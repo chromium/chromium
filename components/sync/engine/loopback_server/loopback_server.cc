@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/map_util.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -286,16 +287,40 @@ bool LoopbackServer::CreatePermanentBookmarkFolder(
     const std::string& server_tag,
     const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const int migration_version = GetMigrationVersion(syncer::BOOKMARKS);
+  const LoopbackServerEntity* existing_folder =
+      FindPermanentBookmarkFolder(server_tag);
+
+  if (existing_folder) {
+    DCHECK_EQ(migration_version,
+              LoopbackServerEntity::GetMigrationVersionFromId(
+                  existing_folder->GetId()));
+    return true;
+  }
+
   std::unique_ptr<LoopbackServerEntity> entity =
       PersistentPermanentEntity::CreateNew(
           syncer::BOOKMARKS, server_tag, name,
-          DataTypeToProtocolRootTag(syncer::BOOKMARKS));
+          DataTypeToProtocolRootTag(syncer::BOOKMARKS), migration_version);
   if (!entity) {
     return false;
   }
 
   SaveEntity(std::move(entity));
   return true;
+}
+
+const LoopbackServerEntity* LoopbackServer::FindPermanentBookmarkFolder(
+    const std::string& server_tag) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& [id, entity] : entities_) {
+    if (entity->GetDataType() == syncer::BOOKMARKS && entity->IsPermanent() &&
+        LoopbackServerEntity::GetInnerIdFromId(id) == server_tag) {
+      return entity.get();
+    }
+  }
+  return nullptr;
 }
 
 bool LoopbackServer::CreateDefaultPermanentItems() {
@@ -406,7 +431,7 @@ void LoopbackServer::EnableStrongConsistencyWithConflictDetectionModel() {
   strong_consistency_model_enabled_ = true;
 }
 
-int LoopbackServer::GetMigrationVersionForTesting(DataType type) const {
+int LoopbackServer::GetMigrationVersion(DataType type) const {
   return GetServerMigrationVersion(migration_versions_, type);
 }
 
@@ -536,22 +561,40 @@ string LoopbackServer::CommitEntity(
     return string();
   }
 
-  // If strong consistency model is enabled (usually on a per-datatype level,
-  // but implemented here as a global state), the server detects version
-  // mismatches and responds with CONFLICT.
-  if (strong_consistency_model_enabled_) {
-    EntityMap::const_iterator iter = entities_.find(client_entity.id_string());
-    if (iter != entities_.end()) {
-      const LoopbackServerEntity* server_entity = iter->second.get();
-      if (server_entity->GetVersion() != client_entity.version()) {
-        entry_response->set_response_type(sync_pb::CommitResponse::CONFLICT);
-        return client_entity.id_string();
-      }
+  const syncer::DataType type =
+      GetDataTypeFromSpecifics(client_entity.specifics());
+  const int migration_version = GetMigrationVersion(type);
+
+  const LoopbackServerEntity* const server_entity =
+      base::FindPtrOrNull(entities_, client_entity.id_string());
+
+  // Verify that updates (version > 0) committed after a migration has occurred
+  // (migration_version > 0) use the expected versioned ID prefix. This prevents
+  // committing legacy IDs post-migration. Creations (version == 0) are skipped
+  // because they use temporary client IDs which the server replaces anyway.
+  if (migration_version > 0 && client_entity.version() > 0 &&
+      !client_entity.id_string().empty()) {
+    const std::string expected_prefix =
+        LoopbackServerEntity::CreateId(type, "", migration_version);
+
+    if (!base::StartsWith(client_entity.id_string(), expected_prefix,
+                          base::CompareCase::SENSITIVE)) {
+      entry_response->set_response_type(
+          sync_pb::CommitResponse::INVALID_MESSAGE);
+      return string();
     }
   }
 
+  // If strong consistency model is enabled (usually on a per-datatype level,
+  // but implemented here as a global state), the server detects version
+  // mismatches and responds with CONFLICT.
+  if (strong_consistency_model_enabled_ && server_entity &&
+      server_entity->GetVersion() != client_entity.version()) {
+    entry_response->set_response_type(sync_pb::CommitResponse::CONFLICT);
+    return client_entity.id_string();
+  }
+
   std::unique_ptr<LoopbackServerEntity> entity;
-  syncer::DataType type = GetDataTypeFromSpecifics(client_entity.specifics());
   if (client_entity.deleted()) {
     entity = PersistentTombstoneEntity::CreateFromEntity(client_entity);
     if (entity) {
@@ -560,30 +603,26 @@ string LoopbackServer::CommitEntity(
   } else if (type == syncer::NIGORI) {
     // NIGORI is the only permanent item type that should be updated by the
     // client.
-    EntityMap::const_iterator iter = entities_.find(client_entity.id_string());
-    CHECK(iter != entities_.end());
+    CHECK(server_entity);
     entity = PersistentPermanentEntity::CreateUpdatedNigoriEntity(
-        client_entity, *iter->second);
+        client_entity, *server_entity);
   } else if (type == syncer::BOOKMARKS) {
     // TODO(pvalenzuela): Validate entity's parent ID.
-    EntityMap::const_iterator iter = entities_.find(client_entity.id_string());
-    if (iter != entities_.end()) {
+    if (server_entity) {
       entity = PersistentBookmarkEntity::CreateUpdatedVersion(
-          client_entity, *iter->second, parent_id, client_guid);
+          client_entity, *server_entity, parent_id, client_guid);
     } else {
-      entity = PersistentBookmarkEntity::CreateNew(client_entity, parent_id,
-                                                   client_guid);
+      entity = PersistentBookmarkEntity::CreateNew(
+          client_entity, parent_id, client_guid, migration_version);
     }
   } else if (type == syncer::PASSWORDS) {
-    entity = PersistentUniqueClientEntity::CreateFromEntity(client_entity);
+    entity = PersistentUniqueClientEntity::CreateFromEntity(client_entity,
+                                                            migration_version);
     // If the commit is coming from a legacy client that doesn't support
     // password notes, carry over an existing note backup. The same logic is
     // implemented on the production sync server.
     if (!client_entity.specifics().password().has_encrypted_notes_backup()) {
-      EntityMap::const_iterator iter =
-          entities_.find(client_entity.id_string());
-      if (iter != entities_.end()) {
-        const LoopbackServerEntity* server_entity = iter->second.get();
+      if (server_entity) {
         if (server_entity->GetSpecifics()
                 .password()
                 .has_encrypted_notes_backup()) {
@@ -595,7 +634,8 @@ string LoopbackServer::CommitEntity(
       }
     }
   } else {
-    entity = PersistentUniqueClientEntity::CreateFromEntity(client_entity);
+    entity = PersistentUniqueClientEntity::CreateFromEntity(client_entity,
+                                                            migration_version);
   }
 
   if (!entity) {
@@ -953,6 +993,46 @@ int LoopbackServer::GetMigrationVersionFromProgressTokenForTesting(  // IN-TEST
     return 0;
   }
   return ProgressMarkerToken::FromString(token).migration_version();
+}
+
+void LoopbackServer::TriggerMigrationForTesting(DataTypeSet data_types) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (const DataType type : data_types) {
+    ++migration_versions_[type];
+  }
+
+  std::vector<std::string> old_ids;
+  for (const auto& [id, entity] : entities_) {
+    const DataType type = entity->GetDataType();
+    if (data_types.Has(type)) {
+      old_ids.push_back(id);
+    }
+  }
+
+  for (const std::string& old_id : old_ids) {
+    auto it = entities_.find(old_id);
+    CHECK(it != entities_.end());
+
+    std::unique_ptr<LoopbackServerEntity> entity = std::move(it->second);
+    CHECK(entity);
+
+    const DataType type = entity->GetDataType();
+    const int new_migration_version = GetMigrationVersion(type);
+    CHECK_NE(new_migration_version,
+             LoopbackServerEntity::GetMigrationVersionFromId(old_id));
+
+    const std::string new_id = LoopbackServerEntity::CreateId(
+        type, LoopbackServerEntity::GetInnerIdFromId(old_id),
+        new_migration_version);
+    CHECK_NE(old_id, new_id);
+
+    entity->MigrateToNewVersionForTesting(new_migration_version);  // IN-TEST
+    entities_[new_id] = std::move(entity);
+    entities_.erase(it);
+  }
+
+  FlushToDisk();
 }
 
 }  // namespace syncer

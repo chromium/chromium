@@ -32,7 +32,8 @@ std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateNew(
     const DataType& data_type,
     const string& server_tag,
     const string& name,
-    const string& parent_server_tag) {
+    const string& parent_server_tag,
+    int migration_version) {
   if (data_type == syncer::UNSPECIFIED) {
     DLOG(WARNING) << "The entity's DataType is invalid.";
     return nullptr;
@@ -56,9 +57,10 @@ std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateNew(
     return nullptr;
   }
 
-  string id = LoopbackServerEntity::CreateId(data_type, server_tag);
-  string parent_id =
-      LoopbackServerEntity::CreateId(data_type, parent_server_tag);
+  string id =
+      LoopbackServerEntity::CreateId(data_type, server_tag, migration_version);
+  string parent_id = LoopbackServerEntity::CreateId(
+      data_type, parent_server_tag, migration_version);
   sync_pb::EntitySpecifics entity_specifics;
   AddDefaultFieldValue(data_type, &entity_specifics);
   return std::make_unique<PersistentPermanentEntity>(
@@ -75,7 +77,8 @@ std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateTopLevel(
 
   string server_tag = syncer::DataTypeToProtocolRootTag(data_type);
   std::string name = std::string(syncer::DataTypeToDebugString(data_type));
-  string id = LoopbackServerEntity::GetTopLevelId(data_type);
+  string id =
+      LoopbackServerEntity::GetTopLevelId(data_type, /*migration_version=*/0);
   sync_pb::EntitySpecifics entity_specifics;
   AddDefaultFieldValue(data_type, &entity_specifics);
   return std::make_unique<PersistentPermanentEntity>(
@@ -112,6 +115,18 @@ PersistentPermanentEntity::PersistentPermanentEntity(
       server_defined_unique_tag_(server_defined_unique_tag),
       parent_id_(parent_id) {
   SetSpecifics(specifics);
+}
+
+void PersistentPermanentEntity::MigrateToNewVersionForTesting(int new_version) {
+  LoopbackServerEntity::MigrateToNewVersionForTesting(new_version);  // IN-TEST
+  const std::string old_parent = GetParentId();
+  if (old_parent != "0" && LoopbackServerEntity::GetDataTypeFromId(
+                               old_parent) != syncer::UNSPECIFIED) {
+    const std::string parent_inner =
+        LoopbackServerEntity::GetInnerIdFromId(old_parent);
+    parent_id_ = LoopbackServerEntity::CreateId(GetDataType(), parent_inner,
+                                                new_version);
+  }
 }
 
 bool PersistentPermanentEntity::RequiresParentId() const {

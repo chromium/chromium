@@ -150,7 +150,8 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
 
   if (parent_id_.empty() && !parent_guid_.is_valid()) {
     parent_id_ =
-        LoopbackServerEntity::CreateId(syncer::BOOKMARKS, "bookmark_bar");
+        LoopbackServerEntity::CreateId(syncer::BOOKMARKS, "bookmark_bar",
+                                       /*migration_version=*/0);
     parent_guid_ = base::Uuid::ParseLowercase(bookmarks::kBookmarkBarNodeUuid);
   }
 
@@ -182,7 +183,8 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
     bool is_folder) {
   if (id_.empty()) {
     id_ = LoopbackServerEntity::CreateId(
-        syncer::BOOKMARKS, base::Uuid::GenerateRandomV4().AsLowercaseString());
+        syncer::BOOKMARKS, base::Uuid::GenerateRandomV4().AsLowercaseString(),
+        /*migration_version=*/0);
   }
 
   if (use_client_tag_hash_) {

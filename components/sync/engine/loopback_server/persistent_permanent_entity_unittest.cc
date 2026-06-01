@@ -12,18 +12,21 @@ namespace syncer {
 namespace {
 
 TEST(PersistentPermanentEntityTest, CreateNew) {
+  ASSERT_FALSE(PersistentPermanentEntity::CreateNew(UNSPECIFIED, "server_tag",
+                                                    "name", "parent_server_tag",
+                                                    /*migration_version=*/0));
   ASSERT_FALSE(PersistentPermanentEntity::CreateNew(
-      UNSPECIFIED, "server_tag", "name", "parent_server_tag"));
-  ASSERT_FALSE(PersistentPermanentEntity::CreateNew(PREFERENCES, "", "name",
-                                                    "parent_server_tag"));
+      PREFERENCES, "", "name", "parent_server_tag", /*migration_version=*/0));
   ASSERT_FALSE(PersistentPermanentEntity::CreateNew(PREFERENCES, "server_tag",
-                                                    "", "parent_server_tag"));
-  ASSERT_FALSE(PersistentPermanentEntity::CreateNew(PREFERENCES, "server_tag",
-                                                    "name", ""));
-  ASSERT_FALSE(PersistentPermanentEntity::CreateNew(PREFERENCES, "server_tag",
-                                                    "name", "0"));
-  ASSERT_TRUE(PersistentPermanentEntity::CreateNew(
-      PREFERENCES, "server_tag", "name", "parent_server_tag"));
+                                                    "", "parent_server_tag",
+                                                    /*migration_version=*/0));
+  ASSERT_FALSE(PersistentPermanentEntity::CreateNew(
+      PREFERENCES, "server_tag", "name", "", /*migration_version=*/0));
+  ASSERT_FALSE(PersistentPermanentEntity::CreateNew(
+      PREFERENCES, "server_tag", "name", "0", /*migration_version=*/0));
+  ASSERT_TRUE(PersistentPermanentEntity::CreateNew(PREFERENCES, "server_tag",
+                                                   "name", "parent_server_tag",
+                                                   /*migration_version=*/0));
 }
 
 TEST(PersistentPermanentEntityTest, CreateTopLevel) {
@@ -36,13 +39,15 @@ TEST(PersistentPermanentEntityTest, CreateUpdatedNigoriEntity) {
   client_entity.mutable_specifics()->mutable_nigori();
 
   auto preferences_server_entity = PersistentPermanentEntity::CreateNew(
-      PREFERENCES, "server_tag", "name", "parent_server_tag");
+      PREFERENCES, "server_tag", "name", "parent_server_tag",
+      /*migration_version=*/0);
   ASSERT_TRUE(preferences_server_entity);
   ASSERT_FALSE(PersistentPermanentEntity::CreateUpdatedNigoriEntity(
       client_entity, *preferences_server_entity));
 
   auto nigori_server_entity = PersistentPermanentEntity::CreateNew(
-      NIGORI, "server_tag", "name", "parent_server_tag");
+      NIGORI, "server_tag", "name", "parent_server_tag",
+      /*migration_version=*/0);
   ASSERT_TRUE(nigori_server_entity);
   ASSERT_TRUE(PersistentPermanentEntity::CreateUpdatedNigoriEntity(
       client_entity, *nigori_server_entity));

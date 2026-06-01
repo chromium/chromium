@@ -33,7 +33,8 @@ class PersistentBookmarkEntity : public LoopbackServerEntity {
   static std::unique_ptr<LoopbackServerEntity> CreateNew(
       const sync_pb::SyncEntity& client_entity,
       const std::string& parent_id,
-      const std::string& originator_cache_guid);
+      const std::string& originator_cache_guid,
+      int migration_version);
 
   // Factory function for PersistentBookmarkEntity. The server's current entity
   // for this ID, `current_server_entity`, is passed here because the client
@@ -66,6 +67,7 @@ class PersistentBookmarkEntity : public LoopbackServerEntity {
   void SetParentId(const std::string& parent_id);
 
   // LoopbackServerEntity implementation.
+  void MigrateToNewVersionForTesting(int new_version) override;
   bool RequiresParentId() const override;
   std::string GetParentId() const override;
   void SerializeAsProto(sync_pb::SyncEntity* proto) const override;

@@ -17,13 +17,15 @@ TEST(PersistentBookmarkEntityTest, CreateNew) {
   entity.set_id_string(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   entity.mutable_specifics()->mutable_preference();
-  EXPECT_FALSE(
-      PersistentBookmarkEntity::CreateNew(entity, "parent_id", "client_guid"));
+  EXPECT_FALSE(PersistentBookmarkEntity::CreateNew(entity, "parent_id",
+                                                   "client_guid",
+                                                   /*migration_version=*/0));
 
   entity.clear_specifics();
   entity.mutable_specifics()->mutable_bookmark();
-  EXPECT_TRUE(
-      PersistentBookmarkEntity::CreateNew(entity, "parent_id", "client_guid"));
+  EXPECT_TRUE(PersistentBookmarkEntity::CreateNew(entity, "parent_id",
+                                                  "client_guid",
+                                                  /*migration_version=*/0));
 }
 
 TEST(PersistentBookmarkEntityTest, CreateUpdatedVersion) {

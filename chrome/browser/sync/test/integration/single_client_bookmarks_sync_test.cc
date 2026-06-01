@@ -1228,7 +1228,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
       entity_builder_factory.NewBookmarkEntityBuilder(
           title, base::Uuid::ParseLowercase(kBookmarkGuid));
   bookmark_builder.SetId(
-      syncer::LoopbackServerEntity::CreateId(syncer::BOOKMARKS, kBookmarkGuid));
+      syncer::LoopbackServerEntity::CreateId(syncer::BOOKMARKS, kBookmarkGuid,
+                                             /*migration_version=*/0));
   fake_server_->InjectEntity(bookmark_builder.BuildFolder());
 
   base::HistogramTester histogram_tester;
@@ -1250,7 +1251,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksSyncTest,
       entity_builder_factory.NewBookmarkEntityBuilder(
           title, base::Uuid::ParseLowercase(kBookmarkGuid));
   bookmark_builder.SetId(
-      syncer::LoopbackServerEntity::CreateId(syncer::BOOKMARKS, kBookmarkGuid));
+      syncer::LoopbackServerEntity::CreateId(syncer::BOOKMARKS, kBookmarkGuid,
+                                             /*migration_version=*/0));
   fake_server_->InjectEntity(bookmark_builder.BuildFolder());
 
   base::HistogramTester histogram_tester;

@@ -38,7 +38,8 @@ class PersistentPermanentEntity : public LoopbackServerEntity {
       const syncer::DataType& data_type,
       const std::string& server_tag,
       const std::string& name,
-      const std::string& parent_server_tag);
+      const std::string& parent_server_tag,
+      int migration_version);
 
   // Factory function for a top level PersistentPermanentEntity. Top level means
   // that the entity's parent is the root entity (no PersistentPermanentEntity
@@ -54,6 +55,7 @@ class PersistentPermanentEntity : public LoopbackServerEntity {
       const LoopbackServerEntity& current_server_entity);
 
   // LoopbackServerEntity implementation.
+  void MigrateToNewVersionForTesting(int new_version) override;
   bool RequiresParentId() const override;
   std::string GetParentId() const override;
   void SerializeAsProto(sync_pb::SyncEntity* proto) const override;

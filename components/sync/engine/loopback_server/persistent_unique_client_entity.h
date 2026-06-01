@@ -38,7 +38,8 @@ class PersistentUniqueClientEntity : public LoopbackServerEntity {
 
   // Factory function for creating a PersistentUniqueClientEntity.
   static std::unique_ptr<LoopbackServerEntity> CreateFromEntity(
-      const sync_pb::SyncEntity& client_entity);
+      const sync_pb::SyncEntity& client_entity,
+      int migration_version);
 
   // Factory function for creating a PersistentUniqueClientEntity for use in the
   // FakeServer injection API.

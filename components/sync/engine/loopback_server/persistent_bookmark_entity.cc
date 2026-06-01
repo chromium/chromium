@@ -34,7 +34,8 @@ PersistentBookmarkEntity::~PersistentBookmarkEntity() = default;
 std::unique_ptr<LoopbackServerEntity> PersistentBookmarkEntity::CreateNew(
     const sync_pb::SyncEntity& client_entity,
     const string& parent_id,
-    const string& originator_cache_guid) {
+    const string& originator_cache_guid,
+    int migration_version) {
   if (!IsBookmark(client_entity)) {
     DLOG(WARNING) << "The given entity must be a bookmark.";
     return nullptr;
@@ -47,8 +48,8 @@ std::unique_ptr<LoopbackServerEntity> PersistentBookmarkEntity::CreateNew(
     return nullptr;
   }
 
-  const string id = LoopbackServerEntity::CreateId(syncer::BOOKMARKS,
-                                                   originator_client_item_id);
+  const string id = LoopbackServerEntity::CreateId(
+      syncer::BOOKMARKS, originator_client_item_id, migration_version);
 
   return std::make_unique<PersistentBookmarkEntity>(
       id, 0, client_entity.name(), originator_cache_guid,
@@ -162,6 +163,19 @@ PersistentBookmarkEntity::PersistentBookmarkEntity(
 
 void PersistentBookmarkEntity::SetParentId(const string& parent_id) {
   parent_id_ = parent_id;
+}
+
+void PersistentBookmarkEntity::MigrateToNewVersionForTesting(int new_version) {
+  LoopbackServerEntity::MigrateToNewVersionForTesting(new_version);  // IN-TEST
+  const std::string old_parent = GetParentId();
+  if (old_parent != "0" && LoopbackServerEntity::GetDataTypeFromId(
+                               old_parent) != syncer::UNSPECIFIED) {
+    const std::string parent_inner =
+        LoopbackServerEntity::GetInnerIdFromId(old_parent);
+    const std::string new_parent = LoopbackServerEntity::CreateId(
+        GetDataType(), parent_inner, new_version);
+    SetParentId(new_parent);
+  }
 }
 
 bool PersistentBookmarkEntity::RequiresParentId() const {

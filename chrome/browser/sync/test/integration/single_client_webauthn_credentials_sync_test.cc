@@ -108,7 +108,8 @@ CreateEntityWithCustomClientTagHash(
   *entity.mutable_webauthn_credential() = specifics;
   return std::make_unique<syncer::PersistentUniqueClientEntity>(
       syncer::LoopbackServerEntity::CreateId(syncer::WEBAUTHN_CREDENTIAL,
-                                             client_tag_hash),
+                                             client_tag_hash,
+                                             /*migration_version=*/0),
       syncer::WEBAUTHN_CREDENTIAL, /*version=*/0,
       /*non_unique_name=*/"", client_tag_hash, entity, /*creation_time=*/0,
       /*last_modified_time=*/0,

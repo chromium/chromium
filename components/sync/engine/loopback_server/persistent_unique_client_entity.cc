@@ -37,8 +37,10 @@ PersistentUniqueClientEntity::~PersistentUniqueClientEntity() = default;
 // static
 std::unique_ptr<LoopbackServerEntity>
 PersistentUniqueClientEntity::CreateFromEntity(
-    const sync_pb::SyncEntity& client_entity) {
-  DataType data_type = GetDataTypeFromSpecifics(client_entity.specifics());
+    const sync_pb::SyncEntity& client_entity,
+    const int migration_version) {
+  const DataType data_type =
+      GetDataTypeFromSpecifics(client_entity.specifics());
   if (!IsRealDataType(data_type)) {
     DLOG(WARNING) << "A UniqueClientEntity should have a valid data type.";
     return nullptr;
@@ -50,13 +52,12 @@ PersistentUniqueClientEntity::CreateFromEntity(
     return nullptr;
   }
 
-  // Without data type specific logic for each CommitOnly type, we cannot infer
-  // a reasonable tag from the specifics. We need uniqueness for how the server
-  // holds onto all objects, so simply make a new tag from a random  number.
-  std::string effective_tag = client_entity.has_client_tag_hash()
-                                  ? client_entity.client_tag_hash()
-                                  : base::NumberToString(base::RandUint64());
-  std::string id = LoopbackServerEntity::CreateId(data_type, effective_tag);
+  const std::string id =
+      client_entity.version() == 0
+          ? LoopbackServerEntity::CreateId(
+                data_type, client_entity.client_tag_hash(), migration_version)
+          : client_entity.id_string();
+
   return std::make_unique<PersistentUniqueClientEntity>(
       id, data_type, client_entity.version(), client_entity.name(),
       client_entity.client_tag_hash(), client_entity.specifics(),
@@ -75,7 +76,8 @@ PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
   DataType data_type = GetDataTypeFromSpecifics(entity_specifics);
   std::string client_tag_hash =
       ClientTagHash::FromUnhashed(data_type, client_tag).value();
-  std::string id = LoopbackServerEntity::CreateId(data_type, client_tag_hash);
+  std::string id = LoopbackServerEntity::CreateId(data_type, client_tag_hash,
+                                                  /*migration_version=*/0);
   return std::make_unique<PersistentUniqueClientEntity>(
       id, data_type, 0, non_unique_name, client_tag_hash, entity_specifics,
       creation_time, last_modified_time,
@@ -94,7 +96,8 @@ PersistentUniqueClientEntity::CreateFromSharedSpecificsForTesting(
   DataType data_type = GetDataTypeFromSpecifics(entity_specifics);
   std::string client_tag_hash =
       ClientTagHash::FromUnhashed(data_type, client_tag).value();
-  std::string id = LoopbackServerEntity::CreateId(data_type, client_tag_hash);
+  std::string id = LoopbackServerEntity::CreateId(data_type, client_tag_hash,
+                                                  /*migration_version=*/0);
   return std::make_unique<PersistentUniqueClientEntity>(
       id, data_type, 0, non_unique_name, client_tag_hash, entity_specifics,
       creation_time, last_modified_time, collaboration_metadata);
@@ -107,7 +110,8 @@ bool PersistentUniqueClientEntity::RequiresParentId() const {
 std::string PersistentUniqueClientEntity::GetParentId() const {
   // The parent ID for this type of entity should always be its DataType's
   // root node.
-  return LoopbackServerEntity::GetTopLevelId(GetDataType());
+  return LoopbackServerEntity::GetTopLevelId(GetDataType(),
+                                             /*migration_version=*/0);
 }
 
 sync_pb::LoopbackServerEntity_Type

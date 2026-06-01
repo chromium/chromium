@@ -18,25 +18,30 @@ TEST(PersistentUniqueClientEntityTest, CreateFromEntity) {
   sync_pb::SyncEntity entity;
   entity.mutable_specifics()->mutable_preference();
   // Normal types need a client_tag_hash.
-  ASSERT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(entity));
+  ASSERT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(
+      entity, /*migration_version=*/0));
 
   *entity.mutable_client_tag_hash() = "tag";
-  ASSERT_TRUE(PersistentUniqueClientEntity::CreateFromEntity(entity));
+  ASSERT_TRUE(PersistentUniqueClientEntity::CreateFromEntity(
+      entity, /*migration_version=*/0));
 
   entity.clear_specifics();
   entity.mutable_specifics()->mutable_user_event();
   // CommitOnly type should also have a client_tag_hash.
-  ASSERT_TRUE(PersistentUniqueClientEntity::CreateFromEntity(entity));
+  ASSERT_TRUE(PersistentUniqueClientEntity::CreateFromEntity(
+      entity, /*migration_version=*/0));
 
   entity.clear_client_tag_hash();
-  ASSERT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(entity));
+  ASSERT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(
+      entity, /*migration_version=*/0));
 }
 
 TEST(PersistentUniqueClientEntityTest, CreateFromEntityWithNoSpecifics) {
   sync_pb::SyncEntity entity;
   entity.set_client_tag_hash("tag");
   // This should not crash, it should return nullptr.
-  EXPECT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(entity));
+  EXPECT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(
+      entity, /*migration_version=*/0));
 }
 
 TEST(PersistentUniqueClientEntityTest, CreateFromSpecificsForTesting) {
@@ -56,7 +61,8 @@ TEST(PersistentUniqueClientEntityTest, CreateFromSpecificsForTesting) {
   EXPECT_EQ(
       LoopbackServerEntity::CreateId(
           syncer::PREFERENCES,
-          ClientTagHash::FromUnhashed(syncer::PREFERENCES, kClientTag).value()),
+          ClientTagHash::FromUnhashed(syncer::PREFERENCES, kClientTag).value(),
+          /*migration_version=*/0),
       entity->GetId());
 }
 

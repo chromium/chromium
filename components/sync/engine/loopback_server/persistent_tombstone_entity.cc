@@ -26,11 +26,13 @@ std::string CreateServerId(syncer::DataType data_type,
   // client tag *hash*. For bookmarks, the non-hashed client tag (aka UUID) is
   // used.
   if (data_type == BOOKMARKS) {
-    return LoopbackServerEntity::CreateId(data_type, std::string(client_tag));
+    return LoopbackServerEntity::CreateId(data_type, std::string(client_tag),
+                                          /*migration_version=*/0);
   }
 
   return LoopbackServerEntity::CreateId(
-      data_type, ClientTagHash::FromUnhashed(data_type, client_tag).value());
+      data_type, ClientTagHash::FromUnhashed(data_type, client_tag).value(),
+      /*migration_version=*/0);
 }
 
 }  // namespace

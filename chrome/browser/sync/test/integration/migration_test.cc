@@ -8,6 +8,9 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
@@ -22,14 +25,43 @@
 #include "content/public/test/browser_test.h"
 
 using bookmarks_helper::AddURL;
+using bookmarks_helper::GetUniqueNodeByURL;
 using bookmarks_helper::IndexedURL;
 using bookmarks_helper::IndexedURLTitle;
+using bookmarks_helper::ServerBookmarksEqualityChecker;
+using bookmarks_helper::SetTitle;
 using bookmarks_helper::StoreType;
 
 using preferences_helper::BooleanPrefMatches;
 using preferences_helper::ChangeBooleanPref;
 
 namespace {
+
+std::optional<sync_pb::SyncEntity> FindBookmarkEntityByURL(
+    fake_server::FakeServer* fake_server,
+    const GURL& url) {
+  const std::vector<sync_pb::SyncEntity> entities =
+      fake_server->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
+  for (const auto& entity : entities) {
+    if (entity.specifics().bookmark().url() == url.spec()) {
+      return entity;
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<sync_pb::SyncEntity> FindPreferenceEntityByPrefName(
+    fake_server::FakeServer* fake_server,
+    const std::string& pref_name) {
+  const std::vector<sync_pb::SyncEntity> entities =
+      fake_server->GetSyncEntitiesByDataType(syncer::PREFERENCES);
+  for (const auto& entity : entities) {
+    if (entity.specifics().preference().name() == pref_name) {
+      return entity;
+    }
+  }
+  return std::nullopt;
+}
 
 // Utility functions to make a data type set out of a small number of
 // data types.
@@ -124,11 +156,11 @@ class MigrationCompletionChecker : public SingleClientStatusChangeChecker {
 
  private:
   std::optional<int> GetMigrationVersionFromProgressMarker(
-      syncer::DataType type) {
+      const syncer::DataType type) {
     const syncer::SyncCycleSnapshot& snap =
         service()->GetLastCycleSnapshotForDebugging();
     const syncer::ProgressMarkerMap& markers = snap.download_progress_markers();
-    auto it = markers.find(type);
+    const auto it = markers.find(type);
     if (it == markers.end()) {
       return std::nullopt;
     }
@@ -388,6 +420,118 @@ IN_PROC_BROWSER_TEST_P(MigrationSingleClientTest, AllTypesWithNigoriAtOnce) {
   syncer::DataTypeSet all_types = GetPreferredDataTypes();
   all_types.Put(syncer::NIGORI);
   RunSingleClientMigrationTest(MakeList(all_types), MODIFY_PREF);
+}
+
+IN_PROC_BROWSER_TEST_P(MigrationSingleClientTest,
+                       PrefsMigrationDiscardMetadata) {
+  ASSERT_TRUE(SetupSync());
+
+  // 1. Create a pref before migration (toggles to true).
+  preferences_helper::ChangeBooleanPref(0, prefs::kShowHomeButton);
+  ASSERT_TRUE(FakeServerPrefMatchesValueChecker(syncer::PREFERENCES,
+                                                prefs::kShowHomeButton, "true")
+                  .Wait());
+
+  // Locate our user preference entity before migration.
+  const std::optional<sync_pb::SyncEntity> pref_before =
+      FindPreferenceEntityByPrefName(GetFakeServer(), prefs::kShowHomeButton);
+  ASSERT_TRUE(pref_before.has_value());
+  const std::string id_before = pref_before->id_string();
+
+  // 2. Trigger migration for Preferences on the server.
+  TriggerMigrationDoneError({syncer::PREFERENCES});
+
+  // 3. Trigger migration on the client and wait for it.
+  TriggerSyncForDataTypes(0, {syncer::PREFERENCES});
+  AwaitMigration({syncer::PREFERENCES});
+
+  // Locate the migrated user preference entity after migration.
+  const std::optional<sync_pb::SyncEntity> pref_after =
+      FindPreferenceEntityByPrefName(GetFakeServer(), prefs::kShowHomeButton);
+  ASSERT_TRUE(pref_after.has_value());
+  const std::string id_after = pref_after->id_string();
+
+  // Verify that the ID changed (migration happened) but data was preserved.
+  EXPECT_NE(id_before, id_after)
+      << "Preference entity ID did not change after migration!";
+  ASSERT_EQ(pref_after->specifics().preference().value(), "true");
+
+  // 4. Modify the pref again after migration (toggles to false).
+  preferences_helper::ChangeBooleanPref(0, prefs::kShowHomeButton);
+  ASSERT_TRUE(FakeServerPrefMatchesValueChecker(syncer::PREFERENCES,
+                                                prefs::kShowHomeButton, "false")
+                  .Wait());
+
+  // 5. Verify the final committed update uses the migrated ID and mutates data.
+  const std::optional<sync_pb::SyncEntity> pref_final =
+      FindPreferenceEntityByPrefName(GetFakeServer(), prefs::kShowHomeButton);
+  ASSERT_TRUE(pref_final.has_value());
+  EXPECT_EQ(pref_final->id_string(), id_after);
+  EXPECT_EQ(pref_final->specifics().preference().value(), "false")
+      << "Client preference mutation was not committed successfully "
+         "post-migration!";
+}
+
+IN_PROC_BROWSER_TEST_P(MigrationSingleClientTest,
+                       BookmarksMigrationDiscardMetadata) {
+  ASSERT_TRUE(SetupSync());
+
+  // 1. Create a bookmark node before migration.
+  const bookmarks::BookmarkNode* const node =
+      AddURL(0, IndexedURLTitle(0), GURL(IndexedURL(0)), GetStoreType());
+  ASSERT_TRUE(node);
+
+  // Wait until it gets uploaded to the server.
+  ASSERT_TRUE(ServerBookmarksEqualityChecker(
+                  {{IndexedURLTitle(0), GURL(IndexedURL(0))}}, nullptr)
+                  .Wait());
+
+  // Locate our user bookmark entity before migration.
+  const std::optional<sync_pb::SyncEntity> bookmark_before =
+      FindBookmarkEntityByURL(GetFakeServer(), GURL(IndexedURL(0)));
+  ASSERT_TRUE(bookmark_before.has_value());
+  const std::string id_before = bookmark_before->id_string();
+
+  // Verify initial data.
+  ASSERT_EQ(bookmark_before->name(), base::UTF16ToUTF8(IndexedURLTitle(0)));
+
+  // 2. Trigger migration for Bookmarks on the server.
+  TriggerMigrationDoneError({syncer::BOOKMARKS});
+
+  // 3. Trigger migration on the client and wait for it.
+  TriggerSyncForDataTypes(0, {syncer::BOOKMARKS});
+  AwaitMigration({syncer::BOOKMARKS});
+
+  // Locate the migrated user bookmark entity after migration.
+  const std::optional<sync_pb::SyncEntity> bookmark_after =
+      FindBookmarkEntityByURL(GetFakeServer(), GURL(IndexedURL(0)));
+  ASSERT_TRUE(bookmark_after.has_value());
+  const std::string id_after = bookmark_after->id_string();
+
+  // Verify that the ID changed (migration happened) but data was preserved.
+  EXPECT_NE(id_before, id_after)
+      << "Bookmark entity ID did not change after migration!";
+  ASSERT_EQ(bookmark_after->name(), base::UTF16ToUTF8(IndexedURLTitle(0)));
+
+  // 4. Modify the bookmark again after migration.
+  const bookmarks::BookmarkNode* const migrated_node =
+      GetUniqueNodeByURL(0, GURL(IndexedURL(0)));
+  ASSERT_TRUE(migrated_node);
+  SetTitle(0, migrated_node, u"New Title");
+
+  // Wait until the modification gets uploaded to the server.
+  ASSERT_TRUE(ServerBookmarksEqualityChecker(
+                  {{u"New Title", GURL(IndexedURL(0))}}, nullptr)
+                  .Wait());
+
+  // 5. Verify the final committed update uses the migrated ID and mutates data.
+  const std::optional<sync_pb::SyncEntity> bookmark_final =
+      FindBookmarkEntityByURL(GetFakeServer(), GURL(IndexedURL(0)));
+  ASSERT_TRUE(bookmark_final.has_value());
+  EXPECT_EQ(bookmark_final->id_string(), id_after);
+  EXPECT_EQ(bookmark_final->name(), "New Title")
+      << "Client bookmark mutation was not committed successfully "
+         "post-migration!";
 }
 
 class MigrationTwoClientTest : public MigrationTest {

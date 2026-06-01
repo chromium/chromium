@@ -63,7 +63,8 @@ LoopbackServerEntity::CreateEntityFromProto(
     case sync_pb::LoopbackServerEntity_Type_BOOKMARK:
       return PersistentBookmarkEntity::CreateFromEntity(entity.entity());
     case sync_pb::LoopbackServerEntity_Type_UNIQUE:
-      return PersistentUniqueClientEntity::CreateFromEntity(entity.entity());
+      return PersistentUniqueClientEntity::CreateFromEntity(
+          entity.entity(), /*migration_version=*/0);
     case sync_pb::LoopbackServerEntity_Type_UNKNOWN:
       NOTREACHED() << "Unknown type encountered";
   }
@@ -122,40 +123,83 @@ LoopbackServerEntity::GetLoopbackServerEntityType() const {
 
 // static
 string LoopbackServerEntity::CreateId(const DataType& data_type,
-                                      const string& inner_id) {
-  int field_number = GetSpecificsFieldNumberFromDataType(data_type);
+                                      const string& inner_id,
+                                      int migration_version) {
+  const int field_number = GetSpecificsFieldNumberFromDataType(data_type);
+  if (migration_version > 0) {
+    return base::StringPrintf("%d%s@%d%s%s", field_number, kIdSeparator,
+                              migration_version, kIdSeparator, inner_id);
+  }
   return base::StringPrintf("%d%s%s", field_number, kIdSeparator, inner_id);
 }
 
 // static
-std::string LoopbackServerEntity::GetTopLevelId(const DataType& data_type) {
+std::string LoopbackServerEntity::GetTopLevelId(const DataType& data_type,
+                                                int migration_version) {
   return LoopbackServerEntity::CreateId(
-      data_type, syncer::DataTypeToProtocolRootTag(data_type));
+      data_type, syncer::DataTypeToProtocolRootTag(data_type),
+      migration_version);
 }
 
 // static
 DataType LoopbackServerEntity::GetDataTypeFromId(const string& id) {
-  vector<std::string_view> tokens = base::SplitStringPiece(
+  const vector<std::string_view> tokens = base::SplitStringPiece(
       id, kIdSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  int field_number;
-  if (tokens.size() != 2 || !base::StringToInt(tokens[0], &field_number)) {
+  if (tokens.size() < 2) {
     return syncer::UNSPECIFIED;
   }
 
-  return syncer::GetDataTypeFromSpecificsFieldNumber(field_number);
+  int field_number = 0;
+  if (base::StringToInt(tokens[0], &field_number)) {
+    return syncer::GetDataTypeFromSpecificsFieldNumber(field_number);
+  }
+
+  return syncer::UNSPECIFIED;
 }
 
 // static
 std::string LoopbackServerEntity::GetInnerIdFromId(const std::string& id) {
-  vector<std::string_view> tokens = base::SplitStringPiece(
+  const vector<std::string_view> tokens = base::SplitStringPiece(
       id, kIdSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  if (tokens.size() != 2) {
+  if (tokens.size() < 2) {
     return std::string();
   }
 
-  return std::string(tokens[1]);
+  if (tokens.size() == 2) {
+    return std::string(tokens[1]);
+  }
+
+  if (base::StartsWith(tokens[1], "@", base::CompareCase::SENSITIVE)) {
+    // It is a versioned ID. Tag starts at tokens[2].
+    const std::vector<std::string_view> sub_tokens(tokens.begin() + 2,
+                                                   tokens.end());
+    return base::JoinString(sub_tokens, kIdSeparator);
+  }
+  // It is an unversioned ID with underscores within the inner ID itself. Tag
+  // starts at tokens[1].
+  const std::vector<std::string_view> sub_tokens(tokens.begin() + 1,
+                                                 tokens.end());
+  return base::JoinString(sub_tokens, kIdSeparator);
+}
+
+// static
+int LoopbackServerEntity::GetMigrationVersionFromId(const std::string& id) {
+  const vector<std::string_view> tokens = base::SplitStringPiece(
+      id, kIdSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (tokens.size() < 3) {
+    return 0;
+  }
+
+  if (base::StartsWith(tokens[1], "@", base::CompareCase::SENSITIVE)) {
+    int version = 0;
+    if (base::StringToInt(tokens[1].substr(1), &version)) {
+      return version;
+    }
+  }
+  return 0;
 }
 
 LoopbackServerEntity::LoopbackServerEntity(const string& id,
@@ -188,6 +232,17 @@ void LoopbackServerEntity::SerializeAsLoopbackServerEntity(
   entity->set_type(GetLoopbackServerEntityType());
   entity->set_data_type(static_cast<int64_t>(GetDataType()));
   SerializeAsProto(entity->mutable_entity());
+}
+
+void LoopbackServerEntity::MigrateToNewVersionForTesting(int new_version) {
+  id_ = CreateId(GetDataType(), GetInnerIdFromId(id_), new_version);
+  // Start with entity version 1 (not to be confused with the migration version,
+  // which is represented by `new_version`). This mimics MIGRATION_DONE causing
+  // the server versions to decrease (as opposed to the usual
+  // monotonically-increasing behavior), as an attempt to catch more bugs
+  // related to making the incorrect assumption that entity versions are
+  // monotonically increasing across MIGRATION_DONE.
+  SetVersion(1);
 }
 
 }  // namespace syncer

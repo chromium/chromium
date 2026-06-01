@@ -2664,7 +2664,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientBookmarksSyncTest, CreateSyncedBookmarks) {
 
   fake_server_->InjectEntity(syncer::PersistentPermanentEntity::CreateNew(
       syncer::BOOKMARKS, "synced_bookmarks", "Synced Bookmarks",
-      "google_chrome_bookmarks"));
+      "google_chrome_bookmarks", /*migration_version=*/0));
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
 
   // Add a bookmark on Client 0 and ensure it syncs over. This will also trigger
