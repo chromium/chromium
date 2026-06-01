@@ -99,6 +99,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -2538,6 +2540,74 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 isMenuVisible(
                         createModelList(getSubmenuItems(modelList, R.id.more_tools_menu_id)),
                         R.id.name_window_menu_id));
+    }
+
+    /**
+     * Helper to set up a regular page menu on a tablet and return the More Tools submenu.
+     *
+     * @param isVerticalTabsEnabled The state to write to VERTICAL_TABS_ENABLED preferences.
+     * @return The populated ModelList for the More Tools submenu container.
+     */
+    private ModelList setUpPageMenuAndGetMoreToolsSubmenu(boolean isVerticalTabsEnabled) {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions());
+        when(mTabModel.getCount()).thenReturn(1);
+
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, isVerticalTabsEnabled);
+
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        List<ListItem> moreToolsItems = getSubmenuItems(modelList, R.id.more_tools_menu_id);
+        return createModelList(moreToolsItems);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    @Config(qualifiers = "sw600dp")
+    public void tabLayoutToggleItem_ShowsVerticalOption_WhenHorizontalActive() {
+        // Set up the menu with vertical tabs disabled.
+        ModelList moreToolsSubmenu =
+                setUpPageMenuAndGetMoreToolsSubmenu(/* isVerticalTabsEnabled= */ false);
+
+        // Verify that the menu item exists in the submenu.
+        assertTrue(
+                "Vertical tabs menu item should exist in More tools",
+                isMenuVisible(moreToolsSubmenu, R.id.toggle_tab_layout_menu_id));
+
+        // Verify that it has the correct title in the submenu.
+        assertTrue(
+                "Title should match",
+                isMenuVisibleWithCorrectTitle(
+                        moreToolsSubmenu,
+                        R.id.toggle_tab_layout_menu_id,
+                        ContextUtils.getApplicationContext()
+                                .getString(
+                                        org.chromium.chrome.tab_ui.R.string.show_tabs_vertically)));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
+    @Config(qualifiers = "sw600dp")
+    public void tabLayoutToggleItem_ShowsHorizontalOption_WhenVerticalActive() {
+        // Set up the menu with vertical tabs enabled.
+        ModelList moreToolsSubmenu =
+                setUpPageMenuAndGetMoreToolsSubmenu(/* isVerticalTabsEnabled= */ true);
+
+        // The menu item id stays identical.
+        assertTrue(
+                "Vertical tabs item should exist in more tools",
+                isMenuVisible(moreToolsSubmenu, R.id.toggle_tab_layout_menu_id));
+
+        // Verify that the title dynamically changed to "Show tabs horizontally"
+        assertTrue(
+                "Title should shift to horizontal option",
+                isMenuVisibleWithCorrectTitle(
+                        moreToolsSubmenu,
+                        R.id.toggle_tab_layout_menu_id,
+                        ContextUtils.getApplicationContext()
+                                .getString(
+                                        org.chromium.chrome.tab_ui.R.string
+                                                .show_tabs_horizontally)));
     }
 
     @Test

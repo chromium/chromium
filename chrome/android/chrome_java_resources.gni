@@ -305,6 +305,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_copy_link_24dp.xml",
   "java/res/drawable/ic_credit_card_24dp.xml",
   "java/res/drawable/ic_dev_tools_24dp.xml",
+  "java/res/drawable/ic_dock_to_right_24dp.xml",
   "java/res/drawable/ic_drag_handle_24dp.xml",
   "java/res/drawable/ic_error.xml",
   "java/res/drawable/ic_features_24dp.xml",

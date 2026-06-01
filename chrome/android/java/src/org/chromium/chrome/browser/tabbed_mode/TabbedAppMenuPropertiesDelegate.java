@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
@@ -1650,6 +1651,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             return true;
         }
 
+        if (shouldShowTabLayoutToggleItem()) {
+            return true;
+        }
+
         return false;
     }
 
@@ -1671,6 +1676,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         if (shouldShowNameWindowItem()) {
             submenuItems.add(buildNameWindowItem());
+        }
+
+        if (shouldShowTabLayoutToggleItem()) {
+            submenuItems.add(buildTabLayoutToggleItem());
         }
 
         return new ListItem(
@@ -1695,6 +1704,23 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.name_window_menu_id,
                         R.string.menu_name_window,
                         shouldShowIconBeforeItem() ? R.drawable.ic_window_24dp : 0));
+    }
+
+    private boolean shouldShowTabLayoutToggleItem() {
+        return VerticalTabUtils.isVerticalTabsEligible(mContext);
+    }
+
+    private ListItem buildTabLayoutToggleItem() {
+        int stringRes =
+                VerticalTabUtils.isVerticalTabsEnabled(mContext)
+                        ? org.chromium.chrome.tab_ui.R.string.show_tabs_horizontally
+                        : org.chromium.chrome.tab_ui.R.string.show_tabs_vertically;
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.toggle_tab_layout_menu_id,
+                        stringRes,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_dock_to_right_24dp : 0));
     }
 
     @Contract("null -> false")
