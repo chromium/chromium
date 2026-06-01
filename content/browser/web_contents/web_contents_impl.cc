@@ -3169,12 +3169,12 @@ void WebContentsImpl::SetPrimaryPageImportance(
       "content", "WebContentsImpl::SetPrimaryPageImportance",
       "main_frame_importance", static_cast<int>(main_frame_importance),
       "subframe_importance", static_cast<int>(subframe_importance));
-  CHECK(IsPerceptibleImportanceSupported() ||
-        (main_frame_importance != ChildProcessImportance::PERCEPTIBLE &&
-         subframe_importance != ChildProcessImportance::PERCEPTIBLE))
-      << "Setter of ChildProcessImportance::PERCEPTIBLE should be aware of the "
-         "support and avoid using PERCEPTIBLE if "
-         "IsPerceptibleImportanceSupported() is false";
+  CHECK(IsNotPerceptibleImportanceSupported() ||
+        (main_frame_importance != ChildProcessImportance::NOT_PERCEPTIBLE &&
+         subframe_importance != ChildProcessImportance::NOT_PERCEPTIBLE))
+      << "Setter of ChildProcessImportance::NOT_PERCEPTIBLE should be aware of "
+         "the support and avoid using NOT_PERCEPTIBLE if "
+         "IsNotPerceptibleImportanceSupported() is false";
   CHECK(main_frame_importance >= subframe_importance);
 
   // Batch service binding updates for the renderer processes of the main frame

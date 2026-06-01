@@ -41,7 +41,7 @@ public class ChildProcessRankingTest {
     private void assertRankingAndRemoveAll(
             ChildProcessRanking ranking, ChildProcessConnection[] connections) {
         int index = connections.length;
-        ChildProcessConnection reverseIterationArray[] =
+        ChildProcessConnection[] reverseIterationArray =
                 new ChildProcessConnection[connections.length];
         for (ChildProcessConnection c : ranking) {
             reverseIterationArray[--index] = c;
@@ -50,7 +50,7 @@ public class ChildProcessRankingTest {
         Assert.assertEquals(0, index);
 
         index = connections.length;
-        ChildProcessConnection reverseRemoveArray[] =
+        ChildProcessConnection[] reverseRemoveArray =
                 new ChildProcessConnection[connections.length];
         for (int i = 0; i < connections.length; ++i) {
             ChildProcessConnection c = ranking.getLowestRankedConnection();
@@ -198,7 +198,7 @@ public class ChildProcessRankingTest {
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
-                ChildProcessImportance.PERCEPTIBLE);
+                ChildProcessImportance.NOT_PERCEPTIBLE);
         ranking.addConnection(
                 c3,
                 /* visible= */ true,
@@ -235,7 +235,7 @@ public class ChildProcessRankingTest {
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
-                ChildProcessImportance.PERCEPTIBLE);
+                ChildProcessImportance.NOT_PERCEPTIBLE);
 
         assertRankingAndRemoveAll(
                 ranking, new ChildProcessConnection[] {c7, c6, c5, c4, c3, c2, c1});

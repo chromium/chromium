@@ -72,7 +72,7 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
             boolean inViewport = visible && (frameDepth == 0 || intersectsViewport);
             return !inViewport
                     && ((isSpareRenderer && ChildProcessRanking.isSpareRendererOfLowestRanking())
-                            || (importance <= ChildProcessImportance.PERCEPTIBLE));
+                            || (importance <= ChildProcessImportance.NOT_PERCEPTIBLE));
         }
     }
 
@@ -100,7 +100,7 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
             // * visible subframe and not intersect viewport
             //   * These processes are bound with NotPerceptibleBinding by BindingManager in
             //   * practice.
-            // * ChildProcessImportance.PERCEPTIBLE
+            // * ChildProcessImportance.NOT_PERCEPTIBLE
             // * invisible main and sub frames (not ranked by frame depth)
             // * spare renderer (if lowest-ranking parameter is set).
             // Within each group, ties are broken by intersect viewport and then frame depth where
@@ -144,13 +144,13 @@ public class ChildProcessRanking implements Iterable<ChildProcessConnection> {
                 return 1;
             }
 
-            boolean o1Perceptible = o1.importance == ChildProcessImportance.PERCEPTIBLE;
-            boolean o2Perceptible = o2.importance == ChildProcessImportance.PERCEPTIBLE;
-            if (o1Perceptible && o2Perceptible) {
+            boolean o1NotPerceptible = o1.importance == ChildProcessImportance.NOT_PERCEPTIBLE;
+            boolean o2NotPerceptible = o2.importance == ChildProcessImportance.NOT_PERCEPTIBLE;
+            if (o1NotPerceptible && o2NotPerceptible) {
                 return compareByIntersectsViewportAndDepth(o1, o2);
-            } else if (o1Perceptible && !o2Perceptible) {
+            } else if (o1NotPerceptible && !o2NotPerceptible) {
                 return -1;
-            } else if (!o1Perceptible && o2Perceptible) {
+            } else if (!o1NotPerceptible && o2NotPerceptible) {
                 return 1;
             }
 

@@ -78,8 +78,8 @@ void RenderProcessPriority::WriteIntoTrace(
     case ChildProcessImportance::MODERATE:
       proto->set_importance(PriorityProto::IMPORTANCE_MODERATE);
       break;
-    case ChildProcessImportance::PERCEPTIBLE:
-      proto->set_importance(PriorityProto::IMPORTANCE_PERCEPTIBLE);
+    case ChildProcessImportance::NOT_PERCEPTIBLE:
+      proto->set_importance(PriorityProto::IMPORTANCE_NOT_PERCEPTIBLE);
       break;
   }
 #endif

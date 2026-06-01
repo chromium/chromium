@@ -7,7 +7,7 @@
 #include "base/android/android_info.h"
 
 namespace content {
-bool IsPerceptibleImportanceSupported() {
+bool IsNotPerceptibleImportanceSupported() {
   // This is the same as `SUPPORT_NOT_PERCEPTIBLE_BINDING` in
   // ChildProcessConnection.java.
   return base::android::android_info::sdk_int() >=

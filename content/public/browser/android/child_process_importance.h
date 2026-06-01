@@ -16,10 +16,10 @@ namespace content {
 // Each importance results in a service binding with different service binding
 // flags to tell the priority of the renderer process to Android system.
 //
-// PERCEPTIBLE importance leads to a service binding with
+// NOT_PERCEPTIBLE importance leads to a service binding with
 // `Context.BIND_NOT_PERCEPTIBLE` which is supported on Android Q+. On older
-// Android version, PERCEPTIBLE importance falls back to NORMAL importance and
-// the corresponding waived service binding.
+// Android version, NOT_PERCEPTIBLE importance falls back to NORMAL importance
+// and the corresponding waived service binding.
 //
 // Note that the numerical order in ChildProcessImportance should be consistent
 // because ChildProcessImportance is compared numerically in
@@ -29,13 +29,13 @@ namespace content {
 enum class ChildProcessImportance {
   // NORMAL is the default value.
   NORMAL = 0,
-  PERCEPTIBLE,
+  NOT_PERCEPTIBLE,
   MODERATE,
   IMPORTANT,
 };
 
 // Whether the device supports `ChildProcessImportance.PERCEPTIBLE` or not.
-CONTENT_EXPORT bool IsPerceptibleImportanceSupported();
+CONTENT_EXPORT bool IsNotPerceptibleImportanceSupported();
 
 }  // namespace content
 

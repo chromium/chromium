@@ -1357,7 +1357,7 @@ int32_t AwContents::GetEffectivePriority(JNIEnv* env) {
   switch (web_contents_->GetPrimaryMainFrame()
               ->GetProcess()
               ->GetEffectiveImportance()) {
-    case content::ChildProcessImportance::PERCEPTIBLE:
+    case content::ChildProcessImportance::NOT_PERCEPTIBLE:
       NOTREACHED(base::NotFatalUntil::M140);
       [[fallthrough]];
     case content::ChildProcessImportance::NORMAL:

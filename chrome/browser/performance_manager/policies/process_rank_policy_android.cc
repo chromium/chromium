@@ -137,7 +137,8 @@ bool IsChangeUnfocusedPriorityEnabled() {
 }  // namespace
 
 ProcessRankPolicyAndroid::ProcessRankPolicyAndroid()
-    : ProcessRankPolicyAndroid(content::IsPerceptibleImportanceSupported()) {}
+    : ProcessRankPolicyAndroid(content::IsNotPerceptibleImportanceSupported()) {
+}
 
 ProcessRankPolicyAndroid::ProcessRankPolicyAndroid(
     bool is_perceptible_importance_supported)
@@ -345,9 +346,9 @@ void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
   CHECK(web_contents);
   content::ChildProcessImportance subframe_importance =
       content::ChildProcessImportance::NORMAL;
-  if (importance >= content::ChildProcessImportance::PERCEPTIBLE) {
+  if (importance >= content::ChildProcessImportance::NOT_PERCEPTIBLE) {
     if (is_perceptible_importance_supported_) {
-      subframe_importance = content::ChildProcessImportance::PERCEPTIBLE;
+      subframe_importance = content::ChildProcessImportance::NOT_PERCEPTIBLE;
     } else if (base::FeatureList::IsEnabled(
                    chrome::android::kProtectedTabsAndroid) &&
                chrome::android::kFallbackToModerateParam.Get()) {
@@ -407,7 +408,7 @@ content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
             page_node, DiscardEligibilityPolicy::DiscardReason::PROACTIVE,
             minimum_time_in_background) != CanDiscardResult::kEligible) {
       if (is_perceptible_importance_supported_) {
-        return content::ChildProcessImportance::PERCEPTIBLE;
+        return content::ChildProcessImportance::NOT_PERCEPTIBLE;
       } else if (chrome::android::kFallbackToModerateParam.Get()) {
         return content::ChildProcessImportance::MODERATE;
       }

@@ -327,7 +327,9 @@ message ChildProcessLauncherPriority {
     IMPORTANCE_NORMAL = 1;
     IMPORTANCE_MODERATE = 2;
     IMPORTANCE_IMPORTANT = 3;
-    IMPORTANCE_PERCEPTIBLE = 4;
+    IMPORTANCE_PERCEPTIBLE =
+        4;  // Deprecated. Use IMPORTANCE_NOT_PERCEPTIBLE instead.
+    IMPORTANCE_NOT_PERCEPTIBLE = 5;
   }
   optional Importance importance = 3;
 }
