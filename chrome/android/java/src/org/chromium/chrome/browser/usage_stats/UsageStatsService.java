@@ -51,7 +51,6 @@ public class UsageStatsService implements Destroyable {
     private final List<WeakReference<PageViewObserver>> mPageViewObservers;
 
     private final DigitalWellbeingClient mClient;
-    private boolean mOptInState;
 
     /** Return the {@link UsageStatsService} for the given {@link Profile}. */
     public static UsageStatsService getForProfile(Profile profile) {
@@ -96,8 +95,6 @@ public class UsageStatsService implements Destroyable {
                         (suspendedSites) -> {
                             notifyObserversOfSuspensions(suspendedSites, true);
                         });
-
-        mOptInState = getOptInState();
     }
 
     @Override
@@ -141,11 +138,12 @@ public class UsageStatsService implements Destroyable {
     /** Sets the user's opt in state. */
     void setOptInState(boolean state) {
         ThreadUtils.assertOnUiThread();
+        boolean oldState = getOptInState();
+        if (oldState == state) return;
+
         UserPrefs.get(mProfile).setBoolean(Pref.USAGE_STATS_ENABLED, state);
 
-        if (mOptInState == state) return;
-        mOptInState = state;
-        mClient.notifyOptInStateChange(mOptInState);
+        mClient.notifyOptInStateChange(state);
 
         if (!state) {
             getAllSuspendedWebsitesAsync()
@@ -213,7 +211,9 @@ public class UsageStatsService implements Destroyable {
     public void onAllHistoryDeleted() {
         ThreadUtils.assertOnUiThread();
         UsageStatsMetricsReporter.reportMetricsEvent(UsageStatsMetricsEvent.CLEAR_ALL_HISTORY);
-        mClient.notifyAllHistoryCleared();
+        if (getOptInState()) {
+            mClient.notifyAllHistoryCleared();
+        }
         mEventTracker
                 .clearAll()
                 .except(
@@ -239,7 +239,9 @@ public class UsageStatsService implements Destroyable {
         // Timestamp proto. It doesn't make any sense to delete into the future, so we can
         // reasonably cap endTimeMs at now.
         long effectiveEndTimeMs = Math.min(endTimeMs, System.currentTimeMillis());
-        mClient.notifyHistoryDeletion(startTimeMs, effectiveEndTimeMs);
+        if (getOptInState()) {
+            mClient.notifyHistoryDeletion(startTimeMs, effectiveEndTimeMs);
+        }
         mEventTracker
                 .clearRange(startTimeMs, effectiveEndTimeMs)
                 .except(
@@ -261,7 +263,9 @@ public class UsageStatsService implements Destroyable {
     public void onHistoryDeletedForDomains(List<String> fqdns) {
         ThreadUtils.assertOnUiThread();
         UsageStatsMetricsReporter.reportMetricsEvent(UsageStatsMetricsEvent.CLEAR_HISTORY_DOMAIN);
-        mClient.notifyHistoryDeletion(fqdns);
+        if (getOptInState()) {
+            mClient.notifyHistoryDeletion(fqdns);
+        }
         mEventTracker
                 .clearDomains(fqdns)
                 .except(
