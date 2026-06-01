@@ -201,6 +201,27 @@ public class UrlBar extends AutocompleteEditText {
         default boolean isKeyboardSuppressed() {
             return false;
         }
+
+        /**
+         * Called when the share action is selected from the text context menu.
+         *
+         * @param text The text to be shared.
+         */
+        default void shareText(String text) {}
+
+        /**
+         * Gets potential replacement text to be used instead of the current selected text for
+         * cut/copy actions. If null is returned, the existing text will be cut or copied.
+         *
+         * @param currentText The current displayed text.
+         * @param selectionStart The selection start in the display text.
+         * @param selectionEnd The selection end in the display text.
+         * @return The text to be cut/copied instead of the currently selected text.
+         */
+        default @Nullable String getReplacementCutCopyText(
+                String currentText, int selectionStart, int selectionEnd) {
+            return null;
+        }
     }
 
     /** Delegate that provides the additional functionality to the textual context menus. */
@@ -779,6 +800,18 @@ public class UrlBar extends AutocompleteEditText {
             case android.R.id.shareText:
                 RecordUserAction.record("Omnibox.LongPress.Share");
                 ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
+                if (mUrlBarDelegate != null) {
+                    String replacementShareText =
+                            mTextContextMenuDelegate != null
+                                    ? mTextContextMenuDelegate.getReplacementCutCopyText(
+                                            getText().toString(), selStart, selEnd)
+                                    : null;
+                    mUrlBarDelegate.shareText(
+                            replacementShareText != null
+                                    ? replacementShareText
+                                    : getText().toString().substring(selStart, selEnd));
+                    return true;
+                }
                 break;
         }
 

@@ -61,6 +61,7 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -106,6 +107,8 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
+import org.chromium.components.browser_ui.share.ShareHelper;
+import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -1257,13 +1260,24 @@ class LocationBarMediator
     }
 
     @VisibleForTesting
-    /* package */ static UrlBarData getUrlBarDataForCurrentInput(
+    /* package */ UrlBarData getUrlBarDataForCurrentInput(
             @Nullable AutocompleteInput currentInput) {
         if (currentInput == null) return UrlBarData.EMPTY;
 
         String userText = currentInput.getUserText();
         if (!TextUtils.isEmpty(userText)
                 && TextUtils.equals(userText, currentInput.getInitialUserText())) {
+            if (ContextualTasksUtils.isContextualTasksUrl(
+                    mLocationBarDataProvider.getCurrentGurl())) {
+                WebContents webContents = mLocationBarDataProvider.getWebContents();
+                if (webContents != null) {
+                    GURL contextualTaskDisplayUrl =
+                            ContextualTasksUtils.getContextualTasksDisplayUrl(webContents);
+                    return UrlBarData.forUrlAndText(
+                            mLocationBarDataProvider.getCurrentGurl(),
+                            contextualTaskDisplayUrl.getSpec());
+                }
+            }
             return UrlBarData.forUrlAndText(currentInput.getPageUrl(), userText);
         }
         return UrlBarData.forNonUrlText(userText);
@@ -2534,6 +2548,24 @@ class LocationBarMediator
     }
 
     @Override
+    public @Nullable String getReplacementCutCopyText(
+            String currentText, int selectionStart, int selectionEnd) {
+        GURL currentGurl = mLocationBarDataProvider.getCurrentGurl();
+        if (!ContextualTasksUtils.isContextualTasksUrl(currentGurl)) return null;
+
+        WebContents webContents = mLocationBarDataProvider.getWebContents();
+        if (webContents == null) return null;
+
+        GURL functionalGurl = ContextualTasksUtils.getContextualTasksFunctionalURL(webContents);
+        if (GURL.isEmptyOrInvalid(functionalGurl)) {
+            return null;
+        }
+
+        return ContextualTasksUtils.getReplacementUrl(
+                currentText, selectionStart, selectionEnd, functionalGurl);
+    }
+
+    @Override
     public boolean isKeyboardSuppressed() {
         // Suppress the keyboard while the fusebox popup is showing as a bottom sheet.
         return mFuseboxCoordinator.getPopupStateSupplier().get() == PopupState.BOTTOM;
@@ -2549,6 +2581,12 @@ class LocationBarMediator
         // Revert the URL to match the current page.
         setUrl(mLocationBarDataProvider.getCurrentGurl(), mLocationBarDataProvider.getUrlBarData());
         endInputAndFocusCurrentTab();
+    }
+
+    @Override
+    public void shareText(String text) {
+        ShareParams params = new ShareParams.Builder(mWindowAndroid, /* title= */ "", text).build();
+        ShareHelper.shareWithSystemShareSheetUi(params);
     }
 
     @Override

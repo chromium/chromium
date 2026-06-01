@@ -33,6 +33,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
@@ -240,7 +241,9 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
         omnibox::TOOL_MODE_UNSPECIFIED, false, false, false, false, false);
   inside_synchronous_start_ = false;
   DCHECK(autocomplete_controller_->done());
-  const AutocompleteResult& result = autocomplete_controller_->result();
+  AutocompleteResult& result =
+      const_cast<AutocompleteResult&>(autocomplete_controller_->result());
+  PostProcessResult(result);
   if (result.empty()) {
     return ScopedJavaLocalRef<jobject>();
   }
@@ -632,7 +635,10 @@ void AutocompleteControllerAndroid::OnResultChanged(
     AutocompleteController* controller,
     bool default_match_changed) {
   if (!inside_synchronous_start_) {
-    NotifySuggestionsReceived(autocomplete_controller_->result());
+    AutocompleteResult& result =
+        const_cast<AutocompleteResult&>(controller->result());
+    PostProcessResult(result);
+    NotifySuggestionsReceived(result);
   }
 }
 
@@ -655,6 +661,23 @@ void AutocompleteControllerAndroid::WarmUpRenderProcess() const {
   // It is ok for this to get called multiple times since all the requests
   // will get de-duplicated to the first one.
   content::SpareRenderProcessHostManager::Get().WarmupSpare(profile_);
+}
+
+void AutocompleteControllerAndroid::PostProcessResult(
+    AutocompleteResult& result) {
+  if (auto* web_contents = GetContextualTasksWebContents()) {
+    for (auto& match : result) {
+      if (contextual_tasks::IsContextualTasksUrl(match.destination_url)) {
+        GURL pretty_url =
+            contextual_tasks::GetContextualTasksDisplayURL(web_contents);
+        if (pretty_url.is_valid()) {
+          match.contents = base::UTF8ToUTF16(pretty_url.spec());
+          match.contents_class.clear();
+          match.contents_class.emplace_back(0, ACMatchClassification::URL);
+        }
+      }
+    }
+  }
 }
 
 content::WebContents*

@@ -13,6 +13,7 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -204,23 +205,10 @@ void AdjustTextForCopy(
 
   // If `url_from_text` looks like a "contextual tasks" display URL, then apply
   // "origin-swapping" logic to generate a valid shareable URL.
-  if (url_from_text->is_valid() &&
-      url_from_text->SchemeIs(
-          contextual_tasks::GetContextualTasksDisplayUrlScheme()) &&
-      url_from_text->GetHost() ==
-          contextual_tasks::GetContextualTasksDisplayUrlHost() &&
-      url_from_text->GetPath() ==
-          contextual_tasks::GetContextualTasksDisplayUrlPath()) {
-    if (!contextual_tasks_inner_frame_url.is_valid()) {
-      return;
-    }
-
-    GURL::Replacements replacements;
-    replacements.SetSchemeStr(contextual_tasks_inner_frame_url.scheme());
-    replacements.SetHostStr(contextual_tasks_inner_frame_url.host());
-    replacements.SetPathStr(contextual_tasks_inner_frame_url.path());
-
-    *url_from_text = url_from_text->ReplaceComponents(replacements);
+  GURL replacement_url = location_bar_model::AdjustContextualTasksURLForCopy(
+      *url_from_text, contextual_tasks_inner_frame_url);
+  if (replacement_url.is_valid()) {
+    *url_from_text = replacement_url;
     *text = base::UTF8ToUTF16(url_from_text->spec());
     // In order for "origin-swapping" to work properly, we need to ensure that
     // callers interpret the copied text as "plain text" content.

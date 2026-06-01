@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -73,6 +74,47 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
   }
 #endif
   NOTREACHED();
+}
+
+GURL GetContextualTasksDisplayURL(const GURL& inner_frame_url) {
+  if (!inner_frame_url.is_valid()) {
+    return GURL();
+  }
+
+  GURL::Replacements replacements;
+
+  std::string display_url_scheme =
+      contextual_tasks::GetContextualTasksDisplayUrlScheme();
+  replacements.SetSchemeStr(display_url_scheme);
+
+  std::string display_url_host =
+      contextual_tasks::GetContextualTasksDisplayUrlHost();
+  replacements.SetHostStr(display_url_host);
+
+  std::string display_url_path =
+      contextual_tasks::GetContextualTasksDisplayUrlPath();
+  replacements.SetPathStr(display_url_path);
+
+  return inner_frame_url.ReplaceComponents(replacements);
+}
+
+GURL AdjustContextualTasksURLForCopy(const GURL& url_from_text,
+                                     const GURL& functional_url) {
+  if (url_from_text.is_valid() && functional_url.is_valid() &&
+      url_from_text.SchemeIs(
+          contextual_tasks::GetContextualTasksDisplayUrlScheme()) &&
+      url_from_text.host() ==
+          contextual_tasks::GetContextualTasksDisplayUrlHost() &&
+      url_from_text.path() ==
+          contextual_tasks::GetContextualTasksDisplayUrlPath()) {
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr(functional_url.scheme());
+    replacements.SetHostStr(functional_url.host());
+    replacements.SetPathStr(functional_url.path());
+
+    return url_from_text.ReplaceComponents(replacements);
+  }
+  return GURL();
 }
 
 }  // namespace location_bar_model

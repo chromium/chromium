@@ -20,6 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
+import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
@@ -354,6 +355,13 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
 
         // Trim to just the currently selected text as that is the only text we are replacing.
         currentText = currentText.substring(selectionStart, selectionEnd);
+
+        UrlBarDelegate delegate = mModel.get(UrlBarProperties.DELEGATE);
+        if (delegate != null) {
+            String replacement =
+                    delegate.getReplacementCutCopyText(currentText, selectionStart, selectionEnd);
+            if (replacement != null) return replacement;
+        }
 
         String formattedUrlLocation;
         String originalUrlLocation;

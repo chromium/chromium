@@ -105,6 +105,7 @@ source_set("impl") {
       "android/contextual_tasks_bridge.h",
       "android/contextual_tasks_ui_service_delegate_android.cc",
       "android/contextual_tasks_ui_service_delegate_android.h",
+      "android/contextual_tasks_utils_android.cc",
     ]
   }
 
@@ -160,6 +161,7 @@ source_set("impl") {
   if (is_android) {
     deps += [
       ":jni_headers",
+      ":utils_jni_headers",
       "//chrome/browser/ui/webui:webui_util",
       "//ui/android",
     ]
@@ -694,9 +696,12 @@ if (is_android) {
   }
 
   android_library("utils_java") {
+    srcjar_deps = [ ":utils_jni_headers" ]
     sources = [ "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUtils.java" ]
     deps = [
       "//components/embedder_support/android:util_java",
+      "//content/public/android:content_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
     ]
   }
@@ -745,6 +750,10 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTaskBottomSheetContentProvider.java",
       "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java",
     ]
+  }
+
+  generate_jni("utils_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUtils.java" ]
   }
 
   robolectric_library("junit") {

@@ -91,6 +91,18 @@ void SendInjectedInputRemovedUpdate(
 // Returns true if the side panel should be used instead of the bottom sheet.
 bool ShouldShowSidePanel();
 
+// Returns whether the provided URL is to a contextual tasks WebUI page.
+bool IsContextualTasksUrl(const GURL& url);
+
+// Returns the functional URL (usually the inner frame URL) for the given
+// WebContents if it is a Contextual Tasks page; otherwise returns an empty
+// GURL.
+GURL GetContextualTasksFunctionalURL(content::WebContents* web_contents);
+
+// Returns the pretty display URL (e.g. chrome://google.com/search) for the
+// given WebContents if it is a Contextual Tasks page.
+GURL GetContextualTasksDisplayURL(content::WebContents* web_contents);
+
 }  // namespace contextual_tasks
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_

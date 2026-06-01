@@ -12,7 +12,6 @@ import android.util.Range;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -101,8 +100,6 @@ public class UrlBarData {
         boolean shouldSuppress =
                 // Don't show the NTP URL
                 UrlUtilities.isNtpUrl(gurl)
-                        // Don't show the AI page URL
-                        || ContextualTasksUtils.isContextualTasksUrl(gurl)
                         // Don't show other Chrome URLs on mobile devices.
                         || (!OmniboxCapabilities.isDesktopPlatform()
                                 && NativePage.isChromePageUrl(gurl, isOffTheRecord));

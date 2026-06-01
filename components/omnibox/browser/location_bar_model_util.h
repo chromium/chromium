@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_LOCATION_BAR_MODEL_UTIL_H_
 
 #include "components/security_state/core/security_state.h"
+#include "url/gurl.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -18,6 +19,15 @@ namespace location_bar_model {
 const gfx::VectorIcon& GetSecurityVectorIcon(
     security_state::SecurityLevel security_level,
     security_state::VisibleSecurityState* visible_security_state);
+
+// Returns the "pretty" version of the Contextual Tasks URL for display.
+GURL GetContextualTasksDisplayURL(const GURL& inner_frame_url);
+
+// Swaps the display Contextual Tasks URL identity (scheme/host/path) for its
+// functional equivalent.
+GURL AdjustContextualTasksURLForCopy(const GURL& url_from_text,
+                                     const GURL& functional_url);
+
 }  // namespace location_bar_model
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_LOCATION_BAR_MODEL_UTIL_H_
