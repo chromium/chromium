@@ -51,6 +51,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showAiSuggestionsControl'),
       },
+
+      showSkillsSettingPage_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showSkillsSettingPage'),
+      },
     };
   }
 
@@ -58,6 +63,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   declare private showHistorySearchControl_: boolean;
   declare private showPasswordChangeControl_: boolean;
   declare private showAiSuggestionsControl_: boolean;
+  declare private showSkillsSettingPage_: boolean;
 
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -125,6 +131,15 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     router.navigateTo(router.getRoutes().AI_SUGGESTIONS);
   }
 
+  private onSkillsRowClick_() {
+    this.recordInteractionMetrics_(
+        AiPageInteractions.SKILLS_CLICK,
+        'Settings.AiPage.SkillsEntryPointClick');
+
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().SKILLS);
+  }
+
 
   private recordInteractionMetrics_(
       interaction: AiPageInteractions, action: string) {
@@ -162,6 +177,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       map.set(routes.AI_SUGGESTIONS.path, '#aiSuggestionsRow');
     }
 
+    if (routes.SKILLS) {
+      map.set(routes.SKILLS.path, '#skillsRow');
+    }
+
     return map;
   }
 
@@ -171,6 +190,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       'compose',
       'historySearch',
       'aiSuggestions',
+      'skills',
     ];
     assert(ids.includes(childViewId));
 
@@ -187,6 +207,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       case 'aiSuggestions':
         assert(this.showAiSuggestionsControl_);
         triggerId = 'aiSuggestionsRow';
+        break;
+      case 'skills':
+        assert(this.showSkillsSettingPage_);
+        triggerId = 'skillsRow';
         break;
       default:
         assertNotReached();

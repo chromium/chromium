@@ -1046,6 +1046,7 @@ source_set("extensions") {
       "//components/services/unzip/public/cpp",
       "//components/sessions",
       "//components/signin/public/identity_manager",
+      "//components/skills/public",
       "//components/strings",
       "//components/sync",
       "//components/sync_preferences",

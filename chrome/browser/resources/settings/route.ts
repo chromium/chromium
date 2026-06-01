@@ -210,6 +210,9 @@ function createRoutes(): SettingsRoutes {
     if (loadTimeData.getBoolean('showAiSuggestionsControl')) {
       r.AI_SUGGESTIONS = r.AI.createChild('/ai/suggestions');
     }
+    if (loadTimeData.getBoolean('showSkillsSettingPage')) {
+      r.SKILLS = r.AI.createChild('/ai/skills');
+    }
   }
 
   if (visibility.appearance !== false) {

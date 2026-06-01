@@ -92,6 +92,11 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
         type: Boolean,
         value: () => loadTimeData.getBoolean('showAiSuggestionsControl'),
       },
+
+      showSkillsSettingPage_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showSkillsSettingPage'),
+      },
     };
   }
 
@@ -104,6 +109,7 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   declare private enableAiModeSearchSetting_: boolean;
   declare private actorLoginFederatedLoginSupportEnabled_: boolean;
   declare private showAiSuggestionsControl_: boolean;
+  declare private showSkillsSettingPage_: boolean;
 
   private showDefaultViews_() {
     const defaultViews: string[] = ['aiInfoCard'];
@@ -169,6 +175,11 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
           assert(this.showAiSuggestionsControl_);
           this.$.viewManager.switchView(
               'aiSuggestions', 'no-animation', 'no-animation');
+          break;
+        case routes.SKILLS:
+          assert(this.showSkillsSettingPage_);
+          this.$.viewManager.switchView(
+              'skills', 'no-animation', 'no-animation');
           break;
         default:
           // Nothing to do. Other parent elements are responsible for updating

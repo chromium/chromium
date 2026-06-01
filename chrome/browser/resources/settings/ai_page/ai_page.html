@@ -1,4 +1,9 @@
-<style include="cr-shared-style settings-shared"></style>
+<style include="cr-shared-style settings-shared">
+  :host {
+    display: block;
+    padding-bottom: 24px;
+  }
+</style>
 
 <!-- TODO(crbug.com/362225975): Remove V2 suffixes. -->
 <settings-section page-title="$i18n{aiPageTitle}">
@@ -34,6 +39,14 @@
         sub-label="$i18n{aiSuggestionsSublabel}"
         role-description="$i18n{subpageArrowRoleDescription}"
         on-click="onAiSuggestionsRowClick_">
+    </cr-link-row>
+    <cr-link-row id="skillsRow" class="hr"
+        hidden="[[!showSkillsSettingPage_]]"
+        start-icon="settings20:flash-on"
+        label="$i18n{skillsSettingLabel}"
+        sub-label="$i18n{skillsSettingSublabel}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onSkillsRowClick_">
     </cr-link-row>
   </div>
 </settings-section>

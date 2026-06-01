@@ -457,6 +457,13 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PASSWORD_CHANGE_ENCRYPTION},
       {"passwordChangeLearnMore", IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL},
 
+      // Skills settings.
+      {"skillsGalleryHeader", IDS_SETTINGS_SKILLS_GALLERY_HEADER},
+      {"skillsGalleryLabel", IDS_SETTINGS_SKILLS_GALLERY_LABEL},
+      {"skillsSettingLabel", IDS_SETTINGS_SKILLS_SETTING_LABEL},
+      {"skillsSettingSublabel", IDS_SETTINGS_SKILLS_SETTING_SUBLABEL},
+      {"skillsToggleLabel", IDS_SETTINGS_SKILLS_TOGGLE_LABEL},
+
       // AI Mode Search Settings strings for Smart Tab Sharing (STS)
       {"stsSettingsEntrypointGoogleSearchAiMode",
        IDS_STS_SETTINGS_ENTRYPOINT_GOOGLE_SEARCH_AI_MODE},

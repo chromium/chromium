@@ -64,6 +64,7 @@
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/skills/public/skills_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/themes/pref_names.h"
@@ -1334,6 +1335,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[optimization_guide::prefs::GetSettingEnabledPrefName(
       optimization_guide::UserVisibleFeatureKey::kContextualCueing)] =
       settings_api::PrefType::kNumber;
+
+  (*s_allowlist)[skills::prefs::kChromeSkillsEnabled] =
+      settings_api::PrefType::kBoolean;
 
   // AI enterprise prefs
   (*s_allowlist)[optimization_guide::prefs::kComposeEnterprisePolicyAllowed] =

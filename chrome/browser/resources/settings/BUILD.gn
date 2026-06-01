@@ -66,6 +66,7 @@ build_webui("build") {
     "ai_page/ai_suggestions_page.ts",
     "ai_page/history_search_page.ts",
     "ai_page/offer_writing_help_page.ts",
+    "ai_page/skills_page.ts",
     "appearance_page/appearance_fonts_page.ts",
     "appearance_page/appearance_page.ts",
     "appearance_page/appearance_page_index.ts",

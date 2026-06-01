@@ -65,4 +65,11 @@
         route-path$="[[routes_.AI_SUGGESTIONS.path]]">
     </settings-ai-suggestions-page>
   </template>
+
+  <template is="dom-if" if="[[showSkillsSettingPage_]]">
+    <settings-skills-page slot="view" id="skills"
+        data-parent-view-id="parent" prefs="{{prefs}}"
+        route-path$="[[routes_.SKILLS.path]]">
+    </settings-skills-page>
+  </template>
 </cr-view-manager>

@@ -81,6 +81,7 @@ suite('AiPage', function() {
       showComposeControl: true,
       showPasswordChangeControl: false,
       showAiSuggestionsControl: false,
+      showSkillsSettingPage: true,
     });
     resetRouterForTesting();
     await createPage();
@@ -103,6 +104,8 @@ suite('AiPage', function() {
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.AiSuggestions', false);
 
+    assertTrue(isChildVisible(page, '#skillsRow'));
+
     metricsBrowserProxy.resetResolver('recordBooleanHistogram');
 
     // No new metrics should get recorded on next AI page navigation.
@@ -115,6 +118,7 @@ suite('AiPage', function() {
       showComposeControl: false,
       showPasswordChangeControl: true,
       showAiSuggestionsControl: true,
+      showSkillsSettingPage: false,
     });
     resetRouterForTesting();
     await createPage();
@@ -135,6 +139,8 @@ suite('AiPage', function() {
     assertTrue(isChildVisible(page, '#aiSuggestionsRow'));
     await verifyFeatureVisibilityMetrics(
         'Settings.AiPage.ElementVisibility.AiSuggestions', true);
+
+    assertFalse(isChildVisible(page, '#skillsRow'));
 
     metricsBrowserProxy.resetResolver('recordBooleanHistogram');
 
@@ -258,6 +264,25 @@ suite('AiPage', function() {
 
     const currentRoute = Router.getInstance().getCurrentRoute();
     assertEquals(routes.AI_SUGGESTIONS, currentRoute);
+    assertEquals(routes.AI, currentRoute.parent);
+  });
+
+  test('skillsRow', async () => {
+    loadTimeData.overrideValues({
+      showAiPage: true,
+      showSkillsSettingPage: true,
+    });
+    resetRouterForTesting();
+    await createPage();
+
+    const skillsRow = page.shadowRoot!.querySelector<HTMLElement>('#skillsRow');
+
+    assertTrue(!!skillsRow);
+    assertTrue(isVisible(skillsRow));
+    skillsRow.click();
+
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    assertEquals(routes.SKILLS, currentRoute);
     assertEquals(routes.AI, currentRoute.parent);
   });
 });

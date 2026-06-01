@@ -1,0 +1,20 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<style include="cr-shared-style settings-shared"></style>
+<settings-subpage page-title="$i18n{skillsSettingLabel}"
+    route-path="[[routePath]]">
+  <settings-toggle-button
+      id="skillsToggle"
+      pref="{{prefs.skills.enabled}}"
+      label="$i18n{skillsToggleLabel}"
+      sub-label="$i18n{skillsSettingSublabel}">
+  </settings-toggle-button>
+  <cr-link-row id="skillsGalleryLink" class="hr"
+      label="$i18n{skillsGalleryHeader}"
+      sub-label="$i18n{skillsGalleryLabel}"
+      on-click="onSkillsGalleryClick_" external>
+  </cr-link-row>
+</settings-subpage>
