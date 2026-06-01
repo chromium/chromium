@@ -262,6 +262,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(
       blink::features::kAndroidDesktopWebPrefsLargeDisplays);
 
+  // Enable timeout for TextClassifier calls.
+  // TODO(crbug.com/504722790): Remove when experiment is complete.
+  feature_overrides.EnableFeature(features::kTextClassifierTimeout);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
