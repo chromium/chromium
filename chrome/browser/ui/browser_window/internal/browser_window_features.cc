@@ -561,9 +561,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       GetUserDataFactory().CreateInstance<BrowserAnimationController>(*browser,
                                                                       *browser);
 
-  browser_select_file_dialog_controller_ =
-      std::make_unique<BrowserSelectFileDialogController>(profile);
-
   context_highlight_window_feature_ =
       std::make_unique<ContextHighlightWindowFeature>(*browser);
 
@@ -859,6 +856,11 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
             extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
             focus_manager);
   }
+
+  browser_select_file_dialog_controller_ =
+      std::make_unique<BrowserSelectFileDialogController>(
+          browser->profile(), browser->tab_strip_model(), browser->window(),
+          browser);
 
   // Initialize post-window dependent embedder features last.
   embedder_browser_window_features_->InitPostWindowConstruction(browser);
@@ -1175,6 +1177,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   skills_ui_window_controller_.reset();
 
   context_highlight_window_feature_.reset();
+
+  browser_select_file_dialog_controller_.reset();
 
   browser_animation_controller_.reset();
 }

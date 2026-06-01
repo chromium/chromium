@@ -1347,12 +1347,6 @@ bool Browser::CanSupportWindowFeature(WindowFeature feature) const {
   return WindowFeatureController::From(this)->CanSupportWindowFeature(feature);
 }
 
-void Browser::OpenFile() {
-  GetFeatures().browser_select_file_dialog_controller()->OpenFile(
-      tab_strip_model_->GetActiveWebContents(), window_->GetNativeWindow(),
-      base::BindOnce(&Browser::OnFileSelectedFromDialog, AsWeakPtr()));
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 
 void Browser::UpdateUIForNavigationInTab(WebContents* contents,
@@ -3058,12 +3052,6 @@ void Browser::RemoveScheduledUpdatesFor(WebContents* contents) {
   if (i != scheduled_updates_.end()) {
     scheduled_updates_.erase(i);
   }
-}
-
-void Browser::OnFileSelectedFromDialog(const GURL& url) {
-  OpenURL(OpenURLParams(url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-                        ui::PAGE_TRANSITION_TYPED, false),
-          /*navigation_handle_callback=*/{});
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -58,6 +58,8 @@ include_rules = [
   "+chrome/browser/signin",
   "+chrome/browser/sync_file_system",
   "+chrome/browser/ui/ash",
+  "+chrome/browser/ui/browser_window/public/browser_window_features.h",
+  "+chrome/browser/ui/browser_select_file_dialog_controller.h",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/office_fallback",

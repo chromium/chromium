@@ -604,14 +604,9 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, MultipleOpenFile) {
   auto* controller = browser_window_interface()
                          ->GetFeatures()
                          .browser_select_file_dialog_controller();
-  controller->OpenFile(
-      chrome_test_utils::GetActiveWebContents(this),
-      browser_window_interface()->GetWindow()->GetNativeWindow(),
-      base::DoNothing());
-  controller->OpenFile(
-      chrome_test_utils::GetActiveWebContents(this),
-      browser_window_interface()->GetWindow()->GetNativeWindow(),
-      base::DoNothing());
+
+  controller->OpenFile();
+  controller->OpenFile();
 }
 
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,

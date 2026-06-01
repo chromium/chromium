@@ -9,7 +9,9 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_select_file_dialog_controller.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
@@ -36,7 +38,12 @@ class ExtensionDialogBoundsTest
   }
 
   // DialogBrowserTest:
-  void ShowUi(const std::string& name) override { browser()->OpenFile(); }
+  void ShowUi(const std::string& name) override {
+    browser()
+        ->GetFeatures()
+        .browser_select_file_dialog_controller()
+        ->OpenFile();
+  }
 
   void EnableDockedMagnifier() const {
     extensions::TestExtensionRegistryObserver registry_observer(

@@ -135,7 +135,9 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_select_file_dialog_controller.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -3751,7 +3753,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   // stores the navigation observer, which later could be used via the
   // `waitForSelectFileDialogNavigation` message.
   if (name == "runSelectFileDialog") {
-    browser()->OpenFile();
+    browser()
+        ->GetFeatures()
+        .browser_select_file_dialog_controller()
+        ->OpenFile();
+
     test_navigation_observer_ =
         std::make_unique<content::TestNavigationObserver>(
             browser()->tab_strip_model()->GetActiveWebContents(), 1);
