@@ -1374,6 +1374,9 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     glDepthMask(GL_FALSE);
     glDisable(GL_BLEND);
+    if (decoder->GetFeatureInfo()->IsWebGL2OrES3OrHigherContext()) {
+      glDisable(GL_RASTERIZER_DISCARD);
+    }
 
     bool need_scissor =
         xoffset || yoffset || width != dest_width || height != dest_height;
