@@ -2335,6 +2335,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_DEEPLINK_ACCOUNT_SWITCH_TITLE" desc="Title of the screen asking user confirmation for signing-in with the selected account. The user may see this after scanning the QR code in desktop Chrome to continue sign-in in iOS.">
         Switch accounts?
       </message>
+      <message name="IDS_IOS_DEEPLINK_SIGNIN_ALREADY_SIGNED_IN_DESCRIPTION" desc="Description shown in the signed-in snackbar when a user attempts to sign in to Chrome via deep link to a account that is already signed in.">
+        You stayed signed in as <ph name="NAME_OR_EMAIL">$1<ex>john.doe@gmail.com</ex></ph>
+      </message>
       <message name="IDS_IOS_DEEPLINK_SIGNIN_SUBTITLE" desc="Subtitle of the screen asking user confirmation for signing-in with the selected account. The user may see this after scanning the QR code in desktop Chrome to continue sign-in in iOS.">
         You scanned a QR code to sign in to Chrome. You’ll get the passwords, bookmarks, and more from this account.
       </message>
