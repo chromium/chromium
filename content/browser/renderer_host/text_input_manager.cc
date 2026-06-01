@@ -41,6 +41,19 @@ bool ShouldUpdateTextInputState(const ui::mojom::TextInputState& old_state,
 #endif
 }
 
+// We want to validate with the viewport's rect. However this lookup can be
+// invoked on a `RenderWidgetHostViewChildFrame` which has been disconnected
+// from the viewport. In such a case we return the requested size of the child
+// view
+gfx::Rect GetViewportRect(RenderWidgetHostViewBase* view) {
+  auto* root_view = view->GetRootView();
+  if (root_view) {
+    return gfx::Rect(root_view->GetVisibleViewportSize());
+  } else {
+    return gfx::Rect(view->GetRequestedRendererSize());
+  }
+}
+
 }  // namespace
 
 TextInputManager::TextInputManager() : active_view_(nullptr) {}
@@ -161,8 +174,9 @@ const std::optional<gfx::Rect> TextInputManager::GetTextControlBounds() const {
   auto control_bounds = state->edit_context_control_bounds.value();
   auto new_top_left =
       active_view_->TransformPointToRootCoordSpace(control_bounds.origin());
-  return std::optional<gfx::Rect>(
-      gfx::Rect(new_top_left, control_bounds.size()));
+  control_bounds.set_origin(new_top_left);
+  control_bounds.AdjustToFit(GetViewportRect(active_view_));
+  return control_bounds;
 }
 
 const std::optional<gfx::Rect> TextInputManager::GetTextSelectionBounds()
@@ -174,8 +188,9 @@ const std::optional<gfx::Rect> TextInputManager::GetTextSelectionBounds()
   auto selection_bounds = state->edit_context_selection_bounds.value();
   auto new_top_left =
       active_view_->TransformPointToRootCoordSpace(selection_bounds.origin());
-  return std::optional<gfx::Rect>(
-      gfx::Rect(new_top_left, selection_bounds.size()));
+  selection_bounds.set_origin(new_top_left);
+  selection_bounds.AdjustToFit(GetViewportRect(active_view_));
+  return selection_bounds;
 }
 
 void TextInputManager::UpdateTextInputState(
@@ -383,11 +398,16 @@ void TextInputManager::ImeCompositionRangeChanged(
   if (character_bounds.has_value()) {
     composition_range_info_map_[view].character_bounds.clear();
 
+    gfx::Rect viewport_rect = GetViewportRect(view);
     // The values for the bounds should be converted to root view's coordinates
     // before being stored.
     for (auto& rect : character_bounds.value()) {
+      gfx::Rect clamped_rect = rect;
+      clamped_rect.set_origin(
+          view->TransformPointToRootCoordSpace(clamped_rect.origin()));
+      clamped_rect.AdjustToFit(viewport_rect);
       composition_range_info_map_[view].character_bounds.emplace_back(
-          view->TransformPointToRootCoordSpace(rect.origin()), rect.size());
+          clamped_rect);
     }
 
     composition_range_info_map_[view].range.set_start(range.start());
