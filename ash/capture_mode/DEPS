@@ -16,10 +16,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "capture_mode_camera_unittest\.cc": [
+  "capture_mode_camera_unittest\\.cc": [
     "+components/viz/test/test_in_process_context_provider.h",
   ],
-  "sunfish_unittest\.cc": [
+  "sunfish_unittest\\.cc": [
     "+chromeos/ash/components/specialized_features",
   ],
 }

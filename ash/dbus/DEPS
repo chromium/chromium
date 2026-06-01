@@ -5,7 +5,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test\.cc": [
+  ".*test\\.cc": [
     "+gmock/gmock.h",
   ]
 }

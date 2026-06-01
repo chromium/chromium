@@ -7,7 +7,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "accelerator_configuration_provider_unittest\.cc": [
+  "accelerator_configuration_provider_unittest\\.cc": [
     "+device/udev_linux/fake_udev_loader.h",
   ],
 }

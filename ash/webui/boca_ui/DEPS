@@ -20,7 +20,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "tab_info_collector_browsertest\.cc": [
+  "tab_info_collector_browsertest\\.cc": [
     "+chrome/browser/profiles/profile_manager.h",
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
