@@ -861,6 +861,17 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest,
             client->completion_status().error_code);
 }
 
+IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileTestMalformedRange) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  net::HttpRequestHeaders headers;
+  headers.SetHeader(net::HttpRequestHeaders::kRange, "bytes=invalid");
+  auto client = TestLoadWithHeaders(CreateFileSystemURL("file1.dat"), &headers);
+  EXPECT_FALSE(client->has_received_response());
+  EXPECT_TRUE(client->has_received_completion());
+  EXPECT_EQ(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE,
+            client->completion_status().error_code);
+}
+
 IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileRangeOutOfBounds) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   WriteFile(
