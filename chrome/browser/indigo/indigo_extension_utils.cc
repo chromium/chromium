@@ -16,7 +16,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/indigo/resources/grit/indigo_browser_resources.h"
 #include "chrome/browser/indigo/resources/grit/indigo_browser_resources_map.h"
-#include "chrome/grit/branded_strings.h"
+#include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/grit/indigo_resources.h"
 #include "chrome/grit/indigo_resources_map.h"
 #include "components/application_locale_storage/application_locale_storage.h"

@@ -119,6 +119,7 @@
     "chrome/app/resources/locale_settings_linux.grd": "Not UI strings; localized separately",
     "chrome/app/resources/locale_settings_mac.grd": "Not UI strings; localized separately",
     "chrome/app/resources/locale_settings_win.grd": "Not UI strings; localized separately",
+    "chrome/browser/indigo/resources/indigo_strings.grd": "Placeholder fallback strings",
     "chromecast/app/resources/chromecast_settings.grd": "Not UI strings; localized separately",
     "components/components_locale_settings.grd": "Not UI strings; localized separately",
     "components/components_variant_public_strings.grd": "Initial implementation - strings are not yet finalized",

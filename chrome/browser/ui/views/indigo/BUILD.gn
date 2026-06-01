@@ -23,8 +23,8 @@ source_set("impl") {
   deps = [
     ":indigo",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
+    "//chrome/browser/indigo/resources:indigo_strings",
     "//chrome/browser/ui",
     "//chrome/browser/ui/color:color_headers",
     "//components/strings:components_strings",

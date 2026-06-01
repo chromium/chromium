@@ -36,6 +36,7 @@
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #endif
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"

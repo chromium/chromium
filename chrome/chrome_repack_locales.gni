@@ -101,6 +101,11 @@ template("chrome_repack_locales") {
       }
       compress = true
     }
+    if (!is_android) {
+      source_patterns +=
+          [ "${root_gen_dir}/chrome/browser/indigo/resources/indigo_strings_" ]
+      deps += [ "//chrome/browser/indigo/resources:indigo_strings" ]
+    }
     if (enable_builtin_search_provider_assets && !is_android) {
       source_patterns += [ "${root_gen_dir}/third_party/search_engines_data/search_engine_descriptions_strings_" ]
       deps += [

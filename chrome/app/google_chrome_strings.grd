@@ -3309,35 +3309,6 @@ Google Chrome is unable to recover your settings.
           We use info to improve this service. See <ph name="BEGIN_LINK1">&lt;a href="https://policies.google.com/privacy" target="_blank"&gt;</ph>Privacy Policy<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a href="https://policies.google.com/terms" target="_blank"&gt;</ph>Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
       </message>
 
-      <!-- Indigo Strings -->
-      <message name="IDS_INDIGO_ENTRYPOINT_CHIP_TEXT" desc="The text on the Indigo entry point chip in the omnibox." translateable="false">
-        Indigo
-      </message>
-      <message name="IDS_INDIGO_ENTRYPOINT_CHIP_TOOLTIP_TEXT" desc="The tooltip text of the Indigo entry point chip in the omnibox in the hover state." translateable="false">
-        Indigo tooltip text
-      </message>
-      <message name="IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT" desc="The text shown in the anchored message bubble for the Indigo page action." translateable="false">
-        Indigo is available for this page
-      </message>
-      <message name="IDS_INDIGO_TITLE" desc="Title for the Indigo page." translateable="false">
-        Indigo
-      </message>
-      <message name="IDS_INDIGO_TEXT_LAYER_STEP_1" desc="The text for step 1 of the Indigo text layer." translateable="false">
-        Loading (1/3)...
-      </message>
-      <message name="IDS_INDIGO_TEXT_LAYER_STEP_2" desc="The text for step 2 of the Indigo text layer." translateable="false">
-        Loading (2/3)...
-      </message>
-      <message name="IDS_INDIGO_TEXT_LAYER_STEP_3" desc="The text for step 3 of the Indigo text layer." translateable="false">
-        Loading (3/3)...
-      </message>
-      <message name="IDS_INDIGO_DISCLAIMER_LINE_1" desc="First line of disclaimer in text overlay." translateable="false">
-        Generative AI can make mistakes.
-      </message>
-      <message name="IDS_INDIGO_DISCLAIMER_LINE_2" desc="Second line of disclaimer in text overlay." translateable="false">
-        Appearance won't be exact
-      </message>
-
       <!-- JS optimizations bubble -->
       <message name="IDS_JS_OPTIMIZATION_BUBBLE_BODY_NON_POLICY_BODY" desc="Body text for the JavaScript optimization bubble when disabled for other reasons.">
         For security, Chrome turns off JavaScript optimization when you visit a site for the first time.&#xA;

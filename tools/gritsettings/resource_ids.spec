@@ -117,6 +117,15 @@
   "chrome/browser/dev_ui_browser_resources.grd": {
     "includes": [2250],
   },
+  # Both indigo_strings.grd for chrome/browser/indigo/resources and
+  # chrome/browser/indigo/resources/internal start with the same ids because
+  # only one of them is built.
+  "chrome/browser/indigo/resources/internal/indigo_strings.grd": {
+    "messages": [2255],
+  },
+  "chrome/browser/indigo/resources/indigo_strings.grd": {
+    "messages": [2255],
+  },
   "chrome/browser/nearby_sharing/internal/nearby_share_internal_icons.grd": {
     "includes": [2260],
   },

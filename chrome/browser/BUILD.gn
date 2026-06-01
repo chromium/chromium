@@ -5398,6 +5398,7 @@ group("browser_generated_files") {
     ]
   } else {
     public_deps += [
+      "//chrome/browser/indigo/resources:indigo_strings",
       "//chrome/browser/lens/core/mojom:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/v2/authentication:mojo_bindings",
