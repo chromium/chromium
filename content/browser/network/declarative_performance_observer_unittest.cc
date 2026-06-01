@@ -49,6 +49,8 @@ class TestNetworkContext : public network::TestNetworkContext {
 
   const std::vector<Report>& reports() const { return reports_; }
 
+  void ClearReports() { reports_.clear(); }
+
   void SetQuitClosure(base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);
   }
@@ -189,6 +191,89 @@ TEST_F(DeclarativePerformanceObserverTest, ObservesVisibilityFlips) {
   const std::string* name2 = entry2->FindString("name");
   ASSERT_TRUE(name2);
   EXPECT_EQ(*name2, "visible");
+}
+
+TEST_F(DeclarativePerformanceObserverTest, RecordsBFCacheLifecycle) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kNavigation);
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kVisibilityState);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  // 1. Commit initial page
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->DidFinishNavigation(&navigation_handle);
+
+  // 2. Enter BackForwardCache
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->RenderFrameHostStateChanged(
+          main_rfh(), RenderFrameHost::LifecycleState::kActive,
+          RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Buffer should be flushed on entering BFCache
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report1 = network_context_.reports()[0];
+
+  const base::ListValue* entries1 = report1.body.FindList("entries");
+  ASSERT_TRUE(entries1);
+  // initial visible + session-end
+  ASSERT_EQ(entries1->size(), 2u);
+
+  const base::Value& end_entry_val = (*entries1)[1];
+  const base::DictValue* end_entry = end_entry_val.GetIfDict();
+  ASSERT_TRUE(end_entry);
+  EXPECT_EQ(*(end_entry->FindString("entryType")), "session-end");
+  EXPECT_EQ(*(end_entry->FindString("name")), "session-end-event");
+
+  // Clear reports for testing restore
+  network_context_.ClearReports();
+
+  // 3. Restore from BackForwardCache
+  MockNavigationHandle restore_handle(kPageURL, main_rfh());
+  restore_handle.set_has_committed(true);
+  restore_handle.set_is_in_primary_main_frame(true);
+  restore_handle.set_is_error_page(false);
+  restore_handle.set_is_served_from_bfcache(true);
+
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->DidFinishNavigation(&restore_handle);
+
+  // Trigger unload to flush metrics for the RESTORED session
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->RenderFrameDeleted(main_rfh());
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report2 = network_context_.reports()[0];
+
+  const base::ListValue* entries2 = report2.body.FindList("entries");
+  ASSERT_TRUE(entries2);
+  // back_forward navigation + initial visible
+  ASSERT_EQ(entries2->size(), 2u);
+
+  const base::Value& nav_entry_val = (*entries2)[0];
+  const base::DictValue* nav_entry = nav_entry_val.GetIfDict();
+  ASSERT_TRUE(nav_entry);
+  EXPECT_EQ(*(nav_entry->FindString("entryType")), "navigation");
+  EXPECT_EQ(*(nav_entry->FindString("type")), "back_forward");
+  EXPECT_EQ(*(nav_entry->FindString("name")), kPageURL.spec());
+
+  const base::Value& vis_entry_val = (*entries2)[1];
+  const base::DictValue* vis_entry = vis_entry_val.GetIfDict();
+  ASSERT_TRUE(vis_entry);
+  EXPECT_EQ(*(vis_entry->FindString("entryType")), "visibility-state");
+  EXPECT_EQ(*(vis_entry->FindString("name")), "visible");
 }
 
 }  // namespace

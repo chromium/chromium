@@ -33,6 +33,10 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(Visibility visibility) override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
+  void RenderFrameHostStateChanged(
+      RenderFrameHost* render_frame_host,
+      RenderFrameHost::LifecycleState old_state,
+      RenderFrameHost::LifecycleState new_state) override;
 
   void SetStoragePartitionForTesting(  // IN-TEST
       StoragePartition* storage_partition);

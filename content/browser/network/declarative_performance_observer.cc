@@ -34,6 +34,34 @@ void DeclarativePerformanceObserver::DidFinishNavigation(
   }
 
   RenderFrameHost* new_rfh = navigation_handle->GetRenderFrameHost();
+
+  if (navigation_handle->IsServedFromBackForwardCache()) {
+    navigation_start_ = navigation_handle->NavigationStart();
+    buffered_entries_.clear();
+    active_rfh_ = new_rfh;
+
+    if (enabled_types_.contains(
+            network::mojom::PerformanceEntryType::kNavigation)) {
+      base::DictValue nav_entry;
+      nav_entry.Set("name", committed_url_.spec());
+      nav_entry.Set("entryType", "navigation");
+      nav_entry.Set("type", "back_forward");
+      nav_entry.Set("startTime", 0.0);
+      AddEntryToBuffer(std::move(nav_entry));
+    }
+
+    if (enabled_types_.contains(
+            network::mojom::PerformanceEntryType::kVisibilityState)) {
+      base::DictValue visibility_entry;
+      visibility_entry.Set("name", "visible");
+      visibility_entry.Set("entryType", "visibility-state");
+      visibility_entry.Set("startTime", 0.0);
+      visibility_entry.Set("duration", 0.0);
+      AddEntryToBuffer(std::move(visibility_entry));
+    }
+    return;
+  }
+
   if (active_rfh_ && active_rfh_ != new_rfh) {
     FlushMetrics(active_rfh_);
     active_rfh_ = nullptr;
@@ -88,6 +116,32 @@ void DeclarativePerformanceObserver::OnVisibilityChanged(
 void DeclarativePerformanceObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
   if (active_rfh_ == render_frame_host) {
+    FlushMetrics(render_frame_host);
+    active_rfh_ = nullptr;
+  }
+}
+
+void DeclarativePerformanceObserver::RenderFrameHostStateChanged(
+    RenderFrameHost* render_frame_host,
+    RenderFrameHost::LifecycleState old_state,
+    RenderFrameHost::LifecycleState new_state) {
+  if (render_frame_host == active_rfh_ &&
+      old_state == RenderFrameHost::LifecycleState::kActive &&
+      new_state == RenderFrameHost::LifecycleState::kInBackForwardCache) {
+    if (enabled_types_.contains(
+            network::mojom::PerformanceEntryType::kVisibilityState) ||
+        enabled_types_.contains(
+            network::mojom::PerformanceEntryType::kNavigation)) {
+      base::DictValue entry;
+      entry.Set("name", "session-end-event");
+      entry.Set("entryType", "session-end");
+      base::TimeDelta relative_time =
+          base::TimeTicks::Now() - navigation_start_;
+      entry.Set("startTime", relative_time.InMillisecondsF());
+      entry.Set("duration", 0.0);
+      AddEntryToBuffer(std::move(entry));
+    }
+
     FlushMetrics(render_frame_host);
     active_rfh_ = nullptr;
   }
