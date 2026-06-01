@@ -144,6 +144,9 @@
 // Supports fetching virtual cards
 #define IOS_WEBVIEW_SUPPORTS_FETCHING_VIRTUAL_CARDS 1
 
+// Supports -[CWVEarlyInitFlags mainThreadInitialNestingLevel].
+#define IOS_WEB_VIEW_SUPPORTS_MAIN_THREAD_INITIAL_NESTING_LEVEL 1
+
 // When enabled, -[CWVGlobalState setDumpWithoutCrashingHandler:] is made available.
 #define CWV_DUMP_WITHOUT_CRASHING_HANDLER_AVAILABLE 1
 
