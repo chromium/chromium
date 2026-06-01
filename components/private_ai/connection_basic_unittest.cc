@@ -39,6 +39,7 @@ class ConnectionBasicTest : public testing::Test {
             base::BindRepeating(
                 &ConnectionBasicTest::on_secure_channel_destroyed,
                 base::Unretained(this))),
+        base::DoNothing(),
         base::BindOnce(&ConnectionBasicTest::on_disconnect,
                        base::Unretained(this)));
 

@@ -215,6 +215,19 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivateAi.SecureChannel.ConnectionEstablishmentLatency.Success"
+    units="ms" expires_after="2026-11-25">
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>lamzin@google.com</owner>
+  <summary>
+    Records the latency of the whole connection establishment process for the
+    secure channel. This measures the duration from when the secure channel
+    starts its establishment process to when it is successfully established.
+  </summary>
+</histogram>
+
 <histogram name="PrivateAi.SecureChannel.GetAttestationRequestLatency.{Status}"
     units="ms" expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>

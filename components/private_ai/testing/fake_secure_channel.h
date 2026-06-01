@@ -58,6 +58,7 @@ class FakeSecureChannelFactory : public SecureChannel::Factory {
 
   // SecureChannel::Factory implementation:
   std::unique_ptr<SecureChannel> Create(
+      base::OnceClosure on_established,
       SecureChannel::ResponseCallback callback) override;
 
  private:

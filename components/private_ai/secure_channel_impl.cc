@@ -47,6 +47,7 @@ SecureChannelImpl::FactoryImpl::FactoryImpl(
 SecureChannelImpl::FactoryImpl::~FactoryImpl() = default;
 
 std::unique_ptr<SecureChannel> SecureChannelImpl::FactoryImpl::Create(
+    base::OnceClosure on_established,
     ResponseCallback callback) {
   auto transport =
       std::make_unique<WebSocketClient>(url_, network_context_, logger_);
@@ -55,11 +56,12 @@ std::unique_ptr<SecureChannel> SecureChannelImpl::FactoryImpl::Create(
   auto attestation_handler = std::make_unique<AttestationHandlerImpl>(logger_);
 
   return std::make_unique<SecureChannelImpl>(
-      std::move(callback), std::move(transport), std::move(secure_session),
-      std::move(attestation_handler), logger_);
+      std::move(on_established), std::move(callback), std::move(transport),
+      std::move(secure_session), std::move(attestation_handler), logger_);
 }
 
 SecureChannelImpl::SecureChannelImpl(
+    base::OnceClosure on_established,
     ResponseCallback callback,
     std::unique_ptr<Transport> transport,
     std::unique_ptr<SecureSession> secure_session,
@@ -69,7 +71,8 @@ SecureChannelImpl::SecureChannelImpl(
       secure_session_(std::move(secure_session)),
       attestation_handler_(std::move(attestation_handler)),
       logger_(logger),
-      response_callback_(std::move(callback)) {
+      response_callback_(std::move(callback)),
+      on_established_(std::move(on_established)) {
   CHECK(transport_);
   CHECK(secure_session_);
   CHECK(attestation_handler_);
@@ -342,6 +345,10 @@ void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
 
   state_ = State::kEstablished;
   state_entry_times_[state_] = base::TimeTicks::Now();
+
+  if (on_established_) {
+    std::move(on_established_).Run();
+  }
 
   ProcessPendingEncryptionRequests();
 }

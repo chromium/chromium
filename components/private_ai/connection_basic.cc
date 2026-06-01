@@ -18,13 +18,16 @@ namespace private_ai {
 
 ConnectionBasic::ConnectionBasic(
     std::unique_ptr<SecureChannel::Factory> secure_channel_factory,
+    base::OnceClosure on_established,
     base::OnceCallback<void(StatusCode)> on_disconnect)
     : on_disconnect_(std::move(on_disconnect)) {
   CHECK(secure_channel_factory);
   CHECK(on_disconnect_);
 
-  secure_channel_ = secure_channel_factory->Create(base::BindRepeating(
-      &ConnectionBasic::OnResponseReceived, weak_factory_.GetWeakPtr()));
+  secure_channel_ = secure_channel_factory->Create(
+      std::move(on_established),
+      base::BindRepeating(&ConnectionBasic::OnResponseReceived,
+                          weak_factory_.GetWeakPtr()));
   CHECK(secure_channel_);
 }
 

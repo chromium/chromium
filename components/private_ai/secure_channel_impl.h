@@ -42,7 +42,8 @@ class SecureChannelImpl : public SecureChannel {
                 PrivateAiOakSessionDriver* oak_session_driver);
     ~FactoryImpl() override;
 
-    std::unique_ptr<SecureChannel> Create(ResponseCallback callback) override;
+    std::unique_ptr<SecureChannel> Create(base::OnceClosure on_established,
+                                          ResponseCallback callback) override;
 
    private:
     const GURL url_;
@@ -51,7 +52,8 @@ class SecureChannelImpl : public SecureChannel {
     raw_ptr<PrivateAiOakSessionDriver> oak_session_driver_;
   };
 
-  SecureChannelImpl(ResponseCallback callback,
+  SecureChannelImpl(base::OnceClosure on_established,
+                    ResponseCallback callback,
                     std::unique_ptr<Transport> transport,
                     std::unique_ptr<SecureSession> secure_session,
                     std::unique_ptr<AttestationHandler> attestation_handler,
@@ -119,6 +121,7 @@ class SecureChannelImpl : public SecureChannel {
   std::deque<Request> pending_encryption_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  base::OnceClosure on_established_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::map<State, base::TimeTicks> state_entry_times_
       GUARDED_BY_CONTEXT(sequence_checker_);
   uint32_t requests_in_session_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;

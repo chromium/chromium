@@ -25,6 +25,7 @@ class SecureChannel {
    public:
     virtual ~Factory() = default;
     virtual std::unique_ptr<SecureChannel> Create(
+        base::OnceClosure on_established,
         ResponseCallback callback) = 0;
   };
 

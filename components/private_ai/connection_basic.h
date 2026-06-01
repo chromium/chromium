@@ -26,6 +26,7 @@ class ConnectionBasic : public Connection {
   // fail immediately without attempting to send a request over the wire.
   ConnectionBasic(
       std::unique_ptr<SecureChannel::Factory> secure_channel_factory,
+      base::OnceClosure on_established,
       base::OnceCallback<void(StatusCode)> on_disconnect);
   ~ConnectionBasic() override;
 

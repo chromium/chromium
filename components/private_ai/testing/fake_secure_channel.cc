@@ -59,10 +59,14 @@ FakeSecureChannelFactory::FakeSecureChannelFactory(
 FakeSecureChannelFactory::~FakeSecureChannelFactory() = default;
 
 std::unique_ptr<SecureChannel> FakeSecureChannelFactory::Create(
+    base::OnceClosure on_established,
     SecureChannel::ResponseCallback callback) {
   auto secure_channel = std::make_unique<FakeSecureChannel>(
       std::move(callback), on_destroyed_callback_);
   on_created_callback_.Run(secure_channel.get());
+  if (on_established) {
+    std::move(on_established).Run();
+  }
   return secure_channel;
 }
 

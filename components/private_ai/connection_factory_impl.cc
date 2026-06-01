@@ -9,6 +9,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection_basic.h"
 #include "components/private_ai/connection_factory.h"
@@ -28,6 +30,12 @@ namespace private_ai {
 
 namespace {
 
+void RecordConnectionEstablishmentLatency(base::TimeTicks start_time) {
+  base::UmaHistogramMediumTimes(
+      "PrivateAi.SecureChannel.ConnectionEstablishmentLatency.Success",
+      base::TimeTicks::Now() - start_time);
+}
+
 std::unique_ptr<Connection> CreateConnectionStack(
     const GURL& url,
     proto::FeatureName feature_name,
@@ -36,6 +44,7 @@ std::unique_ptr<Connection> CreateConnectionStack(
     ConnectionFactoryImpl::SecureChannelFactoryOverride secure_channel_override,
     PrivateAiOakSessionDriver* oak_session_driver,
     base::RepeatingCallback<void(StatusCode)> on_disconnect,
+    base::OnceClosure on_established,
     network::mojom::NetworkContext* network_context) {
   std::unique_ptr<SecureChannel::Factory> secure_channel_factory;
   if (secure_channel_override) {
@@ -46,7 +55,8 @@ std::unique_ptr<Connection> CreateConnectionStack(
   }
 
   std::unique_ptr<Connection> connection = std::make_unique<ConnectionBasic>(
-      std::move(secure_channel_factory), on_disconnect);
+      std::move(secure_channel_factory), std::move(on_established),
+      on_disconnect);
 
   if (token_manager) {
     connection = std::make_unique<ConnectionTokenAttestation>(
@@ -95,13 +105,17 @@ void ConnectionFactoryImpl::EnableProxy(const GURL& proxy_url) {
 std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
     proto::FeatureName feature_name,
     base::RepeatingCallback<void(StatusCode)> on_disconnect) {
+  auto on_established = base::BindOnce(&RecordConnectionEstablishmentLatency,
+                                       base::TimeTicks::Now());
+
   std::unique_ptr<Connection> connection;
   if (!proxy_url_.is_valid()) {
     logger_->LogInfo(FROM_HERE,
                      "Creating connection to Private AI server (direct).");
     connection = CreateConnectionStack(
         url_, feature_name, logger_, token_manager_, secure_channel_override_,
-        oak_session_driver_, on_disconnect, network_context_);
+        oak_session_driver_, on_disconnect, std::move(on_established),
+        network_context_);
   } else {
     logger_->LogInfo(FROM_HERE,
                      "Creating connection to Private AI server via proxy: " +
@@ -111,7 +125,8 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
     // with token attestation.
     auto inner_connection_factory = base::BindOnce(
         &CreateConnectionStack, url_, feature_name, logger_, token_manager_,
-        secure_channel_override_, oak_session_driver_, on_disconnect);
+        secure_channel_override_, oak_session_driver_, on_disconnect,
+        std::move(on_established));
 
     connection = std::make_unique<ConnectionProxy>(
         proxy_url_, logger_, token_manager_, network_driver_,
