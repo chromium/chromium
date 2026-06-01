@@ -308,6 +308,14 @@ bool VideoCaptureImpl::ProcessBuffer(
         base::span<const uint8_t> data = buffer_context->data();
         auto [y_data, uv_data] = data.split_at(y_size);
         auto [u_data, v_data] = uv_data.split_at(u_size);
+        CHECK_GE(v_data.size(),
+                 (media::VideoFrame::Rows(
+                      media::VideoFrame::Plane::kU,
+                      video_frame_init_data.ready_buffer->info->pixel_format,
+                      video_frame_init_data.ready_buffer->info->coded_size
+                          .height()) *
+                  video_frame_init_data.ready_buffer->info->strides
+                      ->stride_by_plane[2]));
         video_frame_init_data.frame = media::VideoFrame::WrapExternalYuvData(
             video_frame_init_data.ready_buffer->info->pixel_format,
             gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
