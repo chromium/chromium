@@ -22,18 +22,18 @@ constexpr size_t kNonceLength = 12;
 
 std::vector<uint8_t> GenerateKeyForOtrPayloads() {
   DCHECK_EQ(kKeyLength,
-            crypto::Aead(crypto::Aead::AES_128_CTR_HMAC_SHA256).KeyLength());
+            crypto::aead::KeySizeFor(crypto::aead::AES_128_CTR_HMAC_SHA256));
   return crypto::RandBytesAsVector(kKeyLength);
 }
 
 std::vector<uint8_t> SealPayload(base::span<const uint8_t> key,
                                  base::span<const uint8_t> payload,
                                  StorageId storage_id) {
-  crypto::Aead aead(crypto::Aead::AES_128_CTR_HMAC_SHA256);
-  aead.Init(key);
-  DCHECK_EQ(kNonceLength, aead.NonceLength());
+  DCHECK_EQ(kNonceLength,
+            crypto::aead::NonceSizeFor(crypto::aead::AES_128_CTR_HMAC_SHA256));
   auto nonce = crypto::RandBytesAsArray<kNonceLength>();
-  auto bytes = aead.Seal(payload, nonce, storage_id.AsBytes());
+  auto bytes = crypto::aead::Seal(crypto::aead::AES_128_CTR_HMAC_SHA256, key,
+                                  payload, nonce, storage_id.AsBytes());
 
   bytes.reserve(payload.size() + nonce.size());
   bytes.insert(bytes.end(), nonce.begin(), nonce.end());
@@ -44,18 +44,18 @@ std::optional<std::vector<uint8_t>> OpenPayload(
     base::span<const uint8_t> key,
     base::span<const uint8_t> encrypted_payload,
     StorageId storage_id) {
-  crypto::Aead aead(crypto::Aead::AES_128_CTR_HMAC_SHA256);
-  aead.Init(key);
-  if (encrypted_payload.size() < aead.NonceLength()) {
+  const size_t nonce_length =
+      crypto::aead::NonceSizeFor(crypto::aead::AES_128_CTR_HMAC_SHA256);
+  if (encrypted_payload.size() < nonce_length) {
     LOG(WARNING) << "Sealed payload is missing nonce.";
     return std::nullopt;
   }
 
-  size_t payload_end = encrypted_payload.size() - aead.NonceLength();
-  auto payload = encrypted_payload.subspan(0U, payload_end);
-  auto nonce = encrypted_payload.subspan(payload_end, aead.NonceLength());
+  size_t payload_end = encrypted_payload.size() - nonce_length;
+  auto [payload, nonce] = encrypted_payload.split_at(payload_end);
   std::optional<std::vector<uint8_t>> output =
-      aead.Open(payload, nonce, storage_id.AsBytes());
+      crypto::aead::Open(crypto::aead::AES_128_CTR_HMAC_SHA256, key, payload,
+                         nonce, storage_id.AsBytes());
   LOG_IF(WARNING, !output) << "Failed to open sealed payload.";
   return output;
 }
