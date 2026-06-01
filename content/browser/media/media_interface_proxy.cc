@@ -445,8 +445,7 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
 
     // `MediaFoundationRenderer` bypasses the browser's audio service.
     // Authorize the frame for audibility bypass claims.
-    AudibilityBypassAuthorization::GetOrCreateForCurrentDocument(
-        &render_frame_host());
+    AudibilityBypassTracker::AddGrant(&render_frame_host());
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

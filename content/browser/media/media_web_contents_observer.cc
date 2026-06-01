@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <tuple>
 
 #include "base/debug/crash_logging.h"
@@ -572,8 +573,7 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
   // This requires explicit browser-side authorization to prevent spoofing.
   bool should_add_client =
       player_info->IsAudible() && !uses_audio_service_ &&
-      AudibilityBypassAuthorization::IsAuthorized(
-          RenderFrameHost::FromID(media_player_id_.frame_routing_id));
+      AudibilityBypassTracker::ClaimGrant(media_player_id_);
 
   auto* audio_stream_monitor =
       media_web_contents_observer_->web_contents_impl()->audio_stream_monitor();
@@ -773,6 +773,7 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
         }
         observer->media_player_remotes_.erase(player_id);
         observer->session_controllers_manager_->OnEnd(player_id);
+        AudibilityBypassTracker::ReleaseGrant(player_id);
         if (observer->fullscreen_player_ &&
             *observer->fullscreen_player_ == player_id) {
           observer->fullscreen_player_.reset();
@@ -814,17 +815,48 @@ MediaWebContentsObserver::GetWeakPtrForFrame(
   return result.first->second->GetWeakPtr();
 }
 
-AudibilityBypassAuthorization::AudibilityBypassAuthorization(
-    RenderFrameHost* rfh)
-    : DocumentUserData<AudibilityBypassAuthorization>(rfh) {}
+AudibilityBypassTracker::AudibilityBypassTracker(RenderFrameHost* rfh)
+    : DocumentUserData<AudibilityBypassTracker>(rfh) {}
 
-AudibilityBypassAuthorization::~AudibilityBypassAuthorization() = default;
+AudibilityBypassTracker::~AudibilityBypassTracker() = default;
 
 // static
-bool AudibilityBypassAuthorization::IsAuthorized(RenderFrameHost* rfh) {
-  return rfh && GetForCurrentDocument(rfh) != nullptr;
+void AudibilityBypassTracker::AddGrant(RenderFrameHost* rfh) {
+  if (rfh) {
+    GetOrCreateForCurrentDocument(rfh)->pending_grants_++;
+  }
 }
 
-DOCUMENT_USER_DATA_KEY_IMPL(AudibilityBypassAuthorization);
+// static
+bool AudibilityBypassTracker::ClaimGrant(const MediaPlayerId& id) {
+  auto* rfh = RenderFrameHost::FromID(id.frame_routing_id);
+  if (!rfh) {
+    return false;
+  }
+  auto* tracker = GetForCurrentDocument(rfh);
+  if (tracker && tracker->authorized_players_.contains(id)) {
+    return true;
+  }
+  if (tracker && tracker->pending_grants_ > 0) {
+    tracker->pending_grants_--;
+    tracker->authorized_players_.insert(id);
+    return true;
+  }
+  return false;
+}
+
+// static
+void AudibilityBypassTracker::ReleaseGrant(const MediaPlayerId& id) {
+  auto* rfh = RenderFrameHost::FromID(id.frame_routing_id);
+  if (!rfh) {
+    return;
+  }
+  auto* tracker = GetForCurrentDocument(rfh);
+  if (tracker) {
+    tracker->authorized_players_.erase(id);
+  }
+}
+
+DOCUMENT_USER_DATA_KEY_IMPL(AudibilityBypassTracker);
 
 }  // namespace content

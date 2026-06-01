@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/run_loop.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_content_type.h"
@@ -358,9 +359,8 @@ TEST_F(MediaWebContentsObserverTest, AuthorizedBypassAllowed) {
   auto player_host = SetupPlayerHost();
   auto player = CreateAndAddPlayer(player_host);
 
-  // Simmulate audibility bypass authorization for the document.
-  AudibilityBypassAuthorization::GetOrCreateForCurrentDocument(
-      contents()->GetPrimaryMainFrame());
+  // Simulate audibility bypass authorization for the document.
+  AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
 
   SetMediaMetadata(player.observer, /*has_audio=*/true, /*has_video=*/false);
 
@@ -392,7 +392,7 @@ TEST_F(MediaWebContentsObserverTest, AuthorizationIsFrameScoped) {
   auto child_player = CreateAndAddPlayer(child_player_host);
 
   // Authorize only the main frame.
-  AudibilityBypassAuthorization::GetOrCreateForCurrentDocument(main_rfh);
+  AudibilityBypassTracker::AddGrant(main_rfh);
 
   // Child frame attempts bypass.
   SetMediaMetadata(child_player.observer, /*has_audio=*/true,
@@ -411,6 +411,79 @@ TEST_F(MediaWebContentsObserverTest, AuthorizationIsFrameScoped) {
 
   // Should be allowed.
   EXPECT_TRUE(IsWebContentsAudible());
+}
+
+TEST_F(MediaWebContentsObserverTest,
+       AudibilityBypassAuthorizationTiedToSpecificPlayer) {
+  auto player_host = SetupPlayerHost();
+  auto original_player = CreateAndAddPlayer(player_host);
+
+  // Simulate MediaFoundationRenderer creation grant.
+  AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
+
+  // Original player claims the grant successfully.
+  SetMediaMetadata(original_player.observer, true, false);
+  SetUseAudioService(original_player.observer, false);
+  PlayMedia(original_player.observer);
+
+  EXPECT_TRUE(IsWebContentsAudible());
+
+  // Original player disconnects, relinquishing its grant/authority.
+  original_player.observer.reset();
+  original_player.player.reset();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(IsWebContentsAudible());
+
+  // A later spoofed player attempts to claim a bypass using the original
+  // document context.
+  auto later_player = CreateAndAddPlayer(player_host);
+  SetMediaMetadata(later_player.observer, true, false);
+  SetUseAudioService(later_player.observer, false);
+  PlayMedia(later_player.observer);
+
+  // The later player should not be able to reuse the audibility bypass grant.
+  EXPECT_FALSE(IsWebContentsAudible());
+}
+
+// Ensure the tracking counter mechanism works when multiple grants are given
+// and consumed.
+TEST_F(MediaWebContentsObserverTest,
+       AudibilityBypassAuthorizationMultipleGrants) {
+  auto player_host = SetupPlayerHost();
+
+  // Simulate two MediaFoundationRenderer creation grants.
+  AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
+  AudibilityBypassTracker::AddGrant(contents()->GetPrimaryMainFrame());
+
+  auto player1 = CreateAndAddPlayer(player_host);
+  auto player2 = CreateAndAddPlayer(player_host);
+  auto player3 = CreateAndAddPlayer(player_host);
+
+  // Player 1 claims the first grant successfully.
+  SetMediaMetadata(player1.observer, true, false);
+  SetUseAudioService(player1.observer, false);
+  PlayMedia(player1.observer);
+  EXPECT_TRUE(IsWebContentsAudible());
+
+  // Pause Player 1 so we can verify Player 2 independently.
+  PauseMedia(player1.observer);
+  EXPECT_FALSE(IsWebContentsAudible());
+
+  // Player 2 claims the second grant successfully.
+  SetMediaMetadata(player2.observer, true, false);
+  SetUseAudioService(player2.observer, false);
+  PlayMedia(player2.observer);
+  EXPECT_TRUE(IsWebContentsAudible());
+
+  PauseMedia(player2.observer);
+  EXPECT_FALSE(IsWebContentsAudible());
+
+  // Player 3 attempts to claim a grant, but none are left.
+  SetMediaMetadata(player3.observer, true, false);
+  SetUseAudioService(player3.observer, false);
+  PlayMedia(player3.observer);
+  EXPECT_FALSE(IsWebContentsAudible());
 }
 
 }  // namespace

@@ -12,6 +12,7 @@
 #include <optional>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -62,22 +63,25 @@ class WebContentsImpl;
 
 // Used to authorize a frame to bypass the browser's audio service for
 // audibility, when using `MediaFoundationRenderer`. This is stored as
-// `DocumentUserData` on the `RenderFrameHost`.
-class CONTENT_EXPORT AudibilityBypassAuthorization
-    : public DocumentUserData<AudibilityBypassAuthorization> {
+// `DocumentUserData` on the `RenderFrameHost`. The authorization is now tied to
+// a specific player instance and is no longer document-wide for the lifetime of
+// the document.
+class CONTENT_EXPORT AudibilityBypassTracker
+    : public DocumentUserData<AudibilityBypassTracker> {
  public:
-  ~AudibilityBypassAuthorization() override;
+  ~AudibilityBypassTracker() override;
 
-  // Returns true if the given `rfh` has been authorized to bypass the
-  // browser's audio service for audibility. This is used for renderers that
-  // handle their own audio output, currently only `MediaFoundationRenderer` on
-  // Windows.
-  static bool IsAuthorized(RenderFrameHost* rfh);
+  static void AddGrant(RenderFrameHost* rfh);
+  static bool ClaimGrant(const MediaPlayerId& id);
+  static void ReleaseGrant(const MediaPlayerId& id);
 
  private:
-  friend class DocumentUserData<AudibilityBypassAuthorization>;
-  explicit AudibilityBypassAuthorization(RenderFrameHost* rfh);
+  friend class DocumentUserData<AudibilityBypassTracker>;
+  explicit AudibilityBypassTracker(RenderFrameHost* rfh);
   DOCUMENT_USER_DATA_KEY_DECL();
+
+  size_t pending_grants_ = 0;
+  base::flat_set<MediaPlayerId> authorized_players_;
 };
 
 // This class manages all RenderFrame based media related managers at the
