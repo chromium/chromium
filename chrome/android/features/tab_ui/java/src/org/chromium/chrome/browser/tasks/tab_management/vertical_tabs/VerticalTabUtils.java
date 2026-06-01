@@ -33,4 +33,18 @@ public class VerticalTabUtils {
         return ChromeSharedPreferences.getInstance()
                 .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
     }
+
+    /**
+     * Returns whether the "Show Tabs Vertically" entry point action should be displayed. This
+     * evaluates to true if the device is eligible for the feature, but the user has not yet
+     * switched to the vertical layout view.
+     */
+    public static boolean shouldShowVerticalTabsEntryPoint(Context context) {
+        if (!isVerticalTabsEligible(context)) {
+            return false;
+        }
+        // Return false if the layout is already active (vertical tabs is already visible).
+        return !ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+    }
 }

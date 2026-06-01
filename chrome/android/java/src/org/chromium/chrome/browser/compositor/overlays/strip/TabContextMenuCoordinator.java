@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.tasks.tab_management.GroupWindowState;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabStripReorderingHelper;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
@@ -413,6 +414,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         snackbarManager,
                         activityResultTracker,
                         modalDialogManager);
+            } else if (menuId == R.id.show_tabs_vertically_menu_id) {
+                // Click/tab behavior will be added in a follow-up.
             }
         };
     }
@@ -714,6 +717,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 itemList.add(createSendToYourDevicesItem());
             }
         }
+        addVerticalTabsItems(itemList, isIncognito);
         itemList.add(createCloseItem(isIncognito));
         itemList.add(createCloseAllTabsItem(isIncognito));
         if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
@@ -751,6 +755,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isIncognito) {
             itemList.add(createAddTabToReadingListItem(anchorInfo));
         }
+        addVerticalTabsItems(itemList, isIncognito);
         itemList.add(createCloseItem(isIncognito));
         if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
             if (getTabModel().getCount() > anchorInfo.getAllTabIds().size()) {
@@ -1005,6 +1010,18 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 .build();
     }
 
+    private void addVerticalTabsItems(ModelList itemList, boolean isIncognito) {
+        if (VerticalTabUtils.shouldShowVerticalTabsEntryPoint(mActivity)) {
+            itemList.add(buildMenuDivider(isIncognito));
+            itemList.add(
+                    buildListItem(
+                            R.string.show_tabs_vertically,
+                            R.id.show_tabs_vertically_menu_id,
+                            isIncognito));
+            itemList.add(buildMenuDivider(isIncognito));
+        }
+    }
+
     private ListItem createCloseItem(boolean isIncognito) {
         return buildListItem(R.string.close, R.id.close_tab, isIncognito);
     }
@@ -1069,6 +1086,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             recordUserAction("AddTabToReadingList", isMultipleTabs);
         } else if (menuId == R.id.send_to_your_devices_menu_id) {
             recordUserAction("SendToYourDevices", false);
+        } else if (menuId == R.id.show_tabs_vertically_menu_id) {
+            // Force false since switching to a vertical layout is a global UI state toggle
+            // and doesn't benefit from distinguishing single vs multi-tab context.
+            recordUserAction("ShowTabsVertically", /* isMultipleTabs= */ false);
         } else {
             assert false : "Unknown menu id: " + menuId;
         }

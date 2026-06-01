@@ -1158,6 +1158,9 @@
           =1 {Add tab to reading list}
           other {Add tabs to reading list}}
       </message>
+      <message name="IDS_SHOW_TABS_VERTICALLY" desc="Context menu item text to show the vertical tabs.">
+        Show tabs vertically
+      </message>
 
       <!-- Tab Group List Bottom Sheet -->
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_TITLE" desc="Title text for a bottom sheet which is used to add a tab to a tab group.">

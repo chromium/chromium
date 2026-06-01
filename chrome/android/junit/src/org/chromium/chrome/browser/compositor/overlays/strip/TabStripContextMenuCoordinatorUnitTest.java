@@ -18,6 +18,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.widget.ListView;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,6 +38,8 @@ import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -47,6 +50,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -106,6 +110,47 @@ public class TabStripContextMenuCoordinatorUnitTest {
 
         when(mRectProvider.getRect())
                 .thenReturn(new Rect(10, 10, mActivity.getWindow().getDecorView().getWidth(), 50));
+    }
+
+    @After
+    public void tearDown() {
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void showMenu_verifyVerticalTabsEntryPoint() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+
+        // Act.
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+
+        // Verify: Baseline items (4) + divider (1) + "Show tabs vertically" (1) = 6 items.
+        verifyMenuState(/* expectedNumItems= */ 6);
+
+        // Index 4 is the divider.
+        ListItem dividerItem = (ListItem) mListView.getAdapter().getItem(4);
+        assertEquals(ListItemType.DIVIDER, dividerItem.type);
+
+        // Index 5 is "Show tabs vertically".
+        PropertyModel verticalTabsItemModel = getItemModelAtPosition(5);
+        assertEquals(
+                R.id.show_tabs_vertically_menu_id,
+                verticalTabsItemModel.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                R.string.show_tabs_vertically,
+                verticalTabsItemModel.get(ListMenuItemProperties.TITLE_ID));
+
+        // Act: Select "Show tabs vertically".
+        mCoordinator
+                .getListMenuDelegate(mContentView)
+                .onItemSelected(verticalTabsItemModel, mListView);
+
+        // TODO: Test click logic here.
+        assertFalse(mMenuWindow.isShowing());
     }
 
     @Test

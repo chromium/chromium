@@ -48,6 +48,7 @@ import android.widget.ListView;
 import androidx.annotation.PluralsRes;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,6 +59,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.UnownedUserDataHost;
@@ -83,6 +85,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.send_tab_to_self.EntryPointDisplayReason;
@@ -131,6 +135,7 @@ import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -385,6 +390,11 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabGroupSyncService.getGroup(TAB_GROUP_ID_STRING)).thenReturn(mSavedTabGroup);
         setupWithIncognito(/* incognito= */ false); // Most tests will run not in incognito mode
         initializeCoordinator();
+    }
+
+    @After
+    public void tearDown() {
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
     }
 
     private void setupWithIncognito(boolean incognito) {
@@ -2720,6 +2730,39 @@ public class TabContextMenuCoordinatorUnitTest {
                                 .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
                                 .build(),
                         /* allowDialog= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    @Config(qualifiers = "sw600dp")
+    public void testListMenuItems_verticalTabsEligible() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTabOutsideOfGroup,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        assertEquals(ListItemType.DIVIDER, modelList.get(10).type);
+        ListItem verticalTabsItem = modelList.get(11);
+        assertEquals(ListItemType.MENU_ITEM, verticalTabsItem.type);
+        assertEquals(
+                R.id.show_tabs_vertically_menu_id,
+                verticalTabsItem.model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(R.string.show_tabs_vertically, verticalTabsItem.model.get(TITLE_ID));
+        assertEquals(ListItemType.DIVIDER, modelList.get(12).type);
     }
 
     // --------------------------------------------------------------//

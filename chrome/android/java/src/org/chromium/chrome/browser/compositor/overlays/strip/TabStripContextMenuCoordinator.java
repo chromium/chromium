@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
@@ -189,6 +190,15 @@ public class TabStripContextMenuCoordinator {
                             .withIsIncognito(isIncognito)
                             .build());
         }
+        if (VerticalTabUtils.shouldShowVerticalTabsEntryPoint(mContext)) {
+            itemList.add(BasicListMenu.buildMenuDivider(isIncognito));
+            itemList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.show_tabs_vertically)
+                            .withMenuId(R.id.show_tabs_vertically_menu_id)
+                            .withIsIncognito(isIncognito)
+                            .build());
+        }
         // Add "Pin Gemini" option with divider
         if (!isIncognito) {
             Profile profile = mTabModel.getProfile();
@@ -239,6 +249,8 @@ public class TabStripContextMenuCoordinator {
                 BookmarkAllTabsHandler.bookmarkAllTabs(mTabModel, mWindowAndroid, mSnackbarManager);
             } else if (model.get(MENU_ITEM_ID) == R.id.name_window) {
                 mMultiInstanceManager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
+            } else if (model.get(MENU_ITEM_ID) == R.id.show_tabs_vertically_menu_id) {
+                // No-op placeholder. Click behavior will be added in a follow-up CL.
             } else if (model.get(MENU_ITEM_ID) == R.id.pin_glic) {
                 RecordUserAction.record("Android.TabStripMenu.PinGlic");
                 if (profile != null) GlicUtils.setButtonPinnedToTabStrip(profile, true);
