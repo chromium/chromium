@@ -81,6 +81,12 @@ ChromeOSSystemExtensionInfoMap ConstructMap() {
            /*pwa_origin=*/"https://chromebookdiags.lenovo.com/*",
            /*iwa_id=*/lenovo_iwa_id.value(),
        }},
+      {/*extension_id=*/"hoalheabnfilagemmocodoambpgngdcd",
+       {
+           /*manufacturers=*/{"ASUS"},
+           /*pwa_origin=*/"https://cscpwa.asus.com/*",
+           /*iwa_id=*/std::nullopt,
+       }},
   };
 
   if (IsChromeOSSystemExtensionDevExtensionEnabled()) {

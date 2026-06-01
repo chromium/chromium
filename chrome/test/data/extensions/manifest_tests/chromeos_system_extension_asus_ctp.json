@@ -1,0 +1,26 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmWEUOtMMkQM5Mp2MFq74x3ZdM199IgR+cHp1zCzMiRLXj9pV1U1fdo007lhOoIjfpvY131sMT3e8/tMOuvM3Umvf0SdRr//YRkQxWo6Gvlz93G+++DjokC5NsZriocBmHf604Kjxhq2iIS5C4rH6eiwtJlxxoZIY/BDiLUor5Gft/eprPcJRQ1EuMUrsPYlJpCKBNEkVnl3JVWkXmcAiwSqPZS0Bbu31heamWDiBANFmh8JK3yFNLLNL2JO8azNim9PdqVLeyFM5RZusybiHjnkSlAmPfpFNmjV88pD8vd6O7PcSqTktLMi40pAmu3PrJqQz9/vo/L3fRFN+rWP00wIDAQAB",
+  "name": "Test chromeos extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "os.attached_device_info",
+    "os.diagnostics",
+    "os.events",
+    "os.telemetry",
+    "os.telemetry.serial_number",
+    "os.telemetry.network_info"
+  ],
+  "optional_permissions": [
+    "os.bluetooth_peripherals_info",
+    "os.diagnostics.network_info_mlab",
+    "os.management.audio"
+  ],
+  "chromeos_system_extension": {},
+  "externally_connectable": {
+    "matches": [
+      "https://cscpwa.asus.com/*"
+    ]
+  },
+  "options_page": "options.html"
+}

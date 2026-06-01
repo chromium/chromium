@@ -78,6 +78,18 @@ TEST(ChromeOSSystemExtensionInfo, LenovoExtension) {
   EXPECT_EQ(extension_info.iwa_id->id(), lenovo_iwa_id);
 }
 
+TEST(ChromeOSSystemExtensionInfo, ASUSCtpExtension) {
+  const auto& asus_test_extension_id = "hoalheabnfilagemmocodoambpgngdcd";
+  ASSERT_TRUE(chromeos::IsChromeOSSystemExtension(asus_test_extension_id));
+
+  const auto& extension_info =
+      chromeos::GetChromeOSExtensionInfoById(asus_test_extension_id);
+  EXPECT_THAT(extension_info.manufacturers,
+              testing::UnorderedElementsAre("ASUS"));
+  EXPECT_EQ("https://cscpwa.asus.com/*", extension_info.pwa_origin);
+  EXPECT_FALSE(extension_info.iwa_id);
+}
+
 TEST(ChromeOSSystemExtensionInfo, DevExtension) {
   ASSERT_FALSE(chromeos::IsChromeOSSystemExtension(
       chromeos::kChromeOSSystemExtensionDevExtensionId));

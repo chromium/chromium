@@ -73,6 +73,14 @@ TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
 }
 
 TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
+       ValidChromeOSSystemExtension_Allowlisted_ASUS_CTP) {
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess("chromeos_system_extension_asus_ctp.json"));
+  EXPECT_TRUE(extension->is_chromeos_system_extension());
+  EXPECT_TRUE(extension->install_warnings().empty());
+}
+
+TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
        ValidNonChromeOSSystemExtension) {
   scoped_refptr<extensions::Extension> extension(
       LoadAndExpectSuccess("background_page.json"));

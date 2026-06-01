@@ -125,6 +125,11 @@ const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams{
         /*app_ui_url=*/"https://chromebookdiags.lenovo.com",
         /*matches_origin=*/"https://chromebookdiags.lenovo.com/*",
         /*manufacturer=*/"Lenovo"),
+    ExtensionInfoTestParams(
+        /*extension_id=*/"hoalheabnfilagemmocodoambpgngdcd",
+        /*app_ui_url=*/"https://cscpwa.asus.com",
+        /*matches_origin=*/"https://cscpwa.asus.com/*",
+        /*manufacturer=*/"ASUS"),
 };
 
 constexpr char kUserEmail[] = "user@example.com";
