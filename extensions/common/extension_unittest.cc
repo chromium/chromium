@@ -388,4 +388,25 @@ TEST(ExtensionTest, ExtensionVersionFormat) {
   EXPECT_TRUE(RunVersionFailure("-0.0"));
 }
 
+// Verifies that short_name is sanitized by collapsing whitespace and
+// terminating bidirectional control characters.
+// Regression test for crbug.com/514071697.
+TEST(ExtensionTest, ExtensionShortNameSanitization) {
+  base::DictValue manifest =
+      base::DictValue()
+          .Set(manifest_keys::kName, "My Extension")
+          .Set(manifest_keys::kShortName, "Sec\n\nUpdate\u202E")
+          .Set(manifest_keys::kVersion, "0.1")
+          .Set(manifest_keys::kManifestVersion, 3);
+
+  std::u16string error;
+  scoped_refptr<const Extension> extension =
+      Extension::Create(base::FilePath(), ManifestLocation::kInternal, manifest,
+                        Extension::NO_FLAGS, &error);
+  ASSERT_TRUE(extension) << "Extension creation failed: " << error;
+
+  EXPECT_EQ(std::string("SecUpdate") + "\xE2\x80\xAE" + "\xE2\x80\xAC",
+            extension->short_name());
+}
+
 }  // namespace extensions
