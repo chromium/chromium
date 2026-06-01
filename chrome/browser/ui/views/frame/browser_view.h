@@ -176,9 +176,9 @@ class BrowserView : public BrowserWindow,
   static BrowserView* GetBrowserViewForBrowser(
       const BrowserWindowInterface* browser);
 
-  // After calling RevealTabStripIfNeeded(), there is normally a delay before
-  // the tabstrip is hidden. Tests can use this function to disable that delay
-  // (and hide immediately).
+  // After calling RevealTopContainerIfNeeded(), there is normally a delay
+  // before the tabstrip is hidden. Tests can use this function to disable that
+  // delay (and hide immediately).
   static void SetDisableRevealerDelayForTesting(bool disable);
 
   bool IsLoadingAnimationRunning() const;
@@ -888,10 +888,11 @@ class BrowserView : public BrowserWindow,
   void CutCopyPaste(int command_id);
 
   // If the browser is in immersive full screen mode, it will reveal the
-  // tabstrip for a short duration. This is useful for shortcuts that perform
-  // tab navigations and need to give users a visual clue as to what tabs are
-  // affected.
-  void RevealTabStripIfNeeded();
+  // top container for a short duration. The top container will have the toolbar
+  // and possibly the tab strip (only in horizontal mode). This is useful for
+  // shortcuts that perform tab navigations and need to give users a visual clue
+  // as to what tabs are affected.
+  void RevealTopContainerIfNeeded();
 
   void OnVerticalTabStripModeChanged(
       tabs::VerticalTabStripStateController* controller);

@@ -1963,7 +1963,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   UpdateUIForContents(new_contents, !tab_change_in_split_view);
 
   if (!IsFullscreen() || !tab_change_in_split_view) {
-    RevealTabStripIfNeeded();
+    RevealTopContainerIfNeeded();
   }
 
   if (change_tab_contents) {
@@ -4350,10 +4350,19 @@ std::vector<ContentsWebView*> BrowserView::GetAllVisibleContentsWebViews() {
   return contents_views;
 }
 
-void BrowserView::RevealTabStripIfNeeded() {
+void BrowserView::RevealTopContainerIfNeeded() {
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(browser());
   if (!immersive_mode_controller->IsEnabled()) {
+    return;
+  }
+
+  // With vertical tab strip, the tab strip isn't in the immersive bar so it
+  // only needs to be shown if the toolbar or location bar had focus.
+  if (auto* vertical_tab_strip_state_controller =
+          tabs::VerticalTabStripStateController::From(browser());
+      vertical_tab_strip_state_controller &&
+      vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs()) {
     return;
   }
 

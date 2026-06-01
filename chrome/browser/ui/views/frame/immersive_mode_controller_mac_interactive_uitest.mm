@@ -26,6 +26,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/hit_test.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -665,4 +666,44 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   // ImmersiveModeTabbedControllerCocoa to be created, leaving the tab overlay
   // visible and resulting in a stuck titlebar with a white gap.
   EXPECT_FALSE(tab_overlay_widget->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       RevealOnTabChangeWithVerticalTabs) {
+  ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+
+  // Add an NTP tab and a regular tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://newtab"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("http://example.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Enter immersive fullscreen.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ImmersiveModeController* controller =
+      ImmersiveModeController::From(browser());
+  EXPECT_TRUE(controller->IsEnabled());
+
+  // Switch to the NTP and confirm that the immersive toolbar is releaved
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_TRUE(controller->IsRevealed());
+
+  // Switch back to the "http://example.com" tab.
+  browser()->tab_strip_model()->ActivateTabAt(2);
+
+  // Wait for the reveal to disappear.
+  ui_test_utils::CheckWaiter(
+      base::BindRepeating(&ImmersiveModeController::IsRevealed,
+                          base::Unretained(controller)),
+      false, base::Seconds(3))
+      .Wait();
+
+  // Confirm that the immersive toolbar isn't revealed.
+  EXPECT_FALSE(controller->IsRevealed());
 }
