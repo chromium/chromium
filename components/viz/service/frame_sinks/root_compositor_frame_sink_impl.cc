@@ -921,6 +921,8 @@ void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
       base::TimeTicks::Now() + base::Seconds(10);
   if (display_client_)
     display_client_->OnDisplayReceivedCALayerParams(std::move(ca_layer_params));
+
+  external_begin_frame_source()->DidReceiveNewCALayerParams();
 #else
   NOTREACHED();
 #endif

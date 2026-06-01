@@ -450,7 +450,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Forces every RootCompositorFrameSink associated with the specified display
   // to update its DisplayLinkMac. This ensures that frame sinks stay in sync
   // with the display configuration when displays are added or removed.
-  void UpdateVSyncDisplays(int64_t display_id);
+  void UpdateVSyncDisplays(int64_t display_id, bool is_browser_vsync_supported);
 #endif
 
  private:

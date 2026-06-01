@@ -240,10 +240,17 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   // Notifies the source that it may need to reconnect to a VSync source (e.g.,
   // DisplayLinkMac) for the specified display. This is typically triggered by
   // display configuration changes in the browser process.
-  virtual void UpdateVSyncDisplay(int64_t display_id) {}
+  // |is_browser_vsync_supported| indicates whether the browser-side
+  // CADisplayLink is valid.
+  virtual void UpdateVSyncDisplay(int64_t display_id,
+                                  bool is_browser_vsync_supported) {}
 
-  // Notifies the display that the refresh rate has changed on the same display.
+  // Notifies the source that the refresh rate has changed on the same display.
   virtual void RefreshRateChangedOnSameDisplay() {}
+
+  // Notifies the source that new CALayerParams have been received from the GPU,
+  // indicating that a new frame has been swapped.
+  virtual void DidReceiveNewCALayerParams() {}
 #endif
 
   virtual void SetUpdateVSyncParametersCallback(
