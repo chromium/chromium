@@ -1134,6 +1134,8 @@ import java.util.function.Supplier;
     }
 
     private void onActivationChipClicked() {
+        if (!isInInputSession()) return;
+        mInput.setAutocompleteState(AutocompleteState.ENABLED);
         activateAiMode(AutocompleteRequestType.AI_MODE, AiModeActivationSource.DEDICATED_BUTTON);
     }
 
