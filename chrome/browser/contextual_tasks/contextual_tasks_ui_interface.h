@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/contextual_tasks/task_info_delegate.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/page_navigator.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -123,6 +124,11 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
   // Fetches the restored tab IDs attached to the WebContents for the
   // current task.
   virtual std::vector<int32_t> GetRestoredTabIds() = 0;
+
+  // Notifies the UI that restored tabs have been successfully fetched from the
+  // database.
+  void OnRestoredTabsFetched(
+      std::vector<searchbox::mojom::TabInfoPtr> tabs) override = 0;
 
   // Registers the composebox handler with this UI.
   virtual void SetComposeboxHandler(

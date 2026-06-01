@@ -26,6 +26,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -71,6 +72,10 @@ class MockContextualTasksComposeboxHandler
   MOCK_METHOD(void, OnTaskChanged, (), (override));
   MOCK_METHOD(void, InitializeInputStateModel, (), (override));
   MOCK_METHOD(void, UpdateStateFromUrl, (const GURL&), (override));
+  MOCK_METHOD(void,
+              SetAimThreadRestoredTabs,
+              (std::vector<searchbox::mojom::TabInfoPtr>),
+              (override));
 };
 
 class MockTaskInfoDelegate : public TaskInfoDelegate {
@@ -1290,6 +1295,36 @@ TEST_F(ContextualTasksUiTest, DidFinishNavigation_PushTaskDetails_TaskChange) {
   auto handle2 = CreateMockNavigationHandle(new_task_url);
   handle2->set_has_committed(true);
   observer->DidFinishNavigation(handle2.get());
+}
+
+TEST_F(ContextualTasksUiTest, OnRestoredTabsFetched) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  auto mock_handler = std::make_unique<
+      testing::NiceMock<MockContextualTasksComposeboxHandler>>();
+  auto* mock_handler_ptr = mock_handler.get();
+  controller.SetComposeboxHandler(mock_handler_ptr);
+
+  std::vector<searchbox::mojom::TabInfoPtr> restored_tabs;
+  auto tab_info = searchbox::mojom::TabInfo::New();
+  tab_info->url = GURL("https://example.com");
+  tab_info->title = "Example Site";
+  restored_tabs.push_back(std::move(tab_info));
+
+  EXPECT_CALL(*mock_handler_ptr, SetAimThreadRestoredTabs(testing::_))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+        EXPECT_EQ(tabs.size(), 1u);
+        EXPECT_EQ(tabs[0]->url, GURL("https://example.com"));
+        EXPECT_EQ(tabs[0]->title, "Example Site");
+      });
+
+  controller.OnRestoredTabsFetched(std::move(restored_tabs));
+  controller.SetComposeboxHandler(nullptr);
 }
 
 }  // namespace contextual_tasks

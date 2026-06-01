@@ -234,6 +234,9 @@ class ContextualTasksUI
       const GURL& url,
       contextual_tasks::ContextualTasksUiService* ui_service);
 
+  void OnRestoredTabsFetched(
+      std::vector<searchbox::mojom::TabInfoPtr> tabs) override;
+
   // Returns true if two URLs are equal. Unlike GURL::operator==, this method
   // ignores the order of query parameters.
   static bool AreUrlsEqual(const GURL& a, const GURL& b);

@@ -518,6 +518,12 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
     }
   }
 }
+void ContextualTasksComposeboxHandler::SetAimThreadRestoredTabs(
+    std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+  if (SearchboxHandler::page_) {
+    SearchboxHandler::page_->SetAimThreadRestoredTabs(std::move(tabs));
+  }
+}
 
 void ContextualTasksComposeboxHandler::AddFileContextFromBrowser(
     searchbox::mojom::SelectedFileInfoPtr file_info,

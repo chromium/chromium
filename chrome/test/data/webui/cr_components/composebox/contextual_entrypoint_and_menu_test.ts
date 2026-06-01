@@ -238,78 +238,40 @@ suite('ContextualEntrypointAndMenu', () => {
     assertTrue(innerActionMenu.$.menu.autoReposition);
   });
 
-  suite('restoredTabs_', () => {
-    test('returns empty array when restoredTabIds is empty', async () => {
-      entrypointAndMenu.restoredTabIds = [];
-      entrypointAndMenu.tabSuggestions = [
-        {
-          tabId: 1,
-          title: 'Tab 1',
-          url: 'about:blank',
-          showInCurrentTabChip: false,
-          showInPreviousTabChip: false,
-          lastActive: {internalValue: 0n},
-        },
-      ];
-      await entrypointAndMenu.updateComplete;
-      assertEquals(0, (entrypointAndMenu as any).getRestoredTabs_().length);
-    });
-
+  suite('aimThreadRestoredTabs', () => {
     test(
-        'returns matched tabs sorted by restoredTabIds in normal order',
+        'forwards aimThreadRestoredTabs to entrypoint button and action menu',
         async () => {
-          const tab1: TabInfo = {
-            tabId: 1,
-            title: 'Tab 1',
-            url: 'about:blank',
-            showInCurrentTabChip: false,
-            showInPreviousTabChip: false,
-            lastActive: {internalValue: 0n},
-          };
-          const tab2: TabInfo = {
-            tabId: 2,
-            title: 'Tab 2',
-            url: 'about:blank',
-            showInCurrentTabChip: false,
-            showInPreviousTabChip: false,
-            lastActive: {internalValue: 0n},
-          };
-          const tab3: TabInfo = {
-            tabId: 3,
-            title: 'Tab 3',
-            url: 'about:blank',
-            showInCurrentTabChip: false,
-            showInPreviousTabChip: false,
-            lastActive: {internalValue: 0n},
-          };
+          const restoredTabs: TabInfo[] = [
+            {
+              tabId: 1,
+              title: 'Tab 1',
+              url: 'about:blank?1',
+              showInCurrentTabChip: false,
+              showInPreviousTabChip: false,
+              lastActive: {internalValue: 0n},
+            },
+            {
+              tabId: 2,
+              title: 'Tab 2',
+              url: 'about:blank?2',
+              showInCurrentTabChip: false,
+              showInPreviousTabChip: false,
+              lastActive: {internalValue: 0n},
+            },
+          ];
 
-          entrypointAndMenu.tabSuggestions = [tab1, tab2, tab3];
-          entrypointAndMenu.restoredTabIds = [2, 3];
+          entrypointAndMenu.aimThreadRestoredTabs = restoredTabs;
           await entrypointAndMenu.updateComplete;
 
-          const restoredTabs = (entrypointAndMenu as any).getRestoredTabs_();
-          assertEquals(2, restoredTabs.length);
-          assertEquals(tab2, restoredTabs[0]);
-          assertEquals(tab3, restoredTabs[1]);
+          const entrypointButton = $$(entrypointAndMenu, '#entrypointButton') as
+              ContextualEntrypointButtonElement;
+          assertTrue(!!entrypointButton);
+          assertEquals(restoredTabs, entrypointButton.restoredTabs);
+
+          const menu = entrypointAndMenu.$.menu;
+          assertTrue(!!menu);
+          assertEquals(restoredTabs, menu.aimThreadRestoredTabs);
         });
-
-    test('filters out tab IDs not found in tabSuggestions', async () => {
-      const tab1: TabInfo = {
-        tabId: 1,
-        title: 'Tab 1',
-        url: 'about:blank',
-        showInCurrentTabChip: false,
-        showInPreviousTabChip: false,
-        lastActive: {internalValue: 0n},
-      };
-      entrypointAndMenu.tabSuggestions = [tab1];
-      entrypointAndMenu.restoredTabIds = [1, 4];
-      await entrypointAndMenu.updateComplete;
-
-      const restoredTabs = (entrypointAndMenu as any).getRestoredTabs_();
-      // Only currently valid TabIDs should be returned by `getRestoredTabs`.
-      assertEquals(1, restoredTabs.length);
-      assertEquals(tab1, restoredTabs[0]);
-    });
   });
 });

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_COMPOSEBOX_HANDLER_INTERFACE_H_
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_auto_suggestion_manager.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -37,6 +38,10 @@ class ContextualTasksComposeboxHandlerInterface {
   // Updates the active model mode and tool mode based on the given URL
   // parameters.
   virtual void UpdateStateFromUrl(const GURL& url) = 0;
+
+  // Dispatches the fetched restored tabs from the database to the WebUI.
+  virtual void SetAimThreadRestoredTabs(
+      std::vector<searchbox::mojom::TabInfoPtr> tabs) {}
 };
 
 }  // namespace contextual_tasks

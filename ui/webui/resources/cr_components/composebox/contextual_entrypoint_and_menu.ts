@@ -59,7 +59,7 @@ export class ContextualEntrypointAndMenuElement extends
         type: Boolean,
       },
       disabledTabIds: {type: Object},
-      restoredTabIds: {type: Array},
+      aimThreadRestoredTabs: {type: Array},
       tabSuggestions: {type: Array},
       inputState: {type: Object},
       glifAnimationState: {type: String},
@@ -87,7 +87,7 @@ export class ContextualEntrypointAndMenuElement extends
   accessor showContextMenuDescription: boolean = false;
   accessor smartTabSharingActive: boolean = false;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
-  accessor restoredTabIds: number[] = [];
+  accessor aimThreadRestoredTabs: TabInfo[] = [];
   accessor tabSuggestions: TabInfo[] = [];
   accessor inputState: InputState|null = null;
   accessor glifAnimationState: GlifAnimationState =
@@ -106,17 +106,6 @@ export class ContextualEntrypointAndMenuElement extends
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
-
-
-  // Returns historical tabs (restored tabs) that are in
-  // the tab suggestions. Passes it down to the entrypoint button
-  // and context menu.
-  protected getRestoredTabs_(): TabInfo[] {
-    const suggestionsMap =
-        new Map(this.tabSuggestions.map(tab => [tab.tabId, tab]));
-    return this.restoredTabIds.map(id => suggestionsMap.get(id))
-        .filter((tab): tab is TabInfo => !!tab);
-  }
 
   // TODO(crbug.com/499310611): Explore avoiding/removing this local property.
   private shouldOpenMenuForMultiSelection_: boolean = false;

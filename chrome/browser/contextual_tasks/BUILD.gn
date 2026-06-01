@@ -607,6 +607,7 @@ source_set("unit_tests") {
     "//components/contextual_search:test_support",
     "//components/contextual_tasks/public",
     "//components/contextual_tasks/public:test_support",
+    "//components/omnibox/common:features",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/content:page_embeddings",
@@ -629,7 +630,6 @@ source_set("unit_tests") {
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/omnibox/browser:test_support",
-      "//components/omnibox/common:features",
       "//components/passage_embeddings/core",
       "//services/network/public/cpp",
     ]

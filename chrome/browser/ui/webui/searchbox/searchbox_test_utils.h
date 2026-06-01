@@ -107,6 +107,10 @@ class MockSearchboxPage : public searchbox::mojom::Page {
               SetRestoredTabIds,
               (const std::vector<int32_t>& ids),
               (override));
+  MOCK_METHOD(void,
+              SetAimThreadRestoredTabs,
+              (std::vector<searchbox::mojom::TabInfoPtr> tabs),
+              (override));
 };
 
 #if !BUILDFLAG(IS_ANDROID)

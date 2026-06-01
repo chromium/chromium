@@ -86,6 +86,9 @@ class ContextualTasksComposeboxHandler
   // provided by the ContextualTasksUI via the `take_input_model_callback_`.
   void InitializeInputStateModel() override;
 
+  void SetAimThreadRestoredTabs(
+      std::vector<searchbox::mojom::TabInfoPtr> tabs) override;
+
   void AddFileContextFromBrowser(
       searchbox::mojom::SelectedFileInfoPtr file_info,
       AddFileContextCallback callback);

@@ -60,7 +60,7 @@ export class ContextualActionMenuElement extends
     return {
       fileNum: {type: Number},
       disabledTabIds: {type: Object},
-      restoredTabIds: {type: Array},
+      aimThreadRestoredTabs: {type: Array},
       tabSuggestions: {type: Array},
       inputState: {type: Object},
       smartTabSharingActive: {type: Boolean},
@@ -90,7 +90,7 @@ export class ContextualActionMenuElement extends
   accessor recentTabId: number|null = null;
   accessor fileNum: number = 0;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
-  accessor restoredTabIds: number[] = [];
+  accessor aimThreadRestoredTabs: TabInfo[] = [];
   accessor tabSuggestions: TabInfo[] = [];
   accessor inputState: InputState|null = null;
   accessor smartTabSharingActive: boolean = false;
@@ -192,7 +192,7 @@ export class ContextualActionMenuElement extends
 
     if (this.contextManagementInComposeboxEnabled_) {
       if (changedProperties.has('disabledTabIds') ||
-          changedProperties.has('restoredTabIds')) {
+          changedProperties.has('aimThreadRestoredTabs')) {
         this.updateSharingTabsText_();
       }
       this.manageShareTabsInitialFocus_(changedProperties);
@@ -253,7 +253,10 @@ export class ContextualActionMenuElement extends
   }
 
   private updateSharingTabsText_() {
-    const totalTabs = this.disabledTabIds.size + this.restoredTabIds.length;
+    const restoredCount = (this.aimThreadRestoredTabs?.length > 0) ?
+        this.aimThreadRestoredTabs.length :
+        0;
+    const totalTabs = this.disabledTabIds.size + restoredCount;
     if (!this.contextManagementInComposeboxEnabled_ || totalTabs === 0) {
       this.sharingTabsText_ = this.i18n('shareTabs');
       return;
@@ -299,8 +302,14 @@ export class ContextualActionMenuElement extends
     return this.inputState.activeModel === model;
   }
 
-  protected isTabSelected_(tabId: number): boolean {
-    return this.disabledTabIds.has(tabId);
+  protected isTabSelected_(tabOrId: TabInfo|number): boolean {
+    if (typeof tabOrId === 'number') {
+      return this.disabledTabIds.has(tabOrId);
+    }
+    const tab = tabOrId;
+    const isAimThreadRestored =
+        (this.aimThreadRestoredTabs || []).includes(tab);
+    return this.disabledTabIds.has(tab.tabId) || isAimThreadRestored;
   }
 
   protected getToolLabel_(tool: ToolMode): string {
@@ -407,7 +416,7 @@ export class ContextualActionMenuElement extends
     const noNewContextAllowed =
         this.isInputTypeDisabled_(InputType.kBrowserTab);
     const isTabInContext = this.isTabSelected_(tab.tabId);
-    if (this.restoredTabIds.includes(tab.tabId)) {
+    if ((this.aimThreadRestoredTabs || []).includes(tab)) {
       return true;
     }
     if (this.enableMultiTabSelection_) {
@@ -418,12 +427,11 @@ export class ContextualActionMenuElement extends
 
   protected getSelectedTabs_(): TabInfo[] {
     // Get the selected tab IDs from the `disabledTabIds` map and
-    // `restoredTabIds`. Because of how maps work in JS, the order when
+    // `aimThreadRestoredTabs`. Because of how maps work in JS, the order when
     // converting to an array is least recently added to most recently added.
     const suggestionsMap =
         new Map(this.tabSuggestions.map(tab => [tab.tabId, tab]));
     const allSelectedIds = [
-      ...this.restoredTabIds,
       ...this.disabledTabIds.keys(),
     ];
 
@@ -431,9 +439,11 @@ export class ContextualActionMenuElement extends
     // IDs lists have tabIds, and not the TabInfo, convert them back to an array
     // of non-empty TabInfos. Then, reverse it to get most recent item first so
     // its favicon is always leftmost.
-    return allSelectedIds.map(id => suggestionsMap.get(id))
-        .filter((tab): tab is TabInfo => !!tab)
-        .reverse();
+    const activeRestoredTabs = allSelectedIds.map(id => suggestionsMap.get(id))
+                                   .filter((tab): tab is TabInfo => !!tab)
+                                   .reverse();
+
+    return activeRestoredTabs.concat(this.aimThreadRestoredTabs || []);
   }
 
   protected isRecentTab_(tabId: number): boolean {
@@ -507,7 +517,14 @@ export class ContextualActionMenuElement extends
     }
   }
 
+  private get hasTabSuggestions_(): boolean {
+    return !!this.tabSuggestions && this.tabSuggestions.length > 0;
+  }
+
   protected onShareTabsRowPointerenter_() {
+    if (!this.hasTabSuggestions_) {
+      return;
+    }
     this.pointerOverTrigger_ = true;
     this.cancelCloseTimer_();
     this.shareTabsFlyoutOpen_ = true;
@@ -515,22 +532,34 @@ export class ContextualActionMenuElement extends
   }
 
   protected onShareTabsRowPointerleave_() {
+    if (!this.hasTabSuggestions_) {
+      return;
+    }
     this.pointerOverTrigger_ = false;
     this.scheduleCloseTimer_();
   }
 
   protected onShareTabsFlyoutPointerenter_() {
+    if (!this.hasTabSuggestions_) {
+      return;
+    }
     this.pointerOverFlyout_ = true;
     this.cancelCloseTimer_();
   }
 
   protected onShareTabsFlyoutPointerleave_() {
+    if (!this.hasTabSuggestions_) {
+      return;
+    }
     this.pointerOverFlyout_ = false;
     this.scheduleCloseTimer_();
   }
 
   protected onShareTabsRowKeydown_(e: KeyboardEvent) {
     if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
+      if (!this.hasTabSuggestions_) {
+        return;
+      }
       e.preventDefault();
       e.stopPropagation();
       this.shareTabsFlyoutOpen_ = true;

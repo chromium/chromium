@@ -624,6 +624,7 @@ suite('ContextualTasksAppTest', function() {
   });
 
   test('zero state nullifies and ignores forcedComposeboxBounds', async () => {
+    loadTimeData.overrideValues({contextManagementInComposeboxEnabled: false});
     const {appElement, proxy} =
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 

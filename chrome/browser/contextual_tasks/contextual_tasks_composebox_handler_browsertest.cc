@@ -3670,3 +3670,25 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
             omnibox::ToolMode::TOOL_MODE_CANVAS);
   EXPECT_TRUE(model->get_state_for_testing().is_canvas_query_submitted);
 }
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
+    SetAimThreadRestoredTabs) {
+  SetUpHandler();
+  ASSERT_NE(handler_, nullptr);
+
+  std::vector<searchbox::mojom::TabInfoPtr> restored_tabs;
+  auto tab_info = searchbox::mojom::TabInfo::New();
+  tab_info->url = GURL("https://example.com");
+  tab_info->title = "Example Site";
+  restored_tabs.push_back(std::move(tab_info));
+
+  EXPECT_CALL(mock_searchbox_page_, SetAimThreadRestoredTabs(testing::_))
+      .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+        EXPECT_EQ(tabs.size(), 1u);
+        EXPECT_EQ(tabs[0]->url, GURL("https://example.com"));
+        EXPECT_EQ(tabs[0]->title, "Example Site");
+      });
+
+  handler_->SetAimThreadRestoredTabs(std::move(restored_tabs));
+}

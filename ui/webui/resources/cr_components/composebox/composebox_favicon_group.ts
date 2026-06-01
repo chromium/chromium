@@ -49,7 +49,10 @@ export class ComposeboxFaviconGroupElement extends CrLitElement {
     this.remainingCount_ = Math.max(0, this.tabs.length - MAX_DISPLAY_COUNT);
   }
 
-  protected getFaviconUrl_(url: string): string {
+  protected getFaviconUrl_(url: string|{url: string}): string {
+    if (typeof url === 'object' && url !== null && 'url' in url) {
+      return getFaviconForPageURL(url.url, false);
+    }
     return getFaviconForPageURL(url, false);
   }
 }

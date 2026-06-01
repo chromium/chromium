@@ -346,6 +346,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // Tracks whether the frame is currently loading. Needed to avoid race
   // condition while awaiting isAiPage.
   private isFrameLoading: boolean = false;
+  private isSubmittingFromComposebox_: boolean = false;
   private listenerIds_: number[] = [];
   private eventTracker_: EventTracker = new EventTracker();
   private commonSearchParams_: {[key: string]: string}|null = null;
@@ -385,6 +386,8 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // Tracks whether the frame is loading for the very first time to prevent
   // double animations.
   private isInitialFrameLoad_: boolean = true;
+  private contextManagementInComposeboxEnabled_: boolean =
+      loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
 
   private updateThemeFromUrl(url: URL) {
     const csParam = url.searchParams.get('cs');
@@ -486,7 +489,19 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       }),
       callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
       callbackRouter.onZeroStateChange.addListener(isZeroState => {
+        const wasZeroState = this.isZeroState_;
         this.isZeroState_ = isZeroState;
+        // Navigation goes from a non-zero state page to a zero state page.
+        // In this case, we need to trigger the submit cleanup if the submission
+        // is coming from the webview since webview does not trigger a cleanup
+        // on its own.
+        if (this.contextManagementInComposeboxEnabled_ && wasZeroState &&
+            !isZeroState) {
+          if (!this.isSubmittingFromComposebox_) {
+            this.composebox_?.getComposebox().submitCleanup();
+          }
+          this.isSubmittingFromComposebox_ = false;
+        }
         // If we just changed to zero state, that means
         // it is a new thread or new AIM page. Otherwise,
         // we are not in zero state anymore, or not in an AIM URL. In
@@ -706,6 +721,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.eventTracker_.add(
         composebox, 'context-menu-opened',
         () => this.onComposeboxContextMenuOpened_());
+
+    this.eventTracker_.add(composebox, 'composebox-submit', () => {
+      this.isSubmittingFromComposebox_ = true;
+    });
 
     this.eventTracker_.add(composebox, 'mouseenter', () => {
       this.composeboxHovered_ = true;

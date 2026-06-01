@@ -100,6 +100,10 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
               (const std::vector<int32_t>& ids),
               (override));
   MOCK_METHOD(void,
+              SetAimThreadRestoredTabs,
+              (std::vector<searchbox::mojom::TabInfoPtr> tabs),
+              (override));
+  MOCK_METHOD(void,
               StepSelection,
               (searchbox::mojom::SelectionDirection,
                searchbox::mojom::SelectionStep),

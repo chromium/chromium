@@ -10,6 +10,7 @@
 
 #include "base/uuid.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 
 namespace contextual_tasks {
 
@@ -38,6 +39,9 @@ class TaskInfoDelegate {
 
   // Called to prepare for a task change.
   virtual void PrepareForTaskChange() = 0;
+
+  virtual void OnRestoredTabsFetched(
+      std::vector<searchbox::mojom::TabInfoPtr> tabs) {}
 
   // Called when the task has been changed.
   virtual void OnTaskChanged() = 0;

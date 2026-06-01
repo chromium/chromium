@@ -533,4 +533,7 @@ interface Page {
 
   // Sets the tab IDs that should be shown as selected before tabs are selected.
   SetRestoredTabIds(array<int32> ids);
+
+  // Sets the TabInfo for the attachments restored from the AIM thread history.
+  SetAimThreadRestoredTabs(array<TabInfo> tabs);
 };

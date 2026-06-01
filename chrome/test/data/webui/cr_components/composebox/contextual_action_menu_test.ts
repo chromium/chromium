@@ -839,6 +839,41 @@ suite('ContextualActionMenu', () => {
     assertFalse(shareTabsTrigger.textContent.includes('1'));
   });
 
+  test(
+      'Tabs counter visibility with restored tabs and no suggestions',
+      async () => {
+        loadTimeData.overrideValues(
+            {contextManagementInComposeboxEnabled: true});
+        actionMenu.remove();
+        actionMenu =
+            document.createElement('cr-composebox-contextual-action-menu');
+        const restoredTab: TabInfo = {
+          tabId: 1,
+          title: 'Restored Tab',
+          url: 'about:blank',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        actionMenu.aimThreadRestoredTabs = [restoredTab];
+        actionMenu.tabSuggestions = [restoredTab];
+        actionMenu.inputState = new MockInputState({
+          allowedInputTypes: [InputType.kBrowserTab],
+          toolsSectionConfig: {header: ''},
+          modelSectionConfig: {header: ''},
+        });
+        document.body.appendChild(actionMenu);
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+
+        const shareTabsTrigger = $$(actionMenu, '#shareTabsTrigger');
+        assertTrue(!!shareTabsTrigger);
+
+        // Since we have restored tabs showing as suggestions, there should be a
+        // dropdown arrow.
+        assertTrue(!!shareTabsTrigger.querySelector('.share-tabs-arrow'));
+      });
+
   test('focuses Share Tabs when opening the + menu via keydown', async () => {
     loadTimeData.overrideValues({
       contextManagementInComposeboxEnabled: true,
@@ -1619,10 +1654,9 @@ suite('ContextualActionMenu', () => {
 
   suite('getSelectedTabs_', () => {
     test(
-        'returns empty array when disabledTabIds and restoredTabIds are empty',
-        () => {
+        'returns empty array when disabled and restored are empty', () => {
           actionMenu.disabledTabIds = new Map();
-          actionMenu.restoredTabIds = [];
+          actionMenu.aimThreadRestoredTabs = [];
           actionMenu.tabSuggestions = [
             {
               tabId: 1,
@@ -1639,7 +1673,7 @@ suite('ContextualActionMenu', () => {
 
     test(
         'returns matched tabs in reverse order of' +
-            ' addition to restoredTabIds and disabledTabIds',
+            ' addition to disabled and concatenated with restored',
         () => {
           const tab1: TabInfo = {
             tabId: 1,
@@ -1668,7 +1702,7 @@ suite('ContextualActionMenu', () => {
 
           actionMenu.tabSuggestions = [tab1, tab2, tab3];
 
-          actionMenu.restoredTabIds = [1];
+          actionMenu.aimThreadRestoredTabs = [tab1];
           const disabledTabIds = new Map();
           disabledTabIds.set(2, 'token2');
           disabledTabIds.set(3, 'token3');
@@ -1677,7 +1711,8 @@ suite('ContextualActionMenu', () => {
           const selectedTabs = (actionMenu as any).getSelectedTabs_();
           assertEquals(3, selectedTabs.length);
           // Given the displayed tabs are reversed (least to most recent),
-          // tab3 should be first, then tab2, then tab1.
+          // tab3 should be first, then tab2, and restored tabs are concatenated
+          // at the end (tab1).
           assertEquals(tab3, selectedTabs[0]);
           assertEquals(tab2, selectedTabs[1]);
           assertEquals(tab1, selectedTabs[2]);
@@ -1694,15 +1729,14 @@ suite('ContextualActionMenu', () => {
       };
       actionMenu.tabSuggestions = [tab1];
 
-      actionMenu.restoredTabIds = [4];
+      actionMenu.aimThreadRestoredTabs = [];
       const disabledTabIds = new Map();
       disabledTabIds.set(1, 'token1');
       disabledTabIds.set(5, 'token5');
       actionMenu.disabledTabIds = disabledTabIds;
 
       const selectedTabs = (actionMenu as any).getSelectedTabs_();
-      // Tabs 4 and 5 are filtered out because they are not found in
-      // tabSuggestions.
+      // Tab 5 is filtered out because it is not found in tabSuggestions.
       assertEquals(1, selectedTabs.length);
       assertEquals(tab1, selectedTabs[0]);
     });

@@ -9,9 +9,7 @@ import type {ComposeboxElement} from './composebox.js';
 
 export function getHtml(this: ComposeboxElement) {
   // Show `contextual-entrypoint-and-menu` if should show menu; otherwise
-  // just show button. `restoredTabIds` are required for
-  // `context-entrypoint-and-menu` while just the entrypoint button takes
-  // `restoredTabs`.
+  // just show button.
   // clang-format off
   return html`
 <div class="context-menu-container" id="contextMenuContainer"
@@ -44,7 +42,7 @@ export function getHtml(this: ComposeboxElement) {
         .recentTabId="${this.recentTabId}"
         .hasImageFiles="${this.hasImageFiles()}"
         .disabledTabIds="${this.addedTabsIds}"
-        .restoredTabIds="${this.restoredTabIds}"
+        .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
         .fileNum="${this.files.size}"
         .sharedTabs="${this.getSharedTabs()}"
         .isSidePanel="${this.isSidePanel}"
@@ -64,7 +62,7 @@ export function getHtml(this: ComposeboxElement) {
         .isOblongShape="${this.isOblongShape}"
         .applyContextButtonBackground="${this.applyContextButtonBackground}"
         .sharedTabs="${this.getSharedTabs()}"
-        .restoredTabs="${this.getRestoredTabs()}"
+        .restoredTabs="${this.aimThreadRestoredTabs}"
         ?upload-button-disabled="${this.uploadButtonDisabled}"
         ?show-context-menu-description="${this.showContextMenuDescription}"
         .glifAnimationState="${this.glifAnimationState}"

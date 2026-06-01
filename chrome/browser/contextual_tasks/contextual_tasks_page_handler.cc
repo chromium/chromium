@@ -37,6 +37,8 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/lens_url_utils.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/logger.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
@@ -649,6 +651,36 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
                                                            submitted_context);
   contextual_tasks_service_->SetUrlResourcesFromServer(*task_id,
                                                        committed_context);
+
+  // Populate restored tabs in the composebox.
+  if (contextual_tasks_service_ &&
+      base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    contextual_tasks_service_->GetContextForTask(
+        *task_id, {},
+        std::make_unique<contextual_tasks::ContextDecorationParams>(),
+        base::BindOnce(
+            [](base::WeakPtr<ContextualTasksPageHandler> self,
+               std::unique_ptr<contextual_tasks::ContextualTaskContext>
+                   context) {
+              if (self && self->web_ui_controller_) {
+                std::vector<contextual_tasks::mojom::ContextInfoPtr>
+                    context_items = PopulateContextualResources(context.get());
+
+                std::vector<searchbox::mojom::TabInfoPtr> tabs;
+                for (const auto& item : context_items) {
+                  if (item->is_tab()) {
+                    auto tab_info = searchbox::mojom::TabInfo::New();
+                    tab_info->url = item->get_tab()->url;
+                    tab_info->title = item->get_tab()->title;
+                    tabs.push_back(std::move(tab_info));
+                  }
+                }
+                self->web_ui_controller_->OnRestoredTabsFetched(
+                    std::move(tabs));
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void ContextualTasksPageHandler::OnReceivedInjectInput(
