@@ -77,6 +77,7 @@ Cq-Include-Trybots: chromium/try:linux_chromium_chromeos_msan_rel_ng
 Cq-Include-Trybots: chromium/try:linux_chromium_msan_rel_ng
 Cq-Include-Trybots: chromium/try:mac-official,linux-official
 Cq-Include-Trybots: chromium/try:mac12-arm64-rel,mac_chromium_asan_rel_ng
+Cq-Include-Trybots: chromium/try:mac15-x64-rel-tests
 Cq-Include-Trybots: chromium/try:win-arm64-rel
 Cq-Include-Trybots: chromium/try:win-official,win32-official
 Cq-Include-Trybots: chrome/try:android-arm32-pgo,android-arm64-pgo
