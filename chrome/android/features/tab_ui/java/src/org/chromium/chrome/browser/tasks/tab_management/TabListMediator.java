@@ -748,7 +748,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     Tab tab = indexAndTab.second;
                     PropertyModel model = mModelList.get(indexAndTab.first).model;
 
-                    updateTabGroupColorViewProvider(tab, model, newColor);
+                    updateTabGroupProperties(tab, model, newColor);
                     updateFaviconForTab(model, tab, null, null);
                     updateDescriptionString(tab, model);
                     updateActionButtonDescriptionString(tab, model);
@@ -1045,7 +1045,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         assumeNonNull(tabGroupId);
                         @TabGroupColorId
                         int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
-                        updateTabGroupColorViewProvider(destinationTab, model, colorId);
+                        updateTabGroupProperties(destinationTab, model, colorId);
                         updateFaviconForTab(model, groupTab, null, null);
                     }
                 }
@@ -1916,7 +1916,7 @@ public class TabListMediator implements TabListNotificationHandler {
             tabGroupColorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
         }
 
-        updateTabGroupColorViewProvider(tab, model, tabGroupColorId);
+        updateTabGroupProperties(tab, model, tabGroupColorId);
         model.set(TabProperties.TAB_CLICK_LISTENER, getTabActionListener(tab, isInTabGroup));
         model.set(TabProperties.IS_SELECTED, isTabSelected);
         model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
@@ -2446,10 +2446,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
         // Group Header Specific properties
         groupInfo.set(TabProperties.TAB_GROUP_ID, null);
-        // TODO(crbug.com/509226293): Evolve standard GTS to also use TAB_GROUP_HEADER_ID
-        // to find and remove/update group cards instead of relying on index translations.
-        groupInfo.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
-        updateTabGroupColorViewProvider(tab, groupInfo, colorId);
+        updateTabGroupProperties(tab, groupInfo, colorId);
         groupInfo.set(
                 TabProperties.TITLE, getLatestTitleForTab(tab, groupInfo, /* useDefault= */ true));
         groupInfo.set(TabProperties.IS_COLLAPSED, isCollapsed);
@@ -3643,7 +3640,7 @@ public class TabListMediator implements TabListNotificationHandler {
         model.set(THUMBNAIL_FETCHER, newFetcher);
     }
 
-    private void updateTabGroupColorViewProvider(
+    private void updateTabGroupProperties(
             Tab tab, PropertyModel model, @TabGroupColorId int colorId) {
         @Nullable TabGroupColorViewProvider provider = model.get(TAB_GROUP_COLOR_VIEW_PROVIDER);
 
@@ -3651,11 +3648,16 @@ public class TabListMediator implements TabListNotificationHandler {
         if (!mActionsOnAllRelatedTabs || tabGroupId == null || !isTabInTabGroup(tab)) {
             // Not a group or not in group display mode.
             model.set(TabProperties.TAB_GROUP_CARD_COLOR, null);
+            model.set(TabProperties.TAB_GROUP_HEADER_ID, null);
             model.set(TAB_GROUP_COLOR_VIEW_PROVIDER, null);
             if (provider != null) provider.destroy();
 
             return;
         }
+
+        // TODO(crbug.com/509226293): Evolve standard GTS to also use TAB_GROUP_HEADER_ID
+        // to find and remove/update group cards instead of relying on index translations.
+        model.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
 
         updateTabGroupColorViewProvider(
                 EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId)), model, colorId);

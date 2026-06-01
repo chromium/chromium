@@ -2055,16 +2055,25 @@ public class TabListMediatorUnitTest {
         doReturn(tabs).when(mTabModel).getRelatedTabList(TAB1_ID);
 
         // These properties should get reset.
-        mModelList.get(0).model.set(TabProperties.TITLE, CUSTOMIZED_DIALOG_TITLE1);
-        ThumbnailFetcher fetcher = mModelList.get(0).model.get(TabProperties.THUMBNAIL_FETCHER);
+        PropertyModel model = mModelList.get(0).model;
+        model.set(TabProperties.TITLE, CUSTOMIZED_DIALOG_TITLE1);
+        model.set(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID);
+        model.set(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.GREY);
+        ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
 
-        // Ungroup the single tab.
+        // Ungroup the single tab, dissolving the group.
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab1, POSITION1);
 
         assertThat(mModelList.size(), equalTo(1));
-        assertThat(mModelList.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
-        assertThat(mModelList.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
-        assertNotEquals(fetcher, mModelList.get(0).model.get(TabProperties.THUMBNAIL_FETCHER));
+        assertThat(model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+
+        // Verify that group properties are correctly set to null when dissolved.
+        assertNull(model.get(TabProperties.TAB_GROUP_HEADER_ID));
+        assertNull(model.get(TabProperties.TAB_GROUP_CARD_COLOR));
+
+        // Verify title and thumbnail are reset.
+        assertThat(model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
+        assertNotEquals(fetcher, model.get(TabProperties.THUMBNAIL_FETCHER));
     }
 
     @Test
