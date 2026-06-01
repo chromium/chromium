@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/lens/lens_url_matcher.h"
 
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -12,12 +14,13 @@ namespace lens {
 class LensUrlMatcherTest : public testing::Test {};
 
 TEST_F(LensUrlMatcherTest, IsMatch) {
-  std::string url_allow_filters = "[\"*\"]";
-  std::string url_block_filters = "[\"a.com/login\",\"d.com\",\"e.edu\"]";
-  std::string url_path_match_allow_filters = "[\"assignment\",\"homework\"]";
-  std::string url_path_match_block_filters = "[\"tutor\"]";
-  std::string url_path_forced_allowed_match_patterns = "[\"edu/.+\"]";
-  std::string hashed_domain_block_filters_list =
+  std::string_view url_allow_filters = "[\"*\"]";
+  std::string_view url_block_filters = "[\"a.com/login\",\"d.com\",\"e.edu\"]";
+  std::string_view url_path_match_allow_filters =
+      "[\"assignment\",\"homework\"]";
+  std::string_view url_path_match_block_filters = "[\"tutor\"]";
+  std::string_view url_path_forced_allowed_match_patterns = "[\"edu/.+\"]";
+  std::string_view hashed_domain_block_filters_list =
       "900131403,3582115023,196958618";  // e.com, subdomain.f.com, g.com
   LensUrlMatcher matcher(
       url_allow_filters, url_block_filters, url_path_match_allow_filters,

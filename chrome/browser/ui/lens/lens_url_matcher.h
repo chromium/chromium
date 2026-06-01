@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_URL_MATCHER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_URL_MATCHER_H_
 
-#include <string>
+#include <string_view>
 #include <unordered_set>
 
 #include "components/url_matcher/url_matcher.h"
@@ -16,12 +16,12 @@ namespace lens {
 
 class LensUrlMatcher {
  public:
-  LensUrlMatcher(std::string url_allow_filters,
-                 std::string url_block_filters,
-                 std::string path_match_allow_filters,
-                 std::string path_match_block_filters,
-                 std::string path_forced_allowed_match_patterns,
-                 std::string hashed_domain_block_filters_list);
+  LensUrlMatcher(std::string_view url_allow_filters,
+                 std::string_view url_block_filters,
+                 std::string_view path_match_allow_filters,
+                 std::string_view path_match_block_filters,
+                 std::string_view path_forced_allowed_match_patterns,
+                 std::string_view hashed_domain_block_filters_list);
   ~LensUrlMatcher();
 
   // True if the given URL is allowed and not blocked by the filters with which
@@ -29,18 +29,18 @@ class LensUrlMatcher {
   bool IsMatch(const GURL& url);
 
  private:
-  void InitializeUrlMatcher(std::string url_allow_filters,
-                            std::string url_block_filters,
+  void InitializeUrlMatcher(std::string_view url_allow_filters,
+                            std::string_view url_block_filters,
                             base::MatcherStringPattern::ID* id);
   void InitializeForceAllowUrlPatterns(
-      std::string path_forced_allowed_match_patterns,
+      std::string_view path_forced_allowed_match_patterns,
       base::MatcherStringPattern::ID* id);
-  void InitializePathAllowMatcher(std::string path_match_allow_filters,
+  void InitializePathAllowMatcher(std::string_view path_match_allow_filters,
                                   base::MatcherStringPattern::ID* id);
-  void InitializePathBlockMatcher(std::string path_match_block_filters,
+  void InitializePathBlockMatcher(std::string_view path_match_block_filters,
                                   base::MatcherStringPattern::ID* id);
   void InitializeHashedDomainBlockFilters(
-      std::string hashed_domain_block_filters_list);
+      std::string_view hashed_domain_block_filters_list);
   bool SubdomainsMatchHash(std::string_view str);
   bool MatchesHash(std::string_view str);
 

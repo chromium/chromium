@@ -8,6 +8,10 @@
 
 #include <algorithm>
 #include <queue>
+#include <set>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/compiler_specific.h"
 
@@ -95,7 +99,7 @@ SubstringSetMatcher::SubstringSetMatcher() = default;
 SubstringSetMatcher::~SubstringSetMatcher() = default;
 
 bool SubstringSetMatcher::Match(
-    const std::string& text,
+    std::string_view text,
     std::set<MatcherStringPattern::ID>* matches) const {
   const size_t old_number_of_matches = matches->size();
 
@@ -130,7 +134,7 @@ bool SubstringSetMatcher::Match(
   return old_number_of_matches != matches->size();
 }
 
-bool SubstringSetMatcher::AnyMatch(const std::string& text) const {
+bool SubstringSetMatcher::AnyMatch(std::string_view text) const {
   // Handle patterns matching the empty string.
   const AhoCorasickNode* const root = &tree_[kRootID];
   if (root->has_outputs()) {

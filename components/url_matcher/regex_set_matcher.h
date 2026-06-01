@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/substring_set_matcher/matcher_string_pattern.h"
@@ -42,7 +43,7 @@ class URL_MATCHER_EXPORT RegexSetMatcher {
 
   // Appends the IDs of regular expressions in our set that match the |text|
   // to |matches|.
-  bool Match(const std::string& text,
+  bool Match(std::string_view text,
              std::set<base::MatcherStringPattern::ID>* matches) const;
 
   bool IsEmpty() const;
@@ -56,7 +57,7 @@ class URL_MATCHER_EXPORT RegexSetMatcher {
 
   // Use Aho-Corasick SubstringSetMatcher to find which literal patterns
   // match the |text|.
-  std::vector<RE2ID> FindSubstringMatches(const std::string& text) const;
+  std::vector<RE2ID> FindSubstringMatches(std::string_view text) const;
 
   // Rebuild FilteredRE2 from scratch. Needs to be called whenever
   // our set of regexes changes.

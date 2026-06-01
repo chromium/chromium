@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/lens/lens_url_matcher.h"
 
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -14,7 +16,7 @@ namespace lens {
 namespace {
 
 // Converts a JSON string array to a vector.
-std::vector<std::string> JSONArrayToVector(const std::string& json_array) {
+std::vector<std::string> JSONArrayToVector(std::string_view json_array) {
   std::optional<base::Value> json_value =
       base::JSONReader::Read(json_array, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
@@ -40,12 +42,13 @@ std::vector<std::string> JSONArrayToVector(const std::string& json_array) {
 
 }  // namespace
 
-LensUrlMatcher::LensUrlMatcher(std::string url_allow_filters,
-                               std::string url_block_filters,
-                               std::string path_match_allow_filters,
-                               std::string path_match_block_filters,
-                               std::string url_forced_allowed_match_patterns,
-                               std::string hashed_domain_block_filters_list) {
+LensUrlMatcher::LensUrlMatcher(
+    std::string_view url_allow_filters,
+    std::string_view url_block_filters,
+    std::string_view path_match_allow_filters,
+    std::string_view path_match_block_filters,
+    std::string_view url_forced_allowed_match_patterns,
+    std::string_view hashed_domain_block_filters_list) {
   base::MatcherStringPattern::ID id(0);
   InitializeUrlMatcher(url_allow_filters, url_block_filters, &id);
   InitializeForceAllowUrlPatterns(url_forced_allowed_match_patterns, &id);
@@ -56,8 +59,8 @@ LensUrlMatcher::LensUrlMatcher(std::string url_allow_filters,
 
 LensUrlMatcher::~LensUrlMatcher() = default;
 
-void LensUrlMatcher::InitializeUrlMatcher(std::string url_allow_filters,
-                                          std::string url_block_filters,
+void LensUrlMatcher::InitializeUrlMatcher(std::string_view url_allow_filters,
+                                          std::string_view url_block_filters,
                                           base::MatcherStringPattern::ID* id) {
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   url_matcher::util::AddFiltersWithLimit(url_matcher_.get(), true, id,
@@ -69,7 +72,7 @@ void LensUrlMatcher::InitializeUrlMatcher(std::string url_allow_filters,
 }
 
 void LensUrlMatcher::InitializeForceAllowUrlPatterns(
-    std::string url_path_forced_allowed_match_patterns,
+    std::string_view url_path_forced_allowed_match_patterns,
     base::MatcherStringPattern::ID* id) {
   auto force_allow_url_strings =
       JSONArrayToVector(url_path_forced_allowed_match_patterns);
@@ -88,7 +91,7 @@ void LensUrlMatcher::InitializeForceAllowUrlPatterns(
 }
 
 void LensUrlMatcher::InitializePathAllowMatcher(
-    std::string path_match_allow_filters,
+    std::string_view path_match_allow_filters,
     base::MatcherStringPattern::ID* id) {
   const auto allow_strings = JSONArrayToVector(path_match_allow_filters);
   std::vector<base::MatcherStringPattern> allow_patterns;
@@ -106,7 +109,7 @@ void LensUrlMatcher::InitializePathAllowMatcher(
 }
 
 void LensUrlMatcher::InitializePathBlockMatcher(
-    std::string path_match_block_filters,
+    std::string_view path_match_block_filters,
     base::MatcherStringPattern::ID* id) {
   const auto block_strings = JSONArrayToVector(path_match_block_filters);
   std::vector<base::MatcherStringPattern> block_patterns;
@@ -124,7 +127,7 @@ void LensUrlMatcher::InitializePathBlockMatcher(
 }
 
 void LensUrlMatcher::InitializeHashedDomainBlockFilters(
-    std::string hashed_domain_block_filters_list) {
+    std::string_view hashed_domain_block_filters_list) {
   for (std::string_view hash_string :
        base::SplitStringPiece(hashed_domain_block_filters_list, ",",
                               base::WhitespaceHandling::TRIM_WHITESPACE,
@@ -155,14 +158,14 @@ bool LensUrlMatcher::IsMatch(const GURL& url) {
 
   // Check if the domain matches any of the hashed block filters. If it does,
   // return false to block this URL.
-  if (SubdomainsMatchHash(url.GetHost())) {
+  if (SubdomainsMatchHash(url.host())) {
     return false;
   }
 
   // Check if the path matches the path block matcher. If it does, return false
   // to block this URL.
   if (path_block_matcher_ && !path_block_matcher_->IsEmpty() &&
-      path_block_matcher_->Match(url.GetPath(), &matches)) {
+      path_block_matcher_->Match(url.path(), &matches)) {
     return false;
   }
 
@@ -177,7 +180,7 @@ bool LensUrlMatcher::IsMatch(const GURL& url) {
   // Finally, check if the path matches the path allow matcher. If it doesn't,
   // return false to block this URL.
   if (path_allow_matcher_ && !path_allow_matcher_->IsEmpty() &&
-      !path_allow_matcher_->Match(url.GetPath(), &matches)) {
+      !path_allow_matcher_->Match(url.path(), &matches)) {
     return false;
   }
 

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/logging.h"
@@ -38,7 +39,7 @@ void RegexSetMatcher::ClearPatterns() {
   RebuildMatcher();
 }
 
-bool RegexSetMatcher::Match(const std::string& text,
+bool RegexSetMatcher::Match(std::string_view text,
                             std::set<MatcherStringPattern::ID>* matches) const {
   size_t old_number_of_matches = matches->size();
   if (regexes_.empty())
@@ -67,7 +68,7 @@ bool RegexSetMatcher::IsEmpty() const {
 }
 
 std::vector<RegexSetMatcher::RE2ID> RegexSetMatcher::FindSubstringMatches(
-    const std::string& text) const {
+    std::string_view text) const {
   std::set<base::MatcherStringPattern::ID> atoms_set;
   substring_matcher_->Match(text, &atoms_set);
   return std::vector<RE2ID>(atoms_set.begin(), atoms_set.end());

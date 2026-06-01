@@ -10,7 +10,7 @@
 
 #include <limits>
 #include <set>
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -54,14 +54,14 @@ class BASE_EXPORT SubstringSetMatcher {
   //    Let k = range of char. Generally 256.
   //    Let z = number of matches returned.
   // Complexity = O(t * logk + zlogz)
-  bool Match(const std::string& text,
+  bool Match(std::string_view text,
              std::set<MatcherStringPattern::ID>* matches) const;
 
   // As Match(), except it returns immediately on the first match.
   // This allows true/false matching to be done without any dynamic
   // memory allocation.
   // Complexity = O(t * logk)
-  bool AnyMatch(const std::string& text) const;
+  bool AnyMatch(std::string_view text) const;
 
   // Returns true if this object retains no allocated data.
   bool IsEmpty() const { return is_empty_; }
