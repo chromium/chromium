@@ -34,7 +34,12 @@ struct HistogramInfo {
 inline constexpr const HistogramInfo kWestworldHistogramAllowlist[] = {
     {"Tabs.TabCount", 215200, MetricType::kInt},
     {"Tabs.WindowCount", 215201, MetricType::kInt},
-};
+    {"Media.WatchTime.AudioVideo.All", 215202, MetricType::kInt},
+    {"Media.WatchTime.AudioVideo.Background", 215203, MetricType::kInt},
+    {"Media.WatchTime.Audio.All", 215204, MetricType::kInt},
+    {"Media.WatchTime.Audio.Background", 215205, MetricType::kInt},
+    {"Apps.UsageTime.ChromeBrowser", 215206, MetricType::kInt},
+    {"Android.DarkTheme.EnabledState", 215207, MetricType::kBoolean}};
 
 }  // namespace chrome::android::westworld
 
