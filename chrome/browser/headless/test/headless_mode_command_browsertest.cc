@@ -619,8 +619,16 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          HeadlessModeTaggedPrintToPdfCommandBrowserTest,
                          ::testing::Bool());
 
+// TODO(crbug.com/504964930): Reenable once deflaked.
+// TODO(crbug.com/514143472): Reenable once deflaked.
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(MEMORY_SANITIZER) || defined(USE_JAVASCRIPT_COVERAGE))
+#define MAYBE_HeadlessTaggedPrintToPdf DISABLED_HeadlessTaggedPrintToPdf
+#else
+#define MAYBE_HeadlessTaggedPrintToPdf HeadlessTaggedPrintToPdf
+#endif
 IN_PROC_BROWSER_TEST_P(HeadlessModeTaggedPrintToPdfCommandBrowserTest,
-                       HeadlessTaggedPrintToPdf) {
+                       MAYBE_HeadlessTaggedPrintToPdf) {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
