@@ -47,6 +47,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -1646,6 +1647,55 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.HiddenBeforeShown", false, 1);
   testing::Mock::VerifyAndClearExpectations(service);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OnEntryShown_RecordsSelectionMetric) {
+  base::HistogramTester histogram_tester;
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* controller = ReadAnythingController::From(tab);
+
+  // Initial open without selection and verify proper logging.
+  controller->OnEntryShown(ReadAnythingOpenTrigger::kOmniboxChip);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.MainPanelSelectionOnOpen", false, 1);
+  controller->OnEntryHidden();
+
+  // Select text.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("data:text/html,Hello world")));
+  content::WebContents* web_contents = tab->GetContents();
+  content::WaitForLoadStop(web_contents);
+  web_contents->Focus();
+  web_contents->SelectAll();
+
+  // Wait for the selection update to reach the browser process.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    content::RenderWidgetHostView* view =
+        web_contents->GetRenderWidgetHostView();
+    return view && !view->GetSelectedText().empty();
+  }));
+
+  // Open again with selection and verify proper logging.
+  controller->OnEntryShown(ReadAnythingOpenTrigger::kOmniboxChip);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.ReadAnything.MainPanelSelectionOnOpen", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.MainPanelSelectionOnOpen", 2);
+
+  // Toggle view (transition).
+  controller->ShowSidePanelUI(
+      SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
+  // Total count should still be 2.
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.MainPanelSelectionOnOpen", 2);
+
+  // Tab switch.
+  controller->OnEntryHidden();  // Away from tab
+  controller->OnEntryShown(ReadAnythingOpenTrigger::kTabSwitch);  // Back to tab
+  // Total count should still be 2.
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.MainPanelSelectionOnOpen", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -36,6 +36,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -215,6 +216,16 @@ void ReadAnythingController::OnEntryShown(
   if (is_presentation_transitioning_) {
     is_presentation_transitioning_ = false;
   } else {
+    // Log once per tab session.
+    if (entry_shown_timestamp_.is_null() &&
+        trigger != ReadAnythingOpenTrigger::kTabSwitch) {
+      content::RenderWidgetHostView* view =
+          tab_->GetContents()->GetRenderWidgetHostView();
+      bool has_selection = view && !view->GetSelectedText().empty();
+      base::UmaHistogramBoolean(
+          "Accessibility.ReadAnything.MainPanelSelectionOnOpen", has_selection);
+    }
+
     entry_shown_timestamp_ = base::TimeTicks::Now();
   }
 

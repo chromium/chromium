@@ -3212,6 +3212,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.MainPanelSelectionOnOpen"
+    enum="Boolean" expires_after="2027-01-01">
+  <owner>gusmartin@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records whether a text selection was present in the main browser tab at the
+    moment Reading Mode was opened. Recorded once per Reading Mode session (Open
+    to Close), excluding tab switches or view-mode transitions.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.MergedDistillationTime.{Result}"
     units="ms" expires_after="2026-10-04">
   <owner>abigailbklein@google.com</owner>
