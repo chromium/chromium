@@ -30,12 +30,12 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -137,6 +137,7 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
@@ -147,6 +148,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
@@ -2780,13 +2782,11 @@ bool ServiceWorkerGlobalScope::SetAttributeEventListener(
 std::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
 ServiceWorkerGlobalScope::FindRaceNetworkRequestURLLoaderFactory(
     const base::UnguessableToken& token) {
-  std::unique_ptr<RaceNetworkRequestInfo> result =
-      race_network_requests_.Take(String(token.ToString()));
-  if (result) {
-    race_network_request_fetch_event_ids_.erase(result->fetch_event_id);
-    return std::optional<
-        mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>(
-        std::move(result->url_loader_factory));
+  if (RaceNetworkRequestInfo result =
+          race_network_requests_.Take(String(token.ToString()));
+      result.IsValid()) {
+    fetch_event_ids_to_token_map_.erase(result.fetch_event_id);
+    return std::move(result.url_loader_factory);
   }
   return std::nullopt;
 }
@@ -2798,58 +2798,22 @@ void ServiceWorkerGlobalScope::InsertNewItemToRaceNetworkRequests(
         url_loader_factory,
     const KURL& request_url) {
   auto race_network_request_token = String(token.ToString());
-  auto info = std::make_unique<RaceNetworkRequestInfo>(
-      fetch_event_id, race_network_request_token,
-      std::move(url_loader_factory));
-  RaceNetworkRequestInfo* info_raw = info.get();
+  RaceNetworkRequestInfo info{
+      .fetch_event_id = fetch_event_id,
+      .url_loader_factory = std::move(url_loader_factory)};
   auto insert_result = race_network_requests_.insert(race_network_request_token,
                                                      std::move(info));
-  // WTF::HashMap::insert does not consume |info| on a duplicate key; in that
-  // case |info| (and |info_raw|) is freed at scope exit. Only publish the raw
-  // pointer into the secondary index after the owning insert succeeds.
-  if (insert_result.is_new_entry) {
-    race_network_request_fetch_event_ids_.insert(fetch_event_id, info_raw);
-  }
-
-  // DumpWithoutCrashing if the token is empty, or not inserted as a new entry
-  // to |race_network_request_loader_factories_|.
-  // TODO(crbug.com/1492640) Remove DumpWithoutCrashing once we collect data
-  // and identify the cause.
-  static bool has_dumped_without_crashing_for_empty_token = false;
-  static bool has_dumped_without_crashing_for_not_new_entry = false;
-  if (!has_dumped_without_crashing_for_empty_token && token.is_empty()) {
-    has_dumped_without_crashing_for_empty_token = true;
-    SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "empty_race_token",
-                          token.is_empty());
-    SCOPED_CRASH_KEY_STRING64("SWGlobalScope", "race_token_string",
-                              token.ToString());
-    SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "race_insert_new_entry",
-                          insert_result.is_new_entry);
-    SCOPED_CRASH_KEY_STRING256("SWGlobalScope", "race_request_url",
-                               request_url.GetString().Utf8());
-    base::debug::DumpWithoutCrashing();
-  }
-  if (!has_dumped_without_crashing_for_not_new_entry &&
-      !insert_result.is_new_entry) {
-    has_dumped_without_crashing_for_not_new_entry = true;
-    SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "empty_race_token",
-                          token.is_empty());
-    SCOPED_CRASH_KEY_STRING64("SWGlobalScope", "race_token_string",
-                              token.ToString());
-    SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "race_insert_new_entry",
-                          insert_result.is_new_entry);
-    SCOPED_CRASH_KEY_STRING256("SWGlobalScope", "race_request_url",
-                               request_url.GetString().Utf8());
-    base::debug::DumpWithoutCrashing();
-  }
+  CHECK(insert_result.is_new_entry) << "Collided UnguessableToken";
+  fetch_event_ids_to_token_map_.insert(fetch_event_id,
+                                       std::move(race_network_request_token));
 }
 
 void ServiceWorkerGlobalScope::RemoveItemFromRaceNetworkRequests(
     int fetch_event_id) {
-  RaceNetworkRequestInfo* info =
-      race_network_request_fetch_event_ids_.Take(fetch_event_id);
-  if (info) {
-    race_network_requests_.erase(info->token);
+  if (const String token_to_remove =
+          fetch_event_ids_to_token_map_.Take(fetch_event_id);
+      !token_to_remove.empty()) {
+    race_network_requests_.erase(token_to_remove);
   }
 }
 

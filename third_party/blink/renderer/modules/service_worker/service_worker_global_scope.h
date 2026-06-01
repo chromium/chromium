@@ -810,15 +810,14 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
 
   struct RaceNetworkRequestInfo {
     int fetch_event_id;
-    String token;
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
         url_loader_factory;
+    bool IsValid() const { return url_loader_factory.is_valid(); }
   };
   // TODO(crbug.com/918702) HashMap cannot use base::UnguessableToken as a
   // key. As a workaround uses String as a key instead.
-  HashMap<String, std::unique_ptr<RaceNetworkRequestInfo>>
-      race_network_requests_;
-  HashMap<int, RaceNetworkRequestInfo*> race_network_request_fetch_event_ids_;
+  HashMap<String, RaceNetworkRequestInfo> race_network_requests_;
+  HashMap<int, String> fetch_event_ids_to_token_map_;
 
   HeapMojoAssociatedRemote<mojom::blink::AssociatedInterfaceProvider>
       remote_associated_interfaces_{this};
