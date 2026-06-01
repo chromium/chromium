@@ -932,7 +932,8 @@ bool ChannelLinux::KernelSupportsUpgradeRequirements() {
 
 // static
 bool ChannelLinux::UpgradesEnabled() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+  if (base::CommandLine::InitializedForCurrentProcess() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
           kSuppressEventfdUpgradeForWebview)) {
     return false;
   }
