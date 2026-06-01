@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_coordinator.h",
   "+ios/chrome/browser/autofill/manual_fill/coordinator",
   "+ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/autofill/payments/coordinator",
   "+ios/chrome/browser/autofill/ui_bundled",
   "+ios/chrome/browser/bookmarks/model/bookmark_model_factory.h",
   "+ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h",

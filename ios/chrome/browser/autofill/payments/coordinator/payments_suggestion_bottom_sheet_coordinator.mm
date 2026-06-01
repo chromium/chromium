@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/autofill/payments/coordinator/payments_suggestion_bottom_sheet_coordinator.h"
 
 #import "base/functional/callback_helpers.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/autofill/payments/coordinator/credit_card_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/autofill/payments/coordinator/payments_suggestion_bottom_sheet_exit_reason.h"
+#import "ios/chrome/browser/autofill/payments/ui/credit_card_suggestion_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -32,11 +32,11 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 }
 
 // This mediator is used to fetch data related to the bottom sheet.
-@property(nonatomic, strong) PaymentsSuggestionBottomSheetMediator* mediator;
+@property(nonatomic, strong) CreditCardSuggestionBottomSheetMediator* mediator;
 
 // This view controller is used to display the bottom sheet.
 @property(nonatomic, strong)
-    PaymentsSuggestionBottomSheetViewController* viewController;
+    CreditCardSuggestionBottomSheetViewController* viewController;
 
 // Used to find the CreditCard object and use it to open the credit card details
 // view.
@@ -68,14 +68,14 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 
 - (void)start {
   WebStateList* webStateList = self.browser->GetWebStateList();
-  self.mediator = [[PaymentsSuggestionBottomSheetMediator alloc]
+  self.mediator = [[CreditCardSuggestionBottomSheetMediator alloc]
       initWithWebStateList:webStateList
                     params:_params
        personalDataManager:self.personalDataManager];
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
-  self.viewController =
-      [[PaymentsSuggestionBottomSheetViewController alloc] initWithHandler:self
-                                                                       URL:URL];
+  self.viewController = [[CreditCardSuggestionBottomSheetViewController alloc]
+      initWithHandler:self
+                  URL:URL];
   self.mediator.consumer = self.viewController;
   self.viewController.delegate = self.mediator;
 
@@ -127,7 +127,7 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
   self.mediator = nil;
 }
 
-#pragma mark - PaymentsSuggestionBottomSheetHandler
+#pragma mark - CreditCardSuggestionBottomSheetHandler
 
 - (void)displayPaymentMethods {
   _dismissing = YES;

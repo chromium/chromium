@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTOFILL_PAYMENTS_COORDINATOR_PAYMENTS_SUGGESTION_BOTTOM_SHEET_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_AUTOFILL_PAYMENTS_COORDINATOR_PAYMENTS_SUGGESTION_BOTTOM_SHEET_COORDINATOR_H_
 
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_handler.h"
+#import "ios/chrome/browser/autofill/payments/ui/credit_card_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 namespace autofill {
@@ -18,7 +18,7 @@ struct FormActivityParams;
 // This coordinator is responsible for creating the bottom sheet's mediator and
 // view controller.
 @interface PaymentsSuggestionBottomSheetCoordinator
-    : ChromeCoordinator <PaymentsSuggestionBottomSheetHandler>
+    : ChromeCoordinator <CreditCardSuggestionBottomSheetHandler>
 
 // `viewController` is the VC used to present the bottom sheet.
 // `params` comes from the form (in bottom_sheet.ts) and contains
@@ -37,4 +37,4 @@ struct FormActivityParams;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTOFILL_PAYMENTS_COORDINATOR_PAYMENTS_SUGGESTION_BOTTOM_SHEET_COORDINATOR_H_

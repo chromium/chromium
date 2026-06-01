@@ -5,7 +5,6 @@
 group("unit_tests") {
   testonly = true
   deps = [
-    ":bottom_sheet_unit_tests",
     ":save_card_bottom_sheet_coordinator_unittest",
     ":save_card_bottom_sheet_mediator_unittest",
     ":save_card_bottom_sheet_view_controller_unittest",
@@ -16,10 +15,7 @@ group("unit_tests") {
 
 group("eg2_tests") {
   testonly = true
-  deps = [
-    ":bottom_sheet_egtest",
-    ":virtual_card_enrollment_bottom_sheet_egtest",
-  ]
+  deps = [ ":virtual_card_enrollment_bottom_sheet_egtest" ]
 }
 
 source_set("constants") {
@@ -34,16 +30,10 @@ source_set("bottom_sheet") {
   sources = [
     "infobar_autofill_edit_profile_bottom_sheet_handler.h",
     "infobar_autofill_edit_profile_bottom_sheet_handler.mm",
-    "payments_suggestion_bottom_sheet_coordinator.h",
-    "payments_suggestion_bottom_sheet_coordinator.mm",
-    "payments_suggestion_bottom_sheet_exit_reason.h",
-    "payments_suggestion_bottom_sheet_mediator.h",
-    "payments_suggestion_bottom_sheet_mediator.mm",
     "settings_autofill_edit_profile_bottom_sheet_handler.h",
     "settings_autofill_edit_profile_bottom_sheet_handler.mm",
   ]
   deps = [
-    ":bottom_sheet_ui",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common:features",
@@ -77,111 +67,6 @@ source_set("bottom_sheet") {
     "//ios/web/public/js_messaging",
     "//ui/base",
   ]
-}
-
-source_set("bottom_sheet_ui") {
-  sources = [
-    "payments_suggestion_bottom_sheet_consumer.h",
-    "payments_suggestion_bottom_sheet_delegate.h",
-    "payments_suggestion_bottom_sheet_handler.h",
-    "payments_suggestion_bottom_sheet_view_controller.h",
-    "payments_suggestion_bottom_sheet_view_controller.mm",
-  ]
-  deps = [
-    ":constants",
-    "//build:branding_buildflags",
-    "//components/autofill/core/browser",
-    "//components/autofill/ios/browser",
-    "//components/autofill/ios/common",
-    "//components/resources:components_scaled_resources_grit",
-    "//components/strings:components_strings_grit",
-    "//components/url_formatter",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/autofill/bnpl",
-    "//ios/chrome/browser/autofill/model/credit_card",
-    "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
-    "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
-    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/table_view",
-    "//ios/chrome/browser/shared/ui/table_view:styler",
-    "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/common/ui/button_stack",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/confirmation_alert",
-    "//ios/chrome/common/ui/table_view:cells_constants",
-    "//ui/base",
-    "//url",
-  ]
-}
-
-source_set("bottom_sheet_unit_tests") {
-  testonly = true
-  sources = [
-    "payments_suggestion_bottom_sheet_coordinator_unittest.mm",
-    "payments_suggestion_bottom_sheet_mediator_unittest.mm",
-  ]
-  deps = [
-    ":bottom_sheet",
-    ":bottom_sheet_ui",
-    "//components/autofill/core/browser",
-    "//components/autofill/core/browser:test_support",
-    "//components/autofill/core/common",
-    "//components/autofill/ios/common",
-    "//components/autofill/ios/form_util",
-    "//components/prefs",
-    "//components/sync:test_support",
-    "//ios/chrome/browser/autofill/model",
-    "//ios/chrome/browser/autofill/model:features",
-    "//ios/chrome/browser/autofill/model/credit_card",
-    "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
-    "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/chrome/browser/signin/model:test_support",
-    "//ios/chrome/browser/tabs/model",
-    "//ios/chrome/browser/tips_manager/model:factory",
-    "//ios/chrome/browser/webdata_services/model",
-    "//ios/chrome/test:test_support",
-    "//ios/chrome/test/app:test_support",
-    "//ios/testing:block_swizzler",
-    "//ios/web/public/test",
-    "//ios/web/public/test/fakes",
-    "//testing/gtest",
-    "//third_party/ocmock",
-  ]
-}
-
-source_set("bottom_sheet_egtest") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [ "payments_suggestion_bottom_sheet_egtest.mm" ]
-  deps = [
-    "//components/autofill/core/browser:test_support",
-    "//components/autofill/ios/common",
-    "//components/strings",
-    "//components/url_formatter",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/autofill/authentication/public",
-    "//ios/chrome/browser/autofill/authentication/test:egtest_util",
-    "//ios/chrome/browser/autofill/manual_fill/test:eg_test_support+eg2",
-    "//ios/chrome/browser/autofill/model:features",
-    "//ios/chrome/browser/autofill/ui_bundled:autofill_ui_constants",
-    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
-    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
-    "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//net:test_support",
-    "//ui/base",
-  ]
-  frameworks = [ "UIKit.framework" ]
 }
 
 # Save Card Bottom Sheet related classes are below:

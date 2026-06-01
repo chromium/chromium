@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/autofill/payments/coordinator/payments_suggestion_bottom_sheet_coordinator.h"
 
 #import <Foundation/Foundation.h>
 
@@ -16,7 +16,7 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"
+#import "ios/chrome/browser/autofill/payments/coordinator/payments_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"

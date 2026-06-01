@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTOFILL_PAYMENTS_COORDINATOR_CREDIT_CARD_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_AUTOFILL_PAYMENTS_COORDINATOR_CREDIT_CARD_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"
+#import "ios/chrome/browser/autofill/payments/coordinator/payments_suggestion_bottom_sheet_exit_reason.h"
+#import "ios/chrome/browser/autofill/payments/ui/credit_card_suggestion_bottom_sheet_delegate.h"
 
 namespace autofill {
 class CreditCard;
@@ -18,12 +18,12 @@ class PersonalDataManager;
 
 class WebStateList;
 
-@protocol PaymentsSuggestionBottomSheetConsumer;
+@protocol CreditCardSuggestionBottomSheetConsumer;
 // This mediator fetches a list suggestions to display in the bottom sheet.
 // It also manages filling the form when a suggestion is selected, as well
 // as showing the keyboard if requested when the bottom sheet is dismissed.
-@interface PaymentsSuggestionBottomSheetMediator
-    : NSObject <PaymentsSuggestionBottomSheetDelegate>
+@interface CreditCardSuggestionBottomSheetMediator
+    : NSObject <CreditCardSuggestionBottomSheetDelegate>
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                               params:(const autofill::FormActivityParams&)params
@@ -31,7 +31,7 @@ class WebStateList;
                      (autofill::PersonalDataManager*)personalDataManager;
 
 // The bottom sheet suggestions consumer.
-@property(nonatomic, weak) id<PaymentsSuggestionBottomSheetConsumer> consumer;
+@property(nonatomic, weak) id<CreditCardSuggestionBottomSheetConsumer> consumer;
 
 // Whether the bottom sheet has any credit cards to display.
 @property(nonatomic, readonly) BOOL hasCreditCards;
@@ -54,4 +54,4 @@ class WebStateList;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTOFILL_PAYMENTS_COORDINATOR_CREDIT_CARD_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_

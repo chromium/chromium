@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/autofill/payments/coordinator/credit_card_suggestion_bottom_sheet_mediator.h"
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/autofill/payments/ui/credit_card_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -32,9 +32,9 @@ namespace {
 const char kTestNumber[] = "4234567890123456";  // Visa
 const char kTestGuid[] = "00000000-0000-0000-0000-000000000001";
 
-class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
+class CreditCardSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
-  PaymentsSuggestionBottomSheetMediatorTest()
+  CreditCardSuggestionBottomSheetMediatorTest()
       : test_web_state_(std::make_unique<web::FakeWebState>()) {
     scoped_feature_list_.InitAndDisableFeature(kAutofillPaymentsSheetV2Ios);
 
@@ -42,13 +42,13 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
 
     test_web_state_->SetCurrentURL(GURL("http://foo.com"));
 
-    consumer_ =
-        OCMStrictProtocolMock(@protocol(PaymentsSuggestionBottomSheetConsumer));
+    consumer_ = OCMStrictProtocolMock(
+        @protocol(CreditCardSuggestionBottomSheetConsumer));
 
     FormSuggestionTabHelper::CreateForWebState(test_web_state_.get(), @[]);
   }
 
-  ~PaymentsSuggestionBottomSheetMediatorTest() override {
+  ~CreditCardSuggestionBottomSheetMediatorTest() override {
     EXPECT_OCMOCK_VERIFY(consumer_);
   }
 
@@ -67,7 +67,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
         std::move(test_web_state_),
         WebStateList::InsertionParams::Automatic().Activate());
 
-    mediator_ = [[PaymentsSuggestionBottomSheetMediator alloc]
+    mediator_ = [[CreditCardSuggestionBottomSheetMediator alloc]
         initWithWebStateList:web_state_list_.get()
                       params:autofill::FormActivityParams()
          personalDataManager:&personal_data_manager_];
@@ -115,18 +115,18 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   std::unique_ptr<WebStateList> web_state_list_;
   id consumer_;
   autofill::TestPersonalDataManager personal_data_manager_;
-  PaymentsSuggestionBottomSheetMediator* mediator_;
+  CreditCardSuggestionBottomSheetMediator* mediator_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests PaymentsSuggestionBottomSheetMediator can be initialized.
-TEST_F(PaymentsSuggestionBottomSheetMediatorTest, Init) {
+// Tests CreditCardSuggestionBottomSheetMediator can be initialized.
+TEST_F(CreditCardSuggestionBottomSheetMediatorTest, Init) {
   CreateMediator();
   EXPECT_TRUE(mediator_);
 }
 
 // Tests consumer when no suggestion is available.
-TEST_F(PaymentsSuggestionBottomSheetMediatorTest, NoSuggestion) {
+TEST_F(CreditCardSuggestionBottomSheetMediatorTest, NoSuggestion) {
   CreateMediator();
   EXPECT_TRUE(mediator_);
 
@@ -136,7 +136,7 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest, NoSuggestion) {
 }
 
 // Tests consumer when suggestions are available (with non local card).
-TEST_F(PaymentsSuggestionBottomSheetMediatorTest, WithSuggestions) {
+TEST_F(CreditCardSuggestionBottomSheetMediatorTest, WithSuggestions) {
   CreateMediatorWithSuggestions();
   EXPECT_TRUE(mediator_);
 
@@ -147,7 +147,7 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest, WithSuggestions) {
 }
 
 // Tests consumer when suggestions are available (with local card).
-TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
+TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
        WithLocalCardOnlySuggestions) {
   CreateMediatorWithLocalCardOnlySuggestions();
   EXPECT_TRUE(mediator_);
@@ -162,7 +162,7 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
 // destroyed. There are a lot of checked observer lists that could potentially
 // cause a crash in the process, so this test ensures they're executed.
 // TODO(crbug.com/422436424): re-enable.
-TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
+TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
        DISABLED_CleansUpWhenWebStateListDestroyed) {
   CreateMediatorWithSuggestions();
   ASSERT_TRUE(mediator_);
@@ -179,7 +179,7 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
 // delay before accepting filling. Tests each key moment, before view did
 // appear, right after appearance, after some time but not enough to reach the
 // minimal delay, and after the minimal delay.
-TEST_F(PaymentsSuggestionBottomSheetMediatorTest, FillingDelay) {
+TEST_F(CreditCardSuggestionBottomSheetMediatorTest, FillingDelay) {
   base::ScopedMockClockOverride mock_clock;
 
   CreateMediatorWithSuggestions();
@@ -214,7 +214,7 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest, FillingDelay) {
 
 // Tests that the payment sheet is aborted when there are no suggestions that
 // could be retrieved, when in stateless mode.
-TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
+TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
        Stateless_AbortWhenNoSuggestions) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(

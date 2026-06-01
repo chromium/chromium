@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/autofill/core/browser",
+  "+components/autofill/core/common",
+  "+components/autofill/ios/browser",
+  "+components/autofill/ios/form_util",
+  "+ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/autofill/payments/ui",
+  "+ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  "+ios/chrome/browser/shared/model/browser",
+  "+ios/chrome/browser/shared/model/profile",
+  "+ios/chrome/browser/shared/model/web_state_list",
+  "+ios/chrome/browser/shared/public/commands",
+  "+ios/web/public",
+]

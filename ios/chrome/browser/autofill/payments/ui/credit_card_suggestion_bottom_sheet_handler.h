@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
-#define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_AUTOFILL_PAYMENTS_UI_CREDIT_CARD_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
+#define IOS_CHROME_BROWSER_AUTOFILL_PAYMENTS_UI_CREDIT_CARD_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
 
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 
 // Handler for the payments bottom sheet's context menu.
-@protocol PaymentsSuggestionBottomSheetHandler
+@protocol CreditCardSuggestionBottomSheetHandler
 
 // Displays the payment methods menu.
 - (void)displayPaymentMethods;
@@ -31,4 +31,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_HANDLER_H_
+#endif  // IOS_CHROME_BROWSER_AUTOFILL_PAYMENTS_UI_CREDIT_CARD_SUGGESTION_BOTTOM_SHEET_HANDLER_H_

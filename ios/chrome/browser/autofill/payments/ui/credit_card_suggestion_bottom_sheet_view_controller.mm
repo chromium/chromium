@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/autofill/payments/ui/credit_card_suggestion_bottom_sheet_view_controller.h"
 
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
@@ -16,8 +16,8 @@
 #import "components/grit/components_scaled_resources.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_handler.h"
+#import "ios/chrome/browser/autofill/payments/ui/credit_card_suggestion_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/autofill/payments/ui/credit_card_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -48,7 +48,7 @@ CGFloat const kTitleLogoHeight = 32;
 
 }  // namespace
 
-@interface PaymentsSuggestionBottomSheetViewController () <
+@interface CreditCardSuggestionBottomSheetViewController () <
     ConfirmationAlertActionHandler,
     UITableViewDataSource> {
   // List of credit cards and icon for the bottom sheet.
@@ -62,7 +62,7 @@ CGFloat const kTitleLogoHeight = 32;
 }
 
 // The payments controller handler used to open the payments options.
-@property(nonatomic, weak) id<PaymentsSuggestionBottomSheetHandler> handler;
+@property(nonatomic, weak) id<CreditCardSuggestionBottomSheetHandler> handler;
 
 // YES if the GPay logo should be shown to the user.
 @property(nonatomic, assign) BOOL showGooglePayLogo;
@@ -72,10 +72,10 @@ CGFloat const kTitleLogoHeight = 32;
 
 @end
 
-@implementation PaymentsSuggestionBottomSheetViewController
+@implementation CreditCardSuggestionBottomSheetViewController
 
 - (instancetype)initWithHandler:
-                    (id<PaymentsSuggestionBottomSheetHandler>)handler
+                    (id<CreditCardSuggestionBottomSheetHandler>)handler
                             URL:(const GURL&)URL {
   self = [super init];
   if (self) {
@@ -143,7 +143,7 @@ CGFloat const kTitleLogoHeight = 32;
   [self.handler viewDidDisappear];
 }
 
-#pragma mark - PaymentsSuggestionBottomSheetConsumer
+#pragma mark - CreditCardSuggestionBottomSheetConsumer
 
 - (void)setCreditCardData:(NSArray<CreditCardData*>*)creditCardData
         showGooglePayLogo:(BOOL)showGooglePayLogo {
@@ -175,7 +175,7 @@ CGFloat const kTitleLogoHeight = 32;
     NSMutableArray<UIMenu*>* menuElements =
         [[NSMutableArray alloc] initWithArray:suggestedActions];
 
-    PaymentsSuggestionBottomSheetViewController* strongSelf = weakSelf;
+    CreditCardSuggestionBottomSheetViewController* strongSelf = weakSelf;
     if (strongSelf) {
       [menuElements
           addObject:[UIMenu menuWithTitle:@""
@@ -416,7 +416,6 @@ CGFloat const kTitleLogoHeight = 32;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.userInteractionEnabled = YES;
   cell.accessibilityValue = [self accessibilityValueForCardAtRow:indexPath.row];
-
 
   // If we have the potential presence of a virtual card, the textLabel on its
   // own is no longer a unique identifier, so we include the description.

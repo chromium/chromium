@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/autofill/payments/coordinator/credit_card_suggestion_bottom_sheet_mediator.h"
 
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
@@ -30,8 +30,8 @@
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/autofill/payments/ui/credit_card_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -59,7 +59,7 @@ bool IsV3() {
 
 }  // namespace
 
-@interface PaymentsSuggestionBottomSheetMediator () <
+@interface CreditCardSuggestionBottomSheetMediator () <
     CRWWebStateObserver,
     PersonalDataManagerObserver,
     WebStateListObserving>
@@ -73,7 +73,7 @@ bool IsV3() {
 
 @end
 
-@implementation PaymentsSuggestionBottomSheetMediator {
+@implementation CreditCardSuggestionBottomSheetMediator {
   // The WebStateList observed by this mediator and the observer bridge.
   raw_ptr<WebStateList> _webStateList;
 
@@ -183,7 +183,7 @@ bool IsV3() {
 
 #pragma mark - Accessors
 
-- (void)setConsumer:(id<PaymentsSuggestionBottomSheetConsumer>)consumer {
+- (void)setConsumer:(id<CreditCardSuggestionBottomSheetConsumer>)consumer {
   _consumer = consumer;
 
   if (!_consumer) {
@@ -231,7 +231,7 @@ bool IsV3() {
   _hasCreditCards = YES;
 }
 
-#pragma mark - PaymentsSuggestionBottomSheetDelegate
+#pragma mark - CreditCardSuggestionBottomSheetDelegate
 
 - (void)didSelectCreditCard:(CreditCardData*)creditCardData
                     atIndex:(NSInteger)index {

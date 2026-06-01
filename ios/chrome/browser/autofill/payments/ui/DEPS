@@ -1,0 +1,31 @@
+include_rules = [
+  "+components/autofill/core/browser",
+  "+components/autofill/core/common",
+  "+components/autofill/ios/common",
+  "+components/grit",
+  "+components/url_formatter",
+  "+ios/chrome/app/strings",
+  "-ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/shared/ui/bottom_sheet",
+  "+ios/chrome/browser/shared/ui/symbols",
+  "+ios/chrome/browser/shared/ui/table_view",
+  "+ios/chrome/browser/shared/ui/util",
+  "+ios/chrome/common/ui",
+]
+
+# TODO(crbug.com/468036457): Remove this once a public subdirectory is
+# extracted from autofill/model
+specific_include_rules = {
+  "credit_card_suggestion_bottom_sheet_consumer.h": [
+    "+ios/chrome/browser/autofill/model/credit_card/credit_card_data.h",
+  ],
+  "credit_card_suggestion_bottom_sheet_delegate.h": [
+    "+ios/chrome/browser/autofill/model/credit_card/credit_card_data.h",
+  ],
+  "credit_card_suggestion_bottom_sheet_handler.h": [
+    "+ios/chrome/browser/autofill/model/credit_card/credit_card_data.h",
+  ],
+  "credit_card_suggestion_bottom_sheet_view_controller.mm": [
+    "+ios/chrome/browser/autofill/model/credit_card/credit_card_data.h",
+  ],
+}
