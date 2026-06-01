@@ -99,6 +99,14 @@ void PrivateAiInternalsPageHandler::SendRequest(const std::string& feature_name,
     return;
   }
 
+  if (request.empty()) {
+    webui_client_->EstablishConnection(feature_name_proto);
+    auto result = private_ai_internals::mojom::PrivateAiResponse::New();
+    result->response = "Prewarming connection";
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
   if (feature_name_proto == proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION) {
     SendZssRequest(request, std::move(callback));
     return;

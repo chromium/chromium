@@ -150,14 +150,11 @@ function sendRequest(featureName: string, prefix: string) {
       document.getElementById('request-input') as HTMLInputElement;
 
   const request = requestInput.value;
-  if (request.trim() === '') {
-    return;
-  }
 
   // Display user's request.
   const requestLabel = prefix ? `${prefix} Request` : 'Request';
   const responseLabel = prefix ? `${prefix} Response` : 'Response';
-  addMsgToConsoleContainer(`${requestLabel}: ${request}`);
+  addMsgToConsoleContainer(`${requestLabel}: ${request || '<empty request>'}`);
 
   // Send request to the Private AI client and get a response.
   proxy.sendRequest(featureName, request).then((response) => {
