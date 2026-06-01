@@ -149,12 +149,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // override in the generic IS_ANDROID block below, guarded by an appropriate
   // runtime check.
 
-  // If enabled, render processes associated only with tabs in unfocused windows
-  // will be downgraded to "vis" priority, rather than remaining at "fg". This
-  // will allow tabs in unfocused windows to be prioritized for OOM kill in
-  // low-memory scenarios.
-  feature_overrides.EnableFeature(chrome::android::kChangeUnfocusedPriority);
-
   // Enables media capture (tab+window+screen sharing).
   // TODO(crbug.com/352187279): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(kAndroidMediaPicker);

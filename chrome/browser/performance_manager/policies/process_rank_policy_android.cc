@@ -4,9 +4,11 @@
 
 #include "chrome/browser/performance_manager/policies/process_rank_policy_android.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/android/android_info.h"
+#include "base/android/device_info.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -123,6 +125,16 @@ class WebViewUpdater : public PageNodeObserver,
 };
 
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+
+namespace {
+
+bool IsChangeUnfocusedPriorityEnabled() {
+  return base::android::device_info::is_desktop() ||
+         base::FeatureList::IsEnabled(
+             chrome::android::kChangeUnfocusedPriority);
+}
+
+}  // namespace
 
 ProcessRankPolicyAndroid::ProcessRankPolicyAndroid()
     : ProcessRankPolicyAndroid(content::IsPerceptibleImportanceSupported()) {}
@@ -364,8 +376,7 @@ content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
     // visible.
     // When the page is embedded, the focus might be in the embedder or the
     // embeddee. In either case, the page should be considered important.
-    if (!base::FeatureList::IsEnabled(
-            chrome::android::kChangeUnfocusedPriority) ||
+    if (!IsChangeUnfocusedPriorityEnabled() ||
         node_to_check_visibility_and_focus->IsFocused() ||
         page_node->IsFocused()) {
       return content::ChildProcessImportance::IMPORTANT;
