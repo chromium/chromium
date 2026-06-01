@@ -105,6 +105,7 @@ To add JNI to a class:
 #### Example:
 
 **Java**
+
 ```java
 class MyClass {
   // Cannot be private. Must be package or public.
@@ -135,6 +136,7 @@ class MyClass {
 ```
 
 **C++**
+
 ```c++
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -192,6 +194,7 @@ that it is stripped in our release binaries.
 #### Example:
 
 **Java**
+
 ```java
 class MyClass {
   @CalledByNative MyClass() {}
@@ -203,6 +206,7 @@ class MyClass {
 ```
 
 **C++**
+
 ```c++
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -262,6 +266,7 @@ to be reference types that are defined in a namespace.
 #### Example Usage
 
 **Java**
+
 ```java
 class MyClass {
   @NativeMethods
@@ -276,6 +281,7 @@ class MyClass {
 ```
 
 **C++**
+
 ```c++
 #include "third_party/jni_zero/jni_zero.h"
 #include "<path to BUILD.gn>/<generate_jni target name>/MyClass_jni.h"
@@ -491,6 +497,7 @@ generated at the registration step, and how the registration works is different
 in different modes.
 
 For examples, we will imagine we have the following two classes:
+
 ```java
 class org.foo.Foo {
   @NativeMethods
@@ -506,6 +513,7 @@ class org.bar.Bar {
 }
 ```
 Which will have the 2 `generate_jni` steps output something like:
+
 ```java
 // Java .srcjar outputs
 class FooJni {
@@ -534,6 +542,7 @@ int Java_GEN_JNI_org_bar_Bar_b() {
 
 In debug mode, the `GEN_JNI` is a file containing `native` methods that match
 every single `@NativeMethods` from every `generate_jni` in our program.
+
 ```java
 class GEN_JNI {
   public static native int org_foo_Foo_f();
@@ -548,6 +557,7 @@ short name to reduce size), and `N` uses multiplexing by signature type to
 reduce the number of JNI functions. Then, we generate a C++ file with matching
 names to the smaller list of functions in `N`, which de-multiplexes back into
 the original functions.
+
 ```java
 class GEN_JNI {
   public static int org_foo_Foo_f() {
@@ -586,6 +596,7 @@ This was added to make transitioning to JNI Zero easier. It allows using
 binary size by putting the `native` methods directly in the `FooJni` classes.
 
 Example:
+
 ```java
 class FooJni {
   public static int f() {
@@ -609,6 +620,7 @@ not add any new uses of these.
 #### Using the "native" Keyword
 
 E.g.:
+
 ```
 class Foo {
     native someMethod();
@@ -625,6 +637,7 @@ for our current release mode, but instead of multipelxing, we'd just take a
 short hash of the name so we have shorter exported string literals. This would
 also change the output of the headers made by `generate_jni`, as they needed to
 likewise have a hashed name generated.
+
 ```java
 class GEN_JNI {
   public static int org_foo_Foo_f() {
