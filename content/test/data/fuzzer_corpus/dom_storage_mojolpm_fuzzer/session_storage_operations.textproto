@@ -1,0 +1,53 @@
+# Session storage: Put, GetAll, DeleteAll across origins.
+
+# actions[0]: Session storage ORIGIN_A.
+actions {
+  new_session_storage_area {
+    id: 0
+    origin_id: ORIGIN_A
+    renderer_id: RENDERER_A
+  }
+}
+# actions[1]: Session storage ORIGIN_B.
+actions {
+  new_session_storage_area {
+    id: 1
+    origin_id: ORIGIN_B
+    renderer_id: RENDERER_B
+  }
+}
+# actions[2]: Put key 115,107 = value 115,118 on id 0.
+actions {
+  storage_area_remote_action {
+    id: 0
+    m_put {
+      m_key { values { value: 115 }  values { value: 107 } }
+      m_value { values { value: 115 }  values { value: 118 } }
+    }
+  }
+}
+# actions[3]: Put key 75 = value 86 on id 1.
+actions {
+  storage_area_remote_action {
+    id: 1
+    m_put {
+      m_key { values { value: 75 } }
+      m_value { values { value: 86 } }
+    }
+  }
+}
+# actions[4]: GetAll on id 0.
+actions { storage_area_remote_action { id: 0  m_get_all {} } }
+# actions[5]: GetAll on id 1.
+actions { storage_area_remote_action { id: 1  m_get_all {} } }
+# actions[6]: DeleteAll on id 0.
+actions { storage_area_remote_action { id: 0  m_delete_all {} } }
+
+# Sequence 0: Put + GetAll on ORIGIN_A.
+sequences { action_indexes: [0, 2, 4] }
+# Sequence 1: Put + GetAll on ORIGIN_B.
+sequences { action_indexes: [1, 3, 5] }
+# Sequence 2: Put + DeleteAll on ORIGIN_A.
+sequences { action_indexes: [0, 2, 6] }
+
+sequence_indexes: [0, 1, 2]

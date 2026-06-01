@@ -1,0 +1,82 @@
+# Multi-area: two bindings same origin, two origins, two renderers.
+
+# actions[0]: Local storage ORIGIN_A, renderer A.
+actions { new_local_storage_area { id: 0  origin_id: ORIGIN_A  renderer_id: RENDERER_A } }
+# actions[1]: Local storage ORIGIN_A (second binding), renderer A.
+actions { new_local_storage_area { id: 1  origin_id: ORIGIN_A  renderer_id: RENDERER_A } }
+# actions[2]: Local storage ORIGIN_B, renderer A.
+actions { new_local_storage_area { id: 2  origin_id: ORIGIN_B  renderer_id: RENDERER_A } }
+# actions[3]: Local storage ORIGIN_A, renderer B.
+actions { new_local_storage_area { id: 3  origin_id: ORIGIN_A  renderer_id: RENDERER_B } }
+# actions[4]: Session storage ORIGIN_A, renderer A (binds id 0 as session).
+actions { new_session_storage_area { id: 0  origin_id: ORIGIN_A  renderer_id: RENDERER_A } }
+# actions[5]: Session storage ORIGIN_B, renderer A (binds id 2 as session).
+actions { new_session_storage_area { id: 2  origin_id: ORIGIN_B  renderer_id: RENDERER_A } }
+# actions[6]: Session storage ORIGIN_A, renderer B (binds id 3 as session).
+actions { new_session_storage_area { id: 3  origin_id: ORIGIN_A  renderer_id: RENDERER_B } }
+# actions[7]: Put key 65=49 on id 0.
+actions {
+  storage_area_remote_action {
+    id: 0
+    m_put {
+      m_key { values { value: 65 } }
+      m_value { values { value: 49 } }
+    }
+  }
+}
+# actions[8]: Put key 66=50 on id 1.
+actions {
+  storage_area_remote_action {
+    id: 1
+    m_put {
+      m_key { values { value: 66 } }
+      m_value { values { value: 50 } }
+    }
+  }
+}
+# actions[9]: Put key 65=50 on id 2 (ORIGIN_B).
+actions {
+  storage_area_remote_action {
+    id: 2
+    m_put {
+      m_key { values { value: 65 } }
+      m_value { values { value: 50 } }
+    }
+  }
+}
+# actions[10]: Put key 65=51 on id 3 (renderer B).
+actions {
+  storage_area_remote_action {
+    id: 3
+    m_put {
+      m_key { values { value: 65 } }
+      m_value { values { value: 51 } }
+    }
+  }
+}
+# actions[11]: Delete key 65 on id 0.
+actions {
+  storage_area_remote_action {
+    id: 0
+    m_delete { m_key { values { value: 65 } } }
+  }
+}
+# actions[12]: GetAll on id 0.
+actions { storage_area_remote_action { id: 0  m_get_all {} } }
+# actions[13]: GetAll on id 2.
+actions { storage_area_remote_action { id: 2  m_get_all {} } }
+
+# Sequence 0: Local two bindings same origin, Put from both, delete from first.
+sequences { action_indexes: [0, 1, 7, 8, 11] }
+# Sequence 1: Local two origins, Put to both, GetAll both.
+sequences { action_indexes: [0, 2, 7, 9, 12, 13] }
+# Sequence 2: Local two renderers same origin, Put from both.
+sequences { action_indexes: [0, 3, 7, 10, 12] }
+# Sequence 3: Session two origins, Put + GetAll on both.
+sequences { action_indexes: [4, 5, 7, 9, 12, 13] }
+# Sequence 4: Session two renderers same origin, Put from both.
+sequences { action_indexes: [4, 6, 7, 10, 12] }
+# Sequence 5: Session Put + Delete + GetAll across origins.
+sequences { action_indexes: [4, 5, 7, 9, 11, 13] }
+
+sequence_indexes: [0, 1, 2, 3, 4, 5]

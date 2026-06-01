@@ -22,17 +22,25 @@ enum RendererProcessId {
 }
 
 // Bind a new StorageArea remote for local storage.
-message NewStorageAreaAction {
+message NewLocalStorageAreaAction {
   required uint32 id = 1;
   optional OriginId origin_id = 2;
+  optional RendererProcessId renderer_id = 3 [default = RENDERER_A];
+}
+
+// Bind a new StorageArea remote for session storage.
+message NewSessionStorageAreaAction {
+  required uint32 id = 1;
+  required OriginId origin_id = 2;
   optional RendererProcessId renderer_id = 3 [default = RENDERER_A];
 }
 
 // Actions that can be performed by the fuzzer.
 message Action {
   oneof action {
-    NewStorageAreaAction new_storage_area = 1;
+    NewLocalStorageAreaAction new_local_storage_area = 1;
     mojolpm.blink.mojom.StorageArea.RemoteAction storage_area_remote_action = 2;
+    NewSessionStorageAreaAction new_session_storage_area = 3;
   }
 }
 

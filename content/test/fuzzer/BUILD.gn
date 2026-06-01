@@ -270,7 +270,11 @@ content_mojolpm_fuzzer_test("dom_storage_mojolpm_fuzzer") {
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
 
-  seed_corpus_sources = [ "//content/test/data/fuzzer_corpus/dom_storage_mojolpm_fuzzer/basic_put.textproto" ]
+  seed_corpus_sources = [
+    "//content/test/data/fuzzer_corpus/dom_storage_mojolpm_fuzzer/local_storage_operations.textproto",
+    "//content/test/data/fuzzer_corpus/dom_storage_mojolpm_fuzzer/multi_area_operations.textproto",
+    "//content/test/data/fuzzer_corpus/dom_storage_mojolpm_fuzzer/session_storage_operations.textproto",
+  ]
 }
 
 content_mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
