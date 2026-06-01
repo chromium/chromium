@@ -608,7 +608,7 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
 
   auto source_lists = picker_factory_->CreateMediaList(
       {DesktopMediaList::Type::kWebContents}, web_contents,
-      std::move(includable_web_contents_filter));
+      includable_web_contents_filter);
 
   // base::Unretained(this) is safe because DesktopCaptureAccessHandler is owned
   // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
