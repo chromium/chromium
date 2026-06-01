@@ -29,6 +29,7 @@
 #include "media/cast/cast_config.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/encoding/encoding_support.h"
+#include "media/cast/test/openscreen_test_helpers.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -49,6 +50,7 @@
 #include "third_party/openscreen/src/cast/streaming/ssrc.h"
 
 using media::cast::FrameSenderConfig;
+using media::cast::MockSender;
 using media::mojom::RemotingSinkMetadata;
 using media::mojom::RemotingSinkMetadataPtr;
 using media::mojom::RemotingStartFailReason;
@@ -718,9 +720,12 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
  protected:
   std::unique_ptr<FakeVideoCaptureHost> video_host_;
 
- private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  NiceMock<MockRemotingSource> remoting_source_;
+  std::unique_ptr<OpenscreenSessionHost> session_host_;
+
+ private:
   const net::IPEndPoint receiver_endpoint_ = GetFreeLocalPort();
   mojo::Receiver<mojom::ResourceProvider> resource_provider_receiver_{this};
   mojo::Receiver<mojom::SessionObserver> session_observer_receiver_{this};
@@ -729,12 +734,10 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   SessionType session_type_ = SessionType::AUDIO_AND_VIDEO;
   bool is_remote_playback_ = false;
   mojo::Remote<media::mojom::Remoter> remoter_;
-  NiceMock<MockRemotingSource> remoting_source_;
   std::string cast_mode_;
   base::TimeDelta target_playout_delay_{kDefaultPlayoutDelay};
   bool force_letterboxing_{false};
 
-  std::unique_ptr<OpenscreenSessionHost> session_host_;
   base::OnceClosure session_host_deletion_cb_;
   std::unique_ptr<MockNetworkContext> network_context_;
   std::unique_ptr<openscreen::cast::Answer> answer_;
@@ -1233,6 +1236,35 @@ TEST_F(OpenscreenSessionHostTest,
 
   // RemotingSender must be destroyed before StopSession().
   result1.reset();
+
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, RemotingNegotiationMismatchedCodec) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  SendRemotingCapabilities();
+  StartRemoting();
+
+  // At this point, last_offered_audio_config_ and last_offered_video_configs_
+  // contain configs with kUnknown codecs.
+
+  // Simulate negotiation completion with specific codecs (e.g., Opus and VP8).
+  openscreen::cast::SessionConfig config(
+      1, 2, 48000, 2, std::chrono::milliseconds(400), {}, {});
+
+  openscreen::cast::SenderSession::ConfiguredSenders senders;
+  senders.audio_sender = std::make_unique<MockSender>(config);
+  senders.audio_config.codec = openscreen::cast::AudioCodec::kOpus;
+  senders.video_sender = std::make_unique<MockSender>(config);
+  senders.video_config.codec = openscreen::cast::VideoCodec::kVp8;
+
+  // During Media Remoting, it is expected and normal for the negotiated codec
+  // to differ from the offered `kUnknown` codec. This should not crash!
+  EXPECT_CALL(remoting_source_, OnStarted());
+  session_host_->OnNegotiated(nullptr, std::move(senders),
+                              openscreen::cast::capture_recommendations::Recommendations{});
+  task_environment_.RunUntilIdle();
 
   StopSession();
 }

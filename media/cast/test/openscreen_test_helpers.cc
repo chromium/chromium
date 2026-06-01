@@ -74,7 +74,6 @@ MockSender::MockSender() : MockSender(GetDefaultSessionConfigForTesting()) {}
 
 MockSender::MockSender(openscreen::cast::SessionConfig config)
     : config_(std::move(config)) {
-  ON_CALL(*this, config).WillByDefault(testing::ReturnRef(config_));
   ON_CALL(*this, SetObserver)
       .WillByDefault([this](openscreen::cast::Sender::Observer* observer) {
         set_observer(observer);

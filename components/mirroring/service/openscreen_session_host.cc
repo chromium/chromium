@@ -317,7 +317,9 @@ void OpenscreenSessionHost::OnNegotiated(
   if (last_offered_audio_config_ && senders.audio_sender) {
     base::UmaHistogramEnumeration("CastStreaming.Sender.Audio.NegotiatedCodec",
                                   audio_codec);
-    CHECK_EQ(last_offered_audio_config_->audio_codec(), audio_codec);
+    if (!last_offered_audio_config_->is_remoting()) {
+      CHECK_EQ(last_offered_audio_config_->audio_codec(), audio_codec);
+    }
     audio_config = last_offered_audio_config_;
   }
 
@@ -328,9 +330,11 @@ void OpenscreenSessionHost::OnNegotiated(
 
     for (const FrameSenderConfig& config : last_offered_video_configs_) {
       // Since we only offer one configuration per codec, we can determine which
-      // config was selected by simply checking its codec.
-      if (config.video_codec() == video_codec) {
+      // config was selected by simply checking its codec. For remoting, we
+      // only offer one "unknown" config.
+      if (config.video_codec() == video_codec || config.is_remoting()) {
         video_config = config;
+        break;
       }
     }
     CHECK(video_config);

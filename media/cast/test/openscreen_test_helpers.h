@@ -1,13 +1,13 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
-// TODO(jophba): remove these helpers once the abstract Sender interface lands
-// and pure virtual sender interfaces can be easily constructed.
 
 #ifndef MEDIA_CAST_TEST_OPENSCREEN_TEST_HELPERS_H_
 #define MEDIA_CAST_TEST_OPENSCREEN_TEST_HELPERS_H_
 
+#include <set>
+
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -35,10 +35,11 @@ class MockSender : public openscreen::cast::Sender {
   explicit MockSender(openscreen::cast::SessionConfig config);
   ~MockSender() override;
 
-  MOCK_METHOD(const openscreen::cast::SessionConfig&,
-              config,
-              (),
-              (const, override));
+  // Sender implementation.
+  const openscreen::cast::SessionConfig& config() const override {
+    return config_;
+  }
+
   MOCK_METHOD(void,
               SetObserver,
               (openscreen::cast::Sender::Observer*),
@@ -90,7 +91,7 @@ class MockSender : public openscreen::cast::Sender {
   base::WeakPtr<MockSender> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
-  openscreen::cast::SessionConfig config_;
+  const openscreen::cast::SessionConfig config_;
   raw_ptr<openscreen::cast::Sender::Observer> observer_ = nullptr;
   std::set<openscreen::cast::FrameId> in_flight_frames_;
   raw_ptr<MockOpenscreenEnvironment> environment_ = nullptr;
