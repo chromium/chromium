@@ -274,5 +274,50 @@ TEST_F(UiResourceManagerTest, ReclaimResources) {
   }
 }
 
+TEST_F(UiResourceManagerTest, ReclaimUnknownResourceId) {
+  auto resource = resource_manager_->OfferAndPrepareResourceForExport(
+      MakeResource(kDefaultSize));
+
+  EXPECT_EQ(resource_manager_->available_resources_count(), 0u);
+  EXPECT_EQ(resource_manager_->exported_resources_count(), 1u);
+
+  std::vector<viz::ReturnedResource> returned;
+  returned.emplace_back();
+  returned.back().id = viz::ResourceId(12345);
+  returned.back().count = 1;
+  returned.back().lost = false;
+
+  resource_manager_->ReclaimResources(returned);
+
+  EXPECT_EQ(resource_manager_->available_resources_count(), 0u);
+  EXPECT_EQ(resource_manager_->exported_resources_count(), 1u);
+}
+
+TEST_F(UiResourceManagerTest, ReclaimDuplicateResourceId) {
+  auto resource = resource_manager_->OfferAndPrepareResourceForExport(
+      MakeResource(kDefaultSize));
+
+  EXPECT_EQ(resource_manager_->available_resources_count(), 0u);
+  EXPECT_EQ(resource_manager_->exported_resources_count(), 1u);
+
+  std::vector<viz::ReturnedResource> returned;
+  returned.emplace_back();
+  returned.back().id = resource.id;
+  returned.back().count = 1;
+  returned.back().lost = false;
+
+  // Reclaim it once.
+  resource_manager_->ReclaimResources(returned);
+
+  EXPECT_EQ(resource_manager_->available_resources_count(), 1u);
+  EXPECT_EQ(resource_manager_->exported_resources_count(), 0u);
+
+  // Reclaim it again (duplicate ID).
+  resource_manager_->ReclaimResources(returned);
+
+  EXPECT_EQ(resource_manager_->available_resources_count(), 1u);
+  EXPECT_EQ(resource_manager_->exported_resources_count(), 0u);
+}
+
 }  // namespace
 }  // namespace ash
