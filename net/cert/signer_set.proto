@@ -95,6 +95,10 @@ message Signer {
   // be reused. The identifiers 0, 1 and 2 are reserved and should not be used.
   // Corresponds to crs_root_id in //net/cert/root_store.proto in Chromium.s
   int32 crs_root_id = 12;
+
+  // The minimum log number that Chrome will accept. Only valid for issuer logs,
+  // mirrors should not have this field set.
+  int32 min_log_number = 13;
 }
 
 message SignerSet {
