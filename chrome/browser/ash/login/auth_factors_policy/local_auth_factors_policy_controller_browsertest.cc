@@ -108,12 +108,13 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
   void UpdatePolicy() { provider_.UpdateChromePolicy(policy_map_); }
 
   void OnFactorChanged(const AccountId& account_id,
-                       ash::auth::mojom::AuthFactor factor) {
+                       ash::auth::mojom::AuthFactor factor,
+                       ash::auth::mojom::ConfigureResult result) {
     LocalAuthFactorsPolicyController* controller =
         LocalAuthFactorsPolicyControllerFactory::GetForProfile(
             GetProfile(account_id));
     CHECK(controller);
-    controller->OnFactorChanged(factor);
+    controller->OnFactorChanged(factor, result);
   }
 
   void SetComplexityPolicy(LocalAuthFactorsComplexity complexity) {
@@ -398,7 +399,8 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
   }
 
   // Simulate updating only the password.
-  OnFactorChanged(account_id, ash::auth::mojom::AuthFactor::kLocalPassword);
+  OnFactorChanged(account_id, ash::auth::mojom::AuthFactor::kLocalPassword,
+                  ash::auth::mojom::ConfigureResult::kSuccess);
 
   // The notification should still be shown because PIN also needs update.
   WaitForNotificationShownCallback();
@@ -411,7 +413,8 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
   }
 
   // Simulate updating the PIN.
-  OnFactorChanged(account_id, ash::auth::mojom::AuthFactor::kCryptohomePin);
+  OnFactorChanged(account_id, ash::auth::mojom::AuthFactor::kCryptohomePin,
+                  ash::auth::mojom::ConfigureResult::kSuccess);
 
   // Wait for the notification to be asynchronously dismissed.
   WaitForNotificationClosedCallback();
@@ -426,6 +429,30 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
   histogram_tester.ExpectBucketCount(
       "Enterprise.LocalAuthFactorsPolicy.LocalAuthFactorChanged",
       static_cast<int>(LocalAuthFactorType::kPin), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
+                       NoHistogramRecordedOnFailedFactorChange) {
+  base::HistogramTester histogram_tester;
+  const AccountId& account_id = local_password_and_pin_user_.account_id;
+  LoginUser(account_id);
+
+  // Simulate a failed update attempt for the password.
+  OnFactorChanged(account_id, ash::auth::mojom::AuthFactor::kLocalPassword,
+                  ash::auth::mojom::ConfigureResult::kFatalError);
+
+  // No histogram should be recorded on failure.
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.LocalAuthFactorsPolicy.LocalAuthFactorChanged", 0);
+
+  // Simulate a successful update attempt for the password.
+  OnFactorChanged(account_id, ash::auth::mojom::AuthFactor::kLocalPassword,
+                  ash::auth::mojom::ConfigureResult::kSuccess);
+
+  // Histogram should be recorded on success.
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.LocalAuthFactorsPolicy.LocalAuthFactorChanged",
+      static_cast<int>(LocalAuthFactorType::kLocalPassword), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,

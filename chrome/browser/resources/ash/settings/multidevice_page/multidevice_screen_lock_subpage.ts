@@ -118,7 +118,8 @@ export class SettingsMultideviceScreenLockSubpageElement extends
     AuthFactorConfig.getRemote().observeFactorChanges(remote);
   }
 
-  async onFactorChanged(factor: AuthFactor): Promise<void> {
+  async onFactorChanged(factor: AuthFactor, _result: ConfigureResult):
+      Promise<void> {
     if (factor !== AuthFactor.kPrefBasedPin &&
         factor !== AuthFactor.kCryptohomePin &&
         factor !== AuthFactor.kCryptohomePinV2) {
@@ -162,8 +163,8 @@ export class SettingsMultideviceScreenLockSubpageElement extends
     //     QuickUnlockMode.PIN to active modes.
     // (2) User selects PASSWORD, QuickUnlockMode.PIN capability is cleared
     //     from the active modes. This notifies this class via
-    //     |onFactorChanged| and prompts us to fetch the current state of the
-    //     PIN asynchronously.
+    //     |onFactorChanged| and prompts us to fetch the current state
+    //     of the PIN asynchronously.
     // (3) User selects PIN_PASSWORD, but the process from step 2 has not yet
     //     completed.
     // In this case, do not forcibly select the PASSWORD radio button even

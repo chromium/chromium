@@ -353,7 +353,9 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   /**
    * Called by chrome when the state of an auth factor changes.
    * */
-  onFactorChanged(factor: AuthFactor): void {
+  onFactorChanged(factor: AuthFactor, _result: ConfigureResult): void {
+    // We want to update the state of the UI regardless of success or failure
+    // which is why we do not use `_result`.
     switch (factor) {
       case AuthFactor.kRecovery:
         this.updateRecoveryState_(this.authToken);

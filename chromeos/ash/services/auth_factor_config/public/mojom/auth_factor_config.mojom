@@ -52,8 +52,8 @@ enum LocalAuthFactorsComplexity {
 // An interface for clients of |AuthFactorConfig| (see there for a list of
 // clients) that need to be notified if configuration of auth factors changes.
 interface FactorObserver {
-  // Called when the configuration of some |factor| changes.
-  OnFactorChanged(AuthFactor factor);
+  // Called when a configuration change for some |factor| is attempted.
+  OnFactorChanged(AuthFactor factor, ConfigureResult result);
 };
 
 // An interface to query generic properties of how authentication factors are

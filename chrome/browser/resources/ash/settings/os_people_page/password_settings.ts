@@ -63,7 +63,7 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
     AuthFactorConfig.getRemote().observeFactorChanges(remote);
   }
 
-  onFactorChanged(factor: AuthFactor): void {
+  onFactorChanged(factor: AuthFactor, _result: ConfigureResult): void {
     switch (factor) {
       case AuthFactor.kGaiaPassword:
       case AuthFactor.kLocalPassword:

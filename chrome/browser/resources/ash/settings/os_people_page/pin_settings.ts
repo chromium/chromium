@@ -95,7 +95,7 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
     chrome.send('RequestQuickUnlockDisabledByPolicy');
   }
 
-  onFactorChanged(factor: AuthFactor): void {
+  onFactorChanged(factor: AuthFactor, _result: ConfigureResult): void {
     switch (factor) {
       case AuthFactor.kPrefBasedPin:
       case AuthFactor.kCryptohomePin:

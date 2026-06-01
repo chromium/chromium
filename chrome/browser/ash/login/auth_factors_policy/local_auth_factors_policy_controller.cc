@@ -241,7 +241,13 @@ LocalAuthFactorsPolicyController::GetAllowedAuthFactors() {
   return ash::GetAuthFactorsSetFromPolicyList(&allowed_auth_factors);
 }
 
-void LocalAuthFactorsPolicyController::OnFactorChanged(AuthFactor factor) {
+void LocalAuthFactorsPolicyController::OnFactorChanged(
+    AuthFactor factor,
+    ash::auth::mojom::ConfigureResult result) {
+  if (result != ash::auth::mojom::ConfigureResult::kSuccess) {
+    return;
+  }
+
   const int enforced_complexity =
       prefs().GetInteger(ash::prefs::kLocalAuthFactorsComplexity);
 
@@ -369,8 +375,12 @@ void LocalAuthFactorsPolicyController::OnShowComplexityUpdateNotification(
 }
 
 void LocalAuthFactorsPolicyController::DismissComplexityUpdateNotification() {
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, kComplexityUpdateNotificationId);
+  auto* notification_display_service =
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
+  if (notification_display_service) {
+    notification_display_service->Close(NotificationHandler::Type::TRANSIENT,
+                                        kComplexityUpdateNotificationId);
+  }
 }
 
 }  // namespace ash

@@ -68,7 +68,8 @@ void AuthFactorConfig::NotifyFactorObserversAfterSuccess(
       std::move(context),
       base::BindOnce(&AuthFactorConfig::OnGetAuthFactorsConfiguration,
                      weak_factory_.GetWeakPtr(), changed_factors,
-                     std::move(callback), auth_token));
+                     /*is_factor_change_success=*/true, std::move(callback),
+                     auth_token));
 }
 
 void AuthFactorConfig::NotifyFactorObserversAfterFailure(
@@ -88,6 +89,7 @@ void AuthFactorConfig::NotifyFactorObserversAfterFailure(
       std::move(context),
       base::BindOnce(&AuthFactorConfig::OnGetAuthFactorsConfiguration,
                      weak_factory_.GetWeakPtr(), AuthFactorSet::All(),
+                     /*is_factor_change_success=*/false,
                      std::move(ignore_param_callback), auth_token));
 }
 
@@ -518,6 +520,7 @@ void AuthFactorConfig::ObtainContext(
 
 void AuthFactorConfig::OnGetAuthFactorsConfiguration(
     AuthFactorSet changed_factors,
+    bool is_factor_change_success,
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
     const std::string& auth_token,
     std::unique_ptr<UserContext> context,
@@ -540,12 +543,17 @@ void AuthFactorConfig::OnGetAuthFactorsConfiguration(
   if (has_knowledge_factor) {
     OnUserHasKnowledgeFactor(*context);
   }
-
+  // TODO: b/517868503 - Determine appropriate return value for
+  // OnGetAuthFactorsConfiguration when triggered by factor change failure.
   std::move(callback).Run(mojom::ConfigureResult::kSuccess);
+
+  const mojom::ConfigureResult result =
+      is_factor_change_success ? mojom::ConfigureResult::kSuccess
+                               : mojom::ConfigureResult::kFatalError;
 
   for (auto& observer : observers_) {
     for (const auto changed_factor : changed_factors) {
-      observer->OnFactorChanged(changed_factor);
+      observer->OnFactorChanged(changed_factor, result);
     }
   }
 }

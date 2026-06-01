@@ -160,6 +160,7 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
       std::unique_ptr<UserContext> context);
   void OnGetAuthFactorsConfiguration(
       AuthFactorSet changed_factors,
+      bool is_factor_change_success,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       const std::string& auth_token,
       std::unique_ptr<UserContext> context,

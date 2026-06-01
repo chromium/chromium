@@ -71,7 +71,8 @@ class LocalAuthFactorsPolicyController
   std::optional<ash::AuthFactorsSet> GetAllowedAuthFactors();
 
   // ash::auth::mojom::FactorObserver:
-  void OnFactorChanged(ash::auth::mojom::AuthFactor factor) override;
+  void OnFactorChanged(ash::auth::mojom::AuthFactor factor,
+                       ash::auth::mojom::ConfigureResult result) override;
 
   void OnComplexityPrefUpdated();
   void ShowComplexityUpdateNotification();
