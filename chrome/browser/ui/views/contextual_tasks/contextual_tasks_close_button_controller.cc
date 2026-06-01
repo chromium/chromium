@@ -72,11 +72,34 @@ ContextualTasksCloseButtonController::From(
 }
 
 void ContextualTasksCloseButtonController::OnEntryShown(SidePanelEntry* entry) {
+  is_panel_visible_ = true;
+  is_panel_hiding_ = false;
   MaybeNotifyVisibilityShouldChange();
+}
+
+void ContextualTasksCloseButtonController::OnEntryWillHide(
+    SidePanelEntry* entry,
+    SidePanelEntryHideReason reason) {
+  if (contextual_tasks::kShowEntryPoint.Get() !=
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    is_panel_hiding_ = true;
+    MaybeNotifyVisibilityShouldChange();
+  }
+}
+
+void ContextualTasksCloseButtonController::OnEntryHideCancelled(
+    SidePanelEntry* entry) {
+  if (contextual_tasks::kShowEntryPoint.Get() !=
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    is_panel_hiding_ = false;
+    MaybeNotifyVisibilityShouldChange();
+  }
 }
 
 void ContextualTasksCloseButtonController::OnEntryHidden(
     SidePanelEntry* entry) {
+  is_panel_hiding_ = false;
+  is_panel_visible_ = false;
   MaybeNotifyVisibilityShouldChange();
 }
 
@@ -135,8 +158,6 @@ void ContextualTasksCloseButtonController::MaybeNotifyVisibilityShouldChange() {
       eligibility_manager && eligibility_manager->AreEntryPointsEligible();
   auto* controller = contextual_tasks::ContextualTasksPanelController::From(
       browser_window_interface_);
-  const bool is_contextual_tasks_panel_open =
-      controller && controller->IsPanelOpenForContextualTask();
   const bool can_expand_to_full_tab =
       controller && controller->CanExpandToFullTab();
 
@@ -147,9 +168,10 @@ void ContextualTasksCloseButtonController::MaybeNotifyVisibilityShouldChange() {
    *  - Side panel is open.
    *  - Side panel can expand to full tab.
    **/
+  bool is_panel_state_eligible = is_panel_visible_ && !is_panel_hiding_;
   should_update_visibility_callbacks_.Notify(
       !IsVerticalTabOrIsImmersiveMode() && is_eligible &&
-      is_contextual_tasks_panel_open && can_expand_to_full_tab);
+      is_panel_state_eligible && can_expand_to_full_tab);
 
   if (controller) {
     content::WebContents* contents = controller->GetActiveWebContents();

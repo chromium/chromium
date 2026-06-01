@@ -34,6 +34,7 @@ source_set("impl") {
   deps = [
     ":contextual_tasks",
     "//chrome/browser/contextual_tasks:ui",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/side_panel",
     "//components/contextual_tasks/public:feature_list",

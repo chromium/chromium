@@ -52,6 +52,9 @@ class ContextualTasksCloseButtonController
 
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* entry) override;
+  void OnEntryWillHide(SidePanelEntry* entry,
+                       SidePanelEntryHideReason reason) override;
+  void OnEntryHideCancelled(SidePanelEntry* entry) override;
   void OnEntryHidden(SidePanelEntry* entry) override;
 
   // contextual_tasks::ContextualTasksPanelController::Observer:
@@ -85,6 +88,9 @@ class ContextualTasksCloseButtonController
       contextual_tasks::ContextualTasksPanelController,
       contextual_tasks::ContextualTasksPanelController::Observer>
       panel_controller_observation_{this};
+
+  bool is_panel_visible_ = false;
+  bool is_panel_hiding_ = false;
 
   ShouldUpdateVisibilityCallbackList should_update_visibility_callbacks_;
 

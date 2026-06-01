@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -54,6 +55,7 @@
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -472,15 +474,21 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
     SetVisible(is_button_eligible && controller->ShouldShowEphemeralButton());
   } else if (contextual_tasks::kShowEntryPoint.Get() ==
              contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-    auto* panel_controller =
-        contextual_tasks::ContextualTasksPanelController::From(
-            browser_window_interface_);
-    CHECK(panel_controller);
     ContextualTasksEphemeralButtonController* const controller =
         ContextualTasksEphemeralButtonController::From(
             browser_window_interface_);
-    SetVisible(!panel_controller->IsPanelOpenForContextualTask() &&
-               is_button_eligible && controller->ShouldShowEphemeralButton());
+    const bool was_visible = GetVisible();
+    SetVisible(is_button_eligible && controller->ShouldShowEphemeralButton());
+    if (!was_visible && GetVisible()) {
+      layer()->SetOpacity(0.0f);
+      drop_shadow_painted_layer_->layer()->SetOpacity(0.0f);
+      views::AnimationBuilder()
+          .Once()
+          .SetDuration(
+              base::Milliseconds(features::kSidePanelFlyoverDurationMs.Get()))
+          .SetOpacity(layer(), 1.0f)
+          .SetOpacity(drop_shadow_painted_layer_->layer(), 1.0f);
+    }
   }
 }
 

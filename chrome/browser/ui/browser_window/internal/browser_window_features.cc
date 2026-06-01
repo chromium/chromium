@@ -1073,6 +1073,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   actor_task_list_bubble_controller_.reset();
 
   contextual_tasks_close_button_controller_.reset();
+  contextual_tasks_ephemeral_button_controller_.reset();
   contextual_tasks_side_panel_coordinator_.reset();
   contextual_tasks_entry_point_eligibility_manager_.reset();
 

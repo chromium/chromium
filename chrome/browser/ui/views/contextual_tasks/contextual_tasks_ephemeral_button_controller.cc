@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -115,9 +116,20 @@ void ContextualTasksEphemeralButtonController::
   MaybeNotifyVisibilityShouldChange();
 }
 
+void ContextualTasksEphemeralButtonController::OnEntryShown(
+    SidePanelEntry* entry) {
+  if (contextual_tasks::kShowEntryPoint.Get() ==
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    is_contextual_tasks_panel_open_ = true;
+    is_hiding_contextual_tasks_panel_ = false;
+    MaybeNotifyVisibilityShouldChange();
+  }
+}
+
 void ContextualTasksEphemeralButtonController::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
+  is_hiding_contextual_tasks_panel_ = true;
   if (!IsActiveTabAssociatedToTask()) {
     return;
   }
@@ -132,6 +144,26 @@ void ContextualTasksEphemeralButtonController::OnEntryWillHide(
 
   ephemeral_button_eligible_tasks_.emplace_back(current_task->GetTaskId());
   MaybeNotifyVisibilityShouldChange();
+}
+
+void ContextualTasksEphemeralButtonController::OnEntryHideCancelled(
+    SidePanelEntry* entry) {
+  if (contextual_tasks::kShowEntryPoint.Get() !=
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    is_hiding_contextual_tasks_panel_ = false;
+    is_contextual_tasks_panel_open_ = true;
+    MaybeNotifyVisibilityShouldChange();
+  }
+}
+
+void ContextualTasksEphemeralButtonController::OnEntryHidden(
+    SidePanelEntry* entry) {
+  if (contextual_tasks::kShowEntryPoint.Get() !=
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    is_hiding_contextual_tasks_panel_ = false;
+    is_contextual_tasks_panel_open_ = false;
+    MaybeNotifyVisibilityShouldChange();
+  }
 }
 
 base::CallbackListSubscription
@@ -160,9 +192,18 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
 
   // The ephemeral toolbar button should show if the contextual task side panel
   // was closed.
-  return current_task.has_value() &&
-         std::ranges::contains(ephemeral_button_eligible_tasks_,
-                               current_task->GetTaskId());
+  bool should_show_button =
+      current_task.has_value() &&
+      std::ranges::contains(ephemeral_button_eligible_tasks_,
+                            current_task->GetTaskId());
+
+  if (contextual_tasks::kShowEntryPoint.Get() ==
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    should_show_button &=
+        (!is_contextual_tasks_panel_open_ || is_hiding_contextual_tasks_panel_);
+  }
+
+  return should_show_button;
 }
 
 contextual_tasks::ContextualTasksService*

@@ -55,8 +55,11 @@ class ContextualTasksEphemeralButtonController
   void OnAimEligibilityResponseChanged();
 
   // SidePanelEntryObserver override:
+  void OnEntryShown(SidePanelEntry* entry) override;
   void OnEntryWillHide(SidePanelEntry* entry,
                        SidePanelEntryHideReason reason) override;
+  void OnEntryHideCancelled(SidePanelEntry* entry) override;
+  void OnEntryHidden(SidePanelEntry* entry) override;
 
   using ShouldUpdateVisibilityCallbackList =
       base::RepeatingCallbackList<void(bool)>;
@@ -72,6 +75,8 @@ class ContextualTasksEphemeralButtonController
   void OnActiveTabChange(BrowserWindowInterface* browser_window_interface);
   void MaybeNotifyVisibilityShouldChange();
 
+  bool is_contextual_tasks_panel_open_ = false;
+  bool is_hiding_contextual_tasks_panel_ = false;
   raw_ptr<AimEligibilityService> aim_eligibility_service_;
 
   std::vector<base::Uuid> ephemeral_button_eligible_tasks_;
