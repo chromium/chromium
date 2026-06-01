@@ -5016,7 +5016,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ChromeNextIa"
+                        "ChromeNextIa",
+                        "FullscreenRefactoring"
                     ]
                 }
             ]
@@ -11282,21 +11283,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FreezeSharedWorker"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FullscreenRefactoring": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FullscreenRefactoring"
                     ]
                 }
             ]
