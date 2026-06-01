@@ -2132,7 +2132,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/base/SplitCompatJobService.java",
       "java/src/org/chromium/chrome/browser/base/SplitCompatMinidumpUploadJobService.java",
       "java/src/org/chromium/chrome/browser/base/SplitCompatRemoteViewsService.java",
-      "java/src/org/chromium/chrome/browser/base/SplitCompatService.java",
       "java/src/org/chromium/chrome/browser/base/SplitCompatUtils.java",
       "java/src/org/chromium/chrome/browser/base/SplitPreloader.java",
       "java/src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetService.java",
