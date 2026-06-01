@@ -2150,15 +2150,6 @@
   <message name="IDS_LOGIN_SSH_WARNING" desc="A message telling user that the device has SSH server configured. So they should be carefule with accounts they use to sign in.">
     Device has SSH server configured. Do not sign in with sensitive accounts.
   </message>
-  <message name="IDS_DEVICE_DISABLED_HEADING" desc="Heading of the message shown to the user when the device has been disabled by its owner.">
-    Your device is locked
-  </message>
-  <message name="IDS_DEVICE_DISABLED_EXPLANATION_WITH_DOMAIN" desc="Explanation shown to the user when the device has been disabled by its owner. This version is used when the domain that owns the device is known.">
-    This device (SN: <ph name="SERIAL_NUMBER">$1<ex>1234</ex></ph>) was locked by the <ph name="SAML_DOMAIN">$2<ex>example.com</ex></ph> administrator.
-  </message>
-  <message name="IDS_DEVICE_DISABLED_EXPLANATION_WITHOUT_DOMAIN" desc="Explanation shown to the user when the device has been disabled by its owner. This version is used when the domain that owns the device is not known.">
-    This device (SN: <ph name="SERIAL_NUMBER">$1<ex>1234</ex></ph>) was locked by the owner.
-  </message>
 
   <!-- Encryption migration dialog -->
   <message name="IDS_ENCRYPTION_MIGRATION_READY_TITLE" desc="Title shown in encryption migration screen, which asks the user to install an OS update.">
@@ -2814,21 +2805,6 @@
   </message>
   <message name="IDS_NETWORK_UI_REFRESH_WIFI_DIRECT_CLIENT_INFO_BUTTON_TEXT" desc="Text for button which, when pressed, refreshing WiFi Direct clients info.">
     Refresh WiFi Direct Clients Info
-  </message>
-
-  <message name="IDS_DEVICE_LOG_LINK_TEXT" desc="Message preceeding link to chrome://device-log">
-    To view network UI logs, see: <ph name="DEVICE_LOG_LINK">&lt;a href="chrome://device-log"&gt;chrome://device-log&lt;/a&gt;</ph>
-  </message>
-
-  <!-- Device health display strings-->
-  <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_TITLE" desc="Title of the screen notifying user about install attributes error.">
-    Something went wrong with setting up the device
-  </message>
-  <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_RESTART" desc="Suggestion to restart the device in case of the install attributes error.">
-    The device encountered an error. Please restart your device and try again.
-  </message>
-  <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_RESET" desc="Suggestion to reset the device in case of the install attributes error.">
-    The device encountered an unrecoverable error. Please reset your device (it will erase all user data) and try again.
   </message>
 
   <!-- Set time/date UI display strings -->

@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/login/localized_values_builder.h"
 

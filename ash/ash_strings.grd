@@ -9459,6 +9459,31 @@ To shut down the device, press and hold the power button on the device again.
         Learn more
       </message>
 
+      <!-- Device strings -->
+      <message name="IDS_DEVICE_DISABLED_HEADING" desc="Heading of the message shown to the user when the device has been disabled by its owner.">
+        Your device is locked
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_WITH_DOMAIN" desc="Explanation shown to the user when the device has been disabled by its owner. This version is used when the domain that owns the device is known.">
+        This device (SN: <ph name="SERIAL_NUMBER">$1<ex>1234</ex></ph>) was locked by the <ph name="SAML_DOMAIN">$2<ex>example.com</ex></ph> administrator.
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_WITHOUT_DOMAIN" desc="Explanation shown to the user when the device has been disabled by its owner. This version is used when the domain that owns the device is not known.">
+        This device (SN: <ph name="SERIAL_NUMBER">$1<ex>1234</ex></ph>) was locked by the owner.
+      </message>
+      <message name="IDS_DEVICE_LOG_LINK_TEXT" desc="Message preceeding link to chrome://device-log">
+        To view network UI logs, see: <ph name="DEVICE_LOG_LINK">&lt;a href="chrome://device-log"&gt;chrome://device-log&lt;/a&gt;</ph>
+      </message>
+
+      <!-- Device health display strings-->
+      <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_TITLE" desc="Title of the screen notifying user about install attributes error.">
+        Something went wrong with setting up the device
+      </message>
+      <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_RESTART" desc="Suggestion to restart the device in case of the install attributes error.">
+        The device encountered an error. Please restart your device and try again.
+      </message>
+      <message name="IDS_DEVICE_ERROR_INSTALL_ATTRIBUTES_FAILURE_RESET" desc="Suggestion to reset the device in case of the install attributes error.">
+        The device encountered an unrecoverable error. Please reset your device (it will erase all user data) and try again.
+      </message>
+
       <!-- Easy Unlock strings -->
       <!-- Strings for notification shown when the Chromebook is added to Easy Unlock -->
       <message name="IDS_EASY_UNLOCK_CHROMEBOOK_ADDED_NOTIFICATION_TITLE" desc="Title for notification shown when this Chromebook is added to Easy Unlock as an additional Easy Unlock device.">
