@@ -10,7 +10,8 @@ import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_bu
 export function getHtml(this: ContextualEntrypointButtonElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  <div id="${this.getWrapperId_()}" class="${this.getWrapperCssClass_()}">
+  <div id="${this.getWrapperId_()}" class="${this.getWrapperCssClass_()}"
+      @pointerenter="${this.onEntrypointPointerenter_}">
     ${(this.showContextMenuDescription || this.showSuggestionLabel)
         && !this.windowWidthBelowThreshold_ ? html`
       <cr-button id="entrypoint"

@@ -10892,6 +10892,36 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualSearch.AddTabsButton.Clicked.{ContextualSearchSource}">
+  <owner>samiraarabgol@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <description>
+    Recorded when the user clicks the Add tabs (AI Mode) entrypoint button in a
+    WebUI searchbox on {ContextualSearchSource}.
+  </description>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</action>
+
+<action name="ContextualSearch.AddTabsButton.Hovered.{ContextualSearchSource}">
+  <owner>samiraarabgol@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <description>
+    Recorded when the user hovers over the Add tabs (AI Mode) entrypoint button
+    in a WebUI searchbox on {ContextualSearchSource}.
+  </description>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</action>
+
+<action name="ContextualSearch.AddTabsButton.Shown.{ContextualSearchSource}">
+  <owner>samiraarabgol@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <description>
+    Recorded when the Add tabs (AI Mode) entrypoint button is shown to the user
+    in a WebUI searchbox on {ContextualSearchSource}.
+  </description>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</action>
+
 <action
     name="ContextualSearch.AiModeButtonClick.{ContextualSearchAiModeButtonSurface}">
   <owner>niharm@google.com</owner>
