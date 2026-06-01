@@ -380,6 +380,36 @@ TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
       latency_hint, context_sample_rate, hardware_params);
   EXPECT_EQ(output_buffer_size, kMaxWebAudioBufferSize);
 }
+// When the kWebAudioRemoveAudioDestinationResampler feature is enabled and the
+// hardware reports a native minimum buffer size that exceeds Web Audio's
+// maximum limit (kMaxWebAudioBufferSize), the GetOutputBufferSize method
+// safely caps the computed buffer size at kMaxWebAudioBufferSize.
+TEST_F(RendererWebAudioDeviceImplBufferSizeTest,
+       DISABLED_ExactLatency_HighHardwareBufferSize_CapsAtMaxBufferSize) {
+  feature_list_.InitAndEnableFeature(
+      features::kWebAudioRemoveAudioDestinationResampler);
+  // Request a 50ms exact latency hint.
+  blink::WebAudioLatencyHint latency_hint(0.05);
+
+  // Simulate a hardware device with a minimum buffer size exceeding
+  // kMaxWebAudioBufferSize (8192).
+  media::AudioParameters hardware_params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Stereo(), kHardwareSampleRate48k,
+      kHardwareBufferSize48k);
+  media::AudioParameters::HardwareCapabilities capabilities;
+  capabilities.min_frames_per_buffer = 16384;
+  capabilities.max_frames_per_buffer = 16384;
+  hardware_params.set_hardware_capabilities(capabilities);
+
+  int context_sample_rate = kHardwareSampleRate48k;
+  int output_buffer_size = RendererWebAudioDeviceImpl::GetOutputBufferSize(
+      latency_hint, context_sample_rate, hardware_params);
+
+  // The output buffer size should be safely capped at
+  // kMaxWebAudioBufferSize (8192) instead of crashing or returning 0.
+  EXPECT_EQ(output_buffer_size, kMaxWebAudioBufferSize);
+}
 
 TEST_F(RendererWebAudioDeviceImplTest, ChannelLayout) {
   for (int ch = 1; ch < static_cast<int>(media::limits::kMaxChannels); ++ch) {
