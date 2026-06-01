@@ -35,6 +35,54 @@ class GlicMessagingBrowserTest : public GlicPrivateApiTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class GlicMessagingAccessDisabledBrowserTest : public GlicPrivateApiTestBase {
+ public:
+  GlicMessagingAccessDisabledBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {extensions_features::kApiGlicPrivate},
+        {extensions_features::kApiGlicAccessFromGoogleWebpage});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
+content::EvalJsResult ExecuteInvoke(content::WebContents* web_contents,
+                                    const std::string& prompt_id,
+                                    const std::string& invocation_source) {
+  std::string script = base::StringPrintf(
+      R"(
+      (async () => {
+        if (!chrome.runtime || !chrome.runtime.sendMessage) {
+          return 'no_runtime';
+        }
+        return new Promise((resolve) => {
+          chrome.runtime.sendMessage(
+              '%s', {type: 'glicPrivate.invoke', args: {
+                promptId: '%s',
+                invocationSource: '%s'
+              }}, (response) => {
+                if (chrome.runtime.lastError) {
+                  resolve(chrome.runtime.lastError.message);
+                } else {
+                  resolve('success');
+                }
+              });
+        });
+      })()
+      )",
+      extension_misc::kGlicExtensionId, prompt_id.c_str(),
+      invocation_source.c_str());
+
+  return content::EvalJs(web_contents, script);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+}  // namespace
+
 // Tests that gemini.google.com can successfully send a getState message to the
 // glic component extension over HTTPS, but example.com cannot.
 IN_PROC_BROWSER_TEST_F(GlicMessagingBrowserTest, ExternalConnectable) {
@@ -109,35 +157,30 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingBrowserTest, InvokeAPI) {
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
                             GURL("https://gemini.google.com/empty.html")));
 
-  std::string script = base::StringPrintf(
-      R"(
-      (async () => {
-        if (!chrome.runtime || !chrome.runtime.sendMessage) {
-          return 'no_runtime';
-        }
-        return new Promise((resolve) => {
-          chrome.runtime.sendMessage(
-              '%s', {type: 'glicPrivate.invoke', args: {
-                promptId: '1',
-                invocationSource: 'universal-cart'
-              }}, (response) => {
-                if (chrome.runtime.lastError) {
-                  resolve(chrome.runtime.lastError.message);
-                } else {
-                  resolve(response.statusCode);
-                }
-              });
-        });
-      })()
-      )",
-      extension_misc::kGlicExtensionId);
-
   content::EvalJsResult result =
-      content::EvalJs(GetActiveWebContents(), script);
+      ExecuteInvoke(GetActiveWebContents(), "1", "universal-cart");
 
   std::string result_string = result.ExtractString();
   EXPECT_EQ("Uncaught Error: local-glic-not-enabled", result_string);
 }
+
+IN_PROC_BROWSER_TEST_F(GlicMessagingAccessDisabledBrowserTest,
+                       InvokeAPIPromotionPage_AccessDisabled) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://gemini.google.com/empty.html")));
+
+  content::EvalJsResult result =
+      ExecuteInvoke(GetActiveWebContents(), "1", "promotion-page");
+
+  std::string result_string = result.ExtractString();
+  EXPECT_EQ("Uncaught Error: local-glic-not-enabled", result_string);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

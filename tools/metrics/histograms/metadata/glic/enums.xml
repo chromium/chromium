@@ -513,6 +513,7 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="Button in the toolbar"/>
   <int value="32" label="Indigo page action"/>
   <int value="33" label="Web Drag and Drop"/>
+  <int value="34" label="From the promotion page"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -848,6 +849,10 @@ chromium-metrics-reviews@google.com.
   <int value="134" label="Web Drag and Drop, attached, audio mode."/>
   <int value="135" label="Web Drag and Drop, detached, text mode."/>
   <int value="136" label="Web Drag and Drop, detached, audio mode."/>
+  <int value="137" label="From the promotion page, attached, text mode."/>
+  <int value="138" label="From the promotion page, attached, audio mode."/>
+  <int value="139" label="From the promotion page, detached, text mode."/>
+  <int value="140" label="From the promotion page, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->

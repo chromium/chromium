@@ -1703,6 +1703,8 @@ enum InvocationSource {
   [MinVersion=23] kIndigoPageAction = 32,
   // User dropped a file/image onto the GLIC panel.
   [MinVersion=24] kWebDragDrop = 33,
+  // From the promotion page.
+  [MinVersion=25] kPromotionPage = 34,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation)

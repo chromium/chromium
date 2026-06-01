@@ -3047,6 +3047,8 @@ export enum InvocationSource {
   INDIGO_PAGE_ACTION = 32,
   // User dropped a file/image onto the GLIC panel.
   WEB_DRAG_DROP = 33,
+  // From the promotion page.
+  PROMOTION_PAGE = 34,
 }
 
 ///////////////////////////////////////////////
@@ -3274,6 +3276,8 @@ export enum FeatureMode {
   EXPERIMENTAL_TRIGGERING = 3,
   // Client feature mode to initiate actuation for Universal Cart.
   UNIVERSAL_CART = 4,
+  // Client feature mode for Promotion Page.
+  PROMOTION_PAGE = 5,
 }
 
 
