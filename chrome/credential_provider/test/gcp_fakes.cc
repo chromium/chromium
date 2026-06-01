@@ -220,7 +220,6 @@ HRESULT FakeOSUserManager::AddUser(const wchar_t* username,
                                    const wchar_t* domain,
                                    BSTR* sid,
                                    DWORD* error) {
-  USES_CONVERSION;
 
   DCHECK(sid);
 
@@ -241,7 +240,7 @@ HRESULT FakeOSUserManager::AddUser(const wchar_t* username,
 
   if (auto it = username_to_info_.find(username);
       it != username_to_info_.end()) {
-    *sid = ::SysAllocString(W2COLE(it->second.sid.c_str()));
+    *sid = ::SysAllocString(it->second.sid.c_str());
     return HRESULT_FROM_WIN32(NERR_UserExists);
   }
 
@@ -259,7 +258,7 @@ HRESULT FakeOSUserManager::AddUser(const wchar_t* username,
     return HRESULT_FROM_WIN32(NERR_ProgNeedsExtraMem);
   }
 
-  *sid = ::SysAllocString(W2COLE(sidstr));
+  *sid = ::SysAllocString(sidstr);
   username_to_info_.emplace(
       username, UserInfo(domain, password, fullname, comment, sidstr));
   ::LocalFree(sidstr);
@@ -554,20 +553,19 @@ HRESULT FakeOSUserManager::CreateTestOSUser(const std::wstring& username,
   }
 
   if (!gaia_id.empty()) {
-    hr = SetUserProperty(OLE2CW(*sid), kUserId,
-                         base::UTF8ToWide(gaia_id.ToString()));
+    hr = SetUserProperty(*sid, kUserId, base::UTF8ToWide(gaia_id.ToString()));
     if (FAILED(hr)) {
       return hr;
     }
 
-    hr = SetUserProperty(OLE2CW(*sid), kUserTokenHandle, L"token_handle");
+    hr = SetUserProperty(*sid, kUserTokenHandle, L"token_handle");
     if (FAILED(hr)) {
       return hr;
     }
   }
 
   if (!email.empty()) {
-    hr = SetUserProperty(OLE2CW(*sid), kUserEmail, email);
+    hr = SetUserProperty(*sid, kUserEmail, email);
     if (FAILED(hr)) {
       return hr;
     }
