@@ -69,7 +69,13 @@ enum class ActivityType {
   //   https://developer.android.com/reference/androidx/browser/auth/AuthTabIntent
   kAuthTab,
 
-  kMaxValue = kAuthTab,
+  // Chrome is running as DevTools.
+  //
+  // See:
+  //   - https://goo.gle/chromium-devtools
+  kDevTools,
+
+  kMaxValue = kDevTools,
 };
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.flags

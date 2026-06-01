@@ -41,6 +41,7 @@ CustomTabsVisibilityHistogram GetCustomTabsVisibleValue(
     case ActivityType::kCustomTab:
     case ActivityType::kTrustedWebActivity:
     case ActivityType::kAuthTab:
+    case ActivityType::kDevTools:
       return VISIBLE_CUSTOM_TAB;
     case ActivityType::kPreFirstTab:
       return NO_VISIBLE_TAB;

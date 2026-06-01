@@ -930,6 +930,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Webapp (not WebAPK)"/>
   <int value="5" label="Pre-First-Tab (Startup/Warmup)"/>
   <int value="6" label="Auth Tab"/>
+  <int value="7" label="DevTools"/>
 </enum>
 
 <enum name="ChromeStartupDelegateFailureType">

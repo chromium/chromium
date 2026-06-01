@@ -9,11 +9,15 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.browser.customtabs.CustomTabsIntent;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,6 +45,12 @@ public class DevToolsActivity extends BaseCustomTabActivity {
         intent.putExtra(DevToolsActivity.WEB_CONTENTS_KEY, webContents);
 
         context.startActivity(intent);
+    }
+
+    @Override
+    protected @Nullable BrowserServicesIntentDataProvider buildIntentDataProvider(
+            Intent intent, @CustomTabsIntent.ColorScheme int colorScheme) {
+        return new DevToolsIntentDataProvider(intent);
     }
 
     @Override
