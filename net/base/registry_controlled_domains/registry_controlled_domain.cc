@@ -61,7 +61,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "net/base/lookup_string_in_fixed_set.h"
-#include "net/base/net_module.h"
 #include "net/base/registry_controlled_domain_constants.h"
 #include "net/base/registry_controlled_domains/effective_tld_names-reversed-inc.cc"
 #include "net/base/url_util.h"

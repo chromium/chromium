@@ -119,14 +119,6 @@ if (is_linux || is_chromeos) {
   net_configs += [ "//build/config/linux:libresolv" ]
 }
 
-source_set("constants") {
-  sources = [
-    "base/registry_controlled_domain_constants.h",
-    "base/trace_constants.h",
-  ]
-  deps = [ "//base" ]
-}
-
 buildflag_header("cronet_buildflags") {
   header = "cronet_buildflags.h"
   header_dir = "net/base"
@@ -149,9 +141,9 @@ source_set("net_features") {
   deps = [
     ":buildflags",
     ":disk_cache_buildflags",
-    ":net_export_header",
     "//base",
     "//crypto:buildflags",
+    "//net/base:net_export_header",
   ]
 }
 
@@ -207,8 +199,6 @@ component("net") {
     "base/interval.h",
     "base/io_buffer.cc",
     "base/io_buffer.h",
-    "base/ip_address.cc",
-    "base/ip_address.h",
     "base/ip_address_util.cc",
     "base/ip_address_util.h",
     "base/ip_endpoint.cc",
@@ -227,8 +217,6 @@ component("net") {
     "base/load_timing_internal_info.h",
     "base/logging_network_change_observer.cc",
     "base/logging_network_change_observer.h",
-    "base/lookup_string_in_fixed_set.cc",
-    "base/lookup_string_in_fixed_set.h",
     "base/mime_sniffer.cc",
     "base/mime_sniffer.h",
     "base/mime_util.cc",
@@ -261,8 +249,6 @@ component("net") {
     "base/network_isolation_key.h",
     "base/network_isolation_partition.cc",
     "base/network_isolation_partition.h",
-    "base/parse_number.cc",
-    "base/parse_number.h",
     "base/pickle.h",
     "base/pickle_base_types.h",
     "base/pickle_traits.h",
@@ -288,8 +274,6 @@ component("net") {
     "base/rand_callback.h",
     "base/reconnect_notifier.cc",
     "base/reconnect_notifier.h",
-    "base/registry_controlled_domains/registry_controlled_domain.cc",
-    "base/registry_controlled_domains/registry_controlled_domain.h",
     "base/request_priority.cc",
     "base/request_priority.h",
     "base/scheduler/net_task_priority.cc",
@@ -305,8 +289,6 @@ component("net") {
     "base/scheme_host_port_matcher_result.h",
     "base/scheme_host_port_matcher_rule.cc",
     "base/scheme_host_port_matcher_rule.h",
-    "base/schemeful_site.cc",
-    "base/schemeful_site.h",
     "base/session_usage.h",
     "base/sockaddr_storage.cc",
     "base/sockaddr_storage.h",
@@ -331,8 +313,6 @@ component("net") {
     "base/url_search_params_view.h",
     "base/url_unescape_iterator.cc",
     "base/url_unescape_iterator.h",
-    "base/url_util.cc",
-    "base/url_util.h",
     "cert/asn1_util.cc",
     "cert/asn1_util.h",
     "cert/caching_cert_verifier.cc",
@@ -1237,10 +1217,10 @@ component("net") {
 
   public_deps = [
     ":disk_cache_buildflags",
-    ":net_export_header",
     ":net_features",
     ":net_public_deps",
     "//base",
+    "//net/base:net_export_header",
     "//net/dns",
     "//net/dns:dns_client",
     "//net/dns:host_resolver",
@@ -1932,12 +1912,6 @@ component("net") {
   }
 }
 
-# net_export.h has its own build target so that code (eg
-# net_nqe_proto) can use it without depending on the whole of //net.
-source_set("net_export_header") {
-  sources = [ "base/net_export.h" ]
-}
-
 # Private dependencies for the //net component and for any build targets (e.g.
 # source sets with circular dependencies with //net) that need to share the same
 # dependencies.
@@ -1956,13 +1930,13 @@ source_set("net_deps") {
   ]
 
   public_deps = [
-    ":constants",
     ":cronet_buildflags",
     ":isolation_info_proto",
-    ":net_export_header",
     ":net_features",
     ":preload_decoder",
     "//base",
+    "//net/base:constants",
+    "//net/base:net_export_header",
     "//net/base/registry_controlled_domains",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/zlib",
@@ -2039,6 +2013,7 @@ source_set("net_public_deps") {
     ":net_nqe_proto",
     "//base",
     "//crypto",
+    "//net/base:registry_controlled_domains",
     "//net/third_party/quiche",
     "//net/third_party/quiche:net_quic_test_tools_proto",
     "//net/third_party/uri_template",
@@ -2068,7 +2043,7 @@ proto_library("net_nqe_proto") {
   cc_include = "net/base/net_export.h"
   component_build_force_source_set = true
 
-  link_deps = [ ":net_export_header" ]
+  link_deps = [ "//net/base:net_export_header" ]
 
   defines = [ "NET_IMPLEMENTATION" ]
 
@@ -3303,7 +3278,7 @@ target(_test_target_type, "net_unittests") {
     "//components/network_time/time_tracker",
     "//crypto",
     "//crypto:test_support",
-    "//net:constants",
+    "//net/base:constants",
     "//net/base/registry_controlled_domains",
     "//net/base/registry_controlled_domains:lookup_strings_test_sets",
     "//net/base/registry_controlled_domains:registry_controlled_domains_test_dafsas",

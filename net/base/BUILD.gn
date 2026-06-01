@@ -16,3 +16,47 @@ if (is_android) {
     srcjar_deps = [ ":java_features_srcjar" ]
   }
 }
+
+source_set("constants") {
+  sources = [
+    "registry_controlled_domain_constants.h",
+    "trace_constants.h",
+  ]
+  deps = [ "//base" ]
+}
+
+# net_export.h has its own build target so that code (eg
+# net_nqe_proto) can use it without depending on the whole of //net.
+source_set("net_export_header") {
+  sources = [ "net_export.h" ]
+}
+
+# registry_controlled_domains has its own build target so that code
+# (eg ios's credential_provider_extension) can use it without depending on the
+# whole of //net.
+source_set("registry_controlled_domains") {
+  sources = [
+    "ip_address.cc",
+    "ip_address.h",
+    "lookup_string_in_fixed_set.cc",
+    "lookup_string_in_fixed_set.h",
+    "parse_number.cc",
+    "parse_number.h",
+    "registry_controlled_domains/registry_controlled_domain.cc",
+    "registry_controlled_domains/registry_controlled_domain.h",
+    "schemeful_site.cc",
+    "schemeful_site.h",
+    "url_util.cc",
+    "url_util.h",
+  ]
+  defines = [ "NET_IMPLEMENTATION" ]
+  public_deps = [
+    ":constants",
+    ":net_export_header",
+    "//net/base/registry_controlled_domains",
+  ]
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
