@@ -1103,6 +1103,21 @@ chromium-metrics-reviews@google.com.
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
+<histogram name="HeapProfiling.InProcess.SamplingIntervalVariance{Process}"
+    units="%" expires_after="2026-08-26">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    The ratio of the actual sampling interval in use to the requested sampling
+    interval, as a percentage. 100% means the actual interval matches the
+    requested interval. Values less than 100% mean the actual interval is
+    smaller (sampling is more frequent). Values greater than 100% mean the
+    actual interval is larger (sampling is less frequent). Emitted once per
+    snapshot in {Process}.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+</histogram>
+
 <histogram name="HeapProfiling.InProcess.TotalSampledMemory{Process}"
     units="MB" expires_after="2026-09-27">
   <owner>joenotcharles@google.com</owner>

@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -127,6 +128,7 @@ class HeapProfilerController {
                    scoped_refptr<StoppedFlag> stopped,
                    ProcessType process_type,
                    base::TimeTicks profiler_creation_time,
+                   base::ByteSize expected_sampling_interval,
                    base::OnceClosure on_first_snapshot_callback);
 
     // Creates params for a single snapshot.
@@ -135,6 +137,7 @@ class HeapProfilerController {
                    base::TimeTicks profiler_creation_time,
                    uint32_t process_probability_pct,
                    size_t process_index,
+                   base::ByteSize expected_sampling_interval,
                    base::OnceClosure on_first_snapshot_callback);
 
     ~SnapshotParams();
@@ -167,6 +170,9 @@ class HeapProfilerController {
     uint32_t process_probability_pct = 100;
     size_t process_index = 0;
 
+    // The expected sampling interval in bytes.
+    base::ByteSize expected_sampling_interval;
+
     // A callback to invoke for the first snapshot. Will be null for the
     // following snapshots. For testing.
     base::OnceClosure on_first_snapshot_callback;
@@ -197,10 +203,12 @@ class HeapProfilerController {
       ProcessType process_type,
       base::TimeDelta time_since_profiler_creation,
       uint32_t process_probability_pct,
-      size_t process_index);
+      size_t process_index,
+      base::ByteSize expected_sampling_interval);
 
   const ProcessType process_type_;
   bool profiling_enabled_;
+  base::ByteSize expected_sampling_rate_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Group name for the synthetic field trial, or nullopt for none.
   std::optional<std::string> synthetic_field_trial_group_;

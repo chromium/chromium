@@ -1037,6 +1037,31 @@ TEST_P(HeapProfilerControllerTest, EmptyProfile) {
   EXPECT_TRUE(sample_received_);
 }
 
+TEST_P(HeapProfilerControllerTest, SamplingIntervalVariance) {
+  ScopedCallbacks callbacks = CreateScopedCallbacks(
+      /*expect_take_snapshot=*/true, /*expect_sampled_profile=*/true);
+  StartHeapProfiling(
+      version_info::Channel::STABLE, ProfilerProcessType::kBrowser,
+      /*expect_enabled=*/true, callbacks.first_snapshot_callback(),
+      callbacks.collector_callback());
+
+  // At this point, the profiler is started. The requested sampling rate is
+  // kSamplingRate (1024). The actual sampling rate should also be 1024.
+  // We change the actual sampling rate to simulate another user changing it.
+  base::PoissonAllocationSampler::Get()->SetSamplingInterval(kSamplingRate * 2);
+
+  task_env().RunUntilQuit();
+
+  // The ratio should be (kSamplingRate * 2) / kSamplingRate = 2, which is 200%.
+  histogram_tester_.ExpectUniqueSample(
+      "HeapProfiling.InProcess.SamplingIntervalVariance.Browser", 200, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "HeapProfiling.InProcess.SamplingIntervalVariance", 200, 1);
+
+  // Restore the sampling interval so other tests aren't affected.
+  base::PoissonAllocationSampler::Get()->SetSamplingInterval(kSamplingRate);
+}
+
 // Test the feature on various channels in the browser process.
 constexpr FeatureTestParams kChannelConfigs[] = {
     // Disabled.
