@@ -319,7 +319,7 @@ enum class PresentedState {
   for (UIViewController* controller in self.bookmarkNavigationController
            .viewControllers) {
     BookmarksHomeViewController* bookmarksHomeViewController =
-        base::apple::ObjCCastStrict<BookmarksHomeViewController>(controller);
+        base::apple::ObjCCast<BookmarksHomeViewController>(controller);
     [bookmarksHomeViewController willDismiss];
   }
 
@@ -376,7 +376,7 @@ enum class PresentedState {
   for (UIViewController* controller in self.bookmarkNavigationController
            .viewControllers) {
     BookmarksHomeViewController* bookmarksHomeViewController =
-        base::apple::ObjCCastStrict<BookmarksHomeViewController>(controller);
+        base::apple::ObjCCast<BookmarksHomeViewController>(controller);
     [bookmarksHomeViewController shutdown];
   }
   // TODO(crbug.com/40617797): Make sure navigaton
@@ -789,7 +789,7 @@ enum class PresentedState {
   for (UIViewController* controller in self.bookmarkNavigationController
            .viewControllers) {
     BookmarksHomeViewController* bookmarksHomeViewController =
-        base::apple::ObjCCastStrict<BookmarksHomeViewController>(controller);
+        base::apple::ObjCCast<BookmarksHomeViewController>(controller);
     [bookmarksHomeViewController willDismissBySwipeDown];
   }
 }
@@ -816,7 +816,7 @@ enum class PresentedState {
                    toViewController:(UIViewController*)toVC {
   if (operation == UINavigationControllerOperationPop) {
     BookmarksHomeViewController* poppedHome =
-        base::apple::ObjCCastStrict<BookmarksHomeViewController>(fromVC);
+        base::apple::ObjCCast<BookmarksHomeViewController>(fromVC);
     // `shutdown` must wait for the next run of the main loop, so that
     // methods such as `textFieldDidEndEditing` have time to be run.
     dispatch_async(dispatch_get_main_queue(), ^{
