@@ -765,11 +765,12 @@ BASE_FEATURE(kVaapiIgnoreDriverChecks, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // NVIDIA VA-API drivers do not support Chromium and can sometimes cause
 // crashes, disable VA-API on NVIDIA GPUs by default. See crbug.com/1492880.
-// NVIDIA has committed to helping support hardware acceleration for ARM64
-// linux devices, so on those devices we should enable this by default.
+// NVIDIA has been considering possibly supporting for an improved driver for
+// hardware acceleration for ARM64 linux devices, so we have separated out the
+// feature flag on that architecture.
 BASE_FEATURE(kVaapiOnNvidiaGPUs,
 #if defined(ARCH_CPU_ARM64) && BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
