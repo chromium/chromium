@@ -134,9 +134,6 @@ class CORE_EXPORT DevToolsSession
       std::unique_ptr<protocol::Serializable> message) override;
   void SendProtocolNotification(
       std::unique_ptr<protocol::Serializable> message) override;
-  void FallThrough(int call_id,
-                   crdtp::span<uint8_t> method,
-                   crdtp::span<uint8_t> message) override;
 
   // v8_inspector::V8Inspector::Channel implementation.
   void sendResponse(

@@ -93,6 +93,9 @@ class CRDTP_EXPORT DispatchResponse {
 
 // This parser extracts only the known top-level fields from a CBOR encoded map;
 // method, id, sessionId, and params.
+using FallthroughCallback = std::function<
+    void(int call_id, span<uint8_t> method, span<uint8_t> message)>;
+
 class CRDTP_EXPORT Dispatchable {
  public:
   // This constructor parses the |serialized| message. If successful,
@@ -100,7 +103,8 @@ class CRDTP_EXPORT Dispatchable {
   // |Params()| can be used to access, the extracted contents. Otherwise,
   // |ok()| will yield |false|, and |DispatchError()| can be
   // used to send a response or notification to the client.
-  explicit Dispatchable(span<uint8_t> serialized);
+  Dispatchable(span<uint8_t> serialized,
+               FallthroughCallback fallthrough_callback);
 
   // The serialized message that we just parsed.
   span<uint8_t> Serialized() const { return serialized_; }
@@ -127,6 +131,13 @@ class CRDTP_EXPORT Dispatchable {
   // not parse into this; it only provides access to its raw contents here.
   span<uint8_t> Params() const { return params_; }
 
+  // Takes the fallthrough callback, if any.
+  FallthroughCallback TakeFallthroughCallback() {
+    FallthroughCallback result;
+    std::swap(result, fallthrough_callback_);
+    return result;
+  }
+
  private:
   bool MaybeParseProperty(cbor::CBORTokenizer* tokenizer);
   bool MaybeParseCallId(cbor::CBORTokenizer* tokenizer);
@@ -144,6 +155,7 @@ class CRDTP_EXPORT Dispatchable {
   bool params_seen_ = false;
   span<uint8_t> params_;
   span<uint8_t> session_id_;
+  FallthroughCallback fallthrough_callback_;
 };
 
 // =============================================================================
@@ -200,7 +212,8 @@ class CRDTP_EXPORT DomainDispatcher {
     Callback(std::unique_ptr<WeakPtr> backend_impl,
              int call_id,
              span<uint8_t> method,
-             span<uint8_t> message);
+             span<uint8_t> message,
+             FallthroughCallback fallthrough_callback);
 
     void sendIfActive(std::unique_ptr<Serializable> partialMessage,
                       const DispatchResponse& response);
@@ -214,20 +227,19 @@ class CRDTP_EXPORT DomainDispatcher {
     // storage for |method| is the binary of the running process.
     span<uint8_t> method_;
     std::vector<uint8_t> message_;
+    FallthroughCallback fallthrough_callback_;
   };
 
   explicit DomainDispatcher(FrontendChannel*);
   virtual ~DomainDispatcher();
 
   // Given a |command_name| without domain qualification, looks up the
-  // corresponding method. If the method is not found, returns nullptr.
-  // Otherwise, Returns a closure that will parse the provided
-  // Dispatchable.params() to a protocol object and execute the
-  // apprpropriate method. If the parsing fails it will issue an
-  // error response on the frontend channel, otherwise it will execute the
-  // command.
-  virtual std::function<void(const Dispatchable&)> Dispatch(
-      span<uint8_t> command_name) = 0;
+  // corresponding method and attempeds to parse and execute it.
+  // If the command is not found, returns false. Otherwise and possible
+  // result, whether a response or error, is send using underlying
+  // frontend_channel_.
+  virtual bool Dispatch(span<uint8_t> command_name,
+                        Dispatchable& dispatchable) = 0;
 
   // Sends a response to the client via the channel.
   void sendResponse(int call_id,
@@ -253,25 +265,6 @@ class CRDTP_EXPORT DomainDispatcher {
 // =============================================================================
 class CRDTP_EXPORT UberDispatcher {
  public:
-  // Return type for ::Dispatch.
-  class CRDTP_EXPORT DispatchResult {
-   public:
-    DispatchResult(bool method_found, std::function<void()> runnable);
-
-    // Indicates whether the method was found, that is, it could be dispatched
-    // to a backend registered with this dispatcher.
-    bool MethodFound() const { return method_found_; }
-
-    // Runs the dispatched result. This will send the appropriate error
-    // responses if the method wasn't found or if something went wrong during
-    // parameter parsing.
-    void Run();
-
-   private:
-    bool method_found_;
-    std::function<void()> runnable_;
-  };
-
   // |frontend_hannel| can't be nullptr.
   explicit UberDispatcher(FrontendChannel* frontend_channel);
   virtual ~UberDispatcher();
@@ -280,7 +273,9 @@ class CRDTP_EXPORT UberDispatcher {
   // handlers registered with this uber dispatcher. Also see |DispatchResult|.
   // |dispatchable.ok()| must hold - callers must check this separately and
   // deal with errors.
-  DispatchResult Dispatch(const Dispatchable& dispatchable) const;
+  void Dispatch(Dispatchable& dispatchable);
+
+  void SendMethodNotFound(int call_id, span<uint8_t> method);
 
   // Invoked from generated code for wiring domain backends; that is,
   // connecting domain handlers to an uber dispatcher.

@@ -163,10 +163,13 @@ base::HistogramBase::Sample32 GetCommandUmaId(std::string_view command_name) {
 void ChromeDevToolsSession::HandleCommand(
     base::span<const uint8_t> message,
     content::DevToolsManagerDelegate::NotHandledCallback callback) {
-  crdtp::Dispatchable dispatchable(crdtp::SpanFrom(message));
+  crdtp::Dispatchable dispatchable(
+      crdtp::SpanFrom(message),
+      [cb = std::move(callback)](int call_id, crdtp::span<uint8_t> method,
+                                 crdtp::span<uint8_t> message) {
+        cb.Run(message);
+      });
   DCHECK(dispatchable.ok());  // Checked by content::DevToolsSession.
-  crdtp::UberDispatcher::DispatchResult dispatched =
-      dispatcher_.Dispatch(dispatchable);
 
   auto command_uma_id = GetCommandUmaId(std::string_view(
       reinterpret_cast<const char*>(dispatchable.Method().data()),
@@ -177,12 +180,7 @@ void ChromeDevToolsSession::HandleCommand(
   base::UmaHistogramSparse("DevTools.CDPCommandFrom" + client_type,
                            command_uma_id);
 
-  if (!dispatched.MethodFound()) {
-    callback.Run(message);
-    return;
-  }
-  pending_commands_[dispatchable.CallId()] = std::move(callback);
-  dispatched.Run();
+  dispatcher_.Dispatch(dispatchable);
 }
 
 // The following methods handle responses or notifications coming from
@@ -190,7 +188,6 @@ void ChromeDevToolsSession::HandleCommand(
 void ChromeDevToolsSession::SendProtocolResponse(
     int call_id,
     std::unique_ptr<protocol::Serializable> message) {
-  pending_commands_.erase(call_id);
   client_channel_->DispatchProtocolMessageToClient(message->Serialize());
 }
 
@@ -200,11 +197,3 @@ void ChromeDevToolsSession::SendProtocolNotification(
 }
 
 void ChromeDevToolsSession::FlushProtocolNotifications() {}
-
-void ChromeDevToolsSession::FallThrough(int call_id,
-                                        crdtp::span<uint8_t> method,
-                                        crdtp::span<uint8_t> message) {
-  auto callback = std::move(pending_commands_[call_id]);
-  pending_commands_.erase(call_id);
-  callback.Run(message);
-}

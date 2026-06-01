@@ -50,9 +50,6 @@ class DummyFrontendChannel : public protocol::FrontendChannel {
       std::unique_ptr<protocol::Serializable> message) override {}
   void SendProtocolNotification(
       std::unique_ptr<protocol::Serializable> message) override {}
-  void FallThrough(int call_id,
-                   crdtp::span<uint8_t> method,
-                   crdtp::span<uint8_t> message) override {}
   void FlushProtocolNotifications() override {}
 };
 

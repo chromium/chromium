@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
@@ -45,12 +44,6 @@ class ChromeDevToolsSessionAndroid : public protocol::FrontendChannel {
   void SendProtocolNotification(
       std::unique_ptr<protocol::Serializable> message) override;
   void FlushProtocolNotifications() override;
-  void FallThrough(int call_id,
-                   crdtp::span<uint8_t> method,
-                   crdtp::span<uint8_t> message) override;
-
-  base::flat_map<int, content::DevToolsManagerDelegate::NotHandledCallback>
-      pending_commands_;
 
   protocol::UberDispatcher dispatcher_;
   std::unique_ptr<BrowserHandlerAndroid> browser_handler_;

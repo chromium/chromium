@@ -304,10 +304,11 @@ void DevToolsSession::DispatchProtocolCommandImpl(
     v8_session_->dispatchProtocolMessage(
         v8_inspector::StringView(data.data(), data.size()));
   } else {
-    crdtp::Dispatchable dispatchable(crdtp::SpanFrom(data));
+    crdtp::Dispatchable dispatchable(crdtp::SpanFrom(data),
+                                     /*fallthrough_callback=*/nullptr);
     // This message has already been checked by content::DevToolsSession.
     DCHECK(dispatchable.ok());
-    inspector_backend_dispatcher_->Dispatch(dispatchable).Run();
+    inspector_backend_dispatcher_->Dispatch(dispatchable);
   }
   agent_->client_->DebuggerTaskFinished();
 }
@@ -354,13 +355,6 @@ void DevToolsSession::SendProtocolResponse(
     int call_id,
     std::unique_ptr<protocol::Serializable> message) {
   SendProtocolResponse(call_id, message->Serialize());
-}
-
-void DevToolsSession::FallThrough(int call_id,
-                                  crdtp::span<uint8_t> method,
-                                  crdtp::span<uint8_t> message) {
-  // There's no other layer to handle the command.
-  NOTREACHED() << String::FromUtf8(crdtp::SpanFrom(method)).Utf8().data();
 }
 
 void DevToolsSession::sendResponse(

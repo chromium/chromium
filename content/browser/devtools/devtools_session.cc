@@ -332,7 +332,12 @@ void DevToolsSession::DispatchProtocolMessage(
     message = converted_cbor_message;
   }
   // At this point |message| is CBOR.
-  crdtp::Dispatchable dispatchable(crdtp::SpanFrom(message));
+  crdtp::Dispatchable dispatchable(
+      crdtp::SpanFrom(message),
+      [cb = base::BindRepeating(&DevToolsSession::FallThrough,
+                                weak_factory_.GetWeakPtr())](
+          int call_id, crdtp::span<uint8_t> method,
+          crdtp::span<uint8_t> message) { cb.Run(call_id, method, message); });
   if (!dispatchable.ok()) {
     DispatchProtocolMessageToClient(
         (dispatchable.HasCallId()
@@ -392,32 +397,36 @@ void DevToolsSession::DispatchProtocolMessageInternal(
 }
 
 void DevToolsSession::HandleCommand(base::span<const uint8_t> message) {
-  HandleCommandInternal(crdtp::Dispatchable(crdtp::SpanFrom(message)), message);
+  HandleCommandInternal(
+      crdtp::Dispatchable(
+          crdtp::SpanFrom(message),
+          [cb = base::BindRepeating(&DevToolsSession::FallThrough,
+                                    weak_factory_.GetWeakPtr())](
+              int call_id, crdtp::span<uint8_t> method,
+              crdtp::span<uint8_t> message) {
+            cb.Run(call_id, method, message);
+          }),
+      message);
 }
 
 void DevToolsSession::HandleCommandInternal(crdtp::Dispatchable dispatchable,
                                             base::span<const uint8_t> message) {
   DCHECK(dispatchable.ok());
-  crdtp::UberDispatcher::DispatchResult dispatched =
-      dispatcher_->Dispatch(dispatchable);
-  if (browser_only_ || dispatched.MethodFound()) {
-    TRACE_EVENT(
-        "devtools", "DevToolsSession::HandleCommand in Browser",
-        perfetto::Flow::ProcessScoped(dispatchable.CallId()), "method",
-        std::string(dispatchable.Method().begin(), dispatchable.Method().end()),
-        "call_id", dispatchable.CallId());
-    dispatched.Run();
-  } else {
-    FallThrough(dispatchable.CallId(), dispatchable.Method(),
-                crdtp::SpanFrom(message));
-  }
+  TRACE_EVENT(
+      "devtools", "DevToolsSession::HandleCommand in Browser",
+      perfetto::Flow::ProcessScoped(dispatchable.CallId()), "method",
+      std::string(dispatchable.Method().begin(), dispatchable.Method().end()),
+      "call_id", dispatchable.CallId());
+  dispatcher_->Dispatch(dispatchable);
 }
 
 void DevToolsSession::FallThrough(int call_id,
                                   crdtp::span<uint8_t> method,
                                   crdtp::span<uint8_t> message) {
-  // In browser-only mode, we should've handled everything in dispatcher.
-  DCHECK(!browser_only_);
+  if (browser_only_) {
+    dispatcher_->SendMethodNotFound(call_id, method);
+    return;
+  }
 
   if (waiting_for_response_.contains(call_id)) {
     DispatchProtocolMessageToClient(

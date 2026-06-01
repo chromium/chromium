@@ -89,7 +89,10 @@ DispatchResponse DispatchResponse::SessionNotFound(std::string message) {
 // =============================================================================
 // Dispatchable - a shallow parser for CBOR encoded DevTools messages
 // =============================================================================
-Dispatchable::Dispatchable(span<uint8_t> serialized) : serialized_(serialized) {
+Dispatchable::Dispatchable(span<uint8_t> serialized,
+                           FallthroughCallback fallthrough_callback)
+    : serialized_(serialized),
+      fallthrough_callback_(std::move(fallthrough_callback)) {
   Status s = cbor::CheckCBORMessage(serialized);
   if (!s.ok()) {
     status_ = {Error::MESSAGE_MUST_BE_AN_OBJECT, s.pos};
@@ -426,11 +429,13 @@ DomainDispatcher::Callback::Callback(
     std::unique_ptr<DomainDispatcher::WeakPtr> backend_impl,
     int call_id,
     span<uint8_t> method,
-    span<uint8_t> message)
+    span<uint8_t> message,
+    FallthroughCallback fallthrough_callback)
     : backend_impl_(std::move(backend_impl)),
       call_id_(call_id),
       method_(method),
-      message_(message.begin(), message.end()) {}
+      message_(message.begin(), message.end()),
+      fallthrough_callback_(std::move(fallthrough_callback)) {}
 
 void DomainDispatcher::Callback::sendIfActive(
     std::unique_ptr<Serializable> partialMessage,
@@ -445,8 +450,9 @@ void DomainDispatcher::Callback::sendIfActive(
 void DomainDispatcher::Callback::fallThroughIfActive() {
   if (!backend_impl_ || !backend_impl_->get())
     return;
-  backend_impl_->get()->channel()->FallThrough(call_id_, method_,
-                                               SpanFrom(message_));
+  // Fallthrough callback may be retaining session which outlives backend.
+  fallthrough_callback_(call_id_, method_, SpanFrom(message_));
+  fallthrough_callback_ = nullptr;
   backend_impl_ = nullptr;
 }
 
@@ -499,17 +505,6 @@ std::unique_ptr<DomainDispatcher::WeakPtr> DomainDispatcher::weakPtr() {
 // =============================================================================
 // UberDispatcher - dispatches between domains (backends).
 // =============================================================================
-UberDispatcher::DispatchResult::DispatchResult(bool method_found,
-                                               std::function<void()> runnable)
-    : method_found_(method_found), runnable_(runnable) {}
-
-void UberDispatcher::DispatchResult::Run() {
-  if (!runnable_)
-    return;
-  runnable_();
-  runnable_ = nullptr;
-}
-
 UberDispatcher::UberDispatcher(FrontendChannel* frontend_channel)
     : frontend_channel_(frontend_channel) {
   assert(frontend_channel);
@@ -526,36 +521,34 @@ size_t DotIdx(span<uint8_t> method) {
 }
 }  // namespace
 
-UberDispatcher::DispatchResult UberDispatcher::Dispatch(
-    const Dispatchable& dispatchable) const {
+void UberDispatcher::Dispatch(Dispatchable& dispatchable) {
   span<uint8_t> method = FindByFirst(redirects_, dispatchable.Method(),
                                      /*default_value=*/dispatchable.Method());
   size_t dot_idx = DotIdx(method);
   if (dot_idx != kNotFound) {
     span<uint8_t> domain = method.subspan(0, dot_idx);
     span<uint8_t> command = method.subspan(dot_idx + 1);
-    DomainDispatcher* dispatcher = FindByFirst(dispatchers_, domain);
-    if (dispatcher) {
-      std::function<void(const Dispatchable&)> dispatched =
-          dispatcher->Dispatch(command);
-      if (dispatched) {
-        return DispatchResult(
-            true, [dispatchable, dispatched = std::move(dispatched)]() {
-              dispatched(dispatchable);
-            });
+    if (DomainDispatcher* dispatcher = FindByFirst(dispatchers_, domain)) {
+      if (dispatcher->Dispatch(command, dispatchable)) {
+        return;
       }
     }
   }
-  return DispatchResult(false, [this, dispatchable]() {
-    frontend_channel_->SendProtocolResponse(
-        dispatchable.CallId(),
-        CreateErrorResponse(dispatchable.CallId(),
-                            DispatchResponse::MethodNotFound(
-                                "'" +
-                                std::string(dispatchable.Method().begin(),
-                                            dispatchable.Method().end()) +
-                                "' wasn't found")));
-  });
+  if (auto fallthrough = dispatchable.TakeFallthroughCallback()) {
+    fallthrough(dispatchable.CallId(), dispatchable.Method(),
+                dispatchable.Serialized());
+  } else {
+    SendMethodNotFound(dispatchable.CallId(), method);
+  }
+}
+
+void UberDispatcher::SendMethodNotFound(int call_id, span<uint8_t> method) {
+  frontend_channel_->SendProtocolResponse(
+      call_id,
+      CreateErrorResponse(call_id,
+                          DispatchResponse::MethodNotFound(
+                              "'" + std::string(method.begin(), method.end()) +
+                              "' wasn't found")));
 }
 
 template <typename T>

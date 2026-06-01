@@ -41,15 +41,10 @@ class ShellDevToolsSession : public FrontendChannel {
                             std::unique_ptr<Serializable> message) override;
   void SendProtocolNotification(std::unique_ptr<Serializable> message) override;
   void FlushProtocolNotifications() override;
-  void FallThrough(int call_id,
-                   crdtp::span<uint8_t> method,
-                   crdtp::span<uint8_t> message) override;
 
   const raw_ref<const BrowserContext> browser_context_;
   UberDispatcher dispatcher_;
   std::vector<std::unique_ptr<DomainHandler>> handlers_;
-  base::flat_map<int, content::DevToolsManagerDelegate::NotHandledCallback>
-      pending_commands_;
   raw_ptr<content::DevToolsAgentHostClientChannel> client_channel_;
 };
 

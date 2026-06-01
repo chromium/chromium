@@ -264,9 +264,10 @@ void AuctionV8DevToolsSession::DispatchProtocolCommand(
 
     v8_session_->dispatchProtocolMessage(cbor_message);
   } else {
-    crdtp::Dispatchable dispatchable(crdtp::span<uint8_t>(
-        cbor_message.characters8(), cbor_message.length()));
-    fallback_dispatcher_.Dispatch(dispatchable).Run();
+    crdtp::Dispatchable dispatchable(
+        crdtp::span<uint8_t>(cbor_message.characters8(), cbor_message.length()),
+        /*fallthrough_callback=*/nullptr);
+    fallback_dispatcher_.Dispatch(dispatchable);
   }
 }
 
@@ -315,13 +316,6 @@ void AuctionV8DevToolsSession::SendProtocolResponse(
 
 void AuctionV8DevToolsSession::SendProtocolNotification(
     std::unique_ptr<crdtp::Serializable> message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  NOTIMPLEMENTED();
-}
-
-void AuctionV8DevToolsSession::FallThrough(int call_id,
-                                           crdtp::span<uint8_t> method,
-                                           crdtp::span<uint8_t> message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   NOTIMPLEMENTED();
 }

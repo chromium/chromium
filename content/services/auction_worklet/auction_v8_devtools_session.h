@@ -110,9 +110,6 @@ class AuctionV8DevToolsSession : public blink::mojom::DevToolsSession,
       std::unique_ptr<crdtp::Serializable> message) override;
   void SendProtocolNotification(
       std::unique_ptr<crdtp::Serializable> message) override;
-  void FallThrough(int call_id,
-                   crdtp::span<uint8_t> method,
-                   crdtp::span<uint8_t> message) override;
   void FlushProtocolNotifications() override;
 
  private:

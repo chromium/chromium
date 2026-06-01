@@ -44,9 +44,9 @@ void UiDevToolsClient::Dispatch(const std::string& json) {
             crdtp::DispatchResponse::ParseError(status.ToASCIIString())));
     return;
   }
-  crdtp::Dispatchable dispatchable(crdtp::SpanFrom(cbor));
+  crdtp::Dispatchable dispatchable(crdtp::SpanFrom(cbor), nullptr);
   if (dispatchable.ok()) {
-    dispatcher_.Dispatch(dispatchable).Run();
+    dispatcher_.Dispatch(dispatchable);
     return;
   }
   if (dispatchable.HasCallId()) {
@@ -101,12 +101,6 @@ void UiDevToolsClient::SendProtocolNotification(
 }
 
 void UiDevToolsClient::FlushProtocolNotifications() {
-  NOTIMPLEMENTED();
-}
-
-void UiDevToolsClient::FallThrough(int call_id,
-                                   crdtp::span<uint8_t> method,
-                                   crdtp::span<uint8_t> message) {
   NOTIMPLEMENTED();
 }
 

@@ -206,9 +206,6 @@ class DevToolsSession : public protocol::FrontendChannel,
   void SendProtocolNotification(
       std::unique_ptr<protocol::Serializable> message) override;
   void FlushProtocolNotifications() override;
-  void FallThrough(int call_id,
-                   crdtp::span<uint8_t> method,
-                   crdtp::span<uint8_t> message) override;
 
   // content::DevToolsAgentHostClientChannel implementation.
   void DispatchProtocolMessageToClient(std::vector<uint8_t> message) override;
@@ -225,6 +222,10 @@ class DevToolsSession : public protocol::FrontendChannel,
   // DevToolsExternalAgentProxy implementation.
   void DispatchOnClientHost(base::span<const uint8_t> message) override;
   void ConnectionClosed() override;
+
+  void FallThrough(int call_id,
+                   crdtp::span<uint8_t> method,
+                   crdtp::span<uint8_t> message);
 
   static void DispatchProtocolResponseOrNotification(
       DevToolsAgentHostClient* client,
