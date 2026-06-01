@@ -591,7 +591,7 @@ class CONTENT_EXPORT NavigationRequest
 
   NavigationState state() const { return state_; }
 
-  FrameTreeNode* frame_tree_node() const { return frame_tree_node_; }
+  FrameTreeNode* frame_tree_node() const { return frame_tree_node_.get(); }
 
   bool is_synchronous_renderer_commit() const {
     return is_synchronous_renderer_commit_;
@@ -2591,10 +2591,10 @@ class CONTENT_EXPORT NavigationRequest
   // this protects against.
   void ValidateCommitOrigin(const url::Origin& origin_to_commit);
 
-  // Never null. The pointee node owns this navigation request instance.
-  // This field is not a raw_ptr because of incompatibilities with tracing
-  // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
-  RAW_PTR_EXCLUSION FrameTreeNode* const frame_tree_node_;
+  // Never null, and intended to outlive this NavigationRequest. Initially, this
+  // NavigationRequest instance is owned by this FrameTreeNode, until ownership
+  // is transferred to the committing RenderFrameHost.
+  raw_ptr<FrameTreeNode> const frame_tree_node_;
 
   // Returns true if navigation timeline UKMs should be recorded.
   // This is also used in `MaybeRecordTraceEventsAndHistograms()`, which should
