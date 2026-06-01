@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
@@ -134,8 +135,11 @@ WorkingSetTrimmerPolicyChromeOS::~WorkingSetTrimmerPolicyChromeOS() = default;
 // On MemoryPressure we will try to trim the working set of some renders if they
 // have been backgrounded for some period of time and have not been trimmed for
 // at least the backoff period.
-void WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure(
-    base::MemoryPressureLevel level) {
+void WorkingSetTrimmerPolicyChromeOS::OnReleaseMemory() {
+  if (memory_limit() >= base::kNoMemoryPressureThreshold) {
+    return;
+  }
+
   bool skip_trimming_due_to_suspend = false;
   if (disable_trim_while_suspended_) {
     base::TimeTicks now = base::TimeTicks::Now();
@@ -154,9 +158,6 @@ void WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure(
   // longer affect whether or not a tab has been invisible for long enough to be
   // eligible for trimming.
   if (skip_trimming_due_to_suspend) {
-    return;
-  }
-  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
 
@@ -179,10 +180,14 @@ void WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure(
   if (trim_arcvm_on_memory_pressure_) {
     if (!last_arcvm_trim_ || (base::TimeTicks::Now() - *last_arcvm_trim_ >
                               params_.arcvm_trim_backoff_time)) {
-      TrimArcVmProcesses(level);
+      const bool is_critical =
+          memory_limit() <= base::kCriticalMemoryPressureThreshold;
+      TrimArcVmProcesses(is_critical);
     }
   }
 }
+
+void WorkingSetTrimmerPolicyChromeOS::OnUpdateMemoryLimit() {}
 
 void WorkingSetTrimmerPolicyChromeOS::set_arcvm_delegate_for_testing(
     ArcVmDelegate* delegate) {
@@ -366,18 +371,16 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcProcesses() {
   }
 }
 
-void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcesses(
-    base::MemoryPressureLevel level) {
+void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcesses(bool is_critical) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_NE(level, base::MEMORY_PRESSURE_LEVEL_NONE);
   // TODO(crbug.com/40755583): Let the policy own WorkingSetTrimmerPolicyArcVm
   // instance once performance_manager code is migrated to UI thread.
   auto* arcvm_delegate = g_arcvm_delegate_for_testing
                              ? g_arcvm_delegate_for_testing
                              : WorkingSetTrimmerPolicyArcVm::Get();
 
-  const bool force_reclaim = params_.trim_arcvm_on_critical_pressure &&
-                             (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  const bool force_reclaim =
+      params_.trim_arcvm_on_critical_pressure && is_critical;
   const mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot =
       params_.trim_arcvm_on_first_memory_pressure_after_arcvm_boot
           ? mechanism::ArcVmReclaimType::kReclaimGuestPageCaches
@@ -479,7 +482,7 @@ void WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimEnded(
 }
 
 void WorkingSetTrimmerPolicyChromeOS::OnTakenFromGraph(Graph* graph) {
-  memory_pressure_listener_registration_.reset();
+  memory_consumer_registration_.reset();
   WorkingSetTrimmerPolicy::OnTakenFromGraph(graph);
 }
 
@@ -507,9 +510,24 @@ void WorkingSetTrimmerPolicyChromeOS::OnPassedToGraph(Graph* graph) {
   // We wait to register the memory pressure listener so we're on the
   // right sequence.
   params_ = features::TrimOnMemoryPressureParams::GetParams();
-  memory_pressure_listener_registration_.emplace(
-      FROM_HERE,
-      base::MemoryPressureListenerTag::kWorkingSetTrimmerPolicyChromeOS, this);
+
+  constexpr base::MemoryConsumerTraits traits(
+      // Trimming renderers and ARCVM can save hundreds of MBs.
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
+      // Requires walking the graph to find eligible nodes.
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      // Trimming working sets does not lose user state.
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      // Trimming processes is an asynchronous OS/VM operation.
+      base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+      // Does not maintain a lasting limit; requires repeated calls if pressure
+      // persists.
+      base::MemoryConsumerTraits::IsStateful::kNo,
+      // Frees memory in external processes, not in the Browser process.
+      base::MemoryConsumerTraits::InProcess::kNo);
+
+  memory_consumer_registration_.emplace("WorkingSetTrimmerPolicyChromeOS",
+                                        traits, this);
 
   WorkingSetTrimmerPolicy::OnPassedToGraph(graph);
 }

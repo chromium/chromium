@@ -10,8 +10,8 @@
 #include <optional>
 #include <utility>
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
@@ -38,7 +38,7 @@ class WorkingSetTrimmerPolicyChromeOSTest;
 // pressure.
 class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
                                         chromeos::PowerManagerClient::Observer,
-                                        public base::MemoryPressureListener {
+                                        public base::MemoryConsumer {
  public:
   // A delegate interface for checking ARCVM status. This interface allows us 1)
   // to test WorkingSetTrimmerPolicyChromeOS more easily, and 2) to have all the
@@ -104,7 +104,9 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
  protected:
   friend class WorkingSetTrimmerPolicyChromeOSTest;
 
-  void OnMemoryPressure(base::MemoryPressureLevel level) override;
+  // MemoryConsumer implementation:
+  void OnReleaseMemory() override;
+  void OnUpdateMemoryLimit() override;
   virtual mechanism::WorkingSetTrimmerChromeOS* GetTrimmer();
 
   void set_trim_on_freeze(bool enabled) { trim_on_freeze_ = enabled; }
@@ -127,7 +129,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
 
   // TrimArcVmProcesses will ask the delegate if it is safe to reclaim memory
   // from ARCVM, and do that when it is. These are virtual for testing.
-  virtual void TrimArcVmProcesses(base::MemoryPressureLevel level);
+  virtual void TrimArcVmProcesses(bool is_critical);
   virtual void OnTrimArcVmProcesses(mechanism::ArcVmReclaimType reclaim_type,
                                     bool is_first_trim_post_boot);
   virtual void OnArcVmTrimStarting();
@@ -153,8 +155,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
   std::optional<base::TimeTicks> last_arcvm_trim_;
   std::optional<base::TimeTicks> last_arcvm_trim_success_;
 
-  std::optional<base::MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
 
  private:
   bool trim_on_freeze_ = false;
@@ -164,7 +165,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
   bool disable_trim_while_suspended_ = false;
   // The status of suspend is updated by PowerManagerClient::Observer which runs
   // on the main thread, and is referenced by
-  // WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure() which runs on the PM
+  // WorkingSetTrimmerPolicyChromeOS::OnReleaseMemory() which runs on the PM
   // sequence.
   base::Lock mutex_;
   bool is_system_suspended_ GUARDED_BY(mutex_) = false;
