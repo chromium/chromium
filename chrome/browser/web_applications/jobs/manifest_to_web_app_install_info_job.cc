@@ -813,10 +813,15 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
     install_info().display_mode = manifest_->display;
   }
   for (const auto& override_item : manifest_->display_override) {
-    install_info().display_override.push_back(
-        override_item.display() == DisplayMode::kUnframed
-            ? DisplayOverride::CreateUnframed(override_item.url_patterns())
-            : DisplayOverride::Create(override_item.display()));
+    if (override_item.display() == DisplayMode::kUnframed) {
+      if (base::FeatureList::IsEnabled(blink::features::kUnframedIwa)) {
+        install_info().display_override.push_back(
+            DisplayOverride::CreateUnframed(override_item.url_patterns()));
+      }
+    } else {
+      install_info().display_override.push_back(
+          DisplayOverride::Create(override_item.display()));
+    }
   }
 
   const std::vector<blink::Manifest::ImageResource>& icons =

@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -32,6 +35,7 @@
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/liburlpattern/part.h"
 
@@ -100,6 +104,7 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
  public:
   ManifestUpdateTest()
       : IsolatedWebAppTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kUnframedIwa);
   }
   ~ManifestUpdateTest() override = default;
 
@@ -162,6 +167,7 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
     ASSERT_THAT(TestIwa(), HasVersion("2.0.0"));
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   FakeIwaRuntimeDataProvider data_provider_;
   std::optional<base::AutoReset<ChromeIwaRuntimeDataProvider*>> resetter_;
 };
