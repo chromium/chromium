@@ -244,6 +244,34 @@ TEST(AutofillAiPersonalContextConverters, ConvertShipment) {
   ExpectAttributeValue(result, kShipmentOrderIds, u"ORD-001, ORD-002");
 }
 
+TEST(AutofillAiPersonalContextConverters,
+     AutofillEntityTypeToPersonalContextEntityType) {
+  using personal_context::proto::EntityType;
+  using enum EntityTypeName;
+
+  EXPECT_EQ(AutofillEntityTypeToPersonalContextEntityType(
+                autofill::EntityType(kOrder)),
+            EntityType::ORDER);
+  EXPECT_EQ(AutofillEntityTypeToPersonalContextEntityType(
+                autofill::EntityType(kShipment)),
+            EntityType::SHIPMENT);
+  EXPECT_EQ(AutofillEntityTypeToPersonalContextEntityType(
+                autofill::EntityType(kDriversLicense)),
+            EntityType::DRIVERS_LICENSE);
+  EXPECT_EQ(AutofillEntityTypeToPersonalContextEntityType(
+                autofill::EntityType(kPassport)),
+            EntityType::PASSPORT);
+  EXPECT_EQ(AutofillEntityTypeToPersonalContextEntityType(
+                autofill::EntityType(kNationalIdCard)),
+            EntityType::NATIONAL_ID);
+  EXPECT_EQ(AutofillEntityTypeToPersonalContextEntityType(
+                autofill::EntityType(kFlightReservation)),
+            EntityType::FLIGHT_RESERVATION);
+  EXPECT_EQ(AutofillEntityTypeToPersonalContextEntityType(
+                autofill::EntityType(kVehicle)),
+            EntityType::VEHICLE);
+}
+
 }  // namespace
 
 }  // namespace autofill

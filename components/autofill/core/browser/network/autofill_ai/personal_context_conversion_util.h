@@ -7,13 +7,16 @@
 
 #include <optional>
 
-namespace personal_context::proto {
-class Entity;
-}  // namespace personal_context::proto
+#include "components/personal_context/proto/features/common_data.pb.h"
 
 namespace autofill {
 
 class EntityInstance;
+class EntityType;
+
+// Converts an Autofill AI EntityType to a Personal Context proto EntityType.
+personal_context::proto::EntityType
+AutofillEntityTypeToPersonalContextEntityType(EntityType type);
 
 // Converts a generic `personal_context::proto::Entity` to an `EntityInstance`.
 std::optional<EntityInstance> PersonalContextEntityToEntityInstance(

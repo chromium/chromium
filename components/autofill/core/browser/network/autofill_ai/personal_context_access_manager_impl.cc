@@ -7,38 +7,12 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/ambient_autofill.pb.h"
 
 namespace autofill {
-
-namespace {
-
-personal_context::proto::EntityType
-AutofillEntityTypeToPersonalContextEntityType(EntityType type) {
-  switch (type.name()) {
-    case EntityTypeName::kOrder:
-      return personal_context::proto::EntityType::ORDER;
-    case EntityTypeName::kShipment:
-      return personal_context::proto::EntityType::SHIPMENT;
-    case EntityTypeName::kDriversLicense:
-      return personal_context::proto::EntityType::DRIVERS_LICENSE;
-    case EntityTypeName::kPassport:
-      return personal_context::proto::EntityType::PASSPORT;
-    case EntityTypeName::kNationalIdCard:
-      return personal_context::proto::EntityType::NATIONAL_ID;
-    case EntityTypeName::kFlightReservation:
-      return personal_context::proto::EntityType::FLIGHT_RESERVATION;
-    case EntityTypeName::kVehicle:
-      return personal_context::proto::EntityType::VEHICLE;
-    case EntityTypeName::kKnownTravelerNumber:
-    case EntityTypeName::kRedressNumber:
-      return personal_context::proto::EntityType::UNSPECIFIED;
-  }
-}
-
-}  // namespace
 
 PersonalContextAccessManagerImpl::PersonalContextAccessManagerImpl(
     personal_context::PersonalContextService* personal_context_service,

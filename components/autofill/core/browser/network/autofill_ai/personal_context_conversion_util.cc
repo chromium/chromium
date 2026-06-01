@@ -258,4 +258,28 @@ std::optional<EntityInstance> PersonalContextEntityToEntityInstance(
   }
 }
 
+personal_context::proto::EntityType
+AutofillEntityTypeToPersonalContextEntityType(EntityType type) {
+  switch (type.name()) {
+    case EntityTypeName::kOrder:
+      return personal_context::proto::EntityType::ORDER;
+    case EntityTypeName::kShipment:
+      return personal_context::proto::EntityType::SHIPMENT;
+    case EntityTypeName::kDriversLicense:
+      return personal_context::proto::EntityType::DRIVERS_LICENSE;
+    case EntityTypeName::kPassport:
+      return personal_context::proto::EntityType::PASSPORT;
+    case EntityTypeName::kNationalIdCard:
+      return personal_context::proto::EntityType::NATIONAL_ID;
+    case EntityTypeName::kFlightReservation:
+      return personal_context::proto::EntityType::FLIGHT_RESERVATION;
+    case EntityTypeName::kVehicle:
+      return personal_context::proto::EntityType::VEHICLE;
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
+      // These entities are not supported by personal context.
+      return personal_context::proto::EntityType::UNSPECIFIED;
+  }
+}
+
 }  // namespace autofill
