@@ -42,7 +42,6 @@ const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
                           mojom::XRSessionFeature::LIGHT_ESTIMATION,
                           mojom::XRSessionFeature::ANCHORS,
                           mojom::XRSessionFeature::DEPTH,
-                          mojom::XRSessionFeature::IMAGE_TRACKING,
                           mojom::XRSessionFeature::HIT_TEST}};
 
   return *kSupportedFeatures;
@@ -93,9 +92,11 @@ ArCoreDevice::ArCoreDevice(
     device_features.emplace_back(mojom::XRSessionFeature::WEBGPU);
   }
 
-  // Only support Front Facing mode if the WebXR incubations flag is enabled.
+  // Only support Front Facing mode and Image Tracking if the WebXR incubations
+  // flag is enabled.
   if (base::FeatureList::IsEnabled(features::kWebXRIncubations)) {
     device_features.emplace_back(mojom::XRSessionFeature::FRONT_FACING);
+    device_features.emplace_back(mojom::XRSessionFeature::IMAGE_TRACKING);
   }
 
   SetSupportedFeatures(device_features);
