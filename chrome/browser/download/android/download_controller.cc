@@ -195,6 +195,20 @@ void LogAppVerificationPromptToPrefs(download::DownloadItem* item) {
   update->Append(base::TimeToValue(base::Time::Now()));
 }
 
+// LINT.IfChange(isEnterpriseBlockDownloadDangerType)
+bool isEnterpriseBlockDownloadDangerType(
+    download::DownloadDangerType danger_type) {
+  return danger_type == download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE ||
+         danger_type ==
+             download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED ||
+         danger_type ==
+             download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK ||
+         danger_type == download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED ||
+         danger_type == download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE ||
+         danger_type == download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE;
+}
+// LINT.ThenChange(//components/browser_ui/util/android/java/src/org/chromium/components/browser_ui/util/DownloadUtils.java:isBlockedSensitiveDownload)
+
 }  // namespace
 
 static void JNI_DownloadController_CancelDownload(
@@ -401,9 +415,8 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
     if (item->GetDangerType() ==
         download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
       OnSensitiveDownload(item);
-    } else if (item->GetDangerType() ==
-               download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
-      // The download contains sensitive content and should be blocked, do
+    } else if (isEnterpriseBlockDownloadDangerType(item->GetDangerType())) {
+      // The download is deemed blocked by enterprise policy, do
       // nothing here so the download will fail the completion check.
     } else if (ShouldShowSafeBrowsingAndroidDownloadWarnings()) {
       ShowDangerousDownloadWarning(model);

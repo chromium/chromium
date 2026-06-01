@@ -301,13 +301,25 @@ public class DownloadMessageUiControllerTest {
     @Feature({"Download"})
     public void testSingleOfflineItemBlockedSensitive() {
         enableShowBlockedSensitiveDownload(true);
-        OfflineItem item = createOfflineItem(OfflineItemState.FAILED);
-        item.failState = FailState.FILE_BLOCKED;
-        item.isDangerous = true;
-        item.dangerType = DownloadDangerType.SENSITIVE_CONTENT_BLOCK;
-        mTestController.onItemUpdated(item);
-        mTestController.verify(MESSAGE_DOWNLOAD_FAILED, DESCRIPTION_BLOCKED);
-        mTestController.verifyIgnoreAction(true);
+        int[] enterpriseBlockedTypes = {
+            DownloadDangerType.SENSITIVE_CONTENT_BLOCK,
+            DownloadDangerType.BLOCKED_PASSWORD_PROTECTED,
+            DownloadDangerType.BLOCKED_TOO_LARGE,
+            DownloadDangerType.BLOCKED_SCAN_FAILED,
+            DownloadDangerType.FORCE_SAVE_TO_GDRIVE,
+            DownloadDangerType.FORCE_SAVE_TO_ONEDRIVE
+        };
+        for (int dangerType : enterpriseBlockedTypes) {
+            OfflineItem item = createOfflineItem(OfflineItemState.FAILED);
+            item.failState = FailState.FILE_BLOCKED;
+            item.isDangerous = true;
+            item.dangerType = dangerType;
+            mTestController.onItemUpdated(item);
+            mTestController.verify(MESSAGE_DOWNLOAD_FAILED, DESCRIPTION_BLOCKED);
+            mTestController.verifyIgnoreAction(true);
+            mTestController.closePreviousMessage();
+            mTestController.onItemRemoved(item.id);
+        }
     }
 
     @Test
@@ -315,12 +327,22 @@ public class DownloadMessageUiControllerTest {
     @Feature({"Download"})
     public void testSingleOfflineItemBlockedSensitiveWithFeatureDisabled() {
         enableShowBlockedSensitiveDownload(false);
-        OfflineItem item = createOfflineItem(OfflineItemState.FAILED);
-        item.failState = FailState.FILE_BLOCKED;
-        item.isDangerous = true;
-        item.dangerType = DownloadDangerType.SENSITIVE_CONTENT_BLOCK;
-        mTestController.onItemUpdated(item);
-        mTestController.verifyMessageGone();
+        int[] enterpriseBlockedTypes = {
+            DownloadDangerType.SENSITIVE_CONTENT_BLOCK,
+            DownloadDangerType.BLOCKED_PASSWORD_PROTECTED,
+            DownloadDangerType.BLOCKED_TOO_LARGE,
+            DownloadDangerType.BLOCKED_SCAN_FAILED,
+            DownloadDangerType.FORCE_SAVE_TO_GDRIVE,
+            DownloadDangerType.FORCE_SAVE_TO_ONEDRIVE
+        };
+        for (int dangerType : enterpriseBlockedTypes) {
+            OfflineItem item = createOfflineItem(OfflineItemState.FAILED);
+            item.failState = FailState.FILE_BLOCKED;
+            item.isDangerous = true;
+            item.dangerType = dangerType;
+            mTestController.onItemUpdated(item);
+            mTestController.verifyMessageGone();
+        }
     }
 
     @Test
