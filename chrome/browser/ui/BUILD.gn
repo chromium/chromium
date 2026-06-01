@@ -3456,8 +3456,6 @@ static_library("ui") {
   }
 
   if (toolkit_views) {
-    deps += [ "//chrome/browser/accessibility" ]
-
     sources += [
       "bubble_anchor_util.h",
       "toolbar_controller_util.cc",
@@ -4673,18 +4671,6 @@ static_library("ui") {
 
     sources += get_target_outputs(":webui_name_variants")
 
-    if (is_chromeos) {
-      sources += [
-        "views/web_apps/isolated_web_apps/multi_capture_notification_details_view.cc",
-        "views/web_apps/isolated_web_apps/multi_capture_notification_details_view.h",
-      ]
-    }
-
-    if (is_mac) {
-      sources +=
-          [ "views/user_education/browser_help_bubble_event_relay_mac.mm" ]
-    }
-
     public_deps += [
       # TODO(crbug.com/419210492): Remove this dependency with
       # chrome/browser/ui/sharing_hub and chrome/browser/ui/views/sharing_hub/
@@ -4698,6 +4684,7 @@ static_library("ui") {
       "//base",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:resources",
+      "//chrome/browser/accessibility",
       "//chrome/browser/actor/resources:browser_resources",
       "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/apps:icon_standardizer",
@@ -4711,6 +4698,7 @@ static_library("ui") {
       "//chrome/browser/preloading/prerender",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/sharing/click_to_call",
+      "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui/actions",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/animation",
@@ -4768,15 +4756,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/tabs/vertical:impl",
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/views/web_dialogs",
-      "//components/browser_apis/tab_strip/aggregation",
-
-      # TODO(crbug.com/432061436) Remove this dependency when the following
-      # headers get
-      # componentized:
-      # c/b/ui/browser.h, browser_finder.h, browser_window.h.
-      # c/b/ui/passwords/passwords_model_delegate.h, passwords_client_ui_delegate.h.
-      "//chrome/browser/actor/ui",
-      "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui/views/zoom",
       "//chrome/browser/ui/waap:waap_utils",
       "//chrome/browser/ui/webauthn:impl",
@@ -4785,6 +4764,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/content_annotator_internals",
       "//chrome/browser/ui/webui/side_panel/customize_chrome",
       "//chrome/browser/ui/window_name_prompt",
+      "//components/browser_apis/tab_strip/aggregation",
       "//components/collaboration/public",
       "//components/commerce/core:metrics",
       "//components/commerce/core:pref_names",
@@ -4830,6 +4810,13 @@ static_library("ui") {
       "//ui/lottie",
       "//ui/views:buildflags",
     ]
+
+    # TODO(crbug.com/432061436) Remove this dependency when the following
+    # headers get
+    # componentized:
+    # c/b/ui/browser.h, browser_finder.h, browser_window.h.
+    # c/b/ui/passwords/passwords_model_delegate.h, passwords_client_ui_delegate.h.
+    deps += [ "//chrome/browser/actor/ui" ]
 
     # This dependency is needed because translate_bubble_view.h declares
     # free-functions in translate_bubble_test_utils.h as `friend`.
@@ -4983,6 +4970,7 @@ static_library("ui") {
         "views/permissions/permission_prompt_notifications_mac.h",
         "views/policy/enterprise_startup_dialog_mac_util.h",
         "views/policy/enterprise_startup_dialog_mac_util.mm",
+        "views/user_education/browser_help_bubble_event_relay_mac.mm",
         "views/webauthn/authenticator_touch_id_view.cc",
         "views/webauthn/authenticator_touch_id_view.h",
         "views/webauthn/mac_authentication_view.h",
@@ -5031,7 +5019,12 @@ static_library("ui") {
       }
     }
 
-    if (!is_chromeos) {
+    if (is_chromeos) {
+      sources += [
+        "views/web_apps/isolated_web_apps/multi_capture_notification_details_view.cc",
+        "views/web_apps/isolated_web_apps/multi_capture_notification_details_view.h",
+      ]
+    } else {
       sources += [
         "idle_dialog.h",
         "views/accessibility/accessibility_focus_highlight.cc",
