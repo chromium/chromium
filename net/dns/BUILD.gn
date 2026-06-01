@@ -587,9 +587,6 @@ fuzzer_test("net_dns_hosts_parse_fuzzer") {
     "//net",
     "//net:net_fuzzer_test_support",
   ]
-  if (is_android) {
-    deps += [ "//third_party/icu:icu_assets" ]
-  }
   dict = "//net/data/fuzzer_dictionaries/net_dns_hosts_parse_fuzzer.dict"
 }
 
@@ -603,9 +600,6 @@ fuzzer_test("net_dns_host_resolver_cache_fuzzer") {
     "//testing/libfuzzer/proto:json_proto_converter",
     "//third_party/libprotobuf-mutator",
   ]
-  if (is_android) {
-    deps += [ "//third_party/icu:icu_assets" ]
-  }
 
   # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
   is_fuzztest_compatible = false
@@ -618,9 +612,6 @@ fuzzer_test("net_dns_https_record_rdata_fuzzer") {
     "//net",
     "//net:net_fuzzer_test_support",
   ]
-  if (is_android) {
-    deps += [ "//third_party/icu:icu_assets" ]
-  }
   dict = "//net/data/fuzzer_dictionaries/net_dns_record_fuzzer.dict"
 }
 
@@ -631,9 +622,6 @@ fuzzer_test("net_dns_nsswitch_reader_fuzzer") {
     "//net",
     "//net:net_fuzzer_test_support",
   ]
-  if (is_android) {
-    deps += [ "//third_party/icu:icu_assets" ]
-  }
   dict = "//net/data/fuzzer_dictionaries/net_dns_nsswitch_reader_fuzzer.dict"
 }
 
@@ -645,9 +633,6 @@ fuzzer_test("net_dns_record_fuzzer") {
     "//net:net_fuzzer_test_support",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
-  if (is_android) {
-    deps += [ "//third_party/icu:icu_assets" ]
-  }
   dict = "//net/data/fuzzer_dictionaries/net_dns_record_fuzzer.dict"
 }
 
@@ -658,9 +643,6 @@ fuzzer_test("net_dns_query_parse_fuzzer") {
     "//net",
     "//net:net_fuzzer_test_support",
   ]
-  if (is_android) {
-    deps += [ "//third_party/icu:icu_assets" ]
-  }
   dict = "//net/data/fuzzer_dictionaries/net_dns_record_fuzzer.dict"
 }
 
@@ -671,9 +653,6 @@ fuzzer_test("net_dns_response_fuzzer") {
     "//net",
     "//net:net_fuzzer_test_support",
   ]
-  if (is_android) {
-    deps += [ "//third_party/icu:icu_assets" ]
-  }
   dict = "//net/data/fuzzer_dictionaries/net_dns_record_fuzzer.dict"
 }
 
@@ -685,9 +664,6 @@ fuzzer_test("net_host_resolver_manager_fuzzer") {
     "//net:net_fuzzer_test_support",
     "//net:test_support",
   ]
-  if (is_android) {
-    deps += [ "//third_party/icu:icu_assets" ]
-  }
   dict = "//net/data/fuzzer_dictionaries/net_host_resolver_manager_fuzzer.dict"
   libfuzzer_options = [ "max_len=4096" ]
 }
