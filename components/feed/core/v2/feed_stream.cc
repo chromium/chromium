@@ -1092,8 +1092,6 @@ RequestMetadata FeedStream::GetCommonRequestMetadata(
       result.session_id = session_id;
     }
   }
-  result.followed_from_web_page_menu_count =
-      metadata_.followed_from_web_page_menu_count();
 
   DCHECK(result.session_id.empty() || result.client_instance_id.empty());
   return result;

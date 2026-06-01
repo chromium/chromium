@@ -123,13 +123,6 @@ class FeedStore {
       feedstore::Metadata old_metadata,
       base::OnceCallback<void(feedstore::Metadata)> callback);
   void ReadStartupData(base::OnceCallback<void(StartupData)> callback);
-  void ReadRecommendedWebFeedInfo(
-      const std::string& web_feed_id,
-      base::OnceCallback<void(std::unique_ptr<feedstore::WebFeedInfo>)>
-          callback);
-  void ReadAllPendingWebFeedOperations(
-      base::OnceCallback<
-          void(std::vector<feedstore::PendingWebFeedOperation>)>);
 
   void WriteDocView(feedstore::DocView doc_view);
   void RemoveDocViews(std::vector<feedstore::DocView> doc_ids);

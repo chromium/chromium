@@ -234,18 +234,6 @@ void SetInfoCardTrackingStates(feedwire::Request* request,
   }
 }
 
-// Set the chrome_feature_usage.times_followed_from_web_page_menu
-// from the request_metadata.followed_from_web_page_menu_count.
-void SetTimesFollowedFromWebPageMenu(feedwire::Request* request,
-                                     const RequestMetadata& request_metadata) {
-  request->mutable_feed_request()
-      ->mutable_feed_query()
-      ->mutable_chrome_fulfillment_info()
-      ->mutable_chrome_feature_usage()
-      ->set_times_followed_from_web_page_menu(
-          request_metadata.followed_from_web_page_menu_count);
-}
-
 // Set the sign in status for the feed query to Discover from the request
 // metadata.sign_in_status
 void SetChromeSignInStatus(feedwire::Request* request,
@@ -369,7 +357,6 @@ feedwire::Request CreateFeedQueryRefreshRequest(
                              consistency_token, std::string());
   SetNoticeCardAcknowledged(&request, request_metadata);
   SetInfoCardTrackingStates(&request, request_metadata);
-  SetTimesFollowedFromWebPageMenu(&request, request_metadata);
   SetChromeSignInStatus(&request, request_metadata);
   SetDefaultSearchEngine(&request, request_metadata);
 

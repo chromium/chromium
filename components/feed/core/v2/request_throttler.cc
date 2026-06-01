@@ -19,7 +19,6 @@ int GetMaxRequestsPerDay(NetworkRequestType request_type) {
   const Config& config = GetFeedConfig();
   switch (request_type) {
     case NetworkRequestType::kFeedQuery:
-    case NetworkRequestType::kWebFeedListContents:
     case NetworkRequestType::kQueryInteractiveFeed:
     case NetworkRequestType::kQueryBackgroundFeed:
       return config.max_feed_query_requests_per_day;
@@ -28,14 +27,8 @@ int GetMaxRequestsPerDay(NetworkRequestType request_type) {
     case NetworkRequestType::kNextPage:
     case NetworkRequestType::kQueryNextPage:
       return config.max_next_page_requests_per_day;
-    case NetworkRequestType::kListWebFeeds:
-      return config.max_list_web_feeds_requests_per_day;
-    case NetworkRequestType::kListRecommendedWebFeeds:
-      return config.max_list_recommended_web_feeds_requests_per_day;
-    case NetworkRequestType::kUnfollowWebFeed:
-    case NetworkRequestType::kFollowWebFeed:
-      return -1;
   }
+  return -1;
 }
 
 int DaysSinceOrigin(const base::Time& time_value) {

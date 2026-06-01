@@ -239,6 +239,8 @@ enum class StreamKind : int {
   kUnknown = 0,
   // For you stream.
   kForYou = 1,
+  // Deprecated, as web feed is removed
+  // kFollowing = 2,
   kMaxValue = kForYou,
 };
 

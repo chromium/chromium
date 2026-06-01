@@ -268,39 +268,6 @@ class TestFeedNetwork : public FeedNetwork {
     InjectApiRawResponse<API>(std::move(response));
   }
 
-  void InjectResponse(
-      const feedwire::webfeed::FollowWebFeedResponse& response) {
-    InjectApiResponse<FollowWebFeedDiscoverApi>(response);
-  }
-  void InjectFollowResponse(const FeedNetwork::RawResponse& response) {
-    InjectApiRawResponse<FollowWebFeedDiscoverApi>(response);
-  }
-  void InjectResponse(
-      const feedwire::webfeed::UnfollowWebFeedResponse& response) {
-    InjectApiResponse<UnfollowWebFeedDiscoverApi>(response);
-  }
-  void InjectUnfollowResponse(const FeedNetwork::RawResponse& response) {
-    InjectApiRawResponse<UnfollowWebFeedDiscoverApi>(response);
-  }
-  void InjectResponse(
-      feedwire::webfeed::ListRecommendedWebFeedsResponse response) {
-    InjectApiResponse<ListRecommendedWebFeedDiscoverApi>(std::move(response));
-  }
-  void InjectResponse(feedwire::webfeed::ListWebFeedsResponse response) {
-    InjectApiResponse<ListWebFeedsDiscoverApi>(std::move(response));
-  }
-
-  void InjectListWebFeedsResponse(
-      std::vector<feedwire::webfeed::WebFeed> web_feeds) {
-    feedwire::webfeed::ListWebFeedsResponse response;
-    for (const auto& feed : web_feeds) {
-      *response.add_web_feeds() = feed;
-    }
-    InjectResponse(response);
-  }
-  void InjectListWebFeedsResponse(const FeedNetwork::RawResponse& response) {
-    InjectApiRawResponse<ListWebFeedsDiscoverApi>(response);
-  }
   void InjectRawResponse(const FeedNetwork::RawResponse& response) {
     injected_raw_response_ = response;
   }
@@ -338,21 +305,6 @@ class TestFeedNetwork : public FeedNetwork {
   }
 
   int GetActionRequestCount() const;
-  int GetFollowRequestCount() const {
-    return GetApiRequestCount<FollowWebFeedDiscoverApi>();
-  }
-  int GetUnfollowRequestCount() const {
-    return GetApiRequestCount<UnfollowWebFeedDiscoverApi>();
-  }
-  int GetListRecommendedWebFeedsRequestCount() const {
-    return GetApiRequestCount<ListRecommendedWebFeedDiscoverApi>();
-  }
-  int GetListFollowedWebFeedsRequestCount() const {
-    return GetApiRequestCount<ListWebFeedsDiscoverApi>();
-  }
-  int GetWebFeedListContentsCount() const {
-    return GetApiRequestCount<WebFeedListContentsDiscoverApi>();
-  }
 
   std::vector<NetworkRequestType> sent_request_types() const {
     return sent_request_types_;

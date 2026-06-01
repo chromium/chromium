@@ -34,7 +34,6 @@ namespace {
 // s/<stream-key>/<content-id>      -> shared_state
 // a/<action-id>                    -> action
 // m                                -> metadata
-// W/<operation-id>                 -> pending_web_feed_operation
 // v/<docid>/<timestamp>            -> docview
 constexpr char kLocalActionPrefix[] = "a/";
 constexpr char kMetadataKey[] = "m";

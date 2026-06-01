@@ -178,16 +178,6 @@ std::string_view NetworkRequestTypeUmaName(NetworkRequestType type) {
       return "UploadActions";
     case NetworkRequestType::kNextPage:
       return "NextPage";
-    case NetworkRequestType::kListWebFeeds:
-      return "ListFollowedWebFeeds";
-    case NetworkRequestType::kUnfollowWebFeed:
-      return "UnfollowWebFeed";
-    case NetworkRequestType::kFollowWebFeed:
-      return "FollowWebFeed";
-    case NetworkRequestType::kListRecommendedWebFeeds:
-      return "ListRecommendedWebFeeds";
-    case NetworkRequestType::kWebFeedListContents:
-      return "WebFeedListContents";
     case NetworkRequestType::kQueryInteractiveFeed:
       return "QueryInteractiveFeed";
     case NetworkRequestType::kQueryBackgroundFeed:

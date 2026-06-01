@@ -20,8 +20,6 @@ struct Config {
   int max_feed_query_requests_per_day = 20;
   int max_next_page_requests_per_day = 20;
   int max_action_upload_requests_per_day = 50;
-  int max_list_recommended_web_feeds_requests_per_day = 20;
-  int max_list_web_feeds_requests_per_day = 20;
   // We'll always attempt to refresh content older than this.
   base::TimeDelta stale_content_threshold = base::Hours(24);
   // Content older than this threshold will not be shown to the user.
@@ -42,9 +40,6 @@ struct Config {
   // If no surfaces are attached, the stream model is unloaded after this
   // timeout.
   base::TimeDelta model_unload_timeout = base::Seconds(1);
-  // If no surfaces are attached, the singleWebFeed stream model is cleared
-  // after this timeout.
-  base::TimeDelta single_web_feed_stream_clear_timeout = base::Seconds(60);
   // How far ahead in number of items from last visible item to final item
   // before attempting to load more content.
   int load_more_trigger_lookahead = 5;
@@ -65,25 +60,6 @@ struct Config {
   // Maximum number of docviews to send in a request for signed-out view
   // demotion.
   size_t max_docviews_to_send = 500;
-
-  // Configuration for Web Feeds.
-
-  // How long before Web Feed content is considered stale.
-  base::TimeDelta web_feed_stale_content_threshold = base::Hours(1);
-  // TimeDelta after startup to fetch recommended and subscribed Web Feeds if
-  // they are stale. If zero, no fetching is done.
-  // This delay is also used to trigger retrying stored follow/unfollow requests
-  // on startup.
-  base::TimeDelta fetch_web_feed_info_delay = base::Seconds(40);
-  // How long before cached recommended feed data on the device is considered
-  // stale and refetched.
-  base::TimeDelta recommended_feeds_staleness_threshold = base::Days(28);
-  // How long before cached subscribed feed data on the device is considered
-  // stale and refetched.
-  base::TimeDelta subscribed_feeds_staleness_threshold = base::Days(7);
-  // Number of days of history to query when determining whether to show the
-  // follow accelerator.
-  int webfeed_accelerator_recent_visit_history_days = 14;
 
   // Configuration for PersistentKeyValueStore (personalizing feed for unsigned
   // users). How many MID entities to persist per URL.

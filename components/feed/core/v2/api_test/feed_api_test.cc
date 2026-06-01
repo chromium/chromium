@@ -558,11 +558,6 @@ void DebugLogResponse(NetworkRequestType request_type,
           << api_path;
   if (request_type == UploadActionsDiscoverApi::kRequestType) {
     DebugLogApiResponse<UploadActionsDiscoverApi>(request_bytes, raw_response);
-  } else if (request_type == ListRecommendedWebFeedDiscoverApi::kRequestType) {
-    DebugLogApiResponse<ListRecommendedWebFeedDiscoverApi>(request_bytes,
-                                                           raw_response);
-  } else if (request_type == ListWebFeedsDiscoverApi::kRequestType) {
-    DebugLogApiResponse<ListWebFeedsDiscoverApi>(request_bytes, raw_response);
   }
 }
 
@@ -583,7 +578,6 @@ void TestFeedNetwork::SendDiscoverApiRequest(
 
   bool is_feed_query_request =
       request_type == NetworkRequestType::kFeedQuery ||
-      request_type == WebFeedListContentsDiscoverApi::kRequestType ||
       request_type == QueryInteractiveFeedDiscoverApi::kRequestType ||
       request_type == QueryBackgroundFeedDiscoverApi::kRequestType ||
       request_type == QueryNextPageDiscoverApi::kRequestType;
@@ -607,20 +601,6 @@ void TestFeedNetwork::SendDiscoverApiRequest(
         InjectApiResponse<UploadActionsDiscoverApi>(response_message);
         break;
       }
-      case ListRecommendedWebFeedDiscoverApi::kRequestType: {
-        feedwire::webfeed::ListRecommendedWebFeedsRequest request;
-        ASSERT_TRUE(request.ParseFromString(request_bytes));
-        feedwire::webfeed::ListRecommendedWebFeedsResponse response_message;
-        InjectResponse(response_message);
-        break;
-      }
-      case ListWebFeedsDiscoverApi::kRequestType: {
-        feedwire::webfeed::ListWebFeedsRequest request;
-        ASSERT_TRUE(request.ParseFromString(request_bytes));
-        feedwire::webfeed::ListWebFeedsResponse response_message;
-        InjectResponse(response_message);
-        break;
-      }
 
         // For FeedQuery requests, emulate a response. The status code of the
         // response is controlled by `error` and `http_status_code` fields.
@@ -628,11 +608,6 @@ void TestFeedNetwork::SendDiscoverApiRequest(
         // the time we want to inject a translated response for ease of
         // test-writing.
 
-      case WebFeedListContentsDiscoverApi::kRequestType: {
-        feedwire::Response response;
-        InjectApiResponse<WebFeedListContentsDiscoverApi>(response);
-        break;
-      }
       case QueryInteractiveFeedDiscoverApi::kRequestType: {
         feedwire::Response response;
         InjectApiResponse<QueryInteractiveFeedDiscoverApi>(response);
@@ -915,9 +890,6 @@ void FeedApiTest::SetUp() {
 
   // Reset to default config, since tests can change it.
   Config config;
-  // Disable fetching of recommended web feeds at startup to
-  // avoid a delayed task in tests that don't need it.
-  config.fetch_web_feed_info_delay = base::TimeDelta();
   // `use_feed_query_requests` is a temporary option for
   // debugging, setting it to false tests the preferred endpoint.
   config.use_feed_query_requests = false;
@@ -1096,7 +1068,6 @@ void FeedStreamTestForAllStreamTypes::SetUp() {
   // Enable web feeds and inject a subscription so that we attempt to load
   // the web feed stream.
   FeedApiTest::SetUp();
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
 }
 
 }  // namespace test

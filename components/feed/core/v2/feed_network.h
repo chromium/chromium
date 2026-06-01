@@ -82,62 +82,6 @@ struct UploadActionsDiscoverApi {
   static bool SendRequestMetadata() { return true; }
 };
 
-struct ListWebFeedsDiscoverApi {
-  using Request = feedwire::webfeed::ListWebFeedsRequest;
-  using Response = feedwire::webfeed::ListWebFeedsResponse;
-  static constexpr NetworkRequestType kRequestType =
-      NetworkRequestType::kListWebFeeds;
-  static std::string_view Method() { return "POST"; }
-  static std::string_view RequestPath(const Request&) { return "v1/webFeeds"; }
-  static bool SendRequestMetadata() { return true; }
-};
-
-struct ListRecommendedWebFeedDiscoverApi {
-  using Request = feedwire::webfeed::ListRecommendedWebFeedsRequest;
-  using Response = feedwire::webfeed::ListRecommendedWebFeedsResponse;
-  static constexpr NetworkRequestType kRequestType =
-      NetworkRequestType::kListRecommendedWebFeeds;
-  static std::string_view Method() { return "POST"; }
-  static std::string_view RequestPath(const Request&) {
-    return "v1/recommendedWebFeeds";
-  }
-  static bool SendRequestMetadata() { return true; }
-};
-
-struct FollowWebFeedDiscoverApi {
-  using Request = feedwire::webfeed::FollowWebFeedRequest;
-  using Response = feedwire::webfeed::FollowWebFeedResponse;
-  static constexpr NetworkRequestType kRequestType =
-      NetworkRequestType::kFollowWebFeed;
-  static std::string_view Method() { return "POST"; }
-  static std::string_view RequestPath(const Request&) {
-    return "v1:followWebFeed";
-  }
-  static bool SendRequestMetadata() { return true; }
-};
-
-struct UnfollowWebFeedDiscoverApi {
-  using Request = feedwire::webfeed::UnfollowWebFeedRequest;
-  using Response = feedwire::webfeed::UnfollowWebFeedResponse;
-  static constexpr NetworkRequestType kRequestType =
-      NetworkRequestType::kUnfollowWebFeed;
-  static std::string_view Method() { return "POST"; }
-  static std::string_view RequestPath(const Request&) {
-    return "v1:unfollowWebFeed";
-  }
-  static bool SendRequestMetadata() { return true; }
-};
-
-struct WebFeedListContentsDiscoverApi {
-  using Request = feedwire::Request;
-  using Response = feedwire::Response;
-  static constexpr NetworkRequestType kRequestType =
-      NetworkRequestType::kWebFeedListContents;
-  static std::string_view Method() { return "POST"; }
-  static std::string_view RequestPath(const Request&) { return "v1/contents"; }
-  static bool SendRequestMetadata() { return false; }
-};
-
 class FeedNetwork {
  public:
   struct RawResponse {

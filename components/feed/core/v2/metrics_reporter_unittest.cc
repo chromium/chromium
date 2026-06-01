@@ -785,27 +785,6 @@ TEST_F(MetricsReporterTest, TurnOffAction) {
                                 FeedUserActionType::kTappedTurnOff, 1);
 }
 
-TEST_F(MetricsReporterTest, NetworkRequestCompleteReportsUma) {
-  NetworkResponseInfo response_info;
-  response_info.status_code = 200;
-  response_info.fetch_duration = base::Seconds(2);
-  response_info.encoded_size_bytes = 123 * 1024;
-
-  MetricsReporter::NetworkRequestComplete(NetworkRequestType::kListWebFeeds,
-                                          response_info);
-
-  histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.Network.ResponseStatus.ListFollowedWebFeeds",
-      200, 1);
-  histogram_.ExpectUniqueTimeSample(
-      "ContentSuggestions.Feed.Network.Duration.ListFollowedWebFeeds",
-      base::Seconds(2), 1);
-  histogram_.ExpectUniqueSample(
-      "ContentSuggestions.Feed.Network.CompressedResponseSizeKB."
-      "ListFollowedWebFeeds",
-      123, 1);
-}
-
 TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedNotEnabled) {
   reporter_->OnMetadataInitialized(/*isEnabledByEnterprisePolicy=*/true,
                                    /*isFeedVisible=*/false,

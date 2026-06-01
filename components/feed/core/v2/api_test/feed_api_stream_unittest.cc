@@ -446,8 +446,6 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
   if (GetStreamType().IsForYou()) {
     EXPECT_EQ(1,
               network_.GetApiRequestCount<QueryInteractiveFeedDiscoverApi>());
-  } else {
-    EXPECT_EQ(1, network_.GetApiRequestCount<WebFeedListContentsDiscoverApi>());
   }
   EXPECT_EQ(
       "token",
@@ -475,7 +473,6 @@ TEST_P(FeedStreamTestForAllStreamTypes, UseFeedQueryOverride) {
   ASSERT_TRUE(network_.query_request_sent);
   // There should be no API refresh requests when using use_feed_query_requests.
   auto api_request_counts = network_.GetApiRequestCounts();
-  api_request_counts.erase(NetworkRequestType::kListWebFeeds);  // ignore
   EXPECT_EQ((std::map<NetworkRequestType, int>()), api_request_counts);
   EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 }
@@ -548,8 +545,6 @@ TEST_F(FeedApiTest, BackgroundRefreshDiscoFeedEnabled) {
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, ForceRefreshForDebugging) {
-  // WebFeed stream is only fetched when there's a subscription.
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
 
   stream_->ForceRefreshForDebugging(GetStreamType());

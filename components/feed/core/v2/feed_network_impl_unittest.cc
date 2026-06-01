@@ -833,30 +833,6 @@ TEST_F(FeedNetworkTest, SendApiRequestSendsValidRequest_UploadActions) {
   EXPECT_EQ(expected_body, sent_body_uncompressed);
 }
 
-TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
-  CallbackReceiver<
-      FeedNetwork::ApiResult<feedwire::webfeed::UnfollowWebFeedResponse>>
-      receiver;
-  feed_network()->SendApiRequest<UnfollowWebFeedDiscoverApi>(
-      {}, account_info(), request_metadata(), receiver.Bind());
-  RespondToDiscoverRequest("", net::HTTP_OK);
-
-  ASSERT_TRUE(receiver.GetResult());
-  const FeedNetwork::ApiResult<feedwire::webfeed::UnfollowWebFeedResponse>&
-      result = *receiver.GetResult();
-  EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
-  EXPECT_TRUE(result.response_body);
-  histogram().ExpectBucketCount(
-      "ContentSuggestions.Feed.Network.ResponseStatus.UnfollowWebFeed", 200, 1);
-}
-
-TEST_F(FeedNetworkTest, SendApiRequest_ListWebFeedsSendsCorrectContentType) {
-  feed_network()->SendApiRequest<ListWebFeedsDiscoverApi>(
-      {}, account_info(), request_metadata(), base::DoNothing());
-  EXPECT_EQ("application/x-protobuf", RespondToDiscoverRequest("", net::HTTP_OK)
-                                          .headers.GetHeader("content-type"));
-}
-
 TEST_F(FeedNetworkTest,
        SendApiRequest_DiscoFeedRequestsSendResponseEncodingHeader) {
   feed_network()->SendApiRequest<QueryBackgroundFeedDiscoverApi>(
