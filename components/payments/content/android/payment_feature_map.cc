@@ -28,6 +28,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &::features::kServiceWorkerPaymentApps,
     &::features::kWebPayments,
+    &::features::kSecurePaymentConfirmation,
     &features::kAppStoreBilling,
     &features::kAppStoreBillingDebug,
     &features::kEnforceFullDelegation,

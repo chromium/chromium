@@ -42,6 +42,7 @@ public abstract class PaymentFeatureList {
             "PaymentRequestSupportReportingAppError";
     public static final String PAYMENT_REQUEST_USE_RENDERER_URL_LOADER =
             "PaymentRequestUseRendererUrlLoader";
+    public static final String SECURE_PAYMENT_CONFIRMATION = "SecurePaymentConfirmationBrowser";
 
     /**
      * Returns whether the specified feature is enabled or not.

@@ -65,6 +65,58 @@ mojom::PaymentAddressPtr RedactShippingAddress(
   address->address_line.clear();
   return address;
 }
+
+// Returns true if the requested method data and payment options represent a
+// valid SecurePaymentConfirmation (SPC) request, or returns false and sets
+// `error_message` if any structural or parameters constraints are violated.
+//
+// Should only be called if `method_data` contains at least one SPC method.
+bool ValidateSecurePaymentConfirmationRequest(
+    const std::vector<mojom::PaymentMethodDataPtr>& method_data,
+    const mojom::PaymentOptionsPtr& options,
+    std::string* error_message) {
+  CHECK(error_message);
+  CHECK_GT(method_data.size(), 0u);
+
+  if (!base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation)) {
+    // If the SPC feature is not enabled and a website specifies
+    // "secure-payment-confirmation", the renderer should pass the browser a
+    // null SPC object.
+    for (const auto& method_data_entry : method_data) {
+      if (method_data_entry->supported_method ==
+              methods::kSecurePaymentConfirmation &&
+          method_data_entry->secure_payment_confirmation.get() != nullptr) {
+        *error_message = errors::kSpcDisabledMustBeNull;
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  if (method_data.size() > 1) {
+    *error_message = errors::kSpcMustBeOnlyPaymentMethod;
+    return false;
+  }
+
+  if (options->request_payer_name || options->request_payer_email ||
+      options->request_payer_phone || options->request_shipping) {
+    *error_message = errors::kSpcUnsupportedOptions;
+    return false;
+  }
+
+  const auto& method_data_entry = method_data.at(0);
+  CHECK_EQ(method_data_entry->supported_method,
+           payments::methods::kSecurePaymentConfirmation);
+
+  if (method_data_entry->secure_payment_confirmation.get() == nullptr) {
+    *error_message = errors::kSpcEnabledMustNotBeNull;
+    return false;
+  }
+
+  return IsValidSecurePaymentConfirmationRequest(
+      method_data_entry->secure_payment_confirmation, error_message);
+}
 }  // namespace
 
 PaymentRequest::PaymentRequest(
@@ -173,50 +225,29 @@ void PaymentRequest::Init(
     return;
   }
 
-  // If SPC is enabled and present, it must be the only payment method. This
-  // should be validated by the renderer, but we double check here in case of a
-  // misbehaving renderer.
-  if (base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation) &&
-      method_data.size() > 1 &&
-      std::ranges::any_of(method_data, [](const auto& datum) {
-        return datum->supported_method == methods::kSecurePaymentConfirmation;
-      })) {
-    mojo::ReportBadMessage(
-        "If present, secure-payment-confirmation must be the only payment "
-        "method");
+  if (!options) {
+    log_.Error(errors::kInvalidPaymentOptions);
     ResetAndDeleteThis();
     return;
   }
 
-  for (const mojom::PaymentMethodDataPtr& method_data_entry : method_data) {
-    if (method_data_entry->supported_method ==
-        methods::kSecurePaymentConfirmation) {
-      // If SPC is disabled, |secure_payment_confirmation| can be null.
-      // This is valid; later on we will fail to create the SPC payment app.
-      if (!method_data_entry->secure_payment_confirmation) {
-        continue;
-      }
-
-      std::string error_message;
-      if (!IsValidSecurePaymentConfirmationRequest(
-              method_data_entry->secure_payment_confirmation, &error_message)) {
-        log_.Error(error_message);
-        mojo::ReportBadMessage("Invalid SecurePaymentConfirmationRequest: " +
-                               error_message);
-        ResetAndDeleteThis();
-        return;
-      }
+  // If SPC is present, validate that the renderer has sent valid data for it.
+  if (std::ranges::any_of(method_data, [](const auto& datum) {
+        return datum &&
+               datum->supported_method == methods::kSecurePaymentConfirmation;
+      })) {
+    std::string error_message;
+    if (!ValidateSecurePaymentConfirmationRequest(method_data, options,
+                                                  &error_message)) {
+      log_.Error(error_message);
+      mojo::ReportBadMessage(error_message);
+      ResetAndDeleteThis();
+      return;
     }
   }
 
   if (!details || !details->id || !details->total) {
     log_.Error(errors::kInvalidPaymentDetails);
-    ResetAndDeleteThis();
-    return;
-  }
-
-  if (!options) {
-    log_.Error(errors::kInvalidPaymentOptions);
     ResetAndDeleteThis();
     return;
   }

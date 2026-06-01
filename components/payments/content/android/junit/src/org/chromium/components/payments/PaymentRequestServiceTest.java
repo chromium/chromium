@@ -50,6 +50,7 @@ import java.util.Set;
 /** A test for PaymentRequestService. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION})
 @DisableFeatures({
     PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES,
     PaymentFeatureList.ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS
@@ -794,6 +795,29 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         assertErrorAndReason(
                 ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
                 PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    @DisableFeatures({PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION})
+    public void testSpcConstraintsBypassedWhenDisabled() {
+        // When SPC is disabled, it should be successfully initialized even if:
+        // 1. It is not the only payment method.
+        // 2. Payment options (like shipping) are requested.
+        // Note: securePaymentConfirmation must be null when the feature is disabled.
+        PaymentOptions options = new PaymentOptions();
+        options.requestShipping = true;
+
+        PaymentMethodData[] methodData = new PaymentMethodData[2];
+        methodData[0] = new PaymentMethodData();
+        methodData[0].supportedMethod = "https://www.chromium.org";
+        methodData[1] = new PaymentMethodData();
+        methodData[1].supportedMethod = MethodStrings.SECURE_PAYMENT_CONFIRMATION;
+        methodData[1].securePaymentConfirmation = null;
+
+        Assert.assertNotNull(
+                defaultBuilder().setMethodData(methodData).setOptions(options).build());
+        assertNoError();
     }
 
     @Test

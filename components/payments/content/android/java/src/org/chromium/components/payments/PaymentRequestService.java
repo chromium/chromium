@@ -594,20 +594,28 @@ public class PaymentRequestService
      */
     private boolean isValidSecurePaymentConfirmationRequest(
             Map<String, PaymentMethodData> methodData, PaymentOptions options) {
-        if (methodData.size() > 1) return false;
-        if (options.requestPayerEmail
+        PaymentMethodData spcMethodData = methodData.get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
+        assumeNonNull(spcMethodData);
+
+        // If the SPC feature is not enabled and a website specifies "secure-payment-confirmation",
+        // the renderer should pass the browser a null SPC object.
+        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
+            return spcMethodData.securePaymentConfirmation == null;
+        }
+
+        // SPC cannot be combined with other payment methods or shipping/payer requests.
+        if (methodData.size() > 1
+                || options.requestPayerEmail
                 || options.requestPayerPhone
                 || options.requestShipping
                 || options.requestPayerName) {
             return false;
         }
-        PaymentMethodData spcMethodData = methodData.get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
-        assumeNonNull(spcMethodData);
 
-        // If SPC is disabled, |securePaymentConfirmation| can be null.
-        // This is valid; later on we will fail to create the SPC payment app.
-        if (spcMethodData.securePaymentConfirmation == null) return true;
+        // The SPC data from the renderer must not be null if the feature is enabled.
+        if (spcMethodData.securePaymentConfirmation == null) return false;
 
+        // Delegate to the native implementation for final validation.
         return mDelegate.validateSecurePaymentConfirmationRequest(
                 spcMethodData.securePaymentConfirmation);
     }

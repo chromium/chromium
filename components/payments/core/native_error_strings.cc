@@ -275,5 +275,21 @@ extern const char kLogoLabelRequired[] =
     "The \"secure-payment-confirmation\" method requires that each entry in "
     "\"paymentEntitiesLogos\" has a non-empty \"label\" field.";
 
+const char kSpcDisabledMustBeNull[] =
+    "If the SPC feature is disabled, secure_payment_confirmation must be null";
+
+const char kSpcMustBeOnlyPaymentMethod[] =
+    "If present, \"secure-payment-confirmation\" must be the only payment "
+    "method";
+
+const char kSpcUnsupportedOptions[] =
+    "The \"secure-payment-confirmation\" payment method does not support "
+    "requestPayerName, requestPayerEmail, requestPayerPhone, or "
+    "requestShipping";
+
+const char kSpcEnabledMustNotBeNull[] =
+    "If the SPC feature is enabled, secure_payment_confirmation must not be "
+    "null";
+
 }  // namespace errors
 }  // namespace payments
