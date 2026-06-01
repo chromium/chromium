@@ -287,11 +287,9 @@ void TableView::Init(ui::TableModel* model,
   SetSingleSelection(single_selection);
   SetModel(model);
 
-  // MacOS Table View uses alternating row colors, which is not color compatible
-  // with the hover layer color.
-#if !BUILDFLAG(IS_MAC)
-  SetMouseHoveringEnabled(true);
-#endif
+  // TODO(crbug.com/517186137): Move mouse hover_layer_ to a separate child view
+  // which will disable the paint clipping optimization, and revert back to
+  // layer clipping.
 }
 
 // TODO(sky): this doesn't support arbitrarily changing the model, rename this

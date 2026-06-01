@@ -626,6 +626,7 @@ void TaskManagerView::Init() {
     // Disables alternating row colors on all platforms, including macOS.
     tab_table->SetAlternatingRowColorsEnabled(base::PassKey<TaskManagerView>(),
                                               false);
+    tab_table->SetMouseHoveringEnabled(true);
 
     tab_table->SetRowPadding(views::DISTANCE_TABLE_VERTICAL_TEXT_PADDING);
   }
