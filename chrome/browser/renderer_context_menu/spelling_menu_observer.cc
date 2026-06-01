@@ -262,6 +262,82 @@ bool SpellingMenuObserver::IsCommandIdEnabled(int command_id) {
   }
 }
 
+void SpellingMenuObserver::ApplySpellingSuggestion() {
+  // When we choose the suggestion sent from the Spelling service, we replace
+  // the misspelled word with the suggestion and add it to our custom-word
+  // dictionary so this word is not marked as misspelled any longer.
+  proxy_->GetWebContents()->ReplaceMisspelling(result_);
+  misspelled_word_ = result_;
+  AddToDictionary();
+}
+
+void SpellingMenuObserver::AddToDictionary() {
+  // GetHostForProfile() can return null when the suggested word is provided
+  // by Web SpellCheck API.
+  content::BrowserContext* browser_context = proxy_->GetBrowserContext();
+  if (browser_context) {
+    SpellcheckService* spellcheck =
+        SpellcheckServiceFactory::GetForContext(browser_context);
+    if (spellcheck) {
+      spellcheck->GetCustomDictionary()->AddWord(
+          base::UTF16ToUTF8(misspelled_word_));
+
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+      if (spellcheck::UseBrowserSpellChecker()) {
+        spellcheck_platform::AddWord(spellcheck->platform_spell_checker(),
+                                     misspelled_word_);
+      }
+#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+    }
+  }
+}
+
+void SpellingMenuObserver::ToggleSpellingService() {
+  if (!integrate_spelling_service_.IsUserModifiable()) {
+    return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
+
+  bool spellcheckEnabled = profile && profile->GetPrefs()->GetBoolean(
+                                          spellcheck::prefs::kSpellCheckEnable);
+
+  // When a user enables the "Use enhanced spell check" item, we check to see
+  // if the user has spellcheck disabled. If the user has spellcheck disabled
+  // but has already enabled the spelling service, we just enable spellcheck.
+  // If spellcheck is enabled but the spelling service is not, we show a
+  // bubble to confirm it. On the other hand, when a user disables this
+  // item, we directly update/ the profile and stop integrating the spelling
+  // service immediately.
+  if (!spellcheckEnabled && integrate_spelling_service_.GetValue()) {
+    if (profile) {
+      profile->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable,
+                                      true);
+    }
+  } else if (!integrate_spelling_service_.GetValue()) {
+    // We use the web contents' primary main frame here rather than getting
+    // the view from the local render frame host because we want to ensure
+    // that it is non-null (proxy_->GetRenderFrameHost() can return nullptr if
+    // the frame goes away). In these cases, the spelling preference changes
+    // are still valid (tied to the BrowsingContext / WebContents) so we still
+    // want to show the confirmation bubble.
+    content::RenderFrameHost* rfh =
+        proxy_->GetWebContents()->GetPrimaryMainFrame();
+    gfx::Rect rect = rfh->GetRenderWidgetHost()->GetView()->GetViewBounds();
+    std::unique_ptr<SpellingBubbleModel> model(
+        new SpellingBubbleModel(profile, proxy_->GetWebContents()));
+    chrome::ShowConfirmBubble(
+        proxy_->GetWebContents()->GetTopLevelNativeWindow(),
+        rfh->GetRenderWidgetHost()->GetView()->GetNativeView(),
+        gfx::Point(rect.CenterPoint().x(), rect.y()), std::move(model));
+  } else {
+    if (profile) {
+      profile->GetPrefs()->SetBoolean(
+          spellcheck::prefs::kSpellCheckUseSpellingService, false);
+    }
+  }
+}
+
 void SpellingMenuObserver::ExecuteCommand(int command_id) {
   DCHECK(IsCommandIdSupported(command_id));
 
@@ -276,87 +352,23 @@ void SpellingMenuObserver::ExecuteCommand(int command_id) {
     if (browser_context) {
       SpellcheckService* spellcheck =
           SpellcheckServiceFactory::GetForContext(browser_context);
-      if (spellcheck) {
-        if (spellcheck->GetMetrics())
-          spellcheck->GetMetrics()->RecordReplacedWordStats(1);
+      if (spellcheck && spellcheck->GetMetrics()) {
+        spellcheck->GetMetrics()->RecordReplacedWordStats(1);
       }
     }
     return;
   }
 
-  // When we choose the suggestion sent from the Spelling service, we replace
-  // the misspelled word with the suggestion and add it to our custom-word
-  // dictionary so this word is not marked as misspelled any longer.
-  if (command_id == IDC_CONTENT_CONTEXT_SPELLING_SUGGESTION) {
-    proxy_->GetWebContents()->ReplaceMisspelling(result_);
-    misspelled_word_ = result_;
-  }
-
-  if (command_id == IDC_CONTENT_CONTEXT_SPELLING_SUGGESTION ||
-      command_id == IDC_SPELLCHECK_ADD_TO_DICTIONARY) {
-    // GetHostForProfile() can return null when the suggested word is provided
-    // by Web SpellCheck API.
-    content::BrowserContext* browser_context = proxy_->GetBrowserContext();
-    if (browser_context) {
-      SpellcheckService* spellcheck =
-          SpellcheckServiceFactory::GetForContext(browser_context);
-      if (spellcheck) {
-        spellcheck->GetCustomDictionary()->AddWord(base::UTF16ToUTF8(
-            misspelled_word_));
-
-#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-        if (spellcheck::UseBrowserSpellChecker()) {
-          spellcheck_platform::AddWord(spellcheck->platform_spell_checker(),
-                                       misspelled_word_);
-        }
-#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-      }
-    }
-  }
-
-  Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
-
-  // The spelling service can be toggled by the user only if it is not managed.
-  if (command_id == IDC_CONTENT_CONTEXT_SPELLING_TOGGLE &&
-      integrate_spelling_service_.IsUserModifiable()) {
-    bool spellcheckEnabled =
-        profile &&
-        profile->GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable);
-
-    // When a user enables the "Use enhanced spell check" item, we check to see
-    // if the user has spellcheck disabled. If the user has spellcheck disabled
-    // but has already enabled the spelling service, we just enable spellcheck.
-    // If spellcheck is enabled but the spelling service is not, we show a
-    // bubble to confirm it. On the other hand, when a user disables this
-    // item, we directly update/ the profile and stop integrating the spelling
-    // service immediately.
-    if (!spellcheckEnabled && integrate_spelling_service_.GetValue()) {
-      if (profile) {
-        profile->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable,
-                                        true);
-      }
-    } else if (!integrate_spelling_service_.GetValue()) {
-      // We use the web contents' primary main frame here rather than getting
-      // the view from the local render frame host because we want to ensure
-      // that it is non-null (proxy_->GetRenderFrameHost() can return nullptr if
-      // the frame goes away). In these cases, the spelling preference changes
-      // are still valid (tied to the BrowsingContext / WebContents) so we still
-      // want to show the confirmation bubble.
-      content::RenderFrameHost* rfh =
-          proxy_->GetWebContents()->GetPrimaryMainFrame();
-      gfx::Rect rect = rfh->GetRenderWidgetHost()->GetView()->GetViewBounds();
-      std::unique_ptr<SpellingBubbleModel> model(
-          new SpellingBubbleModel(profile, proxy_->GetWebContents()));
-      chrome::ShowConfirmBubble(
-          proxy_->GetWebContents()->GetTopLevelNativeWindow(),
-          rfh->GetRenderWidgetHost()->GetView()->GetNativeView(),
-          gfx::Point(rect.CenterPoint().x(), rect.y()), std::move(model));
-    } else {
-      if (profile) {
-        profile->GetPrefs()->SetBoolean(
-            spellcheck::prefs::kSpellCheckUseSpellingService, false);
-      }
-    }
+  switch (command_id) {
+    case IDC_CONTENT_CONTEXT_SPELLING_SUGGESTION:
+      ApplySpellingSuggestion();
+      break;
+    case IDC_SPELLCHECK_ADD_TO_DICTIONARY:
+      AddToDictionary();
+      break;
+    case IDC_CONTENT_CONTEXT_SPELLING_TOGGLE:
+      ToggleSpellingService();
+      break;
   }
 }
 

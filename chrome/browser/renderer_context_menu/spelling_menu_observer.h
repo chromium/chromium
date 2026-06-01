@@ -99,6 +99,19 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
                               bool success,
                               const std::vector<SpellCheckResult>& results);
 
+  // Applies the spelling suggestion and registers the word as a custom
+  // dictionary word so it is no longer marked as misspelled.
+  void ApplySpellingSuggestion();
+
+  // Adds the misspelled word to the user's custom-word dictionary (both local
+  // and platform spellcheckers where supported) so it is no longer marked as
+  // misspelled.
+  void AddToDictionary();
+
+  // Toggles the user preference for using the enhanced spelling service. Shows
+  // a confirmation bubble to the user if the service is being enabled.
+  void ToggleSpellingService();
+
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   // Fires a callback for testing when local (and possibly remote) retrieval of
   // suggestions has completed. This allows tests to wait in a run loop before
