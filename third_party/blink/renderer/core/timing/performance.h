@@ -79,10 +79,10 @@ class PerformanceMeasure;
 class PerformanceNavigation;
 class PerformanceNavigationTiming;
 class PerformanceObserver;
+class PerformanceSoftNavigation;
 class PerformanceTiming;
 class ScriptState;
 class ScriptValue;
-class SoftNavigationEntry;
 class SpeculationData;
 class UserTiming;
 class V8ObjectBuilder;
@@ -226,7 +226,7 @@ class CORE_EXPORT Performance : public EventTarget {
   void AddLargestContentfulPaint(LargestContentfulPaint*);
   void AddInteractionContentfulPaint(InteractionContentfulPaint*);
 
-  void AddSoftNavigationToPerformanceTimeline(SoftNavigationEntry*);
+  void AddSoftNavigationToPerformanceTimeline(PerformanceSoftNavigation*);
 
   PerformanceMark* mark(ScriptState*,
                         const AtomicString& mark_name,

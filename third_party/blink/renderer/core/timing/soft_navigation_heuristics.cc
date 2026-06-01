@@ -365,7 +365,7 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
       "loading", "SoftNavigationHeuristics::SameDocumentNavigationCommitted",
       perfetto::Track::FromPointer(context), "context", *context);
 
-  MaybeCommitNavigationOrEmitSoftNavigationEntry(context);
+  MaybeCommitNavigationOrEmitSoftNavigation(context);
 }
 
 bool SoftNavigationHeuristics::ModifiedDOM(Node* node) {
@@ -379,7 +379,7 @@ bool SoftNavigationHeuristics::ModifiedDOM(Node* node) {
   }
   paint_attribution_tracker_->MarkNodeAsDirectlyModified(node, context);
 
-  MaybeCommitNavigationOrEmitSoftNavigationEntry(context);
+  MaybeCommitNavigationOrEmitSoftNavigation(context);
   return true;
 }
 
@@ -391,7 +391,7 @@ void SoftNavigationHeuristics::ModifiedAttribute(
   ModifiedNode(element);
 }
 
-void SoftNavigationHeuristics::MaybeCommitNavigationOrEmitSoftNavigationEntry(
+void SoftNavigationHeuristics::MaybeCommitNavigationOrEmitSoftNavigation(
     SoftNavigationContext* context) {
   // This is already a soft nav, and the performance entry has already been
   // emitted.
@@ -404,7 +404,7 @@ void SoftNavigationHeuristics::MaybeCommitNavigationOrEmitSoftNavigationEntry(
   // nothing, since we don't want to count it twice.
   if (context->HasNavigationId()) {
     if (context->HasFirstContentfulPaint()) {
-      EmitSoftNavigationEntry(context);
+      EmitSoftNavigation(context);
     }
     return;
   }
@@ -455,10 +455,10 @@ void SoftNavigationHeuristics::MaybeCommitNavigationOrEmitSoftNavigationEntry(
     contexts_waiting_for_paint_timestamp_.insert(context);
     return;
   }
-  EmitSoftNavigationEntry(context);
+  EmitSoftNavigation(context);
 }
 
-void SoftNavigationHeuristics::EmitSoftNavigationEntry(
+void SoftNavigationHeuristics::EmitSoftNavigation(
     SoftNavigationContext* context) {
   context->EmitSoftNavigation();
 
@@ -480,7 +480,7 @@ SoftNavigationHeuristics::MaybeGetSoftNavigationContextForTiming(Node* node) {
 void SoftNavigationHeuristics::OnPaintFinished() {
   for (const auto& context : interaction_id_to_context_.Values()) {
     if (context->OnPaintFinished()) {
-      MaybeCommitNavigationOrEmitSoftNavigationEntry(context);
+      MaybeCommitNavigationOrEmitSoftNavigation(context);
     }
   }
 }
@@ -514,7 +514,7 @@ void SoftNavigationHeuristics::OnFramePresented(
   if (!contexts_waiting_for_paint_timestamp_.empty()) {
     for (auto& context : contexts_waiting_for_paint_timestamp_) {
       CHECK(!context->WasEmitted());
-      MaybeCommitNavigationOrEmitSoftNavigationEntry(context);
+      MaybeCommitNavigationOrEmitSoftNavigation(context);
     }
     contexts_waiting_for_paint_timestamp_.erase_if(
         [&](const auto& context) { return context->WasEmitted(); });

@@ -278,8 +278,8 @@ void SoftNavigationContext::EmitSoftNavigation() {
 
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);
-  performance->AddSoftNavigationEntry(TimeOrigin(),
-                                      FirstContentfulPaintTimingInfo(), this);
+  performance->AddSoftNavigation(TimeOrigin(), FirstContentfulPaintTimingInfo(),
+                                 this);
 }
 
 void SoftNavigationContext::Dispose() {

@@ -144,15 +144,15 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   // Commits the navigation, assigning the context a new navigation ID, if the
   // context has met all of the criteria for a soft navigation and it has not
-  // already committed. Emits a SoftNavigationEntry if the navigation was
+  // already committed. Emits a PerformanceSoftNavigation if the navigation was
   // committed and the context's first contentful paint has its presentation
   // time.
-  void MaybeCommitNavigationOrEmitSoftNavigationEntry(SoftNavigationContext*);
+  void MaybeCommitNavigationOrEmitSoftNavigation(SoftNavigationContext*);
 
-  // Emits the SoftNavigationEntry for the context. The context must have an
-  // associated committed navigation and first contentful paint timestamp when
-  // this is called, and it must not have already been emitted.
-  void EmitSoftNavigationEntry(SoftNavigationContext*);
+  // Emits the PerformanceSoftNavigation for the context. The context must have
+  // an associated committed navigation and first contentful paint timestamp
+  // when this is called, and it must not have already been emitted.
+  void EmitSoftNavigation(SoftNavigationContext*);
 
   uint64_t CalculateRequiredPaintArea() const;
   uint64_t CalculateViewportArea() const;

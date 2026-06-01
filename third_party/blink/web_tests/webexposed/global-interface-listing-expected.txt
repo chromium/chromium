@@ -7803,6 +7803,14 @@ interface PerformanceServerTiming
     getter name
     method constructor
     method toJSON
+interface PerformanceSoftNavigation : PerformanceEntry
+    attribute @@toStringTag
+    getter interactionId
+    getter navigationType
+    getter paintTime
+    getter presentationTime
+    method constructor
+    method getLargestInteractionContentfulPaint
 interface PerformanceTiming
     attribute @@toStringTag
     getter connectEnd
@@ -10154,14 +10162,6 @@ interface SnapEvent : Event
     getter snapTargetBlock
     getter snapTargetInline
     method constructor
-interface SoftNavigationEntry : PerformanceEntry
-    attribute @@toStringTag
-    getter interactionId
-    getter navigationType
-    getter paintTime
-    getter presentationTime
-    method constructor
-    method getLargestInteractionContentfulPaint
 interface SourceBuffer : EventTarget
     attribute @@toStringTag
     getter appendWindowEnd

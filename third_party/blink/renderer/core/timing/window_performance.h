@@ -63,8 +63,9 @@ namespace blink {
 class AnimationFrameTimingInfo;
 class InteractionContentfulPaint;
 class InteractiveDetector;
-class PerformanceTimingForReporting;
 class LocalDOMWindow;
+class PerformanceSoftNavigation;
+class PerformanceTimingForReporting;
 class SoftNavigationContext;
 
 class CORE_EXPORT WindowPerformance final : public Performance,
@@ -184,7 +185,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void AddLayoutShiftEntry(LayoutShift*);
   void AddVisibilityStateEntry(bool is_visible, base::TimeTicks start_time);
-  SoftNavigationEntry* AddSoftNavigationEntry(
+  PerformanceSoftNavigation* AddSoftNavigation(
       base::TimeTicks start_time,
       const DOMPaintTimingInfo& paint_timing_info,
       SoftNavigationContext* context);

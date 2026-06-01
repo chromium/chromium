@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 [Exposed=Window, RuntimeEnabled=SoftNavigationHeuristics]
-interface SoftNavigationEntry : PerformanceEntry {
+interface PerformanceSoftNavigation : PerformanceEntry {
     readonly attribute NavigationType navigationType;
     readonly attribute unsigned long long interactionId;
     InteractionContentfulPaint? getLargestInteractionContentfulPaint();
 };
 
-SoftNavigationEntry includes PaintTimingMixin;
+PerformanceSoftNavigation includes PaintTimingMixin;

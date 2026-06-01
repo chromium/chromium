@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_SOFT_NAVIGATION_ENTRY_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_SOFT_NAVIGATION_ENTRY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_SOFT_NAVIGATION_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_SOFT_NAVIGATION_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -14,14 +14,14 @@ class InteractionContentfulPaint;
 class SoftNavigationContext;
 class V8ObjectBuilder;
 
-class CORE_EXPORT SoftNavigationEntry final : public PerformanceEntry {
+class CORE_EXPORT PerformanceSoftNavigation final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  SoftNavigationEntry(double start_time,
-                      const DOMPaintTimingInfo& paint_timing_info,
-                      SoftNavigationContext* context);
-  ~SoftNavigationEntry() override;
+  PerformanceSoftNavigation(double start_time,
+                            const DOMPaintTimingInfo& paint_timing_info,
+                            SoftNavigationContext* context);
+  ~PerformanceSoftNavigation() override;
 
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
@@ -46,4 +46,4 @@ class CORE_EXPORT SoftNavigationEntry final : public PerformanceEntry {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_SOFT_NAVIGATION_ENTRY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_SOFT_NAVIGATION_H_

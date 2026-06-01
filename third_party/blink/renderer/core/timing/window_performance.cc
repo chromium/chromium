@@ -96,12 +96,12 @@
 #include "third_party/blink/renderer/core/timing/performance_navigation_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/core/timing/performance_paint_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_soft_navigation.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/preload_data.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
-#include "third_party/blink/renderer/core/timing/soft_navigation_entry.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/speculation_data.h"
 #include "third_party/blink/renderer/core/timing/speculation_navigation_data.h"
@@ -1484,15 +1484,16 @@ void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
   }
 }
 
-SoftNavigationEntry* WindowPerformance::AddSoftNavigationEntry(
+PerformanceSoftNavigation* WindowPerformance::AddSoftNavigation(
     base::TimeTicks timestamp,
     const DOMPaintTimingInfo& paint_timing_info,
     SoftNavigationContext* context) {
   CHECK(RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
       GetExecutionContext()));
-  SoftNavigationEntry* entry = MakeGarbageCollected<SoftNavigationEntry>(
-      MonotonicTimeToDOMHighResTimeStamp(timestamp), paint_timing_info,
-      context);
+  PerformanceSoftNavigation* entry =
+      MakeGarbageCollected<PerformanceSoftNavigation>(
+          MonotonicTimeToDOMHighResTimeStamp(timestamp), paint_timing_info,
+          context);
 
   if (HasObserverFor(PerformanceEntry::kSoftNavigation)) {
     UseCounter::Count(GetExecutionContext(),

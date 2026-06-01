@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/timing/soft_navigation_entry.h"
+#include "third_party/blink/renderer/core/timing/performance_soft_navigation.h"
 
 #include "base/check_deref.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
@@ -14,7 +14,7 @@
 
 namespace blink {
 
-SoftNavigationEntry::SoftNavigationEntry(
+PerformanceSoftNavigation::PerformanceSoftNavigation(
     double start_time,
     const DOMPaintTimingInfo& paint_timing_info,
     SoftNavigationContext* context)
@@ -30,28 +30,28 @@ SoftNavigationEntry::SoftNavigationEntry(
   SetPaintTimingInfo(paint_timing_info);
 }
 
-SoftNavigationEntry::~SoftNavigationEntry() = default;
+PerformanceSoftNavigation::~PerformanceSoftNavigation() = default;
 
-const AtomicString& SoftNavigationEntry::entryType() const {
+const AtomicString& PerformanceSoftNavigation::entryType() const {
   return performance_entry_names::kSoftNavigation;
 }
 
-PerformanceEntryType SoftNavigationEntry::EntryTypeEnum() const {
+PerformanceEntryType PerformanceSoftNavigation::EntryTypeEnum() const {
   return PerformanceEntry::EntryType::kSoftNavigation;
 }
 
 InteractionContentfulPaint*
-SoftNavigationEntry::getLargestInteractionContentfulPaint() const {
+PerformanceSoftNavigation::getLargestInteractionContentfulPaint() const {
   CHECK(context_);
   return context_->LargestIcpEntry();
 }
 
-void SoftNavigationEntry::Trace(Visitor* visitor) const {
+void PerformanceSoftNavigation::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
   PerformanceEntry::Trace(visitor);
 }
 
-void SoftNavigationEntry::BuildJSONValue(V8ObjectBuilder& builder) const {
+void PerformanceSoftNavigation::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddString("navigationType", navigationType().AsStringView());
   builder.AddNumber("interactionId", interaction_id_);
