@@ -46,3 +46,32 @@ source_set("unit_tests") {
     "//content/test:test_support",
   ]
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "new_tab_page_preload_browsertest.cc" ]
+    deps = [
+      ":new_tab_page_preload",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser:browser_features",
+      "//chrome/browser/preloading",
+      "//chrome/browser/preloading:prefs",
+      "//chrome/browser/preloading/prerender",
+      "//chrome/browser/ui",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//components/page_load_metrics/browser",
+      "//components/prefs",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net",
+      "//net:test_support",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+    ]
+  }
+}

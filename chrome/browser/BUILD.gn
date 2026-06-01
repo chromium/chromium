@@ -493,14 +493,6 @@ if (!is_android) {
     deps = [ "//url" ]
   }
 
-  source_set("zero_suggest_prefetch_tab_helper") {
-    public = [ "preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h" ]
-    deps = [
-      "//chrome/browser/ui/tabs:tab_strip_model_observer",
-      "//content/public/browser",
-    ]
-  }
-
   source_set("chrome_process_singleton") {
     public = [
       "chrome_process_singleton.h",
@@ -2682,8 +2674,6 @@ static_library("browser") {
       "memory_details_android.cc",
       "platform_util_android.cc",
       "prefetch/android/preload_pages_settings_bridge.cc",
-      "preloading/android/preloading_data_bridge.cc",
-      "preloading/android/preloading_feature_map.cc",
       "shell_integration_android.cc",
     ]
 
@@ -2699,7 +2689,7 @@ static_library("browser") {
       "//chrome/browser/composeplate/android:jni_headers",
       "//chrome/browser/incognito:jni_headers",
       "//chrome/browser/prefetch/android:jni_headers",
-      "//chrome/browser/preloading/android:jni_headers",
+      "//chrome/browser/preloading/android",
       "//chrome/browser/ui/webui/feed_internals",
       "//chrome/browser/ui/webui/notifications_internals",
       "//chrome/browser/util:jni_headers",
@@ -2810,7 +2800,6 @@ static_library("browser") {
       "chrome_browser_interface_binders_webui_parts_desktop.cc",
       "chrome_process_singleton.cc",
       "intranet_redirect_detector.cc",
-      "preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.cc",
       "process_singleton_startup_lock.cc",
       "repost_form_warning_controller.cc",
     ]
@@ -2827,7 +2816,6 @@ static_library("browser") {
       ":intent_chip_display_prefs",
       ":intranet_redirect_detector",
       ":repost_form_warning_controller",
-      ":zero_suggest_prefetch_tab_helper",
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/app/vector_icons",

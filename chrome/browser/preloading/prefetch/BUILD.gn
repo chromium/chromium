@@ -118,6 +118,26 @@ source_set("unit_tests") {
 }
 
 if (!is_android) {
+  source_set("zero_suggest_prefetch") {
+    public = [ "zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h" ]
+    sources = [ "zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.cc" ]
+
+    public_deps = [
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//content/public/browser",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/search",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/omnibox/browser",
+      "//components/omnibox/common",
+    ]
+  }
+
   source_set("browser_tests") {
     testonly = true
 
@@ -132,9 +152,9 @@ if (!is_android) {
 
     deps = [
       ":test_support",
+      ":zero_suggest_prefetch",
       "//base/test:test_support",
       "//chrome/browser:chrome_content_browser_client",
-      "//chrome/browser:zero_suggest_prefetch_tab_helper",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools",

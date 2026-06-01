@@ -25,3 +25,16 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
   ]
 }
+
+source_set("android") {
+  sources = [
+    "preloading_data_bridge.cc",
+    "preloading_feature_map.cc",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/preloading",
+    "//content/public/browser",
+  ]
+}
