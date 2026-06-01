@@ -545,6 +545,12 @@
     <message name="IDS_SETTINGS_REMOVE_VERIFIED_EMAIL_PERMISSION" desc="Label for a menu item that removes the permission for a verified email address.">
       Remove permission
     </message>
+    <message name="IDS_SETTINGS_REMOVE_VERIFIED_EMAIL_PERMISSION_TITLE" desc="Title for the confirmation dialog when removing a verified email permission.">
+      Remove permission?
+    </message>
+    <message name="IDS_SETTINGS_REMOVE_VERIFIED_EMAIL_PERMISSION_BODY" desc="Body text for the confirmation dialog when removing a verified email permission.">
+      Going forward, <ph name="ISSUER">$1<ex>google.com</ex></ph> will stop automatically confirming this email
+    </message>
     <message name="IDS_SETTINGS_ADDRESS_REMOVE_CONFIRMATION_TITLE" desc="Address remove dialog confirmation title.">
       Delete address
     </message>
