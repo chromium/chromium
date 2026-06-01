@@ -97,6 +97,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -5917,8 +5918,9 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, LoadingStateResetOnNavigation) {
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest,
                        LoadingStateIsNotResetOnFailedNavigation) {
-  net::test_server::ControllableHttpResponse document2_response(
-      embedded_test_server(), "/document2");
+  net::test_server::ExpectationHandler handler(embedded_test_server());
+  handler.OnRequest("/document2")
+      .RespondWith(net::HTTP_NO_CONTENT, "text/html; charset=utf-8", "");
 
   EXPECT_TRUE(embedded_test_server()->Start());
   GURL url1(embedded_test_server()->GetURL("/title1.html"));
@@ -5944,12 +5946,6 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest,
   shell()->LoadURL(url2);
   EXPECT_TRUE(navigation_manager.WaitForRequestStart());
   navigation_manager.ResumeNavigation();
-  document2_response.WaitForRequest();
-
-  document2_response.Send(
-      "HTTP/1.1 204 No Content\r\n"
-      "Content-Type: text/html; charset=utf-8\r\n"
-      "\r\n");
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 
   EXPECT_TRUE(rfhi->IsDOMContentLoaded());
