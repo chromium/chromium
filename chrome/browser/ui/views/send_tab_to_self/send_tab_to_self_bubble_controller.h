@@ -16,6 +16,7 @@
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
+#include "components/sync_device_info/device_info.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
@@ -129,6 +130,7 @@ class SendTabToSelfBubbleController
 
   void HandleSendTabToDeviceResult(const GURL& url,
                                    std::string_view device_name,
+                                   syncer::DeviceInfo::FormFactor form_factor,
                                    SendTabToSelfResult result);
 
   // views::WidgetObserver:

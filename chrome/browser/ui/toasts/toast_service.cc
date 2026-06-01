@@ -575,7 +575,9 @@ void ToastService::RegisterToasts(
           .AddGlobalScoped()
           .Build());
 
-  // TODO(crbug.com/492072882): Update design and strings, they are temporary.
+  // Note: The registered icon here is a fallback default required by the
+  // interface. The icon is always overridden dynamically in UI code based on
+  // the target device's form factor.
   toast_registry_->RegisterToast(
       ToastId::kSendTabToSelfSuccess,
       ToastSpecification::Builder(
@@ -596,12 +598,11 @@ void ToastService::RegisterToasts(
           .AddCloseButton()
           .Build());
 
-  // TODO(crbug.com/492072882): Update design, it is temporary.
   toast_registry_->RegisterToast(
       ToastId::kSendTabToSelfFailure,
       ToastSpecification::Builder(features::IsRoundedIconsEnabled()
-                                      ? vector_icons::kWarningFilledIcon
-                                      : vector_icons::kWarningOldIcon,
+                                      ? vector_icons::kErrorIcon
+                                      : vector_icons::kErrorOldIcon,
                                   IDS_SEND_TAB_TO_SELF_POST_SEND_FAILURE_TOAST)
           .AddCloseButton()
           .Build());
@@ -609,8 +610,8 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kSendTabToSelfNoInternetConnection,
       ToastSpecification::Builder(
-          features::IsRoundedIconsEnabled() ? vector_icons::kWarningFilledIcon
-                                            : vector_icons::kWarningOldIcon,
+          features::IsRoundedIconsEnabled() ? vector_icons::kErrorIcon
+                                            : vector_icons::kErrorOldIcon,
           IDS_SEND_TAB_TO_SELF_POST_SEND_NO_INTERNET_TOAST)
           .AddCloseButton()
           .Build());

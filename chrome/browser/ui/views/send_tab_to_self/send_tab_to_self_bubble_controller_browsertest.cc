@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -40,6 +41,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/fake_data_type_controller_delegate.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -48,6 +50,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"
@@ -119,7 +122,8 @@ class SendTabToSelfBubbleControllerBrowserTest : public SigninBrowserTestBase {
 
   void ExpectToastShown(ToastId expected_id,
                         int message_id,
-                        const std::u16string& replacement = u"") {
+                        const std::u16string& replacement = u"",
+                        const gfx::VectorIcon* expected_icon = nullptr) {
     ToastController* toast_controller =
         browser()->GetFeatures().toast_controller();
 
@@ -133,6 +137,16 @@ class SendTabToSelfBubbleControllerBrowserTest : public SigninBrowserTestBase {
             : l10n_util::GetStringFUTF16(message_id, replacement);
 
     EXPECT_EQ(toast_view->label_for_testing()->GetText(), expected_text);
+
+    if (expected_icon) {
+      views::ImageView* icon_view = toast_view->icon_view_for_testing();
+      ASSERT_TRUE(icon_view);
+      ui::ImageModel image_model = icon_view->GetImageModel();
+      ASSERT_TRUE(image_model.IsVectorIcon());
+      // Comparing pointers is intended here as VectorIcons are global constants
+      // and pointer equality guarantees they are the same icon.
+      EXPECT_EQ(image_model.GetVectorIcon().vector_icon(), expected_icon);
+    }
   }
 
   StubSendTabToSelfSyncService* GetStubSyncService() {
@@ -156,7 +170,7 @@ class SendTabToSelfPostSendToastBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
-                       BubbleShowsToast) {
+                       BubbleShowsToast_Desktop) {
   GURL test_url("about:blank");
 
   content::WebContents* web_contents =
@@ -180,9 +194,77 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   controller->OnDeviceSelected("device_1", "device_name_1");
   observer.WaitForEntryAdded();
 
+  const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
+                                             ? kComputerCustomIcon
+                                             : kHardwareComputerOldIcon;
   ExpectToastShown(ToastId::kSendTabToSelfSuccess,
                    IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                   u"device_name_1");
+                   u"device_name_1", &expected_icon);
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
+                       BubbleShowsToast_Phone) {
+  GURL test_url("about:blank");
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+
+  StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
+  ASSERT_TRUE(sync_service);
+
+  SendTabToSelfBubbleController* controller =
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
+
+  TestSendTabToSelfModelObserver observer(
+      sync_service->GetSendTabToSelfModel());
+
+  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
+      {TargetDeviceInfo("device_name_1", "device_1",
+                        syncer::DeviceInfo::FormFactor::kPhone,
+                        base::Time::Now())});
+
+  controller->OnDeviceSelected("device_1", "device_name_1");
+  observer.WaitForEntryAdded();
+
+  const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
+                                             ? kMobileIcon
+                                             : kHardwareSmartphoneOldIcon;
+  ExpectToastShown(ToastId::kSendTabToSelfSuccess,
+                   IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
+                   u"device_name_1", &expected_icon);
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
+                       BubbleShowsToast_Tablet) {
+  GURL test_url("about:blank");
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, test_url));
+
+  StubSendTabToSelfSyncService* sync_service = GetStubSyncService();
+  ASSERT_TRUE(sync_service);
+
+  SendTabToSelfBubbleController* controller =
+      SendTabToSelfBubbleController::GetOrCreateForWebContents(web_contents);
+
+  TestSendTabToSelfModelObserver observer(
+      sync_service->GetSendTabToSelfModel());
+
+  sync_service->GetFakeSendTabToSelfModel()->SetTargetDeviceInfoSortedList(
+      {TargetDeviceInfo("device_name_1", "device_1",
+                        syncer::DeviceInfo::FormFactor::kTablet,
+                        base::Time::Now())});
+
+  controller->OnDeviceSelected("device_1", "device_name_1");
+  observer.WaitForEntryAdded();
+
+  const gfx::VectorIcon& expected_icon =
+      features::IsRoundedIconsEnabled() ? kTabletFilledIcon : kTabletOldIcon;
+  ExpectToastShown(ToastId::kSendTabToSelfSuccess,
+                   IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
+                   u"device_name_1", &expected_icon);
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
@@ -214,9 +296,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   controller->OnDeviceSelected("device_1", "device_name_1");
   observer.WaitForEntryAdded();
 
+  const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
+                                             ? kComputerCustomIcon
+                                             : kHardwareComputerOldIcon;
   ExpectToastShown(ToastId::kSendTabToSelfSuccessThrottled,
                    IDS_SEND_TAB_TO_SELF_POST_SEND_THROTTLED_TOAST,
-                   u"device_name_1");
+                   u"device_name_1", &expected_icon);
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
@@ -244,9 +329,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
 
   observer.WaitForEntryAdded();
 
+  const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
+                                             ? kComputerCustomIcon
+                                             : kHardwareComputerOldIcon;
   ExpectToastShown(ToastId::kSendTabToSelfSuccess,
                    IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
-                   u"device_name_1");
+                   u"device_name_1", &expected_icon);
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
@@ -269,8 +357,12 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   controller->OnDeviceSelected("device_1", "device_name_1");
 
   // Verify that the failure toast is shown.
+  const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
+                                             ? vector_icons::kErrorIcon
+                                             : vector_icons::kErrorOldIcon;
   ExpectToastShown(ToastId::kSendTabToSelfFailure,
-                   IDS_SEND_TAB_TO_SELF_POST_SEND_FAILURE_TOAST);
+                   IDS_SEND_TAB_TO_SELF_POST_SEND_FAILURE_TOAST, u"",
+                   &expected_icon);
 }
 
 class SendTabToSelfPostSendToastDisabledBrowserTest
