@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
@@ -632,6 +633,69 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   // The invocation should complete successfully without waiting for FRE
   // completion (which remains not started). We still need to Wait() for the
   // async Mojo operations to complete.
+  EXPECT_TRUE(success_future.Wait());
+}
+
+class GlicInvokeActuationBrowserTest : public GlicInvokeBrowserTest {
+ public:
+  GlicInvokeActuationBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        ::features::kGlicActor,
+        {{::features::kGlicActorPolicyControlExemption.name, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeActuationBrowserTest,
+                       InvokeWithActuationFeatureMode) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.feature_mode = mojom::FeatureMode::kActuation;
+  options.on_success = success_future.GetCallback();
+  options.target = Target(tab);
+
+  // 1. Trigger invocation in actuation mode.
+  coordinator().Invoke(std::move(options));
+
+  auto* instance = GetInstanceForTab(tab);
+  ASSERT_TRUE(instance);
+
+  // Wait until the web client is connected to ensure that setup has completed
+  // and we have transitioned to waiting for actuation.
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  // The invocation should NOT complete yet because it is waiting for actuation.
+  EXPECT_FALSE(success_future.IsReady());
+
+  // 2. Simulate actuation starting by creating an actor task.
+  auto task_id_result = CreateActorTask(instance);
+  ASSERT_TRUE(task_id_result.has_value()) << task_id_result.error();
+  auto task_id = task_id_result.value();
+
+  // Verify the instance transitioned to actuating.
+  EXPECT_TRUE(instance->IsActuating());
+
+  // Spin the message loop to ensure any incorrect completion tasks run.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The invocation should STILL not be complete because actuation is ongoing.
+  EXPECT_FALSE(success_future.IsReady());
+
+  // 3. Simulate actuation finishing by stopping the task.
+  instance->GetActorTaskManager()->GetClientSessionForTesting()->StopActorTask(
+      static_cast<int32_t>(task_id), mojom::ActorTaskStopReason::kTaskComplete);
+
+  // Verify the instance is no longer actuating.
+  EXPECT_FALSE(instance->IsActuating());
+
+  // Now the invocation should finally complete.
   EXPECT_TRUE(success_future.Wait());
 }
 
