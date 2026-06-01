@@ -609,6 +609,29 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       CreateAndSendQueryMessage_UpdatesMetricsRecorderSource) {
+  // Set the initial source of the session metrics recorder to kLens.
+  session_handle_->GetMetricsRecorder()->UpdateContextualSearchSource(
+      contextual_search::ContextualSearchSource::kLens);
+  EXPECT_EQ(session_handle_->GetMetricsRecorder()->source(),
+            contextual_search::ContextualSearchSource::kLens);
+
+  std::string kQuery = "direct query";
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::optional<base::Uuid>()));
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+
+  handler_->CreateAndSendQueryMessage(kQuery);
+
+  // The source of the metrics recorder should now be updated to
+  // kContextualTasks.
+  EXPECT_EQ(session_handle_->GetMetricsRecorder()->source(),
+            contextual_search::ContextualSearchSource::kContextualTasks);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        CreateAndSendQueryMessage_WithOverlayToken) {
   std::string kQuery = "direct query";
   base::UnguessableToken overlay_token = base::UnguessableToken::Create();
