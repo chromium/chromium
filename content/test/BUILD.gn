@@ -2319,6 +2319,7 @@ test("content_browsertests") {
       "../browser/font_preferences_browsertest.cc",
       "../browser/renderer_host/clipboard_host_impl_browsertest.cc",
       "../browser/speech/speech_recognition_browsertest.cc",
+      "../browser/speech/speech_synthesis_impl_browsertest.cc",
       "../browser/speech/tts_ssml_browsertest.cc",
       "../browser/storage_service_restart_browsertest.cc",
       "../browser/storage_service_sandbox_browsertest.cc",

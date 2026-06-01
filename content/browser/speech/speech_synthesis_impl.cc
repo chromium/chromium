@@ -21,8 +21,11 @@ using AudibleCB = base::RepeatingCallback<
 class EventThunk : public UtteranceEventDelegate {
  public:
   EventThunk(mojo::PendingRemote<blink::mojom::SpeechSynthesisClient> client,
-             AudibleCB audible_cb)
-      : client_(std::move(client)), audible_cb_(std::move(audible_cb)) {}
+             AudibleCB audible_cb,
+             bool is_audible)
+      : client_(std::move(client)),
+        audible_cb_(std::move(audible_cb)),
+        is_audible_(is_audible) {}
   ~EventThunk() override = default;
 
   // UtteranceEventDelegate methods:
@@ -38,7 +41,9 @@ class EventThunk : public UtteranceEventDelegate {
 
     switch (event_type) {
       case TTS_EVENT_START:
-        audible_client_ = audible_cb_.Run();
+        if (is_audible_) {
+          audible_client_ = audible_cb_.Run();
+        }
         client_->OnStartedSpeaking();
         break;
       case TTS_EVENT_END:
@@ -75,7 +80,9 @@ class EventThunk : public UtteranceEventDelegate {
         client_->OnPausedSpeaking();
         break;
       case TTS_EVENT_RESUME:
-        audible_client_ = audible_cb_.Run();
+        if (is_audible_) {
+          audible_client_ = audible_cb_.Run();
+        }
         client_->OnResumedSpeaking();
         break;
     }
@@ -86,6 +93,7 @@ class EventThunk : public UtteranceEventDelegate {
   AudibleCB audible_cb_;
   std::unique_ptr<AudioStreamMonitor::AudibleClientRegistration>
       audible_client_;
+  bool is_audible_;
 };
 
 void SendVoiceListToObserver(
@@ -158,6 +166,10 @@ void SpeechSynthesisImpl::Speak(
   tts_utterance->SetContinuousParameters(utterance->rate, utterance->pitch,
                                          utterance->volume);
 
+  bool is_audible =
+      (utterance->volume == blink::mojom::kSpeechSynthesisDoublePrefNotSet) ||
+      (utterance->volume > 0.0);
+
   // See comments on EventThunk about how lifetime of this instance is managed.
   tts_utterance->SetEventDelegate(std::make_unique<EventThunk>(
       std::move(client),
@@ -165,7 +177,8 @@ void SpeechSynthesisImpl::Speak(
           &AudioStreamMonitor::RegisterAudibleClient,
           base::Unretained(static_cast<WebContentsImpl*>(web_contents_)
                                ->audio_stream_monitor()),
-          frame_id_)));
+          frame_id_),
+      is_audible));
 
   TtsController::GetInstance()->SpeakOrEnqueue(std::move(tts_utterance));
 }
