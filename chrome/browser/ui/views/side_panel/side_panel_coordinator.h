@@ -9,8 +9,9 @@
 #include <optional>
 
 #include "base/callback_list.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
@@ -19,9 +20,8 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/view_observer.h"
 
-class Browser;
-class BrowserView;
 class BrowserWindowInterface;
+class SidePanel;
 
 namespace views {
 class View;
@@ -39,7 +39,7 @@ class View;
 class SidePanelCoordinator final : public SidePanelUIBase,
                                    public views::ViewObserver {
  public:
-  explicit SidePanelCoordinator(BrowserView* browser_view);
+  explicit SidePanelCoordinator(BrowserWindowInterface* browser);
   SidePanelCoordinator(const SidePanelCoordinator&) = delete;
   SidePanelCoordinator& operator=(const SidePanelCoordinator&) = delete;
   ~SidePanelCoordinator() override;
@@ -49,7 +49,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   static SidePanelCoordinator* From(
       BrowserWindowInterface* browser_window_interface);
 
-  void Init(Browser* browser);
   void TearDownPreBrowserWindowDestruction();
 
   // SidePanelUI:
@@ -99,6 +98,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_from,
                                bool visible) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
 
   // Closes `promo_feature` if showing and if actual_id == promo_id, also
   // notifies the User Education system that the feature was used.
@@ -106,10 +106,15 @@ class SidePanelCoordinator final : public SidePanelUIBase,
                                     SidePanelEntryId promo_id,
                                     SidePanelEntryId actual_id);
 
-  const raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
+  SidePanel* GetSidePanel();
+
+  const raw_ref<BrowserWindowInterface> browser_;
 
   std::unique_ptr<SidePanelToolbarPinningController>
       side_panel_toolbar_pinning_controller_;
+
+  base::ScopedObservation<views::View, views::ViewObserver>
+      side_panel_observation_{this};
 
   ui::ScopedUnownedUserData<SidePanelCoordinator> scoped_unowned_user_data_;
 };

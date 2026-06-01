@@ -6,9 +6,9 @@
 
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -25,7 +25,7 @@
 
 // static
 void SidePanelHelper::PopulateGlobalEntries(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     SidePanelRegistry* window_registry) {
   // Add reading list.
   ReadingListSidePanelCoordinator::From(browser)->CreateAndRegisterEntry(
@@ -43,14 +43,14 @@ void SidePanelHelper::PopulateGlobalEntries(
 
   // Add tabs from other devices.
   if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
-          browser->profile())) {
-    browser->browser_window_features()
-        ->tabs_from_other_devices_side_panel_coordinator()
+          browser->GetProfile())) {
+    browser->GetFeatures()
+        .tabs_from_other_devices_side_panel_coordinator()
         ->CreateAndRegisterEntry(window_registry);
   }
 
   // Add history clusters.
-  if (HistoryClustersSidePanelCoordinator::IsSupported(browser->profile()) &&
+  if (HistoryClustersSidePanelCoordinator::IsSupported(browser->GetProfile()) &&
       !HistorySidePanelCoordinator::IsSupported()) {
     browser->GetFeatures()
         .history_clusters_side_panel_coordinator()
@@ -72,9 +72,10 @@ void SidePanelHelper::PopulateGlobalEntries(
 
 // static
 actions::ActionItem* SidePanelHelper::GetActionItem(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     SidePanelEntryKey entry_key) {
-  BrowserActions* const browser_actions = browser->browser_actions();
+  BrowserActions* const browser_actions =
+      browser->GetFeatures().browser_actions();
   if (entry_key.id() == SidePanelEntryId::kExtension) {
     std::optional<actions::ActionId> extension_action_id =
         actions::ActionIdMap::StringToActionId(entry_key.ToString());

@@ -609,12 +609,31 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   Profile* const profile = browser_->GetProfile();
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
+  WebUIBrowserWindow* const webui_browser_window =
+      WebUIBrowserWindow::FromBrowser(browser);
 
   desktop_browser_window_capabilities_ =
       GetUserDataFactory().CreateInstance<DesktopBrowserWindowCapabilities>(
           *browser, browser_window_modal_dialog_delegate_.get(),
           unload_controller_.get(), browser->window(),
           browser->GetUnownedUserDataHost());
+
+  // TODO(crbug.com/346148093): Move SidePanelCoordinator construction to
+  // Init.
+  // TODO(crbug.com/346148554): Do not create a SidePanelCoordinator for most
+  // browser.h types
+  // Conceptually, SidePanelCoordinator handles the "model" whereas
+  // BrowserView::side_panel_ handles the "ui". When we stop
+  // making this for most browser.h types, we should also stop making the
+  // side_panel_.
+  if (browser_view) {
+    side_panel_coordinator_ =
+        GetUserDataFactory().CreateInstance<SidePanelCoordinator>(*browser_,
+                                                                  browser);
+  } else if (webui_browser_window) {
+    webui_browser_side_panel_ui_ =
+        std::make_unique<WebUIBrowserSidePanelUI>(browser);
+  }
 
   if (browser_view) {
     browser_focus_controller_ =
@@ -632,8 +651,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
             *browser, browser->GetWindow(), browser->GetUnownedUserDataHost());
   }
 
-  if (WebUIBrowserWindow* webui_browser_window =
-          WebUIBrowserWindow::FromBrowser(browser)) {
+  if (webui_browser_window) {
     webui_browser_exclusive_access_context_ =
         std::make_unique<WebUIBrowserExclusiveAccessContext>(
             browser->profile(), browser_, browser->GetTabStripModel(),
@@ -827,11 +845,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
         browser->window()->GetNativeWindow()));
   }
 
-  if (WebUIBrowserWindow* webui_browser_window =
-          WebUIBrowserWindow::FromBrowser(browser)) {
+  if (webui_browser_window) {
     focus_manager = webui_browser_window->widget()->GetFocusManager();
-    webui_browser_side_panel_ui_ =
-        std::make_unique<WebUIBrowserSidePanelUI>(browser);
 
     // WebUIBrowserWindow is an AcceleratorProvider.
     accelerator_provider_ = webui_browser_window;
@@ -887,18 +902,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   browser_animation_controller_->AddAnimationProvider(
       std::make_unique<TabStripAnimations>());
 
-  // TODO(crbug.com/346148093): Move SidePanelCoordinator construction to
-  // Init.
-  // TODO(crbug.com/346148554): Do not create a SidePanelCoordinator for most
-  // browser.h types
-  // Conceptually, SidePanelCoordinator handles the "model" whereas
-  // BrowserView::side_panel_ handles the "ui". When we stop
-  // making this for most browser.h types, we should also stop making the
-  // side_panel_.
-  side_panel_coordinator_ =
-      GetUserDataFactory().CreateInstance<SidePanelCoordinator>(*browser_,
-                                                                browser_view);
-
   if (HistorySidePanelCoordinator::IsSupported()) {
     GetUserDataFactory().CreateInstance<HistorySidePanelCoordinator>(
         *browser_view->browser(), browser_view->browser());
@@ -913,8 +916,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         GetUserDataFactory().CreateInstance<CommentsSidePanelCoordinator>(
             *browser_view->browser(), browser_view->browser());
   }
-
-  side_panel_coordinator_->Init(browser_view->browser());
 
   extension_side_panel_manager_ =
       std::make_unique<extensions::ExtensionSidePanelManager>(

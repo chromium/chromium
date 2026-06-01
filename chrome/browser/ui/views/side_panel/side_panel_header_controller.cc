@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -15,9 +16,9 @@
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
@@ -73,10 +74,10 @@ std::unique_ptr<views::ImageButton> CreateImageButton(
 }  // namespace
 
 SidePanelHeaderController::SidePanelHeaderController(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     SidePanelToolbarPinningController* side_panel_toolbar_pinning_controller,
     SidePanelEntry* side_panel_entry)
-    : browser_(browser),
+    : browser_(CHECK_DEREF(browser)),
       side_panel_toolbar_pinning_controller_(
           side_panel_toolbar_pinning_controller),
       side_panel_entry_(side_panel_entry->GetWeakPtr()) {
@@ -271,8 +272,8 @@ void SidePanelHeaderController::UpdateSidePanelHeader() {
 void SidePanelHeaderController::UpdatePinButton() {
   CHECK(side_panel_entry_);
   actions::ActionItem* const action_item =
-      SidePanelHelper::GetActionItem(browser_, side_panel_entry_->key());
-  Profile* const profile = browser_->profile();
+      SidePanelHelper::GetActionItem(&*browser_, side_panel_entry_->key());
+  Profile* const profile = browser_->GetProfile();
   const bool current_pinned_state =
       side_panel_toolbar_pinning_controller_->GetPinnedStateFor(
           side_panel_entry_->key());
@@ -291,7 +292,7 @@ void SidePanelHeaderController::UpdatePinButton() {
 ui::ImageModel SidePanelHeaderController::GetIconImage() {
   CHECK(side_panel_entry_);
   ui::ImageModel icon =
-      SidePanelHelper::GetActionItem(browser_, side_panel_entry_->key())
+      SidePanelHelper::GetActionItem(&*browser_, side_panel_entry_->key())
           ->GetImage();
   if (icon.IsVectorIcon()) {
     icon = ui::ImageModel::FromVectorIcon(*icon.GetVectorIcon().vector_icon(),
@@ -304,7 +305,7 @@ ui::ImageModel SidePanelHeaderController::GetIconImage() {
 std::u16string_view SidePanelHeaderController::GetTitleText() {
   CHECK(side_panel_entry_);
   return side_panel_entry_->GetProperty(kShouldShowTitleInSidePanelHeaderKey)
-             ? SidePanelHelper::GetActionItem(browser_,
+             ? SidePanelHelper::GetActionItem(&*browser_,
                                               side_panel_entry_->key())
                    ->GetText()
              : std::u16string_view();
@@ -397,7 +398,7 @@ void SidePanelHeaderController::MaybeQueuePinPromo(SidePanelEntryId id) {
   // Queue up the next promo to be shown, if there is one that can be shown.
   pending_pin_promo_ = iph_feature;
   if (iph_feature &&
-      !BrowserUserEducationInterface::From(browser_)
+      !BrowserUserEducationInterface::From(&*browser_)
            ->WouldShowFeaturePromo(*iph_feature,
                                    base::PassKey<SidePanelHeaderController>())
            .is_blocked_this_instance()) {
@@ -417,8 +418,8 @@ void SidePanelHeaderController::ShowPinPromo() {
     return;
   }
 
-  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
-      *pending_pin_promo_);
+  BrowserUserEducationInterface::From(&*browser_)
+      ->MaybeShowFeaturePromo(*pending_pin_promo_);
 }
 
 void SidePanelHeaderController::MaybeEndPinPromo(bool pinned) {
@@ -426,7 +427,7 @@ void SidePanelHeaderController::MaybeEndPinPromo(bool pinned) {
     return;
   }
 
-  auto* const user_education = BrowserUserEducationInterface::From(browser_);
+  auto* const user_education = BrowserUserEducationInterface::From(&*browser_);
   if (pinned) {
     user_education->NotifyFeaturePromoFeatureUsed(
         *pending_pin_promo_,

@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -17,7 +18,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_pinning_controller.h"
 
-class Browser;
+class BrowserWindowInterface;
 class SidePanelEntry;
 
 namespace ui {
@@ -38,7 +39,7 @@ class SidePanelHeaderController
       public SidePanelToolbarPinningController::Observer {
  public:
   SidePanelHeaderController(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       SidePanelToolbarPinningController* side_panel_toolbar_pinning_controller,
       SidePanelEntry* side_panel_entry);
   ~SidePanelHeaderController() override;
@@ -71,7 +72,7 @@ class SidePanelHeaderController
   void ShowPinPromo();
   void MaybeEndPinPromo(bool pinned);
 
-  raw_ptr<Browser> browser_ = nullptr;
+  const raw_ref<BrowserWindowInterface> browser_;
   raw_ptr<SidePanelToolbarPinningController>
       side_panel_toolbar_pinning_controller_ = nullptr;
   base::WeakPtr<SidePanelEntry> side_panel_entry_;

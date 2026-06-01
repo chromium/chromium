@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_pinning_controller.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -13,17 +14,18 @@
 #include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/views/view_utils.h"
 
 SidePanelToolbarPinningController::SidePanelToolbarPinningController(
-    BrowserView* browser_view)
-    : browser_view_(browser_view) {
-  Profile* const profile = browser_view_->GetProfile();
+    BrowserWindowInterface* browser)
+    : browser_(CHECK_DEREF(browser)) {
+  Profile* const profile = browser_->GetProfile();
 
   pinned_model_observation_.Observe(PinnedToolbarActionsModel::Get(profile));
   // When the SidePanelPinning feature is enabled observe changes to the
@@ -60,12 +62,12 @@ bool SidePanelToolbarPinningController::GetPinnedStateFor(
           key.extension_id();
       extension_id.has_value()) {
     ToolbarActionsModel* const actions_model =
-        ToolbarActionsModel::Get(browser_view_->GetProfile());
+        ToolbarActionsModel::Get(browser_->GetProfile());
 
     return actions_model->IsActionPinned(*extension_id);
   } else {
     PinnedToolbarActionsModel* const actions_model =
-        PinnedToolbarActionsModel::Get(browser_view_->GetProfile());
+        PinnedToolbarActionsModel::Get(browser_->GetProfile());
 
     std::optional<actions::ActionId> action_id =
         SidePanelEntryIdToActionId(key.id());
@@ -76,11 +78,10 @@ bool SidePanelToolbarPinningController::GetPinnedStateFor(
 
 void SidePanelToolbarPinningController::UpdatePinState(
     SidePanelEntry::Key entry_key) {
-  Profile* const profile = browser_view_->GetProfile();
+  Profile* const profile = browser_->GetProfile();
 
   std::optional<actions::ActionId> action_id =
-      SidePanelHelper::GetActionItem(browser_view_->browser(), entry_key)
-          ->GetActionId();
+      SidePanelHelper::GetActionItem(&*browser_, entry_key)->GetActionId();
   CHECK(action_id.has_value());
 
   bool updated_pin_state = false;
@@ -96,8 +97,14 @@ void SidePanelToolbarPinningController::UpdatePinState(
     updated_pin_state = !actions_model->IsActionPinned(*extension_id);
     actions_model->SetActionVisibility(*extension_id, updated_pin_state);
     if (updated_pin_state) {
-      views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-          kExtensionsSidePanelPinExtensionsEventId, browser_view_);
+      ui::TrackedElement* browser_element =
+          ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+              kBrowserViewElementId,
+              BrowserElements::From(&*browser_)->GetContext());
+      if (browser_element) {
+        ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+            browser_element, kExtensionsSidePanelPinExtensionsEventId);
+      }
     }
   } else {
     PinnedToolbarActionsModel* const actions_model =
@@ -115,14 +122,18 @@ void SidePanelToolbarPinningController::UpdateActiveState(
     SidePanelEntryKey key,
     bool show_active_in_toolbar) {
   auto* const toolbar_container =
-      browser_view_->toolbar_button_provider()->GetPinnedToolbarActions();
+      ToolbarButtonProvider::From(&*browser_)->GetPinnedToolbarActions();
   CHECK(toolbar_container);
 
   // Active extension side-panels have different UI in the toolbar than active
   // built-in side-panels.
   if (key.id() == SidePanelEntryId::kExtension) {
-    browser_view_->toolbar()->extensions_container()->UpdateSidePanelState(
-        show_active_in_toolbar);
+    if (auto* extensions_container =
+            views::AsViewClass<ExtensionsToolbarDesktop>(
+                BrowserElementsViews::From(&*browser_)
+                    ->GetView(kToolbarExtensionsContainerElementId))) {
+      extensions_container->UpdateSidePanelState(show_active_in_toolbar);
+    }
   } else {
     std::optional<actions::ActionId> action_id =
         SidePanelEntryIdToActionId(key.id());

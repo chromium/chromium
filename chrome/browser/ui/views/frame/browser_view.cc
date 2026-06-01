@@ -4868,12 +4868,6 @@ void BrowserView::AddedToWidget() {
 
   UpdateTabSearchBubbleHost();
 
-  // TODO(pbos): Investigate whether the side panels should be creatable when
-  // the ToolbarView does not create a button for them. This specifically seems
-  // to hit web apps. See https://crbug.com/40803038.
-  auto* const side_panel_coordinator = SidePanelCoordinator::From(browser_);
-  side_panel_->AddObserver(side_panel_coordinator);
-
 #if BUILDFLAG(IS_CHROMEOS)
   // TopControlsSlideController must be initialized here in AddedToWidget()
   // rather than Init() as it depends on the browser frame being ready.

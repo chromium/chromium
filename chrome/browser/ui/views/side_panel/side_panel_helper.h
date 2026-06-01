@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "ui/base/class_property.h"
 
-class Browser;
+class BrowserWindowInterface;
 class SidePanelRegistry;
 class SidePanelContentProxy;
 
@@ -28,10 +28,10 @@ class SidePanelHelper {
  public:
   using SidePanelContentState = ::SidePanelContentState;
 
-  static void PopulateGlobalEntries(Browser* browser,
+  static void PopulateGlobalEntries(BrowserWindowInterface* browser,
                                     SidePanelRegistry* global_registry);
 
-  static actions::ActionItem* GetActionItem(Browser* browser,
+  static actions::ActionItem* GetActionItem(BrowserWindowInterface* browser,
                                             SidePanelEntryKey entry_key);
 };
 
