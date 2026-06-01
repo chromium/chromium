@@ -87,8 +87,6 @@ namespace {
 BASE_FEATURE(kIdbSqliteBackingStoreInMemoryContexts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIdbSqliteOnDiskRollout, base::FEATURE_DISABLED_BY_DEFAULT);
-
 constexpr base::FeatureParam<SqliteRolloutStage>::Option
     kIdbSqliteOnDiskRolloutStages[] = {
         {SqliteRolloutStage::kUseLevelDbOnly, "UseLevelDbOnly"},
@@ -99,7 +97,7 @@ constexpr base::FeatureParam<SqliteRolloutStage>::Option
 
 BASE_FEATURE_ENUM_PARAM(SqliteRolloutStage,
                         kIdbSqliteOnDiskRolloutStage,
-                        &kIdbSqliteOnDiskRollout,
+                        &features::kIdbSqliteOnDiskRollout,
                         "stage",
                         SqliteRolloutStage::kUseLevelDbOnly,
                         &kIdbSqliteOnDiskRolloutStages);
@@ -201,7 +199,7 @@ SqliteRolloutStage GetSqliteRolloutStage(bool in_memory) {
                ? SqliteRolloutStage::kUseSqliteOnly
                : SqliteRolloutStage::kUseLevelDbOnly;
   }
-  if (base::FeatureList::IsEnabled(kIdbSqliteOnDiskRollout)) {
+  if (base::FeatureList::IsEnabled(features::kIdbSqliteOnDiskRollout)) {
     return kIdbSqliteOnDiskRolloutStage.Get();
   }
   return SqliteRolloutStage::kUseLevelDbOnly;

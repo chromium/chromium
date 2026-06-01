@@ -909,6 +909,9 @@ public final class ProductionSupportedFlagList {
                 "Force all WebView instances to enable WebAuthn by default in APP mode. This has"
                         + " no effect for apps which explicitly choose a WebAuthn mode."),
         Flag.baseFeature(
+                ContentFeatures.IDB_SQLITE_ON_DISK_ROLLOUT,
+                "Enables the SQLite backing store rollout for on-disk IndexedDB."),
+        Flag.baseFeature(
                 ContentFeatures.IGNORE_DUPLICATE_NAVS,
                 "Ignore duplicate navigations, keeping the older navigations instead."),
         Flag.baseFeature("OverrideAPIKey"),
