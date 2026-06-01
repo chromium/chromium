@@ -215,10 +215,16 @@ void LongPressEntry(NSString* entryTitle) {
 // Asserts that the entry with the title `entryTitle` is visible.
 void AssertEntryVisible(NSString* entryTitle) {
   ScrollToTop();
-  [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(entryTitle)]
-         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
-      onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
-      assertWithMatcher:grey_notNil()];
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(entryTitle)]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (error) {
+    [[[EarlGrey selectElementWithMatcher:VisibleReadingListItem(entryTitle)]
+           usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
+        onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
+        assertWithMatcher:grey_notNil()];
+  }
 }
 
 // Asserts that all the entries are visible.
