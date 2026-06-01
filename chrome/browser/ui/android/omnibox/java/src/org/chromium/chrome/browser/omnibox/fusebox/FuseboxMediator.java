@@ -479,13 +479,20 @@ import java.util.function.Supplier;
         } else if (!OmniboxFeatures.sCompactFusebox.getValue()) {
             targetState = FuseboxState.EXPANDED;
         } else {
+            boolean isPopover =
+                    mModel.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
+                            == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
             targetState =
                     // If we're showing the request type button...
                     showRequestTypeButton
                                     // or the text is wrapping...
                                     || mIsTextWrapping
-                                    // or the attachments list has elements - expand the fusebox.
+                                    // or the attachments list has elements...
                                     || !mModelList.isEmpty()
+                                    // or popover with any ai request type, even when the request
+                                    // button isn't showing, - expand the fusebox.
+                                    || (isPopover
+                                            && ToolModeUtils.isAimRequest(mInput.getRequestType()))
                             ? FuseboxState.EXPANDED
                             : FuseboxState.COMPACT;
         }

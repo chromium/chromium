@@ -480,13 +480,24 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void updateFuseboxState_desktopPlatform_emptyModelList_isCompact() {
+    public void updateFuseboxState_desktopPlatform_conventional_emptyModelList_isCompact() {
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
 
         assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+    }
+
+    @Test
+    public void updateFuseboxState_desktopPlatform_nonConventional_emptyModelList_isExpanded() {
+        OmniboxFeatures.sCompactFusebox.setForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        recreateMediator();
+
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
     }
 
     @Test
