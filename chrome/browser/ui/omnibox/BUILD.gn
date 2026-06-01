@@ -150,6 +150,7 @@ source_set("impl") {
       "//chrome/browser/safe_browsing",
       "//chrome/browser/ssl",
       "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/extensions/",
@@ -231,6 +232,7 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "alternate_nav_infobar_delegate_unittest.cc",
       "chrome_omnibox_navigation_observer_unittest.cc",
       "clipboard_utils_unittest.cc",
       "omnibox_context_menu_controller_unittest.cc",
@@ -247,6 +249,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui:ui_features",
       "//chrome/test:test_support",
       "//components/bookmarks/test",
       "//components/contextual_tasks/public:query_contextualizer",
@@ -296,6 +299,7 @@ if (!is_android) {
       "//chrome/browser/contextual_search",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox:test_support",

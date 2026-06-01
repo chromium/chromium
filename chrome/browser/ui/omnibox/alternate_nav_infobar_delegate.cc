@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
 
+#include <string>
+#include <vector>
+
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -11,6 +14,7 @@
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -54,6 +58,9 @@ const gfx::VectorIcon& AlternateNavInfoBarDelegate::GetVectorIcon() const {
 }
 
 std::u16string AlternateNavInfoBarDelegate::GetLinkText() const {
+  if (base::FeatureList::IsEnabled(features::kInfoBarInlineLinks)) {
+    return std::u16string();
+  }
   return base::UTF8ToUTF16(destination_url_.spec());
 }
 
@@ -92,6 +99,34 @@ bool AlternateNavInfoBarDelegate::LinkClicked(
   // We should always close, even if the navigation did not occur within this
   // WebContents.
   return true;
+}
+
+std::u16string AlternateNavInfoBarDelegate::GetMessageText() const {
+  return l10n_util::GetStringFUTF16(IDS_ALTERNATE_NAV_URL_VIEW_LABEL,
+                                    base::UTF8ToUTF16(destination_url_.spec()));
+}
+
+std::u16string AlternateNavInfoBarDelegate::GetMessageTextTemplate() const {
+  return l10n_util::GetStringUTF16(IDS_ALTERNATE_NAV_URL_VIEW_LABEL);
+}
+
+std::vector<MessageSubstitution>
+AlternateNavInfoBarDelegate::GetMessageSubstitutions() const {
+  std::vector<MessageSubstitution> substitutions;
+  substitutions.emplace_back(base::UTF8ToUTF16(destination_url_.spec()),
+                             /*is_link=*/true, std::nullopt);
+  return substitutions;
+}
+
+bool AlternateNavInfoBarDelegate::InlineSubstitutionLinkClicked(
+    size_t index,
+    WindowOpenDisposition disposition) {
+  CHECK_EQ(index, 0u);
+  return LinkClicked(disposition);
+}
+
+int AlternateNavInfoBarDelegate::GetButtons() const {
+  return BUTTON_NONE;
 }
 
 AlternateNavInfoBarDelegate::AlternateNavInfoBarDelegate(

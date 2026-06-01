@@ -7,6 +7,9 @@ module infobar_internals.mojom;
 // Types for every infobar that can be triggered from the internals page.
 // Keep these sorted alphabetically.
 enum InfoBarType {
+  // Alternate nav infobar.
+  kAlternateNav,
+
   // Collected cookies infobar.
   kCollectedCookies,
 

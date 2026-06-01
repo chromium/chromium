@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 
@@ -22,7 +23,7 @@ class WebContents;
 
 // This class creates an alternate nav infobar and delegate and adds the infobar
 // to the infobar manager for |web_contents|.
-class AlternateNavInfoBarDelegate : public infobars::InfoBarDelegate {
+class AlternateNavInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   AlternateNavInfoBarDelegate(const AlternateNavInfoBarDelegate&) = delete;
   AlternateNavInfoBarDelegate& operator=(const AlternateNavInfoBarDelegate&) =
@@ -46,6 +47,15 @@ class AlternateNavInfoBarDelegate : public infobars::InfoBarDelegate {
   std::u16string GetLinkText() const override;
   GURL GetLinkURL() const override;
   bool LinkClicked(WindowOpenDisposition disposition) override;
+
+  // ConfirmInfoBarDelegate:
+  std::u16string GetMessageText() const override;
+  std::u16string GetMessageTextTemplate() const override;
+  std::vector<MessageSubstitution> GetMessageSubstitutions() const override;
+  bool InlineSubstitutionLinkClicked(
+      size_t index,
+      WindowOpenDisposition disposition) override;
+  int GetButtons() const override;
 
  private:
   AlternateNavInfoBarDelegate(Profile* profile,
