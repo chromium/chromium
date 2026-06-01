@@ -938,6 +938,10 @@ TEST_F(AIPageContentAgentTest, Image) {
   CheckImageNode(image_node, "missing");
   CheckGeometry(image_node, gfx::Rect(-20, -10, 30, 40),
                 gfx::Rect(0, 0, 10, 30));
+  ASSERT_TRUE(image_node.content_attributes->image_info);
+  ASSERT_TRUE(image_node.content_attributes->image_info->source_origin);
+  EXPECT_TRUE(
+      image_node.content_attributes->image_info->source_origin->IsOpaque());
 }
 
 TEST_F(AIPageContentAgentTest, ImageWithAriaLabel) {
@@ -1038,6 +1042,9 @@ TEST_F(AIPageContentAgentTest, Video) {
   ASSERT_TRUE(video1.content_attributes->video_data);
   EXPECT_EQ(video1.content_attributes->video_data->url,
             blink::KURL("https://example.com/video.mp4"));
+  ASSERT_TRUE(video1.content_attributes->video_data->source_origin);
+  EXPECT_EQ(video1.content_attributes->video_data->source_origin->ToString(),
+            "https://example.com");
 
   const auto& video2 = *root.children_nodes[1];
   EXPECT_EQ(video2.content_attributes->attribute_type,
@@ -1046,6 +1053,9 @@ TEST_F(AIPageContentAgentTest, Video) {
   EXPECT_EQ(
       video2.content_attributes->video_data->url,
       blink::KURL("https://example.com/video.mp4?param1=value1&param2=value2"));
+  ASSERT_TRUE(video2.content_attributes->video_data->source_origin);
+  EXPECT_EQ(video2.content_attributes->video_data->source_origin->ToString(),
+            "https://example.com");
 }
 
 TEST_F(AIPageContentAgentTest, Headings) {

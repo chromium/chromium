@@ -57,17 +57,20 @@
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
+#include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/layout_media.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -84,6 +87,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -1082,6 +1086,78 @@ void ProcessTextNode(const LayoutText& layout_text,
   attributes.text_info = std::move(text_info);
 }
 
+// Resolves the active image URL for the given `layout_image`.
+KURL ResolveImageUrl(const LayoutObject& layout_image) {
+  Node* dom_node = layout_image.GetNode();
+  if (!dom_node) {
+    return KURL();
+  }
+
+  // Resolves the DOM element associated with the given `layout_image`, taking
+  // care to traverse up to the owner shadow host if the layout node is inside
+  // an internal shadow tree (e.g., a broken image fallback rendered by
+  // `HTMLImageFallbackHelper`).
+  Element* element = dom_node->IsInUserAgentShadowRoot()
+                         ? dom_node->OwnerShadowHost()
+                         : DynamicTo<Element>(dom_node);
+  if (!element) {
+    return KURL();
+  }
+
+  AtomicString dom_src = element->ImageSourceURL();
+  if (!dom_src.empty()) {
+    return element->GetDocument().CompleteURL(dom_src);
+  }
+
+  return KURL();
+}
+
+// Resolves the security origin for a given URL. For about:blank URLs, the
+// origin is inherited from the document of the given node.
+scoped_refptr<const SecurityOrigin> GetOriginForUrl(const KURL& url,
+                                                    const Node* node) {
+  if (url.IsEmpty()) {
+    return nullptr;
+  }
+
+  const SecurityOrigin* reference_origin = nullptr;
+  if (node && node->GetExecutionContext()) {
+    reference_origin = node->GetExecutionContext()->GetSecurityOrigin();
+  }
+
+  return SecurityOrigin::CreateWithReferenceOrigin(url, reference_origin);
+}
+
+// Resolves the security origin for the image element associated with the layout
+// image. Prioritizes standard image resources, and falls back to DOM-level
+// attributes.
+scoped_refptr<const SecurityOrigin> GetImageSourceOrigin(
+    const LayoutObject& layout_image) {
+  KURL image_url;
+
+  const ImageResourceContent* image_resource_content = nullptr;
+  if (const auto* layout_image_concrete =
+          DynamicTo<LayoutImage>(&layout_image)) {
+    image_resource_content = layout_image_concrete->CachedImage();
+  } else if (const auto* layout_svg_image =
+                 DynamicTo<LayoutSVGImage>(&layout_image)) {
+    if (const LayoutImageResource* image_resource =
+            layout_svg_image->ImageResource()) {
+      image_resource_content = image_resource->CachedImage();
+    }
+  }
+
+  if (image_resource_content) {
+    image_url = image_resource_content->Url();
+  }
+
+  if (image_url.IsEmpty()) {
+    image_url = ResolveImageUrl(layout_image);
+  }
+
+  return GetOriginForUrl(image_url, layout_image.GetNode());
+}
+
 void ProcessImageNode(const LayoutObject& layout_image,
                       mojom::blink::AIPageContentAttributes& attributes) {
   attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kImage;
@@ -1104,7 +1180,8 @@ void ProcessImageNode(const LayoutObject& layout_image,
         ReplaceUnpairedSurrogates(image_element->AltText());
   }
 
-  // TODO(crbug.com/382558422): Include image source origin.
+  image_info->source_origin = GetImageSourceOrigin(layout_image);
+
   attributes.image_info = std::move(image_info);
 }
 
@@ -1145,8 +1222,9 @@ void ProcessVideoNode(const HTMLVideoElement& video_element,
   }
 
   auto video_data = mojom::blink::AIPageContentVideoData::New();
-  video_data->url = video_element.SourceURL();
-  // TODO(crbug.com/382558422): Include video source origin.
+  KURL video_url = video_element.SourceURL();
+  video_data->url = video_url;
+  video_data->source_origin = GetOriginForUrl(video_url, &video_element);
   attributes.video_data = std::move(video_data);
 }
 
