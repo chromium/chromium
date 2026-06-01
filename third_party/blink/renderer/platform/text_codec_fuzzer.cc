@@ -57,8 +57,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       fuzzed_data.PickValueInArray(kFlushBehavior);
 
   // Now, use the rest of the fuzzy data to stress test decoding and encoding.
-  const std::string byte_string = fuzzed_data.ConsumeRemainingBytes();
-  auto byte_span = base::as_byte_span(byte_string);
+  const std::vector<uint8_t> bytes =
+      fuzzed_data.ConsumeRemainingBytesAs<uint8_t>();
+  base::span<const uint8_t> byte_span = base::as_byte_span(bytes);
   std::unique_ptr<blink::TextCodec> codec = NewTextCodec(encoding);
 
   // Treat as bytes-off-the-wire.
@@ -67,21 +68,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       codec->Decode(byte_span, flush_behavior, stop_on_error, saw_error);
 
   // Treat as blink 8-bit string (latin1).
-  if (size % sizeof(blink::LChar) == 0) {
-    std::unique_ptr<blink::TextCodec> lchar_codec = NewTextCodec(encoding);
-    lchar_codec->Encode(byte_span, unencodable_handling);
-  }
+  static_assert(sizeof(uint8_t) == sizeof(blink::LChar));
+  std::unique_ptr<blink::TextCodec> lchar_codec = NewTextCodec(encoding);
+  lchar_codec->Encode(byte_span, unencodable_handling);
 
-  // Treat as blink 16-bit string (utf-16) if there are an even number of bytes.
-  if (size % sizeof(UChar) == 0) {
-    // SAFETY: We have no way to convert a byte span to a UChar span.
-    // `byte_span` contains at least byte_span.size() / sizeof(UChar) UChars.
-    auto uchar_span = UNSAFE_BUFFERS(
-        base::span(reinterpret_cast<const UChar*>(byte_span.data()),
-                   byte_span.size() / sizeof(UChar)));
-    std::unique_ptr<blink::TextCodec> uchar_codec = NewTextCodec(encoding);
-    uchar_codec->Encode(uchar_span, unencodable_handling);
-  }
+  // Treat as blink 16-bit string (utf-16).
+  //
+  // Use a round number of bytes to mint a span of `UChar` (required
+  // to call `reinterpret_span()`).
+  const size_t round_number_of_bytes = (size / sizeof(UChar)) * sizeof(UChar);
+  base::span<const UChar> uchars = base::subtle::reinterpret_span<const UChar>(
+      byte_span.first(round_number_of_bytes));
+  std::unique_ptr<blink::TextCodec> uchar_codec = NewTextCodec(encoding);
+  uchar_codec->Encode(uchars, unencodable_handling);
 
   if (decoded.IsNull())
     return 0;
