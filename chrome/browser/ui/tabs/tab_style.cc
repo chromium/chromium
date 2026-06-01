@@ -17,14 +17,14 @@ namespace {
 
 // Thickness in DIPs of the separator painted on the left and right edges of
 // the tab.
-constexpr int kChromeRefreshSeparatorThickness = 2;
-constexpr int kChromeRefreshSeparatorHorizontalMargin = 2;
+constexpr int kSeparatorThickness = 2;
+constexpr int kSeparatorHorizontalMargin = 2;
 // TODO (crbug.com/40915785): This constant should be in LayoutConstants.
-constexpr int kChromeRefreshSeparatorHeight = 16;
+constexpr int kSeparatorHeight = 16;
 
 // The padding from the top of the tab to the content area.
-constexpr int kChromeRefreshTabVerticalPadding = 6;
-constexpr int kChromeRefreshTabHorizontalPadding = 8;
+constexpr int kTabVerticalPadding = 6;
+constexpr int kTabHorizontalPadding = 8;
 
 // The standard tab width is 232 DIP, excluding separators and overlap.
 constexpr int kTabWidth = 232;
@@ -70,7 +70,7 @@ int TabStyle::GetMinimumActiveWidth(const bool is_split) const {
 
   if (is_split) {
     // Only have one set of horizontal padding between tabs in an active split.
-    return min_active_width - kChromeRefreshTabHorizontalPadding / 2;
+    return min_active_width - kTabHorizontalPadding / 2;
   }
 
   return min_active_width;
@@ -110,23 +110,18 @@ gfx::Size TabStyle::GetPreviewImageSize() const {
 }
 
 gfx::Size TabStyle::GetSeparatorSize() const {
-  return gfx::Size(kChromeRefreshSeparatorThickness,
-                   kChromeRefreshSeparatorHeight);
+  return gfx::Size(kSeparatorThickness, kSeparatorHeight);
 }
 
 gfx::Insets TabStyle::GetSeparatorMargins() const {
   return gfx::Insets::TLBR(GetLayoutConstant(LayoutConstant::kTabStripPadding),
-                           kChromeRefreshSeparatorHorizontalMargin,
+                           kSeparatorHorizontalMargin,
                            GetLayoutConstant(LayoutConstant::kTabStripPadding),
-                           kChromeRefreshSeparatorHorizontalMargin);
+                           kSeparatorHorizontalMargin);
 }
 
 int TabStyle::GetSeparatorCornerRadius() const {
   return GetSeparatorSize().width() / 2;
-}
-
-int TabStyle::GetDragHandleExtension(int height) const {
-  return 6;
 }
 
 std::tuple<float, float, float, SkColor> TabStyle::GetContrastRatioValues(
@@ -265,12 +260,10 @@ SkColor TabStyle::GetCurrentTabBackgroundColor(
 
 gfx::Insets TabStyle::GetContentsInsets() const {
   return gfx::Insets::TLBR(
-      kChromeRefreshTabVerticalPadding +
-          GetLayoutConstant(LayoutConstant::kTabStripPadding),
-      GetBottomCornerRadius() + kChromeRefreshTabHorizontalPadding,
-      kChromeRefreshTabVerticalPadding +
-          GetLayoutConstant(LayoutConstant::kTabStripPadding),
-      GetBottomCornerRadius() + kChromeRefreshTabHorizontalPadding);
+      kTabVerticalPadding + GetLayoutConstant(LayoutConstant::kTabStripPadding),
+      GetBottomCornerRadius() + kTabHorizontalPadding,
+      kTabVerticalPadding + GetLayoutConstant(LayoutConstant::kTabStripPadding),
+      GetBottomCornerRadius() + kTabHorizontalPadding);
 }
 
 float TabStyle::GetSelectedTabOpacity() const {

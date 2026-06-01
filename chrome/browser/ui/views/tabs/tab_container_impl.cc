@@ -47,7 +47,11 @@
 #include "ui/views/view_utils.h"
 
 namespace {
-
+// When the window has a top drag handle, a thin strip at the top of
+// inactive tabs and the new tab button can be treated as part of the window
+// drag handle, to increase draggability.  This region starts 1 DIP above
+// the top of the separator.
+constexpr int kDragHandleExtension = 6;
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -567,20 +571,13 @@ bool TabContainerImpl::IsRectInContentArea(const gfx::Rect& rect) {
   }
 
   if (controller_->CanExtendDragHandle()) {
-    // When the window has a top drag handle, a thin strip at the top of
-    // inactive tabs and the new tab button can be treated as part of the window
-    // drag handle, to increase draggability.  This region starts 1 DIP above
-    // the top of the separator.
-    const int drag_handle_extension =
-        TabStyle::Get()->GetDragHandleExtension(height());
-
     // A hit on an inactive tab is in the content area unless it is in the thin
     // strip mentioned above.
     const std::optional<size_t> tab_index = tabs_view_model_.GetIndexOfView(v);
     if (tab_index.has_value() && IsValidModelIndex(tab_index.value())) {
       Tab* tab = GetTabAtModelIndex(tab_index.value());
       gfx::Rect tab_drag_handle = tab->GetMirroredBounds();
-      tab_drag_handle.set_height(drag_handle_extension);
+      tab_drag_handle.set_height(kDragHandleExtension);
       return tab->IsActive() || !tab_drag_handle.Intersects(rect);
     }
   }

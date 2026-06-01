@@ -143,11 +143,6 @@ class TabStyle {
   // Gets the radius of the rounded rect used to draw the separator.
   int GetSeparatorCornerRadius() const;
 
-  // Returns, for a tab of height |height|, how far the window top drag handle
-  // can extend down into inactive tabs or the new tab button. This behavior
-  // is not used in all cases.
-  int GetDragHandleExtension(int height) const;
-
   // Gets the preferred size for tab previews, which could be screencaps, hero
   // or og:image images, etc.
   gfx::Size GetPreviewImageSize() const;
