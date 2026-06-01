@@ -860,10 +860,11 @@ public class RootUiCoordinator
         }
     }
 
-    // TODO(pnoland, crbug.com/40585866): remove this in favor of wiring it directly.
-    public ToolbarManager getToolbarManager() {
-        assert mToolbarManager != null;
-        return mToolbarManager;
+    /**
+     * @return The {@link OneshotSupplier} for the {@link ToolbarManager}.
+     */
+    public OneshotSupplier<ToolbarManager> getToolbarManagerSupplier() {
+        return mToolbarManagerOneshotSupplier;
     }
 
     public StatusBarColorController getStatusBarColorController() {

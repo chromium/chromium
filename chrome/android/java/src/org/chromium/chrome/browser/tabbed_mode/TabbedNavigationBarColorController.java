@@ -115,8 +115,8 @@ class TabbedNavigationBarColorController
      * @param context Used to load resources.
      * @param tabModelSelector The {@link TabModelSelector} used to determine which tab model is
      *     selected.
-     * @param layoutManagerSupplier An {@link MonotonicObservableSupplier} for the {@link LayoutManager}
-     *     associated with the containing activity.
+     * @param layoutManagerSupplier An {@link MonotonicObservableSupplier} for the {@link
+     *     LayoutManager} associated with the containing activity.
      * @param fullscreenManager The {@link FullscreenManager} used to determine if fullscreen is
      *     enabled.
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} to detect when

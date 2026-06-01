@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPT
 import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -1925,10 +1926,12 @@ public class ToolbarManager
 
         // TODO(crbug.com/448691376): Change ToolbarPositionController profileSupplier argument
         // to Supplier<@Nullable Profile> and updated the rest of the code.
+        @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
+        SharedPreferences sharedPreferences = ContextUtils.getAppSharedPreferences();
         mToolbarPositionController =
                 new ToolbarPositionController(
                         mBrowserControlsSizer,
-                        ContextUtils.getAppSharedPreferences(),
+                        sharedPreferences,
                         mIsNtpWithFakeboxShowingSupplier,
                         mIsIncognitoNtpShowingSupplier,
                         mIsTabSwitcherFinishedShowingSupplier,
@@ -2714,6 +2717,7 @@ public class ToolbarManager
 
     @Override
     public @Nullable View getMenuButtonView() {
+        if (mMenuButtonCoordinator == null) return null;
         MenuButton button = mMenuButtonCoordinator.getMenuButton();
         if (button == null) return null;
         return button.getImageButton();

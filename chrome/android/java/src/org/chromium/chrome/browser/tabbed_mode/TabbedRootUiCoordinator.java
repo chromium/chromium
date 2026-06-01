@@ -203,6 +203,7 @@ import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarControl
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
@@ -920,6 +921,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onPostInflationStartup() {
         super.onPostInflationStartup();
 
+        ToolbarManager toolbarManager = mToolbarManager;
+        assert toolbarManager != null;
+
         var bottomSheetController = getBottomSheetController();
         assert bottomSheetController != null;
         mSystemUiCoordinator =
@@ -933,7 +937,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mBrowserControlsManager,
                         mContextualSearchManagerSupplier,
                         bottomSheetController,
-                        getToolbarManager().getLocationBar().getOmniboxSuggestionsVisualState(),
+                        toolbarManager.getLocationBar().getOmniboxSuggestionsVisualState(),
                         mManualFillingComponentSupplier.get(),
                         mOverviewColorSupplier,
                         mInsetObserver,
@@ -957,7 +961,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         super.initializeToolbar();
 
         if (AndroidSidePanelEnabledFn.isEnabled()) {
-            getToolbarManager().setSideUiStateProviderSupplier(mSideUiStateProviderSupplier);
+            mToolbarManager.setSideUiStateProviderSupplier(mSideUiStateProviderSupplier);
         }
     }
 
@@ -1160,7 +1164,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
-            getToolbarManager().enableBottomControls();
+            // mToolbarManager is initialized in initializeToolbar() which happens during
+            // inflation.
+            assumeNonNull(mToolbarManager).enableBottomControls();
         }
 
         SupplierUtils.waitForAll(
@@ -1449,8 +1455,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private void initializeIph(Profile profile, boolean intentWithEffect) {
         if (mActivity == null) return;
+        ToolbarManager toolbarManager = mToolbarManager;
+        if (toolbarManager == null) return;
 
-        var menuButtonView = getToolbarManager().getMenuButtonView();
+        var menuButtonView = toolbarManager.getMenuButtonView();
         assert menuButtonView != null;
         assert mAppMenuCoordinator != null;
         assert mMessageDispatcher != null;
@@ -1549,7 +1557,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     new OfflineIndicatorInProductHelpController(
                             mActivity,
                             profile,
-                            getToolbarManager(),
+                            toolbarManager,
                             mAppMenuCoordinator.getAppMenuHandler(),
                             mStatusIndicatorCoordinator);
         }
@@ -1782,8 +1790,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     hubManager.setStatusIndicatorHeight(mStatusIndicatorHeight);
                 });
 
+        // mToolbarManager is initialized in initializeToolbar() which happens during
+        // inflation.
         SettableNonNullObservableSupplier<Boolean> isUrlBarFocusedSupplier =
-                ObservableSuppliers.createNonNull(getToolbarManager().isUrlBarFocused());
+                ObservableSuppliers.createNonNull(assumeNonNull(mToolbarManager).isUrlBarFocused());
         mUrlFocusChangeListener =
                 new UrlFocusChangeListener() {
                     @Override
@@ -1814,8 +1824,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mCanAnimateBrowserControls);
         }
 
-        if (getToolbarManager().getOmniboxStub() != null) {
-            getToolbarManager().getOmniboxStub().addUrlFocusChangeListener(mUrlFocusChangeListener);
+        if (mToolbarManager.getOmniboxStub() != null) {
+            mToolbarManager.getOmniboxStub().addUrlFocusChangeListener(mUrlFocusChangeListener);
         }
     }
 

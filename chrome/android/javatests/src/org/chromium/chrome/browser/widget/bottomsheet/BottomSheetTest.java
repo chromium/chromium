@@ -274,7 +274,11 @@ public class BottomSheetTest {
     @MediumTest
     public void testOmniboxFocusSuppressesSheet() {
         ToolbarManager toolbarManager =
-                mTestRule.getActivity().getRootUiCoordinatorForTesting().getToolbarManager();
+                mTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getToolbarManagerSupplier()
+                        .get();
         showContent(mHighPriorityContent, SheetState.HALF);
 
         runOnUiThreadBlocking(

@@ -631,7 +631,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             modalDialogManager,
                             () -> mRootUiCoordinator.getAppBrowserControlsVisibilityDelegate(),
                             this::getTabObscuringHandler,
-                            this::getToolbarManager,
+                            mRootUiCoordinator.getToolbarManagerSupplier(),
                             mRootUiCoordinator::hideContextualSearch,
                             getTabModelSelectorSupplier(),
                             this::getBrowserControlsManager,
@@ -995,11 +995,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     /**
      * @return {@link ToolbarManager} that belongs to this activity or null if the current activity
-     *     does not support a toolbar. TODO(pnoland, https://crbug.com/40585866): remove this in
-     *     favor of having RootUICoordinator inject ToolbarManager directly to sub-components.
+     *     does not support a toolbar.
      */
     public @Nullable ToolbarManager getToolbarManager() {
-        return mRootUiCoordinator.getToolbarManager();
+        return mRootUiCoordinator.getToolbarManagerSupplier().get();
     }
 
     /**

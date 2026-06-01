@@ -11,6 +11,7 @@ import android.app.Activity;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -85,7 +86,7 @@ public class TabModalLifetimeHandler
     private final Supplier<ComposedBrowserControlsVisibilityDelegate>
             mAppVisibilityDelegateSupplier;
     private final Supplier<TabObscuringHandler> mTabObscuringHandlerSupplier;
-    private final Supplier<@Nullable ToolbarManager> mToolbarManagerSupplier;
+    private final OneshotSupplier<ToolbarManager> mToolbarManagerSupplier;
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<BrowserControlsVisibilityManager>
             mBrowserControlsVisibilityManagerSupplier;
@@ -128,7 +129,7 @@ public class TabModalLifetimeHandler
             ModalDialogManager manager,
             Supplier<ComposedBrowserControlsVisibilityDelegate> appVisibilityDelegateSupplier,
             Supplier<TabObscuringHandler> tabObscuringHandlerSupplier,
-            Supplier<@Nullable ToolbarManager> toolbarManagerSupplier,
+            OneshotSupplier<ToolbarManager> toolbarManagerSupplier,
             Runnable hideContextualSearch,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             Supplier<BrowserControlsVisibilityManager> browserControlsVisibilityManagerSupplier,

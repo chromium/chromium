@@ -194,7 +194,7 @@ public class TabbedRootUiCoordinatorTest {
         assertNotNull(browserControlsManager);
 
         // Verify toolbar existence.
-        final var toolbarManager = mTabbedRootUiCoordinator.getToolbarManager();
+        final var toolbarManager = mTabbedRootUiCoordinator.getToolbarManagerSupplier().get();
         assertNotNull(toolbarManager);
         final var toolbar = toolbarManager.getToolbar();
         assertNotNull(toolbar);

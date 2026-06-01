@@ -5070,8 +5070,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         if (Boolean.TRUE.equals(result)) return result;
 
+        @Nullable ToolbarManager toolbarManager =
+                mRootUiCoordinator.getToolbarManagerSupplier().get();
         ExtensionsToolbarCoordinator extensionsToolbarCoordinator =
-                mRootUiCoordinator.getToolbarManager().getExtensionsToolbarCoordinator();
+                toolbarManager == null ? null : toolbarManager.getExtensionsToolbarCoordinator();
         if (extensionsToolbarCoordinator != null) {
             // Handle extension shortcuts.
             if (extensionsToolbarCoordinator.dispatchKeyEvent(event)) {

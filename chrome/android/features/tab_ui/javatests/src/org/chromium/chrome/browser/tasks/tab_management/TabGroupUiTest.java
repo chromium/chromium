@@ -466,7 +466,8 @@ public class TabGroupUiTest {
                 mActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
-                        .getToolbarManager()
+                        .getToolbarManagerSupplier()
+                        .get()
                         .getTabGroupUiBottomControlsCoordinatorForTesting();
 
         // Scene overlay should be visible
