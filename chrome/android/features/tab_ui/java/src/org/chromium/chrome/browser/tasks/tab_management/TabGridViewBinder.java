@@ -222,6 +222,12 @@ public class TabGridViewBinder {
                             && (state.tabIndicator == TabIndicatorStatus.DYNAMIC
                                     || state.tabIndicator == TabIndicatorStatus.STATIC);
             ((TabGridView) view).setActorActiveUiVisible(shouldBeVisible);
+            if (shouldBeVisible) {
+                String title = model.get(TabProperties.TITLE);
+                String accessibilityDesc =
+                        view.getResources().getString(R.string.tab_ax_label_actor_accessing, title);
+                view.setContentDescription(accessibilityDesc);
+            }
         }
     }
 

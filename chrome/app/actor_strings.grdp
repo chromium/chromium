@@ -53,7 +53,7 @@
   <message name="IDS_TOOLTIP_TAB_ALERT_STATE_ACTOR_ACCESSING" desc="Extra tool tip text, when the tab's context is being shared with Gemini" translateable="true">
     Gemini is working on your task...
   </message>
-   <message name="IDS_TAB_AX_LABEL_ACTOR_ACCESSING" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the Gemini is working on tab">
+  <message name="IDS_TAB_AX_LABEL_ACTOR_ACCESSING" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the Gemini is working on tab" formatter_data="android_java">
     <ph name="WINDOW_TITLE">
       $1<ex>Wikipedia</ex>
     </ph> - Gemini is working on your task...
@@ -88,7 +88,9 @@
   <message name="IDS_GLIC_BUTTON_STATUS_DONE_A11Y_LABEL" desc="Content description on the Gemini entry point button when Gemini has completed a task." formatter_data="android_java" is_accessibility_with_no_ui="true">
     Done with task. Ask Gemini
   </message>
-
+  <message name="IDS_GLIC_BUTTON_STATUS_WORKING_A11Y_LABEL" desc="Content description on the Gemini entry point button when Gemini is working on a task." formatter_data="android_java" is_accessibility_with_no_ui="true">
+    Working on task. Ask Gemini
+  </message>
   <message name="IDS_ACTOR_NOTIFICATION_TITLE_WORKING_ON_TASK" desc="Notification title when the actor is actively working on a task." formatter_data="android_java">
    Working on your task
   </message>

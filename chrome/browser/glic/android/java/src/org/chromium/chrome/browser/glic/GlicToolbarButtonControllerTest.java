@@ -196,6 +196,9 @@ public class GlicToolbarButtonControllerTest {
         ButtonData buttonData = mController.get(mTab);
         Assert.assertTrue(buttonData.getButtonSpec().getDrawable() instanceof LayerDrawable);
         Assert.assertEquals(0, buttonData.getButtonSpec().getActionChipLabelResId());
+        Assert.assertEquals(
+                mContext.getString(R.string.glic_button_status_working_a11y_label),
+                buttonData.getButtonSpec().getContentDescription());
     }
 
     @Test
