@@ -33,6 +33,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -41,6 +42,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/accessibility_annotator/core/mock_accessibility_query_service.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
@@ -5926,6 +5928,70 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_manager().DidShowSuggestions(
       {Suggestion(SuggestionType::kAddressEntry)}, form.global_id(),
       form.fields()[0].global_id(), {});
+}
+
+// Tests that even if the context is secure and the `FormStructure` is missing,
+// the underlying `FormData` is still evaluated for being safe enough for
+// filling SPIIs.
+TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_FormNonSecureAction) {
+  // Ensure that the client context is secure.
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://example.com"));
+  ASSERT_TRUE(autofill_client().IsContextSecure());
+
+  auto mock_query_service = std::make_unique<testing::NiceMock<
+      accessibility_annotator::MockAccessibilityQueryService>>();
+  accessibility_annotator::MockAccessibilityQueryService*
+      mock_query_service_ptr = mock_query_service.get();
+  autofill_client().set_accessibility_query_service(
+      std::move(mock_query_service));
+
+  // Create a form that submits to an insecure HTTP action.
+  FormData insecure_form;
+  insecure_form.set_name(u"InsecureForm");
+  insecure_form.set_url(GURL("https://example.com/form.html"));
+  insecure_form.set_action(GURL("http://attacker.com/search"));
+  test_api(insecure_form)
+      .Append(CreateTestFormField("Search", "search", "",
+                                  FormControlType::kInputText));
+
+  OnAskForValuesToFill(insecure_form, insecure_form.fields()[0]);
+
+  std::vector<Suggestion> updated_suggestions;
+  auto update_callback = base::BindLambdaForTesting(
+      [&](std::vector<Suggestion> suggestions,
+          AutofillSuggestionTriggerSource trigger_source) {
+        updated_suggestions = std::move(suggestions);
+      });
+  autofill_manager().DidShowSuggestions(
+      {Suggestion(SuggestionType::kAddressEntry)}, insecure_form.global_id(),
+      test::MakeFieldGlobalId(), update_callback,
+      AutofillSuggestionTriggerSource::kAtMemory);
+
+  // Submit search query. This should invoke Query on mock query service.
+  base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
+      search_callback;
+  EXPECT_CALL(*mock_query_service_ptr,
+              Query(std::u16string_view(u"query"), _, _))
+      .WillOnce(testing::SaveArg<2>(&search_callback));
+  autofill_manager().GetAtMemoryManager().OnSearchSubmitted(u"query");
+  ASSERT_FALSE(search_callback.is_null());
+
+  // Prepare search results containing a SPII entry.
+  std::vector<accessibility_annotator::MemorySearchResult> entries;
+  entries.emplace_back(accessibility_annotator::EntryType::kPassportNumber,
+                       u"Passport", u"123456789");
+  accessibility_annotator::MemorySearchResults results(
+      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
+      std::move(entries));
+
+  // Send search results. Since the context should be insecure (due to insecure
+  // fallback action), the SPII entry must be filtered out, leaving no
+  // suggestions.
+  search_callback.Run(std::move(results));
+  ASSERT_EQ(updated_suggestions.size(), 1u);
+  EXPECT_EQ(updated_suggestions[0].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_DATA));
 }
 
 TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {

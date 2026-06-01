@@ -2213,7 +2213,7 @@ void BrowserAutofillManager::DidShowSuggestions(
 
   const bool is_context_secure =
       form_structure ? !IsFormOrClientNonSecure(client(), *form_structure)
-                     : client().IsContextSecure();
+                     : !IsFormOrClientNonSecure(client(), last_query_form());
   GetAtMemoryManager().OnPopupShown(trigger_source, is_context_secure,
                                     update_suggestions_callback);
 
