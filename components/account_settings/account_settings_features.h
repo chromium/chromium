@@ -9,7 +9,7 @@
 
 namespace account_settings::features {
 
-BASE_DECLARE_FEATURE(kAccountSettingContext);
+BASE_DECLARE_FEATURE(kAccountSettingContextKillSwitch);
 
 }  // namespace account_settings::features
 

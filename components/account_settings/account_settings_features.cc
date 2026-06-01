@@ -6,7 +6,8 @@
 
 namespace account_settings::features {
 
-// Feature flag to gate context-related account settings.
-BASE_FEATURE(kAccountSettingContext, base::FEATURE_DISABLED_BY_DEFAULT);
+// Kill switch to gate context-related account settings.
+BASE_FEATURE(kAccountSettingContextKillSwitch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace account_settings::features
