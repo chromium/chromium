@@ -3262,6 +3262,16 @@ if (enable_java_templates) {
         "--java-srcjars=$_rebased_java_srcjars",
       ]
 
+      if (defined(invoker.enable_compose) && invoker.enable_compose) {
+        _compose_plugin_jar =
+            "//third_party/kotlinc/current/lib/compose-compiler-plugin.jar"
+        inputs += [ _compose_plugin_jar ]
+        args += [
+          "--compiler-plugin-jar",
+          rebase_path(_compose_plugin_jar, root_build_dir),
+        ]
+      }
+
       # SDK jar must be first on classpath.
       if (invoker.include_android_sdk) {
         args += [
@@ -3978,7 +3988,7 @@ if (enable_java_templates) {
         _found_kt = filter_exclude(_abs_kt_files, _kt_allowlist)
         assert(
             _found_kt == [],
-            "Only a files in the allowlist can be included for now. Feel free to remove this assert when experimenting locally. Found: $_found_kt")
+            "Only the files in the allowlist can be included for now. Feel free to remove this assert when experimenting locally. Found: $_found_kt")
         _compile_kt_target_name = "${_main_target_name}__compile_kt"
         _kotlinc_jar_path = "$target_out_dir/$_output_name.kotlinc.jar"
         _kotlin_interface_jar_path =
@@ -3996,6 +4006,9 @@ if (enable_java_templates) {
           target_sources_file = _target_sources_file
           chromium_code = _chromium_code
           include_android_sdk = _requires_robolectric || _requires_android
+          if (defined(invoker.enable_compose)) {
+            enable_compose = invoker.enable_compose
+          }
         }
       }
 
