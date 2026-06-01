@@ -4,6 +4,7 @@
 
 #include "ui/compositor/presentation_time_recorder.h"
 
+#include <optional>
 #include <ostream>
 
 #include "base/functional/bind.h"
@@ -13,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace ui {
@@ -261,9 +263,11 @@ class PresentationTimeHistogramRecorder
         presentation_time_histogram_name_(
             emit_trace_event ? presentation_time_histogram_name : nullptr) {
     if (presentation_time_histogram_name_) {
+      trace_track_.emplace(
+          perfetto::Track(base::trace_event::GetNextGlobalTraceId()));
       TRACE_EVENT_BEGIN(
           "ui", perfetto::StaticString(presentation_time_histogram_name_),
-          perfetto::Track::FromPointer(this));
+          *trace_track_);
     }
   }
 
@@ -275,8 +279,8 @@ class PresentationTimeHistogramRecorder
   // PresentationTimeRecorderInternal:
   void ReportTime(base::TimeDelta delta) override {
     if (presentation_time_histogram_name_) {
-      TRACE_EVENT_END("ui", /*presentation_time_histogram_name_*/
-                      perfetto::Track::FromPointer(this));
+      TRACE_EVENT_END("ui",
+                      /*presentation_time_histogram_name_*/ *trace_track_);
     }
     presentation_time_histogram_->AddTimeMillisecondsGranularity(delta);
   }
@@ -295,6 +299,7 @@ class PresentationTimeHistogramRecorder
   const PresentationTimeRecorder::BucketParams bucket_params_;
   // Only set if `emit_trace_event_` is true since that's its only use.
   const char* const presentation_time_histogram_name_ = nullptr;
+  std::optional<perfetto::Track> trace_track_;
 };
 
 }  // namespace
