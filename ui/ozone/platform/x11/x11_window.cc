@@ -1333,7 +1333,11 @@ void X11Window::SetOverrideRedirect(bool override_redirect) {
       .override_redirect = x11::Bool32(override_redirect),
   });
   if (remap) {
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     Map();
+    if (!weak_this) {
+      return;
+    }
     // We cannot regrab the pointer now since unmapping/mapping
     // happens asynchronously.  We must wait until the window is
     // mapped to issue a grab request.
