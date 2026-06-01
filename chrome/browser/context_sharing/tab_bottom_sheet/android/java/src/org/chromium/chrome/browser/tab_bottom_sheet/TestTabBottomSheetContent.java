@@ -7,21 +7,51 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
+import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
 
 /** Concrete test implementation of {@link TabBottomSheetContent} for automated testing. */
 @NullMarked
 public class TestTabBottomSheetContent extends TabBottomSheetContent {
     public TestTabBottomSheetContent(
-            View contentView, float fullHeightRatio, @ColorInt int backgroundColor) {
-        super(contentView, fullHeightRatio, backgroundColor);
+            View contentView,
+            float fullHeightRatio,
+            @ColorInt int backgroundColor,
+            @Px int peekViewHeight,
+            @IdRes int peekViewContainerId,
+            @IdRes int emptyPlaceholderContainerId) {
+        super(
+                contentView,
+                fullHeightRatio,
+                backgroundColor,
+                peekViewHeight,
+                peekViewContainerId,
+                emptyPlaceholderContainerId);
     }
 
     @Override
     public @Nullable GlowSpec getSheetBackgroundGlowSpecOverride() {
         return null;
+    }
+
+    @Override
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
+        return R.string.tab_bottom_sheet_half_height;
+    }
+
+    @Override
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
+        return R.string.tab_bottom_sheet_full_height;
+    }
+
+    @Override
+    public @StringRes int getSheetClosedAccessibilityStringId() {
+        return R.string.tab_bottom_sheet_closed;
     }
 }

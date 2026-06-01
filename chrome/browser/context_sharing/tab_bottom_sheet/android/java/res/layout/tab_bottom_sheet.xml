@@ -49,10 +49,10 @@ found in the LICENSE file.
             android:layout_gravity="bottom" />
     </FrameLayout>
 
-    <!-- Actor Control View: Appears when BottomSheet is collapsed -->
+    <!-- Peek View: Appears when BottomSheet is collapsed -->
     <!-- The content includes the actor control view and the drag handle bar frame. -->
     <FrameLayout
-        android:id="@+id/actor_control_container"
+        android:id="@+id/peek_view_container"
         android:layout_width="match_parent"
         android:layout_height="@dimen/tab_bottom_sheet_peek_height_total"
         android:layout_gravity="top"

@@ -152,10 +152,19 @@ public class TabBottomSheetCoordinatorTest {
                             View view = invocation.getArgument(0);
                             float heightRatio = invocation.getArgument(1);
                             int bgColor = invocation.getArgument(2);
-                            return new TestTabBottomSheetContent(view, heightRatio, bgColor);
+                            int peekViewHeight = invocation.getArgument(3);
+                            int actorControlContainerId = invocation.getArgument(4);
+                            int emptyPlaceholderContainerId = invocation.getArgument(5);
+                            return new TestTabBottomSheetContent(
+                                    view,
+                                    heightRatio,
+                                    bgColor,
+                                    peekViewHeight,
+                                    actorControlContainerId,
+                                    emptyPlaceholderContainerId);
                         })
                 .when(mMockContentProvider)
-                .create(any(View.class), anyFloat(), anyInt());
+                .create(any(View.class), anyFloat(), anyInt(), anyInt(), anyInt(), anyInt());
 
         mCoBrowseViews =
                 spy(
@@ -169,8 +178,8 @@ public class TabBottomSheetCoordinatorTest {
                                 mMockContentProvider));
         mView = containerViewSpy;
         assertNotNull(
-                "actor_control_container should be found in CoBrowseViews",
-                mView.findViewById(R.id.actor_control_container));
+                "peek_view_container should be found in CoBrowseViews",
+                mView.findViewById(R.id.peek_view_container));
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
         when(mWindowAndroid.getModalDialogManager()).thenReturn(mMockModalDialogManager);
 

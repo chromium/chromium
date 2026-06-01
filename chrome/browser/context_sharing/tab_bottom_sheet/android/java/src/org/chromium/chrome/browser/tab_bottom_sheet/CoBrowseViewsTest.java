@@ -142,7 +142,7 @@ public class CoBrowseViewsTest {
         assertTrue(mCoBrowseViews.hasPeekView());
 
         View view = mCoBrowseViews.getView();
-        ViewGroup peekContainer = view.findViewById(R.id.actor_control_container);
+        ViewGroup peekContainer = view.findViewById(R.id.peek_view_container);
         assertEquals(1, peekContainer.getChildCount());
         assertEquals(mPeekView, peekContainer.getChildAt(0));
 

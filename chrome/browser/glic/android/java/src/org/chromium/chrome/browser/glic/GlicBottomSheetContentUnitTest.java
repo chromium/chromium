@@ -12,8 +12,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -59,16 +59,29 @@ public class GlicBottomSheetContentUnitTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mContentView =
-                LayoutInflater.from(mContext)
-                        .inflate(
-                                org.chromium.chrome.browser.context_sharing.R.layout
-                                        .tab_bottom_sheet,
-                                null);
+        FrameLayout container = new FrameLayout(mContext);
+        View peekContainer = new View(mContext);
+        peekContainer.setId(12345);
+        container.addView(peekContainer);
+
+        TextViewWithCompoundDrawables placeholder = new TextViewWithCompoundDrawables(mContext);
+        placeholder.setId(12346);
+        container.addView(placeholder);
+
+        mContentView = container;
+
         ActorKeyedServiceFactoryJni.setInstanceForTesting(mActorKeyedServiceFactoryJni);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
 
-        mContent = new GlicBottomSheetContent(mContentView, 0.7f, 0xFFFFFFFF, mProfile);
+        mContent =
+                new GlicBottomSheetContent(
+                        mContentView,
+                        0.7f,
+                        0xFFFFFFFF,
+                        /* peekViewHeight= */ 100,
+                        /* peekViewContainerId= */ 12345,
+                        /* emptyPlaceholderContainerId= */ 12346,
+                        mProfile);
     }
 
     @Test

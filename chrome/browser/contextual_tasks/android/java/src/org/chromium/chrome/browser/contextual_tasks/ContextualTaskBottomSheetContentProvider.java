@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.contextual_tasks;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
+import androidx.annotation.Px;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -37,7 +39,18 @@ public class ContextualTaskBottomSheetContentProvider implements TabBottomSheetC
 
     @Override
     public TabBottomSheetContent create(
-            View contentView, float fullHeightRatio, @ColorInt int backgroundColor) {
-        return new ContextualTaskBottomSheetContent(contentView, fullHeightRatio, backgroundColor);
+            View contentView,
+            float fullHeightRatio,
+            @ColorInt int backgroundColor,
+            @Px int peekViewHeight,
+            @IdRes int peekViewContainerId,
+            @IdRes int emptyPlaceholderContainerId) {
+        return new ContextualTaskBottomSheetContent(
+                contentView,
+                fullHeightRatio,
+                backgroundColor,
+                peekViewHeight,
+                peekViewContainerId,
+                emptyPlaceholderContainerId);
     }
 }

@@ -27,7 +27,7 @@ public class TabBottomSheetViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (PEEK_STATE_ALPHA == propertyKey) {
             float alpha = model.get(PEEK_STATE_ALPHA);
-            View peekContainer = view.findViewById(R.id.actor_control_container);
+            View peekContainer = view.findViewById(R.id.peek_view_container);
             peekContainer.setAlpha(alpha);
             peekContainer.setVisibility(alpha == 0.0f ? View.INVISIBLE : View.VISIBLE);
         } else if (EXPANDED_STATE_ALPHA == propertyKey) {

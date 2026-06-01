@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
+import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -22,8 +24,16 @@ public interface TabBottomSheetContentProvider {
      * @param contentView The content view shown inside the bottom sheet.
      * @param fullHeightRatio The target height ratio of the sheet in full state.
      * @param backgroundColor The background color of the sheet.
+     * @param peekViewHeight The height of the peek view in pixels.
+     * @param peekViewContainerId The resource ID for the peek view container.
+     * @param emptyPlaceholderContainerId The resource ID for the empty placeholder container.
      * @return A non-null custom or default {@link TabBottomSheetContent}.
      */
     TabBottomSheetContent create(
-            View contentView, float fullHeightRatio, @ColorInt int backgroundColor);
+            View contentView,
+            float fullHeightRatio,
+            @ColorInt int backgroundColor,
+            @Px int peekViewHeight,
+            @IdRes int peekViewContainerId,
+            @IdRes int emptyPlaceholderContainerId);
 }

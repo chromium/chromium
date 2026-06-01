@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.glic;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
+import androidx.annotation.Px;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -37,7 +39,19 @@ public class GlicBottomSheetContentProvider implements TabBottomSheetContentProv
 
     @Override
     public TabBottomSheetContent create(
-            View contentView, float fullHeightRatio, @ColorInt int backgroundColor) {
-        return new GlicBottomSheetContent(contentView, fullHeightRatio, backgroundColor, mProfile);
+            View contentView,
+            float fullHeightRatio,
+            @ColorInt int backgroundColor,
+            @Px int peekViewHeight,
+            @IdRes int peekViewContainerId,
+            @IdRes int emptyPlaceholderContainerId) {
+        return new GlicBottomSheetContent(
+                contentView,
+                fullHeightRatio,
+                backgroundColor,
+                peekViewHeight,
+                peekViewContainerId,
+                emptyPlaceholderContainerId,
+                mProfile);
     }
 }

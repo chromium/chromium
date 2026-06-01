@@ -217,7 +217,14 @@ public class TabBottomSheetCoordinator {
         assert provider != null : "TabBottomSheetContentProvider must not be null";
         mSheetContent =
                 provider.create(
-                        mContentView, FULL_HEIGHT_RATIO, mCoBrowseViews.getBackgroundColor());
+                        mContentView,
+                        FULL_HEIGHT_RATIO,
+                        mCoBrowseViews.getBackgroundColor(),
+                        mContentView
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total),
+                        R.id.peek_view_container,
+                        R.id.empty_placeholder_container);
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);

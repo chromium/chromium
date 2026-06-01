@@ -8,12 +8,13 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.NullUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
@@ -25,8 +26,9 @@ import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawab
 public abstract class TabBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final float mFullHeightRatio;
-    private final int mPeekViewHeight;
     private final @ColorInt int mBackgroundColor;
+    private final @Px int mPeekViewHeight;
+    private final @IdRes int mEmptyPlaceholderContainerId;
 
     /**
      * Constructor.
@@ -34,23 +36,29 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
      * @param contentView The inflated view for the bottom sheet.
      * @param fullHeightRatio The full height ratio for the bottom sheet.
      * @param backgroundColor The background color for the bottom sheet.
+     * @param peekViewHeight The height of the peek view in pixels.
+     * @param peekViewContainerId The resource ID for the peek view container.
+     * @param emptyPlaceholderContainerId The resource ID for the empty placeholder container.
      */
     public TabBottomSheetContent(
-            View contentView, float fullHeightRatio, @ColorInt int backgroundColor) {
+            View contentView,
+            float fullHeightRatio,
+            @ColorInt int backgroundColor,
+            @Px int peekViewHeight,
+            @IdRes int peekViewContainerId,
+            @IdRes int emptyPlaceholderContainerId) {
         mContentView = contentView;
         mFullHeightRatio = fullHeightRatio;
         mBackgroundColor = backgroundColor;
-        mPeekViewHeight =
-                mContentView
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total);
+        mPeekViewHeight = peekViewHeight;
+        mEmptyPlaceholderContainerId = emptyPlaceholderContainerId;
 
-        View view = mContentView.findViewById(R.id.actor_control_container);
+        View view = mContentView.findViewById(peekViewContainerId);
         View peekContainer = NullUtil.assertNonNull(view);
         peekContainer.setBackgroundColor(mBackgroundColor);
 
         TextViewWithCompoundDrawables placeholder =
-                NullUtil.assertNonNull(mContentView.findViewById(R.id.empty_placeholder_container));
+                NullUtil.assertNonNull(mContentView.findViewById(mEmptyPlaceholderContainerId));
         if (setupPlaceholder(placeholder)) {
             placeholder.setVisibility(View.VISIBLE);
         }
@@ -155,22 +163,14 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
         return false;
     }
 
-    // TODO(crbug.com/502611927): These strings may need to be different for different clients.
+    @Override
+    public abstract @StringRes int getSheetHalfHeightAccessibilityStringId();
 
     @Override
-    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.tab_bottom_sheet_half_height;
-    }
+    public abstract @StringRes int getSheetFullHeightAccessibilityStringId();
 
     @Override
-    public @StringRes int getSheetFullHeightAccessibilityStringId() {
-        return R.string.tab_bottom_sheet_full_height;
-    }
-
-    @Override
-    public @StringRes int getSheetClosedAccessibilityStringId() {
-        return R.string.tab_bottom_sheet_closed;
-    }
+    public abstract @StringRes int getSheetClosedAccessibilityStringId();
 
     @Override
     public boolean canBeSuppressed(BottomSheetContent nextContent) {
@@ -196,6 +196,6 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
 
     public @Nullable TextViewWithCompoundDrawables getPlaceholderViewForTesting() {
         return (TextViewWithCompoundDrawables)
-                mContentView.findViewById(R.id.empty_placeholder_container);
+                mContentView.findViewById(mEmptyPlaceholderContainerId);
     }
 }

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
+import androidx.annotation.Px;
 
 import org.jni_zero.CalledByNative;
 
@@ -20,7 +22,18 @@ public class TestTabBottomSheetContentProvider implements TabBottomSheetContentP
 
     @Override
     public TabBottomSheetContent create(
-            View contentView, float fullHeightRatio, @ColorInt int backgroundColor) {
-        return new TestTabBottomSheetContent(contentView, fullHeightRatio, backgroundColor);
+            View contentView,
+            float fullHeightRatio,
+            @ColorInt int backgroundColor,
+            @Px int peekViewHeight,
+            @IdRes int peekViewContainerId,
+            @IdRes int emptyPlaceholderContainerId) {
+        return new TestTabBottomSheetContent(
+                contentView,
+                fullHeightRatio,
+                backgroundColor,
+                peekViewHeight,
+                peekViewContainerId,
+                emptyPlaceholderContainerId);
     }
 }

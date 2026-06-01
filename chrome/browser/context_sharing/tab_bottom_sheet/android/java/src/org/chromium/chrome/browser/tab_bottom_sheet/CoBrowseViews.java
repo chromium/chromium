@@ -78,7 +78,7 @@ public class CoBrowseViews {
     void destroy() {
         ViewGroup webUiContainer = mContainerView.findViewById(R.id.web_ui_container);
         ViewGroup fuseboxContainer = mContainerView.findViewById(R.id.fusebox_container);
-        ViewGroup peekContainer = mContainerView.findViewById(R.id.actor_control_container);
+        ViewGroup peekContainer = mContainerView.findViewById(R.id.peek_view_container);
         if (mWebUi != null) {
             webUiContainer.removeAllViews();
             mWebUi.destroy();
@@ -121,7 +121,7 @@ public class CoBrowseViews {
      * @param peekView The peek view to attach.
      */
     public void attachPeekView(View peekView) {
-        ViewGroup peekContainer = mContainerView.findViewById(R.id.actor_control_container);
+        ViewGroup peekContainer = mContainerView.findViewById(R.id.peek_view_container);
         peekContainer.removeAllViews();
         detachFromParent(peekView);
         mPeekView = peekView;
@@ -135,7 +135,7 @@ public class CoBrowseViews {
      */
     public void removePeekView(View peekView) {
         if (mPeekView == peekView) {
-            ViewGroup peekContainer = mContainerView.findViewById(R.id.actor_control_container);
+            ViewGroup peekContainer = mContainerView.findViewById(R.id.peek_view_container);
             peekContainer.removeView(mPeekView);
             mPeekView = null;
         }
@@ -187,7 +187,7 @@ public class CoBrowseViews {
     private void populateViewHierarchy() {
         ViewGroup webUiContainer = mContainerView.findViewById(R.id.web_ui_container);
         ViewGroup fuseboxContainer = mContainerView.findViewById(R.id.fusebox_container);
-        ViewGroup peekContainer = mContainerView.findViewById(R.id.actor_control_container);
+        ViewGroup peekContainer = mContainerView.findViewById(R.id.peek_view_container);
 
         if (mWebUi != null) {
             View webUiView = mWebUi.getWebUiView();
