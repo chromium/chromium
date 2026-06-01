@@ -440,7 +440,7 @@ void WebAppInstallFlowDialogDelegate::OnCancel() {
   base::UmaHistogramEnumeration(
       "WebApp.InstallConfirmation.CloseReason",
       views::Widget::ClosedReason::kCancelButtonClicked);
-  MeasureIphOnDialogClose();
+  MeasureMetricsOnDialogClose(/*was_closed_by_user_action=*/true);
 }
 
 void WebAppInstallFlowDialogDelegate::OnClose() {
@@ -450,7 +450,7 @@ void WebAppInstallFlowDialogDelegate::OnClose() {
   base::UmaHistogramEnumeration(
       "WebApp.InstallConfirmation.CloseReason",
       views::Widget::ClosedReason::kCloseButtonClicked);
-  MeasureIphOnDialogClose();
+  MeasureMetricsOnDialogClose(/*was_closed_by_user_action=*/true);
 }
 
 void WebAppInstallFlowDialogDelegate::OnDestroyed() {
@@ -460,7 +460,7 @@ void WebAppInstallFlowDialogDelegate::OnDestroyed() {
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
   base::UmaHistogramEnumeration("WebApp.InstallConfirmation.CloseReason",
                                 views::Widget::ClosedReason::kUnspecified);
-  MeasureIphOnDialogClose();
+  MeasureMetricsOnDialogClose(/*was_closed_by_user_action=*/false);
 }
 
 void WebAppInstallFlowDialogDelegate::OnTextFieldChangedMaybeUpdateButton(
@@ -511,8 +511,13 @@ void WebAppInstallFlowDialogDelegate::CloseDialogAsIgnored() {
   dialog_model()->host()->Close();
 }
 
-void WebAppInstallFlowDialogDelegate::MeasureIphOnDialogClose() {
-  MeasureCancelUserActionsForInstallDialog();
+void WebAppInstallFlowDialogDelegate::MeasureMetricsOnDialogClose(
+    bool was_closed_by_user_action) {
+  if (was_closed_by_user_action) {
+    MeasureCancelUserActionsForInstallDialog();
+    base::UmaHistogramEnumeration("WebApp.InstallFlow.DropOffStep",
+                                  current_step_);
+  }
   if (iph_state_ == PwaInProductHelpState::kShown && install_info_) {
     webapps::AppId app_id =
         GenerateAppIdFromManifestId(install_info_->manifest_id());

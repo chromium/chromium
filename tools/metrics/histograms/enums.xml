@@ -27198,6 +27198,17 @@ others/histograms.xml -->
   <int value="8" label="Picture-in-Picture"/>
 </enum>
 
+<!-- LINT.IfChange(WebAppInstallFlowStep) -->
+
+<enum name="WebAppInstallFlowStep">
+  <int value="0" label="InstallDialog"/>
+  <int value="1" label="InstallerOptions"/>
+  <int value="2" label="Progress"/>
+  <int value="3" label="Successful"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h:InstallDialogStep) -->
+
 <!-- LINT.IfChange(WebAppInstallResultCode) -->
 
 <enum name="WebAppInstallResultCode">

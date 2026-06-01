@@ -1338,6 +1338,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.InstallFlow.DropOffStep" enum="WebAppInstallFlowStep"
+    expires_after="2027-05-27">
+  <owner>aixba@google.com</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the step at which a user drops off (cancels or closes) the web app
+    installation flow. Recorded when the install flow dialog is cancelled,
+    closed, or destroyed before completion.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.InstallFromMigrateFromField.Result"
     enum="WebAppInstallFromMigrateFromFieldResult" expires_after="2027-03-06">
   <owner>mek@chromium.org</owner>
