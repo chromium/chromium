@@ -36,27 +36,27 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "examples_browser_main_parts\.cc": [
+  "examples_browser_main_parts\\.cc": [
     "+ui/wm/test"
   ],
-  "highlight_border\.cc": [
+  "highlight_border\\.cc": [
     "+ui/chromeos/styles/cros_tokens_color_mappings.h"
   ],
-  "run_all_unittests_main\.cc": [
+  "run_all_unittests_main\\.cc": [
     "+mojo/core/embedder",
   ],
-  "views_perftests\.cc": [
+  "views_perftests\\.cc": [
     "+mojo/core/embedder",
   ],
-  "view_unittest\.cc": [
+  "view_unittest\\.cc": [
     "+cc/playback",
     "+components/viz/common",
   ],
-  "views_test_suite\.cc": [
+  "views_test_suite\\.cc": [
     "+gpu/ipc/service",
     "+ui/gl",
   ],
-  ".*test\.cc": [
+  ".*test\\.cc": [
     "+cc/base",
     "+cc/test",
   ]

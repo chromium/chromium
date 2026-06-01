@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "ax_system_caret_win_interactive_uitest\.cc": [
+  "ax_system_caret_win_interactive_uitest\\.cc": [
     "+mojo/core/embedder",
   ]
 }

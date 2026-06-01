@@ -28,10 +28,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "native_window_occlusion_tracker_win_interactive_test\.cc": [
+  "native_window_occlusion_tracker_win_interactive_test\\.cc": [
     "+mojo/core/embedder/embedder.h",
   ],
-  "window_event_dispatcher_unittest\.cc": [
+  "window_event_dispatcher_unittest\\.cc": [
     "+ui/wm/core",
   ],
 }

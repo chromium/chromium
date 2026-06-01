@@ -3,16 +3,16 @@ include_rules = [
   "+ui/accelerated_widget_mac",
 ]
 specific_include_rules = {
-  "atk_util_auralinux_x11\.cc": [
+  "atk_util_auralinux_x11\\.cc": [
     "+ui/events/x",
   ],
-  "ax_platform_node_cocoa\.mm": [
+  "ax_platform_node_cocoa\\.mm": [
     "+skia/ext",
   ],
-  "ax_platform_node_win\.cc": [
+  "ax_platform_node_win\\.cc": [
     "+skia/ext",
   ],
-  "browser_accessibility_manager\.h": [
+  "browser_accessibility_manager\\.h": [
     "+cc/base/rtree.h",
   ],
 }

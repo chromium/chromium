@@ -36,20 +36,20 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test\.(cc|h)": [
+  ".*test\\.(cc|h)": [
     "+components/viz/test"
   ],
-  ".*BlankUiTestActivity\.java": [
+  ".*BlankUiTestActivity\\.java": [
     "+components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog",
   ],
-  ".*delegated_frame_host_android\.(cc|h)": [
+  ".*delegated_frame_host_android\\.(cc|h)": [
     "+third_party/blink/public/common/page/content_to_visible_time_reporter.h",
     "+third_party/blink/public/common/page/content_to_visible_time_request.h",
   ],
-  ".*overscroll_refresh\.(cc|h)": [
+  ".*overscroll_refresh\\.(cc|h)": [
     "+third_party/blink/public/common/input/web_gesture_device.h",
   ],
-  ".*window_android\.(cc|h)": [
+  ".*window_android\\.(cc|h)": [
     "+third_party/blink/public/common/page/content_to_visible_time_reporter.h",
   ],
 }

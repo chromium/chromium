@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "screen_mac_headless\.mm": [
+  "screen_mac_headless\\.mm": [
     "+components/headless/screen_info",
   ],
 }
