@@ -80,19 +80,6 @@ public interface SurfaceActionsHandler {
 
     /** Options when opening URLs with openUrl(). */
     interface OpenUrlOptions {
-        /**
-         * The WebFeed associated with this navigation, for use with shouldShowWebFeedAccelerator(),
-         * this is the WebFeed that should be followed if the user taps the accelerator.
-         */
-        default String webFeedName() {
-            return "";
-        }
-
-        /** Whether to show the Web Feed accelerator on the page after navigation. */
-        default boolean shouldShowWebFeedAccelerator() {
-            return false;
-        }
-
         /** Returns the title. Currently used only for READ_LATER. */
         default String getTitle() {
             return "";
