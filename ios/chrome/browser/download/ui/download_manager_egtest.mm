@@ -653,7 +653,11 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
 
 // Tests that a warning dialog will show up if the scan result is warn, download
 // will proceed if the user decides to continue.
+// TODO(crbug.com/518764990): Flaky on iPad.
 - (void)testDownloadWarnProceedWhenDownloadProtectionEnabled {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iPad.");
+  }
   [AnalysisConnectorsAppInterface setDownloadProtectionRules];
   [AnalysisConnectorsAppInterface setBrowserDMToken];
 
