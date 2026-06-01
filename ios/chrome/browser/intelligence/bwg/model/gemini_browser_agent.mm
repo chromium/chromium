@@ -1332,6 +1332,12 @@ void GeminiBrowserAgent::WillUpdateState(FullscreenBrowserAgent* agent) {
   if (!is_floaty_invoked_ || is_floaty_temporarily_hidden_) {
     return;
   }
+
+  if (last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded &&
+      is_keyboard_visible_) {
+    return;
+  }
+
   ios::provider::UpdateOverlayOffsetWithOpacity(GetFloatyOffset(),
                                                 GetFloatyProgress());
 }
@@ -1341,6 +1347,12 @@ void GeminiBrowserAgent::DidUpdateObscuredInsetRange(
   if (!is_floaty_invoked_ || is_floaty_temporarily_hidden_) {
     return;
   }
+
+  if (last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded &&
+      is_keyboard_visible_) {
+    return;
+  }
+
   ios::provider::UpdateOverlayOffsetWithOpacity(GetFloatyOffset(),
                                                 GetFloatyProgress());
 }
