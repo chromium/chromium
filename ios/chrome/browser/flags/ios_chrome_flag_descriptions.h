@@ -901,6 +901,11 @@ inline constexpr char kIOSBackendPromoServiceIntegrationName[] =
 inline constexpr char kIOSBackendPromoServiceIntegrationDescription[] =
     "Enables Backend Promo Service integration.";
 
+inline constexpr char kIOSBottomSheetMigrationName[] =
+    "iOS Bottom Sheet Migration";
+inline constexpr char kIOSBottomSheetMigrationDescription[] =
+    "Enables the iOS bottom sheet migration.";
+
 inline constexpr char kIOSBrowserEditMenuMetricsName[] =
     "Browser edit menu metrics";
 inline constexpr char kIOSBrowserEditMenuMetricsDescription[] =

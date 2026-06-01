@@ -871,3 +871,9 @@ BASE_FEATURE(kActorServiceLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsActorServiceLoggingEnabled() {
   return base::FeatureList::IsEnabled(kActorServiceLogging);
 }
+
+BASE_FEATURE(kIOSBottomSheetMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSBottomSheetMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kIOSBottomSheetMigration);
+}

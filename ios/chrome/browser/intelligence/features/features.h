@@ -436,4 +436,10 @@ BASE_DECLARE_FEATURE(kBWGPromoConsent);
 BASE_DECLARE_FEATURE(kActorServiceLogging);
 bool IsActorServiceLoggingEnabled();
 
+// Feature flag to enable the iOS bottom sheet migration.
+BASE_DECLARE_FEATURE(kIOSBottomSheetMigration);
+
+// Helper function to check if `kIOSBottomSheetMigration` is enabled.
+bool IsIOSBottomSheetMigrationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
