@@ -23598,11 +23598,15 @@
     "TextClassifierTimeout": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "timeout_ms": "200"
+                    },
                     "enable_features": [
                         "TextClassifierTimeout"
                     ]
