@@ -9,7 +9,7 @@ source_set("tld_cleanup") {
   ]
   deps = [
     "//base",
-    "//net:constants",
+    "//net/base:constants",
     "//url",
   ]
 }

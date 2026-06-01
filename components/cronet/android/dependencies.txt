@@ -38,6 +38,7 @@
 //crypto
 //net
 //net/android
+//net/base
 //net/base/registry_controlled_domains
 //net/dns
 //net/dns/public
@@ -47,7 +48,6 @@
 //net/third_party/uri_template
 //net/traffic_annotation
 //third_party/abseil-cpp
-//third_party/android_build_tools
 //third_party/android_deps
 //third_party/android_sdk
 //third_party/androidx
@@ -60,7 +60,6 @@
 //third_party/compiler-rt
 //third_party/cpu_features
 //third_party/ijar
-//third_party/jdk
 //third_party/jni_zero
 //third_party/kotlin_stdlib
 //third_party/llvm-libc
@@ -100,5 +99,4 @@
 //third_party/simdutf
 //third_party/zlib
 //third_party/zstd
-//tools/android/errorprone_plugin
 //url

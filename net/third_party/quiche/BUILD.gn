@@ -124,7 +124,7 @@ proto_library("net_quic_test_tools_proto") {
   cc_include = "net/base/net_export.h"
   component_build_force_source_set = true
 
-  link_deps = [ "//net:net_export_header" ]
+  link_deps = [ "//net/base:net_export_header" ]
 
   defines = [ "NET_IMPLEMENTATION" ]
 
