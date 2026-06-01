@@ -19,6 +19,7 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -82,13 +83,21 @@ gfx::Rect GetWorkAreaSync(x11::Future<x11::GetPropertyReply> future) {
 x11::Future<x11::GetPropertyReply> GetIccProfileFuture(
     x11::Connection* connection,
     size_t monitor) {
+  // Limit the size of the ICC profile to 4MB. Most monitor profiles are
+  // much smaller than this (typically < 1MB). This prevents potential
+  // memory exhaustion and serves as a first-line defense against malicious
+  // profiles with massive CLUTs.
+  constexpr size_t kMaxIccProfileSize = 4 * 1024 * 1024;
+  // GetProperty takes the length in 4-byte multiples.
+  constexpr uint32_t kMaxIccProfileLongLength = kMaxIccProfileSize / 4;
+
   std::string atom_name = monitor == 0
                               ? "_ICC_PROFILE"
                               : base::StringPrintf("_ICC_PROFILE_%zu", monitor);
   auto future = connection->GetProperty({
       .window = connection->default_root(),
       .property = x11::GetAtom(atom_name.c_str()),
-      .long_length = std::numeric_limits<uint32_t>::max(),
+      .long_length = kMaxIccProfileLongLength,
   });
   future.IgnoreError();
   return future;
@@ -96,11 +105,17 @@ x11::Future<x11::GetPropertyReply> GetIccProfileFuture(
 
 gfx::ICCProfile GetIccProfileSync(x11::Future<x11::GetPropertyReply> future) {
   auto response = future.Sync();
-  if (!response || !response->value_len) {
+  if (!response || !response->value_len || response->bytes_after > 0) {
     return gfx::ICCProfile();
   }
-  return gfx::ICCProfile::FromData(response->value->bytes(),
-                                   response->value_len * response->format / 8u);
+
+  base::CheckedNumeric<size_t> size = response->value_len;
+  size *= (response->format / 8u);
+  if (!size.IsValid()) {
+    return gfx::ICCProfile();
+  }
+
+  return gfx::ICCProfile::FromData(response->value->bytes(), size.ValueOrDie());
 }
 
 x11::Future<x11::RandR::GetOutputPropertyReply> GetEdidFuture(
