@@ -22,7 +22,6 @@ import org.junit.runners.MethodSorters;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -36,7 +35,6 @@ import org.chromium.chrome.test.transit.testhtmls.BlankPopupOnLoadPageStation;
 import org.chromium.chrome.test.transit.testhtmls.PopupOnClickPageStation;
 import org.chromium.chrome.test.transit.testhtmls.PopupOnLoadPageStation;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests whether popup windows appear or get blocked as expected. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -100,7 +98,6 @@ public class PopupPTTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288013
     public void test020SafeGestureTabNotBlocked() {
         PopupOnClickPageStation page =
                 PopupOnClickPageStation.loadInCurrentTab(
@@ -139,7 +136,6 @@ public class PopupPTTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288013
     public void test030AbusiveGesturePopupBlocked() {
         MockSafeBrowsingApiHandler.addMockResponse(
                 mCtaTestRule.getTestServer().getURL(PopupOnClickPageStation.PATH),
@@ -159,7 +155,6 @@ public class PopupPTTest {
     @Test
     @MediumTest
     @RequiresRestart
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288013
     public void testBlankPopupLaunchedFromBlockedChip() {
         PopupBlockedMessageFacility popupBlockedMessage =
                 BlankPopupOnLoadPageStation.loadInCurrentTabExpectBlocked(
