@@ -297,6 +297,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/gcm_driver:test_support",
     "//components/metrics",
+    "//components/network_time",
     "//components/os_crypt/async/browser:test_support",
     "//components/prefs:test_support",
     "//components/saved_tab_groups/public:prefs",

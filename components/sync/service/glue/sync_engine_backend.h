@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_SERVICE_GLUE_SYNC_ENGINE_BACKEND_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -165,7 +166,10 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // invalidations.
   void DoOnStandaloneInvalidationReceived(
       const std::string& payload,
-      const DataTypeSet& interested_data_types);
+      const DataTypeSet& interested_data_types,
+      base::Time arrival_time,
+      std::optional<base::Time> network_time,
+      std::optional<base::TimeDelta> network_time_uncertainty);
 
   // Functions to deal with NIGORI, resembling DataTypeController APIs.
   void DoClearNigoriDataForMigration();
@@ -190,7 +194,10 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   IncomingInvalidationStatus DoOnStandaloneInvalidationReceivedImpl(
       const std::string& payload,
-      const DataTypeSet& interested_data_types);
+      const DataTypeSet& interested_data_types,
+      base::Time arrival_time,
+      std::optional<base::Time> network_time,
+      std::optional<base::TimeDelta> network_time_uncertainty);
 
   // Name used for debugging.
   const std::string name_;

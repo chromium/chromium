@@ -10,6 +10,10 @@
 #include "components/browser_sync/sync_engine_factory_impl.h"
 #include "components/sync/service/sync_client.h"
 
+namespace network_time {
+class NetworkTimeTracker;
+}  // namespace network_time
+
 namespace syncer {
 class DeviceInfoSyncService;
 class DataTypeStoreService;
@@ -34,6 +38,7 @@ class WebViewSyncClient : public syncer::SyncClient {
   // SyncClient implementation.
   PrefService* GetPrefService() override;
   signin::IdentityManager* GetIdentityManager() override;
+  network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   base::FilePath GetLocalSyncBackendFolder() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;

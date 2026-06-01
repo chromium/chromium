@@ -12,6 +12,10 @@
 #import "components/browser_sync/sync_engine_factory_impl.h"
 #import "components/sync/service/sync_client.h"
 
+namespace network_time {
+class NetworkTimeTracker;
+}  // namespace network_time
+
 namespace supervised_user {
 class FamilyLinkSettingsService;
 }  // namespace supervised_user
@@ -44,6 +48,7 @@ class IOSChromeSyncClient : public syncer::SyncClient {
   // SyncClient implementation.
   PrefService* GetPrefService() override;
   signin::IdentityManager* GetIdentityManager() override;
+  network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   base::FilePath GetLocalSyncBackendFolder() override;
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;

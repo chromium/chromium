@@ -11,6 +11,7 @@
 #import "components/browser_sync/browser_sync_switches.h"
 #import "components/browser_sync/sync_engine_factory_impl.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/network_time/network_time_tracker.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/sync/base/sync_util.h"
@@ -19,6 +20,7 @@
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/trusted_vault/trusted_vault_service.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -59,6 +61,11 @@ PrefService* IOSChromeSyncClient::GetPrefService() {
 signin::IdentityManager* IOSChromeSyncClient::GetIdentityManager() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return identity_manager_;
+}
+
+network_time::NetworkTimeTracker* IOSChromeSyncClient::GetNetworkTimeTracker() {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  return GetApplicationContext()->GetNetworkTimeTracker();
 }
 
 base::FilePath IOSChromeSyncClient::GetLocalSyncBackendFolder() {

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/statistics_recorder.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -725,5 +727,44 @@ IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
           .Wait());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
+                       RecordTransitLatencyHistograms) {
+  ASSERT_TRUE(SetupSync());
+
+  // Wait until the client is fully registered for bookmark invalidations on the
+  // server.
+  ASSERT_TRUE(
+      ServerDeviceInfoMatchChecker(
+          ElementsAre(AllOf(InterestedDataTypesContain(syncer::BOOKMARKS),
+                            HasInstanceIdToken())))
+          .Wait());
+
+  base::HistogramTester histogram_tester;
+  base::StatisticsRecorder::HistogramWaiter waiter(
+      "Sync.InvalidationTransitLatency.ClientBased");
+
+  // A commit of a bookmark should trigger an invalidation, which in turn
+  // records transit latency metrics on the client.
+  InjectSyncedBookmark(GetFakeServer());
+
+  // Wait until the metric is recorded.
+  waiter.Wait();
+
+  // Wait until the bookmark is synced to guarantee that the invalidation was
+  // received and processed.
+  ASSERT_TRUE(
+      bookmarks_helper::BookmarksUrlChecker(0, GURL(kSyncedBookmarkURL), 1)
+          .Wait());
+
+  // Client-based transit latency should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "Sync.InvalidationTransitLatency.ClientBased", 1);
+  histogram_tester.ExpectTotalCount(
+      "Sync.InvalidationTransitLatency.ClientBased.BOOKMARK", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.InvalidationTransitLatency.ClockSkewDetected.ClientBased", false,
+      1);
+}
 
 }  // namespace

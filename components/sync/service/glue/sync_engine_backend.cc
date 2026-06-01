@@ -11,11 +11,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
@@ -57,6 +60,117 @@ void RecordInvalidationPerDataType(DataType type) {
 void RecordIncomingInvalidationStatus(
     SyncEngineBackend::IncomingInvalidationStatus status) {
   UMA_HISTOGRAM_ENUMERATION("Sync.IncomingInvalidationStatus", status);
+}
+
+DataTypeSet ExtractInvalidatedDataTypes(
+    const sync_pb::SyncInvalidationsPayload& payload) {
+  std::vector<int> field_numbers;
+  field_numbers.reserve(payload.data_type_invalidations_size());
+  for (const auto& invalidation : payload.data_type_invalidations()) {
+    field_numbers.push_back(invalidation.data_type_id());
+  }
+  return GetDataTypeSetFromSpecificsFieldNumberList(field_numbers);
+}
+
+void RecordLatencyMetric(base::Time issue_time,
+                         base::Time current_time,
+                         std::string_view metric_suffix,
+                         const DataTypeSet& invalidated_types) {
+  const base::TimeDelta latency = current_time - issue_time;
+  const std::string clock_skew_histogram = base::StrCat(
+      {"Sync.InvalidationTransitLatency.ClockSkewDetected.", metric_suffix});
+  const std::string transit_latency_histogram =
+      base::StrCat({"Sync.InvalidationTransitLatency.", metric_suffix});
+
+  constexpr base::TimeDelta min = base::Milliseconds(1);
+  constexpr base::TimeDelta max = base::Days(1);
+  constexpr int bucket_count = 50;
+
+  const bool clock_skew = latency < base::TimeDelta();
+  base::UmaHistogramBoolean(clock_skew_histogram, clock_skew);
+
+  base::UmaHistogramCustomTimes(transit_latency_histogram, latency, min, max,
+                                bucket_count);
+
+  // Record the transit latency metric for each active data type that was
+  // invalidated by this payload.
+  for (DataType type : invalidated_types) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat(
+            {transit_latency_histogram, ".", DataTypeToHistogramSuffix(type)}),
+        latency, min, max, bucket_count);
+  }
+}
+
+void RecordClientBasedLatency(base::Time issue_time,
+                              base::Time arrival_time,
+                              const DataTypeSet& invalidated_types) {
+  RecordLatencyMetric(issue_time, arrival_time, "ClientBased",
+                      invalidated_types);
+}
+
+struct UncertaintyThreshold {
+  base::TimeDelta max_uncertainty;
+  std::string_view histogram_suffix;
+};
+
+constexpr UncertaintyThreshold kUncertaintyThresholds[] = {
+    {base::Seconds(2), "Uncertainty2s"},
+    {base::Seconds(10), "Uncertainty10s"},
+    {base::Seconds(15), "Uncertainty15s"},
+};
+
+void RecordServerBasedLatency(base::Time issue_time,
+                              base::Time network_time,
+                              base::TimeDelta network_time_uncertainty,
+                              const DataTypeSet& invalidated_types) {
+  base::UmaHistogramMediumTimes(
+      "Sync.InvalidationTransitLatency.ServerBased.Uncertainty",
+      network_time_uncertainty);
+
+  // The thresholds are recorded cumulatively (i.e., a sample is recorded in all
+  // histograms whose uncertainty threshold it satisfies). This ensures each
+  // histogram represents a cohesive, self-contained set of samples, allowing
+  // for accurate direct percentile analysis (p50, p90, p99) on the dashboard
+  // without needing to merge disjoint histograms.
+  for (const auto& threshold : kUncertaintyThresholds) {
+    if (network_time_uncertainty <= threshold.max_uncertainty) {
+      const std::string metric_suffix =
+          base::StrCat({"ServerBased.", threshold.histogram_suffix});
+      RecordLatencyMetric(issue_time, network_time, metric_suffix,
+                          invalidated_types);
+    }
+  }
+}
+
+void RecordTransitLatency(
+    const sync_pb::SyncInvalidationsPayload& payload_message,
+    base::Time arrival_time,
+    std::optional<base::Time> network_time,
+    std::optional<base::TimeDelta> network_time_uncertainty,
+    const DataTypeSet& invalidated_types) {
+  std::optional<base::Time> issue_time;
+  if (payload_message.has_server_publish_time_unix_epoch_millis()) {
+    issue_time = base::Time::UnixEpoch() +
+                 base::Milliseconds(
+                     payload_message.server_publish_time_unix_epoch_millis());
+  } else if (payload_message.has_version()) {
+    // TODO(b/517543167): Migrate the server-side to populate
+    // `server_publish_time_unix_epoch_millis` and deprecate utilizing `version`
+    // as a timestamp fallback.
+    issue_time =
+        base::Time::UnixEpoch() + base::Microseconds(payload_message.version());
+  }
+
+  if (!issue_time.has_value()) {
+    return;
+  }
+
+  RecordClientBasedLatency(*issue_time, arrival_time, invalidated_types);
+  if (network_time.has_value() && network_time_uncertainty.has_value()) {
+    RecordServerBasedLatency(*issue_time, *network_time,
+                             *network_time_uncertainty, invalidated_types);
+  }
 }
 
 }  // namespace
@@ -394,38 +508,42 @@ void SyncEngineBackend::DoOnCookieJarChanged(bool account_mismatch,
 
 void SyncEngineBackend::DoOnStandaloneInvalidationReceived(
     const std::string& payload,
-    const DataTypeSet& interested_data_types) {
+    const DataTypeSet& interested_data_types,
+    base::Time arrival_time,
+    std::optional<base::Time> network_time,
+    std::optional<base::TimeDelta> network_time_uncertainty) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const IncomingInvalidationStatus status =
-      DoOnStandaloneInvalidationReceivedImpl(payload, interested_data_types);
+      DoOnStandaloneInvalidationReceivedImpl(payload, interested_data_types,
+                                             arrival_time, network_time,
+                                             network_time_uncertainty);
   RecordIncomingInvalidationStatus(status);
 }
 
 SyncEngineBackend::IncomingInvalidationStatus
 SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
     const std::string& payload,
-    const DataTypeSet& interested_data_types) {
+    const DataTypeSet& interested_data_types,
+    base::Time arrival_time,
+    std::optional<base::Time> network_time,
+    std::optional<base::TimeDelta> network_time_uncertainty) {
   sync_pb::SyncInvalidationsPayload payload_message;
   if (!payload_message.ParseFromString(payload)) {
     return IncomingInvalidationStatus::kPayloadParseFailed;
   }
 
-  bool contains_valid_data_type = false;
+  // Filter out invalidations for unsubscribed data types.
+  const DataTypeSet invalidated_types = Intersection(
+      interested_data_types, ExtractInvalidatedDataTypes(payload_message));
 
-  std::vector<int> field_numbers;
-  field_numbers.reserve(payload_message.data_type_invalidations_size());
-  for (const auto& data_type_invalidation :
-       payload_message.data_type_invalidations()) {
-    field_numbers.push_back(data_type_invalidation.data_type_id());
+  RecordTransitLatency(payload_message, arrival_time, network_time,
+                       network_time_uncertainty, invalidated_types);
+
+  if (invalidated_types.empty()) {
+    return IncomingInvalidationStatus::kUnknownDataType;
   }
-  for (auto data_type :
-       GetDataTypeSetFromSpecificsFieldNumberList(field_numbers)) {
-    if (!interested_data_types.Has(data_type)) {
-      // Filter out invalidations for unsubscribed data types.
-      continue;
-    }
 
-    contains_valid_data_type = true;
+  for (DataType data_type : invalidated_types) {
     RecordInvalidationPerDataType(data_type);
     std::optional<int64_t> version;
     if (payload_message.has_version()) {
@@ -436,10 +554,7 @@ SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
                                                   version);
     sync_manager_->OnIncomingInvalidation(data_type, std::move(inv_adapter));
   }
-  if (contains_valid_data_type) {
-    return IncomingInvalidationStatus::kSuccess;
-  }
-  return IncomingInvalidationStatus::kUnknownDataType;
+  return IncomingInvalidationStatus::kSuccess;
 }
 
 void SyncEngineBackend::DoOnActiveDevicesChanged(

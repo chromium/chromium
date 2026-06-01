@@ -19,11 +19,15 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/simple_test_clock.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "components/network_time/network_time_tracker.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/prefs/testing_pref_service.h"
@@ -154,11 +158,24 @@ class SyncEngineImplTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
+    network_time::NetworkTimeTracker::RegisterPrefs(pref_service_.registry());
 
-    scoped_refptr<base::SequencedTaskRunner> sync_task_runner =
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-             base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+    auto test_clock = std::make_unique<base::SimpleTestClock>();
+    test_clock_ = test_clock.get();
+    test_clock_->SetNow(base::Time::Now());
+
+    auto test_tick_clock = std::make_unique<base::SimpleTestTickClock>();
+    test_tick_clock_ = test_tick_clock.get();
+    test_tick_clock_->Advance(base::Seconds(1));
+
+    network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
+        std::move(test_clock), std::move(test_tick_clock), &pref_service_,
+        /*url_loader_factory=*/nullptr,
+        network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
+
+    sync_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     auto mock_active_devices_provider =
         std::make_unique<NiceMock<MockActiveDevicesProvider>>();
     ON_CALL(*mock_active_devices_provider.get(), CalculateInvalidationInfo)
@@ -166,11 +183,11 @@ class SyncEngineImplTest : public testing::Test {
             ByMove(ActiveDevicesInvalidationInfo::CreateUninitialized())));
     backend_ = std::make_unique<SyncEngineImpl>(
         "fakeDebugName", &mock_sync_invalidations_service_,
-        std::move(mock_active_devices_provider),
+        network_time_tracker_.get(), std::move(mock_active_devices_provider),
         std::make_unique<SyncTransportDataPrefs>(
             &pref_service_, signin::GaiaIdHash::FromGaiaId(kTestGaiaId)),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
-        std::move(sync_task_runner));
+        sync_task_runner_);
 
     fake_manager_factory_ = std::make_unique<FakeSyncManagerFactory>(
         &fake_manager_, network::TestNetworkConnectionTracker::GetInstance());
@@ -212,11 +229,11 @@ class SyncEngineImplTest : public testing::Test {
     os_crypt_async->GetInstance(future.GetCallback());
     params.encryptor = future.Take();
 
+    base::RunLoop run_loop;
     EXPECT_CALL(mock_host_, OnEngineInitialized(expect_success, _))
-        .WillOnce(
-            testing::InvokeWithoutArgs(this, &SyncEngineImplTest::QuitRunLoop));
+        .WillOnce([&run_loop]() { run_loop.Quit(); });
     backend_->Initialize(std::move(params));
-    PumpSyncThread();
+    run_loop.Run();
     // `fake_manager_` is set on the sync thread, but we can rely on the message
     // loop barriers to guarantee that we see the updated value.
     DCHECK(fake_manager_);
@@ -251,47 +268,57 @@ class SyncEngineImplTest : public testing::Test {
     if (!params.to_download.empty()) {
       params.to_download.Put(NIGORI);
     }
-    params.ready_task = base::BindOnce(&SyncEngineImplTest::DownloadReady,
-                                       base::Unretained(this));
+    base::RunLoop run_loop;
+    params.ready_task =
+        base::BindOnce(&SyncEngineImplTest::OnDownloadReady,
+                       base::Unretained(this), run_loop.QuitClosure());
 
     DataTypeSet ready_types = Difference(enabled_types, params.to_download);
     backend_->ConfigureDataTypes(std::move(params));
-    PumpSyncThread();
+    run_loop.Run();
 
     return ready_types;
   }
 
- protected:
-  void DownloadReady(DataTypeSet succeeded_types, DataTypeSet failed_types) {
+  void OnDownloadReady(base::OnceClosure quit_closure,
+                       DataTypeSet succeeded_types,
+                       DataTypeSet failed_types) {
     engine_types_.PutAll(succeeded_types);
-
     backend_->StartSyncingWithServer();
-    QuitRunLoop();
+    std::move(quit_closure).Run();
   }
 
-  void QuitRunLoop() { std::move(quit_loop_).Run(); }
-
-  void PumpSyncThread() {
+ protected:
+  // Synchronously waits for all pending tasks currently queued on a background
+  // `SequencedTaskRunner` to finish processing.
+  // Leverages FIFO sequenced task runners: posting a QuitClosure task to the
+  // background runner ensures it runs strictly after all previously posted
+  // tasks have completed. Once executed, it posts a task back to the main
+  // thread to quit the `run_loop`. This runs instantly without hitting safety
+  // timeouts.
+  void PumpSequencedTaskRunner(base::SequencedTaskRunner* task_runner) {
     base::RunLoop run_loop;
-    quit_loop_ = run_loop.QuitClosure();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SyncEngineImplTest::QuitRunLoop,
-                       weak_ptr_factory_.GetWeakPtr()),
-        TestTimeouts::action_timeout());
+    task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
+  }
+
+  network_time::NetworkTimeTracker* GetNetworkTimeTracker() {
+    return network_time_tracker_.get();
   }
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
   NiceMock<MockSyncEngineHost> mock_host_;
+  scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;
+  std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
+  raw_ptr<base::SimpleTestClock> test_clock_ = nullptr;
+  raw_ptr<base::SimpleTestTickClock> test_tick_clock_ = nullptr;
   std::unique_ptr<SyncEngineImpl> backend_;
   std::unique_ptr<FakeSyncManagerFactory> fake_manager_factory_;
   raw_ptr<FakeSyncManager> fake_manager_ = nullptr;
   DataTypeSet engine_types_;
   DataTypeSet enabled_types_;
-  base::OnceClosure quit_loop_;
   NiceMock<MockSyncInvalidationsService> mock_sync_invalidations_service_;
 
   base::WeakPtrFactory<SyncEngineImplTest> weak_ptr_factory_{this};
@@ -690,6 +717,161 @@ TEST_F(SyncEngineImplTest, ShouldReturnWhetherNextPollTimePassed) {
   fake_manager_->WaitForSyncThread();
 
   EXPECT_FALSE(backend_->IsNextPollTimeInThePast());
+}
+
+TEST_F(SyncEngineImplTest, RecordTransitLatencyMetrics) {
+  // Enable BOOKMARKS type.
+  enabled_types_.Put(syncer::BOOKMARKS);
+
+  fake_manager_factory_->set_progress_marker_types(enabled_types_);
+  fake_manager_factory_->set_initial_sync_ended_types(enabled_types_);
+
+  // Initialize the default backend synchronously.
+  InitializeBackend();
+
+  base::HistogramTester histogram_tester;
+
+  // 1. Unsynced network time - should only log Client-Based.
+  sync_pb::SyncInvalidationsPayload payload;
+  sync_pb::SyncInvalidationsPayload::DataTypeInvalidation*
+      bookmarks_invalidation = payload.add_data_type_invalidations();
+  bookmarks_invalidation->set_data_type_id(
+      GetSpecificsFieldNumberFromDataType(DataType::BOOKMARKS));
+
+  base::TimeDelta expected_latency = base::Seconds(5);
+  // Version is microseconds since Unix Epoch.
+  base::Time issue_time = base::Time::Now() - expected_latency;
+  int64_t version_us = (issue_time - base::Time::UnixEpoch()).InMicroseconds();
+  payload.set_version(version_us);
+
+  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
+      .WillOnce(Return(enabled_types_));
+
+  backend_->OnInvalidationReceived(payload.SerializeAsString());
+
+  // Wait for background thread to process the standalone invalidation to avoid
+  // leak/crash.
+  PumpSequencedTaskRunner(sync_task_runner_.get());
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Sync.InvalidationTransitLatency.ClientBased", expected_latency, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Sync.InvalidationTransitLatency.ClientBased.BOOKMARK", expected_latency,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.InvalidationTransitLatency.ClockSkewDetected.ClientBased", false,
+      1);
+
+  // Server-based should not be logged since network time is not available yet.
+  histogram_tester.ExpectTotalCount(
+      "Sync.InvalidationTransitLatency.ServerBased", 0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.InvalidationTransitLatency.ClockSkewDetected.ServerBased", 0);
+
+  // 2. Synced network time - should log both Client-Based and Server-Based.
+  // Set network time to be exactly base::Time::Now() + 10 seconds (so 10s
+  // clock skew ahead).
+  base::Time network_time = base::Time::Now() + base::Seconds(10);
+  network_time_tracker_->UpdateNetworkTime(network_time, base::Milliseconds(1),
+                                           base::Milliseconds(1),
+                                           test_tick_clock_->NowTicks());
+
+  // Reset the payload issue time to be 5 seconds relative to Now() so client
+  // latency stays exactly 5 seconds.
+  issue_time = base::Time::Now() - expected_latency;
+  version_us = (issue_time - base::Time::UnixEpoch()).InMicroseconds();
+  payload.set_version(version_us);
+
+  base::HistogramTester histogram_tester2;
+  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
+      .WillOnce(Return(enabled_types_));
+
+  backend_->OnInvalidationReceived(payload.SerializeAsString());
+  PumpSequencedTaskRunner(sync_task_runner_.get());
+
+  // Client-based latency should be identical (5 seconds).
+  histogram_tester2.ExpectUniqueTimeSample(
+      "Sync.InvalidationTransitLatency.ClientBased", expected_latency, 1);
+  histogram_tester2.ExpectUniqueSample(
+      "Sync.InvalidationTransitLatency.ClockSkewDetected.ClientBased", false,
+      1);
+
+  // Server-based latency should be (network_time - issue_time) = (Now() + 10s)
+  // - (Now() - 5s) = 15 seconds.
+  base::TimeDelta expected_server_latency =
+      expected_latency + base::Seconds(10);
+
+  base::TimeDelta expected_uncertainty =
+      base::Milliseconds(1) + base::Milliseconds(1) +
+      7 * base::Milliseconds(network_time::kTicksResolutionMs);
+  histogram_tester2.ExpectUniqueTimeSample(
+      "Sync.InvalidationTransitLatency.ServerBased.Uncertainty",
+      expected_uncertainty, 1);
+
+  // Since the uncertainty (9ms) is <= 2s, it should log to all three breakdown
+  // histograms:
+  for (const std::string& uncertainty_suffix :
+       {"Uncertainty2s", "Uncertainty10s", "Uncertainty15s"}) {
+    histogram_tester2.ExpectUniqueTimeSample(
+        base::StrCat({"Sync.InvalidationTransitLatency.ServerBased.",
+                      uncertainty_suffix}),
+        expected_server_latency, 1);
+    histogram_tester2.ExpectUniqueTimeSample(
+        base::StrCat({"Sync.InvalidationTransitLatency.ServerBased.",
+                      uncertainty_suffix, ".BOOKMARK"}),
+        expected_server_latency, 1);
+    histogram_tester2.ExpectUniqueSample(
+        base::StrCat(
+            {"Sync.InvalidationTransitLatency.ClockSkewDetected.ServerBased.",
+             uncertainty_suffix}),
+        false, 1);
+  }
+
+  // 3. Client clock behind server clock (negative latency) - should log
+  // ClockSkewDetected and NOT discard, falling into underflow bucket.
+  base::HistogramTester histogram_tester3;
+  // Payload version is in the future relative to client time (Now() + 2
+  // seconds).
+  base::Time future_issue_time = base::Time::Now() + base::Seconds(2);
+  payload.set_version(
+      (future_issue_time - base::Time::UnixEpoch()).InMicroseconds());
+
+  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
+      .WillOnce(Return(enabled_types_));
+
+  backend_->OnInvalidationReceived(payload.SerializeAsString());
+  PumpSequencedTaskRunner(sync_task_runner_.get());
+
+  histogram_tester3.ExpectUniqueSample(
+      "Sync.InvalidationTransitLatency.ClockSkewDetected.ClientBased", true, 1);
+  histogram_tester3.ExpectTotalCount(
+      "Sync.InvalidationTransitLatency.ClientBased", 1);
+  histogram_tester3.ExpectBucketCount(
+      "Sync.InvalidationTransitLatency.ClientBased", 0, 1);
+  histogram_tester3.ExpectTotalCount(
+      "Sync.InvalidationTransitLatency.ClientBased.BOOKMARK", 1);
+  histogram_tester3.ExpectBucketCount(
+      "Sync.InvalidationTransitLatency.ClientBased.BOOKMARK", 0, 1);
+
+  // 4. Outlier payload (> 7 days) - should NOT discard.
+  base::HistogramTester histogram_tester4;
+  base::Time old_issue_time = base::Time::Now() - base::Days(8);
+  payload.set_version(
+      (old_issue_time - base::Time::UnixEpoch()).InMicroseconds());
+
+  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
+      .WillOnce(Return(enabled_types_));
+
+  backend_->OnInvalidationReceived(payload.SerializeAsString());
+  PumpSequencedTaskRunner(sync_task_runner_.get());
+
+  base::TimeDelta expected_outlier_latency = base::Days(8);
+  histogram_tester4.ExpectUniqueTimeSample(
+      "Sync.InvalidationTransitLatency.ClientBased", expected_outlier_latency,
+      1);
+  histogram_tester4.ExpectUniqueSample(
+      "Sync.InvalidationTransitLatency.ClockSkewDetected.ClientBased", false,
+      1);
 }
 
 }  // namespace

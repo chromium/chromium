@@ -53,6 +53,10 @@ signin::IdentityManager* WebViewSyncClient::GetIdentityManager() {
   return identity_manager_;
 }
 
+network_time::NetworkTimeTracker* WebViewSyncClient::GetNetworkTimeTracker() {
+  return nullptr;
+}
+
 base::FilePath WebViewSyncClient::GetLocalSyncBackendFolder() {
   return base::FilePath();
 }

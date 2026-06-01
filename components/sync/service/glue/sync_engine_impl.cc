@@ -19,7 +19,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "components/network_time/network_time_tracker.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/events/protocol_event.h"
@@ -27,6 +29,7 @@
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
+#include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/service/active_devices_provider.h"
 #include "components/sync/service/glue/sync_engine_backend.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
@@ -100,9 +103,34 @@ SyncTransportDataStartupState ValidateSyncTransportData(
 
 }  // namespace
 
+class SyncEngineImpl::NetworkTimeObserverImpl
+    : public network_time::NetworkTimeTracker::NetworkTimeObserver {
+ public:
+  NetworkTimeObserverImpl(network_time::NetworkTimeTracker* tracker,
+                          SyncEngineImpl* engine)
+      : network_time::NetworkTimeTracker::NetworkTimeObserver(tracker),
+        engine_(engine) {}
+
+  void OnNetworkTimeChanged(
+      const network_time::TimeTracker::TimeTrackerState state) override {}
+
+  void OnNetworkTimeTrackerDestroyed(
+      network_time::NetworkTimeTracker* tracker) override {
+    engine_->OnNetworkTimeTrackerDestroyed();
+  }
+
+ private:
+  // Points to the owning `SyncEngineImpl` instance. This raw pointer is
+  // guaranteed to be safe because `NetworkTimeObserverImpl` is owned as a
+  // `std::unique_ptr` by `SyncEngineImpl`, meaning its lifetime is strictly
+  // bounded by and cannot exceed that of its owner.
+  raw_ptr<SyncEngineImpl> engine_;
+};
+
 SyncEngineImpl::SyncEngineImpl(
     const std::string& name,
     SyncInvalidationsService* sync_invalidations_service,
+    network_time::NetworkTimeTracker* network_time_tracker,
     std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
     std::unique_ptr<SyncTransportDataPrefs> prefs,
     const base::FilePath& sync_data_folder,
@@ -112,12 +140,18 @@ SyncEngineImpl::SyncEngineImpl(
       prefs_(std::move(prefs)),
       sync_invalidations_service_(sync_invalidations_service),
       active_devices_provider_(std::move(active_devices_provider)),
+      network_time_tracker_(network_time_tracker),
       engine_created_time_for_metrics_(base::TimeTicks::Now()) {
   DCHECK(prefs_);
   DCHECK(sync_invalidations_service_);
   backend_ = base::MakeRefCounted<SyncEngineBackend>(
       name_, sync_data_folder, weak_ptr_factory_.GetWeakPtr());
   sync_invalidations_service_->AddTokenObserver(this);
+
+  if (network_time_tracker_) {
+    network_time_observer_ =
+        std::make_unique<NetworkTimeObserverImpl>(network_time_tracker_, this);
+  }
 }
 
 SyncEngineImpl::~SyncEngineImpl() {
@@ -567,6 +601,12 @@ void SyncEngineImpl::RecordNigoriMemoryUsageAndCountsHistograms() {
           backend_));
 }
 
+void SyncEngineImpl::OnNetworkTimeTrackerDestroyed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  network_time_tracker_ = nullptr;
+  network_time_observer_.reset();
+}
+
 void SyncEngineImpl::OnInvalidationReceived(const std::string& payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -577,10 +617,26 @@ void SyncEngineImpl::OnInvalidationReceived(const std::string& payload) {
   // prevent missing incoming invalidations which were received during
   // configuration.
   DCHECK(interested_data_types.has_value());
+
+  const base::Time arrival_time = base::Time::Now();
+  std::optional<base::Time> network_time;
+  std::optional<base::TimeDelta> network_time_uncertainty;
+
+  if (network_time_tracker_) {
+    base::Time nt;
+    base::TimeDelta uncertainty;
+    if (network_time_tracker_->GetNetworkTime(&nt, &uncertainty) ==
+        network_time::NetworkTimeTracker::NETWORK_TIME_AVAILABLE) {
+      network_time = nt;
+      network_time_uncertainty = uncertainty;
+    }
+  }
+
   sync_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::DoOnStandaloneInvalidationReceived,
-                     backend_, payload, *interested_data_types));
+                     backend_, payload, *interested_data_types, arrival_time,
+                     network_time, network_time_uncertainty));
 }
 
 void SyncEngineImpl::OnFCMRegistrationTokenChanged() {

@@ -34,4 +34,8 @@ message SyncInvalidationsPayload {
 
   // Version of invalidation, used to order incoming invalidations.
   optional int64 version = 3;
+
+  // The server-publish time of the invalidation, representing milliseconds
+  // since the Unix epoch.
+  optional int64 server_publish_time_unix_epoch_millis = 4;
 }

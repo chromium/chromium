@@ -1576,6 +1576,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SyncInvalidationsPayload& proto) {
   VISIT_REP(data_type_invalidations);
   VISIT_BYTES(hint);
   VISIT(version);
+  VISIT(server_publish_time_unix_epoch_millis);
 }
 
 VISIT_PROTO_FIELDS(
