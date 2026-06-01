@@ -7,7 +7,7 @@ import assert from 'node:assert';
 // eslint-disable-next-line no-restricted-syntax
 import {readFile, unlink, writeFile} from 'node:fs/promises';
 import {dirname, join} from 'node:path';
-import {argv, exit} from 'node:process';
+import {argv, exit, stdout} from 'node:process';
 import {fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
 
@@ -22,10 +22,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const workspaceRoot = join(__dirname, '../../../../../');
 const clangFormatPath = getClangFormatPath(workspaceRoot);
+const diffHelperPath = join(__dirname, 'diff_helper.py');
 
 // Returns the formatted file contents, or null if a Lit HTML template cannot
 // be extracted from |filePath|.
-async function formatFile(filePath, sortAttributes) {
+async function formatFile(filePath, sortAttributes, quiet = false) {
   const tempFilePath = `${filePath}.tmp.ts`;
 
   // Step 1: Extract and process template content
@@ -37,7 +38,9 @@ async function formatFile(filePath, sortAttributes) {
   } = processTemplate(filePath);
 
   if (!replacedTemplate) {
-    console.info(`Could not extract template from ${filePath}, skipping`);
+    if (!quiet) {
+      console.info(`Could not extract template from ${filePath}, skipping`);
+    }
     return null;
   }
 
@@ -79,7 +82,9 @@ async function formatFile(filePath, sortAttributes) {
 
   // Step 5: Write rest of file to temp file, run clang-format.
   await writeFile(tempFilePath, restOfFile, 'utf-8');
-  console.info(`Running clang-format on temporary file...`);
+  if (!quiet) {
+    console.info(`Running clang-format on temporary file...`);
+  }
   await execAsync(`python3 "${clangFormatPath}" -i "${tempFilePath}"`);
 
   // Step 6: Reconstruction
@@ -106,15 +111,18 @@ async function main() {
     options: {
       'sort-attributes': {type: 'boolean', default: false},
       'dry-run': {type: 'boolean', default: false},
+      'diff': {type: 'boolean', default: false},
     },
   });
   const inFiles = parsed.positionals;
 
+  const isDryRun = parsed.values['dry-run'];
+  const isDiff = parsed.values['diff'];
   let hasDiffAny = false;
 
   for (const f of inFiles) {
     const formattedContent =
-        await formatFile(f, parsed.values['sort-attributes']);
+        await formatFile(f, parsed.values['sort-attributes'], isDiff);
     if (formattedContent === null) {
       continue;
     }
@@ -122,24 +130,41 @@ async function main() {
     const originalContent = await readFile(f, 'utf-8');
     const hasDiff = originalContent !== formattedContent;
 
-    if (parsed.values['dry-run']) {
+    if (isDryRun) {
       hasDiffAny ||= hasDiff;
-      hasDiff ? console.error(`Error: ${f} is not formatted.`) :
-                console.info(`${f} is formatted.`);
+    }
+
+    if (!hasDiff) {
+      if (!isDiff) {
+        console.info(`${f} is already formatted.`);
+      }
       continue;
     }
 
-    if (hasDiff) {
-      await writeFile(f, formattedContent, 'utf-8');
-      console.info(`Successfully formatted and updated ${f}`);
+    if (isDryRun && !isDiff) {
+      console.error(`Error: ${f} is not formatted.`);
       continue;
     }
 
-    console.info(`${f} is already formatted.`);
+    const writePath = isDiff ? `${f}.formatted.tmp.ts` : f;
+    await writeFile(writePath, formattedContent, 'utf-8');
+
+    if (isDiff) {
+      try {
+        const diffOutput = await execAsync(
+            `python3 "${diffHelperPath}" "${f}" "${writePath}"`);
+        stdout.write(diffOutput);
+      } finally {
+        await unlink(writePath);
+      }
+      continue;
+    }
+
+    console.info(`Successfully formatted and updated ${f}`);
   }
 
   if (hasDiffAny) {
-    assert.ok(parsed.values['dry-run']);
+    assert.ok(isDryRun);
     exit(2);
   }
 }

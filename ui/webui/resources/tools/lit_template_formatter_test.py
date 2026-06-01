@@ -60,7 +60,7 @@ class LitTemplateFormatterTest(unittest.TestCase):
   def _run_formatter(self, args):
     formatter_script = os.path.join(_HERE_DIR, "lit_template_formatter",
                                     "main.js")
-    node.RunNode([formatter_script] + args)
+    return node.RunNode([formatter_script] + args)
 
   # When expected_filename is None, compares the formatted output directly
   # against the original source file, verifying that correct formatting remains
@@ -123,6 +123,45 @@ class LitTemplateFormatterTest(unittest.TestCase):
       self._run_formatter(["--dry-run", dest_path])
     self.assertIn("is not formatted", str(context.exception))
     self.assertIn("exit=2", str(context.exception))
+
+  def testDiffModeFormatted(self):
+    filename = "test_basic_expressions.html.ts"
+    expected_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
+                                 "expected", filename)
+    dest_path = os.path.join(self._out_dir, filename)
+    shutil.copy(expected_path, dest_path)
+    # Already formatted, so no diff should show.
+    stdout = self._run_formatter(["--diff", dest_path])
+    self.assertEqual("", stdout)
+
+  def testDiffModeUnformatted(self):
+    filename = "test_basic_expressions.html.ts"
+    src_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
+                            filename)
+    dest_path = os.path.join(self._out_dir, filename)
+    shutil.copy(src_path, dest_path)
+    # Should NOT throw, and should return the diff in stdout
+    stdout = self._run_formatter(["--diff", dest_path])
+    # Should contain the diff in stdout
+    self.assertIn("--- ", stdout)
+    self.assertIn("+++ ", stdout)
+    self.assertIn("-    <h1>${this.title}</h1>", stdout)
+    self.assertIn("+  <h1>${this.title}</h1>", stdout)
+
+  def testDiffAndDryRunModeUnformatted(self):
+    filename = "test_basic_expressions.html.ts"
+    src_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
+                            filename)
+    dest_path = os.path.join(self._out_dir, filename)
+    shutil.copy(src_path, dest_path)
+    # Should throw because it has diffs (and exits with 2 due to dry-run/diff)
+    with self.assertRaises(RuntimeError) as context:
+      self._run_formatter(["--diff", "--dry-run", dest_path])
+    self.assertIn("exit=2", str(context.exception))
+    # Should contain the diff in stdout due to --diff flag.
+    self.assertIn("stdout:\n", str(context.exception))
+    self.assertIn("-    <h1>${this.title}</h1>", str(context.exception))
+    self.assertIn("+  <h1>${this.title}</h1>", str(context.exception))
 
   def testJsUnitTests(self):
     test_script = os.path.join(_HERE_DIR, "lit_template_formatter",
