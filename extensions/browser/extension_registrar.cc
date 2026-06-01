@@ -423,11 +423,13 @@ void ExtensionRegistrar::DisableExtensionWithRawReasons(
   extension_prefs_->ReplaceRawDisableReasons(passkey, extension_id,
                                              disable_reasons);
 
-  int include_mask =
+  int include_all_but_disabled =
       ExtensionRegistry::EVERYTHING & ~ExtensionRegistry::DISABLED;
-  extension = registry_->GetExtensionById(extension_id, include_mask);
-  if (!extension)
+  extension =
+      registry_->GetExtensionById(extension_id, include_all_but_disabled);
+  if (!extension) {
     return;
+  }
 
   // The extension is either enabled or terminated.
   DCHECK(registry_->enabled_extensions().Contains(extension->id()) ||
