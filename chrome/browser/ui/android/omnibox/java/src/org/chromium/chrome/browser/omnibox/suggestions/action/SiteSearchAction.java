@@ -38,9 +38,4 @@ public class SiteSearchAction extends OmniboxAction {
         delegate.setSiteSearchData(new SiteSearchData(keyword, hint));
         return false; // do not clear omnibox focus.
     }
-
-    @Override
-    public void onActionFocusedFromKeyboard(boolean isSelected, OmniboxActionDelegate delegate) {
-        delegate.setSiteSearchData(isSelected ? new SiteSearchData(keyword, hint) : null);
-    }
 }

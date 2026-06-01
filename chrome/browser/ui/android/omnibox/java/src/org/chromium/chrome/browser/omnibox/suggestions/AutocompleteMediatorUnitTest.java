@@ -2064,6 +2064,29 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void triggerSiteSearch_ReTriggerSuccess() {
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        // 1. First trigger: user types "@gemini "
+        setUpSiteSearchSpaceTrigger("@gemini", "Gemini", "Gemini AI", "");
+        assertTrue(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
+        assertNotNull(session.getAutocompleteInput().getSiteSearchData());
+
+        // 2. Backspace: simulate clearing site search data (exit keyword mode)
+        session.getAutocompleteInput().setSiteSearchData(null);
+        doReturn("@gemini").when(mTextStateProvider).getTextWithoutAutocomplete();
+
+        // 3. Second trigger: user deletes space then types space again -> "@gemini "
+        doReturn("@gemini ").when(mTextStateProvider).getTextWithoutAutocomplete();
+        doReturn(mTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("@gemini ");
+
+        assertTrue(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
+        assertNotNull(session.getAutocompleteInput().getSiteSearchData());
+    }
+
+    @Test
+    @SmallTest
     public void onInputChanged_setsAllowParkingAtSentinelProperty_mobile() {
         var session = createEmptySession();
         mMediator.beginInput(session);

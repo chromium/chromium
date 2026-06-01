@@ -2268,6 +2268,7 @@ class LocationBarMediator
                             siteSearchData.enteredViaSpace
                                     ? siteSearchData.keyword + " "
                                     : siteSearchData.keyword;
+                    mCurrentInput.setUserText(searchText);
                     mCurrentInput.setSiteSearchData(null);
                     mUrlCoordinator.setUrlBarData(
                             UrlBarData.forNonUrlText(searchText),
