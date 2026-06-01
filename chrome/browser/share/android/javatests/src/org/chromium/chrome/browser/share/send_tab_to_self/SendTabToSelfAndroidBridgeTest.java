@@ -244,6 +244,78 @@ public class SendTabToSelfAndroidBridgeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testSendTabToDevice_ShowsNoInternetToast_OnNoInternetConnection() {
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
+                confirmationCallbackCaptor =
+                        ArgumentCaptor.forClass(
+                                SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+
+        SendTabToSelfAndroidBridge.sendTabToDevice(
+                mProfile,
+                mWebContents,
+                TARGET_DEVICE_SYNC_CACHE_GUID,
+                "Pixel 10",
+                URL,
+                TITLE,
+                null);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(mWebContents),
+                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
+                        eq(URL),
+                        eq(TITLE),
+                        confirmationCallbackCaptor.capture());
+
+        confirmationCallbackCaptor
+                .getValue()
+                .onResult(SendTabToSelfResult.FAILURE_NO_INTERNET_CONNECTION);
+
+        String expectedMessage =
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.send_tab_to_self_post_send_no_internet_toast);
+        Assert.assertTrue(ShadowToast.showedCustomToast(expectedMessage, R.id.toast_text));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
+    public void testSendTabToDevice_ShowsNoInternetToast_OnCommitTimeout() {
+        ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
+                confirmationCallbackCaptor =
+                        ArgumentCaptor.forClass(
+                                SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
+
+        SendTabToSelfAndroidBridge.sendTabToDevice(
+                mProfile,
+                mWebContents,
+                TARGET_DEVICE_SYNC_CACHE_GUID,
+                "Pixel 10",
+                URL,
+                TITLE,
+                null);
+
+        verify(mNativeMock)
+                .sendTabToDevice(
+                        eq(mProfile),
+                        eq(mWebContents),
+                        eq(TARGET_DEVICE_SYNC_CACHE_GUID),
+                        eq(URL),
+                        eq(TITLE),
+                        confirmationCallbackCaptor.capture());
+
+        confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.FAILURE_COMMIT_TIMEOUT);
+
+        String expectedMessage =
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.send_tab_to_self_post_send_no_internet_toast);
+        Assert.assertTrue(ShadowToast.showedCustomToast(expectedMessage, R.id.toast_text));
+    }
+
+    @Test
+    @SmallTest
     @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_PostSendToastFeatureDisabled() {
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>

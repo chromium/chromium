@@ -89,6 +89,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "ReportUnsafeSiteConfirmation";
     case ToastId::kDefaultBrowserUpdateSuccess:
       return "DefaultBrowserUpdateSuccess";
+    case ToastId::kSendTabToSelfNoInternetConnection:
+      return "SendTabToSelfNoInternetConnection";
   }
 
   NOTREACHED();

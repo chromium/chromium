@@ -365,7 +365,7 @@ void SendTabToSelfBridge::OnCommitAttemptErrors(
 
 syncer::DataTypeSyncBridge::CommitAttemptFailedBehavior
 SendTabToSelfBridge::OnCommitAttemptFailed(syncer::SyncCommitError error) {
-  commit_tracker_->OnCommitAttemptFailed();
+  commit_tracker_->OnCommitAttemptFailed(error);
   // Even if the immediate UI notification failed, the sync engine should
   // keep trying to commit the entry in the background (e.g. if the failure was
   // due to a transient network issue).

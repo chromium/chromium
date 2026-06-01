@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 
 namespace syncer {
 class DataTypeLocalChangeProcessor;
@@ -51,7 +52,7 @@ class SendTabToSelfCommitTracker {
   void OnCommitErrors(const syncer::FailedCommitResponseDataList& error_list);
 
   // Called when sync reports a general commit failure.
-  void OnCommitAttemptFailed();
+  void OnCommitAttemptFailed(syncer::SyncCommitError error);
 
   // Called when sync is disabled. Clears all pending commits with a failure
   // result.

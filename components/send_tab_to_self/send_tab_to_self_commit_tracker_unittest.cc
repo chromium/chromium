@@ -80,8 +80,16 @@ TEST_F(SendTabToSelfCommitTrackerTest, NotifyCommitAttemptFailed) {
   base::test::TestFuture<SendTabToSelfResult> future;
   tracker_.TrackCommit("guid1", future.GetCallback());
 
-  tracker_.OnCommitAttemptFailed();
+  tracker_.OnCommitAttemptFailed(syncer::SyncCommitError::kServerError);
   EXPECT_EQ(future.Get(), SendTabToSelfResult::kFailureCommitAttemptFailed);
+}
+
+TEST_F(SendTabToSelfCommitTrackerTest, NotifyNoInternetConnection) {
+  base::test::TestFuture<SendTabToSelfResult> future;
+  tracker_.TrackCommit("guid1", future.GetCallback());
+
+  tracker_.OnCommitAttemptFailed(syncer::SyncCommitError::kNetworkError);
+  EXPECT_EQ(future.Get(), SendTabToSelfResult::kFailureNoInternetConnection);
 }
 
 // Verifies that a sync disabled error is notified when sync is turned off.

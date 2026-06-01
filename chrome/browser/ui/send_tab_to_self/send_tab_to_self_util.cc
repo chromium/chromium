@@ -128,7 +128,9 @@ void ShowTabSentThrottledToast(content::WebContents* web_contents,
   }
 }
 
-void ShowTabSentFailure(content::WebContents* web_contents, const GURL& url) {
+void ShowTabSentFailure(content::WebContents* web_contents,
+                        SendTabToSelfResult result,
+                        const GURL& url) {
   CHECK(web_contents);
   // If the post-send toast feature is enabled, shows a modern Toast UI.
   // TODO(crbug.com/492072882): The generic failure string is temporary and
@@ -137,8 +139,12 @@ void ShowTabSentFailure(content::WebContents* web_contents, const GURL& url) {
     ToastController* toast_controller =
         ToastController::MaybeGetForWebContents(web_contents);
     if (toast_controller) {
-      toast_controller->MaybeShowToast(
-          ToastParams(ToastId::kSendTabToSelfFailure));
+      ToastId toast_id = ToastId::kSendTabToSelfFailure;
+      if (result == SendTabToSelfResult::kFailureNoInternetConnection ||
+          result == SendTabToSelfResult::kFailureCommitTimeout) {
+        toast_id = ToastId::kSendTabToSelfNoInternetConnection;
+      }
+      toast_controller->MaybeShowToast(ToastParams(toast_id));
     }
   } else {
     // Fallback to legacy system notification if the toast feature is disabled.

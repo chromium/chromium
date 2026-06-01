@@ -62,6 +62,8 @@ void OnSendTabToDeviceComplete(base::WeakPtr<content::WebContents> web_contents,
     case SendTabToSelfResult::kFailureSyncDisabled:
     case SendTabToSelfResult::kFailureEntryRemoved:
     case SendTabToSelfResult::kFailureCommitTimeout:
+    case SendTabToSelfResult::kFailureNoInternetConnection:
+      ShowTabSentFailure(web_contents.get(), result);
       break;
   }
 }

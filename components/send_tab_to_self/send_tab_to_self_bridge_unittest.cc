@@ -767,6 +767,19 @@ TEST_F(SendTabToSelfBridgeTest, NotifyPendingCommitsOnCommitAttemptFailed) {
   EXPECT_EQ(future.Get(), SendTabToSelfResult::kFailureCommitAttemptFailed);
 }
 
+TEST_F(SendTabToSelfBridgeTest,
+       NotifyPendingCommitsOnCommitAttemptFailedWithNetworkError) {
+  InitializeBridge();
+  base::test::TestFuture<SendTabToSelfResult> future;
+  const SendTabToSelfEntry* entry = bridge()->SendEntry(
+      GURL("https://www.example.com/"), "title", kLocalDeviceCacheGuid,
+      PageContext(), NavigationHistory(), future.GetCallback());
+  ASSERT_NE(nullptr, entry);
+
+  bridge()->OnCommitAttemptFailed(syncer::SyncCommitError::kNetworkError);
+  EXPECT_EQ(future.Get(), SendTabToSelfResult::kFailureNoInternetConnection);
+}
+
 // Tests that the pending commit callback is fired with a sync disabled error
 // when sync is disabled while there are still pending commits.
 TEST_F(SendTabToSelfBridgeTest, NotifyPendingCommitsOnDisableSync) {

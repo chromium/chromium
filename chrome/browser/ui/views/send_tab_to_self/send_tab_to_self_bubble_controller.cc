@@ -305,7 +305,8 @@ void SendTabToSelfBubbleController::HandleSendTabToDeviceResult(
     case SendTabToSelfResult::kFailureSyncDisabled:
     case SendTabToSelfResult::kFailureEntryRemoved:
     case SendTabToSelfResult::kFailureCommitTimeout:
-      ShowTabSentFailure(&GetWebContents(), url);
+    case SendTabToSelfResult::kFailureNoInternetConnection:
+      ShowTabSentFailure(&GetWebContents(), result, url);
       break;
   }
 }

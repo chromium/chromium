@@ -605,6 +605,16 @@ void ToastService::RegisterToasts(
           IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE)
           .AddCloseButton()
           .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kSendTabToSelfNoInternetConnection,
+      ToastSpecification::Builder(
+          features::IsRoundedIconsEnabled() ? vector_icons::kWarningFilledIcon
+                                            : vector_icons::kWarningOldIcon,
+          IDS_SEND_TAB_TO_SELF_POST_SEND_NO_INTERNET_TOAST)
+          .AddCloseButton()
+          .Build());
+
   // Report a scam confirmation toast.
   toast_registry_->RegisterToast(
       ToastId::kReportUnsafeSiteConfirmation,

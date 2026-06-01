@@ -81,8 +81,17 @@ void SendTabToSelfCommitTracker::OnCommitErrors(
   }
 }
 
-void SendTabToSelfCommitTracker::OnCommitAttemptFailed() {
-  ClearAllAndInvokeCallbacks(SendTabToSelfResult::kFailureCommitAttemptFailed);
+void SendTabToSelfCommitTracker::OnCommitAttemptFailed(
+    syncer::SyncCommitError error) {
+  SendTabToSelfResult result = SendTabToSelfResult::kFailureCommitAttemptFailed;
+  if (error == syncer::SyncCommitError::kNetworkError) {
+    // Network error usually means no internet connection is available. The UI
+    // code will show a specific toast for this case as it a) happens frequently
+    // according to metrics and b) the user can take a specific action (check
+    // internet connection).
+    result = SendTabToSelfResult::kFailureNoInternetConnection;
+  }
+  ClearAllAndInvokeCallbacks(result);
 }
 
 void SendTabToSelfCommitTracker::OnSyncDisabled() {

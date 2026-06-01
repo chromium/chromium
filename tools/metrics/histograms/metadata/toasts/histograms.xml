@@ -65,6 +65,8 @@ found in the LICENSE file.
     <variant name="MultistepFilterSuggestionRecent"
         summary="recent filter suggestion"/>
     <variant name="NonMilestoneUpdate" summary="non-milestone update"/>
+    <variant name="SendTabToSelfNoInternetConnection"
+        summary="send tab to self no internet connection"/>
     <variant name="SendTabToSelfTabOpened"
         summary="send tab to self tab opened"/>
     <variant name="SendTabToSelfTabsOpenedInBackground"

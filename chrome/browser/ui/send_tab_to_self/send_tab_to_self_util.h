@@ -17,6 +17,7 @@ class WebContents;
 namespace send_tab_to_self {
 
 class SendTabToSelfEntry;
+enum class SendTabToSelfResult;
 
 }  // namespace send_tab_to_self
 
@@ -49,6 +50,7 @@ void ShowTabSentThrottledToast(content::WebContents* web_contents,
 // Shows a failure toast (or notification if the feature flag is disabled)
 // when the tab failed to send.
 void ShowTabSentFailure(content::WebContents* web_contents,
+                        SendTabToSelfResult result,
                         const GURL& url = GURL());
 
 }  // namespace send_tab_to_self

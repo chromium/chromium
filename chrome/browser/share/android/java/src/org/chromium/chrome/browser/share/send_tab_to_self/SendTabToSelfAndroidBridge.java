@@ -114,6 +114,12 @@ public class SendTabToSelfAndroidBridge {
                                 targetDeviceName);
                 Toast.makeText(appContext, throttledMessage, Toast.LENGTH_SHORT).show();
                 break;
+            case SendTabToSelfResult.FAILURE_NO_INTERNET_CONNECTION:
+            case SendTabToSelfResult.FAILURE_COMMIT_TIMEOUT:
+                String noInternetMessage =
+                        appContext.getString(R.string.send_tab_to_self_post_send_no_internet_toast);
+                Toast.makeText(appContext, noInternetMessage, Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 
