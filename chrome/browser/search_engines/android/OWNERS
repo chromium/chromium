@@ -6,3 +6,4 @@ bsazonov@chromium.org #{LAST_RESORT_SUGGESTION}
 # For site search
 per-file .../search_engines/settings/...=kaiyilin@google.com
 per-file java/res/...=kaiyilin@google.com
+per-file BUILD.gn=kaiyilin@google.com
