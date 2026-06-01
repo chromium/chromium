@@ -1006,11 +1006,11 @@
     <message name="IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL" desc="Label for a button that navigates user to the previous page from the 'Sign in' page">
       Back from sign in
     </message>
-    <message name="IDS_PROFILE_PICKER_PAUSE_EFFECTS_BUTTON" desc="A text label for a button that pauses background effects, i.e. audio and animations (if applicable)." translateable="false">
-      Pause
+    <message name="IDS_PROFILE_PICKER_PAUSE_EFFECTS_BUTTON" desc="A text label for a button that pauses background effects, i.e. audio and animations (if applicable).">
+      Pause effects
     </message>
-    <message name="IDS_PROFILE_PICKER_PLAY_EFFECTS_BUTTON" desc="A text label for a button that plays background effects, i.e. audio and animations (if applicable)." translateable="false">
-      Play
+    <message name="IDS_PROFILE_PICKER_PLAY_EFFECTS_BUTTON" desc="A text label for a button that plays background effects, i.e. audio and animations (if applicable).">
+      Play effects
     </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT" desc="Text on the profile card signaling that the user must sign-in in order to open a profile">
       Sign in
