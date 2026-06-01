@@ -895,8 +895,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   // texImage2D calls.
   class LRUCanvasResourceProviderCache {
    public:
-    enum class CacheType { kImage, kVideo };
-    LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type);
+    LRUCanvasResourceProviderCache(wtf_size_t capacity);
     // The pointer returned is owned by the image buffer map.
     CanvasNon2DResourceProviderSharedImage* GetCanvasResourceProvider(
         const CanvasSnapshotInfo& info,
@@ -905,13 +904,9 @@ class MODULES_EXPORT WebGLRenderingContextBase
    private:
     void BubbleToFront(wtf_size_t idx);
     const wtf_size_t capacity_;
-    const CacheType type_;
     Vector<std::unique_ptr<CanvasNon2DResourceProviderSharedImage>> providers_;
   };
-  LRUCanvasResourceProviderCache generated_image_cache_{
-      4, LRUCanvasResourceProviderCache::CacheType::kImage};
-  LRUCanvasResourceProviderCache generated_video_cache_{
-      4, LRUCanvasResourceProviderCache::CacheType::kVideo};
+  LRUCanvasResourceProviderCache generated_video_cache_{4};
 
   GLint max_texture_size_;
   GLint max_cube_map_texture_size_;

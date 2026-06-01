@@ -6699,11 +6699,6 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
                                   CanUseTexImageViaGPU(params) &&
                                   source_image_rect_is_default;
 
-  // If we can upload via GPU, try to to use an accelerated resource provider
-  // configured appropriately for video. Otherwise use the software cache.
-  auto& image_cache =
-      can_upload_via_gpu ? generated_video_cache_ : generated_image_cache_;
-
   // Orient the destination rect based on the frame's transform.
   const auto& visible_rect = media_video_frame->visible_rect();
   auto dest_rect = gfx::Rect(visible_rect.size());
@@ -6716,11 +6711,15 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 
   auto info = CreateSnapshotProviderInfoForVideoFrame(
       *media_video_frame, dest_rect.size(), reinterpret_video_as_srgb);
+
+  CanvasNon2DResourceProviderSharedImage* provider = nullptr;
   bool tried_to_create_provider = false;
-  auto* provider =
-      image_cache.GetCanvasResourceProvider(info, tried_to_create_provider);
-  if (!provider && tried_to_create_provider) {
-    return;
+  if (can_upload_via_gpu) {
+    provider = generated_video_cache_.GetCanvasResourceProvider(
+        info, tried_to_create_provider);
+    if (!provider && tried_to_create_provider) {
+      return;
+    }
   }
 
   // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
@@ -9071,8 +9070,8 @@ String WebGLRenderingContextBase::EnsureNotNull(const String& text) const {
 }
 
 WebGLRenderingContextBase::LRUCanvasResourceProviderCache::
-    LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type)
-    : capacity_(capacity), type_(type), providers_(capacity) {}
+    LRUCanvasResourceProviderCache(wtf_size_t capacity)
+    : capacity_(capacity), providers_(capacity) {}
 
 CanvasNon2DResourceProviderSharedImage* WebGLRenderingContextBase::
     LRUCanvasResourceProviderCache::GetCanvasResourceProvider(
@@ -9093,17 +9092,13 @@ CanvasNon2DResourceProviderSharedImage* WebGLRenderingContextBase::
     return provider;
   }
 
-  bool create_accelerated_provider = false;
-  if (type_ == CacheType::kVideo) {
-    viz::RasterContextProvider* raster_context_provider = nullptr;
-    if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      raster_context_provider =
-          wrapper->ContextProvider().RasterContextProvider();
-    }
-    create_accelerated_provider =
-        ShouldCreateAcceleratedImages(raster_context_provider);
+  viz::RasterContextProvider* raster_context_provider = nullptr;
+  if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+    raster_context_provider =
+        wrapper->ContextProvider().RasterContextProvider();
   }
-
+  bool create_accelerated_provider =
+      ShouldCreateAcceleratedImages(raster_context_provider);
   tried_to_create_provider = create_accelerated_provider;
 
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> temp;
