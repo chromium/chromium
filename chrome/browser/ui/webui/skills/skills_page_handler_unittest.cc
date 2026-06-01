@@ -17,11 +17,13 @@
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/skills/internal/skills_downloader.h"
 #include "components/skills/mocks/mock_skills_service.h"
 #include "components/skills/proto/skill.pb.h"
 #include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
+#include "components/skills/public/skills_prefs.h"
 #include "components/skills/public/skills_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -55,6 +57,7 @@ class MockSkillsPage : public skills::mojom::SkillsPage {
               Update1PSkills,
               (mojom::BrowseSkillsInitialStatePtr),
               (override));
+  MOCK_METHOD(void, SetSkillsEnabled, (bool enabled), (override));
 
   mojo::Receiver<skills::mojom::SkillsPage> receiver_{this};
 };
@@ -213,6 +216,15 @@ TEST_F(SkillsPageHandlerTest, Request1PSkills_DownloadAlreadyRunning) {
   histogram_tester_.ExpectBucketCount(
       "Skills.Management.FirstParty.DownloadRequestStatus",
       SkillsDownloadRequestStatus::kAlreadyRunning, 1);
+}
+
+TEST_F(SkillsPageHandlerTest, OnSkillsEnabledPrefChanged) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_page_, SetSkillsEnabled(false)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
+  profile_.GetPrefs()->SetBoolean(skills::prefs::kChromeSkillsEnabled, false);
+  run_loop.Run();
 }
 
 }  // namespace

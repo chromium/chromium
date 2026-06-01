@@ -79,6 +79,7 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
     return std::make_unique<skills::SkillsServiceImpl>(
+        profile->GetPrefs(),
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
         IdentityManagerFactory::GetForProfile(profile), chrome::GetChannel(),
         DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
@@ -299,13 +300,19 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(SkillsPageScreenshotInteractiveUITest, ErrorStatePage) {
   std::string screenshot_name =
       IsDarkMode() ? "error_state_dark" : "error_state_light";
-  RunTestSequence(SetOnIncompatibleAction(
-                      OnIncompatibleAction::kIgnoreAndContinue,
-                      "Screenshots not supported in all testing environments."),
-                  OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)),
-                  Screenshot(kSkillsPageElementId,
-                             /*screenshot_name=*/screenshot_name,
-                             /*baseline_cl=*/kScreenshotBaselineCL));
+  const InteractiveBrowserWindowTestApi::DeepQuery kErrorPageQuery{
+      "skills-app", "error-page"};
+  RunTestSequence(
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshots not supported in all testing environments."),
+      OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)),
+      WaitForElementEvent(
+          kSkillsPageElementId, kErrorPageQuery,
+          WebContentsInteractionTestUtil::StateChange::Type::kExists),
+      Screenshot(kSkillsPageElementId,
+                 /*screenshot_name=*/screenshot_name,
+                 /*baseline_cl=*/kScreenshotBaselineCL));
   histogram_tester_.ExpectBucketCount(
       "Skills.Management.ErrorPage.Action",
       skills::mojom::SkillsManagementAction::kPageOpened, 1);

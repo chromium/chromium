@@ -38,10 +38,16 @@
 
   <!-- chrome://skills error page -->
   <message name="IDS_SKILLS_ERROR_PAGE_TITLE" desc="Title of the error page that occurs when chrome://skills is not accessible">
-    Skills isn't available
+    Skills aren't available
   </message>
-  <message name="IDS_SKILLS_ERROR_PAGE_DESCRIPTION" desc="Description of the error page that occurs when chrome://skills is not accessible">
+  <message name="IDS_SKILLS_ERROR_PAGE_DESCRIPTION" desc="Description of the error page that occurs when chrome://skills is not accessible because Glic is not enabled">
     To use Skills, sign in to Chrome with a Google account that has Gemini in Chrome enabled
+  </message>
+  <message name="IDS_SKILLS_DISABLED_ERROR_PAGE_DESCRIPTION" desc="Description of the error page that occurs when chrome://skills is disabled by the settings toggle">
+    The Skills feature is currently disabled. Update your Chrome Settings to get started.
+  </message>
+  <message name="IDS_SKILLS_GO_TO_SETTINGS" desc="Label of the button that navigates the user to Chrome Settings page for Skills.">
+    Go to Settings
   </message>
   <message name="IDS_SKILLS_NO_SEARCH_RESULT_TITLE" desc="Title of the page that occurs when chrome://skills has no search results">
     No search results

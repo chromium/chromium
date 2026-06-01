@@ -134,6 +134,7 @@ std::unique_ptr<KeyedService> SkillsInteractiveUiTestBase::CreateSkillsService(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<skills::SkillsServiceImpl>(
+      profile->GetPrefs(),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile), chrome::GetChannel(),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),

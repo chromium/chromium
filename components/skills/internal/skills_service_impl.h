@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/skills/internal/skills_downloader.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -37,6 +38,8 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+class PrefService;
+
 namespace skills {
 
 class SkillsSyncBridge;
@@ -47,6 +50,7 @@ class SkillsSyncBridge;
 class SkillsServiceImpl : public SkillsService {
  public:
   SkillsServiceImpl(
+      PrefService* pref_service,
       optimization_guide::OptimizationGuideDecider* optimization_guide,
       signin::IdentityManager* identity_manager,
       version_info::Channel channel,
@@ -142,6 +146,9 @@ class SkillsServiceImpl : public SkillsService {
   // Sorts the skills by name in alphabetical order.
   void SortSkills();
 
+  // Called when the Skills enabled preference changes.
+  void OnSkillsEnabledPrefChanged();
+
   // The list of skills managed by this service.
   std::vector<std::unique_ptr<Skill>> skills_;
 
@@ -167,6 +174,10 @@ class SkillsServiceImpl : public SkillsService {
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SkillsFetcher> skills_fetcher_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<optimization_guide::OptimizationGuideDecider> optimization_guide_;
+  PrefChangeRegistrar pref_registrar_;
 
   // Identity manager for OAuth.
   raw_ptr<signin::IdentityManager> identity_manager_;

@@ -45,6 +45,8 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddResourcePath("dialog", IDR_SKILLS_SKILLS_DIALOG_HTML);
   source->AddBoolean("isGlicEnabled",
                      glic::GlicEnabling::IsReadyForProfile(profile));
+  source->AddBoolean("isSkillsEnabled",
+                     SkillsServiceFactory::IsSkillsEnabledForProfile(profile));
   source->AddInteger("MAX_NAME_CHAR_COUNT", kMaxNameCharCount);
   source->AddInteger("MAX_PROMPT_CHAR_COUNT", kMaxPromptCharCount);
   source->AddBoolean("isRefinementEnabled",
@@ -84,6 +86,9 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
       {"mainMenu", IDS_SKILL_PAGE_MAIN_MENU},
       {"errorPageTitle", IDS_SKILLS_ERROR_PAGE_TITLE},
       {"errorPageDescription", IDS_SKILLS_ERROR_PAGE_DESCRIPTION},
+      {"disabledErrorPageDescription",
+       IDS_SKILLS_DISABLED_ERROR_PAGE_DESCRIPTION},
+      {"goToSettings", IDS_SKILLS_GO_TO_SETTINGS},
       {"footerText", IDS_SKILLS_SIDEBAR_FOOTER_TEXT},
       {"footerBranding", IDS_SKILLS_SIDEBAR_FOOTER_BRANDING},
       {"addSkillHeader", IDS_SKILLS_DIALOG_ADD_SKILL_HEADER},
@@ -175,8 +180,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(SkillsUI)
 SkillsUI::~SkillsUI() = default;
 
 bool SkillsUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  return SkillsServiceFactory::IsSkillsEnabledForProfile(profile);
+  return base::FeatureList::IsEnabled(features::kSkillsEnabled);
 }
 
 }  // namespace skills

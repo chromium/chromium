@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/skills/features.h"
 #include "components/skills/proto/skill.pb.h"
+#include "components/skills/public/skills_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -65,7 +66,9 @@ SkillsUpdateObserver* SkillsUpdateObserver::From(tabs::TabInterface* tab) {
 
 void SkillsUpdateObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+  if (!skills::IsSkillsEnabled(profile->GetPrefs())) {
     return;
   }
 

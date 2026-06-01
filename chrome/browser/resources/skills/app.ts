@@ -25,6 +25,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {DiscoverSkillsPageElement} from './discover_skills_page.js';
+import {ErrorType} from './error_page.js';
 import type {SkillsSidebarElement} from './sidebar.js';
 import {Page} from './sidebar.js';
 import {SkillsManagementAction, SkillsManagementPage} from './skill_metrics.mojom-webui.js';
@@ -59,21 +60,28 @@ export class SkillsAppElement extends CrLitElement {
       selectedPage_: {type: String},
       narrow_: {type: Boolean},
       isDrawerOpen_: {type: Boolean},
-      shouldShowErrorPage_: {type: Boolean},
+      isSkillsEnabled_: {type: Boolean},
     };
   }
 
   protected accessor selectedPage_: Page = Page.USER_SKILLS;
   protected accessor narrow_: boolean = false;
   protected accessor isDrawerOpen_: boolean = false;
-  protected accessor shouldShowErrorPage_: boolean =
-      !loadTimeData.getBoolean('isGlicEnabled');
+  protected accessor isSkillsEnabled_: boolean =
+      loadTimeData.getBoolean('isSkillsEnabled');
+
   private eventTracker_: EventTracker = new EventTracker();
   private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
+  private listenerIds_: number[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
     ColorChangeUpdater.forDocument().start();
+    this.listenerIds_.push(
+        this.proxy_.callbackRouter.setSkillsEnabled.addListener(
+            (enabled: boolean) => {
+              this.isSkillsEnabled_ = enabled;
+            }));
     const router = CrRouter.getInstance();
     // Dwell time prevents polluting the browser history with rapid changes.
     // 0 to make sure every click is able to be navigated back to.
@@ -97,6 +105,8 @@ export class SkillsAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+    this.listenerIds_.forEach(
+        id => this.proxy_.callbackRouter.removeListener(id));
   }
 
   override updated(changedProperties: PropertyValues) {
@@ -106,6 +116,16 @@ export class SkillsAppElement extends CrLitElement {
         this.selectedPage_ === Page.DISCOVER_SKILLS) {
       this.proxy_.handler.request1PSkills();
     }
+  }
+
+  protected getErrorType_(): ErrorType|null {
+    if (!loadTimeData.getBoolean('isGlicEnabled')) {
+      return ErrorType.GLIC_NOT_ENABLED;
+    }
+    if (!this.isSkillsEnabled_) {
+      return ErrorType.SKILLS_DISABLED;
+    }
+    return null;
   }
 
   // Called when the page is narrow & the menu button appears.
@@ -118,7 +138,7 @@ export class SkillsAppElement extends CrLitElement {
   // Called whenever the text in the search input field changes.
   protected onSearchChanged_(e: CustomEvent<string>) {
     const searchTerm = e.detail;
-    if (!this.shouldShowErrorPage_) {
+    if (this.getErrorType_() === null) {
       this.$.userSkillsPage.onSearchChanged(searchTerm);
       this.$.discoverSkillsPage.onSearchChanged(searchTerm);
     }
@@ -143,11 +163,11 @@ export class SkillsAppElement extends CrLitElement {
   }
 
   protected shouldShowToolbarMenu_() {
-    return this.narrow_ && !this.shouldShowErrorPage_;
+    return this.narrow_ && this.getErrorType_() === null;
   }
 
   private onPathChanged_(newPath: string) {
-    if (this.shouldShowErrorPage_) {
+    if (this.getErrorType_() !== null) {
       return;
     }
     const path = newPath.substring(1);

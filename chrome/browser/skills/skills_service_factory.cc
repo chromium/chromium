@@ -17,6 +17,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/skills/features.h"
 #include "components/skills/internal/skills_service_impl.h"
 #include "components/skills/public/skills_features.h"
 #include "components/sync/model/data_type_store_service.h"
@@ -56,15 +57,15 @@ std::unique_ptr<KeyedService>
 SkillsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!IsSkillsEnabledForProfile(profile)) {
+  if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
     return nullptr;
   }
 
   syncer::OnceDataTypeStoreFactory store_factory =
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
-  // TODO(crbug.com/466802878): Return a nullptr if the feature is disabled.
   return std::make_unique<SkillsServiceImpl>(
+      profile->GetPrefs(),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile), chrome::GetChannel(),
       std::move(store_factory),

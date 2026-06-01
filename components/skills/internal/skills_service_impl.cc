@@ -18,6 +18,8 @@
 #include "components/skills/internal/skills_downloader.h"
 #include "components/skills/internal/skills_sync_bridge.h"
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skills_features.h"
+#include "components/skills/public/skills_prefs.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -33,24 +35,32 @@ constexpr base::TimeDelta kMinimumTimeBetweenDiscoverySkillsRefresh =
 }  // namespace
 
 SkillsServiceImpl::SkillsServiceImpl(
+    PrefService* pref_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide,
     signin::IdentityManager* identity_manager,
     version_info::Channel channel,
     syncer::OnceDataTypeStoreFactory create_store_callback,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : identity_manager_(identity_manager),
+    : pref_service_(pref_service),
+      optimization_guide_(optimization_guide),
+      identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory) {
+  pref_registrar_.Init(pref_service_);
+  pref_registrar_.Add(
+      skills::prefs::kChromeSkillsEnabled,
+      base::BindRepeating(&SkillsServiceImpl::OnSkillsEnabledPrefChanged,
+                          base::Unretained(this)));
   sync_bridge_ = std::make_unique<SkillsSyncBridge>(
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::SKILL,
           base::BindRepeating(&syncer::ReportUnrecoverableError, channel)),
       std::move(create_store_callback), *this);
-  if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+  if (IsSkillsEnabled(pref_service_)) {
     // If the Skills feature is enabled, register the optimization type to
     // signal to Optimization Guide that it should fetch and cache the URL-keyed
     // Skills on each page load.
-    if (optimization_guide) {
-      optimization_guide->RegisterOptimizationTypes(
+    if (optimization_guide_) {
+      optimization_guide_->RegisterOptimizationTypes(
           {optimization_guide::proto::SKILLS});
     }
   }
@@ -276,7 +286,7 @@ const Skill* SkillsServiceImpl::AddSkillImpl(std::unique_ptr<Skill> skill,
 }
 
 void SkillsServiceImpl::FetchDiscoverySkills() {
-  if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+  if (!IsSkillsEnabled(pref_service_)) {
     return;
   }
 
@@ -407,6 +417,10 @@ void SkillsServiceImpl::NotifyPanelWillOpen() {
 }
 
 void SkillsServiceImpl::RefreshDiscoverySkills() {
+  if (!IsSkillsEnabled(pref_service_)) {
+    return;
+  }
+
   if (base::Time::Now() - last_discovery_skills_fetch_time_ <
       kMinimumTimeBetweenDiscoverySkillsRefresh) {
     // If the discovery skills have been fetched recently, do not refresh them
@@ -433,6 +447,15 @@ void SkillsServiceImpl::RefreshDiscoverySkills() {
 
   if (requires_refresh) {
     FetchDiscoverySkills();
+  }
+}
+
+void SkillsServiceImpl::OnSkillsEnabledPrefChanged() {
+  if (IsSkillsEnabled(pref_service_)) {
+    if (optimization_guide_) {
+      optimization_guide_->RegisterOptimizationTypes(
+          {optimization_guide::proto::SKILLS});
+    }
   }
 }
 

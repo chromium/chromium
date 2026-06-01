@@ -2,6 +2,9 @@ include_rules = [
   "+components/endpoint_fetcher",
   "+components/keyed_service",
   "+components/optimization_guide",
+  "+components/prefs",
   "+components/signin",
   "+components/sync",
+  "+components/sync_preferences",
+  "+components/user_prefs",
 ]

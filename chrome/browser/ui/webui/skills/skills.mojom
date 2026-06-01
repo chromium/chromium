@@ -88,6 +88,9 @@ interface SkillsPage {
 
   // Notifies the UI that there is an updated state of 1P skills.
   Update1PSkills(BrowseSkillsInitialState state);
+
+  // Notifies the UI that the Skills feature enabled status changed.
+  SetSkillsEnabled(bool enabled);
 };
 
 // Called from TS side of chrome://skills/dialog (Renderer -> Browser)

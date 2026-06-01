@@ -28,3 +28,7 @@
   max-width: 320px;
   text-align: center;
 }
+
+cr-button {
+  margin-top: 16px;
+}
