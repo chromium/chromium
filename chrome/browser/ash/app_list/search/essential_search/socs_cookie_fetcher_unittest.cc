@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.h"
 
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -50,10 +52,14 @@ class SocsCookieFetcherConsumerTest
 
   bool CookieFetched();
   app_list::SocsCookieFetcher::Status GetStatus();
+  void SetFetchCompleteCallbackForTest(base::OnceClosure callback);
 
  private:
+  void RunFetchCompleteCallback();
+
   bool cookie_fetched_;
   app_list::SocsCookieFetcher::Status status_;
+  base::OnceClosure fetch_complete_callback_;
 };
 
 SocsCookieFetcherConsumerTest::SocsCookieFetcherConsumerTest()
@@ -64,11 +70,13 @@ SocsCookieFetcherConsumerTest::~SocsCookieFetcherConsumerTest() = default;
 void SocsCookieFetcherConsumerTest::OnCookieFetched(
     const std::string& cookie_header) {
   cookie_fetched_ = true;
+  RunFetchCompleteCallback();
 }
 
 void SocsCookieFetcherConsumerTest::OnApiCallFailed(
     app_list::SocsCookieFetcher::Status status) {
   status_ = status;
+  RunFetchCompleteCallback();
 }
 
 bool SocsCookieFetcherConsumerTest::CookieFetched() {
@@ -77,6 +85,17 @@ bool SocsCookieFetcherConsumerTest::CookieFetched() {
 
 app_list::SocsCookieFetcher::Status SocsCookieFetcherConsumerTest::GetStatus() {
   return status_;
+}
+
+void SocsCookieFetcherConsumerTest::SetFetchCompleteCallbackForTest(
+    base::OnceClosure callback) {
+  fetch_complete_callback_ = std::move(callback);
+}
+
+void SocsCookieFetcherConsumerTest::RunFetchCompleteCallback() {
+  if (fetch_complete_callback_) {
+    std::move(fetch_complete_callback_).Run();
+  }
 }
 
 class SocsCookieFetcherTest : public testing::Test {
@@ -167,8 +186,11 @@ TEST_F(SocsCookieFetcherTest, FetchSocsCookieSucceed) {
   url_loader_factory_.AddResponse(essential_search_url, kValidJsonResponse,
                                   net::HTTP_OK);
 
+  base::RunLoop fetch_loop;
+  consumer_->SetFetchCompleteCallbackForTest(fetch_loop.QuitClosure());
+
   socs_cookie_fetcher_->StartFetching();
-  task_environment_.RunUntilIdle();
+  fetch_loop.Run();
   EXPECT_TRUE(consumer_->CookieFetched());
 }
 
