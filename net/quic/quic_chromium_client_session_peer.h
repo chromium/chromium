@@ -36,6 +36,9 @@ class QuicChromiumClientSessionPeer {
       QuicChromiumClientSession* session);
 
   static void DisableConnectionMigration(QuicChromiumClientSession* session);
+
+  static void SetDefaultNetwork(QuicChromiumClientSession* session,
+                                handles::NetworkHandle network);
 };
 
 }  // namespace test

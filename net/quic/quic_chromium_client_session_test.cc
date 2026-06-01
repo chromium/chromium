@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/default_tick_clock.h"
@@ -203,14 +204,18 @@ class QuicChromiumClientSessionTest
   }
 
  protected:
-  void Initialize() {
+  void Initialize(bool migrate_session_on_network_change_v2 = false) {
     if (socket_data_) {
       socket_factory_.AddSocketDataProvider(socket_data_.get());
     }
     std::unique_ptr<DatagramClientSocket> socket =
         socket_factory_.CreateDatagramClientSocket(
             DatagramSocket::DEFAULT_BIND, NetLog::Get(), NetLogSource());
-    socket->Connect(kIpEndPoint);
+    if (default_network_ != handles::kInvalidNetworkHandle) {
+      socket->ConnectUsingNetwork(default_network_, kIpEndPoint);
+    } else {
+      socket->Connect(kIpEndPoint);
+    }
     QuicChromiumPacketWriter* writer = new net::QuicChromiumPacketWriter(
         socket.get(), base::SingleThreadTaskRunner::GetCurrentDefault().get());
     auto* connection = new TestingQuicConnection(
@@ -230,7 +235,7 @@ class QuicChromiumClientSessionTest
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
         QuicSessionAliasKey(url::SchemeHostPort(), session_key_),
         /*require_confirmation=*/false, migrate_session_early_v2_,
-        /*migrate_session_on_network_change_v2=*/false, default_network_,
+        migrate_session_on_network_change_v2, default_network_,
         quic::QuicTime::Delta::FromMilliseconds(
             kDefaultRetransmittableOnWireTimeout.InMilliseconds()),
         /*migrate_idle_session=*/false, allow_port_migration_,
@@ -2850,6 +2855,80 @@ TEST_P(QuicChromiumClientSessionTest,
                                 quic::ConnectionCloseBehavior::SILENT_CLOSE);
 }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+
+TEST_P(QuicChromiumClientSessionTest,
+       OnNetworkMadeDefault_Redundant_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kQuicIgnoreRedundantOnNetworkMadeDefault);
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  // Initialize session with WiFi (kDefaultNetworkForTests) as default.
+  default_network_ = kDefaultNetworkForTests;
+  Initialize(/*migrate_session_on_network_change_v2=*/true);
+  CompleteCryptoHandshake();
+
+  base::HistogramTester histogram_tester;
+
+  // Simulate redundant OnNetworkMadeDefault with the SAME network.
+  session_->OnNetworkMadeDefault(kDefaultNetworkForTests);
+
+  // Verify that ALREADY_MIGRATED IS logged because feature is disabled by
+  // default.
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.ConnectionMigration.OnNetworkMadeDefault",
+      MIGRATION_STATUS_ALREADY_MIGRATED, 1);
+}
+
+TEST_P(QuicChromiumClientSessionTest,
+       OnNetworkMadeDefault_Redundant_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kQuicIgnoreRedundantOnNetworkMadeDefault);
+
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+
+  // Initialize session with WiFi (kDefaultNetworkForTests) as default.
+  default_network_ = kDefaultNetworkForTests;
+  Initialize(/*migrate_session_on_network_change_v2=*/true);
+  CompleteCryptoHandshake();
+
+  base::HistogramTester histogram_tester;
+
+  // Simulate redundant OnNetworkMadeDefault with the SAME network.
+  session_->OnNetworkMadeDefault(kDefaultNetworkForTests);
+
+  // Verify that ALREADY_MIGRATED is NOT logged because feature is enabled.
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.ConnectionMigration.OnNetworkMadeDefault",
+      MIGRATION_STATUS_ALREADY_MIGRATED, 0);
+
+  // Reset default network in session to invalid using Peer.
+  // This simulates that the default network was disconnected, but the session
+  // is still running on it.
+  QuicChromiumClientSessionPeer::SetDefaultNetwork(
+      session_.get(), handles::kInvalidNetworkHandle);
+
+  // Call OnNetworkMadeDefault with WiFi again.
+  // Since default_network_ is now invalid, it should NOT return early.
+  // Since GetCurrentNetwork() is WiFi, and new_network is WiFi,
+  // it should detect we are already on WiFi and log ALREADY_MIGRATED.
+  session_->OnNetworkMadeDefault(kDefaultNetworkForTests);
+
+  // Verify that ALREADY_MIGRATED IS logged now.
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.ConnectionMigration.OnNetworkMadeDefault",
+      MIGRATION_STATUS_ALREADY_MIGRATED, 1);
+}
 
 }  // namespace
 }  // namespace net::test

@@ -740,6 +740,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "MaxIdleTimeBeforeCryptoHandshake",
                    base::Seconds(quic::kInitialIdleTimeoutSecs));
 
+BASE_FEATURE(kQuicIgnoreRedundantOnNetworkMadeDefault,
+             "QuicIgnoreRedundantOnNetworkMadeDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kQuicLongerIdleConnectionTimeout,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

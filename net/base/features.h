@@ -769,6 +769,9 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kQuicHandshakeTimeout);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                                       kMaxIdleTimeBeforeCryptoHandshake);
 
+// If enabled, we will ignore redundant OnNetworkMadeDefault notifications.
+NET_EXPORT BASE_DECLARE_FEATURE(kQuicIgnoreRedundantOnNetworkMadeDefault);
+
 // If enabled, we will use a longer idle timeout.
 NET_EXPORT BASE_DECLARE_FEATURE(kQuicLongerIdleConnectionTimeout);
 

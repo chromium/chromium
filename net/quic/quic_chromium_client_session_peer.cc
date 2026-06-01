@@ -61,4 +61,11 @@ void QuicChromiumClientSessionPeer::DisableConnectionMigration(
   session->connection_migration_disabled_ = true;
 }
 
+// static
+void QuicChromiumClientSessionPeer::SetDefaultNetwork(
+    QuicChromiumClientSession* session,
+    handles::NetworkHandle network) {
+  session->default_network_ = network;
+}
+
 }  // namespace net::test
