@@ -4,6 +4,7 @@
 
 #include "components/signin/public/base/signin_switches.h"
 
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
@@ -559,7 +560,7 @@ BASE_FEATURE(kIgnoreChromeManageAccountsInSubframes,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag to ignore invalid grant errors in AuthenticationService.
-BASE_FEATURE(kIgnoreInvalidGrantError, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIgnoreInvalidGrantError, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
