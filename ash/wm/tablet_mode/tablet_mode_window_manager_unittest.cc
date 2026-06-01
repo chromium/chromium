@@ -1183,6 +1183,43 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case5) {
   EXPECT_FALSE(window_state->IsPinned());
 }
 
+TEST_F(TabletModeWindowManagerTest, LockedFullscreenWindowCannotMinimize) {
+  std::unique_ptr<aura::Window> window(CreateWindow(
+      aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(20, 140, 100, 100)));
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_FALSE(window_state->IsPinned());
+
+  // Enter tablet mode.
+  CreateTabletModeWindowManager();
+
+  // Pin the window (standard pin).
+  {
+    WMEvent event(WM_EVENT_PIN);
+    window_state->OnWMEvent(&event);
+  }
+  EXPECT_TRUE(window_state->IsPinned());
+  EXPECT_FALSE(window_state->IsLockedFullscreen());
+
+  // Standard pinned window should allow minimize event in tablet mode.
+  window_state->Minimize();
+  EXPECT_TRUE(window_state->IsMinimized());
+
+  // Locked fullscreen window should ignore minimize event.
+  window_state->Restore();
+  {
+    WMEvent event(WM_EVENT_LOCKED_FULLSCREEN);
+    window_state->OnWMEvent(&event);
+  }
+  EXPECT_TRUE(window_state->IsLockedFullscreen());
+
+  window_state->Minimize();
+  EXPECT_TRUE(window_state->IsLockedFullscreen());
+  EXPECT_FALSE(window_state->IsMinimized());
+
+  // Exit tablet mode.
+  DestroyTabletModeWindowManager();
+}
+
 // Verifies that if a window is un-full-screened while in tablet mode,
 // other changes to that window's state (such as minimizing it) are
 // preserved upon exiting tablet mode.
