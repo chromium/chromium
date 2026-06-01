@@ -10,12 +10,11 @@ import unittest
 import sys
 
 
+@unittest.skipUnless(sys.platform == 'linux', 'Only linux is supported')
 class RunAllFuzzersTest(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    if sys.platform != 'linux':
-      return
     gn_args = ('use_clang_coverage=true '
                'dcheck_always_on=true '
                'ffmpeg_branding=\"ChromeOS\" '
@@ -32,19 +31,6 @@ class RunAllFuzzersTest(unittest.TestCase):
     fuzzer_binaries_dir = "out/run_all_fuzzers_test"
     pathlib.Path(fuzzer_binaries_dir).mkdir(parents=True, exist_ok=True)
     cls.fuzzer_binaries_dir = fuzzer_binaries_dir
-    cls.fuzzer_corpora_dir = tempfile.mkdtemp()
-    cls.profdata_outdir = tempfile.mkdtemp()
-    os.mkdir(os.path.join(cls.fuzzer_corpora_dir, cls.testfuzzer1))
-    corporadir1 = os.path.join(cls.fuzzer_corpora_dir, cls.testfuzzer1)
-    os.mkdir(os.path.join(cls.fuzzer_corpora_dir, cls.testfuzzer2))
-    corporadir2 = os.path.join(cls.fuzzer_corpora_dir, cls.testfuzzer2)
-    for letter in ["a", "b", "c", "d"]:
-      f1 = open(os.path.join(corporadir1, letter), "x")
-      f2 = open(os.path.join(corporadir2, letter), "x")
-      f1.write(letter)
-      f2.write(letter)
-      f1.close()
-      f2.close()
     gn_gen_cmd = ['gn', 'gen', cls.fuzzer_binaries_dir, '--args=%s' % gn_args]
     try:
       subprocess.check_output(gn_gen_cmd, cwd=cls.chromium_src_dir)
@@ -68,67 +54,74 @@ class RunAllFuzzersTest(unittest.TestCase):
 
   @classmethod
   def tearDownClass(cls):
-    if sys.platform != 'linux':
-      return
     # ignore_errors allows us to delete the directory even though the directory
     # is non-empty. This is what we want, since we created these temporarily,
     # only for the purpose of tests.
     shutil.rmtree(cls.fuzzer_binaries_dir, ignore_errors=True)
-    shutil.rmtree(cls.fuzzer_corpora_dir, ignore_errors=True)
-    shutil.rmtree(cls.profdata_outdir, ignore_errors=True)
+
+  def setUp(self):
+    self.fuzzer_corpora_dir = tempfile.mkdtemp()
+    self.profdata_outdir = tempfile.mkdtemp()
+
+  def tearDown(self):
+    shutil.rmtree(self.fuzzer_corpora_dir, ignore_errors=True)
+    shutil.rmtree(self.profdata_outdir, ignore_errors=True)
 
   def test_wrong_arguments(self):
-    if sys.platform != 'linux':
-      return
     cmd = [
         'python3', 'tools/code_coverage/run_all_fuzzers.py',
-        '--fuzzer-binaries-dir', self.__class__.fuzzer_binaries_dir,
-        '--fuzzer-corpora-dir', self.__class__.fuzzer_corpora_dir
+        '--fuzzer-binaries-dir', self.fuzzer_binaries_dir,
+        '--fuzzer-corpora-dir', self.fuzzer_corpora_dir
     ]
     with self.assertRaises(subprocess.CalledProcessError) as e:
-      subprocess.check_call(cmd, cwd=self.__class__.chromium_src_dir)
+      subprocess.check_call(cmd, cwd=self.chromium_src_dir)
     assert ("returned non-zero exit status 2" in str(e.exception))
     cmd = [
         'python3', 'tools/code_coverage/run_all_fuzzers.py',
-        '--fuzzer-binaries-dir', self.__class__.fuzzer_binaries_dir,
-        '--profdata-outdir', self.__class__.profdata_outdir
+        '--fuzzer-binaries-dir', self.fuzzer_binaries_dir, '--profdata-outdir',
+        self.profdata_outdir
     ]
     with self.assertRaises(subprocess.CalledProcessError) as e:
-      subprocess.check_call(cmd, cwd=self.__class__.chromium_src_dir)
+      subprocess.check_call(cmd, cwd=self.chromium_src_dir)
     assert ("returned non-zero exit status 2" in str(e.exception))
     cmd = [
         'python3', 'tools/code_coverage/run_all_fuzzers.py',
-        '--fuzzer-corpora-dir', self.__class__.fuzzer_corpora_dir,
-        '--profdata-outdir', self.__class__.profdata_outdir
+        '--fuzzer-corpora-dir', self.fuzzer_corpora_dir, '--profdata-outdir',
+        self.profdata_outdir
     ]
     with self.assertRaises(subprocess.CalledProcessError) as e:
-      subprocess.check_call(cmd, cwd=self.__class__.chromium_src_dir)
+      subprocess.check_call(cmd, cwd=self.chromium_src_dir)
     assert ("returned non-zero exit status 2" in str(e.exception))
 
   def test_libfuzzer_fuzzers_succeed(self):
-    if sys.platform != 'linux':
-      return
+    os.makedirs(os.path.join(self.fuzzer_corpora_dir, self.testfuzzer1))
+    corporadir1 = os.path.join(self.fuzzer_corpora_dir, self.testfuzzer1)
+    os.makedirs(os.path.join(self.fuzzer_corpora_dir, self.testfuzzer2))
+    corporadir2 = os.path.join(self.fuzzer_corpora_dir, self.testfuzzer2)
+    for letter in ["a", "b", "c", "d"]:
+      f1 = open(os.path.join(corporadir1, letter), "x")
+      f2 = open(os.path.join(corporadir2, letter), "x")
+      f1.write(letter)
+      f2.write(letter)
+      f1.close()
+      f2.close()
+
     cmd = [
         'python3', 'tools/code_coverage/run_all_fuzzers.py',
-        '--fuzzer-binaries-dir', self.__class__.fuzzer_binaries_dir,
-        '--fuzzer-corpora-dir', self.__class__.fuzzer_corpora_dir,
-        '--profdata-outdir', self.__class__.profdata_outdir, '--fuzzer',
-        'libfuzzer'
+        '--fuzzer-binaries-dir', self.fuzzer_binaries_dir,
+        '--fuzzer-corpora-dir', self.fuzzer_corpora_dir, '--profdata-outdir',
+        self.profdata_outdir, '--fuzzer', 'libfuzzer'
     ]
-    subprocess.check_call(cmd, cwd=self.__class__.chromium_src_dir)
+    subprocess.check_call(cmd, cwd=self.chromium_src_dir)
 
-    expected_profdata = sorted([
-        self.__class__.testfuzzer1 + ".profdata",
-        self.__class__.testfuzzer2 + ".profdata"
-    ])
-    actual_profdata = sorted(os.listdir(self.__class__.profdata_outdir))
+    expected_profdata = sorted(
+        [self.testfuzzer1 + ".profdata", self.testfuzzer2 + ".profdata"])
+    actual_profdata = sorted(os.listdir(self.profdata_outdir))
     assert (
         expected_profdata == actual_profdata
     ), "Expected " + str(expected_profdata) + " but got " + str(actual_profdata)
 
   def test_blackbox_fuzzers_succeed(self):
-    if sys.platform != 'linux':
-      return
     # Create a dummy chrome binary in a temp dir.
     with tempfile.TemporaryDirectory() as bin_dir:
       chrome_bin = os.path.join(bin_dir, "chrome")
@@ -158,7 +151,7 @@ class RunAllFuzzersTest(unittest.TestCase):
               'chrome',
           ]
           # Verify the script runs without crashing when blackbox is specified.
-          subprocess.check_call(cmd, cwd=self.__class__.chromium_src_dir)
+          subprocess.check_call(cmd, cwd=self.chromium_src_dir)
 
 
 if __name__ == '__main__':
