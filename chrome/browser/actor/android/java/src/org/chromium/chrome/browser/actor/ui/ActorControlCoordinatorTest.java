@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.glic.GlicInstanceHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
-import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekProperties;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetPeekProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashSet;

@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+java_cpp_enum("enums_java") {
+  sources = [
+    "//chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_container_type.h",
+    "//chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_client_type.h",
+  ]
+}
+
+android_library("java") {
+  srcjar_deps = [ ":enums_java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetContentProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManager.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetPeekProperties.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+}

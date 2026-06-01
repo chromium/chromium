@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.actor.ui;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekProperties;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetPeekProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for actor control view. */

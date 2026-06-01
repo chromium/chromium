@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tab_bottom_sheet.peek_view.TabBottomSheetPeekProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

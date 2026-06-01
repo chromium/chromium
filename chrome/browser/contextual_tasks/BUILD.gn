@@ -719,7 +719,7 @@ if (is_android) {
       "//base:supplier_java",
       "//build/android:build_java",
       "//chrome/browser/android/lifecycle:java",
-      "//chrome/browser/context_sharing/tab_bottom_sheet/android:java",
+      "//chrome/browser/context_sharing/tab_bottom_sheet/public/android:java",
       "//chrome/browser/contextual_tasks/fusebox/android:java",
       "//chrome/browser/feedback/android:factory_java",
       "//chrome/browser/feedback/android:java",

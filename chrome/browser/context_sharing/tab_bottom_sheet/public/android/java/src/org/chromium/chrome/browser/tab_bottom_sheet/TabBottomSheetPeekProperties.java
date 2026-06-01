@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tab_bottom_sheet.peek_view;
+package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.content.res.ColorStateList;
 

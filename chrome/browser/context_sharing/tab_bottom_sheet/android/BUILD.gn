@@ -31,13 +31,6 @@ generate_jni("jni_headers") {
   ]
 }
 
-java_cpp_enum("enums_java") {
-  sources = [
-    "co_browse_container_type.h",
-    "tab_bottom_sheet_client_type.h",
-  ]
-}
-
 android_resources("java_resources") {
   sources = [
     "java/res/layout/tab_bottom_sheet.xml",
@@ -55,38 +48,12 @@ android_resources("java_resources") {
   ]
 }
 
-android_library("manager_public_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManager.java" ]
-  deps = [
-    "//base:base_java",
-    "//build/android:build_java",
-    "//chrome/browser/tab:java",
-    "//components/browser_ui/bottomsheet/android:java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//ui/android:ui_java",
-  ]
-}
-
-android_library("peek_view_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/tab_bottom_sheet/peek_view/TabBottomSheetPeekProperties.java" ]
-  resources_package = "org.chromium.chrome.browser.context_sharing"
-  deps = [
-    "//build/android:build_java",
-    "//ui/android:ui_java",
-  ]
-}
-
 android_library("java") {
-  srcjar_deps = [
-    ":enums_java",
-    ":jni_headers",
-  ]
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViewFactory.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViews.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/CoBrowseViewsZoomControl.java",
-    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetContent.java",
-    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetContentProvider.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManagerImpl.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetMediator.java",
@@ -104,14 +71,13 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.context_sharing"
   deps = [
     ":java_resources",
-    ":manager_public_java",
-    ":peek_view_java",
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/context_sharing/tab_bottom_sheet/public/android:java",
     "//chrome/browser/contextual_tasks/fusebox/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/glic:metrics_java",
@@ -159,7 +125,6 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":java_resources",
-    ":peek_view_java",
     ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -167,6 +132,7 @@ robolectric_library("junit") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/javatests:common_unit_test_deps_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/context_sharing/tab_bottom_sheet/public/android:java",
     "//chrome/browser/contextual_tasks/fusebox/android:java",
     "//chrome/browser/glic:metrics_java",
     "//components/browser_ui/bottomsheet/android:java",
@@ -194,8 +160,6 @@ android_library("javatests") {
   deps = [
     ":java",
     ":java_resources",
-    ":manager_public_java",
-    ":peek_view_java",
     ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
@@ -203,6 +167,7 @@ android_library("javatests") {
     "//chrome/android/javatests:chrome_test_java_helper",
     "//chrome/browser/android/content:java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/context_sharing/tab_bottom_sheet/public/android:java",
     "//chrome/browser/contextual_tasks/fusebox/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
@@ -256,6 +221,7 @@ android_library("test_support_java") {
   deps = [
     ":java",
     "//base:base_java",
+    "//chrome/browser/context_sharing/tab_bottom_sheet/public/android:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
