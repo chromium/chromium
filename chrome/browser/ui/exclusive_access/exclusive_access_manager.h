@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_permission_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -123,6 +124,8 @@ class ExclusiveAccessManager {
 
   std::optional<ui::ScopedUnownedUserData<ExclusiveAccessManager>>
       scoped_unowned_user_data_;
+
+  base::WeakPtrFactory<ExclusiveAccessManager> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_MANAGER_H_

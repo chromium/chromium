@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_CONTROLLER_BASE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/origin.h"
@@ -85,6 +86,8 @@ class ExclusiveAccessControllerBase {
    private:
     const raw_ref<ExclusiveAccessControllerBase> controller_;
   } web_contents_observer_{*this};
+
+  base::WeakPtrFactory<ExclusiveAccessControllerBase> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_CONTROLLER_BASE_H_

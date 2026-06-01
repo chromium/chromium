@@ -2027,3 +2027,28 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   ui_test_utils::BrowserActivationWaiter(popup).WaitForActivation();
   EXPECT_TRUE(ui_test_utils::IsBrowserActive(popup));
 }
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       ClosingTabExitsFullscreenSafely) {
+  // Add a new tab so the browser doesn't close when we close the active tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  WebContents* active_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  browser()
+      ->GetFeatures()
+      .exclusive_access_manager()
+      ->fullscreen_controller()
+      ->EnterFullscreenModeForTab(active_tab->GetPrimaryMainFrame(), {});
+
+  content::WebContentsDestroyedWatcher watcher(active_tab);
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&chrome::CloseTab, base::Unretained(browser())));
+
+  watcher.Wait();
+}

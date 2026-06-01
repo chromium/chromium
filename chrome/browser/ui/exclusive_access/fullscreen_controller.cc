@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -335,13 +334,6 @@ void FullscreenController::FullscreenTabOpeningPopup(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void FullscreenController::OnTabDeactivated(
-    content::WebContents* web_contents) {
-  base::AutoReset<raw_ptr<content::WebContents>> auto_resetter(
-      &deactivated_contents_, web_contents);
-  ExclusiveAccessControllerBase::OnTabDeactivated(web_contents);
-}
-
 void FullscreenController::OnTabDetachedFromView(WebContents* old_contents) {
   if (!IsFullscreenWithinTab(old_contents)) {
     return;
@@ -499,7 +491,7 @@ void FullscreenController::ExitExclusiveAccessIfNecessary() {
 void FullscreenController::PostFullscreenChangeNotification() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&FullscreenController::NotifyFullscreenChange,
-                                ptr_factory_.GetWeakPtr()));
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FullscreenController::NotifyFullscreenChange() {
@@ -633,6 +625,7 @@ void FullscreenController::ExitFullscreenModeInternal() {
   fullscreen_parameters_.reset();
   toggled_into_fullscreen_ = false;
   started_fullscreen_transition_ = true;
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   // Mac windows report a state change instantly, and so we must also clear
   // state_prior_to_tab_fullscreen_ to match them else other logic using
@@ -641,8 +634,14 @@ void FullscreenController::ExitFullscreenModeInternal() {
   // Controller. The change is instant so we notify about access lost to
   // keep the state coherent.
   NotifyTabExclusiveAccessLost();
+  if (!weak_ptr) {
+    return;
+  }
 #endif
   exclusive_access_manager()->context()->ExitFullscreen();
+  if (!weak_ptr) {
+    return;
+  }
   extension_url_.reset();
   exclusive_access_manager()->UpdateBubble(base::NullCallback());
 }
