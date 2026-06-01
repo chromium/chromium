@@ -74,13 +74,18 @@ void TabsFromOtherDevicesSidePanelMetrics::RecordTabCountOnOpen(
 }
 
 void TabsFromOtherDevicesSidePanelMetrics::RecordTabOpened(
-    size_t device_index) {
+    size_t device_index,
+    size_t tab_recency_index) {
   base::UmaHistogramEnumeration(base::StrCat({histogram_prefix_, "Events"}),
                                 Event::kTabOpened);
 
   base::UmaHistogramExactLinear(
       base::StrCat({histogram_prefix_, "OpenedTabDeviceIndex"}), device_index,
       10);
+
+  base::UmaHistogramCounts1000(
+      base::StrCat({histogram_prefix_, "OpenedTabRecencyIndex"}),
+      tab_recency_index);
 
   if (!tab_opened_ && !opened_timestamp_.is_null()) {
     base::UmaHistogramTimes(base::StrCat({histogram_prefix_, "TimeToFirstTab"}),

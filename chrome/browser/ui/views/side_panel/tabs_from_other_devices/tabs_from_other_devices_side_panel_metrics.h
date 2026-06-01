@@ -48,7 +48,7 @@ class TabsFromOtherDevicesSidePanelMetrics : public SidePanelEntryObserver {
                             size_t total_tab_count,
                             size_t active_device_tab_count);
 
-  void RecordTabOpened(size_t device_index);
+  void RecordTabOpened(size_t device_index, size_t tab_recency_index);
 
   base::WeakPtr<TabsFromOtherDevicesSidePanelMetrics> GetWeakPtr();
 

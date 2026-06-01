@@ -302,6 +302,7 @@ void ForeignSessionHandler::OpenForeignSessionTab(
 
   if (side_panel_ui_ && side_panel_ui_->metrics_recorder()) {
     size_t device_index = 0;
+    size_t tab_recency_index = 0;
     std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
         sessions;
     if (open_tabs->GetAllForeignSessions(&sessions)) {
@@ -311,9 +312,23 @@ void ForeignSessionHandler::OpenForeignSessionTab(
       // GetForeignTab() returned non-null above.
       if (it != sessions.end()) {
         device_index = std::distance(sessions.begin(), it);
+
+        // Count the "recency index" of the tab, i.e. how many tabs have a
+        // timestamp after this one (and thus will show up before this one in
+        // the side panel).
+        for (const auto& window_pair : (*it)->windows) {
+          for (const auto& session_tab :
+               window_pair.second->wrapped_window.tabs) {
+            if (session_tab->timestamp > tab->timestamp) {
+              ++tab_recency_index;
+            }
+          }
+        }
       }
     }
-    side_panel_ui_->metrics_recorder()->RecordTabOpened(device_index);
+
+    side_panel_ui_->metrics_recorder()->RecordTabOpened(device_index,
+                                                        tab_recency_index);
   }
 
   // If this is in the side panel, `web_contents_` refers to the content of the

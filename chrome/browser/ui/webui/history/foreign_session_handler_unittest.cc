@@ -438,6 +438,43 @@ TEST_F(ForeignSessionHandlerSidePanelTest, RecordMetricsOnTabOpen) {
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TabsFromOtherDevicesSidePanel.List.OpenedTabDeviceIndex", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TabsFromOtherDevicesSidePanel.List.OpenedTabRecencyIndex", 0, 1);
+}
+
+TEST_F(ForeignSessionHandlerSidePanelTest,
+       RecordMetricsOnTabOpen_OpenedTabRecencyIndex) {
+  CreateSidePanelUI();
+
+  TabsFromOtherDevicesSidePanelMetrics metrics;
+  metrics.OnEntryShown(nullptr);
+  side_panel_ui_->SetMetricsRecorder(metrics.GetWeakPtr());
+
+  // Add multiple tabs with different timestamps to check recency sorting.
+  auto* delegate = session_sync_service()->GetOpenTabsUIDelegate();
+  delegate->AddForeignSession("my_session_tag");
+
+  sessions::SessionTab* tab_older = delegate->AddTabToForeignSession(
+      "my_session_tag", GURL("https://older.com"));
+  tab_older->timestamp = base::Time::Now() - base::Minutes(5);
+
+  sessions::SessionTab* tab_newer = delegate->AddTabToForeignSession(
+      "my_session_tag", GURL("https://newer.com"));
+  tab_newer->timestamp = base::Time::Now();
+
+  base::HistogramTester histogram_tester;
+
+  // Open the newer tab (should be recency index 0).
+  handler_->OpenForeignSessionTab("my_session_tag", tab_newer->tab_id.id(),
+                                  ui::mojom::ClickModifiers::New());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TabsFromOtherDevicesSidePanel.List.OpenedTabRecencyIndex", 0, 1);
+
+  // Open the older tab (should be recency index 1).
+  handler_->OpenForeignSessionTab("my_session_tag", tab_older->tab_id.id(),
+                                  ui::mojom::ClickModifiers::New());
+  histogram_tester.ExpectBucketCount(
+      "Sync.TabsFromOtherDevicesSidePanel.List.OpenedTabRecencyIndex", 1, 1);
 }
 
 TEST_F(ForeignSessionHandlerSidePanelTest,

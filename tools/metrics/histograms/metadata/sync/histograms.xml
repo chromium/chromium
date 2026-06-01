@@ -2705,6 +2705,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Sync.TabsFromOtherDevicesSidePanel.{Version}.OpenedTabRecencyIndex"
+    units="index" expires_after="2027-05-07">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the index (by recency, i.e., visual order in the side panel) of the
+    tab that was opened within its session/device in the TabsFromOtherDevices
+    side panel ({Version}). Recorded when a tab is opened.
+  </summary>
+  <token key="Version" variants="TabsFromOtherDevicesVersion"/>
+</histogram>
+
+<histogram
     name="Sync.TabsFromOtherDevicesSidePanel.{Version}.TabCountOnOpen.ActiveDevice"
     units="tabs" expires_after="2027-05-07">
   <owner>treib@chromium.org</owner>

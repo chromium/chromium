@@ -34,7 +34,7 @@ TEST_F(TabsFromOtherDevicesSidePanelMetricsTest, RecordEvents_List) {
       "Sync.TabsFromOtherDevicesSidePanel.List.Events",
       TabsFromOtherDevicesSidePanelMetrics::Event::kOpened, 1);
 
-  metrics.RecordTabOpened(0);
+  metrics.RecordTabOpened(0, 2);
   histogram_tester.ExpectBucketCount(
       "Sync.TabsFromOtherDevicesSidePanel.List.Events",
       TabsFromOtherDevicesSidePanelMetrics::Event::kTabOpened, 1);
@@ -61,7 +61,7 @@ TEST_F(TabsFromOtherDevicesSidePanelMetricsTest, RecordEvents_Screenshot) {
       "Sync.TabsFromOtherDevicesSidePanel.Screenshot.Events",
       TabsFromOtherDevicesSidePanelMetrics::Event::kOpened, 1);
 
-  metrics.RecordTabOpened(0);
+  metrics.RecordTabOpened(0, 1);
   histogram_tester.ExpectBucketCount(
       "Sync.TabsFromOtherDevicesSidePanel.Screenshot.Events",
       TabsFromOtherDevicesSidePanelMetrics::Event::kTabOpened, 1);
@@ -92,9 +92,11 @@ TEST_F(TabsFromOtherDevicesSidePanelMetricsTest, RecordTabCountAndDeviceIndex) {
   metrics.OnEntryShown(nullptr);
   EXPECT_FALSE(metrics.HasRecordedTabCount());
 
-  metrics.RecordTabOpened(3);
+  metrics.RecordTabOpened(3, 4);
   histogram_tester.ExpectUniqueSample(
       "Sync.TabsFromOtherDevicesSidePanel.List.OpenedTabDeviceIndex", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TabsFromOtherDevicesSidePanel.List.OpenedTabRecencyIndex", 4, 1);
 }
 
 TEST_F(TabsFromOtherDevicesSidePanelMetricsTest,
@@ -104,12 +106,12 @@ TEST_F(TabsFromOtherDevicesSidePanelMetricsTest,
 
   metrics.OnEntryShown(nullptr);
 
-  metrics.RecordTabOpened(0);
+  metrics.RecordTabOpened(0, 0);
   histogram_tester.ExpectTotalCount(
       "Sync.TabsFromOtherDevicesSidePanel.List.TimeToFirstTab", 1);
 
   // Second call should not record TimeToFirstTab again.
-  metrics.RecordTabOpened(0);
+  metrics.RecordTabOpened(0, 0);
   histogram_tester.ExpectTotalCount(
       "Sync.TabsFromOtherDevicesSidePanel.List.TimeToFirstTab", 1);
 }
