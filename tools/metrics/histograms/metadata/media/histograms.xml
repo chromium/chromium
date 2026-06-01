@@ -1659,7 +1659,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.LoopbackReference.HadRuntimeError"
-    enum="BooleanRuntimeError" expires_after="2026-07-03">
+    enum="BooleanRuntimeError" expires_after="2027-01-03">
   <owner>henrika@google.com</owner>
   <owner>fhernqvist@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
