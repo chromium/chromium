@@ -5,14 +5,14 @@
 #include "chrome/browser/printing/web_api/in_progress_jobs_storage_chromeos.h"
 
 #include "base/check_deref.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
-#include "chrome/browser/printing/local_printer_utils_chromeos.h"
+#include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/session_manager/core/session.h"
@@ -22,19 +22,7 @@ namespace printing {
 
 namespace {
 
-using PrintJobStatus = crosapi::mojom::PrintJobStatus;
 using WebPrintJobState = blink::mojom::WebPrintJobState;
-
-// Accepted job states. The ones not listed here are silently discarded.
-static constexpr auto kJobStatusToJobStateMapping =
-    base::MakeFixedFlatMap<PrintJobStatus, WebPrintJobState>({
-        // clang-format off
-        {PrintJobStatus::kStarted,   WebPrintJobState::kProcessing},
-        {PrintJobStatus::kDone,      WebPrintJobState::kCompleted},
-        {PrintJobStatus::kCancelled, WebPrintJobState::kCanceled},
-        {PrintJobStatus::kError,     WebPrintJobState::kAborted},
-        // clang-format on
-    });
 
 // Terminal states. Once the job reaches one of these, it will no longer be
 // tracked (and hence removed from the storage).
@@ -50,15 +38,26 @@ static constexpr auto kTerminalJobStates =
 }  // namespace
 
 InProgressJobsStorageChromeOS::InProgressJobsStorageChromeOS() {
-  GetLocalPrinterInterface()->AddPrintJobObserver(
-      observer_.BindNewPipeAndPassRemote(),
-      crosapi::mojom::PrintJobSource::kIsolatedWebApp, base::DoNothing());
-
   // Disconnects might happen if the corresponding frame is going away or the
   // renderer process crashes.
   state_observers_.set_disconnect_handler(base::BindRepeating(
       &InProgressJobsStorageChromeOS::OnStateObserverDisconnected,
       base::Unretained(this)));
+
+  const auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  // TODO(crbug.com/479647640): Check if we should use current user instead of
+  // primary user.
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
+  CHECK(profile);
+
+  ash::CupsPrintJobManager* print_job_manager =
+      ash::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
+  CHECK(print_job_manager);
+  cups_manager_observation_.Observe(print_job_manager);
 }
 
 InProgressJobsStorageChromeOS::~InProgressJobsStorageChromeOS() = default;
@@ -67,9 +66,7 @@ void InProgressJobsStorageChromeOS::Cancel() {
   const auto& [printer_id, job_id] = controllers_.current_context();
   const auto* primary_session =
       session_manager::SessionManager::Get()->GetPrimarySession();
-  if (!primary_session) {
-    return;
-  }
+  CHECK(primary_session);
   // TODO(crbug.com/479647640): Check if we should use current user instead of
   // primary user.
   Profile* profile = Profile::FromBrowserContext(
@@ -82,12 +79,43 @@ void InProgressJobsStorageChromeOS::Cancel() {
                        base::DoNothing());
 }
 
-void InProgressJobsStorageChromeOS::OnPrintJobUpdate(
-    const std::string& printer_id,
-    uint32_t job_id,
-    crosapi::mojom::PrintJobUpdatePtr update) {
-  auto id_pair_itr =
-      job_id_to_observer_controller_id_pair_.find({printer_id, job_id});
+void InProgressJobsStorageChromeOS::OnPrintJobStarted(
+    base::WeakPtr<ash::CupsPrintJob> job) {
+  // Transitions the print job state from pending to processing.
+  UpdateJobState(job, blink::mojom::WebPrintJobState::kProcessing);
+}
+
+void InProgressJobsStorageChromeOS::OnPrintJobUpdated(
+    base::WeakPtr<ash::CupsPrintJob> job) {
+  // The print job remains in the processing state, but its progress
+  // (e.g. pages printed) is updated.
+  UpdateJobState(job, blink::mojom::WebPrintJobState::kProcessing);
+}
+
+void InProgressJobsStorageChromeOS::OnPrintJobDone(
+    base::WeakPtr<ash::CupsPrintJob> job) {
+  UpdateJobState(job, blink::mojom::WebPrintJobState::kCompleted);
+}
+
+void InProgressJobsStorageChromeOS::OnPrintJobError(
+    base::WeakPtr<ash::CupsPrintJob> job) {
+  UpdateJobState(job, blink::mojom::WebPrintJobState::kAborted);
+}
+
+void InProgressJobsStorageChromeOS::OnPrintJobCancelled(
+    base::WeakPtr<ash::CupsPrintJob> job) {
+  UpdateJobState(job, blink::mojom::WebPrintJobState::kCanceled);
+}
+
+void InProgressJobsStorageChromeOS::UpdateJobState(
+    base::WeakPtr<ash::CupsPrintJob> job,
+    blink::mojom::WebPrintJobState state) {
+  if (!job || job->source() != PrintJob::Source::kIsolatedWebApp) {
+    return;
+  }
+
+  auto id_pair_itr = job_id_to_observer_controller_id_pair_.find(
+      {job->printer().id(), job->job_id()});
   if (id_pair_itr == job_id_to_observer_controller_id_pair_.end()) {
     // This job doesn't belong to us or has already been discarded.
     return;
@@ -97,24 +125,14 @@ void InProgressJobsStorageChromeOS::OnPrintJobUpdate(
   const auto& [observer_id, controller_id] = id_pair_itr->second;
   auto& observer = CHECK_DEREF(state_observers_.Get(observer_id));
 
-  // Updates are forwarded to the renderer if either the `state` can be mapped
-  // directly or printing is in progress (indicated by `pages_printed` > 0).
-  // Cases are possible where the received `state` is unmapped; then it's
-  // assumed to be `kProcessing` due to `pages_printed` being greater than zero.
-  // Lastly, the notification might end up being equal to the existing job
-  // configuration both in terms of `state` and `pages_printed`; in this case it
-  // will be silently discarded by the renderer.
-  auto* state = base::FindOrNull(kJobStatusToJobStateMapping, update->status);
-  if (state || update->pages_printed > 0) {
-    auto out_update = blink::mojom::WebPrintJobUpdate::New();
-    out_update->state =
-        state ? *state : blink::mojom::WebPrintJobState::kProcessing;
-    if (update->pages_printed > 0) {
-      out_update->pages_printed = update->pages_printed;
-    }
-    observer.OnWebPrintJobUpdate(std::move(out_update));
+  auto out_update = blink::mojom::WebPrintJobUpdate::New();
+  out_update->state = state;
+  if (job->printed_page_number() > 0) {
+    out_update->pages_printed = job->printed_page_number();
   }
-  if (state && kTerminalJobStates.contains(*state)) {
+  observer.OnWebPrintJobUpdate(std::move(out_update));
+
+  if (kTerminalJobStates.contains(state)) {
     state_observers_.Remove(observer_id);
     controllers_.Remove(controller_id);
     job_id_to_observer_controller_id_pair_.erase(id_pair_itr);

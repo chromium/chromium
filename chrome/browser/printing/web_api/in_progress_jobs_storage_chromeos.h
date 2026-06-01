@@ -11,17 +11,22 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/printing/web_printing.mojom.h"
+
+namespace ash {
+class CupsPrintJob;
+}
 
 namespace printing {
 
 class InProgressJobsStorageChromeOS
     : public blink::mojom::WebPrintJobController,
-      public crosapi::mojom::PrintJobObserver {
+      public ash::CupsPrintJobManager::Observer {
  public:
   InProgressJobsStorageChromeOS();
   ~InProgressJobsStorageChromeOS() override;
@@ -29,10 +34,12 @@ class InProgressJobsStorageChromeOS
   // blink::mojom::WebPrintJobController:
   void Cancel() override;
 
-  // crosapi::mojom::PrintJobObserver:
-  void OnPrintJobUpdate(const std::string& printer_id,
-                        uint32_t job_id,
-                        crosapi::mojom::PrintJobUpdatePtr update) override;
+  // ash::CupsPrintJobManager::Observer:
+  void OnPrintJobStarted(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobUpdated(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobDone(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobError(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobCancelled(base::WeakPtr<ash::CupsPrintJob> job) override;
 
   // Adds a job with `job_id` from `printer_id` to the storage and starts
   // dispatching notifications to it via the supplied `observer`.
@@ -53,6 +60,9 @@ class InProgressJobsStorageChromeOS
   // everything related to that job.
   void OnStateObserverDisconnected(mojo::RemoteSetElementId observer_id_in);
 
+  void UpdateJobState(base::WeakPtr<ash::CupsPrintJob> job,
+                      blink::mojom::WebPrintJobState state);
+
   // Invariant:
   // * `state_observers_` has `observer_id` <=> `job_id_to_observer_id_` has
   //   a `job_id` that maps to `observer_id`;
@@ -62,7 +72,9 @@ class InProgressJobsStorageChromeOS
   mojo::ReceiverSet<blink::mojom::WebPrintJobController, PrintJobUniqueId>
       controllers_;
 
-  mojo::Receiver<crosapi::mojom::PrintJobObserver> observer_{this};
+  base::ScopedObservation<ash::CupsPrintJobManager,
+                          ash::CupsPrintJobManager::Observer>
+      cups_manager_observation_{this};
 };
 
 }  // namespace printing

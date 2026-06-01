@@ -29,10 +29,3 @@ void FakeLocalPrinter::GetPrinterTypeDenyList(
     GetPrinterTypeDenyListCallback callback) {
   FAIL();
 }
-
-void FakeLocalPrinter::AddPrintJobObserver(
-    mojo::PendingRemote<crosapi::mojom::PrintJobObserver> remote,
-    crosapi::mojom::PrintJobSource source,
-    AddPrintJobObserverCallback callback) {
-  FAIL();
-}

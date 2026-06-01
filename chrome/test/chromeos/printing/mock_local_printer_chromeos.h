@@ -16,12 +16,6 @@ class MockLocalPrinter : public FakeLocalPrinter {
   ~MockLocalPrinter() override;
 
   MOCK_METHOD(void,
-              AddPrintJobObserver,
-              (mojo::PendingRemote<crosapi::mojom::PrintJobObserver> remote,
-               crosapi::mojom::PrintJobSource source,
-               AddPrintJobObserverCallback callback),
-              (override));
-  MOCK_METHOD(void,
               AddPrintServerObserver,
               (mojo::PendingRemote<crosapi::mojom::PrintServerObserver> remote,
                AddPrintServerObserverCallback callback),

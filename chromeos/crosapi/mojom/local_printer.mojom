@@ -144,46 +144,6 @@ interface PrintServerObserver {
   OnServerPrintersChanged@1();
 };
 
-// Corresponds to functions in CupsPrintJobManager::Observer
-// (chrome/browser/chromeos/printing/cups_print_job_manager.h).
-[Extensible]
-enum PrintJobStatus {
-  [Default] kUnknown, // reserved
-  kCreated,
-  kStarted,
-  kUpdated,
-  kSuspended,
-  kResumed,
-  kDone,
-  kError,
-  kCancelled,
-};
-
-struct PrintJobUpdate {
-  PrintJobStatus status;
-  uint32 pages_printed;
-};
-
-// This interface is used to notify Lacros about print job events.
-[Uuid="a372ba50-7409-4c16-86b9-47a1725947d0"]
-interface PrintJobObserver {
-  // Runs when the print jobs gets an update.
-  [MinVersion=1]
-  OnPrintJobUpdate@1(
-    string printer_id,
-    uint32 job_id,
-    PrintJobUpdate update);
-};
-
-// Used to specify which source(s) to observe print jobs from.
-[Extensible]
-enum PrintJobSource {
-  [Default] kAny, // reserved
-  kExtension,
-  [MinVersion=1] kIsolatedWebApp,
-};
-
-
 // This interface is used to query information about local printers
 // associated with the current Ash profile that can be used for
 // printing from Lacros.
@@ -204,10 +164,4 @@ interface LocalPrinter {
   // Gets list of printers types included in the deny list policy.
   [MinVersion=2]
   GetPrinterTypeDenyList@11() => (array<printing.mojom.PrinterType> deny_list);
-
-  // Adds a print job observer for print jobs from source `source`.
-  [MinVersion=3]
-  AddPrintJobObserver@13(
-    pending_remote<PrintJobObserver> observer,
-    PrintJobSource source) => ();
 };
