@@ -268,6 +268,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/chrome_extension.xml",
     "java/res/drawable/extension_request_access_button_bg.xml",
+    "java/res/drawable/extensions_menu_background_selector.xml",
     "java/res/drawable/extensions_menu_button_bg.xml",
     "java/res/drawable/extensions_menu_containment.xml",
     "java/res/drawable/extensions_menu_context_menu_icon_selector.xml",
