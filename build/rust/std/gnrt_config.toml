@@ -49,11 +49,9 @@ cpp_api_from_rust = { deps = [ "core" ] }
 #
 # compiler_builtins should build with one codegen unit per builtin. See
 # https://github.com/rust-lang/rust/blob/1.93.0/library/Cargo.toml#L19-L23
-# TODO(crbug.com/507831026): Remove use_libm_configure when we next roll rust.
-extra_kv = { include_coverage = false, max_codegen_units = true, use_libm_configure = true }
+extra_kv = { include_coverage = false, max_codegen_units = true }
 extra_build_script_input_roots = [
-  # TODO(crbug.com/507831026): Change this to `../../libm/configure.rs` when we next roll rust
-  '../configure.rs',
+  '../../libm/configure.rs',
 ]
 extra_input_roots = [
   '../../libm/src',

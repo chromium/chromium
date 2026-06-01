@@ -145,13 +145,6 @@ cargo_crate("{{../name}}") {
           "{{this}}",
         {{/each}}
       ]
-      # TODO(crbug.com/507831026): Remove this and always use the new path next time we roll rust.
-      {{#if extra_kv.use_libm_configure}}
-        if (rust_force_head_revision) {
-          build_script_inputs -= [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../configure.rs" ]
-          build_script_inputs += [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/configure.rs" ]
-        }
-      {{/if}}
     {{/if}}
     {{#if build_script_outputs}}
       build_script_outputs = [
