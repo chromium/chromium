@@ -143,16 +143,21 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   };
 }
 
-// Returns the text attributes for interactive links.
-+ (NSDictionary*)linkAttributesForAction:(NSString*)action
-                               fontStyle:(UIFontTextStyle)fontStyle {
-  return @{
-    NSLinkAttributeName : action,
-    NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color],
-    NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
-    NSFontAttributeName :
-        PreferredFontForTextStyle(fontStyle, UIFontWeightSemibold)
-  };
+// Returns an array of link attribute dictionaries for the given actions.
++ (NSArray<NSDictionary*>*)linkAttributesForActions:(NSArray<NSString*>*)actions
+                                              style:(UIFontTextStyle)style {
+  NSMutableArray* attributes = [NSMutableArray arrayWithCapacity:actions.count];
+  for (NSString* action in actions) {
+    NSDictionary* linkAttributes = @{
+      NSLinkAttributeName : action,
+      NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color],
+      NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
+      NSFontAttributeName :
+          PreferredFontForTextStyle(style, UIFontWeightSemibold)
+    };
+    [attributes addObject:linkAttributes];
+  }
+  return attributes;
 }
 
 // Gets the second SF Symbol name based on accounts type and iOS availability.
@@ -166,48 +171,22 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   return kHistorySymbol;
 }
 
-// Creates an attributed string by resolving placeholders and formatting
-// hyperlinks.
-+ (NSAttributedString*)attributedTextWithText:(NSString*)text
-                                      actions:(NSArray<NSString*>*)actions
-                               textAttributes:(NSDictionary*)textAttributes
-                                    fontStyle:(UIFontTextStyle)fontStyle {
-  StringWithTags parsedString = ParseStringWithLinks(text);
-  NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:parsedString.string
-                                             attributes:textAttributes];
-
-  auto styleLink = ^(NSString* action, NSUInteger idx, BOOL* stop) {
-    if (idx >= parsedString.ranges.size()) {
-      *stop = YES;
-      return;
-    }
-    NSRange range = parsedString.ranges[idx];
-    NSDictionary* attrs = [self linkAttributesForAction:action
-                                              fontStyle:fontStyle];
-    [attributedText addAttributes:attrs range:range];
-  };
-  [actions enumerateObjectsUsingBlock:styleLink];
-
-  return [attributedText copy];
-}
-
 // Helper to construct body text using embedded link delimiters.
 + (NSAttributedString*)attributedTextForBody:(NSString*)text
                                      actions:(NSArray<NSString*>*)actions {
-  return [self attributedTextWithText:text
-                              actions:actions
-                       textAttributes:[self defaultTextAttributes]
-                            fontStyle:UIFontTextStyleBody];
+  NSDictionary* attributes = [self defaultTextAttributes];
+  NSArray<NSDictionary*>* linkAttributes =
+      [self linkAttributesForActions:actions style:UIFontTextStyleBody];
+  return AttributedStringFromStringWithLinks(text, attributes, linkAttributes);
 }
 
 // Helper to construct footnote text using embedded link delimiters.
 + (NSAttributedString*)attributedTextForFooter:(NSString*)text
                                        actions:(NSArray<NSString*>*)actions {
-  return [self attributedTextWithText:text
-                              actions:actions
-                       textAttributes:[self footnoteTextAttributes]
-                            fontStyle:UIFontTextStyleFootnote];
+  NSDictionary* attributes = [self footnoteTextAttributes];
+  NSArray<NSDictionary*>* linkAttributes =
+      [self linkAttributesForActions:actions style:UIFontTextStyleFootnote];
+  return AttributedStringFromStringWithLinks(text, attributes, linkAttributes);
 }
 
 #pragma mark - New Standard FRE
