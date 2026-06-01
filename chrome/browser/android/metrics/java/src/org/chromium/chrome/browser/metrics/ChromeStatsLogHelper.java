@@ -28,11 +28,11 @@ public class ChromeStatsLogHelper {
     }
 
     @CalledByNative
-    private static void logHistogramAsBooleanTypeAtom(int unusedAtomID, boolean unusedSample) {
-        // TODO: b/510329523 - Finalize this function to log boolean type Atom
-        // when such Atom is added.
-        // No boolean type atom yet. Thus, there is no `write` function
-        // generated in the ChromeStatsLog library. Add the logic here once
-        // there is boolean type atom added.
+    private static void logHistogramAsBooleanTypeAtom(int atomID, boolean sample) {
+        try {
+            ChromeStatsLog.write(atomID, Process.myUid(), sample);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to log atom", e);
+        }
     }
 }

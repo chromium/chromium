@@ -36,6 +36,48 @@ public final class ChromeStatsLog {
      */
     public static final int TABS_WINDOW_COUNT_REPORTED = 215201;
 
+    /**
+     * MediaWatchTimeAudioVideoReported media_watch_time_audio_video_reported<br>
+     * Usage: StatsLog.write(StatsLog.MEDIA_WATCH_TIME_AUDIO_VIDEO_REPORTED, int uid, int time_ms);
+     * <br>
+     */
+    public static final int MEDIA_WATCH_TIME_AUDIO_VIDEO_REPORTED = 215202;
+
+    /**
+     * MediaWatchTimeAudioVideoBackgroundReported media_watch_time_audio_video_background_reported
+     * <br>
+     * Usage: StatsLog.write(StatsLog.MEDIA_WATCH_TIME_AUDIO_VIDEO_BACKGROUND_REPORTED, int uid, int
+     * time_ms);<br>
+     */
+    public static final int MEDIA_WATCH_TIME_AUDIO_VIDEO_BACKGROUND_REPORTED = 215203;
+
+    /**
+     * MediaWatchTimeAudioReported media_watch_time_audio_reported<br>
+     * Usage: StatsLog.write(StatsLog.MEDIA_WATCH_TIME_AUDIO_REPORTED, int uid, int time_ms);<br>
+     */
+    public static final int MEDIA_WATCH_TIME_AUDIO_REPORTED = 215204;
+
+    /**
+     * MediaWatchTimeAudioBackgroundReported media_watch_time_audio_background_reported<br>
+     * Usage: StatsLog.write(StatsLog.MEDIA_WATCH_TIME_AUDIO_BACKGROUND_REPORTED, int uid, int
+     * time_ms);<br>
+     */
+    public static final int MEDIA_WATCH_TIME_AUDIO_BACKGROUND_REPORTED = 215205;
+
+    /**
+     * AppsUsageTimeChromeBrowserReported apps_usage_time_chrome_browser_reported<br>
+     * Usage: StatsLog.write(StatsLog.APPS_USAGE_TIME_CHROME_BROWSER_REPORTED, int uid, int
+     * time_ms);<br>
+     */
+    public static final int APPS_USAGE_TIME_CHROME_BROWSER_REPORTED = 215206;
+
+    /**
+     * AndroidDarkThemeEnabledStateReported android_dark_theme_enabled_state_reported<br>
+     * Usage: StatsLog.write(StatsLog.ANDROID_DARK_THEME_ENABLED_STATE_REPORTED, int uid, boolean
+     * is_enabled);<br>
+     */
+    public static final int ANDROID_DARK_THEME_ENABLED_STATE_REPORTED = 215207;
+
     // Constants for enum values.
 
     // Annotation constants.
@@ -67,6 +109,19 @@ public final class ChromeStatsLog {
     public static final byte ANNOTATION_ID_STATE_NESTED = StatsLog.ANNOTATION_ID_STATE_NESTED;
 
     // Write methods
+    public static void write(int code, int arg1, boolean arg2) {
+        final StatsEvent.Builder builder = StatsEvent.newBuilder();
+        builder.setAtomId(code);
+        builder.writeInt(arg1);
+        if (ANDROID_DARK_THEME_ENABLED_STATE_REPORTED == code) {
+            builder.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
+        }
+        builder.writeBoolean(arg2);
+
+        builder.usePooledBuffer();
+        StatsLog.write(builder.build());
+    }
+
     public static void write(int code, int arg1, int arg2) {
         final StatsEvent.Builder builder = StatsEvent.newBuilder();
         builder.setAtomId(code);
@@ -75,6 +130,21 @@ public final class ChromeStatsLog {
             builder.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
         }
         if (TABS_WINDOW_COUNT_REPORTED == code) {
+            builder.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
+        }
+        if (MEDIA_WATCH_TIME_AUDIO_VIDEO_REPORTED == code) {
+            builder.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
+        }
+        if (MEDIA_WATCH_TIME_AUDIO_VIDEO_BACKGROUND_REPORTED == code) {
+            builder.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
+        }
+        if (MEDIA_WATCH_TIME_AUDIO_REPORTED == code) {
+            builder.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
+        }
+        if (MEDIA_WATCH_TIME_AUDIO_BACKGROUND_REPORTED == code) {
+            builder.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
+        }
+        if (APPS_USAGE_TIME_CHROME_BROWSER_REPORTED == code) {
             builder.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
         }
         builder.writeInt(arg2);
