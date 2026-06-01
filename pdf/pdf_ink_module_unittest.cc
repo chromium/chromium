@@ -573,7 +573,7 @@ TEST_P(PdfInkModuleTest, HandleGetAllTextAnnotationsMessage) {
             "messageId": "bar",
             "annotations": [
               {
-                "id": 42,
+                "id": 0,
                 "text": "Hello World from Test!",
                 "pageIndex": 0,
                 "pdfZoom": 1.0,
