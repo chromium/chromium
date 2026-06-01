@@ -3162,6 +3162,8 @@ static_library("ui") {
         "views/profiles/feature_showcase/feature_showcase_eligibility_tracker.cc",
         "views/profiles/feature_showcase/feature_showcase_eligibility_tracker.h",
         "views/profiles/feature_showcase/feature_showcase_step_eligibility_checker.h",
+        "views/profiles/feature_showcase/password_manager_feature_showcase_eligibility_checker.cc",
+        "views/profiles/feature_showcase/password_manager_feature_showcase_eligibility_checker.h",
         "views/profiles/first_run_flow_controller.cc",
         "views/profiles/first_run_flow_controller.h",
         "views/profiles/profile_picker_glic_flow_controller.cc",

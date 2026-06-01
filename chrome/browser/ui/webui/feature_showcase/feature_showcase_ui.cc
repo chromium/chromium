@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/ui/webui/feature_showcase/feature_showcase_handler.h"
+#include "chrome/browser/ui/webui/feature_showcase/password_manager_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -47,6 +48,21 @@ void AddDefaultBrowserStepResources(content::WebUIDataSource* source) {
       IDR_INTRO_IMAGES_REFRESH_SHOWCASE_ILLUSTRATION_CHROMIUM_PNG);
 #endif
 }
+
+void AddPasswordManagerStepResources(content::WebUIDataSource* source) {
+  source->AddLocalizedStrings({
+      {"passwordManagerTitle", IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_TITLE},
+      {"passwordManagerSubtitle",
+       IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_SUBTITLE},
+      {"passwordManagerAddToToolbar",
+       IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_ADD_TO_TOOLBAR},
+      {"passwordManagerNoThanks",
+       IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_NO_THANKS},
+      {"passwordManagerIllustrationA11yLabel",
+       IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_ILLUSTRATION_A11Y_LABEL},
+  });
+}
+
 }  // namespace
 
 FeatureShowcaseUIConfig::FeatureShowcaseUIConfig()
@@ -80,6 +96,7 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
       "worker-src blob: chrome://resources 'self';");
 
   AddDefaultBrowserStepResources(source);
+  AddPasswordManagerStepResources(source);
 }
 
 FeatureShowcaseUI::~FeatureShowcaseUI() = default;
@@ -95,12 +112,26 @@ void FeatureShowcaseUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
+void FeatureShowcaseUI::BindInterface(
+    mojo::PendingReceiver<
+        feature_showcase::mojom::PasswordManagerPageHandlerFactory> receiver) {
+  password_manager_factory_receiver_.reset();
+  password_manager_factory_receiver_.Bind(std::move(receiver));
+}
+
 void FeatureShowcaseUI::CreatePageHandler(
     mojo::PendingReceiver<feature_showcase::mojom::FeatureShowcasePageHandler>
         handler) {
   page_handler_ = std::make_unique<FeatureShowcaseHandler>(
       std::move(handler), base::BindOnce(&FeatureShowcaseUI::OnShowcaseFinished,
                                          base::Unretained(this)));
+}
+
+void FeatureShowcaseUI::CreatePasswordManagerPageHandler(
+    mojo::PendingReceiver<feature_showcase::mojom::PasswordManagerPageHandler>
+        handler) {
+  password_manager_handler_ = std::make_unique<PasswordManagerHandler>(
+      std::move(handler), Profile::FromWebUI(web_ui()));
 }
 
 void FeatureShowcaseUI::OnShowcaseFinished() {

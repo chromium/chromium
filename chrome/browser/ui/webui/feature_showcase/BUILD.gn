@@ -8,7 +8,10 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(enable_dice_support)
 
 mojom("mojo_bindings") {
-  sources = [ "feature_showcase.mojom" ]
+  sources = [
+    "feature_showcase.mojom",
+    "password_manager.mojom",
+  ]
   webui_module_path = "/"
 }
 
@@ -18,6 +21,8 @@ source_set("feature_showcase") {
     "feature_showcase_handler.h",
     "feature_showcase_ui.cc",
     "feature_showcase_ui.h",
+    "password_manager_handler.cc",
+    "password_manager_handler.h",
   ]
 
   public_deps = [
@@ -33,6 +38,8 @@ source_set("feature_showcase") {
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/resources/feature_showcase:resources",
     "//chrome/browser/resources/intro:resources",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/common:constants",
     "//components/regional_capabilities",
     "//components/signin/public/base:signin_switches",

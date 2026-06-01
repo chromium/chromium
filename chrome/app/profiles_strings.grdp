@@ -565,6 +565,24 @@
   </if>
 
   <if expr="not is_android">
+
+    <!-- Feature Showcase - Google Password Manager -->
+    <message name="IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_TITLE" desc="Headline for the password security onboarding screen. It introduces the product name 'Google Password Manager,' which should typically remain in English or follow established brand guidelines for the locale. The intent is to highlight safety and security. (CHAR LIMIT = 50)">
+      Stay safe with Google Password Manager
+    </message>
+    <message name="IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_SUBTITLE" desc="Description for the Google Password Manager page in the Feature Showcase.">
+      Built into Chrome to help you create, save, and autofill strong passwords. Add the shortcut for easy access
+    </message>
+    <message name="IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_NO_THANKS" desc="Label for the 'No thanks' button to not pin the Google Password Manager to toolbar.">
+      No thanks
+    </message>
+    <message name="IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_ADD_TO_TOOLBAR" desc="Label for the 'Add to toolbar' button to pin the Google Password Manager to toolbar.">
+      Add to toolbar
+    </message>
+    <message name="IDS_FEATURE_SHOWCASE_PASSWORD_MANAGER_ILLUSTRATION_A11Y_LABEL" desc="Accessibility label for the illustration on the Google Password Manager page in the Feature Showcase.">
+      A simplified image showing the Google Password Manager entry point in Chrome
+    </message>
+
     <!-- Batch Upload Desktop -->
     <message name="IDS_BATCH_UPLOAD_TITLE" desc="Title of the Batch Upload dialog on Desktop. This dialog appears when the user clicks on an informational message about items saved to their device. This title precedes a list of items (passwords, bookmarks, and addresses), where the user can select the checkboxes for the items that they want to save in their Google Account. When items are saved in their Google Account, the user can access them on any device where they’re signed in to Chrome. The tone should be motivating.">
       Save items in account

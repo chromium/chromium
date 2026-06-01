@@ -32,6 +32,13 @@ export function getHtml(this: FeatureShowcaseAppElement) {
           ?buttons-disabled="${this.areButtonsDisabled_}">
       </feature-showcase-default-browser-step>
   ` : ''}
+
+  ${this.hasStep_('password-manager') ? html`
+      <feature-showcase-password-manager-step id="password-manager" slot="view"
+          @step-completed="${this.onStepCompleted_}"
+          ?buttons-disabled="${this.areButtonsDisabled_}">
+      </feature-showcase-password-manager-step>
+  ` : ''}
 </cr-view-manager>
 <!--_html_template_end_-->`;
   // clang-format on

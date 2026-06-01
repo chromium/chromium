@@ -15,6 +15,8 @@ build_webui("build") {
     "animations/showcase_transition_right.json",
     "animations/showcase_transition_right_dark.json",
     "feature_showcase.html",
+    "images/password_manager_illustration_light.png",
+    "images/password_manager_illustration_dark.png",
   ]
 
   ts_files = [
@@ -27,12 +29,16 @@ build_webui("build") {
     "feature_showcase_step.html.ts",
     "example/example_step.ts",
     "example/example_step.html.ts",
+    "password_manager/password_manager_browser_proxy.ts",
+    "password_manager/password_manager_step.ts",
+    "password_manager/password_manager_step.html.ts",
   ]
   css_files = [
     "app.css",
     "default_browser/default_browser_step.css",
     "feature_showcase_step.css",
     "example/example_step.css",
+    "password_manager/password_manager_step.css",
   ]
 
   ts_composite = true
@@ -46,7 +52,10 @@ build_webui("build") {
   mojo_files_deps = [
     "//chrome/browser/ui/webui/feature_showcase:mojo_bindings_ts__generator",
   ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/feature_showcase/feature_showcase.mojom-webui.ts" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/feature_showcase/feature_showcase.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/feature_showcase/password_manager.mojom-webui.ts",
+  ]
 
   webui_context_type = "trusted"
 }

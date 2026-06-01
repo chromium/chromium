@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_eligibility_tracker.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_step_eligibility_checker.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/password_manager_feature_showcase_eligibility_checker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -442,6 +443,10 @@ class FeatureShowcaseStepController : public ProfileManagementStepController {
         step_completed_callback_(std::move(step_completed_callback)) {
     std::vector<std::unique_ptr<FeatureShowcaseStepEligibilityChecker>>
         checkers;
+
+    // Register checkers in order of priority (highest first).
+    checkers.push_back(
+        std::make_unique<PasswordManagerFeatureShowcaseEligibilityChecker>());
     tracker_ = std::make_unique<FeatureShowcaseEligibilityTracker>(
         std::move(checkers));
   }

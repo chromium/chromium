@@ -5,9 +5,10 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import '//resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import './feature_showcase_step.js';
-import './example/example_step.js';
 import './default_browser/default_browser_step.js';
+import './example/example_step.js';
+import './feature_showcase_step.js';
+import './password_manager/password_manager_step.js';
 
 import type {CrLottieElement} from '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import type {CrViewManagerElement} from '//resources/cr_elements/cr_view_manager/cr_view_manager.js';
