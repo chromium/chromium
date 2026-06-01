@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/model/display_override.h"
 
 #include <optional>
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -130,6 +131,10 @@ base::Value DisplayOverride::ToDebugValue() const {
 
 std::string DisplayOverride::ToString() const {
   return base::ToString(ToDebugValue());
+}
+
+void PrintTo(const DisplayOverride& display_override, ::std::ostream* os) {
+  *os << display_override.ToString();
 }
 
 }  // namespace web_app

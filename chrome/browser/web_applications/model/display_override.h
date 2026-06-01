@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_MODEL_DISPLAY_OVERRIDE_H_
 
 #include <optional>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -64,6 +65,8 @@ class DisplayOverride {
   // Currently this can only be non-empty in the "unframed" display mode.
   std::vector<blink::SafeUrlPattern> url_patterns_;
 };
+
+void PrintTo(const DisplayOverride& display_override, std::ostream* os);
 
 }  // namespace web_app
 
