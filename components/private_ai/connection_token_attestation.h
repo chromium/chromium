@@ -33,6 +33,7 @@ class ConnectionTokenAttestation : public Connection {
   // fail immediately without attempting to send a request over the wire.
   ConnectionTokenAttestation(
       std::unique_ptr<Connection> inner_connection,
+      proto::FeatureName feature_name,
       phosphor::TokenManager* token_manager,
       PrivateAiLogger* logger,
       base::OnceCallback<void(StatusCode)> on_disconnect);
@@ -81,6 +82,7 @@ class ConnectionTokenAttestation : public Connection {
   void CallOnDisconnect(StatusCode status_code);
 
   const std::unique_ptr<Connection> inner_connection_;
+  const proto::FeatureName feature_name_;
   raw_ptr<phosphor::TokenManager> token_manager_;
   raw_ptr<PrivateAiLogger> logger_;
 

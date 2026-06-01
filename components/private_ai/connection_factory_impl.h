@@ -53,6 +53,7 @@ class ConnectionFactoryImpl : public ConnectionFactory {
 
   // ConnectionFactory override:
   std::unique_ptr<Connection> Create(
+      proto::FeatureName feature_name,
       base::RepeatingCallback<void(StatusCode)> on_disconnect) override;
 
  private:

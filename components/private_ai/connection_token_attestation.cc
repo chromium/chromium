@@ -43,10 +43,12 @@ ConnectionTokenAttestation::PendingRequest::operator=(PendingRequest&&) =
 
 ConnectionTokenAttestation::ConnectionTokenAttestation(
     std::unique_ptr<Connection> inner_connection,
+    proto::FeatureName feature_name,
     phosphor::TokenManager* token_manager,
     PrivateAiLogger* logger,
     base::OnceCallback<void(StatusCode)> on_disconnect)
     : inner_connection_(std::move(inner_connection)),
+      feature_name_(feature_name),
       token_manager_(token_manager),
       logger_(logger),
       on_disconnect_(std::move(on_disconnect)) {
@@ -121,8 +123,7 @@ void ConnectionTokenAttestation::OnTokenFetched(
 
   proto::PrivateAiRequest request_proto;
 
-  request_proto.set_feature_name(
-      proto::FeatureName::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
+  request_proto.set_feature_name(feature_name_);
   request_proto.mutable_anonymous_token_request()->set_anonymous_token(
       token_data.SerializeAsString());
 

@@ -30,6 +30,7 @@ class FakeConnectionFactory : public ConnectionFactory {
   ~FakeConnectionFactory() override = default;
 
   std::unique_ptr<Connection> Create(
+      proto::FeatureName feature_name,
       base::RepeatingCallback<void(StatusCode)> on_disconnect) override {
     auto connection = std::make_unique<FakeConnection>(
         base::BindRepeating(&FakeConnectionFactory::on_disconnect,

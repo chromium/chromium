@@ -121,7 +121,7 @@ TEST_F(ClientImplIntegrationTest, FullStackSuccess) {
   ASSERT_EQ(channel->written_requests().size(), 2u);
   EXPECT_TRUE(channel->written_requests()[0].has_anonymous_token_request());
   EXPECT_EQ(channel->written_requests()[0].feature_name(),
-            proto::FeatureName::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
+            proto::FeatureName::FEATURE_NAME_UNSPECIFIED);
   EXPECT_TRUE(channel->written_requests()[1].has_generate_content_request());
 
   // 4. Respond to text request.
@@ -170,7 +170,7 @@ TEST_F(ClientImplIntegrationTest, Timeout) {
   ASSERT_EQ(channel->written_requests().size(), 2u);
   EXPECT_TRUE(channel->written_requests()[0].has_anonymous_token_request());
   EXPECT_EQ(channel->written_requests()[0].feature_name(),
-            proto::FeatureName::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
+            proto::FeatureName::FEATURE_NAME_UNSPECIFIED);
   EXPECT_TRUE(channel->written_requests()[1].has_generate_content_request());
 
   // Wait for timeout.
@@ -201,7 +201,7 @@ TEST_F(ClientImplIntegrationTest, ConcurrentRequestsDuringAttestation) {
   ASSERT_EQ(channel->written_requests().size(), 3u);
   EXPECT_TRUE(channel->written_requests()[0].has_anonymous_token_request());
   EXPECT_EQ(channel->written_requests()[0].feature_name(),
-            proto::FeatureName::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
+            proto::FeatureName::FEATURE_NAME_UNSPECIFIED);
 
   // Handle request 1
   EXPECT_EQ(channel->written_requests()[1]
@@ -325,7 +325,7 @@ TEST_F(ClientImplIntegrationTest, ProxySuccess) {
   ASSERT_EQ(channel->written_requests().size(), 2u);
   EXPECT_TRUE(channel->written_requests()[0].has_anonymous_token_request());
   EXPECT_EQ(channel->written_requests()[0].feature_name(),
-            proto::FeatureName::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
+            proto::FeatureName::FEATURE_NAME_UNSPECIFIED);
   EXPECT_TRUE(channel->written_requests()[1].has_generate_content_request());
 
   // 4. Respond to text request.

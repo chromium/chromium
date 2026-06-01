@@ -73,7 +73,9 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
   ConnectionFactoryImpl factory(url, GetNetworkContext(), GetLogger(),
                                 GetOakSessionDriver(), GetNetworkDriver());
 
-  auto connection = factory.Create(base::DoNothing());
+  auto connection = factory.Create(
+      proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
+      base::DoNothing());
   EXPECT_TRUE(connection);
 }
 
@@ -93,7 +95,9 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
                                 GetOakSessionDriver(), GetNetworkDriver());
   factory.EnableTokenAttestation(GetTokenManager());
 
-  auto connection = factory.Create(base::DoNothing());
+  auto connection = factory.Create(
+      proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
+      base::DoNothing());
   EXPECT_TRUE(connection);
 }
 
@@ -106,7 +110,9 @@ IN_PROC_BROWSER_TEST_F(ConnectionFactoryImplBrowserTest,
   factory.EnableTokenAttestation(GetTokenManager());
   factory.EnableProxy(GURL("https://proxy.com"));
 
-  auto connection = factory.Create(base::DoNothing());
+  auto connection = factory.Create(
+      proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
+      base::DoNothing());
   EXPECT_TRUE(connection);
 }
 

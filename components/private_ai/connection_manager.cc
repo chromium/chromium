@@ -39,9 +39,11 @@ Connection* ConnectionManager::GetConnection(proto::FeatureName feature_name) {
   auto& state = connections_[feature_name];
   if (!state.connection) {
     state.connection_id++;
-    state.connection = connection_factory_->Create(base::BindRepeating(
-        &ConnectionManager::OnConnectionDisconnected,
-        weak_factory_.GetWeakPtr(), feature_name, state.connection_id));
+    state.connection = connection_factory_->Create(
+        feature_name,
+        base::BindRepeating(&ConnectionManager::OnConnectionDisconnected,
+                            weak_factory_.GetWeakPtr(), feature_name,
+                            state.connection_id));
   }
   return state.connection.get();
 }

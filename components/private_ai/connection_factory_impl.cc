@@ -30,6 +30,7 @@ namespace {
 
 std::unique_ptr<Connection> CreateConnectionStack(
     const GURL& url,
+    proto::FeatureName feature_name,
     PrivateAiLogger* logger,
     phosphor::TokenManager* token_manager,
     ConnectionFactoryImpl::SecureChannelFactoryOverride secure_channel_override,
@@ -49,7 +50,8 @@ std::unique_ptr<Connection> CreateConnectionStack(
 
   if (token_manager) {
     connection = std::make_unique<ConnectionTokenAttestation>(
-        std::move(connection), token_manager, logger, on_disconnect);
+        std::move(connection), feature_name, token_manager, logger,
+        on_disconnect);
   }
 
   return connection;
@@ -91,13 +93,14 @@ void ConnectionFactoryImpl::EnableProxy(const GURL& proxy_url) {
 }
 
 std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
+    proto::FeatureName feature_name,
     base::RepeatingCallback<void(StatusCode)> on_disconnect) {
   std::unique_ptr<Connection> connection;
   if (!proxy_url_.is_valid()) {
     logger_->LogInfo(FROM_HERE,
                      "Creating connection to Private AI server (direct).");
     connection = CreateConnectionStack(
-        url_, logger_, token_manager_, secure_channel_override_,
+        url_, feature_name, logger_, token_manager_, secure_channel_override_,
         oak_session_driver_, on_disconnect, network_context_);
   } else {
     logger_->LogInfo(FROM_HERE,
@@ -107,7 +110,7 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
     // ConnectionProxy requires an inner factory that creates a connection
     // with token attestation.
     auto inner_connection_factory = base::BindOnce(
-        &CreateConnectionStack, url_, logger_, token_manager_,
+        &CreateConnectionStack, url_, feature_name, logger_, token_manager_,
         secure_channel_override_, oak_session_driver_, on_disconnect);
 
     connection = std::make_unique<ConnectionProxy>(

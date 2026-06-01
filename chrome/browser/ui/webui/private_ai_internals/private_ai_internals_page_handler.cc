@@ -74,7 +74,7 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
                      network_context_, token_manager_, &webui_logger_,
                      &oak_session_driver_content_, &network_driver_content_);
   webui_client_->EstablishConnection(
-      proto::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
+      proto::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT);
   std::move(callback).Run();
 }
 

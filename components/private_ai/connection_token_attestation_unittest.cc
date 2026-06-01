@@ -28,11 +28,13 @@ class ConnectionTokenAttestationTest : public testing::Test {
   ConnectionTokenAttestationTest() = default;
   ~ConnectionTokenAttestationTest() override = default;
 
-  void CreateConnectionAttestation() {
+  void CreateConnectionAttestation(
+      proto::FeatureName feature_name =
+          proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION) {
     auto fake_connection = std::make_unique<FakeConnection>(base::DoNothing());
     fake_connection_ = fake_connection.get();
     connection_attestation_ = std::make_unique<ConnectionTokenAttestation>(
-        std::move(fake_connection), &token_manager_, &logger_,
+        std::move(fake_connection), feature_name, &token_manager_, &logger_,
         base::BindOnce(&ConnectionTokenAttestationTest::OnDisconnect,
                        base::Unretained(this)));
   }
@@ -82,7 +84,7 @@ TEST_F(ConnectionTokenAttestationTest, Success) {
         fake_connection_->pending_requests()[0].request;
     ASSERT_TRUE(pending_request.has_anonymous_token_request());
     EXPECT_EQ(pending_request.feature_name(),
-              proto::FeatureName::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
+              proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION);
     privacy::ppn::PrivacyPassTokenData expected_token_data;
     expected_token_data.set_token("dGVzdF90b2tlbg");
     expected_token_data.set_encoded_extensions("dGVzdF9leHRlbnNpb25z");
