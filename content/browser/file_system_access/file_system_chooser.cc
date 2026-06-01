@@ -255,10 +255,21 @@ base::FilePath FileSystemChooser::Options::ResolveSuggestedNameExtension(
 
   auto suggested_extension = suggested_name.Extension();
 
-  if (suggested_extension.size() > kMaxExtensionLength) {
+  bool stripped_long_extension = false;
+  while (suggested_extension.size() > kMaxExtensionLength) {
     // Sanitize extensions longer than 16 characters.
     file_types.include_all_files = true;
-    return suggested_name.RemoveExtension();
+    suggested_name = suggested_name.RemoveExtension();
+    suggested_extension = suggested_name.Extension();
+    stripped_long_extension = true;
+  }
+
+  if (stripped_long_extension) {
+    // Removing long extensions can expose a shell-integrated extension.
+    if (FileSystemChooser::IsShellIntegratedExtension(suggested_extension)) {
+      return suggested_name.ReplaceExtension(FILE_PATH_LITERAL("download"));
+    }
+    return suggested_name;
   }
 
   if (file_types.extensions.empty() || suggested_extension.empty()) {
