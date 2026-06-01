@@ -68,7 +68,6 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -271,7 +270,6 @@ using base::UserMetricsAction;
       HandlerForProtocol(dispatcher, ActivityServiceCommands);
   mediator.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
   mediator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
-  mediator.tabGroupsHandler = HandlerForProtocol(dispatcher, TabGroupsCommands);
   mediator.bookmarksHandler = HandlerForProtocol(dispatcher, BookmarksCommands);
   mediator.cobaltHandler = HandlerForProtocol(dispatcher, CobaltCommands);
   if (IsLensOverlayAllowedByPolicy(profile->GetPrefs())) {

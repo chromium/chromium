@@ -54,7 +54,6 @@ class ReadingListModel;
 @protocol SceneCommands;
 @protocol SettingsCommands;
 class TabBasedIPHBrowserAgent;
-@protocol TabGroupsCommands;
 @protocol CobaltCommands;
 class TemplateURLService;
 @protocol TextZoomCommands;
@@ -99,7 +98,6 @@ class WebStateList;
 @property(nonatomic, weak) id<LevelUpCommands> levelUpHandler;
 @property(nonatomic, weak) id<ReaderModeCommands> readerModeHandler;
 @property(nonatomic, weak) id<BWGCommands> BWGHandler;
-@property(nonatomic, weak) id<TabGroupsCommands> tabGroupsHandler;
 @property(nonatomic, weak) id<CobaltCommands> cobaltHandler;
 
 // Navigation agent for reloading pages.

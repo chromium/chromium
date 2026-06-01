@@ -100,11 +100,11 @@ enum class IOSOverflowMenuAction {
   kReaderMode = 19,
   kAskBWG = 20,
   kHideToolbars = 21,
-  kTabGroup = 22,
+  // kTabGroupDeprecated = 22,  // Deprecated M150.
   kShareThisPage = 23,
   kMaxValue = kShareThisPage,
 };
-// LINT.ThenChange(ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h:actionType,
+// LINT.ThenChange(/ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h:actionType,
 // /tools/metrics/histograms/metadata/ios/enums.xml:IOSOverflowMenuAction)
 
 // Returns the correct action histogram enum value for the given `action_type`.

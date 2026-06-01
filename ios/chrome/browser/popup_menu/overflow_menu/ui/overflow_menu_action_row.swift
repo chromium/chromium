@@ -146,11 +146,6 @@ struct OverflowMenuActionRow: View {
   var button: some View {
     if isEditing {
       rowContent
-    } else if let menu = action.menu as? UIMenu {
-      UIMenuElementView(element: menu) {
-        rowContent
-          .contentShape(Rectangle())
-      }
     } else {
       Button(
         action: {

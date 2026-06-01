@@ -125,8 +125,6 @@ bool IsNewTabGridTransitionsEnabled() {
   return base::FeatureList::IsEnabled(kTabGridNewTransitions);
 }
 
-BASE_FEATURE(kTabGroupInOverflowMenu, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabSwitcherOverflowMenu, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualPanelForceShowEntrypoint,

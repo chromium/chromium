@@ -58,10 +58,10 @@ enum class ActionType {
   // TODO(crbug.com/416002705): Rename reference to BWG.
   AskBWG,
   HideToolbars,
-  TabGroup,
+  TabGroupDeprecated,  // This enum is deprecated due to feature cleanup.
   ShareThisPage,
 };
-// LINT.ThenChange(ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h:actionType)
+// LINT.ThenChange(/ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h:actionType)
 
 // Ingests `destination` string representation and returns corresponding
 // overflow_menu::Destination enum.

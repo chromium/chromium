@@ -1392,7 +1392,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="ReaderMode"/>
   <int value="20" label="AskGemini"/>
   <int value="21" label="HideToolbars"/>
-  <int value="22" label="TabGroup"/>
+  <int value="22" label="Obsolete in M150 - TabGroup"/>
   <int value="23" label="ShareThisPage"/>
 </enum>
 

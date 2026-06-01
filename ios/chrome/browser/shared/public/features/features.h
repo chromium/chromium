@@ -136,9 +136,6 @@ BASE_DECLARE_FEATURE(kTabGridNewTransitions);
 // Whether the new tab grid tabs transitions should be enabled.
 bool IsNewTabGridTransitionsEnabled();
 
-// When enabled, a Tab Group button will appear in the overflow menu.
-BASE_DECLARE_FEATURE(kTabGroupInOverflowMenu);
-
 // When enabled, an overflow menu will replace the edit menu on the GTS.
 BASE_DECLARE_FEATURE(kTabSwitcherOverflowMenu);
 

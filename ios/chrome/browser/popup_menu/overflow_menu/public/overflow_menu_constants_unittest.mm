@@ -147,9 +147,9 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::HideToolbars:
         finalExpectedActionType = overflow_menu::ActionType::HideToolbars;
         break;
-      case overflow_menu::ActionType::TabGroup:
-        finalExpectedActionType = overflow_menu::ActionType::TabGroup;
-        break;
+      case overflow_menu::ActionType::TabGroupDeprecated:
+        // This is deprecated, so skip it.
+        continue;
       case overflow_menu::ActionType::ShareThisPage:
         finalExpectedActionType = overflow_menu::ActionType::ShareThisPage;
         break;
