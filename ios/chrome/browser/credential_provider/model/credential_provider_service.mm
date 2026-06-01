@@ -451,15 +451,23 @@ void CredentialProviderService::AddCredentialsRefactored(
     MemoryCredentialStore* store,
     std::vector<password_manager::StoredCredential> forms,
     base::OnceClosure completion) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::ThreadPolicy::PREFER_BACKGROUND,
-       base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GetFaviconsListAndFreshness),
+  auto reply_callback = base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           &CredentialProviderService::ContinueAddCredentialsRefactored,
           weak_ptr_factory_.GetWeakPtr(), base::Unretained(store),
           std::move(forms), std::move(completion)));
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::ThreadPolicy::PREFER_BACKGROUND,
+       base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](base::OnceCallback<void(NSDictionary<NSString*, NSDate*>*)>
+                 reply) {
+            std::move(reply).Run(GetFaviconsListAndFreshness());
+          },
+          std::move(reply_callback)));
 }
 
 void CredentialProviderService::ContinueAddCredentialsRefactored(
