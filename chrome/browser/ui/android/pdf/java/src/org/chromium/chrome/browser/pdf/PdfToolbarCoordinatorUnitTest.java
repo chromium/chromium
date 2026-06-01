@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -357,5 +359,45 @@ public class PdfToolbarCoordinatorUnitTest {
         // Verify title is now constrained to end group
         layoutParams = (ConstraintLayout.LayoutParams) title.getLayoutParams();
         assertEquals(R.id.pdf_toolbar_group_end, layoutParams.endToStart);
+    }
+
+    @Test
+    public void testKeyboardShortcuts_zoomIn() {
+        // Current zoom is 1.0f (set in setUp)
+        // Next zoom should be 1.1f
+        KeyEvent event =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_EQUALS,
+                        0,
+                        KeyEvent.META_CTRL_ON);
+        assertTrue(mPdfToolbarCoordinator.onKey(mPdfPageView, KeyEvent.KEYCODE_EQUALS, event));
+        verify(mDelegate).changeZoomLevel(1.1f);
+    }
+
+    @Test
+    public void testKeyboardShortcuts_zoomOut() {
+        // Current zoom is 1.0f (set in setUp)
+        // Previous zoom should be 0.9f
+        KeyEvent event =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_MINUS,
+                        0,
+                        KeyEvent.META_CTRL_ON);
+        assertTrue(mPdfToolbarCoordinator.onKey(mPdfPageView, KeyEvent.KEYCODE_MINUS, event));
+        verify(mDelegate).changeZoomLevel(0.9f);
+    }
+
+    @Test
+    public void testKeyboardShortcuts_noCtrl() {
+        // Simulate "=" without CTRL
+        KeyEvent event = new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_EQUALS, 0, 0);
+        assertFalse(mPdfToolbarCoordinator.onKey(mPdfPageView, KeyEvent.KEYCODE_EQUALS, event));
+        verify(mDelegate, org.mockito.Mockito.never()).changeZoomLevel(anyFloat());
     }
 }

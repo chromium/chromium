@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.graphics.drawable.ColorDrawable;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.ListView;
@@ -27,7 +28,7 @@ import java.util.List;
 
 /** The top-level component responsible for the setup and lifecycle of the PDF Toolbar MVC stack. */
 @NullMarked
-public class PdfToolbarCoordinator implements View.OnClickListener {
+public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyListener {
     private final PropertyModel mModel;
     private final PdfToolbarActionsDelegate mDelegate;
     private final PropertyModelChangeProcessor<PropertyModel, PdfToolbar, PropertyKey>
@@ -224,7 +225,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
 
     private float getNextZoomLevel(float currentZoomLevel, boolean increase) {
         int index = 0;
-
         // Find the first index where the zoom level is greater than or equal to current and move
         // to the next one if it exists.
         while (index < mZoomLevels.size() && mZoomLevels.get(index) <= currentZoomLevel) {
@@ -277,6 +277,24 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
             // Convert to 0-based index for the delegate.
             mDelegate.navigateToPage(pageNumber - 1);
         }
+    }
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN && event.isCtrlPressed()) {
+            float currentZoomFactor = mModel.get(PdfToolbarProperties.ZOOM_LEVEL);
+            if (keyCode == KeyEvent.KEYCODE_EQUALS
+                    || keyCode == KeyEvent.KEYCODE_PLUS
+                    || keyCode == KeyEvent.KEYCODE_NUMPAD_ADD) {
+                mDelegate.changeZoomLevel(getNextZoomLevel(currentZoomFactor, true));
+                return true;
+            } else if (keyCode == KeyEvent.KEYCODE_MINUS
+                    || keyCode == KeyEvent.KEYCODE_NUMPAD_SUBTRACT) {
+                mDelegate.changeZoomLevel(getNextZoomLevel(currentZoomFactor, false));
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Destroys the coordinator and releases references held by the change processor. */

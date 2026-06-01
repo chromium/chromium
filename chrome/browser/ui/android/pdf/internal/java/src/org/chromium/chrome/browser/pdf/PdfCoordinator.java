@@ -747,6 +747,11 @@ public class PdfCoordinator
     @Override
     public void loadPdfSelectionCoordinator(PdfView pdfView) {
         mPdfSelectionCoordinator = new PdfSelectionCoordinator(mActivity, pdfView);
+        if (mToolbarCoordinator != null) {
+            pdfView.setFocusable(true);
+            pdfView.setFocusableInTouchMode(true);
+            pdfView.setOnKeyListener(mToolbarCoordinator);
+        }
     }
 
     @Override
@@ -801,6 +806,7 @@ public class PdfCoordinator
                     if (fragmentContainerView != null
                             && fragmentContainerView.getVisibility() != View.VISIBLE) {
                         fragmentContainerView.setVisibility(View.VISIBLE);
+                        pdfView.requestFocus();
                     }
                     return;
                 }
