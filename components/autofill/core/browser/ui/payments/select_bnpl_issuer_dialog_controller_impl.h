@@ -19,7 +19,6 @@ namespace autofill::payments {
 struct BnplIssuerContext;
 class PaymentsAutofillClient;
 class SelectBnplIssuerView;
-struct TextWithLink;
 
 // Implementation for the SelectBnplIssuerDialogController.
 class SelectBnplIssuerDialogControllerImpl
@@ -52,10 +51,8 @@ class SelectBnplIssuerDialogControllerImpl
   void Dismiss() override;
   const std::vector<BnplIssuerContext>& GetIssuerContexts() const override;
   const std::string& GetAppLocale() const override;
-  TextWithLink GetLinkText() const override;
   std::u16string GetTitle() const override;
-  std::u16string GetSelectionOptionText(
-      autofill::BnplIssuer::IssuerId issuer_id) const override;
+  const PaymentsDataManager& GetPaymentsDataManager() const override;
 
  private:
   // The dialog view, managed by the views infrastructure on desktop.

@@ -95,30 +95,9 @@ u16string SelectBnplIssuerDialogControllerImpl::GetTitle() const {
   return GetStringUTF16(IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_TITLE);
 }
 
-// TODO(crbug.com/430575808): Remove `GetSelectionOptionText` and instead use
-// `GetBnplIssuerSelectionOptionText`.
-u16string SelectBnplIssuerDialogControllerImpl::GetSelectionOptionText(
-    IssuerId issuer_id) const {
-  return GetBnplIssuerSelectionOptionText(issuer_id, GetAppLocale(),
-                                          GetIssuerContexts());
-}
-
-// TODO(crbug.com/430575808): Remove `GetLinkText` and instead use
-// `GetBnplUiFooterText`.
-// TODO(crbug.com/405187652) Check if we want the selection dialog footer to
-// have multiple lines when the text doesn't fit into one line.
-TextWithLink SelectBnplIssuerDialogControllerImpl::GetLinkText() const {
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableAiBasedAmountExtraction)) {
-    return GetBnplUiFooterTextForAi(client_->GetPaymentsDataManager());
-  } else {
-    return GetBnplUiFooterText();
-  }
-#else
-  // `GetBnplUiFooterText` on Android does not return a `TextWithLink`.
-  NOTREACHED();
-#endif  // !BUILDFLAG(IS_ANDROID)
+const PaymentsDataManager&
+SelectBnplIssuerDialogControllerImpl::GetPaymentsDataManager() const {
+  return client_->GetPaymentsDataManager();
 }
 
 }  // namespace autofill::payments

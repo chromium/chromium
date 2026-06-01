@@ -107,11 +107,15 @@ void BnplIssuerView::PopulateIssuers() {
         views::Button::PressedCallback(base::BindRepeating(
             &BnplIssuerView::IssuerSelected, base::Unretained(this), issuer)),
         std::move(image_view), std::u16string(issuer.GetDisplayName()),
-        controller_->GetSelectionOptionText(issuer.issuer_id()), nullptr, true,
-        std::u16string(),
+        GetBnplIssuerSelectionOptionText(
+            issuer.issuer_id(), controller_->GetAppLocale(), issuer_contexts),
+        /*secondary_view=*/nullptr,
+        /*add_vertical_label_spacing=*/true,
+        /*footer=*/std::u16string(),
+        /*icon_label_spacing=*/
         layout_provider->GetDistanceMetric(
             views::DISTANCE_RELATED_LABEL_HORIZONTAL),
-        true);
+        /*multiline_subtitle=*/true);
     issuer_button->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(layout_provider->GetDistanceMetric(
                             views::DISTANCE_UNRELATED_CONTROL_VERTICAL),

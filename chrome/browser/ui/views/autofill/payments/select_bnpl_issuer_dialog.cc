@@ -159,7 +159,14 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
     bnpl_issuer_view_->SetVisible(true);
   }
 
-  TextWithLink link_text = controller_.get()->GetLinkText();
+  TextWithLink link_text;
+  if (base::FeatureList::IsEnabled(
+          ::autofill::features::kAutofillEnableAiBasedAmountExtraction)) {
+    CHECK(controller_);
+    link_text = GetBnplUiFooterTextForAi(controller_->GetPaymentsDataManager());
+  } else {
+    link_text = GetBnplUiFooterText();
+  }
   TextLinkInfo link_info;
   link_info.bold_range = link_text.bold_range;
   link_info.offset = link_text.offset;

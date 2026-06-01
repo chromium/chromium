@@ -73,6 +73,9 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest, Getters) {
                          BnplIssuerEligibilityForPage::kIsEligible)});
   InitController();
   EXPECT_EQ(controller_->GetIssuerContexts(), issuer_contexts_);
+  EXPECT_EQ(controller_->GetAppLocale(), "en-US");
+  EXPECT_EQ(&controller_->GetPaymentsDataManager(),
+            &payments_autofill_client().GetPaymentsDataManager());
   EXPECT_CALL(selected_issuer_callback_, Run(issuer_contexts_[0].issuer));
   controller_->OnIssuerSelected(issuer_contexts_[0].issuer);
   EXPECT_CALL(cancel_callback_, Run());
@@ -83,17 +86,6 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest, GetTitle) {
   InitController();
   EXPECT_EQ(controller_->GetTitle(),
             GetStringUTF16(IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_TITLE));
-}
-
-TEST_F(SelectBnplIssuerDialogControllerImplTest, GetSelectionOptionText) {
-  SetIssuerContexts(
-      {BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
-                         BnplIssuerEligibilityForPage::kIsEligible)});
-  InitController();
-
-  EXPECT_FALSE(
-      controller_->GetSelectionOptionText(BnplIssuer::IssuerId::kBnplAffirm)
-          .empty());
 }
 
 TEST_F(SelectBnplIssuerDialogControllerImplTest,
@@ -132,17 +124,7 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest,
   controller_->OnIssuerSelected(selected_issuer);
 }
 
-// This test checks the `TextWithLink` returned from the `GetLinkText()` method.
-// On Android, `GetLinkText()` does not return a `TextWithLink` so this test is
-// not applicable.
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(SelectBnplIssuerDialogControllerImplTest, GetLinkText) {
-  InitController();
 
-  EXPECT_THAT(controller_->GetLinkText(),
-              Field(&TextWithLink::text, Not(testing::IsEmpty())));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(SelectBnplIssuerDialogControllerImplTest,
        OnIssuerSelected_InvokesCallbackMultipleTimes) {
