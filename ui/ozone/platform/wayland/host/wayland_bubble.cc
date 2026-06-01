@@ -61,7 +61,11 @@ void WaylandBubble::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
   // There is currently no guarantee that the 2 compositor frames arrive
   // together atomically.
   auto old_bounds_dip = GetBoundsInDIP();
+  auto weak_this = AsWeakPtr();
   WaylandWindow::SetBoundsInDIP(bounds_dip);
+  if (!weak_this) {
+    return;
+  }
 
   // TODO(crbug.com/329145822): Don't apply position immediately here, wait for
   // ackconfigure, otherwise it might jitter if offset changes.

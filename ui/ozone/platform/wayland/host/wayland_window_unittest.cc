@@ -5467,6 +5467,41 @@ TEST_P(WaylandWindowTest, HandleToplevelConfigureSyncCloseOnDeactivate) {
   EXPECT_FALSE(window_);
 }
 
+TEST_P(WaylandWindowTest, WaylandPopupSetBoundsUaf) {
+  MockWaylandPlatformWindowDelegate popup_delegate(connection_.get());
+  gfx::Rect popup_bounds(10, 10, 50, 50);
+  auto wayland_popup =
+      CreateWaylandWindowWithParams(PlatformWindowType::kPopup, popup_bounds,
+                                    &popup_delegate, window_->GetWidget());
+  ASSERT_TRUE(wayland_popup);
+
+  popup_delegate.set_on_state_update_callback(base::BindLambdaForTesting([&]() {
+    wayland_popup.reset();
+    return true;
+  }));
+
+  // This should not crash if the fix is applied.
+  wayland_popup->SetBoundsInDIP(gfx::Rect(15, 15, 60, 60));
+}
+
+TEST_P(WaylandWindowTest, WaylandBubbleSetBoundsUaf) {
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  gfx::Rect bubble_bounds(10, 10, 50, 50);
+  auto wayland_bubble =
+      CreateWaylandWindowWithParams(PlatformWindowType::kBubble, bubble_bounds,
+                                    &bubble_delegate, window_->GetWidget());
+  ASSERT_TRUE(wayland_bubble);
+
+  bubble_delegate.set_on_state_update_callback(
+      base::BindLambdaForTesting([&]() {
+        wayland_bubble.reset();
+        return true;
+      }));
+
+  // This should not crash if the fix is applied.
+  wayland_bubble->SetBoundsInDIP(gfx::Rect(15, 15, 60, 60));
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{}));
