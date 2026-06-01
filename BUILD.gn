@@ -1556,21 +1556,21 @@ if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
     testonly = true
     write_runtime_deps = "${root_out_dir}/${target_name}.runtime_deps"
 
-    deps = [ "//third_party/blink/public/mojom:mojom_modules_js" ]
     data_deps = [
       "//content/shell:content_shell",
+      "//third_party/blink/public/mojom:mojom_modules_js",
       "//v8:d8",
     ]
     if (!is_fuchsia) {
-      deps += [ "//chrome" ]
+      data_deps += [ "//chrome" ]
     }
     if (!is_win) {
-      deps += [ "//skia:filter_fuzz_stub" ]
+      data_deps += [ "//skia:filter_fuzz_stub" ]
     }
     if (!is_chromeos) {
-      deps += [ "//v8:v8_shell($v8_snapshot_toolchain)" ]
+      data_deps += [ "//v8:v8_shell($v8_snapshot_toolchain)" ]
       if (enable_pdf) {
-        deps += [ "//third_party/pdfium/testing:pdfium_test" ]
+        data_deps += [ "//third_party/pdfium/testing:pdfium_test" ]
       }
     }
   }
