@@ -473,10 +473,6 @@ void HTMLDialogElement::show(ExceptionState& exception_state) {
   }
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
-  // The layout must be updated here because setFocusForDialog calls
-  // Element::isFocusable, which requires an up-to-date layout.
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-
   // Top layer elements like dialogs and fullscreen elements can be nested
   // inside popovers.
   auto* hide_until = HTMLElement::TopLayerElementPopoverAncestor(
@@ -599,7 +595,6 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state,
 
   // Refresh the AX cache first, because most of it is changing.
   InertSubtreesChanged(document, old_modal_dialog);
-  document.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   // Setting the open attribute already created the close watcher.
   DCHECK(close_watcher_);
