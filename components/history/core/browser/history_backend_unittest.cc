@@ -1898,6 +1898,86 @@ TEST_F(HistoryBackendTest, AddPageArgsConsiderForNewTabPageMostVisited) {
   EXPECT_EQ(visits[2].consider_for_ntp_most_visited, true);
 }
 
+TEST_F(HistoryBackendTest, UntypedIntranetHostPromotion) {
+  ASSERT_TRUE(backend_.get());
+
+  // 1. An untyped intranet host should be promoted to TYPED.
+  {
+    GURL intranet_url("http://myhost");
+    HistoryAddPageArgs request(intranet_url, base::Time::Now(), 0, 0,
+                               std::nullopt, GURL(), RedirectList(),
+                               ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED,
+                               VisitResponseCodeCategory::kNot404, false, true);
+    backend_->AddPage(request);
+
+    VisitVector visits;
+    URLRow row;
+    URLID id = backend_->db()->GetRowForURL(intranet_url, &row);
+    ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+    ASSERT_EQ(1U, visits.size());
+    // Should be promoted to TYPED.
+    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(visits[0].transition,
+                                             ui::PAGE_TRANSITION_TYPED));
+  }
+
+  // 2. A public IPv4 literal should NOT be promoted to TYPED.
+  {
+    GURL ipv4_url("https://8.8.8.8");
+    HistoryAddPageArgs request(ipv4_url, base::Time::Now(), 0, 0, std::nullopt,
+                               GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK,
+                               false, SOURCE_BROWSED,
+                               VisitResponseCodeCategory::kNot404, false, true);
+    backend_->AddPage(request);
+
+    VisitVector visits;
+    URLRow row;
+    URLID id = backend_->db()->GetRowForURL(ipv4_url, &row);
+    ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+    ASSERT_EQ(1U, visits.size());
+    // Should NOT be promoted to TYPED (should remain LINK).
+    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(visits[0].transition,
+                                             ui::PAGE_TRANSITION_LINK));
+  }
+
+  // 3. A public IPv6 literal should NOT be promoted to TYPED.
+  {
+    GURL ipv6_url("https://[2001:4860:4860::8888]");
+    HistoryAddPageArgs request(ipv6_url, base::Time::Now(), 0, 0, std::nullopt,
+                               GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK,
+                               false, SOURCE_BROWSED,
+                               VisitResponseCodeCategory::kNot404, false, true);
+    backend_->AddPage(request);
+
+    VisitVector visits;
+    URLRow row;
+    URLID id = backend_->db()->GetRowForURL(ipv6_url, &row);
+    ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+    ASSERT_EQ(1U, visits.size());
+    // Should NOT be promoted to TYPED (should remain LINK).
+    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(visits[0].transition,
+                                             ui::PAGE_TRANSITION_LINK));
+  }
+
+  // 4. A regular public domain should NOT be promoted to TYPED.
+  {
+    GURL public_url("https://google.com");
+    HistoryAddPageArgs request(public_url, base::Time::Now(), 0, 0,
+                               std::nullopt, GURL(), RedirectList(),
+                               ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED,
+                               VisitResponseCodeCategory::kNot404, false, true);
+    backend_->AddPage(request);
+
+    VisitVector visits;
+    URLRow row;
+    URLID id = backend_->db()->GetRowForURL(public_url, &row);
+    ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+    ASSERT_EQ(1U, visits.size());
+    // Should NOT be promoted to TYPED (should remain LINK).
+    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(visits[0].transition,
+                                             ui::PAGE_TRANSITION_LINK));
+  }
+}
+
 TEST_F(HistoryBackendTest, AddContentModelAnnotationsWithNoEntryInVisitTable) {
   ASSERT_TRUE(backend_.get());
 

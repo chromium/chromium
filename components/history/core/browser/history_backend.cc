@@ -64,6 +64,7 @@
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "sql/error_delegate_util.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
@@ -926,6 +927,15 @@ void HistoryBackend::MarkVisitAsKnownToSync(VisitID visit_id) {
 bool HistoryBackend::IsUntypedIntranetHost(const GURL& url) {
   if (!url.SchemeIs(url::kHttpScheme) && !url.SchemeIs(url::kHttpsScheme) &&
       !url.SchemeIs(url::kFtpScheme)) {
+    return false;
+  }
+
+  // A host is usually considered "intranet" if it has no eTLD suffix (no ".com"
+  // or ".co.uk" etc), i.e. its "registry length" is zero - see
+  // net/base/registry_controlled_domains/registry_controlled_domain.h for more
+  // details. However, IP addresses also don't have an eTLD, but do not
+  // generally belong to an intranet, so they must be separately excluded here.
+  if (url.HostIsIPAddress() && !net::IsLocalhost(url)) {
     return false;
   }
 
