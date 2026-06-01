@@ -17,3 +17,14 @@ component("private_insights") {
     "//components/keyed_service/core",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "private_insights_service_unittest.cc" ]
+  deps = [
+    ":private_insights",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

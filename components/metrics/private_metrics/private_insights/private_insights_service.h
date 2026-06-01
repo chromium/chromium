@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -54,6 +55,9 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PrivateInsightsService> weak_ptr_factory_{this};
+
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServiceTest,
+                           TriggerUploadSkipsPostingTaskWhenAlreadyRunning);
 };
 
 }  // namespace private_insights

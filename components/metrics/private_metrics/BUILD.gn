@@ -120,6 +120,7 @@ source_set("unit_tests") {
   deps = [
     ":private_metrics",
     ":private_metrics_features",
+    "private_insights:unit_tests",
     "//base",
     "//base/test:test_support",
     "//components/country_codes",
