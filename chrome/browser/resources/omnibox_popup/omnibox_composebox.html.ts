@@ -11,6 +11,19 @@ import type {OmniboxComposeboxElement} from './omnibox_composebox.js';
 export function getHtml(this: OmniboxComposeboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+    <search-animated-glow id="animatedSearchElement"
+        animation-state="${this.animationState}"
+        .coloredTicTacVoiceAnimationEnabled=
+            "${this.voiceSearchCoherenceEnabled}"
+        .isListening="${this.isListening}"
+        .entrypointName="${this.entrypointName}"
+        .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
+        .transcript="${this.transcript}"
+        .receivedSpeech="${this.receivedSpeech}"
+        .energyEffectAnimationEnabled="${false}"
+        .isZeroState="${false}"
+        exportparts="composebox-background">
+    </search-animated-glow>
     <ntp-error-scrim id="errorScrim" part="error-scrim"
         ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
                          this.files.size === 0}"

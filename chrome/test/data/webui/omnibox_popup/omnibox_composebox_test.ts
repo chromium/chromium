@@ -997,4 +997,132 @@ suite('OmniboxComposeboxTest', () => {
             'embedded-permission-prompt-showing'));
         assertEquals('0', window.getComputedStyle(bottomActions).opacity);
       });
+
+  test(
+      'voice permission changed updates search-animated-glow class and hides audio-wave',
+      async () => {
+        const windowProxy = TestMock.fromClass(WindowProxy);
+        windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
+        windowProxy.setResultMapperFor(
+            'matchMedia', (query: string) => window.matchMedia(query));
+        WindowProxy.setInstance(windowProxy);
+        testProxy.handler.setPromiseResolveFor('getPageClassification', {
+          metricSource: 'NTP_OMNIBOX_COMPOSEBOX',
+        });
+
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: false,
+        });
+
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        omniboxComposebox = document.createElement('cr-omnibox-composebox');
+        omniboxComposebox.showVoiceSearch = true;
+        document.body.appendChild(omniboxComposebox);
+        await omniboxComposebox.updateComplete;
+
+        const glow =
+            omniboxComposebox.shadowRoot.querySelector('search-animated-glow');
+        assertTrue(!!glow);
+
+        // Inject style to disable transitions for instant opacity evaluation.
+        const style = document.createElement('style');
+        style.textContent =
+            '* { transition: none !important; animation: none !important; }';
+        glow.shadowRoot.appendChild(style);
+
+        // Make sure it is listening so the audio element becomes visible
+        // (opacity 1).
+        omniboxComposebox.isListening = true;
+        await omniboxComposebox.updateComplete;
+        await glow.updateComplete;
+
+        assertTrue(glow.isListening, 'glow.isListening should be true');
+        assertTrue(
+            glow.hasAttribute('is-listening'),
+            'glow should have is-listening attribute');
+
+        const audioWave = glow.shadowRoot.querySelector('audio-wave');
+        assertTrue(!!audioWave);
+        assertEquals('1', window.getComputedStyle(audioWave).opacity);
+
+        // Simulate voice permission prompt opening.
+        omniboxComposebox.onVoicePermissionChanged(
+            new CustomEvent('voice-permission-changed', {
+              detail: {
+                isOpened: true,
+                height: 100,
+                width: 200,
+              },
+            }));
+        await omniboxComposebox.updateComplete;
+
+        // Verify the class was added and opacity turned to 0.
+        assertTrue(
+            glow.classList.contains('embedded-permission-prompt-showing'));
+        assertEquals('0', window.getComputedStyle(audioWave).opacity);
+      });
+
+  test(
+      'voice permission changed updates search-animated-glow class and hides recording-wave',
+      async () => {
+        const windowProxy = TestMock.fromClass(WindowProxy);
+        windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
+        windowProxy.setResultMapperFor(
+            'matchMedia', (query: string) => window.matchMedia(query));
+        WindowProxy.setInstance(windowProxy);
+        testProxy.handler.setPromiseResolveFor('getPageClassification', {
+          metricSource: 'NTP_OMNIBOX_COMPOSEBOX',
+        });
+
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+        });
+
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        omniboxComposebox = document.createElement('cr-omnibox-composebox');
+        omniboxComposebox.showVoiceSearch = true;
+        document.body.appendChild(omniboxComposebox);
+        await omniboxComposebox.updateComplete;
+
+        const glow =
+            omniboxComposebox.shadowRoot.querySelector('search-animated-glow');
+        assertTrue(!!glow);
+
+        // Inject style to disable transitions for instant opacity evaluation.
+        const style = document.createElement('style');
+        style.textContent =
+            '* { transition: none !important; animation: none !important; }';
+        glow.shadowRoot.appendChild(style);
+
+        // Make sure it is listening so the audio element becomes visible
+        // (opacity 1)
+        omniboxComposebox.isListening = true;
+        await omniboxComposebox.updateComplete;
+        await glow.updateComplete;
+
+        assertTrue(glow.isListening, 'glow.isListening should be true');
+        assertTrue(
+            glow.hasAttribute('is-listening'),
+            'glow should have is-listening attribute');
+
+        const recordingWave = glow.shadowRoot.querySelector('recording-wave');
+        assertTrue(!!recordingWave);
+        assertEquals('1', window.getComputedStyle(recordingWave).opacity);
+
+        // Simulate voice permission prompt opening.
+        omniboxComposebox.onVoicePermissionChanged(
+            new CustomEvent('voice-permission-changed', {
+              detail: {
+                isOpened: true,
+                height: 100,
+                width: 200,
+              },
+            }));
+        await omniboxComposebox.updateComplete;
+
+        // Verify the class was added and opacity turned to 0.
+        assertTrue(
+            glow.classList.contains('embedded-permission-prompt-showing'));
+        assertEquals('0', window.getComputedStyle(recordingWave).opacity);
+      });
   });

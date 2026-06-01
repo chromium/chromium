@@ -10,6 +10,7 @@ import '//resources/cr_components/composebox/composebox_voice_search.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import '//resources/cr_components/composebox/error_scrim.js';
 import '//resources/cr_components/composebox/file_carousel.js';
+import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {ComposeboxFile, mapUploadErrorToProcessFilesError, ProcessFilesError, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
@@ -22,6 +23,7 @@ import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composeb
 import type {ContextUploadErrorType} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {ContextUploadStatus} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointButtonElement} from '//resources/cr_components/composebox/contextual_entrypoint_button.js';
+import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -63,9 +65,9 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: Boolean,
       },
-      isCollapsible: {
+      animationState: {
+        type: String,
         reflect: true,
-        type: Boolean,
       },
       entrypointName: {type: String, reflect: true},
       enableCarouselScrolling: {type: Boolean},
@@ -75,8 +77,9 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   accessor entrypointName: string = 'Omnibox';
   accessor applyContextButtonBackground: boolean = false;
   accessor enableCarouselScrolling: boolean = false;
-  accessor isCollapsible: boolean = false;
-  protected accessor expanding_: boolean = false;
+  override accessor animationState: GlowAnimationState =
+      GlowAnimationState.NONE;
+  protected accessor expanding_: boolean = true;
   private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxHandler_: SearchboxPageHandlerRemote;
@@ -91,7 +94,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
 
   override connectedCallback() {
     super.connectedCallback();
-    this.expanding_ = !this.isCollapsible;
+    this.animationState = GlowAnimationState.EXPANDING;
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -213,9 +216,21 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  // TODO(crbug.com/486707998): Remove once this is added to mixin.
   playGlowAnimation() {
-    return;
+    // If |animationState_| were still EXPANDING, this function would have no
+    // effect because nothing changes in CSS and therefore animations wouldn't
+    // be re-trigered. Resetting it to NONE forces the animation related styles
+    // to reset before switching to EXPANDING.
+    this.animationState = GlowAnimationState.NONE;
+    // Wait for the style change for NONE to commit. This ensures the browser
+    // detects a state change when we switch to EXPANDING.
+
+    // If the composebox is not submittable, trigger the animation.
+    if (!this.submitEnabled) {
+      requestAnimationFrame(() => {
+        this.animationState = GlowAnimationState.EXPANDING;
+      });
+    }
   }
 
   isExpanded(): boolean {
