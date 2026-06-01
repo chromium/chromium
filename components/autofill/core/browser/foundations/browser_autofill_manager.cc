@@ -3216,12 +3216,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
 
 autofill_metrics::FormEventLoggerBase*
 BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) {
-  if (field.ShouldSuppressSuggestionsAndFillingByDefault(
-          GetAcUnrecognizedBehavior(client())) &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillConsiderAutocompleteUnrecognizedFieldsInMetrics)) {
-    return nullptr;
-  }
   // TODO(crbug.com/432645177): When migrating Loyalty Cards to AutofillType, we
   // need to pick the right logger(s) here.
   const DenseSet<FormType> form_types = field.Type().GetFormTypes();
