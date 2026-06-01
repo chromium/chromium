@@ -89,19 +89,19 @@ suite('Observable', function() {
   });
 
   test('ObserverParmetersRelativeToObservedPath', () => {
-    const notifications: Map<string, any[]> = new Map();
+    const notifications: Map<string, unknown> = new Map();
 
-    observable.addObserver('foo', (...args) => {
+    observable.addObserver('foo', (...args: any[]) => {
       notifications.set('foo', args);
     });
-    observable.addObserver('foo.value', (...args) => {
+    observable.addObserver('foo.value', (...args: any[]) => {
       notifications.set('foo.value', args);
     });
-    observable.addObserver('foo.*', change => {
+    observable.addObserver('foo.*', (change: WildcardChangeRecord) => {
       notifications.set('foo.*', change);
     });
 
-    observable.addObserver('foo.value.*', change => {
+    observable.addObserver('foo.value.*', (change: WildcardChangeRecord) => {
       notifications.set('foo.value.*', change);
     });
 
@@ -178,8 +178,8 @@ suite('ObservablePolymerCompatibility', function() {
     declare prefs: Prefs;
     observable: Observable<IndexablePrefs>;
 
-    polymerNotifications: Map<string, any[]> = new Map();
-    observableNotifications: Map<string, any[]> = new Map();
+    polymerNotifications: Map<string, unknown[]> = new Map();
+    observableNotifications: Map<string, unknown[]> = new Map();
 
     // Register Polymer observers.
     static get observers() {
@@ -208,10 +208,10 @@ suite('ObservablePolymerCompatibility', function() {
       this.prefs = this.observable.getProxy();
 
       // Register `Observable` observers (alternative non-Polymer mechanism).
-      this.observable.addObserver('foo', (...args) => {
+      this.observable.addObserver('foo', (...args: any[]) => {
         this.observableNotifications.set('foo', args);
       });
-      this.observable.addObserver('foo.value', (...args) => {
+      this.observable.addObserver('foo.value', (...args: any[]) => {
         this.observableNotifications.set('foo.value', args);
       });
       this.observable.addObserver('foo.*', (change: WildcardChangeRecord) => {
@@ -223,16 +223,16 @@ suite('ObservablePolymerCompatibility', function() {
           });
 
       // Register `Observable` observers for an array property.
-      this.observable.addObserver('bar.value', (...args) => {
+      this.observable.addObserver('bar.value', (...args: any[]) => {
         this.observableNotifications.set('bar.value', args);
       });
-      this.observable.addObserver('bar.value.0', (...args) => {
+      this.observable.addObserver('bar.value.0', (...args: any[]) => {
         this.observableNotifications.set('bar.value.0', args);
       });
-      this.observable.addObserver('bar.value.1', (...args) => {
+      this.observable.addObserver('bar.value.1', (...args: any[]) => {
         this.observableNotifications.set('bar.value.1', args);
       });
-      this.observable.addObserver('bar.value.length', (...args) => {
+      this.observable.addObserver('bar.value.length', (...args: any[]) => {
         this.observableNotifications.set('bar.value.length', args);
       });
       this.observable.addObserver(
@@ -352,7 +352,7 @@ suite('ObservablePolymerCompatibility', function() {
   });
 
   function assertNotifications(
-      polymerExpectation: any[], observableExpectation: any[],
+      polymerExpectation: unknown[], observableExpectation: unknown[],
       observerPath: string) {
     assertEquals(
         JSON.stringify(polymerExpectation),

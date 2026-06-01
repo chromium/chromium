@@ -8,7 +8,7 @@ import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Settings} from '../data/model.js';
 import {getInstance} from '../data/model.js';
 import type {PrintPreviewModelElement} from '../data/model.js';
-import type {ChangeCallback} from '../data/observable.js';
+import type {ObserverChangeCallback} from '../data/observable.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -45,7 +45,7 @@ export const SettingsMixin = <T extends Constructor<CrLitElement>>(
       this.observers_ = [];
     }
 
-    addSettingObserver(path: string, callback: ChangeCallback) {
+    addSettingObserver<T>(path: string, callback: ObserverChangeCallback<T>) {
       const id = getInstance().observable.addObserver(path, callback);
       this.observers_.push(id);
     }
@@ -73,7 +73,8 @@ export const SettingsMixin = <T extends Constructor<CrLitElement>>(
 };
 
 export interface SettingsMixinInterface {
-  addSettingObserver(path: string, callback: ChangeCallback): void;
+  addSettingObserver<T>(path: string, callback: ObserverChangeCallback<T>):
+      void;
 
   /**
    * @param settingName Name of the setting to get.

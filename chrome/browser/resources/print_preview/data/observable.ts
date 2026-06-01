@@ -27,8 +27,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-export type ChangeCallback =
-    (newValue: any, previousValue: any, path: string) => void;
+type ChangeCallback<T> = (newValue: T, previousValue: T, path: string) => void;
 
 export interface WildcardChangeRecord {
   path: string;
@@ -44,7 +43,7 @@ export type Indexable<T> = {
 };
 
 function buildProxy<T extends IndexableType>(
-    obj: T, callback: ChangeCallback, path: string[],
+    obj: T, callback: ChangeCallback<unknown>, path: string[],
     proxyCache: WeakMap<object, object>): T {
   function getPath(prop: string): string {
     return path.slice(1).concat(prop).join('.');
@@ -104,16 +103,25 @@ export function setValueAtPath(
   parent[pathParts.at(-1)!] = value;
 }
 
-interface ObserverEntry {
+export type ObserverChangeCallback<T> =
+    ChangeCallback<T>|WildcardChangeCallback;
+
+interface WildcardObserverEntry {
   id: number;
-  callback: ChangeCallback|WildcardChangeCallback;
-  isWildcard: boolean;
+  callback: WildcardChangeCallback;
+  isWildcard: true;
+}
+
+interface ObserverEntry<T> {
+  id: number;
+  callback: ChangeCallback<T>;
+  isWildcard: false;
 }
 
 interface ObserverNode {
   parent?: ObserverNode;
   key: string;
-  observers?: Set<ObserverEntry>;
+  observers?: Set<ObserverEntry<unknown>|WildcardObserverEntry>;
   children?: Map<string, ObserverNode>;
 }
 
@@ -191,7 +199,7 @@ class ObserverTree {
     visitNode(node, []);
   }
 
-  addObserver(path: string, callback: ChangeCallback): number {
+  addObserver<T>(path: string, callback: ObserverChangeCallback<T>): number {
     let effectivePath = path;
 
     // Observers ending with '.*' receive notifications for any change
@@ -208,7 +216,13 @@ class ObserverTree {
 
     // Add observer to the ObserverNode.
     const id = ++this.nextObserverId_;
-    node.observers.add({id, isWildcard, callback});
+    if (isWildcard) {
+      node.observers.add(
+          {id, isWildcard, callback: callback as WildcardChangeCallback});
+    } else {
+      node.observers.add(
+          {id, isWildcard, callback: callback as ChangeCallback<unknown>});
+    }
 
     // Add entry in `observers_` to be used in removeObserver.
     this.observers_.set(id, node);
@@ -281,8 +295,7 @@ export class Observable<T extends IndexableType> {
               // For wildcard observers above the changed node, report the
               // changed path and new values verbatim.
               if (isWildcard) {
-                (callback as
-                 WildcardChangeCallback)({path, value: newValue, base});
+                callback({path, value: newValue, base});
               }
             }
           }
@@ -321,7 +334,7 @@ export class Observable<T extends IndexableType> {
                 // observed path as 'path' and the relative new value as
                 // 'value' and 'base'. This is to maintain parity with Polymer,
                 // even though it is a bit odd.
-                (observer.callback as WildcardChangeCallback)({
+                observer.callback({
                   path: observedPath,
                   value: observerNewValue,
                   base: observerNewValue,
@@ -330,8 +343,7 @@ export class Observable<T extends IndexableType> {
                 // For wildcard observers at the changed node, report the
                 // changed path as 'path' and the new value verbatim as
                 // 'value'.
-                (observer.callback as WildcardChangeCallback)(
-                    {path, value: newValue, base: newValue});
+                observer.callback({path, value: newValue, base: newValue});
               }
               continue;
             }
@@ -345,7 +357,7 @@ export class Observable<T extends IndexableType> {
         });
   }
 
-  addObserver(path: string, callback: ChangeCallback): number {
+  addObserver<T>(path: string, callback: ObserverChangeCallback<T>): number {
     return this.observerTree_.addObserver(path, callback);
   }
 
