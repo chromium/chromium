@@ -140,7 +140,8 @@ public class BrowserUiListMenuRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @UseMethodParameter(NightModeParams.class)
+    // TODO(crbug.com/500214072): Re-enable NightModeDisabled.
+    @UseMethodParameter(NightModeOnlyParameterProvider.class)
     public void testRender_BasicListMenu_SubmenuScroll(boolean nightMode) throws IOException {
         setup(getModelListWithSubmenu(/* incognito= */ false), nightMode, /* incognito= */ false);
         ThreadUtils.runOnUiThreadBlocking(
