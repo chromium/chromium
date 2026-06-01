@@ -3,19 +3,21 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
-#include "chrome/browser/sync/test/integration/migration_waiter.h"
-#include "chrome/browser/sync/test/integration/migration_watcher.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 
@@ -69,6 +71,79 @@ MigrationList MakeList(syncer::DataType type1, syncer::DataType type2) {
   return MakeList(MakeSet(type1), MakeSet(type2));
 }
 
+class MigrationCompletionChecker : public SingleClientStatusChangeChecker {
+ public:
+  MigrationCompletionChecker(syncer::SyncServiceImpl* service,
+                             fake_server::FakeServer* fake_server,
+                             syncer::DataTypeSet expected_types)
+      : SingleClientStatusChangeChecker(service),
+        fake_server_(fake_server),
+        expected_types_(expected_types) {}
+
+  ~MigrationCompletionChecker() override = default;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for migration of "
+        << syncer::DataTypeSetToDebugString(expected_types_) << ". ";
+
+    if (service()->GetTransportState() !=
+        syncer::SyncService::TransportState::ACTIVE) {
+      *os << "Transport state is "
+          << static_cast<int>(service()->GetTransportState())
+          << " (waiting for ACTIVE).";
+      return false;
+    }
+
+    for (syncer::DataType type : expected_types_) {
+      if (!service()->GetActiveDataTypes().Has(type)) {
+        *os << syncer::DataTypeToDebugString(type) << " is not active.";
+        return false;
+      }
+
+      std::optional<int> client_version =
+          GetMigrationVersionFromProgressMarker(type);
+      if (!client_version) {
+        *os << "No valid progress marker for "
+            << syncer::DataTypeToDebugString(type) << ".";
+        return false;
+      }
+
+      const int server_version = fake_server_->GetMigrationVersion(type);
+
+      if (*client_version != server_version) {
+        *os << syncer::DataTypeToDebugString(type)
+            << " has client migration version " << *client_version
+            << " but server expects " << server_version << ".";
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+ private:
+  std::optional<int> GetMigrationVersionFromProgressMarker(
+      syncer::DataType type) {
+    const syncer::SyncCycleSnapshot& snap =
+        service()->GetLastCycleSnapshotForDebugging();
+    const syncer::ProgressMarkerMap& markers = snap.download_progress_markers();
+    auto it = markers.find(type);
+    if (it == markers.end()) {
+      return std::nullopt;
+    }
+    sync_pb::DataTypeProgressMarker marker_proto;
+    if (!marker_proto.ParseFromString(it->second)) {
+      return std::nullopt;
+    }
+    return fake_server::FakeServer::GetProgressMarkerMigrationVersion(
+        marker_proto);
+  }
+
+  const raw_ptr<fake_server::FakeServer> fake_server_;
+  const syncer::DataTypeSet expected_types_;
+};
+
 class MigrationTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
@@ -92,16 +167,6 @@ class MigrationTest
   }
 
   enum TriggerMethod { MODIFY_PREF, MODIFY_BOOKMARK, TRIGGER_REFRESH };
-
-  // Initialize all MigrationWatchers. This helps ensure that all migration
-  // events are captured, even if they were to occur before a test calls
-  // AwaitMigration for a specific profile.
-  void Initialize() {
-    for (int i = 0; i < num_clients(); ++i) {
-      migration_watchers_.push_back(
-          std::make_unique<MigrationWatcher>(GetClient(i)));
-    }
-  }
 
   syncer::DataTypeSet GetPreferredDataTypes() {
     // SyncServiceImpl must already have been created before we can call
@@ -185,8 +250,9 @@ class MigrationTest
   // types.
   void AwaitMigration(syncer::DataTypeSet migrate_types) {
     for (int i = 0; i < num_clients(); ++i) {
-      ASSERT_TRUE(
-          MigrationWaiter(migrate_types, migration_watchers_[i].get()).Wait());
+      ASSERT_TRUE(MigrationCompletionChecker(GetSyncService(i), GetFakeServer(),
+                                             migrate_types)
+                      .Wait());
     }
   }
 
@@ -194,11 +260,6 @@ class MigrationTest
   // trigger method.
   void RunMigrationTest(const MigrationList& migration_list,
                         TriggerMethod trigger_method) {
-    // Make sure migration hasn't been triggered prematurely.
-    for (int i = 0; i < num_clients(); ++i) {
-      ASSERT_TRUE(migration_watchers_[i]->GetMigratedTypes().empty());
-    }
-
     // Phase 1: Trigger the migrations on the server.
     for (const syncer::DataTypeSet& data_types : migration_list) {
       TriggerMigrationDoneError(data_types);
@@ -219,9 +280,6 @@ class MigrationTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  // Used to keep track of the migration progress for each sync client.
-  std::vector<std::unique_ptr<MigrationWatcher>> migration_watchers_;
 };
 
 class MigrationSingleClientTest : public MigrationTest {
@@ -237,7 +295,6 @@ class MigrationSingleClientTest : public MigrationTest {
   void RunSingleClientMigrationTest(const MigrationList& migration_list,
                                     TriggerMethod trigger_method) {
     ASSERT_TRUE(SetupSync());
-    Initialize();
     RunMigrationTest(migration_list, trigger_method);
   }
 };
@@ -352,7 +409,6 @@ class MigrationTwoClientTest : public MigrationTest {
   void RunTwoClientMigrationTest(const MigrationList& migration_list,
                                  TriggerMethod trigger_method) {
     ASSERT_TRUE(SetupSync());
-    Initialize();
 
     // Make sure pref sync works before running the migration test.
     VerifyPrefSync();

@@ -1865,12 +1865,6 @@ void SyncServiceImpl::HasUnsyncedItemsForTest(
   engine_->HasUnsyncedItemsForTest(std::move(cb));  // IN-TEST
 }
 
-BackendMigrator* SyncServiceImpl::GetBackendMigratorForTest() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_IS_TEST();
-  return migrator_.get();
-}
-
 TypeStatusMapForDebugging SyncServiceImpl::GetTypeStatusMapForDebugging()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

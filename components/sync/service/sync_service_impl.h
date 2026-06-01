@@ -264,8 +264,6 @@ class SyncServiceImpl : public SyncService,
   // server.
   void HasUnsyncedItemsForTest(base::OnceCallback<void(bool)> cb) const;
 
-  // Used by MigrationWatcher.  May return null.
-  BackendMigrator* GetBackendMigratorForTest();
 
   // Used by tests to inspect interaction with the access token fetcher.
   bool IsRetryingAccessTokenFetchForTest() const;

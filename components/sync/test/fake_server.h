@@ -277,6 +277,11 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
   void TriggerMigrationDoneError(syncer::DataTypeSet types);
 
+  int GetMigrationVersion(syncer::DataType type) const;
+
+  static int GetProgressMarkerMigrationVersion(
+      const sync_pb::DataTypeProgressMarker& progress_marker);
+
   // Add the user to the collaboration for the shared data types. No-op if the
   // user is already in this collaboration.
   void AddCollaboration(syncer::CollaborationId collaboration_id);

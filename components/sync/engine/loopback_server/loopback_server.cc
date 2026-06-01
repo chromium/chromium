@@ -406,6 +406,10 @@ void LoopbackServer::EnableStrongConsistencyWithConflictDetectionModel() {
   strong_consistency_model_enabled_ = true;
 }
 
+int LoopbackServer::GetMigrationVersionForTesting(DataType type) const {
+  return GetServerMigrationVersion(migration_versions_, type);
+}
+
 void LoopbackServer::AddNewKeystoreKeyForTesting() {
   keystore_keys_.push_back(GenerateNewKeystoreKey());
 }
@@ -940,6 +944,15 @@ bool LoopbackServer::LoadStateFromFile() {
   DVLOG(1) << "Loopback sync cannot read the persistent state file ("
            << persistent_file_ << ").";
   return false;
+}
+
+// static
+int LoopbackServer::GetMigrationVersionFromProgressTokenForTesting(  // IN-TEST
+    const std::string& token) {
+  if (token.empty()) {
+    return 0;
+  }
+  return ProgressMarkerToken::FromString(token).migration_version();
 }
 
 }  // namespace syncer

@@ -81,6 +81,11 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
     }
   }
 
+  int GetMigrationVersionForTesting(DataType type) const;
+
+  static int GetMigrationVersionFromProgressTokenForTesting(
+      const std::string& token);
+
   const std::vector<std::vector<uint8_t>>& GetKeystoreKeysForTesting() const {
     return keystore_keys_;
   }

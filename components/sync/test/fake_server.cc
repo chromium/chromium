@@ -845,6 +845,18 @@ void FakeServer::TriggerMigrationDoneError(syncer::DataTypeSet types) {
   loopback_server_->TriggerMigrationForTesting(types);
 }
 
+int FakeServer::GetMigrationVersion(syncer::DataType type) const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return loopback_server_->GetMigrationVersionForTesting(type);
+}
+
+// static
+int FakeServer::GetProgressMarkerMigrationVersion(
+    const sync_pb::DataTypeProgressMarker& progress_marker) {
+  return syncer::LoopbackServer::GetMigrationVersionFromProgressTokenForTesting(
+      progress_marker.token());
+}
+
 void FakeServer::AddCollaboration(syncer::CollaborationId collaboration_id) {
   collaborations_.insert(std::move(collaboration_id));
   // TODO(b/325917757): update collaboration data type.
