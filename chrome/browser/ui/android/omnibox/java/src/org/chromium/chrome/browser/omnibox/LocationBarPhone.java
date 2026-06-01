@@ -156,6 +156,10 @@ class LocationBarPhone extends LocationBarLayout {
     @Override
     public boolean performClick() {
         if (mIsCenteringApplied) {
+            // performClick() only triggers click listeners and doesn't request focus
+            // when called programmatically (bypassing onTouchEvent). We need to
+            // explicitly request focus to bring up the keyboard.
+            mUrlBar.requestFocus();
             return mUrlBar.performClick();
         }
         return super.performClick();
