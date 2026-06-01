@@ -548,30 +548,54 @@
   NSMutableArray<NSString*>* gaiaIDsToRemove = [NSMutableArray array];
   NSMutableArray<NSString*>* gaiaIDsToAdd = [NSMutableArray array];
   NSMutableArray<NSString*>* gaiaIDsToKeep = [NSMutableArray array];
-  for (id<SystemIdentity> secondaryIdentity : identitiesOnDevice) {
-    GaiaId gaiaID = secondaryIdentity.gaiaId;
-    if (secondaryIdentity == _primaryIdentityBeforeSignin) {
+
+  // Identifies identities to add and to keep.
+  for (id<SystemIdentity> identityOnDevice in identitiesOnDevice) {
+    GaiaId gaiaID = identityOnDevice.gaiaId;
+
+    // TODO(crbug.com/517249368): Use `equalTo:` when equality is defined as
+    // gaiaId equality.
+    if (identityOnDevice == _primaryIdentityBeforeSignin) {
       continue;
     }
-    BOOL mustAdd = YES;
-    for (id<SystemIdentity> displayedIdentity : _identities) {
+    BOOL alreadyDisplayed = NO;
+    for (NSUInteger i = 0; i < _identities.count; ++i) {
+      id<SystemIdentity> displayedIdentity = _identities[i];
       if (gaiaID == displayedIdentity.gaiaId) {
         [gaiaIDsToKeep addObject:gaiaID.ToNSString()];
-        mustAdd = NO;
+        alreadyDisplayed = YES;
+        // Update the identity object in case it has changed.
+        _identities[i] = identityOnDevice;
         break;
       }
     }
-    if (mustAdd) {
-      [_identities addObject:secondaryIdentity];
+    if (!alreadyDisplayed) {
+      [_identities addObject:identityOnDevice];
       [gaiaIDsToAdd addObject:gaiaID.ToNSString()];
     }
   }
 
+  // Identifies identities to remove.
   for (NSUInteger i = 0; i < _identities.count; ++i) {
     id<SystemIdentity> identity = _identities[i];
-    if (![identitiesOnDevice containsObject:identity] ||
-        identity == _primaryIdentityBeforeSignin) {
-      [gaiaIDsToRemove addObject:identity.gaiaId.ToNSString()];
+    GaiaId gaiaID = identity.gaiaId;
+    // TODO(crbug.com/517249368): Use `equalTo:` when equality is defined as
+    // gaiaId equality.
+    BOOL isStillOnDevice = NO;
+    for (id<SystemIdentity> identityOnDevice in identitiesOnDevice) {
+      if (gaiaID == identityOnDevice.gaiaId) {
+        isStillOnDevice = YES;
+        break;
+      }
+    }
+    // We must use Gaia ID for comparison here because `containsObject:` relies
+    // on `isEqual:`. For some `SystemIdentity` implementations, two objects
+    // representing the same account may not be `isEqual:` (for example if their
+    // internal state like refresh token validity differs).
+    // Using Gaia ID ensures that we only remove an identity if the account is
+    // truly gone from the device.
+    if (!isStillOnDevice || identity == _primaryIdentityBeforeSignin) {
+      [gaiaIDsToRemove addObject:gaiaID.ToNSString()];
       [_identities removeObjectAtIndex:i--];
       // There will be a new object at place `i`. So we must decrease `i`.
     }
