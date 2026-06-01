@@ -2729,12 +2729,24 @@ void SqlPersistentStore::Backend::EvictEntries(
   bool corruption_detected = false;
   bool index_mismatch_detected = false;
   size_t evicted_entry_count = 0;
-  // Entries in excluded_res_ids are excluded from candidates at the
-  // SelectEvictionCandidates stage, so pass an empty excluded_res_ids here.
+  // We can trust the entry sizes in `eviction_targets` if they were retrieved
+  // directly from the database, which happens when `index` is null or when a
+  // non-consolidated in-memory index is used (as it doesn't store size
+  // information). In those cases, the sizes are exact. However, the
+  // consolidated index stores approximate sizes (rounded up to 256-byte
+  // chunks). Strictly speaking, the first time `SelectEvictionCandidates` is
+  // called for a consolidated index, it retrieves exact sizes from the database
+  // to populate its metadata. However, for simplicity and robustness, we choose
+  // to always set `trust_target_size` to false when the consolidated index is
+  // enabled. This avoids accumulating rounding errors in
+  // `store_status_.total_size` by forcing `EvictEntriesHelper` to retrieve the
+  // exact size from the database during deletion.
+  const bool trust_target_size =
+      !index || !index->IsConsolidatedInMemoryIndexEnabled();
   auto error = EvictEntriesHelper(
       eviction_targets, /*excluded_res_ids=*/{}, is_idle_time_eviction,
       std::move(abort_flag), std::move(remaining_mandatory_size),
-      /*trust_target_size=*/true, corruption_detected, index_mismatch_detected,
+      trust_target_size, corruption_detected, index_mismatch_detected,
       evicted_entry_count, index);
 
   RecordTimeAndErrorResultHistogram(
@@ -2929,6 +2941,7 @@ Error SqlPersistentStore::Backend::UpdateStoreStatusAndCommitTransaction(
     SCOPED_CRASH_KEY_NUMBER("DiskCache", "actual_total_size",
                             actual_total_size);
     base::debug::DumpWithoutCrashing();
+    CHECK(!strict_corruption_check_enabled_);
     store_status_.entry_count = actual_entry_count;
     meta_table_.SetValue(kSqlBackendMetaTableKeyEntryCount,
                          store_status_.entry_count);

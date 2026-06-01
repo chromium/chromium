@@ -4400,6 +4400,52 @@ TEST_P(SqlPersistentStoreTest, StartEvictionReducesSizeToLowWatermark) {
             SqlPersistentStore::EvictionUrgency::kNeeded);
 }
 
+TEST_P(SqlPersistentStoreTest,
+       StartEvictionWithConsolidatedInMemoryIndexDoesNotCorruptSize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{"SqlDiskCacheSizeAndPriorityAwareEviction", "true"},
+         {"SqlDiskCacheConsolidatedInMemoryIndex", "true"}}},
+       {net::features::kSimpleCachePrioritizedCaching, {}}},
+      {});
+
+  const int64_t kMaxBytes = 10000;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+  store_->EnableStrictCorruptionCheckForTesting();
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  // Using a payload size that is slightly over a 256-byte boundary. The
+  // consolidated in-memory index rounds payload sizes up to 256-byte chunks.
+  // 257 will be rounded up to 512 in the index.
+  const int kPayloadSize = 257;
+
+  const base::Time kBaseTime = base::Time::Now();
+  std::vector<CacheEntryKey> keys;
+  // Repeatedly add entries and trigger eviction. This will cause the rounding
+  // errors.
+  for (int i = 0; i < 40; ++i) {
+    const CacheEntryKey key(base::StringPrintf("key%d", i));
+    keys.push_back(key);
+    auto res_id = CreateEntryAndGetResId(key);
+    FillDataInRange(key, res_id, 0, 0, kPayloadSize, 'a');
+    task_environment_.AdvanceClock(base::Minutes(1));
+    auto error = StartEviction({}, /*is_idle_time_eviction=*/false);
+    EXPECT_EQ(error, SqlPersistentStore::Error::kOk);
+  }
+
+  // Ensure that the tracked total size has not become negative.
+  EXPECT_GE(GetSizeOfAllEntries(), 0);
+
+  // Delete all remaining entries. If the total size was inconsistent (e.g. too
+  // small due to over-decrementing during eviction), this will likely cause
+  // the total size to become negative, triggering a corruption detection.
+  ASSERT_EQ(DeleteLiveEntriesBetween(kBaseTime, base::Time::Now(), {}),
+            SqlPersistentStore::Error::kOk);
+  EXPECT_EQ(GetSizeOfAllEntries(), 0);
+}
+
 TEST_P(SqlPersistentStoreTest, StartEvictionExcludesGivenKeys) {
   const int64_t kMaxBytes = 10000;
   const int64_t kHighWatermark =
