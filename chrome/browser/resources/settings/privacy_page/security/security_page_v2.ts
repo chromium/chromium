@@ -79,6 +79,7 @@ export interface SettingsSecurityPageV2Element {
     httpsFirstModeEnabledBalanced: ControlledRadioButtonElement,
     httpsFirstModeEnabledStrict: ControlledRadioButtonElement,
     httpsFirstModeRadioGroup: SettingsRadioGroupElement,
+    httpsFirstModeRow: SecurityPageFeatureRowElement,
     httpsFirstModeToggle: SettingsToggleButtonElement,
     javascriptGuardrailsRow: SecurityPageFeatureRowElement,
     manageSiteExceptionsButton: CrButtonElement,
@@ -194,6 +195,18 @@ export class SettingsSecurityPageV2Element extends
         }),
       },
 
+      httpsFirstModeStateTextMap_: {
+        type: Object,
+        value: () => ({
+          [HttpsFirstModeSetting.ENABLED_FULL]:
+              loadTimeData.getString('securityFeatureRowStateEnhancedStrict'),
+          [HttpsFirstModeSetting.ENABLED_BALANCED]:
+              loadTimeData.getString('securityFeatureRowStateEnhanced'),
+          [HttpsFirstModeSetting.DISABLED]:
+              loadTimeData.getString('securityFeatureRowStateStandard'),
+        }),
+      },
+
       enableSecurityKeysSubpage_: {
         type: Boolean,
         readOnly: true,
@@ -233,6 +246,12 @@ export class SettingsSecurityPageV2Element extends
         value: false,
       },
 
+      showNewBadge_: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
+
       currentSafeBrowsingSetting_: SafeBrowsingSetting,
     };
   }
@@ -246,7 +265,8 @@ export class SettingsSecurityPageV2Element extends
           'prefs.dns_over_https.mode.*, ' +
           'prefs.dns_over_https.templates.*, ' +
           'prefs.dns_over_https.automatic_mode_fallback_to_doh.*,' +
-          'prefs.generated.javascript_optimizer.*),',
+          'prefs.generated.javascript_optimizer.*,' +
+          'prefs.generated.https_first_mode_enabled.*),',
       'updateRowsState_(' +
           'prefs.generated.https_first_mode_enabled.*,' +
           'prefs.generated.safe_browsing.*,' +
@@ -259,6 +279,7 @@ export class SettingsSecurityPageV2Element extends
   declare private enableBundledSecuritySettingsSecureDnsV2_: boolean;
   declare private enableSecurityKeysSubpage_: boolean;
   declare private httpsFirstModeUncheckedValues_: HttpsFirstModeSetting[];
+  declare private httpsFirstModeStateTextMap_: Object;
   declare private isResettingToDefaults_: boolean;
   declare private isResetStandardBundleToDefaultsButtonVisible_: boolean;
   declare private isResetEnhancedBundleToDefaultsButtonVisible_: boolean;
@@ -272,6 +293,7 @@ export class SettingsSecurityPageV2Element extends
   declare private isSecureDnsManagedByProxy_: boolean;
   declare private shouldHideBundles_: boolean;
   declare private showDisableSafebrowsingDialog_: boolean;
+  declare private showNewBadge_: boolean;
 
   private lastFocusTime_: number|undefined;
   private totalTimeInFocus_: number = 0;
@@ -328,7 +350,29 @@ export class SettingsSecurityPageV2Element extends
     this.interactions_.clear();
     this.totalTimeInFocus_ = 0;
     this.lastFocusTime_ = this.hatsBrowserProxy_.now();
+
+    const queryParams = Router.getInstance().getQueryParameters();
+    const highlight = queryParams.get('highlight');
+    if (highlight === 'secureConnections') {
+      const row = this.shadowRoot!.querySelector('#httpsFirstModeRow');
+      if (row) {
+        row.classList.add('highlight');
+        row.scrollIntoView({behavior: 'smooth', block: 'center'});
+      }
+    }
     CrSettingsPrefs.initialized.then(() => {
+      // Capture the initial value of HFM bundle toast queued preference and set
+      // the local showNewBadge_ property.
+      const toastQueuedPref =
+          this.getPref('https_first_mode_bundle_toast_queued');
+
+      const isNew = toastQueuedPref ? !toastQueuedPref.value : true;
+      this.showNewBadge_ = isNew;
+
+      // Immediately mark the toast/badge as queued/shown so it is dismissed on
+      // subsequent visits.
+      this.setPrefValue('https_first_mode_bundle_toast_queued', true);
+
       this.safeBrowsingStateOnOpen_ =
           this.getPref<SafeBrowsingSetting>('generated.safe_browsing').value;
       this.currentSafeBrowsingSetting_ =
@@ -405,6 +449,15 @@ export class SettingsSecurityPageV2Element extends
           SecurityPageV2Interaction.SAFE_BROWSING_ROW_EXPANDED);
       this.metricsBrowserProxy_.recordAction(
           'SafeBrowsing.Settings.SafeBrowsingRowExpanded');
+    }
+  }
+
+  private onHttpsFirstModeRowClick_(e: CustomEvent<{value: boolean}>) {
+    const isExpanded = e.detail.value;
+    if (isExpanded) {
+      this.metricsBrowserProxy_.recordAction(
+          'SafeBrowsing.Settings.HttpsFirstModeRowExpanded');
+      this.setPrefValue('https_first_mode_bundle_toast_queued', true);
     }
   }
 
@@ -603,6 +656,9 @@ export class SettingsSecurityPageV2Element extends
     this.setPrefValue(
         'generated.javascript_optimizer',
         this.getDefaultJsGuardrailsValue_(bundleSetting));
+    this.setPrefValue(
+        'generated.https_first_mode_enabled',
+        this.getDefaultHttpsFirstModeValue_(bundleSetting));
     if (this.enableBundledSecuritySettingsSecureDnsV2_) {
       this.setPrefValue(
           'dns_over_https.mode', this.getDefaultSecureDnsModeValue_());
@@ -637,6 +693,13 @@ export class SettingsSecurityPageV2Element extends
         (bundleSetting === SecuritySettingsBundleSetting.ENHANCED) ?
             'securityEnhancedBundleJavascriptGuardrailsDefault' :
             'securityStandardBundleJavascriptGuardrailsDefault');
+  }
+
+  private getDefaultHttpsFirstModeValue_(
+      bundleSetting: SecuritySettingsBundleSetting): HttpsFirstModeSetting {
+    return (bundleSetting === SecuritySettingsBundleSetting.ENHANCED) ?
+        HttpsFirstModeSetting.ENABLED_BALANCED :
+        HttpsFirstModeSetting.DISABLED;
   }
 
   private getDefaultSecureDnsModeValue_() {
@@ -695,6 +758,10 @@ export class SettingsSecurityPageV2Element extends
       {
         prefKey: 'generated.javascript_optimizer',
         defaultValue: this.getDefaultJsGuardrailsValue_(bundleSetting),
+      },
+      {
+        prefKey: 'generated.https_first_mode_enabled',
+        defaultValue: this.getDefaultHttpsFirstModeValue_(bundleSetting),
       },
     ];
     // LINT.ThenChange(//chrome/browser/safe_browsing/safe_browsing_service.cc,//chrome/browser/safe_browsing/metrics/bundled_settings_metrics_provider.cc)

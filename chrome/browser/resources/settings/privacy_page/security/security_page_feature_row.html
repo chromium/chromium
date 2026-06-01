@@ -27,6 +27,12 @@
     padding: 12px 0;
   }
 
+  #labelContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   #icon cr-icon {
     --iron-icon-fill-color: var(--google-red-600);
     flex-shrink: 0;
@@ -64,6 +70,11 @@
     width: auto;
   }
 
+  new-badge {
+    --color-badge-background: var(--google-blue-600);
+    color: white;
+  }
+
   ::slotted(*) {
     padding: 0 36px;
   }
@@ -74,7 +85,12 @@
       <cr-icon slot="icon" icon="[[icon]]"></cr-icon>
     </span>
     <div class="flex" id="labelWrapper">
-      [[label]]
+      <div id="labelContainer">
+        [[label]]
+        <template is="dom-if" if="[[showNewBadge]]">
+          <new-badge></new-badge>
+        </template>
+      </div>
       <div class="cr-secondary-text">[[subLabel]]</div>
     </div>
     <template is="dom-if" if="[[!expanded]]">

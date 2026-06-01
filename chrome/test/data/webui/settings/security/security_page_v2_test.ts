@@ -3,22 +3,22 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrExpandButtonElement, SettingsSecureDnsV2Element, SettingsSecurityPageV2Element, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
-import {HttpsFirstModeSetting, JavascriptOptimizerSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import type {ControlledRadioButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, SecurityPageBrowserProxyImpl, Router, routes, resetRouterForTesting, SecureDnsMode, SecureDnsUiManagementMode, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import { flush } from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type { CrExpandButtonElement, SettingsSecureDnsV2Element, SettingsSecurityPageV2Element, SettingsSimpleConfirmationDialogElement } from 'chrome://settings/lazy_load.js';
+import { HttpsFirstModeSetting, JavascriptOptimizerSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting } from 'chrome://settings/lazy_load.js';
+import type { SettingsPrefsElement } from 'chrome://settings/settings.js';
+import type { ControlledRadioButtonElement, SettingsToggleButtonElement } from 'chrome://settings/settings.js';
+import { CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, SecurityPageBrowserProxyImpl, Router, routes, resetRouterForTesting, SecureDnsMode, SecureDnsUiManagementMode, SecurityPageV2Interaction } from 'chrome://settings/settings.js';
+import { assertDeepEquals, assertEquals, assertFalse, assertTrue } from 'chrome://webui-test/chai_assert.js';
+import { flushTasks } from 'chrome://webui-test/polymer_test_util.js';
+import { webUIListenerCallback } from 'chrome://resources/js/cr.js';
+import { eventToPromise, isChildVisible, isVisible } from 'chrome://webui-test/test_util.js';
 
-import {TestMetricsBrowserProxy} from '../test_metrics_browser_proxy.js';
-import {TestHatsBrowserProxy} from '../test_hats_browser_proxy.js';
-import {TestSecurityPageBrowserProxy} from '../test_security_page_browser_proxy.js';
+import { TestMetricsBrowserProxy } from '../test_metrics_browser_proxy.js';
+import { TestHatsBrowserProxy } from '../test_hats_browser_proxy.js';
+import { TestSecurityPageBrowserProxy } from '../test_security_page_browser_proxy.js';
 
-import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+import { TestOpenWindowProxy } from 'chrome://webui-test/test_open_window_proxy.js';
 
 // clang-format on
 
@@ -57,6 +57,17 @@ suite('Main', function() {
       enableSecurityKeysSubpage: true,
       enableBundledSecuritySettingsSecureDnsV2: false,
       enableBlockV8OptimizerOnUnfamiliarSites: true,
+      // Since HTTPS First Mode is now dynamically bundled inside the security
+      // cards, simulating standard vs enhanced card clicks dynamically queries
+      // these default loadTimeData overrides to fetch default HFM settings. We
+      // override them here so that simulated card click tests do not crash on
+      // undefined read.
+      securityStandardBundleSafeBrowsingDefault: SafeBrowsingSetting.STANDARD,
+      securityEnhancedBundleSafeBrowsingDefault: SafeBrowsingSetting.ENHANCED,
+      securityStandardBundleJavascriptGuardrailsDefault:
+          JavascriptOptimizerSetting.ALLOWED,
+      securityEnhancedBundleJavascriptGuardrailsDefault:
+          JavascriptOptimizerSetting.BLOCKED_FOR_UNFAMILIAR_SITES,
     });
 
     settingsPrefs = document.createElement('settings-prefs');
@@ -85,6 +96,12 @@ suite('Main', function() {
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
     page.setPrefValue(
         'generated.javascript_optimizer', JavascriptOptimizerSetting.ALLOWED);
+    page.setPrefValue(
+        'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
+    page.setPrefValue('https_first_mode_bundle_toast_queued', true);
+    page.setPrefValue('dns_over_https.mode', 'automatic');
+    page.setPrefValue('dns_over_https.templates', '');
+    page.setPrefValue('dns_over_https.automatic_mode_fallback_to_doh', false);
     return flushTasks();
   }
 
@@ -316,15 +333,26 @@ suite('Main', function() {
         'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
     await flushTasks();
 
+    // Expand the row first so that slotted child elements (radio buttons) are
+    // rendered.
+    page.$.httpsFirstModeRow.$.expandButton.click();
+    await flushTasks();
+
     // The toggle is set to OFF because HTTPS First Mode is DISABLED.
-    const toggle = page.$.httpsFirstModeToggle;
+    const toggle =
+        page.$.httpsFirstModeRow.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>('#toggleButton')!;
     assertFalse(toggle.checked, 'Toggle should be set to off');
 
     // The radio buttons are disabled because HTTPS First Mode is DISABLED.
-    const balancedButton = page.$.httpsFirstModeEnabledBalanced;
+    const balancedButton =
+        page.shadowRoot!.querySelector<ControlledRadioButtonElement>(
+            '#httpsFirstModeEnabledBalanced')!;
     assertTrue(
         balancedButton.disabled, 'Balanced radio button should be disabled');
-    const strictButton = page.$.httpsFirstModeEnabledStrict;
+    const strictButton =
+        page.shadowRoot!.querySelector<ControlledRadioButtonElement>(
+            '#httpsFirstModeEnabledStrict')!;
     assertTrue(strictButton.disabled, 'Strict radio button should be disabled');
 
     toggle.click();
@@ -339,10 +367,18 @@ suite('Main', function() {
   test('HttpsFirstModeDefaultBalancedWhenToggledOn', async function() {
     page.setPrefValue(
         'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
+    page.setPrefValue('https_first_mode_bundle_toast_queued', false);
+    await flushTasks();
+
+    // Expand HFM row so that the toggle button inside shadowRoot is
+    // instantiated/rendered.
+    page.$.httpsFirstModeRow.$.expandButton.click();
     await flushTasks();
 
     // The toggle is set to OFF because HTTPS First Mode is DISABLED.
-    const toggle = page.$.httpsFirstModeToggle;
+    const toggle =
+        page.$.httpsFirstModeRow.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>('#toggleButton')!;
     assertFalse(toggle.checked, 'Toggle should be OFF');
 
     toggle.click();
@@ -595,8 +631,12 @@ suite('Main', function() {
 
     // Confirm that SB is Off after dialog confirmation.
     await clickConfirmOnDisableSafebrowsingDialog(page);
-    assertFalse(page.$.standardProtectionButton.checked);
-    assertFalse(page.$.enhancedProtectionButton.checked);
+    assertFalse(page.$.safeBrowsingRow
+                    .querySelector<ControlledRadioButtonElement>(
+                        '#standardProtectionButton')!.checked);
+    assertFalse(page.$.safeBrowsingRow
+                    .querySelector<ControlledRadioButtonElement>(
+                        '#enhancedProtectionButton')!.checked);
 
     assertEquals(
         SafeBrowsingSetting.DISABLED,
@@ -613,9 +653,13 @@ suite('Main', function() {
         page.getPref('generated.safe_browsing').value);
 
     // Simulate clicks on safe-browsing-radio-group.
-    page.$.enhancedProtectionButton.click();
+    page.$.safeBrowsingRow
+        .querySelector<ControlledRadioButtonElement>(
+            '#enhancedProtectionButton')!.click();
     await flushTasks();
-    page.$.standardProtectionButton.click();
+    page.$.safeBrowsingRow
+        .querySelector<ControlledRadioButtonElement>(
+            '#standardProtectionButton')!.click();
     await flushTasks();
 
     assertEquals(
@@ -631,7 +675,9 @@ suite('Main', function() {
 
     await clickCancelOnDisableSafebrowsingDialog(page);
 
-    assertTrue(page.$.standardProtectionButton.checked);
+    assertTrue(page.$.safeBrowsingRow
+                   .querySelector<ControlledRadioButtonElement>(
+                       '#standardProtectionButton')!.checked);
     assertEquals(
         SafeBrowsingSetting.STANDARD,
         page.getPref('generated.safe_browsing').value);
@@ -648,7 +694,9 @@ suite('Main', function() {
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
     await flushTasks();
 
-    page.$.safeBrowsingRadioGroup.dispatchEvent(
+    const radioGroup = page.$.safeBrowsingRow.querySelector<HTMLElement>(
+        '#safeBrowsingRadioGroup')!;
+    radioGroup.dispatchEvent(
         new CustomEvent('change', {bubbles: true, composed: true}));
     await flushTasks();
     assertEquals(
@@ -665,7 +713,9 @@ suite('Main', function() {
     // Make sure enhanced is still selected after cancelling out of the dialog.
     await clickCancelOnDisableSafebrowsingDialog(page);
 
-    assertTrue(page.$.enhancedProtectionButton.checked);
+    assertTrue(page.$.safeBrowsingRow
+                   .querySelector<ControlledRadioButtonElement>(
+                       '#enhancedProtectionButton')!.checked);
     assertEquals(
         SafeBrowsingSetting.ENHANCED,
         page.getPref('generated.safe_browsing').value);
@@ -711,6 +761,12 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableBundledSecuritySettingsSecureDnsV2: true,
+      securityStandardBundleSafeBrowsingDefault: SafeBrowsingSetting.STANDARD,
+      securityEnhancedBundleSafeBrowsingDefault: SafeBrowsingSetting.ENHANCED,
+      securityStandardBundleJavascriptGuardrailsDefault:
+          JavascriptOptimizerSetting.ALLOWED,
+      securityEnhancedBundleJavascriptGuardrailsDefault:
+          JavascriptOptimizerSetting.BLOCKED_FOR_UNFAMILIAR_SITES,
     });
   });
 
@@ -735,6 +791,12 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     page.setPrefValue(
         'generated.https_first_mode_enabled',
         HttpsFirstModeSetting.ENABLED_BALANCED);
+    page.setPrefValue(
+        'generated.javascript_optimizer', JavascriptOptimizerSetting.ALLOWED);
+    page.setPrefValue('https_first_mode_bundle_toast_queued', true);
+    page.setPrefValue('dns_over_https.mode', 'automatic');
+    page.setPrefValue('dns_over_https.templates', '');
+    page.setPrefValue('dns_over_https.automatic_mode_fallback_to_doh', false);
 
     // Navigate to the security route to trigger the setup logic in the
     // component, which sets up the event listeners and initial state.
@@ -814,15 +876,17 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     expandButton.click();
     await flushTasks();
 
+    const safeBrowsingRadioGroup =
+        page.$.safeBrowsingRow.querySelector<HTMLElement>(
+            '#safeBrowsingRadioGroup')!;
     assertTrue(
-        isVisible(page.$.safeBrowsingRadioGroup),
+        isVisible(safeBrowsingRadioGroup),
         'The radio group should be visible after expanding the row.');
 
     // Proceed to click the Standard button.
     const standardSafeBrowsingRadioButton =
-        page.$.safeBrowsingRadioGroup
-            .querySelector<ControlledRadioButtonElement>(
-                'controlled-radio-button');
+        safeBrowsingRadioGroup.querySelector<ControlledRadioButtonElement>(
+            'controlled-radio-button');
     assertTrue(
         !!standardSafeBrowsingRadioButton,
         'Standard Safe Browsing radio button element should exist.');
@@ -866,9 +930,12 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
     await flushTasks();
 
     // Click radio buttons.
-    const radioButtons = page.$.safeBrowsingRadioGroup
-                             .querySelectorAll<ControlledRadioButtonElement>(
-                                 'controlled-radio-button');
+    const safeBrowsingRadioGroup =
+        page.$.safeBrowsingRow.querySelector<HTMLElement>(
+            '#safeBrowsingRadioGroup')!;
+    const radioButtons =
+        safeBrowsingRadioGroup.querySelectorAll<ControlledRadioButtonElement>(
+            'controlled-radio-button');
     // Index 0 is Standard, Index 1 is Enhanced.
     radioButtons[0]!.click();
     await flushTasks();
@@ -951,16 +1018,28 @@ suite('SecurityPageV2HappinessTrackingSurveys', function() {
         'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
     await flushTasks();
 
+    // Expand HFM row first so that its slotted collapse content is
+    // visible/rendered.
+    page.$.httpsFirstModeRow.$.expandButton.click();
+    await flushTasks();
+
     // Set the HTTPS-First Mode toggle to ON (which also enables the radio
     // buttons).
-    page.$.httpsFirstModeToggle.click();
+    const toggleButton =
+        page.$.httpsFirstModeRow.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>('#toggleButton')!;
+    toggleButton.click();
     await flushTasks();
 
     // Click each of the HTTPS-First Mode radio buttons. Start with Strict since
     // switching the toggle ON selects Balanced by default.
-    page.$.httpsFirstModeEnabledStrict.click();
+    page.shadowRoot!
+        .querySelector<ControlledRadioButtonElement>(
+            '#httpsFirstModeEnabledStrict')!.click();
     await flushTasks();
-    page.$.httpsFirstModeEnabledBalanced.click();
+    page.shadowRoot!
+        .querySelector<ControlledRadioButtonElement>(
+            '#httpsFirstModeEnabledBalanced')!.click();
     await flushTasks();
 
     // Fire the beforeunload event to simulate closing the page.
@@ -1290,6 +1369,8 @@ suite('SecureDnsBundling', function() {
     page.setPrefValue('dns_over_https.mode', SecureDnsMode.AUTOMATIC);
     page.setPrefValue('dns_over_https.templates', '');
     page.setPrefValue('dns_over_https.automatic_mode_fallback_to_doh', false);
+    page.setPrefValue(
+        'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
 
     return flushTasks();
   }

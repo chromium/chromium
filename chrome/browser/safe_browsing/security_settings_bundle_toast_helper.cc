@@ -41,8 +41,9 @@ SecuritySettingsBundleToastHelper::GetForProfile(Profile* profile) {
 }
 
 void SecuritySettingsBundleToastHelper::TriggerIfNeeded() {
-  if (profile_->GetPrefs()->GetInteger(
-          prefs::kSecuritySettingsBundleMigrationToastState) !=
+  int toast_state = profile_->GetPrefs()->GetInteger(
+      prefs::kSecuritySettingsBundleMigrationToastState);
+  if (toast_state !=
       static_cast<int>(SecuritySettingsBundleToastState::kPending)) {
     return;
   }

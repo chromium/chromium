@@ -48,6 +48,7 @@
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/features.h"
@@ -219,6 +220,7 @@ void MigrateUserToEnhancedSecurityBundleIfNeeded(
   // Do not perform migration if the any bundled settings are managed by a
   // policy.
   PrefService* prefs = profile->GetPrefs();
+
   if (IsSafeBrowsingPolicyManaged(*prefs) ||
       IsJavascriptOptimizerPolicyManaged(*prefs)) {
     return;
@@ -248,11 +250,6 @@ void MigrateUserToEnhancedSecurityBundleIfNeeded(
   if (GetSafeBrowsingState(*prefs) != SafeBrowsingState::ENHANCED_PROTECTION) {
     return;
   }
-
-  // LINT.IfChange
-  // TODO(http://crbug.com/464331450): Add migration code once https-first
-  // feature row is added.
-  // LINT.ThenChange(//chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts,//chrome/browser/safe_browsing/metrics/bundled_settings_metrics_provider.cc)
 
   SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::ENHANCED);
 

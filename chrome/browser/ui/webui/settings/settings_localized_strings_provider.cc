@@ -2329,6 +2329,7 @@ bool ShouldLinkSecureDnsOsSettings() {
 void AddPrivacyStrings(content::WebUIDataSource* html_source,
                        Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"newBadgeLabel", IDS_NEW_BADGE},
       {"privacyPageTitle", IDS_SETTINGS_PRIVACY},
       {"privacyPageMore", IDS_SETTINGS_PRIVACY_MORE},
       {"doNotTrack", IDS_SETTINGS_ENABLE_DO_NOT_TRACK},

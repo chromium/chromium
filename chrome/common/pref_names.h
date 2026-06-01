@@ -2317,7 +2317,6 @@ inline constexpr char kReportingUsers[] = "reporting_users";
 inline constexpr char kArcAppInstallEventLoggingEnabled[] =
     "arc.app_install_event_logging_enabled";
 
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // String which specifies where to store the disk cache.
@@ -2900,7 +2899,6 @@ inline constexpr char kCaretBrowsingEnabled[] =
 // is toggled silently by the keyboard shortcut.
 inline constexpr char kShowCaretBrowsingDialog[] =
     "settings.a11y.caretbrowsing.show_dialog";
-
 
 #if BUILDFLAG(IS_ANDROID)
 // Boolean pref controlling whether immersive AR sessions are enabled

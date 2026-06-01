@@ -185,6 +185,25 @@
   #javascriptGuardrailsRadioGroup {
     padding: 0;
   }
+
+  #httpsFirstModeRow.highlight {
+    animation: pulse-highlight 2s ease-in-out;
+  }
+
+  @keyframes pulse-highlight {
+    0% { background-color: transparent; }
+    25% { background-color: var(--cr-hover-background-color); }
+    50% { background-color: transparent; }
+    75% { background-color: var(--cr-hover-background-color); }
+    100% { background-color: transparent; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :host #httpsFirstModeRow.highlight {
+      animation: none;
+      background-color: var(--cr-hover-background-color);
+    }
+  }
 </style>
 <settings-subpage page-title="$i18n{securityPageTitle}"
     learn-more-url="$i18n{safeBrowsingHelpCenterURL}"
@@ -439,42 +458,45 @@
         </div>
       </div>
     </security-page-feature-row>
+    <security-page-feature-row id="httpsFirstModeRow"
+        on-expanded-change="onHttpsFirstModeRowClick_"
+        on-toggle-button-change="onHttpsFirstModeToggleChange_"
+        pref="{{prefs.generated.https_first_mode_enabled}}"
+        label="$i18n{securityHttpsFirstModeToggleLabel}"
+        sub-label="$i18n{httpsFirstModeSectionDescription}" class="box"
+        numeric-unchecked-values="[[httpsFirstModeUncheckedValues_]]"
+        numeric-checked-value="[[httpsFirstModeSettingEnum_.ENABLED_BALANCED]]"
+        state-text-map="[[httpsFirstModeStateTextMap_]]"
+        show-new-badge="[[showNewBadge_]]">
+      <div slot="collapse">
+        <settings-radio-group id="httpsFirstModeRadioGroup"
+            class="settings-radio-group-feature-row"
+            pref="{{prefs.generated.https_first_mode_enabled}}"
+            selectable-elements="controlled-radio-button"
+            on-change="onHttpsFirstModeRadioGroupChange_">
+          <controlled-radio-button id="httpsFirstModeEnabledBalanced"
+              name="[[httpsFirstModeSettingEnum_.ENABLED_BALANCED]]"
+              pref="[[prefs.generated.https_first_mode_enabled]]"
+              label="$i18n{securityHttpsFirstModeBalancedLabel}"
+              disabled="[[!isHttpsFirstModeEnabled_]]">
+            <div class="settings-radio-button-subtitle">
+              $i18n{securityHttpsFirstModeBalancedSublabel}
+            </div>
+          </controlled-radio-button>
+          <controlled-radio-button id="httpsFirstModeEnabledStrict"
+              name="[[httpsFirstModeSettingEnum_.ENABLED_FULL]]"
+              pref="[[prefs.generated.https_first_mode_enabled]]"
+              label="$i18n{securityHttpsFirstModeStrictLabel}"
+              disabled="[[!isHttpsFirstModeEnabled_]]">
+            <div class="settings-radio-button-subtitle">
+              $i18n{securityHttpsFirstModeStrictSublabel}
+            </div>
+          </controlled-radio-button>
+        </settings-radio-group>
+      </div>
+    </security-page-feature-row>
   </settings-section>
   <settings-section page-title="$i18n{securityAccountAndNetworkSectionTitle}">
-    <div id="httpsFirstModeSection">
-      <settings-toggle-button id="httpsFirstModeToggle" class="cr-row first"
-          pref="{{prefs.generated.https_first_mode_enabled}}"
-          label="$i18n{securityHttpsFirstModeToggleLabel}"
-          sub-label="$i18n{securityHttpsFirstModeToggleSublabel}"
-          numeric-unchecked-values="[[httpsFirstModeUncheckedValues_]]"
-          numeric-checked-value=
-              "[[httpsFirstModeSettingEnum_.ENABLED_BALANCED]]"
-          on-change="onHttpsFirstModeToggleChange_">
-      </settings-toggle-button>
-      <settings-radio-group id="httpsFirstModeRadioGroup"
-          pref="{{prefs.generated.https_first_mode_enabled}}"
-          selectable-elements="controlled-radio-button"
-          on-change="onHttpsFirstModeRadioGroupChange_">
-        <controlled-radio-button id="httpsFirstModeEnabledBalanced"
-            name="[[httpsFirstModeSettingEnum_.ENABLED_BALANCED]]"
-            pref="[[prefs.generated.https_first_mode_enabled]]"
-            label="$i18n{securityHttpsFirstModeBalancedLabel}"
-            disabled="[[!isHttpsFirstModeEnabled_]]">
-          <div class="cr-secondary-text">
-            $i18n{securityHttpsFirstModeBalancedSublabel}
-          </div>
-        </controlled-radio-button>
-        <controlled-radio-button id="httpsFirstModeEnabledStrict"
-            name="[[httpsFirstModeSettingEnum_.ENABLED_FULL]]"
-            pref="[[prefs.generated.https_first_mode_enabled]]"
-            label="$i18n{securityHttpsFirstModeStrictLabel}"
-            disabled="[[!isHttpsFirstModeEnabled_]]">
-          <div class="cr-secondary-text">
-            $i18n{securityHttpsFirstModeStrictSublabel}
-          </div>
-        </controlled-radio-button>
-      </settings-radio-group>
-    </div>
     <settings-toggle-button id="passwordsLeakToggle"
         pref="{{prefs.generated.password_leak_detection}}"
         label="$i18n{securityPasswordsLeakDetectionTitle}"
