@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/multi_draw_manager.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -77,92 +78,120 @@ bool MultiDrawManager::End(ResultData* result) {
 }
 
 bool MultiDrawManager::MultiDrawArrays(GLenum mode,
-                                       const GLint* firsts,
-                                       const GLsizei* counts,
-                                       GLsizei drawcount) {
+                                       base::span<const GLint> firsts,
+                                       base::span<const GLsizei> counts) {
+  CHECK(firsts.size() == counts.size());
+  GLsizei drawcount;
+  if (!base::CheckedNumeric<GLsizei>(firsts.size()).AssignIfValid(&drawcount)) {
+    return false;
+  }
   if (!EnsureDrawArraysFunction(DrawFunction::DrawArrays, mode, drawcount)) {
     return false;
   }
-  CopyArraysHelper(drawcount, firsts, counts, nullptr, nullptr, nullptr,
-                   nullptr);
+  CopyArraysHelper(drawcount, firsts, counts, {}, {}, {}, {});
   return true;
 }
 
-bool MultiDrawManager::MultiDrawArraysInstanced(GLenum mode,
-                                                const GLint* firsts,
-                                                const GLsizei* counts,
-                                                const GLsizei* instance_counts,
-                                                GLsizei drawcount) {
+bool MultiDrawManager::MultiDrawArraysInstanced(
+    GLenum mode,
+    base::span<const GLint> firsts,
+    base::span<const GLsizei> counts,
+    base::span<const GLsizei> instance_counts) {
+  CHECK(firsts.size() == counts.size());
+  CHECK(firsts.size() == instance_counts.size());
+  GLsizei drawcount;
+  if (!base::CheckedNumeric<GLsizei>(firsts.size()).AssignIfValid(&drawcount)) {
+    return false;
+  }
   if (!EnsureDrawArraysFunction(DrawFunction::DrawArraysInstanced, mode,
                                 drawcount)) {
     return false;
   }
-  CopyArraysHelper(drawcount, firsts, counts, nullptr, instance_counts, nullptr,
-                   nullptr);
+  CopyArraysHelper(drawcount, firsts, counts, {}, instance_counts, {}, {});
   return true;
 }
 
 bool MultiDrawManager::MultiDrawArraysInstancedBaseInstance(
     GLenum mode,
-    const GLint* firsts,
-    const GLsizei* counts,
-    const GLsizei* instance_counts,
-    const GLuint* baseinstances,
-    GLsizei drawcount) {
+    base::span<const GLint> firsts,
+    base::span<const GLsizei> counts,
+    base::span<const GLsizei> instance_counts,
+    base::span<const GLuint> baseinstances) {
+  CHECK(firsts.size() == counts.size());
+  CHECK(firsts.size() == instance_counts.size());
+  CHECK(firsts.size() == baseinstances.size());
+  GLsizei drawcount;
+  if (!base::CheckedNumeric<GLsizei>(firsts.size()).AssignIfValid(&drawcount)) {
+    return false;
+  }
   if (!EnsureDrawArraysFunction(DrawFunction::DrawArraysInstancedBaseInstance,
                                 mode, drawcount)) {
     return false;
   }
-  CopyArraysHelper(drawcount, firsts, counts, nullptr, instance_counts, nullptr,
+  CopyArraysHelper(drawcount, firsts, counts, {}, instance_counts, {},
                    baseinstances);
   return true;
 }
 
 bool MultiDrawManager::MultiDrawElements(GLenum mode,
-                                         const GLsizei* counts,
+                                         base::span<const GLsizei> counts,
                                          GLenum type,
-                                         const GLsizei* offsets,
-                                         GLsizei drawcount) {
+                                         base::span<const GLsizei> offsets) {
+  CHECK(counts.size() == offsets.size());
+  GLsizei drawcount;
+  if (!base::CheckedNumeric<GLsizei>(counts.size()).AssignIfValid(&drawcount)) {
+    return false;
+  }
   if (!EnsureDrawElementsFunction(DrawFunction::DrawElements, mode, type,
                                   drawcount)) {
     return false;
   }
-  CopyArraysHelper(drawcount, nullptr, counts, offsets, nullptr, nullptr,
-                   nullptr);
+  CopyArraysHelper(drawcount, {}, counts, offsets, {}, {}, {});
   return true;
 }
 
 bool MultiDrawManager::MultiDrawElementsInstanced(
     GLenum mode,
-    const GLsizei* counts,
+    base::span<const GLsizei> counts,
     GLenum type,
-    const GLsizei* offsets,
-    const GLsizei* instance_counts,
-    GLsizei drawcount) {
+    base::span<const GLsizei> offsets,
+    base::span<const GLsizei> instance_counts) {
+  CHECK(counts.size() == offsets.size());
+  CHECK(counts.size() == instance_counts.size());
+  GLsizei drawcount;
+  if (!base::CheckedNumeric<GLsizei>(counts.size()).AssignIfValid(&drawcount)) {
+    return false;
+  }
   if (!EnsureDrawElementsFunction(DrawFunction::DrawElementsInstanced, mode,
                                   type, drawcount)) {
     return false;
   }
-  CopyArraysHelper(drawcount, nullptr, counts, offsets, instance_counts,
-                   nullptr, nullptr);
+  CopyArraysHelper(drawcount, {}, counts, offsets, instance_counts, {}, {});
   return true;
 }
 
 bool MultiDrawManager::MultiDrawElementsInstancedBaseVertexBaseInstance(
     GLenum mode,
-    const GLsizei* counts,
+    base::span<const GLsizei> counts,
     GLenum type,
-    const GLsizei* offsets,
-    const GLsizei* instance_counts,
-    const GLint* basevertices,
-    const GLuint* baseinstances,
-    GLsizei drawcount) {
+    base::span<const GLsizei> offsets,
+    base::span<const GLsizei> instance_counts,
+    base::span<const GLint> basevertices,
+    base::span<const GLuint> baseinstances) {
+  CHECK(counts.size() == offsets.size());
+  CHECK(counts.size() == instance_counts.size());
+  CHECK(counts.size() == basevertices.size());
+  CHECK(counts.size() == baseinstances.size());
+  GLsizei drawcount;
+  if (!base::CheckedNumeric<GLsizei>(counts.size()).AssignIfValid(&drawcount)) {
+    return false;
+  }
   if (!EnsureDrawElementsFunction(
           DrawFunction::DrawElementsInstancedBaseVertexBaseInstance, mode, type,
           drawcount)) {
     return false;
   }
-  CopyArraysHelper(drawcount, nullptr, counts, offsets, instance_counts,
+  CopyArraysHelper(drawcount, {}, counts, offsets, instance_counts,
                    basevertices, baseinstances);
   return true;
 }
@@ -263,48 +292,59 @@ bool MultiDrawManager::EnsureDrawElementsFunction(DrawFunction draw_function,
   return true;
 }
 
-void MultiDrawManager::CopyArraysHelper(GLsizei drawcount,
-                                        const GLint* firsts,
-                                        const GLsizei* counts,
-                                        const GLsizei* offsets,
-                                        const GLsizei* instance_counts,
-                                        const GLint* basevertices,
-                                        const GLuint* baseinstances) {
-  if (firsts) {
-    std::copy(firsts, UNSAFE_TODO(firsts + drawcount),
-              &result_.firsts[current_draw_offset_]);
+void MultiDrawManager::CopyArraysHelper(
+    GLsizei drawcount,
+    base::span<const GLint> firsts,
+    base::span<const GLsizei> counts,
+    base::span<const GLsizei> offsets,
+    base::span<const GLsizei> instance_counts,
+    base::span<const GLint> basevertices,
+    base::span<const GLuint> baseinstances) {
+  size_t size = static_cast<size_t>(drawcount);
+  size_t offset = static_cast<size_t>(current_draw_offset_);
+  if (!firsts.empty()) {
+    base::span(result_.firsts)
+        .subspan(offset, size)
+        .copy_from(firsts.first(size));
   }
 
-  if (counts) {
-    std::copy(counts, UNSAFE_TODO(counts + drawcount),
-              &result_.counts[current_draw_offset_]);
+  if (!counts.empty()) {
+    base::span(result_.counts)
+        .subspan(offset, size)
+        .copy_from(counts.first(size));
   }
 
-  if (instance_counts) {
-    std::copy(instance_counts, UNSAFE_TODO(instance_counts + drawcount),
-              &result_.instance_counts[current_draw_offset_]);
+  if (!instance_counts.empty()) {
+    base::span(result_.instance_counts)
+        .subspan(offset, size)
+        .copy_from(instance_counts.first(size));
   }
 
-  if (basevertices) {
-    std::copy(basevertices, UNSAFE_TODO(basevertices + drawcount),
-              &result_.basevertices[current_draw_offset_]);
+  if (!basevertices.empty()) {
+    base::span(result_.basevertices)
+        .subspan(offset, size)
+        .copy_from(basevertices.first(size));
   }
 
-  if (baseinstances) {
-    std::copy(baseinstances, UNSAFE_TODO(baseinstances + drawcount),
-              &result_.baseinstances[current_draw_offset_]);
+  if (!baseinstances.empty()) {
+    base::span(result_.baseinstances)
+        .subspan(offset, size)
+        .copy_from(baseinstances.first(size));
   }
 
-  if (offsets) {
+  if (!offsets.empty()) {
+    auto offsets_subspan = offsets.first(size);
     switch (index_type_) {
       case IndexStorageType::Offset:
-        std::copy(offsets, UNSAFE_TODO(offsets + drawcount),
-                  &result_.offsets[current_draw_offset_]);
+        base::span(result_.offsets)
+            .subspan(offset, size)
+            .copy_from(offsets_subspan);
         break;
       case IndexStorageType::Pointer:
-        std::transform(
-            offsets, UNSAFE_TODO(offsets + drawcount),
-            &result_.indices[current_draw_offset_], [](uint32_t offset) {
+        std::ranges::transform(
+            offsets_subspan,
+            base::span(result_.indices).subspan(offset, size).begin(),
+            [](uint32_t offset) {
               return reinterpret_cast<void*>(static_cast<intptr_t>(offset));
             });
         break;

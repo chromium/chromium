@@ -1657,25 +1657,14 @@ error::Error GLES2DecoderPassthroughImpl::HandleMultiDrawArraysCHROMIUM(
   GLenum mode = static_cast<GLenum>(c.mode);
   GLsizei drawcount = static_cast<GLsizei>(c.drawcount);
 
-  uint32_t firsts_size, counts_size;
-  base::CheckedNumeric<uint32_t> checked_size(drawcount);
-  if (!(checked_size * sizeof(GLint)).AssignIfValid(&firsts_size)) {
+  auto firsts = GetSharedMemoryAsSpan<const GLint>(
+      c.firsts_shm_id, c.firsts_shm_offset, drawcount);
+  auto counts = GetSharedMemoryAsSpan<const GLsizei>(
+      c.counts_shm_id, c.counts_shm_offset, drawcount);
+  if (!firsts.has_value() || !counts.has_value()) {
     return error::kOutOfBounds;
   }
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&counts_size)) {
-    return error::kOutOfBounds;
-  }
-  const GLint* firsts = GetSharedMemoryAs<const GLint*>(
-      c.firsts_shm_id, c.firsts_shm_offset, firsts_size);
-  const GLsizei* counts = GetSharedMemoryAs<const GLsizei*>(
-      c.counts_shm_id, c.counts_shm_offset, counts_size);
-  if (firsts == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (counts == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (!multi_draw_manager_->MultiDrawArrays(mode, firsts, counts, drawcount)) {
+  if (!multi_draw_manager_->MultiDrawArrays(mode, *firsts, *counts)) {
     return error::kInvalidArguments;
   }
   return error::kNoError;
@@ -1696,35 +1685,18 @@ GLES2DecoderPassthroughImpl::HandleMultiDrawArraysInstancedCHROMIUM(
   GLenum mode = static_cast<GLenum>(c.mode);
   GLsizei drawcount = static_cast<GLsizei>(c.drawcount);
 
-  uint32_t firsts_size, counts_size, instance_counts_size;
-  base::CheckedNumeric<uint32_t> checked_size(drawcount);
-  if (!(checked_size * sizeof(GLint)).AssignIfValid(&firsts_size)) {
+  auto firsts = GetSharedMemoryAsSpan<const GLint>(
+      c.firsts_shm_id, c.firsts_shm_offset, drawcount);
+  auto counts = GetSharedMemoryAsSpan<const GLsizei>(
+      c.counts_shm_id, c.counts_shm_offset, drawcount);
+  auto instance_counts = GetSharedMemoryAsSpan<const GLsizei>(
+      c.instance_counts_shm_id, c.instance_counts_shm_offset, drawcount);
+  if (!firsts.has_value() || !counts.has_value() ||
+      !instance_counts.has_value()) {
     return error::kOutOfBounds;
   }
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&counts_size)) {
-    return error::kOutOfBounds;
-  }
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&instance_counts_size)) {
-    return error::kOutOfBounds;
-  }
-  const GLint* firsts = GetSharedMemoryAs<const GLint*>(
-      c.firsts_shm_id, c.firsts_shm_offset, firsts_size);
-  const GLsizei* counts = GetSharedMemoryAs<const GLsizei*>(
-      c.counts_shm_id, c.counts_shm_offset, counts_size);
-  const GLsizei* instance_counts = GetSharedMemoryAs<const GLsizei*>(
-      c.instance_counts_shm_id, c.instance_counts_shm_offset,
-      instance_counts_size);
-  if (firsts == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (counts == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (instance_counts == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (!multi_draw_manager_->MultiDrawArraysInstanced(
-          mode, firsts, counts, instance_counts, drawcount)) {
+  if (!multi_draw_manager_->MultiDrawArraysInstanced(mode, *firsts, *counts,
+                                                     *instance_counts)) {
     return error::kInvalidArguments;
   }
   return error::kNoError;
@@ -1744,43 +1716,20 @@ GLES2DecoderPassthroughImpl::HandleMultiDrawArraysInstancedBaseInstanceCHROMIUM(
   GLenum mode = static_cast<GLenum>(c.mode);
   GLsizei drawcount = static_cast<GLsizei>(c.drawcount);
 
-  uint32_t firsts_size, counts_size, instance_counts_size, baseinstances_size;
-  base::CheckedNumeric<uint32_t> checked_size(drawcount);
-  if (!(checked_size * sizeof(GLint)).AssignIfValid(&firsts_size)) {
-    return error::kOutOfBounds;
-  }
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&counts_size)) {
-    return error::kOutOfBounds;
-  }
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&instance_counts_size)) {
-    return error::kOutOfBounds;
-  }
-  if (!(checked_size * sizeof(GLuint)).AssignIfValid(&baseinstances_size)) {
-    return error::kOutOfBounds;
-  }
-  const GLint* firsts = GetSharedMemoryAs<const GLint*>(
-      c.firsts_shm_id, c.firsts_shm_offset, firsts_size);
-  const GLsizei* counts = GetSharedMemoryAs<const GLsizei*>(
-      c.counts_shm_id, c.counts_shm_offset, counts_size);
-  const GLsizei* instance_counts = GetSharedMemoryAs<const GLsizei*>(
-      c.instance_counts_shm_id, c.instance_counts_shm_offset,
-      instance_counts_size);
-  const GLuint* baseinstances = GetSharedMemoryAs<const GLuint*>(
-      c.baseinstances_shm_id, c.baseinstances_shm_offset, baseinstances_size);
-  if (firsts == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (counts == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (instance_counts == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (baseinstances == nullptr) {
+  auto firsts = GetSharedMemoryAsSpan<const GLint>(
+      c.firsts_shm_id, c.firsts_shm_offset, drawcount);
+  auto counts = GetSharedMemoryAsSpan<const GLsizei>(
+      c.counts_shm_id, c.counts_shm_offset, drawcount);
+  auto instance_counts = GetSharedMemoryAsSpan<const GLsizei>(
+      c.instance_counts_shm_id, c.instance_counts_shm_offset, drawcount);
+  auto baseinstances = GetSharedMemoryAsSpan<const GLuint>(
+      c.baseinstances_shm_id, c.baseinstances_shm_offset, drawcount);
+  if (!firsts.has_value() || !counts.has_value() ||
+      !instance_counts.has_value() || !baseinstances.has_value()) {
     return error::kOutOfBounds;
   }
   if (!multi_draw_manager_->MultiDrawArraysInstancedBaseInstance(
-          mode, firsts, counts, instance_counts, baseinstances, drawcount)) {
+          mode, *firsts, *counts, *instance_counts, *baseinstances)) {
     return error::kInvalidArguments;
   }
   return error::kNoError;
@@ -1800,26 +1749,14 @@ error::Error GLES2DecoderPassthroughImpl::HandleMultiDrawElementsCHROMIUM(
   GLenum type = static_cast<GLenum>(c.type);
   GLsizei drawcount = static_cast<GLsizei>(c.drawcount);
 
-  uint32_t counts_size, offsets_size;
-  base::CheckedNumeric<uint32_t> checked_size(drawcount);
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&counts_size)) {
+  auto counts = GetSharedMemoryAsSpan<const GLsizei>(
+      c.counts_shm_id, c.counts_shm_offset, drawcount);
+  auto offsets = GetSharedMemoryAsSpan<const GLsizei>(
+      c.offsets_shm_id, c.offsets_shm_offset, drawcount);
+  if (!counts.has_value() || !offsets.has_value()) {
     return error::kOutOfBounds;
   }
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&offsets_size)) {
-    return error::kOutOfBounds;
-  }
-  const GLsizei* counts = GetSharedMemoryAs<const GLsizei*>(
-      c.counts_shm_id, c.counts_shm_offset, counts_size);
-  const GLsizei* offsets = GetSharedMemoryAs<const GLsizei*>(
-      c.offsets_shm_id, c.offsets_shm_offset, offsets_size);
-  if (counts == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (offsets == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (!multi_draw_manager_->MultiDrawElements(mode, counts, type, offsets,
-                                              drawcount)) {
+  if (!multi_draw_manager_->MultiDrawElements(mode, *counts, type, *offsets)) {
     return error::kInvalidArguments;
   }
   return error::kNoError;
@@ -1841,35 +1778,18 @@ GLES2DecoderPassthroughImpl::HandleMultiDrawElementsInstancedCHROMIUM(
   GLenum type = static_cast<GLenum>(c.type);
   GLsizei drawcount = static_cast<GLsizei>(c.drawcount);
 
-  uint32_t counts_size, offsets_size, instance_counts_size;
-  base::CheckedNumeric<uint32_t> checked_size(drawcount);
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&counts_size)) {
-    return error::kOutOfBounds;
-  }
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&offsets_size)) {
-    return error::kOutOfBounds;
-  }
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&instance_counts_size)) {
-    return error::kOutOfBounds;
-  }
-  const GLsizei* counts = GetSharedMemoryAs<const GLsizei*>(
-      c.counts_shm_id, c.counts_shm_offset, counts_size);
-  const GLsizei* offsets = GetSharedMemoryAs<const GLsizei*>(
-      c.offsets_shm_id, c.offsets_shm_offset, offsets_size);
-  const GLsizei* instance_counts = GetSharedMemoryAs<const GLsizei*>(
-      c.instance_counts_shm_id, c.instance_counts_shm_offset,
-      instance_counts_size);
-  if (counts == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (offsets == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (instance_counts == nullptr) {
+  auto counts = GetSharedMemoryAsSpan<const GLsizei>(
+      c.counts_shm_id, c.counts_shm_offset, drawcount);
+  auto offsets = GetSharedMemoryAsSpan<const GLsizei>(
+      c.offsets_shm_id, c.offsets_shm_offset, drawcount);
+  auto instance_counts = GetSharedMemoryAsSpan<const GLsizei>(
+      c.instance_counts_shm_id, c.instance_counts_shm_offset, drawcount);
+  if (!counts.has_value() || !offsets.has_value() ||
+      !instance_counts.has_value()) {
     return error::kOutOfBounds;
   }
   if (!multi_draw_manager_->MultiDrawElementsInstanced(
-          mode, counts, type, offsets, instance_counts, drawcount)) {
+          mode, *counts, type, *offsets, *instance_counts)) {
     return error::kInvalidArguments;
   }
   return error::kNoError;
@@ -1893,47 +1813,24 @@ error::Error GLES2DecoderPassthroughImpl::
   GLenum type = static_cast<GLenum>(c.type);
   GLsizei drawcount = static_cast<GLsizei>(c.drawcount);
 
-  uint32_t counts_size, offsets_size, instance_counts_size, basevertices_size,
-      baseinstances_size;
-  base::CheckedNumeric<uint32_t> checked_size(drawcount);
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&counts_size)) {
-    return error::kOutOfBounds;
-  }
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&offsets_size)) {
-    return error::kOutOfBounds;
-  }
-  if (!(checked_size * sizeof(GLsizei)).AssignIfValid(&instance_counts_size)) {
-    return error::kOutOfBounds;
-  }
-  if (!(checked_size * sizeof(GLint)).AssignIfValid(&basevertices_size)) {
-    return error::kOutOfBounds;
-  }
-  if (!(checked_size * sizeof(GLuint)).AssignIfValid(&baseinstances_size)) {
-    return error::kOutOfBounds;
-  }
-  const GLsizei* counts = GetSharedMemoryAs<const GLsizei*>(
-      c.counts_shm_id, c.counts_shm_offset, counts_size);
-  const GLsizei* offsets = GetSharedMemoryAs<const GLsizei*>(
-      c.offsets_shm_id, c.offsets_shm_offset, offsets_size);
-  const GLsizei* instance_counts = GetSharedMemoryAs<const GLsizei*>(
-      c.instance_counts_shm_id, c.instance_counts_shm_offset,
-      instance_counts_size);
-  const GLint* basevertices = GetSharedMemoryAs<const GLint*>(
-      c.basevertices_shm_id, c.basevertices_shm_offset, basevertices_size);
-  const GLuint* baseinstances = GetSharedMemoryAs<const GLuint*>(
-      c.baseinstances_shm_id, c.baseinstances_shm_offset, baseinstances_size);
-  if (counts == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (offsets == nullptr) {
-    return error::kOutOfBounds;
-  }
-  if (instance_counts == nullptr) {
+  auto counts = GetSharedMemoryAsSpan<const GLsizei>(
+      c.counts_shm_id, c.counts_shm_offset, drawcount);
+  auto offsets = GetSharedMemoryAsSpan<const GLsizei>(
+      c.offsets_shm_id, c.offsets_shm_offset, drawcount);
+  auto instance_counts = GetSharedMemoryAsSpan<const GLsizei>(
+      c.instance_counts_shm_id, c.instance_counts_shm_offset, drawcount);
+  auto basevertices = GetSharedMemoryAsSpan<const GLint>(
+      c.basevertices_shm_id, c.basevertices_shm_offset, drawcount);
+  auto baseinstances = GetSharedMemoryAsSpan<const GLuint>(
+      c.baseinstances_shm_id, c.baseinstances_shm_offset, drawcount);
+  if (!counts.has_value() || !offsets.has_value() ||
+      !instance_counts.has_value() || !basevertices.has_value() ||
+      !baseinstances.has_value()) {
     return error::kOutOfBounds;
   }
   if (!multi_draw_manager_->MultiDrawElementsInstancedBaseVertexBaseInstance(
-          mode, counts, type, offsets, instance_counts, basevertices,
-          baseinstances, drawcount)) {
+          mode, *counts, type, *offsets, *instance_counts, *basevertices,
+          *baseinstances)) {
     return error::kInvalidArguments;
   }
   return error::kNoError;
