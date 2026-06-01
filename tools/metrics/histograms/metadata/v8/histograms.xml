@@ -235,7 +235,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="V8.ESMImportGraphDepth" units="depth" expires_after="M150">
+<histogram name="V8.ESMImportGraphDepth" units="depth"
+    expires_after="2027-05-01">
   <owner>olivf@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -244,7 +245,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.ESMModulesPerPage" units="modules" expires_after="M150">
+<histogram name="V8.ESMModulesPerPage" units="modules"
+    expires_after="2027-05-01">
   <owner>olivf@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
