@@ -16,6 +16,7 @@
 #include "base/threading/hang_watcher.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/exit_type_service.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
@@ -39,6 +41,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -72,6 +75,64 @@ base::RepeatingCallbackList<void(bool)>& GetClosingAllBrowsersCallbackList() {
   static base::NoDestructor<base::RepeatingCallbackList<void(bool)>>
       callback_list;
   return *callback_list;
+}
+
+// Saves the number of tabs and windows per profile to prefs before restart.
+void SavePreRestartTabWindowCounts() {
+  if (!base::FeatureList::IsEnabled(features::kRecordTabWindowDiffOnRestart)) {
+    return;
+  }
+
+  if (!g_browser_process->profile_manager()) {
+    return;
+  }
+
+  for (Profile* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    // Skip incognito profiles since they won't be restored.
+    if (profile->IsOffTheRecord()) {
+      continue;
+    }
+
+    SessionRestore::StateCounts counts;
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [profile, &counts](BrowserWindowInterface* browser) {
+          if (browser->GetProfile() != profile) {
+            return true;
+          }
+          // Skip windows that are explicitly not restored.
+          if (browser->GetBrowserForMigrationOnly()
+                  ->omit_from_session_restore()) {
+            return true;
+          }
+
+          BrowserWindowInterface::Type type = browser->GetType();
+          if (type == BrowserWindowInterface::Type::TYPE_NORMAL) {
+            counts.normal_tabs += browser->GetTabStripModel()->count();
+            counts.normal_windows++;
+          } else if (type == BrowserWindowInterface::Type::TYPE_APP) {
+            counts.app_tabs += browser->GetTabStripModel()->count();
+            counts.app_windows++;
+          }
+          return true;
+        });
+
+    base::DictValue dict;
+    if (counts.normal_tabs > 0) {
+      dict.Set(SessionRestore::kNormalTabsKey, counts.normal_tabs);
+      dict.Set(SessionRestore::kNormalWindowsKey, counts.normal_windows);
+    }
+
+    if (counts.app_tabs > 0) {
+      dict.Set(SessionRestore::kAppTabsKey, counts.app_tabs);
+      dict.Set(SessionRestore::kAppWindowsKey, counts.app_windows);
+    }
+
+    if (counts.normal_tabs > 0 || counts.app_tabs > 0) {
+      profile->GetPrefs()->SetDict(prefs::kPreSmartRestartSessionState,
+                                   std::move(dict));
+    }
+  }
 }
 
 // Forward declaration.
@@ -186,6 +247,10 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers,
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
         return true;
       });
+
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+  SavePreRestartTabWindowCounts();
+#endif
 
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetBoolean(prefs::kWasRestarted, true);

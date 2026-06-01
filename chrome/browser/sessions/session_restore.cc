@@ -13,6 +13,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -26,6 +27,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -77,10 +79,13 @@
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_metrics.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -136,6 +141,62 @@ bool HasSingleNewTabPage(Browser* browser) {
       browser->tab_strip_model()->GetWebContentsAt(0);
   return active_tab->GetURL() == chrome::ChromeUINewTabURLAsGURL() ||
          search::IsInstantNTP(active_tab);
+}
+
+// Records the difference in the number of tabs and windows for a given type.
+void RecordDiffMetric(const base::DictValue& dict,
+                      std::string_view value_key,
+                      std::string_view histogram_name,
+                      int actual_count) {
+  std::optional<int> expected = dict.FindInt(value_key);
+  if (expected.has_value()) {
+    base::UmaHistogramSparse(histogram_name, expected.value() - actual_count);
+  }
+}
+
+// Records the difference between expected and actual tab/window counts after a
+// restart.
+//
+// Note: This metric is subject to noise if a restart fails (e.g. due to
+// unload handlers) and the user continues browsing and closes tabs before
+// a subsequent manual exit.
+void RecordTabWindowDiff(Profile* profile,
+                         const SessionRestore::StateCounts& counts) {
+  if (!base::FeatureList::IsEnabled(features::kRecordTabWindowDiffOnRestart)) {
+    return;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+
+  // If this wasn't a restart, clear the pref and return. Here, use
+  // StartupBrowserCreator::WasRestarted() instead of reading the pref directly
+  // because StartupBrowserCreator reads and resets the pref during early
+  // startup. Reading it here again would always return false.
+  if (!StartupBrowserCreator::WasRestarted()) {
+    prefs->ClearPref(prefs::kPreSmartRestartSessionState);
+    return;
+  }
+
+  const base::DictValue& dict =
+      prefs->GetDict(prefs::kPreSmartRestartSessionState);
+
+  if (dict.empty()) {
+    return;
+  }
+
+  RecordDiffMetric(dict, SessionRestore::kNormalTabsKey,
+                   "SessionRestore.TabDiffAfterRestart.Normal",
+                   counts.normal_tabs);
+  RecordDiffMetric(dict, SessionRestore::kNormalWindowsKey,
+                   "SessionRestore.WindowDiffAfterRestart.Normal",
+                   counts.normal_windows);
+  RecordDiffMetric(dict, SessionRestore::kAppTabsKey,
+                   "SessionRestore.TabDiffAfterRestart.App", counts.app_tabs);
+  RecordDiffMetric(dict, SessionRestore::kAppWindowsKey,
+                   "SessionRestore.WindowDiffAfterRestart.App",
+                   counts.app_windows);
+
+  prefs->ClearPref(prefs::kPreSmartRestartSessionState);
 }
 
 // Pointers to SessionRestoreImpls which are currently restoring the session.
@@ -622,13 +683,16 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       SessionID active_window_id) {
     int window_count = 0;
     int tab_count = 0;
+    SessionRestore::StateCounts counts;
     std::vector<RestoredTab> restored_tabs;
-    Browser* result = ProcessSessionWindows(
-        windows, active_window_id, restored_tabs, &window_count, &tab_count);
+    Browser* result =
+        ProcessSessionWindows(windows, active_window_id, restored_tabs,
+                              &window_count, &tab_count, &counts);
     if (log_event_) {
       LogSessionServiceRestoreEvent(profile_, window_count, tab_count,
                                     read_error_);
     }
+    RecordTabWindowDiff(profile_, counts);
     SessionRestore::on_session_restored_callbacks()->Notify(
         profile_, static_cast<int>(restored_tabs.size()));
     return result;
@@ -668,7 +732,8 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       SessionID active_window_id,
       std::vector<RestoredTab>& restored_tabs,
       int* window_count,
-      int* tab_count) {
+      int* tab_count,
+      SessionRestore::StateCounts* counts) {
     DVLOG(1) << "ProcessSessionWindows " << windows->size();
 
     PruneWindows(windows);
@@ -727,6 +792,14 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       const bool is_first_window = window.get() == windows->begin()->get();
       const bool is_normal_window =
           window->type == sessions::SessionWindow::TYPE_NORMAL;
+      const bool is_app_window =
+          window->type == sessions::SessionWindow::TYPE_APP;
+
+      if (is_normal_window) {
+        counts->normal_windows++;
+      } else if (is_app_window) {
+        counts->app_windows++;
+      }
 
       if (is_first_window && is_normal_window &&
           ShouldRestoreToExistingBrowser()) {
@@ -807,7 +880,14 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
         DCHECK(did_show_browser);
       }
 
-      (*tab_count) += (browser->tab_strip_model()->count() - initial_tab_count);
+      int total_tab_count =
+          browser->tab_strip_model()->count() - initial_tab_count;
+      (*tab_count) += total_tab_count;
+      if (is_normal_window) {
+        counts->normal_tabs += total_tab_count;
+      } else if (is_app_window) {
+        counts->app_tabs += total_tab_count;
+      }
 
       // 6. Tabs will be grouped appropriately in RestoreTabsToBrowser. Now
       // restore the visual data.

@@ -1642,6 +1642,10 @@ static_assert(std::string_view(kWasRestarted) ==
               std::string_view(ash::chrome_prefs::kWasRestarted));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Dictionary containing the number of tabs and windows before a restart.
+inline constexpr char kPreSmartRestartSessionState[] =
+    "session.pre_smart_restart_session_state";
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Whether Extensions are enabled.

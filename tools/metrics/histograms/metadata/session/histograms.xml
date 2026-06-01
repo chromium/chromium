@@ -1321,6 +1321,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SessionRestore.TabDiffAfterRestart.{Type}" units="tabs"
+    expires_after="2026-12-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The difference between the number of tabs open before a restart and the
+    number of tabs restored for the profile in {Type}. A positive value means
+    tabs were lost; a negative value means tabs were gained. Logged once per
+    session restore if a pre-restart tab count was saved.
+  </summary>
+  <token key="Type">
+    <variant name="App" summary="app windows"/>
+    <variant name="Normal" summary="normal windows"/>
+  </token>
+</histogram>
+
 <histogram name="SessionRestore.UnrecoverableWriteErrorCount"
     units="operations" expires_after="2022-08-07">
   <owner>sky@chromium.org</owner>
@@ -1330,6 +1346,22 @@ chromium-metrics-reviews@google.com.
     when chrome is shutdown). The count is the number of times a write error
     happened at a time when it could not immediately be handled.
   </summary>
+</histogram>
+
+<histogram name="SessionRestore.WindowDiffAfterRestart.{Type}" units="windows"
+    expires_after="2026-12-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The difference between the number of windows open before a restart and the
+    number of windows restored for the profile in {Type}. A positive value means
+    windows were lost; a negative value means windows were gained. Logged once
+    per session restore if a pre-restart window count was saved.
+  </summary>
+  <token key="Type">
+    <variant name="App" summary="app windows"/>
+    <variant name="Normal" summary="normal windows"/>
+  </token>
 </histogram>
 
 </histograms>

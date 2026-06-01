@@ -37,6 +37,19 @@ using StartupTabs = std::vector<StartupTab>;
 // SessionRestore code.
 class SessionRestore {
  public:
+  // Struct to hold the number of tabs and windows per profile.
+  struct StateCounts {
+    int normal_tabs = 0;
+    int normal_windows = 0;
+    int app_tabs = 0;
+    int app_windows = 0;
+  };
+
+  static constexpr char kNormalTabsKey[] = "normal_tabs";
+  static constexpr char kNormalWindowsKey[] = "normal_windows";
+  static constexpr char kAppTabsKey[] = "app_tabs";
+  static constexpr char kAppWindowsKey[] = "app_windows";
+
   // Bitmask representing behaviors available when restoring a session. Populate
   // using the values below.
   using BehaviorBitmask = uint32_t;

@@ -1892,6 +1892,10 @@ const base::FeatureParam<int> kSmartRestartLockScreenDisruptionThreshold{
 
 const base::FeatureParam<base::TimeDelta> kSmartRestartLockScreenDelay{
     &kSmartRestartLockScreen, "lock_restart_delay", base::Minutes(5)};
+
+// A feature to record the difference in the number of tabs and windows between
+// the last session and the current session on restart.
+BASE_FEATURE(kRecordTabWindowDiffOnRestart, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

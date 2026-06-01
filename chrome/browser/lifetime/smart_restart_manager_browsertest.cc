@@ -14,6 +14,8 @@
 #include "chrome/browser/lifetime/restartability_monitor.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -269,6 +271,8 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
                        TriggersRestartOnLockScreen) {
   base::HistogramTester histogram_tester;
+  Profile* profile = browser()->profile();
+
   // 1. Setup: Pending update.
   fake_upgrade_detector_.SetUpgradeAvailable();
 
@@ -282,6 +286,14 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown);
   }));
+
+  ASSERT_TRUE(profile);
+  const auto& dict =
+      profile->GetPrefs()->GetDict(prefs::kPreSmartRestartSessionState);
+  EXPECT_EQ(dict.FindInt(SessionRestore::kNormalTabsKey).value_or(0), 1);
+  EXPECT_EQ(dict.FindInt(SessionRestore::kNormalWindowsKey).value_or(0), 1);
+  EXPECT_FALSE(dict.FindInt(SessionRestore::kAppTabsKey).has_value());
+  EXPECT_FALSE(dict.FindInt(SessionRestore::kAppWindowsKey).has_value());
 
   histogram_tester.ExpectUniqueSample(
       "Session.SmartRestart.Lock.ExecutionOutcome",

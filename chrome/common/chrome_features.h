@@ -1352,6 +1352,9 @@ extern const base::FeatureParam<int> kSmartRestartLockScreenDisruptionThreshold;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kSmartRestartLockScreenDelay;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kRecordTabWindowDiffOnRestart);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool PrefServiceEnabled();

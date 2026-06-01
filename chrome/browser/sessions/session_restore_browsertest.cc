@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/sessions/session_restore.h"
+
 #include <stddef.h>
 
 #include <array>
@@ -19,6 +21,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
@@ -28,6 +31,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -145,6 +149,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/scoped_nsautorelease_pool.h"
@@ -2325,6 +2333,41 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RecordNormalTabWindowDiff) {
+  base::HistogramTester histogram_tester;
+  Profile* profile = browser()->profile();
+
+  // Pre-populate the dictionary pref as if a restart happened.
+  base::DictValue dict;
+  dict.Set(SessionRestore::kNormalTabsKey, 5);
+  dict.Set(SessionRestore::kNormalWindowsKey, 2);
+  dict.Set(SessionRestore::kAppTabsKey, 3);
+  dict.Set(SessionRestore::kAppWindowsKey, 1);
+  profile->GetPrefs()->SetDict(prefs::kPreSmartRestartSessionState,
+                               std::move(dict));
+
+  // Simulate that this WAS a restart!
+  g_browser_process->local_state()->SetBoolean(prefs::kWasRestarted, true);
+
+  // Trigger a restore.
+  SessionRestore::RestoreSession(profile, nullptr,
+                                 SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_APPS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 {});
+
+  // Verify that the histogram was logged.
+  // We expect a diff of 5 for tabs and 2 for windows because 0 were restored.
+  histogram_tester.ExpectUniqueSample(
+      "SessionRestore.TabDiffAfterRestart.Normal", 5, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SessionRestore.WindowDiffAfterRestart.Normal", 2, 1);
+  histogram_tester.ExpectUniqueSample("SessionRestore.TabDiffAfterRestart.App",
+                                      3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SessionRestore.WindowDiffAfterRestart.App", 1, 1);
+}
+
 // Test is flaky on Linux and Windows: https://crbug.com/40170555
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN)
 namespace {
@@ -4375,6 +4418,88 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
   keep_alive.reset();
   profile_keep_alive.reset();
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class SessionRestoreRestartMetricTest : public AppSessionRestoreTest {
+ public:
+  SessionRestoreRestartMetricTest() {
+    feature_list_.InitAndEnableFeature(features::kRecordTabWindowDiffOnRestart);
+  }
+  ~SessionRestoreRestartMetricTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    std::string_view test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+
+    if (base::StartsWith(test_name, "PRE_")) {
+      mock_relaunch_callback_ = std::make_unique<::testing::StrictMock<
+          base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>();
+      EXPECT_CALL(*mock_relaunch_callback_, Run);
+      relaunch_chrome_override_ =
+          std::make_unique<upgrade_util::ScopedRelaunchChromeBrowserOverride>(
+              mock_relaunch_callback_->Get());
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<::testing::StrictMock<
+      base::MockCallback<upgrade_util::RelaunchChromeBrowserCallback>>>
+      mock_relaunch_callback_;
+  std::unique_ptr<upgrade_util::ScopedRelaunchChromeBrowserOverride>
+      relaunch_chrome_override_;
+};
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest,
+                       PRE_RecordTabWindowDiff) {
+  Profile* profile = browser()->profile();
+
+  // Open tabs in normal browser!
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Install and launch app!
+  auto app_url = GURL("https://www.example.com");
+  webapps::AppId app_id = InstallPWA(profile, app_url);
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  ASSERT_NE(app_browser, nullptr);
+
+  chrome::AttemptRestart();
+
+  // Verify that the browser thinks it was restarted!
+  PrefService* pref_service = g_browser_process->local_state();
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kWasRestarted));
+}
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest, RecordTabWindowDiff) {
+  // Use base::StatisticsRecorder instead of base::HistogramTester because
+  // SessionRestore runs during early startup, before the test body executes.
+  // HistogramTester only records metrics logged *after* it is created, so it
+  // would miss the startup metrics. StatisticsRecorder holds all histograms
+  // in the process regardless of when they were logged.
+  base::HistogramBase* histogram = base::StatisticsRecorder::FindHistogram(
+      "SessionRestore.TabDiffAfterRestart.Normal");
+  ASSERT_TRUE(histogram);
+  EXPECT_EQ(histogram->SnapshotSamples()->GetCount(0), 1);
+
+  histogram = base::StatisticsRecorder::FindHistogram(
+      "SessionRestore.WindowDiffAfterRestart.Normal");
+  ASSERT_TRUE(histogram);
+  EXPECT_EQ(histogram->SnapshotSamples()->GetCount(0), 1);
+
+  histogram = base::StatisticsRecorder::FindHistogram(
+      "SessionRestore.TabDiffAfterRestart.App");
+  ASSERT_TRUE(histogram);
+  EXPECT_EQ(histogram->SnapshotSamples()->GetCount(0), 1);
+
+  histogram = base::StatisticsRecorder::FindHistogram(
+      "SessionRestore.WindowDiffAfterRestart.App");
+  ASSERT_TRUE(histogram);
+  EXPECT_EQ(histogram->SnapshotSamples()->GetCount(0), 1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Do a complex scenario that should only restore an app.
 // Have a browser session saved in disk, then open and close two separate
