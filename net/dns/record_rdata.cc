@@ -235,17 +235,19 @@ std::unique_ptr<TxtRecordRdata> TxtRecordRdata::Create(
     return nullptr;
   }
 
-  for (size_t i = 0; i < data.size();) {
-    uint8_t length = data[i];
-
-    if (i + length >= data.size()) {
+  base::SpanReader<const uint8_t> reader{data};
+  while (reader.remaining() > 0) {
+    std::optional<uint8_t> length = reader.ReadU8BigEndian();
+    if (!length) {
       return nullptr;
     }
 
-    rdata->texts_.emplace_back(
-        base::as_string_view(base::as_chars(data.subspan(i + 1, length))));
-    // Move to the next string.
-    i += length + 1;
+    auto text = reader.Read(*length);
+    if (!text) {
+      return nullptr;
+    }
+
+    rdata->texts_.emplace_back(base::as_string_view(*text));
   }
 
   return rdata;
