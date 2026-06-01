@@ -572,21 +572,22 @@ void EmailVerificationRequest::OnTokenAndKeysFetchComplete(
       base::BindOnce(
           [](base::WeakPtr<EmailVerificationRequest> request, std::string token,
              const url::Origin& issuer,
-             EmailVerifier::OnEmailVerifiedCallback callback, bool verified) {
+             EmailVerifier::OnEmailVerifiedCallback callback,
+             EvtVerifier::Result result) {
             if (!request) {
               std::move(callback).Run(std::nullopt);
               return;
             }
-            if (verified) {
+            if (result == EvtVerifier::Result::kVerified) {
               // Step 5.3: the browser notifies the page that
               // the SD-JWT+KB is ready.
               request->CompleteVerifyRequest(
                   std::move(callback), token,
-                  EmailVerificationRequestResult::kSuccess);
+                  blink::mojom::EmailVerificationRequestResult::kSuccess);
             } else {
               request->CompleteVerifyRequest(
                   std::move(callback), std::nullopt,
-                  EmailVerificationRequestResult::kTokenInvalidResponse);
+                  VerificationResultToEvpRequestStatus(result));
             }
           },
           weak_ptr_factory_.GetWeakPtr(), result, issuer, std::move(callback)));

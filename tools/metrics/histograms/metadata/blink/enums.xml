@@ -310,6 +310,29 @@ Called by update_document_policy_enum.py.-->
   <int value="31" label="EmailVerificationWellKnownInvalidContentType"/>
   <int value="32" label="JwksHttpNotFound"/>
   <int value="33" label="JwksInvalidResponse"/>
+  <int value="34" label="TokenVerificationSdJwtUnsupportedHeaderAlg"/>
+  <int value="35" label="TokenVerificationSdJwtMissingIss"/>
+  <int value="36" label="TokenVerificationSdJwtMissingIat"/>
+  <int value="37" label="TokenVerificationSdJwtMissingCnf"/>
+  <int value="38" label="TokenVerificationSdJwtMissingEmail"/>
+  <int value="39" label="TokenVerificationSdJwtInvalidIssuedAt"/>
+  <int value="40" label="TokenVerificationSdJwtInvalidIssuer"/>
+  <int value="41" label="TokenVerificationSdJwtJwksMissingKeys"/>
+  <int value="42" label="TokenVerificationSdJwtSignatureFailed"/>
+  <int value="43" label="TokenVerificationSdJwtInvalidEmailVerified"/>
+  <int value="44" label="TokenVerificationSdJwtInvalidEmail"/>
+  <int value="45" label="TokenVerificationSdJwtInvalidHolderKey"/>
+  <int value="46" label="TokenVerificationKbInvalidTyp"/>
+  <int value="47" label="TokenVerificationKbMissingAud"/>
+  <int value="48" label="TokenVerificationKbMissingNonce"/>
+  <int value="49" label="TokenVerificationKbMissingIat"/>
+  <int value="50" label="TokenVerificationKbMissingSdHash"/>
+  <int value="51" label="TokenVerificationKbInvalidIssuedAt"/>
+  <int value="52" label="TokenVerificationKbInvalidAudience"/>
+  <int value="53" label="TokenVerificationKbInvalidNonce"/>
+  <int value="54" label="TokenVerificationKbInvalidSdHash"/>
+  <int value="55" label="TokenVerificationKbMissingCnf"/>
+  <int value="56" label="TokenVerificationKbSignatureFailed"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/webid/email_verification_request.mojom:EmailVerificationRequestResult) -->

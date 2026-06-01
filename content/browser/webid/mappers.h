@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/delegation/evt_verifier.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/metrics.h"
 #include "content/common/content_export.h"
@@ -123,6 +124,9 @@ AccountsListParseStatusToEvpRequestStatus(ParseStatus parse_status);
 // Should not be invoked when parse_status is ParseStatus::kSuccess.
 CONTENT_EXPORT blink::mojom::EmailVerificationRequestResult
 TokenParseStatusToEvpRequestStatus(ParseStatus parse_status);
+
+CONTENT_EXPORT blink::mojom::EmailVerificationRequestResult
+VerificationResultToEvpRequestStatus(EvtVerifier::Result result);
 
 // Returns a list of fields that we should mediate authorization for. If
 // empty, we should not show a permission request dialog.

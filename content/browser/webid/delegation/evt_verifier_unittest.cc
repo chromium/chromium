@@ -113,12 +113,12 @@ TEST_F(EvtVerifierTest, SuccessfulVerification) {
   std::string full_token = evt_string + kb_jwt.Serialize().value();
 
   // 7. Verify
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<EvtVerifier::Result> future;
   EvtVerifier::Verify(full_token, url::Origin::Create(GURL(kIssuerUrl)),
                       std::move(jwks), url::Origin::Create(GURL(kRpOrigin)),
                       kEmail, kNonce, browser_jwk, future.GetCallback());
 
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), EvtVerifier::Result::kVerified);
 }
 
 TEST_F(EvtVerifierTest, ExpiredEvtRejected) {
@@ -199,13 +199,13 @@ TEST_F(EvtVerifierTest, ExpiredEvtRejected) {
 
   std::string full_token = evt_string + kb_jwt.Serialize().value();
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<EvtVerifier::Result> future;
   EvtVerifier::Verify(
       full_token, url::Origin::Create(GURL("https://issuer.example.com")),
       std::move(jwks), url::Origin::Create(GURL("https://rp.example.com")),
       "test@example.com", "test_nonce", browser_jwk, future.GetCallback());
 
-  EXPECT_FALSE(future.Get());
+  EXPECT_NE(future.Get(), EvtVerifier::Result::kVerified);
 }
 
 TEST_F(EvtVerifierTest, ExpiredKbRejected) {
@@ -286,13 +286,13 @@ TEST_F(EvtVerifierTest, ExpiredKbRejected) {
 
   std::string full_token = evt_string + kb_jwt.Serialize().value();
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<EvtVerifier::Result> future;
   EvtVerifier::Verify(
       full_token, url::Origin::Create(GURL("https://issuer.example.com")),
       std::move(jwks), url::Origin::Create(GURL("https://rp.example.com")),
       "test@example.com", "test_nonce", browser_jwk, future.GetCallback());
 
-  EXPECT_FALSE(future.Get());
+  EXPECT_NE(future.Get(), EvtVerifier::Result::kVerified);
 }
 
 TEST_F(EvtVerifierTest, MismatchedIssuerRejected) {
@@ -373,13 +373,13 @@ TEST_F(EvtVerifierTest, MismatchedIssuerRejected) {
 
   std::string full_token = evt_string + kb_jwt.Serialize().value();
 
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<EvtVerifier::Result> future;
   EvtVerifier::Verify(
       full_token, url::Origin::Create(GURL("https://mismatched.example.com")),
       std::move(jwks), url::Origin::Create(GURL("https://rp.example.com")),
       "test@example.com", "test_nonce", browser_jwk, future.GetCallback());
 
-  EXPECT_FALSE(future.Get());
+  EXPECT_NE(future.Get(), EvtVerifier::Result::kVerified);
 }
 
 TEST_F(EvtVerifierTest, VerificationFallbackWhenKidMissing) {
@@ -492,12 +492,12 @@ TEST_F(EvtVerifierTest, VerificationFallbackWhenKidMissing) {
   std::string full_token = evt_string + kb_jwt.Serialize().value();
 
   // 7. Verify
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<EvtVerifier::Result> future;
   EvtVerifier::Verify(full_token, url::Origin::Create(GURL(kIssuerUrl)),
                       std::move(jwks), url::Origin::Create(GURL(kRpOrigin)),
                       kEmail, kNonce, browser_jwk, future.GetCallback());
 
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), EvtVerifier::Result::kVerified);
 }
 
 TEST_F(EvtVerifierTest, VerificationFallbackWhenKidEmpty) {
@@ -610,12 +610,12 @@ TEST_F(EvtVerifierTest, VerificationFallbackWhenKidEmpty) {
   std::string full_token = evt_string + kb_jwt.Serialize().value();
 
   // 7. Verify
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<EvtVerifier::Result> future;
   EvtVerifier::Verify(full_token, url::Origin::Create(GURL(kIssuerUrl)),
                       std::move(jwks), url::Origin::Create(GURL(kRpOrigin)),
                       kEmail, kNonce, browser_jwk, future.GetCallback());
 
-  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(future.Get(), EvtVerifier::Result::kVerified);
 }
 
 }  // namespace content::webid

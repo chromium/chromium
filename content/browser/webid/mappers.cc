@@ -359,6 +359,74 @@ EmailVerificationRequestResult TokenParseStatusToEvpRequestStatus(
   }
 }
 
+EmailVerificationRequestResult VerificationResultToEvpRequestStatus(
+    EvtVerifier::Result result) {
+  switch (result) {
+    case EvtVerifier::Result::kVerified:
+      return EmailVerificationRequestResult::kSuccess;
+    case EvtVerifier::Result::kInvalidSdJwtKb:
+      return EmailVerificationRequestResult::kTokenMalformedSdJwt;
+    case EvtVerifier::Result::kSdJwtUnsupportedHeaderAlg:
+      return EmailVerificationRequestResult::
+          kTokenVerificationSdJwtUnsupportedHeaderAlg;
+    case EvtVerifier::Result::kSdJwtMissingIss:
+      return EmailVerificationRequestResult::kTokenVerificationSdJwtMissingIss;
+    case EvtVerifier::Result::kSdJwtMissingIat:
+      return EmailVerificationRequestResult::kTokenVerificationSdJwtMissingIat;
+    case EvtVerifier::Result::kSdJwtMissingCnf:
+      return EmailVerificationRequestResult::kTokenVerificationSdJwtMissingCnf;
+    case EvtVerifier::Result::kSdJwtMissingEmail:
+      return EmailVerificationRequestResult::
+          kTokenVerificationSdJwtMissingEmail;
+    case EvtVerifier::Result::kSdJwtInvalidIssuedAt:
+      return EmailVerificationRequestResult::
+          kTokenVerificationSdJwtInvalidIssuedAt;
+    case EvtVerifier::Result::kSdJwtInvalidIssuer:
+      return EmailVerificationRequestResult::
+          kTokenVerificationSdJwtInvalidIssuer;
+    case EvtVerifier::Result::kSdJwtJwksMissingKeys:
+      return EmailVerificationRequestResult::
+          kTokenVerificationSdJwtJwksMissingKeys;
+    case EvtVerifier::Result::kSdJwtSignatureFailed:
+      return EmailVerificationRequestResult::
+          kTokenVerificationSdJwtSignatureFailed;
+    case EvtVerifier::Result::kSdJwtInvalidEmailVerified:
+      return EmailVerificationRequestResult::
+          kTokenVerificationSdJwtInvalidEmailVerified;
+    case EvtVerifier::Result::kSdJwtInvalidEmail:
+      return EmailVerificationRequestResult::
+          kTokenVerificationSdJwtInvalidEmail;
+    case EvtVerifier::Result::kSdJwtInvalidHolderKey:
+      return EmailVerificationRequestResult::
+          kTokenVerificationSdJwtInvalidHolderKey;
+    case EvtVerifier::Result::kKbInvalidTyp:
+      return EmailVerificationRequestResult::kTokenVerificationKbInvalidTyp;
+    case EvtVerifier::Result::kKbMissingAud:
+      return EmailVerificationRequestResult::kTokenVerificationKbMissingAud;
+    case EvtVerifier::Result::kKbMissingNonce:
+      return EmailVerificationRequestResult::kTokenVerificationKbMissingNonce;
+    case EvtVerifier::Result::kKbMissingIat:
+      return EmailVerificationRequestResult::kTokenVerificationKbMissingIat;
+    case EvtVerifier::Result::kKbMissingSdHash:
+      return EmailVerificationRequestResult::kTokenVerificationKbMissingSdHash;
+    case EvtVerifier::Result::kKbInvalidIssuedAt:
+      return EmailVerificationRequestResult::
+          kTokenVerificationKbInvalidIssuedAt;
+    case EvtVerifier::Result::kKbInvalidAudience:
+      return EmailVerificationRequestResult::
+          kTokenVerificationKbInvalidAudience;
+    case EvtVerifier::Result::kKbInvalidNonce:
+      return EmailVerificationRequestResult::kTokenVerificationKbInvalidNonce;
+    case EvtVerifier::Result::kKbInvalidSdHash:
+      return EmailVerificationRequestResult::kTokenVerificationKbInvalidSdHash;
+    case EvtVerifier::Result::kKbMissingCnf:
+      return EmailVerificationRequestResult::kTokenVerificationKbMissingCnf;
+    case EvtVerifier::Result::kKbSignatureFailed:
+      return EmailVerificationRequestResult::
+          kTokenVerificationKbSignatureFailed;
+  }
+}
+
 std::vector<IdentityRequestDialogDisclosureField> GetDisclosureFields(
     const std::optional<std::vector<std::string>>& fields) {
   const std::vector<IdentityRequestDialogDisclosureField> kDefaultPermissions =

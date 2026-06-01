@@ -33,6 +33,34 @@ class CONTENT_EXPORT EvtVerifier {
   // `nonce` is the expected session nonce.
   // `holder_pub_key` is the browser's public key that was bound in the EVT.
   // `callback` is called with true if verification succeeds, false otherwise.
+  enum class Result {
+    kVerified,
+    kInvalidSdJwtKb,
+    kSdJwtUnsupportedHeaderAlg,
+    kSdJwtMissingIss,
+    kSdJwtMissingIat,
+    kSdJwtMissingCnf,
+    kSdJwtMissingEmail,
+    kSdJwtInvalidIssuedAt,
+    kSdJwtInvalidIssuer,
+    kSdJwtJwksMissingKeys,
+    kSdJwtSignatureFailed,
+    kSdJwtInvalidEmailVerified,
+    kSdJwtInvalidEmail,
+    kSdJwtInvalidHolderKey,
+    kKbInvalidTyp,
+    kKbMissingAud,
+    kKbMissingNonce,
+    kKbMissingIat,
+    kKbMissingSdHash,
+    kKbInvalidIssuedAt,
+    kKbInvalidAudience,
+    kKbInvalidNonce,
+    kKbInvalidSdHash,
+    kKbMissingCnf,
+    kKbSignatureFailed,
+  };
+
   static void Verify(const std::string& token,
                      const url::Origin& issuer,
                      base::DictValue issuer_pub_keys,
@@ -40,7 +68,7 @@ class CONTENT_EXPORT EvtVerifier {
                      const std::string& email,
                      const std::string& nonce,
                      const sdjwt::Jwk& holder_pub_key,
-                     base::OnceCallback<void(bool)> callback);
+                     base::OnceCallback<void(Result)> callback);
 };
 
 }  // namespace content::webid

@@ -6,12 +6,15 @@
 
 #include "base/barrier_closure.h"
 #include "base/base64url.h"
+#include "base/types/expected.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "crypto/sha2.h"
 #include "crypto/sign.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace content::webid {
+
+using Result = EvtVerifier::Result;
 
 namespace {
 
@@ -22,36 +25,44 @@ struct ParsedToken {
   std::optional<base::DictValue> kb_payload;
 };
 
-bool VerifyEVT(const sdjwt::SdJwt& sd_jwt,
-               const sdjwt::Header& header,
-               const sdjwt::Payload& payload,
-               const base::DictValue& issuer_pub_keys,
-               const url::Origin& issuer,
-               const std::string& email,
-               const sdjwt::Jwk& holder_pub_key) {
+base::expected<void, Result> VerifyEVT(const sdjwt::SdJwt& sd_jwt,
+                                       const sdjwt::Header& header,
+                                       const sdjwt::Payload& payload,
+                                       const base::DictValue& issuer_pub_keys,
+                                       const url::Origin& issuer,
+                                       const std::string& email,
+                                       const sdjwt::Jwk& holder_pub_key) {
   if (header.alg != "EdDSA" && header.alg != "RS256" && header.alg != "ES256") {
-    return false;
+    return base::unexpected(Result::kSdJwtUnsupportedHeaderAlg);
   }
 
-  if (payload.iss.empty() || !payload.iat || !payload.cnf ||
-      payload.email.empty()) {
-    return false;
+  if (payload.iss.empty()) {
+    return base::unexpected(Result::kSdJwtMissingIss);
+  }
+  if (!payload.iat) {
+    return base::unexpected(Result::kSdJwtMissingIat);
+  }
+  if (!payload.cnf) {
+    return base::unexpected(Result::kSdJwtMissingCnf);
+  }
+  if (payload.email.empty()) {
+    return base::unexpected(Result::kSdJwtMissingEmail);
   }
 
   base::Time now = base::Time::Now();
   base::Time issued_at = *payload.iat;
   if (issued_at > now + base::Minutes(1) ||
       issued_at < now - base::Minutes(5)) {
-    return false;
+    return base::unexpected(Result::kSdJwtInvalidIssuedAt);
   }
 
   if (payload.iss != issuer.Serialize()) {
-    return false;
+    return base::unexpected(Result::kSdJwtInvalidIssuer);
   }
 
   const base::ListValue* keys = issuer_pub_keys.FindList("keys");
   if (!keys) {
-    return false;
+    return base::unexpected(Result::kSdJwtJwksMissingKeys);
   }
 
   bool verified = false;
@@ -80,55 +91,63 @@ bool VerifyEVT(const sdjwt::SdJwt& sd_jwt,
   }
 
   if (!verified) {
-    return false;
+    return base::unexpected(Result::kSdJwtSignatureFailed);
   }
 
   if (!payload.email_verified) {
-    return false;
+    return base::unexpected(Result::kSdJwtInvalidEmailVerified);
   }
 
   if (payload.email != email) {
-    return false;
+    return base::unexpected(Result::kSdJwtInvalidEmail);
   }
 
   if (holder_pub_key != payload.cnf->jwk) {
-    return false;
+    return base::unexpected(Result::kSdJwtInvalidHolderKey);
   }
 
-  return true;
+  return base::ok();
 }
 
-bool VerifyKB(const sdjwt::Jwt& kb_jwt,
-              const sdjwt::Header& kb_header,
-              const sdjwt::Payload& kb_payload,
-              const sdjwt::Payload& evt_payload,
-              const std::string& evt_string,
-              const url::Origin& audience,
-              const std::string& nonce) {
+base::expected<void, Result> VerifyKB(const sdjwt::Jwt& kb_jwt,
+                                      const sdjwt::Header& kb_header,
+                                      const sdjwt::Payload& kb_payload,
+                                      const sdjwt::Payload& evt_payload,
+                                      const std::string& evt_string,
+                                      const url::Origin& audience,
+                                      const std::string& nonce) {
   if (kb_header.typ != "kb+jwt") {
-    return false;
+    return base::unexpected(Result::kKbInvalidTyp);
   }
 
-  if (kb_payload.aud.empty() || kb_payload.nonce.empty() || !kb_payload.iat ||
-      kb_payload.sd_hash.value().empty()) {
-    return false;
+  if (kb_payload.aud.empty()) {
+    return base::unexpected(Result::kKbMissingAud);
+  }
+  if (kb_payload.nonce.empty()) {
+    return base::unexpected(Result::kKbMissingNonce);
+  }
+  if (!kb_payload.iat) {
+    return base::unexpected(Result::kKbMissingIat);
+  }
+  if (kb_payload.sd_hash.value().empty()) {
+    return base::unexpected(Result::kKbMissingSdHash);
   }
 
   base::Time now = base::Time::Now();
   base::Time issued_at = *kb_payload.iat;
   if (issued_at > now + base::Minutes(1) ||
       issued_at < now - base::Minutes(5)) {
-    return false;
+    return base::unexpected(Result::kKbInvalidIssuedAt);
   }
 
   // - Verify aud matches the RP's origin
   if (kb_payload.aud != audience.Serialize()) {
-    return false;
+    return base::unexpected(Result::kKbInvalidAudience);
   }
 
   // - Verify nonce matches the nonce from the RP's session
   if (kb_payload.nonce != nonce) {
-    return false;
+    return base::unexpected(Result::kKbInvalidNonce);
   }
 
   // - Compute the SHA-256 hash of the EVT and verify it matches sd_hash
@@ -139,11 +158,11 @@ bool VerifyKB(const sdjwt::Jwt& kb_jwt,
                         &computed_hash_b64);
 
   if (kb_payload.sd_hash.value() != computed_hash_b64) {
-    return false;
+    return base::unexpected(Result::kKbInvalidSdHash);
   }
 
   if (!evt_payload.cnf) {
-    return false;
+    return base::unexpected(Result::kKbMissingCnf);
   }
   auto holder_pub_key = evt_payload.cnf->jwk;
 
@@ -151,10 +170,10 @@ bool VerifyKB(const sdjwt::Jwt& kb_jwt,
   // claim
   auto verifier = sdjwt::CreateJwtVerifier(holder_pub_key, kb_header);
   if (!verifier || !kb_jwt.Verify(std::move(verifier))) {
-    return false;
+    return base::unexpected(Result::kKbSignatureFailed);
   }
 
-  return true;
+  return base::ok();
 }
 
 void OnTokenParsed(std::unique_ptr<ParsedToken> token,
@@ -166,10 +185,10 @@ void OnTokenParsed(std::unique_ptr<ParsedToken> token,
                    const std::string& email,
                    const std::string& nonce,
                    const sdjwt::Jwk& holder_pub_key,
-                   base::OnceCallback<void(bool)> callback) {
+                   base::OnceCallback<void(Result)> callback) {
   if (!token->header || !token->payload || !token->kb_header ||
       !token->kb_payload) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(Result::kInvalidSdJwtKb);
     return;
   }
 
@@ -179,25 +198,27 @@ void OnTokenParsed(std::unique_ptr<ParsedToken> token,
   auto kb_payload = sdjwt::Payload::From(*token->kb_payload);
 
   if (!header || !payload || !kb_header || !kb_payload) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(Result::kInvalidSdJwtKb);
     return;
   }
 
   // 1. Verify EVT part.
-  if (!VerifyEVT(sd_jwt, *header, *payload, issuer_pub_keys, issuer, email,
-                 holder_pub_key)) {
-    std::move(callback).Run(false);
+  if (auto result = VerifyEVT(sd_jwt, *header, *payload, issuer_pub_keys,
+                              issuer, email, holder_pub_key);
+      result != base::ok()) {
+    std::move(callback).Run(result.error());
     return;
   }
 
   // 2. Verify KB part.
-  if (!VerifyKB(kb_jwt, *kb_header, *kb_payload, *payload, sd_jwt.Serialize(),
-                audience, nonce)) {
-    std::move(callback).Run(false);
+  if (auto result = VerifyKB(kb_jwt, *kb_header, *kb_payload, *payload,
+                             sd_jwt.Serialize(), audience, nonce);
+      result != base::ok()) {
+    std::move(callback).Run(result.error());
     return;
   }
 
-  std::move(callback).Run(true);
+  std::move(callback).Run(Result::kVerified);
 }
 
 }  // namespace
@@ -209,10 +230,10 @@ void EvtVerifier::Verify(const std::string& token,
                          const std::string& email,
                          const std::string& nonce,
                          const sdjwt::Jwk& holder_pub_key,
-                         base::OnceCallback<void(bool)> callback) {
+                         base::OnceCallback<void(Result)> callback) {
   auto sd_jwt_kb = sdjwt::SdJwtKb::Parse(token);
   if (!sd_jwt_kb) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(Result::kInvalidSdJwtKb);
     return;
   }
 

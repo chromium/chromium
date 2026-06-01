@@ -577,6 +577,78 @@ EmailVerificationRequestResultToProtocol(
       return EmailVerificationRequestIssueReasonEnum::JwksHttpNotFound;
     case EmailVerificationRequestResult::kJwksInvalidResponse:
       return EmailVerificationRequestIssueReasonEnum::JwksInvalidResponse;
+    case EmailVerificationRequestResult::
+        kTokenVerificationSdJwtUnsupportedHeaderAlg:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtUnsupportedHeaderAlg;
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtMissingIss:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtMissingIss;
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtMissingIat:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtMissingIat;
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtMissingCnf:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtMissingCnf;
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtMissingEmail:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtMissingEmail;
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtInvalidIssuedAt:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtInvalidIssuedAt;
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtInvalidIssuer:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtInvalidIssuer;
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtJwksMissingKeys:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtJwksMissingKeys;
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtSignatureFailed:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtSignatureFailed;
+    case EmailVerificationRequestResult::
+        kTokenVerificationSdJwtInvalidEmailVerified:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtInvalidEmailVerified;
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtInvalidEmail:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtInvalidEmail;
+    case EmailVerificationRequestResult::
+        kTokenVerificationSdJwtInvalidHolderKey:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationSdJwtInvalidHolderKey;
+    case EmailVerificationRequestResult::kTokenVerificationKbInvalidTyp:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationKbInvalidTyp;
+    case EmailVerificationRequestResult::kTokenVerificationKbMissingAud:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationKbMissingAud;
+    case EmailVerificationRequestResult::kTokenVerificationKbMissingNonce:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationKbMissingNonce;
+    case EmailVerificationRequestResult::kTokenVerificationKbMissingIat:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationKbMissingIat;
+    case EmailVerificationRequestResult::kTokenVerificationKbMissingSdHash:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationKbMissingSdHash;
+    case EmailVerificationRequestResult::kTokenVerificationKbInvalidIssuedAt:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationKbInvalidIssuedAt;
+    case EmailVerificationRequestResult::kTokenVerificationKbInvalidAudience:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationKbInvalidAudience;
+    case EmailVerificationRequestResult::kTokenVerificationKbInvalidNonce:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationKbInvalidNonce;
+    case EmailVerificationRequestResult::kTokenVerificationKbInvalidSdHash:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationKbInvalidSdHash;
+    case EmailVerificationRequestResult::kTokenVerificationKbMissingCnf:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationKbMissingCnf;
+    case EmailVerificationRequestResult::kTokenVerificationKbSignatureFailed:
+      return EmailVerificationRequestIssueReasonEnum::
+          TokenVerificationKbSignatureFailed;
     case EmailVerificationRequestResult::kSuccess:
       NOTREACHED();
   }
