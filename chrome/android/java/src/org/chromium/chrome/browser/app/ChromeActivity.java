@@ -1449,14 +1449,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @VisibleForTesting
     public @Nullable ActorPictureInPictureController maybeCreateActorPipController() {
-        if (mActorPipController != null) {
-            return mActorPipController;
-        }
-
         if (getProfileProviderSupplier().get() == null
                 || !GlicEnabling.isProfileEligible(
                         getProfileProviderSupplier().get().getOriginalProfile())) {
             return null;
+        }
+
+        if (mActorPipController != null) {
+            return mActorPipController;
         }
 
         mActorPipController =
