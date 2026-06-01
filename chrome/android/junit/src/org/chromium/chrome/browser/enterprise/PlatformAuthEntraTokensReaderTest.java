@@ -25,7 +25,6 @@ import android.content.pm.Signature;
 import android.content.pm.SigningInfo;
 import android.os.Bundle;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,6 +45,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -73,8 +74,14 @@ public class PlatformAuthEntraTokensReaderTest {
     @Mock private SigningInfo mSigningInfo;
     @Mock private Signature mSignature;
 
+    private MessageDigest mMd;
+
+    private Map<String, byte[]> mTrustedProvidersMap;
+    private Map<String, byte[]> mDebugProvidersMap;
+
     @Before
     public void setUp() throws Exception {
+        mMd = MessageDigest.getInstance("SHA-512");
         ContextUtils.initApplicationContextForTests(mContext);
 
         when(mContext.getSystemService(Context.ACCOUNT_SERVICE)).thenReturn(mAccountManager);
@@ -88,18 +95,16 @@ public class PlatformAuthEntraTokensReaderTest {
         when(mSigningInfo.hasMultipleSigners()).thenReturn(false);
         when(mSigningInfo.getSigningCertificateHistory()).thenReturn(new Signature[] {mSignature});
 
-        // Set up the testing signature override
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-        byte[] expectedHash = md.digest(VALID_TEST_SIGNATURE);
-        PlatformAuthEntraTokensReader.sSignatureSha512BytesForTesting = expectedHash;
-
         setupBroker(TRUSTED_PACKAGE_NAME);
         when(mSignature.toByteArray()).thenReturn(VALID_TEST_SIGNATURE);
-    }
 
-    @After
-    public void tearDown() {
-        PlatformAuthEntraTokensReader.sSignatureSha512BytesForTesting = null;
+        mTrustedProvidersMap = new HashMap<>();
+        mDebugProvidersMap = new HashMap<>();
+        PlatformAuthEntraTokensReader.setSignaturesForTesting(
+                mTrustedProvidersMap, mDebugProvidersMap);
+
+        byte[] expectedHash = mMd.digest(VALID_TEST_SIGNATURE);
+        mTrustedProvidersMap.put(TRUSTED_PACKAGE_NAME, expectedHash);
     }
 
     private void runReadTokensOnBackgroundThread(
@@ -313,6 +318,7 @@ public class PlatformAuthEntraTokensReaderTest {
     public void testReadTokens_debugProvider_withoutFlag_blocked() throws Exception {
         // Setup a debug-only package (exists in DEBUG_PROVIDERS, but not TRUSTED_PROVIDERS)
         setupBroker("com.microsoft.mockauthapp");
+        mockBrokerSignature("com.microsoft.mockauthapp", "debug_signature", /* isDebug= */ true);
 
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
@@ -326,9 +332,10 @@ public class PlatformAuthEntraTokensReaderTest {
     public void testReadTokens_debugProvider_withFlag_success() throws Exception {
         // Setup a debug-only package
         setupBroker("com.microsoft.mockauthapp");
+        mockBrokerSignature("com.microsoft.mockauthapp", "debug_signature", /* isDebug= */ true);
 
-        // Setup a successful token read. Because the flag is present, getPackageSignature
-        // will return the debug signature, avoiding the null check.
+        // Setup a successful token read. Because the flag is present, the debug signature
+        // will be retrieved and verified, avoiding the null check.
         Bundle resultBundle = new Bundle();
         resultBundle.putString(BUNDLE_RESULT_KEY, TEST_HEADERS);
         when(mMockFuture.getResult(anyLong(), any(TimeUnit.class))).thenReturn(resultBundle);
@@ -345,6 +352,74 @@ public class PlatformAuthEntraTokensReaderTest {
         runReadTokensOnBackgroundThread(TEST_URL, mCallback);
 
         verify(mCallback).onResult(eq(Status.OK), eq(TEST_HEADERS));
+    }
+
+    @Test
+    @CommandLineFlags.Add(ChromeSwitches.ANDROID_ENTRA_SSO_ALLOW_DEBUG_BROKERS)
+    public void testReadTokens_productionProvider_withFlag_success() throws Exception {
+        // Default setup assumes only the trusted provider is installed. Testing with the flag set
+        // ensures that the production signature works despite using the flag.
+        Bundle resultBundle = new Bundle();
+        resultBundle.putString(BUNDLE_RESULT_KEY, TEST_HEADERS);
+        when(mMockFuture.getResult(anyLong(), any(TimeUnit.class))).thenReturn(resultBundle);
+
+        when(mAccountManager.getAuthToken(
+                        any(Account.class),
+                        eq("sso_header"),
+                        any(Bundle.class),
+                        anyBoolean(),
+                        any(),
+                        any()))
+                .thenReturn(mMockFuture);
+
+        runReadTokensOnBackgroundThread(TEST_URL, mCallback);
+
+        verify(mCallback).onResult(eq(Status.OK), eq(TEST_HEADERS));
+    }
+
+    @Test
+    @CommandLineFlags.Add(ChromeSwitches.ANDROID_ENTRA_SSO_ALLOW_DEBUG_BROKERS)
+    public void testReadTokens_providerWithDebugKey_withFlag_success() throws Exception {
+        mockBrokerSignature(TRUSTED_PACKAGE_NAME, "debug_signature", /* isDebug= */ true);
+
+        // Setup a successful token read
+        Bundle resultBundle = new Bundle();
+        resultBundle.putString(BUNDLE_RESULT_KEY, TEST_HEADERS);
+        when(mMockFuture.getResult(anyLong(), any(TimeUnit.class))).thenReturn(resultBundle);
+
+        when(mAccountManager.getAuthToken(
+                        any(Account.class),
+                        eq("sso_header"),
+                        any(Bundle.class),
+                        anyBoolean(),
+                        any(),
+                        any()))
+                .thenReturn(mMockFuture);
+
+        runReadTokensOnBackgroundThread(TEST_URL, mCallback);
+
+        verify(mCallback).onResult(eq(Status.OK), eq(TEST_HEADERS));
+    }
+
+    @Test
+    public void testReadTokens_providerWithDebugKey_withoutFlag_blocked() throws Exception {
+        mockBrokerSignature(TRUSTED_PACKAGE_NAME, "debug_signature", /* isDebug= */ true);
+
+        runReadTokensOnBackgroundThread(TEST_URL, mCallback);
+
+        // Without the flag, debug signature is not accepted, so verification fails
+        verify(mCallback).onResult(eq(Status.SIGNATURE_VERIFICATION_FAILED), anyString());
+    }
+
+    private void mockBrokerSignature(String packageName, String signatureString, boolean isDebug) {
+        byte[] rawSignature = signatureString.getBytes();
+        when(mSignature.toByteArray()).thenReturn(rawSignature);
+        byte[] hashed = mMd.digest(rawSignature);
+        if (isDebug) {
+            mDebugProvidersMap.put(packageName, hashed);
+        } else {
+            mTrustedProvidersMap.put(packageName, hashed);
+        }
     }
 
     private void setupBroker(String packageName) {

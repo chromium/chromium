@@ -30,6 +30,7 @@ import org.jni_zero.JniType;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback2;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -56,8 +57,10 @@ public class PlatformAuthEntraTokensReader {
     private static final Map<String, byte[]> TRUSTED_PROVIDERS = new HashMap<>();
     private static final Map<String, byte[]> DEBUG_PROVIDERS = new HashMap<>();
 
+    @VisibleForTesting private static @Nullable Map<String, byte[]> sTrustedProvidersForTesting;
+    @VisibleForTesting private static @Nullable Map<String, byte[]> sDebugProvidersForTesting;
+
     private static @Nullable ResultOverride sReadTokensOverride;
-    @VisibleForTesting public static byte @Nullable [] sSignatureSha512BytesForTesting;
 
     /**
      * Reads authentication tokens from the Entra broker via the Android {@link AccountManager}.
@@ -94,9 +97,12 @@ public class PlatformAuthEntraTokensReader {
                 return;
             }
 
-            final byte @Nullable [] expectedSignature = getPackageSignature(providerPackageName);
-            if (expectedSignature == null) {
-                if (!debugProvidersEnabled() && DEBUG_PROVIDERS.containsKey(providerPackageName)) {
+            final byte @Nullable [] trustedSignature = getTrustedSignature(providerPackageName);
+            final byte @Nullable [] debugSignature =
+                    debugProvidersEnabled() ? getDebugSignature(providerPackageName) : null;
+
+            if (trustedSignature == null && debugSignature == null) {
+                if (!debugProvidersEnabled() && containsDebugProvider(providerPackageName)) {
                     callback.onResult(
                             Status.DISALLOWED_DEBUG_PACKAGE_PROVIDER,
                             "attempt to get authentication headers from a non-production"
@@ -112,7 +118,8 @@ public class PlatformAuthEntraTokensReader {
                 return;
             }
 
-            if (!verifyPackageSignature(providerPackageName, context, expectedSignature)) {
+            if (!verifyPackageSignature(providerPackageName, context, trustedSignature)
+                    && !verifyPackageSignature(providerPackageName, context, debugSignature)) {
                 callback.onResult(
                         Status.SIGNATURE_VERIFICATION_FAILED,
                         "could not verify signature of " + providerPackageName);
@@ -209,18 +216,22 @@ public class PlatformAuthEntraTokensReader {
         return providerPackageName;
     }
 
-    private static byte @Nullable [] getPackageSignature(String providerPackageName) {
-        // Certain packages have both a production and a debug signature.
-        // If the switch is enabled the debug signature will take priority.
-        if (debugProvidersEnabled() && DEBUG_PROVIDERS.containsKey(providerPackageName)) {
-            return DEBUG_PROVIDERS.get(providerPackageName);
-        }
+    private static byte @Nullable [] getTrustedSignature(String providerPackageName) {
+        return sTrustedProvidersForTesting != null
+                ? sTrustedProvidersForTesting.get(providerPackageName)
+                : TRUSTED_PROVIDERS.get(providerPackageName);
+    }
 
-        if (TRUSTED_PROVIDERS.containsKey(providerPackageName)) {
-            return TRUSTED_PROVIDERS.get(providerPackageName);
-        }
+    private static byte @Nullable [] getDebugSignature(String providerPackageName) {
+        return sDebugProvidersForTesting != null
+                ? sDebugProvidersForTesting.get(providerPackageName)
+                : DEBUG_PROVIDERS.get(providerPackageName);
+    }
 
-        return null;
+    private static boolean containsDebugProvider(String providerPackageName) {
+        return sDebugProvidersForTesting != null
+                ? sDebugProvidersForTesting.containsKey(providerPackageName)
+                : DEBUG_PROVIDERS.containsKey(providerPackageName);
     }
 
     private static boolean debugProvidersEnabled() {
@@ -229,8 +240,12 @@ public class PlatformAuthEntraTokensReader {
     }
 
     private static boolean verifyPackageSignature(
-            String packageName, Context context, byte[] expectedSignature)
+            String packageName, Context context, byte @Nullable [] expectedSignature)
             throws PackageManager.NameNotFoundException, NoSuchAlgorithmException {
+        if (expectedSignature == null) {
+            return false;
+        }
+
         final PackageManager packageManager = context.getPackageManager();
         final PackageInfo packageInfo =
                 packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES);
@@ -255,14 +270,20 @@ public class PlatformAuthEntraTokensReader {
             if (Arrays.equals(currentSha512, expectedSignature)) {
                 return true;
             }
-            if (sSignatureSha512BytesForTesting != null
-                    && Arrays.equals(currentSha512, sSignatureSha512BytesForTesting)) {
-
-                return true;
-            }
         }
 
         return false;
+    }
+
+    public static void setSignaturesForTesting(
+            Map<String, byte[]> trustedProviders, Map<String, byte[]> debugProviders) {
+        sTrustedProvidersForTesting = trustedProviders;
+        sDebugProvidersForTesting = debugProviders;
+        ResettersForTesting.register(
+                () -> {
+                    sTrustedProvidersForTesting = null;
+                    sDebugProvidersForTesting = null;
+                });
     }
 
     static {
