@@ -1354,10 +1354,10 @@ bool CorsURLLoader::
     return false;
   }
 
-  std::optional<net::structured_headers::Item> item =
-      net::structured_headers::ParseBareItem(*response_header);
+  std::optional<net::structured_headers::ParameterizedItem> item =
+      net::structured_headers::ParseItem(*response_header);
 
-  return item && item->is_boolean() && item->GetBoolean();
+  return item && item->item.is_boolean() && item->item.GetBoolean();
 }
 
 }  // namespace network::cors

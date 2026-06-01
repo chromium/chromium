@@ -28,9 +28,6 @@ using Parameters = quiche::structured_headers::Parameters;
 inline std::optional<ParameterizedItem> ParseItem(std::string_view str) {
   return quiche::structured_headers::ParseItem(str);
 }
-inline std::optional<Item> ParseBareItem(std::string_view str) {
-  return quiche::structured_headers::ParseBareItem(str);
-}
 inline std::optional<ParameterisedList> ParseParameterisedList(
     std::string_view str) {
   return quiche::structured_headers::ParseParameterisedList(str);
