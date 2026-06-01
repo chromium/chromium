@@ -238,6 +238,14 @@ def initialize_globals(import_channel: str):
                 "third_party/perfetto/build_config/",
             })
         ],
+        # See https://crbug.com/517894073#comment5
+        f'lib{MODULE_PREFIX}third_party_boringssl_raw_bssl_sys_bindings': [
+            ('export_include_dirs', {
+                "third_party/boringssl/src/include",
+            }), ('local_include_dirs', {
+                "third_party/boringssl/src/include",
+            })
+        ],
         # end export_include_dir.
         # TODO: https://crbug.com/418746360 - Handle //base:build_date_internal
         # for os:linux_glibc.
