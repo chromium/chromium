@@ -157,6 +157,10 @@ impl<'a> AatApplyContext<'a> {
 
     pub fn replace_glyph_inplace(&mut self, i: usize, glyph: u32) {
         self.buffer.info[i].glyph_id = glyph;
+        if glyph == DELETED_GLYPH {
+            self.buffer.scratch_flags |= HB_BUFFER_SCRATCH_FLAG_AAT_HAS_DELETED;
+            self.buffer.info[i].set_aat_deleted();
+        }
         if self.using_buffer_glyph_set {
             self.buffer.glyph_set.insert(glyph);
         }

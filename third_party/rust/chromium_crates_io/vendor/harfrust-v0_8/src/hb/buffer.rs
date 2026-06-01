@@ -4,7 +4,6 @@ use core::cmp::min;
 use core::convert::TryFrom;
 use read_fonts::types::{GlyphId, GlyphId16};
 
-use super::buffer::glyph_flag::{SAFE_TO_INSERT_TATWEEL, UNSAFE_TO_BREAK, UNSAFE_TO_CONCAT};
 use super::face::GlyphExtents;
 use super::unicode::CharExt;
 use super::{hb_font_t, hb_mask_t};
@@ -13,95 +12,6 @@ use crate::hb::unicode::Codepoint;
 use crate::{script, BufferClusterLevel, BufferFlags, Direction, Language, Script, SerializeFlags};
 
 const CONTEXT_LENGTH: usize = 5;
-
-pub mod glyph_flag {
-    /// Indicates that if input text is broken at the
-    /// beginning of the cluster this glyph is part of,
-    /// then both sides need to be re-shaped, as the
-    /// result might be different.
-    ///
-    /// On the flip side, it means that when
-    /// this flag is not present, then it is safe
-    /// to break the glyph-run at the beginning of
-    /// this cluster, and the two sides will represent
-    /// the exact same result one would get if breaking
-    /// input text at the beginning of this cluster and
-    /// shaping the two sides separately.
-    ///
-    /// This can be used to optimize paragraph layout,
-    /// by avoiding re-shaping of each line after line-breaking.
-    pub const UNSAFE_TO_BREAK: u32 = 0x0000_0001;
-    /// Indicates that if input text is changed on one side
-    /// of the beginning of the cluster this glyph is part
-    /// of, then the shaping results for the other side
-    /// might change.
-    ///
-    /// Note that the absence of this flag will NOT by
-    /// itself mean that it IS safe to concat text. Only
-    /// two pieces of text both of which clear of this
-    /// flag can be concatenated safely.
-    ///
-    /// This can be used to optimize paragraph layout,
-    /// by avoiding re-shaping of each line after
-    /// line-breaking, by limiting the reshaping to a
-    /// small piece around the breaking position only,
-    /// even if the breaking position carries the
-    /// UNSAFE_TO_BREAK or when hyphenation or
-    /// other text transformation happens at
-    /// line-break position, in the following way:
-    ///
-    /// 1. Iterate back from the line-break
-    ///    position until the first cluster
-    ///    start position that is NOT unsafe-to-concat,
-    /// 2. shape the segment from there till the
-    ///    end of line, 3. check whether the resulting
-    ///    glyph-run also is clear of the unsafe-to-concat
-    ///    at its start-of-text position; if it is, just
-    ///    splice it into place and the line is shaped;
-    ///    If not, move on to a position further back that
-    ///    is clear of unsafe-to-concat and retry from
-    ///    there, and repeat.
-    ///
-    /// At the start of next line a similar
-    /// algorithm can be implemented.
-    /// That is: 1. Iterate forward from
-    /// the line-break position until the first cluster
-    /// start position that is NOT unsafe-to-concat, 2.
-    /// shape the segment from beginning of the line to
-    /// that position, 3. check whether the resulting
-    /// glyph-run also is clear of the unsafe-to-concat
-    /// at its end-of-text position; if it is, just splice
-    /// it into place and the beginning is shaped; If not,
-    /// move on to a position further forward that is clear
-    /// of unsafe-to-concat and retry up to there, and repeat.
-    ///
-    /// A slight complication will arise in the
-    /// implementation of the algorithm above,
-    /// because while
-    /// our buffer API has a way to return flags
-    /// for position corresponding to
-    /// start-of-text, there is currently no
-    /// position corresponding to end-of-text.
-    /// This limitation can be alleviated by
-    /// shaping more text than needed and
-    /// looking for unsafe-to-concat flag
-    /// within text clusters.
-    ///
-    /// The UNSAFE_TO_BREAK flag will always imply this flag.
-    /// To use this flag, you must enable the buffer flag
-    /// PRODUCE_UNSAFE_TO_CONCAT during shaping, otherwise
-    /// the buffer flag will not be reliably produced.
-    pub const UNSAFE_TO_CONCAT: u32 = 0x0000_0002;
-
-    /// In scripts that use elongation (Arabic,
-    /// Mongolian, Syriac, etc.), this flag signifies
-    /// that it is safe to insert a U+0640 TATWEEL
-    /// character *before* this cluster for elongation.
-    pub const SAFE_TO_INSERT_TATWEEL: u32 = 0x0000_0004;
-
-    /// All the currently defined flags.
-    pub const DEFINED: u32 = 0x0000_0007; // OR of all defined flags
-}
 
 /// Holds the positions of the glyph in both horizontal and vertical directions.
 ///
@@ -259,7 +169,11 @@ macro_rules! declare_buffer_var_alias {
     };
 }
 
-impl GlyphInfo {
+/// Flags that describe the properties of a glyph.
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+pub struct GlyphFlags(pub(crate) u32);
+
+impl GlyphFlags {
     /// Indicates that if input text is broken at the beginning of the cluster this glyph
     /// is part of, then both sides need to be re-shaped, as the result might be different.
     ///
@@ -270,8 +184,164 @@ impl GlyphInfo {
     /// This can be used to optimize paragraph layout, by avoiding re-shaping of each line
     /// after line-breaking, or limiting the reshaping to a small piece around
     /// the breaking point only.
+    pub const UNSAFE_TO_BREAK: Self = Self(0x0000_0001);
+
+    /// Indicates that if input text is changed on one side of the beginning of the cluster
+    /// this glyph is part of, then the shaping results for the other side might change.
+    /// Note that the absence of this flag will NOT by itself mean that it IS safe to concat
+    /// text. Only two pieces of text both of which clear of this flag can be concatenated
+    /// safely.
+    ///
+    /// This can be used to optimize paragraph layout, by avoiding re-shaping of each line after
+    /// line-breaking, by limiting the reshaping to a small piece around the breaking position
+    /// only, even if the breaking position carries the unsafe-to-break flag or when hyphenation
+    /// or other text transformation happens at line-break position, in the following way:
+    /// 1. Iterate back from the line-break position until the first cluster start position
+    ///    that is NOT unsafe-to-concat.
+    /// 2. Shape the segment from there till the end of line.
+    /// 3. Check whether the resulting glyph-run also is clear of the unsafe-to-concat at its
+    ///    start-of-text position; if it is, just splice it into place and the line is shaped;
+    ///    If not, move on to a position further back that is clear of unsafe-to-concat and retry
+    ///    from there, and repeat.
+    ///
+    /// At the start of next line a similar algorithm can be implemented. That is:
+    /// 1. Iterate forward from the line-break position until the first cluster start position that is
+    ///    NOT unsafe-to-concat.
+    /// 2. Shape the segment from beginning of the line to that position.
+    /// 3. Check whether the resulting glyph-run also is clear of the unsafe-to-concat at its end-of-text
+    ///    position; if it is, just splice it into place and the beginning is shaped; If not, move on to a
+    ///    position further forward that is clear of unsafe-to-concat and retry up to there, and repeat. A
+    ///    slight complication will arise in the implementation of the algorithm above, because while our
+    ///    buffer API has a way to return flags for position corresponding to start-of-text, there is currently
+    ///    no position corresponding to end-of-text. This limitation can be alleviated by shaping more text
+    ///    than needed and looking for unsafe-to-concat flag within text clusters. The unsafe-to-break flag will
+    ///    always imply this flag. To use this flag, you must enable the buffer flag [`BufferFlags::PRODUCE_UNSAFE_TO_CONCAT`]
+    ///    during shaping, otherwise the buffer flag will not be reliably produced.
+    pub const UNSAFE_TO_CONCAT: Self = Self(0x0000_0002);
+
+    /// In scripts that use elongation (Arabic, Mongolian, Syriac, etc.), this flag signifies that it is
+    /// safe to insert a U+0640 TATWEEL character before this cluster for elongation. This flag does not
+    /// determine the script-specific elongation places, but only when it is safe to do the elongation
+    /// without interrupting text shaping.
+    pub const SAFE_TO_INSERT_TATWEEL: Self = Self(0x0000_0004);
+
+    /// All the currently defined flags.
+    pub const ALL: Self = Self(Self::DEFINED_BITS);
+
+    pub(crate) const DEFINED_BITS: u32 = 0x0000_0007; // OR of all defined flags
+
+    /// Creates a `GlyphFlags` from the given bits, ignoring any bits that are not defined.
+    pub const fn from_bits_truncate(bits: u32) -> Self {
+        Self(bits & Self::DEFINED_BITS)
+    }
+
+    /// Returns the underlying flag bits.
+    #[inline(always)]
+    pub const fn to_bits(self) -> u32 {
+        self.0
+    }
+
+    /// Indicates that if input text is broken at the beginning of the cluster this glyph
+    /// is part of, then both sides need to be re-shaped, as the result might be different.
+    ///
+    /// See [Self::UNSAFE_TO_BREAK] for more details.
+    #[inline(always)]
+    pub const fn is_unsafe_to_break(self) -> bool {
+        self.intersects(Self::UNSAFE_TO_BREAK)
+    }
+
+    /// Indicates that if input text is changed on one side of the beginning of the cluster
+    /// this glyph is part of, then the shaping results for the other side might change.
+    ///
+    /// See [Self::UNSAFE_TO_CONCAT] for more details.
+    #[inline(always)]
+    pub const fn is_unsafe_to_concat(self) -> bool {
+        self.intersects(Self::UNSAFE_TO_CONCAT)
+    }
+
+    /// In scripts that use elongation (Arabic, Mongolian, Syriac, etc.), this flag signifies that it is
+    /// safe to insert a U+0640 TATWEEL character before this cluster for elongation.
+    ///
+    /// See [Self::SAFE_TO_INSERT_TATWEEL] for more details.
+    #[inline(always)]
+    pub const fn is_safe_to_insert_tatweel(self) -> bool {
+        self.intersects(Self::SAFE_TO_INSERT_TATWEEL)
+    }
+
+    /// Returns `true` if all of the flags in `other` are contained within `self`.
+    #[inline(always)]
+    pub const fn contains(self, other: Self) -> bool {
+        (self.0 & other.0) == other.0
+    }
+
+    /// Returns `true` if any of the flags in `other` are contained within `self`.
+    #[inline(always)]
+    pub const fn intersects(self, other: Self) -> bool {
+        (self.0 & other.0) != 0
+    }
+}
+
+impl core::ops::BitOr for GlyphFlags {
+    type Output = Self;
+
+    #[inline(always)]
+    fn bitor(self, rhs: Self) -> Self::Output {
+        Self(self.0 | rhs.0)
+    }
+}
+
+impl core::ops::BitOrAssign for GlyphFlags {
+    #[inline(always)]
+    fn bitor_assign(&mut self, rhs: Self) {
+        self.0 |= rhs.0;
+    }
+}
+
+impl core::ops::BitAnd for GlyphFlags {
+    type Output = Self;
+
+    #[inline(always)]
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl core::ops::BitAndAssign for GlyphFlags {
+    #[inline(always)]
+    fn bitand_assign(&mut self, rhs: Self) {
+        self.0 &= rhs.0;
+    }
+}
+
+impl core::ops::Not for GlyphFlags {
+    type Output = Self;
+
+    #[inline(always)]
+    fn not(self) -> Self::Output {
+        Self(!self.0 & Self::DEFINED_BITS)
+    }
+}
+
+impl GlyphInfo {
+    /// Returns the flags for this glyph.
+    #[inline(always)]
+    pub const fn flags(&self) -> GlyphFlags {
+        GlyphFlags(self.mask)
+    }
+
+    /// Indicates that if input text is broken at the beginning of the cluster this glyph
+    /// is part of, then both sides need to be re-shaped, as the result might be different.
+    ///
+    /// On the flip side, it means that when this flag is not present,
+    /// then it's safe to break the glyph-run at the beginning of this cluster,
+    /// and the two sides represent the exact same result one would get if breaking input text
+    /// at the beginning of this cluster and shaping the two sides separately.
+    /// This can be used to optimize paragraph layout, by avoiding re-shaping of each line
+    /// after line-breaking, or limiting the reshaping to a small piece around
+    /// the breaking point only.
+    #[inline(always)]
     pub fn unsafe_to_break(&self) -> bool {
-        self.mask & UNSAFE_TO_BREAK != 0
+        self.flags().is_unsafe_to_break()
     }
 
     /// Indicates that if input text is changed on one side of the beginning of the cluster
@@ -305,19 +375,20 @@ impl GlyphInfo {
     ///    than needed and looking for unsafe-to-concat flag within text clusters. The unsafe-to-break flag will
     ///    always imply this flag. To use this flag, you must enable the buffer flag [`BufferFlags::PRODUCE_UNSAFE_TO_CONCAT`]
     ///    during shaping, otherwise the buffer flag will not be reliably produced.
+    #[inline(always)]
     pub fn unsafe_to_concat(&self) -> bool {
-        self.mask & UNSAFE_TO_CONCAT != 0
+        self.flags().is_unsafe_to_concat()
     }
 
     /// In scripts that use elongation (Arabic, Mongolian, Syriac, etc.), this flag signifies that it is
     /// safe to insert a U+0640 TATWEEL character before this cluster for elongation. This flag does not
     /// determine the script-specific elongation places, but only when it is safe to do the elongation
     /// without interrupting text shaping.
+    #[inline(always)]
     pub fn safe_to_insert_tatweel(&self) -> bool {
-        self.mask & SAFE_TO_INSERT_TATWEEL != 0
+        self.flags().is_safe_to_insert_tatweel()
     }
 
-    #[inline]
     pub(crate) fn as_codepoint(&self) -> Codepoint {
         self.glyph_id
     }
@@ -1186,8 +1257,8 @@ impl hb_buffer_t {
     }
 
     pub fn unsafe_to_break(&mut self, start: Option<usize>, end: Option<usize>) {
-        self._set_glyph_flags(
-            UNSAFE_TO_BREAK | UNSAFE_TO_CONCAT,
+        self.set_glyph_flags(
+            GlyphFlags::UNSAFE_TO_BREAK | GlyphFlags::UNSAFE_TO_CONCAT,
             start,
             end,
             Some(true),
@@ -1204,7 +1275,13 @@ impl hb_buffer_t {
             return;
         }
 
-        self._set_glyph_flags(SAFE_TO_INSERT_TATWEEL, start, end, Some(true), None);
+        self.set_glyph_flags(
+            GlyphFlags::SAFE_TO_INSERT_TATWEEL,
+            start,
+            end,
+            Some(true),
+            None,
+        );
     }
 
     fn _set_glyph_flags_impl(
@@ -1256,9 +1333,9 @@ impl hb_buffer_t {
     /// Adds glyph flags in mask to infos with clusters between start and end.
     /// The start index will be from out-buffer if from_out_buffer is true.
     /// If interior is true, then the cluster having the minimum value is skipped. */
-    fn _set_glyph_flags(
+    fn set_glyph_flags(
         &mut self,
-        mask: hb_mask_t,
+        flags: GlyphFlags,
         start: Option<usize>,
         end: Option<usize>,
         interior: Option<bool>,
@@ -1281,7 +1358,7 @@ impl hb_buffer_t {
             return;
         }
 
-        self._set_glyph_flags_impl(mask, start, end, interior, from_out_buffer);
+        self._set_glyph_flags_impl(flags.0, start, end, interior, from_out_buffer);
     }
 
     pub fn unsafe_to_concat(&mut self, start: Option<usize>, end: Option<usize>) {
@@ -1289,12 +1366,12 @@ impl hb_buffer_t {
             return;
         }
 
-        self._set_glyph_flags(UNSAFE_TO_CONCAT, start, end, Some(false), None);
+        self.set_glyph_flags(GlyphFlags::UNSAFE_TO_CONCAT, start, end, Some(false), None);
     }
 
     pub fn unsafe_to_break_from_outbuffer(&mut self, start: Option<usize>, end: Option<usize>) {
-        self._set_glyph_flags(
-            UNSAFE_TO_BREAK | UNSAFE_TO_CONCAT,
+        self.set_glyph_flags(
+            GlyphFlags::UNSAFE_TO_BREAK | GlyphFlags::UNSAFE_TO_CONCAT,
             start,
             end,
             Some(true),
@@ -1307,7 +1384,13 @@ impl hb_buffer_t {
             return;
         }
 
-        self._set_glyph_flags(UNSAFE_TO_CONCAT, start, end, Some(false), Some(true));
+        self.set_glyph_flags(
+            GlyphFlags::UNSAFE_TO_CONCAT,
+            start,
+            end,
+            Some(false),
+            Some(true),
+        );
     }
 
     pub fn move_to(&mut self, i: usize) -> bool {
@@ -1464,7 +1547,7 @@ impl hb_buffer_t {
 
     pub fn set_cluster(info: &mut GlyphInfo, cluster: u32, mask: hb_mask_t) {
         if info.cluster != cluster {
-            info.mask = (info.mask & !glyph_flag::DEFINED) | (mask & glyph_flag::DEFINED);
+            info.mask = (info.mask & !GlyphFlags::DEFINED_BITS) | (mask & GlyphFlags::DEFINED_BITS);
         }
 
         info.cluster = cluster;
@@ -1601,10 +1684,26 @@ impl hb_buffer_t {
         }
     }
 
+    fn set_pre_context_codepoints(&mut self, codepoints: &[u32]) {
+        self.clear_context(0);
+        for (i, &c) in codepoints.iter().take(CONTEXT_LENGTH).enumerate() {
+            self.context[0][i] = c;
+            self.context_len[0] += 1;
+        }
+    }
+
     fn set_post_context(&mut self, text: &str) {
         self.clear_context(1);
         for (i, c) in text.chars().enumerate().take(CONTEXT_LENGTH) {
             self.context[1][i] = c as Codepoint;
+            self.context_len[1] += 1;
+        }
+    }
+
+    fn set_post_context_codepoints(&mut self, codepoints: &[u32]) {
+        self.clear_context(1);
+        for (i, &c) in codepoints.iter().take(CONTEXT_LENGTH).enumerate() {
+            self.context[1][i] = c;
             self.context_len[1] += 1;
         }
     }
@@ -1773,10 +1872,26 @@ impl UnicodeBuffer {
         self.0.set_pre_context(str);
     }
 
+    /// Sets the pre-context for this buffer from codepoints.
+    ///
+    /// The input is expected to be the Unicode codepoints in reverse order.
+    /// This matches HarfBuzz's internal storage of pre-context, and serves
+    /// as a low-overhead method to pass pre-context from HarfBuzz-HarfRust.
+    #[inline]
+    pub fn set_pre_context_codepoints(&mut self, codepoints: &[u32]) {
+        self.0.set_pre_context_codepoints(codepoints);
+    }
+
     /// Sets the post-context for this buffer.
     #[inline]
     pub fn set_post_context(&mut self, str: &str) {
         self.0.set_post_context(str);
+    }
+
+    /// Sets the post-context for this buffer from codepoints.
+    #[inline]
+    pub fn set_post_context_codepoints(&mut self, codepoints: &[u32]) {
+        self.0.set_post_context_codepoints(codepoints);
     }
 
     /// Appends a character to a buffer with the given cluster value.
@@ -1988,8 +2103,8 @@ impl GlyphBuffer {
             }
 
             if flags.contains(SerializeFlags::GLYPH_FLAGS) {
-                if info.mask & glyph_flag::DEFINED != 0 {
-                    write!(&mut s, "#{:X}", info.mask & glyph_flag::DEFINED)?;
+                if info.mask & GlyphFlags::DEFINED_BITS != 0 {
+                    write!(&mut s, "#{:X}", info.mask & GlyphFlags::DEFINED_BITS)?;
                 }
             }
 

@@ -11,7 +11,7 @@ use super::*;
 use super::{hb_font_t, hb_tag_t};
 use crate::hb::aat;
 use crate::hb::algs::{rb_flag, rb_flag_unsafe};
-use crate::hb::buffer::glyph_flag::{SAFE_TO_INSERT_TATWEEL, UNSAFE_TO_BREAK, UNSAFE_TO_CONCAT};
+use crate::hb::buffer::GlyphFlags;
 use crate::hb::unicode::hb_gc::{
     HB_UNICODE_GENERAL_CATEGORY_LOWERCASE_LETTER, HB_UNICODE_GENERAL_CATEGORY_OTHER_LETTER,
     HB_UNICODE_GENERAL_CATEGORY_SPACE_SEPARATOR, HB_UNICODE_GENERAL_CATEGORY_TITLECASE_LETTER,
@@ -994,9 +994,9 @@ fn propagate_flags(buffer: &mut hb_buffer_t) {
     // Propagate cluster-level glyph flags to be the same on all cluster glyphs.
     // Simplifies using them.
 
-    let mut and_mask = glyph_flag::DEFINED;
+    let mut and_mask = GlyphFlags::DEFINED_BITS;
     if !buffer.flags.contains(BufferFlags::PRODUCE_UNSAFE_TO_CONCAT) {
-        and_mask &= !UNSAFE_TO_CONCAT;
+        and_mask &= !GlyphFlags::UNSAFE_TO_CONCAT.0;
     }
 
     if !buffer
@@ -1038,14 +1038,14 @@ fn propagate_flags(buffer: &mut hb_buffer_t) {
                 mask |= info.mask;
             }
 
-            mask &= glyph_flag::DEFINED;
+            mask &= GlyphFlags::DEFINED_BITS;
 
-            if mask & UNSAFE_TO_BREAK != 0 {
-                mask &= !SAFE_TO_INSERT_TATWEEL;
+            if mask & GlyphFlags::UNSAFE_TO_BREAK.0 != 0 {
+                mask &= !GlyphFlags::SAFE_TO_INSERT_TATWEEL.0;
             }
 
-            if mask & SAFE_TO_INSERT_TATWEEL != 0 {
-                mask |= UNSAFE_TO_BREAK | UNSAFE_TO_CONCAT;
+            if mask & GlyphFlags::SAFE_TO_INSERT_TATWEEL.0 != 0 {
+                mask |= GlyphFlags::UNSAFE_TO_BREAK.0 | GlyphFlags::UNSAFE_TO_CONCAT.0;
             }
 
             mask &= and_mask;

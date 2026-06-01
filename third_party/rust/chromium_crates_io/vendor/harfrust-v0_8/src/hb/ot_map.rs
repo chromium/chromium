@@ -2,7 +2,7 @@ use alloc::vec::Vec;
 use core::cmp::Ordering;
 use core::ops::Range;
 
-use super::buffer::{glyph_flag, hb_buffer_t};
+use super::buffer::{hb_buffer_t, GlyphFlags};
 use super::common::TagExt;
 use super::font_funcs::FontFuncsDispatch;
 use super::ot_layout::TableIndex;
@@ -355,7 +355,7 @@ impl<'a> hb_ot_map_builder_t<'a> {
         let mut map_features = Vec::new();
         let mut required_stage = [0; 2];
         let mut global_mask = GLOBAL_BIT_MASK;
-        let mut next_bit = glyph_flag::DEFINED.count_ones() + 1;
+        let mut next_bit = GlyphFlags::DEFINED_BITS.count_ones() + 1;
 
         // Sort features and merge duplicates.
         self.dedup_feature_infos();
