@@ -4491,8 +4491,9 @@ TEST_P(PaintArtifactCompositorTest, OpacityRenderSurfaces) {
   ASSERT_EQ(6u, LayerCount());
 
   std::array<int, 6> effect_ids;
-  for (size_t i = 0; i < LayerCount(); i++)
+  for (wtf_size_t i = 0; i < LayerCount(); ++i) {
     effect_ids[i] = LayerAt(i)->effect_tree_index();
+  }
 
   // Effects of layer 0, 1, 5 each has one compositing layer, so don't have
   // render surface.
@@ -4578,8 +4579,9 @@ TEST_P(PaintArtifactCompositorTest, OpacityAnimationRenderSurfaces) {
   ASSERT_EQ(6u, LayerCount());
 
   std::array<int, 6> effect_ids;
-  for (size_t i = 0; i < LayerCount(); i++)
+  for (wtf_size_t i = 0; i < LayerCount(); ++i) {
     effect_ids[i] = LayerAt(i)->effect_tree_index();
+  }
 
   // Effects of layer 0, 1, 5 each has one compositing layer, so don't have
   // render surface.

@@ -63,7 +63,7 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
 void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
     std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider,
     const gpu::SyncToken& completion_sync_token) {
-  int resource_size =
+  size_t resource_size =
       resource_provider->GetSharedImageFormat().EstimatedSizeInBytes(
           resource_provider->Size());
 
@@ -90,7 +90,7 @@ void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
 WebGPURecyclableResourceCache::Resource::Resource(
     std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider,
     unsigned int timer_id,
-    int resource_size)
+    size_t resource_size)
     : resource_provider_(std::move(resource_provider)),
       timer_id_(timer_id),
       resource_size_(resource_size) {}

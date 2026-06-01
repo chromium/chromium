@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -200,7 +201,8 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(), image_origin,
       image_size, src_point, info,
-      temp_argb_frame->stride(media::VideoFrame::Plane::kARGB),
+      base::checked_cast<GLuint>(
+          temp_argb_frame->stride(media::VideoFrame::Plane::kARGB)),
       temp_argb_frame->GetWritableVisiblePlaneData(
           media::VideoFrame::Plane::kARGB),
       blink::BindOnce(
@@ -237,11 +239,14 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(),
       gfx::Rect(image_size), gfx::Rect(image_size),
       shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin,
-      output_frame->stride(media::VideoFrame::Plane::kY),
+      base::checked_cast<int>(
+          output_frame->stride(media::VideoFrame::Plane::kY)),
       output_frame->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kY),
-      output_frame->stride(media::VideoFrame::Plane::kU),
+      base::checked_cast<int>(
+          output_frame->stride(media::VideoFrame::Plane::kU)),
       output_frame->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kU),
-      output_frame->stride(media::VideoFrame::Plane::kV),
+      base::checked_cast<int>(
+          output_frame->stride(media::VideoFrame::Plane::kV)),
       output_frame->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kV),
       blink::BindOnce(&StaticBitmapImageToVideoFrameCopier::OnReleaseMailbox,
                       weak_ptr_factory_.GetWeakPtr(), image),

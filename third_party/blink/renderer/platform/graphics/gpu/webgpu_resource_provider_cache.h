@@ -94,13 +94,13 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
     Resource(std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
                  resource_provider,
              unsigned int timer_id,
-             int resource_size);
+             size_t resource_size);
     Resource(Resource&& that) noexcept;
     ~Resource();
 
     std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider_;
     unsigned int timer_id_;
-    int resource_size_;
+    size_t resource_size_;
   };
 
   using DequeResourceProvider = Deque<Resource>;

@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 
+#include "base/numerics/safe_conversions.h"
 #include "cc/layers/layer.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_filter.h"
@@ -1107,7 +1108,8 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {
   gfx::Rect expected_visual_rect(7, 16, 93, 84);
   for (size_t i = 0; i < cc_list->TotalOpCount(); i++) {
     SCOPED_TRACE(testing::Message() << "Visual rect of op " << i);
-    EXPECT_EQ(expected_visual_rect, cc_list->VisualRectForTesting(i));
+    EXPECT_EQ(expected_visual_rect,
+              cc_list->VisualRectForTesting(base::checked_cast<int>(i)));
   }
 
   auto output = cc_list->FinalizeAndReleaseAsRecordForTesting();
@@ -1147,7 +1149,8 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
   // TotalOpCount() - 1 because the DrawRecord op has a sub operation.
   for (size_t i = 0; i < cc_list->TotalOpCount() - 1; i++) {
     SCOPED_TRACE(testing::Message() << "Visual rect of op " << i);
-    EXPECT_EQ(expected_filter_visual_rect, cc_list->VisualRectForTesting(i));
+    EXPECT_EQ(expected_filter_visual_rect,
+              cc_list->VisualRectForTesting(base::checked_cast<int>(i)));
   }
 
   auto output = cc_list->FinalizeAndReleaseAsRecordForTesting();
