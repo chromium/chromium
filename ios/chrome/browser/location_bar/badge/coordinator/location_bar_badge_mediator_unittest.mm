@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -152,7 +153,7 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
         {{kPageActionMenu, {}},
          {kAskGeminiChip, {{kAskGeminiChipPrepopulateFloaty, "true"}}},
          {kLocationBarBadgeMigration, {}}},
-        {});
+        {kGeminiCopresence});
 
     iph_feature_list_.InitAndEnableFeatures(
         {feature_engagement::kIPHiOSContextualPanelSampleModelFeature});
@@ -205,13 +206,15 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate());
 
+    GeminiBrowserAgent::CreateForBrowser(browser_.get());
+
     mediator_ = [[LocationBarBadgeMediator alloc]
         initWithWebStateList:web_state_list_
                      tracker:feature_engagement::TrackerFactory::GetForProfile(
                                  profile_.get())
                  prefService:profile_.get()->GetPrefs()
-               geminiService:GeminiServiceFactory::GetForProfile(
-                                 profile_.get())];
+               geminiService:GeminiServiceFactory::GetForProfile(profile_.get())
+          geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(browser_.get())];
     SignInAndSetCapability(true);
 
     mock_consumer_ = OCMProtocolMock(@protocol(LocationBarBadgeConsumer));
@@ -287,6 +290,11 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     OCMStub([mock_delegate_ canShowChip:[OCMArg any]]).andReturn(YES);
     EXPECT_CALL(*tracker_, ShouldTriggerHelpUI(testing::_))
         .WillRepeatedly(testing::Return(true));
+  }
+
+  void SetFloatyInvoked(bool invoked) {
+    GeminiBrowserAgent::FromBrowser(browser_.get())->is_floaty_invoked_ =
+        invoked;
   }
 
   web::WebTaskEnvironment task_environment_{
@@ -416,6 +424,22 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipNotShownIfTooRecent) {
   // Simulate that the timestamp check fails, causing badge to not show.
   AllowGeminiChipToShow(/*show_gemini_chip=*/false, /*trigger_help_ui=*/true,
                         /*badge_is_visible=*/false);
+  [mediator_ updateBadgeConfig:config];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that the Gemini contextual cue chip is not shown if the floaty is
+// already invoked.
+TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipNotShownIfFloatyInvoked) {
+  SetFloatyInvoked(true);
+
+  AllowGeminiChipToShow(/*show_gemini_chip=*/false, /*trigger_help_ui=*/true,
+                        /*badge_is_visible=*/false);
+
+  LocationBarBadgeConfiguration* config =
+      CreateBadgeConfiguration(LocationBarBadgeType::kGeminiContextualCueChip);
+  config.badgeText = kTestAccessibilityLabel;
+
   [mediator_ updateBadgeConfig:config];
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }

@@ -33,6 +33,7 @@
 class Browser;
 class FullscreenController;
 class AppBarMediatorTest;
+class LocationBarBadgeMediatorTest;
 
 namespace gemini {
 enum class FloatyUpdateSource;
@@ -162,6 +163,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   friend class BrowserUserData<GeminiBrowserAgent>;
   friend class GeminiBrowserAgentTest;
   friend class AppBarMediatorTest;
+  friend class LocationBarBadgeMediatorTest;
 
   // Fetches the full context of the active page and feeds it to Gemini.
   void RequestPageContextGeneration();

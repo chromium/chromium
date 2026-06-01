@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_coordinator_delegate.h"
@@ -77,7 +78,8 @@
       initWithWebStateList:self.browser->GetWebStateList()
                    tracker:tracker
                prefService:_prefService
-             geminiService:GeminiServiceFactory::GetForProfile(self.profile)];
+             geminiService:GeminiServiceFactory::GetForProfile(self.profile)
+        geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(self.browser)];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;

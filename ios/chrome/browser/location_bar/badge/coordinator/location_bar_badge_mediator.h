@@ -18,6 +18,7 @@
 class PrefService;
 class WebStateList;
 class GeminiService;
+class GeminiBrowserAgent;
 
 namespace feature_engagement {
 class Tracker;
@@ -31,6 +32,7 @@ class Tracker;
                              tracker:(feature_engagement::Tracker*)tracker
                          prefService:(PrefService*)prefService
                        geminiService:(GeminiService*)geminiService
+                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
 
     NS_DESIGNATED_INITIALIZER;
 
