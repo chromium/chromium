@@ -969,8 +969,13 @@ public class ProcessInitializationHandler {
 
     private void startBindingManagementIfNeeded() {
         ChildProcessLauncherHelper.initialize();
+        // ProtectRecentlyVisibleTab feature disables BindingManager and ProcessRankPolicyAndroid in
+        // performance manager manages it instead.
+        // TODO(crbug.com/467504869): Remove desktop check once the feature is launched on Android.
+        boolean isProtectRecentlyVisibleTabEnabled =
+                DeviceInfo.isDesktop() || ChromeFeatureList.sProtectRecentlyVisibleTab.isEnabled();
         // Moderate binding doesn't apply to low end devices.
-        if (SysUtils.isLowEndDevice() || ChromeFeatureList.sProtectRecentlyVisibleTab.isEnabled()) {
+        if (SysUtils.isLowEndDevice() || isProtectRecentlyVisibleTabEnabled) {
             return;
         }
         ChildProcessLauncherHelper.startBindingManagement(ContextUtils.getApplicationContext());
