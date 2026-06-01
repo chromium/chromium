@@ -17,7 +17,6 @@
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
-#include "components/page_content_annotations/core/tracked_element_feature.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
@@ -69,13 +68,7 @@ void IndigoImageReplacementManager::RegisterImageReplacement(
       std::move(image_replacement));
   mojo::PendingRemote<blink::mojom::ImageReplacementHost> host_remote;
   auto host_receiver = host_remote.InitWithNewPipeAndPassReceiver();
-  std::optional<int32_t> feature_id;
-  if (is_primary) {
-    feature_id =
-        static_cast<int32_t>(page_content_annotations::TrackedElementFeature::
-                                 kIndigoImageReplacement);
-  }
-  remote->StartReplacement(std::move(host_remote), feature_id);
+  remote->StartReplacement(std::move(host_remote));
   receivers_.Add(this, std::move(host_receiver),
                  IndigoImageReplacement(this, std::move(remote), is_primary));
 }
@@ -97,22 +90,13 @@ void IndigoImageReplacementManager::ResetAllReplacements(
   receivers_.Clear();
   primary_registered_ = false;
   generated_image_url_ = GURL();
-}
-
-std::optional<base::Token>
-IndigoImageReplacementManager::GetPrimaryTrackedElementId() const {
-  for (const auto& [receiver_id, context] : receivers_.GetAllContexts()) {
-    if (context->is_primary()) {
-      return context->tracked_element_id();
-    }
-  }
-  return std::nullopt;
+  primary_bounds_ = gfx::Rect();
 }
 
 void IndigoImageReplacementManager::ReplacementFrameAttached(
     const blink::LocalFrameToken& replacement_frame_token,
-    blink::mojom::ImageDataPtr original_image,
-    const std::optional<base::Token>& tracked_element_id) {
+    const gfx::QuadF& quad,
+    blink::mojom::ImageDataPtr original_image) {
   content::RenderFrameHost* image_replacement_subframe =
       content::RenderFrameHost::FromFrameToken(
           content::GlobalRenderFrameHostToken(
@@ -143,8 +127,8 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
   if (original_image) {
     image_bytes_copy.assign_range(original_image->webp_bytes);
   }
-  image_replacement.ReplacementFrameAttached(
-      frame_tree_node_id, std::move(image_bytes_copy), tracked_element_id);
+  image_replacement.ReplacementFrameAttached(frame_tree_node_id,
+                                             std::move(image_bytes_copy));
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
@@ -158,11 +142,25 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
   params.should_replace_current_entry = true;
   web_contents->GetController().LoadURLWithParams(std::move(params));
 
-  // We only use the primary image for generating the replacement image.
-  // The generated image is then shared with the other replacements.
+  // We only use the primary image for positioning the toolbar and generating
+  // the replacement image. The generated image is then shared with the other
+  // replacements.
   if (!image_replacement.is_primary()) {
     return;
   }
+
+  gfx::QuadF scaled_quad = quad;
+  if (content::RenderWidgetHostView* view =
+          page().GetMainDocument().GetView()) {
+    scaled_quad.Scale(1.0f / view->GetDeviceScaleFactor());
+  }
+
+  gfx::Rect bounds_rect = gfx::ToEnclosingRect(scaled_quad.BoundingBox());
+  if (bounds_rect.IsEmpty()) {
+    return;
+  }
+
+  primary_bounds_ = bounds_rect;
 
   // Generate a new image based on the original image bytes.
   Profile* profile =
@@ -212,7 +210,9 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
   if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
     auto* controller = indigo::IndigoPageActionController::From(tab);
     CHECK(controller);
-    controller->ShowToolbar();
+    if (!primary_bounds_.IsEmpty()) {
+      controller->ShowToolbarInside(primary_bounds_);
+    }
   }
 }
 

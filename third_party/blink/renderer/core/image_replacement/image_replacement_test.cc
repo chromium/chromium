@@ -88,8 +88,8 @@ class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
  public:
   void ReplacementFrameAttached(
       const blink::LocalFrameToken& frame_token,
-      mojom::blink::ImageDataPtr original_image,
-      const std::optional<base::Token>& tracked_element_id) override {
+      const gfx::QuadF& quad,
+      mojom::blink::ImageDataPtr original_image) override {
     EXPECT_TRUE(original_image);
     if (original_image) {
       EXPECT_GT(original_image->webp_bytes.size(), 0u);
@@ -108,17 +108,15 @@ class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
       }
     }
     frame_token_ = frame_token;
+    quad_ = quad;
     original_image_ = std::move(original_image);
-    tracked_element_id_ = tracked_element_id;
   }
 
   const std::optional<blink::LocalFrameToken>& frame_token() const {
     return frame_token_;
   }
 
-  const std::optional<base::Token>& tracked_element_id() const {
-    return tracked_element_id_;
-  }
+  const std::optional<gfx::QuadF>& quad() const { return quad_; }
 
   const SkBitmap& decoded_bitmap() const { return decoded_bitmap_; }
 
@@ -129,8 +127,8 @@ class MockImageReplacementHost : public mojom::blink::ImageReplacementHost {
  private:
   mojo::Receiver<mojom::blink::ImageReplacementHost> receiver_{this};
   std::optional<blink::LocalFrameToken> frame_token_;
+  std::optional<gfx::QuadF> quad_;
   mojom::blink::ImageDataPtr original_image_;
-  std::optional<base::Token> tracked_element_id_;
   SkBitmap decoded_bitmap_;
 };
 
@@ -189,7 +187,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementLifecycle) {
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
   // Verify replacement state
@@ -252,7 +250,7 @@ TEST_F(ImageReplacementSimTest, OriginalImageIsEncodedCorrectly) {
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
   // Verify the decoded image in the mock host.
@@ -333,7 +331,7 @@ TEST_F(ImageReplacementSimTest, OriginalImageRespectsOrientation) {
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
   // Verify the decoded image in the mock host.
@@ -344,7 +342,7 @@ TEST_F(ImageReplacementSimTest, OriginalImageRespectsOrientation) {
   EXPECT_EQ(bitmap.height(), 100);
 }
 
-TEST_F(ImageReplacementSimTest, ImageReplacementSendsTrackedElementId) {
+TEST_F(ImageReplacementSimTest, ImageReplacementSendsCorrectQuad) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kImageReplacement);
   SimRequest main_resource("https://example.com/index.html", "text/html");
@@ -373,25 +371,37 @@ TEST_F(ImageReplacementSimTest, ImageReplacementSendsTrackedElementId) {
       std::move(result.value()));
 
   MockImageReplacementHost mock_host;
-  // Start replacement with layout tracking enabled (using kIndigoToolbar as
-  // feature ID).
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), 0);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
-  EXPECT_TRUE(mock_host.tracked_element_id().has_value());
-  EXPECT_NE(mock_host.tracked_element_id().value(), base::Token());
+  EXPECT_TRUE(mock_host.quad().has_value());
+
+  // We expect the quad to be exactly at the absolutely positioned location
+  // and match the specified dimensions.
+  gfx::QuadF expected_quad(gfx::RectF(50, 100, 100, 100));
+
+  EXPECT_EQ(mock_host.quad().value(), expected_quad);
 }
 
-TEST_F(ImageReplacementSimTest, ImageReplacementDoesNotSendTrackedElementId) {
+TEST_F(ImageReplacementSimTest, ImageReplacementSendsCorrectQuadWithTransform) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kImageReplacement);
   SimRequest main_resource("https://example.com/index.html", "text/html");
   LoadURL("https://example.com/index.html");
+  WebView().SetZoomFactorForDeviceScaleFactor(2.0f);
+
   main_resource.Complete(R"(
     <style>
       body { margin: 0; }
-      #target { position: absolute; left: 50px; top: 100px; width: 100px; height: 100px; }
+      #target {
+        position: absolute;
+        left: 50px;
+        top: 100px;
+        width: 100px;
+        height: 100px;
+        transform: rotate(45deg);
+      }
     </style>
     <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
          id="target"></img>
@@ -412,12 +422,22 @@ TEST_F(ImageReplacementSimTest, ImageReplacementDoesNotSendTrackedElementId) {
       std::move(result.value()));
 
   MockImageReplacementHost mock_host;
-  // Start replacement with layout tracking disabled.
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
-  EXPECT_FALSE(mock_host.tracked_element_id().has_value());
+  EXPECT_TRUE(mock_host.quad().has_value());
+
+  gfx::QuadF received_quad = mock_host.quad().value();
+
+  // Center in CSS pixels is (100, 150). -> Physical (DPR=2): (200, 300)
+  // Bounding box size in CSS pixels was 141.4214 -> Physical (DPR=2): 282.8428
+
+  EXPECT_NEAR(received_quad.BoundingBox().CenterPoint().x(), 200.f, 0.5f);
+  EXPECT_NEAR(received_quad.BoundingBox().CenterPoint().y(), 300.f, 0.5f);
+
+  EXPECT_NEAR(received_quad.BoundingBox().width(), 282.8428f, 0.5f);
+  EXPECT_NEAR(received_quad.BoundingBox().height(), 282.8428f, 0.5f);
 }
 
 TEST_F(ImageReplacementSimTest, ClickFiresOnImageAfterReplacement) {
@@ -447,7 +467,7 @@ TEST_F(ImageReplacementSimTest, ClickFiresOnImageAfterReplacement) {
       std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
@@ -503,7 +523,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementRendering) {
       std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
@@ -566,7 +586,7 @@ TEST_F(ImageReplacementSimTest,
       std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
@@ -621,7 +641,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementWaitsForLoadAndResumes) {
       std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
   EXPECT_FALSE(img->HasImageReplacement());
@@ -674,7 +694,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementRemovedFromDocument) {
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());
@@ -760,7 +780,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementMovedToNewDocument) {
 
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());
@@ -836,7 +856,7 @@ TEST_F(ImageReplacementSimTest, ResumeReplacementFailsIfImageLoadFails) {
       std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
   // Replacement should not have started since the image is not loaded.
@@ -861,7 +881,7 @@ TEST_F(ImageReplacementSimTest, ResumeReplacementFailsIfImageLoadFails) {
   // Replacement should not have started since the image load failed.
   mock_host.receiver().reset();
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
   EXPECT_FALSE(img->HasImageReplacement());
   EXPECT_FALSE(replacement_remote.is_connected());
@@ -893,7 +913,7 @@ TEST_F(ImageReplacementSimTest, ImageReplacementResetAfterSrcChange) {
       std::move(result.value()));
   MockImageReplacementHost mock_host;
   replacement_remote->StartReplacement(
-      mock_host.receiver().BindNewPipeAndPassRemote(), std::nullopt);
+      mock_host.receiver().BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
   EXPECT_TRUE(img->HasImageReplacement());

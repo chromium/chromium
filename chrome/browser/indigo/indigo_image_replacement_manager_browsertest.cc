@@ -160,9 +160,8 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
                                 size_t frame_index = 0)
       : web_contents_(web_contents), frame_index_(frame_index) {}
 
-  void StartReplacement(
-      mojo::PendingRemote<blink::mojom::ImageReplacementHost> host_remote,
-      std::optional<int32_t> tracked_element_feature_id) override {
+  void StartReplacement(mojo::PendingRemote<blink::mojom::ImageReplacementHost>
+                            host_remote) override {
     host_remote_.Bind(std::move(host_remote));
     host_remote_.set_disconnect_handler(disconnect_future_.GetCallback());
 
@@ -180,9 +179,9 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
 
     blink::mojom::ImageDataPtr image_data = blink::mojom::ImageData::New();
     image_data->webp_bytes = mojo_base::BigBuffer(kImageBytes);
-    host_remote_->ReplacementFrameAttached(raw_subframe->GetFrameToken(),
-                                           std::move(image_data),
-                                           base::Token::CreateRandom());
+    host_remote_->ReplacementFrameAttached(
+        raw_subframe->GetFrameToken(),
+        gfx::QuadF(gfx::RectF(0.f, 0.f, 100.f, 100.f)), std::move(image_data));
 
     start_replacement_future_.SetValue();
   }

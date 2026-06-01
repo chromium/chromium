@@ -30,10 +30,6 @@ class FakeApi {
   void StartAcceptingConnections(int num_generate_requests = 1,
                                  int num_delete_requests = 0);
 
-  // Starts accepting connections and automatically answers all generate and
-  // delete requests with mock success responses.
-  void StartAcceptingConnectionsAutomatic();
-
   // Returns the URL to be used for the generate endpoint.
   GURL GetGenerateUrl() const;
 
@@ -61,9 +57,6 @@ class FakeApi {
       size_t index = 0);
 
  private:
-  std::unique_ptr<net::test_server::HttpResponse> HandleDefaultRequest(
-      const net::test_server::HttpRequest& request);
-
   net::EmbeddedTestServer test_server_;
   std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
       controllable_responses_;

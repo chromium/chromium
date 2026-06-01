@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_IMAGE_REPLACEMENT_IMAGE_REPLACEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_IMAGE_REPLACEMENT_IMAGE_REPLACEMENT_H_
 
-#include <optional>
-
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom-blink.h"
@@ -59,9 +57,8 @@ class CORE_EXPORT ImageReplacement : public GarbageCollected<ImageReplacement>,
 
  private:
   // mojom::blink::ImageReplacement:
-  void StartReplacement(
-      mojo::PendingRemote<mojom::blink::ImageReplacementHost> host_remote,
-      std::optional<int32_t> tracked_element_feature_id) override;
+  void StartReplacement(mojo::PendingRemote<mojom::blink::ImageReplacementHost>
+                            host_remote) override;
   void RenderReplacement() override;
 
   mojo::PendingRemote<mojom::blink::ImageReplacement> BindReceiver();
@@ -76,7 +73,6 @@ class CORE_EXPORT ImageReplacement : public GarbageCollected<ImageReplacement>,
   bool should_paint_original_image_ = true;
   AtomicString original_image_source_url_;
   mojo::PendingRemote<mojom::blink::ImageReplacementHost> pending_host_remote_;
-  std::optional<int32_t> tracked_element_feature_id_;
 };
 
 }  // namespace blink

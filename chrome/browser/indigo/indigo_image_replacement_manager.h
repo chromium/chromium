@@ -58,13 +58,12 @@ class IndigoImageReplacementManager
   // Resets all image replacements owned and managed by this class.
   void ResetAllReplacements(base::PassKey<IndigoPageActionController>);
   const GURL& generated_image_url() const { return generated_image_url_; }
-  std::optional<base::Token> GetPrimaryTrackedElementId() const;
 
   // blink::mojom::ImageReplacementHost implementation:
   void ReplacementFrameAttached(
       const blink::LocalFrameToken& replacement_frame_token,
-      blink::mojom::ImageDataPtr original_image,
-      const std::optional<base::Token>& tracked_element_id) override;
+      const gfx::QuadF& quad,
+      blink::mojom::ImageDataPtr original_image) override;
 
  private:
   friend class content::PageUserData<IndigoImageReplacementManager>;
@@ -82,7 +81,8 @@ class IndigoImageReplacementManager
       receivers_;
   bool primary_registered_ = false;
   GURL generated_image_url_;
-
+  // TODO(b/513370913): Remove this when bounds are no longer needed here.
+  gfx::Rect primary_bounds_;
   base::WeakPtrFactory<IndigoImageReplacementManager> weak_ptr_factory_{this};
 };
 

@@ -27,21 +27,13 @@ namespace page_content_annotations {
 // If any new features are added here,
 // `viz::TrackedElementFeature::kTrackedElementFeatureMax` should be updated.
 
+// LINT.IfChange(TrackedElementFeature)
 enum class TrackedElementFeature : int32_t {
   kAIHighlight = static_cast<int32_t>(
                      viz::TrackedElementFeature::kTrackedElementFeatureEnd) +
                  1,
-  kIndigoImageReplacement,
-  kMaxValue = kIndigoImageReplacement,
 };
-
-static_assert(
-    static_cast<int32_t>(TrackedElementFeature::kMaxValue) ==
-        static_cast<int32_t>(
-            viz::TrackedElementFeature::kTrackedElementFeatureMax),
-    "viz::TrackedElementFeature::kTrackedElementFeatureMax must be updated "
-    "when adding new features to "
-    "page_content_annotations::TrackedElementFeature");
+// LINT.ThenChange(//components/viz/common/surfaces/tracked_element_rects.h:TrackedElementFeature)
 
 }  // namespace page_content_annotations
 
