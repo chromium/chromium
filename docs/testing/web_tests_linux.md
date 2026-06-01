@@ -10,7 +10,7 @@
         `src/third_party/blink/web_tests/fast/`.
 1.  When the tests finish, any unexpected results should be displayed.
 
-See [Web Tests](testing/web_tests.md)
+See [Web Tests](web_tests.md)
 for full documentation about set up and available options.
 
 ## Pixel Tests
