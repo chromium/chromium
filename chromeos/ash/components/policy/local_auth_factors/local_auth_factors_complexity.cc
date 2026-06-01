@@ -102,11 +102,11 @@ CharClass GetCharClass(base_icu::UChar32 c) {
   return CharClass::kOther;
 }
 
-// Returns true if the password contains 5+:
-// - Repeating characters (e.g., "aaaaa", "@@@@@"),
-// - Sequential letters or numbers (e.g., "abcde", "ABCDE", "98765").
+// Returns true if the password contains 4+:
+// - Repeating characters (e.g., "aaaa", "@@@@"),
+// - Sequential letters or numbers (e.g., "abcd", "ABCD", "9876").
 bool ContainsTrivialSequence(std::string_view password) {
-  constexpr int kMinSeq = 5;
+  constexpr int kMinSeq = 4;
   int inc = 1, dec = 1, same = 1;
 
   base_icu::UChar32 prev = -1;

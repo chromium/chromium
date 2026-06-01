@@ -53,7 +53,7 @@ TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
       {"MediumJustEnough2ClassDS", "74185296+", Complexity::kMedium, Result::kOk},
       {"MediumJustEnough3ClassLUD", "xYxYzZa1", Complexity::kMedium, Result::kOk},
       {"MediumJustEnough3ClassLUS", "aBcDeFg@", Complexity::kMedium, Result::kOk},
-      {"MediumJustEnough4ClassLUNDS", "JkLmnop7$", Complexity::kMedium, Result::kOk},
+      {"MediumJustEnough4ClassLUNDS", "JkLpMqR7$", Complexity::kMedium, Result::kOk},
       {"MediumLong2Class", "zxcvbnm,./1", Complexity::kMedium, Result::kOk},
 
       // kHigh tests (Length >= 12, all 4 character classes).
@@ -70,30 +70,34 @@ TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
 
       // --- Repetitions and Sequences ---
 
-      // Identical Characters (Max 4 allowed).
-      {"Medium4IdenticalPass", "aaaa1234", Complexity::kMedium, Result::kOk},
+      // Identical Characters (Max 3 allowed).
+      {"Medium3IdenticalPass", "aaa12356", Complexity::kMedium, Result::kOk},
+      {"Medium4IdenticalFail", "aaaa1234", Complexity::kMedium, Result::kContainsTrivialSequence},
       {"Medium5IdenticalFail", "aaaaa123", Complexity::kMedium, Result::kContainsTrivialSequence},
       {"Medium5IdenticalEndFail", "123aaaaa", Complexity::kMedium, Result::kContainsTrivialSequence},
-      {"High4IdenticalPass", "aaaaB1!dEfGh", Complexity::kHigh, Result::kOk},
+      {"High3IdenticalPass", "aaaB1!dEfGhi", Complexity::kHigh, Result::kOk},
+      {"High4IdenticalFail", "aaaaB1!dEfGh", Complexity::kHigh, Result::kContainsTrivialSequence},
       {"High5IdenticalFail", "aaaaaB1!dEfG", Complexity::kHigh, Result::kContainsTrivialSequence},
       {"LowIgnoresIdentical", "aaaaa1", Complexity::kLow, Result::kOk},
 
-      // Alphabetical / Numerical Sequences (Max 4 allowed).
-      {"Medium4SeqPass", "abcd1234", Complexity::kMedium, Result::kOk},
+      // Alphabetical / Numerical Sequences (Max 3 allowed).
+      {"Medium3SeqPass", "abc13579", Complexity::kMedium, Result::kOk},
+      {"Medium4SeqFail", "abcd1234", Complexity::kMedium, Result::kContainsTrivialSequence},
       {"Medium5SeqIncFail", "abcde123", Complexity::kMedium, Result::kContainsTrivialSequence},
       {"Medium5SeqDecFail", "edcba123", Complexity::kMedium, Result::kContainsTrivialSequence},
-      {"High4SeqPass", "abcdB1!EfGhI", Complexity::kHigh, Result::kOk},
+      {"High3SeqPass", "abcB1!fGhIjk", Complexity::kHigh, Result::kOk},
+      {"High4SeqFail", "abcdB1!EfGhI", Complexity::kHigh, Result::kContainsTrivialSequence},
       {"High5SeqIncFail", "abcdeB1!fGhI", Complexity::kHigh, Result::kContainsTrivialSequence},
       {"High5SeqDecFail", "654321abCD!@", Complexity::kHigh, Result::kContainsTrivialSequence},
       {"LowIgnoresSequence", "abcde1", Complexity::kLow, Result::kOk},
 
       // Cross-class ASCII sequences.
       {"MediumCrossClassIncPass", "XYZ[\\123", Complexity::kMedium, Result::kOk},
-      {"MediumCrossClassDecPass", "{zyxw123", Complexity::kMedium, Result::kOk},
+      {"MediumCrossClassDecPass", "{zyx1357", Complexity::kMedium, Result::kOk},
       {"MediumCrossClassPunctDigitPass", "-./012ab", Complexity::kMedium, Result::kOk},
 
       // Mixed delta sequence (Not a single continuous run).
-      {"MediumMixedDeltaPass", "abcdc123", Complexity::kMedium, Result::kOk},
+      {"MediumMixedDeltaPass", "abce1357", Complexity::kMedium, Result::kOk},
 
       // Symbol sequence should pass, while symbol repetition should fail.
       {"HighSymbolSequencePass", "aA1#$%&'()*+,-./", Complexity::kHigh, Result::kOk},
@@ -101,15 +105,15 @@ TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
 
       // Off by one errors at symbol <-> alnum boundaries.
       // ASCII 0x5D to 0x65: ]^_`abcde
-      {"MediumSymbolLowerBoundaryPass", "]^_`abcd", Complexity::kMedium, Result::kOk},
-      {"MediumSymbolLowerBoundaryPass", "]^_`abcde", Complexity::kMedium, Result::kContainsTrivialSequence},
+      {"MediumSymbolLowerBoundaryPass", "]^_ab123", Complexity::kMedium, Result::kOk},
+      {"MediumSymbolLowerBoundaryFail", "]^_`abcd", Complexity::kMedium, Result::kContainsTrivialSequence},
 
       // Unicode characters (counting code points).
       {"UnicodeLowShort", "aa👋", Complexity::kLow, Result::kTooShort},
       {"UnicodeLowJustEnough", "aaaaa👋", Complexity::kLow, Result::kOk},
       {"UnicodeMediumShort", "👋👋👋👋👋👋a", Complexity::kMedium, Result::kTooShort},
-      {"UnicodeMediumPass", "👋👋👋👋aa11", Complexity::kMedium, Result::kOk},
-      {"UnicodeMediumSequence", "👋👋👋👋👋aa1", Complexity::kMedium, Result::kContainsTrivialSequence},
+      {"UnicodeMediumPass", "👋👋👋aa111", Complexity::kMedium, Result::kOk},
+      {"UnicodeMediumSequence", "👋👋👋👋aa11", Complexity::kMedium, Result::kContainsTrivialSequence},
       {"UnicodeNonLatin", "čćšđža1!abcd", Complexity::kHigh, Result::kMissesCharacters},
       {"UnicodeNonLatinPass", "čćšđžaaAA11!!", Complexity::kHigh, Result::kOk},
 

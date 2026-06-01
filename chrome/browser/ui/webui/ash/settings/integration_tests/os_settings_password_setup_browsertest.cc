@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(
       "Must not have repeated characters or sequences of 4 or more");
 
   // 4. Test OK
-  password_settings.EnterFirstInput("P@ssword1234!");
+  password_settings.EnterFirstInput("P@ssword1235!");
   password_settings.AssertFirstInputError("");
 }
 
