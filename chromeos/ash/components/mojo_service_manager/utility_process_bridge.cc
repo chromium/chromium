@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/components/mojo_service_manager/utility_process_bridge.h"
 
+#include <string_view>
+
+#include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -50,9 +53,11 @@ class UtilityProcessBridge
     GetServiceManagerProxy()->AddServiceObserver(std::move(observer));
   }
 
-  void BindReceiver(mojo::PendingReceiver<
-                    chromeos::mojo_service_manager::mojom::ServiceManager>
+  void BindReceiver(const std::string& utility_service_name,
+                    mojo::PendingReceiver<
+                        chromeos::mojo_service_manager::mojom::ServiceManager>
                         pending_receiver) {
+    CHECK(allowed_services_.contains(utility_service_name));
     receivers_.Add(this, std::move(pending_receiver));
   }
 
@@ -67,6 +72,10 @@ class UtilityProcessBridge
   UtilityProcessBridge() = default;
   ~UtilityProcessBridge() override = default;
 
+  static constexpr auto allowed_services_ =
+      base::MakeFixedFlatSet<std::string_view>({
+          "video_capture.mojom.VideoCaptureService",
+      });
   mojo::ReceiverSet<chromeos::mojo_service_manager::mojom::ServiceManager>
       receivers_;
 };
@@ -74,9 +83,10 @@ class UtilityProcessBridge
 }  // namespace
 
 void EstablishUtilityProcessBridge(
+    const std::string& utility_service_name,
     mojo::PendingReceiver<mojom::ServiceManager> pending_receiver) {
   UtilityProcessBridge::GetInstance()->BindReceiver(
-      std::move(pending_receiver));
+      utility_service_name, std::move(pending_receiver));
 }
 
 }  // namespace ash::mojo_service_manager
