@@ -13276,6 +13276,24 @@
             ]
         }
     ],
+    "HttpsFirstModeDefaultSettingPairsWithEsb": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HttpsFirstModeDefaultSettingPairsWithEsb"
+                    ]
+                }
+            ]
+        }
+    ],
     "HttpsFirstModeV2ForTypicallySecureUsers": [
         {
             "platforms": [
