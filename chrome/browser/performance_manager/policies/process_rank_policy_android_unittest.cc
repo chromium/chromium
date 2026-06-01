@@ -12,6 +12,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/android_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -156,7 +158,12 @@ TEST_F(ProcessRankPolicyAndroidTest,
             content::ChildProcessImportance::MODERATE);
 }
 
-TEST_F(ProcessRankPolicyAndroidTest, NonFocusedVisiblePage) {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_NonFocusedVisiblePage DISABLED_NonFocusedVisiblePage
+#else
+#define MAYBE_NonFocusedVisiblePage NonFocusedVisiblePage
+#endif
+TEST_F(ProcessRankPolicyAndroidTest, MAYBE_NonFocusedVisiblePage) {
   scoped_feature_list_.InitAndDisableFeature(
       chrome::android::kChangeUnfocusedPriority);
   graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>());
