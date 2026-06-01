@@ -194,8 +194,31 @@ def _ReportXmlIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
                                   absolute_paths_of_affected_files)
 
 
+def _CheckNoManualSysPathManipulation(input_api: Any,
+                                      output_api: Any) -> List[Any]:
+  """Checks that no manual sys.path manipulation is done in tools/metrics."""
+  results = []
+  sys_path_pattern = input_api.re.compile(
+      r'sys\.path\.(append|insert|extend)\(|sys\.path\s*\+?=')
+
+  python_files = lambda f: f.LocalPath().endswith('.py')
+  for affected_file in input_api.AffectedSourceFiles(python_files):
+    filepath = affected_file.LocalPath()
+    if 'setup_modules' in filepath or input_api.os_path.basename(
+        filepath) == 'PRESUBMIT.py':
+      continue
+    for line_number, line in affected_file.ChangedContents():
+      if sys_path_pattern.search(line):
+        results.append(
+            output_api.PresubmitError(
+                f'{filepath}:{line_number} uses manual sys.path manipulation. '
+                f'Use setup_modules instead.'))
+  return results
+
+
 def CheckChange(input_api: Type, output_api: Type):
   problems: List[Any] = []
+  problems.extend(_CheckNoManualSysPathManipulation(input_api, output_api))
   problems.extend(
       presubmit_caching_support.RunCheckWithCache(
           _ReportPythonIssuesList,
