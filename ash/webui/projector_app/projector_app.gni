@@ -4,8 +4,8 @@ import("//build/config/chrome_build.gni")
 assert(is_chromeos)
 
 declare_args() {
-  # Whether to enable the "real" ChromeOS Projector App. When false, a mock app is
-  # bundled for testing integration points.
+  # Whether to enable the "real" ChromeOS Projector App. When false, a mock app
+  # is bundled for testing integration points.
   enable_cros_projector_app = is_chrome_branded
 }
 
