@@ -479,14 +479,20 @@ class FinalizeInstallJobTestIwaUpdateManifest
 
 TEST_P(FinalizeInstallJobTestIwaUpdateManifest, IsolationDataSetInWebAppDB) {
   const IsolatedWebAppStorageLocation& location = GetParam();
-  IwaVersion version = *IwaVersion::Create("1.2.3");
+  const GURL update_manifest_url =
+      GURL("https://example.com/update_manifest.json");
+  const IwaVersion version = *IwaVersion::Create("1.2.3");
 
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       IwaOrigin(test::GetDefaultEcdsaP256WebBundleId()).origin().GetURL());
   info->title = kDefaultAppTitle;
   info->set_isolated_web_app_version(version);
+  info->iwa_update_manifest_url = update_manifest_url;
 
-  FinalizeJobOptions options(webapps::WebappInstallSource::EXTERNAL_POLICY);
+  webapps::WebappInstallSource install_source =
+      location.dev_mode() ? webapps::WebappInstallSource::IWA_DEV_UI
+                          : webapps::WebappInstallSource::IWA_EXTERNAL_POLICY;
+  FinalizeJobOptions options(install_source);
 
   auto integrity_block_data =
       IsolatedWebAppIntegrityBlockData(test::CreateSignatures());
@@ -507,6 +513,12 @@ TEST_P(FinalizeInstallJobTestIwaUpdateManifest, IsolationDataSetInWebAppDB) {
                                            /*controlled_frame_partitions=*/_,
                                            /*pending_update_info=*/std::nullopt,
                                            integrity_block_data)));
+
+  std::optional<GURL> expected_url =
+      location.dev_mode() ? std::nullopt
+                          : std::optional<GURL>(update_manifest_url);
+  EXPECT_EQ(installed_app->isolation_data()->update_manifest_url(),
+            expected_url);
 }
 
 INSTANTIATE_TEST_SUITE_P(

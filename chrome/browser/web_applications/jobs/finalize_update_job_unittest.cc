@@ -17,6 +17,9 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/model/migration_source.h"
@@ -38,6 +41,10 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -231,6 +238,110 @@ TEST_F(FinalizeUpdateJobTest, OnWebAppManifestUpdatedTriggered) {
             RunFinalizeUpdateJob(*info));
   EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
 }
+
+class FinalizeUpdateJobTestIwa
+    : public FinalizeUpdateJobTest,
+      public testing::WithParamInterface<IsolatedWebAppStorageLocation> {
+ protected:
+  webapps::AppId InstallBaseIwa(const WebAppInstallInfo& info,
+                                const IsolatedWebAppStorageLocation& location,
+                                std::optional<IsolatedWebAppIntegrityBlockData>
+                                    integrity_block_data = std::nullopt) {
+    webapps::WebappInstallSource install_source =
+        location.dev_mode() ? webapps::WebappInstallSource::IWA_DEV_UI
+                            : webapps::WebappInstallSource::IWA_EXTERNAL_POLICY;
+
+    FinalizeJobOptions options(install_source);
+    options.iwa_options = FinalizeJobOptions::IwaOptions(
+        location,
+        integrity_block_data.value_or(
+            IsolatedWebAppIntegrityBlockData(test::CreateSignatures())));
+
+    base::test::TestFuture<webapps::AppId, webapps::InstallResultCode> future;
+    FakeWebAppProvider::Get(profile())->install_finalizer().FinalizeInstall(
+        info, options,
+        base::BindOnce(
+            [](base::OnceCallback<void(webapps::AppId,
+                                       webapps::InstallResultCode)> callback,
+               const webapps::AppId& app_id, webapps::InstallResultCode code) {
+              std::move(callback).Run(app_id, code);
+            },
+            future.GetCallback()));
+
+    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+              future.Get<webapps::InstallResultCode>());
+    return future.Get<webapps::AppId>();
+  }
+
+  void SetPendingUpdateState(const webapps::AppId& app_id,
+                             const IsolatedWebAppStorageLocation& location,
+                             const IwaVersion& update_version,
+                             std::optional<IsolatedWebAppIntegrityBlockData>
+                                 integrity_block = std::nullopt) {
+    WebApp* app = FakeWebAppProvider::Get(profile())
+                      ->GetRegistrarMutable()
+                      .GetAppByIdMutable(app_id);
+    ASSERT_TRUE(app);
+    ASSERT_TRUE(app->isolation_data().has_value());
+    app->SetIsolationData(
+        IsolationData::Builder(*app->isolation_data())
+            .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
+                location, update_version, integrity_block))
+            .Build());
+  }
+};
+
+TEST_P(FinalizeUpdateJobTestIwa, IwaUpdateManifestUrlIgnoredInDevMode) {
+  const IsolatedWebAppStorageLocation& location = GetParam();
+  const GURL update_manifest_url =
+      GURL("https://example.com/update_manifest.json");
+  const GURL start_url =
+      IwaOrigin(test::GetDefaultEcdsaP256WebBundleId()).origin().GetURL();
+  const IwaVersion installed_version = *IwaVersion::Create("1.0.0");
+  const IwaVersion update_version = *IwaVersion::Create("2.0.0");
+
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = kDefaultAppTitle;
+  info->set_isolated_web_app_version(installed_version);
+  info->iwa_update_manifest_url = update_manifest_url;
+
+  webapps::AppId app_id = InstallBaseIwa(*info, location);
+  auto integrity_block_data =
+      IsolatedWebAppIntegrityBlockData(test::CreateSignatures());
+  SetPendingUpdateState(app_id, location, update_version, integrity_block_data);
+
+  auto update_info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  update_info->title = u"Foo Title Update";
+  update_info->set_isolated_web_app_version(update_version);
+  update_info->iwa_update_manifest_url = update_manifest_url;
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+            RunFinalizeUpdateJob(*update_info));
+
+  const WebApp* updated_app = registrar().GetAppById(app_id);
+  EXPECT_EQ(updated_app->isolation_data()->version(), update_version);
+
+  std::optional<GURL> expected_url =
+      location.dev_mode() ? std::nullopt
+                          : std::optional<GURL>(update_manifest_url);
+  EXPECT_EQ(updated_app->isolation_data()->update_manifest_url(), expected_url);
+  EXPECT_FALSE(
+      updated_app->isolation_data()->pending_update_info().has_value());
+  EXPECT_EQ(updated_app->isolation_data()->integrity_block_data(),
+            integrity_block_data);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FinalizeUpdateJobTestIwa,
+    testing::Values(IsolatedWebAppStorageLocation(IwaStorageOwnedBundle{
+                        "dir", /*dev_mode=*/false}),
+                    IsolatedWebAppStorageLocation(IwaStorageOwnedBundle{
+                        "dir", /*dev_mode=*/true}),
+                    IsolatedWebAppStorageLocation(IwaStorageUnownedBundle{
+                        base::FilePath(FILE_PATH_LITERAL("p"))}),
+                    IsolatedWebAppStorageLocation(IwaStorageProxy{
+                        url::Origin::Create(GURL("http://localhost:1234"))})));
 
 TEST_F(FinalizeUpdateJobTest, ManifestUpdateOsIntegrationDefaultApps) {
   auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);

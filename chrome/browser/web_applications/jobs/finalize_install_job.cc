@@ -567,7 +567,11 @@ void FinalizeInstallJob::UpdateIsolationDataAndResetPendingUpdateInfo(
     builder.PersistFieldsForUpdate(*web_app->isolation_data());
   }
 
-  if (iwa_update_manifest_url) {
+  // Dev-mode installations must not set the update manifest URL from the
+  // manifest. For dev-mode from-manifest installations the URL is explicitly
+  // set after the install completes, rather than being propagated from the
+  // bundle.
+  if (iwa_update_manifest_url && !location.dev_mode()) {
     builder.SetUpdateManifestUrl(*iwa_update_manifest_url);
   }
 
