@@ -1711,11 +1711,10 @@ void TapTabGroupTitle() {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
 
-  // TODO(crbug.com/456744844): Re-enable the test on iOS26 simulator.
+  // TODO(crbug.com/456744844): Re-enable the test on iOS simulator. See also:
+  // crbug.com/518530903.
 #if TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26 simulator.");
-  }
+  EARL_GREY_TEST_DISABLED(@"Test disabled on simulator.");
 #endif
 
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
