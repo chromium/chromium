@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/trace_event_analyzer.h"
@@ -19,14 +20,17 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -957,6 +961,112 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
                        HitTestMultipleWindows) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(CreateExtensionAndRunTest("desktop/hit_test_multiple_windows.js",
+                                        kPermissionsWindows))
+      << message_;
+}
+
+class AutomationApiTestWithHijackInterception
+    : public AutomationApiTestWithContextType,
+      public ui::AXActionHandlerObserver {
+ protected:
+  void InterceptAXActions() {
+    ui::AXActionHandlerRegistry* registry =
+        ui::AXActionHandlerRegistry::GetInstance();
+    ASSERT_TRUE(registry);
+    registry->AddObserver(this);
+  }
+
+  void SetTreeIds(ui::AXTreeID victim, ui::AXTreeID attacker) {
+    victim_tree_id_ = victim;
+    attacker_tree_id_ = attacker;
+  }
+
+  std::unique_ptr<content::ScopedAccessibilityMode> victim_accessibility_mode_;
+  std::unique_ptr<content::ScopedAccessibilityMode>
+      attacker_accessibility_mode_;
+
+ private:
+  // ui::AXActionHandlerObserver:
+  void PerformAction(const ui::AXActionData& action_data) override {
+    extensions::AutomationEventRouter* router =
+        extensions::AutomationEventRouter::GetInstance();
+    ASSERT_TRUE(router);
+    EXPECT_EQ(action_data.action, ax::mojom::Action::kScrollBackward);
+
+    // Verify the action is indeed for the victim tree.
+    EXPECT_EQ(action_data.target_tree_id, victim_tree_id_);
+
+    // 1. Send forged result (attacker tree ID, same request ID, result = false)
+    ui::AXActionData forged_data = action_data;
+    forged_data.target_tree_id = attacker_tree_id_;
+    router->DispatchActionResult(forged_data, /*result=*/false);
+
+    // 2. Send real result (victim tree ID, same request ID, result = true)
+    router->DispatchActionResult(action_data, /*result=*/true);
+  }
+
+  ui::AXTreeID victim_tree_id_;
+  ui::AXTreeID attacker_tree_id_;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         AutomationApiTestWithHijackInterception,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+IN_PROC_BROWSER_TEST_P(AutomationApiTestWithHijackInterception,
+                       PreventCrossTreeCallbackHijack) {
+  StartEmbeddedTestServer();
+  InterceptAXActions();
+
+  // Create two tabs to get two different AXTreeIDs.
+  // Tab 0 will be the Victim (loaded with a text field).
+  GURL victim_url("data:text/html,<title>Victim</title><input type=\"text\">");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), victim_url));
+  content::WebContents* victim_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+
+  // Enable accessibility for victim tab to ensure it gets a tree ID.
+  victim_accessibility_mode_ =
+      content::BrowserAccessibilityState::GetInstance()
+          ->CreateScopedModeForWebContents(victim_tab, ui::kAXModeComplete);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return victim_tab->GetPrimaryMainFrame()->GetAXTreeID() !=
+           ui::AXTreeIDUnknown();
+  }));
+  ui::AXTreeID victim_tree_id =
+      victim_tab->GetPrimaryMainFrame()->GetAXTreeID();
+
+  // Create Tab 1 (Attacker, also loaded with a text field)
+  GURL attacker_url(
+      "data:text/html,<title>Attacker</title><input type=\"text\">");
+  chrome::AddSelectedTabWithURL(browser(), attacker_url,
+                                ui::PAGE_TRANSITION_LINK);
+  content::WebContents* attacker_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+
+  // Enable accessibility for attacker tab.
+  attacker_accessibility_mode_ =
+      content::BrowserAccessibilityState::GetInstance()
+          ->CreateScopedModeForWebContents(attacker_tab, ui::kAXModeComplete);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return attacker_tab->GetPrimaryMainFrame()->GetAXTreeID() !=
+           ui::AXTreeIDUnknown();
+  }));
+  ui::AXTreeID attacker_tree_id =
+      attacker_tab->GetPrimaryMainFrame()->GetAXTreeID();
+
+  SetTreeIds(victim_tree_id, attacker_tree_id);
+
+  // Activate the victim tab so its accessibility tree is visible to the
+  // desktop.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return browser()->tab_strip_model()->active_index() == 0; }));
+
+  // Run the test extension.
+  ASSERT_TRUE(CreateExtensionAndRunTest("desktop/action_result_hijack.js",
                                         kPermissionsWindows))
       << message_;
 }
