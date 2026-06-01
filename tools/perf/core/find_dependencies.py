@@ -153,6 +153,9 @@ def FindExcludedFiles(files, options):
 
 
 def FindDependencies(target_paths, options):
+  path_util.AddPyUtilsToPath()
+  from py_utils import GetWebPageReplayDir  # pylint: disable=import-outside-toplevel
+
   # Verify arguments.
   for target_path in target_paths:
     if not os.path.exists(target_path):
@@ -171,6 +174,8 @@ def FindDependencies(target_paths, options):
                    'telemetry', 'testing', 'run_tests.py')))
 
   # Add dependencies.
+  dependencies.add(os.path.realpath(GetWebPageReplayDir()))
+
   for target_path in target_paths:
     base_dir = os.path.dirname(os.path.realpath(target_path))
 
