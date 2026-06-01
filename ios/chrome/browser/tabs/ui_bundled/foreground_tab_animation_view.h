@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+enum class AppBarPosition;
+
 // View used to contain an animation of a new tab opening in the foreground.
 // A content subview animates to fill the view while the background fades to
 // black.
@@ -22,6 +24,9 @@
 // If DeviceCornerRadius should be applied to the contentView, ideally only when
 // the contentView takes the full screen. Default is NO.
 @property(nonatomic, assign) BOOL useDeviceCornerRadius;
+
+// Indicates the position of the App Bar, to apply the correct corner radius.
+@property(nonatomic, assign) AppBarPosition appBarPosition;
 
 // Starts a New Tab animation in `parentView`, from `originPoint` with
 // a `completion` block. The new tab will scale up and move from the direction

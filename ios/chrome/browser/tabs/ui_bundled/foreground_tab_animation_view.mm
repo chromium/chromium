@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tabs/ui_bundled/foreground_tab_animation_view.h"
 
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/ui/util/property_animator_group.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -79,13 +81,7 @@ const UIBlurEffectStyle kBackgroundTabBlurStyle =
   self.contentView.transform = transform;
   self.contentView.alpha = 0;
   self.contentView.layer.masksToBounds = YES;
-  if (self.useDeviceCornerRadius) {
-    self.contentView.layer.cornerRadius = DeviceCornerRadius();
-    self.contentView.layer.maskedCorners =
-        kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
-  } else {
-    self.contentView.layer.cornerRadius = kInitialTabCornerRadius;
-  }
+  [self updateCornerRadius];
 
   // Animation components.
   auto tabResizeAnimation = ^{
@@ -162,6 +158,7 @@ const UIBlurEffectStyle kBackgroundTabBlurStyle =
   [animations addCompletion:^(UIViewAnimatingPosition finalPosition) {
     self.contentView.layer.masksToBounds = NO;
     self.contentView.layer.cornerRadius = 0.0;
+    self.contentView.layer.mask = nil;
     self.contentView.layer.maskedCorners =
         kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
         kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
@@ -172,6 +169,53 @@ const UIBlurEffectStyle kBackgroundTabBlurStyle =
   }];
 
   [animations startAnimation];
+}
+
+#pragma mark - Private
+
+// Updates the corner radius of the content view based on the App Bar position.
+- (void)updateCornerRadius {
+  if (!self.useDeviceCornerRadius) {
+    self.contentView.layer.cornerRadius = kInitialTabCornerRadius;
+    return;
+  }
+  if (self.appBarPosition == AppBarPosition::kLeft ||
+      self.appBarPosition == AppBarPosition::kRight) {
+    CGFloat leftRadius = (self.appBarPosition == AppBarPosition::kLeft)
+                             ? kAppBarCornerRadius
+                             : DeviceCornerRadius();
+    CGFloat rightRadius = (self.appBarPosition == AppBarPosition::kRight)
+                              ? kAppBarCornerRadius
+                              : DeviceCornerRadius();
+    CGRect bounds = self.contentView.bounds;
+
+    UIBezierPath* path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(bounds.size.width / 2, 0)];
+    [path addLineToPoint:CGPointMake(bounds.size.width - rightRadius, 0)];
+    [path addArcWithCenter:CGPointMake(bounds.size.width - rightRadius,
+                                       rightRadius)
+                    radius:rightRadius
+                startAngle:-M_PI_2
+                  endAngle:0
+                 clockwise:YES];
+    [path addLineToPoint:CGPointMake(bounds.size.width, bounds.size.height)];
+    [path addLineToPoint:CGPointMake(0, bounds.size.height)];
+    [path addLineToPoint:CGPointMake(0, leftRadius)];
+    [path addArcWithCenter:CGPointMake(leftRadius, leftRadius)
+                    radius:leftRadius
+                startAngle:M_PI
+                  endAngle:-M_PI_2
+                 clockwise:YES];
+    [path closePath];
+
+    CAShapeLayer* maskLayer = [CAShapeLayer layer];
+    maskLayer.path = path.CGPath;
+    self.contentView.layer.mask = maskLayer;
+  } else {
+    self.contentView.layer.cornerRadius = DeviceCornerRadius();
+    self.contentView.layer.maskedCorners =
+        kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+  }
 }
 
 @end
