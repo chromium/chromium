@@ -2,9 +2,10 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import unittest
 import os
 import sys
+import unittest
+import unittest.mock
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
@@ -17,6 +18,9 @@ import components.cronet.tools.breakages_constants as breakages_constants  # pyl
 
 
 class TestRunGN2BPUnitTest(unittest.TestCase):
+
+    def setUp(self):
+        run_gn2bp.GetCurrentCheckoutBranchStableState.cache_clear()
 
     def test_bad_change_id_no_good_change_id_should_throw(self):
         self.assertRaisesRegex(
@@ -110,6 +114,52 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
                 'bar_branch': 1,
                 'foo': 2
             })
+
+    @unittest.mock.patch(
+        'components.cronet.gn2bp.run_gn2bp._get_current_checkout_version_string'
+    )
+    @unittest.mock.patch(
+        'components.cronet.gn2bp.run_gn2bp._get_latest_stable_version_string')
+    def test_GetCurrentCheckoutBranchStableState_stable(
+            self, mock_latest_stable, mock_current):
+        mock_current.return_value = "123.0.6300.0"
+        mock_latest_stable.return_value = "123.0.6300.0"
+        self.assertEqual(run_gn2bp.GetCurrentCheckoutBranchStableState(),
+                         run_gn2bp.BranchStableState.BRANCH_IS_STABLE)
+
+    @unittest.mock.patch(
+        'components.cronet.gn2bp.run_gn2bp._get_current_checkout_version_string'
+    )
+    @unittest.mock.patch(
+        'components.cronet.gn2bp.run_gn2bp._get_latest_stable_version_string')
+    def test_GetCurrentCheckoutBranchStableState_old_stable(
+            self, mock_latest_stable, mock_current):
+        mock_current.return_value = "123.0.6200.0"
+        mock_latest_stable.return_value = "123.0.6300.0"
+        self.assertEqual(run_gn2bp.GetCurrentCheckoutBranchStableState(),
+                         run_gn2bp.BranchStableState.BRANCH_IS_OLD_STABLE)
+
+    @unittest.mock.patch(
+        'components.cronet.gn2bp.run_gn2bp._get_current_checkout_version_string'
+    )
+    @unittest.mock.patch(
+        'components.cronet.gn2bp.run_gn2bp._get_latest_stable_version_string')
+    def test_GetCurrentCheckoutBranchStableState_not_yet_stable(
+            self, mock_latest_stable, mock_current):
+        mock_current.return_value = "123.0.6400.0"
+        mock_latest_stable.return_value = "123.0.6300.0"
+        self.assertEqual(run_gn2bp.GetCurrentCheckoutBranchStableState(),
+                         run_gn2bp.BranchStableState.BRANCH_IS_NOT_YET_STABLE)
+
+    def test_get_build_number_from_version_string(self):
+        self.assertEqual(
+            run_gn2bp._get_build_number_from_version_string("123.0.6300.0"),
+            6300)
+        self.assertEqual(
+            run_gn2bp._get_build_number_from_version_string("1.2.3.4"), 3)
+        self.assertEqual(
+            run_gn2bp._get_build_number_from_version_string(
+                "100.200.30000.400"), 30000)
 
 
 if __name__ == '__main__':

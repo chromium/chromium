@@ -14,6 +14,8 @@ and pass Cronet tests in Android infra. The CL will not be submitted.
 """
 
 import argparse
+from enum import Enum
+
 
 import contextlib
 import hashlib
@@ -29,7 +31,7 @@ import tempfile
 import textwrap
 import time
 import urllib.request
-from functools import cmp_to_key
+from functools import cmp_to_key, cache
 from typing import List, Optional, Set, Tuple
 
 REPOSITORY_ROOT = os.path.abspath(
@@ -87,7 +89,14 @@ class _OptionalExit(contextlib.AbstractContextManager):
         return None
 
 
-def _get_version_string() -> str:
+class BranchStableState(Enum):
+    BRANCH_IS_OLD_STABLE = 1
+    BRANCH_IS_STABLE = 2
+    BRANCH_IS_NOT_YET_STABLE = 3
+
+
+@cache
+def _get_current_checkout_version_string() -> str:
     version = ''
     chrome_version_file_path = os.path.join(REPOSITORY_ROOT, 'chrome',
                                             'VERSION')
@@ -253,11 +262,12 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
   Get the commit hash of AOSP `external/cronet` tip of tree to merge into.
   It will print the generated Gerrit url to stdout.
   """
+    stable_state = GetCurrentCheckoutBranchStableState()
     msg = f'gn2bp{time.time_ns()}'
     change_id = f'I{hashlib.sha1(msg.encode()).hexdigest()}'
     print(f'Generated {change_id=}')
 
-    version = _get_version_string()
+    version = _get_current_checkout_version_string()
     commit_hash = cronet_utils.run_and_get_stdout(['git', 'rev-parse', 'HEAD'])
     commit_date = cronet_utils.run_and_get_stdout(
         ['git', 'show', '--pretty=format:%ci', '--no-patch'])
@@ -282,7 +292,7 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
         it might contain unreviewed changes on top of the aforementioned commit.
 
         """)
-    if import_channel == 'stable' and not _is_currently_on_latest_stable():
+    if import_channel == 'stable' and stable_state != BranchStableState.BRANCH_IS_STABLE:
         prefix = 'DO NOT ' + 'SUBMIT'
         commit_message += textwrap.dedent(f"""\
         {prefix}: This import targets the stable channel but was generated from
@@ -334,7 +344,7 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
         ])
     else:
         target_workflow = f'{import_channel}_import_cronet_to_aosp_gerrit'
-        if import_channel == 'stable' and not _is_currently_on_latest_stable():
+        if import_channel == 'stable' and stable_state != BranchStableState.BRANCH_IS_STABLE:
             # If we're importing to stable and the current branch is not a stable
             # branch, then don't auto-submit.
             after_upload_comment = 'Importing to the stable channel from a non-stable Chromium branch. The workflow will be set to non-autosubmittable. This is an unresolved comment to prevent accidental auto-submit'
@@ -404,8 +414,10 @@ def sort_versions(versions: List[str]) -> List[str]:
     return sorted(versions, key=cmp_to_key(compare_versions))
 
 
-def _is_currently_on_latest_stable():
-    """Verifies that the current checkout is on the latest stable milestone."""
+@cache
+def _get_latest_stable_version_string():
+    """Fetches the latest stable version string from chromiumdash by doing an
+    HTTP request."""
     print('Fetching latest stable version from chromiumdash...')
     with urllib.request.urlopen(
             # Chromiumdash lists releases by date. Because of LTS backports, an older
@@ -415,26 +427,37 @@ def _is_currently_on_latest_stable():
             'https://chromiumdash.appspot.com/fetch_releases?num=50&platform=Android&channel=Stable'
     ) as url:
         data = json.loads(url.read().decode())
-        current_version = _get_version_string()
-        print(f'Current checkout version is {current_version}')
         latest_stable = sort_versions(
             [release_json['version'] for release_json in data])[-1]
         print(f'Latest stable version is {latest_stable}')
+        return latest_stable
 
-        # Version is major.minor.build.patch
-        latest_build = latest_stable.split('.')[2]
-        current_build = current_version.split('.')[2]
 
-        if latest_build != current_build:
-            # There are two main approaches: either exit cleanly (indicating success
-            # without an import) or exit with an error. Exiting cleanly might falsely
-            # suggest a successful import, while exiting with an error could obscure
-            # genuine pipeline failures. We opt for the safer approach of exiting
-            # with an error until this logic is integrated into a LUCI recipe.
-            print(f'Note: The current branch ({current_build}) is not on the '
-                  f'latest stable milestone branch ({latest_build}).')
-            return False
-        return True
+def _get_build_number_from_version_string(version: str) -> int:
+    return int(version.split('.')[2])
+
+
+@cache
+def GetCurrentCheckoutBranchStableState() -> BranchStableState:
+    """Determines the stable state of the current checkout branch."""
+    # Version is major.minor.build.patch
+    current_version = _get_current_checkout_version_string()
+    current_build = _get_build_number_from_version_string(current_version)
+    latest_stable_version = _get_latest_stable_version_string()
+    latest_build = _get_build_number_from_version_string(latest_stable_version)
+
+    if current_build < latest_build:
+        state = BranchStableState.BRANCH_IS_OLD_STABLE
+    elif current_build == latest_build:
+        state = BranchStableState.BRANCH_IS_STABLE
+    else:
+        state = BranchStableState.BRANCH_IS_NOT_YET_STABLE
+
+    print(
+        f'Decided that {state} because the checked out Chromium version is {current_version} and the latest stable version is {latest_stable_version}'
+    )
+    return state
+
 
 
 def _get_chromium_last_change() -> str:
@@ -542,7 +565,8 @@ def _pick_target_channel_for_bot_environment():
         return 'tot'
 
     # COMMIT_HASH-refs/branch-heads/branch_number@{#COMMIT_NUMBER}
-    branch_number = _get_version_string().split('.')[2]
+    branch_number = _get_build_number_from_version_string(
+        _get_current_checkout_version_string())
     if f'refs/branch-heads/{branch_number}' in last_change:
         return 'stable'
     raise ValueError(
@@ -622,6 +646,14 @@ def main():
     args = parser.parse_args()
 
     if _is_bot_environment():
+        if GetCurrentCheckoutBranchStableState(
+        ) == BranchStableState.BRANCH_IS_OLD_STABLE:
+            # The current checkout version is older than the latest stable version.
+            # Exit gracefully as we don't want to import nor test older versions.
+            print(
+                'The current checkout version is older than the latest stable version. Exiting gracefully!'
+            )
+            return 0
         if args.channel is not None:
             raise RuntimeError(
                 'Automatic channel selection must be used in a bot '
