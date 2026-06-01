@@ -67,6 +67,11 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
   [self updatePositioning];
 }
 
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  [self updatePositioning];
+}
+
 #pragma mark - UIView
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
@@ -93,13 +98,12 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
   if (!self.window || !_appBar) {
     return;
   }
-  UIWindowScene* windowScene = self.window.windowScene;
-  CGSize sceneSize = windowScene.screen.bounds.size;
-  CGFloat tallSideLength = MAX(sceneSize.width, sceneSize.height);
+  CGSize windowSize = self.window.bounds.size;
+  CGFloat tallSideLength = MAX(windowSize.width, windowSize.height);
   CGFloat containerLength = tallSideLength * 1.5;
   _heightConstraint.constant = containerLength;
 
-  CGFloat shortSideLength = MIN(sceneSize.width, sceneSize.height);
+  CGFloat shortSideLength = MIN(windowSize.width, windowSize.height);
   _appBarWidthConstraint.constant = shortSideLength;
 
   CGFloat offset = (containerLength - tallSideLength) / 2;
