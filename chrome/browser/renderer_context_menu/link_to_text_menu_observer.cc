@@ -306,16 +306,19 @@ void LinkToTextMenuObserver::ExecuteCopyLinkToText() {
 }
 
 void LinkToTextMenuObserver::Timeout() {
+  if (is_generation_complete_) {
+    return;
+  }
+
   auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id_);
   // The renderer may remove the frame. Or it may have crashed leaving the
   // remote disconnected with the Timeout task still queued.
-  if (rfh && rfh->IsRenderFrameLive()) {
-    CHECK(remote_.is_connected());
-    if (is_generation_complete_)
-      return;
+  if (rfh && rfh->IsRenderFrameLive() && remote_.is_bound() &&
+      remote_.is_connected()) {
     remote_->Cancel();
-    remote_.reset();
   }
+  remote_.reset();
+
   CompleteWithError(LinkGenerationError::kTimeout);
 }
 
