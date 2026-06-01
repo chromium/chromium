@@ -173,8 +173,6 @@ typedef NS_ENUM(NSInteger, FadeWindowsOperation) { kHide, kShow };
 - (void)sendAccessibilityAnnouncement;
 @end
 
-ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
-
 static BOOL __strong (^g_isKeyDownForKeyCodeMock)(unsigned short) = nil;
 
 BOOL isKeyDownForKeyCode(unsigned short keyCode) {
@@ -193,13 +191,8 @@ BOOL isKeyDownForKeyCode(unsigned short keyCode) {
   ConfirmQuitFrameView* __weak _contentView;
   // Whether we've hidden all windows and initiated the quitting process.
   BOOL _didHideWindows;
-}
-
-+ (ConfirmQuitPanelController*)sharedController {
-  if (!g_confirmQuitPanelController) {
-    g_confirmQuitPanelController = [[ConfirmQuitPanelController alloc] init];
-  }
-  return g_confirmQuitPanelController;
+  // Invoked when the panel has finished dismissing.
+  void (^_dismissedCallback)();
 }
 
 + (BOOL (^)(unsigned short))isKeyDownForKeyCodeMock {
@@ -239,7 +232,9 @@ BOOL isKeyDownForKeyCode(unsigned short keyCode) {
   return self;
 }
 
-- (BOOL)runConfirmQuitLoopWithEvent:(NSEvent*)event {
+- (BOOL)runConfirmQuitLoopWithEvent:(NSEvent*)event
+                  dismissedCallback:(void (^)())dismissedCallback {
+  _dismissedCallback = [dismissedCallback copy];
   [[maybe_unused]] NS_VALID_UNTIL_END_OF_SCOPE ConfirmQuitPanelController*
       keepAlive = self;
 
@@ -333,7 +328,10 @@ BOOL isKeyDownForKeyCode(unsigned short keyCode) {
   // Release all animations because CAAnimation retains its delegate (self),
   // which will cause a retain cycle. Break it!
   self.window.animations = @{};
-  g_confirmQuitPanelController = nil;  // releases self
+  if (_dismissedCallback) {
+    _dismissedCallback();
+    _dismissedCallback = nil;
+  }
 }
 
 - (void)showWindow:(id)sender {
@@ -367,6 +365,10 @@ BOOL isKeyDownForKeyCode(unsigned short keyCode) {
 }
 
 - (void)animateFadeOut {
+  if (!self.window.visible) {
+    return;
+  }
+
   NSWindow* window = self.window;
   CAAnimation* animation = [[window animationForKey:@"alphaValue"] copy];
   animation.delegate = self;

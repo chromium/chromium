@@ -25,6 +25,7 @@
 #include "components/prefs/pref_change_registrar.h"
 
 class BookmarkMenuBridge;
+@class ConfirmQuitPanelController;
 class GURL;
 class HistoryMenuBridge;
 class Profile;
@@ -144,6 +145,7 @@ class ColorProvider;
 - (BOOL)windowHasBrowserTabs:(NSWindow*)window;
 
 // Testing API.
+- (ConfirmQuitPanelController*)confirmQuitPanelControllerForTesting;
 - (void)setCmdWMenuItemForTesting:(NSMenuItem*)menuItem;
 - (void)setShiftCmdWMenuItemForTesting:(NSMenuItem*)menuItem;
 

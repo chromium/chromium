@@ -13,10 +13,6 @@
 // to "Hold Cmd+Q to Quit".
 @interface ConfirmQuitPanelController : NSWindowController <NSWindowDelegate>
 
-// Returns the singleton instance of the Controller. This will create one if it
-// does not currently exist.
-@property(class, readonly) ConfirmQuitPanelController* sharedController;
-
 // Returns a string representation fit for display.
 @property(class, readonly) NSString* keyCommandString;
 
@@ -32,7 +28,11 @@
 //
 // |event| is the KeyDown event that triggered the quit attempt; it is used to
 // identify the key being held (typically 'Q') without hardcoding its key code.
-- (BOOL)runConfirmQuitLoopWithEvent:(NSEvent*)event;
+//
+// |dismissedCallback| is invoked when the panel has finished dismissing or
+// closing.
+- (BOOL)runConfirmQuitLoopWithEvent:(NSEvent*)event
+                  dismissedCallback:(void (^)())dismissedCallback;
 
 // Shows the window.
 - (void)showWindow:(id)sender;

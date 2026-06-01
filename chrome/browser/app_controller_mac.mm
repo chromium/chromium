@@ -537,6 +537,7 @@ Profile* GetLastProfileMac() {
 - (void)initMenuState;
 - (void)initProfileMenu;
 - (void)updateConfirmToQuitPrefMenuItem:(NSMenuItem*)item;
+- (void)cancelConfirmQuitPanel;
 - (void)registerServicesMenuTypesTo:(NSApplication*)app;
 - (void)checkForAnyKeyWindows;
 - (BOOL)userWillWaitForInProgressDownloads:(int)downloadCount;
@@ -779,6 +780,11 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   // The last active browser, used to query its ColorProvider on demand.
   // WeakPtr self-nulls on browser destruction.
   base::WeakPtr<BrowserWindowInterface> _lastActiveBrowser;
+
+  // The controller that manages the "Confirm Quit" HUD. This is lazily
+  // initialized on the first keyboard-initiated quit attempt and cleared when
+  // the panel is dismissed or the quit is canceled.
+  ConfirmQuitPanelController* __strong _confirmQuitPanelController;
 }
 
 @synthesize startupComplete = _startupComplete;
@@ -973,12 +979,17 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   chrome::CloseAllBrowsersAndQuit();
 }
 
+- (void)cancelConfirmQuitPanel {
+  [_confirmQuitPanelController cancel];
+  _confirmQuitPanelController = nil;
+}
+
 - (void)stopTryingToTerminateApplication {
   if (browser_shutdown::IsTryingToQuit()) {
     // Reset the "trying to quit" state, so that closing all browser windows
     // will no longer lead to termination.
     browser_shutdown::SetTryingToQuit(false);
-    [ConfirmQuitPanelController.sharedController cancel];
+    [self cancelConfirmQuitPanel];
   }
 }
 
@@ -1008,8 +1019,22 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     return YES;
   }
 
-  return [[ConfirmQuitPanelController sharedController]
-      runConfirmQuitLoopWithEvent:event];
+  // In the event of a double-quit attempt (holding command and pressing 'Q'
+  // twice), we will already have a ConfirmQuitPanelController, so only create a
+  // new one if needed.
+  if (!_confirmQuitPanelController) {
+    _confirmQuitPanelController = [[ConfirmQuitPanelController alloc] init];
+  }
+
+  __weak AppController* weakSelf = self;
+  return [_confirmQuitPanelController
+      runConfirmQuitLoopWithEvent:event
+                dismissedCallback:^{
+                  AppController* strongSelf = weakSelf;
+                  if (strongSelf && !browser_shutdown::IsTryingToQuit()) {
+                    strongSelf->_confirmQuitPanelController = nil;
+                  }
+                }];
 }
 
 // Handles the NSApplicationWillTerminateNotification notification. (Note to
@@ -1458,7 +1483,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     chrome::ShowDownloads(browser);
   }
 
-  [ConfirmQuitPanelController.sharedController cancel];
+  [self cancelConfirmQuitPanel];
   return NO;
 }
 
@@ -2490,6 +2515,13 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       AuthSessionRequest::CancelAuthSession(request);
     }
   });
+}
+
+- (ConfirmQuitPanelController*)confirmQuitPanelControllerForTesting {
+  if (!_confirmQuitPanelController) {
+    _confirmQuitPanelController = [[ConfirmQuitPanelController alloc] init];
+  }
+  return _confirmQuitPanelController;
 }
 
 - (void)setCmdWMenuItemForTesting:(NSMenuItem*)menuItem {
