@@ -20,6 +20,7 @@
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "url/gurl.h"
 
 namespace multistep_filter {
@@ -30,11 +31,13 @@ void LogUrlEligibilityCheck(MultistepFilterLogRouter* log_router,
                             int64_t navigation_id,
                             std::string_view domain,
                             bool signed_in,
-                            bool url_allowed) {
+                            bool url_allowed,
+                            bool consent_enabled) {
   MULTISTEP_FILTER_LOG(log_router, navigation_id,
                        LogEventType::kUrlEligibilityCheck, domain)
       << LogDetail{"signed_in", signed_in}
-      << LogDetail{"url_allowed", url_allowed};
+      << LogDetail{"url_allowed", url_allowed}
+      << LogDetail{"consent_enabled", consent_enabled};
 }
 
 void LogExtractionStarted(MultistepFilterLogRouter* log_router,
@@ -70,10 +73,13 @@ MultistepFilterService::MultistepFilterService(
     std::unique_ptr<AnnotationIndexClient> annotation_index_client,
     std::unique_ptr<FilterStore> filter_store,
     signin::IdentityManager* identity_manager,
+    std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
+        consent_helper,
     MultistepFilterLogRouter* log_router)
     : annotation_index_client_(std::move(annotation_index_client)),
       filter_store_(std::move(filter_store)),
       identity_manager_(identity_manager),
+      consent_helper_(std::move(consent_helper)),
       log_router_(log_router) {
   CHECK(annotation_index_client_);
   CHECK(filter_store_);
@@ -89,10 +95,11 @@ void MultistepFilterService::ExtractAnnotation(int64_t navigation_id,
                                                const GURL& url) {
   const std::string domain = GetEtldPlusOne(url);
   const bool signed_in = IsUserSignedIn();
-  const bool url_allowed = signed_in && IsUrlAllowed(url);
+  const bool consent_enabled = IsUrlKeyedDataCollectionEnabled();
+  const bool url_allowed = signed_in && consent_enabled && IsUrlAllowed(url);
 
   LogUrlEligibilityCheck(log_router_, navigation_id, domain, signed_in,
-                         url_allowed);
+                         url_allowed, consent_enabled);
 
   if (!url_allowed) {
     if (observer_for_test_) {
@@ -120,10 +127,11 @@ void MultistepFilterService::GenerateFilterSuggestions(
 
   const std::string domain = GetEtldPlusOne(url);
   const bool signed_in = IsUserSignedIn();
-  const bool url_allowed = signed_in && IsUrlAllowed(url);
+  const bool consent_enabled = IsUrlKeyedDataCollectionEnabled();
+  const bool url_allowed = signed_in && consent_enabled && IsUrlAllowed(url);
 
   LogUrlEligibilityCheck(log_router_, navigation_id, domain, signed_in,
-                         url_allowed);
+                         url_allowed, consent_enabled);
 
   if (!url_allowed) {
     if (observer_for_test_) {
@@ -171,6 +179,10 @@ void MultistepFilterService::OnSuggestionGenerated(
 bool MultistepFilterService::IsUserSignedIn() const {
   return identity_manager_ &&
          identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
+bool MultistepFilterService::IsUrlKeyedDataCollectionEnabled() const {
+  return consent_helper_ && consent_helper_->IsEnabled();
 }
 
 }  // namespace multistep_filter

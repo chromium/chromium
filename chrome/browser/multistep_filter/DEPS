@@ -3,10 +3,12 @@ include_rules = [
   "+components/multistep_filter/core",
   "+components/keyed_service/core",
   "+components/tabs",
+  "+components/unified_consent",
 ]
 
 specific_include_rules = {
   ".*browsertest\.cc": [
+    "+components/prefs",
     "+components/signin/public/identity_manager",
     "+components/version_info",
   ],

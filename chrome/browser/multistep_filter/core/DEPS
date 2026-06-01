@@ -1,4 +1,5 @@
 include_rules = [
   "+components/multistep_filter/core",
   "+components/keyed_service/core",
+  "+components/unified_consent",
 ]

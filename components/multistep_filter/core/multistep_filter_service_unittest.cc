@@ -24,7 +24,11 @@
 #include "components/multistep_filter/core/multistep_filter_service_test_api.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/suggestion/filter_suggestion_generator.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/unified_consent/pref_names.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -84,6 +88,8 @@ class MultistepFilterServiceTest : public testing::Test {
  public:
   MultistepFilterServiceTest() {
     scoped_feature_list_.InitAndEnableFeature(kMultistepFilter);
+    pref_service_.registry()->RegisterBooleanPref(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   }
 
   void CreateService(signin::IdentityManager* identity_manager) {
@@ -98,10 +104,12 @@ class MultistepFilterServiceTest : public testing::Test {
 
     mock_extractor_ = filter_extractor.get();
     mock_generator_ = filter_suggestion_generator.get();
+    auto consent_helper = unified_consent::UrlKeyedDataCollectionConsentHelper::
+        NewAnonymizedDataCollectionConsentHelper(&pref_service_);
 
     service_ = std::make_unique<MultistepFilterService>(
         std::move(annotation_index_client), std::move(filter_store),
-        identity_manager, /*log_router=*/nullptr);
+        identity_manager, std::move(consent_helper), /*log_router=*/nullptr);
 
     MultistepFilterServiceTestApi(*service_).set_filter_extractor(
         std::move(filter_extractor));
@@ -118,6 +126,7 @@ class MultistepFilterServiceTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
+  TestingPrefServiceSimple pref_service_;
 
   std::unique_ptr<MockObserver> mock_observer_;
   std::unique_ptr<MultistepFilterService> service_;
@@ -284,6 +293,43 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_NullCallback) {
 
   service_->GenerateFilterSuggestions(kTestNavigationId, kUrl,
                                       base::NullCallback());
+}
+
+TEST_F(MultistepFilterServiceTest, ExtractAnnotation_MsbbDisabled) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  CreateService();
+  pref_service_.SetUserPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+      base::Value(false));
+
+  const GURL kUrl("http://example.com");
+  EXPECT_CALL(*mock_extractor_, ExtractAnnotationFromUrl).Times(0);
+  EXPECT_CALL(*mock_observer_, OnExtractionFinished(testing::Eq(std::nullopt)));
+
+  service_->ExtractAnnotation(kTestNavigationId, kUrl);
+}
+
+TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_MsbbDisabled) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  CreateService();
+  pref_service_.SetUserPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+      base::Value(false));
+
+  const GURL kUrl("http://example.com");
+  base::MockCallback<
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
+      mock_callback;
+
+  EXPECT_CALL(*mock_generator_, GenerateSuggestion).Times(0);
+  EXPECT_CALL(*mock_observer_,
+              OnSuggestionGenerated(testing::Eq(std::nullopt)));
+  EXPECT_CALL(mock_callback, Run(testing::Eq(std::nullopt)));
+
+  service_->GenerateFilterSuggestions(kTestNavigationId, kUrl,
+                                      mock_callback.Get());
 }
 
 }  // namespace multistep_filter

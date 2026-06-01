@@ -16,6 +16,7 @@
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -63,7 +64,10 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<MultistepFilterService>(
       std::move(annotation_index_client), std::make_unique<FilterStore>(),
-      identity_manager, log_router);
+      identity_manager,
+      unified_consent::UrlKeyedDataCollectionConsentHelper::
+          NewAnonymizedDataCollectionConsentHelper(profile->GetPrefs()),
+      log_router);
 }
 
 }  // namespace multistep_filter

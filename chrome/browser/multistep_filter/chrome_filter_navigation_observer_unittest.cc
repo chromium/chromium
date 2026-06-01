@@ -19,6 +19,7 @@
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
@@ -55,6 +56,7 @@ class MockMultistepFilterService : public MultistepFilterService {
       : MultistepFilterService(std::move(annotation_index_client),
                                std::move(filter_store),
                                /*identity_manager=*/nullptr,
+                               /*consent_helper=*/nullptr,
                                /*log_router=*/nullptr) {}
 
   MOCK_METHOD(void,

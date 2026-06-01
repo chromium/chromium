@@ -22,6 +22,7 @@ source_set("core") {
     "//chrome/common:channel_info",
     "//components/multistep_filter/core:features",
     "//components/signin/public/identity_manager",
+    "//components/unified_consent",
     "//content/public/browser",
   ]
 }

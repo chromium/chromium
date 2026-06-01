@@ -20,6 +20,7 @@
 #include "components/multistep_filter/core/multistep_filter_util.h"
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -69,6 +70,7 @@ class MockMultistepFilterService : public MultistepFilterService {
       : MultistepFilterService(std::move(extraction_client),
                                std::move(store),
                                /*identity_manager=*/nullptr,
+                               /*consent_helper=*/nullptr,
                                /*log_router=*/nullptr) {}
   ~MockMultistepFilterService() override = default;
 
