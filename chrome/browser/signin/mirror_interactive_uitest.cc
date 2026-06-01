@@ -2,35 +2,54 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/functional/callback.h"
-#include "base/metrics/histogram_base.h"
 #include "base/strings/string_util.h"
-#include "build/build_config.h"
-#include "chrome/browser/chrome_content_browser_client.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/account_addition_options.h"
+#include "components/account_manager_core/account_manager_metrics.h"
+#include "components/account_manager_core/account_upsertion_result.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
+#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
-#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+
+namespace {
+
+FakeAccountManagerUI& SetFakeAccountManagerUI(Profile& profile) {
+  crosapi::AccountManagerMojoService& account_manager_mojo_service =
+      CHECK_DEREF(
+          ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
+              profile.GetPath().value()));
+
+  auto fake_account_manager_ui = std::make_unique<FakeAccountManagerUI>();
+  FakeAccountManagerUI& fake_account_manager_ui_ref = *fake_account_manager_ui;
+  account_manager_mojo_service.SetAccountManagerUI(
+      std::move(fake_account_manager_ui));
+  return fake_account_manager_ui_ref;
+}
+
+}  // namespace
 
 // Tests the behavior of Chrome when it receives a Mirror response from Gaia:
 // - listens to all network responses coming from Gaia with
@@ -39,8 +58,9 @@
 // `signin::BuildManageAccountsParams()`
 // - triggers dialogs based on the action specified in the header, with
 //   `ProcessMirrorHeader`
-// The tests don't display real dialogs. Instead they use the
-// `FakeAccountManagerUI` and only check that the dialogs were triggered.
+// The Account Manager UI tests don't display real dialogs. Instead they use
+// `FakeAccountManagerUI` to verify the requested action and relevant
+// options/UMA.
 // The tests are interactive_ui_tests because they depend on browser's window
 // activation state.
 class MirrorResponseBrowserTest : public InProcessBrowserTest {
@@ -113,6 +133,68 @@ class MirrorResponseBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer https_server_;
   net::test_server::EmbeddedTestServerHandle https_server_handle_;
 };
+
+// When receiving "ADDSESSION" from Gaia, the One Google Bar add-account path
+// should open the Account Manager add-account dialog.
+IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
+                       AddSessionOpensAccountManagerDialog) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  base::HistogramTester histogram_tester;
+  FakeAccountManagerUI& fake_account_manager_ui =
+      SetFakeAccountManagerUI(*browser()->profile());
+
+  ReceiveManageAccountsHeader({{"action", "ADDSESSION"}});
+
+  ASSERT_TRUE(base::test::RunUntil([&fake_account_manager_ui] {
+    return fake_account_manager_ui.show_account_addition_dialog_calls() == 1;
+  }));
+  ASSERT_TRUE(fake_account_manager_ui.last_add_account_options().has_value());
+  EXPECT_FALSE(
+      fake_account_manager_ui.last_add_account_options()->is_available_in_arc);
+  EXPECT_FALSE(fake_account_manager_ui.last_add_account_options()
+                   ->show_arc_availability_picker);
+  EXPECT_EQ(
+      0, fake_account_manager_ui.show_account_reauthentication_dialog_calls());
+  EXPECT_EQ(0, fake_account_manager_ui.show_manage_accounts_settings_calls());
+  histogram_tester.ExpectUniqueSample(
+      account_manager::kAccountAdditionSourceHistogramName,
+      account_manager::AccountAdditionSource::kOgbAddAccount,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      account_manager::kAccountUpsertionResultStatusHistogramName, 0);
+
+  fake_account_manager_ui.CloseDialog();
+
+  histogram_tester.ExpectUniqueSample(
+      account_manager::kAccountUpsertionResultStatusHistogramName,
+      account_manager::AccountUpsertionResult::Status::kCancelledByUser,
+      /*expected_count=*/1);
+}
+
+// When receiving "DEFAULT" from Gaia, Mirror should open Account Manager
+// settings without recording add-account or reauth UMA.
+IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest,
+                       DefaultOpensManageAccountsSettings) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  base::HistogramTester histogram_tester;
+  FakeAccountManagerUI& fake_account_manager_ui =
+      SetFakeAccountManagerUI(*browser()->profile());
+
+  ReceiveManageAccountsHeader({{"action", "DEFAULT"}});
+
+  ASSERT_TRUE(base::test::RunUntil([&fake_account_manager_ui] {
+    return fake_account_manager_ui.show_manage_accounts_settings_calls() == 1;
+  }));
+  EXPECT_EQ(0, fake_account_manager_ui.show_account_addition_dialog_calls());
+  EXPECT_EQ(
+      0, fake_account_manager_ui.show_account_reauthentication_dialog_calls());
+  histogram_tester.ExpectTotalCount(
+      account_manager::kAccountAdditionSourceHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      account_manager::kAccountUpsertionResultStatusHistogramName, 0);
+}
 
 // When receiving "INCOGNITO" from Gaia and the request is initiated by a Google
 // domain - an incognito tab should be opened.

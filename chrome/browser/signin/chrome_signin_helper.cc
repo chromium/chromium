@@ -22,7 +22,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
-#include "components/account_manager_core/account_manager_facade.h"
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -56,10 +55,13 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/check_deref.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/account_manager_metrics.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -331,19 +333,28 @@ void ProcessMirrorHeader(
     return;
   }
 
+  // TODO(b/365741912, b/365902693): Route Mirror add-account and
+  // manage-accounts UI through the future Ash-owned Account Manager UI
+  // coordinator.
+  crosapi::AccountManagerMojoService& account_manager_mojo_service =
+      CHECK_DEREF(
+          ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
+              profile->GetPath().value()));
+
   // 3. Displaying an account addition window.
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
-    ash::AccountManagerFactory::Get()
-        ->GetAccountManagerFacade(profile->GetPath().value())
-        ->ShowAddAccountDialog(account_manager::AccountManagerFacade::
-                                   AccountAdditionSource::kOgbAddAccount);
+    crosapi::mojom::AccountAdditionOptionsPtr options =
+        crosapi::mojom::AccountAdditionOptions::New();
+    options->is_available_in_arc = false;
+    options->show_arc_availability_picker = false;
+    account_manager_mojo_service.ShowAddAccountDialog(
+        account_manager::AccountAdditionSource::kOgbAddAccount,
+        std::move(options), base::DoNothing());
     return;
   }
 
   // 4. Displaying the Account Manager for managing accounts.
-  ash::AccountManagerFactory::Get()
-      ->GetAccountManagerFacade(profile->GetPath().value())
-      ->ShowManageAccountsSettings();
+  account_manager_mojo_service.ShowManageAccountsSettings();
   return;
 
 #elif BUILDFLAG(IS_ANDROID)
