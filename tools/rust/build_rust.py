@@ -369,6 +369,11 @@ class XPy:
             # `SDKROOT`.
             self._env['SDKROOT'] = sdk_path
 
+            # We don't have an official policy of which platforms we support
+            # building chromium on, but we generally expect builders to be
+            # recent, so this should track the OS versions on our buildbots.
+            self._env['MACOSX_DEPLOYMENT_TARGET'] = '15.6'
+
         if zlib_path:
             self._env['CFLAGS'] += f' -I{zlib_path}'
             self._env['CXXFLAGS'] += f' -I{zlib_path}'
