@@ -1,5 +1,5 @@
-# libdisplay-info should only be used in testing code. This visibility list helps
-# enforce that.
+# libdisplay-info should only be used in testing code. This visibility list
+# helps enforce that.
 visibility = [
   "//third_party/libdisplay-info/*",
 
