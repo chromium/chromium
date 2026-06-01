@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -127,7 +128,9 @@ void VerifyMatchComponents(const ExpectedMatchComponents& expected,
 
 class OmniboxApiTest : public ExtensionApiTest {
  public:
-  OmniboxApiTest() = default;
+  OmniboxApiTest() {
+    feature_list_.InitAndEnableFeature(omnibox::kOmniboxSiteSearch);
+  }
   ~OmniboxApiTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -169,6 +172,9 @@ class OmniboxApiTest : public ExtensionApiTest {
     ui_test_utils::WaitForAutocompleteDone(browser());
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
