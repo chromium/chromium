@@ -7,7 +7,8 @@ import("//build/config/features.gni")
 
 declare_args() {
   # Whether to perform critical memory pressure handling when in foreground (if
-  # false, critical memory pressure is treated like moderate pressure in foreground).
+  # false, critical memory pressure is treated like moderate pressure in
+  # foreground).
   allow_critical_memory_pressure_handling_in_foreground =
       is_castos || is_cast_android
 
