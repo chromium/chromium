@@ -465,6 +465,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 toolbar,
                 mIntentDataProvider.get().getPartialTabToolbarCornerRadius(),
                 mToolbarButtonsCoordinator);
+        if (mBrandingController != null) {
+            mBrandingController.onToolbarInitialized(toolbar.getBrandingDelegate());
+        }
         if (mIntentDataProvider.get().isPartialCustomTab()) {
             Callback<Runnable> softInputCallback =
                     ((PartialCustomTabDisplayManager) mCustomTabHeightStrategy)::onShowSoftInput;
