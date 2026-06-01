@@ -46,6 +46,7 @@ static_library("people") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//base:i18n",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
