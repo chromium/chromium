@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("memory") {
@@ -30,11 +28,10 @@ source_set("memory") {
       "memory_kills_monitor.h",
       "oom_kills_monitor.h",
     ]
-    public_deps += [ "//components/metrics" ]
-  }
-
-  if (is_chromeos_ash) {
-    public_deps += [ "//chromeos/ash/components/login/login_state" ]
+    public_deps += [
+      "//chromeos/ash/components/login/login_state",
+      "//components/metrics",
+    ]
   }
 }
 
@@ -69,8 +66,6 @@ source_set("impl") {
       "memory_kills_monitor.cc",
       "oom_kills_monitor.cc",
     ]
-  }
-  if (is_chromeos_ash) {
     deps += [
       "//chromeos/ash/components/dbus/resourced",
       "//chromeos/ash/components/memory",

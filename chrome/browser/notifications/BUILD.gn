@@ -90,7 +90,7 @@ source_set("notifications") {
     public_deps += [ "//components/keep_alive_registry" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     public += [
       "arc_application_notifier_controller.h",
       "chrome_ash_message_center_client.h",
@@ -269,7 +269,7 @@ source_set("impl") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "arc_application_notifier_controller.cc",
       "chrome_ash_message_center_client.cc",

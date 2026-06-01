@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
 
@@ -208,7 +207,7 @@ source_set("tests") {
     "//third_party/tflite",
   ]
 
-  if (is_win || is_mac || is_linux || is_chromeos_ash) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
       "public/cpp/sounds/audio_stream_handler_unittest.cc",
       "public/cpp/sounds/sounds_manager_unittest.cc",

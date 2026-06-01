@@ -481,7 +481,7 @@ Options::Options() {
 //
 // Currently log reuse is an experimental feature in leveldb. More info at:
 // https://github.com/google/leveldb/commit/251ebf5dc70129ad3
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Reusing logs on Chrome OS resulted in an unacceptably high leveldb
   // corruption rate (at least for Indexed DB). More info at
   // https://crbug.com/460568

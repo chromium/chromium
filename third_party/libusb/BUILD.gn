@@ -5,7 +5,6 @@
 # libusb is only used by //services/device/usb on macOS.
 assert(is_mac)
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 config("libusb_config") {
@@ -114,7 +113,7 @@ static_library("libusb") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     defines += [ "USBI_TIMERFD_AVAILABLE" ]
   }
 
