@@ -7,7 +7,10 @@
 #include <memory>
 #include <variant>
 
+#include "base/android/application_status_listener.h"
 #include "base/android/jni_android.h"
+#include "base/android/pre_freeze_background_memory_trimmer.h"
+#include "base/android/sys_utils.h"
 #include "base/base_paths_android.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -28,6 +31,18 @@
 namespace {
 // Whether to use the process start time for startup metrics.
 BASE_FEATURE(kUseProcessStartTimeForMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
+
+class ChromePreFreezeDelegate
+    : public base::android::PreFreezeBackgroundMemoryTrimmer::Delegate {
+ public:
+  bool ShouldThawPreFrozenProcess() const override {
+    // HasVisibleActivities() is a cheap local check. We use it as a fast-path
+    // to avoid the expensive JNI/Binder IPC call to IsProcessInBackground()
+    // when the app is visibly in the foreground.
+    return base::android::ApplicationStatusListener::HasVisibleActivities() ||
+           !base::android::IsProcessInBackground();
+  }
+};
 }  // namespace
 
 // ChromeMainDelegateAndroid is created when the library is loaded. It is always
@@ -40,6 +55,9 @@ std::optional<int> ChromeMainDelegateAndroid::BasicStartupComplete() {
   TRACE_EVENT0("startup", "ChromeMainDelegateAndroid::BasicStartupComplete");
   policy::android::AndroidCombinedPolicyProvider::SetShouldWaitForPolicy(true);
   SetChromeSpecificCommandLineFlags();
+
+  base::android::PreFreezeBackgroundMemoryTrimmer::SetDelegate(
+      std::make_unique<ChromePreFreezeDelegate>());
 
   return ChromeMainDelegate::BasicStartupComplete();
 }

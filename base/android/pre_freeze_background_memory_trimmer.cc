@@ -11,8 +11,10 @@
 #include <string>
 
 #include "base/android/android_info.h"
+#include "base/android/application_status_listener.h"
 #include "base/android/pmf_utils.h"
 #include "base/android/self_compaction_manager.h"
+#include "base/android/sys_utils.h"
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -275,6 +277,41 @@ PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTaskModernHelper(
 }
 
 // static
+void PreFreezeBackgroundMemoryTrimmer::PostOnFreezeTask(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    const base::Location& from_here,
+    OnceClosure task) {
+  DCHECK(SupportsModernTrim());
+  if (!task_runner->RunsTasksInCurrentSequence()) {
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PreFreezeBackgroundMemoryTrimmer::PostOnFreezeTask,
+                       task_runner, from_here, std::move(task)));
+    return;
+  }
+  Instance().PostOnFreezeTaskModern(std::move(task_runner), from_here,
+                                    std::move(task));
+}
+
+void PreFreezeBackgroundMemoryTrimmer::PostOnFreezeTaskModern(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    const base::Location& from_here,
+    OnceClosure task) {
+  DCHECK(task_runner->RunsTasksInCurrentSequence());
+  // We register the PMF metric lazily when the first task is posted
+  // to avoid overhead if no pre-freeze tasks are registered.
+  RegisterPrivateMemoryFootprintMetric();
+
+  std::unique_ptr<BackgroundTask> background_task =
+      BackgroundTask::CreateOnFreezeTask(task_runner, from_here,
+                                         std::move(task));
+  {
+    base::AutoLock locker(lock());
+    background_tasks_.push_back(std::move(background_task));
+  }
+}
+
+// static
 void PreFreezeBackgroundMemoryTrimmer::RegisterMemoryMetric(
     const PreFreezeMetric* metric) {
   base::AutoLock locker(lock());
@@ -349,6 +386,8 @@ void PreFreezeBackgroundMemoryTrimmer::RunPreFreezeTasks() {
 
 void PreFreezeBackgroundMemoryTrimmer::OnPreFreezeInternal() {
   base::AutoLock locker(lock());
+  is_pre_frozen_ = true;
+  pre_freeze_generation_++;
   PostMetricsTasksIfModern();
 
   if (!ShouldUseModernTrim()) {
@@ -403,15 +442,76 @@ bool PreFreezeBackgroundMemoryTrimmer::IsTrimMemoryBackgroundCritical() {
 }
 
 // static
+bool PreFreezeBackgroundMemoryTrimmer::GetAndUpdatePreFrozenState() {
+  if (!SupportsModernTrim()) {
+    return false;
+  }
+  bool is_pre_frozen = false;
+  size_t generation = 0;
+  Delegate* delegate = nullptr;
+  {
+    base::AutoLock auto_lock(lock());
+    if (Instance().force_pre_frozen_for_testing_) {
+      return true;
+    }
+    is_pre_frozen = Instance().is_pre_frozen_;
+    generation = Instance().pre_freeze_generation_;
+    delegate = Instance().delegate_.get();
+  }
+
+  if (!delegate) {
+    // If no delegate is registered, we cannot reliably detect thaw.
+    // To prevent permanently blocking requests, assume we are not pre-frozen.
+    return false;
+  }
+
+  if (is_pre_frozen) {
+    // We release the lock before calling ShouldThawPreFrozenProcess()
+    // because it makes JNI/Binder IPC calls. Holding the lock during
+    // IPC can cause deadlocks and UI jank if other threads block on the lock.
+    if (delegate->ShouldThawPreFrozenProcess()) {
+      base::AutoLock auto_lock(lock());
+      // We only clear the pre-frozen state if a new pre-freeze event has not
+      // occurred since we released the lock to perform the JNI check.
+      if (Instance().pre_freeze_generation_ == generation) {
+        Instance().is_pre_frozen_ = false;
+      }
+      return Instance().is_pre_frozen_;
+    }
+  }
+
+  return is_pre_frozen;
+}
+
+// static
+void PreFreezeBackgroundMemoryTrimmer::SetForcePreFrozenForTesting(bool force) {
+  base::AutoLock auto_lock(lock());
+  Instance().force_pre_frozen_for_testing_ = force;
+}
+
+// static
+void PreFreezeBackgroundMemoryTrimmer::SetDelegate(
+    std::unique_ptr<Delegate> delegate) {
+  base::AutoLock auto_lock(lock());
+  Instance().delegate_ = std::move(delegate);
+}
+
+// static
 void PreFreezeBackgroundMemoryTrimmer::SetSupportsModernTrimForTesting(
     bool is_supported) {
   Instance().supports_modern_trim_ = is_supported;
 }
 
 // static
-void PreFreezeBackgroundMemoryTrimmer::ClearMetricsForTesting() {
+void PreFreezeBackgroundMemoryTrimmer::ResetForTesting() {
   base::AutoLock locker(lock());
   Instance().metrics_.clear();
+  Instance().values_before_.clear();
+  Instance().background_tasks_.clear();
+  Instance().is_pre_frozen_ = false;
+  Instance().force_pre_frozen_for_testing_ = false;
+  Instance().pre_freeze_generation_ = 0;
+  Instance().delegate_.reset();
   PrivateMemoryFootprintMetric::did_register_ = false;
 }
 
@@ -455,7 +555,7 @@ void PreFreezeBackgroundMemoryTrimmer::BackgroundTask::RunNow(
   // it again.
   if (background_task->task_handle_.IsValid()) {
     background_task->task_handle_.CancelTask();
-  } else {
+  } else if (!background_task->is_freeze_only_) {
     return;
   }
 
@@ -466,8 +566,8 @@ void PreFreezeBackgroundMemoryTrimmer::BackgroundTask::CancelTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (task_handle_.IsValid()) {
     task_handle_.CancelTask();
-    PreFreezeBackgroundMemoryTrimmer::UnregisterBackgroundTask(this);
   }
+  PreFreezeBackgroundMemoryTrimmer::UnregisterBackgroundTask(this);
 }
 
 // static
@@ -480,6 +580,23 @@ PreFreezeBackgroundMemoryTrimmer::BackgroundTask::Create(
   DCHECK(task_runner->RunsTasksInCurrentSequence());
   auto background_task = std::make_unique<BackgroundTask>(task_runner);
   background_task->Start(from_here, delay, std::move(task));
+  return background_task;
+}
+
+// static
+std::unique_ptr<PreFreezeBackgroundMemoryTrimmer::BackgroundTask>
+PreFreezeBackgroundMemoryTrimmer::BackgroundTask::CreateOnFreezeTask(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    const base::Location& from_here,
+    OnceClosure task) {
+  DCHECK(task_runner->RunsTasksInCurrentSequence());
+  auto background_task = std::make_unique<BackgroundTask>(task_runner);
+  background_task->is_freeze_only_ = true;
+  background_task->task_ = BindOnce(
+      [](OnceClosure task, MemoryReductionTaskContext context) {
+        std::move(task).Run();
+      },
+      std::move(task));
   return background_task;
 }
 

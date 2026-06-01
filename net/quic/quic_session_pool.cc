@@ -94,6 +94,12 @@
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/application_status_listener.h"
+#include "base/android/pre_freeze_background_memory_trimmer.h"
+#include "base/memory/post_delayed_memory_reduction_task.h"
+#endif
+
 namespace net {
 
 namespace {
@@ -730,6 +736,9 @@ QuicSessionPool::QuicSessionPool(
   InitializeMigrationOptions();
   cert_verifier_->AddObserver(this);
   CertDatabase::GetInstance()->AddObserver(this);
+#if BUILDFLAG(IS_ANDROID)
+  RegisterPreFreezeTask();
+#endif
 }
 
 QuicSessionPool::~QuicSessionPool() {
@@ -862,6 +871,21 @@ int QuicSessionPool::RequestSession(
     const GURL& url,
     const NetLogWithSource& net_log,
     QuicSessionRequest* request) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kCloseQuicSessionsOnPreFreeze)) {
+    // If the process is pre-frozen, we block new requests because the OS will
+    // suspend (freeze) our execution shortly. Starting new requests now would
+    // lead to requests hanging or sockets leaking since we won't be able to
+    // process responses.
+    const bool is_pre_frozen = base::android::PreFreezeBackgroundMemoryTrimmer::
+        GetAndUpdatePreFrozenState();
+    base::UmaHistogramBoolean("Net.QuicSession.RequestBlockedByPreFreeze",
+                              is_pre_frozen);
+    if (is_pre_frozen) {
+      return ERR_ABORTED;
+    }
+  }
+#endif
   if (clock_skew_detector_.ClockSkewDetected(base::TimeTicks::Now(),
                                              base::Time::Now())) {
     MarkAllActiveSessionsGoingAway(kClockSkewDetected);
@@ -2610,5 +2634,22 @@ bool QuicSessionPool::CryptoConfigSessionCacheIsEmptyForTesting(
   }
   return config->session_cache()->GetSize() == 0;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void QuicSessionPool::RegisterPreFreezeTask() {
+  if (base::FeatureList::IsEnabled(features::kCloseQuicSessionsOnPreFreeze) &&
+      base::android::PreFreezeBackgroundMemoryTrimmer::SupportsModernTrim()) {
+    base::PostOnFreezeTask(task_runner_, FROM_HERE,
+                           base::BindOnce(&QuicSessionPool::OnPreFreeze,
+                                          weak_factory_.GetWeakPtr()));
+  }
+}
+
+void QuicSessionPool::OnPreFreeze() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CloseAllSessions(ERR_ABORTED, quic::QUIC_PEER_GOING_AWAY);
+  RegisterPreFreezeTask();
+}
+#endif
 
 }  // namespace net

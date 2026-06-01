@@ -6754,6 +6754,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.RequestBlockedByPreFreeze"
+    enum="BooleanBlocked" expires_after="2027-05-19">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records whether a request to RequestSession was blocked because the app was
+    pre-frozen. Logged for every RequestSession call on Android.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.RetryAfterWriteErrorCount2" units="retries"
     expires_after="2024-06-02">
   <owner>dschinazi@chromium.org</owner>

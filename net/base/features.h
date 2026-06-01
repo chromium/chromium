@@ -796,6 +796,10 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kRecentlyAccessedOriginCacheSize);
 // When enabled, the browser tries QUIC by default.
 NET_EXPORT BASE_DECLARE_FEATURE(kTryQuicByDefault);
 
+// If enabled, close all QUIC sessions when the app is about to be frozen
+// (Android only).
+NET_EXPORT BASE_DECLARE_FEATURE(kCloseQuicSessionsOnPreFreeze);
+
 // The QUIC connection options which will be sent to the server in order to
 // enable certain QUIC features. This should be set using `QuicTag`s (32-bit
 // value represented in ASCII equivalent e.g. EXMP). To set multiple features,

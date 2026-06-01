@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
@@ -945,6 +946,16 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   std::optional<base::TimeDelta> time_delay_for_waiting_job_for_testing_;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Registers a task to run `OnPreFreeze` when the Android process is about to
+  // be frozen.
+  void RegisterPreFreezeTask();
+
+  // Closes all active sessions on pre-freeze.
+  void OnPreFreeze();
+#endif
+
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<QuicSessionPool> weak_factory_{this};
 };
 

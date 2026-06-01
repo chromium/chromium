@@ -26,6 +26,8 @@
 #include "base/android/android_info.h"
 #include "base/android/apk_assets.h"
 #include "base/android/apk_info.h"
+#include "base/android/pre_freeze_background_memory_trimmer.h"
+#include "base/android/sys_utils.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -85,6 +87,19 @@
 #endif  // ENABLE_SPELLCHECK
 
 namespace android_webview {
+namespace {
+class AwPreFreezeDelegate
+    : public base::android::PreFreezeBackgroundMemoryTrimmer::Delegate {
+ public:
+  bool ShouldThawPreFrozenProcess() const override {
+    // WebView cannot use ApplicationStatusListener.
+    // This should not be called from renderers. TODO(yfriedman): This would
+    // fail under native-only renderers especially. Ensure this is properly
+    // evaluated on WebView prior to ramp up on that platform.
+    return !base::android::IsProcessInBackground();
+  }
+};
+}  // namespace
 
 AwMainDelegate::AwMainDelegate() = default;
 
@@ -231,6 +246,9 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   // Have the network service in the browser process even if we have separate
   // renderer processes. See also: switches::kInProcessGPU above.
   content::ForceInProcessNetworkService();
+
+  base::android::PreFreezeBackgroundMemoryTrimmer::SetDelegate(
+      std::make_unique<AwPreFreezeDelegate>());
 
   return std::nullopt;
 }

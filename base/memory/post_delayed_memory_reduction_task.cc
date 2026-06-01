@@ -41,6 +41,15 @@ void PostDelayedMemoryReductionTask(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void PostOnFreezeTask(scoped_refptr<SequencedTaskRunner> task_runner,
+                      const Location& from_here,
+                      OnceClosure task) {
+  android::PreFreezeBackgroundMemoryTrimmer::PostOnFreezeTask(
+      std::move(task_runner), from_here, std::move(task));
+}
+#endif
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                           *
  *                OneShotDelayedBackgroundTimer::TimerImpl                   *

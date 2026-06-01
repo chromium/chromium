@@ -10,11 +10,14 @@
 
 #include <optional>
 
+#include "base/android/application_status_listener.h"
 #include "base/android/self_compaction_manager.h"
+#include "base/android/sys_utils.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/memory/page_size.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -98,14 +101,33 @@ size_t CountResidentPagesInRange(void* addr, size_t size) {
   return tmp;
 }
 
+class MockDelegate : public PreFreezeBackgroundMemoryTrimmer::Delegate {
+ public:
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
+
+  bool ShouldThawPreFrozenProcess() const override { return should_thaw_; }
+
+  bool should_thaw_ = false;
+};
+
 }  // namespace
 
 class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
  public:
   void SetUp() override {
     PreFreezeBackgroundMemoryTrimmer::SetSupportsModernTrimForTesting(true);
-    PreFreezeBackgroundMemoryTrimmer::ClearMetricsForTesting();
+    PreFreezeBackgroundMemoryTrimmer::ResetForTesting();
     ResetGlobalCounter();
+
+    auto delegate = std::make_unique<MockDelegate>();
+    mock_delegate_ = delegate.get();
+    PreFreezeBackgroundMemoryTrimmer::SetDelegate(std::move(delegate));
+  }
+
+  void TearDown() override {
+    PreFreezeBackgroundMemoryTrimmer::SetDelegate(nullptr);
+    PreFreezeBackgroundMemoryTrimmer::ResetForTesting();
   }
 
  protected:
@@ -131,6 +153,9 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
 
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+ protected:
+  raw_ptr<MockDelegate> mock_delegate_ = nullptr;
 };
 
 class PreFreezeSelfCompactionTest : public testing::Test {
@@ -1183,6 +1208,70 @@ TEST_F(PreFreezeSelfCompactionTest, OnSelfFreezeCancel) {
       task_environment_.NextMainThreadPendingTaskDelay());
 
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0u);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest,
+       GetAndUpdatePreFrozenState_Initial) {
+  EXPECT_FALSE(PreFreezeBackgroundMemoryTrimmer::GetAndUpdatePreFrozenState());
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest,
+       GetAndUpdatePreFrozenState_ForceTesting) {
+  PreFreezeBackgroundMemoryTrimmer::SetForcePreFrozenForTesting(true);
+  EXPECT_TRUE(PreFreezeBackgroundMemoryTrimmer::GetAndUpdatePreFrozenState());
+  PreFreezeBackgroundMemoryTrimmer::SetForcePreFrozenForTesting(false);
+  EXPECT_FALSE(PreFreezeBackgroundMemoryTrimmer::GetAndUpdatePreFrozenState());
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest,
+       GetAndUpdatePreFrozenState_ShouldThaw) {
+  // Trigger pre-freeze.
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  // Mock delegate to return true for thawing.
+  mock_delegate_->should_thaw_ = true;
+
+  // Verify it thaws (returns false) and resets the state.
+  EXPECT_FALSE(PreFreezeBackgroundMemoryTrimmer::GetAndUpdatePreFrozenState());
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest,
+       GetAndUpdatePreFrozenState_ShouldKeepFrozen) {
+  // Trigger pre-freeze.
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  // Mock delegate to return false for thawing (should remain frozen).
+  mock_delegate_->should_thaw_ = false;
+
+  // Verify it remains frozen (returns true).
+  EXPECT_TRUE(PreFreezeBackgroundMemoryTrimmer::GetAndUpdatePreFrozenState());
+}
+
+class MockRaceDelegate : public PreFreezeBackgroundMemoryTrimmer::Delegate {
+ public:
+  MockRaceDelegate() = default;
+  ~MockRaceDelegate() override = default;
+
+  bool ShouldThawPreFrozenProcess() const override {
+    // Trigger a new pre-freeze event during the check to simulate a race.
+    PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+    return true;  // Return thawed for the current check
+  }
+};
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest,
+       GetAndUpdatePreFrozenState_RaceCondition) {
+  // Trigger initial pre-freeze.
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  // Inject the race delegate.
+  auto race_delegate = std::make_unique<MockRaceDelegate>();
+  PreFreezeBackgroundMemoryTrimmer::SetDelegate(std::move(race_delegate));
+
+  // Verify that even if the JNI check returned "thawed" (true), the
+  // process remains pre-frozen because a new pre-freeze event occurred
+  // during the check.
+  EXPECT_TRUE(PreFreezeBackgroundMemoryTrimmer::GetAndUpdatePreFrozenState());
 }
 
 }  // namespace base::android

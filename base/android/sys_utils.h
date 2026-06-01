@@ -13,6 +13,10 @@ namespace base::android {
 // obtained from a feature param
 BASE_EXPORT int GetCachedLowMemoryDeviceThresholdMb();
 
+// Queries ActivityManager and checks if the process importance is Cached or
+// below.
+BASE_EXPORT bool IsProcessInBackground();
+
 }  // namespace base::android
 
 #endif  // BASE_ANDROID_SYS_UTILS_H_

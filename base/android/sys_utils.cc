@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/sys_utils.h"
+
 #include <jni.h>
 
 #include "base/android/jni_android.h"
@@ -35,6 +37,11 @@ static void JNI_SysUtils_LogPageFaultCountToTracing(JNIEnv* env) {
 int GetCachedLowMemoryDeviceThresholdMb() {
   JNIEnv* env = AttachCurrentThread();
   return static_cast<int>(Java_SysUtils_getLowMemoryDeviceThresholdMb(env));
+}
+
+bool IsProcessInBackground() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_SysUtils_isProcessInBackground(env);
 }
 
 }  // namespace android

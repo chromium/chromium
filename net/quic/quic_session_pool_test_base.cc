@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -23,6 +24,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
@@ -182,6 +184,11 @@ QuicSessionPoolTestBase::QuicSessionPoolTestBase(
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   FLAGS_quic_enable_http3_grease_randomness = false;
   context_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
+
+#if BUILDFLAG(IS_ANDROID)
+  base::FilePath test_data_dir("/data/local/tmp/net_test_data");
+  base::PathService::Override(base::DIR_SRC_TEST_DATA_ROOT, test_data_dir);
+#endif
 
   // It's important that different proxies have different IPs, to avoid
   // pooling them together.
