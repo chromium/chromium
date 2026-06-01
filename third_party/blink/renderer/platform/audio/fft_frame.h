@@ -113,6 +113,14 @@ class PLATFORM_EXPORT FFTFrame final {
                                       const FFTFrame& frame2,
                                       double x);
 
+  void PlatformConstruct();
+  static unsigned PlatformMinFFTSize();
+  static unsigned PlatformMaxFFTSize();
+  static void PlatformInitialize(float sample_rate);
+  static void PlatformCleanup();
+  void PlatformDoFFT(base::span<const float> data);
+  void PlatformDoInverseFFT(base::span<float> data);
+
   unsigned fft_size_ = 0;
 
   // When using PFFFT, this slot is irrelevant and unused because PFFFT

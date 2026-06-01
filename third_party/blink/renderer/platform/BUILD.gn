@@ -2197,6 +2197,7 @@ source_set("blink_platform_unittests_sources") {
     "audio/denormal_disabler_test.cc",
     "audio/direct_convolver_test.cc",
     "audio/down_sampler_test.cc",
+    "audio/fft_frame_test.cc",
     "audio/push_pull_fifo_multithread_test.cc",
     "audio/push_pull_fifo_test.cc",
     "audio/up_sampler_test.cc",
