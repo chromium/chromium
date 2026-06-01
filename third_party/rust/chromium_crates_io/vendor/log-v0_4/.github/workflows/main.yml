@@ -34,11 +34,15 @@ jobs:
             os: windows-latest
             rust: stable-x86_64-pc-windows-gnu
     steps:
-    - uses: actions/checkout@v4
-    - uses: dtolnay/rust-toolchain@master
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
+      with:
+        persist-credentials: false
+    - uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # v1
       with:
         toolchain: ${{ matrix.rust }}
-    - uses: taiki-e/install-action@cargo-hack
+    - uses: taiki-e/install-action@0abfcd587b70a713fdaa7fb502c885e2112acb15 # v2.75.7
+      with:
+        tool: cargo-hack
     - run: cargo hack test --feature-powerset --exclude-features max_level_off,max_level_error,max_level_warn,max_level_info,max_level_debug,max_level_trace,release_max_level_off,release_max_level_error,release_max_level_warn,release_max_level_info,release_max_level_debug,release_max_level_trace
     - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml
     - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml --release
@@ -47,9 +51,12 @@ jobs:
     name: Check Format and Clippy
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: dtolnay/rust-toolchain@stable
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
       with:
+        persist-credentials: false
+    - uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # v1
+      with:
+        toolchain: stable
         components: clippy
     - run: cargo fmt -- --check
     - run: cargo fmt --manifest-path test_max_level_features/Cargo.toml -- --check
@@ -60,8 +67,12 @@ jobs:
     name: Check Documentation
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: dtolnay/rust-toolchain@stable
+    - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
+      with:
+        persist-credentials: false
+    - uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # v1
+      with:
+        toolchain: stable
     - name: Run rustdoc
       env:
         RUSTDOCFLAGS: "-D warnings"
@@ -71,8 +82,12 @@ jobs:
     name: Feature check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@nightly
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # v1
+        with:
+          toolchain: nightly
       - run: cargo build --verbose -Z avoid-dev-deps --features kv
       - run: cargo build --verbose -Z avoid-dev-deps --features "kv std"
       - run: cargo build --verbose -Z avoid-dev-deps --features "kv kv_sval"
@@ -84,8 +99,12 @@ jobs:
     name: Minimal versions
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@nightly
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # v1
+        with:
+          toolchain: nightly
       - run: cargo build --verbose -Z minimal-versions --features kv
       - run: cargo build --verbose -Z minimal-versions --features "kv std"
       - run: cargo build --verbose -Z minimal-versions --features "kv kv_sval"
@@ -97,11 +116,16 @@ jobs:
     name: MSRV
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@1.68.0
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # v1
         with:
           components: clippy
-      - uses: taiki-e/install-action@cargo-hack
+          toolchain: "1.71"
+      - uses: taiki-e/install-action@0abfcd587b70a713fdaa7fb502c885e2112acb15 # v2.75.7
+        with:
+          tool: cargo-hack
       - run: cargo hack test --feature-powerset --exclude-features max_level_off,max_level_error,max_level_warn,max_level_info,max_level_debug,max_level_trace,release_max_level_off,release_max_level_error,release_max_level_warn,release_max_level_info,release_max_level_debug,release_max_level_trace
       - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml
       - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml --release
@@ -110,8 +134,12 @@ jobs:
     name: Embedded
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # v1
+        with:
+          toolchain: stable
       - run: rustup target add thumbv6m-none-eabi riscv32imc-unknown-none-elf
       - run: cargo build --verbose --target=thumbv6m-none-eabi
       - run: cargo build --verbose --target=riscv32imc-unknown-none-elf

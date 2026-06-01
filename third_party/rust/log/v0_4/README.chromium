@@ -1,7 +1,7 @@
 Name: log
 URL: https://crates.io/crates/log
-Version: 0.4.29
-Revision: b1e2df7bce7a1b685aa9bfd1db0a5cac1f0fc27d
+Version: 0.4.30
+Revision: 9c55760b499b18e81de7df5f3c13a67d5661131d
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/log-v0_4/LICENSE-APACHE

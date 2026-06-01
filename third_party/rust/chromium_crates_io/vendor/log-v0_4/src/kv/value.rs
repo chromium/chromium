@@ -373,6 +373,35 @@ impl_value_to_primitive![
     to_bool -> bool,
 ];
 
+#[cfg(feature = "std")]
+macro_rules! impl_to_value_from_display {
+    ($($into_ty:ty,)*) => {
+        $(
+            impl ToValue for $into_ty {
+                fn to_value(&self) -> Value<'_> {
+                    Value::from_display(self)
+                }
+            }
+
+            impl<'v> From<&'v $into_ty> for Value<'v> {
+                fn from(value: &'v $into_ty) -> Self {
+                    Value::from_display(value)
+                }
+            }
+        )*
+    };
+}
+
+#[cfg(feature = "std")]
+impl_to_value_from_display![
+    std::net::IpAddr,
+    std::net::Ipv4Addr,
+    std::net::Ipv6Addr,
+    std::net::SocketAddr,
+    std::net::SocketAddrV4,
+    std::net::SocketAddrV6,
+];
+
 impl<'v> Value<'v> {
     /// Try to convert this value into an error.
     #[cfg(feature = "kv_std")]
@@ -736,6 +765,7 @@ pub(in crate::kv) mod inner {
 
     #[derive(Clone)]
     pub enum Inner<'v> {
+        // NOTE: New variants can't be added here; see the module-level doc above
         None,
         Bool(bool),
         Str(&'v str),
@@ -999,7 +1029,7 @@ pub(in crate::kv) mod inner {
         }
 
         #[cfg(test)]
-        pub fn to_test_token(&self) -> Token {
+        pub fn to_test_token(&self) -> Token<'_> {
             match self {
                 Inner::None => Token::None,
                 Inner::Bool(v) => Token::Bool(*v),
@@ -1176,7 +1206,10 @@ macro_rules! as_sval {
 pub(crate) mod tests {
     use super::*;
 
+    // For new `ToValue` implementations, also add a test to the `tests/macros` file
+
     impl<'v> Value<'v> {
+        #[allow(mismatched_lifetime_syntaxes)]
         pub(crate) fn to_token(&self) -> inner::Token {
             self.inner.to_test_token()
         }
@@ -1241,6 +1274,75 @@ pub(crate) mod tests {
         assert_eq!(Some(true).to_value().to_string(), "true");
         assert_eq!(().to_value().to_string(), "None");
         assert_eq!(None::<bool>.to_value().to_string(), "None");
+    }
+
+    #[test]
+    #[cfg(feature = "std")]
+    fn test_net_to_value_display() {
+        use std::str::FromStr;
+
+        assert_eq!(
+            std::net::Ipv4Addr::new(192, 168, 10, 100)
+                .to_value()
+                .to_string(),
+            "192.168.10.100"
+        );
+        assert_eq!(
+            std::net::Ipv6Addr::from_str("f33c::1")
+                .unwrap()
+                .to_value()
+                .to_string(),
+            "f33c::1"
+        );
+        assert_eq!(
+            std::net::IpAddr::V4(std::net::Ipv4Addr::new(192, 168, 10, 100))
+                .to_value()
+                .to_string(),
+            "192.168.10.100"
+        );
+        assert_eq!(
+            std::net::IpAddr::V6(std::net::Ipv6Addr::from_str("f33c::1").unwrap())
+                .to_value()
+                .to_string(),
+            "f33c::1"
+        );
+        assert_eq!(
+            std::net::SocketAddrV4::new(std::net::Ipv4Addr::new(192, 168, 10, 100), 12345)
+                .to_value()
+                .to_string(),
+            "192.168.10.100:12345"
+        );
+        assert_eq!(
+            std::net::SocketAddrV6::new(
+                std::net::Ipv6Addr::from_str("f33c::1").unwrap(),
+                12345,
+                0,
+                0
+            )
+            .to_value()
+            .to_string(),
+            "[f33c::1]:12345"
+        );
+        assert_eq!(
+            std::net::SocketAddr::V4(std::net::SocketAddrV4::new(
+                std::net::Ipv4Addr::new(192, 168, 10, 100),
+                12345
+            ))
+            .to_value()
+            .to_string(),
+            "192.168.10.100:12345"
+        );
+        assert_eq!(
+            std::net::SocketAddr::V6(std::net::SocketAddrV6::new(
+                std::net::Ipv6Addr::from_str("f33c::1").unwrap(),
+                12345,
+                0,
+                0
+            ))
+            .to_value()
+            .to_string(),
+            "[f33c::1]:12345"
+        );
     }
 
     #[test]
