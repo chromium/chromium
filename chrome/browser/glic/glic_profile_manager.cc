@@ -110,7 +110,7 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
     return current_detached_glic_->profile();
   }
 
-  // Look for a profile to based on most recently used browser windows
+  // Look for a profile to use based on most recently used browser windows
   Profile* profile_from_browser_window = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
