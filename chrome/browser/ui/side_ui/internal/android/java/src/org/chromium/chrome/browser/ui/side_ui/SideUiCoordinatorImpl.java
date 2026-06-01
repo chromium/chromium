@@ -220,7 +220,12 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         assert mSideUiContainers.size() == 1;
         var sideUiContainer = mSideUiContainers.get(0);
 
-        // 1. Get the current SideUiSpecs.
+        // 1. End any existing transitions still in progress. This needs to be done before checking
+        // the current specs, since specs aren't fully updated until after all transitions have
+        // finished.
+        TransitionManager.endTransitions(getRootView());
+
+        // 2. Get the current SideUiSpecs.
         SideUiSpecs currentSideUiSpecs = getCurrentSideUiSpecs();
         @AnchorSide int currentAnchorSide = sideUiContainer.getAnchorSide();
         @Px
@@ -229,7 +234,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
                         ? currentSideUiSpecs.getWidth(AnchorSide.LEFT)
                         : currentSideUiSpecs.getWidth(AnchorSide.RIGHT);
 
-        // 2. Check if we need to close/re-open side UI.
+        // 3. Check if we need to close/re-open side UI.
         //
         // Currently there is only one SideUiContainer, so we only need to check if there is enough
         // space for that container.
@@ -245,7 +250,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         @Px int minSideUiWidth = ViewUtils.dpToPx(mParentActivity, sideUiContainer.getMinWidthDp());
         boolean canShowSideUi = (windowWidth - minWebContentsWidth - minSideUiWidth >= 0);
 
-        // 2.1. Check if we need to close side UI.
+        // 4.1. Check if we need to close side UI.
         if (currentSideUiWidth != 0 && !canShowSideUi) {
             // Don't simply close the side UI by calling requestUpdateContainerInternal() with a
             // zero width. SideUiContainer may need to save states so that it can restore its UI
@@ -256,7 +261,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             return;
         }
 
-        // 2.2 Check if we need to re-open side UI.
+        // 4.2 Check if we need to re-open side UI.
         if (currentSideUiWidth == 0 && canShowSideUi) {
             // Similarly, we shouldn't call requestUpdateContainerInternal() here.
             // SideUiContainer needs to check whether there actually exists side UI to restore,
@@ -265,7 +270,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             return;
         }
 
-        // 3. At this point, we don't need to close or re-open side UI, so we'll just resize side
+        // 5. At this point, we don't need to close or re-open side UI, so we'll just resize side
         // UI by requesting a UI update with the current specs. This will re-calculate the
         // SideUiSpecs, and if the re-calculated SideUiSpecs is different, the UI will be updated.
         requestUpdateContainerInternal(
