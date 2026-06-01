@@ -19,12 +19,17 @@ namespace features {
 //   `kPrefetchPrerenderIntegration`).
 // - Trigger prefetch ahead of prerender.
 BASE_FEATURE(kPrerender2FallbackPrefetchSpecRules,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+             );
 
 const base::FeatureParam<bool>
     kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout{
         &kPrerender2FallbackPrefetchSpecRules,
-        "kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout", true};
+        "kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout", false};
 
 constexpr base::FeatureParam<Prerender2FallbackPrefetchSchedulerPolicy>::Option
     kPrerender2FallbackPrefetchSchedulerPolicyOptios[] = {
@@ -36,7 +41,7 @@ const base::FeatureParam<Prerender2FallbackPrefetchSchedulerPolicy>
     kPrerender2FallbackPrefetchSchedulerPolicy{
         &kPrerender2FallbackPrefetchSpecRules,
         "kPrerender2FallbackPrefetchSchedulerPolicy",
-        Prerender2FallbackPrefetchSchedulerPolicy::kNotUse,
+        Prerender2FallbackPrefetchSchedulerPolicy::kBurst,
         &kPrerender2FallbackPrefetchSchedulerPolicyOptios};
 
 BASE_FEATURE(kPrerender2NoVarySearch, base::FEATURE_ENABLED_BY_DEFAULT);

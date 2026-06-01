@@ -115,7 +115,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
                     {
                         features::kPrerender2FallbackPrefetchSchedulerPolicy
                             .name,
-                        "NotUse",
+                        "Burst",
                     },
                 },
             },

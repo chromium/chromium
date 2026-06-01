@@ -50,7 +50,7 @@ class PrerendererTest : public RenderViewHostTestHarness {
                     {
                         features::kPrerender2FallbackPrefetchSchedulerPolicy
                             .name,
-                        "NotUse",
+                        "Burst",
                     },
                 },
             },
