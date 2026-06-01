@@ -162,9 +162,9 @@ template("blink_python_runner") {
   }
 }
 
-# TODO(crbug.com/732657): Remove this once everything that uses this switches over to
-# the 'code_generator' template instead.
-# Template to run most of scripts that process "*.json5" files.
+# TODO(crbug.com/732657): Remove this once everything that uses this switches
+# over to the 'code_generator' template instead. Template to run most of scripts
+# that process "*.json5" files.
 #   script: script to run.
 #   in_files: input ".json5" files to pass to the script
 #   other_inputs: (optional) other input files the script depends on
