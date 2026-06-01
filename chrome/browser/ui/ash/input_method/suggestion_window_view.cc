@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/ash/input_method/colors.h"
 #include "chrome/browser/ui/ash/input_method/completion_suggestion_view.h"
 #include "chrome/browser/ui/ash/input_method/suggestion_details.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"

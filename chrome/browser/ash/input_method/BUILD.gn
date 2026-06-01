@@ -185,6 +185,7 @@ static_library("input_method") {
   deps = [
     "//ash/constants",
     "//ash/keyboard/ui",
+    "//ash/strings",
     "//ash/webui/settings/public/constants:mojom",
     "//base:i18n",
     "//build:branding_buildflags",
@@ -345,7 +346,6 @@ source_set("unit_tests") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
-    "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:global_features",
     "//chrome/browser/ash/browser_delegate:impl",

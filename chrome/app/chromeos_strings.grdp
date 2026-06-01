@@ -3944,41 +3944,6 @@ You can manage this account’s settings by installing the Family Link app on yo
   </message>
 
 
-  <!-- Strings for Suggestion features -->
-  <message name="IDS_SUGGESTION_LEARN_MORE" desc="This string is a link that shows up along with a personal information suggestion (in the first 10 instances) to inform the users about the feature. It takes users to the settings page to learn more.">
-    Learn about suggestions
-  </message>
-  <message name="IDS_SUGGESTION_ENTER_KEY" desc="This string is the enter key annotation to educate users how to accept a personal information suggestion.">
-    Enter
-  </message>
-  <message name="IDS_SUGGESTION_DIACRITICS_OPEN" desc="String announced by screenreader when diacritics suggestion pops up.">
-    Accent marks menu open. Press left, right, or number keys to navigate and enter to insert.
-  </message>
-  <message name="IDS_SUGGESTION_DIACRITICS_INSERTED" desc="String announced by screenreader when diacritics are inserted.">
-    Accent mark inserted.
-  </message>
-  <message name="IDS_SUGGESTION_DIACRITICS_DISMISSED" desc="String announced by screenreader when diacritics are dismissed.">
-    Accent marks menu dismissed.
-  </message>
-  <message name="IDS_SUGGESTION_INSERTED" desc="String announced by screenreader when a suggestion is inserted.">
-    Suggestion inserted
-  </message>
-  <message name="IDS_SUGGESTION_AUTOCORRECT_UNDO_TEXT" desc="Label for autocorrect undo button in undo window.">
-    Undo
-  </message>
-  <message name="IDS_SUGGESTION_AUTOCORRECT_LEARN_MORE" desc="String announced by screenreader when a button to learn more about autocorrect is highlighted.">
-    Autocorrect learn more button. Go to autocorrection settings page. Press enter to activate, escape to dismiss.
-  </message>
-  <message name="IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON" desc="String announced by screenreader when a button to undo an autocorrect is highlighted. Example, user types 'hllo', system autocorrects to 'hello', user then prepares to revert the autocorrect.">
-    Undo autocorrect button. Revert to <ph name="TYPED_WORD">$1<ex>hllo</ex></ph>.  Press enter to activate, escape to dismiss.
-  </message>
-  <message name="IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN" desc="String announced by screenreader when a button to undo an autocorrect is shown. Example, user types 'hllo', system autocorrects to 'hello', user then prepares to revert the autocorrect.">
-    Autocorrect undo dialog is shown for <ph name="TYPED_WORD">$1<ex>hllo</ex></ph> corrected to <ph name="CORRECTED_WORD">$2<ex>hello</ex></ph>.  Press up arrow to access, escape to ignore.
-  </message>
-  <message name="IDS_SUGGESTION_TAB_KEY" desc="This string is the tab key annotation, which is used to educate users how to accept a predictive writing suggestion">
-    tab
-  </message>
-
   <!-- Strings for emoji picker-->
   <message name="IDS_ACCNAME_EMOJI_PICKER" desc="The accessible name for the emoji picker.">
     Emoji Picker

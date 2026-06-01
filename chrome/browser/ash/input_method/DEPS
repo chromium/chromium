@@ -28,7 +28,6 @@ include_rules = [
   "+chrome/common/chrome_paths.h",
   "+chrome/common/extensions",
   "+chrome/common/pref_names.h",
-  "+chrome/grit",
 
   # Dependencies outside of //chrome:
   "-content",
@@ -36,6 +35,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "component_extension_ime_manager_delegate_impl\\.cc": [
+    "+chrome/grit",
+  ],
+
   # The configuration layer.
   "(input_method_delegate_impl|input_method_persistence|browser_state_monitor)"
   "\\.(h|cc)": [

@@ -12,7 +12,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/app/vector_icons",
   "+chrome/browser/ash/input_method",
-  "+chrome/grit",
   "+chrome/test",
 ]
 
