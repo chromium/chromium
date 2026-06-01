@@ -34,8 +34,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -1250,25 +1253,26 @@ IN_PROC_BROWSER_TEST_P(PageActionExpandedAnchoredMessageTest,
         const int num_items = GetParam().expandable_content_items;
         content.heading = base::ASCIIToUTF16(
             base::StringPrintf("Will share %d items", num_items));
-        struct Item {
-          raw_ptr<const gfx::VectorIcon> icon;
-          std::u16string text;
-        };
-        // Use a set of sample items to have varied icons and text. Test cases
+        // Use a set of sample items to have varied text. Test cases
         // will use any number of these, depending on what the test wants. The
         // content here is arbitrary.
-        const std::array<Item, 4> kItems = {{
-            {&vector_icons::kEditOldIcon, u"Site with sample items"},
-            {&vector_icons::kGlobeOldIcon,
-             u"Another site with more sample items"},
-            {&vector_icons::kSettingsOldIcon, u"Sample items galore"},
-            {&vector_icons::kExtensionOldIcon, u"Too many sites with items"},
+        const std::array<std::u16string, 4> kItems = {{
+            u"Site with sample items",
+            u"Another site with more sample items",
+            u"Sample items galore",
+            u"Another sample site with a notably longer description",
         }};
+        // Create a solid color icon so that borders and clipping are evident.
+        SkBitmap bitmap;
+        bitmap.allocN32Pixels(16, 16);
+        bitmap.eraseColor(SK_ColorRED);
         for (int i = 0; i < num_items; ++i) {
-          const auto& item = kItems[static_cast<size_t>(i) % kItems.size()];
+          const auto& text = kItems[static_cast<size_t>(i) % kItems.size()];
+          // Use a solid color bitmap to test stacked icon clipping.
           content.items.push_back(
-              {ui::ImageModel::FromVectorIcon(*item.icon, ui::kColorIcon, 16),
-               item.text});
+              {ui::ImageModel::FromImageSkia(
+                   gfx::ImageSkia::CreateFrom1xBitmap(bitmap)),
+               text});
         }
 
         ShowTestAnchoredMessageWithExpandableContent(u"Anchored with expand",
