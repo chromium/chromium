@@ -786,6 +786,9 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   }
   VLOG(1) << "On active tree changed with new id: " << tree_id;
 
+  rendered_text_blocks_ready_recorded_ = false;
+  active_tree_changed_start_time_ = base::TimeTicks::Now();
+
   // If the previous tree was not unknown (e.g. this is not the first tree
   // seen), log session metrics for the previous tree.
   if (model_.active_tree_id() != ui::AXTreeIDUnknown()) {
@@ -3090,6 +3093,17 @@ void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadability(
 
 void ReadAnythingAppController::OnRenderedTextBlocksAvailable(
     const std::vector<std::u16string>& blocks) {
+  if (!rendered_text_blocks_ready_recorded_) {
+    DCHECK(!active_tree_changed_start_time_.is_null());
+    base::TimeDelta elapsed_time =
+        base::TimeTicks::Now() - active_tree_changed_start_time_;
+    base::UmaHistogramLongTimes(
+        "Accessibility.ReadAnything."
+        "TimeFromActiveAXTreeIDChangedToRenderedTextBlocks",
+        elapsed_time);
+    rendered_text_blocks_ready_recorded_ = true;
+  }
+
   if (!IsReadabilitySelectTextEnabled()) {
     return;
   }

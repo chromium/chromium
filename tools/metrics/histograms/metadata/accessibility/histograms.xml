@@ -3548,6 +3548,19 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram
+    name="Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToRenderedTextBlocks"
+    units="ms" expires_after="2027-06-01">
+  <owner>martinglopez@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records the time elapsed from when the browser triggers
+    OnActiveAXTreeIDChanged (due to tab switch, page navigation, or sidebar
+    opening) to when the WebUI finishes layout and renders the distilled text
+    content in the viewport.
+  </summary>
+</histogram>
+
+<histogram
     name="Accessibility.ReadAnything.TimeFromEntryTriggeredToWebUIConnected"
     units="ms" expires_after="2026-10-04">
   <owner>lwinston@google.com</owner>
