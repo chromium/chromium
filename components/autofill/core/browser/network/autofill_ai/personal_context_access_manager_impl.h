@@ -29,6 +29,11 @@ class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
 
   ~PersonalContextAccessManagerImpl() override;
 
+  // PersonalContextAccessManager:
+  void FetchAmbientAutofillContext(
+      base::span<const EntityType> requested_types,
+      FetchAmbientAutofillContextCallback callback) override;
+
  private:
   const raw_ref<personal_context::PersonalContextService>
       personal_context_service_;

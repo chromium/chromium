@@ -23,6 +23,7 @@ include_rules = [
   "+components/password_manager/core/browser/features/password_features.h",
   "+components/payments/core/currency_formatter.h",
   "+components/personal_context/core",
+  "+components/personal_context/proto",
   "+components/policy",
   "+components/profile_metrics",
   "+components/resources",
