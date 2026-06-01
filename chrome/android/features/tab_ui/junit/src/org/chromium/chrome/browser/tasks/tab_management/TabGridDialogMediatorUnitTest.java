@@ -141,7 +141,7 @@ import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -1627,9 +1627,8 @@ public class TabGridDialogMediatorUnitTest {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
 
         when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(GROUP_TITLE);
-        CoreAccountInfo coreAccountInfo =
-                CoreAccountInfo.createFromEmailAndGaiaId(EMAIL1, GAIA_ID1);
-        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(coreAccountInfo);
+        AccountInfo accountInfo = new AccountInfo.Builder(EMAIL1, GAIA_ID1).build();
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(accountInfo);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.OWNER);
 
@@ -1646,9 +1645,8 @@ public class TabGridDialogMediatorUnitTest {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1, GROUP_MEMBER2);
 
         when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(GROUP_TITLE);
-        CoreAccountInfo coreAccountInfo =
-                CoreAccountInfo.createFromEmailAndGaiaId(EMAIL2, GAIA_ID2);
-        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(coreAccountInfo);
+        AccountInfo accountInfo = new AccountInfo.Builder(EMAIL2, GAIA_ID2).build();
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(accountInfo);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
                 .thenReturn(MemberRole.MEMBER);
 

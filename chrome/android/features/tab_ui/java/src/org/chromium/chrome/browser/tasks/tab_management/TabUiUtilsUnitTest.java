@@ -65,7 +65,7 @@ import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -600,7 +600,7 @@ public class TabUiUtilsUnitTest {
     }
 
     private void mockIdentity(String email, GaiaId gaiaId) {
-        CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(email, gaiaId);
-        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(coreAccountInfo);
+        AccountInfo accountInfo = new AccountInfo.Builder(email, gaiaId).build();
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(accountInfo);
     }
 }

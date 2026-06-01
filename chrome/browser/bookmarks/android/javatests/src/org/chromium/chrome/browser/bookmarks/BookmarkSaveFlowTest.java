@@ -57,9 +57,8 @@ import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.google_apis.gaia.GaiaId;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -93,8 +92,6 @@ public class BookmarkSaveFlowTest {
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mBottomSheetTestSupport;
     private BookmarkModel mBookmarkModel;
-    private final CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", new GaiaId("testGaiaId"));
 
     @Before
     public void setUp() throws ExecutionException {
@@ -103,7 +100,7 @@ public class BookmarkSaveFlowTest {
 
         // Setup mocks.
         PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
-        doReturn(mAccountInfo).when(mIdentityManager).getPrimaryAccountInfo();
+        doReturn(TestAccounts.ACCOUNT1).when(mIdentityManager).getPrimaryAccountInfo();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

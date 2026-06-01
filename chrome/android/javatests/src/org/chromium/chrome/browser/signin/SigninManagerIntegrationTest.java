@@ -412,7 +412,7 @@ public class SigninManagerIntegrationTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         SigninTestUtil.signinAndWaitForPrefsCommit(TestAccounts.ACCOUNT1);
 
-        Assert.assertTrue(mIdentityManager.hasPrimaryAccount());
+        assertNotNull(mSigninTestRule.getPrimaryAccount());
         verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .onSignedIn();
     }
@@ -450,7 +450,7 @@ public class SigninManagerIntegrationTest {
         blocker.close();
         // Check that the account is still signed out but the account is available in identity
         // manager.
-        Assert.assertFalse(mIdentityManager.hasPrimaryAccount());
+        assertNull(mSigninTestRule.getPrimaryAccount());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(

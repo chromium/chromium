@@ -47,8 +47,13 @@ public class FakeIdentityManager implements IdentityManager {
     }
 
     @Override
-    public @Nullable CoreAccountInfo getPrimaryAccountInfo() {
-        return mPrimaryAccount;
+    public @Nullable AccountInfo getPrimaryAccountInfo() {
+        if (mPrimaryAccount == null) return null;
+        AccountInfo accountInfo = mExtendedAccountInfos.get(mPrimaryAccount.getId());
+        if (accountInfo != null) {
+            return accountInfo;
+        }
+        return new AccountInfo.Builder(mPrimaryAccount).build();
     }
 
     @Override

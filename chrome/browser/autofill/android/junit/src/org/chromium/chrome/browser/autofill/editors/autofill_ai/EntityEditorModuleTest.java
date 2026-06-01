@@ -94,7 +94,7 @@ import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.TestActivity;
@@ -280,8 +280,8 @@ public class EntityEditorModuleTest {
                     .setIsMaskedServerEntity(true)
                     .build();
 
-    private final CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, new GaiaId("gaia_id"));
+    private final AccountInfo mAccountInfo =
+            new AccountInfo.Builder(USER_EMAIL, new GaiaId("gaia_id")).build();
 
     // Note: can't initialize this list statically because of how Robolectric
     // initializes Android library dependencies.

@@ -60,9 +60,8 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.profile_metrics.BrowserProfileType;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.google_apis.gaia.GaiaId;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -100,8 +99,6 @@ public class BookmarkUtilsTest {
 
     private Activity mActivity;
     private FakeBookmarkModel mBookmarkModel;
-    private final CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", new GaiaId("testGaiaId"));
 
     @Before
     public void setup() {
@@ -117,7 +114,7 @@ public class BookmarkUtilsTest {
         ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
-        doReturn(mAccountInfo).when(mIdentityManager).getPrimaryAccountInfo();
+        doReturn(TestAccounts.ACCOUNT1).when(mIdentityManager).getPrimaryAccountInfo();
         doReturn(mProfile).when(mTab).getProfile();
         doReturn(false).when(mProfile).isOffTheRecord();
 

@@ -128,7 +128,7 @@ public class SigninManagerImplTest {
         verify(callback, never()).onSignInAborted();
 
         // The primary account is now present and consented to sign in.
-        assertTrue(mIdentityManager.hasPrimaryAccount());
+        assertNotNull(mSigninTestRule.getPrimaryAccount());
     }
 
     @Test
@@ -263,7 +263,7 @@ public class SigninManagerImplTest {
     @MediumTest
     public void testSignOutNotAllowedForChildAccounts() {
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
-        assertTrue(mIdentityManager.hasPrimaryAccount());
+        assertNotNull(mSigninTestRule.getPrimaryAccount());
 
         ThreadUtils.runOnUiThreadBlocking(() -> assertFalse(mSigninManager.isSignOutAllowed()));
     }

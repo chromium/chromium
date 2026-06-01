@@ -56,7 +56,7 @@ import org.chromium.components.autofill.AutofillAddressUiComponent;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.google_apis.gaia.GaiaId;
@@ -156,8 +156,8 @@ public class AddressEditorRenderTest {
 
     private AddressEditorCoordinator mAddressEditor;
 
-    private final CoreAccountInfo mAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, new GaiaId("gaia_id"));
+    private final AccountInfo mAccountInfo =
+            new AccountInfo.Builder(USER_EMAIL, new GaiaId("gaia_id")).build();
 
     public AddressEditorRenderTest(boolean nightModeEnabled) {
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);

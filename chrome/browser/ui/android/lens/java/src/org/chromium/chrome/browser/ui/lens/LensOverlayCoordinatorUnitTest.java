@@ -37,10 +37,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -154,13 +153,9 @@ public class LensOverlayCoordinatorUnitTest {
     public void saveCompositedImageAndLaunch_WithAccount() {
         // Setup mock URL and account state.
         GURL testUrl = new GURL("https://example.com");
-        String testEmail = "test@example.com";
         when(mTab.getUrl()).thenReturn(testUrl);
         when(mTab.isIncognito()).thenReturn(false);
-        when(mIdentityManagerMock.getPrimaryAccountInfo())
-                .thenReturn(
-                        CoreAccountInfo.createFromEmailAndGaiaId(
-                                testEmail, new GaiaId("test-gaia-id")));
+        when(mIdentityManagerMock.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
 
         // Bypass the actual file saving.
         Uri mockUri = Uri.parse("content://mock/screenshot.jpg");
@@ -174,7 +169,9 @@ public class LensOverlayCoordinatorUnitTest {
         // Verify that startLens was called with the correct account email.
         verify(mLensControllerMock)
                 .startLens(eq(mWindowAndroid), mLensIntentParamsCaptor.capture());
-        assertEquals(testEmail, mLensIntentParamsCaptor.getValue().getAccountName());
+        assertEquals(
+                TestAccounts.ACCOUNT1.getEmail(),
+                mLensIntentParamsCaptor.getValue().getAccountName());
     }
 
     @Test
@@ -186,10 +183,7 @@ public class LensOverlayCoordinatorUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(true);
 
         // Even if signed in, incognito should prevent passing the account.
-        when(mIdentityManagerMock.getPrimaryAccountInfo())
-                .thenReturn(
-                        CoreAccountInfo.createFromEmailAndGaiaId(
-                                "test@gmail.com", new GaiaId("test-gaia-id")));
+        when(mIdentityManagerMock.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
 
         // Bypass the actual file saving.
         Uri mockUri = Uri.parse("content://mock/screenshot.jpg");

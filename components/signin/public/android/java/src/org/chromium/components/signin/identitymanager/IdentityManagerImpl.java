@@ -71,7 +71,7 @@ public class IdentityManagerImpl implements IdentityManager {
     }
 
     @Override
-    public @Nullable CoreAccountInfo getPrimaryAccountInfo() {
+    public @Nullable AccountInfo getPrimaryAccountInfo() {
         return IdentityManagerImplJni.get().getPrimaryAccountInfo(mNativeIdentityManager);
     }
 
@@ -189,7 +189,7 @@ public class IdentityManagerImpl implements IdentityManager {
     @NativeMethods
     public interface Natives {
 
-        @Nullable CoreAccountInfo getPrimaryAccountInfo(long nativeIdentityManager);
+        @Nullable AccountInfo getPrimaryAccountInfo(long nativeIdentityManager);
 
         @Nullable AccountInfo findExtendedAccountInfoByAccountId(
                 long nativeIdentityManager, CoreAccountId accountId);

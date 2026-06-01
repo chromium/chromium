@@ -514,12 +514,9 @@ IdentityManager::GetPrimaryAccountInfo(JNIEnv* env) const {
   if (account_info.IsEmpty()) {
     return nullptr;
   }
-  // TODO(https://crbug.com/471185380): After M148 reaches Stable - change the
-  // return type for GetPrimaryAccountInfo to AccountInfo.
-  CHECK(!account_tracker_service_->GetAccountInfo(account_info.account_id)
-             .IsEmpty(),
-        base::NotFatalUntil::M148);
-  return ConvertToJavaCoreAccountInfo(env, account_info);
+  AccountInfo extended_info =
+      account_tracker_service_->GetAccountInfo(account_info.account_id);
+  return ConvertToJavaAccountInfo(env, extended_info);
 }
 
 base::android::ScopedJavaLocalRef<jobject>

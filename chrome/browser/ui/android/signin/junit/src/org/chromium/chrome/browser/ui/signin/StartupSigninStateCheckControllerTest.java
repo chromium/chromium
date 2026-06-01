@@ -38,10 +38,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
-import org.chromium.google_apis.gaia.GaiaId;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -63,8 +62,6 @@ public class StartupSigninStateCheckControllerTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private final Context mContext = ApplicationProvider.getApplicationContext();
-    private final CoreAccountInfo mCoreAccountInfo =
-            CoreAccountInfo.createFromEmailAndGaiaId("test@managed.com", new GaiaId("gaia_id_123"));
 
     private StartupSigninStateCheckController mController;
 
@@ -112,7 +109,7 @@ public class StartupSigninStateCheckControllerTest {
     @Test
     @SmallTest
     public void testAlreadyConsented_doesNothing() {
-        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mCoreAccountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.MANAGED_ACCOUNT);
         when(mSigninManager.getUserAcceptedAccountManagement()).thenReturn(true);
 
         mController.onFinishNativeInitialization();
@@ -123,7 +120,7 @@ public class StartupSigninStateCheckControllerTest {
     @Test
     @SmallTest
     public void testUnconsentedManagedAccount_showsDialogAndAccepts() {
-        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mCoreAccountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.MANAGED_ACCOUNT);
         when(mSigninManager.getUserAcceptedAccountManagement()).thenReturn(false);
         doAnswer(
                         invocation -> {
@@ -132,7 +129,7 @@ public class StartupSigninStateCheckControllerTest {
                             return null;
                         })
                 .when(mSigninManager)
-                .isAccountManaged(eq(mCoreAccountInfo), any());
+                .isAccountManaged(eq(TestAccounts.MANAGED_ACCOUNT), any());
         doAnswer(
                         invocation -> {
                             PropertyModel propertyModel = invocation.getArgument(0);
@@ -147,14 +144,14 @@ public class StartupSigninStateCheckControllerTest {
 
         mController.onFinishNativeInitialization();
 
-        verify(mSigninManager).isAccountManaged(eq(mCoreAccountInfo), any());
+        verify(mSigninManager).isAccountManaged(eq(TestAccounts.MANAGED_ACCOUNT), any());
         verify(mSigninManager).setUserAcceptedAccountManagement(true);
     }
 
     @Test
     @SmallTest
     public void testUnconsentedManagedAccount_showsDialogAndCancels() {
-        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mCoreAccountInfo);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.MANAGED_ACCOUNT);
         when(mSigninManager.getUserAcceptedAccountManagement()).thenReturn(false);
         doAnswer(
                         invocation -> {
@@ -163,7 +160,7 @@ public class StartupSigninStateCheckControllerTest {
                             return null;
                         })
                 .when(mSigninManager)
-                .isAccountManaged(eq(mCoreAccountInfo), any());
+                .isAccountManaged(eq(TestAccounts.MANAGED_ACCOUNT), any());
         doAnswer(
                         invocation -> {
                             PropertyModel propertyModel = invocation.getArgument(0);
@@ -178,7 +175,7 @@ public class StartupSigninStateCheckControllerTest {
 
         mController.onFinishNativeInitialization();
 
-        verify(mSigninManager).isAccountManaged(eq(mCoreAccountInfo), any());
+        verify(mSigninManager).isAccountManaged(eq(TestAccounts.MANAGED_ACCOUNT), any());
         verify(mSigninManager).setUserAcceptedAccountManagement(false);
         verify(mSigninManager).signOut(SignoutReason.ABORT_SIGNIN);
     }
@@ -186,10 +183,7 @@ public class StartupSigninStateCheckControllerTest {
     @Test
     @SmallTest
     public void testUnmanagedAccount_doesNothing() {
-        CoreAccountInfo unmanagedAccount =
-                CoreAccountInfo.createFromEmailAndGaiaId(
-                        "test@gmail.com", new GaiaId("gaia_id_unmanaged"));
-        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(unmanagedAccount);
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
         when(mSigninManager.getUserAcceptedAccountManagement()).thenReturn(false);
         doAnswer(
                         invocation -> {
@@ -198,11 +192,11 @@ public class StartupSigninStateCheckControllerTest {
                             return null;
                         })
                 .when(mSigninManager)
-                .isAccountManaged(eq(unmanagedAccount), any());
+                .isAccountManaged(eq(TestAccounts.ACCOUNT1), any());
 
         mController.onFinishNativeInitialization();
 
-        verify(mSigninManager).isAccountManaged(eq(unmanagedAccount), any());
+        verify(mSigninManager).isAccountManaged(eq(TestAccounts.ACCOUNT1), any());
         verify(mSigninManager, never()).setUserAcceptedAccountManagement(anyBoolean());
     }
 }

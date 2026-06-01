@@ -63,7 +63,7 @@ public interface IdentityManager {
      * Provides access to the core information of the user's primary account. Returns non-null if
      * the primary account was set, null otherwise.
      */
-    @Nullable CoreAccountInfo getPrimaryAccountInfo();
+    @Nullable AccountInfo getPrimaryAccountInfo();
 
     /**
      * Looks up and returns information for account with given |accountId|. If the account cannot be

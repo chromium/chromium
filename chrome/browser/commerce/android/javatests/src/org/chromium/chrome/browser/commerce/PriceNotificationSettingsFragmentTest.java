@@ -35,7 +35,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.google_apis.gaia.GaiaId;
 
@@ -72,8 +72,7 @@ public class PriceNotificationSettingsFragmentTest {
 
         when(mIdentityManager.getPrimaryAccountInfo())
                 .thenReturn(
-                        CoreAccountInfo.createFromEmailAndGaiaId(
-                                "user@example.com", new GaiaId("12345")));
+                        new AccountInfo.Builder("user@example.com", new GaiaId("12345")).build());
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
 
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
