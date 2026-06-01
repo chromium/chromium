@@ -342,7 +342,7 @@ ContextualTasksContextService::ContextualTasksContextService(
     model_handler_ = std::make_unique<ContextualTasksContextModelHandler>(
         optimization_guide_keyed_service_,
         base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+            {base::MayBlock(), base::TaskPriority::USER_BLOCKING}));
   }
 }
 
