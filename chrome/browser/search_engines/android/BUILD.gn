@@ -165,6 +165,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/search_engines/settings/common/ExpandableSiteSearchMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/common/SiteSearchViewBinderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/CustomSearchEngineListMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchAdapterUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/dialog/SiteSearchDialogCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/dialog/SiteSearchDialogDraftUnitTest.java",
