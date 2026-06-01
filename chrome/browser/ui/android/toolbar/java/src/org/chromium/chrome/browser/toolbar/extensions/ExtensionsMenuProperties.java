@@ -74,6 +74,10 @@ class ExtensionsMenuProperties {
 
     public static final WritableIntPropertyKey OPTIONAL_SECTION_TYPE = new WritableIntPropertyKey();
 
+    /** Callback to resize the popup window after page transitions. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_RESIZE_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<OnClickListener> RELOAD_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
@@ -117,6 +121,7 @@ class ExtensionsMenuProperties {
                 MENU_BUTTON_PINNED,
                 MENU_BUTTON_PINNING_CLICK_LISTENER,
                 OPTIONAL_SECTION_TYPE,
+                POPUP_RESIZE_CALLBACK,
                 RELOAD_CLICK_LISTENER,
                 SITE_SETTINGS_CONTAINER_VISIBLE,
                 SITE_SETTINGS_INFO_ICON_VISIBLE,

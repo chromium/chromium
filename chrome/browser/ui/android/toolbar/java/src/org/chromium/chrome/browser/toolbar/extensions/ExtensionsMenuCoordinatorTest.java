@@ -71,6 +71,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -424,6 +425,29 @@ public class ExtensionsMenuCoordinatorTest {
 
         observerCaptor.getValue().onDialogAdded(new PropertyModel());
         assertFalse(mExtensionsMenuCoordinator.isExtensionsMenuOpen());
+    }
+
+    @Test
+    public void testPageChangeUpdatesPopupSize() {
+        // Intercept the popup window.
+        AnchoredPopupWindow mockPopup = mock(AnchoredPopupWindow.class);
+        ListMenuHost.setMenuChangedListenerForTesting(popup -> mockPopup);
+
+        // Show the menu.
+        mExtensionsMenuButton.performClick();
+        triggerOnMediatorReady();
+
+        assertTrue(mExtensionsMenuCoordinator.isExtensionsMenuOpen());
+
+        // Change page to SITE_PERMISSIONS.
+        mExtensionsMenuCoordinator
+                .getMainPageModel()
+                .set(
+                        ExtensionsMenuProperties.CURRENT_PAGE,
+                        ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
+
+        // Verify that updateDesiredContentSize(0, 0, true) was called.
+        verify(mockPopup).updateDesiredContentSize(0, 0, true);
     }
 
     private ExtensionsMenuTypes.SiteSettingsState createSiteSettingsState(

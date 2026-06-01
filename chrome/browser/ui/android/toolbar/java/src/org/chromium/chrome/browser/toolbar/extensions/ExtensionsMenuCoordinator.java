@@ -41,6 +41,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
@@ -52,6 +53,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
@@ -354,6 +356,24 @@ public class ExtensionsMenuCoordinator
                         mMediator.onReloadPageButtonClicked();
                     }
                 });
+        mMainPageModel.set(
+                ExtensionsMenuProperties.POPUP_RESIZE_CALLBACK,
+                () -> {
+                    if (isExtensionsMenuOpen()) {
+                        @SuppressWarnings("unchecked")
+                        FlyoutController<AnchoredPopupWindow> flyoutController =
+                                mExtensionsMenuButton
+                                        .getHost()
+                                        .getHierarchicalMenuController()
+                                        .getFlyoutController();
+                        if (flyoutController != null) {
+                            AnchoredPopupWindow popup = flyoutController.getMainPopup();
+                            if (popup != null) {
+                                popup.updateDesiredContentSize(0, 0, true);
+                            }
+                        }
+                    }
+                });
     }
 
     private void showManageExtensionsAppMenuIph() {
@@ -496,5 +516,10 @@ public class ExtensionsMenuCoordinator
     @VisibleForTesting
     View getContentView() {
         return mContentView;
+    }
+
+    @VisibleForTesting
+    PropertyModel getMainPageModel() {
+        return mMainPageModel;
     }
 }

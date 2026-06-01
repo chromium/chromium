@@ -35,8 +35,7 @@ public class ExtensionsMenuViewBinder {
         if (key == ExtensionsMenuProperties.IS_ZERO_STATE
                 || key == ExtensionsMenuProperties.SITE_SETTINGS_CONTAINER_VISIBLE
                 || key == ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE
-                || key == ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE
-                || key == ExtensionsMenuProperties.CURRENT_PAGE) {
+                || key == ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE) {
             TransitionManager.beginDelayedTransition((ViewGroup) view);
         }
 
@@ -86,6 +85,11 @@ public class ExtensionsMenuViewBinder {
             } else if (currentPage == ExtensionsMenuProperties.Page.SITE_PERMISSIONS) {
                 mainPage.setVisibility(View.GONE);
                 sitePermissionsPage.setVisibility(View.VISIBLE);
+            }
+
+            Runnable resizeCallback = model.get(ExtensionsMenuProperties.POPUP_RESIZE_CALLBACK);
+            if (resizeCallback != null) {
+                resizeCallback.run();
             }
         } else if (key == ExtensionsMenuProperties.MANAGE_EXTENSIONS_CLICK_LISTENER) {
             view.findViewById(R.id.extensions_menu_manage_extensions_button)
