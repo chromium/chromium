@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/base64.h"
 #import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/core/common/unique_ids.h"
@@ -14,6 +16,7 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/features/password_features.h"
+#import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
@@ -21,8 +24,11 @@
 #import "components/password_manager/ios/test_helpers.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/webauthn/ios/features.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
+#import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -49,6 +55,7 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -63,6 +70,10 @@ constexpr char kMainFrameId[] = "frameID";
 constexpr autofill::FormRendererId kFormRendererId(1);
 constexpr autofill::FieldRendererId kUsernameFieldRendererId(2);
 constexpr autofill::FieldRendererId kPasswordFieldRendererId(3);
+
+constexpr char kTestUsername1[] = "user1@gmail.com";
+constexpr char kTestDisplayName1[] = "User One";
+constexpr char kTestUsername2[] = "user2@gmail.com";
 
 // Creates suggestion for a single username form.
 FormSuggestion* SuggestionForSingleUsernameForm() {
@@ -403,6 +414,78 @@ class CredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
                   forSecurityOrigin:main_frame_ptr_->GetSecurityOrigin()];
   }
 
+  // Configures passkeys in the WebState's mock credentials delegate.
+  void SetUpMockPasskeyDelegate(const std::vector<uint8_t>& credential_id,
+                                const std::vector<uint8_t>& user_id,
+                                const std::string& username,
+                                const std::string& display_name) {
+    web_state_list_->InsertWebState(
+        std::move(web_state_),
+        WebStateList::InsertionParams::Automatic().Activate());
+
+    webauthn::IOSWebAuthnCredentialsDelegateFactory* delegateFactory =
+        webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
+            web_state_ptr_);
+    webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+        delegateFactory->GetDelegateForFrameId(kMainFrameId);
+    ASSERT_TRUE(delegate);
+
+    std::vector<password_manager::PasskeyCredential> passkeys = {
+        password_manager::PasskeyCredential(
+            password_manager::PasskeyCredential::Source::kICloudKeychain,
+            password_manager::PasskeyCredential::RpId("foo.com"),
+            password_manager::PasskeyCredential::CredentialId(credential_id),
+            password_manager::PasskeyCredential::UserId(user_id),
+            password_manager::PasskeyCredential::Username(username),
+            password_manager::PasskeyCredential::DisplayName(display_name))};
+    delegate->OnCredentialsReceived(std::move(passkeys), "request_id");
+  }
+
+  // Stubs retrieveSuggestionsForForm: on the SharedPasswordController to return
+  // the specified `suggestions` and initializes the bottom sheet mediator.
+  // Returns the mock controller object.
+  id SetupSuggestionsMockAndInitialize(NSArray<FormSuggestion*>* suggestions) {
+    SharedPasswordController* controller =
+        PasswordTabHelper::FromWebState(web_state_ptr_)
+            ->GetSharedPasswordController();
+    EXPECT_TRUE(controller);
+    if (!controller) {
+      return nil;
+    }
+    id mockController = OCMPartialMock(controller);
+
+    OCMStub([mockController
+                retrieveSuggestionsForForm:[OCMArg any]
+                                  webState:static_cast<web::WebState*>(
+                                               [OCMArg anyPointer])
+                         completionHandler:[OCMArg any]])
+        .andDo(^(NSInvocation* invocation) {
+          SuggestionsReadyCompletion completionHandler;
+          [invocation getArgument:&completionHandler atIndex:4];
+          completionHandler(suggestions, mockController);
+        });
+
+    store_ =
+        base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
+            IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+                .get()));
+
+    mediator_ = [[CredentialSuggestionBottomSheetMediator alloc]
+          initWithWebStateList:web_state_list_.get()
+                 faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                   profile_.get())
+                   prefService:prefs_ptr_
+                        params:params_
+                  reauthModule:nil
+          profilePasswordStore:store_
+          accountPasswordStore:nullptr
+        sharedURLLoaderFactory:nullptr
+             engagementTracker:nil];
+
+    return mockController;
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_ptr_;
@@ -578,4 +661,78 @@ TEST_F(CredentialSuggestionBottomSheetMediatorTest,
 
   web_state_list_.reset();
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that when there is both a password suggestion and a passkey suggestion
+// for the same account (username), only the passkey suggestion is displayed.
+TEST_F(CredentialSuggestionBottomSheetMediatorTest,
+       FiltersDuplicatePasswordSuggestions) {
+  NSString* username1 = base::SysUTF8ToNSString(kTestUsername1);
+  NSString* displayName1 = base::SysUTF8ToNSString(kTestDisplayName1);
+  NSString* username2 = base::SysUTF8ToNSString(kTestUsername2);
+  std::vector<uint8_t> credentialId = {1, 2, 3, 4};
+
+  FormSuggestion* passkeySuggestion1 = [FormSuggestion
+      suggestionWithValue:displayName1
+       displayDescription:
+           [NSString stringWithFormat:@"%@ • %@",
+                                      l10n_util::GetNSString(
+                                          IDS_IOS_PASSKEY_SUGGESTION_LABEL),
+                                      username1]
+                     icon:nil
+                     type:autofill::SuggestionType::kWebauthnCredential
+                  payload:autofill::Suggestion::Payload(
+                              autofill::Suggestion::Guid(
+                                  base::Base64Encode(credentialId)))
+           requiresReauth:YES];
+
+  FormSuggestion* passwordSuggestion1 = [FormSuggestion
+      suggestionWithValue:username1
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kPasswordEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:YES];
+
+  FormSuggestion* passwordSuggestion2 = [FormSuggestion
+      suggestionWithValue:username2
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kPasswordEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:YES];
+
+  SetUpMockPasskeyDelegate(credentialId, {5, 6, 7, 8}, kTestUsername1,
+                           kTestDisplayName1);
+  id mockController = SetupSuggestionsMockAndInitialize(
+      @[ passkeySuggestion1, passwordSuggestion1, passwordSuggestion2 ]);
+
+  OCMExpect([consumer_
+      setSuggestions:[OCMArg checkWithBlock:^BOOL(
+                                 NSArray<FormSuggestion*>* suggestions) {
+        EXPECT_EQ(suggestions.count, 2U);
+        // Verify the passkey is preserved.
+        EXPECT_EQ(suggestions[0].type,
+                  autofill::SuggestionType::kWebauthnCredential);
+        EXPECT_NSEQ(suggestions[0].value, displayName1);
+
+        // Verify the password for user1 is removed, but the password for user2
+        // is preserved.
+        EXPECT_EQ(suggestions[1].type,
+                  autofill::SuggestionType::kPasswordEntry);
+        EXPECT_NSEQ(suggestions[1].value, username2);
+        return YES;
+      }]
+           andDomain:[OCMArg isNotNil]]);
+
+  OCMExpect([consumer_
+      setPrimaryActionString:PrimaryActionLabelForPasswordFill()
+       secondaryActionString:l10n_util::GetNSString(
+                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD)
+        secondaryActionImage:[OCMArg any]]);
+
+  [mediator_ setConsumer:consumer_];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  [mockController stopMocking];
 }
