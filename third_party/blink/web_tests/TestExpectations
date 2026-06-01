@@ -2854,9 +2854,6 @@ crbug.com/515776379 virtual/view-transition-wide-gamut/external/wpt/css/css-view
 # [0521/165049.405177:FATAL:third_party/blink/renderer/core/animation/animation.cc:1089] DCHECK failed: start_time_ || hold_time_.
 crbug.com/515679398 external/wpt/scroll-animations/crashtests/change-timeline-from-finite-to-monotonic-crash.html [ Crash ]
 
-# [5427:107299:0521/164110.015017:FATAL:third_party/blink/renderer/core/layout/length_utils.cc:188] DCHECK failed: available_size >= LayoutUnit() (-15.984375 vs. 0).
-crbug.com/515776659 external/wpt/css/css-multicol/flex-grid-item-insert-002-crash.html [ Crash ]
-
 # UUID in `*-expected.txt`
 crbug.com/515776381 external/wpt/beacon/beacon-url-encoding-euc-kr.https.html [ Failure ]
 

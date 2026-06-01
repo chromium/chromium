@@ -2315,6 +2315,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           offset_in_stitched_container -
           (original_offset.block_offset + flex_line.item_offset_adjustment) -
           item_break_token->ConsumedBlockSize();
+      line_cross_size = line_cross_size.ClampNegativeToZero();
     }
 
     const bool min_block_size_should_encompass_intrinsic_size =
