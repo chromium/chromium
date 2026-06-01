@@ -14,6 +14,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/accessibility_annotator/core/mock_accessibility_query_service.h"
@@ -38,6 +39,7 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/personal_context/core/personal_context_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -689,6 +691,54 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.AtMemory.Funnel.SuggestionFilled"),
               BucketsAre(Bucket(true, 1)));
+}
+
+// Tests that the personal context notice is appended when the feature is
+// enabled.
+TEST_F(AtMemoryManagerTest, SendSuggestions_FeatureEnabled_AppendsNotice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      personal_context::features::kPersonalContextFirstRunNoticePhase2);
+
+  base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
+      update_callback;
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         /*is_context_secure=*/true, update_callback.Get());
+
+  std::vector<Suggestion> suggestions;
+  EXPECT_CALL(update_callback,
+              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
+      .WillOnce(SaveArg<0>(&suggestions));
+
+  manager().OnFilterChanged(u"");
+
+  ASSERT_EQ(1u, suggestions.size());
+  EXPECT_EQ(SuggestionType::kPersonalContextNotice, suggestions[0].type);
+  EXPECT_EQ(Suggestion::FiltrationPolicy::kStatic,
+            suggestions[0].filtration_policy);
+}
+
+// Tests that the personal context notice is not appended when the feature is
+// disabled.
+TEST_F(AtMemoryManagerTest,
+       SendSuggestions_FeatureDisabled_DoesNotAppendNotice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      personal_context::features::kPersonalContextFirstRunNoticePhase2);
+
+  base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
+      update_callback;
+  manager().OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory,
+                         /*is_context_secure=*/true, update_callback.Get());
+
+  std::vector<Suggestion> suggestions;
+  EXPECT_CALL(update_callback,
+              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
+      .WillOnce(SaveArg<0>(&suggestions));
+
+  manager().OnFilterChanged(u"");
+
+  EXPECT_TRUE(suggestions.empty());
 }
 
 }  // namespace

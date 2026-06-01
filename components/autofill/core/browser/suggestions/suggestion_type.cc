@@ -135,6 +135,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kAtMemoryNoConnection";
     case SuggestionType::kAtMemorySearchAffordance:
       return "kAtMemorySearchAffordance";
+    case SuggestionType::kPersonalContextNotice:
+      return "kPersonalContextNotice";
   }
   NOTREACHED();
 }

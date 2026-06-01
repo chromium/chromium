@@ -201,8 +201,12 @@ enum class SuggestionType {
   // Suggestion that triggers AtMemory search when accepted.
   kAtMemorySearchAffordance = 84,
 
-  // Next ID: 85
-  kMaxValue = kAtMemorySearchAffordance
+  // Personal context notice. This is a footer note rather than a real
+  // selectable suggestion.
+  kPersonalContextNotice = 85,
+
+  // Next ID: 86
+  kMaxValue = kPersonalContextNotice
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

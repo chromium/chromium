@@ -228,6 +228,7 @@ bool HasAutofillSuggestionsForA11y(SuggestionType type) {
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kPersonalContextNotice:
       return false;
   }
 }
@@ -323,6 +324,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kPersonalContextNotice:
       return false;
   }
 }
@@ -689,6 +691,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
@@ -977,6 +980,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAtMemoryNoConnection:
+    case SuggestionType::kPersonalContextNotice:
       NOTREACHED();  // Should be handled elsewhere.
   }
 
@@ -1102,6 +1106,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kPersonalContextNotice:
       return false;
   }
 }

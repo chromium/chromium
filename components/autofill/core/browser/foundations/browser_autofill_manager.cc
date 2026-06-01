@@ -322,6 +322,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kOpenGemini:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kPersonalContextNotice:
       NOTREACHED();
   }
   NOTREACHED();
@@ -732,6 +733,7 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemorySearchAffordance:
+    case SuggestionType::kPersonalContextNotice:
       return false;
   }
 }
@@ -1197,8 +1199,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
             kDisabledNotEligible) {
       return;
     }
-    // Show empty suggestions with a search bar to start the flow.
-    external_delegate_->OnSuggestionsReturned(field_id, {});
+    std::vector<Suggestion> suggestions;
+    GetAtMemoryManager().MaybeAppendPersonalContextNotice(suggestions);
+
+    // Show suggestions with a search bar to start the flow.
+    external_delegate_->OnSuggestionsReturned(field_id, suggestions);
     return;
   }
 

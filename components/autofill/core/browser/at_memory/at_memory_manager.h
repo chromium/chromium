@@ -75,6 +75,10 @@ class AtMemoryManager {
   // Returns true if a search is currently in progress.
   bool IsSearching() const;
 
+  // Appends the personal context notice to the suggestions if necessary.
+  void MaybeAppendPersonalContextNotice(
+      std::vector<Suggestion>& suggestions) const;
+
  private:
   // Executes the search query. `full_search` is true if the search was
   // explicitly submitted by the user, and false for incremental search.

@@ -67,6 +67,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAutocompleteAtMemoryButton:
+    case SuggestionType::kPersonalContextNotice:
       return SuggestionSection::kFooter;
 
     // Body items.

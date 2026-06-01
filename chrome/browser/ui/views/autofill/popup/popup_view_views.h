@@ -43,6 +43,7 @@ namespace autofill {
 class AutofillPopupController;
 class AutofillSuggestionController;
 class PopupBnplFootnoteView;
+class PopupPersonalContextNoticeView;
 class PopupSeparatorView;
 class PopupTitleView;
 class PopupWarningView;
@@ -95,7 +96,8 @@ class PopupViewViews : public PopupBaseView,
                                   PopupTitleView*,
                                   PopupWarningView*,
                                   PopupLoadingView*,
-                                  PopupBnplFootnoteView*>;
+                                  PopupBnplFootnoteView*,
+                                  PopupPersonalContextNoticeView*>;
 
   // The maximum width of the popup.
   static constexpr int kAutofillPopupMaxWidth = 456;

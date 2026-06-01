@@ -42,6 +42,8 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
+#include "components/personal_context/core/personal_context_features.h"
+#include "components/personal_context/core/personal_context_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -605,6 +607,22 @@ bool AtMemoryManager::IsSearching() const {
   return is_searching_;
 }
 
+void AtMemoryManager::MaybeAppendPersonalContextNotice(
+    std::vector<Suggestion>& suggestions) const {
+  // TODO(crbug.com/515651053): Call
+  // FirstRunService::ShouldShowPersonalContextAutofillNotice when available.
+  if (personal_context::features::
+          IsPersonalContextFirstRunNoticePhase2Enabled()) {
+    if (!suggestions.empty() &&
+        suggestions.back().type == SuggestionType::kPersonalContextNotice) {
+      return;
+    }
+    Suggestion& suggestion =
+        suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
+    suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  }
+}
+
 void AtMemoryManager::ExecuteQuery(const std::u16string& filter,
                                    bool full_search) {
   accessibility_annotator::AccessibilityQueryService* query_service =
@@ -677,6 +695,7 @@ void AtMemoryManager::CancelPendingQueries() {
 }
 
 void AtMemoryManager::SendSuggestions(std::vector<Suggestion> suggestions) {
+  MaybeAppendPersonalContextNotice(suggestions);
   if (update_callback_) {
     update_callback_.Run(std::move(suggestions), trigger_source_);
   }
