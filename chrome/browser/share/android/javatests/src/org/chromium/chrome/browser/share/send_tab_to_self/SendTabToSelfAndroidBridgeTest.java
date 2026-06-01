@@ -213,7 +213,7 @@ public class SendTabToSelfAndroidBridgeTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
-    public void testSendTabToDevice_ShowsNoToast_OnFailure() {
+    public void testSendTabToDevice_ShowsFailureToast_OnFailure() {
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
                 confirmationCallbackCaptor =
                         ArgumentCaptor.forClass(
@@ -239,7 +239,10 @@ public class SendTabToSelfAndroidBridgeTest {
 
         confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.FAILURE_INVALID_URL);
 
-        Assert.assertEquals(0, ShadowToast.shownToastCount());
+        String expectedMessage =
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.send_tab_to_self_post_send_failure_toast);
+        Assert.assertTrue(ShadowToast.showedCustomToast(expectedMessage, R.id.toast_text));
     }
 
     @Test

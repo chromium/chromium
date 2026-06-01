@@ -147,6 +147,20 @@ void DisplaySendToSelfNoInternetSnackbar(
   [snackbar_handler showSnackbarMessage:message];
 }
 
+void DisplaySendToSelfFailureSnackbar(id<SnackbarCommands> snackbar_handler) {
+  CHECK(base::FeatureList::IsEnabled(
+      send_tab_to_self::kSendTabToSelfPostSendToast));
+  if (!snackbar_handler) {
+    return;
+  }
+
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeError);
+  NSString* text =
+      l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_POST_SEND_FAILURE_TOAST);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
+  [snackbar_handler showSnackbarMessage:message];
+}
+
 void SendTabToDeviceComplete(id<SnackbarCommands> snackbar_handler,
                              std::string_view device_name,
                              send_tab_to_self::SendTabToSelfResult result) {
@@ -184,8 +198,12 @@ void SendTabToDeviceComplete(id<SnackbarCommands> snackbar_handler,
     case send_tab_to_self::SendTabToSelfResult::kFailureCommitAttemptFailed:
     case send_tab_to_self::SendTabToSelfResult::kFailureCommitAttemptError:
     case send_tab_to_self::SendTabToSelfResult::kFailureSyncDisabled:
-    case send_tab_to_self::SendTabToSelfResult::kFailureEntryRemoved:
+    case send_tab_to_self::SendTabToSelfResult::kFailureEntryRemoved: {
+      web::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&DisplaySendToSelfFailureSnackbar, snackbar_handler));
       break;
+    }
   }
 }
 

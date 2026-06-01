@@ -133,8 +133,6 @@ void ShowTabSentFailure(content::WebContents* web_contents,
                         const GURL& url) {
   CHECK(web_contents);
   // If the post-send toast feature is enabled, shows a modern Toast UI.
-  // TODO(crbug.com/492072882): The generic failure string is temporary and
-  // shall be replaced once all final strings are specified.
   if (base::FeatureList::IsEnabled(kSendTabToSelfPostSendToast)) {
     ToastController* toast_controller =
         ToastController::MaybeGetForWebContents(web_contents);

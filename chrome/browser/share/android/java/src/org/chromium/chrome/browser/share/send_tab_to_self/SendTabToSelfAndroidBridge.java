@@ -120,6 +120,11 @@ public class SendTabToSelfAndroidBridge {
                         appContext.getString(R.string.send_tab_to_self_post_send_no_internet_toast);
                 Toast.makeText(appContext, noInternetMessage, Toast.LENGTH_SHORT).show();
                 break;
+            default:
+                String failureMessage =
+                        appContext.getString(R.string.send_tab_to_self_post_send_failure_toast);
+                Toast.makeText(appContext, failureMessage, Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 

@@ -58,4 +58,7 @@
   <message name="IDS_SEND_TAB_TO_SELF_POST_SEND_NO_INTERNET_TOAST" desc = "Text for a toast indicating that the tab could not be sent because of no internet connection." formatter_data="android_java">
     Something went wrong. Check your internet connection and try again.
   </message>
+  <message name="IDS_SEND_TAB_TO_SELF_POST_SEND_FAILURE_TOAST" desc = "Text for a toast indicating that the tab could not be sent because of a generic error." formatter_data="android_java">
+    Something went wrong. Try again.
+  </message>
 </grit-part>

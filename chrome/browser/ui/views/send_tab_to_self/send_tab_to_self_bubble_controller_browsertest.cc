@@ -269,9 +269,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   controller->OnDeviceSelected("device_1", "device_name_1");
 
   // Verify that the failure toast is shown.
-  ExpectToastShown(
-      ToastId::kSendTabToSelfFailure,
-      IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE);
+  ExpectToastShown(ToastId::kSendTabToSelfFailure,
+                   IDS_SEND_TAB_TO_SELF_POST_SEND_FAILURE_TOAST);
 }
 
 class SendTabToSelfPostSendToastDisabledBrowserTest

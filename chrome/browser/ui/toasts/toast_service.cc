@@ -599,10 +599,10 @@ void ToastService::RegisterToasts(
   // TODO(crbug.com/492072882): Update design, it is temporary.
   toast_registry_->RegisterToast(
       ToastId::kSendTabToSelfFailure,
-      ToastSpecification::Builder(
-          features::IsRoundedIconsEnabled() ? vector_icons::kWarningFilledIcon
-                                            : vector_icons::kWarningOldIcon,
-          IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE)
+      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                      ? vector_icons::kWarningFilledIcon
+                                      : vector_icons::kWarningOldIcon,
+                                  IDS_SEND_TAB_TO_SELF_POST_SEND_FAILURE_TOAST)
           .AddCloseButton()
           .Build());
 
