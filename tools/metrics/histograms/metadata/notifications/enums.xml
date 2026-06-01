@@ -167,6 +167,11 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="PENDING_JOB_REASON_USER"/>
 </enum>
 
+<enum name="NotificationsAndroidTrampolineActivityEvent">
+  <int value="0" label="Created"/>
+  <int value="1" label="Destroyed"/>
+</enum>
+
 <enum name="NotificationSchedulerNotificationLifeCycleEvent">
   <int value="0" label="Schedule request"/>
   <int value="1" label="Scheduled"/>

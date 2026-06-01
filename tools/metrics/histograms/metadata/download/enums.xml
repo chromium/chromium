@@ -136,6 +136,11 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="NOT_ADDED_DOWNLOAD_NOT_DANGEROUS"/>
 </enum>
 
+<enum name="DownloadAndroidResumedFromNotificationEvent">
+  <int value="0" label="Triggered"/>
+  <int value="1" label="Propagated"/>
+</enum>
+
 <enum name="DownloadAppleWalletOrderFileUI">
   <int value="0" label="Warning alert is presented"/>
   <int value="1"

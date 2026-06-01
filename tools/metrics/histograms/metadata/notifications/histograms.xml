@@ -326,6 +326,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Android.TrampolineActivity"
+    enum="NotificationsAndroidTrampolineActivityEvent"
+    expires_after="2027-02-13">
+  <owner>qinmin@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records key lifecycle events (Creation/Launch and Destruction/Teardown) of
+    the notification click TrampolineActivity. Measured on Android.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.Android.TrampolineActivity.Duration" units="ms"
+    expires_after="2027-02-13">
+  <owner>qinmin@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the lifespan duration of a trampoline activity, from its creation in
+    onCreate() to its destruction in onDestroy(). Measured on Android.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.AppNotificationStatus"
     enum="NotificationAppStatus" expires_after="never">
 <!-- expires-never: Indicates whether Chrome has notification permission. -->

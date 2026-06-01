@@ -26,12 +26,15 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SplitCompatService;
+import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
@@ -49,6 +52,8 @@ import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.content_public.browser.BrowserStartupController;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.UUID;
 
 /**
@@ -57,6 +62,27 @@ import java.util.UUID;
  */
 @NullMarked
 public class DownloadBroadcastManagerImpl extends SplitCompatService.Impl {
+    private static final String EXTRA_RESUMPTION_START_TIME =
+            "Download.Android.ResumptionStartTime";
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({ResumedFromNotificationEvent.TRIGGERED, ResumedFromNotificationEvent.PROPAGATED})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ResumedFromNotificationEvent {
+        int TRIGGERED = 0;
+        int PROPAGATED = 1;
+        int COUNT = 2;
+    }
+
+    private static void recordResumedFromNotificationEvent(
+            @ResumedFromNotificationEvent int event) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Download.Android.ResumedFromNotification",
+                event,
+                ResumedFromNotificationEvent.COUNT);
+    }
+
     private static final int WAIT_TIME_MS = 5000;
 
     private final DownloadSharedPreferenceHelper mDownloadSharedPreferenceHelper =
@@ -101,6 +127,10 @@ public class DownloadBroadcastManagerImpl extends SplitCompatService.Impl {
     public void onNotificationInteraction(final @Nullable Intent intent) {
         if (intent == null) return;
         if (!isActionHandled(intent)) return;
+
+        if (ACTION_DOWNLOAD_RESUME.equals(intent.getAction())) {
+            intent.putExtra(EXTRA_RESUMPTION_START_TIME, TimeUtils.elapsedRealtimeMillis());
+        }
 
         // Remove delayed stop of service until after native library is loaded.
         mHandler.removeCallbacks(mStopSelfRunnable);
@@ -158,6 +188,7 @@ public class DownloadBroadcastManagerImpl extends SplitCompatService.Impl {
                 break;
 
             case ACTION_DOWNLOAD_RESUME:
+                recordResumedFromNotificationEvent(ResumedFromNotificationEvent.TRIGGERED);
                 if (entry != null) {
                     // If user manually resumes a download, update the network type if it
                     // is not metered previously.
@@ -308,6 +339,13 @@ public class DownloadBroadcastManagerImpl extends SplitCompatService.Impl {
                 break;
 
             case ACTION_DOWNLOAD_RESUME:
+                recordResumedFromNotificationEvent(ResumedFromNotificationEvent.PROPAGATED);
+                long startTime = intent.getLongExtra(EXTRA_RESUMPTION_START_TIME, -1);
+                if (startTime != -1) {
+                    long duration = TimeUtils.elapsedRealtimeMillis() - startTime;
+                    RecordHistogram.recordTimesHistogram(
+                            "Download.Android.ResumedFromNotification.LoadDuration", duration);
+                }
                 DownloadItem item =
                         (entry != null)
                                 ? entry.buildDownloadItem()

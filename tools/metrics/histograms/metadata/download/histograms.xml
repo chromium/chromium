@@ -137,6 +137,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Android.ResumedFromNotification"
+    enum="DownloadAndroidResumedFromNotificationEvent"
+    expires_after="2027-02-13">
+  <owner>qinmin@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records key lifecycle events (Triggered and Propagated) of download
+    resumptions initiated from notification click interactions. Measured on
+    Android.
+  </summary>
+</histogram>
+
+<histogram name="Download.Android.ResumedFromNotification.LoadDuration"
+    units="ms" expires_after="2027-02-13">
+  <owner>qinmin@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the time elapsed from the user clicking the 'Resume' button on a
+    download notification to when the browser successfully loads and initiates
+    the download resumption. Measured on Android.
+  </summary>
+</histogram>
+
 <histogram name="Download.Android.WarningBypassDialog.Events"
     enum="AndroidDownloadWarningBypassDialogEvent" expires_after="2026-11-30">
   <owner>yawfrempong@google.com</owner>

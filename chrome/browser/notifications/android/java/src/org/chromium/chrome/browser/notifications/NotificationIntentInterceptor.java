@@ -24,6 +24,8 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.SplitCompatIntentService;
@@ -130,10 +132,30 @@ public class NotificationIntentInterceptor {
      * A trampoline activity that handles logging metrics for click events and action click events.
      */
     public static class TrampolineActivity extends Activity {
+        // These values are persisted to logs. Entries should not be renumbered and
+        // numeric values should never be reused.
+        @IntDef({TrampolineActivityEvent.CREATED, TrampolineActivityEvent.DESTROYED})
+        @Retention(RetentionPolicy.SOURCE)
+        private @interface TrampolineActivityEvent {
+            int CREATED = 0;
+            int DESTROYED = 1;
+            int COUNT = 2;
+        }
+
+        private static void recordTrampolineActivityEvent(@TrampolineActivityEvent int event) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Notifications.Android.TrampolineActivity",
+                    event,
+                    TrampolineActivityEvent.COUNT);
+        }
+
+        private long mCreateTime;
 
         @Override
         protected void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            mCreateTime = TimeUtils.elapsedRealtimeMillis();
+            recordTrampolineActivityEvent(TrampolineActivityEvent.CREATED);
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
                     || hasVisibleActivities()) {
@@ -162,6 +184,15 @@ public class NotificationIntentInterceptor {
             if (!handleNotificationIntent()) {
                 TrampolineActivityTracker.getInstance().finishTrackedActivity();
             }
+        }
+
+        @Override
+        protected void onDestroy() {
+            long duration = TimeUtils.elapsedRealtimeMillis() - mCreateTime;
+            RecordHistogram.recordTimesHistogram(
+                    "Notifications.Android.TrampolineActivity.Duration", duration);
+            recordTrampolineActivityEvent(TrampolineActivityEvent.DESTROYED);
+            super.onDestroy();
         }
 
         @Override
