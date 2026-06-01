@@ -90,6 +90,19 @@ void RunJavaCallback(
   base::android::RunObjectCallbackAndroid(
       j_callback, url::GURLAndroid::FromNativeGURL(env, url));
 }
+
+bool IsFuseboxEligibleForProfileInternal(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+  if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile->GetPrefs())) {
+    return false;
+  }
+  AimEligibilityService* aim_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  return aim_service && aim_service->IsFuseboxEligible();
+}
 }  // namespace
 
 static int64_t JNI_ComposeboxQueryControllerBridge_Init(
@@ -443,9 +456,7 @@ void ComposeboxQueryControllerBridge::RemoveAttachment(
 }
 
 bool ComposeboxQueryControllerBridge::IsFuseboxEligible(JNIEnv* env) {
-  AimEligibilityService* aim_service =
-      AimEligibilityServiceFactory::GetForProfile(profile_);
-  return aim_service && aim_service->IsFuseboxEligible();
+  return IsFuseboxEligibleForProfileInternal(profile_);
 }
 
 bool ComposeboxQueryControllerBridge::IsPdfUploadEligible(JNIEnv* env) {
@@ -769,6 +780,12 @@ void ComposeboxQueryControllerBridge::SubmitQueryToAimPage(
       /*on_ineligible_callback=*/base::DoNothing(),
       /*on_processed_callback=*/base::DoNothing(), std::move(callback),
       /*enable_smart_tab_selection=*/false);
+}
+
+static bool JNI_ComposeboxQueryControllerBridge_IsFuseboxEligibleForProfile(
+    JNIEnv* env,
+    Profile* profile) {
+  return IsFuseboxEligibleForProfileInternal(profile);
 }
 
 DEFINE_JNI(ComposeboxQueryControllerBridge)

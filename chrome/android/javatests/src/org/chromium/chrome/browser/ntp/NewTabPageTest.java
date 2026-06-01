@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,6 +75,8 @@ import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridgeJni;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -162,6 +165,7 @@ public class NewTabPageTest {
     @Mock FeedActionDelegate.PageLoadObserver mPageLoadObserver;
     @Mock LogoBridge.Natives mLogoBridgeJniMock;
     @Mock private LogoBridge mLogoBridge;
+    @Mock ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
 
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final String TEST_FEED =
@@ -184,6 +188,8 @@ public class NewTabPageTest {
     @Before
     public void setUp() throws Exception {
         ComposeplateUtils.setIsEnabledForTesting(true);
+        ComposeboxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxBridgeJni);
+        when(mComposeboxBridgeJni.isFuseboxEligibleForProfile(any())).thenReturn(true);
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
         mActivityTestRule.startOnBlankPage();
         TemplateUrlService originalService =

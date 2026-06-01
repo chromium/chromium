@@ -55,6 +55,8 @@ import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.NewTabPageManager;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridgeJni;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -87,6 +89,7 @@ public class SearchBoxMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private ComposeplateUtils.Natives mComposeplateUtilsJni;
     @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
     @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
 
     private Context mContext;
@@ -112,6 +115,8 @@ public class SearchBoxMediatorUnitTest {
 
         ComposeplateUtilsJni.setInstanceForTesting(mComposeplateUtilsJni);
         when(mComposeplateUtilsJni.isAimEntrypointEligible(any())).thenReturn(false);
+        ComposeboxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxBridgeJni);
+        when(mComposeboxBridgeJni.isFuseboxEligibleForProfile(any())).thenReturn(true);
 
         mMediator =
                 new SearchBoxMediator(
@@ -182,11 +187,20 @@ public class SearchBoxMediatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT + ":show_ntp_plus_button/true")
     public void testUpdateStartIcon_AllConditionsMet() {
-        when(mComposeplateUtilsJni.isAimEntrypointEligible(any())).thenReturn(true);
         verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
         mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
 
         assertTrue(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT + ":show_ntp_plus_button/true")
+    public void testUpdateStartIcon_PolicyDisabled() {
+        when(mComposeboxBridgeJni.isFuseboxEligibleForProfile(any())).thenReturn(false);
+        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
+        mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
+
+        assertFalse(mPropertyModel.get(SearchBoxProperties.PLUS_BUTTON_VISIBILITY));
     }
 
     @Test
@@ -199,7 +213,7 @@ public class SearchBoxMediatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateStartIcon_NotEligible() {
-        when(mComposeplateUtilsJni.isAimEntrypointEligible(any())).thenReturn(false);
+        when(mComposeboxBridgeJni.isFuseboxEligibleForProfile(any())).thenReturn(false);
         verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
         mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
 
@@ -210,7 +224,6 @@ public class SearchBoxMediatorUnitTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateStartIcon_NotGoogle() {
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
-        when(mComposeplateUtilsJni.isAimEntrypointEligible(any())).thenReturn(true);
 
         verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
         mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
@@ -221,7 +234,6 @@ public class SearchBoxMediatorUnitTest {
     @Test
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateStartIcon_FeatureDisabled() {
-        when(mComposeplateUtilsJni.isAimEntrypointEligible(any())).thenReturn(true);
         verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
         mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
 

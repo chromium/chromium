@@ -8,7 +8,6 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -36,7 +35,7 @@ public class FuseboxFeatureUtils {
                 && OmniboxFeatures.isMultimodalInputEnabled(context)
                 && OmniboxFeatures.sShowNtpPlusButton.getValue()
                 && OmniboxCapabilities.isFuseboxSupportedDeviceType()
-                && ComposeplateUtils.isComposeplateEnabled(profile)
+                && ComposeboxQueryControllerBridge.isFuseboxEligibleForProfile(profile)
                 && templateUrlService != null
                 && templateUrlService.isDefaultSearchEngineGoogle();
     }

@@ -191,6 +191,17 @@ public class ComposeboxQueryControllerBridge {
         return ComposeboxQueryControllerBridgeJni.get().isFuseboxEligible(mNativeInstance);
     }
 
+    /**
+     * Returns whether the client is eligible for Fusebox for the given profile.
+     *
+     * <p>This is a static stateless helper to allow components in unfocused contexts (like the NTP
+     * fakebox or the unfocused omnibox status view) to check eligibility without having to
+     * instantiate a heavyweight native controller and session.
+     */
+    public static boolean isFuseboxEligibleForProfile(Profile profile) {
+        return ComposeboxQueryControllerBridgeJni.get().isFuseboxEligibleForProfile(profile);
+    }
+
     /** Returns whether the user is eligible for PDF uploads. */
     boolean isPdfUploadEligible() {
         return ComposeboxQueryControllerBridgeJni.get().isPdfUploadEligible(mNativeInstance);
@@ -313,6 +324,8 @@ public class ComposeboxQueryControllerBridge {
                 long nativeComposeboxQueryControllerBridge, @JniType("std::string") String token);
 
         boolean isFuseboxEligible(long nativeComposeboxQueryControllerBridge);
+
+        boolean isFuseboxEligibleForProfile(@JniType("Profile*") Profile profile);
 
         boolean isPdfUploadEligible(long nativeComposeboxQueryControllerBridge);
 

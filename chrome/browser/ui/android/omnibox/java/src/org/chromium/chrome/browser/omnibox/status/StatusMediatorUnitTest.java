@@ -58,6 +58,8 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridgeJni;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
@@ -117,6 +119,7 @@ public final class StatusMediatorUnitTest {
     @Mock private PageInfoAction mPageInfoAction;
     @Mock private Runnable mTogglePopupCallback;
     @Mock private Runnable mOnStatusViewHiddenForPageInfoRemoval;
+    @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
 
     @Captor private ArgumentCaptor<PermissionDialogController.Observer> mPermissionObserverCaptor;
 
@@ -140,6 +143,8 @@ public final class StatusMediatorUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
         CookieControlsBridgeJni.setInstanceForTesting(mCookieControlsBridgeJniMock);
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
+        ComposeboxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxBridgeJni);
+        doReturn(true).when(mComposeboxBridgeJni).isFuseboxEligibleForProfile(any());
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
@@ -832,6 +837,24 @@ public final class StatusMediatorUnitTest {
                     R.drawable.ic_add_round_20dp_with_inset,
                     mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
         }
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT + ":show_ntp_plus_button/true")
+    public void testShowNtpPlusButton_unfocused_policyDisabled() {
+        doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
+        doReturn(false).when(mLocationBarDataProvider).isIncognito();
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        doReturn(false).when(mComposeboxBridgeJni).isFuseboxEligibleForProfile(any());
+
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        // When policy is disabled, it should fall back to search engine logo.
+        assertNotNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
+        assertEquals(
+                R.drawable.ic_logo_googleg_20dp,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
     }
 
     @Test
