@@ -117,7 +117,14 @@ int SpdyHttpStream::ReadResponseBody(IOBuffer* buf,
 
   // If we have data buffered, complete the IO immediately.
   if (!response_body_queue_.IsEmpty()) {
-    return response_body_queue_.Dequeue(buf->first(buf_len));
+    // Dequeueing can fire consume callbacks that trigger session
+    // teardown and destroy `this`.
+    base::WeakPtr<SpdyHttpStream> self = weak_factory_.GetWeakPtr();
+    int rv = response_body_queue_.Dequeue(buf->first(buf_len));
+    if (!self) {
+      return ERR_CONNECTION_CLOSED;
+    }
+    return rv;
   } else if (stream_closed_) {
     return closed_stream_status_;
   }
@@ -542,11 +549,19 @@ void SpdyHttpStream::DoBufferedReadCallback() {
     return;
 
   if (!response_body_queue_.IsEmpty()) {
+    // Dequeueing can fire consume callbacks that trigger synchronous session
+    // teardown and destroy `this`.
+    base::WeakPtr<SpdyHttpStream> self = weak_factory_.GetWeakPtr();
     int rv =
         response_body_queue_.Dequeue(user_buffer_->first(user_buffer_len_));
+    if (!self) {
+      return;
+    }
     user_buffer_ = nullptr;
     user_buffer_len_ = 0;
-    DoResponseCallback(rv);
+    if (response_callback_) {
+      DoResponseCallback(rv);
+    }
     return;
   }
 
