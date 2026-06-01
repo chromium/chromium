@@ -4,9 +4,14 @@
 
 #include "components/metrics/private_metrics/private_insights/private_insights_features.h"
 
+#include "base/time/time.h"
+
 namespace private_insights {
 
 BASE_FEATURE(kPrivateInsightsFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kPrivateInsightsUploadInterval{
+    &kPrivateInsightsFeature, "upload_interval", base::Minutes(30)};
 
 BASE_FEATURE(kPrivateInsightsPaicErrorReporting,
              base::FEATURE_DISABLED_BY_DEFAULT);

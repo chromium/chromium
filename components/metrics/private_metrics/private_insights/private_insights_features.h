@@ -7,12 +7,18 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace private_insights {
 
 // Enables Private Insights.
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 BASE_DECLARE_FEATURE(kPrivateInsightsFeature);
+
+// The interval between periodic tasks run by PrivateInsightsService.
+COMPONENT_EXPORT(PRIVATE_INSIGHTS)
+extern const base::FeatureParam<base::TimeDelta> kPrivateInsightsUploadInterval;
 
 // Enables Private AI Compute error reporting over Private Insights.
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)

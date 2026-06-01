@@ -8,6 +8,9 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace private_insights {
@@ -20,6 +23,26 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
 
   PrivateInsightsService(const PrivateInsightsService&) = delete;
   PrivateInsightsService& operator=(const PrivateInsightsService&) = delete;
+
+  void Start();
+  void Stop();
+
+  // KeyedService:
+  void Shutdown() override;
+
+ private:
+  void TriggerUpload();
+
+  // Runs on a background thread pool sequence (allows blocking).
+  static bool UploadBlocking();
+
+  void OnUploadComplete(bool result);
+
+  bool is_upload_running_ = false;
+  base::RepeatingTimer upload_timer_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<PrivateInsightsService> weak_ptr_factory_{this};
 };
 
 }  // namespace private_insights
