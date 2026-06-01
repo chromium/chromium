@@ -228,9 +228,14 @@ where
             Self::incoming_message_handler(raw_message, &state_weak, sender)
         };
 
-        let endpoint_watcher =
-            MessagePipeWatcher::new_with_runner(endpoint, runner, handler, disconnect_handler)
-                .expect("System ran out of resources to create new mojo objects.");
+        let endpoint_watcher = MessagePipeWatcher::new_with_runner(
+            endpoint,
+            runner,
+            handler,
+            disconnect_handler,
+            /* begin_processing_immediately = */ true,
+        )
+        .expect("System ran out of resources to create new mojo objects.");
 
         Self { _endpoint_watcher: endpoint_watcher, _state: state }
     }

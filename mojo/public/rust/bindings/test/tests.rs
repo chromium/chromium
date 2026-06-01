@@ -64,8 +64,8 @@ fn test_watcher_basic() {
         }
     };
 
-    let sender = MessagePipeWatcher::new(sender, sender_msg_handler, None).unwrap();
-    let receiver = MessagePipeWatcher::new(receiver, receiver_msg_handler, None).unwrap();
+    let sender = MessagePipeWatcher::new(sender, sender_msg_handler, None, true).unwrap();
+    let receiver = MessagePipeWatcher::new(receiver, receiver_msg_handler, None, true).unwrap();
 
     // Send some messages through; this should trigger the handler twice
     sender.send_message(RawMojoMessage::new_with_bytes(b"Message 1").unwrap()).unwrap();
@@ -103,6 +103,7 @@ fn test_watcher_disconnect() {
         receiver,
         receiver_msg_handler,
         Some(Box::new(receiver_disconnect_handler)),
+        true,
     )
     .unwrap();
 
@@ -142,9 +143,13 @@ fn test_watcher_disconnect_immediately() {
     };
 
     drop(sender);
-    let receiver =
-        MessagePipeWatcher::new(receiver, |_, _| {}, Some(Box::new(receiver_disconnect_handler)))
-            .unwrap();
+    let receiver = MessagePipeWatcher::new(
+        receiver,
+        |_, _| {},
+        Some(Box::new(receiver_disconnect_handler)),
+        true,
+    )
+    .unwrap();
 
     run_loop.run();
 

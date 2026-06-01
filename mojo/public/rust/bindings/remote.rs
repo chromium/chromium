@@ -205,6 +205,7 @@ where
             runner,
             message_handler,
             disconnect_handler,
+            /* begin_processing_immediately = */ true,
         )
         .expect("System ran out of resources to create new mojo objects.");
 

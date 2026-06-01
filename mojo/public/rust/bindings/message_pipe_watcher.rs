@@ -107,12 +107,25 @@ impl MessagePipeWatcher {
     /// Create a new MessagePipeWatcher which schedules `message_handler` on
     /// the default sequence whenever the endpoint receives a new message.
     ///
+    /// When invoked, `message_handler` is passed the output of
+    /// `MessageEndpoint::read`. See that method's documentation for
+    /// information about `method_handler`'s input type.
+    ///
+    /// If the other end of the pipe becomes disconnected, `disconnect_handler`
+    /// will be scheduled on `runner` after all previously received messages.
+    /// After that point, no more handlers will ever be scheduled for this
+    /// watcher.
+    ///
+    /// If `begin_processing_immediately` is false, the watcher will not
+    /// process any notifications until `begin_processing` is called.
+    ///
     /// May fail if the system has run out of resources to allocate new Mojo
     /// handles.
     pub fn new(
         endpoint: MessageEndpoint,
         message_handler: impl MessagePipeWatcherHandler,
         disconnect_handler: Option<Box<dyn FnOnce() + Send + 'static>>,
+        begin_processing_immediately: bool,
     ) -> Option<Self> {
         Self::new_with_runner(
             endpoint,
@@ -122,6 +135,7 @@ impl MessagePipeWatcher {
             )),
             message_handler,
             disconnect_handler,
+            begin_processing_immediately,
         )
     }
 
@@ -133,6 +147,14 @@ impl MessagePipeWatcher {
     /// `MessageEndpoint::read`. See that method's documentation for
     /// information about `method_handler`'s input type.
     ///
+    /// If the other end of the pipe becomes disconnected, `disconnect_handler`
+    /// will be scheduled on `runner` after all previously received messages.
+    /// After that point, no more handlers will ever be scheduled for this
+    /// watcher.
+    ///
+    /// If `begin_processing_immediately` is false, the watcher will not
+    /// process any notifications until `begin_processing` is called.
+    ///
     /// May fail if the system has run out of resources to allocate new Mojo
     /// handles.
     pub fn new_with_runner(
@@ -140,6 +162,7 @@ impl MessagePipeWatcher {
         runner: SequencedTaskRunnerHandle,
         message_handler: impl MessagePipeWatcherHandler,
         disconnect_handler: Option<Box<dyn FnOnce() + Send + 'static>>,
+        begin_processing_immediately: bool,
     ) -> Option<Self> {
         // The main goal of this function is to construct a closure which reads
         // from the `endpoint` and schedules `message_handler` on `runner`.
@@ -183,13 +206,20 @@ impl MessagePipeWatcher {
             trigger_handler,
         );
 
-        Self::try_arm(&watcher_state);
-
+        if begin_processing_immediately {
+            Self::try_arm(&watcher_state);
+        }
         Some(Self { shared_state: watcher_state })
+    }
+
+    /// Begin processing incoming messages and scheduling handlers.
+    pub fn begin_processing(&self) {
+        Self::try_arm(&self.shared_state);
     }
 
     /// Send a message through the underlying pipe. This function just forwards
     /// MessageEndpoint::write from the underlying endpoint.
+    ///
     /// # Possible Error Codes:
     /// - `FailedPrecondition`: If the other end of the message pipe is closed.
     pub fn send_message(&self, msg: RawMojoMessage) -> MojoResult<()> {
