@@ -12,6 +12,7 @@
 #import "base/files/file_path.h"
 #import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
+#import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
 #import "components/signin/public/base/consent_level.h"
@@ -36,6 +37,8 @@
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_controller.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_controller_observer_bridge.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -59,7 +62,8 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 }  // namespace
 
 @interface DriveFilePickerMediator () <AuthenticationServiceObserving,
-                                       IdentityManagerObserverBridgeDelegate>
+                                       IdentityManagerObserverBridgeDelegate,
+                                       ChooseFileControllerObserving>
 @end
 
 @implementation DriveFilePickerMediator {
@@ -118,6 +122,13 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
       _authenticationServiceObserverBridge;
   // Whether this mediator is at the root level of the file picker.
   BOOL _isRoot;
+  // Bridge to observe the ChooseFileController.
+  std::unique_ptr<ChooseFileControllerObserverBridge>
+      _chooseFileControllerObserverBridge;
+  // Scoped observation for the ChooseFileController.
+  std::unique_ptr<base::ScopedObservation<ChooseFileController,
+                                          ChooseFileController::Observer>>
+      _chooseFileControllerObservation;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
@@ -144,11 +155,20 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
         std::make_unique<AuthenticationServiceObserverBridge>(
             _authenticationService, self);
 
-    // Initialize the list of accepted types.
-    ChooseFileTabHelper* tab_helper =
+    // Start observing ChooseFileController.
+    ChooseFileTabHelper* tabHelper =
         ChooseFileTabHelper::FromWebState(webState);
-    CHECK(tab_helper->IsChoosingFiles());
-    const ChooseFileEvent& event = tab_helper->GetChooseFileEvent();
+    CHECK(tabHelper->IsChoosingFiles());
+    ChooseFileController* controller = tabHelper->GetChooseFileController();
+    _chooseFileControllerObserverBridge =
+        std::make_unique<ChooseFileControllerObserverBridge>(self);
+    _chooseFileControllerObservation = std::make_unique<base::ScopedObservation<
+        ChooseFileController, ChooseFileController::Observer>>(
+        _chooseFileControllerObserverBridge.get());
+    _chooseFileControllerObservation->Observe(controller);
+
+    // Initialize the list of accepted types.
+    const ChooseFileEvent& event = tabHelper->GetChooseFileEvent();
     _acceptedTypes = UTTypesAcceptedForEvent(event);
     _allowsMultipleSelection = event.allow_multiple_files;
   }
@@ -169,11 +189,11 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   if (_metricsHelper) {
     _metricsHelper.searchingState = DriveFilePickerSearchState::kNotSearching;
     if (_collection->IsRoot()) {
-      ChooseFileTabHelper* tab_helper =
+      ChooseFileTabHelper* tabHelper =
           ChooseFileTabHelper::FromWebState(_webState.get());
-      CHECK(tab_helper);
+      CHECK(tabHelper);
       [_metricsHelper
-          reportActivationMetricsForEvent:tab_helper->GetChooseFileEvent()];
+          reportActivationMetricsForEvent:tabHelper->GetChooseFileEvent()];
     }
   }
 }
@@ -189,12 +209,12 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 
 - (void)disconnect {
   if (_isRoot && _webState && !_webState->IsBeingDestroyed()) {
-    ChooseFileTabHelper* tab_helper =
+    ChooseFileTabHelper* tabHelper =
         ChooseFileTabHelper::FromWebState(_webState.get());
 
-    CHECK(tab_helper);
-    if (tab_helper->IsChoosingFiles()) {
-      tab_helper->StopChoosingFiles();
+    CHECK(tabHelper);
+    if (tabHelper->IsChoosingFiles()) {
+      tabHelper->StopChoosingFiles();
     }
   }
   // Clear selection on shutdown (stops download, allows dismissal, etc...)
@@ -215,6 +235,8 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   _authenticationService = nullptr;
   _authenticationServiceObserverBridge.reset();
   _imageFetcher = nullptr;
+  _chooseFileControllerObservation.reset();
+  _chooseFileControllerObserverBridge.reset();
 }
 
 - (void)setCollection:(std::unique_ptr<DriveFilePickerCollection>)collection {
@@ -486,6 +508,14 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
     _metricsHelper.userDismissed = YES;
     [self.delegate mediatorDidStopFileSelection:self];
   }
+}
+
+#pragma mark - ChooseFileControllerObserving
+
+- (void)chooseFileControllerDestroyed:(ChooseFileController*)controller {
+  _chooseFileControllerObservation.reset();
+  _chooseFileControllerObserverBridge.reset();
+  [self.delegate mediatorDidStopFileSelection:self];
 }
 
 #pragma mark - Private methods
