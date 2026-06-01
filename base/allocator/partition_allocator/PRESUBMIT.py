@@ -363,7 +363,6 @@ def CheckUnexpectedPreprocessorDefines(input_api, output_api):
         'MEMORY_TOOL_REPLACES_ALLOCATOR',
         'NDEBUG',
         'NEEDS_HANDLING_OF_HW_CAPABILITIES',
-        'OFFICIAL_BUILD',
     }
 
     target_path_prefix = (

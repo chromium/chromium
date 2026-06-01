@@ -14,7 +14,7 @@
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"  // nogncheck
 
 #if PA_HAS_ATTRIBUTE(annotate)
-#if defined(OFFICIAL_BUILD) && !PA_BUILDFLAG(FORCE_ENABLE_RAW_PTR_EXCLUSION)
+#if PA_BUILDFLAG(OFFICIAL) && !PA_BUILDFLAG(FORCE_ENABLE_RAW_PTR_EXCLUSION)
 // The annotation changed compiler output and increased binary size so disable
 // for official builds.
 // TODO(crbug.com/40836910): Remove when issue is resolved.

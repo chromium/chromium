@@ -5492,7 +5492,7 @@ TEST_P(PartitionAllocTest, DanglingPtrReleaseToSchedulerLoopQuarantine) {
 #if PA_USE_DEATH_TESTS()
 // DCHECK message are stripped in official build. It causes death tests with
 // matchers to fail.
-#if !defined(OFFICIAL_BUILD) || PA_BUILDFLAG(IS_DEBUG)
+#if !PA_BUILDFLAG(OFFICIAL) || PA_BUILDFLAG(IS_DEBUG)
 
 // Acquire() once, Release() twice => CRASH
 TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
@@ -5526,7 +5526,7 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
   allocator.root()->Free(ptr);
 }
 
-#endif  //! defined(OFFICIAL_BUILD) || PA_BUILDFLAG(IS_DEBUG)
+#endif  //! PA_BUILDFLAG(OFFICIAL) || PA_BUILDFLAG(IS_DEBUG)
 #endif  // PA_USE_DEATH_TESTS()
 #endif  // PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
@@ -5718,12 +5718,11 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
 
   // DCHECKs don't work with EXPECT_DEATH on official builds.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON) && \
-    (!defined(OFFICIAL_BUILD) || PA_BUILDFLAG(IS_DEBUG))
+    (!PA_BUILDFLAG(OFFICIAL) || PA_BUILDFLAG(IS_DEBUG))
   // Expect to DCHECK on unallocated region.
   EXPECT_DEATH_IF_SUPPORTED(table.IsReservationStart(address_to_check), "");
-#endif  //  PA_BUILDFLAG(DCHECKS_ARE_ON) && (!defined(OFFICIAL_BUILD) ||
-        //  PA_BUILDFLAG(IS_DEBUG))
-
+#endif  //  PA_BUILDFLAG(DCHECKS_ARE_ON) && (!PA_BUILDFLAG(OFFICIAL)
+        //  || PA_BUILDFLAG(IS_DEBUG))
 }
 
 // Test for crash http://crbug.com/1169003.
@@ -5787,14 +5786,14 @@ TEST_P(PartitionAllocTest, FastPathOrReturnNull) {
 #if PA_USE_DEATH_TESTS()
 // DCHECK message are stripped in official build. It causes death tests with
 // matchers to fail.
-#if !defined(OFFICIAL_BUILD) || PA_BUILDFLAG(IS_DEBUG)
+#if !PA_BUILDFLAG(OFFICIAL) || PA_BUILDFLAG(IS_DEBUG)
 
 TEST_P(PartitionAllocDeathTest, CheckTriggered) {
   PA_EXPECT_DCHECK_DEATH_WITH(PA_CHECK(5 == 7), "Check failed.*5 == 7");
   EXPECT_DEATH(PA_CHECK(5 == 7), "Check failed.*5 == 7");
 }
 
-#endif  // !defined(OFFICIAL_BUILD) && PA_BUILDFLAG(IS_DEBUG)
+#endif  // !PA_BUILDFLAG(OFFICIAL) && PA_BUILDFLAG(IS_DEBUG)
 #endif  // PA_USE_DEATH_TESTS()
 
 // Not on chromecast, since gtest considers extra output from itself as a test

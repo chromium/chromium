@@ -54,6 +54,16 @@ if (!defined(partition_alloc_dcheck_always_on_default)) {
   }
 }
 
+# Some embedders uses `is_official_build`, it can be used to set the default
+# value of `partition_alloc_is_official_build_default`.
+if (!defined(partition_alloc_is_official_build_default)) {
+  if (defined(is_official_build)) {
+    partition_alloc_is_official_build_default = is_official_build
+  } else {
+    partition_alloc_is_official_build_default = false
+  }
+}
+
 # Enables a fallback to the system free() for unmanaged pointers.
 # For example, this is necessary on some Android systems where libraries
 # bypass the allocator shim.
@@ -103,6 +113,9 @@ has_memory_tagging = current_cpu == "arm64" && is_clang && !is_asan &&
                      !is_hwasan && (is_linux || is_android)
 
 declare_args() {
+  # Whether PartitionAlloc is built in official mode.
+  partition_alloc_is_official_build = partition_alloc_is_official_build_default
+
   # Debug configuration.
   partition_alloc_is_debug = partition_alloc_is_debug_default
 
@@ -168,8 +181,9 @@ assert(!is_component_build || is_linux || !shim_supports_alloc_token,
        "In the component build, alloc token is only supported on Linux.")
 
 declare_args() {
-  # Whether the allocator shim supports automatic heap partitioning based on AllocToken
-  # or not. If true, shim creates multiple partitions and route allocations based on AllocToken provided.
+  # Whether the allocator shim supports automatic heap partitioning based on
+  # AllocToken or not. If true, shim creates multiple partitions and route
+  # allocations based on AllocToken provided.
   enable_auto_partitioning = false
 }
 assert(shim_supports_alloc_token || !enable_auto_partitioning,
@@ -270,8 +284,8 @@ declare_args() {
   # with enable_backup_ref_ptr_support instead.
   use_raw_ptr_backup_ref_impl = enable_backup_ref_ptr_support
 
-  # Enable BRP protection for unprotected-in-release raw_ptrs.
-  # If false, these pointers will use the no-op implementation with no protection.
+  # Enable BRP protection for unprotected-in-release raw_ptrs. If false, these
+  # pointers will use the no-op implementation with no protection.
   enable_brp_for_unprotected_in_release_raw_ptr =
       partition_alloc_is_debug || partition_alloc_dcheck_always_on
 
@@ -429,7 +443,8 @@ if (!use_partition_alloc ||
   enable_auto_partitioning = false
 }
 
-# Disable |use_full_mte| if memory tagging is not available. This is for targets that run as part the build process.
+# Disable |use_full_mte| if memory tagging is not available. This is for targets
+# that run as part the build process.
 if (!has_memory_tagging) {
   use_full_mte = false
 }

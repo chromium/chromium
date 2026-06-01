@@ -203,7 +203,7 @@ TEST(PartitionAllocLockTest, ReentrancyDeathTest) {
 // AssertAcquired() is only enforced with DCHECK()s.
 // DCHECKs don't work with EXPECT_DEATH on official builds.
 #if defined(GTEST_HAS_DEATH_TEST) && PA_BUILDFLAG(DCHECKS_ARE_ON) && \
-    (!defined(OFFICIAL_BUILD) || PA_BUILDFLAG(IS_DEBUG))
+    (!PA_BUILDFLAG(OFFICIAL) || PA_BUILDFLAG(IS_DEBUG))
 
 TEST(PartitionAllocLockTest, AssertAcquiredDeathTest) {
   Lock lock;
@@ -239,7 +239,7 @@ TEST(PartitionAllocLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
 
   // DCHECKs don't work with EXPECT_DEATH on official builds.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON) && \
-    (!defined(OFFICIAL_BUILD) || PA_BUILDFLAG(IS_DEBUG))
+    (!PA_BUILDFLAG(OFFICIAL) || PA_BUILDFLAG(IS_DEBUG))
   EXPECT_DEATH(lock.AssertAcquired(), "");
 #endif
 }

@@ -113,7 +113,7 @@ LogMessage::~LogMessage() {
   RawLog(severity_, str_newline);
 
   // TODO(crbug.com/40213558): Enable a stack trace on a fatal on fuchsia.
-#if !defined(OFFICIAL_BUILD) &&                         \
+#if !PA_BUILDFLAG(OFFICIAL) &&                          \
     (PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_WIN)) && \
     !defined(__UCLIBC__) && !PA_BUILDFLAG(IS_AIX)
   // TODO(crbug.com/40213558): Show a stack trace on a fatal, unless a debugger
