@@ -120,14 +120,14 @@ std::unique_ptr<LayerImpl> PictureLayerImpl::CreateLayerImpl(
 void PictureLayerImpl::CopyPropertiesTo(LayerImpl* base_layer) const {
   PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
 
-  layer_impl->has_animated_image_update_rect_ = has_animated_image_update_rect_;
-  layer_impl->has_non_animated_image_update_rect_ =
-      has_non_animated_image_update_rect_;
-
   LayerImpl::CopyPropertiesTo(base_layer);
 
   bool changed_other_props = GetChangeFlag(kChangedGeneralProperty);
   if (changed_other_props) {
+    layer_impl->has_animated_image_update_rect_ =
+        has_animated_image_update_rect_;
+    layer_impl->has_non_animated_image_update_rect_ =
+        has_non_animated_image_update_rect_;
     layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
 
     // Solid color layers have no tilings.
@@ -1893,8 +1893,11 @@ PictureLayerImpl::InvalidateRegionForImages(
   auto* controller = layer_tree_impl()->image_animation_controller();
   InvalidationRegion image_invalidation;
   for (auto image_id : images_to_invalidate) {
-    all_animated_image &= controller->IsRegistered(image_id);
     const auto& rects = discardable_image_map_->GetRectsForImage(image_id);
+    if (rects.empty()) {
+      continue;
+    }
+    all_animated_image &= controller->IsRegistered(image_id);
     for (const auto& r : rects) {
       image_invalidation.Union(r);
     }
@@ -1916,8 +1919,7 @@ PictureLayerImpl::InvalidateRegionForImages(
 
   invalidation_.Union(invalidation);
   tilings_->Invalidate(invalidation);
-  // TODO(crbug.com/40335690): SetNeedsPushProperties() would be needed here if
-  // PictureLayerImpl didn't always push properties every activation.
+  SetNeedsPushProperties(kChangedGeneralProperty);
   return ImageInvalidationResult::kInvalidated;
 }
 
@@ -1950,6 +1952,7 @@ void PictureLayerImpl::InvalidateRasterInducingScrolls(
     }
     invalidation_.Union(invalidation);
     tilings_->Invalidate(invalidation);
+    SetNeedsPushProperties(kChangedGeneralProperty);
   }
 }
 

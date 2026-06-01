@@ -176,6 +176,12 @@ class CC_EXPORT PictureLayerImpl
   void set_has_non_animated_image_update_rect() {
     has_non_animated_image_update_rect_ = true;
   }
+  bool has_animated_image_update_rect() const {
+    return has_animated_image_update_rect_;
+  }
+  bool has_non_animated_image_update_rect() const {
+    return has_non_animated_image_update_rect_;
+  }
 
   // Returns the set of tiles which have been updated since the last call to
   // this method. This returns tile indices for each updated tile, grouped by

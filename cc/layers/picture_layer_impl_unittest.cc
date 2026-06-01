@@ -24,6 +24,7 @@
 #include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/picture_layer.h"
+#include "cc/paint/draw_image.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
@@ -2473,6 +2474,41 @@ TEST_F(LegacySWPictureLayerImplTest,
   high_res = active_layer()->tilings()->FindTilingWithScaleKey(1.0f);
   ASSERT_TRUE(high_res);
   EXPECT_EQ(HIGH_RESOLUTION, high_res->resolution());
+}
+
+TEST_F(PictureLayerImplTest, InvalidateRegionForImagesSetsNeedsPushProperties) {
+  gfx::Size layer_bounds(1000, 1000);
+  SetupDefaultTrees(layer_bounds);
+
+  // Use a raster source with images.
+  scoped_refptr<FakeRasterSource> raster_source =
+      FakeRasterSource::CreateFilledWithImages(layer_bounds);
+  pending_layer()->SetRasterSource(raster_source, Region());
+
+  // SetRasterSource sets needs_push_properties. Clear it.
+  pending_layer()->ResetChangeTracking();
+  EXPECT_FALSE(pending_layer()->needs_push_properties());
+  EXPECT_FALSE(pending_layer()->has_non_animated_image_update_rect());
+
+  // Find an image to invalidate from the discardable image map.
+  std::vector<const DrawImage*> images =
+      pending_layer()->discardable_image_map()->GetDiscardableImagesInRect(
+          gfx::Rect(layer_bounds));
+  ASSERT_FALSE(images.empty());
+  PaintImageIdFlatSet images_to_invalidate;
+  images_to_invalidate.insert(images[0]->paint_image().stable_id());
+
+  pending_layer()->InvalidateRegionForImages(images_to_invalidate);
+
+  // Verify that the layer now needs to push properties.
+  EXPECT_TRUE(pending_layer()->needs_push_properties());
+  EXPECT_TRUE(
+      pending_layer()->GetChangeFlag(LayerImpl::kChangedGeneralProperty));
+  EXPECT_TRUE(pending_layer()->has_non_animated_image_update_rect());
+
+  // Activate and verify that the flag is pushed to the active layer.
+  ActivateTree();
+  EXPECT_TRUE(active_layer()->has_non_animated_image_update_rect());
 }
 
 TEST_F(PictureLayerImplTest, OnlyHighResTilingWithGpuRasterization) {
