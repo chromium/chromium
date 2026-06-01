@@ -206,14 +206,13 @@ void RouteMap::UpdateActiveRoutes() {
 #endif
 
   HeapVector<Member<Route>> routes_needing_event;
-  bool changed = false;
   for (const auto& entry : routes_) {
     Route& route = *entry.value;
-    changed |= UpdateMatchStatus(route, &routes_needing_event);
+    UpdateMatchStatus(route, &routes_needing_event);
   }
   for (const auto& entry : anonymous_routes_) {
     Route& route = *entry.value;
-    changed |= UpdateMatchStatus(route, &routes_needing_event);
+    UpdateMatchStatus(route, &routes_needing_event);
   }
 
   for (Route* route : routes_needing_event) {
@@ -222,10 +221,6 @@ void RouteMap::UpdateActiveRoutes() {
     auto* event = MakeGarbageCollected<RouteEvent>(type);
     event->SetTarget(route);
     route->DispatchEvent(*event);
-  }
-
-  if (changed) {
-    GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
   }
 }
 
@@ -252,24 +247,18 @@ void RouteMap::OnNavigationStart(const KURL& previous_url,
   previous_url_ = previous_url;
   next_url_ = next_url;
   UpdateActiveRoutes();
-  if (MayHaveRoutelessNavigations()) {
-    GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
-  }
+  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
 }
 
 void RouteMap::OnNavigationTraverse(HistoryTraverseType type) {
   history_traverse_type_ = type;
-  if (MayHaveRoutelessNavigations()) {
-    GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
-  }
+  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
 }
 
 void RouteMap::OnNavigationCommitted() {
   navigation_phase_ = NavigationPhase::kCommitted;
   UpdateActiveRoutes();
-  if (MayHaveRoutelessNavigations()) {
-    GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
-  }
+  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
 }
 
 void RouteMap::OnNavigationDone() {
@@ -278,9 +267,7 @@ void RouteMap::OnNavigationDone() {
   next_url_ = KURL();
   UpdateActiveRoutes();
   history_traverse_type_ = kNotTraversing;
-  if (MayHaveRoutelessNavigations()) {
-    GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
-  }
+  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
 }
 
 void RouteMap::OnPreviewStart() {

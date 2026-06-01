@@ -29,11 +29,6 @@ bool ActiveNavigationCondition::CheckSelectorMatch(
   Document& document = element.GetDocument();
   RouteMap& route_map = RouteMap::Ensure(document);
 
-  // TODO(crbug.com/436805487): Should only need to call this if there's no
-  // <route-location>. If there's a route, we should detect match changes
-  // automatically when navigation changes.
-  route_map.SetEverHadActiveNavigationCondition();
-
   KURL active_navigation_url = route_map.GetActiveNavigationURL(preposition_);
   KURL href = anchor->Href();
   if (active_navigation_url.IsEmpty() || href.IsEmpty()) {

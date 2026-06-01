@@ -95,10 +95,6 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
     return history_traverse_type_;
   }
 
-  void SetEverHadActiveNavigationCondition() {
-    ever_had_active_navigation_condition_ = true;
-  }
-
   ParseResult ParseAndApplyRoutes(const String& route_map_text);
 
   void AddRouteFromRule(const String& dashed_ident, URLPattern*);
@@ -164,10 +160,6 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
       Route&,
       HeapVector<Member<Route>>* routes_needing_event = nullptr);
 
-  bool MayHaveRoutelessNavigations() const {
-    return has_history_rules_ || ever_had_active_navigation_condition_;
-  }
-
   HeapHashMap<String, Member<Route>> routes_;
   HeapHashMap<String, Member<Route>> anonymous_routes_;
 
@@ -178,7 +170,6 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   HistoryTraverseType history_traverse_type_ = kNotTraversing;
   NavigationPhase navigation_phase_ = NavigationPhase::kInactive;
   bool has_history_rules_ = false;
-  bool ever_had_active_navigation_condition_ = false;
   bool in_preview_ = false;
 
 #if DCHECK_IS_ON()
