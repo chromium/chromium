@@ -770,4 +770,60 @@ INSTANTIATE_TEST_SUITE_P(All,
                                              : "BFCacheDisabled";
                          });
 
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, DefaultVoting) {
+  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string input_arguments = R"JSON({"text": "test"})JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  ExpectOkResult(result);
+
+  const TabObservationStrategy& strategy = result.GetStrategy();
+  EXPECT_EQ(strategy.GetScreenshotPolicy(active_tab()->GetHandle()),
+            ScreenshotPolicy::kRequested);
+  EXPECT_EQ(strategy.GetPageContentExtractionPolicy(active_tab()->GetHandle()),
+            PageContentExtractionPolicy::kRequired);
+}
+
+class ActorToolsTestScriptToolSkipVoting : public ActorToolsTestScriptTool {
+ public:
+  ActorToolsTestScriptToolSkipVoting() {
+    features_.InitWithFeatures({actor::kActorScriptToolSkipScreenshot,
+                                actor::kActorScriptToolSkipPageContent},
+                               {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptToolSkipVoting, SkipVoting) {
+  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string input_arguments = R"JSON({"text": "test"})JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  ExpectOkResult(result);
+
+  const TabObservationStrategy& strategy = result.GetStrategy();
+  EXPECT_EQ(strategy.GetScreenshotPolicy(active_tab()->GetHandle()),
+            ScreenshotPolicy::kSkipped);
+  EXPECT_EQ(strategy.GetPageContentExtractionPolicy(active_tab()->GetHandle()),
+            PageContentExtractionPolicy::kSkipped);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ActorToolsTestScriptToolSkipVoting,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "BFCacheEnabled"
+                                             : "BFCacheDisabled";
+                         });
+
 }  // namespace actor

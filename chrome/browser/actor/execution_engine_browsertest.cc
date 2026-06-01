@@ -1093,7 +1093,6 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, CollectsToolVotes) {
   actor_task().Act(ToRequestList(click1, click2), result.GetCallback());
   ExpectOkResult(result);
 
-  // Each of the the ClickTools votes for `kRequested`.
   const TabObservationStrategy& strategy = result.GetStrategy();
   EXPECT_EQ(strategy.GetScreenshotPolicy(active_tab()->GetHandle()),
             ScreenshotPolicy::kRequested);

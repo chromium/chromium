@@ -135,6 +135,9 @@ BASE_DECLARE_FEATURE(kGlicActorTabObservationController);
 BASE_DECLARE_FEATURE(kActorObserveScreenshotDefault);
 BASE_DECLARE_FEATURE(kActorObservePageContentDefault);
 
+BASE_DECLARE_FEATURE(kActorScriptToolSkipScreenshot);
+BASE_DECLARE_FEATURE(kActorScriptToolSkipPageContent);
+
 }  // namespace actor
 
 #endif  // COMPONENTS_ACTOR_CORE_ACTOR_FEATURES_H_

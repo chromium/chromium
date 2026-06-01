@@ -1541,6 +1541,16 @@ inline constexpr char kActorObservePageContentDefaultName[] =
 inline constexpr char kActorObservePageContentDefaultDescription[] =
     "If enabled, the actor framework will capture page content by default when "
     "requested.";
+
+inline constexpr char kActorScriptToolSkipScreenshotName[] =
+    "Actor script tool skip screenshot";
+inline constexpr char kActorScriptToolSkipScreenshotDescription[] =
+    "If enabled, script tools will explicitly vote to skip screenshots.";
+
+inline constexpr char kActorScriptToolSkipPageContentName[] =
+    "Actor script tool skip page content";
+inline constexpr char kActorScriptToolSkipPageContentDescription[] =
+    "If enabled, script tools will explicitly vote to skip page content.";
 inline constexpr char kGlicCaptureRegionDescription[] =
     "Enables Glic to capture a region of the screen.";
 inline constexpr char kGlicCaptureRegionName[] = "Glic Capture Region";

@@ -245,6 +245,8 @@ void ScriptToolHost::OnToolInvokedInOldDocument(mojom::ActionResultPtr result) {
   if (result && result->code == mojom::ActionResultCode::kOk) {
     result->requires_page_stabilization =
         base::FeatureList::IsEnabled(kActorScriptToolDelayObservation);
+    result->screenshot_policy = pending_result_->screenshot_policy;
+    result->page_content_policy = pending_result_->page_content_policy;
   }
 
   const bool has_tool_response = result && result->script_tool_response;
@@ -460,6 +462,15 @@ void ScriptToolHost::InitializePendingResult() {
   pending_result_->script_tool_response->tool = blink::mojom::ScriptTool::New();
   pending_result_->script_tool_response->tool->name =
       action_->get_script_tool()->name;
+
+  pending_result_->screenshot_policy =
+      base::FeatureList::IsEnabled(kActorScriptToolSkipScreenshot)
+          ? mojom::ScreenshotPolicy::kSkipped
+          : mojom::ScreenshotPolicy::kRequested;
+  pending_result_->page_content_policy =
+      base::FeatureList::IsEnabled(kActorScriptToolSkipPageContent)
+          ? mojom::PageContentExtractionPolicy::kSkipped
+          : mojom::PageContentExtractionPolicy::kRequired;
 }
 
 void ScriptToolHost::SetScriptToolOutput(const std::string& output) {
