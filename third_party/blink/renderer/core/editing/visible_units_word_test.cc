@@ -63,7 +63,7 @@ class VisibleUnitsWordTest : public EditingTestBase {
   }
 
   // To avoid name conflict in jumbo build, following functions should be here.
-  static VisiblePosition CreateVisiblePositionInDOMTree(
+  static VisiblePosition CreateVisiblePositionInDomTree(
       Node& anchor,
       int offset,
       TextAffinity affinity = TextAffinity::kDownstream) {
@@ -196,7 +196,7 @@ TEST_F(VisibleUnitsWordTest, StartOfWordFirstLetter) {
   EXPECT_EQ("<p> (1) abc def|</p>", DoStartOfWord("<p> (1) abc def</p>|"));
 }
 
-TEST_F(VisibleUnitsWordTest, StartOfWordShadowDOM) {
+TEST_F(VisibleUnitsWordTest, StartOfWordShadowDom) {
   const char* body_content =
       "<span id=host><b slot='#one' id=one>1</b> <b slot='#two' "
       "id=two>22</b></span><i id=three>333</i>";
@@ -218,7 +218,7 @@ TEST_F(VisibleUnitsWordTest, StartOfWordShadowDOM) {
   EXPECT_EQ(Position(one, 0),
             CreateVisiblePosition(
                 StartOfWordPosition(
-                    CreateVisiblePositionInDOMTree(*one, 0).DeepEquivalent()))
+                    CreateVisiblePositionInDomTree(*one, 0).DeepEquivalent()))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(space, 1),
             CreateVisiblePosition(
@@ -228,7 +228,7 @@ TEST_F(VisibleUnitsWordTest, StartOfWordShadowDOM) {
   EXPECT_EQ(Position(one, 0),
             CreateVisiblePosition(
                 StartOfWordPosition(
-                    CreateVisiblePositionInDOMTree(*one, 1).DeepEquivalent()))
+                    CreateVisiblePositionInDomTree(*one, 1).DeepEquivalent()))
                 .DeepEquivalent());
 
   EXPECT_EQ(PositionInFlatTree(space, 1),
@@ -239,7 +239,7 @@ TEST_F(VisibleUnitsWordTest, StartOfWordShadowDOM) {
   EXPECT_EQ(Position(four, 0),
             CreateVisiblePosition(
                 StartOfWordPosition(
-                    CreateVisiblePositionInDOMTree(*two, 0).DeepEquivalent()))
+                    CreateVisiblePositionInDomTree(*two, 0).DeepEquivalent()))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(four, 0),
             CreateVisiblePosition(
@@ -249,7 +249,7 @@ TEST_F(VisibleUnitsWordTest, StartOfWordShadowDOM) {
   EXPECT_EQ(Position(four, 0),
             CreateVisiblePosition(
                 StartOfWordPosition(
-                    CreateVisiblePositionInDOMTree(*two, 1).DeepEquivalent()))
+                    CreateVisiblePositionInDomTree(*two, 1).DeepEquivalent()))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(four, 0),
             CreateVisiblePosition(
@@ -258,14 +258,14 @@ TEST_F(VisibleUnitsWordTest, StartOfWordShadowDOM) {
                 .DeepEquivalent());
   EXPECT_EQ(Position(three, 0),
             CreateVisiblePosition(
-                StartOfWordPosition(CreateVisiblePositionInDOMTree(
+                StartOfWordPosition(CreateVisiblePositionInDomTree(
                                         *three, 1, TextAffinity::kUpstream)
                                         .DeepEquivalent()))
                 .DeepEquivalent());
   EXPECT_EQ(Position(three, 0),
             CreateVisiblePosition(
                 StartOfWordPosition(
-                    CreateVisiblePositionInDOMTree(*three, 1).DeepEquivalent()))
+                    CreateVisiblePositionInDomTree(*three, 1).DeepEquivalent()))
                 .DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(three, 0),
@@ -276,7 +276,7 @@ TEST_F(VisibleUnitsWordTest, StartOfWordShadowDOM) {
   EXPECT_EQ(Position(four, 0),
             CreateVisiblePosition(
                 StartOfWordPosition(
-                    CreateVisiblePositionInDOMTree(*four, 1).DeepEquivalent()))
+                    CreateVisiblePositionInDomTree(*four, 1).DeepEquivalent()))
                 .DeepEquivalent());
   EXPECT_EQ(PositionInFlatTree(four, 0),
             CreateVisiblePosition(
@@ -286,7 +286,7 @@ TEST_F(VisibleUnitsWordTest, StartOfWordShadowDOM) {
   EXPECT_EQ(Position(one, 0),
             CreateVisiblePosition(
                 StartOfWordPosition(
-                    CreateVisiblePositionInDOMTree(*five, 1).DeepEquivalent()))
+                    CreateVisiblePositionInDomTree(*five, 1).DeepEquivalent()))
                 .DeepEquivalent());
   // Flat tree canonicalization moves result to downstream position
   EXPECT_EQ(PositionInFlatTree(space, 1),
@@ -419,7 +419,7 @@ TEST_F(VisibleUnitsWordTest, EndOfWordPreviousWordIfOnBoundaryBasic) {
       DoEndOfWord("<p> (1) abc def</p>|", WordSide::kPreviousWordIfOnBoundary));
 }
 
-TEST_F(VisibleUnitsWordTest, EndOfWordShadowDOM) {
+TEST_F(VisibleUnitsWordTest, EndOfWordShadowDom) {
   const char* body_content =
       "<span id=host><b slot='#one' id=one>1</b> <b slot='#two' "
       "id=two>22</b></span><i id=three>333</i>";

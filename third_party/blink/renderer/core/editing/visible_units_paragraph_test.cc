@@ -16,7 +16,7 @@ namespace blink {
 
 class VisibleUnitsParagraphTest : public EditingTestBase {
  protected:
-  static PositionWithAffinity PositionWithAffinityInDOMTree(
+  static PositionWithAffinity PositionWithAffinityInDomTree(
       Node& anchor,
       int offset,
       TextAffinity affinity = TextAffinity::kDownstream) {
@@ -24,7 +24,7 @@ class VisibleUnitsParagraphTest : public EditingTestBase {
                                 affinity);
   }
 
-  static VisiblePosition CreateVisiblePositionInDOMTree(
+  static VisiblePosition CreateVisiblePositionInDomTree(
       Node& anchor,
       int offset,
       TextAffinity affinity = TextAffinity::kDownstream) {
@@ -56,25 +56,25 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphFirstLetter) {
   Node* text = sample->firstChild();
 
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 0))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 0))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 1))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 1))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 2))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 2))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 3))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 3))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 4))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 4))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 5))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 5))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 6))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 6))
                 .DeepEquivalent());
 }
 
@@ -87,25 +87,25 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphFirstLetterPre) {
   Node* text = sample->firstChild();
 
   EXPECT_EQ(Position(text, 3),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 0))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 0))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 3),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 1))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 1))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 3),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 2))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 2))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 3))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 3))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 4))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 4))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 5))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 5))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 6))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 6))
                 .DeepEquivalent());
 }
 
@@ -124,7 +124,7 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphShadow) {
 
   EXPECT_EQ(
       Position(three->firstChild(), 3),
-      EndOfParagraph(CreateVisiblePositionInDOMTree(*one->firstChild(), 1))
+      EndOfParagraph(CreateVisiblePositionInDomTree(*one->firstChild(), 1))
           .DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(one->firstChild(), 1),
@@ -133,7 +133,7 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphShadow) {
 
   EXPECT_EQ(
       Position(three->firstChild(), 3),
-      EndOfParagraph(CreateVisiblePositionInDOMTree(*two->firstChild(), 2))
+      EndOfParagraph(CreateVisiblePositionInDomTree(*two->firstChild(), 2))
           .DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(two->firstChild(), 2),
@@ -148,25 +148,25 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphSimple) {
   Node* text = sample->firstChild();
 
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 0))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 0))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 1))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 1))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 2))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 2))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 3))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 3))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 4))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 4))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 5))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 5))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 6))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 6))
                 .DeepEquivalent());
 }
 
@@ -177,25 +177,25 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphSimplePre) {
   Node* text = sample->firstChild();
 
   EXPECT_EQ(Position(text, 3),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 0))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 0))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 3),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 1))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 1))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 3),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 2))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 2))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 3),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 3))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 3))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 4))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 4))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 5))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 5))
                 .DeepEquivalent());
   EXPECT_EQ(Position(text, 6),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*text, 6))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*text, 6))
                 .DeepEquivalent());
 }
 
@@ -210,7 +210,7 @@ TEST_F(VisibleUnitsParagraphTest, endOfParagraphHiddenElement) {
   Node* second_block = second->firstChild();
 
   EXPECT_EQ(Position(second_block, 12),
-            EndOfParagraph(CreateVisiblePositionInDOMTree(*second_block, 0))
+            EndOfParagraph(CreateVisiblePositionInDomTree(*second_block, 0))
                 .DeepEquivalent());
 }
 
@@ -228,19 +228,19 @@ TEST_F(VisibleUnitsParagraphTest, isEndOfParagraph) {
   Node* three =
       GetDocument().getElementById(AtomicString("three"))->firstChild();
 
-  EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInDOMTree(*one, 0)));
+  EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInDomTree(*one, 0)));
   EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInFlatTree(*one, 0)));
 
-  EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInDOMTree(*one, 1)));
+  EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInDomTree(*one, 1)));
   EXPECT_TRUE(IsEndOfParagraph(CreateVisiblePositionInFlatTree(*one, 1)));
 
-  EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInDOMTree(*two, 2)));
+  EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInDomTree(*two, 2)));
   EXPECT_TRUE(IsEndOfParagraph(CreateVisiblePositionInFlatTree(*two, 2)));
 
-  EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInDOMTree(*three, 0)));
+  EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInDomTree(*three, 0)));
   EXPECT_FALSE(IsEndOfParagraph(CreateVisiblePositionInFlatTree(*three, 0)));
 
-  EXPECT_TRUE(IsEndOfParagraph(CreateVisiblePositionInDOMTree(*three, 3)));
+  EXPECT_TRUE(IsEndOfParagraph(CreateVisiblePositionInDomTree(*three, 3)));
   EXPECT_TRUE(IsEndOfParagraph(CreateVisiblePositionInFlatTree(*three, 3)));
 }
 
@@ -259,19 +259,19 @@ TEST_F(VisibleUnitsParagraphTest, isStartOfParagraph) {
   Node* three =
       GetDocument().getElementById(AtomicString("three"))->firstChild();
 
-  EXPECT_TRUE(IsStartOfParagraph(CreateVisiblePositionInDOMTree(*zero, 0)));
+  EXPECT_TRUE(IsStartOfParagraph(CreateVisiblePositionInDomTree(*zero, 0)));
   EXPECT_TRUE(IsStartOfParagraph(CreateVisiblePositionInFlatTree(*zero, 0)));
 
-  EXPECT_FALSE(IsStartOfParagraph(CreateVisiblePositionInDOMTree(*one, 0)));
+  EXPECT_FALSE(IsStartOfParagraph(CreateVisiblePositionInDomTree(*one, 0)));
   EXPECT_TRUE(IsStartOfParagraph(CreateVisiblePositionInFlatTree(*one, 0)));
 
-  EXPECT_FALSE(IsStartOfParagraph(CreateVisiblePositionInDOMTree(*one, 1)));
+  EXPECT_FALSE(IsStartOfParagraph(CreateVisiblePositionInDomTree(*one, 1)));
   EXPECT_FALSE(IsStartOfParagraph(CreateVisiblePositionInFlatTree(*one, 1)));
 
-  EXPECT_FALSE(IsStartOfParagraph(CreateVisiblePositionInDOMTree(*two, 0)));
+  EXPECT_FALSE(IsStartOfParagraph(CreateVisiblePositionInDomTree(*two, 0)));
   EXPECT_TRUE(IsStartOfParagraph(CreateVisiblePositionInFlatTree(*two, 0)));
 
-  EXPECT_FALSE(IsStartOfParagraph(CreateVisiblePositionInDOMTree(*three, 0)));
+  EXPECT_FALSE(IsStartOfParagraph(CreateVisiblePositionInDomTree(*three, 0)));
   EXPECT_TRUE(IsStartOfParagraph(CreateVisiblePositionInFlatTree(*three, 0)));
 }
 

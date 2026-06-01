@@ -18,7 +18,7 @@
 namespace blink {
 namespace visible_units_test {
 
-PositionWithAffinity PositionWithAffinityInDOMTree(
+PositionWithAffinity PositionWithAffinityInDomTree(
     Node& anchor,
     int offset,
     TextAffinity affinity = TextAffinity::kDownstream) {
@@ -26,7 +26,7 @@ PositionWithAffinity PositionWithAffinityInDOMTree(
                               affinity);
 }
 
-VisiblePosition CreateVisiblePositionInDOMTree(
+VisiblePosition CreateVisiblePositionInDomTree(
     Node& anchor,
     int offset,
     TextAffinity affinity = TextAffinity::kDownstream) {
@@ -99,12 +99,12 @@ TEST_F(VisibleUnitsTest, characterAfter) {
   Element* two = GetDocument().getElementById(AtomicString("two"));
 
   EXPECT_EQ(
-      0, CharacterAfter(CreateVisiblePositionInDOMTree(*one->firstChild(), 1)));
+      0, CharacterAfter(CreateVisiblePositionInDomTree(*one->firstChild(), 1)));
   EXPECT_EQ('5', CharacterAfter(
                      CreateVisiblePositionInFlatTree(*one->firstChild(), 1)));
 
   EXPECT_EQ('1', CharacterAfter(
-                     CreateVisiblePositionInDOMTree(*two->firstChild(), 2)));
+                     CreateVisiblePositionInDomTree(*two->firstChild(), 2)));
   EXPECT_EQ('1', CharacterAfter(
                      CreateVisiblePositionInFlatTree(*two->firstChild(), 2)));
 }
@@ -229,16 +229,16 @@ TEST_F(VisibleUnitsTest, characterBefore) {
   Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
   Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
 
-  EXPECT_EQ('2', CharacterBefore(CreateVisiblePositionInDOMTree(*one, 0)));
+  EXPECT_EQ('2', CharacterBefore(CreateVisiblePositionInDomTree(*one, 0)));
   EXPECT_EQ('2', CharacterBefore(CreateVisiblePositionInFlatTree(*one, 0)));
 
-  EXPECT_EQ('1', CharacterBefore(CreateVisiblePositionInDOMTree(*one, 1)));
+  EXPECT_EQ('1', CharacterBefore(CreateVisiblePositionInDomTree(*one, 1)));
   EXPECT_EQ('1', CharacterBefore(CreateVisiblePositionInFlatTree(*one, 1)));
 
-  EXPECT_EQ(0, CharacterBefore(CreateVisiblePositionInDOMTree(*two, 0)));
+  EXPECT_EQ(0, CharacterBefore(CreateVisiblePositionInDomTree(*two, 0)));
   EXPECT_EQ('4', CharacterBefore(CreateVisiblePositionInFlatTree(*two, 0)));
 
-  EXPECT_EQ(0, CharacterBefore(CreateVisiblePositionInDOMTree(*five, 0)));
+  EXPECT_EQ(0, CharacterBefore(CreateVisiblePositionInDomTree(*five, 0)));
   EXPECT_EQ('1', CharacterBefore(CreateVisiblePositionInFlatTree(*five, 0)));
 }
 
@@ -255,7 +255,7 @@ TEST_F(VisibleUnitsTest, endOfDocument) {
   Element* two = GetDocument().getElementById(AtomicString("two"));
 
   EXPECT_EQ(Position(two->firstChild(), 2),
-            EndOfDocument(CreateVisiblePositionInDOMTree(*one->firstChild(), 0))
+            EndOfDocument(CreateVisiblePositionInDomTree(*one->firstChild(), 0))
                 .DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(one->firstChild(), 1),
@@ -263,7 +263,7 @@ TEST_F(VisibleUnitsTest, endOfDocument) {
           .DeepEquivalent());
 
   EXPECT_EQ(Position(two->firstChild(), 2),
-            EndOfDocument(CreateVisiblePositionInDOMTree(*two->firstChild(), 1))
+            EndOfDocument(CreateVisiblePositionInDomTree(*two->firstChild(), 1))
                 .DeepEquivalent());
   EXPECT_EQ(
       PositionInFlatTree(one->firstChild(), 1),
@@ -306,12 +306,12 @@ TEST_F(VisibleUnitsTest, isEndOfEditableOrNonEditableContent) {
   Element* two = GetDocument().getElementById(AtomicString("two"));
 
   EXPECT_FALSE(IsEndOfEditableOrNonEditableContent(
-      CreateVisiblePositionInDOMTree(*one->firstChild(), 1)));
+      CreateVisiblePositionInDomTree(*one->firstChild(), 1)));
   EXPECT_TRUE(IsEndOfEditableOrNonEditableContent(
       CreateVisiblePositionInFlatTree(*one->firstChild(), 1)));
 
   EXPECT_TRUE(IsEndOfEditableOrNonEditableContent(
-      CreateVisiblePositionInDOMTree(*two->firstChild(), 2)));
+      CreateVisiblePositionInDomTree(*two->firstChild(), 2)));
   EXPECT_FALSE(IsEndOfEditableOrNonEditableContent(
       CreateVisiblePositionInFlatTree(*two->firstChild(), 2)));
 }
@@ -326,17 +326,17 @@ TEST_F(VisibleUnitsTest, isEndOfEditableOrNonEditableContentWithInput) {
           ->firstChild();
 
   EXPECT_FALSE(IsEndOfEditableOrNonEditableContent(
-      CreateVisiblePositionInDOMTree(*text, 0)));
+      CreateVisiblePositionInDomTree(*text, 0)));
   EXPECT_FALSE(IsEndOfEditableOrNonEditableContent(
       CreateVisiblePositionInFlatTree(*text, 0)));
 
   EXPECT_FALSE(IsEndOfEditableOrNonEditableContent(
-      CreateVisiblePositionInDOMTree(*text, 1)));
+      CreateVisiblePositionInDomTree(*text, 1)));
   EXPECT_FALSE(IsEndOfEditableOrNonEditableContent(
       CreateVisiblePositionInFlatTree(*text, 1)));
 
   EXPECT_TRUE(IsEndOfEditableOrNonEditableContent(
-      CreateVisiblePositionInDOMTree(*text, 2)));
+      CreateVisiblePositionInDomTree(*text, 2)));
   EXPECT_TRUE(IsEndOfEditableOrNonEditableContent(
       CreateVisiblePositionInFlatTree(*text, 2)));
 }
