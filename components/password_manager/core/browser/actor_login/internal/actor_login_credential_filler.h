@@ -68,9 +68,9 @@ class ActorLoginCredentialFiller {
   enum class FieldType { kUsername, kPassword };
 
   // Retrieves the full data of a saved credential for the form managed
-  // by `signin_form_manager` corresponding to `credential_`.
+  // by `reference_form_manager` corresponding to `credential_`.
   virtual const password_manager::StoredCredential* GetMatchingStoredCredential(
-      const password_manager::PasswordFormManager& signin_form_manager);
+      const password_manager::PasswordFormManager& reference_form_manager);
 
   virtual bool DoesStoredCredentialBelongToManager(
       const password_manager::PasswordFormManager* manager,
@@ -93,6 +93,15 @@ class ActorLoginCredentialFiller {
   // Should always be called synchronously.
   void ProcessRetrievedForms(
       std::vector<password_manager::PasswordFormManager*> eligible_managers);
+
+  // If there are multiple forms on the page, one will be chosen as
+  // reference based on whether it's in the primary main frame, or whether
+  // the provided credential is a strong match for the form.
+  std::pair<password_manager::PasswordFormManager*,
+            const password_manager::StoredCredential*>
+  FindReferenceFormAndCredential(
+      const std::vector<password_manager::PasswordFormManager*>&
+          eligible_managers);
 
   // Checks if device reauthentication is required before filling.
   // If required, triggers reauthentication and, upon success, re-fetches
