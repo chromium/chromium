@@ -13,6 +13,7 @@
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_and_passwords_mediator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_settings_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/identity_docs_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_coordinator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_table_view_controller.h"
@@ -30,8 +31,9 @@
 
 @interface AutofillAndPasswordsCoordinator () <
     AutofillAndPasswordsTableViewControllerDelegate,
-    PasswordsCoordinatorDelegate,
+    AutofillSettingsCoordinatorDelegate,
     IdentityDocsCoordinatorDelegate,
+    PasswordsCoordinatorDelegate,
     TravelInfoCoordinatorDelegate>
 @end
 
@@ -41,6 +43,7 @@
   PasswordsCoordinator* _passwordsCoordinator;
   IdentityDocsCoordinator* _identityDocsCoordinator;
   TravelInfoCoordinator* _travelInfoCoordinator;
+  AutofillSettingsCoordinator* _autofillSettingsCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -86,6 +89,10 @@
   _travelInfoCoordinator.delegate = nil;
   [_travelInfoCoordinator stop];
   _travelInfoCoordinator = nil;
+
+  _autofillSettingsCoordinator.delegate = nil;
+  [_autofillSettingsCoordinator stop];
+  _autofillSettingsCoordinator = nil;
 
   [_mediator disconnect];
   _mediator = nil;
@@ -198,6 +205,40 @@
   [_travelInfoCoordinator start];
 }
 
+- (void)autofillAndPasswordsTableViewControllerDidSelectAutofillSettings:
+    (AutofillAndPasswordsTableViewController*)controller {
+  if (_autofillSettingsCoordinator) {
+    return;
+  }
+
+  // TODO(crbug.com/500341282): Add missing metric.
+
+  _autofillSettingsCoordinator = [[AutofillSettingsCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  _autofillSettingsCoordinator.delegate = self;
+  [_autofillSettingsCoordinator start];
+}
+
+#pragma mark - AutofillSettingsCoordinatorDelegate
+
+- (void)autofillSettingsCoordinatorDidRemove:
+    (AutofillSettingsCoordinator*)coordinator {
+  CHECK_EQ(_autofillSettingsCoordinator, coordinator);
+  _autofillSettingsCoordinator.delegate = nil;
+  [_autofillSettingsCoordinator stop];
+  _autofillSettingsCoordinator = nil;
+}
+
+#pragma mark - IdentityDocsCoordinatorDelegate
+
+- (void)identityDocsCoordinatorDidRemove:(IdentityDocsCoordinator*)coordinator {
+  CHECK_EQ(_identityDocsCoordinator, coordinator);
+  _identityDocsCoordinator.delegate = nil;
+  [_identityDocsCoordinator stop];
+  _identityDocsCoordinator = nil;
+}
+
 #pragma mark - PasswordsCoordinatorDelegate
 
 - (void)dismissPasswordManagerAfterFailedReauthentication {
@@ -209,15 +250,6 @@
   _passwordsCoordinator.delegate = nil;
   [_passwordsCoordinator stop];
   _passwordsCoordinator = nil;
-}
-
-#pragma mark - IdentityDocsCoordinatorDelegate
-
-- (void)identityDocsCoordinatorDidRemove:(IdentityDocsCoordinator*)coordinator {
-  CHECK_EQ(_identityDocsCoordinator, coordinator);
-  _identityDocsCoordinator.delegate = nil;
-  [_identityDocsCoordinator stop];
-  _identityDocsCoordinator = nil;
 }
 
 #pragma mark - TravelInfoCoordinatorDelegate

@@ -39,4 +39,7 @@ TableViewDetailIconItem* IdentityDocsItem(BOOL enabled);
 // Returns the travel info item.
 TableViewDetailIconItem* TravelInfoItem(BOOL enabled);
 
+// Returns the autofill settings item.
+TableViewDetailIconItem* AutofillSettingsItem();
+
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AND_PASSWORDS_UTILS_AUTOFILL_AND_PASSWORDS_ITEM_UTILS_H_

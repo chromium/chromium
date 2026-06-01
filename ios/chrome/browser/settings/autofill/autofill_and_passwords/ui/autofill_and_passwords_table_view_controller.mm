@@ -29,6 +29,7 @@
   TableViewDetailIconItem* _autofillProfileDetailItem;
   TableViewDetailIconItem* _identityDocsDetailItem;
   TableViewDetailIconItem* _travelInfoDetailItem;
+  TableViewDetailIconItem* _autofillSettingsDetailItem;
 
   BOOL _settingsAreDismissed;
 }
@@ -82,6 +83,10 @@
     [model addItem:_travelInfoDetailItem
         toSectionWithIdentifier:SettingsSectionIdentifierBasics];
   }
+
+  _autofillSettingsDetailItem = AutofillSettingsItem();
+  [model addItem:_autofillSettingsDetailItem
+      toSectionWithIdentifier:SettingsSectionIdentifierBasics];
 }
 
 #pragma mark - UITableViewDelegate
@@ -113,6 +118,10 @@
     case SettingsItemTypeTravelInfo:
       [self.delegate
           autofillAndPasswordsTableViewControllerDidSelectTravelInfo:self];
+      break;
+    case SettingsItemTypeAutofillSettings:
+      [self.delegate
+          autofillAndPasswordsTableViewControllerDidSelectAutofillSettings:self];
       break;
     default:
       break;

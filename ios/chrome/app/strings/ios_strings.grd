@@ -7023,6 +7023,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SETTINGS_AUTOFILL_REMOVE_ADDRESS_LABEL" desc="Remove button title shown to the user to remove an address in the table view either by swiping the row or tapping the red minus icon in editing mode. [iOS only]">
           Remove
       </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_SETTINGS" desc="Title of the Autofill settings section on 'Your saved info' page.">
+        Autofill settings
+      </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_VERIFICATION_TOGGLE_REAUTH_REASON" desc="Message explaining that the reason why we are requiring the user to re-authenticate is to be able to toggle user verification for enhanced autofill. This is shown by iOS in the passcode reauthentication system dialogue, right under the OS string 'Enter iPhone Passcode for $BROWSER_NAME'. [Length: one line]">
         Toggle enhanced autofill user verification
       </message>

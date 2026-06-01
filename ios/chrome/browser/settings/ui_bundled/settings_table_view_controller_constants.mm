@@ -30,6 +30,8 @@ NSString* const kSettingsIdentityDocsCellId = @"kSettingsIdentityDocsCellId";
 NSString* const kSettingsTravelInfoCellId = @"kSettingsTravelInfoCellId";
 NSString* const kSettingsAutofillAndPasswordsCellId =
     @"kSettingsAutofillAndPasswordsCellId";
+NSString* const kSettingsAutofillSettingsCellId =
+    @"kSettingsAutofillSettingsCellId";
 NSString* const kSettingsPrivacyCellId = @"kSettingsPrivacyCellId";
 NSString* const kSettingsArticleSuggestionsCellId =
     @"kSettingsArticleSuggestionsCellId";
