@@ -16,9 +16,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
-import android.view.ViewConfiguration;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,7 +25,6 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -37,8 +34,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
-import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
@@ -58,7 +53,7 @@ import java.util.function.Supplier;
  * related actions in grid related layouts.
  */
 @NullMarked
-public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallback {
+public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallback {
     /** An interface to observe drop tab events on top of an archival message card. */
     @FunctionalInterface
     public interface OnDropOnArchivalMessageCardEventListener {
@@ -70,9 +65,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         void onDropTab(@TabId int tabId);
     }
 
-    private static final long LONGPRESS_DURATION_MS = ViewConfiguration.getLongPressTimeout();
-    private final TabListModel mModel;
-    private final Supplier<TabModel> mCurrentTabModelSupplier;
     private final SettableNonNullObservableSupplier<Integer> mRecentlySwipedTabIdSupplier =
             ObservableSuppliers.createNonNull(Tab.INVALID_TAB_ID);
     private final TabActionListener mTabClosedListener;
@@ -80,28 +72,14 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     private final @Nullable TabGridDialogHandler mTabGridDialogHandler;
     private final int mLongPressDpThresholdSquared;
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
-    private final SettableMonotonicObservableSupplier<RecyclerView> mRecyclerViewSupplier =
-            ObservableSuppliers.createMonotonic();
-    private final float mLongPressDpCancelThreshold;
     private float mSwipeToDismissThreshold;
     private float mMergeThreshold;
     private float mUngroupThreshold;
-    // A bool to track whether an action such as swiping, group/ungroup and drag past a certain
-    // threshold was attempted. This can determine if a longpress on the tab is the objective.
-    private boolean mActionAttempted;
-    // A bool to track whether any action that is not a pure longpress hold-no-drag, was started.
-    // This can determine if an unwanted following click from a pure longpress must be blocked.
-    private boolean mActionStarted;
     private boolean mActionsOnAllRelatedTabs;
     private boolean mIsSwipingToDismiss;
-    private boolean mShouldBlockAction;
-    private boolean mIsMouseInputSource;
     private int mDragFlags;
-    private int mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
     private int mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
     private int mUnGroupTabIndex = TabModel.INVALID_TAB_INDEX;
-    private int mCurrentActionState = ItemTouchHelper.ACTION_STATE_IDLE;
-    private @Nullable TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
     private @Nullable OnDropOnArchivalMessageCardEventListener
             mOnDropOnArchivalMessageCardEventListener;
     private int mPreviousArchivedMessageCardIndex = TabModel.INVALID_TAB_INDEX;
@@ -117,7 +95,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
      * @param tabGridDialogHandler The interface for sending updates when using a tab grid dialog.
      * @param componentName The name of the component for metrics logging.
      * @param actionsOnAllRelatedTabs Whether to operate on related tabs.
-     * @param mode The mode of the tab list.
+     * @param onDragStateChangedListener The listener to notify when the active drag state changes.
      */
     public TabGridItemTouchHelperCallback(
             Context context,
@@ -128,11 +106,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             @Nullable TabGridDialogHandler tabGridDialogHandler,
             String componentName,
             boolean actionsOnAllRelatedTabs,
-            @TabListMode int mode,
             Runnable onDragStateChangedListener) {
-        super(0, 0);
-        mModel = tabListModel;
-        mCurrentTabModelSupplier = currentTabModelSupplier;
+        super(context, tabListModel, currentTabModelSupplier);
         mTabClosedListener = tabClosedListener;
         mComponentName = componentName;
         mActionsOnAllRelatedTabs = actionsOnAllRelatedTabs;
@@ -141,29 +116,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         mOnDragStateChangedListener = onDragStateChangedListener;
 
         Resources resources = context.getResources();
-        mLongPressDpCancelThreshold =
-                resources.getDimensionPixelSize(R.dimen.long_press_cancel_threshold);
 
         // Square, since the threshold will be compared against a squared vector magnitude.
         int longPressDpThreshold =
                 resources.getDimensionPixelSize(R.dimen.tab_list_editor_longpress_entry_threshold);
         mLongPressDpThresholdSquared = longPressDpThreshold * longPressDpThreshold;
-    }
-
-    /**
-     * @param listener the handler for longpress actions.
-     */
-    void setOnLongPressTabItemEventListener(@Nullable OnLongPressTabItemEventListener listener) {
-        assert mTabGridItemLongPressOrchestrator == null;
-        if (listener != null) {
-            setTabGridItemLongPressOrchestrator(
-                    new TabGridItemLongPressOrchestrator(
-                            mRecyclerViewSupplier,
-                            mModel,
-                            listener,
-                            mLongPressDpCancelThreshold,
-                            LONGPRESS_DURATION_MS));
-        }
     }
 
     /**
@@ -215,20 +172,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         if (viewHolder == null) return false;
         @UiType int type = viewHolder.getItemViewType();
         return isMessageCard(type);
-    }
-
-    boolean hasCollaboration(RecyclerView.@Nullable ViewHolder viewHolder) {
-        if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
-            PropertyModel model = simpleViewHolder.model;
-            assumeNonNull(model);
-            if (model.get(CARD_TYPE) == TAB) {
-                @Nullable
-                TabGroupColorViewProvider provider =
-                        model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
-                return provider != null && provider.hasCollaborationId();
-            }
-        }
-        return false;
     }
 
     @Override
@@ -303,75 +246,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         RecordUserAction.record("TabGrid.Drag.Reordered." + mComponentName);
         mActionAttempted = true;
         return true;
-    }
-
-    private int adjustIndexBasedOnPinning(TabModel tabModel, int fromTabId, int newIndex) {
-        // Get the tab being moved.
-        Tab fromTab = tabModel.getTabById(fromTabId);
-        if (fromTab != null) {
-
-            // Determine the index of the last pinned tab.
-            int lastPinnedIndex = tabModel.findFirstNonPinnedTabIndex() - 1;
-
-            if (fromTab.getIsPinned()) {
-                // If the moved tab is pinned, ensure it doesn't move beyond the last pinned index.
-                if (newIndex > lastPinnedIndex) {
-                    newIndex = lastPinnedIndex;
-                }
-            } else {
-                // If the moved tab is not pinned, ensure it doesn't move before the first
-                // non-pinned index.
-                if (newIndex <= lastPinnedIndex) {
-                    newIndex = lastPinnedIndex + 1;
-                }
-            }
-        }
-        return newIndex;
-    }
-
-    @Override
-    public void onMoved(
-            final RecyclerView recyclerView,
-            final RecyclerView.ViewHolder viewHolder,
-            int fromPos,
-            final RecyclerView.ViewHolder target,
-            int toPos,
-            int x,
-            int y) {
-        // If this is a mouse input we don't want to force the auto-scroll behavior that happens
-        // inside the default super implementation. Early returning here will just cancel the drag.
-        if (mIsMouseInputSource) return;
-        super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
-    }
-
-    @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
-        assert viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder;
-
-        SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
-                (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
-
-        PropertyModel model = simpleViewHolder.model;
-        assumeNonNull(model);
-        if (model.containsKey(TabProperties.TAB_ID)) {
-            int tabId = model.get(TabProperties.TAB_ID);
-            mRecentlySwipedTabIdSupplier.set(tabId);
-        }
-
-        if (model.get(CARD_TYPE) == TAB) {
-            mTabClosedListener.run(
-                    viewHolder.itemView,
-                    model.get(TabProperties.TAB_ID),
-                    /* triggeringMotion= */ null);
-
-            RecordUserAction.record("MobileStackViewSwipeCloseTab." + mComponentName);
-        } else if (model.get(CARD_TYPE) == MESSAGE) {
-            // TODO(crbug.com/40099080): Have a caller instead of simulating the close click. And
-            // write unit test to verify the caller is called.
-            viewHolder.itemView.findViewById(R.id.close_button).performClick();
-            // TODO(crbug.com/40099080): UserAction swipe to dismiss.
-        }
-        mActionAttempted = true;
     }
 
     @Override
@@ -503,19 +377,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         }
         mActionStarted = false;
         mActionAttempted = false;
-    }
-
-    private void onDragStateChanged() {
-        if (mOnDragStateChangedListener != null) mOnDragStateChangedListener.run();
-    }
-
-    private boolean hasTabPropertiesModel(RecyclerView.@Nullable ViewHolder viewHolder) {
-        if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
-            PropertyModel model = simpleViewHolder.model;
-            assumeNonNull(model);
-            return model.get(CARD_TYPE) == TAB;
-        }
-        return false;
     }
 
     @Override
@@ -655,6 +516,50 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         }
     }
 
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
+        assert viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder;
+
+        SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
+                (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
+
+        PropertyModel model = simpleViewHolder.model;
+        assumeNonNull(model);
+        if (model.containsKey(TabProperties.TAB_ID)) {
+            int tabId = model.get(TabProperties.TAB_ID);
+            mRecentlySwipedTabIdSupplier.set(tabId);
+        }
+
+        if (model.get(CARD_TYPE) == TAB) {
+            mTabClosedListener.run(
+                    viewHolder.itemView,
+                    model.get(TabProperties.TAB_ID),
+                    /* triggeringMotion= */ null);
+
+            RecordUserAction.record("MobileStackViewSwipeCloseTab." + mComponentName);
+        } else if (model.get(CARD_TYPE) == MESSAGE) {
+            // TODO(crbug.com/40099080): Have a caller instead of simulating the close click. And
+            // write unit test to verify the caller is called.
+            viewHolder.itemView.findViewById(R.id.close_button).performClick();
+            // TODO(crbug.com/40099080): UserAction swipe to dismiss.
+        }
+        mActionAttempted = true;
+    }
+
+    @Override
+    public float getSwipeThreshold(RecyclerView.ViewHolder viewHolder) {
+        @Nullable RecyclerView recyclerView = mRecyclerViewSupplier.get();
+        if (recyclerView != null) {
+            return mSwipeToDismissThreshold / recyclerView.getWidth();
+        }
+        return 0.f;
+    }
+
+    /** Provides the tab ID for the most recently swiped tab. */
+    NonNullObservableSupplier<Integer> getRecentlySwipedTabIdSupplier() {
+        return mRecentlySwipedTabIdSupplier;
+    }
+
     private void handleHoverForArchiveMessage(RecyclerView recyclerView) {
         SimpleRecyclerViewAdapter.ViewHolder hoveredViewHolder =
                 (SimpleRecyclerViewAdapter.ViewHolder)
@@ -731,6 +636,28 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         maybeRemoveRecyclerViewChild(recyclerView, selectedItemView);
     }
 
+    private boolean wasHoveredOnArchivedMessageCard() {
+        return mPreviousArchivedMessageCardIndex != TabModel.INVALID_TAB_INDEX
+                && isArchivedMessageCard(mModel.get(mPreviousArchivedMessageCardIndex).model);
+    }
+
+    private boolean isArchivedMessageCard(RecyclerView.@Nullable ViewHolder cardViewHolder) {
+        if (cardViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
+            return isArchivedMessageCard(assumeNonNull(simpleViewHolder.model));
+        }
+        return false;
+    }
+
+    private boolean isArchivedMessageCard(PropertyModel model) {
+        return model.get(CARD_TYPE) == MESSAGE
+                && model.get(MESSAGE_TYPE) == MessageType.ARCHIVED_TABS_MESSAGE;
+    }
+
+    /** Triggers the drag state change runnable. */
+    private void onDragStateChanged() {
+        if (mOnDragStateChangedListener != null) mOnDragStateChangedListener.run();
+    }
+
     private void maybeRemoveRecyclerViewChild(RecyclerView recyclerView, View view) {
         // TODO(crbug.com/443948545): We should not be removing views directly off of
         //  the RecyclerView, and should fix what is preventing it from reflecting
@@ -738,41 +665,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         if (view.isAttachedToWindow()) {
             assumeNonNull(recyclerView.getLayoutManager()).removeView(view);
         }
-    }
-
-    private boolean wasHoveredOnArchivedMessageCard() {
-        return mPreviousArchivedMessageCardIndex != TabModel.INVALID_TAB_INDEX
-                && isArchivedMessageCard(mModel.get(mPreviousArchivedMessageCardIndex).model);
-    }
-
-    private static float calcMagnitudeSquared(float dX, float dY) {
-        return dX * dX + dY * dY;
-    }
-
-    @Override
-    public float getSwipeThreshold(RecyclerView.ViewHolder viewHolder) {
-        @Nullable RecyclerView recyclerView = mRecyclerViewSupplier.get();
-        if (recyclerView != null) {
-            return mSwipeToDismissThreshold / recyclerView.getWidth();
-        }
-        return 0.f;
-    }
-
-    @Override
-    public int interpolateOutOfBoundsScroll(
-            RecyclerView recyclerView,
-            int viewSize,
-            int viewSizeOutOfBounds,
-            int totalSize,
-            long msSinceStartScroll) {
-        if (mIsMouseInputSource) return 0;
-
-        return super.interpolateOutOfBoundsScroll(
-                recyclerView, viewSize, viewSizeOutOfBounds, totalSize, msSinceStartScroll);
-    }
-
-    private List<Tab> getRelatedTabsForId(int id) {
-        return mCurrentTabModelSupplier.get().getRelatedTabList(id);
     }
 
     private void onTabMergeToGroup(int selectedCardIndex, int hoveredCardIndex) {
@@ -799,85 +691,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         tracker.notifyEvent(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP);
     }
 
-    /*
-     * Returns whether or not a touch action should be blocked on an item accessed from
-     * the TabListCoordinator. The bit is always defaulted to false and reset to that
-     * value after shouldBlockAction() is called. It is used primarily to prevent a
-     * secondary touch event from occurring on a longpress event on a tab grid item.
-     */
-    boolean shouldBlockAction() {
-        boolean out = mShouldBlockAction;
-        mShouldBlockAction = false;
-        return out;
-    }
-
-    void setIsMouseInputSource(boolean isMouseInputSource) {
-        mIsMouseInputSource = isMouseInputSource;
-    }
-
-    void setActionsOnAllRelatedTabsForTesting(boolean flag) {
-        var oldValue = mActionsOnAllRelatedTabs;
-        mActionsOnAllRelatedTabs = flag;
-        ResettersForTesting.register(() -> mActionsOnAllRelatedTabs = oldValue);
-    }
-
-    void setHoveredTabIndexForTesting(int index) {
-        var oldValue = mHoveredTabIndex;
-        mHoveredTabIndex = index;
-        ResettersForTesting.register(() -> mHoveredTabIndex = oldValue);
-    }
-
-    void setSelectedTabIndexForTesting(int index) {
-        var oldValue = mSelectedTabIndex;
-        mSelectedTabIndex = index;
-        ResettersForTesting.register(() -> mSelectedTabIndex = oldValue);
-    }
-
-    void setUnGroupTabIndexForTesting(int index) {
-        var oldValue = mUnGroupTabIndex;
-        mUnGroupTabIndex = index;
-        ResettersForTesting.register(() -> mUnGroupTabIndex = oldValue);
-    }
-
-    void setCurrentActionStateForTesting(int actionState) {
-        var oldValue = mCurrentActionState;
-        mCurrentActionState = actionState;
-        ResettersForTesting.register(() -> mCurrentActionState = oldValue);
-    }
-
-    boolean hasDragFlagForTesting(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        int flags = getMovementFlags(recyclerView, viewHolder);
-        return (flags >> 16) != 0;
-    }
-
-    /** Provides the tab ID for the most recently swiped tab. */
-    NonNullObservableSupplier<Integer> getRecentlySwipedTabIdSupplier() {
-        return mRecentlySwipedTabIdSupplier;
-    }
-
-    @VisibleForTesting
-    boolean hasSwipeFlag(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        int flags = getMovementFlags(recyclerView, viewHolder);
-        return ((flags >> 8) & 0xFF) != 0;
-    }
-
-    @VisibleForTesting
-    void setTabGridItemLongPressOrchestrator(TabGridItemLongPressOrchestrator orchestrator) {
-        mTabGridItemLongPressOrchestrator = orchestrator;
-    }
-
-    private boolean isArchivedMessageCard(RecyclerView.@Nullable ViewHolder cardViewHolder) {
-        if (cardViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
-            return isArchivedMessageCard(assumeNonNull(simpleViewHolder.model));
-        }
-        return false;
-    }
-
-    private boolean isArchivedMessageCard(PropertyModel model) {
-        return model.get(CARD_TYPE) == MESSAGE
-                && model.get(MESSAGE_TYPE) == MessageType.ARCHIVED_TABS_MESSAGE;
-    }
-
     private boolean isSwipeable(RecyclerView.ViewHolder viewHolder) {
         if (mIsMouseInputSource) {
             return false;
@@ -896,14 +709,31 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         return true;
     }
 
-    private boolean isPinnedRegularTab(RecyclerView.@Nullable ViewHolder viewHolder) {
-        if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
-            PropertyModel model = simpleViewHolder.model;
-            if (model != null && model.get(CARD_TYPE) == TAB) {
-                return model.get(TabProperties.IS_PINNED);
-            }
-        }
+    void setActionsOnAllRelatedTabsForTesting(boolean flag) {
+        var oldValue = mActionsOnAllRelatedTabs;
+        mActionsOnAllRelatedTabs = flag;
+        ResettersForTesting.register(() -> mActionsOnAllRelatedTabs = oldValue);
+    }
 
-        return false;
+    void setHoveredTabIndexForTesting(int index) {
+        var oldValue = mHoveredTabIndex;
+        mHoveredTabIndex = index;
+        ResettersForTesting.register(() -> mHoveredTabIndex = oldValue);
+    }
+
+    void setUnGroupTabIndexForTesting(int index) {
+        var oldValue = mUnGroupTabIndex;
+        mUnGroupTabIndex = index;
+        ResettersForTesting.register(() -> mUnGroupTabIndex = oldValue);
+    }
+
+    boolean hasDragFlagForTesting(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        int flags = getMovementFlags(recyclerView, viewHolder);
+        return (flags >> 16) != 0;
+    }
+
+    boolean hasSwipeFlagForTesting(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        int flags = getMovementFlags(recyclerView, viewHolder);
+        return ((flags >> 8) & 0xFF) != 0;
     }
 }

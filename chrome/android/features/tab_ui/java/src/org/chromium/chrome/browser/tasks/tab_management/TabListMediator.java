@@ -1516,7 +1516,6 @@ public class TabListMediator implements TabListNotificationHandler {
                         mTabGridDialogHandler,
                         TabUiMetricsHelper.getComponentNameForMetrics(componentId),
                         mActionsOnAllRelatedTabs,
-                        mMode,
                         onDragStateChangedListener);
     }
 

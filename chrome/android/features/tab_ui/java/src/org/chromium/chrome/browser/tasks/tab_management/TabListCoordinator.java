@@ -14,7 +14,6 @@ import android.app.Activity;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.Size;
-import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -670,23 +669,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                 // Detects if inputs are coming from a mouse or not. This is used to modify
                 // behaviors of the TabGridItemTouchHelperCallback.
                 mOnBeforeItemTouchHelperItemTouchListener =
-                        new OnItemTouchListener() {
-                            @Override
-                            public boolean onInterceptTouchEvent(
-                                    RecyclerView recyclerView, MotionEvent event) {
-                                callback.setIsMouseInputSource(
-                                        event.getSource() == InputDevice.SOURCE_MOUSE);
-                                return false;
-                            }
-
-                            @Override
-                            public void onTouchEvent(
-                                    RecyclerView recyclerView, MotionEvent event) {}
-
-                            @Override
-                            public void onRequestDisallowInterceptTouchEvent(
-                                    boolean disallowIntercept) {}
-                        };
+                        TabListItemTouchHelperCallback.createBeforeOnItemTouchListener(callback);
 
                 // Creates an instance of the ItemTouchHelper using TabGridItemTouchHelperCallback
                 // and attach a downstream mOnAfterItemTouchHelperItemTouchListener that watches for
@@ -699,45 +682,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                 // See similar comments in TabGridItemTouchHelperCallback for more details.
                 mItemTouchHelper = new ItemTouchHelper2(callback, longPressHandler);
                 mOnAfterItemTouchHelperItemTouchListener =
-                        new OnItemTouchListener() {
-                            @Override
-                            public boolean onInterceptTouchEvent(
-                                    RecyclerView recyclerView, MotionEvent event) {
-                                // There can be an edge case when adding the block action logic
-                                // where minimal movement not picked up by the mItemTouchHelper
-                                // can result in attempting to block an action that did have a
-                                // DRAG event.
-                                // Actually, blocking the next event in this can result in an
-                                // unexpected event being consumed leading to an unexpected
-                                // sequence of MotionEvents.
-                                // This bad sequence can then result in invalid UI & click state for
-                                // downstream touch handlers. This additional check ensures that for
-                                // a given action, if a block is requested it must be the UP
-                                // motion that ends the input.
-                                if (callback.shouldBlockAction()
-                                        && (event.getActionMasked() == MotionEvent.ACTION_UP
-                                                || event.getActionMasked()
-                                                        == MotionEvent.ACTION_POINTER_UP)) {
-                                    return true;
-                                }
-                                return false;
-                            }
-
-                            @Override
-                            public void onTouchEvent(
-                                    RecyclerView recyclerView, MotionEvent event) {}
-
-                            @Override
-                            public void onRequestDisallowInterceptTouchEvent(
-                                    boolean disallowIntercept) {
-                                // If a child component does not allow this recyclerView and any
-                                // parent components to intercept touch events, shouldBlockAction
-                                // should be called anyways to reset the tracking boolean.
-                                // Otherwise, the original intercept method will do the check.
-                                if (!disallowIntercept) return;
-                                callback.shouldBlockAction();
-                            }
-                        };
+                        TabListItemTouchHelperCallback.createAfterOnItemTouchListener(callback);
             }
             mRecyclerView.addOnItemTouchListener(mOnBeforeItemTouchHelperItemTouchListener);
             mItemTouchHelper.attachToRecyclerView(mRecyclerView);
