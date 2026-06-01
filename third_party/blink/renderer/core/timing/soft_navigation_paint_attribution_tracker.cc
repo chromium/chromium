@@ -122,23 +122,27 @@ SoftNavigationPaintAttributionTracker::UpdateOnPrePaint(
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
               "SoftNavigationPaintAttributionTracker::UpdateOnPrePaint", "node",
               node ? node->DebugName() : "(anonymous)");
-  // Continue propagating the `context_container_root` for anonymous objects.
-  if (!node) {
-    return PrePaintUpdateResult::kPropagateAncestorNode;
-  }
-
   // If nothing is being propagated, there's nothing to update or track for this
   // node. Otherwise, we might need to start tracking node or update the cached
   // state if the propagated context is from a more recent modification.
   if (context_container_root) {
     auto* inherited_state = GetNodeState(context_container_root);
     CHECK(inherited_state);
-    // If the `node` is something `SoftNavigationContext::AddPaintedArea()`
-    // needs to know about, which is either an image or (aggregated) text.  Note
-    // that this also includes nodes with background images, which may not be
-    // leaf nodes -- but it's fine to store intermediate nodes in the tree whose
-    // parent and descendants have the same context.
-    if (paint_timing::IsTextType(*node) || paint_timing::IsImageType(object)) {
+    if (!node) {
+      // `node` will be null (anonymous) if `object` is for a pseudo element.
+      // Pseudo elements with a "content" URL are not currently handled because
+      // Paint Timing doesn't handle them (related to
+      // https://github.com/w3c/element-timing/issues/74).
+      if (object.IsText()) {
+        MarkNodeForPaintTrackingIfNeeded(text_aggregator, inherited_state);
+      }
+    } else if (paint_timing::IsTextType(*node) ||
+               paint_timing::IsImageType(object)) {
+      // If the `node` is something `SoftNavigationContext::AddPaintedArea()`
+      // needs to know about, which is either an image or (aggregated) text.
+      // Note that this also includes nodes with background images, which may
+      // not be leaf nodes -- but it's fine to store intermediate nodes in the
+      // tree whose parent and descendants have the same context.
       MarkNodeForPaintTrackingIfNeeded(
           node->IsTextNode() ? text_aggregator
                              : paint_timing::ImageGeneratingNode(node),
@@ -162,7 +166,11 @@ SoftNavigationPaintAttributionTracker::UpdateOnPrePaint(
   }
   // If `node` is container root that we're tracking, start propagating that to
   // descendants; otherwise keep propagating the `context_container_root`.
-  if (auto* state = GetNodeState(node); state && state->IsDirectlyModified()) {
+  //
+  // Note: `node` may be null here (anonymous objects), in which case we
+  // continue to propagate `context_container_root`.
+  NodeState* state = node ? GetNodeState(node) : nullptr;
+  if (state && state->IsDirectlyModified()) {
     return PrePaintUpdateResult::kPropagateCurrentNode;
   }
   return PrePaintUpdateResult::kPropagateAncestorNode;
