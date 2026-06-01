@@ -23634,8 +23634,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20260420",
+                    "name": "Enabled_20260601",
                     "params": {
+                        "updates_only": "true",
                         "use_widget": "false"
                     },
                     "enable_features": [
