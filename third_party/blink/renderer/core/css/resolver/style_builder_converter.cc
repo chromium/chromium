@@ -1565,8 +1565,7 @@ GridPosition StyleBuilderConverter::ConvertGridPosition(
   DCHECK(values.length());
 
   bool is_span_position = false;
-  // The specification makes the <integer> optional, in which case it default to
-  // '1'.
+  // Default the span/line count to '1' (a calc-expression may make it invalid).
   int grid_line_number = 1;
   AtomicString grid_line_name;
 
@@ -1582,8 +1581,14 @@ GridPosition StyleBuilderConverter::ConvertGridPosition(
 
   auto* current_primitive_value = DynamicTo<CSSPrimitiveValue>(current_value);
   if (current_primitive_value && current_primitive_value->IsNumber()) {
-    grid_line_number = current_primitive_value->ComputeInteger(
+    const int number = current_primitive_value->ComputeInteger(
         state.CssToLengthConversionData());
+    if (is_span_position) {
+      // A span count must be a positive integer.
+      grid_line_number = ClampTo(number, 1, kGridMaxTracks);
+    } else if (number != 0) {  // A line count must be non-zero.
+      grid_line_number = ClampTo(number, -kGridMaxTracks, kGridMaxTracks);
+    }
     ++i;
     current_value = i < values.length() ? &values.Item(i) : nullptr;
   }
