@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/process/process_handle.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -27,6 +28,7 @@
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/platform.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -223,8 +225,14 @@ PerfettoTracedProcess::PerfettoTracedProcess(bool will_trace_thread_restart)
                        : nullptr),
       will_trace_thread_restart_(will_trace_thread_restart),
       tracing_backend_(std::make_unique<PerfettoTracingBackend>()) {
+  base::ProcessId real_pid = base::GetUniqueIdForProcess().GetUnsafeValue();
+  if (real_pid != base::GetCurrentProcId()) {
+    perfetto::Platform::SetCurrentProcessId(real_pid);
+  }
+
   base::tracing::PerfettoPlatform::Options options{
-      .defer_delayed_tasks = will_trace_thread_restart_};
+      .defer_delayed_tasks = will_trace_thread_restart_,
+      .real_process_id = real_pid};
   platform_ =
       std::make_unique<base::tracing::PerfettoPlatform>(task_runner_, options);
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -237,9 +245,15 @@ PerfettoTracedProcess::PerfettoTracedProcess(bool will_trace_thread_restart)
 PerfettoTracedProcess::PerfettoTracedProcess(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(task_runner),
-      platform_(
-          std::make_unique<base::tracing::PerfettoPlatform>(task_runner_)),
       tracing_backend_(std::make_unique<PerfettoTracingBackend>()) {
+  base::ProcessId real_pid = base::GetUniqueIdForProcess().GetUnsafeValue();
+  if (real_pid != base::GetCurrentProcId()) {
+    perfetto::Platform::SetCurrentProcessId(real_pid);
+  }
+
+  base::tracing::PerfettoPlatform::Options options{.real_process_id = real_pid};
+  platform_ =
+      std::make_unique<base::tracing::PerfettoPlatform>(task_runner_, options);
   DETACH_FROM_SEQUENCE(sequence_checker_);
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;

@@ -20,7 +20,6 @@
 #include "base/process/current_process.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
 #include "content/public/utility/content_utility_client.h"

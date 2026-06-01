@@ -11,7 +11,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/trace_log.h"
 #include "base/trace_event/trace_session_observer.h"
 #include "components/power_metrics/energy_metrics_provider.h"
 

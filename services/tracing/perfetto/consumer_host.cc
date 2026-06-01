@@ -20,7 +20,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/trace_event/trace_log.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"

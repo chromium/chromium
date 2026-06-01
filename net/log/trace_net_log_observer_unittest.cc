@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
+#include "base/trace_event/trace_log.h"
 #include "base/values.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"

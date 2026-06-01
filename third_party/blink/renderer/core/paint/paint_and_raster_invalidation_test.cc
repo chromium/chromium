@@ -89,9 +89,12 @@ INSTANTIATE_PAINT_TEST_SUITE_P(PaintAndRasterInvalidationTest);
 class ScopedEnablePaintInvalidationTracing {
  public:
   ScopedEnablePaintInvalidationTracing() {
-    trace_event::EnableTracing(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"));
+    trace_event::EnableTracingForTesting(
+        TRACE_DISABLED_BY_DEFAULT("blink.invalidation"));
   }
-  ~ScopedEnablePaintInvalidationTracing() { trace_event::DisableTracing(); }
+  ~ScopedEnablePaintInvalidationTracing() {
+    trace_event::DisableTracingForTesting();
+  }
 };
 
 TEST_P(PaintAndRasterInvalidationTest, TrackingForTracing) {

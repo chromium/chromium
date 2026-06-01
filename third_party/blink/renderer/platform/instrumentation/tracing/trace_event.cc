@@ -5,16 +5,17 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_log.h"
 
 namespace blink {
 namespace trace_event {
 
-void EnableTracing(const String& category_filter) {
+void EnableTracingForTesting(const String& category_filter) {
   base::trace_event::TraceLog::GetInstance()->SetEnabled(
       base::trace_event::TraceConfig(category_filter.Utf8(), ""));
 }
 
-void DisableTracing() {
+void DisableTracingForTesting() {
   base::trace_event::TraceLog::GetInstance()->SetDisabled();
 }
 

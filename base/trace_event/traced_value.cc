@@ -22,7 +22,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
-#include "base/trace_event/trace_log.h"
 #include "base/values.h"
 
 namespace base::trace_event {

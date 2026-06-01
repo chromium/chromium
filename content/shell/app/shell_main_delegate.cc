@@ -22,7 +22,6 @@
 #include "base/path_service.h"
 #include "base/process/current_process.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/memory_system/initializer.h"

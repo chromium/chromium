@@ -4,12 +4,11 @@
 
 #include "base/tracing/perfetto_platform.h"
 
+#include "base/process/process_handle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_log.h"
 #include "base/tracing/perfetto_task_runner.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
@@ -26,6 +25,9 @@ PerfettoPlatform::PerfettoPlatform(
     Options options)
     : process_name_prefix_(std::move(options.process_name_prefix)),
       defer_delayed_tasks_(options.defer_delayed_tasks),
+      real_process_id_(options.real_process_id == base::kNullProcessId
+                           ? base::GetCurrentProcId()
+                           : options.real_process_id),
       task_runner_(std::move(task_runner)),
       thread_local_object_([](void* object) {
         delete static_cast<ThreadLocalObject*>(object);
@@ -76,13 +78,11 @@ std::string PerfettoPlatform::GetCurrentProcessName() {
   // the various apps and sources.
   std::string process_name;
   if (!host_package_name.empty()) {
-    process_name = StrCat(
-        {process_name_prefix_, host_package_name, "-",
-         NumberToString(trace_event::TraceLog::GetInstance()->process_id())});
+    process_name = StrCat({process_name_prefix_, host_package_name, "-",
+                           NumberToString(real_process_id_)});
   } else {
-    process_name = StrCat(
-        {process_name_prefix_,
-         NumberToString(trace_event::TraceLog::GetInstance()->process_id())});
+    process_name =
+        StrCat({process_name_prefix_, NumberToString(real_process_id_)});
   }
   return process_name;
 }

@@ -33,7 +33,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_config.h"
-#include "base/trace_event/trace_log.h"
 #include "base/tracing/protos/grit/tracing_proto_resources.h"
 #include "base/values.h"
 #include "base/version_info/version_info.h"

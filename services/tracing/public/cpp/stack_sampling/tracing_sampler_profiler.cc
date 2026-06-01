@@ -26,7 +26,6 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_log.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/buildflags.h"
@@ -34,6 +33,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/core/chrome_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_descriptor.h"
+#include "third_party/perfetto/include/perfetto/tracing/platform.h"
 #include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/profile_common.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/profile_packet.pbzero.h"
@@ -385,8 +385,7 @@ void TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace(
         last_timestamp_.since_origin().InMicroseconds());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
-    if (base::GetCurrentProcId() !=
-        base::trace_event::TraceLog::GetInstance()->process_id()) {
+    if (base::GetCurrentProcId() != perfetto::Platform::GetCurrentProcessId()) {
       auto* chrome_thread = track_descriptor->set_chrome_thread();
       chrome_thread->set_is_sandboxed_tid(true);
     }

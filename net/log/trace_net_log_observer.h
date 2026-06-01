@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_log.h"
 #include "base/trace_event/trace_session_observer.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"

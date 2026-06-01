@@ -919,13 +919,11 @@ TEST_F(TraceEventTestFixture, AsyncBeginEndEvents) {
 TEST_F(TraceEventTestFixture, AsyncBeginEndPointerNotMangled) {
   void* ptr = this;
 
-  TraceLog::GetInstance()->SetProcessID(100);
   BeginTrace();
   TRACE_EVENT_ASYNC_BEGIN0("cat", "name1", ptr);
   TRACE_EVENT_ASYNC_BEGIN0("cat", "name2", ptr);
   EndTraceAndFlush();
 
-  TraceLog::GetInstance()->SetProcessID(200);
   BeginTrace();
   TRACE_EVENT_ASYNC_BEGIN0("cat", "name1", ptr);
   TRACE_EVENT_ASYNC_END0("cat", "name1", ptr);

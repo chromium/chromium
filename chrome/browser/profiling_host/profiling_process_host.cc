@@ -19,7 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
-#include "base/trace_event/trace_log.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"

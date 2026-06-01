@@ -18,7 +18,6 @@
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/trace_event/trace_config.h"
 #import "base/trace_event/trace_event.h"
-#import "base/trace_event/trace_log.h"
 #import "base/tracing/perfetto_platform.h"
 #import "components/tracing/common/background_tracing_metrics_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

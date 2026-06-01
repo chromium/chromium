@@ -348,15 +348,15 @@ void TraceLog::ResetForTesting() {
   self->tracing_session_.reset();
 }
 
-TraceLog::TraceLog() : process_id_(base::kNullProcessId) {
-  SetProcessID(GetCurrentProcId());
+TraceLog::TraceLog() {
   g_trace_log_for_testing = this;
 }
 
 TraceLog::~TraceLog() = default;
 
 void TraceLog::SetEnabled(const TraceConfig& trace_config) {
-  DCHECK(trace_config.process_filter_config().IsEnabled(process_id_));
+  DCHECK(
+      trace_config.process_filter_config().IsEnabled(base::GetCurrentProcId()));
 
   AutoLock lock(lock_);
 
@@ -605,10 +605,6 @@ void TraceLog::OnTraceData(const char* data, size_t size, bool has_more) {
   json_output_writer_.reset();
 }
 #endif  // BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
-
-void TraceLog::SetProcessID(ProcessId process_id) {
-  process_id_ = process_id;
-}
 
 }  // namespace base::trace_event
 

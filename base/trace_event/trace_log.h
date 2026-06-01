@@ -74,13 +74,9 @@ class BASE_EXPORT TraceLog {
   // Cancels tracing and discards collected data.
   void CancelTracing(const OutputCallback& cb);
 
-  ProcessId process_id() const { return process_id_; }
-
   // Exposed for unittesting:
   // Allows clearing up our singleton instance.
   static void ResetForTesting();
-
-  void SetProcessID(ProcessId process_id);
 
  private:
   friend class base::NoDestructor<TraceLog>;
@@ -102,8 +98,6 @@ class BASE_EXPORT TraceLog {
   // This lock protects TraceLog member accesses (except for members protected
   // by thread_info_lock_) from arbitrary threads.
   mutable Lock lock_;
-
-  ProcessId process_id_;
 
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
   perfetto::TraceConfig perfetto_config_;

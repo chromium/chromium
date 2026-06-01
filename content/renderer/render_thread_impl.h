@@ -29,7 +29,6 @@
 #include "base/process/process.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_log.h"
 #include "base/trace_event/trace_session_observer.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"

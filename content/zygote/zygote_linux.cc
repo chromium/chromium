@@ -38,8 +38,6 @@
 #include "base/process/process_handle.h"
 #include "base/process/set_process_title.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "content/common/zygote/zygote_commands_linux.h"
 #include "content/public/common/content_descriptors.h"
@@ -467,11 +465,6 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
     // Sandboxed processes need to send the global, non-namespaced PID when
     // setting up an IPC channel to their parent.
     IPC::Channel::SetGlobalPid(real_pid);
-    // Force the real PID so chrome event data have a PID that corresponds
-    // to system trace event data.
-    base::trace_event::TraceLog::GetInstance()->SetProcessID(real_pid);
-    // Tell Perfetto SDK about the real PID too.
-    perfetto::Platform::SetCurrentProcessId(real_pid);
     base::InitUniqueIdForProcessInPidNamespace(real_pid);
     return 0;
   }

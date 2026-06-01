@@ -6,7 +6,6 @@
 
 #include "base/process/process_handle.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_log.h"
 #include "base/trace_event/traced_value.h"
 
 // Define static storage for trace event categories (see

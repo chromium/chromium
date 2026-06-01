@@ -12,7 +12,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/trace_log.h"
 #include "base/trace_event/trace_session_observer.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
@@ -32,7 +31,6 @@ namespace tracing {
 namespace {
 
 using base::trace_event::TraceConfig;
-using base::trace_event::TraceLog;
 
 class StartupTrackEventConfigObserver
     : public perfetto::TrackEventSessionObserver {
@@ -134,9 +132,6 @@ void InitTracing(
 
   RegisterTracedValueProtoWriter();
 
-  // Ensure TraceLog is initialized first.
-  // https://crbug.com/764357
-  TraceLog::GetInstance();
   StartupTrackEventConfigObserver::GetInstance();
   base::trace_event::TraceSessionObserverList::Initialize();
 
