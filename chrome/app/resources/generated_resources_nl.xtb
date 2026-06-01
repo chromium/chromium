@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Waarschuwing</translation>
 <translation id="1056980582064308040">Als je de instellingen wijzigt, wordt de hotspot opnieuw opgestart. De verbinding van apparaten die de hotspot gebruiken, wordt verbroken.</translation>
 <translation id="1058262162121953039">Pukcode</translation>
-<translation id="1058848978232174442">Taak onderbroken</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> tabbladen gevonden voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="1060172044035704924">Wisselen met weergave rechts</translation>
@@ -2329,6 +2328,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2665056444046933274">Sites kunnen deze functie gebruiken om toegang te krijgen tot andere apps en services op dit apparaat</translation>
 <translation id="2665394472441560184">Een nieuw woord toevoegen</translation>
 <translation id="2665647207431876759">Verlopen</translation>
+<translation id="2666092431469916601">Boven</translation>
 <translation id="2666247341166669829">Batterijniveau links: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Andere apps zijn ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> ondersteunde links openen.</translation>
 <translation id="2667463864537187133">Spellingcontrole beheren</translation>
@@ -2924,6 +2924,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3084548735795614657">Neerzetten om te installeren</translation>
 <translation id="3084771660770137092">Chrome beschikt over onvoldoende geheugen of het webpaginaproces is om een andere reden beëindigd. Laad de pagina opnieuw of ga naar een andere pagina om door te gaan.</translation>
 <translation id="3085412380278336437">Site kan je camera gebruiken</translation>
+<translation id="3087734570205094154">Onderaan</translation>
 <translation id="3088052000289932193">De site gebruikt MIDI</translation>
 <translation id="3088325635286126843">&amp;Naam wijzigen...</translation>
 <translation id="3089137131053189723">Zoekopdracht gewist</translation>
@@ -4410,6 +4411,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4170314459383239649">Wissen bij het verlaten</translation>
 <translation id="4170685671197375581">Snelkoppeling aanzetten</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Tabblad delen met Gemini}other{# tabbladen delen met Gemini}}</translation>
+<translation id="4172051516777682613">Altijd bekijken</translation>
 <translation id="4172944993779635350">Je wachtwoord voor <ph name="URL" /> wordt alleen op dit apparaat opgeslagen. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account.</translation>
 <translation id="4173129130568053653">Gemini kan je helpen afspraken te maken, winkelwagens te vullen of andere taken uit te voeren die je het geeft.</translation>
 <translation id="4175137578744761569">Lichtpaars/wit</translation>
@@ -5785,6 +5787,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5189274947477567401">Als je je wilt afmelden voor het delen van processen, start je de browser opnieuw op. Deze browser wordt nu opnieuw opgestart.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> in gebruik</translation>
+<translation id="5190835502935405962">Bookmarkbalk</translation>
 <translation id="5190926251776387065">Poort activeren</translation>
 <translation id="5190959794678983197">Geen microfoon</translation>
 <translation id="5191094172448199359">De pincodes die je hebt opgegeven, komen niet overeen</translation>
@@ -7618,6 +7621,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6582274660680936615">Je browst momenteel als gast</translation>
 <translation id="6583328141350416497">Download hervatten</translation>
 <translation id="6584878029876017575">Microsoft-ondertekening van levensduur</translation>
+<translation id="6585124893636629274">Gemini in Chrome sluiten</translation>
 <translation id="6585584201072946561">Pas de tekstgrootte en het lettertype aan voor de webbrowser.</translation>
 <translation id="6586099239452884121">Gebruiken als gast</translation>
 <translation id="6586451623538375658">Primaire muisknop omwisselen</translation>
@@ -10067,6 +10071,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8347227221149377169">Afdruktaken</translation>
 <translation id="8348430946834215779">Gebruik waar mogelijk HTTPS en krijg een waarschuwing voordat er sites worden geladen die dit niet ondersteunen</translation>
 <translation id="8348896480272971199">Check je internetverbinding en probeer het opnieuw.</translation>
+<translation id="8349305172487531364">Bookmarkbalk</translation>
 <translation id="8349325309815489209">Extensies toegestaan op deze site</translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8350789879725387295">Stylustools in dock</translation>
@@ -10469,7 +10474,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8651585100578802546">Laad pagina opnieuw</translation>
 <translation id="8651806635673244884">Je kunt je tabbladen weer naar de bovenkant verplaatsen door met de rechtermuisknop op een tabblad te klikken en Tabbladen horizontaal tonen te selecteren.</translation>
 <translation id="8652400352452647993">Fout met pakketextensie</translation>
-<translation id="8652412805227733853">E-mailadres automatisch geverifieerd</translation>
 <translation id="8654151524613148204">Je computer kan het bestand vanwege de grootte helaas niet verwerken.</translation>
 <translation id="8655295600908251630">Kanaal</translation>
 <translation id="8655972064210167941">Het inloggen is mislukt omdat je wachtwoord niet kan worden geverifieerd. Neem contact op met je beheerder of probeer het opnieuw.</translation>

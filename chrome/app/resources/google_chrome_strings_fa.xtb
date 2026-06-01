@@ -238,6 +238,7 @@
 <translation id="345171907106878721">‏افرودن خودتان به Chrome</translation>
 <translation id="3453763134178591239">‏شرایط ChromeOS</translation>
 <translation id="3503306920980160878">‏Chrome برای هم‌رسانی مکانتان با این سایت باید به مکان شما دسترسی داشته باشد</translation>
+<translation id="3539955434060988644">‏باز کردن پیوند در پنجره حالت &amp;ناشناس Chrome</translation>
 <translation id="3576528680708590453">‏سرپرست سیستم برای باز شدن مرورگری دیگر جهت دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Google Chrome را پیکربندی کرده است.</translation>
 <translation id="3582972582564653026">‏Chrome را در همه دستگاه‌هایتان همگام‌سازی و شخصی‌سازی کنید</translation>
 <translation id="3583751698304738917">‏قبلاً با <ph name="USER_EMAIL_ADDRESS" /> در نمایه Chrome دیگری به سیستم وارد شده‌اید</translation>
@@ -778,6 +779,7 @@
 <translation id="8999208279178790196">{0,plural, =0{‏به‌روزرسانی Chrome دردسترس است}=1{‏به‌روزرسانی Chrome دردسترس است}one{‏به‌روزرسانی Chrome از # روز پیش دردسترس است}other{‏به‌روزرسانی Chrome از # روز پیش دردسترس است}}</translation>
 <translation id="9014771989710951291">‏چندین سازمان Chrome را مدیریت می‌کنند</translation>
 <translation id="9018218886431812662">نصب کامل شد</translation>
+<translation id="9024318700713112071">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="9066987883552592250">‏بستن «Gemini در Chrome Canary»</translation>
 <translation id="9090566250983691233">‏ببینید چرا Chrome برخی‌از فایل‌ها را مسدود می‌کند</translation>
 <translation id="9106236359747881194">نوشتاری را برای جستجو انتخاب کنید</translation>

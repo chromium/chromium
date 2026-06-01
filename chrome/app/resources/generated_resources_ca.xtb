@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Advertiment</translation>
 <translation id="1056980582064308040">En canviar la configuració, es reiniciarà el punt d'accés Wi‐Fi. Els dispositius que utilitzen el punt d'accés Wi‐Fi es desconnectaran.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">S'ha interromput la tasca</translation>
 <translation id="1059484610606223931">Protocol segur de transferència d'hipertext (HTTPS)</translation>
 <translation id="1059944192885972544">S'han trobat <ph name="NUM" /> pestanyes per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060172044035704924">Canvia per la visualització dreta</translation>
@@ -130,6 +129,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> vol restaurar la configuració de Chrome i aplicar-hi els valors predeterminats originals. Es restablirà la pàgina d'inici, la pàgina Pestanya nova i el motor de cerca, es desactivaran les extensions i s'anul·larà la fixació de totes les pestanyes. També s'esborraran altres dades temporals i emmagatzemades a la memòria cau, com ara galetes i dades de contingut i de llocs.</translation>
 <translation id="1082725763867769612">Fitxers sense connexió</translation>
 <translation id="1083050113196701330">La comprovació d'actualitzacions s'ha completat correctament. No hi havia cap actualització disponible.</translation>
+<translation id="1083980330680874079">Taulers de Chrome</translation>
 <translation id="1084026333130513768">Desa, comparteix i emet</translation>
 <translation id="1084096383128641877">Encara que suprimeixis aquesta contrasenya, el teu compte de <ph name="DOMAIN" /> no se suprimirà. Canvia la contrasenya o suprimeix el teu compte de <ph name="DOMAIN_LINK" /> per protegir-lo dels altres.</translation>
 <translation id="1084288067399862432">La contrasenya en perill s'ha canviat correctament.
@@ -2328,6 +2328,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2665056444046933274">Els llocs web poden utilitzar aquesta funció per accedir a altres aplicacions i serveis d'aquest dispositiu</translation>
 <translation id="2665394472441560184">Afegeix una paraula nova</translation>
 <translation id="2665647207431876759">Caducat</translation>
+<translation id="2666092431469916601">Superior</translation>
 <translation id="2666247341166669829">Nivell de bateria de l'auricular esquerre: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">S'han configurat altres aplicacions per obrir els mateixos enllaços que <ph name="APP_NAME" />. Es desactivarà l'obertura d'enllaços compatibles des de les aplicacions <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gestiona el corrector ortogràfic</translation>
@@ -2923,6 +2924,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3084548735795614657">Desplegueu per instal·lar</translation>
 <translation id="3084771660770137092">Chrome s'ha quedat sense memòria, o bé el procés de la pàgina web s'ha cancel·lat per algun altre motiu. Per continuar, torneu-la a carregar o aneu a una altra pàgina.</translation>
 <translation id="3085412380278336437">El lloc web pot utilitzar la càmera</translation>
+<translation id="3087734570205094154">Part inferior</translation>
 <translation id="3088052000289932193">El lloc web fa servir MIDI</translation>
 <translation id="3088325635286126843">&amp;Canvia el nom...</translation>
 <translation id="3089137131053189723">La cerca s'ha esborrat</translation>
@@ -4405,6 +4407,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4170314459383239649">Esborra en sortir</translation>
 <translation id="4170685671197375581">Activa la drecera</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Comparteix la pestanya amb Gemini}other{Comparteix # pestanyes amb Gemini}}</translation>
+<translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="4172944993779635350">La contrasenya per a "<ph name="URL" />" està desada només en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu compte.</translation>
 <translation id="4173129130568053653">Gemini et pot ajudar a reservar cites, crear carretons electrònics o fer altres tasques que li encomanis.</translation>
 <translation id="4175137578744761569">Porpra clar i blanc</translation>
@@ -5779,6 +5782,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5189274947477567401">Cal reiniciar el navegador per desactivar la compartició de processos. Aquest navegador es reiniciarà ara.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Fan servir <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Barra d'adreces d'interès</translation>
 <translation id="5190926251776387065">Activa el port</translation>
 <translation id="5190959794678983197">No hi ha cap micròfon</translation>
 <translation id="5191094172448199359">Els codis PIN que has introduït no coincideixen</translation>
@@ -6748,6 +6752,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5926936390113611560">Obre tots els perfils</translation>
 <translation id="592880897588170157">Baixa els fitxers PDF en lloc d'obrir-los automàticament a Chrome</translation>
 <translation id="5930567261594625340">Cel nocturn</translation>
+<translation id="5932194499818201827">Obre l'enllaç en una finestra d'incò&amp;gnit</translation>
 <translation id="5932224571077948991">El lloc web mostra anuncis intrusius o enganyosos</translation>
 <translation id="59324397759951282">Dispositiu USB fabricat per <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">No tens prou llicències disponibles per inscriure aquest dispositiu de maquinari de Google Meet. Contacta amb l'equip de vendes per comprar-ne més. Si creus que veus aquest missatge per error, posa't en contacte amb el servei d'assistència.</translation>
@@ -7614,6 +7619,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6582274660680936615">Estàs navegant com a convidat</translation>
 <translation id="6583328141350416497">Continua la baixada</translation>
 <translation id="6584878029876017575">Signatura de durada de Microsoft</translation>
+<translation id="6585124893636629274">Tanca Gemini a Chrome</translation>
 <translation id="6585584201072946561">Personalitza la mida i la font del text per al navegador web</translation>
 <translation id="6586099239452884121">Navegació com a convidat</translation>
 <translation id="6586451623538375658">Canvia el botó principal del ratolí</translation>
@@ -10063,6 +10069,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="8348430946834215779">Utilitza HTTPS sempre que puguis i rep un advertiment abans de carregar llocs web que no admeten aquest protocol</translation>
 <translation id="8348896480272971199">Comprova la connexió a Internet i torna-ho a provar.</translation>
+<translation id="8349305172487531364">Barra d'adreces d'interès</translation>
 <translation id="8349325309815489209">Les extensions es permeten en aquest lloc web</translation>
 <translation id="8349826889576450703">menú d'aplicacions</translation>
 <translation id="8350789879725387295">Eines del llapis òptic a la barra d'aplicacions</translation>
@@ -10465,7 +10472,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8651585100578802546">Força que es torni a carregar aquesta pàgina</translation>
 <translation id="8651806635673244884">Pots tornar a moure les pestanyes a la part superior fent clic amb el botó dret en qualsevol pestanya i seleccionant Mostra les pestanyes horitzontalment</translation>
 <translation id="8652400352452647993">Error de l'empaquetatge d'extensió</translation>
-<translation id="8652412805227733853">L'adreça electrònica s'ha verificat automàticament</translation>
 <translation id="8654151524613148204">El fitxer és massa gran perquè el vostre equip el pugui gestionar.</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">Hi ha hagut un problema en iniciar la sessió perquè no s'ha pogut verificar la contrasenya. Contacteu amb l'administrador o torneu a provar-ho.</translation>

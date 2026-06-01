@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Aviso</translation>
 <translation id="1056980582064308040">Ao alterar as definições, reinicia a zona Wi-Fi. Os dispositivos que usam a zona Wi-Fi perdem a ligação.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Tarefa interrompida</translation>
 <translation id="1059484610606223931">Protocolo de Transferência de Hipertexto Seguro (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> separadores encontrados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060172044035704924">Trocar com vista direita</translation>
@@ -2330,6 +2329,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2665056444046933274">Os sites podem usar esta funcionalidade para aceder a outras apps e serviços neste dispositivo</translation>
 <translation id="2665394472441560184">Adicionar uma nova palavra</translation>
 <translation id="2665647207431876759">Expirada</translation>
+<translation id="2666092431469916601">Parte superior</translation>
 <translation id="2666247341166669829">Nível da bateria do esquerdo: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Outras apps estão definidas para abrir os mesmos links que a app <ph name="APP_NAME" />. Isto irá impedir que as apps <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> abram links suportados.</translation>
 <translation id="2667463864537187133">Gerir verificação ortográfica</translation>
@@ -2926,6 +2926,7 @@ Quer pará-lo?</translation>
 <translation id="3084548735795614657">Largar para instalar</translation>
 <translation id="3084771660770137092">O Chrome ficou sem memória ou o processo para a página Web foi terminado por qualquer outro motivo. Para continuar, atualize ou aceda a outra página.</translation>
 <translation id="3085412380278336437">O site pode utilizar a câmara.</translation>
+<translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3088052000289932193">O site está a utilizar MIDI</translation>
 <translation id="3088325635286126843">&amp;Mudar o nome...</translation>
 <translation id="3089137131053189723">Pesquisa limpa.</translation>
@@ -4415,6 +4416,7 @@ Quer pará-lo?</translation>
 <translation id="4170314459383239649">Limpar ao sair</translation>
 <translation id="4170685671197375581">Ativar atalho</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Partilhar separador com o Gemini}other{Partilhar # separadores com o Gemini}}</translation>
+<translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="4172944993779635350">A sua palavra-passe para "<ph name="URL" />" está guardada apenas neste dispositivo. Para a usar nos seus outros dispositivos, guarde-a na sua conta.</translation>
 <translation id="4173129130568053653">O Gemini pode ajudar a marcar reuniões, criar carrinhos de compras ou realizar outras tarefas que lhe atribuir.</translation>
 <translation id="4175137578744761569">Roxo claro e branco</translation>
@@ -5791,6 +5793,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5189274947477567401">Para desativar a partilha de processos, é necessário reiniciar o navegador. Este navegador vai ser reiniciado agora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">A usar <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="5190926251776387065">Ativar porta</translation>
 <translation id="5190959794678983197">Nenhum microfone</translation>
 <translation id="5191094172448199359">Os PINs introduzidos não coincidem.</translation>
@@ -7630,6 +7633,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6582274660680936615">Está a navegar como convidado</translation>
 <translation id="6583328141350416497">Continuar transferência</translation>
 <translation id="6584878029876017575">Assinatura vitalícia Microsoft</translation>
+<translation id="6585124893636629274">Fechar Gemini no Chrome</translation>
 <translation id="6585584201072946561">Personalize o tamanho e o tipo de letra do texto para o navegador de Internet</translation>
 <translation id="6586099239452884121">Navegação como convidado</translation>
 <translation id="6586451623538375658">Trocar botão principal do rato</translation>
@@ -10080,6 +10084,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8347227221149377169">Tarefas de impressão</translation>
 <translation id="8348430946834215779">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não suportam este protocolo</translation>
 <translation id="8348896480272971199">Verifique a ligação à Internet e tente novamente.</translation>
+<translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8349325309815489209">Extensões permitidas neste site</translation>
 <translation id="8349826889576450703">iniciador</translation>
 <translation id="8350789879725387295">Ferramentas da caneta stylus na estação de carregamento</translation>
@@ -10482,7 +10487,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8651585100578802546">Forçar o recarregamento desta página</translation>
 <translation id="8651806635673244884">Pode mover os separadores de volta para a parte superior clicando com o botão direito num separador e selecionando "Mostrar separadores na horizontal"</translation>
 <translation id="8652400352452647993">Erro de extensão do pacote</translation>
-<translation id="8652412805227733853">Email validado automaticamente</translation>
 <translation id="8654151524613148204">O ficheiro é demasiado grande para o seu computador processar. Lamentamos.</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">O início de sessão falhou porque não foi possível validar a sua palavra-passe. Contacte o gestor ou tente novamente.</translation>

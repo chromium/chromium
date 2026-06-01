@@ -256,6 +256,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, odabrana kartica koja snima</translation>
 <translation id="2141396931810938595">Na temelju vaše upotrebe</translation>
 <translation id="2145315049852051678">Chrome redovito provjerava jesu li postavke preglednika najsigurnije. Obavijestit ćemo vas ako bilo što treba pregledati.</translation>
+<translation id="2149968176347646218">Veza nije sigurna</translation>
 <translation id="2149973817440762519">Uredi oznaku</translation>
 <translation id="2163089732491971196">Da biste upotrebljavali i spremali Chromeove podatke spremljene na vašem Google računu, unesite šifru</translation>
 <translation id="2166228530126694506">Verzija <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6595046016124923392">Slike se šalju Googleu radi poboljšanja opisa za vas.</translation>
 <translation id="6602173570135186741">Automatsko popunjavanje i zaporke</translation>
 <translation id="661266467055912436">Poboljšava sigurnost za vas i sve ostale na webu.</translation>
+<translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6621391692573306628">Da biste poslali ovu karticu na drugi uređaj, prijavite se na Chrome na oba uređaja</translation>
 <translation id="6627583120233659107">Uredi mapu</translation>
 <translation id="6633067410344541938">Otključaj anonimni način</translation>

@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Ескерту</translation>
 <translation id="1056980582064308040">Параметрлерді өзгерту хотспотты қайта іске қосады. Хотспотты пайдаланатын құрылғылар ажыратылады.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Тапсырма үзілді</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">"<ph name="SEARCH_TEXT" />" үшін <ph name="NUM" /> қойынды табылды.</translation>
 <translation id="1060172044035704924">Оң жақ көрініспен ауыстыру</translation>
@@ -2327,6 +2326,7 @@
 <translation id="2665056444046933274">Сайттар бұл функцияны осы құрылғыдағы басқа қолданбалар мен қызметтерді пайдалану үшін қолдана алады.</translation>
 <translation id="2665394472441560184">Жаңа сөз қосу</translation>
 <translation id="2665647207431876759">Мерзімі өтті</translation>
+<translation id="2666092431469916601">Жоғары</translation>
 <translation id="2666247341166669829">Сол құлақаспаптың батарея деңгейі: <ph name="PERCENTAGE" />%</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ашқан сілтемелерді басқа қолданбалар да аша алатын болып реттелді. <ph name="APP_NAME_2" /> және <ph name="APP_NAME_3" /> қолдау көрсету сілтемелерін аша алмай қалады.</translation>
 <translation id="2667463864537187133">Орфографиялық сөздікті басқару</translation>
@@ -2922,6 +2922,7 @@
 <translation id="3084548735795614657">Орнату үшін сүйреп қойыңыз</translation>
 <translation id="3084771660770137092">Chrome жады толған немесе веб-бетке арналған процесс кейбір басқа себептер үшін тоқтатылған. Жалғастыру үшін қайта жүктеңіз немесе басқа бетке өтіңіз.</translation>
 <translation id="3085412380278336437">Сайт камераны пайдалана алады</translation>
+<translation id="3087734570205094154">Астына</translation>
 <translation id="3088052000289932193">Сайт MIDI құрылғысын пайдаланып жатыр.</translation>
 <translation id="3088325635286126843">&amp;Атын өзгерту…</translation>
 <translation id="3089137131053189723">Іздеу сұрауы өшірілді.</translation>
@@ -4409,6 +4410,7 @@
 <translation id="4170314459383239649">Шыққан кезде тазалау</translation>
 <translation id="4170685671197375581">Жылдам пәрменді қосу</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Қойындыны Gemini-мен бөлісу}other{# қойындыны Gemini-мен бөлісу}}</translation>
+<translation id="4172051516777682613">Әрқашан көрсету</translation>
 <translation id="4172944993779635350">"<ph name="URL" />" сайтының құпия сөзі тек осы құрылғыға сақталды. Оны басқа құрылғыларыңызда пайдалану үшін аккаунтыңызға сақтаңыз.</translation>
 <translation id="4173129130568053653">Gemini кездесулерді брондауға, шоппинг себеттерін жасауға немесе сіз берген басқа тапсырмаларды орындауға көмектесе алады.</translation>
 <translation id="4175137578744761569">Ашық күлгін және ақ</translation>
@@ -5784,6 +5786,7 @@
 <translation id="5189274947477567401">Процесті бөлісуден бас тарту үшін браузерді өшіріп қосу қажет. Бұл браузер қазір өшіп қосылады.</translation>
 <translation id="5189404424758444348">Стимпанк</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> пайдаланылып жатыр</translation>
+<translation id="5190835502935405962">Бетбелгілер жолағы</translation>
 <translation id="5190926251776387065">Портты іске қосу</translation>
 <translation id="5190959794678983197">Микрофон жоқ</translation>
 <translation id="5191094172448199359">Енгізген PIN кодтарыңыз сәйкес келмейді.</translation>
@@ -7618,6 +7621,7 @@
 <translation id="6582274660680936615">Интернетті Қонақ ретінде пайдаланудасыз</translation>
 <translation id="6583328141350416497">Жүктеп алуды жалғастыру</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
+<translation id="6585124893636629274">Chrome-дағы Gemini-ды жабу</translation>
 <translation id="6585584201072946561">Веб-браузер үшін мәтін өлшемі мен қарпін бейімдеу</translation>
 <translation id="6586099239452884121">Қонақ режимі</translation>
 <translation id="6586451623538375658">Негізгі тінтуір түймесін ауыстыру</translation>
@@ -10066,6 +10070,7 @@
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
 <translation id="8348430946834215779">Мүмкін болған кезде, HTTPS пайдаланыңыз. Оған қолдау көрсетілмейтін сайттарды жүктеу алдында сізге ескерту жіберіледі.</translation>
 <translation id="8348896480272971199">Интернет байланысын тексеріп, әрекетті қайталап көріңіз.</translation>
+<translation id="8349305172487531364">Бетбелгілер жолағы</translation>
 <translation id="8349325309815489209">Бұл сайтта кеңейтімдер рұқсат етіледі</translation>
 <translation id="8349826889576450703">қосқыш</translation>
 <translation id="8350789879725387295">Қондырғыдағы стилус құралдары</translation>
@@ -10468,7 +10473,6 @@
 <translation id="8651585100578802546">Бұл бетті күштеп қайта жүктеу</translation>
 <translation id="8651806635673244884">Қойындыларды жоғарыға қайтару үшін кез келген қойындыны тінтуірдің оң жақ түймесімен басып, "Қойындыларды көлденең көрсету" опциясын таңдаңыз.</translation>
 <translation id="8652400352452647993">Пакет кеңейтімі қатесі</translation>
-<translation id="8652412805227733853">Электрондық пошта автоматты түрде расталды.</translation>
 <translation id="8654151524613148204">Файл компьютеріңізде өңдеу үшін тым үлкен. Кешіріңіз.</translation>
 <translation id="8655295600908251630">Арна</translation>
 <translation id="8655972064210167941">Кірілмеді, себебі құпия сөзіңіз расталмады. Әкімшіңізге хабарласыңыз немесе әрекетті қайталаңыз.</translation>

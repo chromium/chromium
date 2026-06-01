@@ -149,6 +149,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1227224963052638717">Nepoznate smernice.</translation>
 <translation id="1227677022489889280">Navedite razlog za premeštanje (obavezno)</translation>
 <translation id="1228893227497259893">Pogrešan identifikator entiteta</translation>
+<translation id="122989279399348496">Dok ste prijavljeni, <ph name="DOMAIN" /> može da potvrdi <ph name="EMAIL" /> na podržanim sajtovima, pa ne morate da proveravate prijemno sanduče</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatski otkriveno)</translation>
 <translation id="1232569758102978740">Bez naslova</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> je obavezno polje</translation>
@@ -510,6 +511,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, dostupno je više radnji, pritisnite Tab da biste ih pregledali</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Podaci o virtuelnoj kartici</translation>
+<translation id="1802420021606590788">Chrome obrađuje naslove stranica i URL-ove u privatnom prostoru u klaudu</translation>
 <translation id="1803254472779303354">Zaključavanje miša je dozvoljeno</translation>
 <translation id="1803351196216024260">Može da traži da koristi mikrofon</translation>
 <translation id="1804258830776932716">Omogućite Pix brzim povezivanjem naloga</translation>
@@ -3027,6 +3029,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5742806904559466333">Barovi, klubovi i noćni život</translation>
 <translation id="5743684619253032786">Proizvodi za negu noktiju</translation>
 <translation id="574392208103952083">Srednja</translation>
+<translation id="5745586894920491759">Chrome obrađuje naslove stranica i URL-ove u klaudu</translation>
 <translation id="5745733273847572235">Može da traži lokaciju</translation>
 <translation id="5750869797196646528">Praćenje ruku</translation>
 <translation id="5752327398324808817">Unesite reč ili dve</translation>
@@ -3420,6 +3423,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Pregledajte evidencije</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />da proverite konfiguraciju proksija, zaštitnog zida i bezbednog DNS-a<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Automatski potvrđujte imejlove</translation>
 <translation id="6366710531182496394">Dvostruko spajanje na levoj strani</translation>
 <translation id="6367196786591004737">Izbriši unos</translation>
 <translation id="6370022303958842211">Radnje pristupa uređajima poput prijavljivanja (uključujući neuspele razloge za prijavljivanje), odjavljivanja, zaključavanja i otključavanja</translation>
@@ -4065,6 +4069,7 @@ Dodatni detalji:
 <translation id="7388380253839603603">Cene i točenje goriva</translation>
 <translation id="7388594495505979117">{0,plural, =1{Uređaj će se restartovati za 1 minut}one{Uređaj će se restartovati za # minut}few{Uređaj će se restartovati za # minuta}other{Uređaj će se restartovati za # minuta}}</translation>
 <translation id="7393161616326137353">Avanturističke igre</translation>
+<translation id="7393243238767102021">Želite da dozvolite da <ph name="DOMAIN" /> automatski verifikuje ovaj imejl?</translation>
 <translation id="7393475648162498734">Omogućite prikaz nagrada i prednosti dostupnih za kartice pri plaćanju</translation>
 <translation id="7393971683644170444">Povezuje se sa dobavljačem kartice…</translation>
 <translation id="739728382607845710">Ikona obrađivača plaćanja</translation>
@@ -5061,6 +5066,7 @@ Dodatni detalji:
 <translation id="8963117664422609631">Idite na podešavanja sajta</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Predlozi:<ph name="MARKUP_2" />Proverite da li je uspostavljena veza za prenos podataka<ph name="MARKUP_3" />Ponovo učitajte ovu veb-stranicu kasnije<ph name="MARKUP_4" />Proverite adresu koju ste uneli<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Lokalni fajlovi će biti izbrisani za <ph name="HOURS" /> s</translation>
+<translation id="8964904785315870349">Verifikovani imejl</translation>
 <translation id="8968766641738584599">Sačuvaj karticu</translation>
 <translation id="8970887620466824814">Došlo je do greške.</translation>
 <translation id="8971063699422889582">Sertifikat servera je istekao.</translation>

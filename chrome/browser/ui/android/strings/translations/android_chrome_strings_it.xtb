@@ -256,6 +256,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, scheda con registrazione selezionata</translation>
 <translation id="2141396931810938595">In base al tuo utilizzo</translation>
 <translation id="2145315049852051678">Chrome esegue controlli regolari per verificare che il browser disponga delle impostazioni più sicure. Ti informeremo qualora fosse necessario un controllo da parte tua.</translation>
+<translation id="2149968176347646218">La connessione non è sicura</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
 <translation id="2163089732491971196">Per usare e salvare i dati di Chrome nel tuo Account Google, inserisci la tua passphrase</translation>
 <translation id="2166228530126694506">Versione <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6595046016124923392">Le immagini vengono inviate a Google per migliorare le descrizioni.</translation>
 <translation id="6602173570135186741">Compilazione automatica e password</translation>
 <translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul web.</translation>
+<translation id="6615455863669487791">Mostrami</translation>
 <translation id="6621391692573306628">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su entrambi i dispositivi</translation>
 <translation id="6627583120233659107">Modifica cartella</translation>
 <translation id="6633067410344541938">Sblocca la modalità Incognito</translation>

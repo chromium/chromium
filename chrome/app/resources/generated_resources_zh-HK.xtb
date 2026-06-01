@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">警告</translation>
 <translation id="1056980582064308040">如果變更設定，系統將重新啟動熱點，屆時裝置與熱點的連線將會解除連結。</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">工作已中斷</translation>
 <translation id="1059484610606223931">超文本傳輸協定 (HTTPS)</translation>
 <translation id="1059944192885972544">搵到 <ph name="NUM" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅分頁</translation>
 <translation id="1060172044035704924">與右邊檢視畫面交換</translation>
@@ -130,6 +129,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> 要求還原您的 Chrome 設定為原始預設值，並會重設您的首頁、新分頁和搜尋引擎、停用您的擴充功能，以及取消固定所有分頁。其他暫存資料和快取資料 (例如 Cookie、內容和網站資料) 亦會一併清除。</translation>
 <translation id="1082725763867769612">離線檔案</translation>
 <translation id="1083050113196701330">成功完成更新檢查。沒有可用更新</translation>
+<translation id="1083980330680874079">Chrome 面板</translation>
 <translation id="1084026333130513768">儲存、分享和投放</translation>
 <translation id="1084096383128641877">移除此密碼不會刪除您在 <ph name="DOMAIN" /> 的帳戶。請變更密碼或刪除您在 <ph name="DOMAIN_LINK" /> 的帳戶，以免被他人盜用。</translation>
 <translation id="1084288067399862432">已成功變更被盜用的密碼。
@@ -2342,6 +2342,7 @@
 <translation id="2665056444046933274">網站可使用此功能存取此裝置上的其他應用程式和服務</translation>
 <translation id="2665394472441560184">新增字詞</translation>
 <translation id="2665647207431876759">已過期</translation>
+<translation id="2666092431469916601">返回頁首</translation>
 <translation id="2666247341166669829">左邊嘅電量係 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2667144577800272420">其他應用程式所設定會開啟的連結與 <ph name="APP_NAME" /> 的設定相同，這會導致「<ph name="APP_NAME_2" />」和「<ph name="APP_NAME_3" />」無法開啟支援的連結。</translation>
 <translation id="2667463864537187133">管理拼字檢查</translation>
@@ -2936,6 +2937,7 @@
 <translation id="3084548735795614657">拖曳即可安裝</translation>
 <translation id="3084771660770137092">Chrome 記憶體不足或其他某些原因導致網頁處理程序終止。如要繼續執行，請重新載入或前往其他網頁。</translation>
 <translation id="3085412380278336437">網站可以使用您的相機</translation>
+<translation id="3087734570205094154">下方</translation>
 <translation id="3088052000289932193">網站正在使用 MIDI 裝置</translation>
 <translation id="3088325635286126843">重新命名(&amp;R)…</translation>
 <translation id="3089137131053189723">已清除搜尋</translation>
@@ -4423,6 +4425,7 @@
 <translation id="4170314459383239649">退出時清除</translation>
 <translation id="4170685671197375581">啟用捷徑</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{與 Gemini 分享分頁}other{與 Gemini 分享 # 個分頁}}</translation>
+<translation id="4172051516777682613">永遠顯示</translation>
 <translation id="4172944993779635350">「<ph name="URL" />」的密碼只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至帳戶。</translation>
 <translation id="4173129130568053653">Gemini 可助你預約、建立購物車，或執行你指派的其他任務。</translation>
 <translation id="4175137578744761569">淺紫色和白色</translation>
@@ -5798,6 +5801,7 @@
 <translation id="5189274947477567401">如要停用程序共用功能，必須重新啟動瀏覽器。此瀏覽器會立即重新啟動。</translation>
 <translation id="5189404424758444348">蒸氣龐克</translation>
 <translation id="5190577235024772869">儲存空間使用量：<ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">書籤列</translation>
 <translation id="5190926251776387065">啟用連接埠</translation>
 <translation id="5190959794678983197">沒有麥克風</translation>
 <translation id="5191094172448199359">您輸入的 PIN 不符</translation>
@@ -6765,6 +6769,7 @@
 <translation id="5926936390113611560">開啟所有設定檔</translation>
 <translation id="592880897588170157">下載 PDF 檔案，而不是在 Chrome 中自動開啟</translation>
 <translation id="5930567261594625340">夜空</translation>
+<translation id="5932194499818201827">在無痕式視窗中開啟連結</translation>
 <translation id="5932224571077948991">網站顯示滋擾性或誤導廣告</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> 的 USB 裝置</translation>
 <translation id="5932441198730183141">您的可用授權不足，無法註冊此 Google Meet 硬件裝置。如要購買更多授權，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
@@ -7631,6 +7636,7 @@
 <translation id="6582274660680936615">您目前是以訪客身分瀏覽</translation>
 <translation id="6583328141350416497">繼續下載</translation>
 <translation id="6584878029876017575">Microsoft 永久簽署</translation>
+<translation id="6585124893636629274">關閉 Chrome 版 Gemini</translation>
 <translation id="6585584201072946561">自訂網絡瀏覽器的文字大小和字型</translation>
 <translation id="6586099239452884121">訪客瀏覽</translation>
 <translation id="6586451623538375658">調換滑鼠主按鈕</translation>
@@ -10078,6 +10084,7 @@
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="8348430946834215779">盡量使用 HTTPS，並在系統載入不支援 HTTPS 的網站前先接收提醒</translation>
 <translation id="8348896480272971199">請檢查互聯網連線，然後再試一次。</translation>
+<translation id="8349305172487531364">書籤列</translation>
 <translation id="8349325309815489209">已允許在此網站執行擴充程式</translation>
 <translation id="8349826889576450703">啟動器</translation>
 <translation id="8350789879725387295">Dock 中的觸控筆工具</translation>
@@ -10480,7 +10487,6 @@
 <translation id="8651585100578802546">強制重新載入這個網頁</translation>
 <translation id="8651806635673244884">如要將分頁移回頂部，請在任何分頁按一下右鍵，然後選取 [橫向顯示分頁]</translation>
 <translation id="8652400352452647993">封裝擴充程式錯誤</translation>
-<translation id="8652412805227733853">已自動驗證電郵</translation>
 <translation id="8654151524613148204">抱歉，檔案過大，您的裝置無法處理。</translation>
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655972064210167941">系統無法驗證您的密碼，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>

@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Avertissement</translation>
 <translation id="1056980582064308040">La modification des paramètres redémarrera le point d’accès. Les appareils qui utilisent le point d’accès seront déconnectés.</translation>
 <translation id="1058262162121953039">Clé PUK</translation>
-<translation id="1058848978232174442">Tâche interrompue</translation>
 <translation id="1059484610606223931">Protocole HTTPS</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> onglets trouvés pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="1060172044035704924">Échanger avec l'affichage de droite</translation>
@@ -2330,6 +2329,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2665056444046933274">Les sites peuvent utiliser cette fonctionnalité pour accéder à d'autres applis et services sur cet appareil</translation>
 <translation id="2665394472441560184">Ajouter un nouveau mot</translation>
 <translation id="2665647207431876759">Expiré</translation>
+<translation id="2666092431469916601">Haut</translation>
 <translation id="2666247341166669829">Niveau de la pile gauche : <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">D'autres applications sont configurées pour ouvrir les mêmes liens que ceux de l'application <ph name="APP_NAME" />. Cette option désactivera l'ouverture des liens compatibles par les applications <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gérer le correcteur orthographique</translation>
@@ -2926,6 +2926,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3084548735795614657">Déposer pour installer</translation>
 <translation id="3084771660770137092">Google Chrome n'avait pas suffisamment de mémoire ou le processus de la page Web a été arrêté pour une autre raison. Pour continuer, actualisez la page ou ouvrez-en une autre.</translation>
 <translation id="3085412380278336437">Le site peut utiliser votre appareil photo</translation>
+<translation id="3087734570205094154">Bas</translation>
 <translation id="3088052000289932193">Le site utilise un appareil MIDI</translation>
 <translation id="3088325635286126843">&amp;Renommer...</translation>
 <translation id="3089137131053189723">Recherche effacée</translation>
@@ -4415,6 +4416,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4170314459383239649">Effacement à la sortie</translation>
 <translation id="4170685671197375581">Activer le raccourci</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Partager l'onglet avec Gemini}one{Partager # onglet avec Gemini}other{Partager # onglets avec Gemini}}</translation>
+<translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="4172944993779635350">Votre mot de passe pour « <ph name="URL" /> » est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte.</translation>
 <translation id="4173129130568053653">Gemini peut vous aider à prendre des rendez-vous, à créer des paniers pour vos achats ou à effectuer d'autres tâches que vous lui confiez.</translation>
 <translation id="4175137578744761569">Violet clair et blanc</translation>
@@ -5790,6 +5792,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5189274947477567401">La désactivation du partage de processus nécessite un redémarrage du navigateur. Ce navigateur va redémarrer maintenant.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Utilisation de <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Barre de favoris</translation>
 <translation id="5190926251776387065">Activer le port</translation>
 <translation id="5190959794678983197">Aucun microphone</translation>
 <translation id="5191094172448199359">Les NIP entrés ne correspondent pas</translation>
@@ -7626,6 +7629,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6582274660680936615">Vous naviguez en tant qu'invité</translation>
 <translation id="6583328141350416497">Continuer le téléchargement</translation>
 <translation id="6584878029876017575">Signature permanente Microsoft</translation>
+<translation id="6585124893636629274">Fermer Gemini dans Chrome</translation>
 <translation id="6585584201072946561">Personnaliser la taille et la police du texte du navigateur Web</translation>
 <translation id="6586099239452884121">Navigation comme invité</translation>
 <translation id="6586451623538375658">Inverser les boutons de la souris</translation>
@@ -10077,6 +10081,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8347227221149377169">Tâches d'impression</translation>
 <translation id="8348430946834215779">Dans la mesure du possible, utilisez le protocole HTTPS et soyez averti avant de charger des sites qui ne le prennent pas en charge</translation>
 <translation id="8348896480272971199">Vérifiez votre connexion Internet et réessayez.</translation>
+<translation id="8349305172487531364">Barre de favoris</translation>
 <translation id="8349325309815489209">Extensions autorisées sur ce site</translation>
 <translation id="8349826889576450703">lanceur d'applications</translation>
 <translation id="8350789879725387295">Outils du stylet ancrés</translation>
@@ -10479,7 +10484,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8651585100578802546">Forcer l'actualisation de la page</translation>
 <translation id="8651806635673244884">Vous pouvez faire remonter vos onglets en faisant un clic droit sur n'importe quel onglet et en sélectionnant « Afficher les onglets horizontalement »</translation>
 <translation id="8652400352452647993">Erreur concernant l'empaquetage d'extensions</translation>
-<translation id="8652412805227733853">L'adresse courriel a été validée automatiquement</translation>
 <translation id="8654151524613148204">Ce fichier est trop volumineux pour votre ordinateur.</translation>
 <translation id="8655295600908251630">Version</translation>
 <translation id="8655972064210167941">La connexion a échoué, car votre mot de passe n'a pas pu être vérifié. Veuillez communiquer avec votre administrateur ou réessayer.</translation>

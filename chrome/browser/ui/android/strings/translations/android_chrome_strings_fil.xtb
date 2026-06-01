@@ -256,6 +256,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, Piniling Nagre-record na Tab</translation>
 <translation id="2141396931810938595">Batay sa iyong paggamit</translation>
 <translation id="2145315049852051678">Regular na nagsusuri ang Chrome para tiyaking may mga pinakaligtas na setting ang iyong browser. Ipapaalam namin sa iyo kung may anumang nangangailangan ng pagsusuri.</translation>
+<translation id="2149968176347646218">Hindi secure ang koneksyon</translation>
 <translation id="2149973817440762519">I-edit ang Bookmark</translation>
 <translation id="2163089732491971196">Para magamit at ma-save ang data sa Chrome sa iyong Google Account, ilagay ang passphrase mo</translation>
 <translation id="2166228530126694506">Bersyon <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6595046016124923392">Ipinapadala sa Google ang mga larawan para mapahusay ang mga paglalarawan para sa iyo.</translation>
 <translation id="6602173570135186741">Autofill at mga password</translation>
 <translation id="661266467055912436">Pinapahusay ang seguridad para sa iyo at sa lahat ng tao sa web.</translation>
+<translation id="6615455863669487791">Ipakita sa akin</translation>
 <translation id="6621391692573306628">Para ipadala ang tab na ito sa ibang device, mag-sign in sa Chrome sa dalawang device</translation>
 <translation id="6627583120233659107">I-edit ang folder</translation>
 <translation id="6633067410344541938">I-unlock ang Incognito</translation>

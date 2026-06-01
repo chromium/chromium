@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">경고</translation>
 <translation id="1056980582064308040">설정을 변경하면 핫스팟이 다시 시작됩니다. 핫스팟을 사용하는 기기의 연결이 해제됩니다.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">작업이 중단됨</translation>
 <translation id="1059484610606223931">하이퍼텍스트 전송 프로토콜 보안(HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' 검색결과로 탭 <ph name="NUM" />개 찾음</translation>
 <translation id="1060172044035704924">오른쪽 뷰와 바꾸기</translation>
@@ -2344,6 +2343,7 @@
 <translation id="2665056444046933274">사이트에서 이 기능을 사용하여 이 기기의 다른 앱 및 서비스에 액세스할 수 있습니다.</translation>
 <translation id="2665394472441560184">새 단어 추가</translation>
 <translation id="2665647207431876759">만료됨</translation>
+<translation id="2666092431469916601">상단</translation>
 <translation id="2666247341166669829">왼쪽 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 앱은 지원되는 링크를 열지 못하게 됩니다.</translation>
 <translation id="2667463864537187133">맞춤법 검사 관리</translation>
@@ -2939,6 +2939,7 @@
 <translation id="3084548735795614657">드롭하여 설치</translation>
 <translation id="3084771660770137092">Chrome에 메모리가 부족하거나 웹페이지 프로세싱이 다른 이유로 종료되었습니다. 계속하려면 새로고침하거나 다른 페이지로 이동하세요.</translation>
 <translation id="3085412380278336437">사이트에서 카메라를 사용할 수 있습니다.</translation>
+<translation id="3087734570205094154">맨 아래</translation>
 <translation id="3088052000289932193">사이트에서 MIDI를 사용합니다.</translation>
 <translation id="3088325635286126843">이름 바꾸기(&amp;R)...</translation>
 <translation id="3089137131053189723">검색 기록이 삭제되었습니다</translation>
@@ -4426,6 +4427,7 @@
 <translation id="4170314459383239649">종료 시 삭제</translation>
 <translation id="4170685671197375581">바로가기 사용 설정</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Gemini와 탭 공유}other{Gemini와 탭 #개 공유}}</translation>
+<translation id="4172051516777682613">항상 표시</translation>
 <translation id="4172944993779635350">"<ph name="URL" />"의 비밀번호가 이 기기에만 저장되었습니다. 다른 기기에서 사용하려면 계정에 저장하세요.</translation>
 <translation id="4173129130568053653">Gemini는 약속 잡기, 장바구니 만들기 또는 사용자가 지정한 기타 작업을 처리하는 데 도움이 됩니다.</translation>
 <translation id="4175137578744761569">연한 보라색 및 흰색</translation>
@@ -5802,6 +5804,7 @@
 <translation id="5189274947477567401">프로세스 공유를 사용 중지하려면 브라우저를 다시 시작해야 합니다. 브라우저가 지금 다시 시작됩니다.</translation>
 <translation id="5189404424758444348">스팀펑크</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> 사용 중</translation>
+<translation id="5190835502935405962">북마크바</translation>
 <translation id="5190926251776387065">포트 활성화</translation>
 <translation id="5190959794678983197">마이크 없음</translation>
 <translation id="5191094172448199359">입력한 PIN이 일치하지 않음</translation>
@@ -7639,6 +7642,7 @@
 <translation id="6582274660680936615">게스트로 탐색 중</translation>
 <translation id="6583328141350416497">계속 다운로드</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
+<translation id="6585124893636629274">Chrome의 Gemini 종료</translation>
 <translation id="6585584201072946561">웹브라우저의 텍스트 크기 및 글꼴을 맞춤설정하세요.</translation>
 <translation id="6586099239452884121">손님으로 로그인</translation>
 <translation id="6586451623538375658">기본 마우스 버튼 전환</translation>
@@ -10088,6 +10092,7 @@
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="8348430946834215779">가능하면 항상 HTTPS를 사용하고 이를 지원하지 않는 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="8348896480272971199">인터넷 연결을 확인하고 다시 시도해 보세요.</translation>
+<translation id="8349305172487531364">북마크바</translation>
 <translation id="8349325309815489209">이 사이트에서 허용되는 확장 프로그램</translation>
 <translation id="8349826889576450703">런처</translation>
 <translation id="8350789879725387295">도크에 스타일러스 도구 표시</translation>
@@ -10490,7 +10495,6 @@
 <translation id="8651585100578802546">캐시를 무시하고 페이지 새로고침</translation>
 <translation id="8651806635673244884">탭을 마우스 오른쪽 버튼으로 클릭하고 '가로로 탭 표시'를 선택하여 탭을 다시 상단으로 이동할 수 있습니다.</translation>
 <translation id="8652400352452647993">확장 프로그램 패키지 오류</translation>
-<translation id="8652412805227733853">이메일 자동 인증됨</translation>
 <translation id="8654151524613148204">파일이 너무 커서 컴퓨터에서 처리할 수 없습니다.</translation>
 <translation id="8655295600908251630">채널</translation>
 <translation id="8655972064210167941">비밀번호를 확인할 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>

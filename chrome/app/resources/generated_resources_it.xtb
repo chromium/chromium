@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Avviso</translation>
 <translation id="1056980582064308040">Se modifichi le impostazioni, l'hotspot verrà riavviato. I dispositivi che usano l'hotspot verranno disconnessi.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Attività interrotta</translation>
 <translation id="1059484610606223931">HyperText Transfer Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Sono state trovate <ph name="NUM" /> schede per "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060172044035704924">Passa alla visualizzazione da destra</translation>
@@ -2328,6 +2327,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2665056444046933274">I siti possono usare questa funzionalità per accedere ad altri servizi e app su questo dispositivo</translation>
 <translation id="2665394472441560184">Aggiungi una nuova parola</translation>
 <translation id="2665647207431876759">Scaduta</translation>
+<translation id="2666092431469916601">In alto</translation>
 <translation id="2666247341166669829">Livello della batteria dell'auricolare sinistro a <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Ci sono altre app impostate per aprire gli stessi link che è possibile aprire con <ph name="APP_NAME" />. Non sarà più possibile aprire i link supportati con <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gestisci controllo ortografico</translation>
@@ -2923,6 +2923,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3084548735795614657">Trascina per installare</translation>
 <translation id="3084771660770137092">Google Chrome ha esaurito la memoria o il processo relativo alla pagina web è stato chiuso per qualche altro motivo. Per continuare, ricarica la pagina o aprine un'altra.</translation>
 <translation id="3085412380278336437">Il sito può usare la videocamera</translation>
+<translation id="3087734570205094154">In basso</translation>
 <translation id="3088052000289932193">Il sito usa un dispositivo MIDI</translation>
 <translation id="3088325635286126843">&amp;Rinomina...</translation>
 <translation id="3089137131053189723">Ricerca cancellata</translation>
@@ -4412,6 +4413,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4170314459383239649">Cancella all'uscita</translation>
 <translation id="4170685671197375581">Attiva scorciatoia</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Condividi scheda con Gemini}other{Condividi # schede con Gemini}}</translation>
+<translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="4172944993779635350">La password per "<ph name="URL" />" è salvata solo su questo dispositivo. Per usarla sugli altri dispositivi, salvala nel tuo account.</translation>
 <translation id="4173129130568053653">Gemini può aiutarti a prenotare appuntamenti, creare carrelli degli acquisti o svolgere altre attività che gli assegni.</translation>
 <translation id="4175137578744761569">Lilla e bianco</translation>
@@ -5787,6 +5789,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5189274947477567401">Per disattivare la condivisione dei processi è necessario riavviare il browser. Il browser verrà riavviato ora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Spazio di archiviazione usato: <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Barra dei preferiti</translation>
 <translation id="5190926251776387065">Attiva porta</translation>
 <translation id="5190959794678983197">Nessun microfono</translation>
 <translation id="5191094172448199359">I PIN inseriti non corrispondono</translation>
@@ -7621,6 +7624,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6582274660680936615">Stai navigando come Ospite</translation>
 <translation id="6583328141350416497">Continua il download</translation>
 <translation id="6584878029876017575">Firma definitiva Microsoft</translation>
+<translation id="6585124893636629274">Chiudi Gemini in Chrome</translation>
 <translation id="6585584201072946561">Personalizza dimensioni e carattere del testo per il browser web</translation>
 <translation id="6586099239452884121">Navigazione come ospite</translation>
 <translation id="6586451623538375658">Inverti tasto principale del mouse</translation>
@@ -10071,6 +10075,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8347227221149377169">Processi di stampa</translation>
 <translation id="8348430946834215779">Utilizza HTTPS quando possibile e ricevi un avviso prima di caricare i siti che non lo supportano</translation>
 <translation id="8348896480272971199">Controlla la connessione a internet e riprova.</translation>
+<translation id="8349305172487531364">Barra dei preferiti</translation>
 <translation id="8349325309815489209">Estensioni consentite su questo sito</translation>
 <translation id="8349826889576450703">Avvio app</translation>
 <translation id="8350789879725387295">Strumenti stilo nel dock</translation>
@@ -10473,7 +10478,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8651585100578802546">Forza aggiornamento di questa pagina</translation>
 <translation id="8651806635673244884">Puoi spostare di nuovo le schede in alto facendo clic con il tasto destro del mouse su una scheda qualsiasi e selezionando "Mostra schede orizzontalmente"</translation>
 <translation id="8652400352452647993">Errore nel pacchetto estensione</translation>
-<translation id="8652412805227733853">Email verificata automaticamente</translation>
 <translation id="8654151524613148204">Il file è troppo grande. Il computer non è in grado di gestirlo. Spiacenti.</translation>
 <translation id="8655295600908251630">Canale</translation>
 <translation id="8655972064210167941">Accesso non riuscito perché non è stato possibile verificare la password. Contatta l'amministratore o riprova.</translation>

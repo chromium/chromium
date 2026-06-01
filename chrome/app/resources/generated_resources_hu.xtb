@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Figyelmeztetés</translation>
 <translation id="1056980582064308040">A beállítások módosításával újraindítja a hotspotot. A hotspotot használó eszközök kapcsolata megszakad.</translation>
 <translation id="1058262162121953039">PUK-kód</translation>
-<translation id="1058848978232174442">Feladat megszakítva</translation>
 <translation id="1059484610606223931">Hypertext Transfer Protocol Secure (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> lap található a következőre: „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="1060172044035704924">Csere a jobb oldali nézettel</translation>
@@ -2340,6 +2339,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2665056444046933274">A webhelyek ezt a funkciót használhatják az eszközön lévő más alkalmazásokhoz és szolgáltatásokhoz való hozzáféréshez</translation>
 <translation id="2665394472441560184">Új szó hozzáadása</translation>
 <translation id="2665647207431876759">Lejárt</translation>
+<translation id="2666092431469916601">Felülre</translation>
 <translation id="2666247341166669829">Bal akkumulátorszint: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Más alkalmazásoknál is be van állítva, hogy megnyissák ugyanazokat a linkeket, mint a(z) <ph name="APP_NAME" />. Ezzel a művelettel letiltja a következők számára a támogatott linkek megnyitását: <ph name="APP_NAME_2" /> és <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Helyesírás-ellenőrzés kezelése</translation>
@@ -2935,6 +2935,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3084548735795614657">Húzza rá a telepítéshez.</translation>
 <translation id="3084771660770137092">Vagy a Chrome fogyott ki a memóriából, vagy a weboldal folyamata szűnt meg valamilyen más ok miatt. A folytatáshoz töltse be újra, vagy keressen fel egy másik oldalt.</translation>
 <translation id="3085412380278336437">A webhely használhatja a kameráját</translation>
+<translation id="3087734570205094154">Alja</translation>
 <translation id="3088052000289932193">A webhely MIDI-eszközt használ</translation>
 <translation id="3088325635286126843">Át&amp;nevezés...</translation>
 <translation id="3089137131053189723">Keresés törölve</translation>
@@ -4423,6 +4424,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4170314459383239649">Törlés kilépéskor</translation>
 <translation id="4170685671197375581">Gyorsparancs bekapcsolása</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Lap megosztása a Geminivel}other{# lap megosztása a Geminivel}}</translation>
+<translation id="4172051516777682613">Mindig mutassa</translation>
 <translation id="4172944993779635350">A(z) „<ph name="URL" />” webhelyhez tartozó jelszava csak ezen az eszközön kerül mentésre. Ha szeretné más eszközökön is használni, mentse a fiókjába.</translation>
 <translation id="4173129130568053653">A Gemini segíthet időpontok foglalásában, bevásárlókosarak létrehozásában, vagy más, Ön által megadott feladatok elvégzésében.</translation>
 <translation id="4175137578744761569">Világoslila-fehér</translation>
@@ -5799,6 +5801,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5189274947477567401">A folyamatmegosztás letiltásához újra kell indítania a böngészőt. A böngésző most újraindul.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Használatban: <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Könyvjelzősáv</translation>
 <translation id="5190926251776387065">Port aktiválása</translation>
 <translation id="5190959794678983197">Nincs mikrofon</translation>
 <translation id="5191094172448199359">A megadott PIN kódok nem egyeznek</translation>
@@ -7637,6 +7640,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6582274660680936615">Vendégként böngészik</translation>
 <translation id="6583328141350416497">Letöltés folytatása</translation>
 <translation id="6584878029876017575">Microsoft élethosszig tartó aláírás</translation>
+<translation id="6585124893636629274">A Gemini a Chrome-ban bezárása</translation>
 <translation id="6585584201072946561">Személyre szabhatja a böngészőben használt betűméretet és betűtípust.</translation>
 <translation id="6586099239452884121">Böngészés vendégként</translation>
 <translation id="6586451623538375658">Az elsődleges egérgomb cseréje</translation>
@@ -10086,6 +10090,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8347227221149377169">Nyomtatási feladatok</translation>
 <translation id="8348430946834215779">HTTPS használata, amikor csak lehetséges, és figyelmeztetés megjelenítése a protokollt nem támogató webhelyek betöltése előtt.</translation>
 <translation id="8348896480272971199">Ellenőrizze az internetkapcsolatot, és próbálja újra.</translation>
+<translation id="8349305172487531364">Könyvjelzősáv</translation>
 <translation id="8349325309815489209">A webhelyen engedélyezett bővítmények</translation>
 <translation id="8349826889576450703">indító</translation>
 <translation id="8350789879725387295">Érintőceruza eszközei a dokkon</translation>
@@ -10488,7 +10493,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8651585100578802546">Az oldal kényszerített újratöltése</translation>
 <translation id="8651806635673244884">Visszahelyezheti a lapokat felülre, ha jobb egérgombbal rákattint bármelyik lapra, és kiválasztja a „Lapok megjelenítése vízszintesen” lehetőséget.</translation>
 <translation id="8652400352452647993">Csomagbővítmény-hiba</translation>
-<translation id="8652412805227733853">E-mail-cím automatikusan ellenőrizve</translation>
 <translation id="8654151524613148204">A fájl túl nagy ahhoz, hogy a számítógép kezelni tudja. Elnézést kérünk!</translation>
 <translation id="8655295600908251630">Csatorna</translation>
 <translation id="8655972064210167941">A bejelentkezés nem sikerült, mert a jelszót nem sikerült ellenőrizni. Kérjük, forduljon rendszergazdájához vagy próbálja újra.</translation>

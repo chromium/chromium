@@ -256,6 +256,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, valitud salvestav vaheleht</translation>
 <translation id="2141396931810938595">Kasutuse põhjal</translation>
 <translation id="2145315049852051678">Chrome kontrollib regulaarselt, kas teie brauseril on kõige turvalisemad seaded. Anname teile teada, kui midagi tuleb üle vaadata.</translation>
+<translation id="2149968176347646218">Ühendus ei ole turvaline</translation>
 <translation id="2149973817440762519">Muuda järjehoidjat</translation>
 <translation id="2163089732491971196">Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool</translation>
 <translation id="2166228530126694506">Versioon <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6595046016124923392">Pildid saadetakse kirjelduste täiendamiseks Google'ile.</translation>
 <translation id="6602173570135186741">Automaattäide ja paroolid</translation>
 <translation id="661266467055912436">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks.</translation>
+<translation id="6615455863669487791">Kuva mulle</translation>
 <translation id="6621391692573306628">Selle vahelehe saatmiseks teise seadmesse logige mõlemas seadmes Chrome'i sisse</translation>
 <translation id="6627583120233659107">Muuda kausta</translation>
 <translation id="6633067410344541938">Ava inkognito seanss</translation>

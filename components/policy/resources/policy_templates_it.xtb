@@ -463,13 +463,6 @@ Se la policy viene disattivata o se non viene configurata, gli elementi da avvia
 <translation id="1340053691042184658">Impedisci gli accessi come ospite al browser</translation>
 <translation id="1342918903685430097">Configura la versione minima di <ph name="PRODUCT_OS_NAME" /> consentita per il dispositivo.</translation>
 <translation id="1343128241903870688">Disattiva i report sulle informazioni relative alle app del dispositivo</translation>
-<translation id="1347198119056266798">Questa policy è deprecata, al suo posto usa <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> e <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Questa policy viene ignorata se è impostata la policy <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (deprecata).
-
-      Forza l'esecuzione delle query nella Ricerca Google con l'opzione SafeSearch attiva e impedisce agli utenti di modificare questa impostazione. Questa impostazione forza anche la modalità Restrizione moderata su YouTube.
-
-      Se attivi questa impostazione, la funzione SafeSearch della Ricerca Google e la modalità Restrizione moderata su YouTube saranno sempre attive.
-
-      Se disattivi questa impostazione o non imposti un valore, la funzione SafeSearch della Ricerca Google e la Modalità con restrizioni di YouTube non verranno applicate.</translation>
 <translation id="134745581157553029">Se la policy "DeviceArcDataSnapshotHours" viene configurata, viene attivato il meccanismo di creazione di istantanee dei dati ARC. L'aggiornamento delle istantanee dei dati ARC può essere avviato automaticamente durante gli intervalli di tempo definiti. Quando inizia un intervallo, l'aggiornamento delle istantanee dei dati ARC è necessario e non ci sono utenti che hanno eseguito l'accesso, questa procedura di aggiornamento viene avviata senza informare l'utente. Se è attiva la sessione utente, nell'UI viene mostrata la notifica, che deve essere accettata per poter riavviare il dispositivo e avviare la procedura di aggiornamento delle istantanee dei dati ARC. Nota: durante questa procedura non è possibile usare il dispositivo.</translation>
 <translation id="1348603614848418219">Disattiva la migrazione dei dispositivi gestiti da <ph name="MS_AD_NAME" /> nella gestione del cloud.</translation>
 <translation id="1352799151662469739">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene bloccato quando viene usata l'alimentazione CA.</translation>
@@ -1458,7 +1451,6 @@ Lasciare la policy non impostata significa che nessuna estensione è esente dall
 <translation id="1963986268950915756">Abilita l'installazione di app web da parte dell'utente dal browser</translation>
 <translation id="1964191545419036999">Galleria (supportata dalla versione 117)</translation>
 <translation id="1964634611280150550">Modalità Incognito non attiva</translation>
-<translation id="1964802606569741174">Questa norma non ha effetto sull'app YouTube per Android. Se è necessario applicare la modalità di protezione di YouTube, l'installazione dell'app YouTube per Android non deve essere consentita.</translation>
 <translation id="1964985353230379667">Consente di specificare la configurazione <ph name="KRB5_CONFIG" /> suggerita per i nuovi ticket creati manualmente.
 
       Se la policy "KerberosUseCustomPrefilledConfig" viene attivata, il valore della policy viene applicato come configurazione suggerita e viene mostrato nella sezione "Avanzate" della finestra di dialogo dell'autenticazione Kerberos. Se la policy viene impostata su una stringa vuota o se non viene configurata, viene eliminata la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.
@@ -1815,7 +1807,6 @@ Questa policy è una misura temporanea e verrà rimossa in un momento successivo
 
       Per ulteriori informazioni sulla Navigazione sicura, visita la pagina https://support.google.com/chrome?p=safe_browsing_preferences.</translation>
 <translation id="2177696016354404697">Disattiva sempre la Schermata privata</translation>
-<translation id="2178899310296064282">Applica almeno la modalità Restrizione moderata su YouTube</translation>
 <translation id="2180260434916939385">Consenti la funzionalità di ricerca nella cronologia basata sull'AI e migliora i modelli di AI.</translation>
 <translation id="2180795125410219364">Le impostazioni di Inizio/Fine sono disattivate</translation>
 <translation id="2180958780733364832">Controlla l'uso della modalità headless</translation>
@@ -5400,7 +5391,6 @@ Per questa policy è possibile definire al massimo 1000 voci.</translation>
 <translation id="4510923771103268849">L'utente può avere accesso root ai contenitori Crostini</translation>
 <translation id="4511848671760711978">Impedisci agli insegnanti di visualizzare gli schermi degli studenti da remoto.</translation>
 <translation id="4512407512989846472">Consente di impedire la copia negli appunti per URL specifici</translation>
-<translation id="4513691822411041977">Non viene forzato l'uso di SafeSearch nella Ricerca Google o nella Modalità con restrizioni di YouTube</translation>
 <translation id="4515404363392014383">Attiva Navigazione sicura per le origini attendibili</translation>
 <translation id="4517327050150780380">Impostazioni per la funzionalità Aiutami a leggere</translation>
 <translation id="4518251772179446575">Chiedi ogni volta che un sito desidera monitorare la posizione fisica degli utenti</translation>
@@ -6564,13 +6554,6 @@ NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai proc
 <translation id="5182483318861266793">Posiziona la barra delle app sul lato destro dello schermo</translation>
 <translation id="51859390023061147">Disattiva la funzionalità di ripristino completo.</translation>
 <translation id="5189360528842591274">Consenti solo la connessione con i servizi Bluetooth nell'elenco</translation>
-<translation id="5190426551516379357">La configurazione della policy applica un livello minimo della Modalità con restrizioni su YouTube e impedisce agli utenti di scegliere un livello meno restrittivo della modalità. Se la policy viene impostata su:
-
-      * Restrizione massima, su YouTube sarà sempre attiva questa modalità.
-
-      * Restrizione moderata, l'utente può scegliere solo le modalità Restrizione moderata e Restrizione massima su YouTube, ma non può disattivare la Modalità con restrizioni.
-
-      * Off, o se il valore non viene configurato, la Modalità con restrizioni su YouTube non viene applicata da Chrome. Le policy esterne, come quelle di YouTube, potrebbero applicare comunque la Modalità con restrizioni.</translation>
 <translation id="5191007233343702012">Utilizza la priorità delle schede standard</translation>
 <translation id="5191476996923842491">Comportamento predefinito per l'impostazione della funzione setTimeout().</translation>
 <translation id="519247340330463721">Configura le norme relative alla Navigazione sicura.</translation>
@@ -8652,13 +8635,6 @@ NOTA: il comportamento predefinito per i dispositivi di consumatori e aziende è
 <translation id="6483115462650732746">Mostra il menu Accessibilità mobile in modalità kiosk</translation>
 <translation id="6491139795995924304">Consenti Bluetooth sul dispositivo</translation>
 <translation id="6491305972928809525">Non mostrare il menu Accessibilità mobile in modalità kiosk</translation>
-<translation id="6491872498385040936">Questa policy è deprecata. È possibile utilizzare la policy <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, che sostituisce questa policy e consente un perfezionamento più preciso.
-
-      Forza la modalità Restrizione moderata di YouTube e impedisce agli utenti di modificare l'impostazione.
-
-      Se questa impostazione viene attivata, verrà sempre applicata almeno la modalità Restrizione moderata di YouTube.
-
-      Se questa impostazione viene disattivata o non viene impostato alcun valore, la Modalità con restrizioni su YouTube non verrà applicata da <ph name="PRODUCT_NAME" />. La Modalità con restrizioni potrebbe essere comunque applicata da policy esterne, ad esempio dalle norme di YouTube.</translation>
 <translation id="6492177700737407141">Gli utenti registrati al programma di protezione avanzata riceveranno solo le protezioni per i consumatori standard</translation>
 <translation id="6492737559291967859">Questa policy consente di specificare la lingua da utilizzare per <ph name="PRODUCT_NAME" />.
 
@@ -9227,7 +9203,6 @@ Se la policy viene disattivata o se non viene configurata, l'utente verrà disco
 <translation id="6857240169209507953">È vietata l'esecuzione di <ph name="BOREALIS_NAME" /> su un dispositivo</translation>
 <translation id="6857372417233723544">Se la policy viene impostata, viene attivato il layout Hindi Inscript su <ph name="PRODUCT_OS_NAME" />.
 Se viene impostata su False o se non viene configurata, il layout non è disponibile. È necessario riavviare per applicare la policy.</translation>
-<translation id="685769593149966548">Applica la modalità Restrizione massima per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="6863927303509860338">Impostazione delle scorciatoie nella pagina Nuova scheda</translation>
 <translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
@@ -9965,7 +9940,6 @@ Il supporto di questa impostazione delle policy terminerà con <ph name="PRODUCT
 <translation id="7238335422094660594">Attiva il provider di <ph name="UIA_NAME" />.</translation>
 <translation id="7241007908714447207">Consenti alle origini delle app web isolate di chiedere di connettersi ai lettori di smart card.</translation>
 <translation id="7241016798422122577">Attiva i controlli con il volto nella schermata di accesso</translation>
-<translation id="7242191282517459095">YouTube (supportato dalla versione 135)</translation>
 <translation id="7244600351241637530">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub possono visualizzare e scaricare su ChromeOS foto e video recenti acquisiti sul proprio telefono.
 
       Se viene disattivata, gli utenti non possono usare questa funzionalità. Gli utenti non possono usare questa funzionalità anche se viene disattivata la policy <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" />.
@@ -11245,7 +11219,6 @@ I valori validi sono compresi tra 1 secondo e 9999 secondi. Se la policy non vie
 
 Questa policy non avrà alcun effetto se la policy <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> viene impostata su false.</translation>
 <translation id="8113731369695819720">Disattiva l'audio in formato mono sulla schermata di accesso</translation>
-<translation id="8114382167597081590">Non imporre la Modalità con restrizioni su YouTube</translation>
 <translation id="8117662664312039036">Non consentire ai dispositivi di utilizzare PluginVm</translation>
 <translation id="8117921351531866504">Consente di stabilire se consentire o meno ai siti web di controllare se l'utente ha salvato dei metodi di pagamento.
 
@@ -11774,7 +11747,6 @@ Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="846994437739309080">Se questa policy è attivata (o non impostata), i certificati TLS aggiunti dagli utenti dagli archivi di attendibilità della piattaforma verranno utilizzati nella creazione di percorsi per l'autenticazione del server TLS.
 
 Se questa policy è disattivata, i certificati TLS aggiunti dagli utenti dagli archivi di attendibilità della piattaforma non verranno utilizzati nella creazione di percorsi per l'autenticazione del server TLS.</translation>
-<translation id="8470317291588703478">Non viene forzata la Modalità con restrizioni di YouTube</translation>
 <translation id="8471117881949952479">Questa policy è stata ritirata e verrà sostituita da DataControlsRules.
 
 Questa policy impedisce la copia dei dati negli appunti per URL specifici.
@@ -11886,7 +11858,6 @@ Il rollback alla versione 106 o precedente di <ph name="PRODUCT_OS_NAME" /> non 
 
       Avviso: è sconsigliato configurare delle limitazioni della versione, poiché potrebbero impedire agli utenti di ricevere aggiornamenti software e correzioni critiche per la sicurezza. Gli aggiornamenti con limitazioni a una versione specifica potrebbero esporre gli utenti a dei rischi.</translation>
 <translation id="8519617069657262768">Attiva la sincronizzazione Google Drive</translation>
-<translation id="8520064498689833152">Viene forzato l'uso almeno del livello medio di SafeSearch nella Ricerca Google e nella Modalità con restrizioni di YouTube</translation>
 <translation id="8520950040439618600">Consenti metodi di autenticazione con PIN e accoppiamento per gli host di accesso remoto</translation>
 <translation id="8524334245528364388">URL per un file JSON con un elenco di server di stampa.</translation>
 <translation id="8525282442896658040">Consente all'app di utilizzare l'autorizzazione delle notifiche temporanee su iOS</translation>
@@ -12137,7 +12108,6 @@ Questa policy è una misura temporanea e verrà rimossa dopo il lancio di alcune
 <translation id="8676959842615154675">Se la policy viene impostata su Attivata, l'host di accesso remoto confronta il nome dell'utente locale a cui è associato l'host con il nome dell'Account Google registrato come proprietario dell'host ("mariorossi" se l'host è di proprietà dell'Account Google "mariorossi@example.com"). Questo host non viene avviato se il nome del proprietario dell'host non coincide con quello dell'utente locale a cui è associato l'host. Per forzare l'associazione dell'Account Google del proprietario con un dominio specifico, usa la policy insieme a <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Se la policy viene impostata su Disattivata o se non viene configurata, l'host di accesso remoto può essere associato a qualsiasi utente locale.</translation>
-<translation id="867708016260789630">Viene forzato l'uso almeno del livello medio della Modalità con restrizioni di YouTube</translation>
 <translation id="8677853537025397834">Consenti l'API WebHID su questi siti</translation>
 <translation id="8684000025871334499">Configura le policy di installazione e runtime per le VM Bruschetta su <ph name="PRODUCT_OS_NAME" />. In questo modo gli utenti possono installare VM di terze parti. Questa funzionalità è disattivata per impostazione predefinita.
 
@@ -12208,7 +12178,6 @@ lo schema HTTPS.</translation>
       "http://acme.com/ABC" corrisponde soltanto in "IESiteListMode".</translation>
 <translation id="8728854710675158426">Hash non sicuri in handshake TLS attivi</translation>
 <translation id="8734543507835977857">Avvia i ritardi di gestione dell'alimentazione e i limiti di durata delle sessioni all'inizio della sessione</translation>
-<translation id="8736538322216687231">Imponi livello minimo della Modalità con restrizioni di YouTube</translation>
 <translation id="873800217865395140">Frequenza di raccolta della telemetria dei siti web in millisecondi.</translation>
 <translation id="8742596277791362306">Questa policy consente di controllare l'abilitazione della funzionalità di insiemi di siti web correlati.
 
@@ -12372,7 +12341,6 @@ Questa policy verrà ignorata se la funzionalità Navigazione sicura viene disat
 Se la policy viene attivata o se non viene configurata, le ricerche trasferite al proxy con una protezione maggiore saranno consentite.
 
 Se la policy viene disattivata, le ricerche trasferite al proxy con una protezione maggiore non saranno consentite. Gli hash parziali degli URL verranno caricati direttamente su Google con una frequenza molto inferiore, il che diminuirà la protezione.</translation>
-<translation id="8858642179038618439">Forza la Modalità di protezione di YouTube</translation>
 <translation id="8860342862142842017">Disattiva l'applicazione di Certificate Transparency per un elenco di hash subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Gli utenti possono configurare il canale di rilascio di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Questa policy consente di impostare un elenco di contenuti scaricabili (DLC) da scaricare il prima possibile. I contenuti scaricati saranno poi disponibili per tutti gli utenti sul dispositivo.

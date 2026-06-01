@@ -256,6 +256,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, izabrana kartica za snimanje</translation>
 <translation id="2141396931810938595">Na osnovu korišćenja</translation>
 <translation id="2145315049852051678">Chrome redovno proverava da li pregledač ima najbezbednija podešavanja. Obavestićemo vas ako treba da pregledate nešto.</translation>
+<translation id="2149968176347646218">Veza nije bezbedna</translation>
 <translation id="2149973817440762519">Izmenite obeleživač</translation>
 <translation id="2163089732491971196">Da biste koristili i čuvali Chrome podatke na Google nalogu, unesite pristupnu frazu</translation>
 <translation id="2166228530126694506">Verzija <ph name="VERSION_NUMBER" /></translation>
@@ -677,6 +678,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, zakačena kartica u režimu slike u slici</translation>
 <translation id="3950820424414687140">Prijavi me</translation>
 <translation id="395377504920307820">Koristi bez naloga</translation>
+<translation id="3955353672249727801">Stranice su dodate na listu za čitanje</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome će učitati stranicu kada bude spremna}one{Chrome će učitati stranice kada budu spremne}few{Chrome će učitati stranice kada budu spremne}other{Chrome će učitati stranice kada budu spremne}}</translation>
 <translation id="3969142555815019568">Chrome ne može da vam proverava lozinke</translation>
 <translation id="3969863827134279083">Pomeri nagore</translation>
@@ -1330,6 +1332,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6595046016124923392">Slike se šalju Google-u radi poboljšanja opisa.</translation>
 <translation id="6602173570135186741">Automatsko popunjavanje i lozinke</translation>
 <translation id="661266467055912436">Poboljšava bezbednost za vas i druge na vebu.</translation>
+<translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6621391692573306628">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chrome na oba uređaja</translation>
 <translation id="6627583120233659107">Izmeni folder</translation>
 <translation id="6633067410344541938">Otključaj kartice bez arhiviranja</translation>

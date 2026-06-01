@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">تحذير</translation>
 <translation id="1056980582064308040">سيؤدي تغيير الإعدادات إلى إعادة تشغيل نقطة الاتصال. سينقطع اتصال الأجهزة التي تستخدم نقطة الاتصال بالإنترنت.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">توقّف تنفيذ المَهمة</translation>
 <translation id="1059484610606223931">‏تأمين بروتوكول نقل الروابط النصية (HTTPS)</translation>
 <translation id="1059944192885972544">تم العثور على <ph name="NUM" /> علامات تبويب حول "<ph name="SEARCH_TEXT" />".</translation>
 <translation id="1060172044035704924">التبديل مع العرض الأيمن</translation>
@@ -2332,6 +2331,7 @@
 <translation id="2665056444046933274">السماح للمواقع الإلكترونية باستخدام هذه الميزة للوصول إلى التطبيقات والخدمات الأخرى على هذا الجهاز</translation>
 <translation id="2665394472441560184">إضافة كلمة جديدة</translation>
 <translation id="2665647207431876759">منتهي الصلاحية</translation>
+<translation id="2666092431469916601">أعلى</translation>
 <translation id="2666247341166669829">مستوى شحن بطارية السماعة اليسرى %<ph name="PERCENTAGE" />.</translation>
 <translation id="2667144577800272420">تم ضبط تطبيقات أخرى لفتح الروابط نفسها مثل <ph name="APP_NAME" />. وسيؤدي هذا الإجراء إلى منع <ph name="APP_NAME_2" /> و<ph name="APP_NAME_3" /> من فتح الروابط المتوافقة.</translation>
 <translation id="2667463864537187133">إدارة التدقيق الإملائي</translation>
@@ -2927,6 +2927,7 @@
 <translation id="3084548735795614657">إسقاط للتثبيت</translation>
 <translation id="3084771660770137092">‏ربما نفدت الذاكرة لدى Chrome أو تم إنهاء العملية لصفحة الويب لسبب آخر. للمتابعة، أعد التحميل أو انتقل إلى صفحة أخرى.</translation>
 <translation id="3085412380278336437">يمكن للموقع الإلكتروني استخدام الكاميرا.</translation>
+<translation id="3087734570205094154">أسفل</translation>
 <translation id="3088052000289932193">‏يستخدم الموقع الإلكتروني جهاز MIDI.</translation>
 <translation id="3088325635286126843">إ&amp;عادة تسمية...</translation>
 <translation id="3089137131053189723">تم محو البحث</translation>
@@ -4414,6 +4415,7 @@
 <translation id="4170314459383239649">محو عند الخروج</translation>
 <translation id="4170685671197375581">تفعيل الاختصار</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{‏مشاركة علامة التبويب مع Gemini}zero{‏مشاركة # علامة تبويب مع Gemini}two{‏مشاركة علامتَي تبويب مع Gemini}few{‏مشاركة # علامات تبويب مع Gemini}many{‏مشاركة # علامة تبويب مع Gemini}other{‏مشاركة # علامة تبويب مع Gemini}}</translation>
+<translation id="4172051516777682613">الإظهار دائمًا</translation>
 <translation id="4172944993779635350">تم حفظ كلمة المرور للموقع الإلكتروني "<ph name="URL" />" على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك.</translation>
 <translation id="4173129130568053653">‏يمكن أن يساعدك Gemini في حجز المواعيد أو إنشاء سلّات التسوّق أو تنفيذ مهام أخرى تُحدَّد له.</translation>
 <translation id="4175137578744761569">أرجواني فاتح وأبيض</translation>
@@ -5790,6 +5792,7 @@
 <translation id="5189274947477567401">يتطلب إيقاف مشاركة العمليات إعادة تشغيل هذا المتصفّح. ستتم إعادة تشغيله الآن.</translation>
 <translation id="5189404424758444348">خيال علمي عن الآلات البخارية</translation>
 <translation id="5190577235024772869">مساحة التخزين المستخدَمة: <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">شريط الإشارات</translation>
 <translation id="5190926251776387065">تفعيل المنفذ</translation>
 <translation id="5190959794678983197">ما مِن ميكروفون متّصل بالجهاز.</translation>
 <translation id="5191094172448199359">رقما التعريف الشخصيان اللذان أدخلتهما غير متطابقَين</translation>
@@ -7627,6 +7630,7 @@
 <translation id="6582274660680936615">أنت الآن تتصفّح في وضع الضيف</translation>
 <translation id="6583328141350416497">مواصلة التنزيل</translation>
 <translation id="6584878029876017575">‏التوقيع مدى الحياة لـ Microsoft</translation>
+<translation id="6585124893636629274">‏إغلاق Gemini في Chrome</translation>
 <translation id="6585584201072946561">يمكنك تغيير حجم النص وخطه في متصفّح الويب.</translation>
 <translation id="6586099239452884121">تصفح الضيف</translation>
 <translation id="6586451623538375658">تبديل زر الماوس الرئيسي</translation>
@@ -10086,6 +10090,7 @@
 <translation id="8347227221149377169">مهام الطباعة</translation>
 <translation id="8348430946834215779">‏استخدِم بروتوكول HTTPS كلما أمكن ذلك واحصل على تحذيرات قبل تحميل المواقع الإلكترونية غير المتوافقة معه</translation>
 <translation id="8348896480272971199">يُرجى التحقّق من اتصالك بالإنترنت وإعادة المحاولة.</translation>
+<translation id="8349305172487531364">شريط الإشارات</translation>
 <translation id="8349325309815489209">الإضافات مسموح بها على هذا الموقع الإلكتروني.</translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8350789879725387295">أدوات قلم الشاشة في لوحة الأدوات</translation>
@@ -10488,7 +10493,6 @@
 <translation id="8651585100578802546">فرض إعادة تحميل هذه الصفحة</translation>
 <translation id="8651806635673244884">يمكنك إعادة علامات التبويب إلى الأعلى من خلال النقر بزر الماوس الأيمن على أي علامة تبويب واختيار "عرض علامات التبويب أفقيًا"</translation>
 <translation id="8652400352452647993">خطأ في حزمة الإضافة</translation>
-<translation id="8652412805227733853">تم تأكيد عنوان البريد الإلكتروني تلقائيًا</translation>
 <translation id="8654151524613148204">عذرًا، الملف كبير جدًا حتى يتمكن الكمبيوتر من معالجته.</translation>
 <translation id="8655295600908251630">القناة</translation>
 <translation id="8655972064210167941">فشل تسجيل الدخول، نظرًا لعدم القدرة على التحقق من كلمة مرورك، يُرجى الاتصال بالمسؤول أو إعادة المحاولة.</translation>

@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">ચેતવણી</translation>
 <translation id="1056980582064308040">સેટિંગમાં ફેરફાર કરવાથી હૉટસ્પૉટ ફરી શરૂ થશે. હૉટસ્પૉટનો ઉપયોગ કરી રહેલા ડિવાઇસ ડિસ્કનેક્ટ થઈ જશે.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">કાર્યમાં વિક્ષેપ આવ્યો</translation>
 <translation id="1059484610606223931">હાઇપરટેક્સ્ટ ટ્રાન્સપોર્ટ પ્રોટોકૉલ (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' માટે <ph name="NUM" /> ટૅબ મળી</translation>
 <translation id="1060172044035704924">જમણા વ્યૂ સાથે સ્વૉપ કરો</translation>
@@ -2328,6 +2327,7 @@
 <translation id="2665056444046933274">સાઇટ આ ડિવાઇસ પરની અન્ય ઍપ અને સેવાઓને ઍક્સેસ કરવા માટે આ સુવિધાનો ઉપયોગ કરી શકે છે</translation>
 <translation id="2665394472441560184">એક નવો શબ્દ ઉમેરો</translation>
 <translation id="2665647207431876759">સમય સમાપ્ત થયો</translation>
+<translation id="2666092431469916601">ઉપર</translation>
 <translation id="2666247341166669829">ડાબા વાયરલેસ ઇયરબડમાં બૅટરીનું લેવલ <ph name="PERCENTAGE" />% છે.</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" />ની જેમજ અન્ય ઍપ પણ આ બધી લિંક ખોલવા માટે સેટ કરવામાં આવી છે. આમ કરવાથી <ph name="APP_NAME_2" /> અને <ph name="APP_NAME_3" /> સપોર્ટેડ લિંક ખોલી શકશે નહીં.</translation>
 <translation id="2667463864537187133">જોડણીની તપાસ મેનેજ કરો</translation>
@@ -2923,6 +2923,7 @@
 <translation id="3084548735795614657">ઇન્સ્ટોલ કરવા છોડો</translation>
 <translation id="3084771660770137092">Chromeની મેમરી પૂરી થઈ ગઈ છે અથવા કોઈ અન્ય કારણસર વેબપેજની પ્રક્રિયા બંધ થઈ ગઈ છે. ચાલુ રાખવા માટે, ફરીથી લોડ કરો અથવા બીજા પેજ પર જાઓ.</translation>
 <translation id="3085412380278336437">સાઇટ તમારા કૅમેરાનો ઉપયોગ કરી શકે છે</translation>
+<translation id="3087734570205094154">તળિયું</translation>
 <translation id="3088052000289932193">સાઇટ MIDIનો ઉપયોગ કરી રહી છે</translation>
 <translation id="3088325635286126843">&amp;નામ બદલો...</translation>
 <translation id="3089137131053189723">શોધ સાફ કરી</translation>
@@ -4412,6 +4413,7 @@
 <translation id="4170314459383239649">બહાર નીકળવા પર સાફ કરો</translation>
 <translation id="4170685671197375581">શૉર્ટકટ ચાલુ કરો</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Gemini સાથે ટૅબ શેર કરો}one{Gemini સાથે # ટૅબ શેર કરો}other{Gemini સાથે # ટૅબ શેર કરો}}</translation>
+<translation id="4172051516777682613">હંમેશા બતાવો</translation>
 <translation id="4172944993779635350">"<ph name="URL" />" માટેનો તમારો પાસવર્ડ માત્ર આ ડિવાઇસ પર સાચવવામાં આવ્યો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા એકાઉન્ટમાં સાચવો.</translation>
 <translation id="4173129130568053653">Gemini તમને અપૉઇન્ટમેન્ટ બુક કરવામાં, શૉપિંગ કાર્ટ બનાવવામાં અથવા તમે તેને આપો તેવા અન્ય કાર્યો કરવામાં મદદ કરી શકે છે.</translation>
 <translation id="4175137578744761569">આછો જાંબલી અને સફેદ</translation>
@@ -5788,6 +5790,7 @@
 <translation id="5189274947477567401">શેરિંગ પ્રક્રિયાને નાપસંદ કરવા માટે, બ્રાઉઝરને ફરી શરૂ કરવું જરૂરી છે. હવે આ બ્રાઉઝર ફરી શરૂ થશે.</translation>
 <translation id="5189404424758444348">સ્ટીમપંક</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" />નો ઉપયોગ કરી રહ્યું છે</translation>
+<translation id="5190835502935405962">બુકમાર્ક બાર</translation>
 <translation id="5190926251776387065">પોર્ટ સક્રિય કરો</translation>
 <translation id="5190959794678983197">કોઈ માઇક્રોફોન નથી</translation>
 <translation id="5191094172448199359">તમે દાખલ કરેલા પિન મેળ ખાતા નથી</translation>
@@ -7628,6 +7631,7 @@ USB ડિવાઇસ</translation>
 <translation id="6582274660680936615">તમે અતિથિ તરીકે બ્રાઉઝ કરી રહ્યાં છો</translation>
 <translation id="6583328141350416497">ડાઉનલોડ ચાલુ રાખો</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
+<translation id="6585124893636629274">Chromeમાં Gemini બંધ કરો</translation>
 <translation id="6585584201072946561">વેબ બ્રાઉઝર માટે ટેક્સ્ટનું કદ અને ફૉન્ટ કસ્ટમાઇઝ કરો</translation>
 <translation id="6586099239452884121">અતિથિ બ્રાઉઝિંગ</translation>
 <translation id="6586451623538375658">પ્રાથમિક માઉસ બટનને સ્વેપ કરો</translation>
@@ -10075,6 +10079,7 @@ USB ડિવાઇસ</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>
 <translation id="8348430946834215779">જ્યારે પણ શક્ય હોય ત્યારે HTTPSનો ઉપયોગ કરો અને તેને સપોર્ટ કરતી ન હોય તેવી સાઇટને લોડ કરતા પહેલાં ચેતવણી મેળવો</translation>
 <translation id="8348896480272971199">તમારું ઇન્ટરનેટ ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="8349305172487531364">બુકમાર્ક બાર</translation>
 <translation id="8349325309815489209">આ સાઇટ પર એક્સ્ટેન્શનની મંજૂરી છે</translation>
 <translation id="8349826889576450703">લૉન્ચર</translation>
 <translation id="8350789879725387295">ડૉકમાં સ્ટાયલસના સાધનો બતાવો</translation>
@@ -10477,7 +10482,6 @@ USB ડિવાઇસ</translation>
 <translation id="8651585100578802546">આ પેજ ફરજિયાત ફરીથી લોડ કરો</translation>
 <translation id="8651806635673244884">તમે કોઈપણ ટૅબ પર રાઇટ ક્લિક કરીને અને “ટૅબને આડી રીતે બતાવો” પસંદ કરીને તમારા ટૅબને પાછા સૌથી ઉપર ખસેડી શકો છો</translation>
 <translation id="8652400352452647993">પૅક એક્સટેન્શન ભૂલ</translation>
-<translation id="8652412805227733853">ઇમેઇલની ચકાસણી ઑટોમૅટિક રીતે કરવામાં આવી</translation>
 <translation id="8654151524613148204">આ ફાઇલ તમારા કમ્પ્યુટરને મેનેજ કરવા માટે ખૂબ મોટી છે. માફ કરશો.</translation>
 <translation id="8655295600908251630">ચેનલ</translation>
 <translation id="8655972064210167941">સાઇન-ઇન નિષ્ફળ થયું કારણ કે તમારો પાસવર્ડ ચકાસી શકાયો નથી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો અથવા ફરી પ્રયાસ કરો.</translation>

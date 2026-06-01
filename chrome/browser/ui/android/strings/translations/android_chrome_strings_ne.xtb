@@ -256,6 +256,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, चयन गरिएको रेकर्डिङ ट्याब</translation>
 <translation id="2141396931810938595">तपाईंको प्रयोगका आधारमा</translation>
 <translation id="2145315049852051678">Chrome ले नियमित रूपमा जाँचेर तपाईंको ब्राउजरका सेटिङ सबैभन्दा सुरक्षित छन् भन्ने कुरा सुनिश्चित गर्छ। केही कुराको समीक्षा गर्नु पर्ने भएमा हामी तपाईंलाई जानकारी गराउने छौँ।</translation>
+<translation id="2149968176347646218">इन्टरनेट सुरक्षित छैन</translation>
 <translation id="2149973817440762519">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="2163089732491971196">तपाईं आफ्नो Google खातामा सेभ गरिएको Chrome को डेटा प्रयोग गर्न र Google खातामा Chrome को थप डेटा सेभ गर्न चाहनुहुन्छ भने आफ्नो पासफ्रेज हाल्नुहोस्</translation>
 <translation id="2166228530126694506">संस्करण <ph name="VERSION_NUMBER" /></translation>
@@ -677,6 +678,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, पिन गरिएको Picture-in-Picture ट्याब</translation>
 <translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
 <translation id="395377504920307820">खातामा लग इन नगरिकन चलाउनुहोस्</translation>
+<translation id="3955353672249727801">पेजहरू रिडिङ लिस्टमा हालिएका छन्</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{यन्त्र तयार भएपछि Chrome ले तपाईंको पृष्ठ लोड गर्ने छ}other{यन्त्र तयार भएपछि Chrome ले तपाईंका पृष्ठहरू लोड गर्ने छ}}</translation>
 <translation id="3969142555815019568">Chrome ले तपाईंका पासवर्डहरू जाँच्न सकेन</translation>
 <translation id="3969863827134279083">माथि सार्नुहोस्</translation>
@@ -1329,6 +1331,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6595046016124923392">तपाईंलाई उपलब्ध गराइने विवरणहरूमा सुधार ल्याउन फोटोहरू Google मा पठाइन्छन्।</translation>
 <translation id="6602173570135186741">अटोफिल तथा पासवर्डहरू</translation>
 <translation id="661266467055912436">तपाईं र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई झन् सुरक्षित पार्छ।</translation>
+<translation id="6615455863669487791">मलाई देखाउनुहोस्</translation>
 <translation id="6621391692573306628">तपाईं यो ट्याब अर्को डिभाइसमा पठाउन चाहनुहुन्छ भने दुवै डिभाइसमा Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="6627583120233659107">फोल्डर सम्पादन गर्नुहोस्</translation>
 <translation id="6633067410344541938">इन्कोग्निटो अनलक गर्नुहोस्</translation>

@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Avertisment</translation>
 <translation id="1056980582064308040">Dacă modifici setările, hotspotul va reporni. Dispozitivele care folosesc hotspotul se vor deconecta.</translation>
 <translation id="1058262162121953039">Codul PUK</translation>
-<translation id="1058848978232174442">Activitatea a fost întreruptă</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">S-au găsit <ph name="NUM" /> file pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="1060172044035704924">Schimbă cu afișarea din dreapta</translation>
@@ -2329,6 +2328,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2665056444046933274">Site-urile pot folosi această funcție pentru a accesa alte aplicații și servicii de pe acest dispozitiv.</translation>
 <translation id="2665394472441560184">Adăugați un cuvânt</translation>
 <translation id="2665647207431876759">Expirat</translation>
+<translation id="2666092431469916601">Sus</translation>
 <translation id="2666247341166669829">Nivelul bateriei din stânga: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Alte aplicații sunt setate să deschidă aceleași linkuri ca <ph name="APP_NAME" />. Astfel, <ph name="APP_NAME_2" /> și <ph name="APP_NAME_3" /> vor fi setate să nu mai deschidă linkurile acceptate.</translation>
 <translation id="2667463864537187133">Gestionează verificarea ortografiei</translation>
@@ -2924,6 +2924,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3084548735795614657">Plasați pentru instalare</translation>
 <translation id="3084771660770137092">Fie Chrome nu are suficientă memorie, fie procesarea paginii web a fost întreruptă dintr-un alt motiv. Pentru a continua, reîncarcă sau accesează altă pagină.</translation>
 <translation id="3085412380278336437">Site-ul poate folosi camera foto</translation>
+<translation id="3087734570205094154">Jos</translation>
 <translation id="3088052000289932193">Site-ul folosește dispozitive MIDI</translation>
 <translation id="3088325635286126843">&amp;Redenumiți...</translation>
 <translation id="3089137131053189723">Căutarea a fost ștearsă</translation>
@@ -4412,6 +4413,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4170314459383239649">Șterge la ieșire</translation>
 <translation id="4170685671197375581">Activează comanda rapidă</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Trimite fila la Gemini}few{Trimite # file la Gemini}other{Trimite # de file la Gemini}}</translation>
+<translation id="4172051516777682613">Afișați întotdeauna</translation>
 <translation id="4172944993779635350">Parola pentru <ph name="URL" /> se salvează numai pe acest dispozitiv. Pentru a o folosi pe celelalte dispozitive, salveaz-o în cont.</translation>
 <translation id="4173129130568053653">Gemini te poate ajuta să faci programări, să creezi coșuri de cumpărături sau să faci alte activități pe care le soliciți.</translation>
 <translation id="4175137578744761569">Mov deschis și alb</translation>
@@ -5787,6 +5789,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5189274947477567401">Pentru a renunța la distribuirea proceselor, trebuie să repornești browserul. Acest browser va reporni acum.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Folosești <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Bară de marcaje</translation>
 <translation id="5190926251776387065">Activează portul</translation>
 <translation id="5190959794678983197">Niciun microfon</translation>
 <translation id="5191094172448199359">Codurile PIN introduse nu sunt identice</translation>
@@ -7623,6 +7626,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6582274660680936615">Navighezi ca invitat</translation>
 <translation id="6583328141350416497">Continuă descărcarea</translation>
 <translation id="6584878029876017575">Semnare Microsoft pe durata de viață</translation>
+<translation id="6585124893636629274">Închide Gemini în Chrome</translation>
 <translation id="6585584201072946561">Personalizează dimensiunea și fontul textului pentru browserul web</translation>
 <translation id="6586099239452884121">Navigare ca invitat</translation>
 <translation id="6586451623538375658">Comutați butonul principal al mouse-ului</translation>
@@ -10075,6 +10079,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8347227221149377169">Sarcini de printare</translation>
 <translation id="8348430946834215779">Folosește HTTPS ori de câte ori este posibil și primește un avertisment înainte de a încărca site-uri care nu acceptă acest protocol</translation>
 <translation id="8348896480272971199">Verifică-ți conexiunea la internet și încearcă din nou.</translation>
+<translation id="8349305172487531364">Bara de marcaje</translation>
 <translation id="8349325309815489209">Extensii permise pe acest site</translation>
 <translation id="8349826889576450703">lansator</translation>
 <translation id="8350789879725387295">Instrumente pentru creion fixate</translation>
@@ -10477,7 +10482,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8651585100578802546">Reîncarcă forțat această pagină</translation>
 <translation id="8651806635673244884">Poți să muți filele înapoi în partea de sus dacă dai clic dreapta pe orice filă și selectezi Afișează filele pe orizontală</translation>
 <translation id="8652400352452647993">Eroare privind pachetul pentru extensie</translation>
-<translation id="8652412805227733853">Adresa de e-mail a fost confirmată automat</translation>
 <translation id="8654151524613148204">Din păcate, fișierul este prea mare pentru a putea fi gestionat de computerul dvs.</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">Nu s-a conectat, deoarece parola nu a putut fi confirmată. Contactează administratorul sau încearcă din nou.</translation>

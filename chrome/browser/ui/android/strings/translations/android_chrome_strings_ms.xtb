@@ -160,7 +160,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1680919990519905526">Beli-belah dgn Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020dan ditutup selepas <ph name="MONTHS_ARCHIVED" /> bulan</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
-<translation id="1693502405710207752">Kemukakan pertanyaan AI semasa anda menyemak imbas</translation>
 <translation id="1696555181932908973">Anda boleh mencuba cara lain untuk meneruskan pada <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="1702543251015153180">Tukar tetapan tema gelap anda?</translation>
 <translation id="1702907158640575240">Penyemak imbas terurus</translation>
@@ -257,6 +256,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, Tab Rakaman Yang Dipilih</translation>
 <translation id="2141396931810938595">Berdasarkan penggunaan anda</translation>
 <translation id="2145315049852051678">Chrome sentiasa menyemak untuk memastikan penyemak imbas anda menawarkan tetapan paling selamat. Kami akan memaklumi anda jika terdapat apa-apa yang memerlukan semakan.</translation>
+<translation id="2149968176347646218">Sambungan tidak selamat</translation>
 <translation id="2149973817440762519">Edit Penanda Halaman</translation>
 <translation id="2163089732491971196">Untuk menggunakan dan menyimpan data Chrome dalam Google Account anda, masukkan ungkapan laluan anda</translation>
 <translation id="2166228530126694506">Versi <ph name="VERSION_NUMBER" /></translation>
@@ -287,7 +287,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2249635629516220541">Sesuaikan maklumat yang digunakan oleh laman untuk memaparkan iklan kepada anda</translation>
 <translation id="2251809247798634662">Tetingkap Inkognito baharu</translation>
 <translation id="2253927598983295051">Pilih kandungan yang mahu dikongsi dengan <ph name="APP_NAME" /></translation>
-<translation id="2257496708195024905">Buat tab baharu</translation>
 <translation id="2261570557291037252">Lagi maklumat apl</translation>
 <translation id="2276696007612801991">Log masuk ke Google Account anda untuk menyemak kata laluan anda</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" />, Tab Inkognito yang Dipilih</translation>
@@ -679,6 +678,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Tab Gambar dalam Gambar yang Disematkan</translation>
 <translation id="3950820424414687140">Log masuk</translation>
 <translation id="395377504920307820">Gunakan tanpa akaun</translation>
+<translation id="3955353672249727801">Halaman ditambahkan pada senarai bacaan</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome akan memuatkan halaman anda apabila sudah sedia}other{Chrome akan memuatkan halaman anda apabila sudah sedia}}</translation>
 <translation id="3969142555815019568">Chrome tidak dapat menyemak kata laluan anda</translation>
 <translation id="3969863827134279083">Alihkan ke Atas</translation>
@@ -1332,6 +1332,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6595046016124923392">Imej dihantar kepada Google untuk meningkatkan perihalan untuk anda.</translation>
 <translation id="6602173570135186741">Autolengkap dan kata laluan</translation>
 <translation id="661266467055912436">Meningkatkan keselamatan untuk anda dan semua orang yang melayari web.</translation>
+<translation id="6615455863669487791">Tunjukkan kepada saya</translation>
 <translation id="6621391692573306628">Untuk menghantar tab ini ke peranti lain, log masuk ke Chrome pada kedua-dua peranti</translation>
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6633067410344541938">Buka kunci Inkognito</translation>

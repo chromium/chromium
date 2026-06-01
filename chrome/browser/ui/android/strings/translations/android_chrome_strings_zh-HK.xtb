@@ -256,6 +256,7 @@
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />，揀咗錄緊媒體嘅分頁</translation>
 <translation id="2141396931810938595">根據使用情況</translation>
 <translation id="2145315049852051678">Chrome 會定期檢查，確保瀏覽器採用最安全的設定。如有任何需要你檢查的事項，我們會通知你。</translation>
+<translation id="2149968176347646218">連線不安全</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2163089732491971196">如要將 Chrome 的資料儲存至 Google 帳戶及使用這類資料，請輸入密碼短語</translation>
 <translation id="2166228530126694506">版本 <ph name="VERSION_NUMBER" /></translation>
@@ -677,6 +678,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />，固定咗畫中畫分頁</translation>
 <translation id="3950820424414687140">登入</translation>
 <translation id="395377504920307820">不登入帳戶使用</translation>
+<translation id="3955353672249727801">已將頁面加入閱讀清單</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome 準備就緒後將載入您的網頁}other{Chrome 準備就緒後將載入您的網頁}}</translation>
 <translation id="3969142555815019568">Chrome 無法檢查密碼</translation>
 <translation id="3969863827134279083">向上移動</translation>
@@ -1330,6 +1332,7 @@
 <translation id="6595046016124923392">圖片會傳送至 Google，以便為您提供更完善的說明。</translation>
 <translation id="6602173570135186741">自動填入和密碼</translation>
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
+<translation id="6615455863669487791">顯示</translation>
 <translation id="6621391692573306628">如要將此分頁傳送至其他裝置，請在這兩部裝置上登入 Chrome</translation>
 <translation id="6627583120233659107">編輯資料夾</translation>
 <translation id="6633067410344541938">解鎖無痕模式</translation>

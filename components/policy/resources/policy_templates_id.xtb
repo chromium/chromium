@@ -465,13 +465,6 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 <translation id="1340053691042184658">Cegah login browser tamu</translation>
 <translation id="1342918903685430097">Mengonfigurasi versi minimum <ph name="PRODUCT_OS_NAME" /> yang diizinkan untuk perangkat.</translation>
 <translation id="1343128241903870688">Nonaktifkan pelaporan info aplikasi perangkat</translation>
-<translation id="1347198119056266798">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> dan <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Kebijakan ini diabaikan jika salah satu dari kebijakan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> atau <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (tidak digunakan lagi) ditetapkan.
-
-      Memaksa kueri di Google Penelusuran Web untuk dijalankan dengan SafeSearch disetel ke aktif dan mencegah pengguna mengubah setelan ini. Setelan ini juga memaksa Mode Terbatas Menengah di YouTube.
-
-      Jika setelan ini diaktifkan, SafeSearch di Google Penelusuran dan Mode Terbatas Menengah di YouTube akan selalu aktif.
-
-      Jika setelan ini dinonaktifkan atau tidak ditetapkan ke suatu nilai, SafeSearch di Google Penelusuran dan Mode Terbatas di YouTube tidak akan diberlakukan.</translation>
 <translation id="134745581157553029">Jika kebijakan "DeviceArcDataSnapshotHours" disetel, mekanisme pembuatan snapshot data ARC akan diaktifkan. Dengan begitu, pembaruan snapshot data ARC dapat otomatis dimulai selama interval waktu yang ditentukan. Jika interval dimulai, pembaruan snapshot data ARC akan diperlukan dan tidak ada pengguna yang login. Pada saat itu, proses pembaruan snapshot data ARC akan dimulai tanpa notifikasi pengguna. Jika sesi pengguna aktif, notifikasi UI akan ditampilkan dan harus diterima untuk memulai ulang perangkat dan memulai proses pembaruan snapshot data ARC. Catatan: penggunaan perangkat akan diblokir selama proses pembaruan snapshot data ARC.</translation>
 <translation id="1348603614848418219">Nonaktifkan migrasi perangkat yang dikelola <ph name="MS_AD_NAME" /> ke pengelolaan cloud.</translation>
 <translation id="1352799151662469739">Durasi waktu tanpa input pengguna sebelum layar terkunci saat menggunakan daya AC, dalam milidetik.</translation>
@@ -1471,7 +1464,6 @@ Catatan: Jika diblokir, URL chrome://* dan chrome-untrusted://* internal dapat m
 <translation id="1963986268950915756">Aktifkan Penginstalan Aplikasi Web Pengguna dari Browser</translation>
 <translation id="1964191545419036999">Galeri (didukung sejak versi 117)</translation>
 <translation id="1964634611280150550">Mode samaran dinonaktifkan</translation>
-<translation id="1964802606569741174">Kebijakan ini tidak memengaruhi aplikasi YouTube Android. Jika Mode Perlindungan di YouTube harus diterapkan, penginstalan aplikasi YouTube Android harus dilarang.</translation>
 <translation id="1964985353230379667">Menentukan konfigurasi <ph name="KRB5_CONFIG" /> yang disarankan untuk tiket baru yang dibuat secara manual.
 
       Jika kebijakan 'KerberosUseCustomPrefilledConfig' disetel ke aktif, nilai kebijakan akan diterapkan sebagai konfigurasi yang disarankan dan akan ditampilkan di bagian "Lanjutan" pada dialog autentikasi Kerberos. Jika kebijakan ini disetel ke string kosong atau tidak disetel, konfigurasi <ph name="PRODUCT_OS_NAME" /> yang direkomendasikan akan dihapus.
@@ -1840,7 +1832,6 @@ Kebijakan ini merupakan tindakan sementara dan akan dihapus tidak lama setelah <
 
       Lihat https://support.google.com/chrome?p=safe_browsing_preferences untuk info selengkapnya tentang Safe Browsing.</translation>
 <translation id="2177696016354404697">Selalu nonaktifkan layar privasi</translation>
-<translation id="2178899310296064282">Terapkan setidaknya Mode Terbatas Menengah di YouTube</translation>
 <translation id="2180260434916939385">Izinkan Penelusuran Histori AI dan tingkatkan kualitas model AI.</translation>
 <translation id="2180795125410219364">Setelan Home/End dinonaktifkan</translation>
 <translation id="2180958780733364832">Mengontrol penggunaan Mode Headless</translation>
@@ -5510,7 +5501,6 @@ Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="4510923771103268849">Pengguna diizinkan untuk memiliki akses root ke penampung Crostini</translation>
 <translation id="4511848671760711978">Cegah pengajar melihat layar siswa dari jarak jauh.</translation>
 <translation id="4512407512989846472">Memungkinkan pemblokiran penyalinan ke papan klip pada URL tertentu</translation>
-<translation id="4513691822411041977">Jangan terapkan penggunaan SafeSearch di Google Penelusuran atau Mode Terbatas YouTube</translation>
 <translation id="4515404363392014383">Aktifkan Safe Browsing untuk sumber tepercaya</translation>
 <translation id="4517327050150780380">Setelan untuk fitur Bantu Baca</translation>
 <translation id="4518251772179446575">Tanyakan setiap kali situs ingin melacak lokasi fisik pengguna</translation>
@@ -6718,13 +6708,6 @@ kebijakan ini saat browser berjalan.</translation>
 <translation id="5182483318861266793">Posisikan rak di sisi kanan layar</translation>
 <translation id="51859390023061147">Nonaktifkan fitur pemulihan penuh.</translation>
 <translation id="5189360528842591274">Hanya mengizinkan koneksi ke layanan Bluetooth dalam daftar</translation>
-<translation id="5190426551516379357">Menyetel kebijakan akan menerapkan Mode Terbatas minimum di YouTube dan mencegah pengguna memilih mode yang kurang dibatasi. Jika disetel ke:
-
-      * Ketat, Mode Terbatas Ketat di YouTube selalu aktif.
-
-      * Menengah, pengguna hanya dapat memilih Mode Terbatas Menengah atau Ketat di YouTube tetapi tidak dapat menonaktifkan Mode terbatas.
-
-      * Nonaktif atau jika tidak ada nilai yang ditetapkan, Chrome tidak akan menerapkan Mode Terbatas di YouTube. Kebijakan eksternal seperti kebijakan YouTube tetap dapat memberlakukan Mode Terbatas.</translation>
 <translation id="5191007233343702012">Gunakan prioritas tab standar</translation>
 <translation id="5191476996923842491">'Perilaku default untuk penundaan minimum fungsi setTimeout().</translation>
 <translation id="519247340330463721">Mengonfigurasi kebijakan terkait Safe Browsing.</translation>
@@ -8886,13 +8869,6 @@ CATATAN: Perilaku default bagi perangkat konsumen dan perusahaan berbeda: P2P ak
 <translation id="6483115462650732746">Tampilkan menu aksesibilitas mengambang dalam mode kios</translation>
 <translation id="6491139795995924304">Izinkan bluetooth di perangkat</translation>
 <translation id="6491305972928809525">Jangan tampilkan menu aksesibilitas mengambang dalam mode kios</translation>
-<translation id="6491872498385040936">Kebijakan ini tidak digunakan lagi. Pertimbangkan untuk menggunakan kebijakan <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, yang mengganti kebijakan ini dan memungkinkan penyelarasan yang lebih mendetail.
-
-      Memaksa Mode Terbatas Menengah di YouTube dan mencegah pengguna mengubah setelan ini.
-
-      Jika setelan ini diaktifkan, Mode Terbatas di YouTube akan selalu diberlakukan setidaknya ke Menengah.
-
-      Jika setelan ini dinonaktifkan atau tidak ditetapkan ke nilai apa pun, Mode Terbatas di YouTube tidak akan diberlakukan oleh <ph name="PRODUCT_NAME" />. Namun, kebijakan eksternal seperti kebijakan YouTube tetap dapat memberlakukan Mode Terbatas.</translation>
 <translation id="6492177700737407141">Pengguna yang terdaftar dalam Program Perlindungan Lanjutan hanya akan menerima perlindungan konsumen standar</translation>
 <translation id="6492737559291967859">Menetapkan kebijakan akan menentukan lokal yang digunakan oleh <ph name="PRODUCT_NAME" />.
 
@@ -9473,7 +9449,6 @@ Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna hanya akan l
 <translation id="6857240169209507953">Cegah <ph name="BOREALIS_NAME" /> berjalan di perangkat</translation>
 <translation id="6857372417233723544">Menyetel kebijakan ini akan mengaktifkan Tata Letak Inscript Hindi di <ph name="PRODUCT_OS_NAME" />.
 Jika kebijakan ini disetel ke salah (false) atau tidak disetel, tata letak tidak akan tersedia. Perlu mulai ulang agar dapat diterapkan.</translation>
-<translation id="685769593149966548">Terapkan Mode Terbatas Ketat untuk YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 atau lebih baru</translation>
 <translation id="6863927303509860338">Menyetel pintasan di Halaman Tab Baru</translation>
 <translation id="6866755486434471318">Mengizinkan <ph name="PEPPER_NAME" /> menggunakan gambar yang dibagikan untuk decoding video.</translation>
@@ -10246,7 +10221,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7238335422094660594">Mengaktifkan penyedia <ph name="UIA_NAME" />.</translation>
 <translation id="7241007908714447207">Izinkan origin Aplikasi Web Terisolasi (IWA) untuk meminta koneksi ke pembaca kartu smart.</translation>
 <translation id="7241016798422122577">Aktifkan fitur kontrol dengan wajah di layar login</translation>
-<translation id="7242191282517459095">YouTube (didukung sejak versi 135)</translation>
 <translation id="7244600351241637530">Jika setelan ini diaktifkan, pengguna yang telah memilih untuk menggunakan Phone Hub akan dapat melihat dan mendownload foto serta video yang terakhir diambil di ponselnya di ChromeOS.
 
       Jika setelan ini dinonaktifkan, pengguna tidak akan diizinkan menggunakan fitur ini. Jika kebijakan <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> disetel ke nonaktif, pengguna juga tidak akan diizinkan menggunakan fitur ini.
@@ -11548,7 +11522,6 @@ Nilai yang valid berkisar dari 1 detik hingga 9999 detik. Jika kebijakan tidak d
 
 Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> disetel ke salah (false).</translation>
 <translation id="8113731369695819720">Nonaktifkan audio mono di layar login</translation>
-<translation id="8114382167597081590">Jangan terapkan Mode Terbatas di YouTube</translation>
 <translation id="8117662664312039036">Jangan izinkan perangkat menggunakan PluginVm</translation>
 <translation id="8117921351531866504">Memungkinkan Anda menentukan situs diizinkan atau tidak untuk memeriksa apakah pengguna telah menyimpan metode pembayaran.
 
@@ -12084,7 +12057,6 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihu
 <translation id="846994437739309080">Jika diaktifkan (atau tidak disetel), sertifikat TLS yang ditambahkan pengguna dari trust store platform akan digunakan dalam pembuatan jalur untuk autentikasi server TLS.
 
 Jika dinonaktifkan, sertifikat TLS yang ditambahkan pengguna dari trust store platform tidak akan digunakan dalam pembuatan jalur untuk autentikasi server TLS.</translation>
-<translation id="8470317291588703478">Jangan terapkan Mode Terbatas YouTube</translation>
 <translation id="8471117881949952479">Kebijakan ini tidak digunakan lagi dan pada akhirnya akan diganti dengan DataControlsRules.
 
 Kebijakan ini memblokir penyalinan data ke papan klip pada URL tertentu.
@@ -12196,7 +12168,6 @@ Rollback ke <ph name="PRODUCT_OS_NAME" /> versi 106 atau yang lebih lama tidak d
 
       Peringatan: Sebaiknya jangan mengonfigurasi batasan versi karena dapat mencegah pengguna menerima update software dan perbaikan keamanan penting. Membatasi update ke versi tertentu dapat membahayakan pengguna.</translation>
 <translation id="8519617069657262768">Aktifkan sinkronisasi Google Drive</translation>
-<translation id="8520064498689833152">Paksa penggunaan SafeSearch di Google Penelusuran dan paksa Mode Terbatas YouTube menjadi minimal Menengah</translation>
 <translation id="8520950040439618600">Mengizinkan metode autentikasi PIN dan penyambungan untuk host akses jarak jauh</translation>
 <translation id="8524334245528364388">URL ke file JSON dengan daftar server cetak.</translation>
 <translation id="8525282442896658040">Mengizinkan aplikasi menggunakan otorisasi notifikasi sementara di iOS</translation>
@@ -12450,7 +12421,6 @@ Kebijakan ini merupakan tindakan sementara dan akan dihapus setelah beberapa ver
 <translation id="8676959842615154675">Jika kebijakan disetel ke Aktif, host akses jarak jauh akan membandingkan nama pengguna lokal yang dikaitkan dengan host dan nama Akun Google yang terdaftar sebagai pemilik host (misalnya, "johan" jika host dimiliki oleh "johan@example.com"). Host ini tidak akan dimulai jika nama pemilik host berbeda dengan nama pengguna lokal yang dikaitkan dengan host. Gunakan kebijakan dengan <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> untuk menegaskan bahwa Akun Google pemilik dikaitkan dengan domain tertentu.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, host akses jarak jauh akan dapat dikaitkan dengan pengguna lokal mana pun.</translation>
-<translation id="867708016260789630">Paksa Mode Terbatas YouTube menjadi minimal Menengah</translation>
 <translation id="8677853537025397834">Mengizinkan WebHID API di situs ini</translation>
 <translation id="8684000025871334499">Mengonfigurasi kebijakan penginstalan dan runtime untuk VM Bruschetta di
 <ph name="PRODUCT_OS_NAME" />. Hal ini memungkinkan
@@ -12526,7 +12496,6 @@ skema HTTPS.</translation>
       "http://acme.com/ABC" hanya cocok dalam mode 'IESiteListMode'.</translation>
 <translation id="8728854710675158426">Pengaktifan Hash Tidak Aman di Handshake TLS</translation>
 <translation id="8734543507835977857">Mulai penundaan pengelolaan daya dan batas durasi sesi pada awal sesi</translation>
-<translation id="8736538322216687231">Memaksa Mode Terbatas YouTube minimum</translation>
 <translation id="873800217865395140">Interval pengumpulan telemetri situs dalam milidetik.</translation>
 <translation id="8742596277791362306">Kebijakan ini memungkinkan Anda mengontrol pengaktifan fitur Set Situs Terkait.
 
@@ -12699,7 +12668,6 @@ lewat proxy dengan perlindungan yang lebih tinggi akan diizinkan.
 Jika kebijakan ini disetel ke Nonaktif, pemeriksaan lewat proxy dengan perlindungan yang lebih tinggi
 tidak akan diizinkan. Hash sebagian dari URL akan diupload ke Google secara langsung dengan frekuensi
 yang jauh lebih rendah, yang akan menurunkan perlindungan.</translation>
-<translation id="8858642179038618439">Memaksakan Mode Perlindungan YouTube</translation>
 <translation id="8860342862142842017">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar hash subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Pengguna dapat mengonfigurasi saluran rilis <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Dengan kebijakan ini, Anda dapat menetapkan daftar DLC (Konten yang Dapat Didownload) untuk didownload sesegera mungkin. DLC yang telah didownload akan tersedia untuk semua pengguna di perangkat.

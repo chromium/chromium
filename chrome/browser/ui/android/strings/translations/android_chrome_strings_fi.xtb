@@ -256,6 +256,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, valittu välilehti, jolla tallennetaan mediaa</translation>
 <translation id="2141396931810938595">Perustuu käyttöösi</translation>
 <translation id="2145315049852051678">Chrome tarkistaa säännöllisesti, että selaimen asetukset ovat mahdollisimman turvalliset. Ilmoitamme, jos jotain on tarkistettava.</translation>
+<translation id="2149968176347646218">Yhteys ei ole turvallinen</translation>
 <translation id="2149973817440762519">Muokkaa kirjanmerkkiä</translation>
 <translation id="2163089732491971196">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että lisäät tunnuslauseesi</translation>
 <translation id="2166228530126694506">Versio <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6595046016124923392">Kuvat lähetetään Googlelle, jotta näkemiäsi kuvauksia voidaan parantaa.</translation>
 <translation id="6602173570135186741">Automaattinen täyttö ja salasanat</translation>
 <translation id="661266467055912436">Parantaa sinun ja kaikkien verkon käyttäjien suojausta</translation>
+<translation id="6615455863669487791">Näytä</translation>
 <translation id="6621391692573306628">Jos haluat lähettää välilehden toiselle laitteelle, kirjaudu Chromeen molemmilla laitteilla</translation>
 <translation id="6627583120233659107">Muokkaa kansiota</translation>
 <translation id="6633067410344541938">Avaa incognito-välilehden lukitus</translation>

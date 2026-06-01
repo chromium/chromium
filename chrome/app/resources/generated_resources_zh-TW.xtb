@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">警告</translation>
 <translation id="1056980582064308040">如果變更設定，系統將重新啟動無線基地台，屆時裝置與無線基地台的連線就會中斷。</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">工作已中斷</translation>
 <translation id="1059484610606223931">超文字安全傳輸通訊協定 (HTTPS)</translation>
 <translation id="1059944192885972544">找到 <ph name="NUM" /> 個與「<ph name="SEARCH_TEXT" />」相符的分頁</translation>
 <translation id="1060172044035704924">與右側畫面交換</translation>
@@ -2329,6 +2328,7 @@
 <translation id="2665056444046933274">網站可透過這項功能存取這部裝置上的其他應用程式和服務</translation>
 <translation id="2665394472441560184">新增字詞</translation>
 <translation id="2665647207431876759">已過期</translation>
+<translation id="2666092431469916601">置頂</translation>
 <translation id="2666247341166669829">左側耳機電量為 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2667144577800272420">其他應用程式所設定會開啟的連結與「<ph name="APP_NAME" />」的設定相同，這會導致「<ph name="APP_NAME_2" />」和「<ph name="APP_NAME_3" />」無法開啟支援的連結。</translation>
 <translation id="2667463864537187133">管理拼字檢查</translation>
@@ -2924,6 +2924,7 @@
 <translation id="3084548735795614657">拖曳即可安裝</translation>
 <translation id="3084771660770137092">Chrome 記憶體不足或其他某些原因導致網頁處理程序終止。如要繼續執行，請重新載入或前往其他網頁。</translation>
 <translation id="3085412380278336437">網站可以使用你的攝影機</translation>
+<translation id="3087734570205094154">置底</translation>
 <translation id="3088052000289932193">網站正在使用 MIDI 裝置</translation>
 <translation id="3088325635286126843">重新命名(&amp;R)...</translation>
 <translation id="3089137131053189723">已清除搜尋內容</translation>
@@ -4409,6 +4410,7 @@
 <translation id="4170314459383239649">退出時清除</translation>
 <translation id="4170685671197375581">啟用捷徑</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{與 Gemini 分享 1 個分頁}other{與 Gemini 分享 # 個分頁}}</translation>
+<translation id="4172051516777682613">一律顯示</translation>
 <translation id="4172944993779635350">你在 <ph name="URL" /> 所用的密碼只儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。</translation>
 <translation id="4173129130568053653">Gemini 可協助你預約、建立購物車，或執行你交辦的其他工作。</translation>
 <translation id="4175137578744761569">淺紫色與白色</translation>
@@ -5781,6 +5783,7 @@
 <translation id="5189274947477567401">如要停用程序共用功能，必須重新啟動瀏覽器。這個瀏覽器會立即重新啟動。</translation>
 <translation id="5189404424758444348">蒸氣龐克</translation>
 <translation id="5190577235024772869">儲存空間使用量：<ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">書籤列</translation>
 <translation id="5190926251776387065">啟用連接埠</translation>
 <translation id="5190959794678983197">沒有麥克風</translation>
 <translation id="5191094172448199359">你輸入的 PIN 碼不相符</translation>
@@ -7613,6 +7616,7 @@
 <translation id="6582274660680936615">你目前是以訪客身分瀏覽</translation>
 <translation id="6583328141350416497">繼續下載</translation>
 <translation id="6584878029876017575">Microsoft 永久簽署</translation>
+<translation id="6585124893636629274">關閉 Chrome 內建 Gemini</translation>
 <translation id="6585584201072946561">自訂網路瀏覽器的文字大小和字型</translation>
 <translation id="6586099239452884121">訪客瀏覽</translation>
 <translation id="6586451623538375658">調換滑鼠主按鈕</translation>
@@ -10062,6 +10066,7 @@
 <translation id="8347227221149377169">列印工作</translation>
 <translation id="8348430946834215779">盡可能使用 HTTPS，並在載入不支援該通訊協定的網站前發出警告</translation>
 <translation id="8348896480272971199">請檢查網際網路連線，然後再試一次。</translation>
+<translation id="8349305172487531364">書籤列</translation>
 <translation id="8349325309815489209">已允許在這個網站執行擴充功能</translation>
 <translation id="8349826889576450703">啟動器</translation>
 <translation id="8350789879725387295">Dock 中的觸控筆工具</translation>
@@ -10464,7 +10469,6 @@
 <translation id="8651585100578802546">強制重新載入此網頁</translation>
 <translation id="8651806635673244884">如要將分頁移回頂端，請在任一分頁按一下滑鼠右鍵，然後選取「水平顯示分頁」</translation>
 <translation id="8652400352452647993">封裝擴充功能錯誤</translation>
-<translation id="8652412805227733853">已自動完成電子郵件地址驗證</translation>
 <translation id="8654151524613148204">很抱歉，檔案過大，你的電腦無法處理。</translation>
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655972064210167941">無法驗證您的密碼，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>

@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Предупреждение</translation>
 <translation id="1056980582064308040">Промяната на настройките ще доведе до рестартиране на точката за достъп. Връзката на устройствата, които я използват, ще бъде прекратена.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Задачата е прекъсната</translation>
 <translation id="1059484610606223931">Hypertext Transfer Protocol Secure (HTTPS)</translation>
 <translation id="1059944192885972544">Бяха открити <ph name="NUM" /> раздела за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="1060172044035704924">Размяна с десния изглед</translation>
@@ -2338,6 +2337,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2665056444046933274">Сайтовете могат да използват тази функция, за да осъществяват достъп до други приложения и услуги на това устройство</translation>
 <translation id="2665394472441560184">Добавяне на нова дума</translation>
 <translation id="2665647207431876759">Изтекла валидност</translation>
+<translation id="2666092431469916601">Най-горе</translation>
 <translation id="2666247341166669829">Нивото на батерията на лявата слушалка е <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">За другите приложения е зададено да отварят същите връзки като <ph name="APP_NAME" />. Това действие ще деактивира отварянето на поддържаните връзки от <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Управление на проверката на правописа</translation>
@@ -2933,6 +2933,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3084548735795614657">Освободете, за да инсталирате</translation>
 <translation id="3084771660770137092">Или Chrome няма достатъчно памет, или процесът за уеб страницата бе прекратен по друга причина. За да продължите, презаредете или отворете друга страница.</translation>
 <translation id="3085412380278336437">Сайтът може да използва камерата ви</translation>
+<translation id="3087734570205094154">Най-долу</translation>
 <translation id="3088052000289932193">Сайтът използва MIDI</translation>
 <translation id="3088325635286126843">&amp;Преименуване...</translation>
 <translation id="3089137131053189723">Търсенето бе изчистено</translation>
@@ -4422,6 +4423,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4170314459383239649">Изчистване при изход</translation>
 <translation id="4170685671197375581">Включване на прекия път</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Споделяне на раздела с Gemini}other{Споделяне на # раздела с Gemini}}</translation>
+<translation id="4172051516777682613">Показване винаги</translation>
 <translation id="4172944993779635350">Паролата ви за <ph name="URL" /> е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си.</translation>
 <translation id="4173129130568053653">Услугата Gemini може да ви помага да запазвате часове, да създавате пазарски кошници или да изпълнявате други задачи, които ѝ възлагате.</translation>
 <translation id="4175137578744761569">Светлолилаво и бяло</translation>
@@ -5798,6 +5800,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5189274947477567401">За да се откажете от споделянето на процеси, трябва да рестартирате браузъра. Браузърът ще се рестартира сега.</translation>
 <translation id="5189404424758444348">Стиймпънк</translation>
 <translation id="5190577235024772869">Използвате <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Лента на отметките</translation>
 <translation id="5190926251776387065">Активиране на порта</translation>
 <translation id="5190959794678983197">Няма микрофон</translation>
 <translation id="5191094172448199359">Въведените от вас ПИН кодове не съвпадат</translation>
@@ -7636,6 +7639,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6582274660680936615">Сърфирате като гост</translation>
 <translation id="6583328141350416497">Продължаване на изтеглянето</translation>
 <translation id="6584878029876017575">Подписване на периода на валидност от Microsoft</translation>
+<translation id="6585124893636629274">Затваряне на Gemini в Chrome</translation>
 <translation id="6585584201072946561">Персонализиране на размера и шрифта на текста за уеб браузъра</translation>
 <translation id="6586099239452884121">Сърфиране като гост</translation>
 <translation id="6586451623538375658">Да се размени основният бутон на мишката</translation>
@@ -10086,6 +10090,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8347227221149377169">Задания за отпечатване</translation>
 <translation id="8348430946834215779">Използвайте HTTPS, когато е възможно, и получавайте предупреждения, преди да бъдат заредени сайтове, които не поддържат този протокол</translation>
 <translation id="8348896480272971199">Проверете връзката си с интернет и опитайте отново.</translation>
+<translation id="8349305172487531364">Лента на отметките</translation>
 <translation id="8349325309815489209">Разширения, разрешени в този сайт</translation>
 <translation id="8349826889576450703">стартов панел</translation>
 <translation id="8350789879725387295">Инструменти за писане в лентата за прикрепяне</translation>
@@ -10488,7 +10493,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8651585100578802546">Принудително презареждане на тази страница</translation>
 <translation id="8651806635673244884">Можете да преместите разделите обратно в горната част, като кликнете с десния бутон върху някой от тях и изберете „Показване на разделите хоризонтално“</translation>
 <translation id="8652400352452647993">Грешка при пакетиране на разширението</translation>
-<translation id="8652412805227733853">Имейл адресът е потвърден автоматично</translation>
 <translation id="8654151524613148204">За съжаление файлът е твърде голям, за да се обработи от компютъра ви.</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Влизането не бе успешно, тъй като паролата ви не можа да се потвърди. Моля, свържете се с администратора си или опитайте отново.</translation>

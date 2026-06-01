@@ -256,6 +256,7 @@
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />，已选择的标签页，正在录制内容</translation>
 <translation id="2141396931810938595">根据您的使用情况</translation>
 <translation id="2145315049852051678">Chrome 会定期检查，确保您的浏览器采用了最优安全设置。如需审核任何事项，我们会通知您。</translation>
+<translation id="2149968176347646218">连接不安全</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2163089732491971196">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令</translation>
 <translation id="2166228530126694506">版本 <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@
 <translation id="6595046016124923392">系统会将图片发送给 Google 以便为您改进说明。</translation>
 <translation id="6602173570135186741">自动填充和密码</translation>
 <translation id="661266467055912436">为您和网络上的所有人提供更好的安全保障。</translation>
+<translation id="6615455863669487791">演示一下</translation>
 <translation id="6621391692573306628">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome</translation>
 <translation id="6627583120233659107">修改文件夹</translation>
 <translation id="6633067410344541938">解锁无痕模式</translation>

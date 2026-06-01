@@ -455,13 +455,6 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de re
 <translation id="1340053691042184658">Empêcher les connexions en mode Invité dans le navigateur</translation>
 <translation id="1342918903685430097">Configurer la version <ph name="PRODUCT_OS_NAME" /> minimale autorisée pour l'appareil.</translation>
 <translation id="1343128241903870688">Désactiver les rapports sur les infos des applis de l'appareil</translation>
-<translation id="1347198119056266798">Cette règle est obsolète. Veuillez utiliser <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> et <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Cette règle est ignorée si les règles <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> ou <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (obsolète) sont configurées.
-
-      SafeSearch est obligatoirement activé pour la recherche sur le Web Google, et ce paramètre ne peut pas être modifié par l'utilisateur. Ce paramètre impose également l'application du mode restreint modéré sur YouTube.
-
-      Si vous activez ce paramètre, SafeSearch est toujours activé dans la recherche Google, et le mode restreint modéré est toujours appliqué sur YouTube.
-
-      Si vous désactivez ce paramètre ou ne définissez pas de valeur, SafeSearch n'est pas activé dans la recherche, et le mode restreint modéré n'est pas appliqué sur YouTube.</translation>
 <translation id="134745581157553029">Si la règle "DeviceArcDataSnapshotHours" est définie, le mécanisme de capture des données ARC est activé. La mise à jour de l'instantané des données ARC peut être lancée automatiquement pendant les intervalles de temps définis. Au démarrage d'un intervalle, lorsque cette mise à jour est requise et qu'aucun utilisateur n'est connecté, elle est lancée sans que l'utilisateur en soit averti. Si la session utilisateur est active, la notification s'affiche dans l'UI. Cette notification doit être validée pour redémarrer l'appareil et lancer le processus de mise à jour de l'instantané des données ARC. Remarque : durant le processus de mise à jour de l'instantané des données ARC, l'appareil est bloqué et ne peut pas être utilisé.</translation>
 <translation id="1348603614848418219">Désactivez la migration des appareils gérés <ph name="MS_AD_NAME" /> vers la gestion dans le cloud.</translation>
 <translation id="1352799151662469739">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'écran est verrouillé (lorsque l'appareil fonctionne sur secteur).</translation>
@@ -1420,7 +1413,6 @@ Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut ent
 <translation id="1963986268950915756">Autoriser les utilisateurs à installer des applications Web depuis le navigateur</translation>
 <translation id="1964191545419036999">Galerie (disponible depuis la version 117)</translation>
 <translation id="1964634611280150550">Mode navigation privée désactivé</translation>
-<translation id="1964802606569741174">Cette règle n'a aucun effet sur l'application YouTube pour Android. Vous ne devez pas autoriser son installation si le mode sécurisé de YouTube doit être appliqué.</translation>
 <translation id="1964985353230379667">Indique la configuration suggérée de <ph name="KRB5_CONFIG" /> pour les nouvelles demandes créées manuellement.
 
       Si la règle "KerberosUseCustomPrefilledConfig" est activée, la valeur de la règle est appliquée en tant que configuration suggérée et figure dans la section "Paramètres avancés" de la boîte de dialogue d'authentification Kerberos. Si cette règle est définie sur une chaîne vide ou si elle n'est pas configurée, la configuration <ph name="PRODUCT_OS_NAME" /> recommandée sera supprimée.
@@ -1777,7 +1769,6 @@ Cette règle est une mesure temporaire qui sera supprimée après la version 14
 
       Pour en savoir plus sur la navigation sécurisée, rendez-vous sur https://support.google.com/chrome?p=safe_browsing_preferences.</translation>
 <translation id="2177696016354404697">Toujours désactiver l'écran de confidentialité</translation>
-<translation id="2178899310296064282">Appliquer au moins le mode restreint modéré sur YouTube</translation>
 <translation id="2180260434916939385">Autoriser la recherche dans l'historique optimisée par l'IA et améliorer les modèles d'IA.</translation>
 <translation id="2180795125410219364">Les paramètres Origine/Fin sont désactivés</translation>
 <translation id="2180958780733364832">Contrôler l'utilisation du mode headless</translation>
@@ -5320,7 +5311,6 @@ Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="4510923771103268849">L'utilisateur est autorisé à accéder à la racine des conteneurs Crostini</translation>
 <translation id="4511848671760711978">Empêcher les enseignants d'afficher à distance les écrans des élèves.</translation>
 <translation id="4512407512989846472">Permettre de bloquer la copie dans le presse-papiers sur les URL spécifiées</translation>
-<translation id="4513691822411041977">N'appliquez pas l'utilisation de SafeSearch dans la recherche Google ou du mode restreint sur YouTube</translation>
 <translation id="4515404363392014383">Activer la navigation sécurisée pour les sources fiables</translation>
 <translation id="4517327050150780380">Paramètres de la fonctionnalité Aide-moi à lire</translation>
 <translation id="4518251772179446575">Demander chaque fois qu'un site veut suivre la position géographique des utilisateurs</translation>
@@ -6472,13 +6462,6 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="5182483318861266793">Placer l'étagère sur le côté droit de l'écran</translation>
 <translation id="51859390023061147">Désactiver la fonctionnalité de restauration complète.</translation>
 <translation id="5189360528842591274">N'autoriser la connexion qu'aux services Bluetooth de la liste</translation>
-<translation id="5190426551516379357">Permet d'appliquer un mode restreint minimal sur YouTube et d'empêcher les utilisateurs de choisir un mode moins restreint. Principe de cette règle :
-
-      * Si vous définissez cette règle sur "Strict", le mode restreint strict sur YouTube est toujours activé.
-
-      * Si vous définissez cette règle sur "Modéré", l'utilisateur ne peut choisir que le mode restreint modéré ou le mode restreint strict sur YouTube (il ne peut pas désactiver le mode restreint).
-
-      * Si cette règle est désactivée ou qu'aucune valeur n'est définie, le mode restreint sur YouTube n'est pas appliqué d'office par Chrome. Toutefois, des règles externes comme les règles de YouTube peuvent quand même appliquer d'office le mode restreint.</translation>
 <translation id="5191007233343702012">Utiliser un ordre de priorité standard pour les onglets</translation>
 <translation id="5191476996923842491">Comportement par défaut pour l'écrêtage de la fonction setTimeout().</translation>
 <translation id="519247340330463721">Configurez les règles associées à la navigation sécurisée.</translation>
@@ -8522,13 +8505,6 @@ REMARQUE : Le comportement par défaut des appareils grand public et profession
 <translation id="6483115462650732746">Afficher le menu d'accessibilité flottant en mode Kiosque</translation>
 <translation id="6491139795995924304">Autoriser le Bluetooth sur l'appareil</translation>
 <translation id="6491305972928809525">Ne pas afficher le menu d'accessibilité flottant en mode Kiosque</translation>
-<translation id="6491872498385040936">Cette règle est obsolète. Utilisez plutôt <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, qui est prioritaire sur cette règle et permet des réglages plus fins.
-
-      Cette règle impose le mode restreint modéré sur YouTube et empêche les utilisateurs de modifier ce paramètre.
-
-      Si ce paramètre est activé, le mode restreint sur YouTube est au moins au niveau modéré.
-
-      Si ce paramètre est désactivé ou si aucune valeur n'est définie, <ph name="PRODUCT_NAME" /> n'applique pas le mode restreint sur YouTube. Toutefois, des règles externes comme les règles de YouTube peuvent toujours appliquer le mode restreint.</translation>
 <translation id="6492177700737407141">Les utilisateurs inscrits au Programme Protection Avancée bénéficieront uniquement des protections standards des consommateurs</translation>
 <translation id="6492737559291967859">Permet de spécifier la langue utilisée dans <ph name="PRODUCT_NAME" />.
 
@@ -9091,7 +9067,6 @@ Si elle est désactivée ou n'est pas configurée, l'utilisateur est déconnect�
 <translation id="6857240169209507953">Empêcher <ph name="BOREALIS_NAME" /> de fonctionner sur un appareil</translation>
 <translation id="6857372417233723544">Cette règle permet d'activer la disposition de clavier Hindi Inscript sur <ph name="PRODUCT_OS_NAME" />.
 Si la règle est définie sur "false" ou si elle n'est pas configurée, cette disposition de clavier n'est pas disponible. Un redémarrage est nécessaire pour que la règle soit prise en compte.</translation>
-<translation id="685769593149966548">Appliquer le mode restreint strict sur YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
 <translation id="6863927303509860338">Définir des raccourcis sur la page "Nouvel onglet"</translation>
 <translation id="6866755486434471318">Autorise <ph name="PEPPER_NAME" /> à utiliser des images partagées pour le décodage vidéo.</translation>
@@ -9798,7 +9773,6 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 <translation id="7238335422094660594">Activer le fournisseur <ph name="UIA_NAME" />.</translation>
 <translation id="7241007908714447207">Autoriser les origines d'applications Web isolées à demander à se connecter aux lecteurs de cartes à puce.</translation>
 <translation id="7241016798422122577">Activer la commande par le visage sur l'écran de connexion</translation>
-<translation id="7242191282517459095">YouTube (compatible depuis la version 135)</translation>
 <translation id="7244600351241637530">Si ce paramètre est activé, les utilisateurs qui ont déjà activé Phone Hub pourront afficher et télécharger les photos et vidéos récentes prises sur leur téléphone sur Chrome OS.
 
       S'il est désactivé, les utilisateurs ne seront pas autorisés à se servir de cette fonctionnalité. Si la règle <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> est désactivée, ils ne seront pas non plus autorisés à utiliser cette fonctionnalité.
@@ -11067,7 +11041,6 @@ Les valeurs valides sont comprises entre 1 seconde et 9 999 secondes. Si cett
 
 Cette règle n'a aucune incidence lorsque la règle <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> est définie sur "False".</translation>
 <translation id="8113731369695819720">Désactiver l'audio mono sur l'écran de connexion</translation>
-<translation id="8114382167597081590">Ne pas appliquer le mode restreint sur YouTube</translation>
 <translation id="8117662664312039036">Ne pas autoriser les appareils à utiliser Plugin VM</translation>
 <translation id="8117921351531866504">Permet de définir si les sites Web sont autorisés à vérifier si l'utilisateur a enregistré des modes de paiement.
 
@@ -11589,7 +11562,6 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="846994437739309080">Si cette règle est activée (ou n'est pas configurée), les certificats TLS ajoutés par l'utilisateur depuis les magasins de confiance de la plate-forme seront utilisés pour la création de chemins pour l'authentification du serveur TLS.
 
 Si elle est désactivée, les certificats TLS ajoutés par l'utilisateur depuis les magasins de confiance de la plate-forme ne seront pas utilisés pour la création de chemins pour l'authentification du serveur TLS.</translation>
-<translation id="8470317291588703478">N'appliquez pas l'utilisation du mode restreint sur YouTube</translation>
 <translation id="8471117881949952479">Cette règle est obsolète et sera à terme remplacée par DataControlsRules.
 
 Cette règle permet de bloquer ou non la copie de données dans le presse-papiers sur des URL précises.
@@ -11701,7 +11673,6 @@ Le rollback vers <ph name="PRODUCT_OS_NAME" /> 106 ou version antérieure n'est
 
       Avertissement : Il est déconseillé de configurer des restrictions de version, car cela pourrait empêcher les utilisateurs de recevoir des mises à jour logicielles et des correctifs de sécurité essentiels. Limiter les mises à jour à une version spécifique pourrait constituer un risque pour les utilisateurs.</translation>
 <translation id="8519617069657262768">Activer la synchronisation Google Drive</translation>
-<translation id="8520064498689833152">Forcez l'utilisation de SafeSearch dans la recherche Google et le mode restreint à être au moins modéré sur YouTube</translation>
 <translation id="8520950040439618600">Autoriser les méthodes d'authentification par code ou association pour les hôtes d'accès à distance</translation>
 <translation id="8524334245528364388">URL vers un fichier JSON contenant une liste de serveurs d'impression.</translation>
 <translation id="8525282442896658040">Autorise l'appli à utiliser l'autorisation des notifications temporaires sur iOS</translation>
@@ -11943,7 +11914,6 @@ Cette règle est une mesure temporaire qui sera supprimée dans quelque temps.</
 <translation id="8676959842615154675">Si cette règle est activée, l'hôte d'accès à distance compare le nom de l'utilisateur local auquel il est associé au nom du compte Google enregistré en tant que propriétaire de l'hôte (par exemple, "pierredupont" si l'hôte appartient à pierredupont@example.com). Cet hôte ne démarre pas si le nom de son propriétaire diffère de celui de l'utilisateur local auquel l'hôte est associé. Pour faire en sorte que le compte Google du propriétaire soit associé à un domaine spécifique, utilisez la règle avec "<ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />".
 
       Si la règle est désactivée ou qu'elle n'est pas configurée, l'hôte d'accès à distance peut être associé à n'importe quel utilisateur local.</translation>
-<translation id="867708016260789630">Forcez le mode restreint à être au moins modéré sur YouTube</translation>
 <translation id="8677853537025397834">Autoriser l'API WebHID sur ces sites</translation>
 <translation id="8684000025871334499">Configurez les règles d'installation et d'exécution pour les VM Bruschetta sur <ph name="PRODUCT_OS_NAME" />. Cela permet aux utilisateurs d'installer des VM tierces. Cette fonctionnalité est désactivée par défaut.
 
@@ -12008,7 +11978,6 @@ Si <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> est désactivée, la traductio
       "http://acme.com/ABC" ne correspond qu'en "IESiteListMode".</translation>
 <translation id="8728854710675158426">Hachages non sécurisés lors de handshakes TLS activés</translation>
 <translation id="8734543507835977857">Démarrer les délais de gestion de l'alimentation et les limites de longueur de session au démarrage de la session</translation>
-<translation id="8736538322216687231">Appliquer un mode restreint minimal sur YouTube</translation>
 <translation id="873800217865395140">Fréquence de collecte des données télémétriques de site Web en millisecondes.</translation>
 <translation id="8742596277791362306">Cette règle permet de contrôler l'activation de la fonctionnalité d'ensembles de sites Web associés.
 
@@ -12169,7 +12138,6 @@ Cette règle est ignorée si la navigation sécurisée est désactivée ou défi
 Si cette règle est activée ou n'est pas configurée, la recherche d'une protection supérieure via proxy est activée.
 
 Si cette règle est désactivée, la recherche d'une protection supérieure via proxy est désactivée. Les hachages partiels d'URL sont importés directement sur Google avec une fréquence beaucoup plus faible, ce qui réduit la protection.</translation>
-<translation id="8858642179038618439">Forcer le mode sécurisé de YouTube</translation>
 <translation id="8860342862142842017">Désactiver l'application des règles de transparence des certificats pour une liste de hachages subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Les utilisateurs peuvent configurer le canal de publication de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Cette règle permet de définir une liste de contenus téléchargeables à télécharger dès que possible. Les contenus téléchargeables téléchargés sont ensuite disponibles pour tous les utilisateurs de l'appareil.

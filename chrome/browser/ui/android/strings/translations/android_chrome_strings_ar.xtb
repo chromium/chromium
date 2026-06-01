@@ -256,6 +256,7 @@
 <translation id="2138632817776076519">‫"<ph name="TAB_TITLE" />"، علامة تبويب تسجّل وسائط وتم اختيارها</translation>
 <translation id="2141396931810938595">حسب معدّل استخدامك</translation>
 <translation id="2145315049852051678">‏يتحقّق Chrome بانتظام من استخدام الإعدادات الأكثر أمانًا في متصفِّحك. وسنُعلمك في حال كان عليك اتخاذ إجراء.</translation>
+<translation id="2149968176347646218">الاتصال بهذا الموقع الإلكتروني غير آمن</translation>
 <translation id="2149973817440762519">تعديل الإشارة</translation>
 <translation id="2163089732491971196">‏لاستخدام بيانات Chrome وحفظها في حسابك على Google، يجب أولاً إدخال عبارة المرور</translation>
 <translation id="2166228530126694506">الإصدار <ph name="VERSION_NUMBER" /></translation>
@@ -1331,6 +1332,7 @@
 <translation id="6595046016124923392">‏يتم إرسال الصور إلى Google لتحسين أوصاف الصور.</translation>
 <translation id="6602173570135186741">الملء التلقائي وكلمات المرور</translation>
 <translation id="661266467055912436">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
+<translation id="6615455863669487791">عرض</translation>
 <translation id="6621391692573306628">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على كلا الجهازين.</translation>
 <translation id="6627583120233659107">تعديل مجلد</translation>
 <translation id="6633067410344541938">فتح علامات التبويب في وضع التصفّح المتخفي</translation>

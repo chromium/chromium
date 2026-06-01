@@ -149,6 +149,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1227224963052638717">Dasar tidak diketahui.</translation>
 <translation id="1227677022489889280">Berikan sebab untuk mengalihkan fail (diperlukan)</translation>
 <translation id="1228893227497259893">Pengecam entiti yang salah</translation>
+<translation id="122989279399348496">Semasa anda log masuk, <ph name="DOMAIN" /> boleh mengesahkan <ph name="EMAIL" /> pada laman yang disokong supaya anda tidak perlu menyemak peti masuk anda</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (auto kesan)</translation>
 <translation id="1232569758102978740">Tidak Bertajuk</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> diperlukan</translation>
@@ -510,6 +511,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pelbagai tindakan tersedia, tekan Tab untuk pergi ke setiap tindakan</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Butiran kad maya</translation>
+<translation id="1802420021606590788">Chrome memproses tajuk halaman dan URL dalam ruang privasi pada awan</translation>
 <translation id="1803254472779303354">Kunci tetikus dibenarkan</translation>
 <translation id="1803351196216024260">Boleh meminta untuk menggunakan mikrofon anda</translation>
 <translation id="1804258830776932716">Dayakan Pix dengan memautkan akaun anda dengan pantas</translation>
@@ -3029,6 +3031,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5742806904559466333">Bar, Kelab &amp; Hiburan Malam</translation>
 <translation id="5743684619253032786">Produk Penjagaan Kuku</translation>
 <translation id="574392208103952083">Sederhana</translation>
+<translation id="5745586894920491759">Chrome memproses tajuk halaman dan URL dalam awan</translation>
 <translation id="5745733273847572235">Boleh meminta lokasi anda</translation>
 <translation id="5750869797196646528">Penjejakan tangan</translation>
 <translation id="5752327398324808817">Masukkan perkataan</translation>
@@ -3423,6 +3426,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Lihat log</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Menyemak proksi, tembok api dan konfigurasi DNS Selamat<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Sahkan e-mel anda secara automatik</translation>
 <translation id="6366710531182496394">Dua kokot kiri</translation>
 <translation id="6367196786591004737">Padam entri</translation>
 <translation id="6370022303958842211">Tindakan akses peranti seperti log masuk (merangkumi sebab log masuk gagal), log keluar, kunci dan buka kunci</translation>
@@ -4068,6 +4072,7 @@ Butiran tambahan:
 <translation id="7388380253839603603">Harga Minyak &amp; Mengisi Minyak Kenderaan</translation>
 <translation id="7388594495505979117">{0,plural, =1{Peranti anda akan dimulakan semula dalam masa 1 minit}other{Peranti anda akan dimulakan semula dalam masa # minit}}</translation>
 <translation id="7393161616326137353">Permainan Kembara</translation>
+<translation id="7393243238767102021">Benarkan <ph name="DOMAIN" /> mengesahkan e-mel ini secara automatik?</translation>
 <translation id="7393475648162498734">Paparkan ganjaran dan manfaat yang tersedia untuk kad anda semasa semak keluar</translation>
 <translation id="7393971683644170444">Menyambung kepada penyedia kad anda...</translation>
 <translation id="739728382607845710">Ikon pengendali pembayaran</translation>
@@ -5064,6 +5069,7 @@ Butiran tambahan:
 <translation id="8963117664422609631">Pergi ke tetapan laman</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Cadangan:<ph name="MARKUP_2" />Pastikan anda mempunyai sambungan data<ph name="MARKUP_3" />Muatkan semula halaman web ini kemudian<ph name="MARKUP_4" />Semak alamat yang anda masukkan<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Fail setempat anda akan dipadamkan selepas <ph name="HOURS" /> jam</translation>
+<translation id="8964904785315870349">E-mel yang Disahkan</translation>
 <translation id="8968766641738584599">Simpan kad</translation>
 <translation id="8970887620466824814">Kesilapan telah berlaku.</translation>
 <translation id="8971063699422889582">Sijil pelayan telah tamat tempoh.</translation>

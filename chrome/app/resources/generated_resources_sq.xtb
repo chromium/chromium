@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Paralajmërim</translation>
 <translation id="1056980582064308040">Ndryshimi i cilësimeve do të rinisë zonën e qasjes për internet. Pajisjet që përdorin zonën e qasjes për internet do të shkëputen.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Detyra u ndërpre</translation>
 <translation id="1059484610606223931">Protokolli i transportit Hypertext (HTTPS)</translation>
 <translation id="1059944192885972544">U gjetën <ph name="NUM" /> skeda për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060172044035704924">Ndërro me pamjen djathtas</translation>
@@ -2326,6 +2325,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2665056444046933274">Sajtet mund ta përdorin këtë veçori për t'u qasur në aplikacionet dhe shërbimet e tjera në këtë pajisje</translation>
 <translation id="2665394472441560184">Shto një fjalë të re</translation>
 <translation id="2665647207431876759">Skaduar</translation>
+<translation id="2666092431469916601">I sipërm</translation>
 <translation id="2666247341166669829">Niveli i baterisë majtas - <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Aplikacione të tjera janë caktuar për të hapur të njëjtat lidhje si <ph name="APP_NAME" />. Kjo do të çaktivizojë hapjen e lidhjeve të mbështetura nga <ph name="APP_NAME_2" /> dhe <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Menaxho kontrollin ortografik</translation>
@@ -2921,6 +2921,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3084548735795614657">Lëshoje për ta instaluar</translation>
 <translation id="3084771660770137092">Chrome nuk ka më memorie ose procesi për faqen e uebit u ndërpre për disa arsye. Për të vazhduar, ngarkoje përsëri ose shko te një faqe tjetër.</translation>
 <translation id="3085412380278336437">Sajti mund të përdorë kamerën tënde</translation>
+<translation id="3087734570205094154">Në fund</translation>
 <translation id="3088052000289932193">Sajti përdor MIDI</translation>
 <translation id="3088325635286126843">&amp;Riemërtoje...</translation>
 <translation id="3089137131053189723">Kërkimi u pastrua</translation>
@@ -4410,6 +4411,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4170314459383239649">Pastro në dalje</translation>
 <translation id="4170685671197375581">Aktivizo shkurtoren</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Ndaj skedën me Gemini}other{Ndaj # skeda me Gemini}}</translation>
+<translation id="4172051516777682613">Trego gjithmonë</translation>
 <translation id="4172944993779635350">Fjalëkalimi yt për "<ph name="URL" />" është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisjet e tua të tjera, ruaje në llogarinë tënde.</translation>
 <translation id="4173129130568053653">Gemini mund të të ndihmojë të rezervosh takime, të krijosh karroca blerjesh ose mund të kryejë detyra të tjera që ti i jep.</translation>
 <translation id="4175137578744761569">E purpurt e çelur dhe e bardhë</translation>
@@ -5785,6 +5787,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5189274947477567401">Tërheqja nga ndarja e procesit kërkon rinisjen e shfletuesit. Ky shfletues do të riniset tani.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Po përdor <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Shiriti i faqeshënuesve</translation>
 <translation id="5190926251776387065">Aktivizo portën</translation>
 <translation id="5190959794678983197">Nuk ka mikrofon</translation>
 <translation id="5191094172448199359">Kodet PIN që fute nuk përputhen</translation>
@@ -7621,6 +7624,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6582274660680936615">Po shfleton si vizitor</translation>
 <translation id="6583328141350416497">Vazhdo shkarkimin</translation>
 <translation id="6584878029876017575">Nënshkrimi i përhershëm nga Microsoft</translation>
+<translation id="6585124893636629274">Mbyll Gemini në Chrome</translation>
 <translation id="6585584201072946561">Personalizo madhësinë e tekstit dhe fontin për shfletuesin e uebit</translation>
 <translation id="6586099239452884121">Shfletimi si vizitor</translation>
 <translation id="6586451623538375658">Ndërro butonin kryesor të miut</translation>
@@ -10070,6 +10074,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="8348430946834215779">Përdor HTTPS kur është e mundur dhe merr paralajmërime para ngarkimit të sajteve që nuk e mbështesin atë</translation>
 <translation id="8348896480272971199">Kontrollo internetin dhe provo përsëri.</translation>
+<translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
 <translation id="8349325309815489209">Shtesat lejohen në këtë sajt</translation>
 <translation id="8349826889576450703">nisësi</translation>
 <translation id="8350789879725387295">Veglat e stilolapsit në stacion</translation>
@@ -10472,7 +10477,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8651585100578802546">Ringarkoje me detyrim këtë faqe</translation>
 <translation id="8651806635673244884">Mund t'i zhvendosësh skedat përsëri në krye duke klikuar me butonin djathtas te çdo skedë dhe duke zgjedhur "Shfaq skedat horizontalisht"</translation>
 <translation id="8652400352452647993">Gabim i shtesës së paketës</translation>
-<translation id="8652412805227733853">Email-i u verifikua automatikisht</translation>
 <translation id="8654151524613148204">Skedari është tepër i madh për t'u përdorur nga kompjuteri yt. Na vjen keq.</translation>
 <translation id="8655295600908251630">Kanali</translation>
 <translation id="8655972064210167941">Identifikimi dështoi pasi fjalëkalimi nuk mund të verifikohej. Kontakto me administratorin ose provo përsëri.</translation>

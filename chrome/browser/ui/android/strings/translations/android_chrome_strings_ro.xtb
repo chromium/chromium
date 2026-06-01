@@ -256,6 +256,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, filă de înregistrare selectată</translation>
 <translation id="2141396931810938595">În funcție de utilizare</translation>
 <translation id="2145315049852051678">Chrome verifică periodic dacă browserul are cele mai sigure setări. Te vom anunța dacă trebuie să examinezi ceva.</translation>
+<translation id="2149968176347646218">Conexiunea nu este sigură</translation>
 <translation id="2149973817440762519">Editați marcajul</translation>
 <translation id="2163089732491971196">Pentru a folosi și a salva datele Chrome în Contul Google, introdu expresia de acces</translation>
 <translation id="2166228530126694506">Versiunea <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6595046016124923392">Imaginile sunt trimise la Google pentru îmbunătățirea descrierilor.</translation>
 <translation id="6602173570135186741">Completarea automată și parolele</translation>
 <translation id="661266467055912436">Îmbunătățește securitatea pe web pentru tine și toți ceilalți.</translation>
+<translation id="6615455863669487791">Afișează</translation>
 <translation id="6621391692573306628">Pentru a trimite această filă pe alt dispozitiv, conectează-te la Chrome pe ambele dispozitive</translation>
 <translation id="6627583120233659107">Editați dosarul</translation>
 <translation id="6633067410344541938">Deblochează modul incognito</translation>

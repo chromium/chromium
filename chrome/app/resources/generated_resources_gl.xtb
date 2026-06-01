@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Advertencia</translation>
 <translation id="1056980582064308040">Ao cambiar a configuración, a zona wifi reiniciarase. Desconectaranse dela os dispositivos que a estean usando.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Interrompeuse a tarefa</translation>
 <translation id="1059484610606223931">Protocolo de Transferencia de Hipertexto (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> pestanas atopadas para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060172044035704924">Cambiar pola vista dereita</translation>
@@ -2328,6 +2327,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2665056444046933274">Os sitios poden usar esta función para acceder a outras aplicacións e servizos deste dispositivo</translation>
 <translation id="2665394472441560184">Engadir unha palabra nova</translation>
 <translation id="2665647207431876759">Caducado</translation>
+<translation id="2666092431469916601">Parte superior</translation>
 <translation id="2666247341166669829">Nivel de batería do dispositivo esquerdo: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Hai outras aplicacións configuradas para abrir as mesmas ligazóns que <ph name="APP_NAME" />. Con esta acción, <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> deixarán de ser as aplicacións predeterminadas para abrir as ligazóns compatibles.</translation>
 <translation id="2667463864537187133">Xestionar corrector ortográfico</translation>
@@ -2923,6 +2923,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3084548735795614657">Soltar para instalar</translation>
 <translation id="3084771660770137092">É posible que finalizase o proceso da páxina web ao esgotarse a memoria de Chrome ou por algún outro motivo. Para continuar, volve cargar a páxina ou accede a outra.</translation>
 <translation id="3085412380278336437">O sitio pode usar a túa cámara</translation>
+<translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3088052000289932193">O sitio está utilizando MIDI</translation>
 <translation id="3088325635286126843">&amp;Cambiar o nome...</translation>
 <translation id="3089137131053189723">Borrouse a busca</translation>
@@ -4415,6 +4416,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4170314459383239649">Borrar as cookies ao saír</translation>
 <translation id="4170685671197375581">Activar atallo</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Compartir pestana con Gemini}other{Compartir # pestanas con Gemini}}</translation>
+<translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="4172944993779635350">O teu contrasinal de <ph name="URL" /> está gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa conta.</translation>
 <translation id="4173129130568053653">Gemini pode axudarche a reservar citas, crear carros da compra ou realizar outras tarefas que lle encomendes.</translation>
 <translation id="4175137578744761569">Púrpura claro e branco</translation>
@@ -5791,6 +5793,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5189274947477567401">Para desactivar o uso compartido de procesos, é necesario reiniciar o navegador. Este reiniciarase agora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> en uso</translation>
+<translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="5190926251776387065">Activar porto</translation>
 <translation id="5190959794678983197">Non hai ningún micrófono conectado</translation>
 <translation id="5191094172448199359">Os PIN que puxeches non coinciden</translation>
@@ -7625,6 +7628,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6582274660680936615">Estás navegando como invitado</translation>
 <translation id="6583328141350416497">Continuar coa descarga</translation>
 <translation id="6584878029876017575">Sinatura de vixencia de Microsoft</translation>
+<translation id="6585124893636629274">Pechar Gemini en Chrome</translation>
 <translation id="6585584201072946561">Personaliza o tamaño do texto e o tipo de letra do navegador web</translation>
 <translation id="6586099239452884121">Navegación como invitado</translation>
 <translation id="6586451623538375658">Cambiar botón principal do rato</translation>
@@ -10074,6 +10078,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8347227221149377169">Traballos de impresión</translation>
 <translation id="8348430946834215779">Usa HTTPS sempre que sexa posible e recibe advertencias antes de cargar sitios que non admitan este protocolo</translation>
 <translation id="8348896480272971199">Comproba a túa conexión a Internet e téntao de novo.</translation>
+<translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8349325309815489209">As extensións non están permitidas neste sitio</translation>
 <translation id="8349826889576450703">menú de aplicacións</translation>
 <translation id="8350789879725387295">Ferramentas do lapis óptico na base</translation>
@@ -10476,7 +10481,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8651585100578802546">Forzar recarga desta páxina</translation>
 <translation id="8651806635673244884">Podes volver colocar as pestanas na parte superior facendo clic co botón dereito en calquera pestana e seleccionando Mostrar pestanas en horizontal</translation>
 <translation id="8652400352452647993">Produciuse un erro na extensión do paquete</translation>
-<translation id="8652412805227733853">O correo electrónico verificouse automaticamente</translation>
 <translation id="8654151524613148204">O ficheiro é demasiado grande para o ordenador o poida manexar.</translation>
 <translation id="8655295600908251630">Canle</translation>
 <translation id="8655972064210167941">Produciuse un erro no inicio de sesión porque o teu contrasinal non se puido verificar. Contacta co administrador ou téntao de novo.</translation>

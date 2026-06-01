@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Peringatan</translation>
 <translation id="1056980582064308040">Mengubah setelan akan memulai ulang hotspot. Perangkat yang menggunakan hotspot akan terputus.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Tugas dihentikan</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> Tab untuk '<ph name="SEARCH_TEXT" />' Ditemukan</translation>
 <translation id="1060172044035704924">Tukar dengan Tampilan Kanan</translation>
@@ -2341,6 +2340,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2665056444046933274">Situs dapat menggunakan fitur ini untuk mengakses aplikasi dan layanan lain di perangkat ini</translation>
 <translation id="2665394472441560184">Tambahkan kata baru</translation>
 <translation id="2665647207431876759">Sudah berakhir</translation>
+<translation id="2666092431469916601">Atas</translation>
 <translation id="2666247341166669829">Tingkat daya baterai kiri <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Aplikasi lain disetel untuk membuka link yang sama dengan <ph name="APP_NAME" />. Penyetelan ini akan membuat <ph name="APP_NAME_2" /> dan <ph name="APP_NAME_3" /> tidak dapat membuka link yang didukung.</translation>
 <translation id="2667463864537187133">Kelola pemeriksa ejaan</translation>
@@ -2936,6 +2936,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3084548735795614657">Lepaskan untuk memasang</translation>
 <translation id="3084771660770137092">Chrome kehabisan memori atau proses untuk halaman web dihentikan karena beberapa alasan lain. Untuk melanjutkan, muat ulang atau buka halaman lain.</translation>
 <translation id="3085412380278336437">Situs dapat menggunakan kamera Anda</translation>
+<translation id="3087734570205094154">Bawah</translation>
 <translation id="3088052000289932193">Situs menggunakan MIDI</translation>
 <translation id="3088325635286126843">&amp;Ubah nama...</translation>
 <translation id="3089137131053189723">Penelusuran dihapus</translation>
@@ -4425,6 +4426,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4170314459383239649">Hapus Saat Keluar</translation>
 <translation id="4170685671197375581">Aktifkan pintasan</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Bagikan tab kepada Gemini}other{Bagikan # tab kepada Gemini}}</translation>
+<translation id="4172051516777682613">Selalu tampilkan</translation>
 <translation id="4172944993779635350">Sandi Anda untuk "<ph name="URL" />" hanya disimpan di perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di akun Anda.</translation>
 <translation id="4173129130568053653">Gemini dapat membantu Anda membuat janji temu, keranjang belanja, atau melakukan tugas lain yang Anda berikan.</translation>
 <translation id="4175137578744761569">Ungu muda dan putih</translation>
@@ -5801,6 +5803,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5189274947477567401">Memilih tidak berbagi proses mengharuskan browser dimulai ulang. Browser ini akan dimulai ulang sekarang.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Menggunakan <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Bilah Bookmark</translation>
 <translation id="5190926251776387065">Aktifkan port</translation>
 <translation id="5190959794678983197">Tidak ada mikrofon</translation>
 <translation id="5191094172448199359">PIN yang Anda masukkan tidak cocok</translation>
@@ -7638,6 +7641,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6582274660680936615">Anda menjelajah sebagai Tamu</translation>
 <translation id="6583328141350416497">Lanjutkan download</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
+<translation id="6585124893636629274">Tutup Gemini di Chrome</translation>
 <translation id="6585584201072946561">Sesuaikan ukuran dan font teks untuk browser web</translation>
 <translation id="6586099239452884121">Penjelajahan tamu</translation>
 <translation id="6586451623538375658">Tukar tombol utama mouse</translation>
@@ -10087,6 +10091,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8347227221149377169">Pencetakan</translation>
 <translation id="8348430946834215779">Gunakan HTTPS jika memungkinkan dan dapatkan peringatan sebelum memuat situs yang tidak mendukungnya</translation>
 <translation id="8348896480272971199">Periksa internet Anda dan coba lagi.</translation>
+<translation id="8349305172487531364">Bilah bookmark</translation>
 <translation id="8349325309815489209">Ekstensi diizinkan di situs ini</translation>
 <translation id="8349826889576450703">peluncur</translation>
 <translation id="8350789879725387295">Alat stilus di dok</translation>
@@ -10489,7 +10494,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8651585100578802546">Paksa Muat Ulang Halaman Ini</translation>
 <translation id="8651806635673244884">Anda dapat memindahkan tab kembali ke atas dengan mengklik kanan tab mana pun dan memilih “Tampilkan tab secara horizontal”</translation>
 <translation id="8652400352452647993">Error ekstensi pack</translation>
-<translation id="8652412805227733853">Email otomatis diverifikasi</translation>
 <translation id="8654151524613148204">Maaf, file terlalu besar untuk ditangani komputer Anda.</translation>
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655972064210167941">Proses masuk gagal karena sandi Anda tidak dapat diverifikasi. Hubungi administrator atau coba lagi.</translation>

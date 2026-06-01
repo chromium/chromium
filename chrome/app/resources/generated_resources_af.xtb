@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Waarskuwing</translation>
 <translation id="1056980582064308040">Die warmkol sal herbegin word wanneer instellings verander word. Toestelle wat die warmkol gebruik, sal ontkoppel word.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Taak is onderbreek</translation>
 <translation id="1059484610606223931">Hiperteksoordragprotokol (HTTPS)</translation>
 <translation id="1059944192885972544">Het <ph name="NUM" /> oortjies vir "<ph name="SEARCH_TEXT" />" gekry</translation>
 <translation id="1060172044035704924">Ruil met regteraansig</translation>
@@ -2342,6 +2341,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2665056444046933274">Werwe kan hierdie kenmerk gebruik om toegang tot ander apps en dienste op hierdie toestel te kry</translation>
 <translation id="2665394472441560184">Voeg 'n nuwe woord by</translation>
 <translation id="2665647207431876759">Verval</translation>
+<translation id="2666092431469916601">Top</translation>
 <translation id="2666247341166669829">Linkerbatteryvlak <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Ander programme is gestel om dieselfde skakels oop te maak as <ph name="APP_NAME" />. Dit sal <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> deaktiveer sodat hulle nie gesteunde skakels kan oopmaak nie.</translation>
 <translation id="2667463864537187133">Bestuur speltoets</translation>
@@ -2937,6 +2937,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3084548735795614657">Laat val om te installeer</translation>
 <translation id="3084771660770137092">Chrome het óf nie meer geheue nie óf die proses vir die webwerf is om een of ander rede gestop. Om voort te gaan, herlaai of gaan na 'n ander bladsy.</translation>
 <translation id="3085412380278336437">Werf kan jou kamera gebruik</translation>
+<translation id="3087734570205094154">Onderkant</translation>
 <translation id="3088052000289932193">Werf gebruik tans MIDI</translation>
 <translation id="3088325635286126843">Hernoem …</translation>
 <translation id="3089137131053189723">Soektog is uitgevee</translation>
@@ -4426,6 +4427,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4170314459383239649">Vee uit wanneer uitgegaan is</translation>
 <translation id="4170685671197375581">Skakel kortpad aan</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Deel oortjie met Gemini}other{Deel # oortjies met Gemini}}</translation>
+<translation id="4172051516777682613">Wys altyd</translation>
 <translation id="4172944993779635350">Jou wagwoord vir “<ph name="URL" />” word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening om dit op jou ander toestelle te gebruik.</translation>
 <translation id="4173129130568053653">Gemini kan jou help om afsprake te maak, inkopiemandjies te skep, of ander take te doen wat jy vir dit gee.</translation>
 <translation id="4175137578744761569">Ligpers en wit</translation>
@@ -5802,6 +5804,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5189274947477567401">Om te onttrek aan prosesdeling vereis dat jou blaaier herbegin. Hierdie blaaier sal nou herbegin.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Gebruik tans <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Boekmerkebalk</translation>
 <translation id="5190926251776387065">Aktiveer poort</translation>
 <translation id="5190959794678983197">Geen mikrofoon nie</translation>
 <translation id="5191094172448199359">Die PIN’e wat jy ingevoer het, stem nie ooreen nie</translation>
@@ -7640,6 +7643,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6582274660680936615">Jy blaai tans as 'n gas</translation>
 <translation id="6583328141350416497">Gaan voort met aflaai</translation>
 <translation id="6584878029876017575">Microsoft se lewenslange gebaretolk</translation>
+<translation id="6585124893636629274">Maak Gemini in Chrome toe</translation>
 <translation id="6585584201072946561">Pasmaak teksgrootte en lettertipe vir die webblaaier</translation>
 <translation id="6586099239452884121">Gasteblaai</translation>
 <translation id="6586451623538375658">Ruil primêre muisknoppie</translation>
@@ -10089,6 +10093,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8347227221149377169">Druktake</translation>
 <translation id="8348430946834215779">Gebruik HTTPS waar moontlik en word gewaarsku voordat werwe laai wat dit nie steun nie</translation>
 <translation id="8348896480272971199">Gaan jou internet na en probeer weer.</translation>
+<translation id="8349305172487531364">Boekmerkebalk</translation>
 <translation id="8349325309815489209">Uitbreidings word op hierdie werf toegelaat</translation>
 <translation id="8349826889576450703">lanseerder</translation>
 <translation id="8350789879725387295">Stilusnutsgoed in dok</translation>
@@ -10491,7 +10496,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8651585100578802546">Dwing hierdie bladsy om te herlaai</translation>
 <translation id="8651806635673244884">Jy kan jou oortjies terugskuif na die bokant deur enige oortjie te regsklik en “Wys oortjies horisontaal” te kies</translation>
 <translation id="8652400352452647993">Pakketuitbreidingfout</translation>
-<translation id="8652412805227733853">E-posadres is outomaties geverifieer</translation>
 <translation id="8654151524613148204">Die lêer is te groot vir jou rekenaar om te hanteer. Jammer.</translation>
 <translation id="8655295600908251630">Kanaal</translation>
 <translation id="8655972064210167941">Kon nie aanmeld nie omdat jou wagwoord nie geverifieer kon word nie. Kontak jou administrateur of probeer weer.</translation>

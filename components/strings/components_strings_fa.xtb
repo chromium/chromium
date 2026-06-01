@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">خط‌مشی ناشناس.</translation>
 <translation id="1227677022489889280">دلیلی برای جابه‌جا کردن ارائه دهید (الزامی)</translation>
 <translation id="1228893227497259893">‏شناسه entity نادرست</translation>
+<translation id="122989279399348496">وقتی که به سیستم وارد شده‌اید، <ph name="DOMAIN" /> می‌تواند <ph name="EMAIL" /> را در سایت‌های پشتیبانی‌شده تأیید کند تا لازم نباشد صندوق ورودی‌تان را بررسی کنید</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (شناسایی خودکار)</translation>
 <translation id="1232569758102978740">بی‌عنوان</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> لازم است</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />، چند کنش دردسترس است، برای جابه‌جایی بین آن‌ها، کلید Tab را فشار دهید</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">جزئیات کارت مجازی</translation>
+<translation id="1802420021606590788">‏‫Chrome عنوان‌های صفحه و نشانی‌های وب را در فضایی خصوصی در فضای ابری پردازش می‌کند</translation>
 <translation id="1803254472779303354">قفل موشواره مجاز است</translation>
 <translation id="1803351196216024260">می‌تواند برای استفاده از میکروفون درخواست دهد</translation>
 <translation id="1804258830776932716">‏با پیوند دادن سریع حسابتان، Pix را فعال کنید</translation>
@@ -3028,6 +3030,7 @@
 <translation id="5742806904559466333">میخانه، باشگاه، و تفریحات شبانه</translation>
 <translation id="5743684619253032786">محصولات مراقبت از ناخن</translation>
 <translation id="574392208103952083">متوسط</translation>
+<translation id="5745586894920491759">‏‫Chrome عنوان‌های صفحه و نشانی‌های وب را در فضای ابری پردازش می‌کند</translation>
 <translation id="5745733273847572235">می‌تواند برای استفاده از مکان درخواست دهد</translation>
 <translation id="5750869797196646528">ردیابی دست</translation>
 <translation id="5752327398324808817">یک یا دو کلمه وارد کنید</translation>
@@ -3422,6 +3425,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">مشاهده گزارش‌ها</translation>
 <translation id="6364095313648930329">‏<ph name="BEGIN_LINK" />بررسی پیکربندی پراکسی، دیوار آتش و DNS امن<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">تأیید خودکار ایمیل‌های شما</translation>
 <translation id="6366710531182496394">دو منگنه در چپ</translation>
 <translation id="6367196786591004737">حذف ورودی</translation>
 <translation id="6370022303958842211">کنش‌های دسترسی به دستگاه مثل ورود به سیستم (ازجمله دلایل ورود ناموفق به سیستم)، خروج از سیستم، قفل کردن، و باز کردن قفل.</translation>
@@ -4067,6 +4071,7 @@
 <translation id="7388380253839603603">قیمت بنزین و تأمین سوخت خودرو</translation>
 <translation id="7388594495505979117">{0,plural, =1{دستگاه یک دقیقه دیگر بازراه‌اندازی خواهد شد}one{دستگاه # دقیقه دیگر بازراه‌اندازی خواهد شد}other{دستگاه # دقیقه دیگر بازراه‌اندازی خواهد شد}}</translation>
 <translation id="7393161616326137353">بازی‌های ماجراجویی</translation>
+<translation id="7393243238767102021">به «<ph name="DOMAIN" />» اجازه می‌دهید این ایمیل را به‌طور خودکار درستی‌سنجی کند؟</translation>
 <translation id="7393475648162498734">پاداش‌ها و مزایایی که برای کارت‌هایتان دردسترس است در زمان تسویه‌حساب نشان داده می‌شود</translation>
 <translation id="7393971683644170444">درحال متصل کردن به ارائه‌کننده کارت…</translation>
 <translation id="739728382607845710">نماد مدیریت‌كننده پرداخت</translation>
@@ -5062,6 +5067,7 @@
 <translation id="8963117664422609631">رفتن به تنظیمات سایت</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />پیشنهادات:<ph name="MARKUP_2" />مطمئن شوید اتصال داده دارید<ph name="MARKUP_3" />بعداً این صفحه وب را مجدداً بار کنید<ph name="MARKUP_4" />آدرسی را که وارد کرده‌اید، بررسی کنید<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">فایل‌های محلی شما تا <ph name="HOURS" /> ساعت دیگر حذف خواهد شد</translation>
+<translation id="8964904785315870349">ایمیل درستی‌سنجی‌شده</translation>
 <translation id="8968766641738584599">ذخیره کارت</translation>
 <translation id="8970887620466824814">مشکلی پیش آمد.</translation>
 <translation id="8971063699422889582">گواهی سرور منقضی شده است.</translation>

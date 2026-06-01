@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Ogohlantirish</translation>
 <translation id="1056980582064308040">Sozlamalarni oʻzgartirgandan keyin hotspot qayta ishga tushadi. Undan foydalanadigan qurilmalar uziladi.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Vazifa toʻxtatildi</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> ta varaqda “<ph name="SEARCH_TEXT" />” topildi</translation>
 <translation id="1060172044035704924">Oʻng panel bilan almashtirish</translation>
@@ -2331,6 +2330,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2665056444046933274">Saytlar bu funksiya yordamida ushbu qurilmadagi boshqa ilova va xizmatlarga ruxsat olishi mumkin</translation>
 <translation id="2665394472441560184">So‘z qo‘shish</translation>
 <translation id="2665647207431876759">Muddati tugagan</translation>
+<translation id="2666092431469916601">Tepaga</translation>
 <translation id="2666247341166669829"><ph name="PERCENTAGE" />% quvvat qoldi.</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ilovasini standart ilova sifatida oʻrnatishni istaysizmi? Bu havola oʻzgartirilgandan keyin <ph name="APP_NAME_2" /> va <ph name="APP_NAME_3" /> ilovalari ochilmay qoladi.</translation>
 <translation id="2667463864537187133">Imlo tekshirgichni boshqarish</translation>
@@ -2926,6 +2926,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3084548735795614657">O‘rnatish uchun bu yerga tashlang</translation>
 <translation id="3084771660770137092">Ushbu veb-sahifani ko‘rsatish vaqtida Chrome xotirasida bo‘sh joy tugab qoldi yoki boshqa sabab tufayli sahifadagi amal to‘xtatildi. Davom etish uchun sahifani yangilang yoki yangi oynada oching.</translation>
 <translation id="3085412380278336437">Sayt kameradan foydalanishi mumkin</translation>
+<translation id="3087734570205094154">Pastga</translation>
 <translation id="3088052000289932193">Saytda MIDI ishlatilmoqda</translation>
 <translation id="3088325635286126843">&amp;Qayta nomlash...</translation>
 <translation id="3089137131053189723">Qidiruv tozalandi</translation>
@@ -4413,6 +4414,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4170314459383239649">Chiqish vaqtida tozalansin</translation>
 <translation id="4170685671197375581">Tezkor tugmalarni yoqish</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Geminiga varaqni ulashish}other{Geminiga # ta varaqni ulashish}}</translation>
+<translation id="4172051516777682613">Doim ko‘rsatilsin</translation>
 <translation id="4172944993779635350">“<ph name="URL" />” uchun parolingiz faqat shu qurilmada saqlanadi. Boshqa qurilmalarda foydalanish uchun uni hisobingizda saqlang.</translation>
 <translation id="4173129130568053653">Gemini uchrashuvlarni band qilish, xarid savatlarini yaratish yoki siz bergan boshqa vazifalarni bajarishda yordam beradi.</translation>
 <translation id="4175137578744761569">Och pushti va oq</translation>
@@ -5788,6 +5790,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5189274947477567401">Jarayon ulashuvini tark etish uchun brauzerni qayta ochish talab etiladi. Bu brauzer hozir qayta ochiladi.</translation>
 <translation id="5189404424758444348">Stimpank</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> band</translation>
+<translation id="5190835502935405962">Xatcho‘plar paneli</translation>
 <translation id="5190926251776387065">Portni yoqish</translation>
 <translation id="5190959794678983197">Mikrofon yoʻq</translation>
 <translation id="5191094172448199359">Kiritilgan PIN kodlar bir xil emas</translation>
@@ -7625,6 +7628,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6582274660680936615">Siz Mehmon rejimidasiz</translation>
 <translation id="6583328141350416497">Yuklab olishda davom etish</translation>
 <translation id="6584878029876017575">Microsoft doimiy imzolash vositasi</translation>
+<translation id="6585124893636629274">Chrome ichida Gemini oynasini yopish</translation>
 <translation id="6585584201072946561">Veb brauzerdagi matn hajmi va shriftni moslash</translation>
 <translation id="6586099239452884121">Mehmon rejimi</translation>
 <translation id="6586451623538375658">Sichqoncha tugmalarining o‘rnini almashtirish</translation>
@@ -10074,6 +10078,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
 <translation id="8348430946834215779">Imkon qadar HTTPS ishlating va bu protokolda ishlamaydigan saytlarni yuklashdan oldin ogohlantirish oling</translation>
 <translation id="8348896480272971199">Internetni tekshiring va qaytadan urining.</translation>
+<translation id="8349305172487531364">Xatcho‘plar paneli</translation>
 <translation id="8349325309815489209">Bu saytda kengaytmalarga ruxsat berilgan</translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8350789879725387295">Dokdagi stilus vositalari</translation>
@@ -10476,7 +10481,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8651585100578802546">Sahifani majburiy yangilash</translation>
 <translation id="8651806635673244884">Istalgan varaq ustiga oʻng klikni bosib, “Varaqlarni gorizontal koʻrsatish” bandini tanlash orqali varaqlarni yuqoriga qaytarish mumkin</translation>
 <translation id="8652400352452647993">Kengaytmani arxivlash xatoligi</translation>
-<translation id="8652412805227733853">Email avtomatik tasdiqlandi</translation>
 <translation id="8654151524613148204">Kechirasiz, kompyuteringizda bu faylni saqlash uchun yetarli joy yo‘q.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Hisobingizga kirish amalga oshmadi, chunki parolni tekshirib bo‘lmadi. Qaytadan urinib ko‘ring.</translation>

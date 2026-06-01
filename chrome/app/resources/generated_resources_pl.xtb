@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Ostrzeżenie</translation>
 <translation id="1056980582064308040">Zmiana ustawień spowoduje ponowne uruchomienie hotspota. Korzystające z niego urządzenia zostaną rozłączone.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Zadanie przerwane</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Znaleziono karty (<ph name="NUM" />) dla zapytania „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="1060172044035704924">Zamień z widokiem po prawej stronie</translation>
@@ -2312,6 +2311,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2665056444046933274">Witryny mogą korzystać z tej funkcji, aby uzyskiwać dostęp do innych aplikacji i usług na tym urządzeniu</translation>
 <translation id="2665394472441560184">Dodaj nowe słowo</translation>
 <translation id="2665647207431876759">Ważność wygasła</translation>
+<translation id="2666092431469916601">Do góry</translation>
 <translation id="2666247341166669829">Poziom naładowania lewej baterii to <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Inne aplikacje zostały ustawione na otwieranie tych samych linków co <ph name="APP_NAME" />. Ta czynność spowoduje, że aplikacje <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> przestaną otwierać obsługiwane linki.</translation>
 <translation id="2667463864537187133">Zarządzanie sprawdzaniem pisowni</translation>
@@ -2907,6 +2907,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3084548735795614657">Przeciągnij tutaj, by zainstalować</translation>
 <translation id="3084771660770137092">W przeglądarce Chrome zabrakło pamięci albo proces strony internetowej został zakończony z innego powodu. Aby kontynuować, załaduj stronę ponownie lub przejdź do innej strony.</translation>
 <translation id="3085412380278336437">Strona może używać kamery</translation>
+<translation id="3087734570205094154">Na dół</translation>
 <translation id="3088052000289932193">Strona używa MIDI</translation>
 <translation id="3088325635286126843">&amp;Zmień nazwę</translation>
 <translation id="3089137131053189723">Wyszukiwanie zostało wyczyszczone</translation>
@@ -4390,6 +4391,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4170314459383239649">Wyczyść przy zamykaniu</translation>
 <translation id="4170685671197375581">Włącz skrót</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Udostępnij kartę usłudze Gemini}few{Udostępnij # karty usłudze Gemini}many{Udostępnij # kart usłudze Gemini}other{Udostępnij # karty usłudze Gemini}}</translation>
+<translation id="4172051516777682613">Zawsze pokazuj</translation>
 <translation id="4172944993779635350">Hasło do strony „<ph name="URL" />” jest zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie.</translation>
 <translation id="4173129130568053653">Gemini może pomagać Ci w rezerwowaniu terminów, tworzeniu koszyków zakupowych i wykonywaniu innych zadań.</translation>
 <translation id="4175137578744761569">Jasnofioletowo-biały</translation>
@@ -5765,6 +5767,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5189274947477567401">Rezygnacja z udostępniania procesów wymaga ponownego uruchomienia przeglądarki. Nastąpi to teraz.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Używasz <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Pasek zakładek</translation>
 <translation id="5190926251776387065">Aktywuj port</translation>
 <translation id="5190959794678983197">Brak mikrofonu</translation>
 <translation id="5191094172448199359">Wpisane kody PIN nie są jednakowe</translation>
@@ -7600,6 +7603,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6582274660680936615">Przeglądasz jako gość</translation>
 <translation id="6583328141350416497">Kontynuuj pobieranie</translation>
 <translation id="6584878029876017575">Podpisywanie dożywotnie firmy Microsoft</translation>
+<translation id="6585124893636629274">Zamknij Gemini w Chrome</translation>
 <translation id="6585584201072946561">Umożliwia dostosowanie rozmiaru tekstu i czcionki w przeglądarce</translation>
 <translation id="6586099239452884121">Przeglądanie jako gość</translation>
 <translation id="6586451623538375658">Zamień główny przycisk myszy</translation>
@@ -10051,6 +10055,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8347227221149377169">Zadania drukowania</translation>
 <translation id="8348430946834215779">Używaj protokołu HTTPS, kiedy to możliwe, i wyświetlaj ostrzeżenia przed wczytaniem stron, które go nie obsługują</translation>
 <translation id="8348896480272971199">Sprawdź połączenie z internetem i spróbuj ponownie.</translation>
+<translation id="8349305172487531364">Pasek zakładek</translation>
 <translation id="8349325309815489209">Rozszerzenia w tej witrynie są dozwolone</translation>
 <translation id="8349826889576450703">program uruchamiający</translation>
 <translation id="8350789879725387295">Narzędzia rysika w docku</translation>
@@ -10453,7 +10458,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8651585100578802546">Wymuś ponowne załadowanie tej strony</translation>
 <translation id="8651806635673244884">Możesz przenieść karty z powrotem na górę, klikając dowolną kartę prawym przyciskiem myszy i wybierając „Pokaż karty w poziomie”</translation>
 <translation id="8652400352452647993">Błąd rozszerzenia pakietu</translation>
-<translation id="8652412805227733853">Adres e-mail został automatycznie zweryfikowany</translation>
 <translation id="8654151524613148204">Plik jest zbyt duży dla komputera. Przepraszamy.</translation>
 <translation id="8655295600908251630">Kanał</translation>
 <translation id="8655972064210167941">Nie udało się zalogować, bo nie można zweryfikować hasła. Skontaktuj się z administratorem lub spróbuj ponownie.</translation>

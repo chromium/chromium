@@ -256,6 +256,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, guia com gravação selecionada</translation>
 <translation id="2141396931810938595">Com base no seu uso</translation>
 <translation id="2145315049852051678">O Chrome verifica regularmente se as configurações mais seguras estão instaladas no seu navegador. Vamos avisar se algo precisar de análise.</translation>
+<translation id="2149968176347646218">A conexão não é segura</translation>
 <translation id="2149973817440762519">Editar favoritos</translation>
 <translation id="2163089732491971196">Digite sua senha longa para usar e salvar dados do Chrome na Conta do Google</translation>
 <translation id="2166228530126694506">Versão <ph name="VERSION_NUMBER" /></translation>
@@ -1332,6 +1333,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6595046016124923392">As imagens são enviadas para o Google e, assim, podemos melhorar as descrições para você.</translation>
 <translation id="6602173570135186741">Preenchimento automático e senhas</translation>
 <translation id="661266467055912436">Melhora a segurança para você e para todos na Web.</translation>
+<translation id="6615455863669487791">Exibir</translation>
 <translation id="6621391692573306628">Para enviar esta guia a outro dispositivo, faça login no Chrome nos dois aparelhos</translation>
 <translation id="6627583120233659107">Editar pasta</translation>
 <translation id="6633067410344541938">Desbloquear a navegação anônima</translation>

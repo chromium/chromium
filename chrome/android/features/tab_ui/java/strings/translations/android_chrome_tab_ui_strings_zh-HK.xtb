@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">已將 <ph name="TABS_COUNT_ONE" /> 個分頁分組</translation>
 <translation id="1844381456014878100">閒置 7 天後</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
 <translation id="1909810060368225529">注意：所有人都能看到此共用分頁群組的變更，所有人都可以變更你的共用分頁群組</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{固定單一分頁}other{固定多個分頁}}</translation>
 <translation id="1982637982196732906">移到閒置部分</translation>

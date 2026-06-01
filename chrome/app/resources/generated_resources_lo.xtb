@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">ຄໍາເຕືອນ</translation>
 <translation id="1056980582064308040">ການປ່ຽນແປງການຕັ້ງຄ່າຈະຣີສະຕາດຮັອດສະປອດ. ອຸປະກອນທີ່ໃຊ້ຮັອດສະປອດຈະຕັດການເຊື່ອມຕໍ່.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">ໜ້າວຽກຖືກຂັດຈັງຫວະ</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">ພົບ <ph name="NUM" /> ແຖບສຳລັບ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="1060172044035704924">ສະຫຼັບກັບມຸມມອງທາງຂວາ</translation>
@@ -2341,6 +2340,7 @@
 <translation id="2665056444046933274">ເວັບໄຊສາມາດໃຊ້ຄຸນສົມບັດນີ້ເພື່ອເຂົ້າເຖິງແອັບ ແລະ ບໍລິການອື່ນໆໃນອຸປະກອນນີ້ໄດ້</translation>
 <translation id="2665394472441560184">ເພີ່ມຄໍາ​ສັບ​ໃຫມ່</translation>
 <translation id="2665647207431876759">ໝົດອາຍຸແລ້ວ</translation>
+<translation id="2666092431469916601">ດ້ານເທິງ</translation>
 <translation id="2666247341166669829">ລະດັບແບັດເຕີຣີຂ້າງຊ້າຍ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ແອັບອື່ນໆຖືກຕັ້ງໃຫ້ເປີດລິ້ງດຽວກັນເປັນ <ph name="APP_NAME" />. ນີ້ຈະປິດການນຳໃຊ້ <ph name="APP_NAME_2" /> ແລະ <ph name="APP_NAME_3" /> ບໍ່ໃຫ້ເປີດລິ້ງທີ່ຮອງຮັບ.</translation>
 <translation id="2667463864537187133">ຈດການການກວດການສະກົດຄຳ</translation>
@@ -2936,6 +2936,7 @@
 <translation id="3084548735795614657">ວາງລົງເພື່ອຕິດຕັ້ງ</translation>
 <translation id="3084771660770137092">Chrome ໝົດຄວາມຈໍາ ຫຼືຂະບວນການສໍາລັບໜ້າເວັບຖືກສິ້ນສຸດລົງດ້ວຍເຫດຜົນໃດໜຶ່ງ. ເພື່ອສືບຕໍ່, ໂຫຼດຄືນໃໝ່ ແລະໄປຫາໜ້າອື່ນ.</translation>
 <translation id="3085412380278336437">ເວັບໄຊສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້</translation>
+<translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
 <translation id="3088052000289932193">ເວັບໄຊກຳລັງໃຊ້ MIDI</translation>
 <translation id="3088325635286126843">ປ່ຽນຊື່ໃໝ່...</translation>
 <translation id="3089137131053189723">ລຶບລ້າງການຊອກຫາແລ້ວ</translation>
@@ -4425,6 +4426,7 @@
 <translation id="4170314459383239649">ລຶບລ້າງເມື່ອອອກ</translation>
 <translation id="4170685671197375581">ເປີດໃຊ້ທາງລັດ</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{ແບ່ງປັນແຖບກັບ Gemini}other{ແບ່ງປັນ # ແຖບກັບ Gemini}}</translation>
+<translation id="4172051516777682613">ສະ​ແດງ​ຢູ່ສະ​ເຫມີ​</translation>
 <translation id="4172944993779635350">ລະບົບບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ "<ph name="URL" />" ໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນອື່ນໆຂອງທ່ານ, ໃຫ້ບັນທຶກໄວ້ໃນບັນຊີຂອງທ່ານ.</translation>
 <translation id="4173129130568053653">Gemini ສາມາດຊ່ວຍທ່ານຈອງການນັດໝາຍ, ສ້າງກະຕ່າຊື້ເຄື່ອງ ຫຼື ເຮັດໜ້າວຽກອື່ນໆທີ່ທ່ານກຳນົດໃຫ້ໄດ້.</translation>
 <translation id="4175137578744761569">ສີມ່ວງອ່ອນ ແລະ ສີຂາວ</translation>
@@ -5801,6 +5803,7 @@
 <translation id="5189274947477567401">ການເລືອກບໍ່ໃຊ້ການແບ່ງປັນຂະບວນການຈຳເປັນຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບ. ໂປຣແກຣມທ່ອງເວັບນີ້ຈະຣີສະຕາດຕອນນີ້.</translation>
 <translation id="5189404424758444348">ສະຕີມພັງຄ໌</translation>
 <translation id="5190577235024772869">ກຳລັງໃຊ້ <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">ແຖບບຸກມາກສ໌</translation>
 <translation id="5190926251776387065">ເປີດນຳໃຊ້ຜອດ</translation>
 <translation id="5190959794678983197">ບໍ່ມີໄມໂຄຣໂຟນ</translation>
 <translation id="5191094172448199359">PIN ທີ່ທ່ານປ້ອນເຂົ້ານັ້ນບໍ່ກົງກັນ</translation>
@@ -7637,6 +7640,7 @@
 <translation id="6582274660680936615">ທ່ານກໍາລັງທ່ອງເວັບໃນຖານະແຂກ</translation>
 <translation id="6583328141350416497">ສືບ​ຕໍ​່​ການ​ດາວ​ໂຫຼດ</translation>
 <translation id="6584878029876017575">ການເຊັນຕະຫຼອດຊີວິດຂອງ Microsoft</translation>
+<translation id="6585124893636629274">ປິດ Gemini ໃນ Chrome</translation>
 <translation id="6585584201072946561">ປັບແຕ່ງຟອນ ແລະ ຂະໜາດຂໍ້ຄວາມສໍາລັບໂປຣແກຣມທ່ອງເວັບ</translation>
 <translation id="6586099239452884121">ການທ່ອງເວັບແບບເປັນແຂກ</translation>
 <translation id="6586451623538375658">ແລກປ່ຽນປຸ່ມເມົາສ໌ຕົ້ນຕໍ</translation>
@@ -10085,6 +10089,7 @@
 <translation id="8347227221149377169">ວຽກການພິມ</translation>
 <translation id="8348430946834215779">ໃຊ້ HTTPS ເມື່ອເປັນໄປໄດ້ ແລະ ຮັບຄຳເຕືອນກ່ອນການໂຫຼດເວັບໄຊທີ່ບໍ່ຮອງຮັບມັນ</translation>
 <translation id="8348896480272971199">ກວດສອບອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
+<translation id="8349305172487531364">ແຖບບຸກມາກສ໌</translation>
 <translation id="8349325309815489209">ສ່ວນຂະຫຍາຍທີ່ອະນຸຍາດຢູ່ເວັບໄຊນີ້</translation>
 <translation id="8349826889576450703">ຕົວເປີດໃຊ້</translation>
 <translation id="8350789879725387295">ເຄື່ອງມືປາຍປາກກາໃນດັອກ</translation>
@@ -10487,7 +10492,6 @@
 <translation id="8651585100578802546">​ບັງຄັບໂຫຼດ​ຫນ້າ​ນີ້ຄືນອີກ</translation>
 <translation id="8651806635673244884">ທ່ານສາມາດຍ້າຍແຖບຂອງທ່ານກັບຄືນໄປໄວ້ເທິງສຸດໄດ້ໂດຍຄລິກຂວາໃສ່ແຖບໃດກໍໄດ້ແລ້ວເລືອກ “ສະແດງແຖບໃນແນວນອນ”</translation>
 <translation id="8652400352452647993">ສ່ວນຂະຫຍາຍແພັກຜິດພາດ</translation>
-<translation id="8652412805227733853">ອີເມວໄດ້ຮັບການຢັ້ງຢືນໂດຍອັດຕະໂນມັດແລ້ວ</translation>
 <translation id="8654151524613148204">ໄຟລ໌ນີ້ໃຫຍ່ເກີນໄປທີ່ຄອມພິວເຕີຂອງທ່ານຈະຈັດການໄດ້. ຂໍອະໄພ.</translation>
 <translation id="8655295600908251630">ຊ່ອງ</translation>
 <translation id="8655972064210167941">ລົງຊື່ເຂົ້າໃຊ້​ບໍ່​ສຳ​ເລັດ ເພາະ​ວ່າ​ລະ​ຫັດ​ຜ່ານ​ຂອງ​ທ່ານ​ບໍ່​ສາ​ມາດ​ຢືນ​ຢັນ​ໄດ້. ກະ​ລຸ​ນາ​ຕິດ​ຕໍ່​ຜູ້ຄວບຄຸມຂອງທ່ານ ຫຼື ລອງໃໝ່ອີກ.</translation>

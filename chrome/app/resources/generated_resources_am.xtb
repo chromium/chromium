@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">ማስጠንቀቂያ</translation>
 <translation id="1056980582064308040">ቅንብሮችን መቀየር መገናኛ ነጥቡን እንደገና ያስጀምረዋል። መገናኛ ነጥቡን የሚጠቀሙ መሳሪያዎች ግንኙነታቸው ይቋረጣል።</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">ተግባር ተቋርጧል</translation>
 <translation id="1059484610606223931">የHypertext ትራንስፖርት ፕሮቶኮል (ኤችቲቲፒኤስ)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> ትሮች ለ«<ph name="SEARCH_TEXT" />» ተገኝቷል።</translation>
 <translation id="1060172044035704924">በቀኝ ዕይታ ለውጥ</translation>
@@ -2337,6 +2336,7 @@
 <translation id="2665056444046933274">ጣቢያዎች በዚህ መሣሪያ ላይ ሌሎች መተግበሪያዎችን እና አገልግሎቶችን ለመድረስ ይህን ባህሪ መጠቀም ይችላሉ</translation>
 <translation id="2665394472441560184">አዲስ ቃል ያክሉ</translation>
 <translation id="2665647207431876759">ጊዜው አልፏል</translation>
+<translation id="2666092431469916601">ላይ</translation>
 <translation id="2666247341166669829">የግራ የባትሪ ደረጃ <ph name="PERCENTAGE" />%።</translation>
 <translation id="2667144577800272420">ሌሎች መተግበሪያዎች ከ<ph name="APP_NAME" /> ጋር ተመሳሳይ የሆኑ አገናኞችን ለመክፈት ተቀናብረዋል። ይህ <ph name="APP_NAME_2" /> እና <ph name="APP_NAME_3" /> የሚደገፉ አገናኞችን እንዳይከፍቱ ያሰናክላቸዋል።</translation>
 <translation id="2667463864537187133">ፊደል አራሚን ያቀናብሩ</translation>
@@ -2932,6 +2932,7 @@
 <translation id="3084548735795614657">ለመጫን ጣል ያድርጉ</translation>
 <translation id="3084771660770137092">ወይም Chrome ማህደረ ትውስታ አልቆበታል ወይም የድረ-ገጹ ሂደት በሌላ ምክንያት ተቋርጧል። ለመቀጠል ዳግም ይጫኑ ወይም ወደ ሌላ ገፅ ይሂዱ።</translation>
 <translation id="3085412380278336437">ጣቢያ የእርስዎን ካሜራ መጠቀም ይችላል</translation>
+<translation id="3087734570205094154">ግርጌ</translation>
 <translation id="3088052000289932193">ጣቢያ MIDIን እየተጠቀመ ነው</translation>
 <translation id="3088325635286126843">እንደገና &amp;ሰይም...</translation>
 <translation id="3089137131053189723">ፍለጋ ጸድቷል</translation>
@@ -4419,6 +4420,7 @@
 <translation id="4170314459383239649">ሲወጣ አጽዳ</translation>
 <translation id="4170685671197375581">አቋራጭን አብራ</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{ትርን ከGemini ጋር አጋራ}one{# ትርን ከGemini ጋር አጋራ}other{# ትሮችን ከGemini ጋር አጋራ}}</translation>
+<translation id="4172051516777682613">ሁልጊዜ አሳይ</translation>
 <translation id="4172944993779635350">የ«<ph name="URL" />» የይለፍ ቃልዎ በዚህ መሣሪያ ላይ ብቻ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በመለያዎ ውስጥ ያስቀምጡት።</translation>
 <translation id="4173129130568053653">Gemini ቀጠሮዎችን እንዲያስይዙ፣ የግዢ ጋሪዎችን እንዲፈጥሩ ሊያግዝዎት ወይም ሌሎች እርስዎ የሚሰጡትን ተግባራት ሊያከናውን ይችላል።</translation>
 <translation id="4175137578744761569">ፈካ ያለ ወይን ጠጅ እና ነጭ</translation>
@@ -5795,6 +5797,7 @@
 <translation id="5189274947477567401">ከሂደት ማጋራት መርጦ መውጣት የአሳሽ እንደገና መጀመር ያስፈልገዋል። ይህ አሳሽ አሁን እንደገና ይጀምራል።</translation>
 <translation id="5189404424758444348">ስቲምፓንክ</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> በመጠቀም ላይ</translation>
+<translation id="5190835502935405962">የዕልባቶች አሞሌ</translation>
 <translation id="5190926251776387065">ወደብን አግብር</translation>
 <translation id="5190959794678983197">ማይክሮፎን የለም</translation>
 <translation id="5191094172448199359">ያስገቧቸው ፒኖች አይመሳሰሉም</translation>
@@ -7632,6 +7635,7 @@
 <translation id="6582274660680936615">እንደ እንግዳ እያሰሱ ነው</translation>
 <translation id="6583328141350416497">ማውረድን ቀጥል</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
+<translation id="6585124893636629274">Gemini በChrome ውስጥ ዝጋ</translation>
 <translation id="6585584201072946561">ለድር አሳሹ የጽሑፍ መጠንን እና ቅርጸ-ቁምፊን ያብጁ</translation>
 <translation id="6586099239452884121">በእንግዳ አሰሳ</translation>
 <translation id="6586451623538375658">የዋና መዳፊት አዘራር ይቀይሩ</translation>
@@ -10089,6 +10093,7 @@ nil</translation>
 <translation id="8347227221149377169">የኅትመት ሥራዎች</translation>
 <translation id="8348430946834215779">በተቻለ መጠን ኤችቲቲፒኤስ ይጠቀሙ እና እሱን የማይደግፉትን ጣቢያዎች ከመጫንዎ በፊት ማስጠንቀቂያ ያግኙ</translation>
 <translation id="8348896480272971199">በይነመረብዎን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
+<translation id="8349305172487531364">የዕልባቶች አሞሌ</translation>
 <translation id="8349325309815489209">በዚህ ጣቢያ ላይ የተፈቀዱ ቅጥያዎች</translation>
 <translation id="8349826889576450703">ማስጀመሪያ</translation>
 <translation id="8350789879725387295">የስታይለስ መሣሪያዎች በመትከያ ላይ</translation>
@@ -10491,7 +10496,6 @@ nil</translation>
 <translation id="8651585100578802546">ይህ ገፅ እንደገና እንዲጀምር አስገድድ</translation>
 <translation id="8651806635673244884">ማንኛውንም ትር በቀኝ ጠቅ በማድረግ እና «ትሮችን በአግድም አሳይ» የሚለውን በመምረጥ ትሮችዎን ወደ ላይ መመለስ ይችላሉ</translation>
 <translation id="8652400352452647993">የጥቅል ቅጥያ ስህተት</translation>
-<translation id="8652412805227733853">ኢሜይል በራስ-ሰር ተረጋግጧል</translation>
 <translation id="8654151524613148204">ይህ ፋይል ኮምፒውተርዎ እንዳይሰራው በጣም ትልቅ ነው። እናዝናለን።</translation>
 <translation id="8655295600908251630">ሰርጥ</translation>
 <translation id="8655972064210167941">የእርስዎ የይለፍ ቃል ትክክለኛነቱ ሊረጋገጥ ስላልቻለ መግባት አልተሳካም። እባክዎ የእርስዎን አስተዳዳሪ ያነጋግሩ ወይም እንደገና ይሞክሩ።</translation>

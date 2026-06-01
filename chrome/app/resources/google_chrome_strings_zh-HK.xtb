@@ -242,6 +242,7 @@
 <translation id="345171907106878721">新增為 Chrome 使用者</translation>
 <translation id="3453763134178591239">Chrome OS 條款</translation>
 <translation id="3503306920980160878">Chrome 需要位置資訊存取權，才能與這個網站分享您的位置資訊</translation>
+<translation id="3539955434060988644">在 Chrome 無痕式視窗中開啟連結</translation>
 <translation id="3576528680708590453">系統管理員已設定 Google Chrome 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="3582972582564653026">在不同裝置上同步和設定個人化的 Chrome</translation>
 <translation id="3583751698304738917">你已在另一個 Chrome 個人檔案中以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入</translation>
@@ -786,6 +787,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>
 <translation id="9014771989710951291">Chrome 由多個機構管理</translation>
 <translation id="9018218886431812662">安裝完成</translation>
+<translation id="9024318700713112071">將 Chrome 設定為預設瀏覽器</translation>
 <translation id="9066987883552592250">關閉 Chrome Canary 版 Gemini</translation>
 <translation id="9090566250983691233">瞭解 Chrome 封鎖部分檔案的原因</translation>
 <translation id="9106236359747881194">選取文字即可搜尋</translation>

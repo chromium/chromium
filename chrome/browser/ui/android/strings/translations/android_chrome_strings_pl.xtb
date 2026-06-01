@@ -256,6 +256,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, wybrana karta nagrywania</translation>
 <translation id="2141396931810938595">Na podstawie wykorzystania</translation>
 <translation id="2145315049852051678">Chrome regularnie sprawdza, czy przeglądarka ma możliwie najbezpieczniejsze ustawienia. Jeśli coś trzeba będzie sprawdzić, powiadomimy Cię.</translation>
+<translation id="2149968176347646218">Połączenie nie jest bezpieczne</translation>
 <translation id="2149973817440762519">Edytuj zakładkę</translation>
 <translation id="2163089732491971196">Wpisz hasło wielowyrazowe, aby móc zapisywać dane z Chrome na koncie Google i ich używać</translation>
 <translation id="2166228530126694506">Wersja <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6595046016124923392">Obrazy są wysyłane do Google, żebyśmy mogli dostarczać Ci lepsze opisy.</translation>
 <translation id="6602173570135186741">Autouzupełnianie i hasła</translation>
 <translation id="661266467055912436">Zwiększa bezpieczeństwo Twoje i pozostałych użytkowników internetu.</translation>
+<translation id="6615455863669487791">Pokaż mi</translation>
 <translation id="6621391692573306628">Aby wysłać tę kartę na inne urządzenie, na obu urządzeniach zaloguj się w Chrome</translation>
 <translation id="6627583120233659107">Edytuj folder</translation>
 <translation id="6633067410344541938">Odblokuj tryb incognito</translation>

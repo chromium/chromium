@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1056980582064308040">Promjena postavki će ponovo pokrenuti pristupnu tačku. Veza s uređajima koji koriste pristupnu tačku će se prekinuti.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Zadatak je prekinut</translation>
 <translation id="1059484610606223931">Protokol za prenos hiperteksta (HTTPs)</translation>
 <translation id="1059944192885972544">Za upit "<ph name="SEARCH_TEXT" />" je pronađen sljedeći broj kartica: <ph name="NUM" /></translation>
 <translation id="1060172044035704924">Zamijeni desnim prikazom</translation>
@@ -2340,6 +2339,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2665056444046933274">Web lokacije mogu koristiti ovu funkciju da pristupe drugim aplikacijama i uslugama na uređaju</translation>
 <translation id="2665394472441560184">Dodaj novu riječ</translation>
 <translation id="2665647207431876759">Isteklo</translation>
+<translation id="2666092431469916601">Gornji</translation>
 <translation id="2666247341166669829">Nivo napunjenosti lijeve baterije: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Ostale aplikacije su postavljene da otvaraju iste linkove kao i <ph name="APP_NAME" />. Ovim će se onemogućiti da <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> otvaraju podržane linkove.</translation>
 <translation id="2667463864537187133">Upravljajte provjerom pravopisa</translation>
@@ -2935,6 +2935,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3084548735795614657">Otpustite da biste instalirali</translation>
 <translation id="3084771660770137092">Chrome više nema memorije ili je proces web lokacije prekinut iz nekog drugog razloga.  Ponovo učitajte ili idite na drugu stranicu da nastavite.</translation>
 <translation id="3085412380278336437">Web lokacija može koristiti vašu kameru</translation>
+<translation id="3087734570205094154">Dolje</translation>
 <translation id="3088052000289932193">Web lokacija koristi MIDI uređaj</translation>
 <translation id="3088325635286126843">&amp;Promijeni naziv…</translation>
 <translation id="3089137131053189723">Pretraživanje je izbrisano</translation>
@@ -4424,6 +4425,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="4170314459383239649">Obriši pri zatvaranju</translation>
 <translation id="4170685671197375581">Uključi prečicu</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Dijelite karticu s Geminijem}one{Dijelite # karticu s Geminijem}few{Dijelite # kartice s Geminijem}other{Dijelite # kartica s Geminijem}}</translation>
+<translation id="4172051516777682613">Uvijek prikaži</translation>
 <translation id="4172944993779635350">Lozinka za "<ph name="URL" />" sačuvana je samo na ovom uređaju. Da je koristite na drugim uređajima, sačuvajte je na računu.</translation>
 <translation id="4173129130568053653">Gemini vam može pomoći da zakazujete termine, kreirate kolica za kupovinu ili obavljate druge zadatke koje mu date.</translation>
 <translation id="4175137578744761569">Svijetloljubičasta i bijela</translation>
@@ -5800,6 +5802,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5189274947477567401">Isključivanje dijeljenja procesa zahtijeva ponovno pokretanje preglednika. Preglednik će se ponovo pokrenuti sada.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Koristi se <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Traka oznaka</translation>
 <translation id="5190926251776387065">Aktiviranje priključka</translation>
 <translation id="5190959794678983197">Nema mikrofona</translation>
 <translation id="5191094172448199359">PIN-ovi koje ste unijeli se ne podudaraju</translation>
@@ -7638,6 +7641,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6582274660680936615">Pregledate kao gost</translation>
 <translation id="6583328141350416497">Nastavi preuzimanje</translation>
 <translation id="6584878029876017575">Microsoft trajni potpis</translation>
+<translation id="6585124893636629274">Zatvorite Gemini u Chromeu</translation>
 <translation id="6585584201072946561">Prilagodite veličinu teksta i font za web preglednik</translation>
 <translation id="6586099239452884121">Pretraživanje za goste</translation>
 <translation id="6586451623538375658">Zamijeni primarno dugme miša</translation>
@@ -10092,6 +10096,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8347227221149377169">Zadaci štampanja</translation>
 <translation id="8348430946834215779">Koristite HTTPS kad god je moguće i dobijte upozorenje prije učitavanja web lokacija koje ga ne podržavaju</translation>
 <translation id="8348896480272971199">Provjerite internetsku vezu i pokušajte ponovo.</translation>
+<translation id="8349305172487531364">Traka oznaka</translation>
 <translation id="8349325309815489209">Ekstenzije su dozvoljene na ovoj web lokaciji</translation>
 <translation id="8349826889576450703">pokretač</translation>
 <translation id="8350789879725387295">Alati olovke na priključnoj traci</translation>
@@ -10494,7 +10499,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8651585100578802546">Prisilno ponovo učitaj ovu stranicu</translation>
 <translation id="8651806635673244884">Možete vratiti kartice na vrh desnim klikom na bilo koju karticu i odabirom opcije "Prikaži kartice vodoravno"</translation>
 <translation id="8652400352452647993">Greška s paketom ekstenzije</translation>
-<translation id="8652412805227733853">Adresa e-pošte je automatski potvrđena</translation>
 <translation id="8654151524613148204">Fajl je prevelik da bi ga računar obradio. Žao nam je.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Prijava nije uspjela jer vaša lozinka nije potvrđena. Obratite se administratoru ili pokušajte ponovo.</translation>

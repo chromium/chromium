@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Rhybudd</translation>
 <translation id="1056980582064308040">Bydd newid gosodiadau yn ailgychwyn y poethfan. Bydd dyfeisiau sy'n defnyddio'r poethfan yn datgysylltu.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Ymyrrwyd ar y dasg.</translation>
 <translation id="1059484610606223931">Protocol Trafnidiaeth Hyperdestun (HTTPS)</translation>
 <translation id="1059944192885972544">Wedi canfod <ph name="NUM" /> o Dabiau ar gyfer '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="1060172044035704924">Cyfnewid gyda'r Wedd Dde</translation>
@@ -2341,6 +2340,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2665056444046933274">Gall gwefannau ddefnyddio'r nodwedd hon i gael mynediad at apiau a gwasanaethau eraill ar y ddyfais hon</translation>
 <translation id="2665394472441560184">Ychwanegu gair newydd</translation>
 <translation id="2665647207431876759">Wedi darfod</translation>
+<translation id="2666092431469916601">Brig</translation>
 <translation id="2666247341166669829">Lefel batri chwith <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Mae apiau eraill wedi'u gosod i agor yr un dolenni â <ph name="APP_NAME" />. Bydd hyn yn analluogi <ph name="APP_NAME_2" /> a <ph name="APP_NAME_3" /> rhag agor dolenni a gefnogir.</translation>
 <translation id="2667463864537187133">Rheoli gwirio sillafu</translation>
@@ -2936,6 +2936,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3084548735795614657">Gollyngwch i'w osod</translation>
 <translation id="3084771660770137092">Naill ai gwnaeth Chrome redeg allan o gof neu cafodd y broses ar gyfer y dudalen we ei therfynu am ryw reswm arall.  I barhau, ail-lwythwch neu ewch i dudalen arall.</translation>
 <translation id="3085412380278336437">Gall y wefan ddefnyddio'ch camera</translation>
+<translation id="3087734570205094154">Gwaelod</translation>
 <translation id="3088052000289932193">Mae'r wefan yn defnyddio MIDI</translation>
 <translation id="3088325635286126843">&amp;Ailenwi...</translation>
 <translation id="3089137131053189723">Mae'r chwiliad wedi'i glirio</translation>
@@ -4425,6 +4426,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4170314459383239649">Clirio Wrth Adael</translation>
 <translation id="4170685671197375581">Troi llwybr byr ymlaen</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Rhannu tab gyda Gemini}zero{Rhannu # tab gyda Gemini}two{Rhannu # dab gyda Gemini}few{Rhannu # thab gyda Gemini}many{Rhannu # thab gyda Gemini}other{Rhannu # tab gyda Gemini}}</translation>
+<translation id="4172051516777682613">Dangos bob tro</translation>
 <translation id="4172944993779635350">Mae eich cyfrinair ar gyfer "<ph name="URL" />" wedi'i gadw i'r ddyfais hon yn unig. I'w ddefnyddio ar eich dyfeisiau eraill, cadwch ef yn eich cyfrif.</translation>
 <translation id="4173129130568053653">Gall Gemini eich helpu i archebu apwyntiadau, creu basgedi siopa, neu wneud tasgau eraill rydych yn eu rhoi iddo.</translation>
 <translation id="4175137578744761569">Porffor golau a gwyn</translation>
@@ -5801,6 +5803,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5189274947477567401">Mae optio allan o rannu proses yn gofyn am ailgychwyn porwr. Bydd y porwr hwn yn ailgychwyn nawr.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Defnyddio <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Bar Nodau Tudalen</translation>
 <translation id="5190926251776387065">Gweithredu porth</translation>
 <translation id="5190959794678983197">Dim meicroffon</translation>
 <translation id="5191094172448199359">Nid yw'r PIN rydych wedi'u rhoi'n cyfateb</translation>
@@ -7638,6 +7641,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6582274660680936615">Rydych yn pori fel Gwestai</translation>
 <translation id="6583328141350416497">Parhau i lawrlwytho</translation>
 <translation id="6584878029876017575">Llofnodi Oes Microsoft</translation>
+<translation id="6585124893636629274">Cau Gemini yn Chrome</translation>
 <translation id="6585584201072946561">Addasu maint testun a ffont ar gyfer y porwr gwe</translation>
 <translation id="6586099239452884121">Pori gwestai</translation>
 <translation id="6586451623538375658">Newid prif fotwm y llygoden</translation>
@@ -10095,6 +10099,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8347227221149377169">Ffeiliau i'w hargraffu</translation>
 <translation id="8348430946834215779">Defnyddiwch HTTPS lle bynnag y bo'n bosib a chael rhybudd cyn llwytho gwefannau nad ydynt yn ei gefnogi</translation>
 <translation id="8348896480272971199">Gwiriwch eich rhyngrwyd a rhowch gynnig arall arni.</translation>
+<translation id="8349305172487531364">Bar nodau tudalen</translation>
 <translation id="8349325309815489209">Caniateir estyniadau ar y wefan hon</translation>
 <translation id="8349826889576450703">lansiwr</translation>
 <translation id="8350789879725387295">Offer pwyntil yn y doc</translation>
@@ -10497,7 +10502,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8651585100578802546">Gorfodi Ail-lwytho'r Dudalen Hon</translation>
 <translation id="8651806635673244884">Gallwch symud eich tabiau yn ôl i'r brig trwy dde-glicio unrhyw dab a dewis “Dangos tabiau'n llorweddol”</translation>
 <translation id="8652400352452647993">Gwall estyniad pecyn</translation>
-<translation id="8652412805227733853">E-bost wedi'i ddilysu'n awtomatig</translation>
 <translation id="8654151524613148204">Mae'r ffeil yn rhy fawr i'ch cyfrifiadur ei thrin. Ymddiheuriadau.</translation>
 <translation id="8655295600908251630">Sianel</translation>
 <translation id="8655972064210167941">Methwyd â mewngofnodi gan nad oedd modd dilysu eich cyfrinair. Cysylltwch â'ch gweinyddwr neu rhowch gynnig arall arni.</translation>

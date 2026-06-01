@@ -256,6 +256,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, onglet sélectionné avec enregistrement en cours</translation>
 <translation id="2141396931810938595">D'après votre utilisation</translation>
 <translation id="2145315049852051678">Chrome vérifie régulièrement que les paramètres de votre navigateur sont les plus sûrs possibles. Si d'autres vérifications sont nécessaires, nous vous le signalerons.</translation>
+<translation id="2149968176347646218">La connexion n'est pas sécurisée</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2163089732491971196">Pour utiliser et enregistrer des données Chrome dans votre compte Google, saisissez votre phrase secrète</translation>
 <translation id="2166228530126694506">Version <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6595046016124923392">Les images sont envoyées à Google afin de vous proposer de meilleures descriptions.</translation>
 <translation id="6602173570135186741">Saisie automatique et mots de passe</translation>
 <translation id="661266467055912436">Renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
+<translation id="6615455863669487791">Démonstration</translation>
 <translation id="6621391692573306628">Pour envoyer cet onglet sur un autre appareil, connectez-vous à Chrome sur cet autre appareil et celui-ci</translation>
 <translation id="6627583120233659107">Modifier le dossier</translation>
 <translation id="6633067410344541938">Déverrouiller la navigation privée</translation>

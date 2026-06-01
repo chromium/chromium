@@ -256,6 +256,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, pestanya de gravació seleccionada</translation>
 <translation id="2141396931810938595">Segons l'ús que en fas</translation>
 <translation id="2145315049852051678">Chrome comprova regularment que el navegador tingui la configuració més segura. T'avisarem si hi ha res que hagis de revisar.</translation>
+<translation id="2149968176347646218">La connexió no és segura</translation>
 <translation id="2149973817440762519">Edita l'adreça d'interès</translation>
 <translation id="2163089732491971196">Per utilitzar i desar les dades de Chrome al teu Compte de Google, introdueix la frase de contrasenya</translation>
 <translation id="2166228530126694506">Versió <ph name="VERSION_NUMBER" /></translation>
@@ -677,6 +678,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, pestanya fixada d'imatge sobre imatge</translation>
 <translation id="3950820424414687140">Inicia la sessió</translation>
 <translation id="395377504920307820">Utilitza sense cap compte</translation>
+<translation id="3955353672249727801">Les pàgines s'han afegit a la llista de lectura</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome carregarà la pàgina quan estigui a punt}other{Chrome carregarà les pàgines quan estiguin a punt}}</translation>
 <translation id="3969142555815019568">Chrome no pot comprovar les teves contrasenyes</translation>
 <translation id="3969863827134279083">Mou cap amunt</translation>
@@ -1330,6 +1332,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6595046016124923392">Les imatges s'envien a Google per millorar-ne les descripcions per a tu.</translation>
 <translation id="6602173570135186741">Emplenament automàtic i contrasenyes</translation>
 <translation id="661266467055912436">Millora la seguretat per a tu i per a tots els usuaris del web.</translation>
+<translation id="6615455863669487791">Mostra-m'ho</translation>
 <translation id="6621391692573306628">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chrome als dos dispositius</translation>
 <translation id="6627583120233659107">Edita la carpeta</translation>
 <translation id="6633067410344541938">Desbloqueja el mode d'incògnit</translation>

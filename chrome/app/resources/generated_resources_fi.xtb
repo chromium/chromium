@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Varoitus</translation>
 <translation id="1056980582064308040">Asetusten muuttaminen käynnistää hotspotin uudelleen. Hotspotia käyttävien laitteiden yhteys katkeaa.</translation>
 <translation id="1058262162121953039">PUK-koodi</translation>
-<translation id="1058848978232174442">Tehtävä keskeytetty</translation>
 <translation id="1059484610606223931">Suojattu hypertekstin siirtoprotokolla (HTTPS)</translation>
 <translation id="1059944192885972544">Haulla "<ph name="SEARCH_TEXT" />" löytyi <ph name="NUM" /> välilehteä</translation>
 <translation id="1060172044035704924">Vaihda oikeaan näkymään</translation>
@@ -2341,6 +2340,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2665056444046933274">Sivustot voivat käyttää tätä ominaisuutta päästäkseen muihin sovelluksiin ja palveluihin tällä laitteella</translation>
 <translation id="2665394472441560184">Lisää uusi sana</translation>
 <translation id="2665647207431876759">Vanhentunut</translation>
+<translation id="2666092431469916601">Yleisin</translation>
 <translation id="2666247341166669829">Vasemmanpuoleisen akun varaus <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Muut sovellukset on asetettu avaamaan samat linkit kuin <ph name="APP_NAME" />. Muutoksen jälkeen <ph name="APP_NAME_2" /> ja <ph name="APP_NAME_3" /> eivät enää voi avata tuettuja linkkejä.</translation>
 <translation id="2667463864537187133">Hallitse oikeinkirjoituksen tarkistusta</translation>
@@ -2936,6 +2936,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3084548735795614657">Pudota ja asenna</translation>
 <translation id="3084771660770137092">Joko Chromen muisti loppui tai verkkosivun prosessi lopetettiin muusta syystä. Päivitä sivu tai siirry toiselle sivulle.</translation>
 <translation id="3085412380278336437">Sivusto voi käyttää kameraasi</translation>
+<translation id="3087734570205094154">Alaosassa</translation>
 <translation id="3088052000289932193">Sivusto käyttää MIDIä</translation>
 <translation id="3088325635286126843">Nimeä uudelleen...</translation>
 <translation id="3089137131053189723">Haku tyhjennetty</translation>
@@ -4422,6 +4423,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4170314459383239649">Tyhjennä poistuttaessa</translation>
 <translation id="4170685671197375581">Laita pikanäppäin päälle</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Jaa välilehti Geminille}other{Jaa # välilehteä Geminille}}</translation>
+<translation id="4172051516777682613">Näytä aina</translation>
 <translation id="4172944993779635350">Salasana (<ph name="URL" />) on tallennettu vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteilla, tallenna se tilillesi.</translation>
 <translation id="4173129130568053653">Gemini voi auttaa sinua varaamaan aikoja, luomaan ostoskoreja tai tekemään muita tehtäviä, joita annat sille.</translation>
 <translation id="4175137578744761569">Vaalea violetti ja valkoinen</translation>
@@ -5798,6 +5800,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5189274947477567401">Prosessin jakamisen poistaminen käytöstä edellyttää selaimen uudelleenkäynnistystä. Selain käynnistyy uudelleen nyt.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" />-sovelluksen käyttäminen</translation>
+<translation id="5190835502935405962">Kirjanmerkkipalkki</translation>
 <translation id="5190926251776387065">Aktivoi portti</translation>
 <translation id="5190959794678983197">Ei mikrofonia</translation>
 <translation id="5191094172448199359">Lisäämäsi PIN-koodit eivät täsmää</translation>
@@ -7635,6 +7638,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6582274660680936615">Selaat vieraana</translation>
 <translation id="6583328141350416497">Jatka latausta</translation>
 <translation id="6584878029876017575">Microsoftin elinikäinen allekirjoitus</translation>
+<translation id="6585124893636629274">Sulje Gemini in Chrome</translation>
 <translation id="6585584201072946561">Yksilöi tekstin kokoa ja fonttia selainta varten</translation>
 <translation id="6586099239452884121">Vierailijakäyttö</translation>
 <translation id="6586451623538375658">Vaihda hiiren ykköspainiketta</translation>
@@ -10085,6 +10089,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8347227221149377169">Tulostustyöt</translation>
 <translation id="8348430946834215779">Käytä HTTPS:ää aina kun mahdollista. Saat varoituksen ennen sellaisten sivustojen lataamista, jotka eivät tue sitä.</translation>
 <translation id="8348896480272971199">Tarkista internetyhteys ja yritä uudelleen.</translation>
+<translation id="8349305172487531364">Kirjanmerkkipalkki</translation>
 <translation id="8349325309815489209">Laajennukset sallittu tällä sivustolla</translation>
 <translation id="8349826889576450703">käynnistysohjelma</translation>
 <translation id="8350789879725387295">Näyttökynätyökalut alapalkissa</translation>
@@ -10487,7 +10492,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8651585100578802546">Lataa tämä sivu uudelleen</translation>
 <translation id="8651806635673244884">Voit siirtää välilehdet takaisin yläreunaan klikkaamalla mitä tahansa välilehteä kakkospainikkeella ja valitsemalla "Näytä välilehdet vaakasuunnassa"</translation>
 <translation id="8652400352452647993">Virhe: pakattu laajennus</translation>
-<translation id="8652412805227733853">Sähköposti vahvistettiin automaattisesti</translation>
 <translation id="8654151524613148204">Tiedosto on liian suuri käsiteltäväksi.</translation>
 <translation id="8655295600908251630">Kanava</translation>
 <translation id="8655972064210167941">Sisäänkirjautuminen epäonnistui, koska salasanasi vahvistaminen epäonnistui. Ota yhteyttä järjestelmänvalvojaan tai yritä uudelleen.</translation>

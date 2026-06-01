@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">אזהרה</translation>
 <translation id="1056980582064308040">שינוי ההגדרות יגרום להפעלה מחדש של הנקודה לשיתוף אינטרנט. מכשירים שמחוברים לנקודה לשיתוף האינטרנט ינותקו.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">המשימה הופסקה</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">נמצאו <ph name="NUM" /> כרטיסיות עבור '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="1060172044035704924">החלפה עם התצוגה הימנית</translation>
@@ -2338,6 +2337,7 @@
 <translation id="2665056444046933274">אתרים יכולים להשתמש בתכונה הזו כדי להתחבר לאפליקציות ולשירותים אחרים במכשיר הזה</translation>
 <translation id="2665394472441560184">מילה חדשה</translation>
 <translation id="2665647207431876759">פג תוקף</translation>
+<translation id="2666092431469916601">למעלה</translation>
 <translation id="2666247341166669829">רמת הטעינה של הסוללה השמאלית %<ph name="PERCENTAGE" />.</translation>
 <translation id="2667144577800272420">אפליקציות אחרות מוגדרות לפתוח את אותם קישורים כמו <ph name="APP_NAME" />. כתוצאה מכך, <ph name="APP_NAME_2" /> וגם <ph name="APP_NAME_3" /> לא יפתחו קישורים נתמכים.</translation>
 <translation id="2667463864537187133">ניהול בדיקת איות</translation>
@@ -2933,6 +2933,7 @@
 <translation id="3084548735795614657">יש לשחרר כדי להתקין</translation>
 <translation id="3084771660770137092">‏ייתכן שהזיכרון של Chrome אזל או שתהליך שפעל על דף האינטרנט הופסק מסיבה כלשהי. כדי להמשיך, יש לטעון מחדש או לעבור לדף אחר.</translation>
 <translation id="3085412380278336437">האתר רשאי להשתמש במצלמה</translation>
+<translation id="3087734570205094154">תחתית</translation>
 <translation id="3088052000289932193">‏האתר משתמש ב-MIDI</translation>
 <translation id="3088325635286126843">&amp;שינוי שם...</translation>
 <translation id="3089137131053189723">החיפוש נוקה</translation>
@@ -4422,6 +4423,7 @@
 <translation id="4170314459383239649">מחיקה ביציאה</translation>
 <translation id="4170685671197375581">הפעלת קיצור הדרך</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{‏שיתוף הכרטיסייה עם Gemini}one{‏שיתוף של # כרטיסיות עם Gemini}two{‏שיתוף של # כרטיסיות עם Gemini}other{‏שיתוף של # כרטיסיות עם Gemini}}</translation>
+<translation id="4172051516777682613">להציג תמיד</translation>
 <translation id="4172944993779635350">הסיסמה לאתר <ph name="URL" /> שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון.</translation>
 <translation id="4173129130568053653">‏‫Gemini יכול לעזור לקבוע פגישות, ליצור עגלות קניות או לעבוד על משימות אחרות שיוקצו לו.</translation>
 <translation id="4175137578744761569">סגול בהיר ולבן</translation>
@@ -5799,6 +5801,7 @@
 <translation id="5189274947477567401">כדי להפסיק את שיתוף התהליך, צריך להפעיל מחדש את הדפדפן. הדפדפן הזה יופעל מחדש עכשיו.</translation>
 <translation id="5189404424758444348">סטימפאנק</translation>
 <translation id="5190577235024772869">נפח אחסון בשימוש: <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">סרגל הסימניות</translation>
 <translation id="5190926251776387065">הפעלת היציאה</translation>
 <translation id="5190959794678983197">אין מיקרופון</translation>
 <translation id="5191094172448199359">קודי האימות שהזנת לא תואמים.</translation>
@@ -7636,6 +7639,7 @@
 <translation id="6582274660680936615">גלישה כאורח</translation>
 <translation id="6583328141350416497">להמשך ההורדה</translation>
 <translation id="6584878029876017575">‏חתימה לכל החיים של Microsoft</translation>
+<translation id="6585124893636629274">‏סגירת Gemini ב-Chrome</translation>
 <translation id="6585584201072946561">התאמה אישית של הגופן וגודל הטקסט בדפדפן האינטרנט</translation>
 <translation id="6586099239452884121">גלישה כאורח</translation>
 <translation id="6586451623538375658">החלפת כפתור העכבר העיקרי</translation>
@@ -10090,6 +10094,7 @@
 <translation id="8347227221149377169">משימות הדפסה</translation>
 <translation id="8348430946834215779">‏יש להשתמש ב-HTTPS כשאפשר, ולקבל אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS</translation>
 <translation id="8348896480272971199">צריך לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
+<translation id="8349305172487531364">סרגל סימניות</translation>
 <translation id="8349325309815489209">יש הרשאה לתוספים באתר הזה</translation>
 <translation id="8349826889576450703">מרכז האפליקציות</translation>
 <translation id="8350789879725387295">כלי סטיילוס באזור המוצמד</translation>
@@ -10492,7 +10497,6 @@
 <translation id="8651585100578802546">אילוץ טעינה מחדש של דף זה</translation>
 <translation id="8651806635673244884">כדי להחזיר את הכרטיסיות לחלק העליון, אפשר ללחוץ לחיצה ימנית על כרטיסייה כלשהי ולבחור באפשרות "הצגת הכרטיסיות לרוחב"</translation>
 <translation id="8652400352452647993">שגיאת 'ארוז תוסף'</translation>
-<translation id="8652412805227733853">כתובת האימייל אומתה אוטומטית</translation>
 <translation id="8654151524613148204">הקובץ גדול מכדי שהמחשב שלך יוכל לטפל בו. מצטערים.</translation>
 <translation id="8655295600908251630">ערוץ</translation>
 <translation id="8655972064210167941">הכניסה נכשלה מפני שלא ניתן היה לאמת את הסיסמה. יש לפנות למנהל המערכת או לנסות שוב.</translation>

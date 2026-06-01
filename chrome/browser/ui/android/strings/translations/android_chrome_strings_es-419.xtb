@@ -256,6 +256,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, pestaña con grabación seleccionada</translation>
 <translation id="2141396931810938595">Según tu uso</translation>
 <translation id="2145315049852051678">Chrome verifica con regularidad que el navegador tenga la configuración más segura. Te avisaremos si hay algo que debas revisar.</translation>
+<translation id="2149968176347646218">La conexión no es segura</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2163089732491971196">Para usar y guardar datos de Chrome en tu Cuenta de Google, ingresa tu frase de contraseña</translation>
 <translation id="2166228530126694506">Versión <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6595046016124923392">Se envían las imágenes a Google para proporcionarte mejores descripciones.</translation>
 <translation id="6602173570135186741">Autocompletar y contraseñas</translation>
 <translation id="661266467055912436">Mejora la seguridad para ti y todos los usuarios de la Web.</translation>
+<translation id="6615455863669487791">Mostrarme</translation>
 <translation id="6621391692573306628">Para enviar esta pestaña a otro dispositivo, accede a Chrome en ambos dispositivos.</translation>
 <translation id="6627583120233659107">Editar la carpeta</translation>
 <translation id="6633067410344541938">Desbloquear pestañas de incógnito</translation>

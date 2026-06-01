@@ -256,6 +256,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2138632817776076519">Atlasīta cilne <ph name="TAB_TITLE" />, kurā notiek ierakstīšana</translation>
 <translation id="2141396931810938595">Pamatojoties uz jūsu lietojumu</translation>
 <translation id="2145315049852051678">Chrome regulāri pārbauda, vai jūsu pārlūkā ir atlasīti visdrošākie iestatījumi. Ja kaut kas būs jāpārskata, saņemsiet paziņojumu.</translation>
+<translation id="2149968176347646218">Savienojums nav drošs</translation>
 <translation id="2149973817440762519">Rediģēt grāmatzīmes</translation>
 <translation id="2163089732491971196">Lai izmantotu un saglabātu Chrome datus savā Google kontā, ievadiet ieejas frāzi</translation>
 <translation id="2166228530126694506">Versija <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6595046016124923392">Attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus.</translation>
 <translation id="6602173570135186741">Automātiskā aizpilde un paroles</translation>
 <translation id="661266467055912436">Šis režīms efektīvāk aizsargā gan jūs, gan visus citus tīmekļa lietotājus.</translation>
+<translation id="6615455863669487791">Rādīt man</translation>
 <translation id="6621391692573306628">Lai nosūtītu šo cilni uz citu ierīci, abās ierīcēs pierakstieties pārlūkā Chrome</translation>
 <translation id="6627583120233659107">Rediģēt mapi</translation>
 <translation id="6633067410344541938">Atbloķēt inkognito režīmu</translation>

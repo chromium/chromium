@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Babala</translation>
 <translation id="1056980582064308040">Kapag binago ang mga setting, mare-restart ang hotspot. Madidiskonekta ang mga device na gumagamit ng hotspot.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Naantala ang gawain</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Nakakita ng <ph name="NUM" /> (na) Tab Para sa '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="1060172044035704924">I-swap sa Kanang View</translation>
@@ -2342,6 +2341,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2665056444046933274">Puwedeng gamitin ng mga site ang feature na ito para i-access ang iba pang app at serbisyo sa device na ito</translation>
 <translation id="2665394472441560184">Magdagdag ng bagong salita</translation>
 <translation id="2665647207431876759">Nag-expire</translation>
+<translation id="2666092431469916601">Tuktok</translation>
 <translation id="2666247341166669829"><ph name="PERCENTAGE" />% antas ng baterya ng kaliwa.</translation>
 <translation id="2667144577800272420">May iba pang app na nakatakdang buksan ang mga link na kapareho ng sa <ph name="APP_NAME" />. Idi-disable nito ang kakayahan ng <ph name="APP_NAME_2" /> at <ph name="APP_NAME_3" /> na buksan ang mga sinusuportahang link.</translation>
 <translation id="2667463864537187133">Pamahalaan ang pang-check ng pagbabaybay</translation>
@@ -2937,6 +2937,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3084548735795614657">I-drop upang i-install</translation>
 <translation id="3084771660770137092">Naubusan ng memorya ang Chrome o winakasan ang proseso para sa webpage dahil sa ilang kadahilanan. Upang magpatuloy, mag-reload o pumunta sa isa pang pahina.</translation>
 <translation id="3085412380278336437">Maaaring gamitin ng site ang iyong camera</translation>
+<translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="3088052000289932193">Gumagamit ng MIDI ang site</translation>
 <translation id="3088325635286126843">&amp;Palitan ang pangalan...</translation>
 <translation id="3089137131053189723">Na-clear ang paghahanap</translation>
@@ -4426,6 +4427,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4170314459383239649">I-clear sa Paglabas</translation>
 <translation id="4170685671197375581">I-on ang shortcut</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{I-share ang tab sa Gemini}one{I-share ang # tab sa Gemini}other{I-share ang # na tab sa Gemini}}</translation>
+<translation id="4172051516777682613">Palaging ipakita</translation>
 <translation id="4172944993779635350">Mase-save ang iyong password para sa "<ph name="URL" />" sa device lang na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong account.</translation>
 <translation id="4173129130568053653">Matutulungan ka ng Gemini na mag-book ng mga appointment, gumawa ng mga shopping cart, o gumawa ng iba pang gawaing ibibigay mo rito.</translation>
 <translation id="4175137578744761569">Light purple at puti</translation>
@@ -5802,6 +5804,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5189274947477567401">Nire-require sa pag-opt out sa pag-share ng proseso ang pag-restart ng browser. Magre-restart na ngayon ang browser na ito.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Gumagamit ng <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Bar ng Mga Bookmark</translation>
 <translation id="5190926251776387065">I-activate ang port</translation>
 <translation id="5190959794678983197">Walang mikropono</translation>
 <translation id="5191094172448199359">Hindi tugma ang mga PIN na inilagay mo</translation>
@@ -7639,6 +7642,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6582274660680936615">Nagba-browse ka bilang isang Bisita</translation>
 <translation id="6583328141350416497">Ipagpatuloy ang pag-download</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
+<translation id="6585124893636629274">Isara ang Gemini sa Chrome</translation>
 <translation id="6585584201072946561">I-customize ang laki at font ng text para sa web browser</translation>
 <translation id="6586099239452884121">Pagba-browse ng bisita</translation>
 <translation id="6586451623538375658">Palitan ang pangunahing button ng mouse</translation>
@@ -10091,6 +10095,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8347227221149377169">Mga pag-print</translation>
 <translation id="8348430946834215779">Gamitin ang HTTPS sa tuwing posible at makatanggap ng babala bago mag-load ng mga site na hindi sumusuporta rito</translation>
 <translation id="8348896480272971199">Tingnan kung may internet ka at subukan ulit.</translation>
+<translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8349325309815489209">Pinapayagan ang mga extension sa site na ito</translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8350789879725387295">Mga tool ng stylus sa dock</translation>
@@ -10494,7 +10499,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8651585100578802546">Sapilitang I-reload ang Pahinang Ito</translation>
 <translation id="8651806635673244884">Puwede mong ilipat ulit ang iyong mga tab sa itaas sa pamamagitan ng pag-right click sa anumang tab at pagpili sa “Ipakita ang mga tab nang pahalang”</translation>
 <translation id="8652400352452647993">Nagka-error sa extension ng pack</translation>
-<translation id="8652412805227733853">Awtomatikong na-verify ang email</translation>
 <translation id="8654151524613148204">Masyadong malaki ang file upang mapangasiwaan ng iyong computer. Paumanhin.</translation>
 <translation id="8655295600908251630">Channel</translation>
 <translation id="8655972064210167941">Hindi nakapag-sign in dahil hindi ma-verify ang iyong password. Mangyaring makipag-ugnayan sa iyong administrator o subukan ulit.</translation>

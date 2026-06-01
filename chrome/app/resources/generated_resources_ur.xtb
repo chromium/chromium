@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">وارننگ</translation>
 <translation id="1056980582064308040">ترتیبات کو تبدیل کرنے سے ہاٹ اسپاٹ ری اسٹارٹ ہو جائے گا۔ ہاٹ اسپاٹ استعمال کرنے والے آلات غیر منسلک ہو جائیں گے۔</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">ٹاسک میں خلل پڑا</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' کیلئے <ph name="NUM" /> ٹیبز ملے</translation>
 <translation id="1060172044035704924">دائیں منظر کے ساتھ تبدیل کریں</translation>
@@ -2331,6 +2330,7 @@
 <translation id="2665056444046933274">سائٹس اس آلے پر موجود دیگر ایپس اور سروسز تک رسائی کیلئے اس خصوصیت کا استعمال کر سکتی ہیں</translation>
 <translation id="2665394472441560184">ایک نیا لفظ شامل کریں</translation>
 <translation id="2665647207431876759">میعاد ختم ہوگئی</translation>
+<translation id="2666092431469916601">سرفہرست</translation>
 <translation id="2666247341166669829">بائیں بیٹری کا لیول <ph name="PERCENTAGE" />% ہے۔</translation>
 <translation id="2667144577800272420">دیگر ایپس کو <ph name="APP_NAME" /> کی طرح لنکس کو کھولنے کے لیے سیٹ کیا گیا ہے۔ یہ <ph name="APP_NAME_2" /> <ph name="APP_NAME_3" /> تعاون یافتہ لنکس کھولنے سے غیر فعال کر دیں گی۔</translation>
 <translation id="2667463864537187133">املا کی جانچ کا نظم کریں</translation>
@@ -2926,6 +2926,7 @@
 <translation id="3084548735795614657">انسٹال کرنے کیلئے ڈراپ کریں</translation>
 <translation id="3084771660770137092">‏یا تو Chrome کی میموری ختم ہوگئی یا کسی دیگر وجہ سے ویب صفحہ کیلئے کارروائی معطل کر دی گئی۔ جاری رکھنے کیلئے دوبارہ لوڈ کریں یا کسی دوسرے صفحہ پر جائیں۔</translation>
 <translation id="3085412380278336437">سائٹ آپ کا کیمرا استعمال کر سکتی ہے</translation>
+<translation id="3087734570205094154">نیچے</translation>
 <translation id="3088052000289932193">‏سائٹ MIDI استعمال کر رہی ہے</translation>
 <translation id="3088325635286126843">&amp;نام بدلیں…</translation>
 <translation id="3089137131053189723">تلاش کو صاف کر دیا گیا</translation>
@@ -4413,6 +4414,7 @@
 <translation id="4170314459383239649">باہر نکلنے پر صاف کریں</translation>
 <translation id="4170685671197375581">شارٹ کٹ آن کریں</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{‏‫Gemini کے ساتھ ٹیب کا اشتراک کریں}other{‏‫Gemini کے ساتھ # ٹیبز کا اشتراک کریں}}</translation>
+<translation id="4172051516777682613">ہمیشہ دکھائیں</translation>
 <translation id="4172944993779635350">"<ph name="URL" />" کے لیے آپ کا پاس ورڈ صرف اس آلہ پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کے لیے، اسے اپنے اکاؤنٹ میں محفوظ کریں۔</translation>
 <translation id="4173129130568053653">‏‫Gemini اپوائنٹمنٹس بُک کرنے، شاپنگ کارٹس بنانے یا آپ کے دیے گئے دیگر ٹاسکس کو انجام دینے میں آپ کی مدد کر سکتا ہے۔</translation>
 <translation id="4175137578744761569">ہلکا جامنی اور سفید</translation>
@@ -5788,6 +5790,7 @@
 <translation id="5189274947477567401">عمل کے اشتراک سے آپٹ آؤٹ کرنے کے لیے براؤزر کو ری اسٹارٹ کرنے کی ضرورت ہے۔ یہ براؤزر اب ری اسٹارٹ ہوگا۔</translation>
 <translation id="5189404424758444348">اسٹیم پنک</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> استعمال کر کے</translation>
+<translation id="5190835502935405962">بُک مارکس بار</translation>
 <translation id="5190926251776387065">پورٹ فعال کریں</translation>
 <translation id="5190959794678983197">مائیکروفون نہیں ہے</translation>
 <translation id="5191094172448199359">‏آپ کے درج کردہ PINs مماثل نہیں ہیں</translation>
@@ -7623,6 +7626,7 @@
 <translation id="6582274660680936615">آپ ایک مہمان کے طور پر براؤز کر رہے ہیں</translation>
 <translation id="6583328141350416497">ڈاؤن لوڈ جاری رکھیں</translation>
 <translation id="6584878029876017575">‏Microsoft لائف ٹائم سائننگ</translation>
+<translation id="6585124893636629274">‏‫Chrome میں Gemini کو بند کریں</translation>
 <translation id="6585584201072946561">ویب براؤزر کے لیے ٹیکسٹ سائز اور فونٹ کو حسب ضرورت بنائیں</translation>
 <translation id="6586099239452884121">مہمان براؤزنگ</translation>
 <translation id="6586451623538375658">ابتدائی ماؤس بٹن سویپ کریں</translation>
@@ -10072,6 +10076,7 @@
 <translation id="8347227221149377169">پرنٹ جابز</translation>
 <translation id="8348430946834215779">‏جب بھی ممکن ہو HTTPS کا استعمال کریں اور ان سائٹس کو لوڈ کرنے سے پہلے وارننگ حاصل کریں جو اس کی حمایت نہیں کرتی ہیں</translation>
 <translation id="8348896480272971199">اپنا انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="8349305172487531364">بُک مارکس بار</translation>
 <translation id="8349325309815489209">اس سائٹ پر ایکسٹینشنز کی اجات ہے</translation>
 <translation id="8349826889576450703">لانچر</translation>
 <translation id="8350789879725387295">ڈاک میں اسٹائلس ٹولز</translation>
@@ -10474,7 +10479,6 @@
 <translation id="8651585100578802546">یہ صفحہ زبردستی دوبارہ لوڈ کریں</translation>
 <translation id="8651806635673244884">آپ کسی بھی ٹیب پر دائیں کلک کر کے اور "ٹیبز کو افقی طور پر دکھائیں" کو منتخب کر کے اپنے ٹیبز کو واپس اوپر لے جا سکتے ہیں</translation>
 <translation id="8652400352452647993">پیک ایکسٹینشن کی خرابی</translation>
-<translation id="8652412805227733853">ای میل کی توثیق خودکار طور پر ہو گئی</translation>
 <translation id="8654151524613148204">آپ کے کمپیوٹر کیلئے ہینڈل کرنے کیلئے فائل کافی بڑی ہے۔ معذرت۔</translation>
 <translation id="8655295600908251630">چینل</translation>
 <translation id="8655972064210167941">سائن ان ناکام ہو گیا کیونکہ آپ کے پاس ورڈز کی توثیق نہيں ہو سکی۔ براہ کرم اپنے منتظم سے رابطہ کریں یا دوبارہ کوشش کریں۔</translation>

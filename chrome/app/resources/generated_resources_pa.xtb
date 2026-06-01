@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">ਚਿਤਾਵਨੀ</translation>
 <translation id="1056980582064308040">ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲਣ ਨਾਲ ਹੌਟਸਪੌਟ ਮੁੜ-ਸ਼ੁਰੂ ਹੋ ਜਾਵੇਗਾ। ਹੌਟਸਪੌਟ ਨੂੰ ਵਰਤ ਰਹੇ ਡੀਵਾਈਸ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਣਗੇ।</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">ਕਾਰਜ ਵਿੱਚ ਰੁਕਾਵਟ ਆਈ</translation>
 <translation id="1059484610606223931">ਹਾਇਪਰਟੈਕਸਟ ਟਰਾਂਸਪੋਰਟ ਪ੍ਰੋਟੋਕੋਲ (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' ਲਈ <ph name="NUM" /> ਟੈਬਾਂ ਮਿਲੀਆਂ</translation>
 <translation id="1060172044035704924">ਸੱਜੇ ਦ੍ਰਿਸ਼ ਨਾਲ ਸਵੈਪ ਕਰੋ</translation>
@@ -2343,6 +2342,7 @@
 <translation id="2665056444046933274">ਸਾਈਟਾਂ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦੀ ਵਰਤੋਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਹੋਰ ਐਪਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="2665394472441560184">ਇੱਕ ਨਵਾਂ ਸ਼ਬਦ ਜੋੜੋ</translation>
 <translation id="2665647207431876759">ਮਿਆਦ ਮੁੱਕ ਗਈ</translation>
+<translation id="2666092431469916601">ਟੌਪ</translation>
 <translation id="2666247341166669829">ਖੱਬੇ ਪਾਸੇ ਵਾਲੇ ਬੱਡ ਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ਹੋਰ ਐਪਾਂ <ph name="APP_NAME" /> ਵਾਂਗ ਉਹੀ ਲਿੰਕ ਖੋਲ੍ਹਣ ਲਈ ਤਿਆਰ ਹਨ। ਇਹ <ph name="APP_NAME_2" /> ਅਤੇ <ph name="APP_NAME_3" /> ਨੂੰ ਸਹਾਇਤਾ ਲਈ ਲਿੰਕ ਖੋਲ੍ਹਣ ਤੋਂ ਰੋਕ ਦੇਵੇਗਾ।</translation>
 <translation id="2667463864537187133">ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -2939,6 +2939,7 @@
 <translation id="3084548735795614657">ਸਥਾਪਤ ਕਰਨ ਲਈ ਡ੍ਰੌਪ ਕਰੋ</translation>
 <translation id="3084771660770137092">Chrome ਦੀ ਮੈਮਰੀ ਖਤਮ ਹੋ ਗਈ ਜਾਂ ਵੈੱਬ-ਪੰਨਾ ਦੀ ਪ੍ਰਕਿਰਿਆ ਕਿਸੇ ਕਾਰਨ ਕਰਕੇ ਖਤਮ ਕਰ ਦਿੱਤੀ ਗਈ ਸੀ। ਜਾਰੀ ਰੱਖਣ ਲਈ, ਰੀਲੋੱਡ ਕਰੋ ਜਾਂ ਕਿਸੇ ਹੋਰ ਪੰਨੇ 'ਤੇ ਜਾਓ।</translation>
 <translation id="3085412380278336437">ਸਾਈਟ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀ ਹੈ</translation>
+<translation id="3087734570205094154">ਹੇਠਲਾ</translation>
 <translation id="3088052000289932193">ਸਾਈਟ MIDI ਨੂੰ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="3088325635286126843">&amp;ਮੁੜ ਨਾਮ ਦਿਓ...</translation>
 <translation id="3089137131053189723">ਖੋਜ ਕਲੀਅਰ ਕੀਤੀ ਗਈ</translation>
@@ -4428,6 +4429,7 @@
 <translation id="4170314459383239649">ਬਾਹਰ ਨਿਕਲਣ 'ਤੇ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="4170685671197375581">ਸ਼ਾਰਟਕੱਟ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{ਟੈਬ ਨੂੰ Gemini ਨਾਲ ਸਾਂਝਾ ਕਰੋ}one{# ਟੈਬ ਨੂੰ Gemini ਨਾਲ ਸਾਂਝਾ ਕਰੋ}other{# ਟੈਬਾਂ ਨੂੰ Gemini ਨਾਲ ਸਾਂਝਾ ਕਰੋ}}</translation>
+<translation id="4172051516777682613">ਹਮੇਸ਼ਾਂ ਦਿਖਾਓ</translation>
 <translation id="4172944993779635350">"<ph name="URL" />" ਲਈ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਆਪਣੇ ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।</translation>
 <translation id="4173129130568053653">Gemini ਅਪਾਇੰਟਮੈਂਟਾਂ ਬੁੱਕ ਕਰਨ, ਖਰੀਦਦਾਰੀ ਕਾਰਟ ਬਣਾਉਣ ਜਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਇਸਨੂੰ ਦਿੱਤੇ ਗਏ ਹੋਰ ਕਾਰਜ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4175137578744761569">ਹਲਕਾ ਜਾਮਨੀ ਅਤੇ ਸਫ਼ੈਦ</translation>
@@ -5803,6 +5805,7 @@
 <translation id="5189274947477567401">ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਦੇ ਵਿਕਲਪ ਤੋਂ ਹਟਣ ਦੀ ਚੋਣ ਕਰਨ ਲਈ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਇਹ ਬ੍ਰਾਊਜ਼ਰ ਹੁਣ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਵੇਗਾ।</translation>
 <translation id="5189404424758444348">ਸਟੀਮਪੰਕ</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
+<translation id="5190835502935405962">ਬੁੱਕਮਾਰਸ ਬਾਰ</translation>
 <translation id="5190926251776387065">ਪੋਰਟ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="5190959794678983197">ਕੋਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨਹੀਂ ਹੈ</translation>
 <translation id="5191094172448199359">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦਾਖਲ ਕੀਤੇ ਪਿੰਨ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ</translation>
@@ -7641,6 +7644,7 @@
 <translation id="6582274660680936615">ਤੁਸੀਂ ਮਹਿਮਾਨ ਵਜੋਂ ਬ੍ਰਾਊਜ਼ ਕਰ ਰਹੇ ਹੋ</translation>
 <translation id="6583328141350416497">ਡਾਊਨਲੋਡ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="6584878029876017575">Microsoft ਲਾਈਫਟਾਈਮ ਸਾਈਨਿੰਗ</translation>
+<translation id="6585124893636629274">Chrome ਵਿੱਚ Gemini ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="6585584201072946561">ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਰ ਲਈ ਲਿਖਤ ਦੇ ਆਕਾਰ ਅਤੇ ਫ਼ੌਂਟ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="6586099239452884121">ਮਹਿਮਾਨ ਬ੍ਰਾਊਜ਼ਿੰਗ</translation>
 <translation id="6586451623538375658">ਪ੍ਰਾਈਮਰੀ ਮਾਊਸ ਬਟਨ ਸਵੈਪ ਕਰੋ</translation>
@@ -10092,6 +10096,7 @@
 <translation id="8347227221149377169">ਪ੍ਰਿੰਟ ਜੌਬਾਂ</translation>
 <translation id="8348430946834215779">ਜਦੋਂ ਵੀ ਸੰਭਵ ਹੋਵੇ HTTPS ਦੀ ਵਰਤੋਂ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਲੋਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਚਿਤਾਵਨੀ ਪ੍ਰਾਪਤ ਕਰੋ ਜੋ ਇਸਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="8348896480272971199">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਦੀ ਜਾਂਚ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="8349305172487531364">ਬੁੱਕਮਾਰਕਸ ਬਾਰ</translation>
 <translation id="8349325309815489209">ਇਸ ਸਾਈਟ 'ਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="8349826889576450703">ਲਾਂਚਰ</translation>
 <translation id="8350789879725387295">ਡੌਕ ਵਿੱਚ ਸਟਾਈਲਸ ਟੂਲ</translation>
@@ -10494,7 +10499,6 @@
 <translation id="8651585100578802546">ਇਸ ਪੰਨੇ ਨੂੰ ਜ਼ੋਰ ਨਾਲ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="8651806635673244884">ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਟੈਬ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰ ਕੇ ਅਤੇ “ਟੈਬਾਂ ਨੂੰ ਲੇਟਵੇਂ ਤੌਰ 'ਤੇ ਦਿਖਾਓ” ਨੂੰ ਚੁਣ ਕੇ ਆਪਣੀਆਂ ਟੈਬਾਂ ਨੂੰ ਵਾਪਸ ਸਿਖਰ 'ਤੇ ਲਿਜਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="8652400352452647993">ਪੈਕ ਐਕਸਟੈਂਸ਼ਨ ਗੜਬੜ</translation>
-<translation id="8652412805227733853">ਈਮੇਲ ਦੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪੁਸ਼ਟੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="8654151524613148204">ਫ਼ਾਈਲ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਵੱਲੋਂ ਹੈਂਡਲ ਕਰਨ ਲਈ ਬਹੁਤ ਜ਼ਿਆਦਾ ਵੱਡੀ ਹੈ। ਮਾਫ਼ ਕਰਨਾ।</translation>
 <translation id="8655295600908251630">ਚੈਨਲ</translation>
 <translation id="8655972064210167941">ਸਾਈਨ-ਇਨ ਅਸਫਲ ਹੋ ਗਿਆ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ ਜਾਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>

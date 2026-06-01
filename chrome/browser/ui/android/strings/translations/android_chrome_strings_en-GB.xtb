@@ -256,6 +256,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, selected recording tab</translation>
 <translation id="2141396931810938595">Based on your usage</translation>
 <translation id="2145315049852051678">Chrome regularly checks to make sure that your browser has the safest settings. We'll let you know if anything needs review.</translation>
+<translation id="2149968176347646218">Connection is not secure</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2163089732491971196">To use and save Chrome data in your Google Account, enter your passphrase</translation>
 <translation id="2166228530126694506">Version <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6595046016124923392">Images are sent to Google to improve descriptions for you.</translation>
 <translation id="6602173570135186741">Autofill and passwords</translation>
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
+<translation id="6615455863669487791">Show me</translation>
 <translation id="6621391692573306628">To send this tab to another device, sign in to Chrome on both devices</translation>
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6633067410344541938">Unlock Incognito</translation>

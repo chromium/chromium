@@ -465,13 +465,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
 <translation id="1340053691042184658">Tarayıcıya misafir girişlerini engelle</translation>
 <translation id="1342918903685430097">Cihaz için izin verilen minimum <ph name="PRODUCT_OS_NAME" /> sürümünü yapılandır.</translation>
 <translation id="1343128241903870688">Cihazın uygulama bilgileri raporlamasını devre dışı bırak</translation>
-<translation id="1347198119056266798">Bu politika kullanımda kaldırılmıştır. Lütfen bunun yerine <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> ve <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> politikalarını kullanın. <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> veya (kullanımdan kaldırılan) <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> politikası ayarlanırsa bu politika yoksayılır.
-
-      Google Web Arama'daki sorguları Güvenli Arama etkin olarak yapılmaya zorlar ve kullanıcıların bu ayarı değiştirmelerini engeller. Bu ayar, aynı zamanda YouTube'da Orta Düzey Kısıtlı Mod'un kullanılmasını da zorunlu kılar.
-
-      Bu ayarı etkinleştirirseniz Google Arama'da Güvenli Arama ve YouTube'da Orta Düzey Kısıtlı Mod her zaman etkin olur.
-
-      Bu ayarı devre dışı bırakır veya herhangi bir değer belirlemezseniz, Google Arama'da Güvenli Arama ve YouTube'da Kısıtlı Mod uygulanmaz.</translation>
 <translation id="134745581157553029">"DeviceArcDataSnapshotHours" politikası ayarlanırsa ARC verilerinin anlık görüntü mekanizması etkinleştirilir. ARC verilerinin anlık görüntüsünün güncellemesi, tanımlanan zaman aralıklarında otomatik olarak başlatılabilir. Bir aralık başladığında, ARC anlık görüntüsünün güncellemesi gerekip giriş yapmış kullanıcı yoksa ARC verilerinin anlık görüntüsünü güncelleme işlemi, kullanıcı bildirimi olmadan başlatılır. Kullanıcı oturumu etkinse kullanıcı arayüzü bildirimi gösterilir. Cihazı yeniden başlatıp ARC verilerinin anlık görüntüsünü güncelleme işlemini başlatmak için bildirimin kabul edilmesi gerekir. Not: Cihaz kullanımı, ARC verilerinin anlık görüntüsünü güncelleme işlemi sırasında engellenir.</translation>
 <translation id="1348603614848418219"><ph name="MS_AD_NAME" /> tarafından yönetilen cihazların bulut yönetimine taşınmasını devre dışı bırak.</translation>
 <translation id="1352799151662469739">AC gücüyle çalışırken, ekran kilitlenmeden önce kullanıcı girişi olmadan geçecek süre (milisaniye olarak)</translation>
@@ -1448,7 +1441,6 @@ Not: Dahili chrome://* ile chrome-untrusted://* URL'lerinin engellenmesi beklenm
 <translation id="1963986268950915756">Kullanıcıların Tarayıcıdan Web Uygulaması Yüklemesine İzin Ver</translation>
 <translation id="1964191545419036999">Galeri (117 sürümünden itibaren desteklenir)</translation>
 <translation id="1964634611280150550">Gizli mod devre dışı</translation>
-<translation id="1964802606569741174">Bu politikanın Android YouTube uygulaması üzerinde hiçbir etkisi yoktur. YouTube'da Güvenlik Modu uygulanacaksa Android YouTube uygulamasının yüklenmesine izin verilmemelidir.</translation>
 <translation id="1964985353230379667">Manuel olarak oluşturulan yeni kayıtlar için önerilen <ph name="KRB5_CONFIG" /> yapılandırmasını değiştirir.
 
       "KerberosUseCustomPrefilledConfig" politikası etkinleştirilirse politika değeri, önerilen yapılandırma olarak uygulanır ve Kerberos kimlik doğrulama iletişim kutusunun "Gelişmiş" bölümünde gösterilir. Bu politika boş bir dizeye ayarlanır veya ayarlanmadan bırakılırsa önerilen <ph name="PRODUCT_OS_NAME" /> yapılandırması silinir.
@@ -1805,7 +1797,6 @@ Bu politika geçici bir çözüm olup <ph name="PRODUCT_NAME" /> 145 sürümünd
 
       Güvenli Tarama hakkında daha fazla bilgi için https://support.google.com/chrome?p=safe_browsing_preferences adresine göz atın.</translation>
 <translation id="2177696016354404697">Gizlilik ekranını her zaman devre dışı bırak</translation>
-<translation id="2178899310296064282">YouTube'da en azından Orta Düzey Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="2180260434916939385">Yapay zeka destekli geçmişte aramaya izin ver ve yapay zeka modellerini daha iyi hale getir.</translation>
 <translation id="2180795125410219364">Home/End ayarları devre dışı</translation>
 <translation id="2180958780733364832">Gözetimsiz Mod'un kullanımını kontrol et</translation>
@@ -5434,7 +5425,6 @@ Bu politika 1.000 giriş ile sınırlıdır.</translation>
 <translation id="4510923771103268849">Kullanıcının, Crostini kapsayıcılarına root erişimi olmasına izin verilir</translation>
 <translation id="4511848671760711978">Öğretmenlerin, öğrencilerin ekranını uzaktan görüntülemesini engelle.</translation>
 <translation id="4512407512989846472">Belirli URL'lerden panoya kopyalama işleminin engellenmesine izin verir</translation>
-<translation id="4513691822411041977">Google Arama'da Güvenli Arama ve YouTube Kısıtlı Modu kullanımını zorlama</translation>
 <translation id="4515404363392014383">Güvenilen kaynaklar için Güvenli Tarama'yı etkinleştir</translation>
 <translation id="4517327050150780380">Okumama yardım et özelliğinin ayarları</translation>
 <translation id="4518251772179446575">Bir site, kullanıcının fiziksel konumunu izlemek istediğinde sor</translation>
@@ -6582,13 +6572,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="5182483318861266793">Rafı ekranın sağ tarafında konumlandır</translation>
 <translation id="51859390023061147">Tam geri yükleme özelliğini devre dışı bırak.</translation>
 <translation id="5189360528842591274">Yalnızca listedeki Bluetooth hizmetleriyle bağlantı kurmaya izin ver</translation>
-<translation id="5190426551516379357">Politika ayarlanırsa YouTube'da minimum Kısıtlı mod uygulanır ve kullanıcıların daha az kısıtlı bir mod seçmeleri engellenir. Politikayı:
-
-      * Yüksek Düzey seçeneğine ayarlarsanız YouTube'da Yüksek Düzey Kısıtlı mod her zaman etkin olur.
-
-      * Orta Düzey olarak ayarlarsanız kullanıcı YouTube'da yalnızca Orta Düzey Kısıtlı mod'u ve Yüksek Düzey Kısıtlı mod'u seçebilir, ancak Kısıtlı mod'u kapatamaz.
-
-      * Kapalı olarak ayarlar veya hiçbir değer ayarlamazsanız Chrome, YouTube'da Kısıtlı mod'u zorunlu tutmaz. Ancak YouTube politikaları gibi harici politikalar Kısıtlı mod'un uygulanmasını zorunlu tutabilir.</translation>
 <translation id="5191007233343702012">Standart sekme önceliklendirmeyi kullan</translation>
 <translation id="5191476996923842491">setTimeout() fonksiyon zaman aşımı için varsayılan davranış.</translation>
 <translation id="519247340330463721">Güvenli Tarama ile ilgili politikaları yapılandırır.</translation>
@@ -8675,13 +8658,6 @@ NOT: Tüketici cihazlarıyla kurumsal cihazların varsayılan davranışı farkl
 <translation id="6483115462650732746">Kiosk modunda kayan erişilebilirlik menüsünü göster</translation>
 <translation id="6491139795995924304">Cihazda Bluetooth'a izin ver</translation>
 <translation id="6491305972928809525">Kiosk modunda kayan erişilebilirlik menüsünü gizle</translation>
-<translation id="6491872498385040936">Bu politika kullanımdan kaldırılmıştır. Bu politikayı geçersiz kılan ve daha ayrıntılı ayarlamaya olanak tanıyan <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> politikasını kullanma seçeneğini değerlendirin.
-
-YouTube Orta Düzey Kısıtlı Modu'nu zorlar ve kullanıcıların bu ayarı değiştirmesini engeller.
-
-Bu ayar etkinleştirilirse YouTube'da Kısıtlı Mod her zaman en azından Orta Düzey olacak şekilde zorunlu kılınır.
-
-Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph name="PRODUCT_NAME" /> tarafından YouTube'da Kısıtlı Mod zorunlu kılınmaz. Bununla birlikte, YouTube politikaları gibi harici politikalar Kısıtlı Mod'u zorunlu kılmaya devam edebilir.</translation>
 <translation id="6492177700737407141">Gelişmiş Koruma programına kaydolan kullanıcılara yalnızca standart tüketici korumaları sunulur</translation>
 <translation id="6492737559291967859">Politikayı ayarlamak, <ph name="PRODUCT_NAME" /> ürününün kullandığı yerel ayarı belirtir.
 
@@ -9251,7 +9227,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ya
 <translation id="6857240169209507953"><ph name="BOREALIS_NAME" /> politikasının cihazda çalışması engellensin</translation>
 <translation id="6857372417233723544">Politika ayarlanırsa <ph name="PRODUCT_OS_NAME" /> işletim sisteminde Hintçe Alfabetik Düzen etkinleştirilir.
 Politika, yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa bu düzen kullanılamaz. Geçerli olması için yeniden başlatma gerekir.</translation>
-<translation id="685769593149966548">YouTube için Yüksek Düzey Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="686079137349561371">Microsoft Windows 7 veya sonraki sürümler</translation>
 <translation id="6863927303509860338">Yeni Sekme Sayfası'nda kısayollar ayarlama</translation>
 <translation id="6866755486434471318">Video kodu çözmek için paylaşılan resimlerin <ph name="PEPPER_NAME" /> tarafından kullanılmasına izin ver.</translation>
@@ -9993,7 +9968,6 @@ Bu politika ayarının desteği <ph name="PRODUCT_NAME" /> 146 sürümünde sonl
 <translation id="7238335422094660594"><ph name="UIA_NAME" /> sağlayıcısını etkinleştir</translation>
 <translation id="7241007908714447207">Yalıtılmış web uygulaması kaynaklarının, akıllı kart okuyuculara bağlanmak için izin istemesine olanak tanır.</translation>
 <translation id="7241016798422122577">Yüzle kumandayı, giriş ekranında etkinleştir</translation>
-<translation id="7242191282517459095">YouTube (135 sürümünden itibaren desteklenir)</translation>
 <translation id="7244600351241637530">Bu ayar etkinleştirilirse Telefon Merkezi'ne zaten kaydolmuş kullanıcılar, telefonlarında çekilmiş son fotoğrafları ve videoları ChromeOS'te görüntüleyip indirebilirler.
 
       Bu ayar devre dışı bırakılırsa kullanıcıların bu özelliği kullanmalarına izin verilmez. <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> politikası devre dışı bırakılırsa da kullanıcıların bu özelliği kullanmalarına izin verilmez.
@@ -11289,7 +11263,6 @@ Geçerli değerler, 1 saniye ile 9.999 saniye aralığındadır. Politika ayarla
 
 <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> politikası Yanlış değerine ayarlandığında bu politikanın hiçbir etkisi olmaz.</translation>
 <translation id="8113731369695819720">Giriş ekranında mono sesi devre dışı bırak</translation>
-<translation id="8114382167597081590">YouTube'da Kısıtlı Mod'u zorunlu kılma</translation>
 <translation id="8117662664312039036">Cihazların PluginVm kullanmasına izin verme</translation>
 <translation id="8117921351531866504">Web sitelerinin kullanıcının kaydettiği ödeme yöntemleri olup olmadığını kontrol etmesine izin verilip verilmeyeceğini ayarlamanıza olanak sağlar.
 
@@ -11823,7 +11796,6 @@ Politika ayarlanmadan bırakılırsa <ph name="CHROME_CLEANUP_NAME" />, <ph name
 <translation id="846994437739309080">Etkinleştirilirse (veya ayarlanmazsa), platformun güvenilir sertifika depolarındaki kullanıcılar tarafından eklenen TLS sertifikaları, TLS sunucusu kimlik doğrulaması için yol oluşturma işleminde kullanılır.
 
 Devre dışı bırakılırsa, platformun güvenilir sertifika depolarındaki kullanıcılar tarafından eklenen TLS sertifikaları, TLS sunucusu kimlik doğrulaması için yol oluşturma işleminde kullanılmaz.</translation>
-<translation id="8470317291588703478">YouTube Kısıtlı Modu'nu zorlama</translation>
 <translation id="8471117881949952479">Bu politikanın desteği sonlandırılmış ve gelecekte DataControlsRules ile değiştirilecektir.
 
 Bu politika, belirli URL'lerdeki verilerin panoya kopyalanmasını engeller.
@@ -11929,7 +11901,6 @@ Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa üçüncü 
 
       Uyarı: Kullanıcıların yazılım güncellemelerini ve kritik güvenlik düzeltmelerini almasını engelleyebileceği için sürüm kısıtlamalarının yapılandırılması önerilmez. Güncellemelerin belirli bir sürümle kısıtlanması kullanıcıları riske atabilir.</translation>
 <translation id="8519617069657262768">Google Drive senkronizasyonunu etkinleştir</translation>
-<translation id="8520064498689833152">Google Arama'da Güvenli Arama ve YouTube Kısıtlı Modu kullanımını en azından Orta Düzey olmaya zorla</translation>
 <translation id="8520950040439618600">Uzaktan erişim ana makinelerinin PIN ve eşleme kimlik doğrulama yöntemlerini kullanmasına izin verir</translation>
 <translation id="8524334245528364388">Yazdırma sunucularının listesini içeren bir JSON dosyasının URL'si.</translation>
 <translation id="8525282442896658040">Uygulamanın iOS'ta hazırlayıcı bildirim yetkilendirmesini kullanmasına izin verir</translation>
@@ -12178,7 +12149,6 @@ Bu politika geçici bir çözüm olup birkaç aşamadan sonra kaldırılacaktır
 <translation id="8676959842615154675">Politika, Etkin değerine ayarlanırsa uzaktan erişim ana makinesi, ana makine ile ilişkilendirilmiş yerel kullanıcının adını, ana makinenin sahibi olarak kayıtlı Google Hesabının adıyla (ör. ana makinenin sahibi "candogru@example.com" hesabı ise, bu ad "candogru" olur) karşılaştırır. Ana makinenin sahibinin adı, ana makinenin ilişkilendirildiği yerel kullanıcının adından farklı ise bu uzaktan erişim ana makinesi çalışmaz. Ana makine sahibinin Google Hesabının belirli bir alan adıyla ilişkilendirilmesini sağlamak için bu politikayı, <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> politikası ile birlikte kullanın.
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa uzaktan erişim ana makinesi herhangi bir yerel kullanıcıyla ilişkilendirilebilir.</translation>
-<translation id="867708016260789630">YouTube Kısıtlı Modu'nu en azından Orta Düzey olmaya zorla</translation>
 <translation id="8677853537025397834">Bu sitelerde WebHID API'ye izin ver</translation>
 <translation id="8684000025871334499"><ph name="PRODUCT_OS_NAME" /> hizmetindeki Bruschetta sanal makineleri için yükleme ve
 çalışma zamanı politikalarını yapılandırın. Bu şekilde kullanıcıların,
@@ -12251,7 +12221,6 @@ yükleyicide "daha fazla bilgi" URL'si görünmez. Görünüyorsa https şeması
       "http://acme.com/ABC" yalnızca "IESiteListMode" modunda eşleşir.</translation>
 <translation id="8728854710675158426">TLS El Sıkışmalarında Güvenli Olmayan Karmalar Etkinleştirildi</translation>
 <translation id="8734543507835977857">Oturum başlangıcında güç yönetimi gecikmelerini ve oturum süresi sınırlarını başlat</translation>
-<translation id="8736538322216687231">Minimum YouTube Kısıtlı Modu'nu zorla</translation>
 <translation id="873800217865395140">Web sitesi telemetri toplama hızı (milisaniye cinsinden)</translation>
 <translation id="8742596277791362306">Bu politika, İlgili Web Sitesi Grupları özelliğini etkinleştirme işleminin kontrol edilmesini sağlar.
 
@@ -12419,7 +12388,6 @@ korumalı proxy kullanan aramalara izin verilir.
 
 Politika, Devre Dışı olarak ayarlanırsa daha yüksek korumalı proxy kullanan aramalara izin
 verilmez. URL'lerin kısmi karmaları doğrudan Google'a çok daha düşük sıklıkta yüklenir. Bu da korumanın kalitesini düşürür.</translation>
-<translation id="8858642179038618439">YouTube Güvenlik Modunu zorla</translation>
 <translation id="8860342862142842017">subjectPublicKeyInfo karma listesi için Sertifika Şeffaflığı uygulamasını devre dışı bırak</translation>
 <translation id="8860894781631833477">Kullanıcılar <ph name="PRODUCT_OS_NAME" /> sürüm kanalını yapılandırabilir</translation>
 <translation id="8862086508140571198">Bu politika, mümkün olan en kısa sürede indirilecek DLC (İndirilebilir İçerik) listesinin ayarlanmasına olanak tanır. İndirilen DLC'ler sonrasında cihazdaki tüm kullanıcılar tarafından kullanılabilir.

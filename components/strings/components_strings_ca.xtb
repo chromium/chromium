@@ -149,6 +149,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1227224963052638717">Política desconeguda.</translation>
 <translation id="1227677022489889280">Indica el motiu pel qual el vols moure (obligatori)</translation>
 <translation id="1228893227497259893">Identificador d'entitat incorrecte</translation>
+<translation id="122989279399348496">Mentre tens la sessió iniciada, <ph name="DOMAIN" /> pot confirmar <ph name="EMAIL" /> en llocs web compatibles perquè no hagis de consultar la safata d'entrada</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (detectat automàticament)</translation>
 <translation id="1232569758102978740">Sense títol</translation>
 <translation id="1234539281285007945">El camp <ph name="FIELD_1" /> és obligatori</translation>
@@ -510,6 +511,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, hi ha diverses accions disponibles, prem el tabulador per moure't d'una acció a una altra</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detalls de la targeta virtual</translation>
+<translation id="1802420021606590788">Chrome processa els títols i els URL de les pàgines en un espai privat al núvol</translation>
 <translation id="1803254472779303354">S'ha permès el bloqueig del ratolí</translation>
 <translation id="1803351196216024260">Pot demanar permís per utilitzar el micròfon</translation>
 <translation id="1804258830776932716">Activa Pix enllaçant el teu compte ràpidament</translation>
@@ -3027,6 +3029,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5742806904559466333">Bars, discoteques i vida nocturna</translation>
 <translation id="5743684619253032786">Productes de manicura</translation>
 <translation id="574392208103952083">Mitja</translation>
+<translation id="5745586894920491759">Chrome processa els títols i els URL de les pàgines al núvol</translation>
 <translation id="5745733273847572235">Pot demanar la teva ubicació</translation>
 <translation id="5750869797196646528">Seguiment de mans</translation>
 <translation id="5752327398324808817">Introdueix una o dues paraules</translation>
@@ -3421,6 +3424,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Mostra els registres</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Comprova el servidor intermediari, el tallafoc i la configuració de DNS segur<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Confirma automàticament les teves adreces electròniques</translation>
 <translation id="6366710531182496394">Grapat doble a l'esquerra</translation>
 <translation id="6367196786591004737">Suprimeix l'entrada</translation>
 <translation id="6370022303958842211">Accions d'accés al dispositiu, com ara inicis de sessió (inclosos els motius pels quals no s'ha pogut iniciar la sessió), tancaments de sessió, bloquejos i desbloquejos</translation>
@@ -4066,6 +4070,7 @@ Detalls addicionals:
 <translation id="7388380253839603603">Preus de la gasolina i combustibles</translation>
 <translation id="7388594495505979117">{0,plural, =1{El dispositiu es reiniciarà d'aquí a 1 minut}other{El dispositiu es reiniciarà d'aquí a # minuts}}</translation>
 <translation id="7393161616326137353">Jocs d'aventura</translation>
+<translation id="7393243238767102021">Vols permetre que <ph name="DOMAIN" /> verifiqui automàticament aquesta adreça electrònica?</translation>
 <translation id="7393475648162498734">Mostra quines recompenses i quins avantatges tens disponibles per a les targetes en el moment de tramitar la compra</translation>
 <translation id="7393971683644170444">S'està connectant amb el proveïdor de la targeta...</translation>
 <translation id="739728382607845710">Icona de gestor de pagaments</translation>
@@ -5061,6 +5066,7 @@ Detalls addicionals:
 <translation id="8963117664422609631">Ves a la configuració del lloc web</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggeriments:<ph name="MARKUP_2" />Assegureu-vos que teniu connexió de dades<ph name="MARKUP_3" />Torneu a carregar aquesta pàgina web més tard<ph name="MARKUP_4" />Comproveu l'adreça que heu introduït<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Els teus fitxers locals se suprimiran d'aquí a <ph name="HOURS" /> hores</translation>
+<translation id="8964904785315870349">Adreça electrònica verificada</translation>
 <translation id="8968766641738584599">Desa la targeta</translation>
 <translation id="8970887620466824814">Hi ha hagut un error.</translation>
 <translation id="8971063699422889582">El certificat del servidor ha caducat.</translation>

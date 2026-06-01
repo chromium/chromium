@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Varning</translation>
 <translation id="1056980582064308040">Om du ändrar inställningarna startas surfzonen om. Enheter som använder surfzonen kopplas från.</translation>
 <translation id="1058262162121953039">PUK-kod</translation>
-<translation id="1058848978232174442">Uppgiften avbröts</translation>
 <translation id="1059484610606223931">HTTPS (Hypertext Transfer Protocol)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> flikar för <ph name="SEARCH_TEXT" /> hittades</translation>
 <translation id="1060172044035704924">Byt med höger vy</translation>
@@ -2342,6 +2341,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2665056444046933274">Webbplatser kan använda den här funktionen för att komma åt andra appar och tjänster på enheten</translation>
 <translation id="2665394472441560184">Lägg till ett nytt ord</translation>
 <translation id="2665647207431876759">Upphört att gälla</translation>
+<translation id="2666092431469916601">Överst</translation>
 <translation id="2666247341166669829">Vänster batterinivå är <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Andra appar är inställda på att öppna samma länkar som <ph name="APP_NAME" />. Detta inaktiverar att <ph name="APP_NAME_2" /> och <ph name="APP_NAME_3" /> öppnar länkar som stöds.</translation>
 <translation id="2667463864537187133">Hantera stavningskontrollen</translation>
@@ -2937,6 +2937,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3084548735795614657">Släpp för att installera</translation>
 <translation id="3084771660770137092">Antingen tog minnet slut i Chrome eller så avslutades processen för webbsidan av någon annan anledning. Om du vill fortsätta läser du in sidan på nytt eller öppnar en annan sida.</translation>
 <translation id="3085412380278336437">Webbplatsen har åtkomst till kameran</translation>
+<translation id="3087734570205094154">Nederst</translation>
 <translation id="3088052000289932193">MIDI används på webbplatsen</translation>
 <translation id="3088325635286126843">&amp;Byt namn ...</translation>
 <translation id="3089137131053189723">Sökningen har rensats</translation>
@@ -4426,6 +4427,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4170314459383239649">Rensa vid avslut</translation>
 <translation id="4170685671197375581">Aktivera kortkommandot</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Dela flik med Gemini}other{Dela # flikar med Gemini}}</translation>
+<translation id="4172051516777682613">Visa alltid</translation>
 <translation id="4172944993779635350">Du har endast sparat lösenordet för <ph name="URL" /> på den här enheten. Om du vill använda det på dina andra enheter ska du spara dem i kontot.</translation>
 <translation id="4173129130568053653">Gemini kan hjälpa dig att boka möten, skapa kundvagnar eller utföra andra uppgifter du ger den.</translation>
 <translation id="4175137578744761569">Ljuslila och vit</translation>
@@ -5802,6 +5804,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5189274947477567401">Om du vill välja bort processdelning måste webbläsaren startas om. Webbläsaren startas om nu.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Använder <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Bokmärkesfältet</translation>
 <translation id="5190926251776387065">Aktivera port</translation>
 <translation id="5190959794678983197">Ingen mikrofon</translation>
 <translation id="5191094172448199359">Pinkoden du angav matchar inte</translation>
@@ -7639,6 +7642,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6582274660680936615">Du surfar som gäst</translation>
 <translation id="6583328141350416497">Fortsätt med nedladdningen</translation>
 <translation id="6584878029876017575">Microsofts Livstids signering</translation>
+<translation id="6585124893636629274">Stäng Gemini i Chrome</translation>
 <translation id="6585584201072946561">Anpassa textstorlek och font för webbläsaren</translation>
 <translation id="6586099239452884121">Gästsession</translation>
 <translation id="6586451623538375658">Byt primär musknapp</translation>
@@ -10089,6 +10093,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8347227221149377169">Utskriftsjobb</translation>
 <translation id="8348430946834215779">Använd HTTPS när det är möjligt och få en varning innan webbplatser som saknar stöd för HTTPS läses in</translation>
 <translation id="8348896480272971199">Kontrollera internet och försök igen.</translation>
+<translation id="8349305172487531364">Bokmärkesfältet</translation>
 <translation id="8349325309815489209">Tillägg tillåts på den här webbplatsen</translation>
 <translation id="8349826889576450703">start</translation>
 <translation id="8350789879725387295">Dockade verktyg för e-penna</translation>
@@ -10491,7 +10496,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8651585100578802546">Tvinga webbläsaren att hämta sidan igen</translation>
 <translation id="8651806635673244884">Du kan flytta flikarna tillbaka till toppen genom att högerklicka på en flik och välja Visa flikar horisontellt</translation>
 <translation id="8652400352452647993">Fel vid paketering av tillägg</translation>
-<translation id="8652412805227733853">E-postadressen har verifierats automatiskt</translation>
 <translation id="8654151524613148204">Filen är för stor för att din dator ska kunna hantera den.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Inloggningen misslyckades eftersom ditt lösenord inte kunde verifieras. Kontakta administratören eller försök igen.</translation>

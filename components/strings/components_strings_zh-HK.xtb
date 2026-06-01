@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">不明政策。</translation>
 <translation id="1227677022489889280">請提供移動的原因 (必填)</translation>
 <translation id="1228893227497259893">實體識別碼錯誤</translation>
+<translation id="122989279399348496">登入後，<ph name="DOMAIN" /> 可在支援的網站上確認 <ph name="EMAIL" />，讓你無需檢查收件箱</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (自動偵測)</translation>
 <translation id="1232569758102978740">無標題</translation>
 <translation id="1234539281285007945">「<ph name="FIELD_1" />」為必填欄位</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />，可以進行幾種動作，㩒 Tab 鍵就可以跟次序轉換唔同嘅動作</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">虛擬卡詳情</translation>
+<translation id="1802420021606590788">Chrome 會在雲端私人空間處理網頁標題和網址</translation>
 <translation id="1803254472779303354">允許鎖定滑鼠</translation>
 <translation id="1803351196216024260">可要求使用麥克風</translation>
 <translation id="1804258830776932716">連結帳戶即可快速啟用 Pix</translation>
@@ -3026,6 +3028,7 @@
 <translation id="5742806904559466333">酒吧、俱樂部和夜生活</translation>
 <translation id="5743684619253032786">指甲護理產品</translation>
 <translation id="574392208103952083">中</translation>
+<translation id="5745586894920491759">Chrome 會在雲端處理網頁標題和網址</translation>
 <translation id="5745733273847572235">可要求您提供位置</translation>
 <translation id="5750869797196646528">手部追蹤</translation>
 <translation id="5752327398324808817">輸入一至兩個字</translation>
@@ -3420,6 +3423,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">查看記錄</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />檢查 Proxy、防火牆和安全 DNS 設定<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">自動確認電郵</translation>
 <translation id="6366710531182496394">雙釘 (左側)</translation>
 <translation id="6367196786591004737">刪除項目</translation>
 <translation id="6370022303958842211">裝置存取動作，例如登入 (包括失敗的登入原因)、登出、鎖定和解鎖</translation>
@@ -4065,6 +4069,7 @@
 <translation id="7388380253839603603">氣油價格和汽車燃料</translation>
 <translation id="7388594495505979117">{0,plural, =1{裝置將於 1 分鐘後重新啟動}other{裝置將於 # 分鐘後重新啟動}}</translation>
 <translation id="7393161616326137353">冒險遊戲</translation>
+<translation id="7393243238767102021">要允許 <ph name="DOMAIN" /> 自動驗證此電郵嗎？</translation>
 <translation id="7393475648162498734">結帳時顯示付款卡可享有哪些獎賞和禮遇</translation>
 <translation id="7393971683644170444">正在連接發卡機構…</translation>
 <translation id="739728382607845710">付款處理常式圖示</translation>
@@ -5060,6 +5065,7 @@
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />建議：<ph name="MARKUP_2" />請確保您已建立數據連線<ph name="MARKUP_3" />請稍後重新載入此網頁<ph name="MARKUP_4" />請檢查您輸入的網址<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">本機檔案將於 <ph name="HOURS" /> 小時後刪除</translation>
+<translation id="8964904785315870349">已驗證的電郵</translation>
 <translation id="8968766641738584599">儲存付款卡</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8971063699422889582">伺服器憑證已過期。</translation>

@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Amaran</translation>
 <translation id="1056980582064308040">Menukar tetapan akan memulakan semula tempat liputan. Peranti yang menggunakan tempat liputan akan terputus sambungan.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Tugasan terganggu</translation>
 <translation id="1059484610606223931">Protokol Pengangkutan Hiperteks (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> Tab untuk '<ph name="SEARCH_TEXT" />' Ditemukan</translation>
 <translation id="1060172044035704924">Tukar dengan Paparan Kanan</translation>
@@ -130,6 +129,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> mahu memulihkan tetapan Chrome anda kepada tetapan lalainya yang asal. Tindakan ini akan menetap semula halaman utama, halaman tab baharu dan enjin carian anda, melumpuhkan sambungan anda dan menyahsemat semua tab. Data sementara yang lain dan data cache anda, seperti data kuki, kandungan dan tapak akan turut dikosongkan.</translation>
 <translation id="1082725763867769612">Fail luar talian</translation>
 <translation id="1083050113196701330">Semakan kemaskinian berjaya diselesaikan. Tiada kemaskinian tersedia</translation>
+<translation id="1083980330680874079">Panel Chrome</translation>
 <translation id="1084026333130513768">Simpan, Kongsi dan Hantar</translation>
 <translation id="1084096383128641877">Pengalihan keluar kata laluan tidak akan memadamkan akaun anda pada <ph name="DOMAIN" />. Tukar kata laluan anda atau padamkan akaun anda pada <ph name="DOMAIN_LINK" /> untuk melindungi kata laluan itu daripada orang lain.</translation>
 <translation id="1084288067399862432">Berjaya menukar kata laluan yang terjejas.
@@ -1976,7 +1976,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2410298923485357543">Gunakan suara semula jadi semasa peranti di dalam talian</translation>
 <translation id="2410754283952462441">Pilih akaun</translation>
 <translation id="2410940059315936967">Laman yang anda lawati boleh membenamkan kandungan daripada laman lain, contohnya imej, iklan dan teks. Kuki yang ditetapkan oleh laman lain ini dipanggil kuki pihak ketiga.</translation>
-<translation id="241142778943057419"><ph name="TASK_TITLE" />: Gemini sedang mengusahakan tugasan anda dan akan memaklumi anda jika tindakan lanjut diperlukan.</translation>
 <translation id="2411666601450687801">Tiada Mesin Maya dibenarkan pada peranti ini</translation>
 <translation id="2412015533711271895">Ibu/bapa atau penjaga anda perlu memberikan kebenaran untuk anda menggunakan sambungan ini</translation>
 <translation id="2412593942846481727">Kemas kini tersedia</translation>
@@ -2147,7 +2146,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2518620532958109495">Dibenarkan untuk memasuki skrin penuh secara automatik</translation>
 <translation id="2519250377986324805">Lihat cara</translation>
 <translation id="2519517390894391510">Nama Profil Sijil</translation>
-<translation id="2520272650254532882"><ph name="TASK_TITLE" />: Gemini memerlukan bantuan anda untuk terus mengusahakan tugasan.</translation>
 <translation id="2520644704042891903">Menunggu soket tersedia...</translation>
 <translation id="2521427645491031107">Penyegerakan apl ditetapkan dalam Tetapan peranti</translation>
 <translation id="2521835766824839541">lagu sebelumnya</translation>
@@ -2344,6 +2342,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2665056444046933274">Laman boleh menggunakan ciri ini untuk mengakses apl dan perkhidmatan lain pada peranti ini</translation>
 <translation id="2665394472441560184">Tambah perkataan baharu</translation>
 <translation id="2665647207431876759">Tamat tempoh</translation>
+<translation id="2666092431469916601">Atas</translation>
 <translation id="2666247341166669829">Paras bateri kiri <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Apl lain ditetapkan untuk membuka pautan yang sama sebagai <ph name="APP_NAME" />. Tindakan ini akan melumpuhkan <ph name="APP_NAME_2" /> dan <ph name="APP_NAME_3" /> daripada membuka pautan yang disokong.</translation>
 <translation id="2667463864537187133">Urus semakan ejaan</translation>
@@ -2940,6 +2939,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3084548735795614657">Lepaskan untuk memasang</translation>
 <translation id="3084771660770137092">Sama ada Chrome kehabisan memori atau proses untuk halaman web dihentikan kerana beberapa sebab lain.  Untuk meneruskan, muatkan semula atau pergi ke halaman lain.</translation>
 <translation id="3085412380278336437">Tapak boleh menggunakan kamera anda</translation>
+<translation id="3087734570205094154">Bawah</translation>
 <translation id="3088052000289932193">Tapak menggunakan MIDI</translation>
 <translation id="3088325635286126843">&amp;Namakan semula...</translation>
 <translation id="3089137131053189723">Carian dikosongkan</translation>
@@ -3831,7 +3831,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3740945083753997630">Kurangkan saiz paparan dan teks</translation>
 <translation id="3741056951918180319">Anda boleh mengklik sambungan pada bila-bila masa untuk menggunakannya di mana-mana laman</translation>
 <translation id="374124333420280219">Butiran apl:</translation>
-<translation id="3741271624261034423"><ph name="TASK_TITLE" />: Gemini berhenti mengusahakan tugasan.</translation>
 <translation id="3741510433331996336">Mulakan semula peranti anda untuk menyelesaikan pengemaskinian</translation>
 <translation id="3742235229730461951">Reka letak papan kekunci Korea</translation>
 <translation id="3743842571276656710">Masukkan PIN untuk digandingkan dengan <ph name="DEVICE_NAME" /></translation>
@@ -4432,6 +4431,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4170314459383239649">Kosongkan Apabila Keluar</translation>
 <translation id="4170685671197375581">Hidupkan pintasan</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Kongsi tab dengan Gemini}other{Kongsi # tab dengan Gemini}}</translation>
+<translation id="4172051516777682613">Sentiasa paparkan</translation>
 <translation id="4172944993779635350">Kata laluan anda untuk "<ph name="URL" />" disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan tersebut dalam akaun anda.</translation>
 <translation id="4173129130568053653">Gemini boleh membantu anda menempah janji temu, membuat troli beli-belah atau melakukan tugasan lain yang anda berikan kepada Gemini.</translation>
 <translation id="4175137578744761569">Ungu cerah dan putih</translation>
@@ -4938,7 +4938,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4551763574344810652">Tekan <ph name="MODIFIER_KEY_DESCRIPTION" /> untuk buat asal</translation>
 <translation id="4553526521109675518">Anda perlu memulakan semula Chromebook anda untuk menukar bahasa peranti. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553807334824079753">Versi baharu apl ini diperlukan</translation>
-<translation id="4554396912539531334"><ph name="TASK_TITLE" />: Gemini menghentikan tugasan anda. Kembali kepada Chrome untuk menyemak tugasan tersebut.</translation>
 <translation id="4555769855065597957">Bayang</translation>
 <translation id="4555863373929230635">Untuk menyimpan kata laluan pada Google Account anda, log masuk dan aktifkan penyegerakan.</translation>
 <translation id="4556072422434361369"><ph name="SENDER_NAME" /> telah berkongsi kata laluan dengan anda pada <ph name="WEBSITE_NAME" />. Anda boleh menggunakan kata laluan tersebut dalam borang log masuk.</translation>
@@ -5810,6 +5809,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5189274947477567401">Dengan menarik diri daripada perkongsian proses, penyemak imbas perlu dimulakan semula. Penyemak imbas ini akan dimulakan semula sekarang.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Menggunakan <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Bar Penanda Halaman</translation>
 <translation id="5190926251776387065">Aktifkan port</translation>
 <translation id="5190959794678983197">Tiada mikrofon</translation>
 <translation id="5191094172448199359">PIN yang anda masukkan tidak sepadan</translation>
@@ -6782,6 +6782,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5926936390113611560">Buka semua profil</translation>
 <translation id="592880897588170157">Muat turun fail PDF dan bukannya membuka fail dalam Chrome secara automatik</translation>
 <translation id="5930567261594625340">Langit malam</translation>
+<translation id="5932194499818201827">Buka pautan dalam tetingkap Inko&amp;gnito</translation>
 <translation id="5932224571077948991">Tapak menyiarkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="59324397759951282">Peranti USB daripada <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Anda tidak mempunyai lesen tersedia yang mencukupi untuk mendaftarkan peranti perkakasan Google Meet ini. Sila hubungi bahagian jualan untuk membeli lebih banyak lesen. Jika anda percaya mesej ini merupakan satu kesilapan, sila hubungi sokongan.</translation>
@@ -7651,6 +7652,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6582274660680936615">Anda sedang menyemak imbas sebagai Tetamu</translation>
 <translation id="6583328141350416497">Teruskan muat turun</translation>
 <translation id="6584878029876017575">Menandatangani Microsoft Sepanjang Hayat</translation>
+<translation id="6585124893636629274">Tutup Gemini dalam Chrome</translation>
 <translation id="6585584201072946561">Sesuaikan saiz teks dan fon untuk penyemak imbas web</translation>
 <translation id="6586099239452884121">Penyemakan imbas tetamu</translation>
 <translation id="6586451623538375658">Tukar butang utama tetikus</translation>
@@ -8126,7 +8128,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6914812290245989348">Tidak memberikan sebarang amaran sebelum mengakses laman yang tidak selamat</translation>
 <translation id="6916590542764765824">Urus Sambungan</translation>
 <translation id="6916676294509106572">Kalendar Outlook disembunyikan</translation>
-<translation id="691676495793723176"><ph name="TASK_TITLE" />: Gemini telah menyelesaikan tugasan anda, anda boleh melihat tugasan tersebut dalam Chrome.</translation>
 <translation id="6916818963747321523">Kembangkan Semua</translation>
 <translation id="6917873303492266709">Untuk berkongsi, menyertai dan bekerjasama dalam kumpulan tab, buka tetapan dan hidupkan Benarkan log masuk Chrome</translation>
 <translation id="6918733588290914545">Persediaan pantas dengan telefon Android</translation>
@@ -10103,6 +10104,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8347227221149377169">Tugas cetak</translation>
 <translation id="8348430946834215779">Jika boleh, gunakan HTTPS dan dapatkan amaran sebelum memuatkan laman yang tidak menyokong tetapan ini</translation>
 <translation id="8348896480272971199">Semak sambungan Internet anda dan cuba lagi.</translation>
+<translation id="8349305172487531364">Bar penanda halaman</translation>
 <translation id="8349325309815489209">Sambungan dibenarkan pada laman ini</translation>
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8350789879725387295">Alatan stilus dalam dok</translation>
@@ -10506,7 +10508,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8651585100578802546">Paksa Muatkan Semula Halaman Ini</translation>
 <translation id="8651806635673244884">Anda boleh mengalihkan tab anda kembali kepada bahagian atas dengan mengklik kanan mana-mana tab dan memilih “Tunjukkan tab secara mendatar”</translation>
 <translation id="8652400352452647993">Ralat sambungan pek</translation>
-<translation id="8652412805227733853">E-mel disahkan secara automatik</translation>
 <translation id="8654151524613148204">Fail terlalu besar untuk dikendalikan oleh komputer. Maaf.</translation>
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655972064210167941">Log masuk gagal kerana kata laluan anda tidak dapat disahkan. Sila hubungi pentadbir anda atau cuba lagi.</translation>

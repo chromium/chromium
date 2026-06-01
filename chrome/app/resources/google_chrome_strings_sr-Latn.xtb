@@ -242,6 +242,7 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="345171907106878721">Dodajte sebe u Chrome</translation>
 <translation id="3453763134178591239">Chrome OS uslovi</translation>
 <translation id="3503306920980160878">Chrome traži pristup vašoj lokaciji da biste je delili sa ovim sajtom</translation>
+<translation id="3539955434060988644">Otvori link u Chrome prozoru bez arhi&amp;viranja</translation>
 <translation id="3576528680708590453">Administrator sistema je konfigurisao Chrome da otvara alternativni pregledač za pristup URL-u <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sinhronizujte i personalizujte Chrome na svim uređajima</translation>
 <translation id="3583751698304738917">Već ste prijavljeni kao <ph name="USER_EMAIL_ADDRESS" /> na drugom Chrome profilu</translation>
@@ -787,6 +788,7 @@ Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako
 <translation id="8999208279178790196">{0,plural, =0{Ažuriranje za Chrome je dostupno}=1{Ažuriranje za Chrome je dostupno}one{Ažuriranje za Chrome je dostupno već # dan}few{Ažuriranje za Chrome je dostupno već # dana}other{Ažuriranje za Chrome je dostupno već # dana}}</translation>
 <translation id="9014771989710951291">Više organizacija upravlja Chrome-om</translation>
 <translation id="9018218886431812662">Instalacija je završena</translation>
+<translation id="9024318700713112071">Podesite Chrome kao podrazumevani pregledač</translation>
 <translation id="9066987883552592250">Zatvorite Gemini u Chrome Canary-ju</translation>
 <translation id="9090566250983691233">Saznajte zašto Chrome blokira neke fajlove</translation>
 <translation id="9106236359747881194">Izaberite tekst za pretragu</translation>

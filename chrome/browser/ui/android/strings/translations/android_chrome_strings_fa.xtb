@@ -256,6 +256,7 @@
 <translation id="2138632817776076519">‫<ph name="TAB_TITLE" />، زبانه ضبط انتخابی</translation>
 <translation id="2141396931810938595">براساس میزان استفاده شما</translation>
 <translation id="2145315049852051678">‏‫Chrome به‌طور منظم بررسی می‌کند تا مطمئن شود مرورگرتان ایمن‌ترین تنظیمات را دارد. اگر موردی به بازبینی نیاز داشته باشد، به شما اطلاع خواهیم داد.</translation>
+<translation id="2149968176347646218">اتصال ایمن نیست</translation>
 <translation id="2149973817440762519">ویرایش نشانک</translation>
 <translation id="2163089732491971196">‏برای ذخیره و استفاده کردن از داده‌های Chrome در «حساب Google» خود، گذرعبارت خود را وارد کنید</translation>
 <translation id="2166228530126694506">نسخه <ph name="VERSION_NUMBER" /></translation>
@@ -677,6 +678,7 @@
 <translation id="3943322906274039960">‫<ph name="TAB_TITLE" />، زبانه سنجاق‌شده تصویردرتصویر</translation>
 <translation id="3950820424414687140">ورود به سیستم</translation>
 <translation id="395377504920307820">استفاده بدون حساب</translation>
+<translation id="3955353672249727801">صفحه‌ها به «فهرست خواندن» افزوده شدند</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{‏وقتی آماده شدید، Chrome صفحه را بار می‌کند}one{‏وقتی آماده شدید، Chrome صفحه‌ها را بار می‌کند}other{‏وقتی آماده شدید، Chrome صفحه‌ها را بار می‌کند}}</translation>
 <translation id="3969142555815019568">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="3969863827134279083">حرکت به بالا</translation>
@@ -1330,6 +1332,7 @@
 <translation id="6595046016124923392">‏تصاویر به Google ارسال می‌شوند تا توضیحات برایتان بهبود یابند.</translation>
 <translation id="6602173570135186741">تکمیل خودکار و گذرواژه‌ها</translation>
 <translation id="661266467055912436">امنیت را برای شما و همه کاربران دیگر وب بهبود می‌بخشد.</translation>
+<translation id="6615455863669487791">نشانم داده شود</translation>
 <translation id="6621391692573306628">‏برای ارسال این زبانه به دستگاهی دیگر، در هردو دستگاه به سیستم Chrome وارد شوید</translation>
 <translation id="6627583120233659107">ویرایش پوشه</translation>
 <translation id="6633067410344541938">باز کردن قفل «حالت ناشناس»</translation>

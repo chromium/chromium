@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">Непознате смернице.</translation>
 <translation id="1227677022489889280">Наведите разлог за премештање (обавезно)</translation>
 <translation id="1228893227497259893">Погрешан идентификатор ентитета</translation>
+<translation id="122989279399348496">Док сте пријављени, <ph name="DOMAIN" /> може да потврди <ph name="EMAIL" /> на подржаним сајтовима, па не морате да проверавате пријемно сандуче</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (аутоматски откривено)</translation>
 <translation id="1232569758102978740">Без наслова</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> је обавезно поље</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, доступно је више радњи, притисните Tab да бисте их прегледали</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Подаци о виртуелној картици</translation>
+<translation id="1802420021606590788">Chrome обрађује наслове страница и URL-ове у приватном простору у клауду</translation>
 <translation id="1803254472779303354">Закључавање миша је дозвољено</translation>
 <translation id="1803351196216024260">Може да тражи да користи микрофон</translation>
 <translation id="1804258830776932716">Омогућите Pix брзим повезивањем налога</translation>
@@ -3027,6 +3029,7 @@
 <translation id="5742806904559466333">Барови, клубови и ноћни живот</translation>
 <translation id="5743684619253032786">Производи за негу ноктију</translation>
 <translation id="574392208103952083">Средња</translation>
+<translation id="5745586894920491759">Chrome обрађује наслове страница и URL-ове у клауду</translation>
 <translation id="5745733273847572235">Може да тражи локацију</translation>
 <translation id="5750869797196646528">Праћење руку</translation>
 <translation id="5752327398324808817">Унесите реч или две</translation>
@@ -3420,6 +3423,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Прегледајте евиденције</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />да проверите конфигурацију проксија, заштитног зида и безбедног DNS-а<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Аутоматски потврђујте имејлове</translation>
 <translation id="6366710531182496394">Двоструко спајање на левој страни</translation>
 <translation id="6367196786591004737">Избриши унос</translation>
 <translation id="6370022303958842211">Радње приступа уређајима попут пријављивања (укључујући неуспеле разлоге за пријављивање), одјављивања, закључавања и откључавања</translation>
@@ -4065,6 +4069,7 @@
 <translation id="7388380253839603603">Цене и точење горива</translation>
 <translation id="7388594495505979117">{0,plural, =1{Уређај ће се рестартовати за 1 минут}one{Уређај ће се рестартовати за # минут}few{Уређај ће се рестартовати за # минута}other{Уређај ће се рестартовати за # минута}}</translation>
 <translation id="7393161616326137353">Авантуристичке игре</translation>
+<translation id="7393243238767102021">Желите да дозволите да <ph name="DOMAIN" /> аутоматски верификује овај имејл?</translation>
 <translation id="7393475648162498734">Омогућите приказ награда и предности доступних за картице при плаћању</translation>
 <translation id="7393971683644170444">Повезује се са добављачем картице…</translation>
 <translation id="739728382607845710">Икона обрађивача плаћања</translation>
@@ -5061,6 +5066,7 @@
 <translation id="8963117664422609631">Идите на подешавања сајта</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Предлози:<ph name="MARKUP_2" />Проверите да ли је успостављена веза за пренос података<ph name="MARKUP_3" />Поново учитајте ову веб-страницу касније<ph name="MARKUP_4" />Проверите адресу коју сте унели<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Локални фајлови ће бити избрисани за <ph name="HOURS" /> с</translation>
+<translation id="8964904785315870349">Верификовани имејл</translation>
 <translation id="8968766641738584599">Сачувај картицу</translation>
 <translation id="8970887620466824814">Дошло је до грешке.</translation>
 <translation id="8971063699422889582">Сертификат сервера је истекао.</translation>

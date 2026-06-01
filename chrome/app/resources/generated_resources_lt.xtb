@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Įspėjimas</translation>
 <translation id="1056980582064308040">Pakeitus nustatymus viešosios interneto prieigos taškas bus paleistas iš naujo. Įrenginiai, naudojantys viešosios interneto prieigos tašką, bus atjungti.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Užduotis nutraukta</translation>
 <translation id="1059484610606223931">Hiperteksto transportavimo protokolas (HTTPS)</translation>
 <translation id="1059944192885972544">Rasta skirtukų: <ph name="NUM" /> pagal užklausą „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="1060172044035704924">Apkeisti su dešiniuoju rodiniu</translation>
@@ -2342,6 +2341,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2665056444046933274">Svetainės gali naudoti šią funkciją, kad galėtų pasiekti kitas programas ir paslaugas šiame įrenginyje</translation>
 <translation id="2665394472441560184">Pridėti naują žodį</translation>
 <translation id="2665647207431876759">Negalioja</translation>
+<translation id="2666092431469916601">Į viršų</translation>
 <translation id="2666247341166669829">Kairiosios akumuliatoriaus energijos lygis: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Kitos programos nustatytos atidaryti tas pačias nuorodas kaip ir „<ph name="APP_NAME" />“. Tai atllikus „<ph name="APP_NAME_2" />“ ir „<ph name="APP_NAME_3" />“ negalės atidaryti palaikomų nuorodų.</translation>
 <translation id="2667463864537187133">Rašybos tikrinimo tvarkymas</translation>
@@ -2937,6 +2937,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3084548735795614657">Nuvilkite, jei norite diegti</translation>
 <translation id="3084771660770137092">Nebėra laisvos „Chrome“ atminties vietos arba tinklalapio procesas buvo nutrauktas dėl kitos priežasties. Jei norite tęsti, įkelkite iš naujo arba eikite į kitą puslapį.</translation>
 <translation id="3085412380278336437">Svetainė gali naudoti jūsų fotoaparatą</translation>
+<translation id="3087734570205094154">Apačia</translation>
 <translation id="3088052000289932193">Svetainėje naudojamas MIDI įrenginys</translation>
 <translation id="3088325635286126843">&amp;Pervardyti...</translation>
 <translation id="3089137131053189723">Paieška išvalyta</translation>
@@ -4426,6 +4427,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4170314459383239649">Išvalyti išeinant</translation>
 <translation id="4170685671197375581">Įjungti šaukinį</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Bendrinti skirtuką su „Gemini“}one{Bendrinti # skirtuką su „Gemini“}few{Bendrinti # skirtukus su „Gemini“}many{Bendrinti # skirtuko su „Gemini“}other{Bendrinti # skirtukų su „Gemini“}}</translation>
+<translation id="4172051516777682613">Visada rodyti</translation>
 <translation id="4172944993779635350">„<ph name="URL" />“ slaptažodis išsaugotas tik šiame įrenginyje. Jei norite naudoti kituose įrenginiuose, išsaugokite paskyroje.</translation>
 <translation id="4173129130568053653">„Gemini“ gali padėti rezervuoti susitikimus, kurti pirkinių krepšelius ar atlikti kitas jūsų pateiktas užduotis.</translation>
 <translation id="4175137578744761569">Šviesiai violetinė ir balta</translation>
@@ -5802,6 +5804,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5189274947477567401">Atsisakius proceso bendrinimo reikia iš naujo paleisti naršyklę. Ši naršyklė bus paleista iš naujo dabar.</translation>
 <translation id="5189404424758444348">Stimpankas</translation>
 <translation id="5190577235024772869">Naudojama <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Žymių juosta</translation>
 <translation id="5190926251776387065">Suaktyvinti prievadą</translation>
 <translation id="5190959794678983197">Mikrofono nėra</translation>
 <translation id="5191094172448199359">Įvesti PIN kodai neatitinka</translation>
@@ -7640,6 +7643,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6582274660680936615">Naršote kaip svečias</translation>
 <translation id="6583328141350416497">Tęsti atsisiuntimą</translation>
 <translation id="6584878029876017575">„Microsoft“ pasirašymas visam laikui</translation>
+<translation id="6585124893636629274">Uždaryti „Gemini“ naršyklėje „Chrome“</translation>
 <translation id="6585584201072946561">Tinkinkite žiniatinklio naršyklės teksto dydį ir šriftą</translation>
 <translation id="6586099239452884121">Svečio naršymas</translation>
 <translation id="6586451623538375658">Sukeisti pagrindinį pelės klavišą</translation>
@@ -10096,6 +10100,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8347227221149377169">Spausdinimo užduotys</translation>
 <translation id="8348430946834215779">Kai įmanoma, naudokite HTTPS ir gaukite įspėjimą prieš įkeliant jo nepalaikančias svetaines</translation>
 <translation id="8348896480272971199">Patikrinkite internetą ir bandykite dar kartą.</translation>
+<translation id="8349305172487531364">Žymių juosta</translation>
 <translation id="8349325309815489209">Šioje svetainėje plėtiniai leidžiami</translation>
 <translation id="8349826889576450703">paleidimo priemonė</translation>
 <translation id="8350789879725387295">Rašiklio įrankiai doke</translation>
@@ -10498,7 +10503,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8651585100578802546">Priversti iš naujo įkelti šį puslapį</translation>
 <translation id="8651806635673244884">Galite perkelti skirtukus atgal į viršų dešiniuoju klavišu spustelėję bet kurį skirtuką ir pasirinkę „Rodyti skirtukus horizontaliai“</translation>
 <translation id="8652400352452647993">Paketo plėtinio klaida</translation>
-<translation id="8652412805227733853">El. pašto adresas patvirtintas automatiškai</translation>
 <translation id="8654151524613148204">Failas per didelis, kad jį būtų galima apdoroti kompiuteriu. Apgailestaujame.</translation>
 <translation id="8655295600908251630">Kanalas</translation>
 <translation id="8655972064210167941">Nepavyko prisijungti, nes negalima patvirtinti slaptažodžio. Susisiekite su administratoriumi arba bandykite dar kartą.</translation>

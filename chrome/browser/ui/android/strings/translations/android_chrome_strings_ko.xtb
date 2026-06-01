@@ -256,6 +256,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, 선택되고 녹화 중인 탭</translation>
 <translation id="2141396931810938595">사용량 기준</translation>
 <translation id="2145315049852051678">Chrome에서는 브라우저가 가장 안전하게 설정되어 있는지 정기적으로 확인합니다. 검토가 필요한 사항이 있으면 알려 드리겠습니다.</translation>
+<translation id="2149968176347646218">연결이 안전하지 않음</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
 <translation id="2163089732491971196">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
 <translation id="2166228530126694506">버전 <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6595046016124923392">설명을 개선하기 위해 이미지가 Google로 전송되었습니다.</translation>
 <translation id="6602173570135186741">자동 완성 및 비밀번호</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
+<translation id="6615455863669487791">보기</translation>
 <translation id="6621391692573306628">이 탭을 다른 기기로 보내려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="6627583120233659107">폴더 수정</translation>
 <translation id="6633067410344541938">시크릿 모드 잠금 해제</translation>

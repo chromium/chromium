@@ -256,6 +256,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, izbrani zavihek za snemanje</translation>
 <translation id="2141396931810938595">Na podlagi uporabe</translation>
 <translation id="2145315049852051678">Chrome redno preverja, ali so v brskalniku na voljo najvarnejše nastavitve. Če boste morali kaj pregledati, vam bomo sporočili.</translation>
+<translation id="2149968176347646218">Povezava ni varna</translation>
 <translation id="2149973817440762519">Uredi zaznamek</translation>
 <translation id="2163089732491971196">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, vnesite geslo</translation>
 <translation id="2166228530126694506">Različica <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6595046016124923392">Slike so poslane Googlu zaradi izboljšanja opisov.</translation>
 <translation id="6602173570135186741">Samodejno izpolnjevanje in gesla</translation>
 <translation id="661266467055912436">Izboljšuje varnost za vas in vse druge v spletu.</translation>
+<translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6621391692573306628">Če želite ta zavihek poslati v drugo napravo, se v obeh napravah prijavite v Chrome.</translation>
 <translation id="6627583120233659107">Uredi mapo</translation>
 <translation id="6633067410344541938">Odkleni anonimni način</translation>

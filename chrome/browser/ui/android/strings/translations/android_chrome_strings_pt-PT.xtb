@@ -256,6 +256,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, separador a gravar selecionado</translation>
 <translation id="2141396931810938595">Com base na sua utilização</translation>
 <translation id="2145315049852051678">O Chrome verifica regularmente se o navegador tem as definições mais seguras. Entramos em contacto consigo se algo precisar de revisão.</translation>
+<translation id="2149968176347646218">A ligação não é segura</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2163089732491971196">Para usar e guardar dados do Chrome na sua Conta Google, introduza a frase de acesso</translation>
 <translation id="2166228530126694506">Versão <ph name="VERSION_NUMBER" /></translation>
@@ -1331,6 +1332,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6595046016124923392">As imagens são enviadas para a Google para melhorar as descrições.</translation>
 <translation id="6602173570135186741">Preenchimento automático e palavras-passe</translation>
 <translation id="661266467055912436">Melhora a segurança para si e todas as pessoas na Web.</translation>
+<translation id="6615455863669487791">Mostrar</translation>
 <translation id="6621391692573306628">Para enviar este separador para outro dispositivo, inicie sessão no Chrome em ambos os dispositivos</translation>
 <translation id="6627583120233659107">Editar pasta</translation>
 <translation id="6633067410344541938">Desbloquear a Navegação anónima</translation>

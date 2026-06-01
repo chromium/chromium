@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1056980582064308040">Promjenom postavki ponovo će se pokrenuti žarišna točka. Prekinut će se veza s uređajima koji upotrebljavaju žarišnu točku.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Zadatak je prekinut</translation>
 <translation id="1059484610606223931">Protokol za prijenos hiperteksta (HTTPS)</translation>
 <translation id="1059944192885972544">Pronađenih kartica za "<ph name="SEARCH_TEXT" />": <ph name="NUM" /></translation>
 <translation id="1060172044035704924">Zamijeni desnim prikazom</translation>
@@ -2330,6 +2329,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2665056444046933274">Web-lokacije mogu upotrebljavati tu značajku za pristup drugim aplikacijama i uslugama na ovom uređaju</translation>
 <translation id="2665394472441560184">Dodajte novu riječ</translation>
 <translation id="2665647207431876759">Isteklo</translation>
+<translation id="2666092431469916601">Gornji</translation>
 <translation id="2666247341166669829">Razina baterije lijeve slušalice: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Druge aplikacije postavljene su tako da otvaraju iste veze kao <ph name="APP_NAME" />. Time će se aplikacijama <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> onemogućiti da otvaraju podržane veze.</translation>
 <translation id="2667463864537187133">Upravljanje provjerom pravopisa</translation>
@@ -2925,6 +2925,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3084548735795614657">Ispustite da biste instalirali</translation>
 <translation id="3084771660770137092">Pregledniku Chrome ponestalo je memorije ili je proces za web-stranicu prekinut iz nekog drugog razloga. Da biste nastavili, ponovo učitajte stranicu ili idite na neku drugu stranicu.</translation>
 <translation id="3085412380278336437">Web-lokacija može upotrebljavati vašu kameru</translation>
+<translation id="3087734570205094154">Donji</translation>
 <translation id="3088052000289932193">Web-lokacija upotrebljava MIDI</translation>
 <translation id="3088325635286126843">&amp;Preimenuj...</translation>
 <translation id="3089137131053189723">Pretraživanje izbrisano</translation>
@@ -4413,6 +4414,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4170314459383239649">Izbriši pri izlazu</translation>
 <translation id="4170685671197375581">Uključi prečac</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Podijeli karticu s Geminijem}one{Podijeli # karticu s Geminijem}few{Podijeli # kartice s Geminijem}other{Podijeli # kartica s Geminijem}}</translation>
+<translation id="4172051516777682613">Uvijek prikaži</translation>
 <translation id="4172944993779635350">Vaša zaporka za <ph name="URL" /> spremljena je samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj račun.</translation>
 <translation id="4173129130568053653">Gemini vam može pomoći s rezervacijom termina, izradom košarica ili obavljanjem drugih zadataka koje mu dodijelite.</translation>
 <translation id="4175137578744761569">Svijetloljubičasta i bijela</translation>
@@ -5788,6 +5790,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5189274947477567401">Za isključivanje dijeljenja procesa potrebno je ponovo pokrenuti preglednik. Ovaj će se preglednik sada ponovo pokrenuti.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Upotrebljava se <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Traka oznaka</translation>
 <translation id="5190926251776387065">Aktiviraj priključak</translation>
 <translation id="5190959794678983197">Nema mikrofona</translation>
 <translation id="5191094172448199359">Unijeli ste PIN-ove koji se ne podudaraju</translation>
@@ -7621,6 +7624,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6582274660680936615">Pregledavate kao gost</translation>
 <translation id="6583328141350416497">Nastavi preuzimanje</translation>
 <translation id="6584878029876017575">Microsoftovo cjeloživotno potpisivanje</translation>
+<translation id="6585124893636629274">Zatvori Gemini u Chromeu</translation>
 <translation id="6585584201072946561">Prilagodite veličinu i font teksta za web-preglednik</translation>
 <translation id="6586099239452884121">Gostujuće pregledavanje</translation>
 <translation id="6586451623538375658">Zamijeni primarnu tipku miša</translation>
@@ -10075,6 +10079,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8347227221149377169">Zadaci ispisa</translation>
 <translation id="8348430946834215779">Upotrebljavajte HTTPS kad god je to moguće i primajte upozorenja prije učitavanja web-lokacija koje ga ne podržavaju</translation>
 <translation id="8348896480272971199">Provjerite internetsku vezu i pokušajte ponovo.</translation>
+<translation id="8349305172487531364">Traka oznaka</translation>
 <translation id="8349325309815489209">Proširenja su dopuštena na ovoj web-lokaciji</translation>
 <translation id="8349826889576450703">pokretač</translation>
 <translation id="8350789879725387295">Alati pisaljke na traci</translation>
@@ -10477,7 +10482,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8651585100578802546">Ponovo prisilno učitaj ovu stranicu</translation>
 <translation id="8651806635673244884">Kartice možete vratiti na vrh tako da desnom tipkom kliknete bilo koju karticu i odaberete Prikaži kartice vodoravno</translation>
 <translation id="8652400352452647993">Pogreška proširenja paketa</translation>
-<translation id="8652412805227733853">E-adresa je automatski potvrđena</translation>
 <translation id="8654151524613148204">Nažalost, datoteka je prevelika da bi ju vaše računalo obradilo.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Prijava nije uspjela jer zaporka nije potvrđena. Obratite se administratoru ili pokušajte ponovo.</translation>

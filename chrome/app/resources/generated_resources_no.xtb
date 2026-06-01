@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Advarsel</translation>
 <translation id="1056980582064308040">Hvis du endrer innstillingene, starter wifi-sonen på nytt. Enheter som bruker wifi-sonen kobles fra.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Oppgaven er avbrutt</translation>
 <translation id="1059484610606223931">Protokoll for sikker hypertekstoverføring (HTTPS)</translation>
 <translation id="1059944192885972544">Fant <ph name="NUM" /> faner for «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="1060172044035704924">Bytt med høyre visning</translation>
@@ -2336,6 +2335,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2665056444046933274">Nettsteder kan bruke denne funksjonen for å bruke andre apper og tjenester på denne enheten</translation>
 <translation id="2665394472441560184">Legg til et nytt ord</translation>
 <translation id="2665647207431876759">Utløpt</translation>
+<translation id="2666092431469916601">Topp</translation>
 <translation id="2666247341166669829">Batterinivået til venstre øreplugg er <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Andre apper er stilt inn på å åpne de samme linkene som <ph name="APP_NAME" />. Dette medfører at <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> ikke kan åpne støttede linker.</translation>
 <translation id="2667463864537187133">Administrer stavekontroll</translation>
@@ -2931,6 +2931,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3084548735795614657">Slipp for å installere</translation>
 <translation id="3084771660770137092">Chrome gikk tom for minne, eller prosessen for nettsiden ble avsluttet av andre årsaker. Hvis du vil fortsette, laster du inn siden på nytt, eller går til en annen side.</translation>
 <translation id="3085412380278336437">Nettstedet kan bruke kameraet ditt</translation>
+<translation id="3087734570205094154">Bunn</translation>
 <translation id="3088052000289932193">Nettstedet bruker MIDI</translation>
 <translation id="3088325635286126843">&amp;Gi nytt navn</translation>
 <translation id="3089137131053189723">Søket er slettet</translation>
@@ -4418,6 +4419,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4170314459383239649">Slett ved avslutning</translation>
 <translation id="4170685671197375581">Slå på snarveien</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Del fanen med Gemini}other{Del # faner med Gemini}}</translation>
+<translation id="4172051516777682613">Vis alltid</translation>
 <translation id="4172944993779635350">Passordet ditt for «<ph name="URL" />» er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i kontoen din.</translation>
 <translation id="4173129130568053653">Gemini kan hjelpe deg med å bestille timer, opprette handlekurver eller gjøre andre oppgaver du gir den.</translation>
 <translation id="4175137578744761569">Lys lilla og hvit</translation>
@@ -5793,6 +5795,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5189274947477567401">Du må starte nettleseren på nytt for å velge bort prosessdeling. Nettleseren startes på nytt nå.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Bruker <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Bokmerkerad</translation>
 <translation id="5190926251776387065">Aktivér porten</translation>
 <translation id="5190959794678983197">Ingen mikrofon</translation>
 <translation id="5191094172448199359">PIN-kodene du skrev inn, er ikke like</translation>
@@ -7628,6 +7631,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6582274660680936615">Du surfer som gjest</translation>
 <translation id="6583328141350416497">Fortsett nedlastingen</translation>
 <translation id="6584878029876017575">Microsoft-livstidssignering</translation>
+<translation id="6585124893636629274">Lukk Gemini i Chrome</translation>
 <translation id="6585584201072946561">Tilpass tekststørrelse og skrifttype for nettleseren</translation>
 <translation id="6586099239452884121">Gjestesurfing</translation>
 <translation id="6586451623538375658">Bytt primær museknapp</translation>
@@ -10078,6 +10082,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8347227221149377169">Utskriftsjobber</translation>
 <translation id="8348430946834215779">Bruk HTTPS når det er mulig, og bli advart før innlasting av nettsteder som ikke støtter dette</translation>
 <translation id="8348896480272971199">Sjekk internettilkoblingen, og prøv på nytt.</translation>
+<translation id="8349305172487531364">Bokmerkerad</translation>
 <translation id="8349325309815489209">Utvidelser er tillatt på dette nettstedet</translation>
 <translation id="8349826889576450703">appoversikt</translation>
 <translation id="8350789879725387295">Pekepennverktøy i Dock</translation>
@@ -10480,7 +10485,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8651585100578802546">Tving ny innlasting av siden</translation>
 <translation id="8651806635673244884">Du kan flytte fanene tilbake til toppen ved å høyreklikke på en fane og velge «Vis faner horisontalt»</translation>
 <translation id="8652400352452647993">Feil med pakkeutvidelse</translation>
-<translation id="8652412805227733853">E-posten er automatisk bekreftet</translation>
 <translation id="8654151524613148204">Beklager, men filen er så stor at datamaskinen din ikke klarer å håndtere den.</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655972064210167941">Påloggingen mislyktes fordi passordet ditt ikke kunne bekreftes. Kontakt administratoren din, eller prøv på nytt.</translation>

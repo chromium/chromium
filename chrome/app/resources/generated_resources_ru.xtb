@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Внимание</translation>
 <translation id="1056980582064308040">После изменения настроек произойдет перезагрузка точки доступа. Использующие ее устройства будут отключены.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Задача прервана</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Вкладок, найденных по запросу "<ph name="SEARCH_TEXT" />": <ph name="NUM" /></translation>
 <translation id="1060172044035704924">Поменять местами с правым окном</translation>
@@ -2329,6 +2328,7 @@
 <translation id="2665056444046933274">Сайты могут использовать эту функцию для доступа к другим приложениям и сервисам на этом устройстве</translation>
 <translation id="2665394472441560184">Добавить слово</translation>
 <translation id="2665647207431876759">Срок действия истек.</translation>
+<translation id="2666092431469916601">Сверху</translation>
 <translation id="2666247341166669829">Левый наушник заряжен на <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Вы хотите установить "<ph name="APP_NAME" />" в качестве приложения по умолчанию? После изменения эти ссылки больше не будут открываться в приложениях "<ph name="APP_NAME_2" />" и "<ph name="APP_NAME_3" />".</translation>
 <translation id="2667463864537187133">Настроить проверку орфографии</translation>
@@ -2899,6 +2899,7 @@
 <translation id="3060987956645097882">Не удалось подключиться к телефону. Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="3061302636956643119">Текст будет отправлен на обработку в Google.</translation>
 <translation id="306166624240243643">Проверьте новое название и URL</translation>
+<translation id="3062037978804523418">Если вы не ответите в ближайшее время, для экономии заряда батареи Gemini перестанет работать над задачей "<ph name="TASK_TITLE" />".</translation>
 <translation id="3064871050034234884">Разрешить сайтам воспроизводить звук</translation>
 <translation id="3065041951436100775">Сообщение о вкладке, закрытой из-за отсутствия ответа.</translation>
 <translation id="3065522099314259755">Задержка при повторе ввода на клавиатуре</translation>
@@ -2924,6 +2925,7 @@
 <translation id="3084548735795614657">Чтобы установить расширение, перетащите его</translation>
 <translation id="3084771660770137092">Выполнение процесса этой веб-страницы было прекращено. Это может быть вызвано тем, что Chrome не хватает памяти, или иными причинами. Чтобы продолжить, обновите страницу или перейдите на другой URL.</translation>
 <translation id="3085412380278336437">Сайт может использовать камеру</translation>
+<translation id="3087734570205094154">Снизу</translation>
 <translation id="3088052000289932193">Сайт использует MIDI-устройство</translation>
 <translation id="3088325635286126843">&amp;Переименовать</translation>
 <translation id="3089137131053189723">История поиска удалена</translation>
@@ -3065,6 +3067,7 @@
 <translation id="3193695589337931419">Получение системных сигналов</translation>
 <translation id="3194095220941877499">Подтверждать копирование ссылок, изображений и видеозаписей</translation>
 <translation id="3194924099707928914">Прежде чем Chrome сможет завершить это действие, вам необходимо войти в аккаунт.</translation>
+<translation id="3195773549050092642">Gemini перестанет выполнять задачу</translation>
 <translation id="3196912927885212665">Чтобы настроить телефон Android, включите Bluetooth на Chromebook.</translation>
 <translation id="3197453258332670132">При нажатии правой кнопкой мыши или долгом нажатии будет показываться информация о выбранном тексте</translation>
 <translation id="3199637719075529971">Эта вкладка подключена к последовательному порту</translation>
@@ -3684,6 +3687,7 @@
 <translation id="3662207097851752847">Подтвердите аккаунт Google на телефоне</translation>
 <translation id="3663417513679360795">Подробнее о том, как включить стандартную предзагрузку</translation>
 <translation id="3664511988987167893">Значок расширения</translation>
+<translation id="366484203224589850">Gemini работает над задачей "<ph name="TASK_TITLE" />" уже долгое время и скоро остановится, чтобы сэкономить заряд батареи.</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Присоединитесь к группе, в которой состоит <ph name="OWNER_FIRST_NAME" />}=1{Присоединитесь к группе, в которой состоит <ph name="OWNER_FIRST_NAME" /> и ещё # пользователь}one{Присоединитесь к группе, в которой состоит <ph name="OWNER_FIRST_NAME" /> и ещё # пользователь}few{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё # пользователя}many{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё # пользователей}other{Присоединитесь к группе, в которой состоят <ph name="OWNER_FIRST_NAME" /> и ещё # пользователя}}</translation>
 <translation id="3665301845536101715">Открыть на боковой панели</translation>
 <translation id="3665589677786828986">Некоторые настройки Chrome недавно были изменены посторонней программой. Браузер восстановил их значения по умолчанию.</translation>
@@ -4413,6 +4417,7 @@
 <translation id="4170314459383239649">Удалять при выходе</translation>
 <translation id="4170685671197375581">Включить сочетание клавиш</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Поделиться вкладкой с Gemini}one{Поделиться # вкладкой с Gemini}few{Поделиться # вкладками с Gemini}many{Поделиться # вкладками с Gemini}other{Поделиться # вкладки с Gemini}}</translation>
+<translation id="4172051516777682613">Показывать всегда</translation>
 <translation id="4172944993779635350">Пароль для сайта "<ph name="URL" />" сохранен только на этом устройстве. Добавьте его в аккаунт Google, чтобы использовать на других устройствах.</translation>
 <translation id="4173129130568053653">Gemini помогает записываться на прием, добавлять товары в корзину и выполнять другие задачи.</translation>
 <translation id="4175137578744761569">Сиреневый с белым</translation>
@@ -5283,6 +5288,7 @@
 <translation id="4824958205181053313">Отключить синхронизацию?</translation>
 <translation id="4825462365587146530">Подробнее о Chrome Root Store в новой вкладке…</translation>
 <translation id="4825532258163983651">Не удается удалить ключ доступа</translation>
+<translation id="4825863060583917820">Переключаться между двумя последними вкладками с помощью сочетания клавиш Ctrl + Tab</translation>
 <translation id="4827134188176577524">Chrome Root Store содержит сертификаты от центров сертификации, которые считаются доверенными в рамках Chrome Root Program. Список сертификатов регулярно проверяется.</translation>
 <translation id="4827283332383516812">Удаление карты</translation>
 <translation id="4827675678516992122">Ошибка подключения</translation>
@@ -5788,6 +5794,7 @@
 <translation id="5189274947477567401">Чтобы отключить использование общего процесса, браузер перезапустится.</translation>
 <translation id="5189404424758444348">Стимпанк</translation>
 <translation id="5190577235024772869">Используется <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Панель закладок</translation>
 <translation id="5190926251776387065">Активировать порт</translation>
 <translation id="5190959794678983197">Микрофон недоступен</translation>
 <translation id="5191094172448199359">PIN-коды не совпадают.</translation>
@@ -5876,6 +5883,7 @@
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> предлагает результаты поиска в зависимости от вашего местоположения. Изменить настройки этой функции можно здесь: <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252653240322147470">PIN-код должен содержать не более <ph name="MAXIMUM" /> знаков</translation>
 <translation id="5254233580564156835">Использование памяти: <ph name="MEMORY_USAGE" /></translation>
+<translation id="5254678337198156877">Данные этого приложения будут доступны сервису "<ph name="APP_NAME" />" и установленным из него приложений.</translation>
 <translation id="5255726914791076208">Если изменить ключ доступа, имя вашего аккаунта в сервисе <ph name="RP_ID" /> останется прежним.</translation>
 <translation id="5255859108402770436">Войдите в аккаунт снова</translation>
 <translation id="5256174546894739043">Спрашивать, прежде чем разрешать сайтам отслеживать движения рук</translation>
@@ -6309,6 +6317,7 @@
 <translation id="5578387000057347457">Создавайте изображения, вводя запросы или выделяя текст</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 объект доступен только на этом устройстве. <ph name="BEGIN_LINK" />Добавьте его в аккаунт Google<ph name="END_LINK" />, чтобы использовать на других устройствах.}one{{ITEM_COUNT} объект доступен только на этом устройстве. <ph name="BEGIN_LINK" />Добавьте их в аккаунт Google<ph name="END_LINK" />, чтобы использовать на других устройствах.}few{{ITEM_COUNT} объекта доступны только на этом устройстве. <ph name="BEGIN_LINK" />Добавьте их в аккаунт Google<ph name="END_LINK" />, чтобы использовать на других устройствах.}many{{ITEM_COUNT} объектов доступны только на этом устройстве. <ph name="BEGIN_LINK" />Добавьте их в аккаунт Google<ph name="END_LINK" />, чтобы использовать на других устройствах.}other{{ITEM_COUNT} объекта доступны только на этом устройстве. <ph name="BEGIN_LINK" />Добавьте их в аккаунт Google<ph name="END_LINK" />, чтобы использовать на других устройствах.}}</translation>
 <translation id="5579225964082017560">Удалить сайт <ph name="SITE" /> из списка "<ph name="SECTION_HEADER" />".</translation>
+<translation id="5581031802689147441">Параллельный просмотр</translation>
 <translation id="5581134892342029705">Перевод на <ph name="LANGUAGE" /> завершен</translation>
 <translation id="558170650521898289">Проверка драйвера оборудования Microsoft Windows</translation>
 <translation id="5582634344048669777">8-точечный</translation>
@@ -6792,6 +6801,7 @@
 <translation id="5951303645598168883"><ph name="ORIGIN" /> запрашивает доступ к шрифтам на устройстве</translation>
 <translation id="5951624318208955736">Монитор</translation>
 <translation id="5952020381407136867">сенсорная панель</translation>
+<translation id="5952784976463781389">Данные этого приложения используются в сервисе "<ph name="PARENT_APP_NAME" />" и установленных из него приложениях.</translation>
 <translation id="5953211687820750364">Этот список формируется с учетом <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           и <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" />.</translation>
 <translation id="5955192144223994637">Использовать для работы этот профиль</translation>
@@ -7542,6 +7552,7 @@
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="6527574156657772563">Нет устройств. Чтобы подключить телефон к <ph name="DEVICE_TYPE" />, добавьте на мобильное устройство свой аккаунт Google. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="652969759100732863">Чтобы открыть поиск по вкладкам, нажмите ⌘ + Shift + A. Теперь вы можете искать и закрывать вкладки здесь. Вы можете в любое время открепить эту панель.</translation>
+<translation id="6529890283323814131">Другие рекомендации</translation>
 <translation id="6530030995840538405">Сгенерированное изображение: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />.</translation>
 <translation id="6530186581263215931">Эти настройки определяются администратором</translation>
 <translation id="6530267432324197764">Профилем управляет <ph name="MANAGER" /></translation>
@@ -7626,6 +7637,7 @@
 <translation id="6582274660680936615">Вы используете гостевой режим</translation>
 <translation id="6583328141350416497">Продолжить скачивание</translation>
 <translation id="6584878029876017575">Бессрочная подписка Microsoft</translation>
+<translation id="6585124893636629274">Закрыть Gemini в Chrome</translation>
 <translation id="6585584201072946561">Настроить размер текста и шрифт для веб-браузера</translation>
 <translation id="6586099239452884121">Гостевой режим</translation>
 <translation id="6586451623538375658">Поменять местами кнопки мыши</translation>
@@ -8927,6 +8939,7 @@
 <translation id="7520766081042531487">Портал в режиме инкогнито: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Показывать ярлыки</translation>
 <translation id="7521430434164837205">Файлы Microsoft 365</translation>
+<translation id="7521805955117875767">Панель закладок скрыта, поскольку вы давно ее не использовали.</translation>
 <translation id="7523117833414447032">Озвучивание заглавных букв</translation>
 <translation id="7523585675576642403">Переименовать профиль</translation>
 <translation id="7525067979554623046">Создать</translation>
@@ -10081,6 +10094,7 @@
 <translation id="8347227221149377169">Задания печати</translation>
 <translation id="8348430946834215779">Использовать протокол HTTPS всегда, когда это возможно, и предупреждать перед загрузкой сайтов, которые его не поддерживают</translation>
 <translation id="8348896480272971199">Проверьте подключение к интернету и повторите попытку.</translation>
+<translation id="8349305172487531364">Панель закладок</translation>
 <translation id="8349325309815489209">Расширения, разрешенные на этом сайте</translation>
 <translation id="8349826889576450703">Launcher</translation>
 <translation id="8350789879725387295">Инструменты стилуса на панели Dock</translation>
@@ -10483,7 +10497,6 @@
 <translation id="8651585100578802546">Принудительно обновить страницу</translation>
 <translation id="8651806635673244884">Чтобы вернуть вкладки в верхнюю часть экрана, нажмите правой кнопкой мыши на любую из них и выберите "Показать вкладки горизонтально".</translation>
 <translation id="8652400352452647993">Ошибка в упакованном расширении</translation>
-<translation id="8652412805227733853">Адрес электронной почты проверен автоматически.</translation>
 <translation id="8654151524613148204">Недостаточно места для обработки файла.</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Ошибка входа: не удалось подтвердить пароль. Обратитесь к администратору или повторите попытку.</translation>

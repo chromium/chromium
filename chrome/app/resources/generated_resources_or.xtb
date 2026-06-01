@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">ଚେତାବନୀ</translation>
 <translation id="1056980582064308040">ସେଟିଂସ ବଦଳାଇବା ଫଳରେ ହଟସ୍ପଟ ରିଷ୍ଟାର୍ଟ ହେବ। ହଟସ୍ପଟ ବ୍ୟବହାର କରୁଥିବା ଡିଭାଇସଗୁଡ଼ିକ ଡିସକନେକ୍ଟ ହୋଇଯିବ।</translation>
 <translation id="1058262162121953039">ବ୍ୟକ୍ତିଗତ ଅନ୍‌ଲକ୍ କୀ'</translation>
-<translation id="1058848978232174442">ଟାସ୍କ ବାଧାପ୍ରାପ୍ତ ହୋଇଛି</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' ପାଇଁ <ph name="NUM" />ଟି ଟାବ୍ ମିଳିଲା</translation>
 <translation id="1060172044035704924">ଡାହାଣପଟ ଭ୍ୟୁ ସହ ସ୍ୱାପ କରନ୍ତୁ</translation>
@@ -2328,6 +2327,7 @@
 <translation id="2665056444046933274">ଏହି ଡିଭାଇସରେ ଅନ୍ୟ ଆପ୍ସ ଏବଂ ସର୍ଭିସକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ ଏହି ଫିଚରକୁ ବ୍ୟବହାର କରିପାରିବ</translation>
 <translation id="2665394472441560184">ଏକ ନୂତନ ଶବ୍ଦ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2665647207431876759">ମିଆଦ ଶେଷ ହୋଇଯାଇଛି</translation>
+<translation id="2666092431469916601">ଶୀର୍ଷ</translation>
 <translation id="2666247341166669829">ବାମ ପଟର ବ୍ୟାଟେରୀ ଲେଭେଲ <ph name="PERCENTAGE" />%।</translation>
 <translation id="2667144577800272420">ସମାନ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ ଅନ୍ୟ ଆପଗୁଡ଼ିକ <ph name="APP_NAME" /> ଭାବେ ସେଟ ହୋଇଛି। ଏହା ସମର୍ଥିତ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲିବାରୁ <ph name="APP_NAME_2" /> ଏବଂ <ph name="APP_NAME_3" />କୁ ଅକ୍ଷମ କରିଦେବ।</translation>
 <translation id="2667463864537187133">ବନାନ ଯାଞ୍ଚ ପରିଚାଳନ କରନ୍ତୁ</translation>
@@ -2923,6 +2923,7 @@
 <translation id="3084548735795614657">ଇନ୍‍ଷ୍ଟଲ୍ କରିବା ପାଇଁ ଡ୍ରପ୍ କରନ୍ତୁ</translation>
 <translation id="3084771660770137092">Chromeରେ ମେମୋରୀ ସରିଯାଇଥିଲା କିମ୍ବା ୱେବ୍‌ପୃଷ୍ଠା ପାଇଁ ପ୍ରକ୍ରିୟା ଅଗ୍ରାହ୍ୟ କରାଯାଇଥିଲା।  ଜାରି ରଖିବାକୁ, ପୁଣି ଲୋଡ୍‌ କରନ୍ତୁ କିମ୍ବା ଅନ୍ୟ ଏକ ପୃଷ୍ଠାକୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="3085412380278336437">ସାଇଟ୍ ଆପଣଙ୍କର କ୍ୟାମେରା ବ୍ୟବହାର କରିପାରିବ</translation>
+<translation id="3087734570205094154">ନିମ୍ନଭାଗ</translation>
 <translation id="3088052000289932193">ସାଇଟ୍ MIDI ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="3088325635286126843">&amp;ରିନେମ୍‌ କରନ୍ତୁ...</translation>
 <translation id="3089137131053189723">ସର୍ଚ୍ଚ ଖାଲି କରାଯାଇଛି</translation>
@@ -4411,6 +4412,7 @@
 <translation id="4170314459383239649">ପ୍ରସ୍ଥାନରେ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="4170685671197375581">ସର୍ଟକଟ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Gemini ସହ ଟାବ ସେୟାର କରନ୍ତୁ}other{Gemini ସହ # ଟାବ ସେୟାର କରନ୍ତୁ}}</translation>
+<translation id="4172051516777682613">ସର୍ବଦା ଦେଖାନ୍ତୁ</translation>
 <translation id="4172944993779635350">"<ph name="URL" />" ପାଇଁ ଆପଣଙ୍କ ପାସୱାର୍ଡ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ ହୋଇଛି। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ଏହାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଏହାକୁ ସେଭ କରନ୍ତୁ।</translation>
 <translation id="4173129130568053653">Gemini ଆପଣଙ୍କୁ ଆପଏଣ୍ଟମେଣ୍ଟ ବୁକ କରିବା, ସପିଂ କାର୍ଟ ତିଆରି କରିବା କିମ୍ବା ଆପଣ ଏହାକୁ ଦେଉଥିବା ଅନ୍ୟ ଟାସ୍କ କରିବାରେ ସହାୟତା କରିପାରିବ।</translation>
 <translation id="4175137578744761569">ହାଲୁକା ବାଇଗଣୀ ଓ ଧଳା</translation>
@@ -5786,6 +5788,7 @@
 <translation id="5189274947477567401">ପ୍ରକ୍ରିୟାକୁ ସେୟାର କରିବାରୁ ଅପ୍ଟ ଆଉଟ କରିବା ପାଇଁ ବ୍ରାଉଜରକୁ ରିଷ୍ଟାର୍ଟ କରିବାର ଆବଶ୍ୟକତା ଅଛି। ଏହି ବ୍ରାଉଜର ବର୍ତ୍ତମାନ ରିଷ୍ଟାର୍ଟ ହେବ।</translation>
 <translation id="5189404424758444348">ଷ୍ଟିମପଙ୍କ</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> ବ୍ୟବହାର କରାଯାଉଛି</translation>
+<translation id="5190835502935405962">ବୁକମାର୍କ ବାର୍</translation>
 <translation id="5190926251776387065">ପୋର୍ଟ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="5190959794678983197">କୌଣସି ମାଇକ୍ରୋଫୋନ ନାହିଁ</translation>
 <translation id="5191094172448199359">ଆପଣ ଲେଖିଥିବା PINଗୁଡ଼ିକ ମେଳ ହେଉ ନାହିଁ</translation>
@@ -7621,6 +7624,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6582274660680936615">ଆପଣ ଜଣେ ଅତିଥି ଭାବରେ ବ୍ରାଉଜ୍ କରୁଛନ୍ତି</translation>
 <translation id="6583328141350416497">ଡାଉନଲୋଡ କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
+<translation id="6585124893636629274">Chromeରେ Gemini ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6585584201072946561">ୱେବ ବ୍ରାଉଜର ପାଇଁ ଟେକ୍ସଟ ଆକାର ଏବଂ ଫଣ୍ଟକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="6586099239452884121">ଗେଷ୍ଟ ବ୍ରାଉଜିଂ</translation>
 <translation id="6586451623538375658">ପ୍ରାଥମିକ ମାଉସ୍‌ ବଟନ୍‌ ସ୍ୱାପ୍‌ କରନ୍ତୁ</translation>
@@ -10070,6 +10074,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8347227221149377169">ପ୍ରିଣ୍ଟ ଜବ୍</translation>
 <translation id="8348430946834215779">ଯେତେବେଳେ ସମ୍ଭବ HTTPS ବ୍ୟବହାର କରନ୍ତୁ ଏବଂ ଏହାକୁ ସମର୍ଥନ କରୁନଥିବା ସାଇଟଗୁଡ଼ିକ ଲୋଡ କରିବା ପୂର୍ବରୁ ଚେତାବନୀ ପାଆନ୍ତୁ</translation>
 <translation id="8348896480272971199">ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="8349305172487531364">ବୁକମାର୍କସ୍ ଦଣ୍ଡିକା</translation>
 <translation id="8349325309815489209">ଏହି ସାଇଟରେ ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଏ</translation>
 <translation id="8349826889576450703">ଲଞ୍ଚର</translation>
 <translation id="8350789879725387295">ଡକରେ ଷ୍ଟାଇଲସ୍ ଟୁଲଗୁଡ଼ିକ</translation>
@@ -10472,7 +10477,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8651585100578802546">ଏହି ପୃଷ୍ଠାକୁ ବାଧ୍ୟତାମୂଳକ ଭାବରେ ପୁନଃଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="8651806635673244884">ଆପଣ ଯେ କୌଣସି ଟାବରେ ଡାହାଣ-କ୍ଲିକ କରି ଏବଂ “ଟାବଗୁଡ଼ିକୁ ହରିଜୋଣ୍ଟାଲ ଭାବେ ଦେଖାନ୍ତୁ”କୁ ଚୟନ କରି ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକୁ ଶୀର୍ଷକୁ ପୁଣି ମୁଭ କରିପାରିବେ</translation>
 <translation id="8652400352452647993">ପ୍ୟାକ୍ ଏକ୍ସଟେନ୍‌ସନ୍ ତ୍ରୁଟି</translation>
-<translation id="8652412805227733853">ଇମେଲ ସ୍ୱତଃ ଯାଞ୍ଚ ହୋଇଛି</translation>
 <translation id="8654151524613148204">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‌ ପାଇଁ ଫାଇଲ୍‌ଟି ବହୁତ ବଡ ଅଟେ। କ୍ଷମା କରିବେ…</translation>
 <translation id="8655295600908251630">ଚ୍ୟାନେଲ୍</translation>
 <translation id="8655972064210167941">ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡ ଯାଞ୍ଚ ହୋଇନଥିବାରୁ ସାଇନ୍‌ ଇନ୍ ବିଫଳ ହୋଇଛି। ଦୟାକରି ଆପଣଙ୍କ ବ୍ୟବସ୍ଥାପକଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ ବା ପୁଣିଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>

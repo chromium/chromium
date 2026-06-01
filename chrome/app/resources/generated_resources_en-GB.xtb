@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Warning</translation>
 <translation id="1056980582064308040">Changing settings will restart the hotspot. Devices using the hotspot will disconnect.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Task interrupted</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol Secure (HTTPS)</translation>
 <translation id="1059944192885972544">Found <ph name="NUM" /> tabs For '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="1060172044035704924">Swap with right view</translation>
@@ -2342,6 +2341,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2665056444046933274">Sites can use this feature to access other apps and services on this device</translation>
 <translation id="2665394472441560184">Add a new word</translation>
 <translation id="2665647207431876759">Expired</translation>
+<translation id="2666092431469916601">Top</translation>
 <translation id="2666247341166669829">Left battery level <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Other apps are set to open the same links as <ph name="APP_NAME" />. This will disable <ph name="APP_NAME_2" /> and <ph name="APP_NAME_3" /> from opening supported links.</translation>
 <translation id="2667463864537187133">Manage spell check</translation>
@@ -2937,6 +2937,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3084548735795614657">Drop to install</translation>
 <translation id="3084771660770137092">Either Chrome ran out of memory or the process for the web page was terminated for some other reason. To continue, reload or go to another page.</translation>
 <translation id="3085412380278336437">Site can use your camera</translation>
+<translation id="3087734570205094154">Bottom</translation>
 <translation id="3088052000289932193">Site is using MIDI</translation>
 <translation id="3088325635286126843">&amp;Rename...</translation>
 <translation id="3089137131053189723">Search cleared</translation>
@@ -4426,6 +4427,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4170314459383239649">Clear On Exit</translation>
 <translation id="4170685671197375581">Turn on shortcut</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Share tab with Gemini}other{Share # tabs with Gemini}}</translation>
+<translation id="4172051516777682613">Always show</translation>
 <translation id="4172944993779635350">Your password for "<ph name="URL" />" is saved only to this device. To use it on your other devices, save it in your account.</translation>
 <translation id="4173129130568053653">Gemini can help you book appointments, create shopping baskets or do other tasks that you give it.</translation>
 <translation id="4175137578744761569">Light purple and white</translation>
@@ -5802,6 +5804,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5189274947477567401">Opting out of process sharing requires a browser restart. This browser will restart now.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Using <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Bookmarks bar</translation>
 <translation id="5190926251776387065">Activate port</translation>
 <translation id="5190959794678983197">No microphone</translation>
 <translation id="5191094172448199359">The PINs that you entered don't match</translation>
@@ -7639,6 +7642,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6582274660680936615">You're browsing as a Guest</translation>
 <translation id="6583328141350416497">Continue download</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
+<translation id="6585124893636629274">Close Gemini in Chrome</translation>
 <translation id="6585584201072946561">Customise text size and font for the web browser</translation>
 <translation id="6586099239452884121">Guest browsing</translation>
 <translation id="6586451623538375658">Swap the primary mouse button</translation>
@@ -10089,6 +10093,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8347227221149377169">Print jobs</translation>
 <translation id="8348430946834215779">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it</translation>
 <translation id="8348896480272971199">Check your Internet and try again.</translation>
+<translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8349325309815489209">Extensions allowed on this site</translation>
 <translation id="8349826889576450703">Launcher</translation>
 <translation id="8350789879725387295">Stylus tools in dock</translation>
@@ -10491,7 +10496,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8651585100578802546">Force Reload This Page</translation>
 <translation id="8651806635673244884">You can move your tabs back to the top by right-clicking any tab and selecting 'Show tabs horizontally'</translation>
 <translation id="8652400352452647993">Pack extension error</translation>
-<translation id="8652412805227733853">Email verified automatically</translation>
 <translation id="8654151524613148204">The file is too large for your computer to handle. Sorry.</translation>
 <translation id="8655295600908251630">Channel</translation>
 <translation id="8655972064210167941">Sign-in failed because your password could not be verified. Please contact your administrator or try again.</translation>

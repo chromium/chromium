@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">คำเตือน</translation>
 <translation id="1056980582064308040">การเปลี่ยนการตั้งค่าจะรีสตาร์ทฮอตสปอต อุปกรณ์ที่ใช้ฮอตสปอตจะขาดจากการเชื่อมต่อ</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">งานถูกขัดจังหวะ</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">พบ <ph name="NUM" /> แท็บสำหรับ "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060172044035704924">สลับกับมุมมองด้านขวา</translation>
@@ -2329,6 +2328,7 @@
 <translation id="2665056444046933274">เว็บไซต์สามารถใช้ฟีเจอร์นี้เพื่อเข้าถึงแอปและบริการอื่นๆ ในอุปกรณ์นี้</translation>
 <translation id="2665394472441560184">เพิ่มคำใหม่</translation>
 <translation id="2665647207431876759">หมดอายุ</translation>
+<translation id="2666092431469916601">ด้านบน</translation>
 <translation id="2666247341166669829">ระดับแบตเตอรี่ข้างซ้าย <ph name="PERCENTAGE" />%</translation>
 <translation id="2667144577800272420">มีแอปอื่นได้รับการตั้งค่าให้เปิดลิงก์เดียวกับ <ph name="APP_NAME" /> การดำเนินการนี้จะทำให้ <ph name="APP_NAME_2" /> และ <ph name="APP_NAME_3" /> ไม่สามารถเปิดลิงก์ที่รองรับ</translation>
 <translation id="2667463864537187133">จัดการการตรวจตัวสะกด</translation>
@@ -2924,6 +2924,7 @@
 <translation id="3084548735795614657">วางเพื่อติดตั้ง</translation>
 <translation id="3084771660770137092">ไม่ว่า Chrome จะมีหน่วยความจำไม่เพียงพอหรือกระบวนการของหน้าเว็บถูกยกเลิกด้วยเหตุใดก็ตาม หากต้องการดำเนินการต่อ ให้โหลดซ้ำหรือไปที่หน้าเว็บอื่น</translation>
 <translation id="3085412380278336437">เว็บไซต์ใช้กล้องของคุณได้</translation>
+<translation id="3087734570205094154">ด้านล่าง</translation>
 <translation id="3088052000289932193">เว็บไซต์กำลังใช้ MIDI</translation>
 <translation id="3088325635286126843">&amp;เปลี่ยนชื่อ...</translation>
 <translation id="3089137131053189723">ล้างการค้นหาแล้ว</translation>
@@ -4411,6 +4412,7 @@
 <translation id="4170314459383239649">ล้างเมื่อออก</translation>
 <translation id="4170685671197375581">เปิดทางลัด</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{แชร์แท็บกับ Gemini}other{แชร์ # แท็บกับ Gemini}}</translation>
+<translation id="4172051516777682613">แสดงทุกครั้ง</translation>
 <translation id="4172944993779635350">ระบบบันทึกรหัสผ่านสำหรับ "<ph name="URL" />" ไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่นๆ ให้บันทึกไว้ในบัญชีของคุณ</translation>
 <translation id="4173129130568053653">Gemini สามารถช่วยคุณจองการนัดหมาย สร้างรถเข็นช็อปปิ้ง หรือทำงานอื่นๆ ที่คุณมอบหมาย</translation>
 <translation id="4175137578744761569">สีม่วงอ่อนและสีขาว</translation>
@@ -5786,6 +5788,7 @@
 <translation id="5189274947477567401">การเลือกไม่ใช้การแชร์กระบวนการจำเป็นต้องรีสตาร์ทเบราว์เซอร์ เบราว์เซอร์จะรีสตาร์ทตอนนี้</translation>
 <translation id="5189404424758444348">สตีมพังก์</translation>
 <translation id="5190577235024772869">กำลังใช้ <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">แถบบุ๊กมาร์ก</translation>
 <translation id="5190926251776387065">เปิดใช้งานพอร์ต</translation>
 <translation id="5190959794678983197">ไม่มีไมโครโฟน</translation>
 <translation id="5191094172448199359">PIN ที่คุณป้อนไม่ตรงกัน</translation>
@@ -7619,6 +7622,7 @@
 <translation id="6582274660680936615">คุณกำลังเรียกดูในฐานะผู้มาเยือน</translation>
 <translation id="6583328141350416497">ดาวน์โหลดต่อ</translation>
 <translation id="6584878029876017575">การรับรองตลอดชีพของ Microsoft</translation>
+<translation id="6585124893636629274">ปิด Gemini ใน Chrome</translation>
 <translation id="6585584201072946561">ปรับขนาดและแบบอักษรของข้อความสำหรับเว็บเบราว์เซอร์</translation>
 <translation id="6586099239452884121">การท่องเว็บในโหมดผู้มาเยือน</translation>
 <translation id="6586451623538375658">สลับปุ่มเมาส์หลัก</translation>
@@ -10068,6 +10072,7 @@
 <translation id="8347227221149377169">งานพิมพ์</translation>
 <translation id="8348430946834215779">ใช้ HTTPS ทุกครั้งที่ทำได้และรับการแจ้งเตือนก่อนโหลดเว็บไซต์ที่ไม่รองรับ HTTPS</translation>
 <translation id="8348896480272971199">โปรดตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง</translation>
+<translation id="8349305172487531364">แถบบุ๊กมาร์ก</translation>
 <translation id="8349325309815489209">ส่วนขยายที่อนุญาตในเว็บไซต์นี้</translation>
 <translation id="8349826889576450703">Launcher</translation>
 <translation id="8350789879725387295">เครื่องมือสไตลัสในแถบเครื่องมือ</translation>
@@ -10470,7 +10475,6 @@
 <translation id="8651585100578802546">ต้องโหลดหน้านี้ใหม่</translation>
 <translation id="8651806635673244884">คุณสามารถย้ายแท็บกลับไปไว้ด้านบนได้โดยคลิกขวาที่แท็บใดก็ได้แล้วเลือก "แสดงแท็บในแนวนอน"</translation>
 <translation id="8652400352452647993">ข้อผิดพลาดเกี่ยวกับการรวมแพ็กเกจส่วนขยาย</translation>
-<translation id="8652412805227733853">อีเมลได้รับการยืนยันโดยอัตโนมัติแล้ว</translation>
 <translation id="8654151524613148204">ไฟล์มีขนาดใหญ่เกินกว่าที่คอมพิวเตอร์ของคุณจะจัดการได้ ขออภัย</translation>
 <translation id="8655295600908251630">ช่องทาง</translation>
 <translation id="8655972064210167941">การลงชื่อเข้าใช้ล้มเหลวเนื่องจากไม่สามารถยืนยันรหัสผ่านได้ โปรดติดต่อผู้ดูแลระบบของคุณหรือลองอีกครั้ง</translation>

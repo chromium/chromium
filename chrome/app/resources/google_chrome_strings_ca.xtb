@@ -238,6 +238,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="345171907106878721">Afegeix-me a Chrome</translation>
 <translation id="3453763134178591239">Condicions de Chrome OS</translation>
 <translation id="3503306920980160878">Chrome necessita accedir a la teva ubicació per compartir-la amb aquest lloc web</translation>
+<translation id="3539955434060988644">Obre l'enllaç en una finestra d'incò&amp;gnit a Chrome</translation>
 <translation id="3576528680708590453">L'administrador del sistema ha configurat Google Chrome perquè obri un navegador alternatiu per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sincronitza i personalitza Chrome en tots els teus dispositius</translation>
 <translation id="3583751698304738917">Ja has iniciat la sessió com a <ph name="USER_EMAIL_ADDRESS" /> en un altre perfil de Chrome</translation>
@@ -779,6 +780,7 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="8999208279178790196">{0,plural, =0{Hi ha una actualització de Chrome disponible}=1{Hi ha una actualització de Chrome disponible}other{Fa # dies que hi ha una actualització de Chrome disponible}}</translation>
 <translation id="9014771989710951291">Diverses organitzacions gestionen Chrome</translation>
 <translation id="9018218886431812662">La instal·lació s'ha completat</translation>
+<translation id="9024318700713112071">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="9066987883552592250">Tanca Gemini a Chrome Canary</translation>
 <translation id="9090566250983691233">Descobreix per què Chrome bloqueja alguns fitxers</translation>
 <translation id="9106236359747881194">Selecciona text per cercar</translation>

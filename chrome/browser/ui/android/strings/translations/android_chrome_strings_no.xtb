@@ -256,6 +256,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, valgt opptaksfane</translation>
 <translation id="2141396931810938595">Basert på bruken din</translation>
 <translation id="2145315049852051678">Chrome sjekker regelmessig at nettleseren din har de tryggeste innstillingene. Vi gir deg beskjed hvis det er noe du må se nærmere på.</translation>
+<translation id="2149968176347646218">Tilkoblingen er ikke sikker</translation>
 <translation id="2149973817440762519">Rediger bokmerke</translation>
 <translation id="2163089732491971196">For å bruke og lagre Chrome-data i Google-kontoen din, skriv inn passordfrasen din</translation>
 <translation id="2166228530126694506">Versjon <ph name="VERSION_NUMBER" /></translation>
@@ -1330,6 +1331,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6595046016124923392">Bildene blir sendt til Google for å gjøre beskrivelsene bedre.</translation>
 <translation id="6602173570135186741">Autofyll og passord</translation>
 <translation id="661266467055912436">Øker sikkerheten for deg og alle andre på nettet.</translation>
+<translation id="6615455863669487791">Vis meg</translation>
 <translation id="6621391692573306628">For å sende denne fanen til en annen enhet, logg på Chrome på begge enhetene</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
 <translation id="6633067410344541938">Lås opp inkognitomodus</translation>

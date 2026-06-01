@@ -455,13 +455,6 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
 <translation id="1340053691042184658">Browseranmeldungen durch Gäste verhindern</translation>
 <translation id="1342918903685430097">Konfiguriere die für das Gerät erforderliche Mindestversion von <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1343128241903870688">Melden der App-Informationen auf Geräten deaktivieren</translation>
-<translation id="1347198119056266798">Diese Richtlinie wurde eingestellt. Verwende statt ihrer "<ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />" und "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />". Diese Richtlinie wird ignoriert, wenn entweder die Richtlinie "<ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />", "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />" oder die veraltete Richtlinie "<ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" />" konfiguriert ist.
-
-      Erzwingt die Ausführung der Google Websuche mit aktivierter SafeSearch-Funktion und verhindert, dass Nutzer diese Einstellung ändern. Durch diese Einstellung wird auf YouTube auch der moderate eingeschränkte Modus erzwungen.
-
-      Wenn du diese Einstellung aktivierst, sind in der Google Suche SafeSearch und auf YouTube der moderate eingeschränkte Modus immer aktiv.
-
-      Wenn du diese Einstellung deaktivierst oder keinen Wert festlegst, werden SafeSearch in der Google Suche und der eingeschränkte Modus auf YouTube nicht erzwungen.</translation>
 <translation id="134745581157553029">Wenn die Richtlinie „DeviceArcDataSnapshotHours“ eingestellt wurde, ist die Schnappschussfunktion für ARC-Daten aktiviert. In den festgelegten Zeiträumen kann die Aktualisierung des ARC-Datenschnappschusses automatisch gestartet werden. Ist zu Beginn eines solchen Zeitraums eine Aktualisierung des ARC-Datenschnappschusses erforderlich und kein Nutzer angemeldet, beginnt der Prozess ohne Benachrichtigung des Nutzers. Ist eine Nutzersitzung im Gange, muss einer Benachrichtigung auf der Benutzeroberfläche zugestimmt werden, damit das Gerät neu startet und die Aktualisierung des ARC-Datenschnappschusses beginnt. Hinweis: Während der Aktualisierung des ARC-Datenschnappschusses kann das Gerät nicht benutzt werden.</translation>
 <translation id="1348603614848418219">Migration der von <ph name="MS_AD_NAME" /> verwalteten Geräten zur Cloud-Verwaltung deaktivieren.</translation>
 <translation id="1352799151662469739">Zeitraum ohne Nutzereingabe im Netzbetrieb, nach dem der Bildschirm gesperrt wird, angegeben in Millisekunden.</translation>
@@ -1420,7 +1413,6 @@ Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ b
 <translation id="1963986268950915756">Installation von Web-Apps durch Nutzer über den Browser aktivieren</translation>
 <translation id="1964191545419036999">Galerie (wird seit Version 117 unterstützt)</translation>
 <translation id="1964634611280150550">Inkognitomodus deaktiviert</translation>
-<translation id="1964802606569741174">Diese Richtlinie hat keine Auswirkungen auf die Android YouTube App. Wenn der Sicherheitsmodus in YouTube erzwungen werden soll, darf das Installieren der Android YouTube App nicht zugelassen werden.</translation>
 <translation id="1964985353230379667">Legt die vorgeschlagene <ph name="KRB5_CONFIG" />-Konfiguration für die neuen, manuell erstellten Tickets fest.
 
       Wenn die Richtlinie „KerberosUseCustomPrefilledConfig“ aktiviert ist, wird der Wert der Richtlinie als vorgeschlagene Konfiguration angewendet und im Authentifizierungsdialogfeld von Kerberos unter „Advanced“ (Erweitert) angezeigt. Wenn du diese Richtlinie leer lässt oder nicht konfigurierst, wird die empfohlene <ph name="PRODUCT_OS_NAME" />-Konfiguration gelöscht.
@@ -1775,7 +1767,6 @@ Die Richtlinie ist eine vorübergehende Maßnahme und wird nach Version 145 von
 
       Weitere Informationen zu Safe Browsing findest du unter https://support.google.com/chrome?p=safe_browsing_preferences.</translation>
 <translation id="2177696016354404697">Privatsphärefunktion immer deaktivieren</translation>
-<translation id="2178899310296064282">Mindestens den moderaten eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="2180260434916939385">KI‑basierte Verlaufssuche zulassen und KI‑Modelle verbessern.</translation>
 <translation id="2180795125410219364">Einstellungen von „Position 1“ und „Ende“ sind deaktiviert</translation>
 <translation id="2180958780733364832">Verwendung des monitorlosen Modus verwalten</translation>
@@ -5319,7 +5310,6 @@ Diese Richtlinie ist auf 1.000 Einträge beschränkt.</translation>
 <translation id="4510923771103268849">Nutzer hat Root-Zugriff auf Crostini-Container</translation>
 <translation id="4511848671760711978">Lehrkräften nicht erlauben, sich die Bildschirme von Schülern/Studenten per Fernzugriff anzusehen.</translation>
 <translation id="4512407512989846472">Gestattet das Blockieren von Kopiervorgängen in die Zwischenablage auf bestimmten URLs</translation>
-<translation id="4513691822411041977">Verwendung von SafeSearch in der Google Suche oder im eingeschränkten Modus für YouTube nicht erzwingen</translation>
 <translation id="4515404363392014383">Safe Browsing für vertrauenswürdige Quellen aktivieren</translation>
 <translation id="4517327050150780380">Einstellungen für die Funktion „Hilfe beim Lesen“</translation>
 <translation id="4518251772179446575">Nachfragen, wenn eine Website den physischen Standort der Nutzer verfolgen möchte</translation>
@@ -6470,13 +6460,6 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 <translation id="5182483318861266793">Ablage auf der rechten Seite des Bildschirms anzeigen</translation>
 <translation id="51859390023061147">Funktion zur vollständigen Wiederherstellung deaktivieren.</translation>
 <translation id="5189360528842591274">Verbindung nur zu den Bluetooth-Diensten in der Liste erlauben</translation>
-<translation id="5190426551516379357">Wenn die Richtlinie konfiguriert ist, wird ein minimaler eingeschränkter Modus auf YouTube erzwungen und verhindert, dass Nutzer einen weniger eingeschränkten Modus auswählen. Wird diese Richtlinie
-
-* auf "Strikt" festgelegt, ist der strikte eingeschränkte Modus auf YouTube immer aktiv.
-
-      * auf "Moderat" festgelegt, kann der Nutzer auf YouTube nur den moderaten eingeschränkten Modus und den strikten eingeschränkten Modus auswählen, den eingeschränkten Modus aber nicht deaktivieren.
-
-      * auf "Aus" festgelegt oder ist kein Wert angegeben, wird der eingeschränkte Modus auf YouTube nicht durch Chrome erzwungen. Der eingeschränkte Modus wird jedoch möglicherweise trotzdem durch externe Richtlinien wie YouTube-Richtlinien erzwungen.</translation>
 <translation id="5191007233343702012">Standardpriorisierung von Tabs verwenden</translation>
 <translation id="5191476996923842491">Standardverhalten für die Mindestverzögerung der Funktion setTimeout().</translation>
 <translation id="519247340330463721">Hiermit werden die Safe Browsing-Richtlinien konfiguriert.</translation>
@@ -8510,13 +8493,6 @@ HINWEIS: Das Standardverhalten hängt davon ab, ob es sich um ein Verbraucherger
 <translation id="6483115462650732746">Unverankertes Menü für Bedienungshilfen im Kioskmodus anzeigen</translation>
 <translation id="6491139795995924304">Bluetooth auf Gerät zulassen</translation>
 <translation id="6491305972928809525">Unverankertes Menü für Bedienungshilfen im Kioskmodus nicht anzeigen</translation>
-<translation id="6491872498385040936">Diese Richtlinie wurde eingestellt. Du kannst stattdessen "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />" verwenden. Damit wird diese Richtlinie überschrieben und eine bessere Feinabstimmung ermöglicht.
-
-      Erzwingt den moderaten eingeschränkten Modus auf YouTube und verhindert, dass Nutzer diese Einstellung ändern.
-
-      Wenn diese Einstellung aktiviert ist, wird auf YouTube immer mindestens der eingeschränkte Modus "Moderat" erzwungen.
-
-      Ist diese Einstellung deaktiviert oder ist kein Wert festgelegt, wird der eingeschränkte Modus auf YouTube nicht durch <ph name="PRODUCT_NAME" /> erzwungen. Der eingeschränkte Modus kann möglicherweise jedoch trotzdem durch externe Richtlinien wie YouTube-Richtlinien erzwungen werden.</translation>
 <translation id="6492177700737407141">Nutzer, die am erweiterten Sicherheitsprogramm teilnehmen, werden nur durch die Standardfunktionen für Privatnutzer geschützt</translation>
 <translation id="6492737559291967859">Wenn die Richtlinie konfiguriert ist, wird die von <ph name="PRODUCT_NAME" /> verwendete Sprache festgelegt.
 
@@ -9079,7 +9055,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird der Nutzer nur
 <translation id="6857240169209507953">Ausführung von <ph name="BOREALIS_NAME" /> auf einem Gerät verhindern</translation>
 <translation id="6857372417233723544">Ist diese Richtlinie festgelegt, wird das InScript-Layout für Hindi unter <ph name="PRODUCT_OS_NAME" /> aktiviert.
 Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verfügbar. Damit die Änderungen wirksam werden, ist ein Neustart erforderlich.</translation>
-<translation id="685769593149966548">Strikt eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 oder höher</translation>
 <translation id="6863927303509860338">Verknüpfungen auf der Seite „Neuer Tab“ einrichten</translation>
 <translation id="6866755486434471318">Zulassen, dass <ph name="PEPPER_NAME" /> freigegebene Bilder für die Videodecodierung verwendet.</translation>
@@ -9786,7 +9761,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7238335422094660594">Anbieter der <ph name="UIA_NAME" /> aktivieren.</translation>
 <translation id="7241007908714447207">Ursprüngen der isolierten Web-App erlauben, um die Erlaubnis zu bitten, eine Verbindung zu Smartcard-Lesegeräten herzustellen.</translation>
 <translation id="7241016798422122577">Mimik-Steuerung auf dem Anmeldebildschirm aktivieren</translation>
-<translation id="7242191282517459095">YouTube (wird seit Version 135 unterstützt)</translation>
 <translation id="7244600351241637530">Durch Aktivieren dieser Einstellung können Nutzer, die der Verwendung von Phone Hub zugestimmt haben, Fotos und Videos, die kürzlich mit ihrem Smartphone aufgenommen wurden, auf einem Chrome OS-Gerät abrufen und herunterladen.
 
       Wenn diese Einstellung deaktiviert ist, können Nutzer die Funktion nicht verwenden. Ist die Richtlinie <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> deaktiviert, können Nutzer die Funktion ebenfalls nicht verwenden.
@@ -11044,7 +11018,6 @@ Gültige Werte reichen von 1 Sekunde bis 9.999 Sekunden. Ist diese Richtlinie 
 
 Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.</translation>
 <translation id="8113731369695819720">„Mono-Audio“ auf dem Anmeldebildschirm deaktivieren</translation>
-<translation id="8114382167597081590">Eingeschränkten Modus auf YouTube nicht erzwingen</translation>
 <translation id="8117662664312039036">Geräten nicht erlauben, PluginVm zu verwenden</translation>
 <translation id="8117921351531866504">Mit dieser Richtlinie kannst du Websites erlauben zu prüfen, ob ein Nutzer Zahlungsmethoden gespeichert hat.
 
@@ -11570,7 +11543,6 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="846994437739309080">Wenn diese Richtlinie aktiviert (oder nicht konfiguriert) ist, werden vom Nutzer hinzugefügte TLS-Zertifikate aus Plattform-Trust Stores bei der Pfaderstellung für die TLS-Serverauthentifizierung verwendet.
 
 Wenn diese Richtlinie deaktiviert ist, werden vom Nutzer hinzugefügte TLS-Zertifikate aus Plattform-Trust Stores nicht bei der Pfaderstellung für die TLS-Serverauthentifizierung verwendet.</translation>
-<translation id="8470317291588703478">Eingeschränkten Modus für YouTube nicht erzwingen</translation>
 <translation id="8471117881949952479">Diese Richtlinie wurde eingestellt und wird zu gegebener Zeit durch „DataControlsRules“ ersetzt.
 
 Mit dieser Richtlinie wird das Kopieren von Daten in die Zwischenablage unter bestimmten URLs blockiert.
@@ -11682,7 +11654,6 @@ Rollback auf <ph name="PRODUCT_OS_NAME" /> Version 106 oder niedriger wird nich
 
       Warnung: Google rät von Versionsbeschränkungen ab, da die Geräte dann möglicherweise weder Softwareupdates noch kritische Sicherheitskorrekturen erhalten. Updatebeschränkungen auf eine bestimmte Version können ein Risiko für die Nutzer sein.</translation>
 <translation id="8519617069657262768">Google Drive-Synchronisierung aktivieren</translation>
-<translation id="8520064498689833152">Erzwingen, dass in der Google Suche SafeSearch verwendet wird und der eingeschränkte Modus für YouTube mindestens auf „Moderat“ festgelegt ist</translation>
 <translation id="8520950040439618600">PIN- und Kopplungsauthentifizierung für Hosts für den Remote-Zugriff zulassen</translation>
 <translation id="8524334245528364388">URL einer JSON-Datei mit einer Liste von Druckservern.</translation>
 <translation id="8525282442896658040">Ermöglicht der App, die Autorisierung für vorläufige Benachrichtigungen unter iOS zu verwenden</translation>
@@ -11924,7 +11895,6 @@ Diese Richtlinie ist eine vorübergehende Maßnahme und wird nach einigen Meilen
 <translation id="8676959842615154675">Wenn diese Richtlinie aktiviert ist, vergleicht der Host für den Remote-Zugriff den Namen des mit dem Host verknüpften lokalen Nutzers mit dem Namen des Google-Kontos, das als Hosteigentümer registriert ist (z. B. „maxmustermann“, wenn der Hosteigentümer das Google-Konto „maxmustermann@beispiel.de“ ist). Dieser Host wird nicht gestartet, wenn der Name des Hosteigentümers vom Namen des mit dem Host verknüpften lokalen Nutzers abweicht. Wenn du erzwingen möchtest, dass das Google-Konto des Eigentümers mit einer bestimmten Domain verknüpft ist, verwende die Richtlinie mit <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, kann der Host für den Remote-Zugriff mit jedem lokalen Nutzer verknüpft sein.</translation>
-<translation id="867708016260789630">Auf YouTube mindestens den eingeschränkten Modus „Moderat“ erzwingen</translation>
 <translation id="8677853537025397834">WebHID API auf diesen Websites erlauben</translation>
 <translation id="8684000025871334499">Hiermit lassen sich Installations- und Laufzeitrichtlinien für Bruschetta-VMs unter <ph name="PRODUCT_OS_NAME" /> konfigurieren. Dies ermöglicht Nutzern, Drittanbieter-VMs zu installieren. Diese Funktion ist standardmäßig deaktiviert.
 
@@ -11989,7 +11959,6 @@ Wenn die Richtlinie „<ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" />“ deaktiv
       „http://acme.de/ABC“ stimmt nur in „IESiteListMode“ überein.</translation>
 <translation id="8728854710675158426">Nicht sichere Hashes in TLS-Handshakes aktiviert</translation>
 <translation id="8734543507835977857">Verzögerungen bei der Energieverwaltung und Begrenzungen der Sitzungslänge zu Beginn der Sitzung starten</translation>
-<translation id="8736538322216687231">Minimalen eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="873800217865395140">Häufigkeit der Erhebung der Websitetelemetrie in Millisekunden.</translation>
 <translation id="8742596277791362306">Mit dieser Richtlinie lässt sich die Aktivierung der Funktion für Gruppen ähnlicher Websites verwalten.
 
@@ -12150,7 +12119,6 @@ Diese Richtlinie wird ignoriert, wenn Safe Browsing deaktiviert oder der Modus f
 Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Suchanfragen per Proxy mit erhöhter Sicherheit zugelassen.
 
 Ist die Richtlinie deaktiviert, sind Suchanfragen per Proxy mit erhöhter Sicherheit nicht zulässig. Teil-Hashes von URLs werden viel seltener direkt bei Google hochgeladen, wodurch der Schutz reduziert wird.</translation>
-<translation id="8858642179038618439">YouTube-Sicherheitsmodus erzwingen</translation>
 <translation id="8860342862142842017">Erzwingung der Zertifikatstransparenz für eine Liste mit subjectPublicKeyInfo-Hashes deaktivieren</translation>
 <translation id="8860894781631833477">Nutzer dürfen die <ph name="PRODUCT_OS_NAME" />-Release-Version konfigurieren</translation>
 <translation id="8862086508140571198">Mit dieser Richtlinie kann eine Liste von DLCs (herunterladbaren Inhalten) festgelegt werden, die so schnell wie möglich heruntergeladen werden sollen. Die heruntergeladenen DLCs sind dann für alle Nutzer auf dem Gerät verfügbar.

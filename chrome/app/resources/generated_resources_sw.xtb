@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Ilani</translation>
 <translation id="1056980582064308040">Hatua ya kubadilisha mipangilio itazima kisha kuwasha mtandao pepe. Vifaa vinavyotumia mtandao pepe vitatenganishwa.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Jukumu limekatizwa</translation>
 <translation id="1059484610606223931">Itifaki ya Uhamishaji wa Maandishi yenye Viungo (HTTPS)</translation>
 <translation id="1059944192885972544">Imepata Vichupo <ph name="NUM" /> Vya '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="1060172044035704924">Badilisha utumie Mwonekano wa Kulia</translation>
@@ -2339,6 +2338,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2665056444046933274">Tovuti zinaweza kutumia kipengele hiki kufikia programu na huduma nyingine kwenye kifaa hiki</translation>
 <translation id="2665394472441560184">Ongeza neno jipya</translation>
 <translation id="2665647207431876759">Muda wake umekwisha</translation>
+<translation id="2666092431469916601">Juu</translation>
 <translation id="2666247341166669829">Kiwango cha betri ya upande wa kushoto <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Programu zingine zimeruhusiwa kufungua viungo vinavyofunguliwa na <ph name="APP_NAME" />. Hatua hii itazuia <ph name="APP_NAME_2" /> na <ph name="APP_NAME_3" /> zisifungue viungo vinavyoweza kutumika.</translation>
 <translation id="2667463864537187133">Dhibiti kikagua maendelezo</translation>
@@ -2934,6 +2934,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3084548735795614657">Achilia ili kusakinisha</translation>
 <translation id="3084771660770137092">Chrome imeishiwa na kumbukumbu au mchakato wa ukurasa wa wavuti ulisitishwa kwa sababu nyingine. Kuendelea, pakia upya au nenda kwenye ukurasa mwingine.</translation>
 <translation id="3085412380278336437">Tovuti inaweza kutumia kamera yako</translation>
+<translation id="3087734570205094154">Chini</translation>
 <translation id="3088052000289932193">Tovuti inatumia MIDI</translation>
 <translation id="3088325635286126843">&amp;Badilisha jina...</translation>
 <translation id="3089137131053189723">Utafutaji umefutwa</translation>
@@ -4421,6 +4422,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4170314459383239649">Futa Unapofunga</translation>
 <translation id="4170685671197375581">Washa njia ya mkato</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Ruhusu Gemini ifikie kichupo}other{Ruhusu Gemini ifikie vichupo #}}</translation>
+<translation id="4172051516777682613">Onyesha kila mara</translation>
 <translation id="4172944993779635350">Nenosiri lako la "<ph name="URL" />" limehifadhiwa kwenye kifaa hiki pekee. Ili ulitumie kwenye vifaa vyako vingine, lihifadhi katika akaunti yako.</translation>
 <translation id="4173129130568053653">Gemini inaweza kukusaidia kuweka miadi, kutayarisha vikapu vya ununuzi au kufanya majukumu mengine unayoipa.</translation>
 <translation id="4175137578744761569">Zambarau hafifu na nyeupe</translation>
@@ -5797,6 +5799,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5189274947477567401">Kujiondoa katika mchakato wa kutuma huhitaji uzime kisha uwashe kivinjari. Kivinjari hiki kitazima kisha kiwake sasa.</translation>
 <translation id="5189404424758444348">Sayansi dhahania ya mvuke</translation>
 <translation id="5190577235024772869">Inatumia <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Sehemu ya Alamisho</translation>
 <translation id="5190926251776387065">Washa mlango</translation>
 <translation id="5190959794678983197">Hakuna maikrofoni</translation>
 <translation id="5191094172448199359">PIN ulizoweka hazilingani</translation>
@@ -7634,6 +7637,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6582274660680936615">Unavinjari katika dirisha la Wageni</translation>
 <translation id="6583328141350416497">Endelea kupakua</translation>
 <translation id="6584878029876017575">Uwekaji Sahihi wa Maisha kutoka Microsoft</translation>
+<translation id="6585124893636629274">Funga Gemini kwenye Chrome</translation>
 <translation id="6585584201072946561">Weka mapendeleo ya fonti na ukubwa wa maandishi ya kivinjari</translation>
 <translation id="6586099239452884121">Kuvinjari kama mgeni</translation>
 <translation id="6586451623538375658">Badilisha kitufe msingi cha kipanya</translation>
@@ -10084,6 +10088,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8347227221149377169">Kazi za kuchapisha</translation>
 <translation id="8348430946834215779">Tumia HTTPS panapowezekana na upate tahadhari kabla ya kupakia tovuti zisizotumia kiendelezi hicho</translation>
 <translation id="8348896480272971199">Angalia intaneti yako kisha ujaribu tena.</translation>
+<translation id="8349305172487531364">Sehemu ya Alamisho</translation>
 <translation id="8349325309815489209">Viendelezi vinaruhusiwa kwenye tovuti hii</translation>
 <translation id="8349826889576450703">kifungua programu</translation>
 <translation id="8350789879725387295">Zana za Stylus katika rafu</translation>
@@ -10486,7 +10491,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8651585100578802546">Lazimisha Ukurasa Huu Upakiwe Tena</translation>
 <translation id="8651806635673244884">Unaweza kuhamishia vichupo vyako juu kwa kubofya kulia kichupo chochote kisha uchague “Onyesha vichupo kwa mlalo”</translation>
 <translation id="8652400352452647993">Hitilafu ya kiendelezi cha kifurushi</translation>
-<translation id="8652412805227733853">Barua pepe imethibitishwa kiotomatiki</translation>
 <translation id="8654151524613148204">Faili hii ni kubwa sana kwa kompyuta yako kuishughulikia. Samahani.</translation>
 <translation id="8655295600908251630">Kituo</translation>
 <translation id="8655972064210167941">Haikufaulu kuingia katika akaunti kwa sababu nenosiri lako halikuthibitishwa. Tafadhali wasiliana na msimamizi wako au jaribu tena.</translation>

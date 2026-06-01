@@ -875,6 +875,7 @@
 <translation id="2354001756790975382">Другие закладки</translation>
 <translation id="2355395290879513365">Злоумышленники могут видеть изображения, которые видны вам, и изменять их в целях мошенничества.</translation>
 <translation id="2356941001189392209">URL только тех посещенных вами страниц, на которых зафиксированы события, связанные с устаревшими технологиями.</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Вы поделитесь 1 вкладкой}one{Вы поделитесь {NUM_TABS} вкладкой}few{Вы поделитесь {NUM_TABS} вкладками}many{Вы поделитесь {NUM_TABS} вкладками}other{Вы поделитесь {NUM_TABS} вкладки}}</translation>
 <translation id="2357481397660644965">Вашим устройством управляет <ph name="DEVICE_MANAGER" />, а аккаунтом – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Несколько</translation>
 <translation id="2359808026110333948">Продолжить</translation>

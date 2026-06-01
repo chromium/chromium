@@ -256,6 +256,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2138632817776076519"><ph name="TAB_TITLE" />, odabrana kartica za snimanje</translation>
 <translation id="2141396931810938595">Zasnovano na vašem korištenju</translation>
 <translation id="2145315049852051678">Chrome redovno provjerava ima li vaš preglednik najsigurnije postavke. Obavijestit ćemo vas ako nešto bude potrebno pregledati.</translation>
+<translation id="2149968176347646218">Veza nije sigurna</translation>
 <translation id="2149973817440762519">Uredi oznaku</translation>
 <translation id="2163089732491971196">Da koristite i sačuvate podatke Chromea na Google računu, unesite pristupni izraz</translation>
 <translation id="2166228530126694506">Verzija <ph name="VERSION_NUMBER" /></translation>
@@ -1331,6 +1332,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6595046016124923392">Slike se šalju Googleu radi poboljšanja opisa.</translation>
 <translation id="6602173570135186741">Automatsko popunjavanje i lozinke</translation>
 <translation id="661266467055912436">Poboljšava vašu i svačiju sigurnost na webu.</translation>
+<translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6621391692573306628">Da pošaljete ovu karticu na drugi uređaj, prijavite se na Chrome na oba uređaja</translation>
 <translation id="6627583120233659107">Uredi folder</translation>
 <translation id="6633067410344541938">Otključaj anonimni način rada</translation>

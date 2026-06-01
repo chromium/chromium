@@ -454,13 +454,6 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 <translation id="1340053691042184658">Niet toestaan dat gebruikers als gast inloggen bij de browser</translation>
 <translation id="1342918903685430097">Stel de minimaal toegestane <ph name="PRODUCT_OS_NAME" />-versie in voor het apparaat.</translation>
 <translation id="1343128241903870688">Rapportage van app-informatie van apparaat uitzetten</translation>
-<translation id="1347198119056266798">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> en <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Dit beleid wordt genegeerd als het beleid <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> of <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (verouderd) is ingesteld.
-
-      Hiermee wordt afgedwongen dat zoekopdrachten in Google Zoeken worden uitgevoerd met SafeSearch ingesteld op 'actief' en wordt voorkomen dat gebruikers deze instelling kunnen wijzigen. Met deze instelling wordt ook de gemiddelde Beperkte modus op YouTube afgedwongen.
-
-      Als je deze instelling aanzet, zijn SafeSearch in Google Zoeken en de gemiddelde Beperkte modus op YouTube altijd actief.
-
-      Als je deze instelling uitzet of geen waarde instelt, worden SafeSearch in Google Zoeken en de Beperkte modus op YouTube niet afgedwongen.</translation>
 <translation id="134745581157553029">Als je het beleid DeviceArcDataSnapshotHours instelt, wordt het mechanisme voor momentopnamen van ARC-gegevens aangezet. De update voor momentopnamen van ARC-gegevens kan automatisch worden gestart gedurende de gedefinieerde tijdsintervallen. Wanneer een interval start, is de update voor momentopnamen van ARC-gegevens vereist. Als er geen gebruiker is ingelogd, wordt het updateproces voor momentopnamen van ARC-gegevens gestart zonder melding aan de gebruiker. Als de gebruikerssessie actief is, wordt de UI-melding getoond en moet deze worden geaccepteerd om een apparaat opnieuw op te starten en het updateproces voor momentopnamen van ARC-gegevens te starten. Opmerking: Een apparaat is geblokkeerd voor gebruik tijdens het updateproces voor momentopnamen van ARC-gegevens.</translation>
 <translation id="1348603614848418219">De migratie van door <ph name="MS_AD_NAME" /> beheerde apparaten naar cloudbeheer uitzetten.</translation>
 <translation id="1352799151662469739">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt vergrendeld als er op netvoeding wordt gewerkt (in milliseconden)</translation>
@@ -1421,7 +1414,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="1963986268950915756">Installatie van web-apps door gebruikers vanuit browser aanzetten</translation>
 <translation id="1964191545419036999">Galerij (ondersteund sinds versie 117)</translation>
 <translation id="1964634611280150550">Incognitomodus staat uit</translation>
-<translation id="1964802606569741174">Dit beleid is niet van invloed op de YouTube-app voor Android. Als de veiligheidsmodus voor YouTube moet worden afgedwongen, moet je installatie van de YouTube-app voor Android niet toestaan.</translation>
 <translation id="1964985353230379667">Hiermee wordt de voorgestelde <ph name="KRB5_CONFIG" />-configuratie voor de nieuwe handmatig gemaakte tickets opgegeven.
 
       Als je het beleid KerberosUseCustomPrefilledConfig toepast, wordt de waarde van het beleid toegepast als voorgestelde configuratie en getoond in het gedeelte Geavanceerd van het dialoogvenster voor Kerberos-verificatie. Als je dit beleid instelt op een lege tekenreeks of niet instelt, wordt de aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie verwijderd.
@@ -1777,7 +1769,6 @@ Dit beleid is een tijdelijke maatregel en wordt verwijderd na <ph name="PRODUCT_
 
       Zie https://support.google.com/chrome?p=safe_browsing_preferences voor meer informatie over Safe Browsing.</translation>
 <translation id="2177696016354404697">Het privacyscherm altijd uitzetten</translation>
-<translation id="2178899310296064282">Minimaal de gemiddelde 'Beperkte modus' op YouTube afdwingen</translation>
 <translation id="2180260434916939385">Sta AI-gestuurd zoeken in geschiedenis toe en verbeter AI-modellen.</translation>
 <translation id="2180795125410219364">Instellingen voor Home/End staan uit</translation>
 <translation id="2180958780733364832">Gebruik van de stand zonder interface beheer</translation>
@@ -5314,7 +5305,6 @@ Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="4510923771103268849">De gebruiker heeft toestemming voor roottoegang tot Crostini-containers</translation>
 <translation id="4511848671760711978">Voorkomen dat docenten op afstand de schermen van leerlingen kunnen bekijken</translation>
 <translation id="4512407512989846472">Staat toe dat het kopiëren naar het klembord voor gespecificeerde URL's wordt geblokkeerd</translation>
-<translation id="4513691822411041977">Het gebruik van SafeSearch op Google Zoeken of de beperkte modus van YouTube niet afdwingen</translation>
 <translation id="4515404363392014383">Safe Browsing voor vertrouwde bronnen aanzetten</translation>
 <translation id="4517327050150780380">Instellingen voor de functie Help me met lezen</translation>
 <translation id="4518251772179446575">Goedkeuring vragen wanneer een site de fysieke locatie van gebruikers wil bijhouden</translation>
@@ -6442,13 +6432,6 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 <translation id="5182483318861266793">De plank aan de rechterkant van het scherm plaatsen</translation>
 <translation id="51859390023061147">De functie voor volledig herstel uitzetten.</translation>
 <translation id="5189360528842591274">Alleen verbinding met de bluetooth-services in de lijst toestaan</translation>
-<translation id="5190426551516379357">Als je het beleid instelt, werkt YouTube in een minimale beperkte modus en kunnen gebruikers geen minder beperkte modus kiezen. Als je het instelt op:
-
-      * Streng, is de strenge beperkte modus in YouTube altijd actief.
-
-      * Gemiddeld, kan de gebruiker alleen de gemiddelde beperkte modus en de strenge beperkte modus selecteren op YouTube, maar kan de gebruiker de beperkte modus niet uitzetten.
-
-      * Uit of als je geen waarde instelt, werkt YouTube niet in de beperkte modus in Chrome. De beperkte modus kan echter nog steeds worden afgedwongen door externe beleidsregels zoals het YouTube-beleid.</translation>
 <translation id="5191007233343702012">Standaard prioriteit geven aan tabbladen gebruiken</translation>
 <translation id="5191476996923842491">Standaardgedrag voor vastzetten van de functie setTimeout().</translation>
 <translation id="519247340330463721">Beleid met betrekking tot Safe Browsing configureren.</translation>
@@ -8481,13 +8464,6 @@ OPMERKING: Het standaardgedrag voor consumenten- en zakelijke apparaten verschil
 <translation id="6483115462650732746">Zwevend toegankelijkheidsmenu tonen in de kioskmodus</translation>
 <translation id="6491139795995924304">Bluetooth toestaan op apparaat</translation>
 <translation id="6491305972928809525">Zwevend toegankelijkheidsmenu niet tonen in de kioskmodus</translation>
-<translation id="6491872498385040936">Dit beleid is beëindigd. Overweeg <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> te gebruiken, dat voorrang krijgt op dit beleid en waarmee gedetailleerdere afstelling kan plaatsvinden.
-
-      Hiermee werkt YouTube in de gemiddelde Beperkte modus en wordt voorkomen dat gebruikers deze instelling kunnen wijzigen.
-
-      Als deze instelling aanstaat, werkt YouTube altijd minimaal in de gemiddelde Beperkte modus.
-
-      Als deze instelling uitstaat of er is geen waarde ingesteld, werkt YouTube niet in de Beperkte modus in <ph name="PRODUCT_NAME" />. De Beperkte modus kan wel nog steeds worden verplicht door externe beleidsregels zoals het YouTube-beleid.</translation>
 <translation id="6492177700737407141">Gebruikers die zijn ingeschreven voor Geavanceerde beveiliging krijgen alleen standaardbescherming voor consumenten</translation>
 <translation id="6492737559291967859">Als je het beleid instelt, wordt de landinstelling gespecificeerd die <ph name="PRODUCT_NAME" /> gebruikt.
 
@@ -9049,7 +9025,6 @@ Als je het beleid niet toepast of niet instelt, wordt de gebruiker alleen uitgel
 <translation id="6857240169209507953">Voorkomen dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd op een apparaat</translation>
 <translation id="6857372417233723544">Als je het beleid instelt, wordt Hindi InScript-indeling aangezet voor <ph name="PRODUCT_OS_NAME" />.
 Als het beleid is ingesteld op False of niet is ingesteld, is de indeling niet beschikbaar. Hiervoor moet opnieuw worden opgestart.</translation>
-<translation id="685769593149966548">Strenge 'Beperkte modus' voor YouTube afdwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 of later</translation>
 <translation id="6863927303509860338">Snelkoppelingen instellen op de pagina Nieuw tabblad</translation>
 <translation id="6866755486434471318">Toestaan dat <ph name="PEPPER_NAME" /> gedeelde afbeeldingen gebruikt voor videodecodering.</translation>
@@ -9754,7 +9729,6 @@ Ondersteuning voor deze beleidsinstelling wordt beëindigd in <ph name="PRODUCT_
 <translation id="7238335422094660594">De provider van <ph name="UIA_NAME" /> aanzetten.</translation>
 <translation id="7241007908714447207">Toestaan dat geïsoleerde web-app-oorsprongen vragen om verbinding te maken met smartcardlezers.</translation>
 <translation id="7241016798422122577">Gezichtsbediening op het inlogscherm aanzetten</translation>
-<translation id="7242191282517459095">YouTube (ondersteund vanaf versie 135)</translation>
 <translation id="7244600351241637530">Als je deze instelling aanzet, kunnen gebruikers die Telefoonhub al hebben toegestaan, recente foto's en video's die ze op hun telefoon hebben gemaakt, bekijken en downloaden via Chrome OS.
 
       Als je deze instelling uitzet, mogen gebruikers deze functie niet gebruiken. Als je het beleid <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> niet toepast, kunnen gebruikers deze functie ook niet gebruiken.
@@ -11021,7 +10995,6 @@ Geldige waarden liggen tussen 1 en 9999 seconden. Als je het beleid niet instelt
 
 Dit beleid heeft geen effect als het beleid <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> is ingesteld op False.</translation>
 <translation id="8113731369695819720">Monogeluid op het inlogscherm uitzetten</translation>
-<translation id="8114382167597081590">'Beperkte modus' niet afdwingen op YouTube</translation>
 <translation id="8117662664312039036">Apparaten niet toestaan een PluginVm te gebruiken</translation>
 <translation id="8117921351531866504">Hiermee kun je instellen of websites controleren of de gebruiker betaalmethoden heeft opgeslagen.
 
@@ -11542,7 +11515,6 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="846994437739309080">Als je dit toepast (of niet instelt), worden door gebruikers toegevoegde TLS-certificaten uit truststores van het platform gebruikt om paden voor TLS-serververificatie te maken.
 
 Als je dit beleid niet toepast, worden door de gebruiker toegevoegde TLS-certificaten uit truststores van het platform niet gebruikt om paden voor TLS-serververificatie te maken.</translation>
-<translation id="8470317291588703478">Beperkte modus van YouTube niet afdwingen</translation>
 <translation id="8471117881949952479">Dit beleid is beëindigd en wordt uiteindelijk vervangen door DataControlsRules.
 
 Met dit beleid blokkeer je het kopiëren van gegevens naar het klembord voor specifieke URL's.
@@ -11654,7 +11626,6 @@ Rollback naar <ph name="PRODUCT_OS_NAME" /> versie 106 of lager wordt niet onder
 
       Waarschuwing: Het wordt niet aanbevolen om versiebeperkingen in te stellen omdat deze kunnen voorkomen dat gebruikers software-updates en essentiële beveiligingsoplossingen krijgen. Als je updates beperkt tot een specifieke versie, kan dit een risico opleveren voor gebruikers.</translation>
 <translation id="8519617069657262768">Google Drive-synchronisatie aanzetten</translation>
-<translation id="8520064498689833152">Het gebruik van SafeSearch afdwingen op Google Zoeken en afdwingen dat de beperkte modus van YouTube minimaal is ingesteld op Gematigd</translation>
 <translation id="8520950040439618600">Methoden voor pincode- en koppelingsverificatie toestaan voor hosts voor externe toegang</translation>
 <translation id="8524334245528364388">URL naar een json-bestand met een lijst van afdrukservers.</translation>
 <translation id="8525282442896658040">Staat toe dat de app autorisatie voor voorlopige meldingen gebruikt op iOS</translation>
@@ -11896,7 +11867,6 @@ Dit beleid is een tijdelijke maatregel en wordt na een aantal mijlpalen verwijde
 <translation id="8676959842615154675">Als je dit beleid toepast, vergelijkt de host voor externe toegang de naam van de lokale gebruiker waaraan de host is gekoppeld, met de naam van het Google-account dat is geregistreerd als eigenaar van de host (bijvoorbeeld 'jansmits' als de host eigendom is van het Google-account jansmits@example.com). Deze host wordt niet gestart als de naam van de hosteigenaar anders is dan de naam van de lokale gebruiker waaraan de host is gekoppeld. Als je wilt afdwingen dat het Google-account van de eigenaar wordt gekoppeld aan een specifiek domein, gebruik je het beleid met <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Als je het beleid niet toepast of niet instelt, kan de host voor externe toegang aan elke lokale gebruiker worden gekoppeld.</translation>
-<translation id="867708016260789630">Afdwingen dat de beperkte modus van YouTube minimaal is ingesteld op Gematigd</translation>
 <translation id="8677853537025397834">De WebHID API toestaan op deze sites</translation>
 <translation id="8684000025871334499">Stel installatie- en runtimebeleid in voor Bruschetta-VM's op <ph name="PRODUCT_OS_NAME" />. Hierdoor kunnen gebruikers VM's van derden installeren. Deze functie staat standaard uit.
 
@@ -11961,7 +11931,6 @@ Als je <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> niet toepast, staat Live v
       'http://acme.com/ABC' komt alleen overeen in IESiteListMode.</translation>
 <translation id="8728854710675158426">Onveilige hashes in TLS-handshakes aangezet</translation>
 <translation id="8734543507835977857">Vertragingen in energiebeheer en limieten voor de sessieduur starten na het begin van de sessie</translation>
-<translation id="8736538322216687231">Minimale 'Beperkte modus' op YouTube afdwingen</translation>
 <translation id="873800217865395140">Snelheid voor verzameling van websitetelemetrie in milliseconden.</translation>
 <translation id="8742596277791362306">Met dit beleid kun je de functie voor gehelen van gerelateerde websites aanzetten.
 
@@ -12122,7 +12091,6 @@ Dit beleid wordt genegeerd als Safe Browsing uitstaat of is ingesteld op de modu
 Als je het beleid toepast of niet instelt, zijn de lookups via proxy met een betere beveiliging mogelijk.
 
 Als je het beleid niet toepast, zijn lookups via proxy met een betere beveiliging niet toegestaan. Gedeeltelijke hashes van URL's worden rechtstreeks naar Google geüpload met een veel lagere frequentie, waardoor de bescherming afneemt.</translation>
-<translation id="8858642179038618439">Beperkte modus van YouTube afdwingen</translation>
 <translation id="8860342862142842017">Handhaving van Certificaattransparantie voor een lijst met subjectPublicKeyInfo-hashes</translation>
 <translation id="8860894781631833477">Gebruikers kunnen het releasekanaal voor <ph name="PRODUCT_OS_NAME" /> instellen</translation>
 <translation id="8862086508140571198">Met dit beleid kun je een lijst met DLC's (downloadbare content) instellen die zo snel mogelijk moeten worden gedownload. De gedownloade DLC's zijn dan beschikbaar voor alle gebruikers op het apparaat.

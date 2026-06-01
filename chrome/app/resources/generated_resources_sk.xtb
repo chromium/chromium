@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">Upozornenie</translation>
 <translation id="1056980582064308040">Ak zmeníte nastavenia, hotspot sa reštartuje. Zariadenia používajúce hotspot sa odpoja.</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">Úloha bola prerušená</translation>
 <translation id="1059484610606223931">Protokol HTTPS (Hypertext Transport Protocol)</translation>
 <translation id="1059944192885972544">Boli nájdené karty (<ph name="NUM" />) pre dopyt <ph name="SEARCH_TEXT" /></translation>
 <translation id="1060172044035704924">Vymeniť s pravým zobrazením</translation>
@@ -2329,6 +2328,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2665056444046933274">Weby môžu pomocou tejto funkcie získať prístup k iným aplikáciám a službám v tomto zariadení</translation>
 <translation id="2665394472441560184">Pridať nové slovo</translation>
 <translation id="2665647207431876759">Platnosť uplynula</translation>
+<translation id="2666092431469916601">Vrch</translation>
 <translation id="2666247341166669829">Úroveň batérie ľavého slúchadla je <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Ďalšie aplikácie sú nastavené, aby otvárali rovnaké odkazy ako <ph name="APP_NAME" />. Týmto zakážete aplikáciám <ph name="APP_NAME_2" /> a <ph name="APP_NAME_3" /> otvárať podporované odkazy.</translation>
 <translation id="2667463864537187133">Správa kontroly pravopisu</translation>
@@ -2924,6 +2924,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3084548735795614657">Nainštalujte presunutím</translation>
 <translation id="3084771660770137092">Prehliadač Chrome má nedostatok pamäte, alebo bol proces na webovej stránke z ukončený z iného dôvodu. Ak chcete pokračovať, obnovte stránku alebo prejdite na inú.</translation>
 <translation id="3085412380278336437">Web môže používať vašu kameru</translation>
+<translation id="3087734570205094154">Spodok</translation>
 <translation id="3088052000289932193">Web používa MIDI</translation>
 <translation id="3088325635286126843">&amp;Premenovať...</translation>
 <translation id="3089137131053189723">Vyhľadávanie bolo vymazané</translation>
@@ -4413,6 +4414,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4170314459383239649">Vymazať po ukončení</translation>
 <translation id="4170685671197375581">Zapnúť skratku</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Zdieľajte kartu s Gemini}few{Zdieľajte # karty s Gemini}many{Share # tabs with Gemini}other{Zdieľajte # kariet s Gemini}}</translation>
+<translation id="4172051516777682613">Vždy zobraziť</translation>
 <translation id="4172944993779635350">Heslo pre web <ph name="URL" /> je uložené iba v tomto zariadení. Ak ho chcete používať v ďalších zariadeniach, uložte si ho do svojho účtu.</translation>
 <translation id="4173129130568053653">Gemini vám môže pomôcť rezervovať stretnutia, vytvoriť nákupné košíky alebo vykonať ďalšie úlohy, ktoré mu zadáte.</translation>
 <translation id="4175137578744761569">Svetlofialová a biela</translation>
@@ -5788,6 +5790,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5189274947477567401">Odhlásenie zo zdieľania procesov vyžaduje reštart prehliadača. Tento prehliadač sa teraz reštartuje.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Využitý priestor: <ph name="USED_SPACE" /></translation>
+<translation id="5190835502935405962">Panel so záložkami</translation>
 <translation id="5190926251776387065">Aktivovať port</translation>
 <translation id="5190959794678983197">Žiaden mikrofón</translation>
 <translation id="5191094172448199359">Kódy PIN, ktoré ste zadali, nesúhlasia</translation>
@@ -7624,6 +7627,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6582274660680936615">Prehliadate ako hosť</translation>
 <translation id="6583328141350416497">Pokračovať v sťahovaní</translation>
 <translation id="6584878029876017575">Podpisovanie s neobmedzenou platnosťou spoločnosti Microsoft</translation>
+<translation id="6585124893636629274">Zavrieť Gemini v Chrome</translation>
 <translation id="6585584201072946561">Prispôsobte si veľkosť textu a písmo pre webový prehliadač</translation>
 <translation id="6586099239452884121">Hosťovské prehliadanie</translation>
 <translation id="6586451623538375658">Zameniť primárne tlačidlo myši</translation>
@@ -10077,6 +10081,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8347227221149377169">Tlačové úlohy</translation>
 <translation id="8348430946834215779">Používajte protokol HTTPS vždy, keď je to možné, a dostávajte upozornenia pred načítaním webov, ktoré ho nepodporujú</translation>
 <translation id="8348896480272971199">Skontrolujte pripojenie k internetu a skúste to znova.</translation>
+<translation id="8349305172487531364">Panel so záložkami</translation>
 <translation id="8349325309815489209">Rozšírenia sú na tomto webe povolené</translation>
 <translation id="8349826889576450703">spúšťač</translation>
 <translation id="8350789879725387295">Nástroje dotykového pera v doku</translation>
@@ -10479,7 +10484,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8651585100578802546">Vynútiť obnovenie tejto stránky</translation>
 <translation id="8651806635673244884">Karty môžete presunúť späť nahor tak, že kliknete pravým tlačidlom na ľubovoľnú kartu a vyberiete Zobrazovať karty vodorovne.</translation>
 <translation id="8652400352452647993">Chyba zbalenia rozšírenia</translation>
-<translation id="8652412805227733853">E‑mail bol automaticky overený</translation>
 <translation id="8654151524613148204">Súbor je príliš veľký a váš počítač ho nemôže spracovať. Ľutujeme.</translation>
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655972064210167941">Prihlásenie zlyhalo, pretože sa heslo nepodarilo overiť. Kontaktujte svojho správcu alebo to skúste znova.</translation>

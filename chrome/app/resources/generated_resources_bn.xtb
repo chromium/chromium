@@ -89,7 +89,6 @@
 <translation id="1056898198331236512">সতর্কতা</translation>
 <translation id="1056980582064308040">সেটিংস পরিবর্তন হলে হটস্পট রিস্টার্ট হবে। হটস্পট ব্যবহার করা ডিভাইস ডিসকানেক্ট হবে।</translation>
 <translation id="1058262162121953039">PUK</translation>
-<translation id="1058848978232174442">টাস্কে বাধা পড়েছে</translation>
 <translation id="1059484610606223931">হাইপারটেক্সট ট্রান্সপোর্ট প্রোটোকল (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />'-এর জন্য <ph name="NUM" />টি ট্যাব পাওয়া গেছে</translation>
 <translation id="1060172044035704924">ডানদিকের ভিউয়ের সাথে অদল বদল করুন</translation>
@@ -2343,6 +2342,7 @@
 <translation id="2665056444046933274">এই ডিভাইসে অন্যান্য অ্যাপ ও পরিষেবা অ্যাক্সেস করার জন্য সাইট এই ফিচার ব্যবহার করতে পারে</translation>
 <translation id="2665394472441560184">একটি নতুন শব্দ জুড়ুন</translation>
 <translation id="2665647207431876759">মেয়াদ শেষ হয়েছে</translation>
+<translation id="2666092431469916601">শীর্ষ</translation>
 <translation id="2666247341166669829">বাঁদিকের ব্যাটারি লেভেল <ph name="PERCENTAGE" />%।</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" />-এর মতো অন্যান্য অ্যাপ একই লিঙ্ক খোলার জন্য সেট করা আছে। এটি <ph name="APP_NAME_2" /> এবং <ph name="APP_NAME_3" />-এর সহায়ক লিঙ্ক খুলতে দেবে না।</translation>
 <translation id="2667463864537187133">বানান পরিক্ষক পরিচালনা করুন</translation>
@@ -2938,6 +2938,7 @@
 <translation id="3084548735795614657">ইনস্টল করতে ড্রপ করুন</translation>
 <translation id="3084771660770137092">হয় Chrome-এর মেমরি শেষ হয়েছে অথবা অন্য কোন কারণে ওয়েবপৃষ্ঠার প্রসেস বন্ধ হয়েছে৷ চালিয়ে যেতে, আবার লোড করুন বা অন্য পৃষ্ঠায় যান৷</translation>
 <translation id="3085412380278336437">সাইটটি আপনার ক্যামেরা ব্যবহার করতে পারে</translation>
+<translation id="3087734570205094154">নিচে</translation>
 <translation id="3088052000289932193">সাইট MIDI ব্যবহার করছে</translation>
 <translation id="3088325635286126843">&amp;পুনঃনামকরণ...</translation>
 <translation id="3089137131053189723">সার্চ বিভাগ খালি করা হয়েছে।</translation>
@@ -4427,6 +4428,7 @@
 <translation id="4170314459383239649">ছেড়ে গেলে কুকিজ মুছে দিন</translation>
 <translation id="4170685671197375581">শর্টকাট চালু করুন</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Gemini-র সাথে ট্যাব শেয়ার করুন}one{Gemini-র সাথে #টি ট্যাব শেয়ার করুন}other{Gemini-র সাথে #টি ট্যাব শেয়ার করুন}}</translation>
+<translation id="4172051516777682613">সর্বদা দেখান</translation>
 <translation id="4172944993779635350">"<ph name="URL" />"-এর জন্য আপনার পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ করা আছে। অন্যান্য ডিভাইসে এই পাসওয়ার্ড ব্যবহারের জন্য আপনার অ্যাকাউন্টে সেভ করুন।</translation>
 <translation id="4173129130568053653">Gemini আপনাকে অ্যাপয়েন্টমেন্ট বুক করা, শপিং কার্ট তৈরি করা অথবা আপনার দেওয়া অন্যান্য টাস্ক করার ব্যাপারে সাহায্য করতে পারে।</translation>
 <translation id="4175137578744761569">হালকা বেগুনি ও সাদা</translation>
@@ -5803,6 +5805,7 @@
 <translation id="5189274947477567401">প্রসেস শেয়ারিং থেকে অপ্ট-আউট করার জন্য ব্রাউজার রিস্টার্ট করতে হয়। এই ব্রাউজার এখন রিস্টার্ট করা হবে।</translation>
 <translation id="5189404424758444348">স্টিমপাঙ্ক</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> ব্যবহৃত হচ্ছে</translation>
+<translation id="5190835502935405962">বুকমার্ক বার</translation>
 <translation id="5190926251776387065">পোর্ট চালু করুন</translation>
 <translation id="5190959794678983197">কোনও মাইক্রোফোন নেই</translation>
 <translation id="5191094172448199359">আপনার লেখা পিন মিলছে না</translation>
@@ -7642,6 +7645,7 @@
 <translation id="6582274660680936615">আপনি গেস্ট হিসেবে ব্রাউজ করছেন</translation>
 <translation id="6583328141350416497">ডাউনলোড চালিয়ে যান</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
+<translation id="6585124893636629274">Chrome-এ Gemini বন্ধ করুন</translation>
 <translation id="6585584201072946561">ওয়েব ব্রাউজারের জন্য টেক্সট সাইজ ও ফন্ট কাস্টমাইজ করুন</translation>
 <translation id="6586099239452884121">গেস্ট ব্রাউজিং</translation>
 <translation id="6586451623538375658">প্রাথমিক মাউস বোতাম অদল-বদল করুন</translation>
@@ -10094,6 +10098,7 @@
 <translation id="8347227221149377169">প্রিন্ট করার কাজগুলি</translation>
 <translation id="8348430946834215779">যখনই সম্ভব, তখনই HTTPS ব্যবহার করুন এবং এখানে কাজ করে না এমন সাইট লোড করার আগে সতর্কতা পান</translation>
 <translation id="8348896480272971199">ইন্টারনেট কানেকশন চেক করে আবার চেষ্টা করুন।</translation>
+<translation id="8349305172487531364">বুকমার্কস বার</translation>
 <translation id="8349325309815489209">এই সাইটে এক্সটেনশনের অনুমতি রয়েছে</translation>
 <translation id="8349826889576450703">লঞ্চার</translation>
 <translation id="8350789879725387295">ডকে স্টাইলাস টুল</translation>
@@ -10496,7 +10501,6 @@
 <translation id="8651585100578802546">এই পৃষ্ঠাটি ফোর্স রিলোড করুন</translation>
 <translation id="8651806635673244884">আপনি যেকোনও ট্যাবে ডানদিকের বোতামে ক্লিক করে এবং “ট্যাবগুলি অনুভূমিকভাবে দেখান” বিকল্প বেছে নিয়ে আপনার ট্যাবগুলিকে আবার উপরে সরাতে পারবেন</translation>
 <translation id="8652400352452647993">প্যাক এক্সটেনশনে সমস্যা হয়েছে</translation>
-<translation id="8652412805227733853">ইমেল অটোমেটিক যাচাই করা হয়েছে</translation>
 <translation id="8654151524613148204">আপনার কম্পিউটারের পক্ষে ফাইলটি পরিচালনা করার জন্য অত্যন্ত বড়৷ দুঃখিত৷</translation>
 <translation id="8655295600908251630">চ্যানেল</translation>
 <translation id="8655972064210167941">আপনার পাসওয়ার্ড যাচাই করতে না পারায় সাইন-ইন করা যায়নি। অনুগ্রহ করে আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন অথবা আবার চেষ্টা করুন।</translation>
