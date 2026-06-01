@@ -47,7 +47,7 @@ proto_library("confidential_compute_proto") {
 
   deps = [
     "//third_party/oak:oak_proto",
-    "//third_party/protobuf:google_protobuf_timestamp_lite_proto",
+    "//third_party/protobuf:timestamp_proto",
   ]
 
   import_dirs = [

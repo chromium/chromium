@@ -8,6 +8,7 @@ if (is_android) {
 # Includes default args like 'enable_js_protobuf'.
 import("proto_library.gni")
 import("proto_sources.gni")
+import("proto_wkt.gni")
 if (enable_js_protobuf) {
   import("//third_party/closure_compiler/compile_js.gni")
 }
@@ -42,10 +43,6 @@ config("protobuf_config_internal") {
       "-Wno-unused-lambda-capture",
     ]
   }
-}
-
-proto_library("struct_proto") {
-  sources = [ "src/google/protobuf/struct.proto" ]
 }
 
 if (is_component_build) {
@@ -546,9 +543,9 @@ source_set("time_util") {
   public = [ "src/google/protobuf/util/time_util.h" ]
   sources = [ "src/google/protobuf/util/time_util.cc" ]
   deps = [
-    ":google_protobuf_duration_lite_proto",
-    ":google_protobuf_timestamp_lite_proto",
+    ":duration_proto",
     ":protobuf_lite",
+    ":timestamp_proto",
   ]
 }
 
@@ -564,24 +561,24 @@ source_set("io_gzip_stream") {
   defines = [ "HAVE_ZLIB" ]
 }
 
-_current_dir = rebase_path(".", "//")
-_proto_out_dir_full = "$_current_dir/full/src"
-
-proto_library("google_protobuf_any_full_proto") {
+proto_wkt("any_proto") {
   sources = [ "src/google/protobuf/any.proto" ]
-  proto_in_dir = "src"
-  proto_out_dir = "$_proto_out_dir_full"
-  use_protobuf_full = true
+
+  full_target_name = "any_full_proto"
+  full_target_visibility = [
+    # libprotobuf-mutator uses the full version of any.proto internally.
+    "//third_party/libprotobuf-mutator",
+  ]
 }
 
-proto_library("google_protobuf_duration_lite_proto") {
+proto_wkt("duration_proto") {
   sources = [ "src/google/protobuf/duration.proto" ]
-  proto_in_dir = "src"
-  cc_generator_options = "lite=true:"
 }
 
-proto_library("google_protobuf_timestamp_lite_proto") {
+proto_wkt("struct_proto") {
+  sources = [ "src/google/protobuf/struct.proto" ]
+}
+
+proto_wkt("timestamp_proto") {
   sources = [ "src/google/protobuf/timestamp.proto" ]
-  proto_in_dir = "src"
-  cc_generator_options = "lite=true:"
 }

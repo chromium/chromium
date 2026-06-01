@@ -1,0 +1,71 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Generate protobuf Well-Known Types (WKT) as proto_library targets.
+#
+# Example usage:
+#   proto_wkt("example_proto") {
+#     sources = [ "src/google/protobuf/example.proto" ]
+#   }
+#
+# Parameters:
+#
+#   sources (required)
+#       List of proto files to compile.
+#
+#   full_target_name (optional)
+#       Generate full protobuf WKT target in addition to the lite target with
+#       this name.
+#
+#       Full versions of protobuf WKTs should not be used, as they can conflict
+#       with lite versions.
+#
+#   full_target_visibility (optional, default empty)
+#       Visibility for the full protobuf WKT target.
+
+import("proto_library.gni")
+
+template("proto_wkt") {
+  assert(string_replace(target_name + ".END", "_proto.END", "") !=
+             target_name + ".END",
+         "proto_wkt target name must end with _proto: $target_name")
+
+  if (defined(invoker.full_target_name)) {
+    _prefix = string_replace(target_name + ".END", "_proto.END", "")
+    _expected_full_target_name = "${_prefix}_full_proto"
+    assert(
+        invoker.full_target_name == _expected_full_target_name,
+        "full_target_name must be ${_expected_full_target_name} for target ${target_name}")
+  }
+
+  _current_dir = rebase_path(".", "//")
+  _proto_out_dir_lite = "$_current_dir/lite/src"
+  _proto_out_dir_full = "$_current_dir/full/src"
+
+  # The Lite version of this WKT.
+  proto_library(target_name) {
+    sources = invoker.sources
+    proto_in_dir = "src"
+    proto_out_dir = "$_proto_out_dir_lite"
+    cc_generator_options = "lite"
+  }
+
+  if (defined(invoker.full_target_name)) {
+    _full_visibility = []
+    if (defined(invoker.full_target_visibility)) {
+      _full_visibility += invoker.full_target_visibility
+    }
+
+    # The Full version of this WKT.
+    proto_library(invoker.full_target_name) {
+      sources = invoker.sources
+      visibility = _full_visibility
+      proto_in_dir = "src"
+      proto_out_dir = "$_proto_out_dir_full"
+      use_protobuf_full = true
+    }
+  } else {
+    not_needed([ "_proto_out_dir_full" ])
+  }
+}

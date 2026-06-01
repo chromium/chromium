@@ -1412,7 +1412,7 @@ proto_library("sharing_log_proto") {
   proto_out_dir = "third_party/nearby"
   deps = [
     ":sharing_enums_proto",
-    "//third_party/protobuf:google_protobuf_duration_lite_proto",
+    "//third_party/protobuf:duration_proto",
   ]
 
   # For built-in protos, specifically duration.proto.
