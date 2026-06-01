@@ -113,8 +113,15 @@ void AwPrintManager::ScriptedPrint(
     ScriptedPrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
+  if (!render_frame_host->IsActive()) {
+    // Only active RFHs should try to print.
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   if (scripted_params->is_scripted &&
-      GetCurrentTargetFrame()->IsNestedWithinFencedFrame()) {
+      render_frame_host->IsNestedWithinFencedFrame()) {
     DLOG(ERROR) << "Unexpected message received. Script Print is not allowed"
                    " in a fenced frame.";
     std::move(callback).Run(nullptr);

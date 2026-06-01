@@ -620,6 +620,12 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
+  if (!render_frame_host->IsActive()) {
+    // Only active RFHs should show UI elements.
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   content::RenderProcessHost* render_process_host =
       render_frame_host->GetProcess();
   if (params->is_scripted && render_frame_host->IsNestedWithinFencedFrame()) {

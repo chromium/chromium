@@ -561,7 +561,7 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(
   DCHECK(print_preview_rfh_);
 
   auto* rfh = content::RenderFrameHost::FromID(rfh_id);
-  if (!rfh || rfh != print_preview_rfh_) {
+  if (!rfh || rfh != print_preview_rfh_ || !print_preview_rfh_->IsActive()) {
     return;
   }
 
