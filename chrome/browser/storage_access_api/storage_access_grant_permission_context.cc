@@ -224,17 +224,21 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
   return fedcm_context;
 }
 
+bool IsAccessRestrictedInFrame(content::RenderFrameHost* rfh) {
+  return rfh->GetLastCommittedOrigin().opaque() || rfh->IsCredentialless() ||
+         rfh->IsNestedWithinFencedFrame() ||
+         rfh->IsSandboxed(
+             network::mojom::WebSandboxFlags::kStorageAccessByUserActivation) ||
+         rfh->GetStorageKey().ForbidsUnpartitionedStorageAccess();
+}
+
 // Verifies that the given RenderFrameHost is allowed to request this
 // permission. If the RenderFrameHost is not allowed to request permission, this
 // calls `bad_message::ReceivedBadMessage` to close the pipe.
 base::expected<void, content::PermissionStatusSource>
 ValidatePermissionEligibility(content::RenderFrameHost* rfh,
                               const net::SchemefulSite& requesting_site) {
-  if (rfh->GetLastCommittedOrigin().opaque() || rfh->IsCredentialless() ||
-      rfh->IsNestedWithinFencedFrame() ||
-      rfh->IsSandboxed(
-          network::mojom::WebSandboxFlags::kStorageAccessByUserActivation) ||
-      rfh->GetStorageKey().ForbidsUnpartitionedStorageAccess()) {
+  if (IsAccessRestrictedInFrame(rfh)) {
     // No need to log anything here, since well-behaved renderers have already
     // done these checks and have logged to the console. This block is to handle
     // compromised renderers.
@@ -583,9 +587,15 @@ StorageAccessGrantPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  // Permission query from top-level frame should be "granted" by default.
-  if (render_frame_host && render_frame_host->IsInPrimaryMainFrame()) {
-    return CONTENT_SETTING_ALLOW;
+  if (render_frame_host) {
+    if (IsAccessRestrictedInFrame(render_frame_host)) {
+      return CONTENT_SETTING_ASK;
+    }
+
+    // Permission query from top-level frame should be "granted" by default.
+    if (render_frame_host->IsInPrimaryMainFrame()) {
+      return CONTENT_SETTING_ALLOW;
+    }
   }
 
   ContentSetting setting = permissions::ContentSettingPermissionContextBase::
