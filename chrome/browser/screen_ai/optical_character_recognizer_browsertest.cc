@@ -510,8 +510,16 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
                               expected_no_text_calls);
 }
 
+// TODO(518868853): Fix flaky test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PerformOCR_ImmediatelyAfterServiceInit \
+  DISABLED_PerformOCR_ImmediatelyAfterServiceInit
+#else
+#define MAYBE_PerformOCR_ImmediatelyAfterServiceInit \
+  PerformOCR_ImmediatelyAfterServiceInit
+#endif
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       PerformOCR_ImmediatelyAfterServiceInit) {
+                       MAYBE_PerformOCR_ImmediatelyAfterServiceInit) {
   if (!IsOcrAvailable()) {
     GTEST_SKIP() << "This test is only available when service is available";
   }
