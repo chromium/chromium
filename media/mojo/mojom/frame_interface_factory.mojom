@@ -53,6 +53,10 @@ interface FrameInterfaceFactory {
   [EnableIf=is_win]
   GetFrameScreenRect() => (gfx.mojom.Rect frame_screen_rect);
 
+  // Returns a browser-owned HWND for Media Foundation GPU adapter selection.
+  [EnableIf=is_win]
+  GetContentProtectionWindow() => (uint32 hwnd);
+
   // Binds a generic media frame-bound interface. This is to allow //content
   // embedders to provide additional interfaces.
   BindEmbedderReceiver(mojo_base.mojom.GenericPendingReceiver receiver);

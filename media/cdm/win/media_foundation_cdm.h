@@ -20,6 +20,7 @@
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_document_service.h"
 #include "media/cdm/win/media_foundation_cdm_util.h"
+#include "media/cdm/win/virtual_core_window_impl.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
@@ -78,6 +79,7 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
   // TODO(xhwang): Use a helper to reduce the number of callbacks.
   MediaFoundationCdm(
       const std::string& uma_prefix,
+      HWND content_protection_hwnd,
       const CreateMFCdmCB& create_mf_cdm_cb,
       const IsTypeSupportedCB& is_type_supported_cb,
       const StoreClientTokenCB& store_client_token_cb,
@@ -148,6 +150,13 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
 
   // Prefix for UMA reported in `this` and the `sessions_`.
   const std::string uma_prefix_;
+
+  // Wraps the browser-owned HWND used for GPU adapter selection. Created
+  // in the constructor when an HWND is provided. Kept alive for the
+  // lifetime of the CDM and reused across hardware context reset
+  // recoveries. `nullptr` when adapter selection is unavailable (feature
+  // flag off, tests, headless, etc.).
+  Microsoft::WRL::ComPtr<VirtualCoreWindowImpl> virtual_core_window_;
 
   // Callback to create `mf_cdm_`.
   CreateMFCdmCB create_mf_cdm_cb_;

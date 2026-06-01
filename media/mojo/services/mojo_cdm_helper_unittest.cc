@@ -82,6 +82,10 @@ class TestFrameInterfaceFactory : public mojom::FrameInterfaceFactory {
   void GetFrameScreenRect(GetFrameScreenRectCallback callback) override {
     std::move(callback).Run(gfx::Rect());
   }
+  void GetContentProtectionWindow(
+      GetContentProtectionWindowCallback callback) override {
+    std::move(callback).Run(0u);
+  }
 #endif  // BUILDFLAG(IS_WIN)
   void GetCdmOrigin(GetCdmOriginCallback callback) override {}
   void BindEmbedderReceiver(mojo::GenericPendingReceiver) override {}

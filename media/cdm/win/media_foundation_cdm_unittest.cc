@@ -89,6 +89,7 @@ class MediaFoundationCdmTest : public testing::Test {
         mf_cdm_session_(MakeComPtr<StrictMock<MockMFCdmSession>>()),
         cdm_(base::MakeRefCounted<MediaFoundationCdm>(
             kTestUmaPrefix,
+            /*content_protection_hwnd=*/nullptr,
             base::BindRepeating(&MediaFoundationCdmTest::CreateMFCdm,
                                 base::Unretained(this)),
             base::BindRepeating(

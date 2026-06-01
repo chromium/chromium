@@ -113,11 +113,17 @@ class MEDIA_EXPORT CdmAuxiliaryHelper : public CdmAllocator,
                          const std::string& challenge,
                          ChallengePlatformCB callback) override;
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
-
 #if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(GetMediaFoundationCdmDataCB callback) override;
   void SetCdmClientToken(const std::vector<uint8_t>& client_token) override;
   void OnCdmEvent(CdmEvent event, HRESULT hresult) override;
+
+  // Returns an HWND owned by the browser process for Media Foundation GPU
+  // adapter selection. The HWND is parented to the frame's top-level browser
+  // window and follows tab moves. Returns 0 if unavailable.
+  using GetContentProtectionWindowCB = base::OnceCallback<void(uint32_t hwnd)>;
+  virtual void GetContentProtectionWindow(
+      GetContentProtectionWindowCB callback);
 #endif  // BUILDFLAG(IS_WIN)
 };
 

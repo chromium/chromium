@@ -54,14 +54,26 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
   using IsTypeSupportedResultCB =
       base::OnceCallback<void(IsTypeSupportedValueOrError value_or_error)>;
 
-  void OnCdmOriginIdObtained(
+  // `content_protection_hwnd_value` is the browser-owned HWND for Media
+  // Foundation GPU adapter selection, transmitted as a `uint32` (see
+  // `base::win::Uint32ToHandle()`).
+  using InitializeCdmCB = base::OnceCallback<void(
+      uint32_t content_protection_hwnd_value,
+      std::unique_ptr<MediaFoundationCdmData> media_foundation_cdm_data)>;
+
+  void OnContentProtectionWindowObtained(
+      InitializeCdmCB init_cdm_cb,
+      uint32_t content_protection_hwnd_value);
+
+  void InitializeMediaFoundationCdm(
       const CdmConfig& cdm_config,
       const SessionMessageCB& session_message_cb,
       const SessionClosedCB& session_closed_cb,
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb,
       CdmCreatedCB cdm_created_cb,
-      const std::unique_ptr<MediaFoundationCdmData> media_foundation_cdm_data);
+      uint32_t content_protection_hwnd_value,
+      std::unique_ptr<MediaFoundationCdmData> media_foundation_cdm_data);
 
   HRESULT GetCdmFactory(
       const std::string& key_system,

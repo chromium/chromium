@@ -2213,6 +2213,7 @@ test("content_browsertests") {
       "../browser/accessibility/ax_platform_node_textrangeprovider_win_browsertest.cc",
       "../browser/accessibility/ax_platform_node_win_browsertest.cc",
       "../browser/accessibility/hit_testing_win_browsertest.cc",
+      "../browser/media/content_protection_window_browsertest.cc",
       "../browser/media/system_media_controls/web_app_system_media_controls_browsertest.cc",
       "../browser/network/network_service_process_tracker_win_browsertest.cc",
       "../browser/renderer_host/accessibility_object_lifetime_win_browsertest.cc",

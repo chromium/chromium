@@ -3172,6 +3172,8 @@ source_set("browser") {
       "installedapp/native_win_app_fetcher.h",
       "installedapp/native_win_app_fetcher_impl.cc",
       "installedapp/native_win_app_fetcher_impl.h",
+      "media/content_protection_window.cc",
+      "media/content_protection_window.h",
       "media/dcomp_surface_registry_broker.cc",
       "media/dcomp_surface_registry_broker.h",
       "media/key_system_support_win.cc",

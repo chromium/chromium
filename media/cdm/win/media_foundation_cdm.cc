@@ -6,6 +6,7 @@
 #include "media/cdm/win/media_foundation_cdm.h"
 
 #include <mferror.h>
+#include <mfmediaengine.h>
 #include <stdlib.h>
 
 #include <vector>
@@ -19,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_propvariant.h"
 #include "base/win/win_util.h"
@@ -41,6 +43,15 @@ using Microsoft::WRL::Make;
 using Microsoft::WRL::RuntimeClass;
 using Microsoft::WRL::RuntimeClassFlags;
 using Exception = CdmPromise::Exception;
+
+// Content type and key system used by SetContentProtectionWindow to set
+// the content protection HWND via IsTypeSupportedEx for PlayReady HWDRM.
+// The `.3000` (HWDRM) suffix is required. Media Foundation only stores
+// the HWND when the key system identifies a HWDRM pipeline.
+constexpr wchar_t kAdapterSelectionContentType[] =
+    L"video/mp4;codecs=\"av01.0.04M.08\"";
+constexpr wchar_t kAdapterSelectionKeySystem[] =
+    L"com.microsoft.playready.recommendation.3000";
 
 // The HDCP value follows the feature value in
 // https://docs.microsoft.com/en-us/uwp/api/windows.media.protection.protectioncapabilities.istypesupported?view=winrt-19041
@@ -142,6 +153,48 @@ std::string GenerateDummySessionId() {
   uint8_t random_bytes[8];
   base::RandBytes(random_bytes);
   return "DUMMY_" + base::HexEncode(random_bytes);
+}
+
+// Sets the content protection window for Media Foundation PlayReady
+// HWDRM GPU adapter selection so the crypto sessions are created on
+// the correct adapter.
+//
+// By setting `MF_MEDIA_ENGINE_COREWINDOW` on `IMFExtendedDRMTypeSupport`
+// and calling `IsTypeSupportedEx()` with a PlayReady hardware DRM key system,
+// this function provides Media Foundation with an HWND that it stores
+// in a process-global. When the crypto session is later created, Media
+// Foundation resolves this HWND to a monitor and GPU adapter to determine
+// which D3D device to use. Safe to call repeatedly (e.g. on hardware context
+// reset) with the same `virtual_core_window`.
+HRESULT SetContentProtectionWindow(
+    ComPtr<VirtualCoreWindowImpl> virtual_core_window) {
+  ComPtr<IMFExtendedDRMTypeSupport> mf_type_support;
+  RETURN_IF_FAILED(CoCreateInstance(CLSID_MFMediaEngineClassFactory, nullptr,
+                                    CLSCTX_INPROC_SERVER,
+                                    IID_PPV_ARGS(&mf_type_support)));
+
+  ComPtr<IMFAttributes> mf_type_support_attributes;
+  RETURN_IF_FAILED(mf_type_support.As(&mf_type_support_attributes));
+
+  ComPtr<IUnknown> core_window_unknown;
+  RETURN_IF_FAILED(virtual_core_window.As(&core_window_unknown));
+
+  RETURN_IF_FAILED(mf_type_support_attributes->SetUnknown(
+      MF_MEDIA_ENGINE_COREWINDOW, core_window_unknown.Get()));
+
+  base::win::ScopedBstr content_type_bstr(kAdapterSelectionContentType);
+  base::win::ScopedBstr key_system_bstr(kAdapterSelectionKeySystem);
+  MF_MEDIA_ENGINE_CANPLAY answer = MF_MEDIA_ENGINE_CANPLAY_NOT_SUPPORTED;
+
+  // Call IsTypeSupportedEx to store the HWND for adapter selection.
+  // The answer value doesn't matter; the goal is the side effect of MF
+  // storing the HWND internally for later adapter resolution.
+  RETURN_IF_FAILED(mf_type_support->IsTypeSupportedEx(
+      content_type_bstr.Get(), key_system_bstr.Get(), &answer));
+
+  DVLOG(1) << "SetContentProtectionWindow: "
+           << "IsTypeSupportedEx succeeded, answer=" << answer;
+  return S_OK;
 }
 
 class CdmProxyImpl : public MediaFoundationCdmProxy {
@@ -321,6 +374,7 @@ bool MediaFoundationCdm::IsAvailable() {
 
 MediaFoundationCdm::MediaFoundationCdm(
     const std::string& uma_prefix,
+    HWND content_protection_hwnd,
     const CreateMFCdmCB& create_mf_cdm_cb,
     const IsTypeSupportedCB& is_type_supported_cb,
     const StoreClientTokenCB& store_client_token_cb,
@@ -346,6 +400,18 @@ MediaFoundationCdm::MediaFoundationCdm(
   CHECK(session_closed_cb_);
   CHECK(session_keys_change_cb_);
   CHECK(session_expiration_update_cb_);
+
+  if (content_protection_hwnd &&
+      base::FeatureList::IsEnabled(kMediaFoundationMultiGpuAdapterSelection)) {
+    HRESULT hr = Microsoft::WRL::MakeAndInitialize<VirtualCoreWindowImpl>(
+        &virtual_core_window_, content_protection_hwnd);
+    if (FAILED(hr)) {
+      DVLOG(1) << __func__
+               << ": MakeAndInitialize<VirtualCoreWindowImpl> failed "
+                  "(non-fatal): "
+               << PrintHr(hr);
+    }
+  }
 }
 
 MediaFoundationCdm::~MediaFoundationCdm() {
@@ -353,6 +419,16 @@ MediaFoundationCdm::~MediaFoundationCdm() {
 }
 
 HRESULT MediaFoundationCdm::Initialize() {
+  if (MediaFoundationCdmModule::GetInstance()->IsOsCdm() &&
+      virtual_core_window_) {
+    // Set the content protection window so the crypto session is created on
+    // the correct GPU adapter on multi-GPU systems. This is a best effort
+    // operation. Failures are logged but should not block CDM creation.
+    HRESULT cpw_hr = SetContentProtectionWindow(virtual_core_window_);
+    base::UmaHistogramSparse(uma_prefix_ + "SetContentProtectionWindow",
+                             cpw_hr);
+  }
+
   HRESULT hr = E_FAIL;
   ComPtr<IMFContentDecryptionModule> mf_cdm;
   create_mf_cdm_cb_.Run(hr, mf_cdm);
