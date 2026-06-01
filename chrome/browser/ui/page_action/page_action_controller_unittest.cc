@@ -76,6 +76,8 @@ class TestDelegate : public PageActionController::Delegate {
  public:
   void SetIsChipShowingChangedCallback(
       IsChipShowingChangedCallback callback) override {}
+  void SetImageAnimationStartedCallback(
+      ImageAnimationStartedCallback callback) override {}
   void SetAnchoredMessageCloseCallback(
       base::RepeatingClosure callback) override {}
   void SetAnchoredMessageExpandCallback(
@@ -685,7 +687,8 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideImage) {
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetOverrideImage(_, std::optional<ui::ImageModel>(override_image),
-                               PageActionColorSource::kForeground))
+                               PageActionColorSource::kForeground,
+                               std::optional<int>(std::nullopt)))
       .Times(1);
   controller().OverrideImage(kFirstActionItemId, override_image);
 
@@ -693,7 +696,8 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideImage) {
       .WillOnce(testing::Return(PageActionColorSource::kForeground));
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetOverrideImage(_, std::optional<ui::ImageModel>(std::nullopt),
-                               PageActionColorSource::kForeground))
+                               PageActionColorSource::kForeground,
+                               std::optional<int>(std::nullopt)))
       .Times(1);
   controller().ClearOverrideImage(kFirstActionItemId);
 }
@@ -707,10 +711,29 @@ TEST_F(PageActionControllerMockModelTest, OverrideImageWithColorSource) {
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
               SetOverrideImage(_, std::optional<ui::ImageModel>(override_image),
-                               PageActionColorSource::kCascadingAccent))
+                               PageActionColorSource::kCascadingAccent,
+                               std::optional<int>(std::nullopt)))
       .Times(1);
   controller().OverrideImage(kFirstActionItemId, override_image,
                              PageActionColorSource::kCascadingAccent);
+}
+
+TEST_F(PageActionControllerMockModelTest, OverrideImageWithAnimation) {
+  controller().Initialize(tab_interface(), {kFirstActionItemId},
+                          properties_provider_);
+
+  ui::ImageModel override_image =
+      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
+  constexpr int kImageAnimationResourceId = 10;
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetOverrideImage(_, std::optional<ui::ImageModel>(override_image),
+                               PageActionColorSource::kForeground,
+                               std::optional<int>(kImageAnimationResourceId)))
+      .Times(1);
+  controller().OverrideImage(kFirstActionItemId, override_image,
+                             PageActionColorSource::kForeground,
+                             kImageAnimationResourceId);
 }
 
 TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideTooltip) {

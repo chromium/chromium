@@ -98,7 +98,7 @@ TEST_F(BookmarkPageActionControllerTest, URLStarredChangedUpdatesImageAndName) {
               OverrideTooltip(kActionBookmarkThisTab, _))
       .Times(1);
   EXPECT_CALL(page_action_controller(),
-              OverrideImage(kActionBookmarkThisTab, _, _))
+              OverrideImage(kActionBookmarkThisTab, _, _, _))
       .Times(1);
 
   bookmark_page_action_controller().URLStarredChanged(tab().GetContents(),
@@ -111,7 +111,7 @@ TEST_F(BookmarkPageActionControllerTest, URLStarredChangedUpdatesImageAndName) {
               OverrideTooltip(kActionBookmarkThisTab, _))
       .Times(1);
   EXPECT_CALL(page_action_controller(),
-              OverrideImage(kActionBookmarkThisTab, _, _))
+              OverrideImage(kActionBookmarkThisTab, _, _, _))
       .Times(1);
 
   bookmark_page_action_controller().URLStarredChanged(tab().GetContents(),

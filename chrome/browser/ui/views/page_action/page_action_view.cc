@@ -29,6 +29,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/button/single_animated_image_container.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -102,6 +103,11 @@ void PageActionView::SetIsChipShowingChangedCallback(
     IsChipShowingChangedCallback callback) {
   is_chip_showing_changed_callback_ = std::move(callback);
   last_notified_is_chip_showing_.reset();
+}
+
+void PageActionView::SetImageAnimationStartedCallback(
+    ImageAnimationStartedCallback callback) {
+  image_animation_started_callback_ = std::move(callback);
 }
 
 void PageActionView::SetAnchoredMessageCloseCallback(
@@ -289,6 +295,12 @@ void PageActionView::UpdateIconImage() {
                                      PageActionColorSource::kForeground
                                  ? GetForegroundColor()
                                  : views::GetCascadingAccentColor(this);
+
+  if (observation_.GetSource()->GetShouldAnimateImage()) {
+    int resource_id = observation_.GetSource()->GetImageAnimationResourceId();
+    AnimateImage(resource_id, icon_color);
+  }
+
   // If image does not have a vector icon, set it directly.
   if (icon_image.IsVectorIcon()) {
     SetImageModel(ui::ImageModel::FromVectorIcon(
@@ -300,6 +312,17 @@ void PageActionView::UpdateIconImage() {
     // set on instantiation and does not need to be updated again.
     UpdateBorder();
   }
+}
+
+void PageActionView::AnimateImage(int resource_id, SkColor icon_color) {
+  views::SingleAnimatedImageContainer::AnimationConfig config{
+      .direction =
+          views::SingleAnimatedImageContainer::AnimationDirection::kForward,
+      .end_behavior =
+          views::SingleAnimatedImageContainer::AnimationEndBehavior::kReset};
+
+  animated_image_container().PlayAnimation({resource_id, icon_color}, config);
+  image_animation_started_callback_.Run();
 }
 
 const gfx::Insets PageActionView::GetInsetsForNonVectorIcon() const {

@@ -166,6 +166,7 @@ class PageActionController {
 
     using IsChipShowingChangedCallback =
         base::RepeatingCallback<void(bool is_chip_showing)>;
+    using ImageAnimationStartedCallback = base::RepeatingClosure;
     using AnchoredMessageCloseCallback = base::RepeatingClosure;
     using AnchoredMessageExpandCallback = base::RepeatingClosure;
     using AnchoredMessageCollapseCallback = base::RepeatingClosure;
@@ -173,6 +174,8 @@ class PageActionController {
 
     virtual void SetIsChipShowingChangedCallback(
         IsChipShowingChangedCallback callback) = 0;
+    virtual void SetImageAnimationStartedCallback(
+        ImageAnimationStartedCallback callback) = 0;
     virtual void SetAnchoredMessageCloseCallback(
         AnchoredMessageCloseCallback callback) = 0;
     virtual void SetAnchoredMessageExpandCallback(
@@ -228,12 +231,18 @@ class PageActionController {
   // other places that rely on the same action item. However, features can
   // provide a custom image to use for the page action for a specific context
   // (tab). The source of the icon's color can be controlled with
-  // `color_source`, which defaults to using foreground color.
+  // `color_source`, which defaults to using foreground color. Optionally, also
+  // plays an lottie animation specified by `animation_resource_id`
+  // when setting the new override image.
   virtual void OverrideImage(actions::ActionId action_id,
                              const ui::ImageModel& override_image) = 0;
   virtual void OverrideImage(actions::ActionId action_id,
                              const ui::ImageModel& override_image,
                              PageActionColorSource color_source) = 0;
+  virtual void OverrideImage(actions::ActionId action_id,
+                             const ui::ImageModel& override_image,
+                             PageActionColorSource color_source,
+                             std::optional<int> animation_resource_id) = 0;
 
   virtual void ClearOverrideImage(actions::ActionId action_id) = 0;
 
@@ -353,6 +362,10 @@ class PageActionControllerImpl : public PageActionController,
   void OverrideImage(actions::ActionId action_id,
                      const ui::ImageModel& override_image,
                      PageActionColorSource color_source) override;
+  void OverrideImage(actions::ActionId action_id,
+                     const ui::ImageModel& override_image,
+                     PageActionColorSource color_source,
+                     std::optional<int> animation_resource_id) override;
   void ClearOverrideImage(actions::ActionId action_id) override;
   void OverrideTooltip(actions::ActionId action_id,
                        const std::u16string& override_tooltip) override;
@@ -404,6 +417,10 @@ class PageActionControllerImpl : public PageActionController,
   // Triggered when `page_action_view` chip state visibility has changed and
   // completed animation to the new state.
   void OnIsChipShowingChanged(actions::ActionId id, bool is_chip_showing);
+
+  // Triggered when `page_action_view` plays the image transition animation
+  // prior to updating to the new image.
+  void OnImageAnimationStarted(actions::ActionId id);
 
   PageActionModelInterface& FindPageActionModel(
       actions::ActionId action_id) const;

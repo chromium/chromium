@@ -179,16 +179,28 @@ TEST_F(PageActionModelTest, OverrideImage) {
 
   ui::ImageModel kOverrideImage =
       ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
+  constexpr int kImageAnimationResourceId = 10;
 
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
   model_.SetOverrideImage(PassKey(), kOverrideImage,
-                          PageActionColorSource::kForeground);
+                          PageActionColorSource::kForeground,
+                          kImageAnimationResourceId);
   EXPECT_EQ(model_.GetImage(), kOverrideImage);
+  EXPECT_TRUE(model_.GetShouldAnimateImage());
+  EXPECT_EQ(model_.GetImageAnimationResourceId(), kImageAnimationResourceId);
 
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
   model_.SetOverrideImage(PassKey(), std::nullopt,
-                          PageActionColorSource::kForeground);
+                          PageActionColorSource::kForeground, std::nullopt);
   EXPECT_EQ(model_.GetImage(), kTestImage);
+  EXPECT_FALSE(model_.GetShouldAnimateImage());
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetOverrideImage(PassKey(), kOverrideImage,
+                          PageActionColorSource::kForeground,
+                          kImageAnimationResourceId);
+  model_.SetDidAnimateImage(PassKey());
+  EXPECT_FALSE(model_.GetShouldAnimateImage());
 }
 
 TEST_F(PageActionModelTest, OverrideTooltip) {
@@ -336,14 +348,16 @@ TEST_F(PageActionModelTest, OverrideImageWithColorSource) {
   // Override with a new image and color source.
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
   model_.SetOverrideImage(PassKey(), kOverrideImage,
-                          PageActionColorSource::kCascadingAccent);
+                          PageActionColorSource::kCascadingAccent,
+                          std::nullopt);
   EXPECT_EQ(model_.GetImage(), kOverrideImage);
   EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kCascadingAccent);
 
   // Override with the same image and color source should not notify.
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(0);
   model_.SetOverrideImage(PassKey(), kOverrideImage,
-                          PageActionColorSource::kCascadingAccent);
+                          PageActionColorSource::kCascadingAccent,
+                          std::nullopt);
   EXPECT_EQ(model_.GetImage(), kOverrideImage);
   EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kCascadingAccent);
 
@@ -351,7 +365,8 @@ TEST_F(PageActionModelTest, OverrideImageWithColorSource) {
   // source.
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
   model_.SetOverrideImage(PassKey(), std::nullopt,
-                          PageActionColorSource::kCascadingAccent);
+                          PageActionColorSource::kCascadingAccent,
+                          std::nullopt);
   EXPECT_EQ(model_.GetImage(), kTestImage);
   EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kCascadingAccent);
 }

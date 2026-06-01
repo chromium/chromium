@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/image_model.h"
@@ -79,6 +80,8 @@ class PageActionView : public IconLabelBubbleView,
   // Reports the chip visibility change state at the end of the animation.
   void SetIsChipShowingChangedCallback(
       IsChipShowingChangedCallback callback) override;
+  void SetImageAnimationStartedCallback(
+      ImageAnimationStartedCallback callback) override;
   void SetAnchoredMessageCloseCallback(
       base::RepeatingClosure callback) override;
   void SetAnchoredMessageExpandCallback(
@@ -131,6 +134,8 @@ class PageActionView : public IconLabelBubbleView,
   // update the image size if needed.
   void UpdateIconImage();
 
+  void AnimateImage(int resource_id, SkColor icon_color);
+
   const gfx::Insets GetInsetsForNonVectorIcon() const;
 
   // Changes to label visibility indicate that the chip state of this page
@@ -173,6 +178,10 @@ class PageActionView : public IconLabelBubbleView,
   // only reported when there is not an ongoing animation. It's initialized to
   // base::DoNothing() for testing purpose.
   IsChipShowingChangedCallback is_chip_showing_changed_callback_ =
+      base::DoNothing();
+
+  // Client-provided callbacks for when image animation starts.
+  ImageAnimationStartedCallback image_animation_started_callback_ =
       base::DoNothing();
 
   // The last "chip showing" state that was sent for a notification.

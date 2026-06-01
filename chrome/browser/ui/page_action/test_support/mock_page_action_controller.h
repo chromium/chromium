@@ -59,6 +59,13 @@ class MockPageActionController : public PageActionController {
               OverrideImage,
               (actions::ActionId, const ui::ImageModel&, PageActionColorSource),
               (override));
+  MOCK_METHOD(void,
+              OverrideImage,
+              (actions::ActionId,
+               const ui::ImageModel&,
+               PageActionColorSource,
+               std::optional<int>),
+              (override));
   MOCK_METHOD(void, ClearOverrideImage, (actions::ActionId), (override));
   MOCK_METHOD(void,
               OverrideTooltip,

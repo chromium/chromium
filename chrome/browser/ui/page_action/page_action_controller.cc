@@ -357,15 +357,24 @@ void PageActionControllerImpl::OverrideImage(
     actions::ActionId action_id,
     const ui::ImageModel& override_image,
     PageActionColorSource color_source) {
-  FindPageActionModel(action_id).SetOverrideImage(PageActionPassKey(),
-                                                  override_image, color_source);
+  OverrideImage(action_id, override_image, color_source, std::nullopt);
+}
+
+void PageActionControllerImpl::OverrideImage(
+    actions::ActionId action_id,
+    const ui::ImageModel& override_image,
+    PageActionColorSource color_source,
+    std::optional<int> animation_resource_id) {
+  FindPageActionModel(action_id).SetOverrideImage(
+      PageActionPassKey(), override_image, color_source, animation_resource_id);
 }
 
 void PageActionControllerImpl::ClearOverrideImage(actions::ActionId action_id) {
   auto& model = FindPageActionModel(action_id);
   model.SetOverrideImage(PageActionPassKey(),
                          /*override_image=*/std::nullopt,
-                         model.GetColorSource());
+                         model.GetColorSource(),
+                         /*animation_resource_id=*/std::nullopt);
 }
 
 void PageActionControllerImpl::OverrideTooltip(
@@ -503,6 +512,9 @@ void PageActionControllerImpl::RegisterCallbacks(PageActionPassKey,
   delegate->SetIsChipShowingChangedCallback(
       base::BindRepeating(&PageActionControllerImpl::OnIsChipShowingChanged,
                           weak_factory_.GetWeakPtr(), action_id));
+  delegate->SetImageAnimationStartedCallback(
+      base::BindRepeating(&PageActionControllerImpl::OnImageAnimationStarted,
+                          weak_factory_.GetWeakPtr(), action_id));
   delegate->SetAnchoredMessageCloseCallback(
       base::BindRepeating(&PageActionControllerImpl::HideAnchoredMessage,
                           weak_factory_.GetWeakPtr(), action_id));
@@ -544,6 +556,11 @@ void PageActionControllerImpl::OnIsChipShowingChanged(
     bool is_chip_showing) {
   FindPageActionModel(action_id).SetIsChipShowing(PageActionPassKey(),
                                                   is_chip_showing);
+}
+
+void PageActionControllerImpl::OnImageAnimationStarted(
+    actions::ActionId action_id) {
+  FindPageActionModel(action_id).SetDidAnimateImage(PageActionPassKey());
 }
 
 std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config) {
