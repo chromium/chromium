@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/stringprintf.h"
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
@@ -346,6 +347,104 @@ TEST_F(ExternalPopupMenuTest, PopupAccountsForVisualViewportTransform) {
 
   EXPECT_EQ(expected_x, ShownBounds().x());
   EXPECT_EQ(expected_y, ShownBounds().y());
+}
+
+TEST_F(ExternalPopupMenuTest, PopupClippedToViewportVariations) {
+  struct TestCase {
+    int left;
+    int top;
+    int width;
+    int height;
+    float dpr;
+    bool expect_shown;
+    int expected_x;
+    int expected_y;
+    int expected_width;
+    int expected_height;
+  } test_cases[] = {
+      // Top left partial
+      {-50, -50, 200, 200, 1.0f, true, 0, 0, 150, 150},
+  // Top left partial with DPR
+// The android differences here and below correspond to the OS_ANDROID check in
+// ExternalPopupMenu::GetDprForSizeAdjustment.
+#ifdef OS_ANDROID
+      {-50, -50, 200, 200, 2.0f, true, 0, 0, 300, 300},
+#else
+      {-50, -50, 200, 200, 2.0f, true, 0, 0, 150, 150},
+#endif
+      // Top left complete
+      {-250, -250, 200, 200, 1.0f, false, 0, 0, 0, 0},
+      // Top left complete with DPR
+      {-250, -250, 200, 200, 2.0f, false, 0, 0, 0, 0},
+      // Bottom right partial
+      {750, 550, 200, 200, 1.0f, true, 750, 550, 50, 50},
+  // Bottom right partial with DPR
+#ifdef OS_ANDROID
+      {750, 550, 200, 200, 2.0f, true, 1500, 1100, 100, 100},
+#else
+      {750, 550, 200, 200, 2.0f, true, 750, 550, 200, 200},
+#endif
+      // Bottom right complete
+      {850, 650, 200, 200, 1.0f, false, 0, 0, 0, 0},
+      // Bottom right complete with DPR
+      {850, 650, 200, 200, 2.0f, false, 0, 0, 0, 0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "left: " << test_case.left << ", top: " << test_case.top
+                 << ", dpr: " << test_case.dpr);
+
+    WebView()->MainFrameWidget()->SetDeviceScaleFactorForTesting(test_case.dpr);
+
+    frame_test_helpers::LoadHTMLString(
+        MainFrame(),
+        base::StringPrintf(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <style>
+        body { margin: 0; }
+        select {
+          position: fixed;
+          left: %dpx;
+          top: %dpx;
+          width: %dpx;
+          height: %dpx;
+        }
+      </style>
+      <body>
+      <select id=select>
+        <option>option</option>
+      </select>
+      </body>
+      </html>
+      )HTML",
+          test_case.left, test_case.top, test_case.width, test_case.height),
+        url_test_helpers::ToKURL("http://www.test.com/"));
+
+    WebView()->MainFrameViewWidget()->Resize(
+        gfx::Size(800 * test_case.dpr, 600 * test_case.dpr));
+    WebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+        DocumentUpdateReason::kTest);
+
+    auto* select = To<HTMLSelectElement>(
+        MainFrame()->GetFrame()->GetDocument()->getElementById(
+            AtomicString("select")));
+    auto* layout_object = select->GetLayoutObject();
+    ASSERT_TRUE(layout_object);
+
+    select->ShowPopup();
+
+    if (test_case.expect_shown) {
+      WaitUntilShowedPopup();
+      EXPECT_EQ(test_case.expected_x, ShownBounds().x());
+      EXPECT_EQ(test_case.expected_y, ShownBounds().y());
+      EXPECT_EQ(test_case.expected_width, ShownBounds().width());
+      EXPECT_EQ(test_case.expected_height, ShownBounds().height());
+    } else {
+      EXPECT_FALSE(select->PopupIsVisible());
+    }
+  }
 }
 
 // Android doesn't use this position data and we don't adjust it for DPR there..

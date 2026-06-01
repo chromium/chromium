@@ -5248,6 +5248,15 @@
       base_feature: "none",
     },
     {
+      // Make select popup anchor stay within web contents to prevent
+      // overlapping browser UI.
+      // TODO(https://issues.chromium.org/issues/511869411): Remove this flag
+      // after it has been shipped for long enough.
+      // Shipped in M150, safe to remove in M152.
+      name: "SelectAnchorInViewport",
+      status: "stable",
+    },
+    {
       // SelectAudioOutput API
       // https://chromestatus.com/feature/5164535504437248
       name: "SelectAudioOutput",

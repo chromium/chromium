@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/forms/external_popup_menu.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -73,6 +74,8 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/screen_info.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -755,6 +758,11 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
     gfx::Rect visual_viewport_rect =
         document.GetPage()->GetVisualViewport().RootFrameToViewport(
             local_root_rect);
+    float dpr = ExternalPopupMenu::GetDprForSizeAdjustment(*select_);
+    if (dpr != 1.0f) {
+      visual_viewport_rect =
+          gfx::ScaleToRoundedRect(visual_viewport_rect, 1.0f / dpr);
+    }
     visual_viewport_rect.Intersect(
         gfx::Rect(document.GetPage()->GetVisualViewport().Size()));
     if (visual_viewport_rect.IsEmpty())

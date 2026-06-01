@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
@@ -59,9 +60,8 @@
 
 namespace blink {
 
-namespace {
-
-float GetDprForSizeAdjustment(const Element& owner_element) {
+// static
+float ExternalPopupMenu::GetDprForSizeAdjustment(const Element& owner_element) {
   float dpr = 1.0f;
   // Android doesn't need these adjustments and it makes tests fail.
 #ifndef OS_ANDROID
@@ -82,8 +82,6 @@ float GetDprForSizeAdjustment(const Element& owner_element) {
 #endif
   return dpr;
 }
-
-}  // namespace
 
 ExternalPopupMenu::ExternalPopupMenu(LocalFrame& frame,
                                      HTMLSelectElement& owner_element)
@@ -140,6 +138,22 @@ bool ExternalPopupMenu::ShowInternal() {
     float dpr = GetDprForSizeAdjustment(*owner_element_);
     if (dpr != 1.0) {
       rect_in_viewport = gfx::ScaleToRoundedRect(rect_in_viewport, 1 / dpr);
+    }
+
+    // Adjust anchor position to stay within web contents, otherwise the popup
+    // could be rendered entirely outside of the web contents. If this select
+    // is in a cross-origin iframe, then the anchor will be confined to the
+    // bounds of the iframe rather than the entire web contents.
+    if (RuntimeEnabledFeatures::SelectAnchorInViewportEnabled() &&
+        local_frame_->GetPage()) {
+      gfx::Rect viewport_rect(
+          local_frame_->GetPage()->GetVisualViewport().Size());
+      // rect_in_viewport should always overlap with viewport_rect. If the
+      // select element is positioned outside of the viewport, then
+      // MenuListSelectType::ShowPopup has an early return which prevents us
+      // from getting here.
+      CHECK(viewport_rect.Intersects(rect_in_viewport));
+      rect_in_viewport.Intersect(viewport_rect);
     }
 
     gfx::Rect bounds =
