@@ -59,7 +59,7 @@ ConvertBlinkPowerPreferenceToMojo(
 ML::ML(ExecutionContext* execution_context)
     : ExecutionContextClient(execution_context),
 #if BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
-      tflite_context_provider_(execution_context),
+      in_process_context_provider_(execution_context),
 #endif  // BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
       webnn_context_provider_(execution_context) {
 }
@@ -67,8 +67,8 @@ ML::ML(ExecutionContext* execution_context)
 void ML::Trace(Visitor* visitor) const {
   visitor->Trace(webnn_context_provider_);
 #if BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
-  visitor->Trace(tflite_context_provider_);
-  visitor->Trace(tflite_pending_resolvers_);
+  visitor->Trace(in_process_context_provider_);
+  visitor->Trace(in_process_pending_resolvers_);
 #endif  // BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
   visitor->Trace(pending_resolvers_);
   ExecutionContextClient::Trace(visitor);
@@ -112,10 +112,10 @@ ScriptPromise<MLContext> ML::createContext(ScriptState* script_state,
 
             if (result->is_error()) {
 #if BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
-              // Fallback to in-process TFLite CPU backend when the GPU
+              // Fallback to the in-renderer CPU backend when the GPU
               // process WebNN backend fails.
-              ml->CreateInProcessTFLiteContext(resolver, options,
-                                               std::move(scoped_trace));
+              ml->CreateInProcessContext(resolver, options,
+                                         std::move(scoped_trace));
               return;
 #else
               const webnn::mojom::blink::Error& create_context_error =
@@ -162,20 +162,19 @@ void ML::EnsureWebNNServiceConnection() {
 }
 
 #if BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
-void ML::CreateInProcessTFLiteContext(
-    ScriptPromiseResolver<MLContext>* resolver,
-    MLContextOptions* options,
-    webnn::ScopedTrace scoped_trace) {
-  EnsureInProcessTFLiteConnection();
+void ML::CreateInProcessContext(ScriptPromiseResolver<MLContext>* resolver,
+                                MLContextOptions* options,
+                                webnn::ScopedTrace scoped_trace) {
+  EnsureInProcessServiceConnection();
 
-  // Track this resolver in the TFLite-specific set so that only a TFLite
-  // disconnect (not a GPU-process disconnect) can reject it.
-  tflite_pending_resolvers_.insert(resolver);
+  // Track this resolver in the in-renderer-specific set so that only an
+  // in-renderer disconnect (not a GPU-process disconnect) can reject it.
+  in_process_pending_resolvers_.insert(resolver);
 
-  // The tflite_context_provider_ remote uses the blink Mojo variant
+  // The in_process_context_provider_ remote uses the blink Mojo variant
   // (connected via cross-variant pipe to the non-blink receiver), so
   // we can use the same callback pattern as the GPU process path.
-  tflite_context_provider_->CreateWebNNContext(
+  in_process_context_provider_->CreateWebNNContext(
       webnn::mojom::blink::CreateContextOptions::New(
           ConvertBlinkDeviceTypeToMojo(options->deviceType()),
           ConvertBlinkPowerPreferenceToMojo(options->powerPreference())),
@@ -183,7 +182,7 @@ void ML::CreateInProcessTFLiteContext(
           [](ML* ml, ScriptPromiseResolver<MLContext>* resolver,
              MLContextOptions* options, webnn::ScopedTrace scoped_trace,
              webnn::mojom::blink::CreateContextResultPtr result) {
-            ml->tflite_pending_resolvers_.erase(resolver);
+            ml->in_process_pending_resolvers_.erase(resolver);
 
             ExecutionContext* context = resolver->GetExecutionContext();
             if (!context) {
@@ -207,8 +206,8 @@ void ML::CreateInProcessTFLiteContext(
           WrapPersistent(options), std::move(scoped_trace)));
 }
 
-void ML::EnsureInProcessTFLiteConnection() {
-  if (tflite_context_provider_.is_bound()) {
+void ML::EnsureInProcessServiceConnection() {
+  if (in_process_context_provider_.is_bound()) {
     return;
   }
 
@@ -216,37 +215,37 @@ void ML::EnsureInProcessTFLiteConnection() {
       GetExecutionContext()->GetTaskRunner(TaskType::kMachineLearning);
 
   // Get a WebNNWeightsFileCreator remote from the browser process to create
-  // weight files for the in-process TFLite context provider. The remote is
-  // passed to the provider as a raw message pipe handle.
+  // weight files for the in-renderer context provider. The remote is passed
+  // to the provider as a raw message pipe handle.
   mojo::PendingRemote<webnn::mojom::blink::WebNNWeightsFileCreator>
       weights_file_creator;
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       weights_file_creator.InitWithNewPipeAndPassReceiver());
 
-  // Create the in-process TFLite context provider via the thin factory.
+  // Create the in-renderer context provider via the thin factory.
   // The factory returns a raw pipe handle for a WebNNContextProvider remote.
   // We wrap it into a blink-variant PendingRemote — this works because blink
   // and non-blink Mojo variants use the same wire format.
   mojo::ScopedMessagePipeHandle context_provider_pipe =
-      webnn::tflite::CreateInProcessContextProvider(
-          weights_file_creator.PassPipe(), task_runner);
-  tflite_context_provider_.Bind(
+      webnn::CreateInProcessContextProvider(weights_file_creator.PassPipe(),
+                                            task_runner);
+  in_process_context_provider_.Bind(
       mojo::PendingRemote<webnn::mojom::blink::WebNNContextProvider>(
           std::move(context_provider_pipe), 0u),
       task_runner);
-  CHECK(tflite_context_provider_.is_bound());
-  tflite_context_provider_.set_disconnect_handler(
-      BindOnce(&ML::OnTFLiteServiceConnectionError, WrapWeakPersistent(this)));
+  CHECK(in_process_context_provider_.is_bound());
+  in_process_context_provider_.set_disconnect_handler(BindOnce(
+      &ML::OnInProcessServiceConnectionError, WrapWeakPersistent(this)));
 }
 
-void ML::OnTFLiteServiceConnectionError() {
-  tflite_context_provider_.reset();
-  for (const auto& resolver : tflite_pending_resolvers_) {
+void ML::OnInProcessServiceConnectionError() {
+  in_process_context_provider_.reset();
+  for (const auto& resolver : in_process_pending_resolvers_) {
     resolver->RejectWithDOMException(
         DOMExceptionCode::kUnknownError,
-        "In-process TFLite service connection error.");
+        "In-renderer WebNN service connection error.");
   }
-  tflite_pending_resolvers_.clear();
+  in_process_pending_resolvers_.clear();
 }
 #endif  // BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
 

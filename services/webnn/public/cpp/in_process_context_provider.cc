@@ -10,14 +10,14 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
-#include "services/webnn/tflite/context_provider_tflite.h"
+#include "services/webnn/webnn_context_provider_in_renderer.h"
 
-namespace webnn::tflite {
+namespace webnn {
 
 mojo::ScopedMessagePipeHandle CreateInProcessContextProvider(
     mojo::ScopedMessagePipeHandle weights_file_creator_pipe,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  auto provider = std::make_unique<ContextProviderTflite>(
+  auto provider = std::make_unique<WebNNContextProviderInRenderer>(
       mojo::PendingRemote<mojom::WebNNWeightsFileCreator>(
           std::move(weights_file_creator_pipe), 0u),
       std::move(task_runner));
@@ -28,4 +28,4 @@ mojo::ScopedMessagePipeHandle CreateInProcessContextProvider(
   return pending_remote.PassPipe();
 }
 
-}  // namespace webnn::tflite
+}  // namespace webnn

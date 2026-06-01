@@ -53,34 +53,34 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   void EnsureWebNNServiceConnection();
 
 #if BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
-  // Creates an in-process TFLite context provider for CPU inference that
+  // Creates an in-renderer WebNN context provider for CPU inference that
   // bypasses the GPU process entirely. The provider is created in the renderer
   // process and bound to a local Mojo self-pipe.
-  void EnsureInProcessTFLiteConnection();
+  void EnsureInProcessServiceConnection();
 
-  // Reset the remote of in-process TFLite `WebNNContextProvider` if the
+  // Reset the remote of the in-renderer `WebNNContextProvider` if the
   // remote is cut off from its receiver.
-  void OnTFLiteServiceConnectionError();
+  void OnInProcessServiceConnectionError();
 
-  // Creates a WebNN context using the in-process TFLite backend. Called
-  // directly for CPU device requests and as a fallback when the GPU process
-  // backend fails.
-  void CreateInProcessTFLiteContext(ScriptPromiseResolver<MLContext>* resolver,
-                                    MLContextOptions* options,
-                                    webnn::ScopedTrace scoped_trace);
+  // Creates a WebNN context using the in-renderer backend. Called directly
+  // for CPU device requests and as a fallback when the GPU process backend
+  // fails.
+  void CreateInProcessContext(ScriptPromiseResolver<MLContext>* resolver,
+                              MLContextOptions* options,
+                              webnn::ScopedTrace scoped_trace);
 
-  // In-process TFLite context provider for CPU device, bypassing the GPU
-  // process. Uses a cross-variant Mojo pipe: the blink-variant remote is
-  // connected to a non-blink receiver hosting ContextProviderTflite.
-  // The wire format is identical across variants.
+  // In-renderer context provider for CPU device, bypassing the GPU process.
+  // Uses a cross-variant Mojo pipe: the blink-variant remote is connected to
+  // a non-blink receiver hosting WebNNContextProviderInRenderer. The wire
+  // format is identical across variants.
   HeapMojoRemote<webnn::mojom::blink::WebNNContextProvider>
-      tflite_context_provider_;
+      in_process_context_provider_;
 
-  // Resolvers for requests currently in-flight on the in-process TFLite path.
+  // Resolvers for requests currently in-flight on the in-renderer path.
   // Kept separate from `pending_resolvers_` so that a GPU-process disconnect
-  // does not incorrectly reject TFLite requests (and vice-versa).
+  // does not incorrectly reject in-renderer requests (and vice-versa).
   HeapHashSet<Member<ScriptPromiseResolver<MLContext>>>
-      tflite_pending_resolvers_;
+      in_process_pending_resolvers_;
 #endif  // BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
 
   // WebNN support multiple types of neural network inference hardware

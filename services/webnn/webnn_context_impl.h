@@ -47,13 +47,8 @@
 
 namespace webnn {
 
-#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-namespace tflite {
-class ContextProviderTflite;
-}
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-
 class WebNNContextProviderImpl;
+class WebNNContextProviderInRenderer;
 class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
 class GpuTaskScheduler;
@@ -113,18 +108,17 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       gpu::SharedImageManager* shared_image_manager,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
-#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-  // Constructor for running without GPU dependencies (e.g., TFLite in the
-  // renderer process).
+  // Constructor for running without GPU dependencies (e.g., in the renderer
+  // process).
   WebNNContextImpl(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
-      base::WeakPtr<tflite::ContextProviderTflite> tflite_context_provider,
+      base::WeakPtr<WebNNContextProviderInRenderer>
+          context_provider_in_renderer,
       WebNNContextImpl::ContextBackendUma backend_uma,
       ContextProperties properties,
       mojom::CreateContextOptionsPtr options,
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
@@ -303,15 +297,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // `context_provider_->main_thread_task_runner()` runs tasks.
   base::WeakPtr<WebNNContextProviderImpl> context_provider_;
 
-#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-  // For tflite renderer process. Only dereference on main_task_runner_.
-  base::WeakPtr<tflite::ContextProviderTflite> tflite_context_provider_;
+  // Set when this context is owned by a WebNNContextProviderInRenderer
+  // (renderer process). Only dereference on main_task_runner_.
+  base::WeakPtr<WebNNContextProviderInRenderer> context_provider_in_renderer_;
 
-  // True when this context is owned by a ContextProviderTflite (renderer
-  // process). This flag is thread-safe to read since it is set at construction
-  // and never modified.
-  const bool is_tflite_context_provider_ = false;
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+  // True when this context is owned by a WebNNContextProviderInRenderer
+  // (renderer process). This flag is thread-safe to read since it is set at
+  // construction and never modified.
+  const bool is_context_provider_in_renderer_ = false;
 
   // Context properties reported to the renderer process.
   const ContextProperties properties_;

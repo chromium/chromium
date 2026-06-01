@@ -9,11 +9,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
-namespace webnn::tflite {
+namespace webnn {
 
-// Creates an in-process TFLite context provider and returns the raw message
-// pipe handle for a WebNNContextProvider remote. The caller can wrap this
-// into a blink-variant PendingRemote to bind a HeapMojoRemote.
+// Creates an in-process WebNN context provider and returns the raw message pipe
+// handle for a WebNNContextProvider remote. The caller can wrap this into a
+// blink-variant PendingRemote to bind a HeapMojoRemote.
 //
 // |weights_file_creator_pipe| is the raw message pipe handle for a
 // WebNNWeightsFileCreator remote.
@@ -22,6 +22,6 @@ mojo::ScopedMessagePipeHandle CreateInProcessContextProvider(
     mojo::ScopedMessagePipeHandle weights_file_creator_pipe,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-}  // namespace webnn::tflite
+}  // namespace webnn
 
 #endif  // SERVICES_WEBNN_PUBLIC_CPP_IN_PROCESS_CONTEXT_PROVIDER_H_

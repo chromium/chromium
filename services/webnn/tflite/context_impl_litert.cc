@@ -13,6 +13,7 @@
 #include "services/webnn/tflite/tensor_impl_tflite.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
+#include "services/webnn/webnn_context_provider_in_renderer.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::litert {
@@ -70,6 +71,36 @@ ContextImplLiteRt::ContextImplLiteRt(
                        std::move(main_task_runner)),
       is_incognito_(is_incognito) {}
 
+// static
+WebNNContextImpl::WebNNContextImplPtr ContextImplLiteRt::CreateForRenderer(
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    base::WeakPtr<WebNNContextProviderInRenderer> context_provider,
+    mojom::CreateContextOptionsPtr options,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner) {
+  DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
+  auto task_runner = owning_task_runner;
+  return WebNNContextImplPtr(
+      new ContextImplLiteRt(std::move(receiver), std::move(context_provider),
+                            std::move(options), std::move(owning_task_runner),
+                            std::move(main_task_runner)),
+      OnTaskRunnerDeleter(std::move(task_runner)));
+}
+
+ContextImplLiteRt::ContextImplLiteRt(
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    base::WeakPtr<WebNNContextProviderInRenderer> context_provider,
+    mojom::CreateContextOptionsPtr options,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+    : WebNNContextImpl(std::move(receiver),
+                       std::move(context_provider),
+                       ContextBackendUma::kLiteRT,
+                       tflite::GraphBuilderTflite::GetContextProperties(),
+                       std::move(options),
+                       std::move(owning_task_runner),
+                       std::move(main_task_runner)) {}
+
 ContextImplLiteRt::~ContextImplLiteRt() = default;
 
 base::WeakPtr<WebNNContextImpl> ContextImplLiteRt::AsWeakPtr() {
@@ -86,7 +117,7 @@ void ContextImplLiteRt::CreateGraphImpl(
     base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
         constant_tensor_operands,
     CreateGraphImplCallback callback) {
-  if (is_incognito_) {
+  if (is_incognito_.value_or(false)) {
     // In incognito mode, weights are stored in the Flatbuffer model file
     // rather than an external weights file, pass an invalid file handle to
     // the graph impl so it can fallback to the default behavior.

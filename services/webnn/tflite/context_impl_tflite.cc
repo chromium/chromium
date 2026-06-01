@@ -73,7 +73,7 @@ ContextImplTflite::ContextImplTflite(
 // static
 WebNNContextImpl::WebNNContextImplPtr ContextImplTflite::CreateForRenderer(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    base::WeakPtr<ContextProviderTflite> context_provider,
+    base::WeakPtr<WebNNContextProviderInRenderer> context_provider,
     mojom::CreateContextOptionsPtr options,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner) {
@@ -88,7 +88,7 @@ WebNNContextImpl::WebNNContextImplPtr ContextImplTflite::CreateForRenderer(
 
 ContextImplTflite::ContextImplTflite(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    base::WeakPtr<ContextProviderTflite> context_provider,
+    base::WeakPtr<WebNNContextProviderInRenderer> context_provider,
     mojom::CreateContextOptionsPtr options,
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)

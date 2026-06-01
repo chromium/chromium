@@ -35,13 +35,9 @@
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_context_provider_impl.h"
-#include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_context_provider_in_renderer.h"
 #include "services/webnn/webnn_tensor_impl.h"
 #include "third_party/tflite/buildflags.h"
-
-#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-#include "services/webnn/tflite/context_provider_tflite.h"  // nogncheck
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 #include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
@@ -129,10 +125,9 @@ WebNNContextImpl::WebNNContextImpl(
   InitializeContext(backend_uma);
 }
 
-#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    base::WeakPtr<tflite::ContextProviderTflite> tflite_context_provider,
+    base::WeakPtr<WebNNContextProviderInRenderer> context_provider_in_renderer,
     WebNNContextImpl::ContextBackendUma backend_uma,
     ContextProperties properties,
     mojom::CreateContextOptionsPtr options,
@@ -142,8 +137,8 @@ WebNNContextImpl::WebNNContextImpl(
                       blink::WebNNContextToken,
                       mojo::Receiver<mojom::WebNNContext>>(std::move(receiver),
                                                            owning_task_runner),
-      tflite_context_provider_(std::move(tflite_context_provider)),
-      is_tflite_context_provider_(true),
+      context_provider_in_renderer_(std::move(context_provider_in_renderer)),
+      is_context_provider_in_renderer_(true),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)),
       memory_type_tracker_(base::MakeRefCounted<gpu::MemoryTracker>()),
@@ -152,7 +147,6 @@ WebNNContextImpl::WebNNContextImpl(
       tracing_id_(g_next_webnn_context_tracing_id.GetNext()) {
   InitializeContext(backend_uma);
 }
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 void WebNNContextImpl::InitializeContext(ContextBackendUma backend_uma) {
   RecordContextBackendUma(backend_uma);
@@ -251,13 +245,11 @@ void WebNNContextImpl::OnDisconnect() {
   ClearGraphBuilders();
 
   base::OnceClosure remove_task;
-#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-  if (is_tflite_context_provider_) {
+  if (is_context_provider_in_renderer_) {
     remove_task =
-        base::BindOnce(&tflite::ContextProviderTflite::RemoveWebNNContextImpl,
-                       tflite_context_provider_, handle());
+        base::BindOnce(&WebNNContextProviderInRenderer::RemoveWebNNContextImpl,
+                       context_provider_in_renderer_, handle());
   }
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
   if (!remove_task) {
     remove_task =
@@ -292,14 +284,12 @@ void WebNNContextImpl::DestroyAllContextsAndKillGpuProcess() {
 void WebNNContextImpl::CreateWeightsFile(
     base::OnceCallback<void(base::File)> callback) {
   base::OnceClosure create_task;
-#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-  if (is_tflite_context_provider_) {
+  if (is_context_provider_in_renderer_) {
     create_task =
-        base::BindOnce(&tflite::ContextProviderTflite::CreateWeightsFile,
-                       tflite_context_provider_,
+        base::BindOnce(&WebNNContextProviderInRenderer::CreateWeightsFile,
+                       context_provider_in_renderer_,
                        base::BindPostTaskToCurrentDefault(std::move(callback)));
   }
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
   if (!create_task) {
     create_task = base::BindOnce(

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_TFLITE_CONTEXT_PROVIDER_TFLITE_H_
-#define SERVICES_WEBNN_TFLITE_CONTEXT_PROVIDER_TFLITE_H_
+#ifndef SERVICES_WEBNN_WEBNN_CONTEXT_PROVIDER_IN_RENDERER_H_
+#define SERVICES_WEBNN_WEBNN_CONTEXT_PROVIDER_IN_RENDERER_H_
 
 #include "base/component_export.h"
 #include "base/files/file.h"
@@ -15,21 +15,23 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 
-namespace webnn::tflite {
+namespace webnn {
 
-// A lightweight WebNNContextProvider implementation for TFLite that runs
-// without GPU dependencies (e.g., in the renderer process).
-class COMPONENT_EXPORT(WEBNN_SERVICE) ContextProviderTflite
+// A lightweight WebNNContextProvider implementation that runs without GPU
+// dependencies (e.g., in the renderer process).
+class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderInRenderer
     : public mojom::WebNNContextProvider {
  public:
-  ContextProviderTflite(
+  WebNNContextProviderInRenderer(
       mojo::PendingRemote<mojom::WebNNWeightsFileCreator>
           weights_file_creator_remote,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
-  ~ContextProviderTflite() override;
+  ~WebNNContextProviderInRenderer() override;
 
-  ContextProviderTflite(const ContextProviderTflite&) = delete;
-  ContextProviderTflite& operator=(const ContextProviderTflite&) = delete;
+  WebNNContextProviderInRenderer(const WebNNContextProviderInRenderer&) =
+      delete;
+  WebNNContextProviderInRenderer& operator=(
+      const WebNNContextProviderInRenderer&) = delete;
 
   // mojom::WebNNContextProvider:
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
@@ -38,7 +40,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextProviderTflite
   // Creates a weights file via the browser process.
   void CreateWeightsFile(base::OnceCallback<void(base::File)> callback);
 
-  base::WeakPtr<ContextProviderTflite> GetWeakPtr() {
+  base::WeakPtr<WebNNContextProviderInRenderer> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
@@ -62,9 +64,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextProviderTflite
   // destroyed (when the mojo pipe closes).
   WebNNContextProviderImpl::WebNNContextImplSet context_impls_;
 
-  base::WeakPtrFactory<ContextProviderTflite> weak_factory_{this};
+  base::WeakPtrFactory<WebNNContextProviderInRenderer> weak_factory_{this};
 };
 
-}  // namespace webnn::tflite
+}  // namespace webnn
 
-#endif  // SERVICES_WEBNN_TFLITE_CONTEXT_PROVIDER_TFLITE_H_
+#endif  // SERVICES_WEBNN_WEBNN_CONTEXT_PROVIDER_IN_RENDERER_H_

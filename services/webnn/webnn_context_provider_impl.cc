@@ -53,7 +53,6 @@
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
 #include "services/webnn/tflite/context_impl_tflite.h"  // nogncheck
-#include "services/webnn/tflite/context_provider_tflite.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
@@ -704,9 +703,9 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
   LOG(ERROR) << "[WebNN] Failed to create ONNX Runtime environment: "
              << env_creation_results.error();
 
-#if BUILDFLAG(WEBNN_USE_TFLITE)
-  // If the request would be served by the renderer-process TFLite backend,
-  // skip the GPU-process TFLite/LiteRT fallbacks and return a
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+  // If the request would be served by the renderer-process TFLite/LiteRT
+  // backend, skip the GPU-process TFLite/LiteRT fallbacks and return a
   // `kNotSupportedError` so the renderer's `ML::createContext` fallback path
   // creates the in-process TFLite context instead.
   if (ShouldUseInProcessTflite(*options)) {
@@ -717,7 +716,7 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
                              command_buffer_id, std::move(context_impl));
     return;
   }
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
   if (base::FeatureList::IsEnabled(mojom::features::kWebNNLiteRT)) {

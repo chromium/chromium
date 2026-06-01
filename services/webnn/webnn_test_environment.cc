@@ -27,12 +27,12 @@ namespace webnn::test {
 
 namespace {
 
-// Mimics the renderer-process behavior of falling back to the in-process
-// TFLite backend when the GPU-process `WebNNContextProvider` rejects a
-// request.
-class TFLiteFallbackContextProvider : public mojom::WebNNContextProvider {
+// Mimics the renderer-process behavior of falling back to an in-process
+// backend (TFLite, LiteRT, or ORT) when the GPU-process
+// `WebNNContextProvider` rejects a request.
+class InProcessFallbackContextProvider : public mojom::WebNNContextProvider {
  public:
-  TFLiteFallbackContextProvider(
+  InProcessFallbackContextProvider(
       mojo::PendingRemote<mojom::WebNNContextProvider> gpu_process_remote,
       bool is_incognito,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -40,23 +40,24 @@ class TFLiteFallbackContextProvider : public mojom::WebNNContextProvider {
         is_incognito_(is_incognito),
         task_runner_(std::move(task_runner)) {}
 
-  ~TFLiteFallbackContextProvider() override = default;
+  ~InProcessFallbackContextProvider() override = default;
 
-  TFLiteFallbackContextProvider(const TFLiteFallbackContextProvider&) = delete;
-  TFLiteFallbackContextProvider& operator=(
-      const TFLiteFallbackContextProvider&) = delete;
+  InProcessFallbackContextProvider(const InProcessFallbackContextProvider&) =
+      delete;
+  InProcessFallbackContextProvider& operator=(
+      const InProcessFallbackContextProvider&) = delete;
 
   // mojom::WebNNContextProvider:
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
                           CreateWebNNContextCallback callback) override {
     // Try the GPU-process provider first; on error,
     // `OnGpuProcessCreateContextResult` may fall back to the in-process
-    // TFLite provider with the same options.
+    // provider with the same options.
     auto options_clone = options.Clone();
     gpu_process_remote_->CreateWebNNContext(
         std::move(options),
         base::BindOnce(
-            &TFLiteFallbackContextProvider::OnGpuProcessCreateContextResult,
+            &InProcessFallbackContextProvider::OnGpuProcessCreateContextResult,
             base::Unretained(this), std::move(options_clone),
             std::move(callback)));
   }
@@ -66,13 +67,13 @@ class TFLiteFallbackContextProvider : public mojom::WebNNContextProvider {
                                        CreateWebNNContextCallback callback,
                                        mojom::CreateContextResultPtr result) {
 #if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-    // Fall back to the in-process TFLite provider on GPU-process failure,
-    // mirroring `ML::CreateInProcessTFLiteContext` in the renderer.
+    // Fall back to the in-process provider on GPU-process failure, mirroring
+    // `ML::CreateInProcessContext` in the renderer.
     if (result->is_error() &&
         !WebNNContextProviderImpl::HasBackendForTesting()) {
-      EnsureInProcessTFLiteConnection();
-      in_process_tflite_remote_->CreateWebNNContext(std::move(options),
-                                                    std::move(callback));
+      EnsureInProcessConnection();
+      in_process_remote_->CreateWebNNContext(std::move(options),
+                                             std::move(callback));
       return;
     }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
@@ -80,26 +81,25 @@ class TFLiteFallbackContextProvider : public mojom::WebNNContextProvider {
   }
 
 #if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-  // Lazily binds the in-process TFLite provider remote on first use, mirroring
-  // `ML::EnsureInProcessTFLiteConnection` in the renderer.
-  void EnsureInProcessTFLiteConnection() {
-    if (in_process_tflite_remote_.is_bound()) {
+  // Lazily binds the in-process provider remote on first use, mirroring
+  // `ML::EnsureInProcessConnection` in the renderer.
+  void EnsureInProcessConnection() {
+    if (in_process_remote_.is_bound()) {
       return;
     }
     mojo::PendingRemote<mojom::WebNNWeightsFileCreator> weights_file_creator;
     WeightsFileCreatorImpl::Create(
         weights_file_creator.InitWithNewPipeAndPassReceiver(), is_incognito_);
     mojo::ScopedMessagePipeHandle in_process_pipe =
-        tflite::CreateInProcessContextProvider(weights_file_creator.PassPipe(),
-                                               task_runner_);
-    in_process_tflite_remote_.Bind(
-        mojo::PendingRemote<mojom::WebNNContextProvider>(
-            std::move(in_process_pipe), 0u));
+        webnn::CreateInProcessContextProvider(weights_file_creator.PassPipe(),
+                                              task_runner_);
+    in_process_remote_.Bind(mojo::PendingRemote<mojom::WebNNContextProvider>(
+        std::move(in_process_pipe), 0u));
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
   mojo::Remote<mojom::WebNNContextProvider> gpu_process_remote_;
-  mojo::Remote<mojom::WebNNContextProvider> in_process_tflite_remote_;
+  mojo::Remote<mojom::WebNNContextProvider> in_process_remote_;
   [[maybe_unused]] const bool is_incognito_;
   [[maybe_unused]] const scoped_refptr<base::SingleThreadTaskRunner>
       task_runner_;
@@ -241,10 +241,11 @@ void WebNNTestEnvironment::BindWebNNContextProvider(
       gpu_process_remote.InitWithNewPipeAndPassReceiver(),
       {is_incognito, kFakeClientIdForTesting, kFakeClientTracingIdForTesting});
 
-  mojo::MakeSelfOwnedReceiver(std::make_unique<TFLiteFallbackContextProvider>(
-                                  std::move(gpu_process_remote), is_incognito,
-                                  task_environment_->GetMainThreadTaskRunner()),
-                              std::move(pending_receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<InProcessFallbackContextProvider>(
+          std::move(gpu_process_remote), is_incognito,
+          task_environment_->GetMainThreadTaskRunner()),
+      std::move(pending_receiver));
   pending_receiver_count_++;
 }
 
