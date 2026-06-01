@@ -9,9 +9,11 @@
 #include "base/containers/flat_map.h"
 #include "base/test/with_feature_override.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations_fuzzable.pb.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "url/gurl.h"
 
 namespace privacy_sandbox {
@@ -295,5 +297,16 @@ TEST_F(PrivacySandboxAttestationsParserTest, InvalidAllAPIsProto) {
       site1apis.Has(PrivacySandboxAttestationsGatedAPI::kSharedStorage));
   ASSERT_TRUE(site1apis.size() == 5UL);
 }
+
+void ParseAttestationsFromStringDoesNotCrash(
+    const fuzzable::privacy_sandbox::PrivacySandboxAttestationsProto&
+        attestations_proto) {
+  std::string native_input = attestations_proto.SerializeAsString();
+  ParseAttestationsFromString(native_input);
+}
+FUZZ_TEST(PrivacySandboxAttestationsParserFuzzTest,
+          ParseAttestationsFromStringDoesNotCrash)
+    .WithDomains(fuzztest::Arbitrary<
+                 fuzzable::privacy_sandbox::PrivacySandboxAttestationsProto>());
 
 }  // namespace privacy_sandbox

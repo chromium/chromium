@@ -1029,6 +1029,7 @@ test("components_unittests") {
     "PaymentCurrencyAmountFuzzTest.FromValueDictDoesNotCrash",
     "PrivacyMathTest.GetKCombinationAtIndexDoesNotCrash",
     "PrivacyMathTest.GetNumStatesDoesNotCrash",
+    "PrivacySandboxAttestationsParserFuzzTest.ParseAttestationsFromStringDoesNotCrash",
     "RegistrationInfoTest.Parses",
     "SourceRegistrationTest.Parses",
     "TranslateUtilFuzzTest.GetTranslateSecurityOriginDoesNotCrash",

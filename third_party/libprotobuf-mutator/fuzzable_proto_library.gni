@@ -10,16 +10,125 @@
 # use the optimize for LITE_RUNTIME option which is incompatible with the full
 # protobuf runtime. tl;dr: A fuzzable_proto_library is a proto_library that can
 # be fuzzed with libprotobuf-mutator and shipped in Chrome.
-
+#
+# Setting `use_experimental_fuzzable_proto` to true, generates a
+# "${target_name}_fuzzable" target which contains a copy of the original protos
+# but with a `fuzzable.` package prefix and optimized for SPEED, meaning they
+# can be used for fuzzing outside of fuzzing builds.
+# TODO(crbug.com/505034799): Make this default to true once all fuzzers are
+# migrated.
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 # TODO(https://crbug.com/1197634): Fold this into proto_library.
 template("fuzzable_proto_library") {
-  # Only make the proto library fuzzable if we are doing a build that we can
-  # use LPM on (i.e. libFuzzer not on Chrome OS).
-  if (use_fuzzing_engine_with_lpm &&
-      current_toolchain != "//build/toolchain/cros:target") {
+  if (defined(invoker.use_experimental_fuzzable_proto) &&
+      invoker.use_experimental_fuzzable_proto) {
+    assert(!defined(invoker.proto_library_deps),
+           "proto_library_deps is deprecated and not supported with " +
+               "use_experimental_fuzzable_proto = true. Use deps instead.")
+
+    # TODO(crbug.com/505034799): Support proto_in_dir and proto_out_dir.
+    assert(!defined(invoker.proto_in_dir) && !defined(invoker.proto_out_dir),
+           "proto_in_dir and proto_out_dir are not supported yet with " +
+               "use_experimental_fuzzable_proto = true.")
+
+    _prepend_fuzzable_target = "${target_name}_prepend_fuzzable"
+    action_foreach(_prepend_fuzzable_target) {
+      script = "//third_party/libprotobuf-mutator/prepend_fuzzable.py"
+      sources = invoker.sources
+      _output_file = "$root_gen_dir/{{source_root_relative_dir}}/{{source_name_part}}_fuzzable.proto"
+      outputs = [ _output_file ]
+      args = [
+        "--infile",
+        "{{source}}",
+        "--outfile",
+        rebase_path(_output_file, root_build_dir),
+      ]
+    }
+
+    _prepended_protos = []
+    foreach(source, invoker.sources) {
+      _dir = rebase_path(get_path_info(source, "dir"), "//")
+      _name = get_path_info(source, "name")
+      _prepended_protos += [ "$root_gen_dir/$_dir/${_name}_fuzzable.proto" ]
+    }
+
+    # Generate a unique export macro name for this proto.
+    _dir_suffix = string_replace(rebase_path(".", "//"), "/", "_")
+    _dir_suffix = string_replace(_dir_suffix, "-", "_")
+    _dir_suffix = string_replace(_dir_suffix, ".", "_")
+    _export_macro_name = "FUZZABLE_PROTO_EXPORT_${_dir_suffix}_${target_name}"
+
+    _fuzzable_proto_target = "${target_name}_fuzzable__proto"
+    proto_library(_fuzzable_proto_target) {
+      sources = _prepended_protos
+      proto_deps = [ ":$_prepend_fuzzable_target" ]
+
+      proto_in_dir = target_gen_dir
+      proto_out_dir = rebase_path(".", "//")
+
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "sources",
+                               "proto_in_dir",
+                               "proto_out_dir",
+                               "component_build_force_source_set",
+                               "use_experimental_fuzzable_proto",
+                             ])
+      component_build_force_source_set = true
+
+      # Override LITE_RUNTIME settings in the protobuf files and export symbols.
+      cc_generator_options =
+          "speed,dllexport_decl=FUZZABLE_PROTO_EXPORT($_export_macro_name):"
+      cc_include = "third_party/libprotobuf-mutator/fuzzable_proto_export.h"
+      extra_configs = [ "//third_party/protobuf:protobuf_config" ]
+
+      if (!defined(defines)) {
+        defines = []
+      }
+      defines += [ "IS_${_export_macro_name}_IMPL=1" ]
+    }
+
+    # These groups are required by proto_library template in proto_library.gni.
+    group("${target_name}_fuzzable_input_group") {
+      public_deps = [ ":${_fuzzable_proto_target}_input_group" ]
+    }
+    group("${target_name}_fuzzable_gen") {
+      public_deps = [ ":${_fuzzable_proto_target}_gen" ]
+    }
+
+    # In component builds, we build fuzzable proto libraries as shared
+    # components rather than static libraries. If they were static libraries,
+    # multiple components depending on them would statically link duplicate
+    # copies of the generated proto code. If a binary depends on multiple of
+    # these components it result in ODR violations and crashes due to duplicate
+    # full proto descriptor registrations since the protobuf library is a shared
+    # library. By making the target a `component`, we ensure the generated code
+    # is compiled exactly once into a single shared library.
+    component("${target_name}_fuzzable") {
+      testonly = true
+      sources = [ "//third_party/libprotobuf-mutator/dummy.cc" ]
+      public_deps = [
+        ":$_fuzzable_proto_target",
+        "//third_party/libprotobuf-mutator:protobuf_full_for_fuzzing",
+      ]
+
+      if (!defined(defines)) {
+        defines = []
+      }
+      defines += [ "IS_${_export_macro_name}_IMPL=1" ]
+    }
+
+    # Also define original proto target so consumers can still depend on it.
+    proto_library(target_name) {
+      forward_variables_from(invoker,
+                             "*",
+                             [ "use_experimental_fuzzable_proto" ])
+    }
+  } else if (use_fuzzing_engine_with_lpm &&
+             current_toolchain != "//build/toolchain/cros:target") {
     _proto_target_name = "${target_name}__proto"
     proto_library(_proto_target_name) {
       forward_variables_from(invoker,
@@ -59,7 +168,7 @@ template("fuzzable_proto_library") {
     # multiple components depending on them would statically link duplicate
     # copies of the generated proto code. If a binary depends on multiple of
     # these components it result in ODR violations and crashes due to duplicate
-    # proto descriptor registrations since the protobuf library is a shared
+    # full proto descriptor registrations since the protobuf library is a shared
     # library. By making the target a `component`, we ensure the generated code
     # is compiled exactly once into a single shared library.
     component(target_name) {

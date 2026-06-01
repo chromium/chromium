@@ -85,3 +85,11 @@ if (use_fuzzing_engine_with_lpm) {
     sources = [ "dummy.cc" ]
   }
 }
+
+# Wrapper group that provides protobuf_full to fuzzing and test targets without
+# having to add them to protobuf's visibility list. Similiar to `protobuf_full`
+# above.
+group("protobuf_full_for_fuzzing") {
+  testonly = true
+  public_deps = [ "//third_party/protobuf:protobuf_full" ]
+}

@@ -7,4 +7,5 @@ import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 fuzzable_proto_library("proto") {
   sources = [ "privacy_sandbox_attestations.proto" ]
   cc_generator_options = "lite=true:"
+  use_experimental_fuzzable_proto = true
 }
