@@ -10965,14 +10965,14 @@ bool Element::PseudoElementStylesDependOnAttr() const {
   return PseudoElementStylesDependOnFunc(func);
 }
 
-template <typename Functor>
-bool Element::PseudoElementStylesDependOnFunc(Functor& func) const {
+bool Element::PseudoElementStylesDependOnFunc(
+    base::FunctionRef<bool(const ComputedStyle&)> func) const {
   const ComputedStyle* style = GetComputedStyle();
   if (!style) {
     return false;
   }
 
-  if (style->HasCachedPseudoElementStyle(func)) {
+  if (!IsPseudoElement() && style->DependsOnFunc(func)) {
     return true;
   }
 
@@ -10987,12 +10987,13 @@ bool Element::PseudoElementStylesDependOnFunc(Functor& func) const {
   // Note that |HasAnyPseudoElementStyles()| counts public pseudo-elements only.
   // ::-webkit-scrollbar-*  are internal, and hence are not counted. So we must
   // perform this check after checking scrollbar pseudo-element styles.
-  if (!style->HasAnyPseudoElementStyles()) {
+  if (!IsPseudoElement() && !style->HasAnyPseudoElementStyles()) {
     return false;
   }
 
   for (PseudoElement* pseudo_element : rare_data->GetPseudoElements()) {
-    if (func(*pseudo_element->GetComputedStyle())) {
+    if (func(*pseudo_element->GetComputedStyle()) ||
+        pseudo_element->PseudoElementStylesDependOnFunc(func)) {
       return true;
     }
   }

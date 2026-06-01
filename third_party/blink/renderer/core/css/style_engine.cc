@@ -34,6 +34,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
+#include "base/functional/function_ref.h"
 #include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "third_party/blink/public/common/features.h"
@@ -1262,17 +1263,18 @@ void StyleEngine::MarkViewportUnitDirty(ViewportUnitFlag flag) {
 
 namespace {
 
-template <typename Func>
-void MarkElementsForRecalc(TreeScope& tree_scope,
-                           const StyleChangeReasonForTracing& reason,
-                           Func predicate) {
+void MarkElementsForRecalc(
+    TreeScope& tree_scope,
+    const StyleChangeReasonForTracing& reason,
+    base::FunctionRef<bool(const ComputedStyle&)> predicate) {
   for (Element* element = ElementTraversal::FirstWithin(tree_scope.RootNode());
        element; element = ElementTraversal::NextIncludingPseudo(*element)) {
     if (ShadowRoot* root = element->GetShadowRoot()) {
       MarkElementsForRecalc(*root, reason, predicate);
     }
     const ComputedStyle* style = element->GetComputedStyle();
-    if (style && predicate(*style)) {
+    if (style && (predicate(*style) ||
+                  element->PseudoElementStylesDependOnFunc(predicate))) {
       element->SetNeedsStyleRecalc(kLocalStyleChange, reason);
     }
   }
@@ -1298,11 +1300,10 @@ void StyleEngine::InvalidateViewportUnitStylesIfNeeded() {
 
   const auto& reason =
       StyleChangeReasonForTracing::Create(style_change_reason::kViewportUnits);
-  MarkElementsForRecalc(
-      GetDocument(), reason, [dirty_flags](const ComputedStyle& style) {
-        return (style.ViewportUnitFlags() & dirty_flags) ||
-               style.HighlightPseudoElementStylesDependOnViewportUnits();
-      });
+  MarkElementsForRecalc(GetDocument(), reason,
+                        [dirty_flags](const ComputedStyle& style) {
+                          return (style.ViewportUnitFlags() & dirty_flags) != 0;
+                        });
 }
 
 void StyleEngine::InvalidateStyleAndLayoutForFontUpdates() {

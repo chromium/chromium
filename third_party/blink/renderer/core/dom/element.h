@@ -27,6 +27,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/function_ref.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
@@ -1540,6 +1541,8 @@ class CORE_EXPORT Element : public ContainerNode {
 
   bool PseudoElementStylesDependOnFontMetrics() const;
   bool PseudoElementStylesDependOnAttr() const;
+  bool PseudoElementStylesDependOnFunc(
+      base::FunctionRef<bool(const ComputedStyle&)> func) const;
 
   // Retrieve the ComputedStyle (if any) corresponding to the provided
   // PseudoId from cache, calculating the ComputedStyle on-demand if it's
@@ -2228,8 +2231,6 @@ class CORE_EXPORT Element : public ContainerNode {
 
   ShadowRoot* GetShadowRootInternal() const;
 
-  template <typename Functor>
-  bool PseudoElementStylesDependOnFunc(Functor& func) const;
 
   // Returns true if the element satisfies conditions for focusability for
   // spatial navigation, even if the spatial navigation is not currently

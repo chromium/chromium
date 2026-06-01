@@ -30,6 +30,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/values_equivalent.h"
 #include "base/types/pass_key.h"
@@ -867,18 +868,19 @@ class ComputedStyle final : public ComputedStyleBase {
            (StyleType() == kPseudoIdFirstLetter && !InitialLetter().IsNormal());
   }
 
-  template <typename Functor>
-  bool HasCachedPseudoElementStyle(Functor& func) const {
-    if (!func || !HasCachedPseudoElementStyles()) {
-      return false;
-    }
-
+  bool DependsOnFunc(base::FunctionRef<bool(const ComputedStyle&)> func) const {
     DCHECK_EQ(StyleType(), kPseudoIdNone);
 
-    for (const auto& [key, pseudo_style] : *GetPseudoElementStyleCache()) {
-      if (func(*pseudo_style)) {
-        return true;
+    if (HasCachedPseudoElementStyles()) {
+      for (const auto& [key, pseudo_style] : *GetPseudoElementStyleCache()) {
+        if (func(*pseudo_style)) {
+          return true;
+        }
       }
+    }
+
+    if (HighlightData().StylesDependOnFunc(func)) {
+      return true;
     }
 
     return false;
@@ -886,7 +888,6 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool HighlightPseudoElementStylesDependOnRelativeUnits() const;
   bool HighlightPseudoElementStylesDependOnContainerUnits() const;
-  bool HighlightPseudoElementStylesDependOnViewportUnits() const;
   bool HighlightPseudoElementStylesHaveVariableReferences() const;
 
   // font-size

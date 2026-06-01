@@ -604,34 +604,6 @@ bool ComputedStyle::HighlightPseudoElementStylesDependOnContainerUnits() const {
   return false;
 }
 
-bool ComputedStyle::HighlightPseudoElementStylesDependOnViewportUnits() const {
-  const StyleHighlightData& highlight_data = HighlightData();
-  if (highlight_data.Selection() &&
-      highlight_data.Selection()->HasViewportUnits()) {
-    return true;
-  }
-  if (highlight_data.TargetText() &&
-      highlight_data.TargetText()->HasViewportUnits()) {
-    return true;
-  }
-  if (highlight_data.SpellingError() &&
-      highlight_data.SpellingError()->HasViewportUnits()) {
-    return true;
-  }
-  if (highlight_data.GrammarError() &&
-      highlight_data.GrammarError()->HasViewportUnits()) {
-    return true;
-  }
-  const CustomHighlightsStyleMap& custom_highlights =
-      highlight_data.CustomHighlights();
-  for (const auto& custom_highlight : custom_highlights) {
-    if (custom_highlight.value->HasViewportUnits()) {
-      return true;
-    }
-  }
-
-  return false;
-}
 
 bool ComputedStyle::HighlightPseudoElementStylesHaveVariableReferences() const {
   const StyleHighlightData& highlight_data = HighlightData();
