@@ -27,6 +27,10 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 
+// Android only supports manifest V3 with service workers, but service workers
+// cannot use window.alert().
+static_assert(!BUILDFLAG(IS_ANDROID));
+
 namespace extensions {
 
 namespace {
