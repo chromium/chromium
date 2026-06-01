@@ -43,6 +43,8 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.webapk.lib.client.WebApkServiceConnectionManager;
 import org.chromium.webapk.lib.runtime_library.IWebApkApi;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Provides APIs for browsers to communicate with WebAPK services. Each WebAPK has its own "WebAPK
  * service".
@@ -115,9 +117,11 @@ public class WebApkServiceClient {
     }
 
     private static Handler createPermissionHandler(Callback<Integer> permissionCallback) {
+        final AtomicBoolean called = new AtomicBoolean(false);
         return new Handler(
                 Looper.getMainLooper(),
                 message -> {
+                    if (called.getAndSet(true)) return true;
                     @ContentSetting
                     int settingValue =
                             toContentSettingValue(

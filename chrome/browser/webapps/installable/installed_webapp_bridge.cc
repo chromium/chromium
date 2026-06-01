@@ -4,13 +4,16 @@
 
 #include "chrome/browser/webapps/installable/installed_webapp_bridge.h"
 
+#include <memory>
 #include <utility>
 #include <variant>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
+#include "base/containers/id_map.h"
 #include "base/memory/safety_checks.h"
+#include "base/no_destructor.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -41,6 +44,14 @@ class PermissionCallbackWithAMSC
   ADVANCED_MEMORY_SAFETY_CHECKS();
 };
 
+base::IDMap<std::unique_ptr<PermissionCallbackWithAMSC>, int64_t>&
+GetPermissionCallbacks() {
+  static base::NoDestructor<
+      base::IDMap<std::unique_ptr<PermissionCallbackWithAMSC>, int64_t>>
+      permission_callbacks;
+  return *permission_callbacks;
+}
+
 }  // namespace
 
 static void JNI_InstalledWebappBridge_NotifyPermissionsChange(
@@ -50,20 +61,21 @@ static void JNI_InstalledWebappBridge_NotifyPermissionsChange(
   ContentSettingsType type = static_cast<ContentSettingsType>(type_int);
   DCHECK(IsKnownEnumValue(type));
   InstalledWebappProvider* provider =
-    reinterpret_cast<InstalledWebappProvider*>(j_provider);
+      reinterpret_cast<InstalledWebappProvider*>(j_provider);
   provider->Notify(type);
 }
 
-static void JNI_InstalledWebappBridge_RunPermissionCallback(
-    JNIEnv* env,
-    int64_t callback_ptr,
-    int setting) {
+static void JNI_InstalledWebappBridge_RunPermissionCallback(JNIEnv* env,
+                                                            int64_t callback_id,
+                                                            int setting) {
   DCHECK_LE(setting, static_cast<int>(PermissionDecision::kMaxValue));
-  auto* callback = reinterpret_cast<PermissionCallbackWithAMSC*>(callback_ptr);
-  std::move(*callback).Run(
-      static_cast<PermissionDecision>(static_cast<PermissionDecision>(setting)),
-      /*is_final_decision=*/true);
-  delete callback;
+  auto* callback = GetPermissionCallbacks().Lookup(callback_id);
+  if (!callback) {
+    return;
+  }
+  std::move(*callback).Run(static_cast<PermissionDecision>(setting),
+                           /*is_final_decision=*/true);
+  GetPermissionCallbacks().Remove(callback_id);
 }
 
 InstalledWebappProvider::RuleList
@@ -91,7 +103,7 @@ InstalledWebappBridge::GetInstalledWebappPermissions(ContentSettingsType type) {
 }
 
 void InstalledWebappBridge::SetProviderInstance(
-    InstalledWebappProvider *provider) {
+    InstalledWebappProvider* provider) {
   Java_InstalledWebappBridge_setInstalledWebappProvider(
       base::android::AttachCurrentThread(), (int64_t)provider);
 }
@@ -116,8 +128,8 @@ void InstalledWebappBridge::DecidePermission(ContentSettingsType type,
   // dialog, but as the dialog is modal, the only other thing the user can do
   // is quit Chrome which will also free the pointer. The callback pointer will
   // be destroyed in RunPermissionCallback.
-  PermissionCallbackWithAMSC* callback_ptr =
-      new PermissionCallbackWithAMSC(base::BindOnce(
+  auto callback_with_amsc =
+      std::make_unique<PermissionCallbackWithAMSC>(base::BindOnce(
           [](PermissionCallback callback, const PromptOptions& prompt_options,
              PermissionDecision decision, bool is_final_decision) {
             std::move(callback).Run(permissions::PermissionPromptDecision{
@@ -127,9 +139,12 @@ void InstalledWebappBridge::DecidePermission(ContentSettingsType type,
           },
           std::move(callback), prompt_options));
 
+  int64_t callback_id =
+      GetPermissionCallbacks().Add(std::move(callback_with_amsc));
+
   Java_InstalledWebappBridge_decidePermission(
       env, static_cast<int>(type), origin_url.spec(), last_committed_url.spec(),
-      reinterpret_cast<int64_t>(callback_ptr));
+      callback_id);
 }
 
 DEFINE_JNI(InstalledWebappBridge)
