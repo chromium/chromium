@@ -5,9 +5,11 @@ rust_static_library("bindings") {
   sources = [
     "interface.rs",
     "lib.rs",
+    "marker_types.rs",
     "message.rs",
     "message_header.rs",
     "message_pipe_watcher.rs",
+    "pending_endpoint.rs",
     "receiver.rs",
     "remote.rs",
   ]

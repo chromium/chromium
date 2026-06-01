@@ -9,6 +9,9 @@
 //! performance-critical code may need to use the lower-level types in the
 //! `mojo_rust_system_bindings` crate instead.
 
+mod marker_types;
+mod pending_endpoint;
+
 pub mod interface;
 pub mod message;
 pub mod message_header;

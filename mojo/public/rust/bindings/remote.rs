@@ -27,10 +27,7 @@
 chromium::import! {
   "//mojo/public/rust/system";
   "//base:sequenced_task_runner";
-  "//mojo/public/rust/mojom_value_parser";
-  "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
 }
-use mojom_value_parser_core::{MojomType, MojomValue};
 
 use std::collections::HashMap;
 use std::marker::PhantomData;
@@ -107,36 +104,12 @@ where
 ///
 /// This type represents a `Remote` which has not yet been bound to a
 /// sequence, and is therefore unable to send messages.
-pub struct PendingRemote<T>
-where
-    T: DynMojomInterface + ?Sized,
-{
-    endpoint: MessageEndpoint,
-    _phantom: PhantomData<T>,
-}
+pub type PendingRemote<T> = crate::pending_endpoint::PendingRemote<T>;
 
 impl<T> PendingRemote<T>
 where
     T: DynMojomInterface + ?Sized,
 {
-    /// Create a new PendingRemote from a raw pipe endpoint.
-    ///
-    /// If you want to create a new remote/receiver pair, use
-    /// `new_pipe` instead. This function is mostly useful for creating a new
-    /// `Remote` from an endpoint received via mojo or FFI.
-    ///
-    /// Note that the caller is responsible for ensuring that `Self` has the
-    /// right instantiation of `T` as the other endpoint, or else incoming
-    /// messages will be incomprehensible.
-    pub fn new(endpoint: MessageEndpoint) -> Self {
-        Self { endpoint, _phantom: PhantomData }
-    }
-
-    /// Consume this PendingRemote and return the underlying endpoint.
-    pub fn into_endpoint(self) -> MessageEndpoint {
-        self.endpoint
-    }
-
     /// Bind this pending remote to the current default sequence.
     pub fn bind(self) -> Remote<T> {
         Remote::new(self.endpoint)
@@ -153,19 +126,6 @@ where
                 .expect("Must be called in a context with a default SequencedTaskRunner")
         });
         Remote::new_with_options(self.endpoint, runner, disconnect_handler)
-    }
-
-    /// Create a new Mojo message pipe corresponding to `T`'s interface, and
-    /// return the endpoints
-    ///
-    /// This can only fail if the system has run out of resources to create new
-    /// pipes.
-    pub fn new_pipe() -> Option<(PendingRemote<T>, super::receiver::PendingReceiver<T>)> {
-        let (endpoint1, endpoint2) = MessageEndpoint::create_pipe().ok()?;
-        return Some((
-            PendingRemote::new(endpoint1),
-            super::receiver::PendingReceiver::new(endpoint2),
-        ));
     }
 }
 
@@ -289,37 +249,3 @@ where
 // We deliberately do not implement `From` and `Into` for
 // `Remote/PendingRemote` pairs, because binding and unbinding are
 // stateful operations that should be done explicitly.
-
-impl<T: DynMojomInterface + ?Sized> std::fmt::Debug for PendingRemote<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("PendingRemote").field("endpoint", &self.endpoint).finish()
-    }
-}
-
-impl<T: DynMojomInterface + ?Sized> PartialEq for PendingRemote<T> {
-    fn eq(&self, other: &Self) -> bool {
-        self.endpoint == other.endpoint
-    }
-}
-
-impl<T: DynMojomInterface + ?Sized> Eq for PendingRemote<T> {}
-
-impl<Context, T> mojom_value_parser::MojomParse<Context> for PendingRemote<T>
-where
-    T: DynMojomInterface + ?Sized + 'static,
-{
-    fn mojom_type() -> MojomType {
-        MojomType::PendingRemote
-    }
-
-    fn into_mojom_value(self, _context: &Context) -> MojomValue {
-        MojomValue::PendingRemote(self.into_endpoint())
-    }
-
-    fn try_from_mojom_value(value: MojomValue, _context: &Context) -> anyhow::Result<Self> {
-        match value {
-            MojomValue::PendingRemote(handle) => Ok(PendingRemote::new(handle)),
-            _ => anyhow::bail!("Expected PendingRemote, got {:?}", value),
-        }
-    }
-}
