@@ -9527,6 +9527,22 @@
             ]
         }
     ],
+    "DynamicProfileCountryV2iOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "StrictLocalWaffle_20260519",
+                    "enable_features": [
+                        "StrictAssociatedCountriesCheck",
+                        "WaffleRestrictToAssociatedCountries"
+                    ]
+                }
+            ]
+        }
+    ],
     "EdgeToEdgeUseBackupNavbarInsets": [
         {
             "platforms": [
