@@ -14,8 +14,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -212,6 +214,11 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Returns true if Glic is enabled for the profile, the feature is enabled,
   // and the account is non-enterprise (or for Glic dev).
   static bool IsShareImageEnabledForProfile(Profile* profile);
+
+  // Returns the Gemini Enterprise settings, taking into account command line
+  // overrides.
+  static std::optional<glic::mojom::GeminiEnterpriseSettings>
+  GetGeminiEnterpriseSettings(Profile* profile);
 
   // Whether the live mode and floaty window are enabled by flags.
   static bool IsLiveAndFloatyEnabledByFlags();

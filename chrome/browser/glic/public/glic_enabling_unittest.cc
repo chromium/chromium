@@ -8,9 +8,12 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/mock_log.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -30,6 +33,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -46,6 +50,7 @@
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1404,6 +1409,187 @@ TEST_F(GlicEnablingCombinedObserverTest,
   enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
   EXPECT_TRUE(callback_called);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+
+constexpr char kPrefProjectId[] = "pref-project";
+constexpr char kPrefAppId[] = "pref-engine";
+constexpr char kPrefLocation[] = "pref-location";
+
+constexpr char kCmdProjectId[] = "cmd-project";
+constexpr char kCmdAppId[] = "cmd-engine";
+constexpr char kCmdLocation[] = "cmd-location";
+
+glic::mojom::GeminiEnterpriseSettings GetPrefSettings() {
+  return glic::mojom::GeminiEnterpriseSettings(kPrefProjectId, kPrefAppId,
+                                               kPrefLocation);
+}
+
+glic::mojom::GeminiEnterpriseSettings GetCmdSettings() {
+  return glic::mojom::GeminiEnterpriseSettings(kCmdProjectId, kCmdAppId,
+                                               kCmdLocation);
+}
+
+std::string ToJsonString(
+    const glic::mojom::GeminiEnterpriseSettings& settings) {
+  return base::StringPrintf(
+      R"({"project_id": "%s", "app_id": "%s", "location": "%s"})",
+      settings.project_id.c_str(), settings.app_id.c_str(),
+      settings.location.c_str());
+}
+
+base::DictValue ToDictValue(
+    const glic::mojom::GeminiEnterpriseSettings& settings) {
+  base::DictValue dict;
+  dict.Set("project_id", settings.project_id);
+  dict.Set("app_id", settings.app_id);
+  dict.Set("location", settings.location);
+  return dict;
+}
+
+struct GeminiEnterpriseSettingsParams {
+  bool feature_enabled = false;
+  std::optional<glic::mojom::GeminiEnterpriseSettings> pref_settings;
+  std::optional<glic::mojom::GeminiEnterpriseSettings> cmd_settings;
+  std::optional<glic::mojom::GeminiEnterpriseSettings> expected_settings;
+};
+
+class GlicEnablingGeminiEnterpriseSettingsTest
+    : public GlicEnablingProfileEligibilityTest,
+      public testing::WithParamInterface<GeminiEnterpriseSettingsParams> {
+ public:
+  GlicEnablingGeminiEnterpriseSettingsTest() {
+    const auto& params = GetParam();
+    if (params.feature_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kGlicGeminiEnterpriseSettingsEnabled);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kGlicGeminiEnterpriseSettingsEnabled);
+    }
+  }
+
+  void SetUp() override {
+    GlicEnablingProfileEligibilityTest::SetUp();
+
+    const auto& params = GetParam();
+
+    if (params.pref_settings.has_value()) {
+      profile()->GetPrefs()->SetDict(glic::prefs::kGlicGeminiEnterpriseSettings,
+                                     ToDictValue(params.pref_settings.value()));
+    }
+
+    if (params.cmd_settings.has_value()) {
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+          switches::kGlicGeminiEnterpriseSettingsOverride,
+          ToJsonString(params.cmd_settings.value()));
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+TEST_P(GlicEnablingGeminiEnterpriseSettingsTest, ExpectedBehavior) {
+  std::optional<glic::mojom::GeminiEnterpriseSettings> settings =
+      GlicEnabling::GetGeminiEnterpriseSettings(profile());
+
+  const auto& expected = GetParam().expected_settings;
+
+  if (expected.has_value()) {
+    EXPECT_THAT(
+        settings,
+        testing::Optional(testing::AllOf(
+            testing::Field("project_id",
+                           &glic::mojom::GeminiEnterpriseSettings::project_id,
+                           expected->project_id),
+            testing::Field("app_id",
+                           &glic::mojom::GeminiEnterpriseSettings::app_id,
+                           expected->app_id),
+            testing::Field("location",
+                           &glic::mojom::GeminiEnterpriseSettings::location,
+                           expected->location))));
+  } else {
+    EXPECT_EQ(settings, std::nullopt);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlicEnablingGeminiEnterpriseSettingsTest,
+    testing::Values(
+        GeminiEnterpriseSettingsParams{.feature_enabled = true,
+                                       .expected_settings = std::nullopt},
+        GeminiEnterpriseSettingsParams{.feature_enabled = true,
+                                       .pref_settings = GetPrefSettings(),
+                                       .expected_settings = GetPrefSettings()},
+        GeminiEnterpriseSettingsParams{.feature_enabled = false,
+                                       .pref_settings = GetPrefSettings(),
+                                       .expected_settings = std::nullopt},
+        GeminiEnterpriseSettingsParams{.feature_enabled = true,
+                                       .pref_settings = GetPrefSettings(),
+                                       .cmd_settings = GetCmdSettings(),
+                                       .expected_settings = GetCmdSettings()},
+        GeminiEnterpriseSettingsParams{.feature_enabled = false,
+                                       .cmd_settings = GetCmdSettings(),
+                                       .expected_settings = std::nullopt},
+        GeminiEnterpriseSettingsParams{.feature_enabled = true,
+                                       .cmd_settings = GetCmdSettings(),
+                                       .expected_settings = GetCmdSettings()}));
+
+class GlicEnablingGeminiEnterpriseSettingsErrorTest
+    : public GlicEnablingProfileEligibilityTest {
+ public:
+  GlicEnablingGeminiEnterpriseSettingsErrorTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGlicGeminiEnterpriseSettingsEnabled);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+TEST_F(GlicEnablingGeminiEnterpriseSettingsErrorTest, InvalidJsonLogsError) {
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kGlicGeminiEnterpriseSettingsOverride, "invalid json");
+
+  base::test::MockLog mock_log;
+  EXPECT_CALL(
+      mock_log,
+      Log(logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
+          testing::HasSubstr("Gemini Enterprise settings override is not a "
+                             "valid JSON dictionary.")))
+      .Times(1);
+  mock_log.StartCapturingLogs();
+
+  EXPECT_EQ(GlicEnabling::GetGeminiEnterpriseSettings(profile()), std::nullopt);
+
+  mock_log.StopCapturingLogs();
+}
+
+TEST_F(GlicEnablingGeminiEnterpriseSettingsErrorTest, MissingFieldsLogsError) {
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kGlicGeminiEnterpriseSettingsOverride,
+      "{\"project_id\": \"p\"}");
+
+  base::test::MockLog mock_log;
+  EXPECT_CALL(
+      mock_log,
+      Log(logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
+          testing::HasSubstr("Gemini Enterprise settings override is missing "
+                             "required fields.")))
+      .Times(1);
+  mock_log.StartCapturingLogs();
+
+  EXPECT_EQ(GlicEnabling::GetGeminiEnterpriseSettings(profile()), std::nullopt);
+
+  mock_log.StopCapturingLogs();
+}
+
+#endif
 
 }  // namespace
 }  // namespace glic

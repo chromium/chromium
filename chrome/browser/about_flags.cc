@@ -10719,6 +10719,19 @@ const FeatureEntry kFeatureEntries[] = {
                                     kGlicGuestUrlPresetTypes,
                                     "GlicGuestUrlPresets")},
 
+    // Glic enterprise settings
+    {"glic-gemini-enterprise-settings-override",
+     flag_descriptions::kGlicGeminiEnterpriseSettingsOverrideName,
+     flag_descriptions::kGlicGeminiEnterpriseSettingsOverrideDescription, kOsDesktop,
+     STRING_VALUE_TYPE(switches::kGlicGeminiEnterpriseSettingsOverride, "")},
+
+    {"glic-gemini-enterprise-settings-enabled",
+     flag_descriptions::kGlicGeminiEnterpriseSettingsEnabledName,
+     flag_descriptions::kGlicGeminiEnterpriseSettingsEnabledDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         features::kGlicGeminiEnterpriseSettingsEnabled)},
+
     {"glic-selection-prompt", flag_descriptions::kGlicSelectionPromptName,
      flag_descriptions::kGlicSelectionPromptDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kGlicSelectionPromptChoices)},

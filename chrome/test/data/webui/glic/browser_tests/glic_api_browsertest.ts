@@ -38,6 +38,33 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testHibernateAllOnMemoryPressure() {}
 
+  async testGeminiEnterpriseSettings() {
+    assertDefined(this.host.getGeminiEnterpriseSettings);
+    const settingsObservable = this.host.getGeminiEnterpriseSettings();
+    const settings = settingsObservable.getCurrentValue();
+    assertDefined(settings);
+    assertEquals(settings.projectId, 'switch-project');
+    assertEquals(settings.appId, 'switch-engine');
+    assertEquals(settings.location, 'switch-location');
+  }
+
+  async testGeminiEnterpriseSettingsPolicy() {
+    assertDefined(this.host.getGeminiEnterpriseSettings);
+    const settingsObservable = this.host.getGeminiEnterpriseSettings();
+    const settings = settingsObservable.getCurrentValue();
+    assertDefined(settings);
+    assertEquals(settings.projectId, 'policy-project');
+    assertEquals(settings.appId, 'policy-engine');
+    assertEquals(settings.location, 'policy-location');
+  }
+
+  async testGeminiEnterpriseSettingsDisabled() {
+    assertDefined(this.host.getGeminiEnterpriseSettings);
+    const settingsObservable = this.host.getGeminiEnterpriseSettings();
+    const settings = settingsObservable.getCurrentValue();
+    assertUndefined(settings);
+  }
+
   async testCancelActions() {
     assertDefined(this.host.cancelActions);
     const taskId: number = this.testParams;

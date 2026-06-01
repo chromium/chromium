@@ -4,7 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import type {ActorTaskInterruptReason, AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, ExperimentalTriggeringUpdate, FocusedTabData, FormFactor, FormFillingResponse, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, MicrophoneStatus, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActorTaskInterruptReason, AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, ExperimentalTriggeringUpdate, FocusedTabData, FormFactor, FormFillingResponse, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, MicrophoneStatus, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {OneShotTimer} from '../../timer.js';
@@ -100,6 +100,12 @@ class WebClientMessageHandler implements MessageHandlerInterface<WebClient> {
 
   glicWebClientCanAttachStateChanged(payload: {canAttach: boolean}): void {
     this.host.canAttachPanelValue.assignAndSignal(payload.canAttach);
+  }
+
+  glicWebClientNotifyGeminiEnterpriseSettingsChanged(payload: {
+    settings: GeminiEnterpriseSettings|undefined,
+  }) {
+    this.host.getGeminiEnterpriseSettings?.().assignAndSignal(payload.settings);
   }
 
   glicWebClientNotifyMicrophonePermissionStateChanged(payload: {
@@ -437,6 +443,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   private panelState = ObservableValueImpl.withNoValue<PanelState>();
   canAttachPanelValue = ObservableValueImpl.withNoValue<boolean>();
   private focusedTabStateV2 = ObservableValueImpl.withNoValue<FocusedTabData>();
+  private geminiEnterpriseSettings =
+      ObservableValueImpl.withNoValue<GeminiEnterpriseSettings|undefined>();
   private zoomLevel =
       ObservableValueImpl.withNoValue<number>(async (isActive: boolean) => {
         if (isActive) {
@@ -549,6 +557,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
       this.journalHost = new GlicBrowserHostJournalImpl(this.actorSender);
     }
     const state = response.initialState;
+    this.geminiEnterpriseSettings.assignAndSignal(
+        state.geminiEnterpriseSettings ?? undefined);
     this.router.setLoggingEnabled(state.loggingEnabled);
     this.clientRemote.rawSender().setMaxInFlightRequests(
         state.maxInFlightRequests);
@@ -802,6 +812,11 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     const result = await this.clientRemote.requestWithResponse(
         'glicBrowserGetModelQualityClientId', undefined);
     return result.modelQualityClientId;
+  }
+
+  getGeminiEnterpriseSettings?
+      (): ObservableValueImpl<GeminiEnterpriseSettings|undefined> {
+    return this.geminiEnterpriseSettings;
   }
 
   async switchConversation(info?: ConversationInfo): Promise<void> {

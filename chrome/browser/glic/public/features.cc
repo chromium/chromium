@@ -193,4 +193,8 @@ BASE_FEATURE(kGlicSetWebContentsVisibilityWhenToggling,
 BASE_FEATURE(kGlicProcessCounterAbuseVerdict,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicNoWebUiLoader, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicGeminiEnterpriseSettingsEnabled,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

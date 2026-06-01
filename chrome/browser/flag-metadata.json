@@ -5360,6 +5360,22 @@
     "expiry_milestone": 154
   },
   {
+    "name": "glic-gemini-enterprise-settings-enabled",
+    "owners": [
+      "alexwchen@google.com",
+      "austinzzr@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "glic-gemini-enterprise-settings-override",
+    "owners": [
+      "alexwchen@google.com",
+      "austinzzr@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-guest-url-presets",
     "owners": [
       "cuianthony@google.com",

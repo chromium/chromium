@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateSkillRequest, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GetPinCandidatesOptions, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UpdateSkillRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {AdditionalContext, AdditionalContextPart, GeminiEnterpriseSettings, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateSkillRequest, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GetPinCandidatesOptions, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UpdateSkillRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 import type {ActorClient, ActorHost} from './actor/actor_types.js';
 import type {CheckStructuredClonable, ReplaceProperties, ValidateRequestMap} from './transport/messaging.js';
@@ -528,6 +528,12 @@ export declare interface WebClient {
   glicWebClientCanAttachStateChanged: {
     request: {
       canAttach: boolean,
+    },
+    backgroundAllowed: true,
+  };
+  glicWebClientNotifyGeminiEnterpriseSettingsChanged: {
+    request: {
+      settings: GeminiEnterpriseSettings | undefined,
     },
     backgroundAllowed: true,
   };

@@ -521,6 +521,13 @@ enum FormFactor {
   kTablet = 3,
 };
 
+// @generate glic_api
+struct GeminiEnterpriseSettings {
+  string project_id;
+  string app_id;
+  string location;
+};
+
 // The result of `WebClientCreated()`. Contains information that needs to be
 // available before the web client is initialized.
 struct WebClientInitialState {
@@ -590,6 +597,8 @@ struct WebClientInitialState {
   bool enable_get_tab_favicon_by_id;
   // Whether the processCounterAbuseVerdict API is enabled.
   bool enable_process_counter_abuse_verdict;
+  // Settings for Gemini Enterprise.
+  GeminiEnterpriseSettings? gemini_enterprise_settings;
 };
 
 // @generate glic_api
@@ -2064,6 +2073,9 @@ interface WebClient {
 
   // The onboarding completed state has changed.
   NotifyOnboardingCompletedChanged(bool completed);
+
+  // Informs the client that the Gemini Enterprise settings have changed.
+  NotifyGeminiEnterpriseSettingsChanged(GeminiEnterpriseSettings? settings);
 
   // Notifies the client that the user has clicked on a row in the actor task
   // list bubble.

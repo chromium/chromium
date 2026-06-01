@@ -191,6 +191,10 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicOnboardingApiTest",
       "GlicApiTestWithDaisyChain",
       "GlicApiTestNoFloatyOrLiveMode",
+      "GlicApiTestGeminiEnterpriseSettingsOverride",
+      "GlicApiTestGeminiEnterpriseSettingsDisabled",
+      "GlicApiTestGeminiEnterpriseSettingsPolicy",
+      "GlicApiTestGeminiEnterpriseSettingsPolicyUnset",
   };
 }
 
@@ -599,6 +603,98 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Test fixture that injects GeminiEnterpriseSettings via command line override.
+class GlicApiTestGeminiEnterpriseSettingsOverride : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestGeminiEnterpriseSettingsOverride() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGlicGeminiEnterpriseSettingsEnabled);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicApiTestWithOneTab::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kGlicGeminiEnterpriseSettingsOverride,
+        "{\"project_id\": \"switch-project\", \"app_id\": \"switch-engine\", "
+        "\"location\": \"switch-location\"}");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class GlicApiTestGeminiEnterpriseSettingsDisabled
+    : public GlicApiTestGeminiEnterpriseSettingsOverride {
+ public:
+  GlicApiTestGeminiEnterpriseSettingsDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGlicGeminiEnterpriseSettingsEnabled);
+  }
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class GlicApiTestGeminiEnterpriseSettingsPolicy : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestGeminiEnterpriseSettingsPolicy() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGlicGeminiEnterpriseSettingsEnabled);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    GlicApiTestWithOneTab::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
+  void SetUpOnMainThread() override {
+    policy_provider_.SetupPolicyServiceForPolicyUpdates(
+        browser()->profile()->GetProfilePolicyConnector()->policy_service());
+
+    base::DictValue enterprise_settings;
+    enterprise_settings.Set("project_id", "policy-project");
+    enterprise_settings.Set("app_id", "policy-engine");
+    enterprise_settings.Set("location", "policy-location");
+    policy::PolicyMap policies =
+        policy_provider_.policies()
+            .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
+                                         std::string()))
+            .Clone();
+    policies.Set(policy::key::kGeminiEnterpriseSettings,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                 base::Value(std::move(enterprise_settings)), nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+
+    base::RunLoop().RunUntilIdle();
+
+    GlicApiTestWithOneTab::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    policy_provider_.SetupPolicyServiceForPolicyUpdates(nullptr);
+    GlicApiTestWithOneTab::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+class GlicApiTestGeminiEnterpriseSettingsPolicyUnset
+    : public GlicApiTestGeminiEnterpriseSettingsPolicy {
+ public:
+  GlicApiTestGeminiEnterpriseSettingsPolicyUnset() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGlicGeminiEnterpriseSettingsEnabled);
+  }
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Note: Test names must match test function names in api_test.ts.
 
 // TODO(harringtond): Many of these tests are minimal, and could be improved
@@ -606,6 +702,27 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
 
 // Just verify the test harness works.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDoNothing) {
+  ExecuteJsTest();
+}
+
+// Verifies that the TypeScript API receives and exposes the switch settings.
+IN_PROC_BROWSER_TEST_P(GlicApiTestGeminiEnterpriseSettingsOverride,
+                       testGeminiEnterpriseSettings) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestGeminiEnterpriseSettingsDisabled,
+                       testGeminiEnterpriseSettingsDisabled) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestGeminiEnterpriseSettingsPolicy,
+                       testGeminiEnterpriseSettingsPolicy) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestGeminiEnterpriseSettingsPolicyUnset,
+                       testGeminiEnterpriseSettingsDisabled) {
   ExecuteJsTest();
 }
 
@@ -3355,6 +3472,22 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithFailedCookieSync,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestGeminiEnterpriseSettingsOverride,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestGeminiEnterpriseSettingsDisabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestGeminiEnterpriseSettingsPolicy,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestGeminiEnterpriseSettingsPolicyUnset,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 }  // namespace

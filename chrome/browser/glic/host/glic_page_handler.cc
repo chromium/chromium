@@ -516,6 +516,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         prefs::kGlicDefaultTabContextEnabled,
         base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
                             base::Unretained(this)));
+    pref_change_registrar_.Add(
+        glic::prefs::kGlicGeminiEnterpriseSettings,
+        base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
+                            base::Unretained(this)));
     web_actuation_pref_subscription_ =
         glic_service_->enabling().RegisterOnUserEnabledActuationOnWebChanged(
             base::BindRepeating(
@@ -704,6 +708,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(features::kGlicGetTabFaviconById);
     state->enable_process_counter_abuse_verdict =
         base::FeatureList::IsEnabled(features::kGlicProcessCounterAbuseVerdict);
+
+    state->gemini_enterprise_settings = GetGeminiEnterpriseSettingsPtr();
 
     std::move(callback).Run(std::move(state));
   }
@@ -1727,6 +1733,20 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
  private:
+  glic::mojom::GeminiEnterpriseSettingsPtr GetGeminiEnterpriseSettingsPtr()
+      const {
+    std::optional<glic::mojom::GeminiEnterpriseSettings>
+        gemini_enterprise_settings =
+            GlicEnabling::GetGeminiEnterpriseSettings(profile_);
+    if (gemini_enterprise_settings.has_value()) {
+      return glic::mojom::GeminiEnterpriseSettings::New(
+          gemini_enterprise_settings->project_id,
+          gemini_enterprise_settings->app_id,
+          gemini_enterprise_settings->location);
+    }
+    return nullptr;
+  }
+
   bool ComputeCanAttach() const { return floating_panel_can_attach_; }
 
   void NotifyCanAttachChanged() {
@@ -1787,6 +1807,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     } else if (pref_name == prefs::kGlicDefaultTabContextEnabled) {
       web_client_->NotifyDefaultTabContextPermissionStateChanged(
           pref_service_->GetBoolean(pref_name));
+    } else if (pref_name == glic::prefs::kGlicGeminiEnterpriseSettings) {
+      web_client_->NotifyGeminiEnterpriseSettingsChanged(
+          GetGeminiEnterpriseSettingsPtr());
     } else {
       DCHECK(false) << "Unknown Glic permission pref changed: " << pref_name;
     }

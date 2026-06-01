@@ -107,6 +107,13 @@ export declare interface ZssConfig {
   additionalContent?: string;
 }
 
+/** Settings for Gemini Enterprise. */
+export declare interface GeminiEnterpriseSettings {
+  projectId: string;
+  appId: string;
+  location: string;
+}
+
 /** Options for invoking Glic. */
 export declare interface InvokeOptions {
   /** Source that triggered this invocation. */
@@ -310,6 +317,13 @@ export declare interface GlicBrowserHost {
    * this method can be unsafe to call even when it's defined.
    */
   getModelQualityClientId?(): Promise<string>;
+
+  /**
+   * Returns the Gemini Enterprise settings if available.
+   * New in May 2026.
+   */
+  getGeminiEnterpriseSettings?
+      (): ObservableValue<GeminiEnterpriseSettings|undefined>;
 
   /**
    * Fetches page context for the currently focused tab, optionally including

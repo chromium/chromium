@@ -12879,6 +12879,7 @@ from previous Chrome versions.
   <int value="-433879402"
       label="EnableAmbientAuthenticationInIncognito:disabled"/>
   <int value="-433775463" label="EnforceManagementDisclaimer:enabled"/>
+  <int value="-433732913" label="GlicGeminiEnterpriseSettingsEnabled:disabled"/>
   <int value="-431656941" label="LongScreenshotsLenientMemoryCheck:enabled"/>
   <int value="-431617217" label="ArcGhostWindowNewStyle:disabled"/>
   <int value="-431553693" label="ChangePasswordAffiliationInfo:disabled"/>
@@ -17274,6 +17275,7 @@ from previous Chrome versions.
   <int value="1012997760" label="OmniboxExpandedStateSuggestIcons:disabled"/>
   <int value="1013066153"
       label="SafetyHubUnusedPermissionRevocationForAllSurfaces:disabled"/>
+  <int value="1013353355" label="GlicGeminiEnterpriseSettingsEnabled:enabled"/>
   <int value="1013656454"
       label="EnableKeyboardBacklightControlInSettings:disabled"/>
   <int value="1013734783" label="WebViewXRequestedWithHeader:disabled"/>
@@ -18480,6 +18482,7 @@ from previous Chrome versions.
   <int value="1399126464" label="DefaultBrowserPromptRefresh:disabled"/>
   <int value="1399386367" label="LocalHistoryZeroSuggestBeyondNTP:disabled"/>
   <int value="1399657075" label="IndexedDBCompressValuesWithSnappy:enabled"/>
+  <int value="1401713551" label="glic-gemini-enterprise-settings-override"/>
   <int value="1401948539" label="TpcdSupportSettings:disabled"/>
   <int value="1402046854" label="DesktopUAOnConnectedDisplay:enabled"/>
   <int value="1402156039" label="BakedGamutMapping:disabled"/>

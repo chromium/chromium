@@ -1615,6 +1615,15 @@ inline constexpr char kGlicGuestUrlPresetsName[] = "Glic guest URL presets";
 inline constexpr char kGlicGuestUrlPresetsDescription[] =
     "Overrides the Bluebird environment URL used for Glic with user-configured "
     "values. Intended for manual testing only.";
+inline constexpr char kGlicGeminiEnterpriseSettingsOverrideName[] =
+    "Glic Gemini Enterprise Settings Override";
+inline constexpr char kGlicGeminiEnterpriseSettingsOverrideDescription[] =
+    "Overrides the Gemini Enterprise settings (project_id, app_id, location) "
+    "for Glic local development and testing.";
+inline constexpr char kGlicGeminiEnterpriseSettingsEnabledName[] =
+    "Glic Gemini Enterprise Settings Enabled Feature";
+inline constexpr char kGlicGeminiEnterpriseSettingsEnabledDescription[] =
+    "Enables the Glic Gemini Enterprise settings feature.";
 inline constexpr char kGlicDisableActorSafetyChecksName[] =
     "Glic disable actor safety checks";
 inline constexpr char kGlicDisableActorSafetyChecksDescription[] =
