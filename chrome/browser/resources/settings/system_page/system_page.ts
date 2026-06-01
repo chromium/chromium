@@ -139,7 +139,7 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
   // </if>
   // <if expr="is_win">
   declare private showProcessIsolationSetting_: boolean;
-  private processIsolationEnabledAtStartup_: boolean = false;
+  private processIsolationEnabledAtStartup_: boolean|undefined;
   // </if>
 
   // <if expr="_google_chrome">
@@ -272,6 +272,9 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
 
   // <if expr="is_win">
   private shouldShowIsolationRestart_(): boolean {
+    if (this.processIsolationEnabledAtStartup_ === undefined) {
+      return false;
+    }
     return this.getPref('isolation_state.enabled').value !==
         this.processIsolationEnabledAtStartup_;
   }

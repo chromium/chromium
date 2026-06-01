@@ -5,10 +5,13 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {SettingsSystemPageElement, SystemPageBrowserProxy} from 'chrome://settings/lazy_load.js';
 import {SystemPageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {LifetimeBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, LifetimeBrowserProxyImpl} from 'chrome://settings/settings.js';
+import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -51,8 +54,56 @@ suite('settings system page', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   // </if>
   let systemPage: SettingsSystemPageElement;
+  let settingsPrefs: SettingsPrefsElement;
 
-  setup(function() {
+  function getInitialPrefs(_isolationEnabledAtStartup: boolean):
+      chrome.settingsPrivate.PrefObject[] {
+    const prefs = [
+      {
+        key: 'background_mode.enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+      {
+        key: 'hardware_acceleration_mode.enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: HARDWARE_ACCELERATION_AT_STARTUP,
+      },
+      {
+        key: 'proxy',
+        type: chrome.settingsPrivate.PrefType.DICTIONARY,
+        value: {mode: 'system'},
+      },
+      {
+        key: 'proxy_override_rules',
+        type: chrome.settingsPrivate.PrefType.LIST,
+        value: [],
+      },
+    ];
+    // <if expr="is_win">
+    prefs.push({
+      key: 'isolation_state.enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: _isolationEnabledAtStartup,
+    });
+    // </if>
+    // <if expr="_google_chrome and is_win">
+    prefs.push({
+      key: 'feature_notifications_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    });
+    // </if>
+    return prefs;
+  }
+
+  suiteSetup(function() {
+    CrSettingsPrefs.deferInitialization = true;
+    settingsPrefs = document.createElement('settings-prefs');
+    document.body.appendChild(settingsPrefs);
+  });
+
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // <if expr="is_win">
     loadTimeData.overrideValues({
@@ -69,54 +120,21 @@ suite('settings system page', function() {
     systemBrowserProxy = new TestSystemPageBrowserProxy();
     SystemPageBrowserProxyImpl.setInstance(systemBrowserProxy);
 
+    settingsPrefs.resetForTesting();
+    CrSettingsPrefs.resetForTesting();
+    const fakeSettingsPrivate = new FakeSettingsPrivate(
+        getInitialPrefs(/*_isolationEnabledAtStartup=*/ false));
+    settingsPrefs.initialize(fakeSettingsPrivate);
+
+    await CrSettingsPrefs.initialized;
+
     systemPage = document.createElement('settings-system-page');
-    systemPage.set('prefs', {
-      background_mode: {
-        enabled: {
-          key: 'background_mode.enabled',
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: true,
-        },
-      },
-      hardware_acceleration_mode: {
-        enabled: {
-          key: 'hardware_acceleration_mode.enabled',
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: HARDWARE_ACCELERATION_AT_STARTUP,
-        },
-      },
-      // <if expr="is_win">
-      isolation_state: {
-        enabled: {
-          key: 'isolation_state.enabled',
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-      },
-      // </if>
-      proxy: {
-        key: 'proxy',
-        type: chrome.settingsPrivate.PrefType.DICTIONARY,
-        value: {mode: 'system'},
-      },
-      proxy_override_rules: {
-        key: 'proxy_override_rules',
-        type: chrome.settingsPrivate.PrefType.LIST,
-        value: [],
-      },
-      // <if expr="_google_chrome and is_win">
-      feature_notifications_enabled: {
-        key: 'feature_notifications_enabled',
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        value: true,
-      },
-      // </if>
-    });
+    systemPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(systemPage);
 
     // Ensure that dynamic Polymer nodes (i.e., featureNotificationsEnabled,
     // which is behind a `dom-if` block) are loaded.
-    flush();
+    await flushTasks();
   });
 
   teardown(function() {
@@ -159,6 +177,47 @@ suite('settings system page', function() {
     flush();
     assertTrue(control.checked);
 
+    const restart = control.querySelector('cr-button');
+    assertTrue(!!restart);
+
+    restart.click();
+    return lifetimeBrowserProxy.whenCalled('restart');
+  });
+
+  test('process isolation restart button (starts enabled)', async function() {
+    // Recreate the page with the pref starting as true.
+    systemPage.remove();
+    settingsPrefs.resetForTesting();
+    CrSettingsPrefs.resetForTesting();
+
+    const fakeSettingsPrivate = new FakeSettingsPrivate(
+        getInitialPrefs(/*_isolationEnabledAtStartup=*/ true));
+    settingsPrefs.initialize(fakeSettingsPrivate);
+
+    await CrSettingsPrefs.initialized;
+
+    systemPage = document.createElement('settings-system-page');
+    systemPage.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(systemPage);
+    await flushTasks();
+
+    const control =
+        systemPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#isolationState');
+    assertTrue(!!control);
+
+    // The pref starts as true.
+    assertTrue(control.checked);
+
+    // Restart button should be hidden by default because startup state matches.
+    assertFalse(!!control.querySelector('cr-button'));
+
+    // Toggle the setting off.
+    systemPage.setPrefValue('isolation_state.enabled', false);
+    flush();
+    assertFalse(control.checked);
+
+    // Now the restart button should be showing.
     const restart = control.querySelector('cr-button');
     assertTrue(!!restart);
 
