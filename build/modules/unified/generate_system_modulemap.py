@@ -23,7 +23,8 @@ import modulemap_config
 _HEADER_RE = re.compile(r'(?:(private)\s+)?(?:(textual)\s+)?header\s+"([^"]+)"')
 _SIMPLE_HEADER_RE = re.compile(r'(\bheader\s+")([^"]+)(")')
 _REQUIRES_RE = re.compile(r'^\s*requires\s+(.*)')
-# This needs to match all triple dirs that exist in /usr/include in the sysroot.
+# This needs to match all triple dirs that exist in root_include_dir in the
+# sysroot.
 _TRIPLE = re.compile('^(.*)-(linux|cros)-(gnu|gnueabi|gnueabihf|android)$')
 _DEBUG_SOURCE = '/tmp/debug_generate_system_modulemap.cc'
 _DEBUG_SCRIPT = pathlib.Path('/tmp/debug_generate_system_modulemap.sh')
@@ -367,7 +368,10 @@ def calculate_transitive_headers(clang_args: list[str],
                 '-MF',
                 str(dep_file),
             ],
-            target_os)
+            target_os),
+        # Since we're only doing preprocessing, some non-preprocessor args go
+        # unused. That's fine.
+        '-Wno-unused-command-line-argument',
     ]
 
     if debug:
@@ -537,7 +541,7 @@ def main(args, extra_args):
     sysroot_dirs = []
     if args.sysroot:
       extra_args.append(f'--sysroot={args.sysroot}')
-      subdir = args.sysroot / 'usr/include'
+      subdir = args.sysroot / args.root_include_dir
       sysroot_dirs.append(subdir)
       for d in subdir.iterdir():
         # We append *every* triple, not just the correct one.
@@ -553,30 +557,7 @@ def main(args, extra_args):
       for arg in extra_args:
         if arg.startswith('/I'):
           sysroot_dirs.append(pathlib.Path(arg.removeprefix('/I')))
-    clang_args = [
-        str(args.clang),
-        *_format_clang_args(
-            [
-                # Some files are only read with optimization flags enabled.
-                '-O2',
-                '-D_FORTIFY_SOURCE=3',
-                # Ensure we're using the right libc++
-                '-nostdinc++',
-                f'-I{_SRC_PREFIX}/third_party/libc++/src/include',
-                f'-I{_SRC_PREFIX}/third_party/libc++abi/src/include',
-                f'-I{_SRC_PREFIX}/buildtools/third_party/libc++',
-                # Libc++ feature/hardening macros required by libc++ headers.
-                '-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE',
-                '-D_LIBCPP_BUILDING_LIBRARY',
-                '-std=c++23',
-                # Ensures that paths to compiler builtin headers are kept
-                # relative rather than being resolved to absolute/canonical
-                # symlinked paths.
-                '-no-canonical-prefixes',
-            ],
-            args.os),
-        *extra_args
-    ]
+    clang_args = [str(args.clang), '-D_LIBCPP_BUILDING_LIBRARY', *extra_args]
     allowlist = AllowList(modulemap_config.headers(os=args.os))
 
     deps = calculate_transitive_headers(
@@ -627,6 +608,9 @@ if __name__ == '__main__':
   parser.add_argument('--sysroot',
                       type=pathlib.Path,
                       help='Path to the sysroot directory.')
+  parser.add_argument(
+      '--root_include_dir',
+      help='Path to the root include dir. Relative to the sysroot.')
   parser.add_argument('--output',
                       type=pathlib.Path,
                       required=True,
