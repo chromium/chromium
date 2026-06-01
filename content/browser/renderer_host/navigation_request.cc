@@ -9389,7 +9389,7 @@ void NavigationRequest::WriteIntoTrace(
   ctx->set_navigation_id(navigation_id_);
   ctx->set_has_committed(HasCommitted());
   ctx->set_is_error_page(IsErrorPage());
-  ctx.Set(TraceProto::kFrameTreeNode, frame_tree_node_);
+  ctx.Set(TraceProto::kFrameTreeNode, frame_tree_node());
   if (state_ >= WILL_PROCESS_RESPONSE)
     ctx.Set(TraceProto::kRenderFrameHost, GetRenderFrameHost());
 
