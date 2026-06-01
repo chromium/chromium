@@ -20,7 +20,8 @@ class AccountCapabilitiesFetcherIOS : public AccountCapabilitiesFetcher {
       const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
       ChromeAccountManagerService* account_manager_service,
-      OnCompleteCallback on_complete_callback);
+      OnSomeCapabilitiesFetchedCallback on_some_capabilities_fetched_callback,
+      OnAllFetchesCompleteCallback on_all_fetches_complete_callback);
   ~AccountCapabilitiesFetcherIOS() override;
 
   AccountCapabilitiesFetcherIOS(const AccountCapabilitiesFetcherIOS&) = delete;

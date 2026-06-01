@@ -208,6 +208,9 @@ void AccountFetcherService::StartFetchingAccountCapabilities(
         account_info.capabilities.AreAnyCapabilitiesKnown()
             ? AccountCapabilitiesFetcher::FetchPriority::kBackground
             : AccountCapabilitiesFetcher::FetchPriority::kForeground,
+        base::BindRepeating(
+            &AccountFetcherService::OnSomeAccountCapabilitiesFetched,
+            base::Unretained(this)),
         base::BindOnce(
             &AccountFetcherService::OnAccountCapabilitiesFetchComplete,
             base::Unretained(this)));
@@ -340,13 +343,15 @@ void AccountFetcherService::FetchAccountImage(const CoreAccountId& account_id) {
                                         std::move(callback), std::move(params));
 }
 
-void AccountFetcherService::OnAccountCapabilitiesFetchComplete(
+void AccountFetcherService::OnSomeAccountCapabilitiesFetched(
     const CoreAccountId& account_id,
-    const std::optional<AccountCapabilities>& account_capabilities) {
-  if (account_capabilities.has_value()) {
-    account_tracker_service_->SetAccountCapabilities(account_id,
-                                                     *account_capabilities);
-  }
+    const AccountCapabilities& account_capabilities) {
+  account_tracker_service_->SetAccountCapabilities(account_id,
+                                                   account_capabilities);
+}
+
+void AccountFetcherService::OnAccountCapabilitiesFetchComplete(
+    const CoreAccountId& account_id) {
   // |account_id| is owned by the request. Cannot be used after this line.
   account_capabilities_requests_.erase(account_id);
 }

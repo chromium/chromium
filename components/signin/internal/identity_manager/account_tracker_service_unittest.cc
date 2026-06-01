@@ -351,6 +351,10 @@ class AccountTrackerServiceTest : public testing::Test {
   void ReturnAccountImageFetchSuccess(AccountKey account_key);
   void ReturnAccountImageFetchFailure(AccountKey account_key);
   void ReturnAccountCapabilitiesFetchSuccess(AccountKey account_key);
+  void UpdateAccountCapabilities(AccountKey account_key,
+                                 const AccountCapabilities& capabilities);
+  void CompleteAccountCapabilitiesFetchWithoutCapabilities(
+      AccountKey account_key);
   void SimulateParentalSupervisionCheckComplete(
       AccountKey account_key,
       bool is_subject_to_parental_controls);
@@ -488,6 +492,23 @@ void AccountTrackerServiceTest::ReturnAccountCapabilitiesFetchSuccess(
       AccountKeyToAccountCapability(account_key));
   fake_account_fetcher_factory_->CompleteAccountCapabilitiesFetch(
       AccountKeyToAccountId(account_key), capabilities);
+}
+
+void AccountTrackerServiceTest::UpdateAccountCapabilities(
+    AccountKey account_key,
+    const AccountCapabilities& capabilities) {
+  IssueAccessToken(account_key);
+  fake_account_fetcher_factory_->UpdateAccountCapabilities(
+      AccountKeyToAccountId(account_key), capabilities);
+}
+
+void AccountTrackerServiceTest::
+    CompleteAccountCapabilitiesFetchWithoutCapabilities(
+        AccountKey account_key) {
+  IssueAccessToken(account_key);
+  fake_account_fetcher_factory_
+      ->CompleteAccountCapabilitiesFetchWithoutCapabilities(
+          AccountKeyToAccountId(account_key));
 }
 
 void AccountTrackerServiceTest::SimulateParentalSupervisionCheckComplete(
@@ -724,6 +745,35 @@ TEST_F(AccountTrackerServiceTest,
   ClearAccountTrackerEvents();
 
   ReturnAccountCapabilitiesFetchSuccess(kAccountKeyAlpha);
+  EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+}
+
+TEST_F(AccountTrackerServiceTest,
+       TokenAvailable_AccountCapabilitiesMultiPhase) {
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+  ClearAccountTrackerEvents();
+
+  // Phase 1: update capabilities but do not complete fetch.
+  AccountCapabilities capabilities;
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_fetch_family_member_info(true);
+
+  UpdateAccountCapabilities(kAccountKeyAlpha, capabilities);
+
+  // The capabilities should be updated in AccountTrackerService, but
+  // AreAllAccountCapabilitiesFetched() should still be false because the
+  // fetcher is not complete/destroyed.
+  EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+  AccountInfo account_info = account_tracker()->GetAccountInfo(
+      AccountKeyToAccountId(kAccountKeyAlpha));
+  EXPECT_EQ(account_info.capabilities.can_fetch_family_member_info(),
+            signin::Tribool::kTrue);
+
+  // Phase 2: complete the fetch.
+  CompleteAccountCapabilitiesFetchWithoutCapabilities(kAccountKeyAlpha);
   EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 }
 

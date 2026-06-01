@@ -20,10 +20,15 @@ using OnAccountCapabilitiesFetchedCallback =
 AccountCapabilitiesFetcherAndroid::AccountCapabilitiesFetcherAndroid(
     const CoreAccountInfo& account_info,
     AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-    AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
-    : AccountCapabilitiesFetcher(account_info,
-                                 fetch_priority,
-                                 std::move(on_complete_callback)) {
+    AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+        on_some_capabilities_fetched_callback,
+    AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback
+        on_all_fetches_complete_callback)
+    : AccountCapabilitiesFetcher(
+          account_info,
+          fetch_priority,
+          std::move(on_some_capabilities_fetched_callback),
+          std::move(on_all_fetches_complete_callback)) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   // This callback is "owned" by the Java counterpart. There is no explicit way
@@ -31,10 +36,10 @@ AccountCapabilitiesFetcherAndroid::AccountCapabilitiesFetcherAndroid(
   // pass a raw pointer to Java. The callback object will be collected once
   // Java calls back to native in
   // `JNI_AccountCapabilitiesFetcher_setAccountCapabilities()`.
-  auto heap_callback =
-      std::make_unique<OnAccountCapabilitiesFetchedCallback>(base::BindOnce(
-          &AccountCapabilitiesFetcherAndroid::CompleteFetchAndMaybeDestroySelf,
-          weak_ptr_factory_.GetWeakPtr()));
+  auto heap_callback = std::make_unique<OnAccountCapabilitiesFetchedCallback>(
+      base::BindOnce(&AccountCapabilitiesFetcherAndroid::
+                         UpdateAndCompleteFetchAndMaybeDestroySelf,
+                     weak_ptr_factory_.GetWeakPtr()));
   base::android::ScopedJavaLocalRef<jobject> local_java_ref =
       signin::Java_AccountCapabilitiesFetcher_Constructor(
           env, account_info,

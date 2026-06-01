@@ -86,9 +86,14 @@ class TestSupportAndroid {
   std::unique_ptr<AccountCapabilitiesFetcher> CreateFetcher(
       const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-      AccountCapabilitiesFetcher::OnCompleteCallback callback) {
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+          on_some_capabilities_fetched_callback,
+      AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback
+          on_all_fetches_complete_callback) {
     return std::make_unique<AccountCapabilitiesFetcherAndroid>(
-        account_info, fetch_priority, std::move(callback));
+        account_info, fetch_priority,
+        std::move(on_some_capabilities_fetched_callback),
+        std::move(on_all_fetches_complete_callback));
   }
 
   void ReturnAccountCapabilitiesFetchSuccess(
@@ -197,11 +202,15 @@ class TestSupportGaia {
   std::unique_ptr<AccountCapabilitiesFetcher> CreateFetcher(
       const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-      AccountCapabilitiesFetcher::OnCompleteCallback callback) {
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+          on_some_capabilities_fetched_callback,
+      AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback
+          on_all_fetches_complete_callback) {
     return std::make_unique<AccountCapabilitiesFetcherGaia>(
         &fake_oauth2_token_service_,
         test_url_loader_factory_.GetSafeWeakWrapper(), account_info,
-        fetch_priority, std::move(callback));
+        fetch_priority, std::move(on_some_capabilities_fetched_callback),
+        std::move(on_all_fetches_complete_callback));
   }
 
   void ReturnAccountCapabilitiesFetchSuccess(
@@ -289,11 +298,16 @@ class AccountCapabilitiesFetcherTest : public ::testing::TestWithParam<bool> {
   bool IsGetAllVisibleUrlEnabled() const { return GetParam(); }
 
   std::unique_ptr<AccountCapabilitiesFetcher> CreateFetcher(
-      AccountCapabilitiesFetcher::OnCompleteCallback callback,
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+          on_some_capabilities_fetched_callback,
+      AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback
+          on_all_fetches_complete_callback,
       AccountCapabilitiesFetcher::FetchPriority priority =
           AccountCapabilitiesFetcher::FetchPriority::kForeground) {
-    return test_support_.CreateFetcher(account_info(), priority,
-                                       std::move(callback));
+    return test_support_.CreateFetcher(
+        account_info(), priority,
+        std::move(on_some_capabilities_fetched_callback),
+        std::move(on_all_fetches_complete_callback));
   }
 
   void ReturnAccountCapabilitiesFetchSuccess(bool capability_value) {
@@ -320,17 +334,23 @@ class AccountCapabilitiesFetcherTest : public ::testing::TestWithParam<bool> {
 };
 
 TEST_P(AccountCapabilitiesFetcherTest, Success_True) {
-  base::MockCallback<AccountCapabilitiesFetcher::OnCompleteCallback> callback;
+  base::MockCallback<
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback>
+      on_some_capabilities_fetched_callback;
+  base::MockCallback<AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback>
+      on_all_fetches_complete_callback;
   std::unique_ptr<AccountCapabilitiesFetcher> fetcher =
-      CreateFetcher(callback.Get());
+      CreateFetcher(on_some_capabilities_fetched_callback.Get(),
+                    on_all_fetches_complete_callback.Get());
   AccountCapabilities expected_capabilities;
   AccountCapabilitiesTestMutator mutator(&expected_capabilities);
   mutator.SetAllSupportedCapabilities(true);
   base::HistogramTester tester;
 
   fetcher->Start();
-  EXPECT_CALL(callback,
-              Run(account_id(), ::testing::Optional(expected_capabilities)));
+  EXPECT_CALL(on_some_capabilities_fetched_callback,
+              Run(account_id(), Eq(expected_capabilities)));
+  EXPECT_CALL(on_all_fetches_complete_callback, Run(account_id()));
   ReturnAccountCapabilitiesFetchSuccess(true);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -345,17 +365,24 @@ TEST_P(AccountCapabilitiesFetcherTest, Success_True) {
 }
 
 TEST_P(AccountCapabilitiesFetcherTest, Success_True_Background) {
-  base::MockCallback<AccountCapabilitiesFetcher::OnCompleteCallback> callback;
-  std::unique_ptr<AccountCapabilitiesFetcher> fetcher = CreateFetcher(
-      callback.Get(), AccountCapabilitiesFetcher::FetchPriority::kBackground);
+  base::MockCallback<
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback>
+      on_some_capabilities_fetched_callback;
+  base::MockCallback<AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback>
+      on_all_fetches_complete_callback;
+  std::unique_ptr<AccountCapabilitiesFetcher> fetcher =
+      CreateFetcher(on_some_capabilities_fetched_callback.Get(),
+                    on_all_fetches_complete_callback.Get(),
+                    AccountCapabilitiesFetcher::FetchPriority::kBackground);
   AccountCapabilities expected_capabilities;
   AccountCapabilitiesTestMutator mutator(&expected_capabilities);
   mutator.SetAllSupportedCapabilities(true);
   base::HistogramTester tester;
 
   fetcher->Start();
-  EXPECT_CALL(callback,
-              Run(account_id(), ::testing::Optional(expected_capabilities)));
+  EXPECT_CALL(on_some_capabilities_fetched_callback,
+              Run(account_id(), Eq(expected_capabilities)));
+  EXPECT_CALL(on_all_fetches_complete_callback, Run(account_id()));
   ReturnAccountCapabilitiesFetchSuccess(true);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -370,33 +397,47 @@ TEST_P(AccountCapabilitiesFetcherTest, Success_True_Background) {
 }
 
 TEST_P(AccountCapabilitiesFetcherTest, Success_False) {
-  base::MockCallback<AccountCapabilitiesFetcher::OnCompleteCallback> callback;
+  base::MockCallback<
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback>
+      on_some_capabilities_fetched_callback;
+  base::MockCallback<AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback>
+      on_all_fetches_complete_callback;
   std::unique_ptr<AccountCapabilitiesFetcher> fetcher =
-      CreateFetcher(callback.Get());
+      CreateFetcher(on_some_capabilities_fetched_callback.Get(),
+                    on_all_fetches_complete_callback.Get());
   AccountCapabilities expected_capabilities;
   AccountCapabilitiesTestMutator mutator(&expected_capabilities);
   mutator.SetAllSupportedCapabilities(false);
 
   fetcher->Start();
-  EXPECT_CALL(callback,
-              Run(account_id(), ::testing::Optional(expected_capabilities)));
+  EXPECT_CALL(on_some_capabilities_fetched_callback,
+              Run(account_id(), Eq(expected_capabilities)));
+  EXPECT_CALL(on_all_fetches_complete_callback, Run(account_id()));
   ReturnAccountCapabilitiesFetchSuccess(false);
 }
 
 TEST_P(AccountCapabilitiesFetcherTest, FetchFailure) {
-  base::MockCallback<AccountCapabilitiesFetcher::OnCompleteCallback> callback;
+  base::MockCallback<
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback>
+      on_some_capabilities_fetched_callback;
+  base::MockCallback<AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback>
+      on_all_fetches_complete_callback;
   std::unique_ptr<AccountCapabilitiesFetcher> fetcher =
-      CreateFetcher(callback.Get());
+      CreateFetcher(on_some_capabilities_fetched_callback.Get(),
+                    on_all_fetches_complete_callback.Get());
   base::HistogramTester tester;
 
   fetcher->Start();
-  std::optional<AccountCapabilities> expected_capabilities;
 #if BUILDFLAG(IS_ANDROID)
   // Android never returns std::nullopt even if the fetcher has failed to get
   // all capabilities.
-  expected_capabilities = AccountCapabilities();
+  AccountCapabilities expected_capabilities;
+  EXPECT_CALL(on_some_capabilities_fetched_callback,
+              Run(account_id(), Eq(expected_capabilities)));
+#else
+  EXPECT_CALL(on_some_capabilities_fetched_callback, Run(_, _)).Times(0);
 #endif
-  EXPECT_CALL(callback, Run(account_id(), Eq(expected_capabilities)));
+  EXPECT_CALL(on_all_fetches_complete_callback, Run(account_id()));
   ReturnAccountCapabilitiesFetchFailure();
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -414,13 +455,19 @@ TEST_P(AccountCapabilitiesFetcherTest, FetchFailure) {
 // an access token.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_P(AccountCapabilitiesFetcherTest, TokenFailure) {
-  base::MockCallback<AccountCapabilitiesFetcher::OnCompleteCallback> callback;
+  base::MockCallback<
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback>
+      on_some_capabilities_fetched_callback;
+  base::MockCallback<AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback>
+      on_all_fetches_complete_callback;
   std::unique_ptr<AccountCapabilitiesFetcher> fetcher =
-      CreateFetcher(callback.Get());
+      CreateFetcher(on_some_capabilities_fetched_callback.Get(),
+                    on_all_fetches_complete_callback.Get());
   base::HistogramTester tester;
 
   fetcher->Start();
-  EXPECT_CALL(callback, Run(account_id(), Eq(std::nullopt)));
+  EXPECT_CALL(on_some_capabilities_fetched_callback, Run(_, _)).Times(0);
+  EXPECT_CALL(on_all_fetches_complete_callback, Run(account_id()));
   SimulateIssueAccessTokenPersistentError();
 
   tester.ExpectTotalCount(
@@ -434,13 +481,19 @@ TEST_P(AccountCapabilitiesFetcherTest, TokenFailure) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_P(AccountCapabilitiesFetcherTest, Cancelled) {
-  base::MockCallback<AccountCapabilitiesFetcher::OnCompleteCallback> callback;
+  base::MockCallback<
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback>
+      on_some_capabilities_fetched_callback;
+  base::MockCallback<AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback>
+      on_all_fetches_complete_callback;
   std::unique_ptr<AccountCapabilitiesFetcher> fetcher =
-      CreateFetcher(callback.Get());
+      CreateFetcher(on_some_capabilities_fetched_callback.Get(),
+                    on_all_fetches_complete_callback.Get());
   base::HistogramTester tester;
 
   fetcher->Start();
-  EXPECT_CALL(callback, Run(_, _)).Times(0);
+  EXPECT_CALL(on_some_capabilities_fetched_callback, Run(_, _)).Times(0);
+  EXPECT_CALL(on_all_fetches_complete_callback, Run(_)).Times(0);
   fetcher.reset();
 
 #if !BUILDFLAG(IS_ANDROID)

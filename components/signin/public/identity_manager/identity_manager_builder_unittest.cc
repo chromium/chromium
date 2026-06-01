@@ -48,13 +48,15 @@ class MockAccountFetcherFactory : public AccountFetcherFactory {
                base::OnceCallback<void(std::optional<AccountInfo>)>),
               (override));
 
-  MOCK_METHOD(
-      std::unique_ptr<AccountCapabilitiesFetcher>,
-      CreateAccountCapabilitiesFetcher,
-      (const CoreAccountInfo& account_info,
-       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-       AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback),
-      (override));
+  MOCK_METHOD(std::unique_ptr<AccountCapabilitiesFetcher>,
+              CreateAccountCapabilitiesFetcher,
+              (const CoreAccountInfo& account_info,
+               AccountCapabilitiesFetcher::FetchPriority fetch_priority,
+               AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+                   on_some_capabilities_fetched_callback,
+               AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback
+                   on_all_fetches_complete_callback),
+              (override));
 };
 
 class IdentityManagerBuilderTest : public testing::Test {

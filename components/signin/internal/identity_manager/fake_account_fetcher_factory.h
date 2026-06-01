@@ -38,13 +38,20 @@ class FakeAccountFetcherFactory : public AccountFetcherFactory {
   std::unique_ptr<AccountCapabilitiesFetcher> CreateAccountCapabilitiesFetcher(
       const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-      AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
-      override;
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+          on_some_capabilities_fetched_callback,
+      AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback
+          on_all_fetches_complete_callback) override;
   void PrepareForFetchingAccountCapabilities() override;
 
   void CompleteAccountCapabilitiesFetch(
       const CoreAccountId& account_id,
       const std::optional<AccountCapabilities> account_capabilities);
+  void UpdateAccountCapabilities(
+      const CoreAccountId& account_id,
+      const AccountCapabilities& account_capabilities);
+  void CompleteAccountCapabilitiesFetchWithoutCapabilities(
+      const CoreAccountId& account_id);
 
   int GetNumCallsToPrepareForFetchingAccountCapabilities() const;
 

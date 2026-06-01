@@ -153,16 +153,16 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
     ios::AccountCapabilitiesFetcherIOS fetcher(
         account, AccountCapabilitiesFetcher::FetchPriority::kForeground,
         account_manager_service,
-        base::BindOnce(^(const CoreAccountId& account_id,
-                         const std::optional<AccountCapabilities>&
-                             capabilities) {
-          if (capabilities.has_value()) {
-            AccountInfo updated_account = account;
-            updated_account.capabilities = capabilities.value();
-            signin::UpdateAccountInfoForAccount(identity_manager,
-                                                updated_account);
-          }
-        }).Then(run_loop.QuitClosure()));
+        base::BindRepeating(^(const CoreAccountId& account_id,
+                              const AccountCapabilities& capabilities) {
+          AccountInfo updated_account = account;
+          updated_account.capabilities = capabilities;
+          signin::UpdateAccountInfoForAccount(identity_manager,
+                                              updated_account);
+        }),
+        base::BindOnce([](base::RunLoop* run_loop,
+                          const CoreAccountId&) { run_loop->Quit(); },
+                       &run_loop));
     fetcher.Start();
     run_loop.Run();
   }

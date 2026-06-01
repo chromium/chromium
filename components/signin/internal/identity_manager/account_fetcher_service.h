@@ -138,10 +138,13 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void OnUserInfoFetchCompleted(const CoreAccountId& account_id,
                                 std::optional<AccountInfo> account_info);
 
-  // Called by AccountCapabilitiesFetcher callback.
-  void OnAccountCapabilitiesFetchComplete(
+  // Called by AccountCapabilitiesFetcher on_some_capabilities_fetched_callback.
+  void OnSomeAccountCapabilitiesFetched(
       const CoreAccountId& account_id,
-      const std::optional<AccountCapabilities>& account_capabilities);
+      const AccountCapabilities& account_capabilities);
+
+  // Called by AccountCapabilitiesFetcher on_all_fetches_complete_callback.
+  void OnAccountCapabilitiesFetchComplete(const CoreAccountId& account_id);
 
   image_fetcher::ImageFetcherImpl* GetOrCreateImageFetcher();
 

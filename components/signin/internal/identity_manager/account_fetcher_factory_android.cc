@@ -32,7 +32,12 @@ std::unique_ptr<AccountCapabilitiesFetcher>
 AccountFetcherFactoryAndroid::CreateAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
     AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-    AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) {
+    AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+        on_some_capabilities_fetched_callback,
+    AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback
+        on_all_fetches_complete_callback) {
   return std::make_unique<AccountCapabilitiesFetcherAndroid>(
-      account_info, fetch_priority, std::move(on_complete_callback));
+      account_info, fetch_priority,
+      std::move(on_some_capabilities_fetched_callback),
+      std::move(on_all_fetches_complete_callback));
 }

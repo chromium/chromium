@@ -52,10 +52,15 @@ AccountCapabilitiesFetcherGaia::AccountCapabilitiesFetcherGaia(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const CoreAccountInfo& account_info,
     AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-    AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
-    : AccountCapabilitiesFetcher(account_info,
-                                 fetch_priority,
-                                 std::move(on_complete_callback)),
+    AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+        on_some_capabilities_fetched_callback,
+    AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback
+        on_all_fetches_complete_callback)
+    : AccountCapabilitiesFetcher(
+          account_info,
+          fetch_priority,
+          std::move(on_some_capabilities_fetched_callback),
+          std::move(on_all_fetches_complete_callback)),
       OAuth2AccessTokenManager::Consumer("account_capabilities_fetcher"),
       token_service_(token_service),
       url_loader_factory_(std::move(url_loader_factory)) {
@@ -110,7 +115,7 @@ void AccountCapabilitiesFetcherGaia::OnGetTokenFailure(
   DCHECK_EQ(request, login_token_request_.get());
   login_token_request_.reset();
   RecordFetchResultAndDuration(FetchResult::kGetTokenFailure);
-  CompleteFetchAndMaybeDestroySelf(std::nullopt);
+  CompleteFetchAndMaybeDestroySelf();
 }
 
 void AccountCapabilitiesFetcherGaia::OnGetAccountCapabilitiesResponse(
@@ -129,7 +134,7 @@ void AccountCapabilitiesFetcherGaia::OnGetAccountCapabilitiesResponse(
   }
 
   RecordFetchResultAndDuration(result);
-  CompleteFetchAndMaybeDestroySelf(parsed_capabilities);
+  UpdateAndCompleteFetchAndMaybeDestroySelf(parsed_capabilities);
 }
 
 void AccountCapabilitiesFetcherGaia::OnOAuthError() {
@@ -138,7 +143,7 @@ void AccountCapabilitiesFetcherGaia::OnOAuthError() {
                       perfetto::Flow::FromPointer(this), "error", "OAuthError");
   VLOG(1) << "OnOAuthError";
   RecordFetchResultAndDuration(FetchResult::kOAuthError);
-  CompleteFetchAndMaybeDestroySelf(std::nullopt);
+  CompleteFetchAndMaybeDestroySelf();
 }
 
 void AccountCapabilitiesFetcherGaia::OnNetworkError(int response_code) {
@@ -148,7 +153,7 @@ void AccountCapabilitiesFetcherGaia::OnNetworkError(int response_code) {
                       "NetworkError", "response_code", response_code);
   VLOG(1) << "OnNetworkError " << response_code;
   RecordFetchResultAndDuration(FetchResult::kNetworkError);
-  CompleteFetchAndMaybeDestroySelf(std::nullopt);
+  CompleteFetchAndMaybeDestroySelf();
 }
 
 void AccountCapabilitiesFetcherGaia::RecordFetchResultAndDuration(

@@ -32,9 +32,14 @@ std::unique_ptr<AccountCapabilitiesFetcher>
 FakeAccountFetcherFactory::CreateAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
     AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-    AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) {
+    AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+        on_some_capabilities_fetched_callback,
+    AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback
+        on_all_fetches_complete_callback) {
   auto fetcher = std::make_unique<FakeAccountCapabilitiesFetcher>(
-      account_info, fetch_priority, std::move(on_complete_callback),
+      account_info, fetch_priority,
+      std::move(on_some_capabilities_fetched_callback),
+      std::move(on_all_fetches_complete_callback),
       base::BindOnce(&FakeAccountFetcherFactory::OnFetcherDestroyed,
                      base::Unretained(this), account_info.account_id));
   DCHECK(!fetchers_.count(account_info.account_id));
@@ -52,6 +57,20 @@ void FakeAccountFetcherFactory::CompleteAccountCapabilitiesFetch(
   DCHECK(fetchers_.count(account_id));
   // `CompleteFetch` may destroy the fetcher.
   fetchers_[account_id]->CompleteFetch(account_capabilities);
+}
+
+void FakeAccountFetcherFactory::UpdateAccountCapabilities(
+    const CoreAccountId& account_id,
+    const AccountCapabilities& account_capabilities) {
+  DCHECK(fetchers_.count(account_id));
+  fetchers_[account_id]->UpdateCapabilities(account_capabilities);
+}
+
+void FakeAccountFetcherFactory::
+    CompleteAccountCapabilitiesFetchWithoutCapabilities(
+        const CoreAccountId& account_id) {
+  DCHECK(fetchers_.count(account_id));
+  fetchers_[account_id]->CompleteFetchWithoutCapabilities();
 }
 
 int FakeAccountFetcherFactory::

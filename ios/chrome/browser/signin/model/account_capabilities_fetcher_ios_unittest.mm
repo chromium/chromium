@@ -30,9 +30,8 @@ const char kTestEmail[] = "janedoe@chromium.org";
 
 void CheckCapability(signin::Tribool capability_expected,
                      const CoreAccountId& account_id,
-                     const std::optional<AccountCapabilities>& capabilities) {
-  ASSERT_TRUE(capabilities.has_value());
-  ASSERT_EQ(capabilities->can_fetch_family_member_info(), capability_expected);
+                     const AccountCapabilities& capabilities) {
+  ASSERT_EQ(capabilities.can_fetch_family_member_info(), capability_expected);
 }
 
 }  // anonymous namespace
@@ -82,8 +81,10 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
     ios::AccountCapabilitiesFetcherIOS fetcher(
         account_info, AccountCapabilitiesFetcher::FetchPriority::kForeground,
         account_manager_service_,
-        base::BindOnce(&CheckCapability, capability_expected)
-            .Then(run_loop.QuitClosure()));
+        base::BindRepeating(&CheckCapability, capability_expected),
+        base::BindOnce([](base::RunLoop* run_loop,
+                          const CoreAccountId&) { run_loop->Quit(); },
+                       &run_loop));
 
     fetcher.Start();
     run_loop.Run();

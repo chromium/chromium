@@ -31,7 +31,10 @@ class AccountFetcherFactory {
   CreateAccountCapabilitiesFetcher(
       const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-      AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) = 0;
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+          on_some_capabilities_fetched_callback,
+      AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback
+          on_all_fetches_complete_callback) = 0;
 
   // Calling this method provides a hint that
   // `CreateAccountCapabilitiesFetcher()` may be called in the near future, and

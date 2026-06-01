@@ -16,7 +16,8 @@ class AccountCapabilitiesFetcherIOSWebView : public AccountCapabilitiesFetcher {
   AccountCapabilitiesFetcherIOSWebView(
       const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-      OnCompleteCallback on_complete_callback);
+      OnSomeCapabilitiesFetchedCallback on_some_capabilities_fetched_callback,
+      OnAllFetchesCompleteCallback on_all_fetches_complete_callback);
   ~AccountCapabilitiesFetcherIOSWebView() override;
 
   AccountCapabilitiesFetcherIOSWebView(

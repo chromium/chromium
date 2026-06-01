@@ -14,13 +14,18 @@ AccountCapabilitiesFetcherIOSWebView::~AccountCapabilitiesFetcherIOSWebView() =
 AccountCapabilitiesFetcherIOSWebView::AccountCapabilitiesFetcherIOSWebView(
     const CoreAccountInfo& account_info,
     AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-    AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
-    : AccountCapabilitiesFetcher(account_info,
-                                 fetch_priority,
-                                 std::move(on_complete_callback)) {}
+    AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+        on_some_capabilities_fetched_callback,
+    AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback
+        on_all_fetches_complete_callback)
+    : AccountCapabilitiesFetcher(
+          account_info,
+          fetch_priority,
+          std::move(on_some_capabilities_fetched_callback),
+          std::move(on_all_fetches_complete_callback)) {}
 
 void AccountCapabilitiesFetcherIOSWebView::StartImpl() {
-  CompleteFetchAndMaybeDestroySelf(/*capabilities=*/std::nullopt);
+  CompleteFetchAndMaybeDestroySelf();
 }
 
 }  // namespace ios_web_view

@@ -17,7 +17,8 @@ namespace ios_web_view {
 // This factory disables capabilities fetching for iOS WebView.
 class AccountFetcherFactoryIOSWebView : public AccountFetcherFactory {
  public:
-  using OnCompleteCallback = AccountCapabilitiesFetcher::OnCompleteCallback;
+  using OnAllFetchesCompleteCallback =
+      AccountCapabilitiesFetcher::OnAllFetchesCompleteCallback;
 
   AccountFetcherFactoryIOSWebView(ProfileOAuth2TokenService& token_service,
                                   SigninClient& signin_client);
@@ -35,7 +36,9 @@ class AccountFetcherFactoryIOSWebView : public AccountFetcherFactory {
   std::unique_ptr<AccountCapabilitiesFetcher> CreateAccountCapabilitiesFetcher(
       const CoreAccountInfo& account_info,
       AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-      OnCompleteCallback on_complete_callback) override;
+      AccountCapabilitiesFetcher::OnSomeCapabilitiesFetchedCallback
+          on_some_capabilities_fetched_callback,
+      OnAllFetchesCompleteCallback on_all_fetches_complete_callback) override;
 
  private:
   const raw_ref<ProfileOAuth2TokenService> token_service_;

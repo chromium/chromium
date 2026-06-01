@@ -12,11 +12,14 @@
 FakeAccountCapabilitiesFetcher::FakeAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
     AccountCapabilitiesFetcher::FetchPriority fetch_priority,
-    OnCompleteCallback on_complete_callback,
+    OnSomeCapabilitiesFetchedCallback on_some_capabilities_fetched_callback,
+    OnAllFetchesCompleteCallback on_all_fetches_complete_callback,
     base::OnceClosure on_destroy_callback)
-    : AccountCapabilitiesFetcher(account_info,
-                                 fetch_priority,
-                                 std::move(on_complete_callback)),
+    : AccountCapabilitiesFetcher(
+          account_info,
+          fetch_priority,
+          std::move(on_some_capabilities_fetched_callback),
+          std::move(on_all_fetches_complete_callback)),
       on_destroy_callback_(std::move(on_destroy_callback)) {}
 
 FakeAccountCapabilitiesFetcher::~FakeAccountCapabilitiesFetcher() {
@@ -27,5 +30,14 @@ void FakeAccountCapabilitiesFetcher::StartImpl() {}
 
 void FakeAccountCapabilitiesFetcher::CompleteFetch(
     const std::optional<AccountCapabilities>& account_capabilities) {
-  CompleteFetchAndMaybeDestroySelf(account_capabilities);
+  UpdateAndCompleteFetchAndMaybeDestroySelf(account_capabilities);
+}
+
+void FakeAccountCapabilitiesFetcher::UpdateCapabilities(
+    const AccountCapabilities& account_capabilities) {
+  UpdateFetchedCapabilities(account_capabilities);
+}
+
+void FakeAccountCapabilitiesFetcher::CompleteFetchWithoutCapabilities() {
+  CompleteFetchAndMaybeDestroySelf();
 }
