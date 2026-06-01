@@ -356,6 +356,7 @@ source_set("mojo_caller_security_checker") {
   }
   if (is_win) {
     deps += [ "//remoting/host/win:trust_util" ]
+    libs = [ "wtsapi32.lib" ]
   }
 }
 

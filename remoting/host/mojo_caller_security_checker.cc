@@ -26,6 +26,14 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <wtsapi32.h>
+
+#include "base/strings/utf_string_conversions.h"
+#include "base/win/access_token.h"
+#include "base/win/scoped_handle.h"
+#include "base/win/sid.h"
 #include "remoting/host/win/trust_util.h"
 #endif
 
@@ -55,6 +63,72 @@ constexpr auto kAllowedCallerProgramNames =
 static const auto kAllowedIdentifiers =
     std::to_array<const std::string_view>({kBundleId, "remote_webauthn"});
 #endif
+
+#if BUILDFLAG(IS_WIN)
+bool IsWinCallerUserSidValid(
+    const named_mojo_ipc_server::ConnectionInfo& caller) {
+  std::optional<base::win::AccessToken> current_token =
+      base::win::AccessToken::FromCurrentProcess();
+  if (!current_token.has_value()) {
+    PLOG(ERROR) << "Failed to open current process token.";
+    return false;
+  }
+
+  std::optional<base::win::Sid> expected_sid;
+
+  // Verify the client's identity depending on the host service context:
+  // - If running as `LocalSystem` (standard service/production mode), the
+  //   host has the necessary TCB privileges (`SE_TCB_NAME`) to query the
+  //   legitimate active session user's token via `WTSQueryUserToken`.
+  // - If running as a standard user process (developer diagnostics/testing
+  //   environments or developer unit tests), the host lacks TCB privileges
+  //   to query other session tokens. In this case, the active remote session's
+  //   owner is simply the current process owner itself, so we securely fall
+  //   back to validating the client against the current host process token.
+  if (current_token->User() ==
+      base::win::Sid::FromKnownSid(base::win::WellKnownSid::kLocalSystem)) {
+    // SYSTEM Mode: Retrieve the target Windows session owner's User SID.
+    HANDLE session_token_raw = nullptr;
+    if (!::WTSQueryUserToken(caller.session_id, &session_token_raw)) {
+      PLOG(ERROR) << "WTSQueryUserToken failed for session ID "
+                  << caller.session_id;
+      return false;
+    }
+    base::win::ScopedHandle session_token_handle(session_token_raw);
+
+    std::optional<base::win::AccessToken> session_token =
+        base::win::AccessToken::FromToken(std::move(session_token_handle));
+    if (!session_token.has_value()) {
+      PLOG(ERROR) << "Failed to get access token from session token handle.";
+      return false;
+    }
+    expected_sid = session_token->User();
+  } else {
+    // User/Developer Mode Fallback: Use current process User SID as the
+    // expected value.
+    expected_sid = current_token->User();
+  }
+
+  std::optional<base::win::AccessToken> client_token =
+      base::win::AccessToken::FromProcess(caller.process.Handle());
+  if (!client_token.has_value()) {
+    PLOG(ERROR) << "Failed to open client process token for PID " << caller.pid;
+    return false;
+  }
+  base::win::Sid client_sid = client_token->User();
+
+  if (client_sid != *expected_sid) {
+    LOG(ERROR) << "Client user SID ("
+               << base::WideToUTF8(client_sid.ToSddlString().value_or(L""))
+               << ") does not match expected user SID ("
+               << base::WideToUTF8(expected_sid->ToSddlString().value_or(L""))
+               << ")";
+    return false;
+  }
+
+  return true;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -114,7 +188,10 @@ bool IsTrustedMojoEndpoint(
     return false;
   }
 #if BUILDFLAG(IS_WIN)
-  return IsBinaryTrusted(caller_process_image_path);
+  if (!IsBinaryTrusted(caller_process_image_path)) {
+    return false;
+  }
+  return IsWinCallerUserSidValid(caller);
 #else
   // Linux binaries are not code-signed, so we just return true.
   return true;

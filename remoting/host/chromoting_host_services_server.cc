@@ -23,6 +23,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/strcat_win.h"
 #include "base/win/win_util.h"
+#include "mojo/public/c/system/invitation.h"
 #endif
 
 namespace remoting {
@@ -44,6 +45,8 @@ named_mojo_ipc_server::EndpointOptions CreateEndpointOptions(
   options.security_descriptor =
       base::StrCat({L"O:", user_sid, L"G:", user_sid, L"D:(A;;GA;;;AU)"});
   options.include_peer_process_info = true;
+  options.extra_send_invitation_flags =
+      MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS;
 #elif BUILDFLAG(IS_LINUX)
   // Allow the endpoint to be connected by any users iff the server is run as
   // root.
