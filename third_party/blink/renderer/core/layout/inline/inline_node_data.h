@@ -17,7 +17,7 @@ class InlineItemsBuilderTemplate;
 // Data which is required for inline nodes.
 struct CORE_EXPORT InlineNodeData final : InlineItemsData {
  public:
-  InlineNodeData() = default;
+  InlineNodeData() : InlineItemsData(/*is_node_data=*/true) {}
   // Returns true if `text_content` contains non-latin1 characters other than
   // kObjectReplacementCharacter.
   bool HasNonOrc16BitCharacters() const { return has_non_orc_16bit_; }
@@ -55,7 +55,7 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
                                                 : *first_line_items_;
   }
 
-  void Trace(Visitor* visitor) const override;
+  void TraceAfterDispatch(Visitor* visitor) const;
 
  private:
   void SetBaseDirection(TextDirection direction) {
@@ -70,21 +70,13 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
   template <typename OffsetMappingBuilder>
   friend class InlineItemsBuilderTemplate;
 
-  // Items to use for the first line, when the node has :first-line rules.
-  //
-  // Items have different ComputedStyle, and may also have different
-  // text_content and ShapeResult if 'text-transform' is applied or fonts are
-  // different.
-  Member<InlineItemsData> first_line_items_;
+  // Flags placed first for packing with InlineItemsData::is_node_data_.
+  bool has_non_orc_16bit_ : 1;
+  bool is_bidi_enabled_ : 1;
+  bool base_direction_ : 1;  // TextDirection
 
-  Member<SvgInlineNodeData> svg_node_data_;
-
-  unsigned has_non_orc_16bit_ : 1;
-  unsigned is_bidi_enabled_ : 1;
-  unsigned base_direction_ : 1;  // TextDirection
-
-  unsigned has_floats_ : 1;
-  unsigned has_out_of_flow_positioned_ : 1;
+  bool has_floats_ : 1;
+  bool has_out_of_flow_positioned_ : 1;
 
   // True if this node contains initial letter box. This value is used for
   // clearing. To control whether subsequent blocks overlap with initial
@@ -94,24 +86,42 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
   //     *    This text from subsequent block two.
   //     *    This text from subsequent block three.
   // [1] https://drafts.csswg.org/css-inline/#initial-letter-paragraphs
-  unsigned has_initial_letter_box_ : 1;
+  bool has_initial_letter_box_ : 1;
 
   // The node contains <ruby>.
-  unsigned has_ruby_ : 1;
+  bool has_ruby_ : 1;
 
   // We use this flag to determine if we have *only* floats, and OOF-positioned
   // children. If so we consider them block-level, and run the
   // |BlockLayoutAlgorithm| instead of the |InlineLayoutAlgorithm|. This is
   // done to pick up block-level static-position behaviour.
-  unsigned is_block_level_ : 1;
+  bool is_block_level_ : 1;
 
   // True if changes to an item may affect different layout of earlier lines.
   // May not be able to use line caches even when the line or earlier lines are
   // not dirty.
-  unsigned changes_may_affect_earlier_lines_ : 1;
+  bool changes_may_affect_earlier_lines_ : 1;
 
-  unsigned is_bisect_line_break_disabled_ : 1;
-  unsigned is_score_line_break_disabled_ : 1;
+  bool is_bisect_line_break_disabled_ : 1;
+  bool is_score_line_break_disabled_ : 1;
+
+  // End of flags placed first for packing with InlineItemsData::is_node_data_.
+
+  // Items to use for the first line, when the node has :first-line rules.
+  //
+  // Items have different ComputedStyle, and may also have different
+  // text_content and ShapeResult if 'text-transform' is applied or fonts are
+  // different.
+  Member<InlineItemsData> first_line_items_;
+
+  Member<SvgInlineNodeData> svg_node_data_;
+};
+
+template <>
+struct DowncastTraits<InlineNodeData> {
+  static bool AllowFrom(const InlineItemsData& value) {
+    return value.IsNodeData();
+  }
 };
 
 }  // namespace blink

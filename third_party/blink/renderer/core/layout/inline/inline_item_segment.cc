@@ -97,8 +97,8 @@ RunSegmenter::RunSegmenterRange InlineItemSegment::ToRunSegmenterRange(
                            segment_data_);
 }
 
-std::unique_ptr<InlineItemSegments> InlineItemSegments::Clone() const {
-  auto new_segments = std::make_unique<InlineItemSegments>();
+InlineItemSegments* InlineItemSegments::Clone() const {
+  auto* new_segments = MakeGarbageCollected<InlineItemSegments>();
   new_segments->segments_.append_range(segments_);
   new_segments->items_to_segments_.append_range(items_to_segments_);
   return new_segments;

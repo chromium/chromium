@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_items_data.h"
 
+#include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
+
 namespace blink {
 
 void InlineItemsData::GetOpenTagItems(wtf_size_t start_index,
@@ -30,7 +32,16 @@ void InlineItemsData::CheckConsistency() const {
 #endif
 
 void InlineItemsData::Trace(Visitor* visitor) const {
+  if (auto* node_data = DynamicTo<InlineNodeData>(this)) {
+    node_data->TraceAfterDispatch(visitor);
+  } else {
+    TraceAfterDispatch(visitor);
+  }
+}
+
+void InlineItemsData::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(items);
+  visitor->Trace(segments);
   visitor->Trace(offset_mapping);
 }
 

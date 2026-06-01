@@ -217,7 +217,7 @@ float ComputeAdditionalPaintTimeScale(const InlineItemsData& items_data,
     CHECK_NE(iter, items_data.items.end());
     ShapeResult* shape_result = ShapeForFit(
         **iter, current.TextStartOffset(), current.TextEndOffset(), shaper,
-        *scaled_font, items_data.segments.get(), is_start_of_paragraph);
+        *scaled_font, items_data.segments.Get(), is_start_of_paragraph);
     is_start_of_paragraph = false;
     if (spacing.SetSpacing(scaled_desc)) {
       shape_result->ApplySpacing(spacing);
@@ -338,7 +338,7 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
         CHECK_NE(iter, items_data.items.end());
         ShapeResult* nospacing_shape =
             ShapeForFit(**iter, start, end, shaper, *style.GetFont(),
-                        items_data.segments.get(), is_start_of_paragraph);
+                        items_data.segments.Get(), is_start_of_paragraph);
         is_start_of_paragraph = false;
         did_reshape = true;
         if (spacing.SetSpacing(
@@ -427,7 +427,7 @@ float LineFitter::MeasureScale() {
       if (HasFixedSpacing(item.item->Style()->GetFontDescription())) {
         ShapeResult* nospacing_shape = ShapeForFit(
             *item.item, item.StartOffset(), item.EndOffset(), shaper_,
-            *item.item->Style()->GetFont(), items_data_.segments.get(),
+            *item.item->Style()->GetFont(), items_data_.segments.Get(),
             line_info_.IsStartOfParagraph() && is_first_text);
         if (spacing_.SetSpacing(PercentageSpacingDescription(
                 item.item->Style()->GetFontDescription()))) {
@@ -500,7 +500,7 @@ bool LineFitter::FitLine(float scale_factor,
         MakeGarbageCollected<Font>(scaled_desc, font.GetFontSelector());
     ShapeResult* shape_result =
         ShapeForFit(*item.item, item.StartOffset(), item.EndOffset(), shaper_,
-                    *scaled_font, items_data_.segments.get(),
+                    *scaled_font, items_data_.segments.Get(),
                     line_info_.IsStartOfParagraph() && is_first_text);
     is_first_text = false;
     LayoutUnit size_without_spacing =

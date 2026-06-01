@@ -13,10 +13,10 @@ void InlineNodeData::DisableBidi() {
   SetBaseDirection(TextDirection::kLtr);
 }
 
-void InlineNodeData::Trace(Visitor* visitor) const {
+void InlineNodeData::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(first_line_items_);
   visitor->Trace(svg_node_data_);
-  InlineItemsData::Trace(visitor);
+  InlineItemsData::TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink

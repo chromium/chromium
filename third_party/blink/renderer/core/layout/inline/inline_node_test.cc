@@ -1376,7 +1376,7 @@ TEST_F(InlineNodeTest, SegmentRanges) {
 
   InlineItemsData* items_data = layout_block_flow_->GetInlineNodeData();
   ASSERT_TRUE(items_data);
-  InlineItemSegments* segments = items_data->segments.get();
+  InlineItemSegments* segments = items_data->segments.Get();
   ASSERT_TRUE(segments);
 
   // Test EndOffset for the full text. All segment boundaries including the end

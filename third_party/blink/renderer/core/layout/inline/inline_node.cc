@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 
 #include <algorithm>
-#include <memory>
 #include <numeric>
 
 #include "base/containers/adapters.h"
@@ -1244,7 +1243,7 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
       // We can reuse InlineNodeData::segments only in horizontal writing modes
       // because we might update it by SegmentFontOrientation() in vertical
       // writing modes.
-      data->segments = std::move(previous_data->segments);
+      data->segments = previous_data->segments;
       return;
     }
   }
@@ -1277,7 +1276,7 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
 
   // This node has multiple segments.
   if (!data->segments)
-    data->segments = std::make_unique<InlineItemSegments>();
+    data->segments = MakeGarbageCollected<InlineItemSegments>();
   data->segments->ComputeSegments(&segmenter, &range);
   DCHECK_EQ(range.end, text_content.length());
 }
@@ -1298,7 +1297,7 @@ void InlineNode::SegmentFontOrientation(InlineNodeData* data) const {
   // If we don't have |InlineItemSegments| yet, create a segment for the
   // entire content.
   const unsigned capacity = items.size() + text_content.length() / 10;
-  InlineItemSegments* segments = data->segments.get();
+  InlineItemSegments* segments = data->segments.Get();
   if (segments) {
     DCHECK(!data->segments->IsEmpty());
     data->segments->ReserveCapacity(capacity);
@@ -1312,8 +1311,8 @@ void InlineNode::SegmentFontOrientation(InlineNodeData* data) const {
         item.Style()->GetFont()->GetFontDescription().Orientation() ==
             FontOrientation::kVerticalMixed) {
       if (!segments) {
-        data->segments = std::make_unique<InlineItemSegments>();
-        segments = data->segments.get();
+        data->segments = MakeGarbageCollected<InlineItemSegments>();
+        segments = data->segments.Get();
         segments->ReserveCapacity(capacity);
         segments->Append(text_content.length(), item);
         DCHECK_EQ(text_content.length(), data->segments->EndOffset());

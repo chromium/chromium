@@ -20,8 +20,9 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_options.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -89,11 +90,10 @@ class CORE_EXPORT InlineItemSegment {
 // ratio jumps to 10-30, or sometimes 300 depends on the length of the block,
 // because the average characters/segment ratio in Japanese is 2-5. This class
 // builds internal indexes for faster access in such cases.
-class CORE_EXPORT InlineItemSegments {
-  USING_FAST_MALLOC(InlineItemSegments);
-
+class CORE_EXPORT InlineItemSegments
+    : public GarbageCollected<InlineItemSegments> {
  public:
-  std::unique_ptr<InlineItemSegments> Clone() const;
+  InlineItemSegments* Clone() const;
 
   unsigned size() const { return segments_.size(); }
   bool IsEmpty() const { return segments_.empty(); }
@@ -176,6 +176,11 @@ class CORE_EXPORT InlineItemSegments {
                          unsigned item_index,
                          ShapeOptions = ShapeOptions()) const;
 
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(segments_);
+    visitor->Trace(items_to_segments_);
+  }
+
  private:
   unsigned PopulateItemsFromFontOrientation(
       unsigned start_offset,
@@ -190,8 +195,8 @@ class CORE_EXPORT InlineItemSegments {
   void CheckOffset(unsigned offset, const InlineItemSegment* segment) const {}
 #endif
 
-  Vector<InlineItemSegment> segments_;
-  Vector<unsigned> items_to_segments_;
+  HeapVector<InlineItemSegment> segments_;
+  HeapVector<unsigned> items_to_segments_;
 };
 
 inline InlineItemSegments::Iterator::Iterator(

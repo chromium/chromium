@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_ITEMS_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_ITEMS_DATA_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_text_index.h"
@@ -15,14 +13,13 @@
 namespace blink {
 
 class InlineItemSegments;
+struct InlineNodeData;
 class OffsetMapping;
 
 // Represents a text content with a list of InlineItem. A node may have an
 // additional InlineItemsData for ::first-line pseudo-element.
 struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
  public:
-  virtual ~InlineItemsData() = default;
-
   InlineItemTextIndex End() const {
     return {items.size(), text_content.length()};
   }
@@ -36,7 +33,7 @@ struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
   // Set to nullptr when all items has only single run, which is common case for
   // most writing systems. However, in multi-script writing systems such as
   // Japanese, almost every item has multiple runs.
-  std::unique_ptr<InlineItemSegments> segments;
+  Member<InlineItemSegments> segments;
 
   // The DOM to text content offset mapping of this inline node.
   Member<OffsetMapping> offset_mapping;
@@ -69,7 +66,19 @@ struct CORE_EXPORT InlineItemsData : public GarbageCollected<InlineItemsData> {
   void CheckConsistency() const;
 #endif
 
-  virtual void Trace(Visitor* visitor) const;
+  InlineItemsData() = default;
+
+  void Trace(Visitor* visitor) const;
+  void TraceAfterDispatch(Visitor* visitor) const;
+
+ protected:
+  friend struct DowncastTraits<InlineNodeData>;
+
+  explicit InlineItemsData(bool is_node_data) : is_node_data_(is_node_data) {}
+  bool IsNodeData() const { return is_node_data_; }
+
+ private:
+  bool is_node_data_ = false;
 };
 
 }  // namespace blink
