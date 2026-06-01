@@ -311,6 +311,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // See crbug.com/1309151.
   aw_feature_overrides.DisableFeature(::features::kGpuShaderDiskCache);
 
+  // GpuPersistentCache is enabled by default on Clank but not on WebView yet.
+  // Disable it by default so it can be rolled out using Finch.
+  aw_feature_overrides.DisableFeature(::features::kGpuPersistentCache);
+
   // Don't pass the data about browser window position on screen to WebView.
   aw_feature_overrides.DisableFeature(ui::kAndroidUseCorrectWindowBounds);
 

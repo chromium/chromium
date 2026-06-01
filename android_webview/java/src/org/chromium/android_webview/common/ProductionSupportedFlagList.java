@@ -152,6 +152,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "DefaultPassthroughCommandDecoder", "Use the passthrough GLES2 command decoder."),
         Flag.baseFeature(
+                GpuFeatures.GPU_PERSISTENT_CACHE,
+                "Use GpuPersistentCache for GPU blob caching in memory and on disk (if "
+                        + "enabled separately by enabling GpuShaderDiskCache)"),
+        Flag.baseFeature(
                 GpuFeatures.WEBVIEW_SURFACE_CONTROL,
                 "Use SurfaceControl. Requires WebViewThreadSafeMedia and Android device and OS "
                         + "support. Is not supported for TV, see WebViewSurfaceControlForTV."),

@@ -12250,6 +12250,7 @@
     "GpuPersistentCache": [
         {
             "platforms": [
+                "android_webview",
                 "windows"
             ],
             "experiments": [
