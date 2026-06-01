@@ -47,7 +47,11 @@ source_set("browser_ui") {
       "//ui/base/unowned_user_data",
     ]
   } else {
-    sources += [ "glic_nudge_controller_android.h" ]
+    sources += [
+      "glic_nudge_controller_android.h",
+      "glic_toast.h",
+    ]
+    deps += [ "//components/messages/android" ]
   }
 }
 
@@ -71,7 +75,10 @@ source_set("impl") {
       "glic_vector_icon_manager.cc",
     ]
   } else {
-    sources += [ "glic_nudge_controller_android.cc" ]
+    sources += [
+      "glic_nudge_controller_android.cc",
+      "glic_toast.cc",
+    ]
   }
 
   deps = [
@@ -106,6 +113,8 @@ source_set("impl") {
       "//content/public/browser",
       "//ui/strings:ui_strings__strings_grit",
     ]
+  } else {
+    deps += [ "//components/messages/android" ]
   }
 
   public_deps = [ "//chrome/browser/glic" ]

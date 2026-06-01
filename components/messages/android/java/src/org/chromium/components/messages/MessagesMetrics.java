@@ -116,7 +116,7 @@ public class MessagesMetrics {
                 ENQUEUED_VISIBLE_HISTOGRAM_NAME, messageIdentifier, MessageIdentifier.COUNT);
     }
 
-    /** Records metrics when a message is hidden after being enqueued.*/
+    /** Records metrics when a message is hidden after being enqueued. */
     static void recordMessageEnqueuedHidden(
             @MessageIdentifier int enqueuedMessage,
             @MessageIdentifier int currentDisplayedMessage) {
@@ -163,6 +163,7 @@ public class MessagesMetrics {
 
     /**
      * Record the id of background message when it is stacked.
+     *
      * @param messageIdentifier The id of the background message.
      */
     static void recordStackingHidden(@MessageIdentifier int messageIdentifier) {
@@ -172,6 +173,7 @@ public class MessagesMetrics {
 
     /**
      * Record the id of the front message when there is a background message.
+     *
      * @param messageIdentifier The id of the foreground message.
      */
     static void recordStackingHiding(@MessageIdentifier int messageIdentifier) {
@@ -359,10 +361,13 @@ public class MessagesMetrics {
                 return "ExtensionsRequestAccess";
             case MessageIdentifier.KNOWN_INTERCEPTION_DISCLOSURE:
                 return "KnownInterceptionDisclosure";
+            case MessageIdentifier.GLIC_WINDOW_RESIZED:
+                return "GlicWindowResized";
             default:
                 return "Unknown";
         }
     }
+
     // LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier)
 
     static String getEnqueuedHistogramNameForTesting() {

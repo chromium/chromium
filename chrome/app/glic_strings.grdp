@@ -511,4 +511,16 @@
   <message name="IDS_GLIC_GET_HELP" desc="Link or button label text to open help documentation.">
     Get help
   </message>
+  <message name="IDS_GLIC_CHAT_HIDDEN_TITLE" desc="Title of the snackbar message shown when Glic chat is hidden due to window resizing.">
+    Chat hidden
+  </message>
+  <message name="IDS_GLIC_CHAT_HIDDEN_DESCRIPTION" desc="Subtitle description of the snackbar message shown when Glic chat is hidden due to window resizing.">
+    Increase window size to resume chat
+  </message>
+  <message name="IDS_GLIC_TASK_PAUSED_TITLE" desc="Title of the snackbar message shown when a Glic task is paused due to window resizing.">
+    Task paused
+  </message>
+  <message name="IDS_GLIC_TASK_PAUSED_DESCRIPTION" desc="Subtitle description of the snackbar message shown when a Glic task is paused due to window resizing.">
+    Increase window size to resume task
+  </message>
 </grit-part>

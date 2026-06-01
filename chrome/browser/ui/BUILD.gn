@@ -1455,7 +1455,6 @@ static_library("ui") {
       "//chrome/browser/glic/browser_ui:glow_controller",
       "//chrome/browser/glic/browser_ui:glow_controller_impl",
       "//chrome/browser/glic/browser_ui:glow_impl",
-      "//chrome/browser/glic/browser_ui:impl",
       "//chrome/browser/glic/selection",
       "//chrome/browser/glic/suggestions",
       "//chrome/browser/indigo",
@@ -1909,10 +1908,6 @@ static_library("ui") {
       # included or get componentized: c/b/ui/browser_dialogs.h,
       # browser_navigation.h, browser.h.
       "//chrome/browser/ui/sync:impl",
-
-      # TODO(crbug.com/364501603): Remove this circular dependency when
-      # c/b/ui/views/tabs/tab_strip_action_container.h gets componentized.
-      "//chrome/browser/glic/browser_ui:impl",
 
       # TODO(crbug.com/438226511): Remove this circular dependency when the
       # following headers get componentized:
