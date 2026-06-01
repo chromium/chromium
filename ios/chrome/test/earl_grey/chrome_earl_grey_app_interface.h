@@ -166,6 +166,12 @@ enum class TipsNotificationType;
 // internal NavigationItem to trigger scroll restoration upon page load.
 + (void)openNewTabWithURL:(NSString*)url textFragment:(NSString*)textFragment;
 
+// Opens a new tab with the given URL, text fragment, and marks it as
+// originating from Send Tab To Self with the given entry GUID.
++ (void)openSendTabToSelfNewTabWithURL:(NSString*)url
+                          textFragment:(NSString*)textFragment
+                             entryGUID:(NSString*)guid;
+
 // Simulates opening a custom `URL` from another application.
 + (void)simulateExternalAppURLOpeningWithURL:(NSURL*)URL;
 
@@ -438,6 +444,19 @@ enum class TipsNotificationType;
                                              title:(NSString*)title
                                         deviceName:(NSString*)deviceName
                                   targetDeviceGUID:(NSString*)targetDeviceGUID;
+
+// Adds a fake Send Tab To Self entry to the fake sync server and returns its
+// GUID. `formFieldData` is a dictionary where keys are form control names and
+// values are the values to fill.
++ (NSString*)addFakeSendTabToSelfEntryWithURL:(NSString*)url
+                                        title:(NSString*)title
+                                formFieldData:
+                                    (NSDictionary<NSString*, NSString*>*)
+                                        formFieldData;
+
+// Checks if the local Send Tab To Self model contains an entry with the given
+// GUID.
++ (BOOL)hasSendTabToSelfEntryWithGUID:(NSString*)guid;
 
 // Returns the generated text fragment for the given URL, or nil if no entry
 // exists or no fragment is set.

@@ -7,6 +7,7 @@
 #import <set>
 #import <string>
 
+#import "base/base64.h"
 #import "base/check.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
@@ -28,10 +29,12 @@
 #import "components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#import "components/send_tab_to_self/proto_conversions.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync/base/time.h"
 #import "components/sync/engine/loopback_server/loopback_server_entity.h"
+#import "components/sync/nigori/cryptographer_impl.h"
 #import "components/sync/protocol/device_info_specifics.pb.h"
 #import "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #import "components/sync/protocol/session_specifics.pb.h"
@@ -491,32 +494,74 @@ void AddDeviceInfoToFakeSyncServer(const std::string& device_name,
           /*creation_time=*/mtime, mtime));
 }
 
-void AddSendTabToSelfEntryToFakeSyncServer(
-    const std::string& url,
+std::string AddSendTabToSelfEntryToFakeSyncServer(
+    const GURL& url,
     const std::string& title,
     const std::string& device_name,
-    const std::string& target_device_guid) {
+    const std::string& target_device_cache_guid,
+    const std::map<std::string, std::string>& form_fields) {
   DCHECK(IsFakeSyncServerSetUp());
 
   sync_pb::EntitySpecifics specifics;
-  sync_pb::SendTabToSelfSpecifics* send_tab =
+  sync_pb::SendTabToSelfSpecifics* stts_specifics =
       specifics.mutable_send_tab_to_self();
-  const std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  send_tab->set_guid(guid);
-  send_tab->set_title(title);
-  send_tab->set_url(url);
-  send_tab->set_shared_time_usec(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  send_tab->set_device_name(device_name);
-  send_tab->set_target_device_sync_cache_guid(target_device_guid);
-  send_tab->set_opened(false);
-  send_tab->set_notification_dismissed(false);
+  stts_specifics->set_url(url.spec());
+  stts_specifics->set_title(title);
 
-  std::unique_ptr<syncer::LoopbackServerEntity> entity =
+  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  stts_specifics->set_guid(guid);
+
+  std::string target_guid = target_device_cache_guid;
+  if (target_guid.empty()) {
+    syncer::DeviceInfoSyncService* device_info_service =
+        DeviceInfoSyncServiceFactory::GetForProfile(
+            chrome_test_util::GetOriginalProfile());
+    target_guid = device_info_service->GetLocalDeviceInfoProvider()
+                      ->GetLocalDeviceInfo()
+                      ->guid();
+  }
+
+  int64_t now_usec =
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
+  stts_specifics->set_shared_time_usec(now_usec);
+  stts_specifics->set_device_name(device_name);
+  stts_specifics->set_target_device_sync_cache_guid(target_guid);
+  stts_specifics->set_opened(false);
+  stts_specifics->set_notification_dismissed(false);
+
+  if (!form_fields.empty()) {
+    sync_pb::PageContext* page_context = stts_specifics->mutable_page_context();
+    for (const auto& [name, value] : form_fields) {
+      sync_pb::FormField* field =
+          page_context->mutable_form_field_info()->add_fields();
+      field->set_name_attribute(name);
+      field->set_id_attribute(name);
+      field->set_value(value);
+      field->set_form_control_type("text");
+    }
+
+    std::vector<std::vector<uint8_t>> keystore_keys =
+        gSyncFakeServer->GetKeystoreKeys();
+    if (!keystore_keys.empty()) {
+      std::string key_base64 = base::Base64Encode(keystore_keys.back());
+      std::unique_ptr<syncer::CryptographerImpl> cryptographer =
+          syncer::CryptographerImpl::FromSingleKeyForTesting(
+              key_base64, syncer::KeyDerivationParams::CreateForPbkdf2());
+      if (cryptographer &&
+          cryptographer->Encrypt(
+              stts_specifics->page_context(),
+              stts_specifics->mutable_encrypted_page_context())) {
+        stts_specifics->clear_page_context();
+      }
+    }
+  }
+
+  gSyncFakeServer->InjectEntity(
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-          /*non_unique_name=*/std::string(), /*client_tag=*/guid, specifics,
-          /*creation_time=*/12345, /*last_modified_time=*/12345);
-  gSyncFakeServer->InjectEntity(std::move(entity));
+          /*non_unique_name=*/title, /*client_tag=*/guid, specifics,
+          /*creation_time=*/now_usec, /*last_modified_time=*/now_usec));
+
+  return guid;
 }
 
 BOOL IsUrlPresentOnClient(const GURL& url,

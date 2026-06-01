@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_push_notification_client.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"

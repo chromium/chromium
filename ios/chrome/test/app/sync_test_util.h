@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include <map>
 #include <set>
 #include <string>
 
@@ -138,12 +139,15 @@ void AddHistoryVisitToFakeSyncServer(const GURL& url);
 void AddDeviceInfoToFakeSyncServer(const std::string& device_name,
                                    base::Time last_updated_timestamp);
 
-// Injects a send tab to self entry into the fake sync server.
-void AddSendTabToSelfEntryToFakeSyncServer(
-    const std::string& url,
+// Injects a Send Tab To Self entry into the fake sync server and returns its
+// GUID. If `target_device_cache_guid` is empty, the local device's cache GUID
+// is used instead.
+std::string AddSendTabToSelfEntryToFakeSyncServer(
+    const GURL& url,
     const std::string& title,
     const std::string& device_name,
-    const std::string& target_device_guid);
+    const std::string& target_device_cache_guid = "",
+    const std::map<std::string, std::string>& form_fields = {});
 
 // Returns YES if the provided `url` is present (or not) if `expected_present`
 // is YES (or NO).

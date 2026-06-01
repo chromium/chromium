@@ -12,5 +12,6 @@ specific_include_rules = {
 "sync_test_util\\.mm": [
     "+components/data_sharing/public",
     "+components/saved_tab_groups",
+    "+components/send_tab_to_self",
   ],
 }

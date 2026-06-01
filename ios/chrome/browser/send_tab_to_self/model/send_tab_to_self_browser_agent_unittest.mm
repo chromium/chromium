@@ -20,6 +20,8 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -28,6 +30,7 @@
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
 
 using send_tab_to_self::FakeSendTabToSelfModel;
@@ -50,6 +53,11 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
 
     profile_ = std::move(test_profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    mock_scene_commands_ =
+        [OCMockObject mockForProtocol:@protocol(SceneCommands)];
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_scene_commands_
+                     forProtocol:@protocol(SceneCommands)];
     SendTabToSelfBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = SendTabToSelfBrowserAgent::FromBrowser(browser_.get());
     model_ = static_cast<FakeSendTabToSelfModel*>(
@@ -97,6 +105,7 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
 
   // All infobar managers created during tests, for ease of clean-up.
   std::vector<infobars::InfoBarManager*> infobar_managers_;
+  id mock_scene_commands_;
 };
 
 TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddSimple) {

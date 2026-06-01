@@ -1019,6 +1019,28 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                 targetDeviceGUID:targetDeviceGUID];
 }
 
+- (NSString*)addFakeSendTabToSelfEntryWithURL:(NSString*)url
+                                        title:(NSString*)title
+                                formFieldData:
+                                    (NSDictionary<NSString*, NSString*>*)
+                                        formFieldData {
+  return [ChromeEarlGreyAppInterface
+      addFakeSendTabToSelfEntryWithURL:url
+                                 title:title
+                         formFieldData:formFieldData];
+}
+
+- (void)waitForSendTabToSelfEntryWithGUID:(NSString*)guid {
+  BOOL entrySynced = [[GREYCondition
+      conditionWithName:@"Wait for STTS entry to sync to the client"
+                  block:^BOOL {
+                    return [ChromeEarlGreyAppInterface
+                        hasSendTabToSelfEntryWithGUID:guid];
+                  }] waitWithTimeout:10.0];
+  GREYAssertTrue(entrySynced,
+                 @"Send Tab To Self entry did not sync to the client.");
+}
+
 - (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL {
   return
       [ChromeEarlGreyAppInterface textFragmentForSendTabToSelfEntryWithURL:URL];
@@ -2106,8 +2128,16 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ReaderModeAppInterface hideReaderMode];
 }
 
-- (void)openNewTabWithURL:(NSString*)URL textFragment:(NSString*)textFragment {
-  [ChromeEarlGreyAppInterface openNewTabWithURL:URL textFragment:textFragment];
+- (void)openNewTabWithURL:(NSString*)url textFragment:(NSString*)textFragment {
+  [ChromeEarlGreyAppInterface openNewTabWithURL:url textFragment:textFragment];
+}
+
+- (void)openSendTabToSelfNewTabWithURL:(NSString*)url
+                          textFragment:(NSString*)textFragment
+                             entryGUID:(NSString*)guid {
+  [ChromeEarlGreyAppInterface openSendTabToSelfNewTabWithURL:url
+                                                textFragment:textFragment
+                                                   entryGUID:guid];
 }
 
 @end

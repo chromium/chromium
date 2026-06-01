@@ -470,6 +470,21 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   [handler openURLInNewTab:command];
 }
 
++ (void)openSendTabToSelfNewTabWithURL:(NSString*)url
+                          textFragment:(NSString*)textFragment
+                             entryGUID:(NSString*)guid {
+  const GURL gurl = GURL(base::SysNSStringToUTF8(url));
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:gurl];
+  command.textFragment = textFragment;
+  command.sendTabToSelfEntryGUID = guid;
+
+  id<SceneCommands> handler = HandlerForProtocol(
+      chrome_test_util::GetCurrentBrowser()->GetCommandDispatcher(),
+      SceneCommands);
+  [handler openURLInNewTab:command];
+}
+
 + (void)simulateExternalAppURLOpeningWithURL:(NSURL*)URL {
   chrome_test_util::SimulateExternalAppURLOpeningWithURL(URL);
 }
@@ -1008,9 +1023,39 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
                                         deviceName:(NSString*)deviceName
                                   targetDeviceGUID:(NSString*)targetDeviceGUID {
   chrome_test_util::AddSendTabToSelfEntryToFakeSyncServer(
-      base::SysNSStringToUTF8(URL), base::SysNSStringToUTF8(title),
+      GURL(base::SysNSStringToUTF8(URL)), base::SysNSStringToUTF8(title),
       base::SysNSStringToUTF8(deviceName),
       base::SysNSStringToUTF8(targetDeviceGUID));
+}
+
++ (NSString*)addFakeSendTabToSelfEntryWithURL:(NSString*)url
+                                        title:(NSString*)title
+                                formFieldData:
+                                    (NSDictionary<NSString*, NSString*>*)
+                                        formFieldData {
+  std::map<std::string, std::string> formFields;
+  for (NSString* key in formFieldData) {
+    formFields[base::SysNSStringToUTF8(key)] =
+        base::SysNSStringToUTF8(formFieldData[key]);
+  }
+
+  std::string guid = chrome_test_util::AddSendTabToSelfEntryToFakeSyncServer(
+      GURL(base::SysNSStringToUTF8(url)), base::SysNSStringToUTF8(title),
+      "target_device", "cache_guid_target_device", formFields);
+
+  return base::SysUTF8ToNSString(guid);
+}
+
++ (BOOL)hasSendTabToSelfEntryWithGUID:(NSString*)guid {
+  ProfileIOS* original_profile = chrome_test_util::GetOriginalProfile();
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(original_profile);
+  if (!service || !service->GetSendTabToSelfModel()) {
+    return NO;
+  }
+  send_tab_to_self::SendTabToSelfModel* model =
+      service->GetSendTabToSelfModel();
+  return model->GetEntryByGUID(base::SysNSStringToUTF8(guid)) != nullptr;
 }
 
 + (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL {
@@ -1120,11 +1165,12 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   });
   if (!success) {
     ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+    syncer::SyncService* syncService =
+        SyncServiceFactory::GetForProfile(profile);
+    int state = (int)syncService->GetTransportState();
     NSString* errorDescription = [NSString
         stringWithFormat:
-            @"Sync transport must be active, but actual state was: %d",
-            (int)SyncServiceFactory::GetForProfile(profile)
-                ->GetTransportState()];
+            @"Sync transport must be active, but actual state was: %d", state];
     return testing::NSErrorWithLocalizedDescription(errorDescription);
   }
   return nil;

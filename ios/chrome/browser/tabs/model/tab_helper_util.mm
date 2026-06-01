@@ -224,8 +224,11 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState()));
 
   attacher.Create<AnnotationsTabHelper>();
-  attacher.CreateWhen<SendTabToSelfTabHelper>(base::FeatureList::IsEnabled(
-      send_tab_to_self::kSendTabToSelfPropagateScrollPosition));
+  attacher.CreateWhen<SendTabToSelfTabHelper>(
+      base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfPropagateScrollPosition) ||
+      base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfPropagateFormFields));
 
   SafeBrowsingClient* client =
       SafeBrowsingClientFactory::GetForProfile(profile);

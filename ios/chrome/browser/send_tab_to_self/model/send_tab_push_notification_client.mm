@@ -14,7 +14,6 @@
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#import "components/shared_highlighting/core/common/text_fragment.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
@@ -23,6 +22,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
@@ -84,10 +84,9 @@ bool SendTabPushNotificationClient::HandleNotificationInteraction(
     return false;
   }
 
-  GURL url = GURL(base::SysNSStringToUTF8(user_info[kUrlKey]));
-
   // Load URL in a new tab and mark the corresponding SendTabToSelfEntry as
   // opened.
+  GURL url = GURL(base::SysNSStringToUTF8(user_info[kUrlKey]));
   std::string identifier = base::SysNSStringToUTF8(
       response.notification.request.content.userInfo[kIdentifierKey]);
   if (base::CallbackListSubscription subscription =
@@ -138,32 +137,23 @@ void SendTabPushNotificationClient::LoadSendTabUrlInNewTab(
   send_tab_to_self::SendTabToSelfModel* send_tab_model =
       sync_service->GetSendTabToSelfModel();
 
-  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];
+  const send_tab_to_self::SendTabToSelfEntry* entry =
+      send_tab_model->GetEntryByGUID(std::string(identifier));
 
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfPropagateScrollPosition)) {
-    const send_tab_to_self::SendTabToSelfEntry* entry =
-        send_tab_model->GetEntryByGUID(std::string(identifier));
-    if (entry && !entry->GetPageContext().scroll_position.IsEmpty()) {
-      const send_tab_to_self::ScrollPosition& scroll_position =
-          entry->GetPageContext().scroll_position;
-      shared_highlighting::TextFragment fragment(
-          scroll_position.text_fragment.text_start,
-          scroll_position.text_fragment.text_end,
-          scroll_position.text_fragment.prefix,
-          scroll_position.text_fragment.suffix);
-      std::string escaped_string = fragment.ToEscapedString(
-          shared_highlighting::TextFragment::EscapedStringFormat::
-              kWithoutTextDirective);
-      command.textFragment = base::SysUTF8ToNSString(escaped_string);
-    }
+  OpenNewTabCommand* command = nil;
+  if (entry) {
+    command = send_tab_to_self::CreateOpenNewTabCommand(entry);
+  } else {
+    command = [OpenNewTabCommand commandWithURLFromChrome:url];
   }
 
   id<SceneCommands> handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   [handler openURLInNewTab:command];
 
-  send_tab_model->MarkEntryOpened(std::string(identifier));
+  if (entry) {
+    send_tab_model->MarkEntryOpened(std::string(identifier));
+  }
 
   if (IsProvisionalNotificationAlertEnabled()) {
     AuthenticationService* authService =

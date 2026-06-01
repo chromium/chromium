@@ -14,6 +14,8 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
+@protocol SceneCommands;
+
 namespace send_tab_to_self {
 
 class SendTabToSelfEntry;
@@ -23,10 +25,12 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   static std::unique_ptr<IOSSendTabToSelfInfoBarDelegate> Create(
       const SendTabToSelfEntry* entry,
-      SendTabToSelfModel* model);
+      SendTabToSelfModel* model,
+      id<SceneCommands> scene_handler);
 
-  explicit IOSSendTabToSelfInfoBarDelegate(const SendTabToSelfEntry* entry,
-                                           SendTabToSelfModel* model);
+  IOSSendTabToSelfInfoBarDelegate(const SendTabToSelfEntry* entry,
+                                  SendTabToSelfModel* model,
+                                  id<SceneCommands> scene_handler);
 
   IOSSendTabToSelfInfoBarDelegate(const IOSSendTabToSelfInfoBarDelegate&) =
       delete;
@@ -57,6 +61,9 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Registration with NSNotificationCenter for this window.
   __strong id<NSObject> registration_ = nil;
+
+  // Handler for scene commands.
+  __weak id<SceneCommands> scene_handler_ = nil;
 
   base::WeakPtrFactory<IOSSendTabToSelfInfoBarDelegate> weak_ptr_factory_;
 };
