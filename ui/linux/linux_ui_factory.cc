@@ -67,9 +67,12 @@ LinuxUiAndTheme* GetLinuxUi(CreateLinuxUiFunc&& create_linux_ui) {
   // obtain the `ThemeService` instance while this callstack is still setting it
   // up, leading to unexpected null pointers. To avoid this, delay any such
   // notifications until the callstack has unwound.
-  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
-      FROM_HERE,
-      std::make_unique<NativeTheme::UpdateNotificationDelayScoper>());
+  auto delay_scoper =
+      std::make_unique<NativeTheme::UpdateNotificationDelayScoper>();
+  if (base::SequencedTaskRunner::HasCurrentDefault()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(delay_scoper));
+  }
 
   // This function is reentrant: it may be called while Initialize() is running.
   // In that case, return `linux_ui`. However, if Initialize() fails,

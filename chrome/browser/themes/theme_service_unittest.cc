@@ -1165,4 +1165,17 @@ TEST_F(ThemeServiceTest, RemoveUnusedThemesExemptsSavedLocalTheme) {
   EXPECT_TRUE(registry()->GetInstalledExtension(scoper2.extension_id()));
 }
 
+#if BUILDFLAG(IS_LINUX)
+TEST(LinuxUiFactoryTest, GetDefaultLinuxUiWithoutTaskRunner) {
+  // Ensure no current default sequenced task runner is set.
+  ASSERT_FALSE(base::SequencedTaskRunner::HasCurrentDefault());
+
+  // Calling ui::GetDefaultLinuxUi() shouldn't crash, even when there's no
+  // SequencedTaskRunner.
+  (void)ui::GetDefaultLinuxUi();
+  // The return value may be null or non-null depending on environment, but must
+  // not crash.
+}
+#endif
+
 }  // namespace theme_service_internal
