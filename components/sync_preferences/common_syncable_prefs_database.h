@@ -24,6 +24,8 @@ inline constexpr char kSyncablePriorityPrefForTesting[] =
     "syncable-test-priority-preference";
 inline constexpr char kSyncableAlwaysSyncingPriorityPrefForTesting[] =
     "syncable-always-syncing-test-priority-preference";
+inline constexpr char kSyncableAccountScopedPrefForTesting[] =
+    "syncable-account-scoped-test-preference";
 
 // This class provides an implementation for SyncablePrefsDatabase for common
 // syncable preferences, i.e. preferences which are shared between all

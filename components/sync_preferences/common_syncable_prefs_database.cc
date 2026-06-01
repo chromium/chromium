@@ -165,6 +165,7 @@ enum {
   kAutofillAiShoppingEntitiesEnabled = 114,
   kPrefTranslateRecentTargets = 115,
   kBookmarkBarVisibilityState = 116,
+  kSyncableAccountScopedPrefForTesting = 117,  // For tests.
   // New entries should be added above this line.
   kSubscriptionEligibilityAiSubscriptionTier =
       100338,  // (different ID as it's a move from //chrome)
@@ -391,6 +392,10 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {kSyncablePrefForTesting,
          {syncable_prefs_ids::kSyncablePrefForTesting, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {kSyncableAccountScopedPrefForTesting,
+         {syncable_prefs_ids::kSyncableAccountScopedPrefForTesting,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone,
+          WriteBehavior::kWriteToAccountOnly}},
         {kSyncableMergeableDictPrefForTesting,
          {syncable_prefs_ids::kSyncableMergeableDictPrefForTesting,
           syncer::PREFERENCES, PrefSensitivity::kNone,

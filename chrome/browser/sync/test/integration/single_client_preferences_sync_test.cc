@@ -49,6 +49,7 @@
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync_preferences/common_syncable_prefs_database.h"
+#include "components/sync_preferences/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2578,5 +2579,77 @@ IN_PROC_BROWSER_TEST_P(
             ConvertPrefValueToValueInSpecifics(base::Value("new value")));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+class SingleClientPreferencesAccountScopedSyncTest
+    : public SingleClientPreferencesWithAccountStorageSyncTest {
+ public:
+  SingleClientPreferencesAccountScopedSyncTest() {
+    feature_list_.InitAndEnableFeature(
+        sync_preferences::features::kAccountScopedPrefs);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientPreferencesAccountScopedSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesAccountScopedSyncTest,
+                       ShouldStoreAccountScopedPrefInAccountStoreOnly) {
+  ASSERT_TRUE(SetupClients());
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(
+          sync_preferences::kSyncableAccountScopedPrefForTesting, "",
+          user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Verify that no local value is stored for the account-scoped pref.
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncableAccountScopedPrefForTesting, "local value");
+  EXPECT_FALSE(GetPrefs(0)->GetUserPrefValue(
+      sync_preferences::kSyncableAccountScopedPrefForTesting));
+
+  InjectPreferenceToFakeServer(
+      syncer::PREFERENCES,
+      sync_preferences::kSyncableAccountScopedPrefForTesting,
+      base::Value("account value"));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  ASSERT_EQ(GetPrefs(0)->GetString(
+                sync_preferences::kSyncableAccountScopedPrefForTesting),
+            "account value");
+
+  // Change pref value while syncing.
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncableAccountScopedPrefForTesting, "new value");
+  ASSERT_EQ(GetPrefs(0)->GetString(
+                sync_preferences::kSyncableAccountScopedPrefForTesting),
+            "new value");
+
+  // Change is synced to account.
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
+                  syncer::DataType::PREFERENCES,
+                  sync_preferences::kSyncableAccountScopedPrefForTesting,
+                  ConvertPrefValueToValueInSpecifics(base::Value("new value")))
+                  .Wait());
+
+  // Disable syncing preferences.
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Account-scoped pref is cleared from the account store and was never written
+  // to the local store.
+  EXPECT_FALSE(GetPrefs(0)->GetUserPrefValue(
+      sync_preferences::kSyncableAccountScopedPrefForTesting));
+}
 
 }  // namespace

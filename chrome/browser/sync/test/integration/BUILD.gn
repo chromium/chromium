@@ -60,6 +60,7 @@ source_set("sync_integration_tests_impl") {
     "//components/sync_bookmarks",
     "//components/sync_device_info:test_support",
     "//components/sync_preferences:common_syncable_prefs_database",
+    "//components/sync_preferences:features",
     "//components/undo",
     "//components/version_info",
     "//components/webauthn:features",
