@@ -2,7 +2,9 @@ ci/linux-no-initial-webui-rel
 ci/linux-surface-embed-rel
 ci/mac-no-initial-webui-rel
 ci/win-webium-product-rel
+ci/windows-no-initial-webui-rel
 try/linux-no-initial-webui-rel
 try/linux-surface-embed-rel
 try/mac-no-initial-webui-rel
 try/win-webium-product-rel
+try/windows-no-initial-webui-rel

@@ -512,6 +512,75 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "windows-no-initial-webui-rel",
+    description_html = "Runs tests with Initial WebUI disabled to check legacy UI path. See b/505579819.",
+    parent = "ci/Win x64 Builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+    ),
+    targets = targets.bundle(
+        targets = [
+            "browser_tests",
+            "interactive_ui_tests",
+            "unit_tests",
+        ],
+        mixins = [
+            "isolate_profile_data",
+            "retry_only_failed_tests",
+            "win11-any",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "browser_tests": targets.mixin(
+                args = [
+                    "--disable-features=InitialWebUI,WebUIReloadButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit",
+                ],
+                swarming = targets.swarming(
+                    shards = 14,
+                ),
+            ),
+            "interactive_ui_tests": targets.mixin(
+                args = [
+                    "--disable-features=InitialWebUI,WebUIReloadButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit",
+                ],
+                swarming = targets.swarming(
+                    shards = 3,
+                ),
+            ),
+            "unit_tests": targets.mixin(
+                args = [
+                    "--disable-features=InitialWebUI,WebUIReloadButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit",
+                ],
+            ),
+        },
+    ),
+    # TODO(crbug.com/505579819): Enable gardening once the bot is stable.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "release",
+        short_name = "no-webui",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-webium-product-eng@google.com",
+)
+
+ci.thin_tester(
     name = "win-webium-product-rel",
     description_html = "Webium Product Windows tests.",
     parent = "ci/Win x64 Builder",

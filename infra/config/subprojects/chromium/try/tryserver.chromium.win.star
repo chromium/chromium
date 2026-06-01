@@ -511,6 +511,21 @@ try_.builder(
 )
 
 try_.builder(
+    name = "windows-no-initial-webui-rel",
+    mirrors = [
+        "ci/Win x64 Builder",
+        "ci/windows-no-initial-webui-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Win x64 Builder",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "chrome-webium-product-eng@google.com",
+)
+
+try_.builder(
     name = "win-webium-product-rel",
     mirrors = [
         "ci/win-webium-product-rel",

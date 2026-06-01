@@ -1036,7 +1036,8 @@
     "win_chromium_compile_dbg_ng": "try/win_chromium_compile_dbg_ng/gn-args.json",
     "win_chromium_compile_rel_ng": "try/win_chromium_compile_rel_ng/gn-args.json",
     "win_chromium_x64_rel_ng": "try/win_chromium_x64_rel_ng/gn-args.json",
-    "win_optional_gpu_tests_rel": "try/win_optional_gpu_tests_rel/gn-args.json"
+    "win_optional_gpu_tests_rel": "try/win_optional_gpu_tests_rel/gn-args.json",
+    "windows-no-initial-webui-rel": "try/windows-no-initial-webui-rel/gn-args.json"
   },
   "tryserver.crossbench": {
     "linux-crossbench": "try/linux-crossbench/gn-args.json"
