@@ -13,9 +13,10 @@
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/timer/timer.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -36,12 +37,12 @@ class ObfuscatedFileUtil;
 class QuotaManagerProxy;
 
 // `SandboxQuotaObserver` is used from multiple threads so the ref-counting,
-// needs to be thread-safe. It doesn't own anything so the destructor can run
-// on any thread.
+// needs to be thread-safe.
 class SandboxQuotaObserver
     : public FileUpdateObserver,
       public FileAccessObserver,
-      public base::RefCountedThreadSafe<SandboxQuotaObserver> {
+      // `delayed_cache_update_helper_` must be destroyed on the correct thread.
+      public base::RefCountedDeleteOnSequence<SandboxQuotaObserver> {
  public:
   SandboxQuotaObserver(
       scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
@@ -71,7 +72,8 @@ class SandboxQuotaObserver
                             bool enabled);
 
  private:
-  friend class base::RefCountedThreadSafe<SandboxQuotaObserver>;
+  friend class base::RefCountedDeleteOnSequence<SandboxQuotaObserver>;
+  friend class base::DeleteHelper<SandboxQuotaObserver>;
 
   mutable base::Lock is_disabled_lock_;
   bool is_disabled_ GUARDED_BY(is_disabled_lock_) = false;
