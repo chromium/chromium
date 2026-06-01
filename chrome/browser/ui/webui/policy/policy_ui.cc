@@ -257,6 +257,8 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   source->AddBoolean(
       "policyPageMojoMigrationEnabled",
       base::FeatureList::IsEnabled(policy::features::kPolicyPageMojoMigration));
+
+  source->AddBoolean("hideUploadReportButton", profile->IsOffTheRecord());
 }
 
 }  // namespace

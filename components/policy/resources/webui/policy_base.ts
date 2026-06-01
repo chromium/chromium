@@ -444,8 +444,13 @@ export class Page {
    * far.
    */
   updateReportButton(enabled: boolean) {
+    // We hide the report button when reporting is disabled or profile is
+    // unavailable (e.g. incognito).
+    const hideUploadReportButton =
+        loadTimeData.valueExists('hideUploadReportButton') &&
+        loadTimeData.getBoolean('hideUploadReportButton');
     getRequiredElement('upload-report').style.display =
-        enabled ? 'block' : 'none';
+        (enabled && !hideUploadReportButton) ? 'block' : 'none';
   }
   // </if>
 

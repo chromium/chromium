@@ -477,10 +477,13 @@ void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
                                ->chrome_browser_cloud_management_controller()
                                ->report_scheduler();
 
-  auto* profile_report_scheduler =
+  auto* cloud_profile_reporting_service =
       enterprise_reporting::CloudProfileReportingServiceFactory::GetForProfile(
-          Profile::FromWebUI(web_ui()))
-          ->report_scheduler();
+          Profile::FromWebUI(web_ui()));
+  auto* profile_report_scheduler =
+      cloud_profile_reporting_service
+          ? cloud_profile_reporting_service->report_scheduler()
+          : nullptr;
 
   if (report_scheduler && profile_report_scheduler) {
     const auto on_report_uploaded = base::BarrierClosure(

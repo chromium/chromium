@@ -31,6 +31,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
+#include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -725,6 +727,41 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonWithProfileReporting) {
   provider_.UpdateChromePolicy(policy_map);
   VerifyReportButton(/*visible=*/false);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonOTRProfile) {
+  Browser* otr_browser = OpenURLOffTheRecord(browser()->profile(),
+                                             GURL(chrome::kChromeUIPolicyURL));
+  ASSERT_TRUE(otr_browser);
+  content::WebContents* otr_contents =
+      otr_browser->tab_strip_model()->GetActiveWebContents();
+
+  // Concretely assert that CloudProfileReportingServiceFactory returns nullptr
+  // for OTR profile, so no reporting service / scheduler is available.
+  EXPECT_EQ(
+      nullptr,
+      enterprise_reporting::CloudProfileReportingServiceFactory::GetForProfile(
+          otr_browser->profile()));
+
+  // Turn on the reporting policy.
+  policy::PolicyMap policy_map;
+  policy_map.Set(policy::key::kCloudProfileReportingEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  provider_.UpdateChromePolicy(policy_map);
+
+  // Verify the button is NOT visible in the OTR profile, even when enabled by
+  // policy.
+  const std::string kJavaScript = "getReportButtonVisibility();";
+  std::string visibility =
+      content::EvalJs(otr_contents, kJavaScript).ExtractString();
+  EXPECT_EQ("none", visibility);
+
+  // Verify that calling uploadReport does not crash and completes safely.
+  EXPECT_TRUE(content::ExecJs(otr_contents,
+                              "chrome.send('uploadReport', ['test_id']);"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class PolicyPrecedenceUITest
