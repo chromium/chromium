@@ -23,8 +23,7 @@
       },
       {
         "args": [
-          "--disable-features=BackForwardCache",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux.bf_cache_content_browsertests.filter"
+          "--disable-features=BackForwardCache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
