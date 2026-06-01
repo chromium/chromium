@@ -144,6 +144,11 @@ class BridgedNativeWidgetTestApi {
     bridge_->CheckAndNotifyAllWorkspacesStateChanged();
   }
 
+  remote_cocoa::NativeWidgetNSWindowBridge* bridge() { return &*bridge_; }
+  void set_wants_to_be_visible(bool visible) {
+    bridge_->wants_to_be_visible_ = visible;
+  }
+
  private:
   const raw_ref<remote_cocoa::NativeWidgetNSWindowBridge> bridge_;
 };
@@ -1743,6 +1748,45 @@ TEST_F(NativeWidgetMacTest, CloseWithWindowModalSheet) {
 
     [native_parent close];
     EXPECT_TRUE(widget_observer.widget_closed());
+  }
+}
+
+// Test that if the bridge is destroyed synchronously during a modal sheet
+// animation inside FullscreenControllerTransitionComplete(), the weak pointer
+// check correctly prevents a Use-After-Free (UAF) upon return
+// (https://crbug.com/517040438).
+TEST_F(NativeWidgetMacTest, FullscreenTransitionCompleteBridgeDestruction) {
+  NSWindow* native_parent = MakeClosableTitledNativeParent();
+  @autoreleasepool {
+    Widget* parent_widget =
+        Widget::GetWidgetForNativeWindow(gfx::NativeWindow(native_parent));
+    ASSERT_TRUE(parent_widget);
+
+    Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
+        NativeWidgetMacTest::MakeModalDialog(ui::mojom::ModalType::kWindow),
+        gfx::NativeWindow(), parent_widget->GetNativeView());
+
+    BridgedNativeWidgetTestApi(sheet_widget).set_wants_to_be_visible(true);
+
+    remote_cocoa::NativeWidgetNSWindowBridge* parent_bridge =
+        NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+            gfx::NativeWindow(native_parent))
+            ->GetInProcessNSWindowBridge();
+
+    // Register an observer to close the parent widget synchronously when the
+    // child modal sheet starts its presentation animation. This simulates the
+    // synchronous bridge destruction during the on-stack beginSheet: call.
+    id observer = [[NSNotificationCenter defaultCenter]
+        addObserverForName:NSWindowWillBeginSheetNotification
+                    object:native_parent
+                     queue:nil
+                usingBlock:^(NSNotification* note) {
+                  parent_widget->CloseNow();
+                }];
+
+    parent_bridge->FullscreenControllerTransitionComplete(true);
+
+    [[NSNotificationCenter defaultCenter] removeObserver:observer];
   }
 }
 
