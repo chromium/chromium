@@ -86,8 +86,9 @@ template("chrome_app") {
             [ "//content/app/ios/appex/${_process_target}.appex.entitlements" ]
       }
 
-      # We don't use ios_appex_bundle here because we don't want to mess with multiple
-      # toolkits as the core framework is built with the default toolkit.
+      # We don't use ios_appex_bundle here because we don't want to mess with
+      # multiple toolkits as the core framework is built with the default
+      # toolkit.
       ios_app_bundle("${_outer_target}_${_process_target}") {
         forward_variables_from(invoker,
                                "*",
