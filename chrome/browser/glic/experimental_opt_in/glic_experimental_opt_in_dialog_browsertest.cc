@@ -14,7 +14,7 @@
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_dialog_view.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_page_handler.h"
-#include "chrome/browser/glic/fre/fre_util.h"
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_util.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
@@ -158,7 +158,7 @@ class GlicExperimentalOptInTest
         opt_in_test_server_.GetURL("a.test", "/test_data/page.html");
     expected_url = net::AppendOrReplaceQueryParameter(
         expected_url, "experimental_triggering_opt_in", expected_state_value);
-    expected_url = DecorateGlicFreUrl(browser()->profile(), expected_url);
+    expected_url = DecorateGlicOptInUrl(browser()->profile(), expected_url);
     EXPECT_EQ(actual_url, expected_url);
 
     service()->opt_in_controller().CloseDialog(false);

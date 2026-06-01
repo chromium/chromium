@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_metrics.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_page_handler.h"
-#include "chrome/browser/glic/fre/fre_util.h"
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -61,7 +61,7 @@ GURL GetExperimentalTriggeringOptInURL(Profile* profile,
   url = net::AppendOrReplaceQueryParameter(
       url, "experimental_triggering_opt_in", state_str);
 
-  return DecorateGlicFreUrl(profile, url);
+  return DecorateGlicOptInUrl(profile, url);
 }
 
 }  // namespace

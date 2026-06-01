@@ -479,6 +479,8 @@ source_set("impl") {
       "experimental_opt_in/glic_experimental_opt_in_page_handler.h",
       "experimental_opt_in/glic_experimental_opt_in_ui.cc",
       "experimental_opt_in/glic_experimental_opt_in_ui.h",
+      "experimental_opt_in/glic_experimental_opt_in_util.cc",
+      "experimental_opt_in/glic_experimental_opt_in_util.h",
       "gemini_spark_settings_policy_handler.cc",
       "glic_selection_observer.cc",
       "glic_settings_util_desktop.cc",
