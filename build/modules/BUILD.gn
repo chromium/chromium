@@ -10,6 +10,9 @@ import("//buildtools/third_party/libc++/modules.gni")
 if (is_win) {
   import("//build/toolchain/win/win_toolchain_data.gni")
 }
+if (is_ios && current_toolchain == default_toolchain) {
+  import("//build/config/ios/ios_sdk.gni")
+}
 
 group("modules") {
   deps = [ "//build/modules/modularize:no_modules" ]
@@ -27,17 +30,45 @@ config("strict_deps") {
 }
 
 if (use_unified_system_module) {
+  # When using the system xcode, the header files are in the output directory.
+  # We therefore need to depend on a dummy action declaring that it generates
+  # those files. Only a single target can output them, so we declare them in
+  # the default toolchain.
+  if (current_toolchain == default_toolchain) {
+    # Note: ios doesn't support hermetic xcode, so we do this unconditionally.
+    if (is_ios) {
+      action("ios_sysroot") {
+        script = "//build/noop.py"
+        outputs = expand_directory(ios_sdk_path + "/usr/include", true)
+      }
+    }
+    if (is_mac && mac_use_xcode_symlinks) {
+      action("mac_sysroot") {
+        script = "//build/noop.py"
+        outputs =
+            filter_exclude(expand_directory(sysroot + "/usr/include", true),
+                           # Avoid overlap with //build/config/mac:sdk_inputs
+                           [ "*.defs" ])
+      }
+    }
+  }
+
   system_headers = libcxx_headers + [
                      "//buildtools/third_party/libc++/__config_site",
                      "//buildtools/third_party/libc++/__assertion_handler",
                    ]
   root_include_dir = ""
+  extra_headers = []
   if (is_win) {
     foreach(include_flag, current_win_toolchain_data.include_flags_I_list) {
       system_headers +=
           expand_directory(string_replace(include_flag, "/I", "", 1), true)
     }
-  } else if (is_linux || is_apple || is_android || is_chromeos) {
+  } else if (is_ios) {
+    extra_headers += [ ":ios_sysroot(${default_toolchain})" ]
+  } else if (is_mac && mac_use_xcode_symlinks) {
+    extra_headers += [ ":mac_sysroot(${default_toolchain})" ]
+  } else if (is_linux || is_mac || is_android || is_chromeos) {
     root_include_dir = "usr/include"
   } else if (is_fuchsia) {
     root_include_dir = "include"
@@ -72,6 +103,8 @@ if (use_unified_system_module) {
     if (host_os == "win") {
       clang = "${clang}.exe"
     }
+
+    deps = extra_headers
 
     inputs = [
                clang,
@@ -228,6 +261,7 @@ if (use_unified_system_module) {
     configs -= [ "//build/config/coverage:default_coverage" ]
 
     deps = [ ":system_modulemap" ]
+    public_deps = extra_headers
 
     defines = [ "_LIBCPP_WCHAR_H_HAS_CONST_OVERLOADS" ]
     if (is_apple) {
