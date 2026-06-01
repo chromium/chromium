@@ -6324,6 +6324,11 @@ targets.bundle(
                 shards = 3,
             ),
         ),
+        "pixel_interactive_ui_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
     },
 )
 
