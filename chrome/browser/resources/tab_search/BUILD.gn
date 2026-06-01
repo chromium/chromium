@@ -42,6 +42,8 @@ build_webui("build") {
     "tab_search_item.ts",
     "tab_search_page.html.ts",
     "tab_search_page.ts",
+    "tab_search_split_item.html.ts",
+    "tab_search_split_item.ts",
     "tab_search_sync_browser_proxy.ts",
     "tab_search_utils.ts",
     "title_item.ts",
@@ -55,6 +57,7 @@ build_webui("build") {
     "tab_search_group_item.css",
     "tab_search_item.css",
     "tab_search_page.css",
+    "tab_search_split_item.css",
   ]
 
   mojo_files_deps = [

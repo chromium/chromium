@@ -40,3 +40,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchTest, MediaTabs) {
 IN_PROC_BROWSER_TEST_F(TabSearchTest, SplitNewTabPage) {
   RunTest("tab_search/split_new_tab_page_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(TabSearchTest, SplitItem) {
+  RunTest("tab_search/tab_search_split_item_test.js", "mocha.run()");
+}

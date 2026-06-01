@@ -18,6 +18,7 @@ build_webui_tests("build") {
     "tab_search_media_tabs_test.ts",
     "tab_search_page_focus_test.ts",
     "tab_search_page_test.ts",
+    "tab_search_split_item_test.ts",
     "tab_search_test_data.ts",
     "tab_search_test_helper.ts",
     "test_tab_search_api_proxy.ts",
