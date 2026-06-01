@@ -467,6 +467,9 @@ const base::FeatureParam<std::string> kGlicIneligibleAccountHelpUrl{
 const base::FeatureParam<int> kGlicMinRequiredRamMb{
     &kGlic, "glic-min-required-ram-mb", 0};
 
+const base::FeatureParam<bool> kGlicAdaptiveToolbarAutoPin{
+    &kGlic, "adaptive-toolbar-auto-pin", true};
+
 // Controls whether the Glic feature is always detached.
 BASE_FEATURE(kGlicDetached, base::FEATURE_ENABLED_BY_DEFAULT);
 

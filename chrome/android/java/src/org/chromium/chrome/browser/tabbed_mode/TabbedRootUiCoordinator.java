@@ -1649,6 +1649,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return false;
         }
 
+        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.GLIC, "adaptive-toolbar-auto-pin", true)) {
+            return false;
+        }
+
         // When the Android Bottom Bar is enabled the promo is not required as the button is
         // available by default.
         boolean glicEnabled = GlicEnabling.isEnabledForProfile(profile);
