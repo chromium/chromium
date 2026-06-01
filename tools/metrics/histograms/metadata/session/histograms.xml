@@ -319,6 +319,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Session.SessionCrashed.Bubble"
+    enum="SessionCrashedBubbleUserAction" expires_after="2027-05-29">
+  <owner>miketaylr@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>How did the user interact with the SessionCrashed Bubble?</summary>
+</histogram>
+
 <histogram name="Session.SmartRestart.Lock.ExecutionOutcome{TabCount}"
     enum="SmartRestartExtendedExecutionOutcome" expires_after="2026-10-01">
   <owner>victortan@chromium.org</owner>

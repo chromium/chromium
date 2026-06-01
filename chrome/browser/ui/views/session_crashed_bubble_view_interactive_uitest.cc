@@ -34,7 +34,8 @@ class SessionCrashedBubbleViewTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     // TODO(pbos): Set up UMA opt-in conditions instead of providing this bool.
     crash_bubble_ = SessionCrashedBubbleView::ShowBubble(
-        browser(), name == "SessionCrashedBubbleOfferUma");
+        browser(), /*uma_opted_in_already=*/false,
+        /*offer_uma_optin=*/name == "SessionCrashedBubbleOfferUma");
   }
 
  protected:

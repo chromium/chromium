@@ -46,7 +46,8 @@ class SessionCrashedBubbleViewRestructureTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    SessionCrashedBubbleView::ShowBubble(browser(), /*offer_uma_optin=*/true);
+    SessionCrashedBubbleView::ShowBubble(
+        browser(), /*uma_opted_in_already=*/false, /*offer_uma_optin=*/true);
   }
 };
 

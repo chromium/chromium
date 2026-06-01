@@ -57,6 +57,7 @@ class SessionCrashedBubbleView : public SessionCrashedBubble {
   // TODO(pbos): Mock conditions in test instead.
   static views::BubbleDialogModelHost* ShowBubble(
       BrowserWindowInterface* browser,
+      bool uma_opted_in_already,
       bool offer_uma_optin);
 };
 
