@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.ui.actions.glic;
 
+import android.graphics.drawable.Drawable;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,8 +29,9 @@ public class GlicActionProperties {
         int DONE = 3;
     }
 
-    public static final WritableIntPropertyKey GLIC_STATE = new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<Drawable> GLIC_DRAWABLE =
+            new WritableObjectPropertyKey<>(true);
 
     public static final PropertyKey[] ALL_KEYS =
-            PropertyModel.concatKeys(ActionProperties.ALL_KEYS, new PropertyKey[] {GLIC_STATE});
+            PropertyModel.concatKeys(ActionProperties.ALL_KEYS, new PropertyKey[] {GLIC_DRAWABLE});
 }

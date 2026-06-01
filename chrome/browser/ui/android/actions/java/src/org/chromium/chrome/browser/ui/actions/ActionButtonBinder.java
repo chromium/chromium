@@ -59,18 +59,6 @@ public class ActionButtonBinder {
         } else if (ActionProperties.IS_SELECTED == propertyKey) {
             boolean selected = model.get(ActionProperties.IS_SELECTED);
             targetView.setSelected(selected);
-
-            // TODO(crbug.com/491509952): Remove this hack once the underlying issue with
-            // StateListDrawable not updating on selection state changes is fixed.
-            if (targetView instanceof ImageView imageView) {
-                int resId =
-                        model.containsKey(ActionProperties.ICON_ID)
-                                ? model.get(ActionProperties.ICON_ID)
-                                : 0;
-                if (resId != 0) {
-                    imageView.setImageResource(resId);
-                }
-            }
         } else if (ActionProperties.ON_PRESS_CALLBACK == propertyKey
                 || ActionProperties.BUTTON_STATE == propertyKey) {
             Callback<View> callback = model.get(ActionProperties.ON_PRESS_CALLBACK);

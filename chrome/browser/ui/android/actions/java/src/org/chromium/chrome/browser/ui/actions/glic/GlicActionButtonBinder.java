@@ -4,19 +4,14 @@
 
 package org.chromium.chrome.browser.ui.actions.glic;
 
-import android.content.Context;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.widget.ImageView;
 
-import androidx.appcompat.content.res.AppCompatResources;
-
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.glic.GlicUiHelper;
 import org.chromium.chrome.browser.ui.actions.ActionButtonBinder;
-import org.chromium.chrome.browser.ui.actions.R;
-import org.chromium.chrome.browser.ui.actions.glic.GlicActionProperties.GlicState;
-import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -28,32 +23,22 @@ public class GlicActionButtonBinder {
      * PropertyKey}.
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == GlicActionProperties.GLIC_STATE) {
+        if (propertyKey == GlicActionProperties.GLIC_DRAWABLE) {
             View targetView = ActionButtonBinder.resolveView(view);
-            int state = model.get(GlicActionProperties.GLIC_STATE);
+            Drawable drawable = model.get(GlicActionProperties.GLIC_DRAWABLE);
             if (targetView instanceof ImageView imageView) {
-                updateImageForState(imageView, state);
+                imageView.setImageDrawable(drawable);
+                if (drawable instanceof LayerDrawable layerDrawable) {
+                    if (layerDrawable.getNumberOfLayers() > 0) {
+                        Drawable layer0 = layerDrawable.getDrawable(0);
+                        if (layer0 instanceof Animatable animatable) {
+                            animatable.start();
+                        }
+                    }
+                }
             }
         } else {
             ActionButtonBinder.bind(model, view, propertyKey);
-        }
-    }
-
-    private static void updateImageForState(ImageView imageView, int state) {
-        Context context = imageView.getContext();
-        boolean alwaysUseFilled = BottomBarConfigUtils.alwaysUseFilledIcon();
-        if (state == GlicState.WORKING) {
-            int sparkResId = R.drawable.ic_spark_filled_24dp;
-            Drawable sparkIcon = AppCompatResources.getDrawable(context, sparkResId);
-            Drawable drawable = GlicUiHelper.createWorkingDrawable(context, sparkIcon);
-            imageView.setImageDrawable(drawable);
-        } else if (state == GlicState.NEEDS_REVIEW || state == GlicState.DONE) {
-            imageView.setImageResource(R.drawable.glic_dirty_dot_filled_spark_24dp);
-        } else {
-            imageView.setImageResource(
-                    alwaysUseFilled
-                            ? R.drawable.ic_spark_filled_24dp
-                            : R.drawable.ic_spark_outlined_24dp);
         }
     }
 }

@@ -80,7 +80,7 @@ public class ActionUtils {
         int glicIconResId =
                 BottomBarConfigUtils.alwaysUseFilledIcon()
                         ? R.drawable.ic_spark_filled_24dp
-                        : R.drawable.ic_spark_selector;
+                        : R.drawable.ic_spark_outlined_24dp;
         registerAction(
                 registry,
                 ActionId.GLIC,

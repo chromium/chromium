@@ -8,9 +8,11 @@ import static org.chromium.chrome.browser.ui.actions.button.ButtonState.DEFAULT;
 import static org.chromium.chrome.browser.ui.actions.button.ButtonState.UNCLICKABLE;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -23,6 +25,7 @@ import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicButtonStateController;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicTaskMenuCoordinator;
+import org.chromium.chrome.browser.glic.GlicUiHelper;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -31,6 +34,7 @@ import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.R;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -53,6 +57,11 @@ public class GlicActionCoordinator {
     private final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
     private @Nullable GlicTaskMenuCoordinator mTaskMenuCoordinator;
+    private final Drawable mDefaultDrawable;
+    private final Drawable mFilledDrawable;
+    private final Drawable mWorkingDrawable;
+    private final Drawable mReviewDrawable;
+    private final Drawable mDoneDrawable;
 
     public GlicActionCoordinator(
             Activity activity,
@@ -96,7 +105,25 @@ public class GlicActionCoordinator {
 
                             mStateController.updateObservations(tab.getProfile());
                             mStateController.updateButtonState();
+
+                            onStateChanged(
+                                    mStateController.getButtonState(),
+                                    mStateController.isPanelOpen());
                         });
+
+        int glicIconResId =
+                BottomBarConfigUtils.alwaysUseFilledIcon()
+                        ? R.drawable.ic_spark_filled_24dp
+                        : R.drawable.ic_spark_outlined_24dp;
+
+        mDefaultDrawable = AppCompatResources.getDrawable(activity, glicIconResId);
+        mFilledDrawable = AppCompatResources.getDrawable(activity, R.drawable.ic_spark_filled_24dp);
+        mWorkingDrawable = GlicUiHelper.createWorkingDrawable(activity, mFilledDrawable);
+        Drawable dirtyDotFilledSpark =
+                AppCompatResources.getDrawable(
+                        activity, R.drawable.glic_dirty_dot_filled_spark_24dp);
+        mReviewDrawable = dirtyDotFilledSpark;
+        mDoneDrawable = dirtyDotFilledSpark;
     }
 
     private void onModelChanged(@Nullable PropertyModel model) {
@@ -110,12 +137,29 @@ public class GlicActionCoordinator {
             @GlicButtonStateController.ButtonState int state, boolean isPanelOpen) {
         PropertyModel model = getModelSupplierOrNull();
         if (model != null) {
-            model.set(GlicActionProperties.GLIC_STATE, state);
+            Drawable desiredDrawable;
+            switch (state) {
+                case GlicButtonStateController.ButtonState.WORKING:
+                    desiredDrawable = mWorkingDrawable;
+                    break;
+                case GlicButtonStateController.ButtonState.NEEDS_REVIEW:
+                    desiredDrawable = mReviewDrawable;
+                    break;
+                case GlicButtonStateController.ButtonState.DONE:
+                    desiredDrawable = mDoneDrawable;
+                    break;
+                case GlicButtonStateController.ButtonState.DEFAULT:
+                default:
+                    desiredDrawable = isPanelOpen ? mFilledDrawable : mDefaultDrawable;
+                    break;
+            }
+            model.set(GlicActionProperties.GLIC_DRAWABLE, desiredDrawable);
             model.set(ActionProperties.IS_SELECTED, isPanelOpen);
         }
     }
 
     private void onGlicActionPressed(View view) {
+        mStateController.setPersistDoneState(false);
         Tab currentTab = mTabSupplier.get();
         if (currentTab != null) {
             TrackerFactory.getTrackerForProfile(currentTab.getProfile())
@@ -130,15 +174,8 @@ public class GlicActionCoordinator {
         // If there are no tasks, or we are already on the tab with the active task, just toggle
         // Glic.
         if (tasks == null || tasks.isEmpty() || isOnActingTab) {
-            boolean wasOpen = mStateController.isPanelOpen();
             mToggleGlicCallback.onClick(false, GlicInvocationSource.TOOLBAR_BUTTON);
             mStateController.updateButtonState();
-
-            // Optimistically toggle selection state based on previous panel state.
-            PropertyModel model = getModelSupplierOrNull();
-            if (model != null) {
-                model.set(ActionProperties.IS_SELECTED, !wasOpen);
-            }
             return;
         }
 

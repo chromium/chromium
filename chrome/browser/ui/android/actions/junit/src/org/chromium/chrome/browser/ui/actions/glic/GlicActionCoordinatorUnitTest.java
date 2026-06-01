@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.actions.glic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,9 +13,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.view.View;
-
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,6 +24,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -64,7 +65,7 @@ public class GlicActionCoordinatorUnitTest {
     @Mock private Tab mNtpTab;
     @Mock private GlicButtonDelegate mToggleGlicCallback;
     @Mock private Profile mProfile;
-    @Mock private Activity mActivity;
+    private Activity mActivity;
     @Mock private Supplier<ChromeAndroidTask> mTaskSupplier;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -83,6 +84,7 @@ public class GlicActionCoordinatorUnitTest {
         ActorKeyedServiceFactory.setForTesting(mActorService);
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         TrackerFactory.setTrackerForTests(mTracker);
+        mActivity = Robolectric.buildActivity(Activity.class).create().get();
 
         mActionRegistry = new ActionRegistry();
         mTabSupplier = ObservableSuppliers.createNullable();
@@ -112,8 +114,6 @@ public class GlicActionCoordinatorUnitTest {
                         mTabModelSelectorSupplier,
                         mSnackbarManager);
 
-        when(mActivity.getResources())
-                .thenReturn(ApplicationProvider.getApplicationContext().getResources());
         mTabSupplier.set(mTab);
         ShadowLooper.idleMainLooper();
     }
@@ -129,17 +129,6 @@ public class GlicActionCoordinatorUnitTest {
         callback.onResult(null);
         verify(mToggleGlicCallback)
                 .onClick(false, GlicKeyedService.GlicInvocationSource.TOOLBAR_BUTTON);
-    }
-
-    @Test
-    public void testClick_togglesSelection() {
-        Callback<View> callback = mActionModel.get(ActionProperties.ON_PRESS_CALLBACK);
-
-        // Initial state should be false in the real controller.
-        callback.onResult(null);
-
-        // Verify optimistic toggle sets it to true (since it was closed).
-        assertTrue(mActionModel.get(ActionProperties.IS_SELECTED));
     }
 
     @Test
@@ -204,13 +193,36 @@ public class GlicActionCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnStateChanged_updatesModel() {
+    public void testOnStateChanged_updatesDrawable_allStates() {
+        mCoordinator.onStateChanged(
+                GlicButtonStateController.ButtonState.DEFAULT, /* isPanelOpen= */ false);
+        Drawable defaultClosed = mActionModel.get(GlicActionProperties.GLIC_DRAWABLE);
+        assertNotNull(defaultClosed);
+        assertEquals(false, mActionModel.get(ActionProperties.IS_SELECTED));
+
+        mCoordinator.onStateChanged(
+                GlicButtonStateController.ButtonState.DEFAULT, /* isPanelOpen= */ true);
+        Drawable defaultOpen = mActionModel.get(GlicActionProperties.GLIC_DRAWABLE);
+        assertNotNull(defaultOpen);
+        assertNotEquals(defaultClosed, defaultOpen);
+        assertEquals(true, mActionModel.get(ActionProperties.IS_SELECTED));
+
         mCoordinator.onStateChanged(
                 GlicButtonStateController.ButtonState.WORKING, /* isPanelOpen= */ true);
+        Drawable working = mActionModel.get(GlicActionProperties.GLIC_DRAWABLE);
+        assertNotNull(working);
+        assertNotEquals(working, defaultOpen);
 
-        assertEquals(
-                GlicButtonStateController.ButtonState.WORKING,
-                mActionModel.get(GlicActionProperties.GLIC_STATE));
-        assertTrue(mActionModel.get(ActionProperties.IS_SELECTED));
+        mCoordinator.onStateChanged(
+                GlicButtonStateController.ButtonState.NEEDS_REVIEW, /* isPanelOpen= */ true);
+        Drawable needsReview = mActionModel.get(GlicActionProperties.GLIC_DRAWABLE);
+        assertNotNull(needsReview);
+        assertNotEquals(needsReview, working);
+
+        mCoordinator.onStateChanged(
+                GlicButtonStateController.ButtonState.DONE, /* isPanelOpen= */ true);
+        Drawable done = mActionModel.get(GlicActionProperties.GLIC_DRAWABLE);
+        assertNotNull(done);
+        assertEquals(needsReview, done);
     }
 }
