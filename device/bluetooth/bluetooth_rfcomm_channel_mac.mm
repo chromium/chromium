@@ -120,7 +120,16 @@ BluetoothRfcommChannelMac::~BluetoothRfcommChannelMac() {
   // delegate's reference to this object so the delegate will not notify us
   // for events that occur after our destruction.
   [delegate_ resetOwner];
+  [channel_ setDelegate:nil];
   [channel_ closeChannel];
+  // `delegate_`'s self-retain (`_strongSelf`) is only armed after a successful
+  // open. If we are destroyed during a pending or failed open, keep the
+  // delegate alive across one main-run-loop turn so any already-enqueued
+  // IOBluetooth callbacks hit a live receiver. See FB13705522.
+  BluetoothRfcommChannelDelegate* __strong delegate = delegate_;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    (void)delegate;
+  });
 }
 
 // static
