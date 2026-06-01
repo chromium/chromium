@@ -164,7 +164,8 @@ TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
 #endif
   };
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if (BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)) && \
+    BUILDFLAG(GOOGLE_CHROME_BRANDING)
   promo_cards.emplace_back("move_passwords_promo");
 #endif
 

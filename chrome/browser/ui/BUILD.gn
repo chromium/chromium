@@ -1411,7 +1411,7 @@ static_library("ui") {
       ]
     }
 
-    if (enable_dice_support && is_chrome_branded) {
+    if ((enable_dice_support || is_chromeos) && is_chrome_branded) {
       sources += [
         "webui/password_manager/promo_cards/move_passwords_promo.cc",
         "webui/password_manager/promo_cards/move_passwords_promo.h",

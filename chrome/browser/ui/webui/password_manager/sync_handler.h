@@ -61,7 +61,7 @@ class SyncHandler : public content::WebUIMessageHandler,
   // Handles the request for the primary account information.
   void HandleGetAccountInfo(const base::ListValue& args);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
   // Opens the Batch Upload Dialog.
   void HandleOpenBatchUploadDialog(const base::ListValue& args);
 #endif

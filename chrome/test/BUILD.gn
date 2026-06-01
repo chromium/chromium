@@ -8798,7 +8798,7 @@ test("unit_tests") {
     if (!is_chromeos && is_chrome_branded) {
       sources += [ "../browser/ui/webui/settings/on_device_ai_settings_handler_unittest.cc" ]
     }
-    if (enable_dice_support && is_chrome_branded) {
+    if ((enable_dice_support || is_chromeos) && is_chrome_branded) {
       sources += [ "../browser/ui/webui/password_manager/promo_cards/move_passwords_promo_unittest.cc" ]
     }
 

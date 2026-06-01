@@ -17,7 +17,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -26,7 +26,7 @@
 
 namespace password_manager {
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 // Entry points to the Batch Upload dialog in the passwords settings section.
@@ -72,7 +72,7 @@ void SyncHandler::RegisterMessages() {
       "GetLocalPasswordCount",
       base::BindRepeating(&SyncHandler::HandleGetLocalPasswordCount,
                           base::Unretained(this)));
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "OpenBatchUpload",
       base::BindRepeating(&SyncHandler::HandleOpenBatchUploadDialog,
@@ -177,7 +177,7 @@ void SyncHandler::HandleGetAccountInfo(const base::ListValue& args) {
   ResolveJavascriptCallback(callback_id, GetAccountInfo());
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS)
 void SyncHandler::HandleOpenBatchUploadDialog(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
