@@ -15,7 +15,9 @@
 #include "base/at_exit.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_qualifiers.h"
@@ -41,6 +43,14 @@ struct TestCase {
 
     // Load the resource assets needed for the autofill code.
     ui::RegisterPathProvider();
+#if BUILDFLAG(IS_ANDROID)
+    // Override DIR_RESOURCE_PAKS_ANDROID to DIR_ASSETS to load files pushed to
+    // the shared public test data directory instead of packaging them in the
+    // APK, saving space and maintaining consistency with other Android fuzzers.
+    base::FilePath assets_dir;
+    base::PathService::Get(base::DIR_ASSETS, &assets_dir);
+    base::PathService::Override(ui::DIR_RESOURCE_PAKS_ANDROID, assets_dir);
+#endif
     ui::ResourceBundle::InitSharedInstanceWithPakPath(
         base::PathService::CheckedGet(ui::UI_TEST_PAK));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
@@ -55,8 +65,6 @@ struct TestCase {
   IcuEnvironment icu_environment;
 };
 
-TestCase* test_case = new TestCase();
-
 GeoIpCountryCode GenerateGeoIpCountryCode(FuzzedDataProvider& data_provider) {
   char chars[2];
   for (auto& letter : chars) {
@@ -68,6 +76,7 @@ GeoIpCountryCode GenerateGeoIpCountryCode(FuzzedDataProvider& data_provider) {
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static const base::NoDestructor<TestCase> test_case;
   FuzzedDataProvider data_provider(data, size);
   FormData form_data = GenerateFormData(data_provider);
 

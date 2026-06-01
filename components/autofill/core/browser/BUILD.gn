@@ -2004,6 +2004,10 @@ fuzzer_test("form_structure_fuzzer") {
     "//ui/base",
     "//ui/resources:ui_test_pak",
   ]
+  if (is_android) {
+    # Provides org.chromium.ui.base.ResourceBundle.
+    deps += [ "//ui/android:ui_no_recycler_view_java" ]
+  }
   data_deps = [
     "//components:components_tests_pak",
     "//ui/resources:ui_test_pak_data",
