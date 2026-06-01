@@ -112,6 +112,7 @@ import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceHandler;
+import org.chromium.chrome.browser.glic.GlicMetrics;
 import org.chromium.chrome.browser.glic.GlicNavigationUtils;
 import org.chromium.chrome.browser.glic.GlicPromoCoordinator;
 import org.chromium.chrome.browser.glic.GlicUiCoordinator;
@@ -254,6 +255,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -2562,6 +2564,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (profile == null || !GlicEnabling.isEnabledForProfile(profile)) {
             return false;
         }
+
+        Tab currentTab = mActivityTabProvider.get();
+        boolean isNtp = currentTab != null && UrlUtilities.isNtpUrl(currentTab.getUrl());
+        GlicMetrics.recordEntryPointClick(invocationSource, isNtp);
         // TODO(crbug.com/489548570): Remove this entry point into SidePanelDevFeature.
         if (mSidePanelDevFeature != null) {
             mSidePanelDevFeature.toggle();

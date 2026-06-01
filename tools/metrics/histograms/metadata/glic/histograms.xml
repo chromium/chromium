@@ -472,6 +472,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.EntryPoint.Click.{TabContext}"
+    enum="GlicInvocationSource" expires_after="2027-05-30">
+  <owner>haileywang@google.com</owner>
+  <owner>wenyufu@google.com</owner>
+  <summary>
+    Recorded on Android when a user clicks on a Glic entry point (e.g., toolbar
+    button or 3-dot menu). The recorded sample represents the source of the
+    invocation. This metric is split by {TabContext} to distinguish whether the
+    user was on the New Tab Page or another tab when they clicked the entry
+    point.
+  </summary>
+  <token key="TabContext">
+    <variant name="Ntp" summary="the New Tab Page"/>
+    <variant name="Other" summary="any tab other than the New Tab Page"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.EntryPoint.Status" enum="GlicEntryPointStatus"
     expires_after="2026-09-27">
   <owner>sanaakbani@google.com</owner>

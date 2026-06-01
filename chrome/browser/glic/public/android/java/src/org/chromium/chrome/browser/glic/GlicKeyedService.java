@@ -26,6 +26,7 @@ public interface GlicKeyedService {
         GlicInvocationSource.TOP_CHROME_BUTTON,
         GlicInvocationSource.THREE_DOTS_MENU,
         GlicInvocationSource.TOOLBAR_BUTTON,
+        GlicInvocationSource.MAX_VALUE,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface GlicInvocationSource {
@@ -33,6 +34,7 @@ public interface GlicKeyedService {
         int TOP_CHROME_BUTTON = 3;
         int THREE_DOTS_MENU = 7;
         int TOOLBAR_BUTTON = 31;
+        int MAX_VALUE = 34;
     }
 
     // LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource)
