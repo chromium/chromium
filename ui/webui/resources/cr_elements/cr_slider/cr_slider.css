@@ -12,6 +12,7 @@
 
 :host {
   --cr-slider-active-color: var(--google-blue-600);
+  --cr-slider-active-text-color: white;
   --cr-slider-container-color: rgba(var(--google-blue-600-rgb), .24);
   --cr-slider-container-disabled-color:
       rgba(var(--google-grey-600-rgb), .24);
@@ -48,6 +49,34 @@
     --cr-slider-marker-color: var(--google-blue-300);
     --cr-slider-marker-disabled-color: rgba(255, 255, 255, .54);
     --cr-slider-ripple-color: rgba(var(--cr-slider-knob-color-rgb), .4);
+  }
+}
+
+:host-context([webui-refresh-2026]) {
+  --cr-slider-active-color: var(--color-slider-active);
+  --cr-slider-active-text-color: var(--color-slider-active-text);
+  --cr-slider-container-color: var(--color-slider-active-container);
+  --cr-slider-container-disabled-color: var(--color-slider-disabled-container);
+  --cr-slider-disabled-color: var(--color-slider-disabled);
+  --cr-slider-knob-color: var(--color-slider-active);
+  --cr-slider-knob-disabled-color: var(--color-slider-disabled);
+  --cr-slider-marker-active-color: var(--color-slider-active-text);
+  --cr-slider-marker-color: var(--color-slider-active);
+  --cr-slider-marker-disabled-color: var(--color-slider-disabled);
+  --cr-slider-ripple-color: var(--color-slider-active-ripple);
+
+  #knob,
+  #label {
+    /* Use the non-rgb color for consistency in this experiment */
+    background-color: var(--cr-slider-knob-color);
+  }
+
+
+  #markers::before,
+  #markers::after,
+  .active-marker::after,
+  .inactive-marker::after {
+    opacity: 0.54;
   }
 }
 
@@ -156,7 +185,7 @@
   background: rgb(var(--cr-slider-knob-color-rgb));
   border-radius: .75em;
   bottom: 22px;
-  color: white;  /* Same for dark and light mode. */
+  color: var(--cr-slider-active-text-color);
   font-size: 12px;
   line-height: 1.5em;
   opacity: 0;
@@ -219,4 +248,8 @@
   background-color: var(--cr-slider-disabled-color);
   border: 2px solid var(--cr-slider-knob-disabled-color);
   box-shadow: unset;
+}
+
+:host([disabled_]):host-context([webui-refresh-2026]) #knob {
+  border: none;
 }

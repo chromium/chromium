@@ -886,6 +886,13 @@
   E_CPONLY(kColorSidePanelWallpaperSearchErrorButtonBackground) \
   E_CPONLY(kColorSidePanelWallpaperSearchErrorButtonText) \
   E_CPONLY(kColorSidePanelWallpaperSearchInspirationDescriptors) \
+  /* Slider colors. */ \
+  E_CPONLY(kColorSliderActive) \
+  E_CPONLY(kColorSliderActiveContainer) \
+  E_CPONLY(kColorSliderActiveRipple) \
+  E_CPONLY(kColorSliderActiveText) \
+  E_CPONLY(kColorSliderDisabled) \
+  E_CPONLY(kColorSliderDisabledContainer) \
   /* Split view colors. */ \
   E_CPONLY(kColorSplitViewBackground) \
   /* Star rating view colors. */ \

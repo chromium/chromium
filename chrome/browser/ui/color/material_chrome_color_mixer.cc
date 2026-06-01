@@ -199,6 +199,14 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorSplitViewBackground] = {ui::kColorSysSurface2};
   mixer[kColorMultiContentsViewMiniToolbarForeground] = {kColorToolbarText};
 
+  // Slider colors.
+  mixer[kColorSliderActive] = {ui::kColorSysPrimary};
+  mixer[kColorSliderActiveContainer] = {ui::kColorSysDivider};
+  mixer[kColorSliderActiveRipple] = {ui::kColorSysStateRipplePrimary};
+  mixer[kColorSliderActiveText] = {ui::kColorSysOnPrimary};
+  mixer[kColorSliderDisabled] = {ui::kColorSysNeutralOutline};
+  mixer[kColorSliderDisabledContainer] = {ui::kColorSysSurfaceVariant};
+
   // Side Panel colors.
   mixer[kColorSidePanelBackground] = {ui::kColorSysBaseContainer};
 
