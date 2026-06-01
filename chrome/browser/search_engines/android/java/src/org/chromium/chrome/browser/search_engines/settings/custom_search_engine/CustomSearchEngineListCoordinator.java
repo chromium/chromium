@@ -81,8 +81,8 @@ public class CustomSearchEngineListCoordinator {
 
     public void destroy() {
         mSiteSearchDialogCoordinator.dismiss();
-        mModel.set(SiteSearchProperties.ADAPTER, null);
         mPropertyModelChangeProcessor.destroy();
+        mModel.set(SiteSearchProperties.ADAPTER, null);
         mMediator.destroy();
         mAdapter.destroy();
     }

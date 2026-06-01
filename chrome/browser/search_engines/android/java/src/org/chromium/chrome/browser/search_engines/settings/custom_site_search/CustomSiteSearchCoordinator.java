@@ -82,10 +82,10 @@ public class CustomSiteSearchCoordinator {
 
     public void destroy() {
         mSiteSearchDialogCoordinator.dismiss();
-        mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
         mPropertyModelChangeProcessor.destroy();
+        mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
         mModelList.removeObserver(mListObserver);
-        mAdapter.destroy();
         mMediator.destroy();
+        mAdapter.destroy();
     }
 }

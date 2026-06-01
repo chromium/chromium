@@ -78,10 +78,10 @@ public class InactiveShortcutCoordinator {
     }
 
     public void destroy() {
-        mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
         mPropertyModelChangeProcessor.destroy();
+        mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
         mModelList.removeObserver(mListObserver);
-        mAdapter.destroy();
         mMediator.destroy();
+        mAdapter.destroy();
     }
 }
