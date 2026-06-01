@@ -181,7 +181,7 @@ class AssistantAIMUIStateProvider
 
   if (_viewController) {
     _viewController = nil;
-    [self dismissAssistantContainerAnimated:YES];
+    [self dismissAssistantContainerAnimated:NO];
   }
 }
 
@@ -292,7 +292,6 @@ class AssistantAIMUIStateProvider
     _isHiding = NO;
     return;
   }
-  [self stop];
 }
 
 - (void)assistantContainer:(AssistantContainerViewController*)container

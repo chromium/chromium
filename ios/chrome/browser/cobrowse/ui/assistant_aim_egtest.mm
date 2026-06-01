@@ -84,6 +84,11 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
       performAction:grey_tap()];
 }
 
+// Returns the matcher for the Assistant AIM close button.
+id<GREYMatcher> CloseButton() {
+  return grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier);
+}
+
 }  // namespace
 
 @interface AssistantAIMTestCase : ChromeTestCase
@@ -124,20 +129,35 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
   OpenCoBrowse(self.testServer);
 
   // Wait for the assistant to appear.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 
   // Tap the close button.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:CloseButton()] performAction:grey_tap()];
 
   // Verify the assistant is dismissed.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that the assistant can be dismissed and reopened multiple times.
+- (void)testOpenCloseAndReopenAssistant {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
+  // First presentation & dismissal.
+  OpenCoBrowse(self.testServer);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+  [[EarlGrey selectElementWithMatcher:CloseButton()] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
+
+  // Second presentation & dismissal.
+  OpenCoBrowse(self.testServer);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+  [[EarlGrey selectElementWithMatcher:CloseButton()] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
       assertWithMatcher:grey_nil()];
 }
 
@@ -149,9 +169,7 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
   OpenCoBrowse(self.testServer);
 
   // Wait for the assistant to appear.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
   // Enter Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
 
@@ -161,9 +179,7 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
                                               kTabGridScrollViewIdentifier)];
 
   // Verify the assistant is NOT visible in Tab Grid.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
       assertWithMatcher:grey_nil()];
 
   // Exit Tab Grid.
@@ -171,9 +187,7 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
       performAction:grey_tap()];
 
   // Verify the assistant is visible again.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 }
 // Tests that the assistant can transition between medium, large, and minimized
 // detents.
@@ -185,9 +199,7 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
   OpenCoBrowse(self.testServer);
 
   // Wait for the assistant to appear.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 
   // Check it starts in Medium state.
   WaitForDetent(AssistantContainerDetent::kMedium);
@@ -229,10 +241,9 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
 
   // Wait for the assistant to appear and be visible.
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kAssistantAIMCloseButtonAccessibilityIdentifier),
-                     grey_sufficientlyVisible(), nil)];
+      waitForUIElementToAppearWithMatcher:grey_allOf(CloseButton(),
+                                                     grey_sufficientlyVisible(),
+                                                     nil)];
 
   // Verify the assistant is in minimized state.
   WaitForDetent(AssistantContainerDetent::kMinimized);
@@ -251,37 +262,26 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
   OpenCoBrowse(self.testServer);
 
   // Wait for the assistant to appear.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 
   // Background and foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
   // Verify the assistant is still visible.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 }
 
 - (void)testAssistantDoesNotReappearAfterExplicitClose {
   OpenCoBrowse(self.testServer);
 
   // Wait for the assistant to appear.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 
   // Tap the close button.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:CloseButton()] performAction:grey_tap()];
 
   // Verify the assistant is dismissed.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
       assertWithMatcher:grey_nil()];
 
   // Reload the page.
@@ -289,18 +289,14 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify the assistant does NOT reappear.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
       assertWithMatcher:grey_nil()];
 
   // Background and foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
   // Verify the assistant does NOT reappear.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
       assertWithMatcher:grey_nil()];
 }
 
@@ -308,9 +304,7 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
   OpenCoBrowse(self.testServer);
 
   // Wait for the assistant to appear.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 
   // Ensure session is saved before clean shutdown so it can be restored.
   [ChromeEarlGrey saveSessionImmediately];
@@ -336,9 +330,7 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
   [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
 
   // Verify the assistant is still visible.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 }
 
 // Tests that the CoBrowse assistant is only shown in the window where it was
@@ -351,9 +343,7 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
   OpenCoBrowse(self.testServer);
 
   // Wait for the assistant to appear in the first window.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 
   // Open a second window.
   [ChromeEarlGrey openNewWindow];
@@ -376,9 +366,7 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
           setValue:@NO
       forConfigKey:kGREYConfigKeySynchronizationEnabled];
 
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
       assertWithMatcher:grey_nil()];
 
   [[GREYConfiguration sharedConfiguration]
@@ -394,9 +382,7 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
   [ChromeEarlGrey waitForForegroundWindowCount:1];
 
   // Verify the assistant is still visible in the first window.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityID(
-                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 }
 
 @end
