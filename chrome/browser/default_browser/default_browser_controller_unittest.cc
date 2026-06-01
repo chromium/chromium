@@ -28,7 +28,7 @@ class MockDefaultBrowserSetter : public DefaultBrowserSetter {
   MOCK_METHOD(DefaultBrowserSetterType, GetType, (), (const override));
   MOCK_METHOD(void,
               Execute,
-              (DefaultBrowserSetterCompletionCallback),
+              (DefaultBrowserSetterCompletionCallback, const ExecuteParams&),
               (override));
 };
 
@@ -90,8 +90,9 @@ TEST_F(DefaultBrowserControllerTest, OnAcceptedSuccess) {
   base::test::TestFuture<DefaultBrowserState> future;
   DefaultBrowserState state = DefaultBrowserState::IS_DEFAULT;
 
-  EXPECT_CALL(*setter_, Execute(testing::_))
-      .WillOnce([state](DefaultBrowserSetterCompletionCallback callback) {
+  EXPECT_CALL(*setter_, Execute(testing::_, testing::_))
+      .WillOnce([state](DefaultBrowserSetterCompletionCallback callback,
+                        const DefaultBrowserSetter::ExecuteParams& params) {
         std::move(callback).Run(state);
       });
 
@@ -114,8 +115,9 @@ TEST_F(DefaultBrowserControllerTest, OnAcceptedFailure) {
   base::test::TestFuture<DefaultBrowserState> future;
   DefaultBrowserState state = DefaultBrowserState::NOT_DEFAULT;
 
-  EXPECT_CALL(*setter_, Execute(testing::_))
-      .WillOnce([state](DefaultBrowserSetterCompletionCallback callback) {
+  EXPECT_CALL(*setter_, Execute(testing::_, testing::_))
+      .WillOnce([state](DefaultBrowserSetterCompletionCallback callback,
+                        const DefaultBrowserSetter::ExecuteParams& params) {
         std::move(callback).Run(state);
       });
 

@@ -27,7 +27,8 @@ class DefaultBrowserVisualGuidedSetter : public DefaultBrowserSetter {
 
   // DefaultBrowserSetter:
   DefaultBrowserSetterType GetType() const override;
-  void Execute(DefaultBrowserSetterCompletionCallback on_complete) override;
+  void Execute(DefaultBrowserSetterCompletionCallback on_complete,
+               const ExecuteParams& params) override;
 
  private:
   const raw_ref<Profile> profile_;

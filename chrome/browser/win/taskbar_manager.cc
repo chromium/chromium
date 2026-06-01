@@ -59,6 +59,7 @@ constexpr std::array kChannels = {
     "DefaultBrowserBubbleDialog",
     "DefaultBrowserModalDialogWithSettingsImage",
     "DefaultBrowserModalDialogWithoutSettingsImage",
+    "DefaultBrowserVisualGuidedSetter",
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/windows/histograms.xml:PinAppToTaskbarChannel)
 

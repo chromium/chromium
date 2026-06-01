@@ -18,7 +18,7 @@ TEST(ShellIntegrationDefaultBrowserSetterTest, Execute) {
   ShellIntegrationDefaultBrowserSetter setter;
   base::test::TestFuture<DefaultBrowserState> future;
 
-  setter.Execute(future.GetCallback());
+  setter.Execute(future.GetCallback(), /*params*/ {});
 
   ASSERT_TRUE(future.Wait())
       << "Callback should be called after setter executes";

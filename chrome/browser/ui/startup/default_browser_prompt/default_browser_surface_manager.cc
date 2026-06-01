@@ -110,7 +110,9 @@ void DefaultBrowserSurfaceManager::HandleAccept() {
     return;
   }
 
+  default_browser::DefaultBrowserSetter::ExecuteParams execute_params;
   if (can_pin_to_taskbar()) {
+    execute_params.can_pin_to_taskbar = true;
 #if BUILDFLAG(IS_WIN)
     // Attempt the pin to taskbar in parallel with bringing up the Windows
     // settings UI. Serializing the operations is an option, but since the user
@@ -129,7 +131,8 @@ void DefaultBrowserSurfaceManager::HandleAccept() {
 #endif  // BUILDFLAG(IS_WIN)
   }
 
-  controller_->OnAccepted(base::DoNothingWithBoundArgs(std::move(controller_)));
+  controller_->OnAccepted(base::DoNothingWithBoundArgs(std::move(controller_)),
+                          std::move(execute_params));
 }
 
 void DefaultBrowserSurfaceManager::HandleDismiss() {

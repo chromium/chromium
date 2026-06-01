@@ -22,7 +22,8 @@ DefaultBrowserSetterType ShellIntegrationDefaultBrowserSetter::GetType() const {
 }
 
 void ShellIntegrationDefaultBrowserSetter::Execute(
-    DefaultBrowserSetterCompletionCallback on_complete) {
+    DefaultBrowserSetterCompletionCallback on_complete,
+    const ExecuteParams& /*params*/) {
   on_complete_callback_ = std::move(on_complete);
   worker_ = base::MakeRefCounted<shell_integration::DefaultBrowserWorker>();
 

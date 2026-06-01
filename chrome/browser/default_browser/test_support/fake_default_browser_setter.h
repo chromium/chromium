@@ -14,7 +14,8 @@ class FakeDefaultBrowserSetter : public DefaultBrowserSetter {
   FakeDefaultBrowserSetter() = default;
 
   DefaultBrowserSetterType GetType() const override;
-  void Execute(DefaultBrowserSetterCompletionCallback on_complete) override;
+  void Execute(DefaultBrowserSetterCompletionCallback on_complete,
+               const ExecuteParams& params) override;
 };
 
 }  // namespace default_browser

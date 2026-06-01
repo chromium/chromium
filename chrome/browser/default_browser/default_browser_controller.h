@@ -76,7 +76,8 @@ class DefaultBrowserController {
   // Called by UI based on user interactions.
   void OnShown();
   void OnAccepted(
-      DefaultBrowserControllerCompletionCallback on_setter_completion_callback);
+      DefaultBrowserControllerCompletionCallback on_setter_completion_callback,
+      const DefaultBrowserSetter::ExecuteParams& params = {});
   void OnIgnored();
   void OnDismissed();
 

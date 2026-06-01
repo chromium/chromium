@@ -21,7 +21,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserVisualGuidedSetterBrowserTest, Execute) {
 
   int initial_tab_count = browser()->tab_strip_model()->count();
 
-  setter.Execute(future.GetCallback());
+  setter.Execute(future.GetCallback(), /*params*/ {});
 
   ASSERT_TRUE(future.Wait())
       << "Callback should be called after setter executes";

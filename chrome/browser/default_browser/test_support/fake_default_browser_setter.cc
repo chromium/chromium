@@ -16,7 +16,8 @@ DefaultBrowserSetterType FakeDefaultBrowserSetter::GetType() const {
 }
 
 void FakeDefaultBrowserSetter::Execute(
-    DefaultBrowserSetterCompletionCallback on_complete) {
+    DefaultBrowserSetterCompletionCallback on_complete,
+    const ExecuteParams& /*params*/) {
   std::move(on_complete).Run(DefaultBrowserState::IS_DEFAULT);
 }
 

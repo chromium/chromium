@@ -32,6 +32,10 @@ enum class DefaultBrowserSetterType {
 
 class DefaultBrowserSetter {
  public:
+  struct ExecuteParams {
+    bool can_pin_to_taskbar = false;
+  };
+
   virtual ~DefaultBrowserSetter() = default;
 
   // Returns the setter's type for UI configuration.
@@ -39,7 +43,8 @@ class DefaultBrowserSetter {
 
   // Asynchronously starts the process of setting the browser as default.
   // Accepts a callback for success/failure handling.
-  virtual void Execute(DefaultBrowserSetterCompletionCallback on_complete) = 0;
+  virtual void Execute(DefaultBrowserSetterCompletionCallback on_complete,
+                       const ExecuteParams& params) = 0;
 };
 
 }  // namespace default_browser

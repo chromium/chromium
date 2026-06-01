@@ -61,6 +61,7 @@ source_set("default_browser") {
     sources += [ "default_browser_monitor_win.cc" ]
 
     deps += [
+      "//chrome/browser/win",
       "//chrome/browser/win:registry_watcher",
       "//chrome/install_static:install_static_util",
     ]

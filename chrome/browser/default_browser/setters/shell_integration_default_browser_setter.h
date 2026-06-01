@@ -31,7 +31,8 @@ class ShellIntegrationDefaultBrowserSetter : public DefaultBrowserSetter {
       const ShellIntegrationDefaultBrowserSetter&) = delete;
 
   DefaultBrowserSetterType GetType() const override;
-  void Execute(DefaultBrowserSetterCompletionCallback on_complete) override;
+  void Execute(DefaultBrowserSetterCompletionCallback on_complete,
+               const ExecuteParams& params) override;
 
  private:
   void OnComplete(DefaultBrowserState default_browser_state);

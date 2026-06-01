@@ -90,7 +90,8 @@ void DefaultBrowserController::OnShown() {
 }
 
 void DefaultBrowserController::OnAccepted(
-    DefaultBrowserControllerCompletionCallback completion_callback) {
+    DefaultBrowserControllerCompletionCallback completion_callback,
+    const DefaultBrowserSetter::ExecuteParams& params) {
   RecordInteractionMetric(DefaultBrowserInteractionType::kAccepted);
 
   setter_execution_start_time_ = base::TimeTicks::Now();
@@ -98,7 +99,8 @@ void DefaultBrowserController::OnAccepted(
   completion_callback_ = std::move(completion_callback);
   setter_->Execute(
       base::BindOnce(&DefaultBrowserController::OnSetterExecutionComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      std::move(params));
 }
 
 void DefaultBrowserController::OnIgnored() {
