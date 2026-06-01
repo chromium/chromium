@@ -46,12 +46,10 @@ build_webui("build") {
     "util.ts",
   ]
 
-  if (!is_chromeos) {
-    ts_files += [
-      "promo_card.html.ts",
-      "promo_card.ts",
-    ]
-  }
+  ts_files += [
+    "promo_card.html.ts",
+    "promo_card.ts",
+  ]
 
   icons_html_files = [ "icons.html" ]
 
@@ -64,11 +62,8 @@ build_webui("build") {
     "shared_style_lit.css",
     "shared_vars.css",
     "toolbar.css",
+    "promo_card.css",
   ]
-
-  if (!is_chromeos) {
-    css_files += [ "promo_card.css" ]
-  }
 
   ts_composite = true
   ts_definitions = [

@@ -4745,7 +4745,6 @@ if (!is_android) {
         "../browser/signin/dice_mtls_browsertest.cc",
         "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
         "../browser/signin/signin_ui_util_browsertest.cc",
-        "../browser/ui/webui/bookmarks/bookmarks_message_handler_browsertest.cc",
       ]
       if (is_win) {
         sources += [ "../browser/signin/signin_util_win_browsertest.cc" ]
@@ -4776,6 +4775,7 @@ if (!is_android) {
     }
 
     if (enable_dice_support || is_chromeos) {
+      sources += [ "../browser/ui/webui/bookmarks/bookmarks_message_handler_browsertest.cc" ]
       deps += [ "//chrome/browser/profiles/batch_upload:browser_tests" ]
     }
 
