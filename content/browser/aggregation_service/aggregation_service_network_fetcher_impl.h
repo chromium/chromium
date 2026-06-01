@@ -14,11 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
@@ -26,15 +24,14 @@ class GURL;
 
 namespace base {
 class Clock;
-class Time;
 }  // namespace base
 
 namespace content {
 
 class StoragePartition;
 
-// This class fetches a JSON formatted response from a helper server and uses a
-// sandboxed utility process to parse it to a PublicKey array.
+// This class fetches a JSON formatted response from a helper server and parses
+// it to a PublicKey array.
 class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
     : public AggregationServiceKeyFetcher::NetworkFetcher {
  public:
@@ -94,14 +91,6 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
                               NetworkFetchCallback callback,
                               std::optional<std::string> response_body);
 
-  // Callback for DataDecoder. `expiry_time` will be null if the freshness
-  // lifetime is zero.
-  void OnJsonParse(const GURL& url,
-                   NetworkFetchCallback callback,
-                   base::Time fetch_time,
-                   base::Time expiry_time,
-                   data_decoder::DataDecoder::ValueOrError result);
-
   void OnError(const GURL& url,
                NetworkFetchCallback callback,
                FetchStatus status,
@@ -122,9 +111,6 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
 
   // Whether to enable debug logging. Should be false in production.
   bool enable_debug_logging_ = false;
-
-  base::WeakPtrFactory<AggregationServiceNetworkFetcherImpl> weak_factory_{
-      this};
 };
 
 }  // namespace content

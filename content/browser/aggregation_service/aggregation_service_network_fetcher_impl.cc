@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,7 +25,6 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -214,24 +214,13 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
     response_time = current_time;
   }
 
-  // Since DataDecoder parses untrusted data in a separate process if necessary,
-  // we obey the rule of 2.
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body,
-      base::BindOnce(&AggregationServiceNetworkFetcherImpl::OnJsonParse,
-                     weak_factory_.GetWeakPtr(), url, std::move(callback),
-                     std::move(response_time), std::move(expiry_time)));
-}
-
-void AggregationServiceNetworkFetcherImpl::OnJsonParse(
-    const GURL& url,
-    NetworkFetchCallback callback,
-    base::Time fetch_time,
-    base::Time expiry_time,
-    data_decoder::DataDecoder::ValueOrError result) {
+  // JSONReader is now safe for rule of 2.
+  base::JSONReader::Result result =
+      base::JSONReader::ReadAndReturnValueWithError(*response_body,
+                                                    base::JSON_PARSE_RFC);
   if (!result.has_value()) {
     OnError(url, std::move(callback), FetchStatus::kJsonParseError,
-            /*error_msg=*/result.error());
+            /*error_msg=*/result.error().message);
     return;
   }
 
@@ -244,8 +233,8 @@ void AggregationServiceNetworkFetcherImpl::OnJsonParse(
 
   RecordFetchStatus(FetchStatus::kSuccess);
 
-  std::move(callback).Run(PublicKeyset(std::move(keys), std::move(fetch_time),
-                                       std::move(expiry_time)));
+  std::move(callback).Run(
+      PublicKeyset(std::move(keys), response_time, expiry_time));
 }
 
 void AggregationServiceNetworkFetcherImpl::OnError(
