@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -246,7 +247,9 @@ ArcAuthService* ArcAuthService::GetForBrowserContext(
 
 ArcAuthService::ArcAuthService(content::BrowserContext* browser_context,
                                ArcBridgeService* arc_bridge_service)
-    : delegate_(std::make_unique<ArcAuthServiceDelegateImpl>(
+    :  // TODO(crbug.com/404130092): Inject PrefService via constructor.
+      local_state_(CHECK_DEREF(g_browser_process->local_state())),
+      delegate_(std::make_unique<ArcAuthServiceDelegateImpl>(
           ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
               browser_context))),
       profile_(Profile::FromBrowserContext(browser_context)),
@@ -814,8 +817,8 @@ ArcAuthService::CreateArcBackgroundAuthCodeFetcher(
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
   DCHECK(!account_info.IsEmpty());
   auto fetcher = std::make_unique<ArcBackgroundAuthCodeFetcher>(
-      url_loader_factory_, profile_, account_id, initial_signin,
-      IsPrimaryGaiaAccount(account_info.gaia));
+      &local_state_.get(), url_loader_factory_, profile_, account_id,
+      initial_signin, IsPrimaryGaiaAccount(account_info.gaia));
 
   return fetcher;
 }

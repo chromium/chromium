@@ -8,13 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "components/account_id/account_id.h"
@@ -57,12 +57,14 @@ const char kTokenBootstrapEndPoint[] =
     "https://oauthtokenbootstrap.googleapis.com/v1/tokenbootstrap";
 
 ArcBackgroundAuthCodeFetcher::ArcBackgroundAuthCodeFetcher(
+    PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile,
     const CoreAccountId& account_id,
     bool initial_signin,
     bool is_primary_account)
-    : url_loader_factory_(std::move(url_loader_factory)),
+    : local_state_(CHECK_DEREF(local_state)),
+      url_loader_factory_(std::move(url_loader_factory)),
       profile_(profile),
       context_(profile_, account_id),
       initial_signin_(initial_signin),
@@ -116,7 +118,7 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
     return;
   }
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   const std::string device_id = known_user.GetDeviceId(
       multi_user_util::GetAccountIdFromProfile(profile_));
   if (device_id.empty()) {

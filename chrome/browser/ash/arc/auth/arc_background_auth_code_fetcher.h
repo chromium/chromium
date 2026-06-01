@@ -11,11 +11,13 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_code_fetcher.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_context.h"
 
+class PrefService;
 class Profile;
 
 namespace signin {
@@ -38,7 +40,9 @@ extern const char kTokenBootstrapEndPoint[];
 class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
  public:
   // |account_id| is the id used by the OAuth Token Service chain.
+  // `local_state` must be non-null and must outlive `this`.
   ArcBackgroundAuthCodeFetcher(
+      PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile* profile,
       const CoreAccountId& account_id,
@@ -69,6 +73,7 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
   void ReportResult(const std::string& auth_code,
                     OptInSilentAuthCode uma_status);
 
+  const raw_ref<PrefService> local_state_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Unowned pointer.
   const raw_ptr<Profile> profile_;
