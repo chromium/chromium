@@ -153,7 +153,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   SkAlphaType GetAlphaType() const { return alpha_type_; }
   gfx::Size Size() const { return size_; }
   virtual base::ByteSize EstimatedSizeInBytes() const {
-    return base::ByteSize(format_.EstimatedSizeInBytes(size_));
+    return base::ByteSize(GetSharedImageFormat().EstimatedSizeInBytes(Size()));
   }
 
   virtual bool WritePixels(const SkImageInfo& orig_info,
