@@ -61,6 +61,6 @@
     assert_equals(getComputedStyle(document.body).color, "rgb(255, 0, 255)");
     await new Promise(r => navigation.onnavigatesuccess = () => t.step_timeout(r, 0));
     assert_equals(getComputedStyle(document.body).backgroundColor, "rgba(0, 0, 0, 0)");
-    assert_equals(getComputedStyle(document.body).color, "rgb(255, 0, 255)");
+    assert_equals(getComputedStyle(document.body).color, "rgb(0, 0, 0)");
   }, "precommit");
 </script>

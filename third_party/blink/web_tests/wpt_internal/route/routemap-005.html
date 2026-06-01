@@ -67,14 +67,9 @@
   }
 
   promise_test(async (t) => {
-    // at:url-pattern("*route*") should match.
+    // Nothing should match if there's no active navigation.
     let state = "at initial";
-    assert_equals(getComputedStyle(target).width, "100px", state);
-    assert_equals(getComputedStyle(target).height, "7px", state);
-    assert_equals(getComputedStyle(target).paddingTop, "0px", state);
-    assert_equals(getComputedStyle(target).paddingBottom, "0px", state);
-    assert_equals(getComputedStyle(target).marginLeft, "0px", state);
-    assert_equals(getComputedStyle(target).marginRight, "0px", state);
+    assert_no_matches(state);
     assert_invariants(state);
 
     entrychange = Promise.withResolvers();
@@ -92,14 +87,9 @@
     assert_equals(getComputedStyle(target).marginRight, "0px", state);
     assert_invariants(state);
     await finished.promise;
-    // at:url-pattern("match-later-r2") should match.
+    // Nothing should match if there's no active navigation.
     state = "at match-later-r2";
-    assert_equals(getComputedStyle(target).width, "7px", state);
-    assert_equals(getComputedStyle(target).height, "90px", state);
-    assert_equals(getComputedStyle(target).paddingTop, "0px", state);
-    assert_equals(getComputedStyle(target).paddingBottom, "0px", state);
-    assert_equals(getComputedStyle(target).marginLeft, "0px", state);
-    assert_equals(getComputedStyle(target).marginRight, "0px", state);
+    assert_no_matches(state);
     assert_invariants(state);
 
     entrychange = Promise.withResolvers();

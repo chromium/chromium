@@ -7,7 +7,7 @@
     "routes": [
       {
         "name": "r",
-        "pattern": "*"
+        "pattern": "/somewhere/"
       }
     ]
   }
@@ -45,10 +45,22 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-  test(()=> {
-    assert_equals(canary.offsetHeight, 0);
-  }, "None of the @navigation rules should match");
-  test(()=> {
-    assert_equals(getComputedStyle(sanityCheck).color, "rgb(0, 255, 0)");
-  }, "Sanity check");
+  promise_test(async (t) => {
+    await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+    let committed = Promise.withResolvers();
+    navigation.onnavigate = (event) => {
+      event.intercept({
+        async handler() {
+          committed.resolve();
+          await new Promise(resolve => requestAnimationFrame(resolve));
+        }
+      })
+    };
+
+    // Trigger an active navigation, so that any valid "at" rule will match.
+    navigation.navigate("/somewhere/");
+    await committed.promise;
+    assert_equals(canary.offsetHeight, 0, "None of the invalid @navigation rules should match");
+    assert_equals(getComputedStyle(sanityCheck).color, "rgb(0, 255, 0)", "Sanity check");
+  }, "Invalid @navigation rules");
 </script>

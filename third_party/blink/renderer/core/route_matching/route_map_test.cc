@@ -17,15 +17,11 @@ namespace {
 class RouteMapTest : public PageTestBase {
  public:
   RouteMap& GetRouteMap() const { return RouteMap::Ensure(GetDocument()); }
-
-  void SetURL(const String& url) {
-    GetDocument().SetURL(KURL(url));
-    GetRouteMap().UpdateActiveRoutes();
-  }
 };
 
 TEST_F(RouteMapTest, ParseAndMatch) {
-  SetURL("https://example.com/foo");
+  KURL start_url("https://example.com/foo");
+  GetDocument().SetURL(start_url);
 
   RouteMap& route_map = GetRouteMap();
   route_map.ParseAndApplyRoutes(R"({
@@ -46,20 +42,51 @@ TEST_F(RouteMapTest, ParseAndMatch) {
   const Route* route2 = route_map.FindRoute("route2");
   ASSERT_TRUE(route2);
 
-  EXPECT_TRUE(route1->Matches(NavigationPreposition::kAt));
+  // Nothing should match when there's no active navigation.
+  EXPECT_FALSE(route1->Matches(NavigationPreposition::kAt));
   EXPECT_FALSE(route2->Matches(NavigationPreposition::kAt));
 
-  SetURL("https://example.com/bar");
+  KURL from = start_url;
+  KURL to = start_url;
+  route_map.OnNavigationStart(from, to);
+  EXPECT_TRUE(route1->Matches(NavigationPreposition::kAt));
+  EXPECT_FALSE(route2->Matches(NavigationPreposition::kAt));
+  route_map.OnNavigationCommitted();
+  EXPECT_TRUE(route1->Matches(NavigationPreposition::kAt));
+  EXPECT_FALSE(route2->Matches(NavigationPreposition::kAt));
+  route_map.OnNavigationDone();
   EXPECT_FALSE(route1->Matches(NavigationPreposition::kAt));
-  EXPECT_TRUE(route2->Matches(NavigationPreposition::kAt));
+  EXPECT_FALSE(route2->Matches(NavigationPreposition::kAt));
 
-  SetURL("https://example.com/baz");
+  to = KURL("https://example.com/bar");
+  route_map.OnNavigationStart(from, to);
+  EXPECT_TRUE(route1->Matches(NavigationPreposition::kAt));
+  EXPECT_FALSE(route2->Matches(NavigationPreposition::kAt));
+  GetDocument().SetURL(to);
+  route_map.OnNavigationCommitted();
   EXPECT_FALSE(route1->Matches(NavigationPreposition::kAt));
   EXPECT_TRUE(route2->Matches(NavigationPreposition::kAt));
+  route_map.OnNavigationDone();
+  EXPECT_FALSE(route1->Matches(NavigationPreposition::kAt));
+  EXPECT_FALSE(route2->Matches(NavigationPreposition::kAt));
+
+  from = to;
+  to = KURL("https://example.com/baz");
+  route_map.OnNavigationStart(from, to);
+  EXPECT_FALSE(route1->Matches(NavigationPreposition::kAt));
+  EXPECT_TRUE(route2->Matches(NavigationPreposition::kAt));
+  GetDocument().SetURL(to);
+  route_map.OnNavigationCommitted();
+  EXPECT_FALSE(route1->Matches(NavigationPreposition::kAt));
+  EXPECT_TRUE(route2->Matches(NavigationPreposition::kAt));
+  route_map.OnNavigationDone();
+  EXPECT_FALSE(route1->Matches(NavigationPreposition::kAt));
+  EXPECT_FALSE(route2->Matches(NavigationPreposition::kAt));
 }
 
 TEST_F(RouteMapTest, GetActiveRoutes) {
-  SetURL("https://example.com/foo");
+  KURL start_url("https://example.com/foo");
+  GetDocument().SetURL(start_url);
 
   RouteMap& route_map = GetRouteMap();
   route_map.ParseAndApplyRoutes(R"({
@@ -81,11 +108,35 @@ TEST_F(RouteMapTest, GetActiveRoutes) {
 
   RouteMap::MatchCollection collection;
   route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
-  EXPECT_EQ(2u, collection.size());
+  // No active routes when there's no active navigation.
+  EXPECT_EQ(0u, collection.size());
 
-  SetURL("https://example.com/bar");
+  KURL from = start_url;
+  KURL to = start_url;
+  route_map.OnNavigationStart(from, to);
+  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  EXPECT_EQ(2u, collection.size());
+  GetDocument().SetURL(to);
+  route_map.OnNavigationCommitted();
+  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  EXPECT_EQ(2u, collection.size());
+  route_map.OnNavigationDone();
+  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  // No active routes when there's no active navigation.
+  EXPECT_EQ(0u, collection.size());
+
+  to = KURL("https://example.com/bar");
+  route_map.OnNavigationStart(from, to);
+  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  EXPECT_EQ(2u, collection.size());
+  GetDocument().SetURL(to);
+  route_map.OnNavigationCommitted();
   route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
   EXPECT_EQ(1u, collection.size());
+  route_map.OnNavigationDone();
+  route_map.GetActiveRoutes(NavigationPreposition::kAt, &collection);
+  // No active routes when there's no active navigation.
+  EXPECT_EQ(0u, collection.size());
 }
 
 }  // anonymous namespace

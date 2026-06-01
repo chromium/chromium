@@ -173,7 +173,7 @@ void RouteMap::AddRouteFromRule(const String& dashed_ident,
   Route* route = MakeGarbageCollected<Route>(GetDocument());
   route->AddPattern(url_pattern);
   routes_.insert(dashed_ident, route);
-  route->UpdateMatchStatus(previous_url_, next_url_);
+  UpdateMatchStatus(*route);
 }
 
 void RouteMap::AddAnonymousRoute(URLPattern* pattern) {
@@ -185,7 +185,7 @@ void RouteMap::AddAnonymousRoute(URLPattern* pattern) {
   }
   route = MakeGarbageCollected<Route>(GetDocument());
   route->AddPattern(pattern);
-  route->UpdateMatchStatus(previous_url_, next_url_);
+  UpdateMatchStatus(*route);
 }
 
 const Route* RouteMap::FindRoute(const String& route_name) const {
@@ -248,6 +248,7 @@ void RouteMap::GetActiveRoutes(NavigationPreposition preposition,
 
 void RouteMap::OnNavigationStart(const KURL& previous_url,
                                  const KURL& next_url) {
+  navigation_phase_ = NavigationPhase::kLoading;
   previous_url_ = previous_url;
   next_url_ = next_url;
   UpdateActiveRoutes();
@@ -264,6 +265,7 @@ void RouteMap::OnNavigationTraverse(HistoryTraverseType type) {
 }
 
 void RouteMap::OnNavigationCommitted() {
+  navigation_phase_ = NavigationPhase::kCommitted;
   UpdateActiveRoutes();
   if (MayHaveRoutelessNavigations()) {
     GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
@@ -271,6 +273,7 @@ void RouteMap::OnNavigationCommitted() {
 }
 
 void RouteMap::OnNavigationDone() {
+  navigation_phase_ = NavigationPhase::kInactive;
   previous_url_ = KURL();
   next_url_ = KURL();
   UpdateActiveRoutes();
@@ -297,7 +300,7 @@ void RouteMap::OnPreviewFinished() {
 }
 
 KURL RouteMap::GetWithURL() const {
-  if (previous_url_.IsEmpty() || next_url_.IsEmpty()) {
+  if (!IsActiveNavigation()) {
     return KURL();
   }
   DCHECK(GetDocument().Url() == next_url_ ||
@@ -311,8 +314,11 @@ KURL RouteMap::GetWithURL() const {
 }
 
 KURL RouteMap::GetAtURL() const {
-  // TODO(crbug.com/436805487): Should return KURL() if there's no active
-  // navigation.
+  if (!IsActiveNavigation()) {
+    return KURL();
+  }
+  DCHECK(GetDocument().Url() == next_url_ ||
+         GetDocument().Url() == previous_url_);
   return GetDocument().Url();
 }
 
@@ -342,7 +348,7 @@ RouteMap::ParseResult RouteMap::AddPatternToRoute(Route& route,
     route.AddPattern(*pattern);
     // TODO(crbug.com/436805487): If we actually end up keeping support for
     // <script type="routemap">, we're missing events here.
-    if (route.UpdateMatchStatus(previous_url_, next_url_)) {
+    if (UpdateMatchStatus(route)) {
       GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
     }
     return RouteMap::ParseResult(RouteMap::ParseResult::kSuccess);
@@ -355,11 +361,14 @@ bool RouteMap::UpdateMatchStatus(
     Route& route,
     HeapVector<Member<Route>>* routes_needing_event) {
   bool matched_at = route.Matches(NavigationPreposition::kAt);
-  if (!route.UpdateMatchStatus(previous_url_, next_url_)) {
+
+  if (!route.UpdateMatchStatus(GetFromURL(), GetToURL(), navigation_phase_)) {
     return false;
   }
-  if (matched_at != route.Matches(NavigationPreposition::kAt)) {
-    routes_needing_event->push_back(&route);
+  if (routes_needing_event) {
+    if (matched_at != route.Matches(NavigationPreposition::kAt)) {
+      routes_needing_event->push_back(&route);
+    }
   }
   return true;
 }

@@ -11,7 +11,7 @@
       },
       {
         "name": "r2",
-        "pattern": "*different-url"
+        "pattern": "/*/different-url"
       }
     ]
   }
@@ -29,14 +29,38 @@
     const rbogus = routeMap.get("rbogus");
     assert_equals(rbogus, null, "rbogus should not be found");
 
+    await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+    let committed = Promise.withResolvers();
+    let precommit = Promise.withResolvers();
+    navigation.onnavigate = (event) => {
+      event.intercept({
+        async precommitHandler() {
+          precommit.resolve();
+          await new Promise(r => t.step_timeout(r, 0));
+        },
+        async handler() {
+          committed.resolve();
+          await new Promise(resolve => requestAnimationFrame(resolve));
+        }
+      })
+    };
+
+    // Trigger an active navigation, so that any valid "at" rule will match.
+    navigation.navigate("different-url");
+    await precommit.promise;
+
+    // Nothing must fail at this stage, as that would cause the test to hang,
+    // due to interferences with the testharness machinery. So just write down
+    // what we saw, and check it later.
+    let r1_matches_in_precommit = r1.matches;
+    let r2_matches_in_precommit = r2.matches;
+
+    await committed.promise;
+
+    assert_true(r1_matches_in_precommit);
+    assert_false(r2_matches_in_precommit);
+
     assert_true(r1.matches);
-    assert_false(r2.matches);
-
-    history.pushState(0, null, "different-url");
-
-    window.onpageshow = t.step_func_done(() => {
-      assert_true(r1.matches);
-      assert_true(r2.matches);
-    });
+    assert_true(r2.matches);
   }, "document.routeMap");
 </script>

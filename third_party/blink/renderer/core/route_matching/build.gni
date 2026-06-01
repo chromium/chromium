@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 blink_core_sources_route_matching = [
+  "navigation_phase.h",
   "navigation_preposition.h",
   "route.cc",
   "route.h",

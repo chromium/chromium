@@ -11,6 +11,9 @@
   :active-navigation() {
     --with: matched;
   }
+  :active-navigation(at) {
+    --at: matched;
+  }
 </style>
 <a id="link1" href="/target/foo">foo</a>
 <a id="link2" href="/target/bar">bar</a>
@@ -25,16 +28,19 @@
       [link1, "--to"],
       [link1, "--from"],
       [link1, "--with"],
+      [link1, "--at"],
       [link2, "--to"],
       [link2, "--from"],
       [link2, "--with"],
+      [link2, "--at"],
     ];
 
-    //                                                                             onnavigate      committed
-    //                                                                             T F W  T F W    T F W  T F W
-    await test_navigation(t, "foo", ()=> { navigation.navigate("/target/foo"); }, [1,0,1, 0,0,0], [1,0,0, 0,0,0], match_params);
-    await test_navigation(t, "bar", ()=> { navigation.navigate("/target/bar"); }, [0,1,0, 1,0,1], [0,1,1, 1,0,0], match_params);
-    await test_navigation(t, "BACK", ()=> { navigation.back(); },                 [1,0,1, 0,1,0], [1,0,0, 0,1,1], match_params);
-    await test_navigation(t, "FORWARD", ()=> { navigation.forward(); },           [0,1,0, 1,0,1], [0,1,1, 1,0,0], match_params);
+    //                                                                             onnavigate          committed
+    //                                                                             link1    link2      link1    link2
+    //                                                                             T F W A  T F W A    T F W A  T F W A
+    await test_navigation(t, "foo", ()=> { navigation.navigate("/target/foo"); }, [1,0,1,0, 0,0,0,0], [1,0,0,1, 0,0,0,0], match_params);
+    await test_navigation(t, "bar", ()=> { navigation.navigate("/target/bar"); }, [0,1,0,1, 1,0,1,0], [0,1,1,0, 1,0,0,1], match_params);
+    await test_navigation(t, "BACK", ()=> { navigation.back(); },                 [1,0,1,0, 0,1,0,1], [1,0,0,1, 0,1,1,0], match_params);
+    await test_navigation(t, "FORWARD", ()=> { navigation.forward(); },           [0,1,0,1, 1,0,1,0], [0,1,1,0, 1,0,0,1], match_params);
   }, "Navigate between two URLs");
 </script>

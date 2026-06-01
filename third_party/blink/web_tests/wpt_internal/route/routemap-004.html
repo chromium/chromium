@@ -2,25 +2,25 @@
 <title>Test @navigation(to:foo) and @navigation(from:foo)</title>
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
-<!-- Assuming here that "route" is part of the test path but no other parts of the URL. -->
+<!-- Assuming here that "route" is part of the test path but no other parts of the URL, and that the file ends in .html -->
 <script type="routemap">
   {
     "routes": [
       {
         "name": "r1",
-        "pattern": [ "*route*" ]
+        "pattern": [ "/*/route/*.html" ]
       },
       {
         "name": "r2",
-        "pattern": { "pathname": "*match-later-r2*" }
+        "pattern": { "pathname": "/*/match-later-r2" }
       },
       {
         "name": "r3",
-        "pattern": { "pathname": "*match-later-r3*" }
+        "pattern": { "pathname": "/*/match-later-r3" }
       },
       {
         "name": "r4",
-        "pattern": { "pathname": "*match-later-r4*" }
+        "pattern": { "pathname": "/*/match-later-r4*" }
       }
     ]
   }
@@ -114,14 +114,9 @@
   }
 
   promise_test(async (t) => {
-    // "at:r1" should match.
-    assert_equals(getComputedStyle(target).width, "100px", "at r1");
-    assert_equals(getComputedStyle(target).height, "7px", "at r1");
-    assert_equals(getComputedStyle(target).paddingTop, "0px", "at r1");
-    assert_equals(getComputedStyle(target).paddingBottom, "0px", "at r1");
-    assert_equals(getComputedStyle(target).marginLeft, "0px", "at r1");
-    assert_equals(getComputedStyle(target).marginRight, "0px", "at r1");
-    assert_invariants("at r1");
+    // Nothing should match when there's no active navigation.
+    assert_no_matches("before navigation");
+    assert_invariants("before navigation");
 
     entrychange = Promise.withResolvers();
     finished = Promise.withResolvers();
@@ -136,13 +131,8 @@
     assert_equals(getComputedStyle(target).marginRight, "0px", "to r2");
     assert_invariants("to r2");
     await finished.promise;
-    // "at:r2" should match.
-    assert_equals(getComputedStyle(target).width, "7px", "at r2");
-    assert_equals(getComputedStyle(target).height, "90px", "at r2");
-    assert_equals(getComputedStyle(target).paddingTop, "0px", "at r2");
-    assert_equals(getComputedStyle(target).paddingBottom, "0px", "at r2");
-    assert_equals(getComputedStyle(target).marginLeft, "0px", "at r2");
-    assert_equals(getComputedStyle(target).marginRight, "0px", "at r2");
+    // Nothing should match when there's no active navigation.
+    assert_no_matches("at r2");
     assert_invariants("at r2");
 
     entrychange = Promise.withResolvers();
@@ -158,8 +148,9 @@
     assert_equals(getComputedStyle(target).marginRight, "0px", "to r3");
     assert_invariants("to r3");
     await finished.promise;
-    // Nothing should match.
+    // Nothing should match when there's no active navigation.
     assert_no_matches("at r3");
+    assert_invariants("at r3");
 
     entrychange = Promise.withResolvers();
     finished = Promise.withResolvers();
@@ -174,7 +165,8 @@
     assert_equals(getComputedStyle(target).marginRight, "80px", "to r4");
     assert_invariants();
     await finished.promise;
-    // Nothing should match.
+    // Nothing should match when there's no active navigation.
     assert_no_matches("at r4");
+    assert_invariants("at r4");
   }, "Between routes");
 </script>

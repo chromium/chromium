@@ -14,9 +14,11 @@ namespace blink {
 
 namespace {
 
-bool MatchesPatterns(Document& document,
-                     const KURL& url,
+bool MatchesPatterns(const KURL& url,
                      const HeapVector<Member<URLPattern>>& patterns) {
+  if (url.IsEmpty()) {
+    return false;
+  }
   for (const URLPattern* pattern : patterns) {
     if (pattern->Match(url)) {
       return true;
@@ -63,7 +65,7 @@ URLPattern* Route::pattern() const {
 }
 
 bool Route::MatchesUrl(const KURL& url) const {
-  return MatchesPatterns(*document_, url, patterns_);
+  return MatchesPatterns(url, patterns_);
 }
 
 void Route::AddPattern(URLPattern* pattern) {
@@ -71,29 +73,26 @@ void Route::AddPattern(URLPattern* pattern) {
   patterns_.push_back(pattern);
 }
 
-bool Route::UpdateMatchStatus(const KURL& previous_url, const KURL& next_url) {
-  bool matches_at = MatchesPatterns(*document_, document_->Url(), patterns_);
+bool Route::UpdateMatchStatus(const KURL& from_url,
+                              const KURL& to_url,
+                              NavigationPhase phase) {
+  bool committed = phase == NavigationPhase::kCommitted;
+  bool matches_at = MatchesPatterns(committed ? to_url : from_url, patterns_);
+  bool matches_from = MatchesPatterns(from_url, patterns_);
+  bool matches_to = MatchesPatterns(to_url, patterns_);
+  bool matches_with = MatchesPatterns(committed ? from_url : to_url, patterns_);
 
-  // If a previous/next URL are set, we're moving from one route to another.
-  // Both need to be set, or none of them should be set.
-  DCHECK_EQ(previous_url.IsNull(), next_url.IsNull());
-
-  bool matches_from = !previous_url.IsNull() &&
-                      MatchesPatterns(*document_, previous_url, patterns_);
-  bool matches_to =
-      !next_url.IsNull() && MatchesPatterns(*document_, next_url, patterns_);
+  bool at_changed = matches_at_ != matches_at;
   bool from_changed = matches_from_ != matches_from;
   bool to_changed = matches_to_ != matches_to;
-
-  matches_from_ = matches_from;
-  matches_to_ = matches_to;
-  // TODO(crbug.com/436805487): Add support for "with"
-  if (matches_at_ == matches_at) {
-    return from_changed || to_changed;
-  }
+  bool with_changed = matches_with_ != matches_with;
 
   matches_at_ = matches_at;
-  return true;
+  matches_from_ = matches_from;
+  matches_to_ = matches_to;
+  matches_with_ = matches_with;
+
+  return at_changed || from_changed || to_changed || with_changed;
 }
 
 bool Route::URLPatternMatchesURLAndHref(const KURL& active_navigation_url,

@@ -83,13 +83,8 @@
   }
 
   promise_test(async (t) => {
-    // "at:--r1" should match.
-    assert_equals(getComputedStyle(target).width, "100px", "at --r1");
-    assert_equals(getComputedStyle(target).height, "7px", "at --r1");
-    assert_equals(getComputedStyle(target).paddingTop, "0px", "at --r1");
-    assert_equals(getComputedStyle(target).paddingBottom, "0px", "at --r1");
-    assert_equals(getComputedStyle(target).marginLeft, "0px", "at --r1");
-    assert_equals(getComputedStyle(target).marginRight, "0px", "at --r1");
+    // Nothing should match when there's no active navigation.
+    assert_no_matches("at --r1");
     assert_invariants("at --r1");
 
     entrychange = Promise.withResolvers();
@@ -105,13 +100,8 @@
     assert_equals(getComputedStyle(target).marginRight, "0px", "to --r2");
     assert_invariants("to --r2");
     await finished.promise;
-    // "at:--r2" should match.
-    assert_equals(getComputedStyle(target).width, "7px", "at --r2");
-    assert_equals(getComputedStyle(target).height, "90px", "at --r2");
-    assert_equals(getComputedStyle(target).paddingTop, "0px", "at --r2");
-    assert_equals(getComputedStyle(target).paddingBottom, "0px", "at --r2");
-    assert_equals(getComputedStyle(target).marginLeft, "0px", "at --r2");
-    assert_equals(getComputedStyle(target).marginRight, "0px", "at --r2");
+    // Nothing should match when there's no active navigation.
+    assert_no_matches("at --r2");
     assert_invariants("at --r2");
 
     entrychange = Promise.withResolvers();

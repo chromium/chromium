@@ -11,7 +11,7 @@
       },
       {
         "name": "r2",
-        "pattern": { "pathname": "*match-later*" }
+        "pattern": { "pathname": "/*/match-later" }
       }
     ]
   }
@@ -38,24 +38,52 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-  test(()=> {
-    assert_equals(getComputedStyle(target).width, "100px");
-    assert_equals(getComputedStyle(target).height, "7px");
-  }, "Initially only route r1 should match");
-
   promise_test(async t => {
-    history.pushState(0, null, "match-later");
-    window.onpageshow = t.step_func_done(() => {
-      assert_equals(getComputedStyle(target).width, "100px");
-      assert_equals(getComputedStyle(target).height, "100px");
-    });
-  }, "Both routes should match");
+    await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+    let committed = Promise.withResolvers();
+    let precommit = Promise.withResolvers();
+    navigation.onnavigate = (event) => {
+      event.intercept({
+        async precommitHandler() {
+          precommit.resolve();
+          await new Promise(r => t.step_timeout(r, 0));
+        },
+        async handler() {
+          committed.resolve();
+          await new Promise(resolve => requestAnimationFrame(resolve));
+        }
+      })
+    };
 
-  promise_test(async t => {
-    window.onpopstate = t.step_func_done(() => {
-      assert_equals(getComputedStyle(target).width, "100px");
-      assert_equals(getComputedStyle(target).height, "7px");
-    });
-    history.back();
-  }, "Going back again, only route r1 should match");
+    // Trigger an active navigation, so that any valid "at" rule will match.
+    navigation.navigate("match-later");
+    await precommit.promise;
+
+    // Nothing must fail at this stage, as that would cause the test to hang,
+    // due to interferences with the testharness machinery. So just write down
+    // what we saw, and check it later.
+    let r1_matched_in_precommit = getComputedStyle(target).width == "100px";
+    let r2_matched_in_precommit = getComputedStyle(target).width == "7px";
+
+    await committed.promise;
+
+    // Initially only route r1 should match
+    assert_true(r1_matched_in_precommit, "initially");
+    assert_false(r2_matched_in_precommit, "initially");
+
+    assert_equals(getComputedStyle(target).width, "100px", "committed");
+    assert_equals(getComputedStyle(target).height, "100px", "committed");
+
+    await new Promise(r => navigation.onnavigatesuccess = () => t.step_timeout(r, 0));
+
+    // Go back.
+    precommit = Promise.withResolvers();
+    committed = Promise.withResolvers();
+    navigation.back();
+
+    await committed.promise;
+
+    assert_equals(getComputedStyle(target).width, "100px", "back");
+    assert_equals(getComputedStyle(target).height, "7px", "back");
+  }, "Navigate to URL, go back");
 </script>
