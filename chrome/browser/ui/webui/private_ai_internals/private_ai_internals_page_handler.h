@@ -77,6 +77,8 @@ class PrivateAiInternalsPageHandler
   void SendZssRequest(const std::string& inner_text,
                       SendRequestCallback callback);
   void SendFormsAiRequest(const std::string& url, SendRequestCallback callback);
+  void SendContextualCueRequest(const std::string& request,
+                                SendRequestCallback callback);
 
   raw_ptr<phosphor::TokenManager> token_manager_;
   // The global client, only used for observation.
