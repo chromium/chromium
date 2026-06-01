@@ -156,6 +156,16 @@
             on-close="onAddressRemoveConfirmationDialogClose_">
         </settings-address-remove-confirmation-dialog>
       </template>
+      <template is="dom-if" if="[[showEmailRemoveConfirmationDialog_]]"
+          restamp>
+        <settings-simple-confirmation-dialog id="emailRemoveConfirmationDialog"
+            title-text="$i18n{removeVerifiedEmailPermissionTitle}"
+            body-text="[[getEmailRemoveConfirmationDescription_(
+                activeEmailIssuer_)]]"
+            confirm-text="$i18n{remove}"
+            on-close="onEmailRemoveConfirmationDialogClose_">
+        </settings-simple-confirmation-dialog>
+      </template>
       <template is="dom-if" if="[[isPlusAddressEnabled_]]">
         <cr-link-row class="cr-row" id="plusAddressSettingsButton"
             label="$i18n{plusAddressSettings}"

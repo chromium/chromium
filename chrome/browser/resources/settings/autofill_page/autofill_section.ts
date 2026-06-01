@@ -19,6 +19,7 @@ import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
+import '../simple_confirmation_dialog.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
 import './passwords_shared.css.js';
@@ -39,6 +40,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import type {AutofillManagerProxy, PersonalDataChangedListener} from './autofill_manager_proxy.js';
 import {AutofillManagerImpl} from './autofill_manager_proxy.js';
@@ -115,6 +117,8 @@ export class SettingsAutofillSectionElement extends
 
       showAddressDialog_: Boolean,
       showAddressRemoveConfirmationDialog_: Boolean,
+      showEmailRemoveConfirmationDialog_: Boolean,
+      activeEmailIssuer_: String,
 
       isGoogleProfileAddress: {
         type: Boolean,
@@ -156,6 +160,8 @@ export class SettingsAutofillSectionElement extends
   declare private accountInfo_: chrome.autofillPrivate.AccountInfo|null;
   declare private showAddressDialog_: boolean;
   declare private showAddressRemoveConfirmationDialog_: boolean;
+  declare private showEmailRemoveConfirmationDialog_: boolean;
+  declare private activeEmailIssuer_: string;
   declare private isGoogleProfileAddress: boolean;
   declare private isPlusAddressEnabled_: boolean;
   declare private isEmailVerificationProtocolEnabled_: boolean;
@@ -410,8 +416,30 @@ export class SettingsAutofillSectionElement extends
     const currentPrefs = this.getPref<Record<string, unknown>>(
                                  'autofill.email_verification_state')
                              .value;
-    assert(currentPrefs && email in currentPrefs);
-    this.deletePrefDictEntry('autofill.email_verification_state', email);
+    assert(currentPrefs);
+    const emailData = currentPrefs[email] as Record<string, string>| undefined;
+    assert(emailData);
+    const issuerSite = emailData['issuer_site'];
+    assert(issuerSite);
+    const hostname = new URL(issuerSite).hostname;
+    this.activeEmailIssuer_ = hostname;
+    this.showEmailRemoveConfirmationDialog_ = true;
+  }
+
+  private onEmailRemoveConfirmationDialogClose_(e: Event) {
+    const confirmationDialog =
+        e.target as SettingsSimpleConfirmationDialogElement;
+    assert(confirmationDialog);
+    const wasDeletionConfirmed = confirmationDialog.wasConfirmed();
+    if (wasDeletionConfirmed) {
+      const email = this.emailSharedMenuModel_;
+      this.deletePrefDictEntry('autofill.email_verification_state', email);
+    }
+    this.showEmailRemoveConfirmationDialog_ = false;
+  }
+
+  private getEmailRemoveConfirmationDescription_(issuer: string): string {
+    return this.i18n('removeVerifiedEmailPermissionBody', issuer);
   }
 
   private isCloudOffVisible_(

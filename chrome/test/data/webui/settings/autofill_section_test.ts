@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrActionMenuElement} from 'chrome://settings/settings.js';
-import type {CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
+import type {CrInputElement, CrTextareaElement, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {AutofillAddressOptInChange, AutofillManagerImpl, CountryDetailManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -190,8 +190,8 @@ suite('AutofillSectionUiTest', function() {
     loadTimeData.overrideValues({emailVerificationProtocolEnabled: true});
 
     const emailState = {
-      'test1@example.com': {allowed: true},
-      'test2@example.com': {allowed: false},
+      'test1@example.com': {allowed: true, issuer_site: 'https://example.com'},
+      'test2@example.com': {allowed: false, issuer_site: 'https://example.com'},
     };
 
     const section = await createAutofillSection([], {
@@ -238,7 +238,16 @@ suite('AutofillSectionUiTest', function() {
         actionMenu.querySelector<HTMLElement>('#menuRemoveEmail');
     assertTrue(!!removeButton);
     removeButton.click();
-    flush();
+    await flushTasks();
+
+    const dialog = section.shadowRoot!
+                       .querySelector<SettingsSimpleConfirmationDialogElement>(
+                           '#emailRemoveConfirmationDialog');
+    assertTrue(!!dialog);
+    dialog.$.confirm.click();
+
+    await eventToPromise('close', dialog.$.dialog);
+    await flushTasks();
 
     // Verify pref was updated.
     const updatedPrefs = section
