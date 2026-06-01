@@ -329,7 +329,8 @@ template("proto_library") {
     _proto_in_dir = get_path_info(_sources[0], "dir")
     _has_nested_dirs = false
 
-    # Consistency check: |proto_in_dir| should be defined to allow sub-directories.
+    # Consistency check: |proto_in_dir| should be defined to allow
+    # sub-directories.
     foreach(_source, _sources) {
       assert(get_path_info(_source, "dir") == _proto_in_dir,
              "Please define |proto_in_dir| to allow nested directories.")
@@ -492,9 +493,9 @@ template("proto_library") {
     public_deps = [ ":$_input_group_name" ]
 
     args = _relative_sources + [
-             # Wrapper should never pick a system protoc.
-             # Path should be rebased because |root_build_dir| for current toolchain
-             # may be different from |root_out_dir| of protoc built on host toolchain.
+             # Wrapper should never pick a system protoc. Path should be rebased
+             # because |root_build_dir| for current toolchain may be different
+             # from |root_out_dir| of protoc built on host toolchain.
              "--protoc",
              "./" + rebase_path(_protoc_path, root_build_dir),
              "--proto-in-dir",
@@ -563,8 +564,8 @@ template("proto_library") {
     if (_generate_with_plugin) {
       if (defined(invoker.generator_plugin_label)) {
         # Straightforward way to get the name of executable doesn't work because
-        # |root_out_dir| and |root_build_dir| may differ in cross-compilation and
-        # also Windows executables have .exe at the end.
+        # |root_out_dir| and |root_build_dir| may differ in cross-compilation
+        # and also Windows executables have .exe at the end.
 
         _plugin_host_label =
             "${invoker.generator_plugin_label}($host_toolchain)"
@@ -650,7 +651,8 @@ template("proto_library") {
 
   if ((defined(invoker.generate_library) && !invoker.generate_library) ||
       !_generate_sources) {
-    # If only descriptor is required, just generate a group wrapper for action output.
+    # If only descriptor is required, just generate a group wrapper for action
+    # output.
     _library_type = "group"
   } else if ((defined(invoker.force_source_set) && invoker.force_source_set) ||
              (defined(invoker.component_build_force_source_set) &&
@@ -697,9 +699,10 @@ template("proto_library") {
         configs += invoker.extra_configs
       }
 
-      # Remove Sanitizer and coverage instrumentation for a performance boost when
-      # fuzzing, since the only fuzzers that use protobuf are libprotobuf-mutator
-      # based fuzzers, and they don't actually target protobuf code.
+      # Remove Sanitizer and coverage instrumentation for a performance boost
+      # when fuzzing, since the only fuzzers that use protobuf are
+      # libprotobuf-mutator based fuzzers, and they don't actually target
+      # protobuf code.
       configs -= not_fuzzed_remove_configs
       configs += not_fuzzed_add_configs
     }
@@ -726,10 +729,10 @@ template("proto_library") {
       #
       # This is required for instance for well-known protobuf types, like
       # timestamp.proto, as the non-lite version of its header is included in
-      # protobuf's sources.  Specifying the protobuf's src directory (as include_dir)
-      # before the generated directory, would cause header file mismatch and the
-      # non-lite version would be included instead of the lite one causing
-      # issues when linking binaries.
+      # protobuf's sources. Specifying the protobuf's src directory (as
+      # include_dir) before the generated directory, would cause header file
+      # mismatch and the non-lite version would be included instead of the lite
+      # one causing issues when linking binaries.
       public_configs += [ "$_this_dir:using_proto" ]
 
       # If using built-in cc generator, the resulting headers reference headers
