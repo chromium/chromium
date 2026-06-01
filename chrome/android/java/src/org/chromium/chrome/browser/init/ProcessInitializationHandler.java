@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.firstrun.TosDialogBehaviorSharedPrefInvalidator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
@@ -770,6 +771,8 @@ public class ProcessInitializationHandler {
                         ShoppingPersistedTabData.onDeferredStartup();
                     }
                 });
+
+        tasks.add(() -> FeedbackPolicyManager.getInstance().onFinishNativeInitialization(profile));
     }
 
     private void initChannelsAsync() {

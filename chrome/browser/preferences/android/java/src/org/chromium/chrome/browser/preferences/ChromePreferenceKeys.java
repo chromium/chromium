@@ -731,6 +731,8 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix HOME_MODULES_IMPRESSION_COUNT_BEFORE_INTERACTION =
             new KeyPrefix("Chrome.HomeModules.ImpressionCountBeforeInteraction.*");
 
+    public static final String POLICY_USER_FEEDBACK_ALLOWED = "Chrome.Policy.UserFeedbackAllowed";
+
     /**
      * Save the timestamp of the last time that we record metrics on whether user enables the price
      * tracking annotations.
@@ -1282,6 +1284,7 @@ public final class ChromePreferenceKeys {
                 PIH_PRIVACY_NOTICE_CLOSED,
                 PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP,
                 PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT,
+                POLICY_USER_FEEDBACK_ALLOWED,
                 PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                 PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS,
                 PRICE_TRACKING_IDS_FOR_TABS_WITH_PRICE_DROP,
