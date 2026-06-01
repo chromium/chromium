@@ -93,6 +93,28 @@ void NavigationLocationTestExpression::SerializePrepositionTo(
   }
 }
 
+bool NavigationPhaseTestExpression::Matches(Document& document) const {
+  const auto* route_map = RouteMap::Get(&document);
+  return route_map && route_map->GetPhase() == phase_;
+}
+
+void NavigationPhaseTestExpression::SerializeTo(StringBuilder& builder) const {
+  builder.Append("phase: ");
+  switch (phase_) {
+    case NavigationPhase::kLoading:
+      builder.Append("loading");
+      break;
+    case NavigationPhase::kReady:
+      builder.Append("ready");
+      break;
+    case NavigationPhase::kCommitted:
+      builder.Append("committed");
+      break;
+    case NavigationPhase::kInactive:
+      NOTREACHED();
+  }
+}
+
 bool NavigationTypeTestExpression::Matches(Document& document) const {
   const auto* route_map = RouteMap::Get(&document);
   if (!route_map) {

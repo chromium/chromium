@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_phase.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 
 namespace blink {
@@ -127,6 +128,27 @@ NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
       return nullptr;
     }
     return MakeGarbageCollected<NavigationTypeTestExpression>(type);
+  }
+
+  if (ident == "phase") {
+    // <navigation-phase-test>
+    if (stream.Peek().GetType() != kIdentToken) {
+      return nullptr;
+    }
+    AtomicString argument(
+        stream.ConsumeIncludingWhitespace().Value().ToString());
+    NavigationPhase phase;
+    if (argument == "loading") {
+      phase = NavigationPhase::kLoading;
+    } else if (argument == "ready") {
+      // TODO(crbug.com/436805487): Support "ready".
+      return nullptr;
+    } else if (argument == "committed") {
+      phase = NavigationPhase::kCommitted;
+    } else {
+      return nullptr;
+    }
+    return MakeGarbageCollected<NavigationPhaseTestExpression>(phase);
   }
 
   std::optional<NavigationPreposition> preposition =

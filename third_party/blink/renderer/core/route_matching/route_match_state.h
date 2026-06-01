@@ -33,6 +33,8 @@ class RouteMatchState : public GarbageCollected<RouteMatchState> {
 
   RouteMap::HistoryTraverseType traverse_type_ = RouteMap::kNotTraversing;
 
+  NavigationPhase phase_ = NavigationPhase::kInactive;
+
   bool in_preview_ = false;
 };
 

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>@navigation</title>
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#typedef-navigation-phase-test">
+<style>
+  @navigation (phase: loading) {
+    #elm {
+      --loading: matched;
+    }
+  }
+  @navigation (phase: committed) {
+    #elm {
+      --committed: matched;
+    }
+  }
+  /* TODO(crbug.com/436805487): Add test for 'ready'. */
+</style>
+<span id="elm"></span>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-navigation.js"></script>
+<script>
+  promise_test(async (t) => {
+    await new Promise(r => window.onload = () => t.step_timeout(r, 0));
+
+    const match_params = [
+      [elm, "--loading"],
+      [elm, "--committed"],
+    ];
+
+    await test_navigation(t, "nav1", ()=> { navigation.navigate("/elsewhere/"); }, [1,0], [0,1], match_params);
+    await test_navigation(t, "nav2", ()=> { navigation.back(); },                  [1,0], [0,1], match_params);
+  }, "Navigate between URLs");
+</script>

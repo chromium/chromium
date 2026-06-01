@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_NAVIGATION_QUERY_H_
 
 #include "third_party/blink/renderer/core/css/conditional_exp_node.h"
+#include "third_party/blink/renderer/core/route_matching/navigation_phase.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -118,6 +119,23 @@ struct DowncastTraits<NavigationLocationTestExpression> {
   static bool AllowFrom(const NavigationTestExpression& exp) {
     return exp.IsNavigationLocationTestExpression();
   }
+};
+
+// <navigation-phase-test>
+//
+// https://drafts.csswg.org/css-navigation-1/#typedef-navigation-phase-test
+class NavigationPhaseTestExpression : public NavigationTestExpression {
+ public:
+  explicit NavigationPhaseTestExpression(NavigationPhase phase)
+      : phase_(phase) {
+    DCHECK(phase != NavigationPhase::kInactive);
+  }
+
+  bool Matches(Document&) const override;
+  void SerializeTo(StringBuilder&) const override;
+
+ private:
+  NavigationPhase phase_;
 };
 
 // <navigation-type-test>

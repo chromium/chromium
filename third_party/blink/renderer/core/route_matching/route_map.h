@@ -144,6 +144,8 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // Return the "at" URL of the current navigation, if any.
   KURL GetAtURL() const;
 
+  NavigationPhase GetPhase() const { return navigation_phase_; }
+
   // Get the "active navigation URL", given the specified preposition.
   //
   // https://drafts.csswg.org/css-navigation-1/#active-navigation-url
