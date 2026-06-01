@@ -7722,8 +7722,9 @@ IN_PROC_BROWSER_TEST_P(SSLServerPaddingBrowserTest,
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
 
+  // Make sure there's no favicon so that only one request is sent.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server.GetURL("/title1.html")));
+      browser(), https_server.GetURL("/local_network_access/no-favicon.html")));
 
   content::FetchHistogramsFromChildProcesses();
   base::test::TestFuture<void> future;
