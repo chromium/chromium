@@ -428,7 +428,8 @@ inline void EventDispatcher::DispatchEventPostProcess(
   // TODO(dtapuska): Change this to a target SDK quirk crbug.com/643705
   if (!is_trusted_or_click && event_->IsMouseEvent() &&
       event_->type() == event_type_names::kMousedown &&
-      IsA<HTMLSelectElement>(*node_)) {
+      IsA<HTMLSelectElement>(*node_) &&
+      !RuntimeEnabledFeatures::SelectWebViewUntrustedEventRemovalEnabled()) {
     if (Settings* settings = node_->GetDocument().GetSettings()) {
       is_trusted_or_click = settings->GetWideViewportQuirkEnabled();
     }
@@ -476,6 +477,8 @@ inline void EventDispatcher::DispatchEventPostProcess(
   // Track the usage of sending a mousedown event to a select element to force
   // it to open. This measures a possible breakage of not allowing untrusted
   // events to open select boxes.
+  // TODO(crbug.com/41273490): Obsolete this UseCounter and remove this code
+  // after removing the corresponding functionality.
   if (!event_->isTrusted() && event_->IsMouseEvent() &&
       event_->type() == event_type_names::kMousedown &&
       IsA<HTMLSelectElement>(*node_)) {

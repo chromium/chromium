@@ -1402,6 +1402,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_CPP_METRICS_FILTERING,
                 "Enables WebView UMA metrics filtering in C++ instead of Java."),
+        Flag.baseFeature(
+                BlinkFeatures.SELECT_WEBVIEW_UNTRUSTED_EVENT_REMOVAL,
+                "Enables the removal of a WebView-specific hack to allow select elements to be"
+                        + " opened with untrusted mousedown events."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
