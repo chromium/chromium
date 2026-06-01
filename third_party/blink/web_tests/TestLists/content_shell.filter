@@ -392,7 +392,6 @@ external/wpt/css/css-writing-modes/mongolian-orientation-002.html
 external/wpt/css/css-writing-modes/relpos-inline-overflowing-block-vrl.html
 external/wpt/css/css-writing-modes/sizing-orthog-htb-*
 external/wpt/css/css-writing-modes/wm-propagation-*
-external/wpt/css/filter-effects/backdrop-filter*
 external/wpt/css/filter-effects/css-filters-animation-opacity.html
 external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html
 external/wpt/css/filter-effects/clip-under-filter-001.html
