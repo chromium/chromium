@@ -927,7 +927,7 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
     public void testShowAndroidControlsWithAnimation_BottomPosition() {
         // 1. During setControlsPosition(), ensure canAnimateNativeBrowserControls() is true
         // (so it successfully saves the hidden offset TOOLBAR_HEIGHT).

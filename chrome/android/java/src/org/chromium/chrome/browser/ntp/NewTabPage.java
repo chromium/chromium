@@ -93,7 +93,6 @@ import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -1274,16 +1273,23 @@ public class NewTabPage
 
     private void updateNtpScrollListener(boolean attach) {
         if (!(mFeedSurfaceProvider instanceof FeedSurfaceCoordinator)) return;
+
+        if (!BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext)) return;
+
         RecyclerView recyclerView =
                 ((FeedSurfaceCoordinator) mFeedSurfaceProvider).getRecyclerView();
+        if (recyclerView == null) {
+            if (mNtpScrollListener != null) {
+                mNtpScrollListener = null;
+            }
+            return;
+        }
 
-        if (attach && recyclerView != null && mNtpScrollListener == null) {
+        if (attach && mNtpScrollListener == null) {
             mNtpScrollListener = new NtpScrollListener(mBrowserControlsStateProvider, mContext);
             recyclerView.addOnScrollListener(mNtpScrollListener);
         } else if (!attach && mNtpScrollListener != null) {
-            if (recyclerView != null) {
-                recyclerView.removeOnScrollListener(mNtpScrollListener);
-            }
+            recyclerView.removeOnScrollListener(mNtpScrollListener);
             mNtpScrollListener = null;
         }
     }
@@ -1318,14 +1324,6 @@ public class NewTabPage
             BrowserControlsVisibilityManager manager = (BrowserControlsVisibilityManager) provider;
             int bottomControlsHeight = manager.getBottomControlsHeight();
             if (bottomControlsHeight <= 0) return;
-
-            boolean isBottomBarEnabled = BottomBarConfigUtils.isBottomBarEnabled(context);
-            boolean isBottomChinEnabled =
-                    context instanceof Activity
-                            && EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled((Activity) context);
-            if (!isBottomBarEnabled && !isBottomChinEnabled) {
-                return;
-            }
 
             float density = context.getResources().getDisplayMetrics().density;
             int thresholdPx = (int) (SCROLL_THRESHOLD_DP * density);

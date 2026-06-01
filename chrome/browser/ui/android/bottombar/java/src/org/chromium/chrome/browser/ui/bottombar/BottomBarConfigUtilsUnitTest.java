@@ -107,7 +107,7 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
     public void testIsNtpScrollOffEnabled_ValidNtp() {
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getNativePage()).thenReturn(mNativePage);
@@ -134,6 +134,48 @@ public class BottomBarConfigUtilsUnitTest {
         when(mNativePage.getHost()).thenReturn("newtab");
 
         assertFalse(BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":ntp_scroll_off_enabled/true/disable_on_ntp/false")
+    public void testIsNtpScrollOffEnabled_KillSwitchEnabled() {
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.getHost()).thenReturn("newtab");
+
+        assertTrue(BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":ntp_scroll_off_enabled/false")
+    public void testIsNtpScrollOffEnabled_KillSwitchDisabled() {
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.getHost()).thenReturn("newtab");
+
+        assertFalse(BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/true")
+    public void testIsNtpScrollOffEnabled_DisableOnNtpEnabled() {
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.getHost()).thenReturn("newtab");
+
+        assertFalse(BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    public void testIsNtpScrollOffEnabled_DisableOnNtpDisabled() {
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(mNativePage);
+        when(mNativePage.getHost()).thenReturn("newtab");
+
+        assertTrue(BottomBarConfigUtils.isNtpScrollOffEnabled(mTab, mContext));
     }
 
     @Test
