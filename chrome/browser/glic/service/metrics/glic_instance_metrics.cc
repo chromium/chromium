@@ -656,33 +656,22 @@ void GlicInstanceMetrics::ResetShownState(EmbedderKey key) {
 }
 
 void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
-                                 const ShowOptions& options,
-                                 bool should_log_old_metric) {
+                                 const ShowOptions& options) {
   invocation_start_time_ = base::TimeTicks::Now();
   last_invocation_source_ = source;
 
   // 1. Log Events
-  LogEvent(GlicInstanceEvent::kOpen2);
-  if (should_log_old_metric) {
-    LogEvent(GlicInstanceEvent::kOpen);
-  }
+  LogEvent(GlicInstanceEvent::kOpen);
 
   // 2. Log Initial Invocation Source
   if (!initial_invocation_source_.has_value()) {
     initial_invocation_source_ = source;
-    base::UmaHistogramEnumeration("Glic.Instance.InitialInvocationSource2",
+    base::UmaHistogramEnumeration("Glic.Instance.InitialInvocationSource",
                                   source);
-    if (should_log_old_metric) {
-      base::UmaHistogramEnumeration("Glic.Instance.InitialInvocationSource",
-                                    source);
-    }
   }
 
   // 3. Record Actions
-  base::RecordAction(base::UserMetricsAction("Glic.Instance.Open2"));
-  if (should_log_old_metric) {
-    base::RecordAction(base::UserMetricsAction("Glic.Instance.Open"));
-  }
+  base::RecordAction(base::UserMetricsAction("Glic.Instance.Open"));
 
   // 4. Log Open Source
   bool is_floaty =
@@ -690,19 +679,12 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
   std::string open_source_base = is_floaty
                                      ? "Glic.Instance.Floaty.OpenSource"
                                      : "Glic.Instance.SidePanel.OpenSource";
-
-  base::UmaHistogramEnumeration(open_source_base + "2", source);
-  if (should_log_old_metric) {
-    base::UmaHistogramEnumeration(open_source_base, source);
-  }
+  base::UmaHistogramEnumeration(open_source_base, source);
 
   // 5. Log Zoom Level
   if (pref_service_) {
     int zoom_level = pref_service_->GetInteger(prefs::kGlicZoomLevel);
-    base::UmaHistogramSparse("Glic.ZoomLevel.OnOpen2", zoom_level);
-    if (should_log_old_metric) {
-      base::UmaHistogramSparse("Glic.ZoomLevel.OnOpen", zoom_level);
-    }
+    base::UmaHistogramSparse("Glic.ZoomLevel.OnOpen", zoom_level);
   }
 
   // 6. SaaS Usage

@@ -126,7 +126,7 @@ enum class GlicInstanceEvent {
   kShown = 47,
   kOpen = 48,
   kWebUiStateWarmed = 49,
-  kOpen2 = 50,
+  // kOpen2 = 50 - Only used in Canary M150
   kWebUiStateLocationMismatch = 51,
   kWebUiStateIneligibleAccount = 52,
   kMaxValue = kWebUiStateIneligibleAccount,
@@ -261,9 +261,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // Called when the UI is shown and it was not already showing for this
   // instance.
-  void OnOpen(glic::mojom::InvocationSource source,
-              const ShowOptions& options,
-              bool should_log_old_metric = true);
+  void OnOpen(glic::mojom::InvocationSource source, const ShowOptions& options);
 
   // Returns true if this is the first time this specific embedder is becoming
   // visible after being opened/closed.

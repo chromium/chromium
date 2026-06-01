@@ -15512,19 +15512,10 @@ should be able to be added at any place in this file.
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <description>
-    Logged when Open is called on a new or closed instance. Note that this may
-    be logged when a new conversation creates a new instance to replace an
-    existing one in an already open UI container.
-  </description>
-</action>
-
-<action name="Glic.Instance.Open2">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <description>
-    Logged when opening a new or closed instance. Note that this may be logged
-    when a new conversation creates a new instance to replace an existing one in
-    an already open UI container, or when detaching/ attaching Floaty from side
+    Logged when opening a new or closed instance. Logged for instances created
+    in both the foreground and background. Note that this may be logged when a
+    new conversation creates a new instance to replace an existing one in an
+    already open UI container, or when detaching/ attaching Floaty from side
     panel.
   </description>
 </action>

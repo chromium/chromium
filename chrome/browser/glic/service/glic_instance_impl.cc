@@ -363,10 +363,6 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
   }
 
   EmbedderKey new_key = GetEmbedderKey(options);
-  // Look up the current embedder for that tab/key.
-  EmbedderEntry* entry = GetEmbedderEntry(new_key);
-  const bool new_embedder_will_show =
-      !entry || !entry->embedder || !entry->embedder->IsShowing();
 
   GlicUiEmbedder* embedder_to_show = nullptr;
 
@@ -392,13 +388,8 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
   MaybeShowHostUi(embedder_to_show, options.invocation_source,
                   options.prompt_suggestion, options.fre_override);
 
-  // Order matters: MarkShownAndCheckIfFirstTime has side effects and
-  // must be called even if new_embedder_will_show is true.
-  if (instance_metrics().MarkShownAndCheckIfFirstTime(new_key) ||
-      new_embedder_will_show) {
-    instance_metrics().OnOpen(
-        options.invocation_source, options,
-        /* should_log_old_metric=*/new_embedder_will_show);
+  if (instance_metrics().MarkShownAndCheckIfFirstTime(new_key)) {
+    instance_metrics().OnOpen(options.invocation_source, options);
     service_->metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
                                                     options.invocation_source);
   }

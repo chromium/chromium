@@ -465,27 +465,23 @@ TEST_F(GlicInstanceMetricsTest, InstanceEvents_LogsEventCountsAndHadEvent) {
       GlicInstanceEvent::kTurnCompleted, 1);
 }
 
-TEST_F(GlicInstanceMetricsTest, InstanceEvents_OpenAndOpen2) {
+TEST_F(GlicInstanceMetricsTest, InstanceEvents_Open) {
   ShowOptions show_options{FloatingShowOptions{}};
 
-  // Call OnOpen with should_log_old_metric = true (default)
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
 
   histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
                                       GlicInstanceEvent::kOpen, 1);
-  histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
-                                      GlicInstanceEvent::kOpen2, 1);
 
-  // Call OnOpen with should_log_old_metric = false
-  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options,
-                  false);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Instance.Open"), 1);
 
-  // kOpen should still be 1.
-  histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
-                                      GlicInstanceEvent::kOpen, 1);
-  // kOpen2 should be 2.
-  histogram_tester_.ExpectBucketCount("Glic.Instance.EventCounts",
-                                      GlicInstanceEvent::kOpen2, 2);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.InitialInvocationSource",
+      mojom::InvocationSource::kTopChromeButton, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Floaty.OpenSource",
+      mojom::InvocationSource::kTopChromeButton, 1);
 }
 
 TEST_F(GlicInstanceMetricsTest,

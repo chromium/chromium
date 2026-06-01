@@ -452,7 +452,7 @@ chromium-metrics-reviews@google.com.
   <int value="47" label="Shown"/>
   <int value="48" label="Open"/>
   <int value="49" label="WebUI State Warmed"/>
-  <int value="50" label="Open2"/>
+  <int value="50" label="(Obsolete) Open2"/>
   <int value="51" label="WebUI State Location Mismatch"/>
   <int value="52" label="WebUI State Ineligible Account"/>
 </enum>

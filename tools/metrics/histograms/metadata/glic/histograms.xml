@@ -1010,18 +1010,6 @@ chromium-metrics-reviews@google.com.
   <owner>basiaz@google.com</owner>
   <owner>birnie@google.com</owner>
   <summary>
-    Records the source of the invocation that opened the floaty GlicInstance.
-    Recorded each time toggle is called for showing the floaty and is a
-    companion metric to Glic.Instance.Floaty.ToggleSource which included
-    invocations that close Floaty.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.Floaty.OpenSource2" enum="GlicInvocationSource"
-    expires_after="2026-10-04">
-  <owner>basiaz@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
     Records the source of the invocation when the Glic Floaty panel becomes
     visible for the first time after being closed. Recorded when detached from
     Side Panel, when opened directly via os button / hotkey, or when the
@@ -1381,26 +1369,11 @@ chromium-metrics-reviews@google.com.
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
-    Records the source of the invocation that opened the Glic instance in the
-    side panel. Recorded each time Show() is called to show the instance in the
-    side panel and it was not already showing. Note that this may be recorded
-    even if the side panel UI container was already open for a different
-    instance (e.g., when invoking a new conversation).
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.SidePanel.OpenSource2"
-    enum="GlicInvocationSource" expires_after="2026-10-04">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
     Records the source of the invocation when the Glic panel becomes visible for
     the first time after being closed. Recorded when first visible (for
     foreground and background instance creation), when popped back from Floaty,
-    for a conversation switch. It is not logged on tab switches. This is
-    different from Glic.Instance.SidePanel.OpenSource in that this metric is
-    also recorded for background instances which the previous version did not
-    do.
+    for a conversation switch. Background opens were not recorded before M150.
+    This metric is not logged on tab switches.
   </summary>
 </histogram>
 
@@ -3076,11 +3049,9 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Suffix">
     <variant name="OnOpen"
-        summary="when the Glic panel is opened by the user."/>
-    <variant name="OnOpen2"
         summary="when the Glic panel is opened by the user for the first time
-                 from a closed state, for the new metrics behavior (see
-                 Glic.Instance.{SidePanel,Floaty}.OpenSource2) for detailed
+                 from a closed state, see
+                 Glic.Instance.{SidePanel,Floaty}.OpenSource for detailed
                  definitions."/>
     <variant name="SteadyState"
         summary="periodically for active users (those who have completed the
