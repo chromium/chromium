@@ -350,15 +350,16 @@ void FocusManager::SetFocusedViewWithReason(View* view,
   focus_change_listeners_.Notify(&FocusChangeListener::OnWillChangeFocus,
                                  focused_view_, view);
 
-  View* old_focused_view = focused_view_;
+  // Actions below like `Blur()` can destroy `focused_view_`.
+  ViewTracker old_focused_view_tracker(focused_view_);
   focused_view_ = view;
   base::AutoReset<int> entrance_count_resetter(
       &setting_focused_view_entrance_count_,
       setting_focused_view_entrance_count_ + 1);
 
-  if (old_focused_view) {
-    old_focused_view->RemoveObserver(this);
-    old_focused_view->Blur();
+  if (old_focused_view_tracker.view()) {
+    old_focused_view_tracker.view()->RemoveObserver(this);
+    old_focused_view_tracker.view()->Blur();
   }
   // Also make |focused_view_| the stored focus view. This way the stored focus
   // view is remembered if focus changes are requested prior to a show or while
@@ -373,7 +374,8 @@ void FocusManager::SetFocusedViewWithReason(View* view,
   }
 
   focus_change_listeners_.Notify(&FocusChangeListener::OnDidChangeFocus,
-                                 old_focused_view, focused_view_);
+                                 old_focused_view_tracker.view(),
+                                 focused_view_);
 }
 
 void FocusManager::SetFocusedView(View* view) {

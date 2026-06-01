@@ -175,6 +175,75 @@ TEST_F(FocusManagerTest, FocusChangeListener) {
   RemoveFocusChangeListener(&listener);
 }
 
+namespace {
+
+class DestructiveView : public View {
+  METADATA_HEADER(DestructiveView, View)
+ public:
+  explicit DestructiveView(View* view_to_delete) {
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+    tracker_.SetView(view_to_delete);
+  }
+
+  void OnFocus() override {
+    if (View* v = tracker_.view()) {
+      v->parent()->RemoveChildViewT(v);
+    }
+    View::OnFocus();
+  }
+
+ private:
+  ViewTracker tracker_;
+};
+
+BEGIN_METADATA(DestructiveView)
+END_METADATA
+
+class DidChangeFocusListener : public FocusChangeListener {
+ public:
+  void OnWillChangeFocus(View* focused_before, View* focused_now) override {}
+  void OnDidChangeFocus(View* focused_before, View* focused_now) override {
+    focus_changes_.emplace_back(focused_before, focused_now);
+  }
+
+  const std::vector<ViewPair>& focus_changes() const { return focus_changes_; }
+  void ClearFocusChanges() { focus_changes_.clear(); }
+
+ private:
+  std::vector<ViewPair> focus_changes_;
+};
+
+}  // namespace
+
+TEST_F(FocusManagerTest, FocusChangeWithSynchronousDestruction) {
+  auto view1_ptr = std::make_unique<View>();
+  view1_ptr->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  View* view1 = GetContentsView()->AddChildView(std::move(view1_ptr));
+
+  DestructiveView* view2 =
+      GetContentsView()->AddChildView(std::make_unique<DestructiveView>(view1));
+
+  DidChangeFocusListener listener;
+  AddFocusChangeListener(&listener);
+
+  view1->RequestFocus();
+  ASSERT_EQ(1u, listener.focus_changes().size());
+  EXPECT_EQ(nullptr, listener.focus_changes()[0].first);
+  EXPECT_EQ(view1, listener.focus_changes()[0].second);
+  listener.ClearFocusChanges();
+
+  // This will trigger view2->OnFocus() which will synchronously delete view1.
+  view2->RequestFocus();
+  ASSERT_EQ(1u, listener.focus_changes().size());
+  // Since view1 was synchronously destroyed, the old focused view should be
+  // nullptr.
+  EXPECT_EQ(nullptr, listener.focus_changes()[0].first);
+  EXPECT_EQ(view2, listener.focus_changes()[0].second);
+  listener.ClearFocusChanges();
+
+  RemoveFocusChangeListener(&listener);
+}
+
 TEST_F(FocusManagerTest, NativeViewFocusChangeListener) {
   // First, ensure the simulator is aware of the Widget created in SetUp() being
   // currently active.
