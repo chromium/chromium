@@ -319,11 +319,14 @@ if (!is_cronet_build || is_ios) {
       sources += [
         "android_metrics_provider.cc",
         "android_metrics_provider.h",
+        "android_unconditional_persistent_histograms_field_trial.cc",
+        "android_unconditional_persistent_histograms_field_trial.h",
         "gms_metrics_provider.cc",
         "gms_metrics_provider.h",
       ]
       public += [
         "android_metrics_provider.h",
+        "android_unconditional_persistent_histograms_field_trial.h",
         "gms_metrics_provider.h",
       ]
       deps += [ ":jni_headers" ]

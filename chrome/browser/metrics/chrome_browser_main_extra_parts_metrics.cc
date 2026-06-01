@@ -78,6 +78,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_info.h"
+#include "components/metrics/android_unconditional_persistent_histograms_field_trial.h"
 #if defined(__arm__)
 #include <cpu-features.h>
 #endif
@@ -1079,6 +1080,19 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
                                                               group_name);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  std::string_view unconditional_histograms_group =
+      metrics::android_unconditional_persistent_histograms_field_trial::
+          GetSyntheticTrialGroup();
+  if (!unconditional_histograms_group.empty()) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        metrics::android_unconditional_persistent_histograms_field_trial::
+            kTrialName,
+        unconditional_histograms_group,
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {

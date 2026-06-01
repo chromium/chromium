@@ -20,20 +20,35 @@
 #include "build/build_config.h"
 #include "components/metrics/persistent_system_profile.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/metrics/android_unconditional_persistent_histograms_field_trial.h"
+#endif
+
 namespace {
 // Creating a "spare" file for persistent metrics involves a lot of I/O and
 // isn't important so delay the operation for a while after startup.
 #if BUILDFLAG(IS_ANDROID)
-// Android needs the spare file and also launches faster.
-constexpr bool kSpareFileRequired = true;
+// Android launches faster but has shorter average session durations. Shorter
+// delay ensures the spare file is created before mobile sessions terminate.
 constexpr int kSpareFileCreateDelaySeconds = 10;
 #else
 // Desktop may have to restore a lot of tabs so give it more time before doing
-// non-essential work. The spare file is still a performance boost but not as
-// significant of one so it's not required.
-constexpr bool kSpareFileRequired = false;
+// non-essential work.
 constexpr int kSpareFileCreateDelaySeconds = 90;
 #endif
+
+// Evaluates whether a pre-allocated spare file is required to initialize
+// persistent histograms. On Android, the requirement is eliminated if the
+// client-side field trial is enabled. On Desktop platforms, early
+// initialization is unconditional, so no spare file is required.
+bool IsSpareFileRequired() {
+#if BUILDFLAG(IS_ANDROID)
+  return !metrics::android_unconditional_persistent_histograms_field_trial::
+      IsEnabled();
+#else
+  return false;
+#endif
+}
 
 #if BUILDFLAG(IS_WIN)
 
@@ -137,7 +152,7 @@ InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
     // Move any spare file into the active position.
     base::ReplaceFile(spare_file, active_file, nullptr);
     // Create global allocator using the |active_file|.
-    if (kSpareFileRequired && !base::PathExists(active_file)) {
+    if (IsSpareFileRequired() && !base::PathExists(active_file)) {
       result = InitResult::kNoSpareFile;
     } else if (base::GlobalHistogramAllocator::CreateWithFile(
                    active_file, kAllocSize, kAllocId, kBrowserMetricsName,
