@@ -27,7 +27,7 @@ use helper_functions_cxx::ffi as cxx_helpers;
 ///
 /// The `pub` fields may be read and written by the user, so it is the user's
 /// responsibility to ensure that the header is valid when sent. The main
-/// validition conditions are:
+/// validity conditions are:
 /// - The `interface_id` and `name` fields exist for the message pipe it's being
 ///   sent on.
 /// - The payload of the message is of the type indicated by the `name` field.
@@ -37,7 +37,6 @@ use helper_functions_cxx::ffi as cxx_helpers;
 pub struct MessageHeader {
     /// The version of the header.
     version: u32,
-
     /// The ordinal of the mojom `interface` this message corresponds to. Used
     /// for sending multiple interfaces via the same pipe.
     pub interface_id: u32,
@@ -55,30 +54,67 @@ pub struct MessageHeader {
     pub request_id: u64,
     /// A mojom pointer (i.e. a byte offset) to the message's payload.
     payload_ptr: u64,
-    /// Used for associated interfaces. Rust doesn't support these yet.
+    /// A mojom pointer to the interface ID array at the end of the message (or
+    /// 0 if it's absent). This field should only be set for messages that
+    /// were received over the wire, or which have been fully serialized and
+    /// are ready to be sent.
+    /// Note that this field's value is measured from the pointer's location
+    /// inside the _header_. Parsing code generally wants the distance from the
+    /// beginning of the payload instead, which can be obtained using the
+    /// `interface_ids_offset` method.
     interface_ids_ptr: u64,
     /// Tracks when the header was created.
     creation_timeticks_us: i64,
 }
 
 impl MessageHeader {
-    pub fn new(interface_id: u32, name: u32, flags: MessageHeaderFlags, request_id: u64) -> Self {
-        Self::new_with_version(3, interface_id, name, flags, request_id)
+    /// Create a new message header with the given fields.
+    ///
+    /// Note that `interface_ids_offset` should be the offset from the start of
+    /// the payload to the interface ID array (or 0, if there isn't an interface
+    /// ID array). The constructor will compute the appropriate value for the
+    /// `interface_ids_ptr` header field from that information.
+    pub fn new(
+        interface_id: u32,
+        name: u32,
+        flags: MessageHeaderFlags,
+        request_id: u64,
+        interface_ids_offset: u64,
+    ) -> Self {
+        Self::new_with_version(3, interface_id, name, flags, request_id, interface_ids_offset)
     }
 
+    /// Create a new message at a specific version with the given fields. Fields
+    /// which are not present at that version will be ignored.
+    ///
+    /// Note that `interface_ids_offset` should be the offset from the start of
+    /// the payload to the interface ID array (or 0, if there isn't an interface
+    /// ID array). The constructor will compute the appropriate value for the
+    /// `interface_ids_ptr` from that information.
     pub fn new_with_version(
         version: u32,
         interface_id: u32,
         name: u32,
         flags: MessageHeaderFlags,
         request_id: u64,
+        interface_ids_offset: u64,
     ) -> Self {
+        // The header contains two pointers, which are next to each other. This
+        // is the number of bytes from the end of the interface ID pointer to
+        // the end of the header.
         let payload_ptr = match version {
             1 => 0, // Not present in this version
             2 => 16,
             3 => 24,
             _ => panic!("Mojom headers must have version 1, 2 or 3"),
         };
+        let interface_ids_distance = match version {
+            1 => 0, // Not present in this version
+            2 => 8 + interface_ids_offset,
+            3 => 16 + interface_ids_offset,
+            _ => panic!("Mojom headers must have version 1, 2 or 3"),
+        };
+        let interface_ids_ptr = if interface_ids_offset == 0 { 0 } else { interface_ids_distance };
         MessageHeader {
             interface_id,
             name,
@@ -87,8 +123,7 @@ impl MessageHeader {
             trace_nonce: cxx_helpers::GetNextGlobalTraceId() as u32,
             request_id,
             payload_ptr,
-            // This pointer is unused in Rust for now
-            interface_ids_ptr: 0,
+            interface_ids_ptr,
             creation_timeticks_us: cxx_helpers::CurrentTimeTicksInMicroseconds(),
             version,
         }
@@ -97,6 +132,26 @@ impl MessageHeader {
     /// Return the timestamp when this header value was created.
     pub fn creation_timeticks_us(&self) -> i64 {
         self.creation_timeticks_us
+    }
+
+    /// Return the offset from the beginning of the _payload_ to the beginning
+    /// of the interface IDs array, or 0 if the array is absent. Note that this
+    /// is not the same as the `interface_ids_ptr` header field, which is
+    /// measured from a point inside the header rather than relative to the
+    /// payload.
+    pub fn interface_ids_offset(&self) -> u64 {
+        if self.interface_ids_ptr == 0 {
+            return 0;
+        }
+        // Use saturating subtraction to prevent underflow if we got a bad message.
+        // If it happens, we'll probably fail shortly when we try to actually parse the
+        // message.
+        match self.version {
+            1 => 0, // Not present in this version
+            2 => self.interface_ids_ptr.saturating_sub(8),
+            3 => self.interface_ids_ptr.saturating_sub(16),
+            _ => panic!("Mojom headers must have version 1, 2 or 3"),
+        }
     }
 
     /// Serialize the header as a mojom value

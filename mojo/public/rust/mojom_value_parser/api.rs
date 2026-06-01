@@ -16,18 +16,20 @@ use crate::parsing_trait::MojomParse;
 /// type `T`. It returns the decoded value, and the remaining bytes in
 /// the message. If ownership of any handles in `handles` was transferred, their
 /// entries will be `None`.
+///
+/// The `interface_ids_offset` argument should be the distance from the
+/// beginning of `data_slice` to the start of the embedded interface ID array,
+/// or 0 if the array is absent.
 pub fn deserialize<'a, Context, T: MojomParse<Context>>(
     data_slice: &'a [u8],
     handles: &'a mut [Option<UntypedHandle>],
+    interface_ids_offset: u64,
     context: &Context,
 ) -> ParsingResult<(&'a [u8], T)> {
-    // TODO(crbug.com/493274453): This will be made into an argument once we land
-    // full support for associated interfaces
-    let interface_ids_ptr = 0;
     let (remaining_bytes, parsed_value) = crate::parse_values::parse_top_level_value(
         data_slice,
         handles,
-        interface_ids_ptr,
+        interface_ids_offset,
         T::wire_type(),
     )?;
     // Convert the parsed MojomValue to a T. This conversion should never fail,
@@ -40,9 +42,11 @@ pub fn deserialize<'a, Context, T: MojomParse<Context>>(
 pub fn deserialize_exact<Context, T: MojomParse<Context>>(
     data_slice: &[u8],
     handles: &mut [Option<UntypedHandle>],
+    interface_ids_offset: u64,
     context: &Context,
 ) -> ParsingResult<T> {
-    let (remaining_bytes, parsed_value) = deserialize::<Context, T>(data_slice, handles, context)?;
+    let (remaining_bytes, parsed_value) =
+        deserialize::<Context, T>(data_slice, handles, interface_ids_offset, context)?;
     if !remaining_bytes.is_empty() {
         return Err(crate::errors::ParsingError::too_much_data(
             data_slice.len() - remaining_bytes.len(),
@@ -54,18 +58,18 @@ pub fn deserialize_exact<Context, T: MojomParse<Context>>(
 
 /// Serialize a Rust struct into a Mojom message.
 ///
+/// Returns the serialized bytes, any handles that were contained within
+/// `value`, and the offset from the beginning of the serialized value to the
+/// embedded array of interface IDs. If that array is absent, the offset is 0.
+///
 /// Panics if called on a non-struct (structs are the only valid top-level
 /// type).
 pub fn serialize<Context, T: MojomParse<Context>>(
     value: T,
     context: &Context,
-) -> (Vec<u8>, Vec<UntypedHandle>) {
+) -> (Vec<u8>, Vec<UntypedHandle>, u64) {
     let mojom_value: MojomValue = value.into_mojom_value(context);
-    // TODO(crbug.com/493274453): We'll also return the interface ID pointer once we
-    // have full support
-    let (data, handles, _interface_ids_ptr) =
-        crate::deparse_values::deparse_top_level_value(mojom_value, T::wire_type())
-            // The Err return value is mostly useful for internal debugging
-            .expect("Deparsing should always succeed");
-    (data, handles)
+    crate::deparse_values::deparse_top_level_value(mojom_value, T::wire_type())
+        // The Err return value is mostly useful for internal debugging
+        .expect("Deparsing should always succeed")
 }

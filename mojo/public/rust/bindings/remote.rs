@@ -262,14 +262,9 @@ where
     /// header, retrieve the corresponding response callback from
     /// the map, and invoke the interface's response handler with
     /// it.
-    fn incoming_message_handler(mut raw_message: RawMojoMessage, callback_map: &CallbackMap<T>) {
-        let message: MojomMessage = match MojomMessage::from_raw(&raw_message) {
-            Ok(msg) => msg,
-            Err(err) => {
-                // The error here is a reminder to return immediately, which we do
-                let _ = raw_message.report_bad_message(&err.to_string());
-                return;
-            }
+    fn incoming_message_handler(raw_message: RawMojoMessage, callback_map: &CallbackMap<T>) {
+        let Some(mut message) = MojomMessage::parse_raw_or_report_bad_message(raw_message) else {
+            return;
         };
         let response_callback = callback_map
             .lock()
@@ -279,7 +274,7 @@ where
             Some(callback) => callback,
             None => {
                 // The error here is a reminder to return immediately, which we do
-                let _ = raw_message.report_bad_message(&format!(
+                let _ = message.report_bad_message(&format!(
                     "Received message with unknown request_id {}",
                     message.header.request_id
                 ));

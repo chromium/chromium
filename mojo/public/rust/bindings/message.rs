@@ -13,8 +13,7 @@ chromium::import! {
 }
 
 use crate::message_header::*;
-use mojom_value_parser::ParsingResult;
-use system::message::RawMojoMessage;
+use system::message::{BadMessageError, RawMojoMessage};
 use system::mojo_types::UntypedHandle;
 
 /// Represents a Mojom message with a structured header and unstructured
@@ -34,17 +33,41 @@ pub struct MojomMessage {
     pub header: MessageHeader,
     pub payload: Vec<u8>,
     pub handles: Vec<UntypedHandle>,
+    // This field should only be set for messages that came in across the wire;
+    // we keep the raw handle around so we can report a bad message later if
+    // necessary.
+    pub raw_message_handle: Option<RawMojoMessage>,
 }
 
 impl MojomMessage {
-    /// Parse the given raw message into a structured representation.
-    pub fn from_raw(msg: &RawMojoMessage) -> ParsingResult<Self> {
+    /// Parse the provided raw message object's header, and extract its data.
+    ///
+    /// If parsing fails, this will return `None` and report the original
+    /// message as malformed.
+    pub fn parse_raw_or_report_bad_message(mut msg: RawMojoMessage) -> Option<Self> {
         let (raw_bytes, handles) = msg.read_data().unwrap();
-        let (remaining_bytes, header) = MessageHeader::deserialize(raw_bytes)?;
+        let (remaining_bytes, header) = match MessageHeader::deserialize(raw_bytes) {
+            Ok(data) => data,
+            Err(err) => {
+                let _ = msg.report_bad_message(&err.to_string());
+                return None;
+            }
+        };
+
         // We might be able to avoid allocating here if we had a better
         // MojomMessage type.
         let payload = remaining_bytes.to_vec();
-        Ok(MojomMessage { header, payload, handles })
+        Some(MojomMessage { header, payload, handles, raw_message_handle: Some(msg) })
+    }
+
+    /// Parse the given raw message into a structured representation.
+    pub fn report_bad_message(&mut self, error_msg: &str) -> Result<(), BadMessageError> {
+        match &mut self.raw_message_handle {
+            Some(raw_msg) => raw_msg.report_bad_message(error_msg),
+            // This should only happen if someone calls this function on a message
+            // they didn't receive, which means they created it themselves.
+            None => panic!("Cannot report a bad message that doesn't have an underlying handle"),
+        }
     }
 
     /// Serialize this message into its binary equivalent, and return the
@@ -53,5 +76,13 @@ impl MojomMessage {
         let mut serialized = self.header.serialize();
         serialized.extend(self.payload);
         (serialized, self.handles)
+    }
+}
+
+impl From<MojomMessage> for RawMojoMessage {
+    fn from(msg: MojomMessage) -> Self {
+        let (payload, handles) = msg.into_data();
+        // This can only fail if we're out of memory
+        RawMojoMessage::new_with_data(&payload, handles).unwrap()
     }
 }

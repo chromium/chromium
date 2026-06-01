@@ -240,17 +240,12 @@ where
     /// header, call the corresponding method on the state object, and then
     /// send a response back through the pipe (if the message expects one).
     fn incoming_message_handler(
-        mut raw_message: RawMojoMessage,
+        raw_message: RawMojoMessage,
         state_weak: &Weak<Mutex<StateTy>>,
         sender: ResponseSender,
     ) {
-        let message: MojomMessage = match MojomMessage::from_raw(&raw_message) {
-            Ok(msg) => msg,
-            Err(err) => {
-                // The error here is a reminder to return immediately, which we do
-                let _ = raw_message.report_bad_message(&err.to_string());
-                return;
-            }
+        let Some(message) = MojomMessage::parse_raw_or_report_bad_message(raw_message) else {
+            return;
         };
 
         let expects_response = message
