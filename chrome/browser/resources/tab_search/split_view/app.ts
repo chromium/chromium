@@ -6,8 +6,11 @@ import '/strings.m.js';
 import '../tab_search_item.js';
 import '../selectable_lazy_list.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -108,6 +111,20 @@ export class SplitNewTabPageAppElement extends CrLitElement {
 
   protected onCloseClick_() {
     this.apiProxy_.closeWebUiTab();
+  }
+
+  protected onCloseButtonFocus_() {
+    const tooltip =
+        this.shadowRoot.querySelector<CrTooltipElement>('cr-tooltip');
+    assert(tooltip);
+    tooltip.show();
+  }
+
+  protected onCloseButtonBlur_() {
+    const tooltip =
+        this.shadowRoot.querySelector<CrTooltipElement>('cr-tooltip');
+    assert(tooltip);
+    tooltip.hide();
   }
 
   protected onTabClick_(e: Event) {
