@@ -59,6 +59,10 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
 
   void SetDisplay(Display* display);
 
+  const base::flat_set<FrameSinkId>& pending_frame_sinks_for_testing() const {
+    return pending_frame_sinks_;
+  }
+
  private:
   // ExternalBeginFrameSourceClient implementation.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
@@ -93,7 +97,8 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
   // The frame source id as specified in BeginFrameArgs passed to
   // IssueExternalBeginFrame. Note this is likely to be different from our
   // source id, but this is what will be reported to FrameSinkObserver methods.
-  uint64_t original_source_id_ = BeginFrameArgs::kStartingSourceId;
+  // This is only set after an external begin frame has actually been issued.
+  std::optional<uint64_t> original_source_id_;
 
   base::flat_set<FrameSinkId> pending_frame_sinks_;
   std::optional<BeginFrameAck> pending_ack_;

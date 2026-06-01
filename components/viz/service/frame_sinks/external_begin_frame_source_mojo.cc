@@ -79,16 +79,18 @@ void ExternalBeginFrameSourceMojo::OnDestroyedCompositorFrameSink(
 void ExternalBeginFrameSourceMojo::OnFrameSinkDidBeginFrame(
     const FrameSinkId& sink_id,
     const BeginFrameArgs& args) {
-  if (args.frame_id.source_id != original_source_id_)
+  if (!original_source_id_ || args.frame_id.source_id != *original_source_id_) {
     return;
+  }
   pending_frame_sinks_.insert(sink_id);
 }
 
 void ExternalBeginFrameSourceMojo::OnFrameSinkDidFinishFrame(
     const FrameSinkId& sink_id,
     const BeginFrameArgs& args) {
-  if (args.frame_id.source_id != original_source_id_)
+  if (!original_source_id_ || args.frame_id.source_id != *original_source_id_) {
     return;
+  }
   pending_frame_sinks_.erase(sink_id);
   MaybeProduceFrameCallback();
 }
