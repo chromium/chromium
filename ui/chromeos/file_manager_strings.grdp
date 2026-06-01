@@ -1872,4 +1872,71 @@
   <message name="IDS_FORMATTING_FINISHED_FAILURE_MESSAGE" desc="Text of notification message which is shown when there are some errors while formatting.">
     Aw, Snap! There was an error during formatting.
   </message>
+
+  <!-- Removable device notifications -->
+  <message name="IDS_REMOVABLE_DEVICE_DETECTION_TITLE" desc="Text of notification message which is shown when user inserts removable device (SD card, USB key...)">
+    Removable device detected
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE" desc="Text of notification message to navigate users to the Files app. If user clicks a button in the notification, the Files app opens.">
+    Explore the device’s content in the Files app.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_ALLOW_PLAY_STORE_ACCESS_MESSAGE" desc="Text of notification message to navigate users to the ARC settings page. If user clicks a button in the notification, the page opens.">
+    For device preferences, go to Settings.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_PLAY_STORE_APPS_HAVE_ACCESS_MESSAGE" desc="Text of notification message to navigate users to the ARC settings page. If user clicks a button in the notification, the page opens.">
+    Play Store applications have access to this device.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE_READONLY_POLICY" desc="Text of notification message to navigate users to the Files app when attaching a removable media, but the administrator's poilcy forbids writing data to them. If user clicks a button in the notification, the Files app opens.">
+    Explore the device's content in the Files app. The content is restricted by an admin and can’t be modified.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL" desc="Text of a button label in a notification to navigate users to the Files app. If user clicks the button, the Files app opens.">
+    Open Files app
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL" desc="Text of a button label in a notification to navigate users to the ARC settings page. If user clicks the button, the page opens.">
+    Open settings
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_IMPORT_MESSAGE" desc="Text of notification message to start the media import flow. If user clicks a button in the notification, the import flow begins.">
+    Back up media from the device using the Files app.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_IMPORT_BUTTON_LABEL" desc="Text of a button label in a notification to start the import flow. If user clicks the button, the import flow begins.">
+    View/Backup media
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_UNSUPPORTED_MESSAGE" desc="Text of notification message which is shown when user inserts removable device (SD card, USB key...)">
+   Sorry, the device <ph name="DEVICE_LABEL">$1<ex>My SD card</ex></ph> is not supported at this time.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE" desc="Text of notification message which is shown when user inserts removable device (SD card, USB key...)">
+   Sorry, your external storage device is not supported at this time.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_UNKNOWN_MESSAGE" desc="Text of notification message which is shown when user inserts removable device (SD card, USB key...)">
+   Sorry, the device <ph name="DEVICE_LABEL">$1<ex>My SD card</ex></ph> could not be recognized.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_UNKNOWN_BUTTON_LABEL" desc="Text of a button label in a notification to format the device. If user clicks the button, the Files app opens and focus on unknown the device.">
+    Format this device
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_UNKNOWN_DEFAULT_MESSAGE" desc="Text of notification message which is shown when user inserts removable device (SD card, USB key...)">
+   Sorry, your external storage device could not be recognized.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_MULTIPART_DEVICE_UNSUPPORTED_MESSAGE" desc="Text of notification message which is shown when user inserts removable device (SD card, USB key...)">
+   Sorry, at least one partition on the device <ph name="DEVICE_LABEL">$1<ex>MySDcard</ex></ph> could not be mounted.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE" desc="Text of notification message which is shown when user inserts removable device (SD card, USB key...)">
+   Sorry, at least one partition on your external storage device could not be mounted.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_EXTERNAL_STORAGE_DISABLED_MESSAGE" desc="Text of notification message which is shown when user inserts removable device but external storage is disabled by policy">
+   Sorry, your administrator has disabled external storage on your account.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_HARD_UNPLUGGED_TITLE" desc="Text of notification title which is shown when user manually removes external storage without clicking the eject icon">
+   Whoa, there. Be careful.
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_HARD_UNPLUGGED_MESSAGE" desc="Text of notification message which is shown when user manually removes external storage without clicking the eject icon">
+    In the future, be sure to eject your removable device in the Files app before unplugging it. Otherwise, you might lose data.
+  </message>
+
+  <!-- Renaming removable device notifications -->
+  <message name="IDS_REMOVABLE_DEVICE_RENAMING_OF_DEVICE_FAILED_TITLE" desc="Title of notification message which is shown when renaming process fails">
+    Renaming failed
+  </message>
+  <message name="IDS_REMOVABLE_DEVICE_RENAMING_OF_DEVICE_FINISHED_FAILURE_MESSAGE" desc="Text of notification message which is shown when there are some errors while renaming.">
+    Aw, Snap! There was an error during renaming.
+  </message>
 </grit-part>

@@ -383,9 +383,9 @@ void SystemNotificationManager::HandleDeviceEvent(
   const std::string id = ToString(event.type);
   switch (event.type) {
     case fmp::DeviceEventType::kDisabled:
-      notification =
-          CreateNotification(id, IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
-                             IDS_EXTERNAL_STORAGE_DISABLED_MESSAGE);
+      notification = CreateNotification(
+          id, IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
+          IDS_REMOVABLE_DEVICE_EXTERNAL_STORAGE_DISABLED_MESSAGE);
       RecordDeviceNotificationMetric(
           DeviceNotificationUmaType::DEVICE_EXTERNAL_STORAGE_DISABLED);
       break;
@@ -402,8 +402,9 @@ void SystemNotificationManager::HandleDeviceEvent(
       break;
 
     case fmp::DeviceEventType::kHardUnplugged:
-      notification = CreateNotification(id, IDS_DEVICE_HARD_UNPLUGGED_TITLE,
-                                        IDS_DEVICE_HARD_UNPLUGGED_MESSAGE);
+      notification =
+          CreateNotification(id, IDS_REMOVABLE_DEVICE_HARD_UNPLUGGED_TITLE,
+                             IDS_REMOVABLE_DEVICE_HARD_UNPLUGGED_MESSAGE);
       RecordDeviceNotificationMetric(
           DeviceNotificationUmaType::DEVICE_HARD_UNPLUGGED);
       break;
@@ -453,9 +454,9 @@ void SystemNotificationManager::HandleDeviceEvent(
       break;
 
     case fmp::DeviceEventType::kRenameFail:
-      notification =
-          CreateNotification(id, IDS_RENAMING_OF_DEVICE_FAILED_TITLE,
-                             IDS_RENAMING_OF_DEVICE_FINISHED_FAILURE_MESSAGE);
+      notification = CreateNotification(
+          id, IDS_REMOVABLE_DEVICE_RENAMING_OF_DEVICE_FAILED_TITLE,
+          IDS_REMOVABLE_DEVICE_RENAMING_OF_DEVICE_FINISHED_FAILURE_MESSAGE);
       RecordDeviceNotificationMetric(DeviceNotificationUmaType::RENAME_FAIL);
       break;
 
@@ -870,23 +871,26 @@ NotificationPtr SystemNotificationManager::MakeMountErrorNotification(
     case MOUNT_STATUS_CHILD_ERROR:
       if (event.status == fmp::MountError::kUnsupportedFilesystem) {
         if (volume.drive_label().empty()) {
-          message = GetStringUTF16(IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
+          message =
+              GetStringUTF16(IDS_REMOVABLE_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
         } else {
-          message = GetStringFUTF16(IDS_DEVICE_UNSUPPORTED_MESSAGE,
+          message = GetStringFUTF16(IDS_REMOVABLE_DEVICE_UNSUPPORTED_MESSAGE,
                                     UTF8ToUTF16(volume.drive_label()));
         }
         RecordDeviceNotificationMetric(DeviceNotificationUmaType::DEVICE_FAIL);
       } else {
         if (volume.drive_label().empty()) {
-          message = GetStringUTF16(IDS_DEVICE_UNKNOWN_DEFAULT_MESSAGE);
+          message =
+              GetStringUTF16(IDS_REMOVABLE_DEVICE_UNKNOWN_DEFAULT_MESSAGE);
         } else {
-          message = GetStringFUTF16(IDS_DEVICE_UNKNOWN_MESSAGE,
+          message = GetStringFUTF16(IDS_REMOVABLE_DEVICE_UNKNOWN_MESSAGE,
                                     UTF8ToUTF16(volume.drive_label()));
         }
 
         if (!volume.is_read_only()) {
           // Give a format device button on the notification.
-          buttons.emplace_back(GetStringUTF16(IDS_DEVICE_UNKNOWN_BUTTON_LABEL));
+          buttons.emplace_back(
+              GetStringUTF16(IDS_REMOVABLE_DEVICE_UNKNOWN_BUTTON_LABEL));
           uma_types_for_buttons.push_back(
               DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_FAIL);
           RecordDeviceNotificationMetric(
@@ -902,11 +906,12 @@ NotificationPtr SystemNotificationManager::MakeMountErrorNotification(
     // failed.
     case MOUNT_STATUS_MULTIPART_ERROR:
       if (volume.drive_label().empty()) {
-        message =
-            GetStringUTF16(IDS_MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
+        message = GetStringUTF16(
+            IDS_REMOVABLE_DEVICE_MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
       } else {
-        message = GetStringFUTF16(IDS_MULTIPART_DEVICE_UNSUPPORTED_MESSAGE,
-                                  UTF8ToUTF16(volume.drive_label()));
+        message = GetStringFUTF16(
+            IDS_REMOVABLE_DEVICE_MULTIPART_DEVICE_UNSUPPORTED_MESSAGE,
+            UTF8ToUTF16(volume.drive_label()));
       }
       RecordDeviceNotificationMetric(DeviceNotificationUmaType::DEVICE_FAIL);
       break;
