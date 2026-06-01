@@ -4,24 +4,22 @@
 
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 
-#include <algorithm>
-#include <cstddef>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
-#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/multi_icon_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -30,13 +28,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/menus/simple_menu_model.h"
-#include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -54,103 +49,68 @@
 
 namespace page_actions {
 
-const gfx::Insets kChipContainerBorderInset = gfx::Insets::TLBR(8, 12, 8, 16);
-const int kChipContainerLineHeight = 20;
-const int kChipContainerChildSpacing = 8;
 const int kChipContainerHeight = 36;
+const int kChipIconSize = 20;
 const int kAnchoredMessageHeight = 52;
 const gfx::Insets kAnchoredMessageMarginsInset = gfx::Insets::TLBR(8, 16, 8, 9);
 const gfx::Insets kAnchoredMessageIconMarginsInset =
     gfx::Insets::TLBR(0, 0, 0, 12);
-const int kAnchoredMessageIconSize = 20;
+const int kAnchoredMessageIconSize = 18;
 const int kAnchoredMessageSpaceLeftOfChip = 16;
 const gfx::Insets kAnchoreMessageActionIconMarginsInset =
     gfx::Insets::TLBR(0, 8, 0, 0);
 
 // ChipContainerView holds the clickable chip of the anchored message, similar
 // to the Suggestion Chip version of the Page Action View.
-class ChipContainerView : public views::View {
-  METADATA_HEADER(ChipContainerView, views::View)
+class ChipContainerView : public views::MdTextButton {
+  METADATA_HEADER(ChipContainerView, views::MdTextButton)
  public:
   ChipContainerView(const std::u16string& label_text,
                     const std::optional<ui::ImageModel>& icon,
-                    const raw_ref<AnchoredMessageBubbleView::Delegate> delegate)
-      : delegate_(delegate) {
-    icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-    icon_view_->SetVisible(false);
-    icon_view_->SetProperty(
-        views::kElementIdentifierKey,
-        AnchoredMessageBubbleView::kAnchoredMessageChipIconId);
-    label_ = AddChildView(std::make_unique<views::Label>());
-    label_->SetVisible(false);
-    label_->SetAutoColorReadabilityEnabled(false);
-    label_->SetLineHeight(kChipContainerLineHeight);
-    label_->SetProperty(views::kElementIdentifierKey,
-                        AnchoredMessageBubbleView::kAnchoredMessageChipLabelId);
+                    const raw_ref<AnchoredMessageBubbleView::Delegate> delegate,
+                    const std::u16string& accessible_name)
+      : views::MdTextButton(
+            base::BindRepeating(
+                &AnchoredMessageBubbleView::Delegate::AnchoredMessageChipClick,
+                base::Unretained(&delegate.get())),
+            label_text),
+        delegate_(delegate) {
+    // We set max height, since otherwise MdTextButton forces 10px vertical
+    // padding, and we need 8px.
+    SetMaxSize(gfx::Size(0, kChipContainerHeight));
+    SetRequestFocusOnPress(false);
+    SetStyle(ui::ButtonStyle::kProminent);
+    SetLabelStyle(views::style::STYLE_BODY_3_MEDIUM);
 
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-                         views::BoxLayout::Orientation::kHorizontal,
-                         gfx::Insets(), kChipContainerChildSpacing))
-        ->set_cross_axis_alignment(
-            views::BoxLayout::CrossAxisAlignment::kCenter);
-    SetBorder(views::CreateEmptyBorder(kChipContainerBorderInset));
-
-    Update(label_text, icon);
+    Update(label_text, icon, accessible_name);
   }
 
   ~ChipContainerView() override = default;
 
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    const ui::ColorProvider* color_provider = GetColorProvider();
-
-    if (!color_provider) {
-      return;
-    }
-
-    SetBackground(views::CreateRoundedRectBackground(
-        color_provider->GetColor(ui::kColorSysPrimary),
-        kChipContainerHeight / 2));
-    if (icon_) {
-      // Assuming `icon_` is a vector icon, re-colorize it.
-      if (icon_->IsVectorIcon()) {
-        ui::ImageModel colored_icon = ui::ImageModel::FromVectorIcon(
-            *icon_->GetVectorIcon().vector_icon(),
-            color_provider->GetColor(ui::kColorSysOnPrimary),
-            kAnchoredMessageIconSize);
-        icon_view_->SetImage(colored_icon);
-      } else {
-        icon_view_->SetImage(icon_.value());
-      }
-      icon_view_->SetImageSize(
-          gfx::Size(kAnchoredMessageIconSize, kAnchoredMessageIconSize));
-    }
-    label_->SetEnabledColor(color_provider->GetColor(ui::kColorSysOnPrimary));
-  }
-
-  bool OnMousePressed(const ui::MouseEvent& event) override {
-    if (event.IsOnlyLeftMouseButton()) {
-      delegate_->AnchoredMessageChipClick();
-    }
-    // If the event has been handled, this will never be reached, so we can just
-    // always return false.
-    return false;
-  }
-
  public:
   void Update(const std::u16string& label_text,
-              const std::optional<ui::ImageModel>& icon) {
-    icon_ = icon;
-    icon_view_->SetVisible(icon_ != std::nullopt);
-    label_->SetVisible(!label_text.empty());
-    label_->SetText(label_text);
-    OnThemeChanged();
+              const std::optional<ui::ImageModel>& icon,
+              const std::u16string& accessible_name) {
+    SetText(label_text);
+    if (icon && !icon->IsEmpty()) {
+      if (icon->IsVectorIcon()) {
+        SetImageModel(views::Button::STATE_NORMAL,
+                      ui::ImageModel::FromVectorIcon(
+                          *icon->GetVectorIcon().vector_icon(),
+                          ui::kColorSysOnPrimary, kChipIconSize));
+      } else {
+        SetImageModel(views::Button::STATE_NORMAL, icon.value());
+      }
+    } else {
+      SetImageModel(views::Button::STATE_NORMAL, std::nullopt);
+    }
+    SetAccessibleName(accessible_name,
+                      accessible_name.empty()
+                          ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                          : ax::mojom::NameFrom::kAttribute);
   }
 
  private:
-  raw_ptr<views::ImageView> icon_view_ = nullptr;
-  raw_ptr<views::Label> label_ = nullptr;
-  std::optional<ui::ImageModel> icon_;
   const raw_ref<AnchoredMessageBubbleView::Delegate> delegate_;
 };
 
@@ -165,10 +125,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AnchoredMessageBubbleView,
                                       kAnchoredMessageLabelId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AnchoredMessageBubbleView,
                                       kAnchoredMessageChipId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AnchoredMessageBubbleView,
-                                      kAnchoredMessageChipIconId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AnchoredMessageBubbleView,
-                                      kAnchoredMessageChipLabelId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AnchoredMessageBubbleView,
                                       kAnchoredMessageCloseIconId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AnchoredMessageBubbleView,
@@ -223,6 +179,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
   label_->SetMultiLine(false);
+  label_->SetTextStyle(views::style::STYLE_BODY_2_MEDIUM);
   label_->SetProperty(views::kElementIdentifierKey, kAnchoredMessageLabelId);
 
   expand_button_ = top_row_->AddChildView(std::make_unique<MultiIconButton>(
@@ -235,7 +192,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   expand_button_->SetVisible(false);
 
   chip_container_ = top_row_->AddChildView(std::make_unique<ChipContainerView>(
-      std::u16string(), std::nullopt, delegate_));
+      std::u16string(), std::nullopt, delegate_, model.GetAccessibleName()));
   chip_container_->SetProperty(views::kElementIdentifierKey,
                                kAnchoredMessageChipId);
 
@@ -307,7 +264,8 @@ void AnchoredMessageBubbleView::UpdateContent(
                     : std::nullopt;
   bool show_chip = chip_icon || !model.GetText().empty();
 
-  chip_container_->Update(model.GetText(), chip_icon);
+  chip_container_->Update(model.GetText(), chip_icon,
+                          model.GetAccessibleName());
   chip_container_->SetVisible(show_chip);
 
   AnchoredMessageActionIconType action_icon_type =

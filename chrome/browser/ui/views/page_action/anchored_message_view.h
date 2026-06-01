@@ -46,8 +46,6 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageIconId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageLabelId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageChipId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageChipIconId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageChipLabelId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageCloseIconId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageMenuIconId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageExpandButtonId);

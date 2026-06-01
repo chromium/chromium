@@ -20,6 +20,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -110,8 +111,11 @@ TEST_F(AnchoredMessageBubbleViewTest, VisibilityReflectsModelOnCreation) {
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageIconId),
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageLabelId),
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipIconId),
-      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipLabelId),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageChipId,
+                [this](views::LabelButton* chip) {
+                  return chip->GetText() == test_text_ &&
+                         chip->HasImage(views::Button::STATE_NORMAL);
+                }),
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageCloseIconId),
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageMenuIconId));
 
@@ -125,6 +129,7 @@ TEST_F(AnchoredMessageBubbleViewTest,
   ON_CALL(model_, GetAnchoredMessageText())
       .WillByDefault(ReturnRef(test_text_));
   ON_CALL(model_, GetText()).WillByDefault(ReturnRef(test_text_));
+  ON_CALL(model_, GetImage()).WillByDefault(ReturnRef(empty_image_));
   ON_CALL(model_, GetAnchoredMessageActionIconType())
       .WillByDefault(Return(AnchoredMessageActionIconType::kClose));
 
@@ -137,8 +142,11 @@ TEST_F(AnchoredMessageBubbleViewTest,
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageIconId),
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageLabelId),
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageChipIconId),
-      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipLabelId),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageChipId,
+                [this](views::LabelButton* chip) {
+                  return chip->GetText() == test_text_ &&
+                         !chip->HasImage(views::Button::STATE_NORMAL);
+                }),
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageCloseIconId),
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageMenuIconId));
 
@@ -153,6 +161,7 @@ TEST_F(AnchoredMessageBubbleViewTest,
   ON_CALL(model_, GetAnchoredMessageText())
       .WillByDefault(ReturnRef(test_text_));
   ON_CALL(model_, GetText()).WillByDefault(ReturnRef(test_text_));
+  ON_CALL(model_, GetImage()).WillByDefault(ReturnRef(empty_image_));
   ON_CALL(model_, GetAnchoredMessageActionIconType())
       .WillByDefault(Return(AnchoredMessageActionIconType::kMenu));
   ON_CALL(model_, GetAnchoredMessageMenuModel())
@@ -167,8 +176,11 @@ TEST_F(AnchoredMessageBubbleViewTest,
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageIconId),
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageLabelId),
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageChipIconId),
-      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipLabelId),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageChipId,
+                [this](views::LabelButton* chip) {
+                  return chip->GetText() == test_text_ &&
+                         !chip->HasImage(views::Button::STATE_NORMAL);
+                }),
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageCloseIconId),
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageMenuIconId));
 
@@ -189,8 +201,11 @@ TEST_F(AnchoredMessageBubbleViewTest,
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageIconId),
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageLabelId),
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipIconId),
-      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipLabelId),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageChipId,
+                [this](views::LabelButton* chip) {
+                  return chip->GetText() == test_text_ &&
+                         chip->HasImage(views::Button::STATE_NORMAL);
+                }),
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageCloseIconId),
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageMenuIconId));
 
@@ -210,8 +225,11 @@ TEST_F(AnchoredMessageBubbleViewTest, UpdateContentChangesVisibility_ChipOnly) {
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageIconId),
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageLabelId),
       EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageChipIconId),
-      EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageChipLabelId),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageChipId,
+                [](views::LabelButton* chip) {
+                  return chip->GetText().empty() &&
+                         chip->HasImage(views::Button::STATE_NORMAL);
+                }),
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageCloseIconId),
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageMenuIconId));
 
