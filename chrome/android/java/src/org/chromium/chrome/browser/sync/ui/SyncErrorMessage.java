@@ -445,7 +445,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         final CoreAccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         assert primaryAccountInfo != null;
         AccountManagerFacadeProvider.getInstance()
-                .updateCredentials(primaryAccountInfo, activity, null);
+                .updateCredentials(primaryAccountInfo.getId(), activity, null);
     }
 
     private static @UserActionableError int getError(Profile profile) {

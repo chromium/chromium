@@ -641,7 +641,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     CoreAccountInfo primaryAccountInfo = identityManager.getPrimaryAccountInfo();
                     assert primaryAccountInfo != null;
                     AccountManagerFacadeProvider.getInstance()
-                            .updateCredentials(primaryAccountInfo, mActivity, successCallback);
+                            .updateCredentials(
+                                    primaryAccountInfo.getId(), mActivity, successCallback);
                 };
 
         CollaborationControllerDelegateFactory collaborationControllerDelegateFactory =

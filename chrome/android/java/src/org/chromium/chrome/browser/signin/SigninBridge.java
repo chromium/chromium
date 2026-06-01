@@ -422,13 +422,8 @@ final class SigninBridge {
         }
         GURL initialTabURL = tab.getUrl();
         AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
-        Profile profile = tab.getProfile().getOriginalProfile();
-        IdentityManager identityManager =
-                assertNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
-
         accountManagerFacade.updateCredentials(
-                assertNonNull(
-                        identityManager.findExtendedAccountInfoByAccountId(selectedAccountId)),
+                selectedAccountId,
                 assumeNonNull(windowAndroid.getActivity().get()),
                 (success) -> {
                     if (success && !tab.isDestroyed() && tab.getUrl().equals(initialTabURL)) {

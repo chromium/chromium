@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -50,6 +49,7 @@ import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.MockitoHelper;
 
@@ -177,7 +177,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 mWindowAndroidMock, mProfile);
 
         verify(mFakeAccountManagerFacade)
-                .updateCredentials(eq(TestAccounts.ACCOUNT1), eq(activity), any());
+                .updateCredentials(eq(TestAccounts.ACCOUNT1.getId()), eq(activity), any());
     }
 
     @Test
@@ -210,9 +210,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 mWindowAndroidMock, mProfile);
         verify(mFakeAccountManagerFacade, never())
                 .updateCredentials(
-                        any(CoreAccountInfo.class),
-                        any(Activity.class),
-                        MockitoHelper.anyCallback());
+                        any(CoreAccountId.class), any(Activity.class), MockitoHelper.anyCallback());
     }
 
     @Test

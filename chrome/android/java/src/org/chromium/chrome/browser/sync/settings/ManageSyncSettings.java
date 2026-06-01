@@ -797,7 +797,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         switch (error) {
             case UserActionableError.SIGN_IN_NEEDS_UPDATE:
                 AccountManagerFacadeProvider.getInstance()
-                        .updateCredentials(primaryAccountInfo, getActivity(), null);
+                        .updateCredentials(primaryAccountInfo.getId(), getActivity(), null);
                 return;
             case UserActionableError.NEEDS_CLIENT_UPGRADE:
                 // Opens the client in play store for update.

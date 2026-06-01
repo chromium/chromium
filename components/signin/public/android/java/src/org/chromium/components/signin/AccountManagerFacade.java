@@ -151,7 +151,7 @@ public interface AccountManagerFacade {
      */
     @MainThread
     void updateCredentials(
-            CoreAccountInfo accountInfo, Activity activity, @Nullable Callback<Boolean> callback);
+            CoreAccountId accountId, Activity activity, @Nullable Callback<Boolean> callback);
 
     /**
      * Asks the user to confirm their knowledge of the password to the given account. If the account

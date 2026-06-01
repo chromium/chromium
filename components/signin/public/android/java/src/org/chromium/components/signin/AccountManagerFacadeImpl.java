@@ -473,22 +473,45 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     @Override
     public void updateCredentials(
-            CoreAccountInfo accountInfo, Activity activity, @Nullable Callback<Boolean> callback) {
+            CoreAccountId accountId, Activity activity, @Nullable Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
+        assert accountId != null;
+        getAccounts()
+                .then(
+                        accounts -> {
+                            updateCredentialsInternal(accounts, accountId, activity, callback);
+                        });
+    }
 
+    private void updateCredentialsInternal(
+            List<AccountInfo> accounts,
+            CoreAccountId accountId,
+            Activity activity,
+            @Nullable Callback<Boolean> callback) {
+        var accountInfo = AccountUtils.findAccountByAccountId(accounts, accountId);
+        if (accountInfo == null) {
+            if (callback != null) {
+                callback.onResult(false);
+            }
+            return;
+        }
         mDelegate.updateCredentials(
-                CoreAccountInfo.getAndroidAccountFrom(accountInfo),
+                AccountUtils.createAccountFromEmail(accountInfo.getEmail()),
                 activity,
                 (success) -> {
                     if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
                         onPlatformAccountsUpdated(
                                 () -> {
-                                    if (callback != null) callback.onResult(success);
+                                    if (callback != null) {
+                                        callback.onResult(success);
+                                    }
                                 });
                     } else {
                         onAccountsUpdated(
                                 () -> {
-                                    if (callback != null) callback.onResult(success);
+                                    if (callback != null) {
+                                        callback.onResult(success);
+                                    }
                                 });
                     }
                 });

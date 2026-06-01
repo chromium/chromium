@@ -48,7 +48,7 @@ public class ChildAccountService {
         }
         AccountManagerFacadeProvider.getInstance()
                 .updateCredentials(
-                        assertNonNull(accountInfo),
+                        assertNonNull(accountInfo).getId(),
                         activity,
                         success -> {
                             if (!success) {

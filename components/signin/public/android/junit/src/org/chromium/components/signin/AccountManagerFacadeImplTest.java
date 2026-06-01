@@ -883,12 +883,11 @@ public class AccountManagerFacadeImplTest {
     @Test
     @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testUpdateCredentialsWaitForRefreshToken_migrateAccountManagerDelegateEnabled() {
-        FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
-        delegate.addAccount(TestAccounts.ACCOUNT1);
+        mDelegate.addAccount(TestAccounts.ACCOUNT1);
         RobolectricUtil.runAllBackgroundAndUi();
 
         mFacade.addObserver(mObserverMock);
-        mFacade.updateCredentials(TestAccounts.ACCOUNT1, null, mMockCallback);
+        mFacade.updateCredentials(TestAccounts.ACCOUNT1.getId(), null, mMockCallback);
         RobolectricUtil.runAllBackgroundAndUi();
 
         InOrder inOrder = inOrder(mObserverMock, mMockCallback);
@@ -899,12 +898,11 @@ public class AccountManagerFacadeImplTest {
     @Test
     @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
     public void testUpdateCredentialsWaitForRefreshToken() {
-        FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
-        delegate.addAccount(TestAccounts.ACCOUNT1);
+        mDelegate.addAccount(TestAccounts.ACCOUNT1);
         RobolectricUtil.runAllBackgroundAndUi();
 
         mFacade.addObserver(mObserverMock);
-        mFacade.updateCredentials(TestAccounts.ACCOUNT1, null, mMockCallback);
+        mFacade.updateCredentials(TestAccounts.ACCOUNT1.getId(), null, mMockCallback);
         RobolectricUtil.runAllBackgroundAndUi();
 
         InOrder inOrder = inOrder(mObserverMock, mMockCallback);

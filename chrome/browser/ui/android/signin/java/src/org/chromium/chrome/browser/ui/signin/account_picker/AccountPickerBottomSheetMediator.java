@@ -765,7 +765,7 @@ public class AccountPickerBottomSheetMediator
                 };
         assertNonNull(mSelectedAccount);
         mAccountManagerFacade.updateCredentials(
-                mSelectedAccount, mActivity, onUpdateCredentialsCompleted);
+                mSelectedAccount.getId(), mActivity, onUpdateCredentialsCompleted);
     }
 
     private void startSigninTimestampLogging() {
