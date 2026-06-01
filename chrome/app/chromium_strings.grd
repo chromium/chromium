@@ -1450,7 +1450,7 @@ Chromium is unable to recover your settings.
           ChromiumOS could not sync your data because your account sign-in details are out of date.
         </message>
         <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
-          ChromiumOS could not save Chromium data in your Google Account because your account sign-in details are out of date.
+          ChromiumOS could not save Chromium data in your Google Account because your account sign-in details are out of date
         </message>
         <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
           ChromiumOS could not sync your data because Sync is not available for your domain.
@@ -1459,7 +1459,7 @@ Chromium is unable to recover your settings.
           ChromiumOS could not sync your data due to an error signing in.
         </message>
         <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when there's an error signing in.">
-          ChromiumOS could not save Chromium data in your Google Account due to an error signing in.
+          ChromiumOS could not save Chromium data in your Google Account due to an error signing in
         </message>
         <message name="IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error bubble view when the user needs to enter their sync passphrase.">
           To use and save Chromium data in your Google Account, enter your passphrase

@@ -1420,7 +1420,7 @@ Google Chrome is unable to recover your settings.
             ChromeOS Flex could not sync your data because your account sign-in details are out of date.
           </message>
           <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
-            ChromeOS Flex could not save Chrome data in your Google Account because your account sign-in details are out of date.
+            ChromeOS Flex could not save Chrome data in your Google Account because your account sign-in details are out of date
           </message>
           <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
             ChromeOS Flex could not sync your data because Sync is not available for your domain.
@@ -1429,7 +1429,7 @@ Google Chrome is unable to recover your settings.
             ChromeOS Flex could not sync your data due to an error signing in.
           </message>
           <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when there's an error signing in.">
-            ChromeOS Flex could not save Chrome data in your Google Account due to an error signing in.
+            ChromeOS Flex could not save Chrome data in your Google Account due to an error signing in
           </message>
         </if>
         <if expr="not reven">
@@ -1440,7 +1440,7 @@ Google Chrome is unable to recover your settings.
             ChromeOS could not sync your data because your account sign-in details are out of date.
           </message>
           <message name="IDS_SYNC_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when the user's sign-in credentials are out of date.">
-            ChromeOS could not save Chrome data in your Google Account because your account sign-in details are out of date.
+            ChromeOS could not save Chrome data in your Google Account because your account sign-in details are out of date
           </message>
           <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error notification when sync is not available for their domain.">
             ChromeOS could not sync your data because Sync is not available for your domain.
@@ -1449,7 +1449,7 @@ Google Chrome is unable to recover your settings.
             ChromeOS could not sync your data due to an error signing in.
           </message>
           <message name="IDS_SYNC_OTHER_SIGN_IN_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sign-in error notification when there's an error signing in.">
-            ChromeOS could not save Chrome data in your Google Account due to an error signing in.
+            ChromeOS could not save Chrome data in your Google Account due to an error signing in
           </message>
         </if>
         <message name="IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error bubble view when the user needs to enter their sync passphrase.">
