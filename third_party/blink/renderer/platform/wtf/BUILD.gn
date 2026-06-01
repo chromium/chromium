@@ -15,7 +15,7 @@ import("//third_party/blink/renderer/config.gni")
 declare_args() {
   # Enable active iterator counting in blink::HeapVector to detect
   # use-after-free.
-  enable_heap_vector_active_iterator_checks = false
+  enable_heap_vector_active_iterator_checks = true
 }
 
 buildflag_header("wtf_buildflags") {
