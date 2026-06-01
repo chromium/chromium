@@ -16,6 +16,12 @@
 
 class OmniboxActionInSuggest : public OmniboxAction {
  public:
+  // Validates the template_action and returns a new OmniboxActionInSuggest if
+  // valid.
+  static scoped_refptr<OmniboxActionInSuggest> Create(
+      omnibox::SuggestTemplateInfo::TemplateAction template_action,
+      std::optional<TemplateURLRef::SearchTermsArgs> search_terms_args);
+
   OmniboxActionInSuggest(
       omnibox::SuggestTemplateInfo::TemplateAction template_action,
       std::optional<TemplateURLRef::SearchTermsArgs> search_terms_args);

@@ -10,6 +10,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -131,7 +132,42 @@ constexpr bool AllowAsActionButton(
   return action.action_type() ==
          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM;
 }
+
+// Validates that the scheme of the provided action URI matches the expected
+// scheme of its action type.
+bool IsValidActionURIForType(
+    const std::string& action_uri_str,
+    omnibox::SuggestTemplateInfo_TemplateAction_ActionType action_type) {
+  GURL action_url(action_uri_str);
+  if (!action_url.is_valid()) {
+    return false;
+  }
+
+  switch (action_type) {
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
+      return action_url.SchemeIs(url::kTelScheme);
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
+      return action_url.SchemeIsHTTPOrHTTPS();
+    default:
+      return true;
+  }
+}
 }  // namespace
+
+// static
+scoped_refptr<OmniboxActionInSuggest> OmniboxActionInSuggest::Create(
+    omnibox::SuggestTemplateInfo::TemplateAction template_action,
+    std::optional<TemplateURLRef::SearchTermsArgs> search_terms_args) {
+  if (!template_action.action_uri().empty() &&
+      !IsValidActionURIForType(template_action.action_uri(),
+                               template_action.action_type())) {
+    return nullptr;
+  }
+
+  return base::MakeRefCounted<OmniboxActionInSuggest>(
+      std::move(template_action), std::move(search_terms_args));
+}
 
 OmniboxActionInSuggest::OmniboxActionInSuggest(
     omnibox::SuggestTemplateInfo::TemplateAction template_action,

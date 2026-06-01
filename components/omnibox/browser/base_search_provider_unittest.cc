@@ -718,8 +718,59 @@ TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
         << "while evaluating case `" << test_case.test_name << '`';
   }
 }
+TEST_F(BaseSearchProviderTest, CreateActionInSuggest_SchemeValidation) {
+  using TemplateAction = omnibox::SuggestTemplateInfo::TemplateAction;
 
+  struct {
+    const char* test_name;
+    TemplateAction::ActionType action_type;
+    const char* action_url;
+    bool expect_valid;
+  } test_cases[]{
+      {"CALL: tel scheme is valid", TemplateAction::CALL, "tel:123456", true},
+      {"CALL: HTTP scheme is invalid", TemplateAction::CALL,
+       "http://example.com", false},
+      {"CALL: HTTPS scheme is invalid", TemplateAction::CALL,
+       "https://example.com", false},
+      {"CALL: chrome scheme is invalid", TemplateAction::CALL,
+       "chrome://settings", false},
+      {"DIRECTIONS: HTTP scheme is valid", TemplateAction::DIRECTIONS,
+       "http://example.com", true},
+      {"DIRECTIONS: HTTPS scheme is valid", TemplateAction::DIRECTIONS,
+       "https://example.com", true},
+      {"DIRECTIONS: tel scheme is invalid", TemplateAction::DIRECTIONS,
+       "tel:123456", false},
+      {"DIRECTIONS: chrome scheme is invalid", TemplateAction::DIRECTIONS,
+       "chrome://settings", false},
+      {"REVIEWS: HTTP scheme is valid", TemplateAction::REVIEWS,
+       "http://example.com", true},
+      {"REVIEWS: HTTPS scheme is valid", TemplateAction::REVIEWS,
+       "https://example.com", true},
+      {"REVIEWS: tel scheme is invalid", TemplateAction::REVIEWS, "tel:123456",
+       false},
+      {"REVIEWS: chrome scheme is invalid", TemplateAction::REVIEWS,
+       "chrome://settings", false},
+  };
 
+  for (const auto& test_case : test_cases) {
+    TemplateAction template_action;
+    template_action.set_action_type(test_case.action_type);
+    template_action.set_action_uri(test_case.action_url);
+
+    TemplateURLRef::SearchTermsArgs search_terms_args;
+    SearchTermsData search_terms_data;
+    TemplateURLData template_url_data;
+    template_url_data.SetURL("https://www.google.com");
+    auto template_url = std::make_unique<TemplateURL>(template_url_data);
+
+    auto action = BaseSearchProvider::CreateActionInSuggest(
+        std::move(template_action), template_url->url_ref(), search_terms_args,
+        search_terms_data);
+
+    EXPECT_EQ(action != nullptr, test_case.expect_valid)
+        << "while evaluating case `" << test_case.test_name << "`";
+  }
+}
 
 TEST_F(BaseSearchProviderTest, SuggestTemplateInfoPopulatesMatch) {
   TemplateURLData data;
