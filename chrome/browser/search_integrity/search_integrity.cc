@@ -184,6 +184,8 @@ void SearchIntegrity::OnTemplateURLServiceLoaded() {
         report.is_default_custom_with_matching_policy_engine);
     base::UmaHistogramBoolean("Search.Integrity.IsDefaultEnforcedWithoutPolicy",
                               report.is_default_enforced_without_policy);
+    base::UmaHistogramEnumeration("Search.Integrity.DuplicateKeyword",
+                                  report.duplicate_keyword_status);
 
     if (report.referral_param_found.has_value()) {
       base::UmaHistogramEnumeration("Search.Integrity.Referral.ParameterFound",
@@ -211,6 +213,8 @@ void SearchIntegrity::LogEnterpriseMetrics(
   base::UmaHistogramBoolean(
       "Search.Integrity.Enterprise.IsDefaultEnforcedWithoutPolicy",
       report.is_default_enforced_without_policy);
+  base::UmaHistogramEnumeration("Search.Integrity.Enterprise.DuplicateKeyword",
+                                report.duplicate_keyword_status);
 
   if (report.referral_param_found.has_value()) {
     base::UmaHistogramEnumeration(
@@ -263,6 +267,38 @@ SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
 
   const TemplateURL* default_search_provider =
       template_url_service_->GetDefaultSearchProvider();
+
+  std::set<std::u16string> seen_keywords;
+  bool default_duplicated = false;
+  bool non_default_duplicated = false;
+
+  const std::u16string default_keyword =
+      default_search_provider
+          ? base::i18n::ToLower(default_search_provider->keyword())
+          : std::u16string();
+
+  for (const TemplateURL* turl : template_urls) {
+    std::u16string keyword = base::i18n::ToLower(turl->keyword());
+    if (!seen_keywords.insert(keyword).second) {
+      if (default_search_provider && keyword == default_keyword) {
+        default_duplicated = true;
+      } else {
+        non_default_duplicated = true;
+      }
+    }
+  }
+
+  if (default_duplicated && non_default_duplicated) {
+    report.duplicate_keyword_status = SearchDuplicateKeyword::kBoth;
+  } else if (default_duplicated) {
+    report.duplicate_keyword_status =
+        SearchDuplicateKeyword::kDefaultDuplicated;
+  } else if (non_default_duplicated) {
+    report.duplicate_keyword_status =
+        SearchDuplicateKeyword::kNonDefaultDuplicated;
+  } else {
+    report.duplicate_keyword_status = SearchDuplicateKeyword::kNoDuplicates;
+  }
 
   if (!default_search_provider) {
     return report;

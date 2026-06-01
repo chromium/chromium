@@ -329,6 +329,59 @@ TEST_F(SearchIntegrityTest, CheckDefaultEnforcedWithoutPolicy_Managed) {
   EXPECT_FALSE(report.is_default_enforced_without_policy);
 }
 
+TEST_F(SearchIntegrityTest, CheckDuplicateKeywords_None) {
+  AddSearchEngine(u"google", "http://google.com");
+  AddSearchEngine(u"bing", "http://bing.com");
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_EQ(report.duplicate_keyword_status,
+            SearchDuplicateKeyword::kNoDuplicates);
+}
+
+TEST_F(SearchIntegrityTest, CheckDuplicateKeywords_DefaultOnly) {
+  TemplateURL* google1 = AddSearchEngine(u"google", "http://google.com");
+  AddSearchEngine(u"google", "http://google.ca");
+  AddSearchEngine(u"bing", "http://bing.com");
+  SetDefaultSearchProvider(google1);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_EQ(report.duplicate_keyword_status,
+            SearchDuplicateKeyword::kDefaultDuplicated);
+}
+
+TEST_F(SearchIntegrityTest, CheckDuplicateKeywords_NonDefaultOnly) {
+  TemplateURL* google = AddSearchEngine(u"google", "http://google.com");
+  AddSearchEngine(u"bing", "http://bing.com");
+  AddSearchEngine(u"bing", "http://bing.ca");
+  SetDefaultSearchProvider(google);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_EQ(report.duplicate_keyword_status,
+            SearchDuplicateKeyword::kNonDefaultDuplicated);
+}
+
+TEST_F(SearchIntegrityTest, CheckDuplicateKeywords_Both) {
+  TemplateURL* google1 = AddSearchEngine(u"google", "http://google.com");
+  AddSearchEngine(u"google", "http://google.ca");
+  AddSearchEngine(u"bing", "http://bing.com");
+  AddSearchEngine(u"bing", "http://bing.ca");
+  SetDefaultSearchProvider(google1);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_EQ(report.duplicate_keyword_status, SearchDuplicateKeyword::kBoth);
+}
+
+TEST_F(SearchIntegrityTest, CheckDuplicateKeywords_CaseInsensitive) {
+  TemplateURL* google1 = AddSearchEngine(u"Google", "http://google.com");
+  AddSearchEngine(u"google", "http://google.ca");
+  AddSearchEngine(u"Bing", "http://bing.com");
+  AddSearchEngine(u"biNg", "http://bing.ca");
+  SetDefaultSearchProvider(google1);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+  EXPECT_EQ(report.duplicate_keyword_status, SearchDuplicateKeyword::kBoth);
+}
+
 TEST_F(SearchIntegrityTest, CheckForSpoofing_NoAlertForNonUrlKeywords) {
   // These 3 should not trigger any spoofing metrics since the keywords are not
   // URLs.

@@ -1288,6 +1288,26 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.Integrity{Enterprise}.DuplicateKeyword"
+    enum="SearchDuplicateKeyword" expires_after="2026-10-20">
+  <owner>yeroshkin@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether there are duplicate keywords among the installed search
+    engines{Enterprise}
+
+    Recorded once per profile on profile load.
+  </summary>
+  <token key="Enterprise">
+    <variant name=""
+        summary=", distinguishing between default and non-default engines."/>
+    <variant name=".Enterprise"
+        summary="on a managed profile, distinguishing between default and
+                 non-default engines."/>
+  </token>
+</histogram>
+
 <histogram name="Search.iOS.SelectDefaultSearchEngine"
     enum="OmniboxSearchEngineType" expires_after="2026-09-20">
   <owner>sczs@chromium.org</owner>

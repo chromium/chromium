@@ -345,6 +345,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SCROLLED_CLICKED"/>
 </enum>
 
+<enum name="SearchDuplicateKeyword">
+  <int value="0" label="No Duplicates"/>
+  <int value="1" label="Non-default keyword duplicated"/>
+  <int value="2" label="Default keyword duplicated"/>
+  <int value="3" label="Both Default and non-default duplicates"/>
+</enum>
+
 <enum name="SearchEngineChoiceDate">
   <summary>Year-Month</summary>
   <int value="100001" label="Before 2022"/>

@@ -21,6 +21,18 @@ namespace search_integrity {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SearchDuplicateKeyword)
+enum class SearchDuplicateKeyword {
+  kNoDuplicates = 0,
+  kNonDefaultDuplicated = 1,
+  kDefaultDuplicated = 2,
+  kBoth = 3,
+  kMaxValue = kBoth,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:SearchDuplicateKeyword)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // LINT.IfChange(SearchReferralParam)
 enum class SearchReferralParam {
   kPC = 0,
@@ -50,6 +62,8 @@ struct SearchIntegrityReport {
   std::optional<SearchReferralParam> referral_param_found;
   bool is_default_custom_with_matching_policy_engine = false;
   bool is_default_enforced_without_policy = false;
+  SearchDuplicateKeyword duplicate_keyword_status =
+      SearchDuplicateKeyword::kNoDuplicates;
 };
 
 // Manages the Search Integrity feature, which detects non-standard search
