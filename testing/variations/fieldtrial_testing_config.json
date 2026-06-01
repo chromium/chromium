@@ -9507,6 +9507,26 @@
             ]
         }
     ],
+    "DynamicProfileCountryV2Desktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "StrictLocalWaffle_20260519",
+                    "enable_features": [
+                        "DynamicProfileCountry",
+                        "StrictAssociatedCountriesCheck",
+                        "WaffleRestrictToAssociatedCountries"
+                    ]
+                }
+            ]
+        }
+    ],
     "EdgeToEdgeUseBackupNavbarInsets": [
         {
             "platforms": [
