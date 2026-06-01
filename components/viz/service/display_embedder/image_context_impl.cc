@@ -395,17 +395,12 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
   }
 
   if (!representation_) {
-    auto representation =
-        representation_factory->ProduceSkia(mailbox(), context_state);
+    auto representation = representation_factory->ProduceSkia(
+        mailbox(), context_state,
+        /*required_usages=*/{gpu::SHARED_IMAGE_USAGE_DISPLAY_READ});
     if (!representation) {
       DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                      "mailbox not found in SharedImageManager.";
-      return false;
-    }
-
-    if (!(representation->usage().Has(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ))) {
-      DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
-                     "was not created with DISPLAY_READ usage.";
       return false;
     }
 

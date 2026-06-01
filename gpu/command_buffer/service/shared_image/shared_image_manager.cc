@@ -244,7 +244,8 @@ SharedImageManager::ProduceGLTexturePassthrough(const Mailbox& mailbox,
 std::unique_ptr<SkiaImageRepresentation> SharedImageManager::ProduceSkia(
     const Mailbox& mailbox,
     MemoryTypeTracker* tracker,
-    scoped_refptr<SharedContextState> context_state) {
+    scoped_refptr<SharedContextState> context_state,
+    SharedImageUsageSet required_usages) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -252,6 +253,14 @@ std::unique_ptr<SkiaImageRepresentation> SharedImageManager::ProduceSkia(
   if (!backing) {
     LOG(ERROR) << "SharedImageManager::ProduceSkia: Trying to Produce a "
                   "Skia representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  // Required usages must be verified before creating the representation to
+  // avoid potentially creating a representation on the wrong thread.
+  if (!required_usages.empty() && !backing->usage().HasAll(required_usages)) {
+    LOG(ERROR) << "SharedImageManager::ProduceSkia: Trying to Produce a "
+                  "Skia representation from backing without required usages.";
     return nullptr;
   }
 
