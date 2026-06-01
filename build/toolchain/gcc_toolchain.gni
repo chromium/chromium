@@ -152,9 +152,8 @@ template("single_gcc_toolchain") {
       host_toolchain_is_msan = _host_toolchain_is_msan
       host_toolchain_msan_track_origins = _host_toolchain_msan_track_origins
 
-      use_mold = use_mold &&
-          (invoker_toolchain_args.current_cpu == "x64" ||
-           invoker_toolchain_args.current_cpu == "arm64")
+      use_mold = use_mold && (invoker_toolchain_args.current_cpu == "x64" ||
+                              invoker_toolchain_args.current_cpu == "arm64")
     }
 
     # When the invoker has explicitly overridden use_remoteexec or
@@ -331,8 +330,7 @@ template("single_gcc_toolchain") {
 
     use_mold_separate_debug_file =
         defined(invoker.use_mold_separate_debug_file) &&
-        invoker.use_mold_separate_debug_file &&
-        toolchain_args.use_mold
+        invoker.use_mold_separate_debug_file && toolchain_args.use_mold
     if (use_mold_separate_debug_file) {
       not_needed(invoker, [ "strip" ])
     }

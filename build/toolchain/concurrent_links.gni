@@ -49,8 +49,8 @@ if (concurrent_links == -1) {
               # coverage, which requires more memory.
               coverage_instrumentation_input_file == "") ||
              use_sanitizer_coverage || use_fuzzing_engine) {
-    # Full sanitizer coverage instrumentation increases linker memory consumption
-    # significantly.
+    # Full sanitizer coverage instrumentation increases linker memory
+    # consumption significantly.
     _args = [ "--mem_per_link_gb=16" ]
   } else if (is_win && symbol_level == 1 && !is_debug && is_component_build) {
     _args = [ "--mem_per_link_gb=3" ]

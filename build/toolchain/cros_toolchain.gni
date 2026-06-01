@@ -24,7 +24,8 @@
 # cross-compilation with RBE acceleration. (NB: additional variables
 # will be necessary to successfully compile a working CrOS Chrome.)
 #
-# target_sysroot= /g/.cros_cache/chrome-sdk/tarballs/auron_paine+7644.0.0+sysroot_chromeos-base_chromeos-chrome.tar.xz"
+# target_sysroot=
+# /g/.cros_cache/chrome-sdk/tarballs/auron_paine+7644.0.0+sysroot_chromeos-base_chromeos-chrome.tar.xz"
 # target_cpu = "x64"
 
 import("//build/config/clang/clang.gni")
