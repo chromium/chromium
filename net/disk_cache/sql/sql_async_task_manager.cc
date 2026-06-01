@@ -4,6 +4,8 @@
 
 #include "net/disk_cache/sql/sql_async_task_manager.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/run_loop.h"
@@ -12,16 +14,22 @@
 
 namespace disk_cache {
 
-SqlAsyncTaskManager::SqlAsyncTaskManager() = default;
+SqlAsyncTaskManager::SqlAsyncTaskManager()
+    : shutdown_flag_(
+          base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+              std::in_place,
+              false)) {}
 
 SqlAsyncTaskManager::~SqlAsyncTaskManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  shutdown_flag_->data.store(true);
 }
 
 std::unique_ptr<SqlAsyncTaskToken> SqlAsyncTaskManager::StartTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++pending_task_count_;
-  return std::make_unique<SqlAsyncTaskToken>(weak_factory_.GetWeakPtr());
+  return std::make_unique<SqlAsyncTaskToken>(weak_factory_.GetWeakPtr(),
+                                             shutdown_flag_);
 }
 
 void SqlAsyncTaskManager::RunOnAllTasksCompleteForTest(  // IN-TEST

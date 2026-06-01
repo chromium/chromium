@@ -6,7 +6,9 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "net/disk_cache/sql/sql_async_task_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -131,6 +133,42 @@ TEST_F(SqlAsyncTaskManagerTest, MultipleTasksStartedAndDestroyed) {
   token2.reset();
 
   manager_.RunUntilAllTasksCompleteForTest();
+}
+
+TEST_F(SqlAsyncTaskManagerTest, DestroyOnDifferentThreadDuringShutdown) {
+  auto local_manager = std::make_unique<SqlAsyncTaskManager>();
+  std::unique_ptr<SqlAsyncTaskToken> token = local_manager->StartTask();
+
+  // Simulate shutdown by destroying the manager.
+  local_manager.reset();
+
+  // Destroy the token on a different thread. This should not crash.
+  base::RunLoop run_loop;
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      base::BindLambdaForTesting([t = std::move(token), &run_loop]() mutable {
+        t.reset();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(SqlAsyncTaskManagerTest,
+       DestroyOnDifferentThreadWithoutShutdownCrashes) {
+  std::unique_ptr<SqlAsyncTaskToken> token = manager_.StartTask();
+
+  // Destroy the token on a different thread while manager is still alive.
+  // This should crash (trigger CHECK).
+  EXPECT_CHECK_DEATH({
+    base::RunLoop run_loop;
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        base::BindLambdaForTesting([t = std::move(token), &run_loop]() mutable {
+          t.reset();
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  });
 }
 
 }  // namespace disk_cache

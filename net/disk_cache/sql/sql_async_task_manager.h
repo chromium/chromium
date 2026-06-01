@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
@@ -49,6 +50,7 @@ class NET_EXPORT_PRIVATE SqlAsyncTaskManager {
 
   void CheckAndRunCallback();
 
+  scoped_refptr<base::RefCountedData<std::atomic_bool>> shutdown_flag_;
   int pending_task_count_ = 0;
   base::OnceClosure on_all_tasks_complete_callback_;
 
