@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -50,6 +51,11 @@
 #include "url/gurl.h"
 
 namespace reporting {
+
+namespace {
+const base::FilePath* g_allowed_directory_for_testing = nullptr;
+constexpr char kTargetDir[] = "/var/spool/support";
+}  // namespace
 
 constexpr char kAuthorizationPrefix[] = "Bearer ";
 
@@ -382,9 +388,13 @@ class FileUploadDelegate::InitContext
   }
 
   static StatusOr<int64_t> InitFile(const std::string origin_path) {
+    const base::FilePath file_path(origin_path);
+    if (!FileUploadDelegate::IsPathAllowed(file_path)) {
+      return base::unexpected(
+          Status(error::INVALID_ARGUMENT, "Path is not allowed"));
+    }
     auto handle = std::make_unique<base::File>(
-        base::FilePath(origin_path),
-        base::File::FLAG_OPEN | base::File::FLAG_READ);
+        file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (!handle->IsValid()) {
       base::UmaHistogramEnumeration(
           reporting::kUmaDataLossErrorReason,
@@ -657,6 +667,11 @@ class FileUploadDelegate::NextStepContext
                                             int64_t total,
                                             int64_t offset,
                                             int64_t size) {
+    const base::FilePath file_path(origin_path);
+    if (!FileUploadDelegate::IsPathAllowed(file_path)) {
+      return base::unexpected(
+          Status(error::INVALID_ARGUMENT, "Path is not allowed"));
+    }
     // Retrieve data from the file to be attached. Note: it could be done with
     // `AttachFileForUpload` instead, but loading into memory allows to check
     // integrity of the file (TBD; for now we only verify file access and
@@ -664,8 +679,7 @@ class FileUploadDelegate::NextStepContext
     std::string buffer;
 
     auto handle = std::make_unique<base::File>(
-        base::FilePath(origin_path),
-        base::File::FLAG_OPEN | base::File::FLAG_READ);
+        file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (!handle->IsValid()) {
       base::UmaHistogramEnumeration(
           reporting::kUmaDataLossErrorReason,
@@ -931,6 +945,35 @@ class FileUploadDelegate::FinalContext
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
+// static
+void FileUploadDelegate::SetAllowedDirectoryForTesting(
+    const base::FilePath* allowed_directory) {
+  CHECK_IS_TEST();
+  g_allowed_directory_for_testing = allowed_directory;
+}
+
+// static
+bool FileUploadDelegate::IsPathAllowed(const base::FilePath& path) {
+  if (path.empty() || !path.IsAbsolute() || path.ReferencesParent()) {
+    return false;
+  }
+
+  // Symbolic links are banned to prevent path traversal/symlink bypasses.
+  if (base::IsLink(path)) {
+    return false;
+  }
+
+  base::FilePath allowed_dir;
+  if (g_allowed_directory_for_testing) {
+    CHECK_IS_TEST();
+    allowed_dir = *g_allowed_directory_for_testing;
+  } else {
+    allowed_dir = base::FilePath(kTargetDir);
+  }
+
+  return path.DirName() == allowed_dir;
+}
+
 FileUploadDelegate::FileUploadDelegate() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -1128,7 +1171,13 @@ void FileUploadDelegate::DoFinalize(
 }
 
 void FileUploadDelegate::DoDeleteFile(std::string_view origin_path) {
-  const auto delete_result = base::DeleteFile(base::FilePath(origin_path));
+  const base::FilePath file_path(origin_path);
+  if (!IsPathAllowed(file_path)) {
+    LOG(WARNING) << "Ignoring deletion request for unsafe path: "
+                 << origin_path;
+    return;
+  }
+  const auto delete_result = base::DeleteFile(file_path);
   if (!delete_result) {
     LOG(WARNING) << "Failed to delete file=" << origin_path;
   }

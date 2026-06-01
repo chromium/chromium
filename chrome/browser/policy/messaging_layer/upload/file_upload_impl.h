@@ -36,6 +36,9 @@ class FileUploadDelegate : public FileUploadJob::Delegate {
 
   static std::string GetFileUploadUrl();
 
+  static void SetAllowedDirectoryForTesting(
+      const base::FilePath* allowed_directory);
+
  private:
   // Helper classes.
   class AccessTokenRetriever;
@@ -123,6 +126,8 @@ class FileUploadDelegate : public FileUploadJob::Delegate {
 
   // Maximum upload size allowed for a single request.
   int64_t max_upload_buffer_size_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  static bool IsPathAllowed(const base::FilePath& path);
 
   // Weak pointer factory used by this delegate.
   // Note that weak pointers here are all dereferenced on UI task runner, and so

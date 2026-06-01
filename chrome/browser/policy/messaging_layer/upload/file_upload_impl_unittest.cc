@@ -240,9 +240,11 @@ class FileUploadDelegateTest : public ::testing::Test {
         &FileUploadDelegateTest::HandlePostRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_.Start());
     PrepareFileForUpload();
+    FileUploadDelegate::SetAllowedDirectoryForTesting(&temp_dir_.GetPath());
   }
 
   void TearDown() override {
+    FileUploadDelegate::SetAllowedDirectoryForTesting(nullptr);
     ASSERT_TRUE(test_server_.ShutdownAndWaitUntilComplete());
     EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
@@ -997,6 +999,56 @@ TEST_F(FileUploadDelegateTest, FinishFailures) {
   }
 }
 
+TEST_F(FileUploadDelegateTest, RejectRelativePath) {
+  std::unique_ptr<FileUploadJob::Delegate> delegate =
+      PrepareFileUploadDelegate();
+
+  // Prepare access tokens.
+  access_token_manager_.SetTokenValid(kTokenValid);
+  access_token_manager_.AddTokenToQueue(kTokenValid);
+
+  test::TestEvent<
+      StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
+      init_done;
+  delegate->DoInitiate("relative/path/to/file", "some_parameters",
+                       init_done.cb());
+  EXPECT_THAT(init_done.result().error(),
+              Property(&Status::error_code, Eq(error::INVALID_ARGUMENT)));
+}
+
+TEST_F(FileUploadDelegateTest, RejectPathWithParentReferences) {
+  std::unique_ptr<FileUploadJob::Delegate> delegate =
+      PrepareFileUploadDelegate();
+
+  // Prepare access tokens.
+  access_token_manager_.SetTokenValid(kTokenValid);
+  access_token_manager_.AddTokenToQueue(kTokenValid);
+
+  test::TestEvent<
+      StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
+      init_done;
+  delegate->DoInitiate("/var/spool/support/../unsafe_file", "some_parameters",
+                       init_done.cb());
+  EXPECT_THAT(init_done.result().error(),
+              Property(&Status::error_code, Eq(error::INVALID_ARGUMENT)));
+}
+
+TEST_F(FileUploadDelegateTest, RejectUnallowedDirectory) {
+  std::unique_ptr<FileUploadJob::Delegate> delegate =
+      PrepareFileUploadDelegate();
+
+  // Prepare access tokens.
+  access_token_manager_.SetTokenValid(kTokenValid);
+  access_token_manager_.AddTokenToQueue(kTokenValid);
+
+  test::TestEvent<
+      StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
+      init_done;
+  delegate->DoInitiate("/etc/passwd", "some_parameters", init_done.cb());
+  EXPECT_THAT(init_done.result().error(),
+              Property(&Status::error_code, Eq(error::INVALID_ARGUMENT)));
+}
+
 TEST_F(FileUploadDelegateTest, DeleteFile) {
   // Prepare the delegate.
   std::unique_ptr<FileUploadJob::Delegate> delegate =
@@ -1004,5 +1056,23 @@ TEST_F(FileUploadDelegateTest, DeleteFile) {
 
   delegate->DoDeleteFile(origin_path());
   EXPECT_FALSE(base::PathExists(base::FilePath(origin_path())));
+}
+
+TEST_F(FileUploadDelegateTest, DeleteFileRejectsUnsafePaths) {
+  // Prepare the delegate.
+  std::unique_ptr<FileUploadJob::Delegate> delegate =
+      PrepareFileUploadDelegate();
+
+  base::ScopedTempDir another_temp_dir;
+  ASSERT_TRUE(another_temp_dir.CreateUniqueTempDir());
+  base::FilePath unsafe_file =
+      another_temp_dir.GetPath().AppendASCII("do_not_delete");
+  ASSERT_TRUE(base::WriteFile(unsafe_file, "data"));
+
+  delegate->DoDeleteFile(unsafe_file.MaybeAsASCII());
+
+  // The file should NOT have been deleted because it resides outside the
+  // allowed directory!
+  EXPECT_TRUE(base::PathExists(unsafe_file));
 }
 }  // namespace reporting
