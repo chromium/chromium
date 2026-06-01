@@ -1152,7 +1152,22 @@ void BoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
     const PhysicalFragment& child_fragment = *child;
     DCHECK(child_fragment.IsBox());
     if (child_fragment.HasSelfPaintingLayer()) {
-      MaybePaintReplacedNormalFlowInline(child_fragment, paint_info);
+      if (paint_info.phase != PaintPhase::kTextClip) {
+        // Replaced normal flow stacking contexts (like <video>) need to be
+        // painted inline to maintain correct paint order with siblings.
+        // They will be skipped in PaintLayerPainter::PaintChildren.
+        MaybePaintReplacedNormalFlowInline(child_fragment, paint_info);
+      } else if (!child_fragment.IsFloating()) {
+        // Self-painting-layer descendants are skipped by the layer-tree walk
+        // during kTextClip, so visit them here to get their glyphs into the
+        // mask. The mask is pure text geometry, so don't apply the
+        // descendant's opacity (or other compositing effects): that's not part
+        // of the "geometry of the text" and would wrongly dim the ancestor's
+        // revealed background.
+        BoxFragmentPainter(To<PhysicalBoxFragment>(child_fragment))
+            .PaintObject(paint_info_for_descendants,
+                         paint_offset + child.offset);
+      }
       continue;
     }
     if (child_fragment.IsFloating()) {
@@ -2170,11 +2185,16 @@ void BoxFragmentPainter::PaintBoxItem(const FragmentItem& item,
   DCHECK_EQ(item.PostLayoutBoxFragment(), &child_fragment);
   DCHECK(!child_fragment.IsHiddenForPaint());
   if (child_fragment.HasSelfPaintingLayer()) {
-    // Replaced normal flow stacking contexts (like <video>) need to be painted
-    // inline to maintain correct paint order with siblings.
-    // They will be skipped in PaintLayerPainter::PaintChildren.
-    MaybePaintReplacedNormalFlowInline(child_fragment, paint_info);
-    return;
+    if (paint_info.phase != PaintPhase::kTextClip) {
+      // Replaced normal flow stacking contexts (like <video>) need to be
+      // painted inline to maintain correct paint order with siblings.
+      // They will be skipped in PaintLayerPainter::PaintChildren.
+      MaybePaintReplacedNormalFlowInline(child_fragment, paint_info);
+      return;
+    }
+    // During kTextClip we fall through into self-painting-layer inline boxes
+    // (e.g. <span style="position:relative">) so their glyphs contribute to the
+    // text mask; the layer-tree walk has no kTextClip pass.
   }
   if (child_fragment.IsFloating()) {
     return;
