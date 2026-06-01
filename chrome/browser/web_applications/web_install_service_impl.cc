@@ -4,13 +4,16 @@
 
 #include "chrome/browser/web_applications/web_install_service_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
@@ -74,6 +77,10 @@ constexpr char kInstallApiTypeUma[] = "WebApp.WebInstallApi.InstallType";
 constexpr char kInstallElementResultUma[] = "WebApp.WebInstallElement.Result";
 constexpr char kInstallElementTypeUma[] =
     "WebApp.WebInstallElement.InstallType";
+
+// Rate limiting defaults for cross-origin IsInstalled queries.
+size_t g_max_cross_origin_queries = 100;
+base::TimeDelta g_min_cross_origin_query_interval = base::Seconds(1);
 
 // Checks if an app is installed based on `manifest_id`, if possible. Otherwise
 // falls back to `install_target`. Used by the background doc install path.
@@ -166,6 +173,21 @@ void WebInstallServiceImpl::CreateIfAllowed(
   new WebInstallServiceImpl(*render_frame_host, std::move(receiver));
 }
 
+// static
+base::AutoReset<size_t>
+WebInstallServiceImpl::SetMaxCrossOriginQueriesForTesting(  // IN-TEST
+    size_t max_queries) {
+  return base::AutoReset<size_t>(&g_max_cross_origin_queries, max_queries);
+}
+
+// static
+base::AutoReset<base::TimeDelta>
+WebInstallServiceImpl::SetMinCrossOriginQueryIntervalForTesting(  // IN-TEST
+    base::TimeDelta interval) {
+  return base::AutoReset<base::TimeDelta>(&g_min_cross_origin_query_interval,
+                                          interval);
+}
+
 void WebInstallServiceImpl::IsInstalled(blink::mojom::InstallOptionsPtr options,
                                         IsInstalledCallback callback) {
   GURL install_target;
@@ -177,11 +199,68 @@ void WebInstallServiceImpl::IsInstalled(blink::mojom::InstallOptionsPtr options,
     install_target = last_committed_url_;
   }
 
+  // Exclude invalid URLs, file://, chrome://, etc.
   if (!install_target.is_valid() || !install_target.SchemeIsHTTPOrHTTPS()) {
     std::move(callback).Run(false);
     return;
   }
+  if (manifest_id.has_value() &&
+      (!manifest_id->is_valid() || !manifest_id->SchemeIsHTTPOrHTTPS())) {
+    std::move(callback).Run(false);
+    return;
+  }
 
+  // `IsAppInstalled` queries by `manifest_id` if available, otherwise
+  // `install_target`.
+  const GURL lookup_url = manifest_id.value_or(install_target);
+  const url::Origin document_origin =
+      render_frame_host().GetLastCommittedOrigin();
+
+  // Same-origin queries are not rate limited.
+  if (document_origin.IsSameOriginWith(url::Origin::Create(lookup_url))) {
+    RunIsInstalledLookup(std::move(install_target), std::move(manifest_id),
+                         std::move(callback));
+    return;
+  }
+
+  // Rate limit queries that could expose cross-origin app installation state.
+
+  // Per-document cap. Counts attempts (not accepts) so that abuse permanently
+  // exhausts the budget. Queries are counted when received, not when they're
+  // dispatched.
+  cross_origin_query_count_++;
+  if (cross_origin_query_count_ > g_max_cross_origin_queries) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Compute how long to defer this query. Each cross-origin query is
+  // dispatched at its own reserved slot, with slots spaced by
+  // `g_min_cross_origin_query_interval`.
+  // `next_cross_origin_query_dispatch_time_` tracks the next available slot.
+  // This query takes that slot, then advances it for the next query.
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeDelta delay =
+      std::max(base::TimeDelta(), next_cross_origin_query_dispatch_time_ - now);
+
+  // Calculate the next slot. `max(now, ...)` re-bases at `now` to account for
+  // queries received after an extended idle period.
+  next_cross_origin_query_dispatch_time_ =
+      std::max(now, next_cross_origin_query_dispatch_time_) +
+      g_min_cross_origin_query_interval;
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&WebInstallServiceImpl::RunIsInstalledLookup,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(install_target),
+                     std::move(manifest_id), std::move(callback)),
+      delay);
+}
+
+void WebInstallServiceImpl::RunIsInstalledLookup(
+    GURL install_target,
+    std::optional<GURL> manifest_id,
+    IsInstalledCallback callback) {
   auto* provider = WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext()));
   // `kWebAppInstallation` or `kInstallElement` is guaranteed to be enabled at

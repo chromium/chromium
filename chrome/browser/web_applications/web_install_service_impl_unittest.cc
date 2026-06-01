@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_install_service_impl.h"
 
+#include <array>
 #include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -205,7 +206,7 @@ TEST_F(WebInstallServiceImplTest, CurrentDocument_NoManifest) {
 // kNoCustomManifestId.
 TEST_F(WebInstallServiceImplTest, CurrentDocument_NoCustomManifestId) {
   base::HistogramTester histograms;
-  // Create a manifest WITHOUT setting `id` — the fake will default it to
+  // Create a manifest WITHOUT setting `id` -- the fake will default it to
   // start_url and set has_custom_id = false.
   auto manifest = CreateManifest(GURL(kDocumentUrl));
   SetupPageWithManifest(GURL(kDocumentUrl), std::move(manifest));
@@ -410,6 +411,338 @@ TEST_F(WebInstallServiceImplTest, CurrentDocument_InstallAlreadyInProgress) {
                                WebInstallServiceResult::kUnexpectedFailure, 1);
   histograms.ExpectBucketCount(kVariantedInstallTypeUma,
                                WebInstallServiceType::kCurrentDocument, 1);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// IsInstalled rate limiting tests.
+// These verify that cross-origin IsInstalled queries are rate limited by both
+// total count per document and minimum time interval between queries.
+///////////////////////////////////////////////////////////////////////////////
+
+constexpr char kCrossOriginUrl[] = "https://example.com/app";
+
+// Small cap used in place of the production 100-query limit for cross-origin
+// IsInstalled rate limiting. Tests reference this directly in loop bounds.
+constexpr size_t kMaxQueries = 3;
+
+// Minimum interval between consecutive cross-origin queries -- matches the
+// production default of `g_min_cross_origin_query_interval`. Tests advance
+// the mock clock by this amount to satisfy the interval throttle.
+constexpr base::TimeDelta kMinCrossOriginQueryInterval = base::Seconds(1);
+
+class WebInstallServiceImplRateLimitTest : public WebAppTest {
+ public:
+  WebInstallServiceImplRateLimitTest()
+      : WebAppTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitWithFeatures({blink::features::kWebAppInstallation,
+                                           blink::features::kInstallElement},
+                                          {});
+  }
+
+  void SetUp() override {
+    WebAppTest::SetUp();
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
+    NavigateAndCommit(GURL(kDocumentUrl));
+  }
+
+  void BindService() {
+    WebInstallServiceImpl::CreateIfAllowed(
+        web_contents()->GetPrimaryMainFrame(),
+        service_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  bool IsInstalled(const GURL& install_url) {
+    auto options = blink::mojom::InstallOptions::New();
+    options->install_url = install_url;
+
+    base::test::TestFuture<bool> future;
+    service_remote_->IsInstalled(std::move(options), future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+
+    return future.Get();
+  }
+
+  bool IsInstalledWithManifestId(const GURL& install_url,
+                                 const GURL& manifest_id) {
+    auto options = blink::mojom::InstallOptions::New();
+    options->install_url = install_url;
+    options->manifest_id = manifest_id;
+
+    base::test::TestFuture<bool> future;
+    service_remote_->IsInstalled(std::move(options), future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+
+    return future.Get();
+  }
+
+  bool IsInstalledSameOrigin() {
+    base::test::TestFuture<bool> future;
+    service_remote_->IsInstalled(/*options=*/nullptr, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+
+    return future.Get();
+  }
+
+  mojo::Remote<blink::mojom::WebInstallService>& service_remote() {
+    return service_remote_;
+  }
+
+ private:
+  mojo::Remote<blink::mojom::WebInstallService> service_remote_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(WebInstallServiceImplRateLimitTest, SingleCrossOriginQuery_Allowed) {
+  BindService();
+
+  EXPECT_FALSE(IsInstalled(GURL(kCrossOriginUrl)));
+  task_environment()->AdvanceClock(kMinCrossOriginQueryInterval);
+
+  test::InstallDummyWebApp(profile(), "Cross Origin App",
+                           GURL(kCrossOriginUrl));
+
+  EXPECT_TRUE(IsInstalled(GURL(kCrossOriginUrl)));
+}
+
+// Same-origin queries should not be rate limited.
+TEST_F(WebInstallServiceImplRateLimitTest, SameOriginQuery_NotRateLimited) {
+  // Use a small limit to avoid looping 100 times.
+  base::AutoReset<size_t> max_queries =
+      WebInstallServiceImpl::SetMaxCrossOriginQueriesForTesting(kMaxQueries);
+
+  test::InstallDummyWebApp(profile(), "Same Origin App", GURL(kDocumentUrl));
+  BindService();
+
+  // Issue well past the cross-origin cap; none should be blocked.
+  for (size_t i = 0; i < kMaxQueries * 2; ++i) {
+    EXPECT_TRUE(IsInstalledSameOrigin());
+  }
+}
+
+// Basic count throttle: cross-origin queries are rejected once the
+// per-document maximum has been reached.
+TEST_F(WebInstallServiceImplRateLimitTest,
+       CrossOriginQuery_RateLimitedAtCountCap) {
+  // Use a small limit to avoid looping 100 times.
+  base::AutoReset<size_t> max_queries =
+      WebInstallServiceImpl::SetMaxCrossOriginQueriesForTesting(kMaxQueries);
+
+  test::InstallDummyWebApp(profile(), "Cross Origin App",
+                           GURL(kCrossOriginUrl));
+  BindService();
+
+  // Issue the maximum allowed queries, advancing time after each to avoid
+  // the time-based rate limit on the next query.
+  for (size_t i = 0; i < kMaxQueries; ++i) {
+    // The cross origin app was installed, so these should succeed.
+    EXPECT_TRUE(IsInstalled(GURL(kCrossOriginUrl)));
+    task_environment()->AdvanceClock(kMinCrossOriginQueryInterval);
+  }
+
+  // The loop's final AdvanceClock cleared the time throttle, so this next
+  // query is rejected purely on count.
+  EXPECT_FALSE(IsInstalled(GURL(kCrossOriginUrl)));
+}
+
+// Basic interval throttle: a second cross-origin query issued before the
+// minimum interval elapses is deferred (not rejected); it completes once the
+// interval has passed.
+TEST_F(WebInstallServiceImplRateLimitTest,
+       CrossOriginQuery_DeferredWithinInterval) {
+  test::InstallDummyWebApp(profile(), "Cross Origin App",
+                           GURL(kCrossOriginUrl));
+  BindService();
+
+  // First query at t=0 runs immediately and is accepted.
+  EXPECT_TRUE(IsInstalled(GURL(kCrossOriginUrl)));
+
+  // Back-to-back second query is deferred -- not ready until the interval
+  // elapses.
+  auto options = blink::mojom::InstallOptions::New();
+  options->install_url = GURL(kCrossOriginUrl);
+  base::test::TestFuture<bool> deferred;
+  service_remote()->IsInstalled(std::move(options), deferred.GetCallback());
+
+  // Drain the mojo pipe so the IsInstalled call reaches the service and
+  // posts the delayed task. The deferred reply should still be pending.
+  service_remote().FlushForTesting();
+  EXPECT_FALSE(deferred.IsReady());
+
+  // Advance well past the minimum interval so the deferred lookup is
+  // guaranteed to have run.
+  task_environment()->FastForwardBy(kMinCrossOriginQueryInterval * 2);
+  ASSERT_TRUE(deferred.IsReady());
+  EXPECT_TRUE(deferred.Get());
+}
+
+// A cross-origin query issued after an idle period longer than the minimum
+// interval dispatches immediately, not after the (now-stale) reserved slot.
+TEST_F(WebInstallServiceImplRateLimitTest,
+       CrossOriginQuery_AfterExtendedIdle_DispatchesImmediately) {
+  test::InstallDummyWebApp(profile(), "Cross Origin App",
+                           GURL(kCrossOriginUrl));
+  BindService();
+
+  // Prime the dispatch slot with a first query.
+  EXPECT_TRUE(IsInstalled(GURL(kCrossOriginUrl)));
+
+  // Idle for much longer than the minimum interval.
+  task_environment()->AdvanceClock(kMinCrossOriginQueryInterval * 5);
+
+  // The next query's reserved slot is in the past; it must dispatch now
+  // without waiting.
+  auto options = blink::mojom::InstallOptions::New();
+  options->install_url = GURL(kCrossOriginUrl);
+  base::test::TestFuture<bool> future;
+  service_remote()->IsInstalled(std::move(options), future.GetCallback());
+  service_remote().FlushForTesting();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get());
+}
+
+// Deferred queries must still consume the per-document count budget. This
+// pins the invariant that the count increment happens before scheduling -- if
+// it were ever moved after, a compromised renderer could enqueue an
+// unbounded number of pending lookups by spamming the API.
+TEST_F(WebInstallServiceImplRateLimitTest, DeferredQuery_ConsumesCountBudget) {
+  // Use a small limit to avoid looping 100 times.
+  base::AutoReset<size_t> max_queries =
+      WebInstallServiceImpl::SetMaxCrossOriginQueriesForTesting(kMaxQueries);
+
+  test::InstallDummyWebApp(profile(), "Cross Origin App",
+                           GURL(kCrossOriginUrl));
+  BindService();
+
+  // Issue kMaxQueries back-to-back. The first runs immediately; the rest are
+  // deferred at the minimum interval. Each one consumes one count of budget.
+  std::array<base::test::TestFuture<bool>, kMaxQueries> futures;
+  for (auto& future : futures) {
+    auto options = blink::mojom::InstallOptions::New();
+    options->install_url = GURL(kCrossOriginUrl);
+    service_remote()->IsInstalled(std::move(options), future.GetCallback());
+  }
+  // Flush so all IsInstalled calls reach the service and post their tasks.
+  service_remote().FlushForTesting();
+
+  // Drain all deferred lookups by advancing well past the total expected
+  // span.
+  task_environment()->FastForwardBy(kMinCrossOriginQueryInterval *
+                                    (kMaxQueries + 1));
+  for (auto& future : futures) {
+    ASSERT_TRUE(future.IsReady());
+    EXPECT_TRUE(future.Get());
+  }
+
+  // The budget is now exhausted. The next query must be rejected on count,
+  // returning false immediately rather than being deferred.
+  EXPECT_FALSE(IsInstalled(GURL(kCrossOriginUrl)));
+}
+
+// A burst of cross-origin queries must be paced at the minimum interval.
+// The i-th deferred query should complete at t = i * interval, no sooner.
+// This guards against a "collapse the queue when the clock is ahead" bug
+// where a single FastForward would flush the whole burst at once.
+TEST_F(WebInstallServiceImplRateLimitTest,
+       BurstedDeferredQueries_PacedAtMinInterval) {
+  base::AutoReset<base::TimeDelta> interval =
+      WebInstallServiceImpl::SetMinCrossOriginQueryIntervalForTesting(
+          base::Seconds(5));
+
+  test::InstallDummyWebApp(profile(), "Cross Origin App",
+                           GURL(kCrossOriginUrl));
+  BindService();
+
+  // Issue three back-to-back queries at t=0.
+  std::array<base::test::TestFuture<bool>, 3> futures;
+  for (auto& future : futures) {
+    auto options = blink::mojom::InstallOptions::New();
+    options->install_url = GURL(kCrossOriginUrl);
+    service_remote()->IsInstalled(std::move(options), future.GetCallback());
+  }
+  service_remote().FlushForTesting();
+
+  // t=0s: only futures[0] is ready (delay=0).
+  ASSERT_TRUE(futures[0].IsReady());
+  EXPECT_TRUE(futures[0].Get());
+  EXPECT_FALSE(futures[1].IsReady());
+  EXPECT_FALSE(futures[2].IsReady());
+
+  // t=4s: futures[1] still pending (needs t=5s).
+  task_environment()->FastForwardBy(base::Seconds(4));
+  EXPECT_FALSE(futures[1].IsReady());
+  EXPECT_FALSE(futures[2].IsReady());
+
+  // Past t=5s: futures[1] fires; futures[2] still pending (needs t=10s).
+  // Overshoot the boundary to avoid flakiness from exact-interval timing.
+  task_environment()->FastForwardBy(base::Seconds(2));
+  ASSERT_TRUE(futures[1].IsReady());
+  EXPECT_TRUE(futures[1].Get());
+  EXPECT_FALSE(futures[2].IsReady());
+
+  // Past t=10s: futures[2] fires.
+  task_environment()->FastForwardBy(base::Seconds(5));
+  ASSERT_TRUE(futures[2].IsReady());
+  EXPECT_TRUE(futures[2].Get());
+}
+
+// The cross-origin check follows the registrar lookup origin: when a
+// same-origin manifest_id is provided, queries are not rate-limited even if
+// the install_url is cross-origin.
+TEST_F(WebInstallServiceImplRateLimitTest,
+       CrossOriginInstallUrl_SameOriginManifestId_NotRateLimited) {
+  // Use a small limit to avoid looping 100 times.
+  base::AutoReset<size_t> max_queries =
+      WebInstallServiceImpl::SetMaxCrossOriginQueriesForTesting(kMaxQueries);
+
+  // Install an app whose manifest_id matches the document origin.
+  test::InstallDummyWebApp(profile(), "Same Origin App", GURL(kDocumentUrl));
+  BindService();
+
+  // Issue well past the cross-origin cap. Each query pairs a cross-origin
+  // install_url with a same-origin manifest_id, so the lookup is treated as
+  // same-origin and none should be rate-limited.
+  for (size_t i = 0; i < kMaxQueries * 2; ++i) {
+    EXPECT_TRUE(
+        IsInstalledWithManifestId(GURL(kCrossOriginUrl), GURL(kDocumentUrl)));
+  }
+}
+
+// The cross-origin check follows the registrar lookup origin: when a
+// cross-origin manifest_id is provided, queries are rate-limited even if the
+// install_url is same-origin.
+TEST_F(WebInstallServiceImplRateLimitTest,
+       SameOriginInstallUrl_CrossOriginManifestId_RateLimited) {
+  // Use a small limit to avoid looping 100 times.
+  base::AutoReset<size_t> max_queries =
+      WebInstallServiceImpl::SetMaxCrossOriginQueriesForTesting(kMaxQueries);
+
+  // Install an app whose manifest_id is cross-origin to the document.
+  test::InstallDummyWebApp(profile(), "Cross Origin App",
+                           GURL(kCrossOriginUrl));
+  BindService();
+
+  // Issue the maximum allowed queries, advancing time after each to avoid
+  // the time-based rate limit on the next query.
+  for (size_t i = 0; i < kMaxQueries; ++i) {
+    EXPECT_TRUE(
+        IsInstalledWithManifestId(GURL(kDocumentUrl), GURL(kCrossOriginUrl)));
+    task_environment()->AdvanceClock(kMinCrossOriginQueryInterval);
+  }
+
+  // The loop's final AdvanceClock cleared the time throttle, so this next
+  // query is rejected purely on count.
+  EXPECT_FALSE(
+      IsInstalledWithManifestId(GURL(kDocumentUrl), GURL(kCrossOriginUrl)));
+}
+
+// A non-HTTP(S) manifest_id (e.g. chrome://) should return false immediately
+// without consuming cross-origin query budget.
+TEST_F(WebInstallServiceImplRateLimitTest,
+       InvalidManifestIdScheme_ReturnsFalse) {
+  BindService();
+
+  EXPECT_FALSE(IsInstalledWithManifestId(GURL(kCrossOriginUrl),
+                                         GURL("chrome://settings")));
 }
 
 }  // namespace

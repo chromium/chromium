@@ -8,7 +8,9 @@
 #include <optional>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/document_service.h"
@@ -88,6 +90,12 @@ class WebInstallServiceImpl
   static void CreateIfAllowed(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebInstallService> receiver);
+
+  // Test-only overrides for rate limiting constants.
+  static base::AutoReset<size_t> SetMaxCrossOriginQueriesForTesting(
+      size_t max_queries);
+  static base::AutoReset<base::TimeDelta>
+  SetMinCrossOriginQueryIntervalForTesting(base::TimeDelta interval);
 
   // blink::mojom::WebInstallService implementation:
   void IsInstalled(blink::mojom::InstallOptionsPtr options,
@@ -172,11 +180,26 @@ class WebInstallServiceImpl
                       const webapps::AppId& app_id,
                       webapps::InstallResultCode code);
 
+  // Runs the actual registrar lookup for `IsInstalled` and replies via
+  // `callback`. Posted with a delay for cross-origin queries, and invoked
+  // synchronously for same-origin queries.
+  void RunIsInstalledLookup(GURL install_target,
+                            std::optional<GURL> manifest_id,
+                            IsInstalledCallback callback);
+
   const content::GlobalRenderFrameHostId frame_routing_id_;
   GURL last_committed_url_;
   // Active data retrievers. They are destroyed when this service is destroyed
   // or when their callback completes.
   absl::flat_hash_set<std::unique_ptr<WebAppDataRetriever>> data_retrievers_;
+
+  // Running count of cross-origin query attempts (not accepts).
+  size_t cross_origin_query_count_ = 0;
+
+  // The earliest TimeTicks at which the next cross-origin lookup is allowed to
+  // run; it advances monotonically each time a lookup is scheduled, paced by
+  // `g_min_cross_origin_query_interval`.
+  base::TimeTicks next_cross_origin_query_dispatch_time_;
 
   base::WeakPtrFactory<web_app::WebInstallServiceImpl> weak_ptr_factory_{this};
 };
