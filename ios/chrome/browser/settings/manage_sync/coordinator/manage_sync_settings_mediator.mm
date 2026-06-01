@@ -350,7 +350,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     self.encryptionItem.accessoryView = nil;
   }
   self.encryptionItem.accessibilityTraits |= UIAccessibilityTraitButton;
-  [self updateEncryptionItem:NO];
+  [self updateEncryptionItemWithNotifyConsumer:NO];
   [model addItem:self.encryptionItem
       toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
 
@@ -402,9 +402,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
 }
 
-// Updates encryption item, and notifies the consumer if `notifyConsumer` is set
-// to YES.
-- (void)updateEncryptionItem:(BOOL)notifyConsumer {
+// Updates encryption item. If `notifyConsumer` is YES, the consumer is
+// notified about model changes.
+- (void)updateEncryptionItemWithNotifyConsumer:(BOOL)notifyConsumer {
   if (!self.accountStateSignedIn) {
     return;
   }
@@ -448,7 +448,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   return footerItem;
 }
 
-- (void)updateSignOutSection {
+// Updates the sign-out section. If `notifyConsumer` is YES, the consumer is
+// notified about model changes.
+- (void)updateSignOutSectionWithNotifyConsumer:(BOOL)notifyConsumer {
   TableViewModel* model = self.consumer.tableViewModel;
   BOOL hasSignOutSection =
       [model hasSectionForSectionIdentifier:ManageAndSignOutSectionIdentifier];
@@ -460,10 +462,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   if (!hasSignOutSection) {
     [self loadManageAccountsSection];
     [self loadSwitchAccountAndSignOutSection];
-    NSUInteger sectionIndex =
-        [model sectionForSectionIdentifier:ManageAndSignOutSectionIdentifier];
-    [self.consumer insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
-                     rowAnimation:NO];
+    if (notifyConsumer) {
+      NSUInteger sectionIndex =
+          [model sectionForSectionIdentifier:ManageAndSignOutSectionIdentifier];
+      [self.consumer insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+                       rowAnimation:NO];
+    }
   }
 }
 
@@ -669,9 +673,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [self updateBatchUploadSectionWithNotifyConsumer:YES firstLoad:firstLoad];
 }
 
-// Deletes the batch upload section and notifies the consumer about model
-// changes.
-- (void)removeBatchUploadSection {
+// Deletes the batch upload section. If `notifyConsumer` is YES, the consumer
+// is notified about model changes.
+- (void)removeBatchUploadSectionNotifyConsumer:(BOOL)notifyConsumer {
   TableViewModel* model = self.consumer.tableViewModel;
   if (![model hasSectionForSectionIdentifier:BatchUploadSectionIdentifier]) {
     return;
@@ -681,9 +685,11 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [model removeSectionWithIdentifier:BatchUploadSectionIdentifier];
   self.batchUploadItem = nil;
 
-  // Remove the batch upload section from the table view model.
-  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
-  [self.consumer deleteSections:indexSet rowAnimation:YES];
+  if (notifyConsumer) {
+    // Remove the batch upload section from the table view.
+    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
+    [self.consumer deleteSections:indexSet rowAnimation:YES];
+  }
 }
 
 // Updates the batch upload section according to data already fetched.
@@ -696,7 +702,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   // there is no local data to offer the batch upload.
   if (self.syncErrorItem || self.isSyncDisabledByAdministrator ||
       (!_localPasswordsToUpload && !_localItemsToUpload)) {
-    [self removeBatchUploadSection];
+    [self removeBatchUploadSectionNotifyConsumer:notifyConsummer];
     return;
   }
 
@@ -1023,11 +1029,14 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     [self.commandHandler closeManageSyncSettings];
     return;
   }
-  [self updateSyncErrorsSection:YES];
-  [self updateBatchUploadSectionWithNotifyConsumer:YES firstLoad:NO];
-  [self updateSyncItemsNotifyConsumer:YES];
-  [self updateEncryptionItem:YES];
-  [self updateSignOutSection];
+  // Update the model without notifying the consumer, then reload atomically
+  // to avoid UIKit querying stale index paths during section animations.
+  [self updateSyncErrorsSectionWithNotifyConsumer:NO];
+  [self updateBatchUploadSectionWithNotifyConsumer:NO firstLoad:NO];
+  [self updateSyncItemsNotifyConsumer:NO];
+  [self updateEncryptionItemWithNotifyConsumer:NO];
+  [self updateSignOutSectionWithNotifyConsumer:NO];
+  [self.consumer reloadTableData];
   [self fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:NO];
 }
 
@@ -1038,10 +1047,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       _chromeAccountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
   if ([_signedInIdentity isEqual:identity]) {
     [self updatePrimaryAccountDetails];
-    [self updateSyncItemsNotifyConsumer:YES];
-    [self updateSyncErrorsSection:YES];
-    [self updateBatchUploadSectionWithNotifyConsumer:YES firstLoad:NO];
-    [self updateEncryptionItem:YES];
+    // Update the model without notifying the consumer, then reload atomically.
+    [self updateSyncItemsNotifyConsumer:NO];
+    [self updateSyncErrorsSectionWithNotifyConsumer:NO];
+    [self updateBatchUploadSectionWithNotifyConsumer:NO firstLoad:NO];
+    [self updateEncryptionItemWithNotifyConsumer:NO];
+    [self.consumer reloadTableData];
     [self fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:NO];
   }
 }
@@ -1208,12 +1219,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   // The `self.consumer.tableViewModel` will be reset prior to this method.
   // Ignore any previous value the `self.syncErrorItem` may have contained.
   self.syncErrorItem = nil;
-  [self updateSyncErrorsSection:NO];
+  [self updateSyncErrorsSectionWithNotifyConsumer:NO];
 }
 
 // Updates the sync errors section. If `notifyConsumer` is YES, the consumer is
 // notified about model changes.
-- (void)updateSyncErrorsSection:(BOOL)notifyConsumer {
+- (void)updateSyncErrorsSectionWithNotifyConsumer:(BOOL)notifyConsumer {
   if (!self.accountStateSignedIn) {
     return;
   }

@@ -617,3 +617,40 @@ TEST_F(ManageSyncSettingsMediatorTest,
                 info_item.statusText);
   }
 }
+
+// Tests that inserting a sync error section while removing the batch upload
+// section in a single onSyncStateChanged cycle does not crash.
+TEST_F(ManageSyncSettingsMediatorTest,
+       SyncErrorAddedWhileBatchUploadVisibleDoesNotCrash) {
+  ScopedKeyWindow scoped_window;
+  CreateManageSyncSettingsMediator();
+
+  scoped_window.Get().rootViewController = consumer_;
+
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // Add a batch upload section directly to the model.
+  TableViewModel* model = mediator_.consumer.tableViewModel;
+  [model insertSectionWithIdentifier:BatchUploadSectionIdentifier atIndex:0];
+  TableViewTextItem* dummyItem = [[TableViewTextItem alloc]
+      initWithType:BatchUploadRecommendationItemType];
+  dummyItem.text = @"Test";
+  [model addItem:dummyItem
+      toSectionWithIdentifier:BatchUploadSectionIdentifier];
+  [consumer_.tableView reloadData];
+  [consumer_.view layoutIfNeeded];
+
+  ASSERT_TRUE(
+      [model hasSectionForSectionIdentifier:BatchUploadSectionIdentifier]);
+
+  // Trigger a sync error, which inserts the error section and removes the
+  // batch upload section in the same cycle.
+  sync_service_->SetPersistentAuthError();
+  [mediator_ onSyncStateChanged];
+
+  EXPECT_TRUE(
+      [model hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]);
+  EXPECT_FALSE(
+      [model hasSectionForSectionIdentifier:BatchUploadSectionIdentifier]);
+}

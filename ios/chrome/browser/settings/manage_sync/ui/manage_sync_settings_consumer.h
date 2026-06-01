@@ -41,6 +41,10 @@
 // Shows the managed UI info bubble for the `button`.
 - (void)showManagedUIInfoForButton:(UIButton*)button;
 
+// Reloads the table view from the current model state without rebuilding
+// the model itself.
+- (void)reloadTableData;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_MANAGE_SYNC_UI_MANAGE_SYNC_SETTINGS_CONSUMER_H_

@@ -182,6 +182,14 @@ constexpr CGFloat kDefaultSectionFooterHeightPointSize = 10.;
   [self didTapManagedUIInfoButton:button];
 }
 
+- (void)reloadTableData {
+  if (!self.tableViewModel) {
+    // No need to reload since the model has not been loaded yet.
+    return;
+  }
+  [self.tableView reloadData];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
