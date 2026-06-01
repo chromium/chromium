@@ -33,6 +33,7 @@ struct OptimizationGuideModelExecutionResult;
 }  // namespace optimization_guide
 
 namespace page_actions {
+class PageActionController;
 class PageActionObserver;
 }  // namespace page_actions
 
@@ -124,6 +125,11 @@ class ContextualCueingController
   void ShowCue(CueTargetType cue_type,
                const CueTarget& target,
                const optimization_guide::proto::ContextualCue& cue);
+#if !BUILDFLAG(IS_ANDROID)
+  void MaybeShowTabList(
+      page_actions::PageActionController* page_action_controller,
+      const std::vector<tabs::TabHandle>& tabs_to_show);
+#endif
   void OnCueClicked(CueTargetType cue_type,
                     std::string cuj,
                     CueActionData action,

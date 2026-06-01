@@ -95,4 +95,17 @@ const base::FeatureParam<std::string> kHelpCenterArticleLink(
     "ContextualCueingV2HelpCenterArticleLink",
     "https://support.google.com/chrome?p=");
 
+constexpr base::FeatureParam<TabListVisibility>::Option
+    kTabListVisibilityOptions[] = {
+        {TabListVisibility::kNever, "never"},
+        {TabListVisibility::kAlways, "always"},
+        {TabListVisibility::kOnlyIfMultiple, "only-if-multiple"},
+};
+
+const base::FeatureParam<TabListVisibility> kTabListVisibility(
+    &kContextualCueingV2,
+    "ContextualCueingV2TabListVisibility",
+    TabListVisibility::kNever,
+    &kTabListVisibilityOptions);
+
 }  // namespace contextual_cueing

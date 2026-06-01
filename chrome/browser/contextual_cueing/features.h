@@ -60,6 +60,14 @@ extern const base::FeatureParam<bool> kUsePrivateAi;
 // The help center article link.
 extern const base::FeatureParam<std::string> kHelpCenterArticleLink;
 
+// Visibility mode for the tab list.
+enum class TabListVisibility {
+  kNever = 0,
+  kAlways = 1,
+  kOnlyIfMultiple = 2,
+};
+extern const base::FeatureParam<TabListVisibility> kTabListVisibility;
+
 }  // namespace contextual_cueing
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_FEATURES_H_

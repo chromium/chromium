@@ -29,6 +29,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_action/page_action_model.h"
+#include "chrome/browser/ui/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -236,7 +238,8 @@ class ContextualCueingControllerBrowserTest
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{kContextualCueingV2,
-          {{"ContextualCueingV2DiscardShoppingPdfs", "true"}}}},
+          {{"ContextualCueingV2DiscardShoppingPdfs", "true"},
+           {"ContextualCueingV2TabListVisibility", "always"}}}},
         /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction});
   }
 };
@@ -395,6 +398,22 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
   SeedExecutionResult(response);
 
+  class TestObserver : public page_actions::PageActionModelObserver {
+   public:
+    void OnPageActionModelChanged(
+        const page_actions::PageActionModelInterface& model) override {
+      content_ = model.GetAnchoredMessageExpandableContent();
+    }
+    std::optional<page_actions::AnchoredMessageExpandableContent> content_;
+  };
+
+  TestObserver model_observer;
+  base::ScopedObservation<page_actions::PageActionModelInterface,
+                          page_actions::PageActionModelObserver>
+      observation(&model_observer);
+  GetPageActionController()->AddObserver(kActionAnchoredContextualCue,
+                                         observation);
+
   contextual_cueing_controller()->OnPageContentAnnotated(
       page_content_annotations::HistoryVisit(
           active_web_contents->GetController()
@@ -456,6 +475,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                  kProactiveCueLatencyAfterPageLoadName);
   ASSERT_TRUE(latency_value);
   EXPECT_GE(*latency_value, 0);
+
+  // Verify expandable content.
+  EXPECT_TRUE(model_observer.content_.has_value());
+  EXPECT_EQ(model_observer.content_->items.size(), 1u);
+  EXPECT_FALSE(model_observer.content_->items[0].text.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,

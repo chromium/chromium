@@ -196,8 +196,7 @@ TEST_F(GlicCueTargetTest, OnClick_AutoSubmitEnabled) {
                   options.GetInvocationSource());
         EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
             options.target.conversation));
-        // Two tabs plus the active tab.
-        EXPECT_EQ(3ul, options.tab_sharing.tabs_to_pin.size());
+        EXPECT_EQ(2ul, options.tab_sharing.tabs_to_pin.size());
         EXPECT_EQ(123, options.tab_sharing.tabs_to_pin[0].raw_value());
         EXPECT_EQ(456, options.tab_sharing.tabs_to_pin[1].raw_value());
         EXPECT_EQ(GlicPinTrigger::kContextualCue,
@@ -234,8 +233,7 @@ TEST_F(GlicCueTargetTest, OnClick_AutoSubmitDisabled) {
                   options.GetInvocationSource());
         EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
             options.target.conversation));
-        // Two tabs plus the active tab.
-        EXPECT_EQ(3ul, options.tab_sharing.tabs_to_pin.size());
+        EXPECT_EQ(2ul, options.tab_sharing.tabs_to_pin.size());
         EXPECT_EQ(123, options.tab_sharing.tabs_to_pin[0].raw_value());
         EXPECT_EQ(456, options.tab_sharing.tabs_to_pin[1].raw_value());
         EXPECT_EQ(GlicPinTrigger::kContextualCue,
@@ -269,8 +267,7 @@ TEST_F(GlicCueTargetTest, OnEditPrompt) {
                       options.GetInvocationSource());
             EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
                 options.target.conversation));
-            // Two tabs plus the active tab.
-            EXPECT_EQ(3ul, options.tab_sharing.tabs_to_pin.size());
+            EXPECT_EQ(2ul, options.tab_sharing.tabs_to_pin.size());
             EXPECT_EQ(123, options.tab_sharing.tabs_to_pin[0].raw_value());
             EXPECT_EQ(456, options.tab_sharing.tabs_to_pin[1].raw_value());
             EXPECT_EQ(GlicPinTrigger::kContextualCue,

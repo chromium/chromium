@@ -103,13 +103,6 @@ void GlicCueTarget::InvokeGlic(contextual_cueing::CueActionData data,
       glic::mojom::InvocationSource::kAutoOpenedByContextualCue);
   options.prompts.emplace_back(std::move(glic_data.prompt));
 
-  // Also pin the active tab if it isn't already pinned.
-  tabs::TabHandle active_handle = GetActiveTabHandle();
-  if (std::find(glic_data.tabs_to_share.begin(), glic_data.tabs_to_share.end(),
-                active_handle) == glic_data.tabs_to_share.end()) {
-    glic_data.tabs_to_share.push_back(active_handle);
-  }
-
   CUEING_LOG(
       base::StringPrintf("Sharing %d tabs", glic_data.tabs_to_share.size()));
   options.tab_sharing = TabSharingOptions(std::move(glic_data.tabs_to_share),
@@ -155,16 +148,6 @@ contextual_cueing::CueActionData GlicCueTarget::CueActionDataFromResponse(
 optimization_guide::proto::ContextualCueingSurface GlicCueTarget::GetSurface()
     const {
   return optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_GEMINI_IN_CHROME;
-}
-
-tabs::TabHandle GlicCueTarget::GetActiveTabHandle() {
-  if (auto* tab_list_interface =
-          TabListInterface::From(&*browser_window_interface_)) {
-    if (tabs::TabInterface* active_tab = tab_list_interface->GetActiveTab()) {
-      return active_tab->GetHandle();
-    }
-  }
-  return tabs::TabHandle::Null();
 }
 
 }  // namespace glic

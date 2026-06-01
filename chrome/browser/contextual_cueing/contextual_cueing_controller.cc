@@ -25,6 +25,7 @@
 #include "chrome/browser/contextual_cueing/cueing_log.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_cueing/prefs.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
@@ -54,6 +55,7 @@
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -63,6 +65,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/menus/simple_menu_model.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -650,7 +653,15 @@ ContextualCueingController::GetTabsToShow(
     }
   }
 
-  CUEING_LOG(base::StringPrintf("%d tabs in response.", tabs_to_show.size()));
+  // Also show the active tab if it isn't already shown.
+  tabs::TabHandle active_handle =
+      tab_list_interface_->GetActiveTab()->GetHandle();
+  if (std::find(tabs_to_show.begin(), tabs_to_show.end(), active_handle) ==
+      tabs_to_show.end()) {
+    tabs_to_show.push_back(active_handle);
+  }
+
+  CUEING_LOG(base::StringPrintf("%d tabs to show.", tabs_to_show.size()));
   return {tabs_to_show, tab_metrics};
 }
 
@@ -662,11 +673,11 @@ void ContextualCueingController::ShowCue(
   CueActionData action_data =
       target.CueActionDataFromResponse(cue, tabs_to_show);
 
-  tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
-  CHECK(tab);
+  tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
+  CHECK(active_tab);
 
   base::TimeDelta show_latency;
-  base::Time page_load_time = tab->GetContents()
+  base::Time page_load_time = active_tab->GetContents()
                                   ->GetController()
                                   .GetLastCommittedEntry()
                                   ->GetTimestamp();
@@ -695,7 +706,7 @@ void ContextualCueingController::ShowCue(
       cue_type, cue.suggested_cuj(), action_data));
 
   page_actions::PageActionController* page_action_controller =
-      tab->GetTabFeatures()->page_action_controller();
+      active_tab->GetTabFeatures()->page_action_controller();
   if (!page_action_controller) {
     RecordContextualCueingDecision(GetActiveTabSourceId(),
                                    ContextualCueingDecision::kNoActiveTab);
@@ -720,6 +731,9 @@ void ContextualCueingController::ShowCue(
       kActionAnchoredContextualCue,
       page_actions::AnchoredMessageActionIconType::kMenu,
       std::move(menu_model));
+
+  MaybeShowTabList(page_action_controller, tabs_to_show);
+
   page_action_controller->ShowAnchoredMessage(
       kActionAnchoredContextualCue,
       {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
@@ -731,7 +745,7 @@ void ContextualCueingController::ShowCue(
   page_action_observer_->RegisterAsPageActionObserver(*page_action_controller);
 
   contextual_cueing_service_->OnCueShown(
-      tab->GetContents()->GetLastCommittedURL());
+      active_tab->GetContents()->GetLastCommittedURL());
 #endif
 
   base::UmaHistogramSparse("ContextualCueing.ShownCueCUJ",
@@ -740,6 +754,53 @@ void ContextualCueingController::ShowCue(
   RecordContextualCueingDecision(GetActiveTabSourceId(),
                                  ContextualCueingDecision::kSuccess);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualCueingController::MaybeShowTabList(
+    page_actions::PageActionController* page_action_controller,
+    const std::vector<tabs::TabHandle>& tabs_to_show) {
+  const TabListVisibility visibility_mode = kTabListVisibility.Get();
+  if (visibility_mode == TabListVisibility::kNever) {
+    return;
+  }
+
+  const size_t min_tab_count =
+      visibility_mode == TabListVisibility::kOnlyIfMultiple ? 2ul : 1ul;
+  if (tabs_to_show.size() < min_tab_count) {
+    return;
+  }
+
+  std::vector<page_actions::AnchoredMessageExpandableItem> tab_items;
+  tab_items.reserve(tabs_to_show.size());
+  for (tabs::TabHandle handle : tabs_to_show) {
+    const tabs::TabInterface* tab = handle.Get();
+    if (!tab) {
+      continue;
+    }
+
+    // TODO(crbug.com/507551989): Display "Current tab" on the active tab's
+    // entry.
+    std::u16string title = tab->GetTitle();
+    CUEING_LOG(base::StringPrintf("title: %s", base::UTF16ToUTF8(title)));
+
+    // TODO(crbug.com/507551989): Set a favicon here.
+    tab_items.emplace_back(favicon::GetDefaultFaviconModel(), std::move(title));
+  }
+
+  if (tab_items.size() < min_tab_count) {
+    return;
+  }
+
+  std::u16string heading = l10n_util::GetPluralStringFUTF16(
+      IDS_CONTEXTUAL_CUEING_TAB_SHARING_HEADING, tab_items.size());
+  CUEING_LOG(base::StringPrintf("heading: %s", base::UTF16ToUTF8(heading)));
+
+  page_action_controller->SetAnchoredMessageExpandableContent(
+      kActionAnchoredContextualCue,
+      std::make_optional<page_actions::AnchoredMessageExpandableContent>(
+          {.heading = heading, .items = std::move(tab_items)}));
+}
+#endif
 
 void ContextualCueingController::OnCueHidden() {
   cue_hidden_time_ = base::TimeTicks();
