@@ -301,4 +301,31 @@ TEST(StringImplTest, Find) {
   EXPECT_EQ(5u, test_string_impl16->Find(u"\x4100"));
 }
 
+TEST(StringImplTest, FoldCaseSharpS) {
+  LChar sharp_s_8bit_chars[] = {'W', 'o', 'r', 'd', '1', ' ',
+                                'W', 'o', 'r', 'd', '2', 0xDF};
+  scoped_refptr<StringImpl> sharp_s_8bit =
+      StringImpl::Create(sharp_s_8bit_chars);
+  EXPECT_TRUE(sharp_s_8bit->Is8Bit());
+  EXPECT_EQ(sharp_s_8bit->length(), 12u);
+
+  UChar sharp_s_16bit_chars[] = {'W', 'o', 'r', 'd', '1', ' ',
+                                 'W', 'o', 'r', 'd', '2', 0x00DF};
+  scoped_refptr<StringImpl> sharp_s_16bit =
+      StringImpl::Create(sharp_s_16bit_chars);
+  EXPECT_FALSE(sharp_s_16bit->Is8Bit());
+  EXPECT_EQ(sharp_s_16bit->length(), 12u);
+
+  scoped_refptr<StringImpl> folded_8bit = sharp_s_8bit->FoldCase();
+  scoped_refptr<StringImpl> folded_16bit = sharp_s_16bit->FoldCase();
+
+  // "Word1 Word2ß" (length 12) folds to "word1 word2ss" (length 13)
+  EXPECT_EQ(folded_8bit->length(), 13u);
+  EXPECT_EQ(folded_16bit->length(), 13u);
+
+  EXPECT_EQ(String(folded_8bit), String(folded_16bit));
+  EXPECT_TRUE(String(folded_8bit).contains("word2ss"));
+  EXPECT_TRUE(String(folded_16bit).contains("word2ss"));
+}
+
 }  // namespace blink

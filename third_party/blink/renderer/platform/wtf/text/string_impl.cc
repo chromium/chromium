@@ -461,59 +461,55 @@ scoped_refptr<StringImpl> StringImpl::Fill(UChar character) {
 scoped_refptr<StringImpl> StringImpl::FoldCase() {
   CHECK_LE(length_, static_cast<size_type>(numeric_limits<int32_t>::max()));
 
-  if (Is8Bit()) {
-    // Do a faster loop for the case where all the characters are ASCII.
-    base::span<LChar> data8;
-    scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data8);
-    LChar ored = 0;
+  auto fold_case_16bit_slow = [](base::span<const UChar> source16,
+                                 scoped_refptr<StringImpl> original_string) {
+    base::span<UChar> data16;
+    scoped_refptr<StringImpl> new_impl =
+        StringImpl::CreateUninitialized(source16.size(), data16);
 
-    const base::span<const LChar> source8 = Span8();
-    for (size_t i = 0; i < source8.size(); ++i) {
-      const LChar c = source8[i];
-      data8[i] = ::blink::ToAsciiLower(c);
-      ored |= c;
-    }
-
-    if (!(ored & ~0x7F))
+    bool error;
+    const int32_t real_length = unicode::FoldCase(
+        data16.data(), static_cast<int32_t>(data16.size()), source16.data(),
+        static_cast<int32_t>(source16.size()), &error);
+    if (!error && real_length == static_cast<int32_t>(data16.size())) {
       return new_impl;
-
-    // Do a slower implementation for cases that include non-ASCII Latin-1
-    // characters.
-    for (size_t i = 0; i < source8.size(); ++i) {
-      data8[i] = static_cast<LChar>(unicode::ToLower(source8[i]));
+    }
+    new_impl = StringImpl::CreateUninitialized(real_length, data16);
+    unicode::FoldCase(data16.data(), static_cast<int32_t>(data16.size()),
+                      source16.data(), static_cast<int32_t>(source16.size()),
+                      &error);
+    if (error) {
+      return original_string;
     }
     return new_impl;
-  }
+  };
 
-  // Do a faster loop for the case where all the characters are ASCII.
-  base::span<UChar> data16;
-  scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data16);
-  UChar ored = 0;
+  const bool is_ascii = ContainsOnlyAsciiOrEmpty();
 
-  const base::span<const UChar> source16 = Span16();
-  for (size_t i = 0; i < source16.size(); ++i) {
-    const UChar c = source16[i];
-    data16[i] = ::blink::ToAsciiLower(c);
-    ored |= c;
-  }
-  if (!(ored & ~0x7F))
-    return new_impl;
+  return VisitCharacters(*this, [&](auto chars) -> scoped_refptr<StringImpl> {
+    if (is_ascii) {
+      // Faster implementation for cases where all the characters are ASCII.
+      using CharType = typename decltype(chars)::value_type;
+      base::span<CharType> data;
+      scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data);
+      for (size_t i = 0; i < chars.size(); ++i) {
+        data[i] = ::blink::ToAsciiLower(chars[i]);
+      }
+      return new_impl;
+    }
 
-  // Do a slower implementation for cases that include non-ASCII characters.
-  bool error;
-  const int32_t real_length = unicode::FoldCase(
-      data16.data(), static_cast<int32_t>(data16.size()), source16.data(),
-      static_cast<int32_t>(source16.size()), &error);
-  if (!error && real_length == static_cast<int32_t>(data16.size())) {
-    return new_impl;
-  }
-  new_impl = CreateUninitialized(real_length, data16);
-  unicode::FoldCase(data16.data(), static_cast<int32_t>(data16.size()),
-                    source16.data(), static_cast<int32_t>(source16.size()),
-                    &error);
-  if (error)
-    return this;
-  return new_impl;
+    // Slower implementation for cases that include non-ASCII characters.
+    using CharType = typename decltype(chars)::value_type;
+    if constexpr (std::is_same_v<CharType, LChar>) {
+      Vector<UChar, 512> source16(length_);
+      for (wtf_size_t i = 0; i < length_; ++i) {
+        source16[i] = chars[i];
+      }
+      return fold_case_16bit_slow(source16, this);
+    } else {
+      return fold_case_16bit_slow(chars, this);
+    }
+  });
 }
 
 template <class UCharPredicate>

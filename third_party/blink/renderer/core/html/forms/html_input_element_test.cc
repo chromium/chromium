@@ -152,6 +152,39 @@ TEST_F(HTMLInputElementTest, FilteredDataListOptionsDynamicContain) {
   EXPECT_EQ("Hozelock Auto Reel 40m - 2595", options[3]->value().Utf8());
 }
 
+TEST_F(HTMLInputElementTest, FilteredDataListOptionsCaseFoldingSharpS) {
+  // Datalist option has Eszett ("ß"), and we want to match it with "ß" input.
+  // The bug was that typing "ß" (8-bit) matched the option, but copy-pasting
+  // "ß" (16-bit) did not (see crbug.com/493179860 for more details).
+
+  // Case A (Simulating Typing): Input is "ß" (8-bit), Option is "ß" (8-bit).
+  // They both fold to "ß" (pre-fix) or both to "ss" (post-fix), so they match.
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <input id=test value="&#xDF;" list=dl_sharps>
+    <datalist id=dl_sharps>
+      <option>&#xDF;</option>
+    </datalist>
+  )HTML");
+  auto options = TestElement().FilteredDataListOptions();
+  EXPECT_EQ(1u, options.size());
+  EXPECT_EQ(0xDF, options[0]->value()[0]);
+
+  // Case B (Simulating Pasting): Input is "ß" (forced 16-bit), Option is "ß"
+  // (8-bit). Previously, 16-bit input folded to "ss" but 8-bit option folded to
+  // "ß", resulting in no match. With the fix, both fold to "ss" and match.
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <input id=test list=dl_sharps2>
+    <datalist id=dl_sharps2>
+      <option>&#xDF;</option>
+    </datalist>
+  )HTML");
+  const UChar sharps_16bit[] = {0xDF, 0};
+  TestElement().SetValue(String(sharps_16bit));
+  options = TestElement().FilteredDataListOptions();
+  EXPECT_EQ(1u, options.size());
+  EXPECT_EQ(0xDF, options[0]->value()[0]);
+}
+
 TEST_F(HTMLInputElementTest, create) {
   auto* input = MakeGarbageCollected<HTMLInputElement>(
       GetDocument(), CreateElementFlags::ByCreateElement());
