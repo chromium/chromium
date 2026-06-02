@@ -7,11 +7,10 @@
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/aura/window.h"
@@ -71,8 +70,8 @@ bool CanShowWindowForUser(
 }
 
 gfx::ImageSkia GetAvatarImageForContext(content::BrowserContext* context) {
-  return GetAvatarImageForUser(ash::ProfileHelper::Get()->GetUserByProfile(
-      Profile::FromBrowserContext(context)));
+  return GetAvatarImageForUser(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context));
 }
 
 gfx::ImageSkia GetAvatarImageForUser(const user_manager::User* user) {
