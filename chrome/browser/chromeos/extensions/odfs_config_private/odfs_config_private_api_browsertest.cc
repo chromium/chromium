@@ -89,7 +89,7 @@ class OfdsConfigPrivateApiBrowserTest : public ExtensionApiTest {
   }
 
   int CreateNewTabAndNavigate(const GURL& url, Browser* browser) {
-    chrome::NewTab(browser);
+    chrome::NewTab(browser, NewTabTypes::kNoUserAction);
 
     content::WebContents* web_contents =
         browser->GetTabStripModel()->GetActiveWebContents();

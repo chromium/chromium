@@ -1398,7 +1398,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_EQ(app_origin, url::Origin::Create(filesystem_url));
 
   // Create a new tab, unrelated to the app, and navigate it to a web URL.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   content::WebContents* web_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL web_url(embedded_test_server()->GetURL("/title1.html"));

@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   ASSERT_EQ(1U, CountNotifications());
 
   // Open a new tab, but the balloon will still be there.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   WebContents* new_current_tab = GetActiveWebContents();
   ASSERT_TRUE(new_current_tab);
   ASSERT_NE(new_current_tab, original_tab);
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   LoadTestExtension();
 
   // Open a tab extension.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(std::string(extensions::kExtensionScheme) +
                       url::kStandardSchemeSeparator + first_extension_id_ +

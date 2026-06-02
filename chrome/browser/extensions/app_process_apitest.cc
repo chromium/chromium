@@ -104,7 +104,7 @@ class AppApiTest : public extensions::ExtensionApiTest {
     EXPECT_FALSE(browser()->tab_strip_model()->GetWebContentsAt(1)->GetWebUI());
 
     ui_test_utils::TabAddedWaiter tab_add(browser());
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     tab_add.Wait();
     LOG(INFO) << "New tab.";
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, AppProcess) {
   EXPECT_FALSE(browser()->tab_strip_model()->GetWebContentsAt(2)->GetWebUI());
 
   ui_test_utils::TabAddedWaiter tab_add(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   tab_add.Wait();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), base_url.Resolve("path3/empty.html")));
@@ -295,10 +295,10 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, DISABLED_AppProcessRedirectBack) {
   // Open two tabs in the app.
   GURL base_url = GetTestBaseURL("app_process");
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), base_url.Resolve("path1/empty.html")));
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   // Wait until the second tab finishes its redirect train (2 hops).
   // 1. We navigate to redirect.html
   // 2. Renderer navigates and finishes, counting as a load stop.

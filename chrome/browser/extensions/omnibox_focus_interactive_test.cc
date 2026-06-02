@@ -66,7 +66,7 @@ class OmniboxFocusInteractiveTest : public ExtensionBrowserTest {
   }
 
   void OpenNewTab() {
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     content::WebContents* web_contents = GetActiveWebContents();
 
     // Wait until chrome://newtab navigation finished.

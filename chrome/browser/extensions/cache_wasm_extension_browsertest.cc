@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(WasmExtensionCachingBrowserTest, CacheWasmExtensions) {
   // few more loads.
   for (int num_tabs = 1; num_tabs <= 10; ++num_tabs) {
     LOG(INFO) << "Opening new tab #" << num_tabs;
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     // Wait until we got a total of `num_tabs` many samples.
     WaitForHistogramSamples(kHistogram, num_tabs);
     // If there was a hit, we are happy (and done).
