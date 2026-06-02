@@ -22,6 +22,8 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediarecorder/blob_event.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
@@ -498,8 +500,15 @@ void MediaRecorder::CreateBlobEvent(Blob* blob) {
   if (!blob_event_first_chunk_timecode_.has_value()) {
     blob_event_first_chunk_timecode_ = now;
   } else {
-    timecode =
-        (now - blob_event_first_chunk_timecode_.value()).InMillisecondsF();
+    if (LocalDOMWindow* window =
+            DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
+      if (WindowPerformance* performance =
+              DOMWindowPerformance::performance(*window)) {
+        timecode = performance->MonotonicTimeToDOMHighResTimeStamp(now) -
+                   performance->MonotonicTimeToDOMHighResTimeStamp(
+                       blob_event_first_chunk_timecode_.value());
+      }
+    }
   }
 
   ScheduleDispatchEvent(MakeGarbageCollected<BlobEvent>(
