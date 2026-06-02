@@ -2234,9 +2234,9 @@ void BrowserAutofillManager::DidShowSuggestions(
                             return GetFillingProductFromSuggestionType(type) ==
                                    FillingProduct::kAutofillAi;
                           })) {
-    ai_manager->OnSuggestionsShown(CHECK_DEREF(form_structure),
-                                   CHECK_DEREF(autofill_field), suggestions,
-                                   driver().GetPageUkmSourceId());
+    ai_manager->OnAutofillAiSuggestionsShown(
+        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field), suggestions,
+        driver().GetPageUkmSourceId());
   }
 
   // Notify the BNPL manager about suggestion shown if the current shown

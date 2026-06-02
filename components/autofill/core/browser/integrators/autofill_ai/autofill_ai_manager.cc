@@ -224,7 +224,7 @@ AutofillAiManager::AutofillAiManager(
 
 AutofillAiManager::~AutofillAiManager() = default;
 
-void AutofillAiManager::OnSuggestionsShown(
+void AutofillAiManager::OnAutofillAiSuggestionsShown(
     const FormStructure& form,
     const AutofillField& field,
     base::span<const Suggestion> shown_suggestions,

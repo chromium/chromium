@@ -35,7 +35,7 @@ class MockAutofillAiManager : public AutofillAiManager {
               (const autofill::FormStructure&, autofill::FieldGlobalId),
               (const override));
   MOCK_METHOD(void,
-              OnSuggestionsShown,
+              OnAutofillAiSuggestionsShown,
               (const FormStructure&,
                const AutofillField&,
                base::span<const Suggestion> shown_suggestions,

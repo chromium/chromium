@@ -400,8 +400,8 @@ TEST_F(AutofillAiManagerTest,
   Suggestion passport_suggestion(SuggestionType::kFillAutofillAi);
   passport_suggestion.payload =
       Suggestion::AutofillAiPayload(passport_entity.guid());
-  manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
-                               {passport_suggestion}, {});
+  manager().OnAutofillAiSuggestionsShown(
+      form_structure, *form_structure.field(0), {passport_suggestion}, {});
   manager().OnDidFillSuggestion(passport_entity, form_structure,
                                 *form_structure.field(0),
                                 /*filled_fiekds*/ {}, {});
@@ -435,8 +435,8 @@ TEST_F(AutofillAiManagerTest,
   Suggestion passport_suggestion(SuggestionType::kFillAutofillAi);
   passport_suggestion.payload =
       Suggestion::AutofillAiPayload(passport_entity.guid());
-  manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
-                               {passport_suggestion}, {});
+  manager().OnAutofillAiSuggestionsShown(
+      form_structure, *form_structure.field(0), {passport_suggestion}, {});
 
   EXPECT_CALL(
       autofill_client(),
@@ -470,8 +470,8 @@ TEST_F(
   Suggestion passport_suggestion(SuggestionType::kFillAutofillAi);
   passport_suggestion.payload =
       Suggestion::AutofillAiPayload(passport_entity.guid());
-  manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
-                               {passport_suggestion}, {});
+  manager().OnAutofillAiSuggestionsShown(
+      form_structure, *form_structure.field(0), {passport_suggestion}, {});
   manager().OnDidFillSuggestion(passport_entity, form_structure,
                                 *form_structure.field(0),
                                 /*filled_fiekds*/ {}, {});
@@ -2164,22 +2164,25 @@ TEST_F(AutofillAiManagerTest, LoadedServerPredictionsToSuggestionsShownTiming) {
       Suggestion::AutofillAiPayload(GetPassportEntityInstance().guid());
 
   // First time showing suggestions on page 1 logs the metric.
-  manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
-                               {passport_suggestion}, ukm_source_id_1);
+  manager().OnAutofillAiSuggestionsShown(
+      form_structure, *form_structure.field(0), {passport_suggestion},
+      ukm_source_id_1);
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.TimingInterval.LoadedServerPredictionsToSuggestionsShown",
       1);
 
   // Second time showing suggestions on page 1 DOES NOT log.
-  manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
-                               {passport_suggestion}, ukm_source_id_1);
+  manager().OnAutofillAiSuggestionsShown(
+      form_structure, *form_structure.field(0), {passport_suggestion},
+      ukm_source_id_1);
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.TimingInterval.LoadedServerPredictionsToSuggestionsShown",
       1);
 
   // Showing suggestions on page 2 LOGS again.
-  manager().OnSuggestionsShown(form_structure, *form_structure.field(0),
-                               {passport_suggestion}, ukm_source_id_2);
+  manager().OnAutofillAiSuggestionsShown(
+      form_structure, *form_structure.field(0), {passport_suggestion},
+      ukm_source_id_2);
   histogram_tester.ExpectTotalCount(
       "Autofill.Ai.TimingInterval.LoadedServerPredictionsToSuggestionsShown",
       2);

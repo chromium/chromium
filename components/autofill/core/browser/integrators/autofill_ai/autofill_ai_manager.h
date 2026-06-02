@@ -71,7 +71,7 @@ class AutofillAiManager {
   // TODO(crbug.com/389629573): The "On*" methods below are used only for
   // logging purposes. Explore different approaches.
 
-  virtual void OnSuggestionsShown(
+  virtual void OnAutofillAiSuggestionsShown(
       const FormStructure& form,
       const AutofillField& field,
       base::span<const Suggestion> shown_suggestions,

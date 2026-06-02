@@ -512,9 +512,9 @@ TEST_P(AutofillAiFunnelMetricsTest, SuggestionAfterReadiness) {
   }
   {  // The user triggered suggestions.
     manager().OnFormSeen(*form);
-    manager().OnSuggestionsShown(*form, *form->field(0),
-                                 {GetSuggestion(entity)},
-                                 /*ukm_source_id=*/{});
+    manager().OnAutofillAiSuggestionsShown(*form, *form->field(0),
+                                           {GetSuggestion(entity)},
+                                           /*ukm_source_id=*/{});
     base::HistogramTester histogram_tester;
     SubmitOrAbandonForm(*form);
     ExpectFunnelRecording(histogram_tester, "SuggestionAfterReadiness",
@@ -529,9 +529,9 @@ TEST_P(AutofillAiFunnelMetricsTest, FillAfterSuggestion) {
   AddOrUpdateEntityInstance(entity);
   auto set_up_funnel = [&] {
     manager().OnFormSeen(*form);
-    manager().OnSuggestionsShown(*form, *form->field(0),
-                                 {GetSuggestion(entity)},
-                                 /*ukm_source_id=*/{});
+    manager().OnAutofillAiSuggestionsShown(*form, *form->field(0),
+                                           {GetSuggestion(entity)},
+                                           /*ukm_source_id=*/{});
   };
   {  // The user didn't fill suggestions.
     set_up_funnel();
@@ -559,9 +559,9 @@ TEST_P(AutofillAiFunnelMetricsTest, CorrectionAfterFill) {
   AddOrUpdateEntityInstance(entity);
   auto set_up_funnel = [&] {
     manager().OnFormSeen(*form);
-    manager().OnSuggestionsShown(*form, *form->field(0),
-                                 {GetSuggestion(entity)},
-                                 /*ukm_source_id=*/{});
+    manager().OnAutofillAiSuggestionsShown(*form, *form->field(0),
+                                           {GetSuggestion(entity)},
+                                           /*ukm_source_id=*/{});
     manager().OnDidFillSuggestion(entity, *form, *form->field(0),
                                   {form->field(0)},
                                   /*ukm_source_id=*/{});
@@ -669,9 +669,9 @@ TEST_P(AutofillAiKeyMetricsTest, FillingAssistance) {
                               /*sample=*/0);
   }
   {
-    manager().OnSuggestionsShown(*form, *form->field(0),
-                                 {GetSuggestion(entity)},
-                                 /*ukm_source_id=*/{});
+    manager().OnAutofillAiSuggestionsShown(*form, *form->field(0),
+                                           {GetSuggestion(entity)},
+                                           /*ukm_source_id=*/{});
     manager().OnDidFillSuggestion(entity, *form, *form->field(0),
                                   /*filled_fields=*/{},
                                   /*ukm_source_id=*/{});
@@ -687,8 +687,9 @@ TEST_P(AutofillAiKeyMetricsTest, FillingAcceptance) {
   EntityInstance entity = CreateEntity();
   AddOrUpdateEntityInstance(entity);
   manager().OnFormSeen(*form);
-  manager().OnSuggestionsShown(*form, *form->field(0), {GetSuggestion(entity)},
-                               /*ukm_source_id=*/{});
+  manager().OnAutofillAiSuggestionsShown(*form, *form->field(0),
+                                         {GetSuggestion(entity)},
+                                         /*ukm_source_id=*/{});
   {
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
@@ -711,8 +712,9 @@ TEST_P(AutofillAiKeyMetricsTest, FillingCorrectness) {
   EntityInstance entity = CreateEntity();
   AddOrUpdateEntityInstance(entity);
   manager().OnFormSeen(*form);
-  manager().OnSuggestionsShown(*form, *form->field(0), {GetSuggestion(entity)},
-                               /*ukm_source_id=*/{});
+  manager().OnAutofillAiSuggestionsShown(*form, *form->field(0),
+                                         {GetSuggestion(entity)},
+                                         /*ukm_source_id=*/{});
   manager().OnDidFillSuggestion(entity, *form, *form->field(0),
                                 /*filled_fields=*/{form->field(0)},
                                 /*ukm_source_id=*/{});
@@ -749,12 +751,14 @@ TEST_F(BaseAutofillAiTest, KeyMetrics_MixedForm) {
   manager().OnFormSeen(*mixed_form);
 
   // Assistance should be true for both.
-  manager().OnSuggestionsShown(*mixed_form, *mixed_form->fields().front(),
-                               {GetSuggestion(vehicle_entity)},
-                               /*ukm_source_id=*/{});
-  manager().OnSuggestionsShown(*mixed_form, *mixed_form->fields().back(),
-                               {GetSuggestion(drivers_license_entity)},
-                               /*ukm_source_id=*/{});
+  manager().OnAutofillAiSuggestionsShown(*mixed_form,
+                                         *mixed_form->fields().front(),
+                                         {GetSuggestion(vehicle_entity)},
+                                         /*ukm_source_id=*/{});
+  manager().OnAutofillAiSuggestionsShown(
+      *mixed_form, *mixed_form->fields().back(),
+      {GetSuggestion(drivers_license_entity)},
+      /*ukm_source_id=*/{});
 
   // Acceptance should be true for both.
   manager().OnDidFillSuggestion(
