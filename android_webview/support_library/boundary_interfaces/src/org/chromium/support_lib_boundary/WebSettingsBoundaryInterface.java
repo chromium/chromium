@@ -187,4 +187,8 @@ public interface WebSettingsBoundaryInterface {
     void setIgnoreDuplicateNavThreshold(long thresholdMs);
 
     long getIgnoreDuplicateNavThreshold();
+
+    void setDownloadFaviconsEnabled(boolean enabled);
+
+    boolean getDownloadFaviconsEnabled();
 }

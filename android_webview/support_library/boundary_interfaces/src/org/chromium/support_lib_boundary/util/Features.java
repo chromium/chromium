@@ -486,4 +486,8 @@ public class Features {
 
     // WebViewCompat.navigate
     public static final String WEBVIEW_NAVIGATE_V1 = "WEBVIEW_NAVIGATE_V1";
+
+    // WebSettingsCompat.setDownloadFaviconsEnabled
+    // WebSettingsCompat.getDownloadFaviconsEnabled
+    public static final String DOWNLOAD_FAVICONS_ENABLED = "DOWNLOAD_FAVICONS_ENABLED";
 }

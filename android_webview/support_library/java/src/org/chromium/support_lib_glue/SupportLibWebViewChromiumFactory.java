@@ -143,6 +143,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.BACK_FORWARD_CACHE_SETTINGS_V4,
                 Features.IGNORE_DUPLICATE_NAV + Features.DEV_SUFFIX,
                 Features.WEBVIEW_NAVIGATE_V1,
+                Features.DOWNLOAD_FAVICONS_ENABLED + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -339,6 +340,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.CLEAR_MAX_PREFETCHES,
         ApiCall.CLEAR_PREFETCH_TTL,
         ApiCall.NAVIGATE,
+        ApiCall.SET_DOWNLOAD_FAVICONS_ENABLED,
+        ApiCall.GET_DOWNLOAD_FAVICONS_ENABLED,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -541,8 +544,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int CLEAR_PREFETCH_TTL = 192;
         int CLEAR_MAX_PRERENDERS = 193;
         int NAVIGATE = 194;
+        int SET_DOWNLOAD_FAVICONS_ENABLED = 195;
+        int GET_DOWNLOAD_FAVICONS_ENABLED = 196;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 195;
+        int COUNT = 197;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

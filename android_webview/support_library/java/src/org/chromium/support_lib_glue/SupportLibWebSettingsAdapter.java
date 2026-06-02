@@ -672,4 +672,22 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             return mAwSettings.getIgnoreDuplicateNavThreshold();
         }
     }
+
+    @Override
+    public void setDownloadFaviconsEnabled(boolean enabled) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_DOWNLOAD_FAVICONS_ENABLED")) {
+            recordApiCall(ApiCall.SET_DOWNLOAD_FAVICONS_ENABLED);
+            mAwSettings.setDownloadFaviconsEnabled(enabled);
+        }
+    }
+
+    @Override
+    public boolean getDownloadFaviconsEnabled() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_DOWNLOAD_FAVICONS_ENABLED")) {
+            recordApiCall(ApiCall.GET_DOWNLOAD_FAVICONS_ENABLED);
+            return mAwSettings.getDownloadFaviconsEnabled();
+        }
+    }
 }
