@@ -32,6 +32,10 @@
   z-index: 4;
 }
 
+:host-context([energy-effect-enabled]) #container {
+  box-shadow: var(--box-shadow-energy-effect);
+}
+
 #input::-webkit-scrollbar {
   display: none;
 }
