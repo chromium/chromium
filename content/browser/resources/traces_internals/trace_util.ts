@@ -35,6 +35,10 @@ function downloadUrl(fileName: string, url: string): void {
   a.href = url;
   a.download = fileName;
   a.click();
+
+  // Downloading succeeds even if the URL was revoked during downloading. See
+  // the spec for details (https://w3c.github.io/FileAPI/#dfn-revokeObjectURL):
+  window.URL.revokeObjectURL(url);
 }
 
 export function downloadTraceData(data: BigBuffer, uuid: Token): void {
