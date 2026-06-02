@@ -59,9 +59,6 @@ class Blocklist : public KeyedService {
   using GetBlocklistedIDsCallback =
       base::OnceCallback<void(const BlocklistStateMap&)>;
 
-  using GetMalwareIDsCallback =
-      base::OnceCallback<void(const std::set<ExtensionId>&)>;
-
   using IsBlocklistedCallback = base::OnceCallback<void(BlocklistState)>;
 
   using DatabaseReadyCallback = base::OnceCallback<void(bool)>;
@@ -83,13 +80,6 @@ class Blocklist : public KeyedService {
   // see ExtensionPrefs::IsExtensionBlocklisted.
   void GetBlocklistedIDs(const std::set<ExtensionId>& ids,
                          GetBlocklistedIDsCallback callback);
-
-  // From the subset of extension IDs passed in via `ids`, select the ones
-  // marked in the blocklist as BLOCKLISTED_MALWARE and asynchronously pass
-  // to `callback`. Basically, will call GetBlocklistedIDs and filter its
-  // results.
-  void GetMalwareIDs(const std::set<ExtensionId>& ids,
-                     GetMalwareIDsCallback callback);
 
   // More convenient form of GetBlocklistedIDs for checking a single extension.
   void IsBlocklisted(const ExtensionId& extension_id,

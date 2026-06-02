@@ -141,22 +141,6 @@ void CheckOneExtensionState(Blocklist::IsBlocklistedCallback callback,
                                             : state_map.begin()->second);
 }
 
-void GetMalwareFromBlocklistStateMap(
-    Blocklist::GetMalwareIDsCallback callback,
-    const Blocklist::BlocklistStateMap& state_map) {
-  std::set<ExtensionId> malware;
-  for (const auto& state_pair : state_map) {
-    // TODO(oleg): UNKNOWN is treated as MALWARE for backwards compatibility.
-    // In future GetMalwareIDs will be removed and the caller will have to
-    // deal with BLOCKLISTED_UNKNOWN state returned from GetBlocklistedIDs.
-    if (state_pair.second == BLOCKLISTED_MALWARE ||
-        state_pair.second == BLOCKLISTED_UNKNOWN) {
-      malware.insert(state_pair.first);
-    }
-  }
-  std::move(callback).Run(malware);
-}
-
 }  // namespace
 
 Blocklist::Observer::Observer(Blocklist* blocklist) : blocklist_(blocklist) {
@@ -198,12 +182,6 @@ void Blocklist::GetBlocklistedIDs(const std::set<ExtensionId>& ids,
       SafeBrowsingDatabaseManager::Client::GetPassKey(), ids,
       base::BindOnce(&Blocklist::GetBlocklistStateForIDs,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void Blocklist::GetMalwareIDs(const std::set<ExtensionId>& ids,
-                              GetMalwareIDsCallback callback) {
-  GetBlocklistedIDs(ids, base::BindOnce(&GetMalwareFromBlocklistStateMap,
-                                        std::move(callback)));
 }
 
 void Blocklist::IsBlocklisted(const ExtensionId& extension_id,

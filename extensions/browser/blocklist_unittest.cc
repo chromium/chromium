@@ -65,28 +65,6 @@ void Assign(T* to, const T& from) {
 
 }  // namespace
 
-TEST_F(BlocklistTest, OnlyIncludesRequestedIDs) {
-  ExtensionId a = AddExtension("a");
-  ExtensionId b = AddExtension("b");
-  ExtensionId c = AddExtension("c");
-
-  Blocklist blocklist(browser_context());
-  TestBlocklist tester(&blocklist);
-  tester.SetBlocklistState(a, BLOCKLISTED_MALWARE, false);
-  tester.SetBlocklistState(b, BLOCKLISTED_MALWARE, false);
-
-  EXPECT_EQ(BLOCKLISTED_MALWARE, tester.GetBlocklistState(a));
-  EXPECT_EQ(BLOCKLISTED_MALWARE, tester.GetBlocklistState(b));
-  EXPECT_EQ(NOT_BLOCKLISTED, tester.GetBlocklistState(c));
-
-  std::set<ExtensionId> blocklisted_ids;
-  blocklist.GetMalwareIDs(
-      {a, c}, base::BindOnce(&Assign<std::set<ExtensionId>>, &blocklisted_ids));
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ((std::set<ExtensionId>{a}), blocklisted_ids);
-}
-
 TEST_F(BlocklistTest, SafeBrowsing) {
   ExtensionId a = AddExtension("a");
 
