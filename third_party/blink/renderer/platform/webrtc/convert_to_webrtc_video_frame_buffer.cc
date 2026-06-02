@@ -344,25 +344,34 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       const webrtc::I420ABufferInterface* yuva_buffer = buffer->GetI420A();
       const media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420A;
       const size_t luma_rows = size.height();
-      const size_t chroma_rows =
-          media::VideoFrame::PlaneSizeInSamples(
-              pixel_format, media::VideoFrame::Plane::kU, size)
-              .height();
+      const size_t luma_width = size.width();
+      const gfx::Size chroma_size = media::VideoFrame::PlaneSizeInSamples(
+          pixel_format, media::VideoFrame::Plane::kU, size);
+      const size_t chroma_width = chroma_size.width();
+      const size_t chroma_rows = chroma_size.height();
       // TODO(issues.webrtc.org/issues/42225170):
       // webrtc::I420ABufferInterface should expose ArrayView instead of raw
       // pointers.
       auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuva_buffer->DataY(),
-          base::saturated_cast<size_t>(yuva_buffer->StrideY()) * luma_rows));
+          base::saturated_cast<size_t>(yuva_buffer->StrideY()) *
+                  (luma_rows - 1) +
+              luma_width));
       auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuva_buffer->DataU(),
-          base::saturated_cast<size_t>(yuva_buffer->StrideU()) * chroma_rows));
+          base::saturated_cast<size_t>(yuva_buffer->StrideU()) *
+                  (chroma_rows - 1) +
+              chroma_width));
       auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuva_buffer->DataV(),
-          base::saturated_cast<size_t>(yuva_buffer->StrideV()) * chroma_rows));
+          base::saturated_cast<size_t>(yuva_buffer->StrideV()) *
+                  (chroma_rows - 1) +
+              chroma_width));
       auto a_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuva_buffer->DataA(),
-          base::saturated_cast<size_t>(yuva_buffer->StrideA()) * luma_rows));
+          base::saturated_cast<size_t>(yuva_buffer->StrideA()) *
+                  (luma_rows - 1) +
+              luma_width));
       video_frame = media::VideoFrame::WrapExternalYuvaData(
           pixel_format, size, gfx::Rect(size), size, yuva_buffer->StrideY(),
           yuva_buffer->StrideU(), yuva_buffer->StrideV(),
@@ -374,22 +383,29 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       const webrtc::I420BufferInterface* yuv_buffer = buffer->GetI420();
       const media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420;
       const size_t luma_rows = size.height();
-      const size_t chroma_rows =
-          media::VideoFrame::PlaneSizeInSamples(
-              pixel_format, media::VideoFrame::Plane::kU, size)
-              .height();
+      const size_t luma_width = size.width();
+      const gfx::Size chroma_size = media::VideoFrame::PlaneSizeInSamples(
+          pixel_format, media::VideoFrame::Plane::kU, size);
+      const size_t chroma_width = chroma_size.width();
+      const size_t chroma_rows = chroma_size.height();
       // TODO(issues.webrtc.org/issues/42225170):
       // webrtc::I420BufferInterface should expose ArrayView instead of raw
       // pointers.
       auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuv_buffer->DataY(),
-          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * luma_rows));
+          base::saturated_cast<size_t>(yuv_buffer->StrideY()) *
+                  (luma_rows - 1) +
+              luma_width));
       auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuv_buffer->DataU(),
-          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * chroma_rows));
+          base::saturated_cast<size_t>(yuv_buffer->StrideU()) *
+                  (chroma_rows - 1) +
+              chroma_width));
       auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuv_buffer->DataV(),
-          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * chroma_rows));
+          base::saturated_cast<size_t>(yuv_buffer->StrideV()) *
+                  (chroma_rows - 1) +
+              chroma_width));
 
       video_frame = media::VideoFrame::WrapExternalYuvData(
           pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY(),
@@ -401,21 +417,28 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       const webrtc::I444BufferInterface* yuv_buffer = buffer->GetI444();
       const media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I444;
       const size_t luma_rows = size.height();
-      const size_t chroma_rows =
-          media::VideoFrame::PlaneSizeInSamples(
-              pixel_format, media::VideoFrame::Plane::kU, size)
-              .height();
+      const size_t luma_width = size.width();
+      const gfx::Size chroma_size = media::VideoFrame::PlaneSizeInSamples(
+          pixel_format, media::VideoFrame::Plane::kU, size);
+      const size_t chroma_width = chroma_size.width();
+      const size_t chroma_rows = chroma_size.height();
       // TODO(crbug.com/338570700): webrtc::I444BufferInterface should expose
       // ArrayView instead of raw pointers.
       auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuv_buffer->DataY(),
-          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * luma_rows));
+          base::saturated_cast<size_t>(yuv_buffer->StrideY()) *
+                  (luma_rows - 1) +
+              luma_width));
       auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuv_buffer->DataU(),
-          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * chroma_rows));
+          base::saturated_cast<size_t>(yuv_buffer->StrideU()) *
+                  (chroma_rows - 1) +
+              chroma_width));
       auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuv_buffer->DataV(),
-          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * chroma_rows));
+          base::saturated_cast<size_t>(yuv_buffer->StrideV()) *
+                  (chroma_rows - 1) +
+              chroma_width));
       video_frame = media::VideoFrame::WrapExternalYuvData(
           pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY(),
           yuv_buffer->StrideU(), yuv_buffer->StrideV(), y_plane, u_plane,
@@ -426,21 +449,28 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       const webrtc::I422BufferInterface* yuv_buffer = buffer->GetI422();
       const media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I422;
       const size_t luma_rows = size.height();
-      const size_t chroma_rows =
-          media::VideoFrame::PlaneSizeInSamples(
-              pixel_format, media::VideoFrame::Plane::kU, size)
-              .height();
+      const size_t luma_width = size.width();
+      const gfx::Size chroma_size = media::VideoFrame::PlaneSizeInSamples(
+          pixel_format, media::VideoFrame::Plane::kU, size);
+      const size_t chroma_width = chroma_size.width();
+      const size_t chroma_rows = chroma_size.height();
       // TODO(crbug.com/338570700): webrtc::I422BufferInterface should expose
       // ArrayView instead of raw pointers.
       auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuv_buffer->DataY(),
-          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * luma_rows));
+          base::saturated_cast<size_t>(yuv_buffer->StrideY()) *
+                  (luma_rows - 1) +
+              luma_width));
       auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuv_buffer->DataU(),
-          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * chroma_rows));
+          base::saturated_cast<size_t>(yuv_buffer->StrideU()) *
+                  (chroma_rows - 1) +
+              chroma_width));
       auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
           yuv_buffer->DataV(),
-          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * chroma_rows));
+          base::saturated_cast<size_t>(yuv_buffer->StrideV()) *
+                  (chroma_rows - 1) +
+              chroma_width));
       video_frame = media::VideoFrame::WrapExternalYuvData(
           pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY(),
           yuv_buffer->StrideU(), yuv_buffer->StrideV(), y_plane, u_plane,
@@ -452,25 +482,33 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       const media::VideoPixelFormat pixel_format =
           media::PIXEL_FORMAT_YUV420P10;
       const size_t luma_rows = size.height();
-      const size_t chroma_rows =
-          media::VideoFrame::PlaneSizeInSamples(
-              pixel_format, media::VideoFrame::Plane::kU, size)
-              .height();
+      const size_t luma_width = size.width();
+      const gfx::Size chroma_size = media::VideoFrame::PlaneSizeInSamples(
+          pixel_format, media::VideoFrame::Plane::kU, size);
+      const size_t chroma_width = chroma_size.width();
+      const size_t chroma_rows = chroma_size.height();
       // WebRTC defines I010 data as uint16 whereas Chromium uses uint8 for all
       // video formats, so conversion and cast is needed.
       // TODO(crbug.com/338570700): webrtc::I010BufferInterface should expose
       // ArrayView instead of raw pointers.
       auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(yuv_buffer->DataY()),
-          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * 2 * luma_rows));
+          (base::saturated_cast<size_t>(yuv_buffer->StrideY()) *
+               (luma_rows - 1) +
+           luma_width) *
+              2));
       auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(yuv_buffer->DataU()),
-          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * 2 *
-              chroma_rows));
+          (base::saturated_cast<size_t>(yuv_buffer->StrideU()) *
+               (chroma_rows - 1) +
+           chroma_width) *
+              2));
       auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(yuv_buffer->DataV()),
-          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * 2 *
-              chroma_rows));
+          (base::saturated_cast<size_t>(yuv_buffer->StrideV()) *
+               (chroma_rows - 1) +
+           chroma_width) *
+              2));
       video_frame = media::VideoFrame::WrapExternalYuvData(
           pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY() * 2,
           yuv_buffer->StrideU() * 2, yuv_buffer->StrideV() * 2, y_plane,
@@ -482,25 +520,33 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       const media::VideoPixelFormat pixel_format =
           media::PIXEL_FORMAT_YUV422P10;
       const size_t luma_rows = size.height();
-      const size_t chroma_rows =
-          media::VideoFrame::PlaneSizeInSamples(
-              pixel_format, media::VideoFrame::Plane::kU, size)
-              .height();
+      const size_t luma_width = size.width();
+      const gfx::Size chroma_size = media::VideoFrame::PlaneSizeInSamples(
+          pixel_format, media::VideoFrame::Plane::kU, size);
+      const size_t chroma_width = chroma_size.width();
+      const size_t chroma_rows = chroma_size.height();
       // WebRTC defines I210 data as uint16 whereas Chromium uses uint8 for all
       // video formats, so conversion and cast is needed.
       // TODO(crbug.com/338570700): webrtc::I210BufferInterface should expose
       // ArrayView instead of raw pointers.
       auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(yuv_buffer->DataY()),
-          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * 2 * luma_rows));
+          (base::saturated_cast<size_t>(yuv_buffer->StrideY()) *
+               (luma_rows - 1) +
+           luma_width) *
+              2));
       auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(yuv_buffer->DataU()),
-          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * 2 *
-              chroma_rows));
+          (base::saturated_cast<size_t>(yuv_buffer->StrideU()) *
+               (chroma_rows - 1) +
+           chroma_width) *
+              2));
       auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(yuv_buffer->DataV()),
-          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * 2 *
-              chroma_rows));
+          (base::saturated_cast<size_t>(yuv_buffer->StrideV()) *
+               (chroma_rows - 1) +
+           chroma_width) *
+              2));
       video_frame = media::VideoFrame::WrapExternalYuvData(
           pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY() * 2,
           yuv_buffer->StrideU() * 2, yuv_buffer->StrideV() * 2, y_plane,
@@ -512,25 +558,33 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       const media::VideoPixelFormat pixel_format =
           media::PIXEL_FORMAT_YUV444P10;
       const size_t luma_rows = size.height();
-      const size_t chroma_rows =
-          media::VideoFrame::PlaneSizeInSamples(
-              pixel_format, media::VideoFrame::Plane::kU, size)
-              .height();
+      const size_t luma_width = size.width();
+      const gfx::Size chroma_size = media::VideoFrame::PlaneSizeInSamples(
+          pixel_format, media::VideoFrame::Plane::kU, size);
+      const size_t chroma_width = chroma_size.width();
+      const size_t chroma_rows = chroma_size.height();
       // WebRTC defines I410 data as uint16 whereas Chromium uses uint8 for all
       // video formats, so conversion and cast is needed.
       // TODO(crbug.com/338570700): webrtc::I410BufferInterface should expose
       // ArrayView instead of raw pointers.
       auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(yuv_buffer->DataY()),
-          base::saturated_cast<size_t>(yuv_buffer->StrideY()) * 2 * luma_rows));
+          (base::saturated_cast<size_t>(yuv_buffer->StrideY()) *
+               (luma_rows - 1) +
+           luma_width) *
+              2));
       auto u_plane = UNSAFE_TODO(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(yuv_buffer->DataU()),
-          base::saturated_cast<size_t>(yuv_buffer->StrideU()) * 2 *
-              chroma_rows));
+          (base::saturated_cast<size_t>(yuv_buffer->StrideU()) *
+               (chroma_rows - 1) +
+           chroma_width) *
+              2));
       auto v_plane = UNSAFE_TODO(base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(yuv_buffer->DataV()),
-          base::saturated_cast<size_t>(yuv_buffer->StrideV()) * 2 *
-              chroma_rows));
+          (base::saturated_cast<size_t>(yuv_buffer->StrideV()) *
+               (chroma_rows - 1) +
+           chroma_width) *
+              2));
       video_frame = media::VideoFrame::WrapExternalYuvData(
           pixel_format, size, gfx::Rect(size), size, yuv_buffer->StrideY() * 2,
           yuv_buffer->StrideU() * 2, yuv_buffer->StrideV() * 2, y_plane,
@@ -541,19 +595,24 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       const webrtc::NV12BufferInterface* nv12_buffer = buffer->GetNV12();
       const media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_NV12;
       const size_t luma_rows = size.height();
-      const size_t chroma_rows =
-          media::VideoFrame::PlaneSizeInSamples(
-              pixel_format, media::VideoFrame::Plane::kUV, size)
-              .height();
+      const size_t luma_width = size.width();
+      const gfx::Size chroma_size = media::VideoFrame::PlaneSizeInSamples(
+          pixel_format, media::VideoFrame::Plane::kUV, size);
+      const size_t chroma_width = chroma_size.width();
+      const size_t chroma_rows = chroma_size.height();
       // TODO(issues.webrtc.org/issues/42225170):
       // webrtc::I420BufferInterface should expose ArrayView instead of raw
       // pointers.
       auto y_plane = UNSAFE_TODO(base::span<const uint8_t>(
           nv12_buffer->DataY(),
-          base::saturated_cast<size_t>(nv12_buffer->StrideY()) * luma_rows));
+          base::saturated_cast<size_t>(nv12_buffer->StrideY()) *
+                  (luma_rows - 1) +
+              luma_width));
       auto uv_plane = UNSAFE_TODO(base::span<const uint8_t>(
           nv12_buffer->DataUV(),
-          base::saturated_cast<size_t>(nv12_buffer->StrideUV()) * chroma_rows));
+          base::saturated_cast<size_t>(nv12_buffer->StrideUV()) *
+                  (chroma_rows - 1) +
+              chroma_width));
 
       video_frame = media::VideoFrame::WrapExternalYuvData(
           media::PIXEL_FORMAT_NV12, size, gfx::Rect(size), size,
