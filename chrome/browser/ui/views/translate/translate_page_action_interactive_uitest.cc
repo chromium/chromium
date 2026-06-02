@@ -78,8 +78,15 @@ class TranslatePageActionInteractiveUiTest : public InProcessBrowserTest {
 
 // Verifies that clicking the Translate icon closes the Partial Translate bubble
 // and results in neither of the two Translate bubbles being shown.
+//
+// TODO(https://crbug.com/518230754): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ClosePartialTranslateBubble DISABLED_ClosePartialTranslateBubble
+#else
+#define MAYBE_ClosePartialTranslateBubble ClosePartialTranslateBubble
+#endif
 IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
-                       ClosePartialTranslateBubble) {
+                       MAYBE_ClosePartialTranslateBubble) {
   // Show the Translate icon.
   ChromeTranslateClient::FromWebContents(
       browser()->tab_strip_model()->GetActiveWebContents())
