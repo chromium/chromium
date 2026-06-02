@@ -245,6 +245,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidSurfaceColorUpdate,
     &kAndroidTabDeclutterDedupeTabIdsKillSwitch,
     &kAndroidTabSkipSaveTabsKillswitch,
+    &kAndroidTabstripStartupCaptureBugFix,
     &kAndroidThemeModule,
     &kAndroidThemeResourceProvider,
     &kAndroidToolbarScrollAblation,
@@ -603,6 +604,7 @@ BASE_FEATURE(kAndroidShareFullLink, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidSurfaceColorUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidTabSkipSaveTabsKillswitch,"AndroidTabSkipSaveTabsTaskKillswitch", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidTabstripStartupCaptureBugFix, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidThemeModule, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidThemeResourceProvider, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidToolbarScrollAblation, base::FEATURE_DISABLED_BY_DEFAULT);
