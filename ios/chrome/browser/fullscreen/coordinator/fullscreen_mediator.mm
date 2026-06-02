@@ -236,6 +236,7 @@ const CGFloat kFullscreenSnapThreshold = 10.0;
     _browserAgent->ExitFullscreen(
         PassKey(), FullscreenModeTransitionTrigger::kForcedByCode,
         /*animated=*/true);
+    [self updateViewportInsets:_browserAgent->insets()];
   }
 }
 
