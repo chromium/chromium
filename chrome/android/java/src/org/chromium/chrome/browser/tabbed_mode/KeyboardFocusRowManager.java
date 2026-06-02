@@ -14,7 +14,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -189,11 +188,9 @@ import java.util.function.Supplier;
         }
 
         // The next item in the focus cycle order is BOOKMARKS_BAR, if it is present.
-        if (ChromeFeatureList.sAndroidBookmarkBar.isEnabled()) {
-            var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
-            if (bookmarkBarCoordinator != null && bookmarkBarCoordinator.isVisible()) {
-                keyboardFocusRows.add(KeyboardFocusRow.BOOKMARKS_BAR);
-            }
+        var bookmarkBarCoordinator = mBookmarkBarCoordinatorSupplier.get();
+        if (bookmarkBarCoordinator != null && bookmarkBarCoordinator.isVisible()) {
+            keyboardFocusRows.add(KeyboardFocusRow.BOOKMARKS_BAR);
         }
 
         // The next item in the focus cycle order is the SIDE_PANEL, if it is shown.

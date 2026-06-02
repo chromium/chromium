@@ -15,7 +15,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
@@ -169,8 +168,7 @@ public class BookmarkBarUtils {
         if (sDeviceBookmarkBarCompatibleForTesting != null) {
             return sDeviceBookmarkBarCompatibleForTesting;
         }
-        return ChromeFeatureList.sAndroidBookmarkBar.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /**
@@ -364,11 +362,10 @@ public class BookmarkBarUtils {
         // we respect the user's local choice.
         // If a user has set the show bookmarks bar setting explicitly, then we will use that value.
         // If the user has never set the preference, then we will return a default, which is
-        // currently controlled with a FeatureParam.
+        // currently false.
         return hasUserSetDevicePrefShowBookmarksBar()
-                ? ContextUtils.getAppSharedPreferences()
-                        .getBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, false)
-                : ChromeFeatureList.sAndroidBookmarkBarShowBookmarkBar.getValue();
+                && ContextUtils.getAppSharedPreferences()
+                        .getBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, false);
     }
 
     /**

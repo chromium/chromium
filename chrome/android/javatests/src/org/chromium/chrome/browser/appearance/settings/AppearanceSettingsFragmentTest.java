@@ -38,7 +38,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -68,7 +67,6 @@ import java.util.Set;
 /** Tests for {@link AppearanceSettingsFragment}. */
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR + ":show_bookmark_bar/true")
 @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AppearanceSettingsFragmentTest {
 
@@ -184,6 +182,11 @@ public class AppearanceSettingsFragmentTest {
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_NonDesktop() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                            mProfile, true, /* fromKeyboardShortcut= */ false);
+                });
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
 
@@ -205,6 +208,12 @@ public class AppearanceSettingsFragmentTest {
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_NonDesktop() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                            mProfile, true, /* fromKeyboardShortcut= */ false);
+                });
+
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
 

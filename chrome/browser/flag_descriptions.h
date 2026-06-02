@@ -196,11 +196,6 @@ inline constexpr char kNewTabPageCustomizationV2Name[] =
     "Customize the new tab page V2";
 inline constexpr char kNewTabPageCustomizationV2Description[] =
     "Allows users to customize the new tab page, like appearance.";
-inline constexpr char kAndroidBookmarkBarName[] = "Bookmark Bar";
-inline constexpr char kAndroidBookmarkBarDescription[] =
-    "Enables the bookmark bar which provides users with bookmark access from "
-    "top chrome. Note that device form factor restrictions also apply.";
-
 inline constexpr char kAndroidBottomBarName[] = "Android Bottom Bar";
 inline constexpr char kAndroidBottomBarDescription[] =
     "Enables the chrome android bottom bar.";

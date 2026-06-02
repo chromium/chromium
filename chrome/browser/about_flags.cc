@@ -10758,10 +10758,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableSaveAndFill)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-bookmark-bar", flag_descriptions::kAndroidBookmarkBarName,
-     flag_descriptions::kAndroidBookmarkBarDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidBookmarkBar)},
-
     {"default-browser-promo-entry-point",
      flag_descriptions::kDefaultBrowserPromoEntryPointName,
      flag_descriptions::kDefaultBrowserPromoEntryPointDescription, kOsAndroid,

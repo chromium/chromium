@@ -267,10 +267,9 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
                             // item of the top controls, so we need to subtract the height of the
                             // bookmark bar to shift the toolbar up.
                             // TODO(crbug.com/417238089): Get offset from TopControlsStacker.
-                            int height = mBrowserControlsStateProvider.getTopControlsHeight();
-                            if (ChromeFeatureList.sAndroidBookmarkBar.isEnabled()) {
-                                height = getBookmarkBarAdjustedContentOffset(height);
-                            }
+                            int height =
+                                    getBookmarkBarAdjustedContentOffset(
+                                            mBrowserControlsStateProvider.getTopControlsHeight());
                             if (getControlsPosition() == ControlsPosition.TOP) {
                                 applyContentOffsetToModel(adjustContentOffsetForHairline(height));
                             } else if (getControlsPosition() == ControlsPosition.BOTTOM) {
@@ -668,10 +667,7 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
         }
 
         contentOffset = adjustContentOffsetForHairline(contentOffset);
-
-        if (ChromeFeatureList.sAndroidBookmarkBar.isEnabled()) {
-            contentOffset = getBookmarkBarAdjustedContentOffset(contentOffset);
-        }
+        contentOffset = getBookmarkBarAdjustedContentOffset(contentOffset);
 
         applyContentOffsetToModel(contentOffset);
     }

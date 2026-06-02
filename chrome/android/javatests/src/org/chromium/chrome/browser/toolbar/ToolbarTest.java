@@ -175,38 +175,23 @@ public class ToolbarTest {
     @Test
     @MediumTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
-    @Restriction({DeviceFormFactor.PHONE})
-    public void testControlContainerTopMarginWhenBookmarkBarIsDisabledOnPhone() {
-        testControlContainerTopMargin(/* expectBookmarkBar= */ false);
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testControlContainerTopMarginWhenBookmarkBarIsDisabledOnTablet() {
-        testControlContainerTopMargin(/* expectBookmarkBar= */ false);
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest
     // TODO(crbug.com/447525636): Re-enable tests.
-    public void testControlContainerTopMarginWhenBookmarkBarIsEnabledOnPhone() {
+    public void testControlContainerTopMarginOnPhone() {
         testControlContainerTopMargin(/* expectBookmarkBar= */ false);
     }
 
     @Test
     @MediumTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testControlContainerTopMarginWhenBookmarkBarIsEnabledOnTablet() {
+    public void testControlContainerTopMarginOnTablet() {
+        // Enable the bookmark bar setting for the test.
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                mActivity.getProfileProviderSupplier().get().getOriginalProfile(),
+                true,
+                /* fromKeyboardShortcut= */ false);
         testControlContainerTopMargin(/* expectBookmarkBar= */ true);
     }
 

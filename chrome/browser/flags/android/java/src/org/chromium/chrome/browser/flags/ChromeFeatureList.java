@@ -180,7 +180,6 @@ public abstract class ChromeFeatureList {
             "AndroidAppIntegrationMultiDataSource";
     public static final String ANDROID_APP_RATING_PROMPT = "AndroidAppRatingPrompt";
     public static final String ANDROID_AUTO_MINTED_TWA = "AndroidAutoMintedTWA";
-    public static final String ANDROID_BOOKMARK_BAR = "AndroidBookmarkBar";
     public static final String ANDROID_BOTTOM_BAR = "AndroidBottomBar";
     public static final String ANDROID_BRICKS_NATIVE_PAGE = "AndroidBricksNativePage";
     public static final String ANDROID_CONTEXT_MENU_DISABLED_MENU_ITEMS =
@@ -1443,8 +1442,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ALWAYS_DRAW_COMPOSITED_TOOLBAR_HAIRLINE, true);
     public static final MutableFlagWithSafeDefault sAndroidActorTaskTimeout =
             newMutableFlagWithSafeDefault(ANDROID_ACTOR_TASK_TIMEOUT, false);
-    public static final MutableFlagWithSafeDefault sAndroidBookmarkBar =
-            newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR, true);
     public static final MutableFlagWithSafeDefault sAndroidContextMenuDisabledMenuItems =
             newMutableFlagWithSafeDefault(ANDROID_CONTEXT_MENU_DISABLED_MENU_ITEMS, true);
     public static final MutableFlagWithSafeDefault sAndroidContextMenuNewActions =
@@ -1576,9 +1573,6 @@ public abstract class ChromeFeatureList {
                             ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE,
                             "multi_data_source_skip_device_check",
                             false);
-
-    public static final BooleanCachedFeatureParam sAndroidBookmarkBarShowBookmarkBar =
-            newBooleanCachedFeatureParam(ANDROID_BOOKMARK_BAR, "show_bookmark_bar", false);
 
     public static final BooleanCachedFeatureParam sAndroidBottomBarAlwaysUseFilledGlicIcon =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "always_use_filled_glic_icon", false);
@@ -1937,7 +1931,6 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck,
                     sAndroidAppIntegrationMultiDataSourceSkipSchemaCheck,
                     sAndroidAppRatingPromptBypassChecks,
-                    sAndroidBookmarkBarShowBookmarkBar,
                     sAndroidBottomBarAlwaysUseFilledGlicIcon,
                     sAndroidBottomBarDisableOnNtp,
                     sAndroidBottomBarKeepAppMenuInToolbar,

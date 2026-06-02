@@ -35,7 +35,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -44,7 +43,6 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayer;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayerJni;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.glic.GlicEnabling;
@@ -133,38 +131,25 @@ public class TabbedRootUiCoordinatorTest {
     @Test
     @MediumTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
-    @Restriction({DeviceFormFactor.PHONE})
-    public void testTopControlsHeightWithBookmarkBarWhenFlagIsDisabledOnPhone() {
-        testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ false);
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testTopControlsHeightWithBookmarkBarWhenFlagIsDisabledOnTablet() {
-        testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ false);
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest
     // TODO(crbug.com/447525636): Re-enable tests.
-    public void testTopControlsHeightWithBookmarkBarWhenFlagIsEnabledOnPhone() {
+    public void testTopControlsHeightWithBookmarkBarOnPhone() {
         testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ false);
     }
 
     @Test
     @MediumTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testTopControlsHeightWithBookmarkBarWhenFlagIsEnabledOnTablet() {
+    public void testTopControlsHeightWithBookmarkBarOnTablet() {
+        final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+
+        // Enable the bookmark bar setting for the test.
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
+                activity.getProfileProviderSupplier().get().getOriginalProfile(),
+                true,
+                /* fromKeyboardShortcut= */ false);
         testTopControlsHeightWithBookmarkBar(/* expectBookmarkBar= */ true);
     }
 

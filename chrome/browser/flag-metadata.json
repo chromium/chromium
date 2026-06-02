@@ -262,11 +262,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "android-bookmark-bar",
-    "owners": [ "dmblack@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "android-bottom-bar",
     "owners": [ "polardz@google.com", "ckitagawa@chromium.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 155

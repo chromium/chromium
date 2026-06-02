@@ -276,7 +276,6 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     private static boolean shouldShowBookmarkPref(Context context) {
-        // isDeviceBookmarkBarCompatible already checks the flag sAndroidBookmarkBar.
         return BookmarkBarUtils.isDeviceBookmarkBarCompatible(context);
     }
 

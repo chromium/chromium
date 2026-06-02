@@ -2538,7 +2538,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             }
             return true;
         } else if (id == R.id.toggle_bookmark_bar) {
-            // isActivityStateBookmarkBarCompatible already checks the flag sAndroidBookmarkBar.
             if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
                 if (DeviceInfo.isDesktop()) {
                     // Desktop uses the synced UserPref.

@@ -221,7 +221,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidActorTaskTimeout,
     &kAndroidAppIntegrationMultiDataSource,
     &kAndroidAppRatingPrompt,
-    &kAndroidBookmarkBar,
     &kAndroidBottomBar,
     &kAndroidBricksNativePage,
     &kAndroidContextMenuDisabledMenuItems,
@@ -578,7 +577,6 @@ BASE_FEATURE(kAndroidActorTaskTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidAppIntegrationMultiDataSource, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidAppRatingPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidAtomsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidBookmarkBar, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBottomBar, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBricksNativePage, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidContextMenuDisabledMenuItems, base::FEATURE_ENABLED_BY_DEFAULT);
