@@ -7150,6 +7150,7 @@
                     },
                     "enable_features": [
                         "ContextualCueingV2",
+                        "GlicContextualCueingV2AutoSubmit",
                         "OnDeviceCategoryClassifier"
                     ]
                 }
