@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.customtabs.features.branding.MismatchNotificationChecker;
+import org.chromium.chrome.browser.customtabs.features.branding.MismatchNotificationData;
 import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderLayoutCoordinator;
 import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderUtils;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
@@ -385,10 +386,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mModalDialogManagerSupplier.get(),
                 snackbarManager,
                 (signinDelegate, accountId, lastShownTime, mimData, onClose) -> {
-                    assert mimData != null;
+                    MismatchNotificationData nonNullMimData =
+                            mimData != null ? mimData : new MismatchNotificationData();
                     boolean show =
                             connection.shouldShowAccountMismatchNotification(
-                                    intent, profile, accountId, lastShownTime, mimData);
+                                    intent, profile, accountId, lastShownTime, nonNullMimData);
                     if (show) {
                         assert intent != null;
                         var accountName = connection.getAppAccountName(intent);
