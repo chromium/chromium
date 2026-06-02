@@ -690,10 +690,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           enablement_service->GetEnablementState() ==
               personal_context::PersonalContextEnablementState::kEnabled);
   html_source->AddLocalizedString("personalContextSettingsTitle",
-                                  IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_TITLE);
+                                  IDS_PERSONAL_CONTEXT_SETTINGS_TITLE);
   html_source->AddLocalizedString(
       "personalContextSettingsDescription",
-      IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_DESCRIPTION_DESKTOP);
+      IDS_PERSONAL_CONTEXT_SETTINGS_DESCRIPTION_DESKTOP);
 
   html_source->AddString(
       "webuiRefresh2026",

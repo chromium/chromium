@@ -32,13 +32,12 @@ found in the LICENSE file.
         android:title="@string/settings_autofill_ai_page_title"
         app:isPreferenceVisible="false">
 
-        <!-- TODO(b/511147704): Rename title and summary string names. -->
         <org.chromium.components.browser_ui.settings.ChromeBasePreference
             android:id="@+id/autofill_ai_personal_context"
             android:key="autofill_ai_personal_context"
             android:order="0"
-            android:title="@string/accessibility_annotator_settings_title"
-            android:summary="@string/accessibility_annotator_settings_description_android"
+            android:title="@string/personal_context_settings_title"
+            android:summary="@string/personal_context_settings_description_android"
             android:widgetLayout="@layout/preference_widget_open_in_new"
             app:isPreferenceVisible="false" />
         <org.chromium.chrome.browser.autofill.options.AutofillAiPreference

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- TODO(b:507316824): Fill final strings, and prepare to be translateable. -->
+
+<grit-part>
+  <!-- Personal Context First Run Strings. -->
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_TITLE" desc="" formatter_data="android_java" translateable="false">
+    Lorem ipsum dolor sit amet
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
+    Lorem ipsum dolor sit amet.
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_CARD_1_ANDROID" desc="" formatter_data="android_java" translateable="false">
+    Lorem ipsum dolor sit amet.
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_CARD_2_ANDROID" desc="" formatter_data="android_java" translateable="false">
+    Lorem ipsum dolor sit amet.
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_LEARN_MORE_ANDROID" desc="" formatter_data="android_java" translateable="false">
+    Lorem ipsum dolor <ph name="BEGIN_LINK">&lt;link&gt;</ph>sit amet<ph name="END_LINK">&lt;/link&gt;</ph>.
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_DESCRIPTION_DESKTOP" desc="" translateable="false">
+    Lorem ipsum dolor sit amet.
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_CARD_1_DESKTOP" desc="" translateable="false">
+    Lorem <ph name="TRIGGER_TEXT">$1<ex>@@</ex></ph> ipsum dolor sit amet.
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_CARD_2_DESKTOP" desc="" translateable="false">
+    Lorem ipsum dolor sit amet.
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_LEARN_MORE_DESKTOP" desc="" translateable="false">
+    Lorem ipsum dolor <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>sit amet<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_PRIMARY_BUTTON" desc="" formatter_data="android_java" translateable="false">
+    Lorem
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_SECONDARY_BUTTON" desc="" formatter_data="android_java" translateable="false">
+    Ipsum
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_SETTINGS_TITLE" desc="" formatter_data="android_java" translateable="false">
+    Lorem ipsum dolor sit amet
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_SETTINGS_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
+    Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.
+  </message>
+  <message name="IDS_PERSONAL_CONTEXT_SETTINGS_DESCRIPTION_DESKTOP" desc="" translateable="false">
+    Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.
+  </message>
+</grit-part>

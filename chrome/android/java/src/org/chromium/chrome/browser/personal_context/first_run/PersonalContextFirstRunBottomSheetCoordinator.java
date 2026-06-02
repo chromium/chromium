@@ -43,31 +43,28 @@ public class PersonalContextFirstRunBottomSheetCoordinator {
                 new PropertyModel.Builder(PersonalContextFirstRunBottomSheetProperties.ALL_KEYS)
                         .with(
                                 PersonalContextFirstRunBottomSheetProperties.TITLE,
-                                context.getString(R.string.accessibility_annotator_info_title))
+                                context.getString(R.string.personal_context_notice_title))
                         .with(
                                 PersonalContextFirstRunBottomSheetProperties.DESCRIPTION,
                                 context.getString(
-                                        R.string.accessibility_annotator_info_description_android))
+                                        R.string.personal_context_notice_description_android))
                         .with(
                                 PersonalContextFirstRunBottomSheetProperties.LEARN_MORE_DESCRIPTION,
                                 context.getString(
-                                        R.string.accessibility_annotator_info_learn_more_android))
+                                        R.string.personal_context_notice_learn_more_android))
                         .with(
                                 PersonalContextFirstRunBottomSheetProperties.CARD_1_TEXT,
-                                context.getString(
-                                        R.string.accessibility_annotator_info_card_1_android))
+                                context.getString(R.string.personal_context_notice_card_1_android))
                         .with(
                                 PersonalContextFirstRunBottomSheetProperties.CARD_2_TEXT,
-                                context.getString(
-                                        R.string.accessibility_annotator_info_card_2_android))
+                                context.getString(R.string.personal_context_notice_card_2_android))
                         .with(
                                 PersonalContextFirstRunBottomSheetProperties.PRIMARY_BUTTON_LABEL,
-                                context.getString(
-                                        R.string.accessibility_annotator_info_primary_button))
+                                context.getString(R.string.personal_context_notice_primary_button))
                         .with(
                                 PersonalContextFirstRunBottomSheetProperties.SECONDARY_BUTTON_LABEL,
                                 context.getString(
-                                        R.string.accessibility_annotator_info_secondary_button))
+                                        R.string.personal_context_notice_secondary_button))
                         .build();
 
         ClickableSpan learnMoreSpan =

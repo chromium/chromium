@@ -43,21 +43,19 @@ PersonalContextNoticeUI::PersonalContextNoticeUI(content::WebUI* web_ui)
       source, kPersonalContextNoticeResources,
       IDR_PERSONAL_CONTEXT_NOTICE_PERSONAL_CONTEXT_NOTICE_HTML);
   source->AddLocalizedString("personalContextNoticeTitle",
-                             IDS_ACCESSIBILITY_ANNOTATOR_INFO_TITLE);
-  source->AddLocalizedString(
-      "personalContextNoticeDescription",
-      IDS_ACCESSIBILITY_ANNOTATOR_INFO_DESCRIPTION_DESKTOP);
+                             IDS_PERSONAL_CONTEXT_NOTICE_TITLE);
+  source->AddLocalizedString("personalContextNoticeDescription",
+                             IDS_PERSONAL_CONTEXT_NOTICE_DESCRIPTION_DESKTOP);
   source->AddLocalizedString("personalContextNoticeCard1",
-                             IDS_ACCESSIBILITY_ANNOTATOR_INFO_CARD_1_DESKTOP);
+                             IDS_PERSONAL_CONTEXT_NOTICE_CARD_1_DESKTOP);
   source->AddLocalizedString("personalContextNoticeCard2",
-                             IDS_ACCESSIBILITY_ANNOTATOR_INFO_CARD_2_DESKTOP);
-  source->AddLocalizedString(
-      "personalContextNoticeLearnMore",
-      IDS_ACCESSIBILITY_ANNOTATOR_INFO_LEARN_MORE_DESKTOP);
+                             IDS_PERSONAL_CONTEXT_NOTICE_CARD_2_DESKTOP);
+  source->AddLocalizedString("personalContextNoticeLearnMore",
+                             IDS_PERSONAL_CONTEXT_NOTICE_LEARN_MORE_DESKTOP);
   source->AddLocalizedString("personalContextNoticePrimaryButton",
-                             IDS_ACCESSIBILITY_ANNOTATOR_INFO_PRIMARY_BUTTON);
+                             IDS_PERSONAL_CONTEXT_NOTICE_PRIMARY_BUTTON);
   source->AddLocalizedString("personalContextNoticeSecondaryButton",
-                             IDS_ACCESSIBILITY_ANNOTATOR_INFO_SECONDARY_BUTTON);
+                             IDS_PERSONAL_CONTEXT_NOTICE_SECONDARY_BUTTON);
   source->AddString(
       "personalContextTriggerText",
       accessibility_annotator::kAccessibilityAnnotatorTriggerText);
