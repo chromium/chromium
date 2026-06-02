@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -67,6 +68,35 @@ TEST_F(NGShapeCacheTest, AddEntriesAndCacheHits) {
   EXPECT_EQ(
       cache->GetOrCreate(CreateKey("A", TextDirection::kRtl), ShapeResultFunc),
       entry_A_RTL);
+}
+
+TEST_F(NGShapeCacheTest, FontPerformanceMetrics) {
+  FontPerformance::Reset();
+
+  auto ShapeResultFunc = []() -> ShaperResult {
+    return {MakeGarbageCollected<ShapeResult>(0, 0, TextDirection::kLtr),
+            /*can_cache=*/true};
+  };
+
+  auto CreateKey = [](const String& text) -> ShapeCacheKey {
+    return ShapeCacheKey(text, 0, text.length(), g_null_atom, {},
+                         TextDirection::kLtr);
+  };
+
+  // First access: Miss
+  cache->GetOrCreate(CreateKey("A"), ShapeResultFunc);
+  EXPECT_EQ(FontPerformance::ShapeCacheHitCount(), 0u);
+  EXPECT_EQ(FontPerformance::ShapeCacheMissCount(), 1u);
+
+  // Second access: Hit
+  cache->GetOrCreate(CreateKey("A"), ShapeResultFunc);
+  EXPECT_EQ(FontPerformance::ShapeCacheHitCount(), 1u);
+  EXPECT_EQ(FontPerformance::ShapeCacheMissCount(), 1u);
+
+  // Access with different key: Miss
+  cache->GetOrCreate(CreateKey("B"), ShapeResultFunc);
+  EXPECT_EQ(FontPerformance::ShapeCacheHitCount(), 1u);
+  EXPECT_EQ(FontPerformance::ShapeCacheMissCount(), 2u);
 }
 
 }  // namespace blink

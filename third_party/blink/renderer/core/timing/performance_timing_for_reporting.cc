@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 
 namespace blink {
@@ -501,6 +502,27 @@ void PerformanceTimingForReporting::SetFirstInputOrScrollNotifiedTimestamp(
            base::NotFatalUntil::M152);
   first_input_or_scroll_notified_timestamp_ =
       MonotonicTimeToIntegerMilliseconds(timestamp);
+}
+
+base::TimeDelta PerformanceTimingForReporting::SystemFallbackFontTime() const {
+  return FontPerformance::SystemFallbackFontTime();
+}
+
+uint32_t PerformanceTimingForReporting::SystemFallbackFontCount() const {
+  return FontPerformance::SystemFallbackFontCount();
+}
+
+base::TimeDelta
+PerformanceTimingForReporting::SystemFallbackFontInitialDuration() const {
+  return FontPerformance::SystemFallbackFontInitialDuration();
+}
+
+uint32_t PerformanceTimingForReporting::ShapeCacheHitCount() const {
+  return FontPerformance::ShapeCacheHitCount();
+}
+
+uint32_t PerformanceTimingForReporting::ShapeCacheMissCount() const {
+  return FontPerformance::ShapeCacheMissCount();
 }
 
 }  // namespace blink

@@ -280,6 +280,28 @@ WebPerformanceMetricsForReporting::UserTimingMarkInteractive() const {
   return private_->timingForReporting()->UserTimingMarkInteractive();
 }
 
+base::TimeDelta WebPerformanceMetricsForReporting::SystemFallbackFontTime()
+    const {
+  return private_->timingForReporting()->SystemFallbackFontTime();
+}
+
+uint32_t WebPerformanceMetricsForReporting::SystemFallbackFontCount() const {
+  return private_->timingForReporting()->SystemFallbackFontCount();
+}
+
+base::TimeDelta
+WebPerformanceMetricsForReporting::SystemFallbackFontInitialDuration() const {
+  return private_->timingForReporting()->SystemFallbackFontInitialDuration();
+}
+
+uint32_t WebPerformanceMetricsForReporting::ShapeCacheHitCount() const {
+  return private_->timingForReporting()->ShapeCacheHitCount();
+}
+
+uint32_t WebPerformanceMetricsForReporting::ShapeCacheMissCount() const {
+  return private_->timingForReporting()->ShapeCacheMissCount();
+}
+
 std::optional<std::tuple<std::string, base::TimeDelta>>
 WebPerformanceMetricsForReporting::CustomUserTimingMark() const {
   auto mark = private_->timingForReporting()->CustomUserTimingMark();

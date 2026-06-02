@@ -21,6 +21,10 @@ class PLATFORM_EXPORT FontPerformance {
     primary_font_ = base::TimeDelta();
     primary_font_in_style_ = base::TimeDelta();
     system_fallback_ = base::TimeDelta();
+    system_fallback_count_ = 0;
+    system_fallback_initial_duration_ = base::TimeDelta();
+    shape_cache_hit_count_ = 0;
+    shape_cache_miss_count_ = 0;
   }
 
   // The aggregated time spent in |DeterminePrimarySimpleFontData|.
@@ -42,12 +46,36 @@ class PLATFORM_EXPORT FontPerformance {
 
   // The aggregated time spent in |FallbackFontForCharacter|.
   static base::TimeDelta SystemFallbackFontTime() { return system_fallback_; }
+  static uint32_t SystemFallbackFontCount() { return system_fallback_count_; }
+  static base::TimeDelta SystemFallbackFontInitialDuration() {
+    return system_fallback_initial_duration_;
+  }
+
   static void AddSystemFallbackFontTime(base::TimeDelta time) {
     if (!IsMainThread()) [[unlikely]] {
       return;
     }
     system_fallback_ += time;
+    system_fallback_count_++;
+    if (system_fallback_count_ == 1) {
+      system_fallback_initial_duration_ = time;
+    }
   }
+
+  static void AddShapeCacheHit() {
+    if (!IsMainThread()) [[unlikely]] {
+      return;
+    }
+    shape_cache_hit_count_++;
+  }
+  static void AddShapeCacheMiss() {
+    if (!IsMainThread()) [[unlikely]] {
+      return;
+    }
+    shape_cache_miss_count_++;
+  }
+  static uint32_t ShapeCacheHitCount() { return shape_cache_hit_count_; }
+  static uint32_t ShapeCacheMissCount() { return shape_cache_miss_count_; }
 
   static void MarkFirstContentfulPaint();
   static void MarkDomContentLoaded();
@@ -65,6 +93,10 @@ class PLATFORM_EXPORT FontPerformance {
   static base::TimeDelta primary_font_;
   static base::TimeDelta primary_font_in_style_;
   static base::TimeDelta system_fallback_;
+  static uint32_t system_fallback_count_;
+  static base::TimeDelta system_fallback_initial_duration_;
+  static uint32_t shape_cache_hit_count_;
+  static uint32_t shape_cache_miss_count_;
   static unsigned in_style_;
 };
 
