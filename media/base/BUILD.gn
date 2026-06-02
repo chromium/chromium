@@ -718,6 +718,7 @@ source_set("unit_tests") {
     sources += [
       "win/dxgi_device_scope_handle_unittest.cc",
       "win/media_foundation_package_locator_unittest.cc",
+      "win/mf_helpers_unittest.cc",
     ]
     deps += [
       "//media",
