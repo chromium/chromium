@@ -13,6 +13,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
@@ -48,6 +49,7 @@ public class PartnerBrowserCustomizations {
     private static final int DEFAULT_TIMEOUT_MS = 10_000;
 
     private static final int HOMEPAGE_URL_MAX_LENGTH = 1000;
+    private static final String LOCALE_US = "US";
     // Private homepage structure.
     @VisibleForTesting static final String PARTNER_HOMEPAGE_PATH = "homepage";
 
@@ -131,7 +133,15 @@ public class PartnerBrowserCustomizations {
     /** Returns whether the feature to disable the partner homepage is enabled. */
     private static boolean isDisablePartnerHomepageAndroidEnabled() {
         return ChromeFeatureList.sDisablePartnerHomepageAndroid.isEnabled()
+                && isCountryImpacted(
+                        ChromeFeatureList.sDisablePartnerHomepageAndroidApplyToAllCountries
+                                .getValue())
                 && !BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext());
+    }
+
+    /** Returns true if all countries are impacted, or the default country code is impacted. */
+    public static boolean isCountryImpacted(boolean applyToAllCountries) {
+        return applyToAllCountries || LocaleUtils.getDefaultCountryCode().equals(LOCALE_US);
     }
 
     /**

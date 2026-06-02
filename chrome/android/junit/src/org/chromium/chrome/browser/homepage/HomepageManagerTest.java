@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -42,6 +44,8 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Locale;
+
 /** Unit tests for {@link HomepageManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -52,12 +56,19 @@ public class HomepageManagerTest {
     @Mock private PartnerBrowserCustomizations mPartnerBrowserCustomizations;
     @Mock private ActorUiTabController mActorUiTabController;
 
+    private static final Locale DEFAULT_LOCALE = Locale.getDefault();
+
     @Before
     public void setUp() {
         PartnerBrowserCustomizations.setInstanceForTesting(mPartnerBrowserCustomizations);
         DseNewTabUrlManager.resetIsEeaChoiceCountryForTesting();
         ExtensionsUrlOverrideRegistry.resetRegistry();
         UrlConstantResolverFactory.resetResolvers();
+    }
+
+    @After
+    public void tearDown() {
+        Locale.setDefault(DEFAULT_LOCALE);
     }
 
     @Test
@@ -824,5 +835,115 @@ public class HomepageManagerTest {
                                                 && params.getTransitionType()
                                                         == PageTransition.HOME_PAGE));
         Mockito.verifyNoInteractions(tabCreatorManager);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/true"})
+    public void testIsHomepageEnabled_HomeButtonRemovalEverywhere() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+
+        Locale.setDefault(Locale.US);
+        Assert.assertFalse(
+                "Homepage should be disabled in US geo under removal.",
+                homepageManager.isHomepageEnabled());
+
+        Locale.setDefault(Locale.CANADA);
+        Assert.assertTrue(
+                "Homepage should be enabled in non-US geo when restricted.",
+                homepageManager.isHomepageEnabled());
+
+        FeatureOverrides.newBuilder()
+                .param(ChromeFeatureList.HOME_BUTTON_REMOVAL, "apply_to_all_countries", true)
+                .apply();
+        Assert.assertFalse(
+                "Homepage should be disabled with everywhere removal enabled and"
+                        + " apply_to_all_countries set to true in non-US geo.",
+                homepageManager.isHomepageEnabled());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/true"})
+    public void testShouldShowHomepageSettings_HomeButtonRemovalEverywhere() {
+        Locale.setDefault(Locale.US);
+        Assert.assertFalse(
+                "Homepage settings should be hidden in US geo under removal.",
+                HomepageManager.shouldShowHomepageSettings());
+
+        Locale.setDefault(Locale.CANADA);
+        Assert.assertTrue(
+                "Homepage settings should still be visible in non-US geo when restricted.",
+                HomepageManager.shouldShowHomepageSettings());
+
+        FeatureOverrides.newBuilder()
+                .param(ChromeFeatureList.HOME_BUTTON_REMOVAL, "apply_to_all_countries", true)
+                .apply();
+        Assert.assertFalse(
+                "Homepage settings should be hidden with everywhere removal enabled and"
+                        + " apply_to_all_countries set to true in non-US geo.",
+                HomepageManager.shouldShowHomepageSettings());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    public void testShouldShowHomeButtonOnToolbar_KeepOnNtp() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+
+        Locale.setDefault(Locale.US);
+        Assert.assertTrue(
+                "Home button should be shown on NTP in US geo.",
+                homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ true));
+        Assert.assertFalse(
+                "Home button should be hidden on non-NTP in US geo.",
+                homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ false));
+
+        Locale.setDefault(Locale.CANADA);
+        Assert.assertTrue(
+                "Home button should be shown on NTP in non-US geo when restricted.",
+                homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ true));
+        Assert.assertTrue(
+                "Home button should still be shown on non-NTP in non-US geo when restricted.",
+                homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ false));
+
+        FeatureOverrides.newBuilder()
+                .param(ChromeFeatureList.HOME_BUTTON_REMOVAL, "apply_to_all_countries", true)
+                .apply();
+        Assert.assertTrue(
+                "Home button should be shown on NTP with keep_on_ntp and apply_to_all_countries set"
+                        + " to true in non-US geo.",
+                homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ true));
+        Assert.assertFalse(
+                "Home button should be hidden on non-NTP with keep_on_ntp and"
+                        + " apply_to_all_countries set to true in non-US geo.",
+                homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ false));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    public void testShouldShowHomepageMenuItem_KeepOnNtp() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+
+        Locale.setDefault(Locale.US);
+        Assert.assertTrue(
+                "Homepage menu item should be shown in US geo.",
+                homepageManager.shouldShowHomepageMenuItem());
+
+        Locale.setDefault(Locale.CANADA);
+        Assert.assertFalse(
+                "Homepage menu item should not be shown in non-US geo when restricted.",
+                homepageManager.shouldShowHomepageMenuItem());
+
+        FeatureOverrides.newBuilder()
+                .param(ChromeFeatureList.HOME_BUTTON_REMOVAL, "apply_to_all_countries", true)
+                .apply();
+        Assert.assertTrue(
+                "Homepage menu item should be shown with keep_on_ntp and apply_to_all_countries set"
+                        + " to true in non-US geo.",
+                homepageManager.shouldShowHomepageMenuItem());
     }
 }
