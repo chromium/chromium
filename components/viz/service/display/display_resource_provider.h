@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
@@ -157,11 +158,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
    private:
     void Reset();
 
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-    RAW_PTR_EXCLUSION DisplayResourceProvider* resource_provider_ = nullptr;
+    raw_ptr<DisplayResourceProvider> resource_provider_ = nullptr;
     ResourceId resource_id_ = kInvalidResourceId;
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-    RAW_PTR_EXCLUSION ChildResource* resource_ = nullptr;
+    raw_ptr<ChildResource> resource_ = nullptr;
   };
 
   // All resources that are returned to children while an instance of this

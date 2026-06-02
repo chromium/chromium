@@ -543,7 +543,9 @@ void DisplayResourceProvider::ScopedReadLockSharedImage::Reset() {
     return;
   DCHECK(resource_->lock_for_overlay_count);
   resource_->lock_for_overlay_count--;
-  resource_provider_->TryReleaseResource(resource_id_, resource_);
+  ChildResource* resource = resource_;
+  resource_ = nullptr;
+  resource_provider_->TryReleaseResource(resource_id_, resource);
   resource_provider_ = nullptr;
   resource_id_ = kInvalidResourceId;
 }
