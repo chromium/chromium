@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import type {ProfileData, RecentlyClosedTab, Tab, TabSearchItemElement, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {SEARCH_QUERY_MAX_LENGTH, SplitTabLayout, SplitViewData, TabGroupColor, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -1008,4 +1008,48 @@ suite('TabSearchAppTest', () => {
     assertEquals(0, queryRows().length);
   });
 
+  test('Click on split view close button calls closeTabs', async () => {
+    const token = sampleToken(1n, 1n);
+    const tabs = [
+      createTab({
+        tabId: 10,
+        title: 'SearchEngine',
+        url: 'https://google.com',
+        splitId: token,
+      }),
+      createTab({
+        tabId: 20,
+        title: 'PaymentGateway',
+        url: 'https://paypal.com',
+        splitId: token,
+      }),
+    ];
+
+    await setupTest(
+        createProfileData({
+          windows: [{
+            active: true,
+            isHostWindow: true,
+            height: SAMPLE_WINDOW_HEIGHT,
+            tabs,
+          }],
+        }),
+        {
+          splitViewTabRestoreEnabled: true,
+        });
+
+    await tabSearchPage.$.tabsList.ensureAllDomItemsAvailable();
+
+    const splitViewElement =
+        tabSearchPage.$.tabsList.querySelector('tab-search-split-item');
+    assertTrue(!!splitViewElement);
+
+    const closeButton =
+        splitViewElement.shadowRoot.querySelector('cr-icon-button');
+    assertTrue(!!closeButton);
+
+    closeButton.click();
+    const [closedTabIds] = await testProxy.whenCalled('closeTabs');
+    assertDeepEquals([10, 20], closedTabIds);
+  });
 });

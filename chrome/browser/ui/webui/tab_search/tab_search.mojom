@@ -229,6 +229,9 @@ interface PageHandler {
   // Close a specific tab.
   CloseTab(int32 tab_id);
 
+  // Close multiple specific tabs.
+  CloseTabs(array<int32> tab_ids);
+
   // Close the tab hosting this WebUI.
   CloseWebUiTab();
 

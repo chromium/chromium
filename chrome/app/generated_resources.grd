@@ -12260,6 +12260,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_SEARCH_A11Y_TAB_CLOSED" desc="A11y message after user clicks on the close tab button in the list item.">
         Tab Closed
       </message>
+      <message name="IDS_TAB_SEARCH_A11Y_SPLIT_VIEW_CLOSED" is_accessibility_with_no_ui="true" desc="A11y message after user clicks on the close button of a split view row in the list item.">
+        Split View Closed
+      </message>
       <message name="IDS_TAB_SEARCH_A11Y_FOUND_TAB" desc="Singular form of a11y message after user changes search field when search filed is empty.">
         Found <ph name="NUM">$1<ex>1</ex></ph> Tab
       </message>
