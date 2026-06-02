@@ -76,4 +76,7 @@ fuzzer_test("media_metadata_parser_fuzzer") {
     "//content/test:test_support",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
+  if (is_android) {
+    deps += [ "//base/test:test_support" ]
+  }
 }
