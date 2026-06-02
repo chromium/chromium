@@ -20,7 +20,6 @@
 #include "content/browser/interest_group/interest_group_storage_metric_types.h"
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/blink/public/common/features.h"
@@ -565,34 +564,25 @@ void BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromNetworkComplete(
     base::UmaHistogramBoolean(
         "Ads.InterestGroup.ServerAuction.KeyFetch.NetworkCached", was_cached);
   }
+
+  std::optional<base::DictValue> result =
+      base::JSONReader::ReadDict(*response, base::JSON_PARSE_RFC);
   if (state.version == 1) {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        *response,
-        base::BindOnce(&BiddingAndAuctionServerKeyFetcher::OnParsedKeys,
-                       weak_ptr_factory_.GetWeakPtr(), coordinator));
+    OnParsedKeys(coordinator, result);
   } else {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        *response,
-        base::BindOnce(&BiddingAndAuctionServerKeyFetcher::OnParsedKeysV2,
-                       weak_ptr_factory_.GetWeakPtr(), coordinator));
+    OnParsedKeysV2(coordinator, result);
   }
 }
 
 void BiddingAndAuctionServerKeyFetcher::OnParsedKeys(
-    url::Origin coordinator,
-    data_decoder::DataDecoder::ValueOrError result) {
+    const url::Origin& coordinator,
+    const std::optional<base::DictValue>& result) {
   if (!result.has_value()) {
     FailAllCallbacks(coordinator);
     return;
   }
 
-  const base::DictValue* response_dict = result->GetIfDict();
-  if (!response_dict) {
-    FailAllCallbacks(coordinator);
-    return;
-  }
-
-  const base::ListValue* keys_list = response_dict->FindList("keys");
+  const base::ListValue* keys_list = result->FindList("keys");
   if (!keys_list) {
     FailAllCallbacks(coordinator);
     return;
@@ -616,23 +606,18 @@ void BiddingAndAuctionServerKeyFetcher::OnParsedKeys(
 }
 
 void BiddingAndAuctionServerKeyFetcher::OnParsedKeysV2(
-    url::Origin coordinator,
-    data_decoder::DataDecoder::ValueOrError result) {
+    const url::Origin& coordinator,
+    const std::optional<base::DictValue>& result) {
   if (!result.has_value()) {
     FailAllCallbacks(coordinator);
     return;
   }
 
-  const base::DictValue* response_dict = result->GetIfDict();
-  if (!response_dict) {
-    FailAllCallbacks(coordinator);
-    return;
-  }
   std::vector<std::pair<url::Origin, std::vector<BiddingAndAuctionServerKey>>>
       origin_scoped_keys;
 
   const base::DictValue* origin_scoped_keys_dict =
-      response_dict->FindDict("originScopedKeys");
+      result->FindDict("originScopedKeys");
   if (!origin_scoped_keys_dict) {
     FailAllCallbacks(coordinator);
     return;

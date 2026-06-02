@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -17,7 +18,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -180,24 +180,20 @@ void InterestGroupPermissionsChecker::OnRequestComplete(
   // `simple_url_loader` is no longer needed after this point.
   active_request->second->simple_url_loader.reset();
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body,
-      base::BindOnce(&InterestGroupPermissionsChecker::OnJsonParsed,
-                     weak_factory_.GetWeakPtr(), active_request));
+  OnJsonParsed(active_request, base::JSONReader::ReadDict(
+                                   *response_body, base::JSON_PARSE_RFC));
 }
 
 void InterestGroupPermissionsChecker::OnJsonParsed(
     ActiveRequestMap::iterator active_request,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result->is_dict()) {
+    const std::optional<base::DictValue>& result) {
+  if (!result.has_value()) {
     OnActiveRequestComplete(active_request, Permissions());
     return;
   }
 
-  std::optional<bool> can_join =
-      result->GetDict().FindBool("joinAdInterestGroup");
-  std::optional<bool> can_leave =
-      result->GetDict().FindBool("leaveAdInterestGroup");
+  std::optional<bool> can_join = result->FindBool("joinAdInterestGroup");
+  std::optional<bool> can_leave = result->FindBool("leaveAdInterestGroup");
   Permissions permissions{/*can_join=*/can_join.value_or(false),
                           /*can_leave=*/can_leave.value_or(false)};
   OnActiveRequestComplete(active_request, permissions);

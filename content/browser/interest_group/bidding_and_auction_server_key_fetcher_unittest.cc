@@ -18,7 +18,6 @@
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.pb.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -96,7 +95,6 @@ class BiddingAndAuctionServerKeyFetcherTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  data_decoder::test::InProcessDataDecoder decoder_;
   base::ScopedTempDir temp_directory_;
   std::unique_ptr<InterestGroupManagerImpl> manager_;
 };

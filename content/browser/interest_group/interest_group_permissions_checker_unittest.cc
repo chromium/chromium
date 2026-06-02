@@ -15,7 +15,6 @@
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -98,7 +97,6 @@ class InterestGroupPermissionsCheckerTestBase {
 
   base::test::TaskEnvironment task_environment_ = base::test::TaskEnvironment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   BoolCallback bool_callback_;
   network::TestURLLoaderFactory url_loader_factory_;

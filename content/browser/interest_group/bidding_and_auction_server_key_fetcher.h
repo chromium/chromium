@@ -14,13 +14,17 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/interest_group_manager.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace base {
+class DictValue;
+}
 
 namespace network {
 class SimpleURLLoader;
@@ -207,14 +211,14 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   // Called when the JSON blob containing the keys has be parsed into
   // base::Values. Uses the parsed result to add keys to the cache and calls
   // queued callbacks.
-  void OnParsedKeys(url::Origin coordinator,
-                    data_decoder::DataDecoder::ValueOrError result);
+  void OnParsedKeys(const url::Origin& coordinator,
+                    const std::optional<base::DictValue>& result);
 
   // Called when the JSON blob containing the keys has be parsed into
   // base::Values for v2 keys. Uses the parsed result to add keys to the cache
   // and calls queued callbacks.
-  void OnParsedKeysV2(url::Origin coordinator,
-                      data_decoder::DataDecoder::ValueOrError result);
+  void OnParsedKeysV2(const url::Origin& coordinator,
+                      const std::optional<base::DictValue>& result);
 
   void CacheKeysAndRunAllCallbacks(const url::Origin& coordinator,
                                    BiddingAndAuctionKeySet keyset,

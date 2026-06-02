@@ -25,7 +25,6 @@
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
 #include "net/base/isolation_info.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -220,9 +219,6 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
       blink::InterestGroupKey group_key,
       base::TimeTicks start_time,
       std::optional<std::string> fetch_body);
-  void DidUpdateInterestGroupsOfOwnerJsonParse(
-      blink::InterestGroupKey group_key,
-      data_decoder::DataDecoder::ValueOrError result);
 
   // Updates the specified interest group with the information in `update`.
   // On completion, invoked OnUpdateInterestGroupCompleted() asynchronously,

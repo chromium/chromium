@@ -21,6 +21,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -39,7 +40,6 @@
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -711,13 +711,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 std::optional<InterestGroupUpdate> ParseUpdateJson(
     const blink::InterestGroupKey& group_key,
-    const data_decoder::DataDecoder::ValueOrError& result) {
+    const std::optional<base::DictValue>& dict) {
   // TODO(crbug.com/40172488): Report to devtools.
-  if (!result.has_value()) {
-    return std::nullopt;
-  }
-  const base::DictValue* dict = result->GetIfDict();
-  if (!dict) {
+  if (!dict.has_value()) {
     return std::nullopt;
   }
   if (!ValidateNameAndOwnerIfPresent(group_key, *dict)) {
@@ -1261,21 +1257,8 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerNetFetch(
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Net.ResponseSizeBytes.Update", fetch_body->size());
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *fetch_body,
-      base::BindOnce(
-          &InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerJsonParse,
-          weak_factory_.GetWeakPtr(), std::move(group_key)));
-}
-
-void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerJsonParse(
-    blink::InterestGroupKey group_key,
-    data_decoder::DataDecoder::ValueOrError result) {
-  DCHECK_EQ(group_key.owner, owners_to_update_.FrontOwner());
-  DCHECK_GT(num_in_flight_updates_, 0);
-  DCHECK(!waiting_on_db_read_);
-  std::optional<InterestGroupUpdate> interest_group_update =
-      ParseUpdateJson(group_key, result);
+  std::optional<InterestGroupUpdate> interest_group_update = ParseUpdateJson(
+      group_key, base::JSONReader::ReadDict(*fetch_body, base::JSON_PARSE_RFC));
   if (!interest_group_update) {
     ReportUpdateFailed(group_key, UpdateDelayType::kParseFailure);
     return;

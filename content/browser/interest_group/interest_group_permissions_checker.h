@@ -13,14 +13,16 @@
 #include <tuple>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_permissions_cache.h"
 #include "content/common/content_export.h"
 #include "net/base/network_isolation_key.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/origin.h"
+
+namespace base {
+class DictValue;
+}
 
 namespace network {
 class SimpleURLLoader;
@@ -126,8 +128,7 @@ class CONTENT_EXPORT InterestGroupPermissionsChecker {
 
   // A request for a .well-known file, along with a list of
   // PendingPermissionChecks that are waiting on it to complete. Deleted once
-  // `simple_url_loader` has received a response, and its JSON has been parsed
-  // by an async DataDecoder::ParseJsonIsolated() call.
+  // `simple_url_loader` has received a response, and its JSON has been parsed.
   struct ActiveRequest {
     ActiveRequest();
     ~ActiveRequest();
@@ -149,7 +150,7 @@ class CONTENT_EXPORT InterestGroupPermissionsChecker {
   // Invoked with the result of parsing the response body associated with
   // `active_request` as JSON.
   void OnJsonParsed(ActiveRequestMap::iterator active_request,
-                    data_decoder::DataDecoder::ValueOrError result);
+                    const std::optional<base::DictValue>& result);
 
   // Invoked once the Permissions to use for `active_request` have been
   // determined, either as result of an error, by successfully parsing the
@@ -162,8 +163,6 @@ class CONTENT_EXPORT InterestGroupPermissionsChecker {
 
   ActiveRequestMap active_requests_;
   InterestGroupPermissionsCache cache_;
-
-  base::WeakPtrFactory<InterestGroupPermissionsChecker> weak_factory_{this};
 };
 
 }  // namespace content
