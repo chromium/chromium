@@ -2398,4 +2398,31 @@ TEST_F(FreezingPolicyInfiniteTabsTest, NonTab) {
                             /* parent_frame_node=*/nullptr, kBrowsingInstanceB);
 }
 
+TEST_F(FreezingPolicyInfiniteTabsTest, NonTabWebUI) {
+  // Create a new page of type `kNonTabWebUI`.
+  auto webui_page = CreateNode<PageNodeImpl>(
+      /*web_contents=*/nullptr,
+      /*browsing_context_id=*/base::UnguessableToken(), GURL(),
+      PagePropertyFlags{PagePropertyFlag::kIsVisible});
+  webui_page->SetType(PageType::kNonTabWebUI);
+  auto webui_frame =
+      CreateFrameNodeAutoId(process_node(), webui_page.get(),
+                            /* parent_frame_node=*/nullptr, kBrowsingInstanceB);
+
+  // It should have both kVisible and kNonTabWebUI cannot freeze reasons.
+  ExpectCannotFreezeReasons(webui_page.get(), FreezingType::kInfiniteTabs,
+                            ElementsAre(CannotFreezeReason::kVisible,
+                                        CannotFreezeReason::kNonTabWebUI));
+
+  // When it becomes hidden, it should not be frozen because of the cannot
+  // freeze reason.
+  webui_page->SetIsVisible(false);
+  AdvanceClock(base::Milliseconds(1));
+  VerifyFreezerExpectations();
+
+  // Now it should only have the kNonTabWebUI cannot freeze reason.
+  ExpectCannotFreezeReasons(webui_page.get(), FreezingType::kInfiniteTabs,
+                            ElementsAre(CannotFreezeReason::kNonTabWebUI));
+}
+
 }  // namespace performance_manager
