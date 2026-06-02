@@ -14,6 +14,7 @@ extern const char kMetricsUserConsent[];
 extern const char kMetricsUserId[];
 extern const char kMetricsUserMetricLogs[];
 extern const char kMetricsUserMetricLogsMetadata[];
+extern const char kMetricsUserReportingLevel[];
 
 }  // namespace prefs
 }  // namespace metrics

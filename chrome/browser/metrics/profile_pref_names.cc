@@ -29,4 +29,8 @@ const char kMetricsUserMetricLogs[] = "metrics.user_metrics_logs";
 const char kMetricsUserMetricLogsMetadata[] =
     "metrics.user_metrics_logs_metadata";
 
+// Integer pref containing the current user metrics reporting level.
+// Castable to metrics::MetricsReportingLevel.
+const char kMetricsUserReportingLevel[] = "metrics.user_reporting_level";
+
 }  // namespace metrics::prefs

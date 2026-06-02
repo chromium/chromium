@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_level.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/user_manager/user.h"
@@ -163,6 +164,8 @@ void PerUserStateManagerChromeOS::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kMetricsUserConsent, false);
   registry->RegisterBooleanPref(prefs::kMetricsRequiresClientIdResetOnConsent,
                                 false);
+  registry->RegisterIntegerPref(prefs::kMetricsUserReportingLevel,
+                                static_cast<int>(MetricsReportingLevel::kNone));
 }
 
 std::optional<std::string> PerUserStateManagerChromeOS::GetCurrentUserId()

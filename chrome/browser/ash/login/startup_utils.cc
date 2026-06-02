@@ -33,6 +33,7 @@
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "components/metrics/metrics_reporting_level.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -109,6 +110,9 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(ash::prefs::kEnrollmentRecoveryRequired, false);
   registry->RegisterStringPref(ash::prefs::kInitialLocale, "en-US");
   registry->RegisterBooleanPref(prefs::kOobeGuestMetricsEnabled, false);
+  registry->RegisterIntegerPref(
+      prefs::kOobeGuestMetricsReportingLevel,
+      static_cast<int>(metrics::MetricsReportingLevel::kNone));
   registry->RegisterBooleanPref(prefs::kOobeCriticalUpdateCompleted, false);
   registry->RegisterBooleanPref(prefs::kOobeIsConsumerSegment, false);
   registry->RegisterBooleanPref(prefs::kOobeConsumerUpdateCompleted, false);
