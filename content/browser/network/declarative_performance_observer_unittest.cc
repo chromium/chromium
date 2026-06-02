@@ -111,10 +111,10 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsVisibilityStateOnCommit) {
 
   const base::ListValue* entries = report.body.FindList("entries");
   ASSERT_TRUE(entries);
-  ASSERT_EQ(entries->size(), 1u);
+  ASSERT_EQ(entries->size(), 2u);
 
-  const base::Value& entry_val = (*entries)[0];
-  const base::DictValue* visEntry = entry_val.GetIfDict();
+  const base::Value& entry_val0 = (*entries)[0];
+  const base::DictValue* visEntry = entry_val0.GetIfDict();
   ASSERT_TRUE(visEntry);
 
   const std::string* entryType = visEntry->FindString("entryType");
@@ -132,6 +132,13 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsVisibilityStateOnCommit) {
   std::optional<double> duration = visEntry->FindDouble("duration");
   ASSERT_TRUE(duration);
   EXPECT_EQ(*duration, 0.0);
+
+  // Check session-end entry
+  const base::Value& entry_val1 = (*entries)[1];
+  const base::DictValue* endEntry = entry_val1.GetIfDict();
+  ASSERT_TRUE(endEntry);
+  EXPECT_EQ(*(endEntry->FindString("entryType")), "session-end");
+  EXPECT_EQ(*(endEntry->FindString("name")), "session-end-event");
 }
 
 TEST_F(DeclarativePerformanceObserverTest, ObservesVisibilityFlips) {
@@ -164,33 +171,42 @@ TEST_F(DeclarativePerformanceObserverTest, ObservesVisibilityFlips) {
   DeclarativePerformanceObserver::FromWebContents(web_contents())
       ->RenderFrameDeleted(main_rfh());
 
-  ASSERT_EQ(network_context_.reports().size(), 1u);
-  const auto& report = network_context_.reports()[0];
+  ASSERT_EQ(network_context_.reports().size(), 2u);
 
-  const base::ListValue* entries = report.body.FindList("entries");
-  ASSERT_TRUE(entries);
-  // initial visible + 1st flip (hidden) + 2nd flip (visible)
-  ASSERT_EQ(entries->size(), 3u);
+  // Report 1: Flushed on HIDDEN
+  const auto& report1 = network_context_.reports()[0];
+  const base::ListValue* entries1 = report1.body.FindList("entries");
+  ASSERT_TRUE(entries1);
+  // initial visible + 1st flip (hidden)
+  ASSERT_EQ(entries1->size(), 2u);
 
-  const base::Value& entry1_val = (*entries)[1];
+  const base::Value& entry0_val = (*entries1)[0];
+  const base::DictValue* entry0 = entry0_val.GetIfDict();
+  ASSERT_TRUE(entry0);
+  EXPECT_EQ(*(entry0->FindString("name")), "visible");
+
+  const base::Value& entry1_val = (*entries1)[1];
   const base::DictValue* entry1 = entry1_val.GetIfDict();
   ASSERT_TRUE(entry1);
-  const std::string* entryType1 = entry1->FindString("entryType");
-  ASSERT_TRUE(entryType1);
-  EXPECT_EQ(*entryType1, "visibility-state");
-  const std::string* name1 = entry1->FindString("name");
-  ASSERT_TRUE(name1);
-  EXPECT_EQ(*name1, "hidden");
+  EXPECT_EQ(*(entry1->FindString("name")), "hidden");
 
-  const base::Value& entry2_val = (*entries)[2];
-  const base::DictValue* entry2 = entry2_val.GetIfDict();
-  ASSERT_TRUE(entry2);
-  const std::string* entryType2 = entry2->FindString("entryType");
-  ASSERT_TRUE(entryType2);
-  EXPECT_EQ(*entryType2, "visibility-state");
-  const std::string* name2 = entry2->FindString("name");
-  ASSERT_TRUE(name2);
-  EXPECT_EQ(*name2, "visible");
+  // Report 2: Flushed on RenderFrameDeleted
+  const auto& report2 = network_context_.reports()[1];
+  const base::ListValue* entries2 = report2.body.FindList("entries");
+  ASSERT_TRUE(entries2);
+  // 2nd flip (visible) + session-end
+  ASSERT_EQ(entries2->size(), 2u);
+
+  const base::Value& entry2_0_val = (*entries2)[0];
+  const base::DictValue* entry2_0 = entry2_0_val.GetIfDict();
+  ASSERT_TRUE(entry2_0);
+  EXPECT_EQ(*(entry2_0->FindString("name")), "visible");
+
+  const base::Value& entry2_1_val = (*entries2)[1];
+  const base::DictValue* entry2_1 = entry2_1_val.GetIfDict();
+  ASSERT_TRUE(entry2_1);
+  EXPECT_EQ(*(entry2_1->FindString("entryType")), "session-end");
+  EXPECT_EQ(*(entry2_1->FindString("name")), "session-end-event");
 }
 
 TEST_F(DeclarativePerformanceObserverTest, RecordsNavigationTiming) {
@@ -240,11 +256,18 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsNavigationTiming) {
 
   const base::ListValue* entries = report.body.FindList("entries");
   ASSERT_TRUE(entries);
-  ASSERT_EQ(entries->size(), 1u);
+  ASSERT_EQ(entries->size(), 2u);
 
-  const base::Value& entry_val = (*entries)[0];
-  const base::DictValue* navEntry = entry_val.GetIfDict();
+  const base::Value& entry_val0 = (*entries)[0];
+  const base::DictValue* navEntry = entry_val0.GetIfDict();
   ASSERT_TRUE(navEntry);
+
+  // Check session-end entry
+  const base::Value& entry_val1 = (*entries)[1];
+  const base::DictValue* endEntry = entry_val1.GetIfDict();
+  ASSERT_TRUE(endEntry);
+  EXPECT_EQ(*(endEntry->FindString("entryType")), "session-end");
+  EXPECT_EQ(*(endEntry->FindString("name")), "session-end-event");
 
   const std::string* entryType = navEntry->FindString("entryType");
   ASSERT_TRUE(entryType);
@@ -370,8 +393,14 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsBFCacheLifecycle) {
 
   const base::ListValue* entries2 = report2.body.FindList("entries");
   ASSERT_TRUE(entries2);
-  // back_forward navigation + initial visible
-  ASSERT_EQ(entries2->size(), 2u);
+  // back_forward navigation + initial visible + session-end
+  ASSERT_EQ(entries2->size(), 3u);
+
+  const base::Value& end_entry_val2 = (*entries2)[2];
+  const base::DictValue* end_entry2 = end_entry_val2.GetIfDict();
+  ASSERT_TRUE(end_entry2);
+  EXPECT_EQ(*(end_entry2->FindString("entryType")), "session-end");
+  EXPECT_EQ(*(end_entry2->FindString("name")), "session-end-event");
 
   const base::Value& nav_entry_val = (*entries2)[0];
   const base::DictValue* nav_entry = nav_entry_val.GetIfDict();

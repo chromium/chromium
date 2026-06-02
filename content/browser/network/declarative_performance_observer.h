@@ -46,6 +46,7 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
 
   void AddEntryToBuffer(base::DictValue entry);
   void FlushMetrics(RenderFrameHost* rfh);
+  void AppendSessionEndEntry();
 
   std::string reporting_endpoint_;
   base::flat_set<network::mojom::PerformanceEntryType> enabled_types_;
