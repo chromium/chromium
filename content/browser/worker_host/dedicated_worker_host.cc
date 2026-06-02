@@ -67,6 +67,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/script_source_location.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
@@ -393,8 +394,9 @@ void DedicatedWorkerHost::StartScriptLoad(
       nearest_ancestor_render_frame_host->GetSiteInstance()->GetPartitionDomain(
           storage_partition_impl);
 
-  TRACE_EVENT_BEGIN("loading", "WorkerScriptFetcher CreateAndStart",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "loading", "WorkerScriptFetcher CreateAndStart",
+      perfetto::NamedTrack::FromPointer("content::DedicatedWorkerHost", this));
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host_->GetDeprecatedID(), token_, script_url,
       *nearest_ancestor_render_frame_host, creator_render_frame_host,
@@ -424,7 +426,8 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     std::optional<WorkerScriptFetcherResult> result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // WorkerScriptFetcher CreateAndStart
-  TRACE_EVENT_END("loading", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("loading", perfetto::NamedTrack::FromPointer(
+                                 "content::DedicatedWorkerHost", this));
   TRACE_EVENT("loading", "DedicatedWorkerHost::DidStartScriptLoad",
               "final_response_url", script_request_url_);
 
