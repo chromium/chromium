@@ -36,7 +36,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -59,9 +58,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
-import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
-import org.chromium.chrome.browser.ntp.TitleUtil;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.open_in_app.OpenInAppMenuItemProvider;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -81,7 +77,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuBookmarkItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuRecentEntryItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
@@ -132,9 +127,6 @@ import java.util.function.Supplier;
 /** An {@link AppMenuPropertiesDelegateImpl} for ChromeTabbedActivity. */
 @NullMarked
 public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
-
-    public static final int MAX_RECENT_ENTRIES_TO_SHOW = 8;
-
     @IntDef({
         TabbedAppMenuItemType.UPDATE_ITEM,
         TabbedAppMenuItemType.NEW_INCOGNITO,
@@ -179,7 +171,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private @Nullable FaviconHelper mFaviconHelper;
     private final FaviconHelper.DefaultFaviconHelper mDefaultFaviconHelper;
     private final RoundedIconGenerator mRoundedIconGenerator;
-    private final Supplier<RecentlyClosedEntriesManager> mRecentlyClosedEntriesManagerSupplier;
 
     public TabbedAppMenuPropertiesDelegate(
             Context context,
@@ -197,8 +188,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             MonotonicObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             PageZoomManager pageZoomManager,
             OneshotSupplier<HubManager> hubManagerSupplier,
-            @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider,
-            Supplier<RecentlyClosedEntriesManager> recentlyClosedEntriesManagerSupplier) {
+            @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider) {
         super(
                 context,
                 activityTabProvider,
@@ -217,7 +207,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         mHubManagerSupplier = hubManagerSupplier;
         mDefaultFaviconHelper = new FaviconHelper.DefaultFaviconHelper();
         mRoundedIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
-        mRecentlyClosedEntriesManagerSupplier = recentlyClosedEntriesManagerSupplier;
 
         incognitoReauthControllerOneshotSupplier.onAvailable(
                 mIncognitoReauthCallbackController.makeCancelable(
@@ -838,34 +827,26 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                             .with(AppMenuTabItemProperties.TAB_ID, tab.getId())
                             .with(
                                     AppMenuItemProperties.ICON_SUPPLIER,
-                                    createIconSupplierForTab(
-                                            tab.getUrl(),
-                                            tab.getTabGroupId(),
-                                            tab.isOffTheRecord(),
-                                            TabFavicon.getBitmap(tab),
-                                            /* fallbackToHost= */ false))
+                                    createIconSupplierForTab(tab))
                             .build();
             submenuItems.add(new ListItem(AppMenuHandler.AppMenuItemType.TAB, model));
         }
         return submenuItems;
     }
 
-    private LazyOneshotSupplier<Drawable> createIconSupplierForTab(
-            GURL faviconUrl,
-            @Nullable Token tabGroupId,
-            boolean isOffTheRecord,
-            @Nullable Bitmap cachedFavicon,
-            boolean fallbackToHost) {
+    private LazyOneshotSupplier<Drawable> createIconSupplierForTab(Tab tab) {
         return new LazyOneshotSupplierImpl<>() {
             @Override
             public void doSet() {
+                GURL faviconUrl = tab.getUrl();
                 int faviconDisplaySize =
                         mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
 
-                if (cachedFavicon != null) {
+                Bitmap tabFavicon = TabFavicon.getBitmap(tab);
+                if (tabFavicon != null) {
                     set(
                             FaviconUtils.getIconDrawableWithFilter(
-                                    cachedFavicon,
+                                    tabFavicon,
                                     faviconUrl,
                                     mRoundedIconGenerator,
                                     mDefaultFaviconHelper,
@@ -887,13 +868,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         };
 
                 Profile profile = getProfileFromTabModel();
-                if (tabGroupId != null && !isOffTheRecord) {
+                if (tab.getTabGroupId() != null && !tab.isOffTheRecord()) {
                     getFaviconHelper()
                             .getForeignFaviconImageForURL(
                                     profile,
                                     faviconUrl,
                                     faviconDisplaySize,
-                                    fallbackToHost,
+                                    /* fallbackToHost= */ false,
                                     faviconCallback);
                 } else {
                     getFaviconHelper()
@@ -901,7 +882,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                     profile,
                                     faviconUrl,
                                     faviconDisplaySize,
-                                    fallbackToHost,
+                                    /* fallbackToHost= */ false,
                                     faviconCallback);
                 }
             }
@@ -1023,32 +1004,18 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildHistoryParentItem() {
         assert shouldShowHistoryParentItem();
 
-        Supplier<List<ListItem>> submenuItemsSupplier =
-                () -> {
-                    List<ListItem> submenuItems = new ArrayList<>();
-                    if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing()) {
-                        submenuItems.add(buildHistoryItem());
-                    }
+        List<ListItem> submenuItems = new ArrayList<>();
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing()) {
+            submenuItems.add(buildHistoryItem());
+        }
 
-                    if (shouldShowRecentTabsItem()) {
-                        submenuItems.add(buildRecentTabsItem());
-                    }
+        if (shouldShowRecentTabsItem()) {
+            submenuItems.add(buildRecentTabsItem());
+        }
 
-                    if (shouldShowQuickDeleteItem()) {
-                        submenuItems.add(buildQuickDeleteItem());
-                    }
-
-                    List<ListItem> recentEntries = getRecentEntryMenuItemList();
-                    if (!recentEntries.isEmpty()) {
-                        submenuItems.add(
-                                new ListItem(
-                                        AppMenuHandler.AppMenuItemType.DIVIDER,
-                                        buildModelForDivider(R.id.divider_line_id)));
-                        submenuItems.addAll(recentEntries);
-                    }
-
-                    return submenuItems;
-                };
+        if (shouldShowQuickDeleteItem()) {
+            submenuItems.add(buildQuickDeleteItem());
+        }
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
@@ -1056,59 +1023,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.history_parent_menu_id,
                         R.string.menu_history,
                         shouldShowIconBeforeItem() ? R.drawable.ic_history_24dp : Resources.ID_NULL,
-                        submenuItemsSupplier));
-    }
-
-    private List<ListItem> getRecentEntryMenuItemList() {
-        List<ListItem> items = new ArrayList<>();
-        RecentlyClosedEntriesManager manager = mRecentlyClosedEntriesManagerSupplier.get();
-        assert manager != null;
-
-        // TODO(crbug.com/509065810): Support updating the menu items dynamically when the
-        // recently closed entries list changes while the menu is open.
-        int count = 0;
-        for (RecentlyClosedEntry entry : manager.getRecentlyClosedEntries()) {
-            if (count >= MAX_RECENT_ENTRIES_TO_SHOW) {
-                break;
-            }
-
-            if (entry instanceof RecentlyClosedTab tab) {
-                items.add(
-                        buildRecentEntryMenuItem(
-                                entry,
-                                TitleUtil.getTitleForDisplay(tab.getTitle(), tab.getUrl()),
-                                createIconSupplierForTab(
-                                        tab.getUrl(),
-                                        tab.getTabGroupId(),
-                                        // Recently closed tabs are not tracked for incognito.
-                                        /* isOffTheRecord= */ false,
-                                        // No live Tab object is available to get a cached favicon.
-                                        /* cachedFavicon= */ null,
-                                        /* fallbackToHost= */ true)));
-                count++;
-            }
-
-            // TODO(crbug.com/509065810): Support windows and bulk closures.
-        }
-        return items;
-    }
-
-    private ListItem buildRecentEntryMenuItem(
-            RecentlyClosedEntry entry,
-            String title,
-            @Nullable LazyOneshotSupplier<Drawable> iconSupplier) {
-        PropertyModel.Builder builder =
-                populateBaseModelForTextItem(
-                                new PropertyModel.Builder(
-                                        AppMenuRecentEntryItemProperties.ALL_KEYS),
-                                R.id.recent_entry_menu_item)
-                        .with(AppMenuItemProperties.TITLE, title)
-                        .with(AppMenuRecentEntryItemProperties.RECENT_ENTRY, entry);
-        if (shouldShowIconBeforeItem() && iconSupplier != null) {
-            builder.with(AppMenuItemProperties.ICON_SUPPLIER, iconSupplier);
-            builder.with(AppMenuItemProperties.ICON_NO_TINT, true);
-        }
-        return new ListItem(AppMenuHandler.AppMenuItemType.RECENT_ENTRY, builder.build());
+                        () -> submenuItems));
     }
 
     private ListItem buildHistoryItem() {

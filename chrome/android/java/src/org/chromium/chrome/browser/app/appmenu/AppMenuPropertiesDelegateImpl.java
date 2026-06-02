@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
-import org.chromium.chrome.browser.ntp.SessionRecentlyClosedEntry;
 import org.chromium.chrome.browser.open_in_app.OpenInAppMenuItemProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -70,7 +69,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemWithSubmenuProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuRecentEntryItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -111,7 +109,6 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
 
     public static final String BOOKMARK_ID_BUNDLE_KEY = "BookmarkId";
     public static final String TAB_ID_BUNDLE_KEY = "TabId";
-    public static final String RECENT_ENTRY_SESSION_ID_BUNDLE_KEY = "RecentEntrySessionId";
 
     private static @Nullable Boolean sItemBookmarkedForTesting;
 
@@ -902,24 +899,17 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     public @Nullable Bundle getBundleForMenuItem(PropertyModel model) {
         if (model.containsKey(AppMenuBookmarkItemProperties.BOOKMARK_ID)) {
             BookmarkId bookmarkId = model.get(AppMenuBookmarkItemProperties.BOOKMARK_ID);
-            assert bookmarkId != null;
-
-            Bundle bundle = new Bundle();
-            bundle.putString(
-                    AppMenuPropertiesDelegateImpl.BOOKMARK_ID_BUNDLE_KEY, bookmarkId.toString());
-            return bundle;
+            if (bookmarkId != null) {
+                Bundle bundle = new Bundle();
+                bundle.putString(
+                        AppMenuPropertiesDelegateImpl.BOOKMARK_ID_BUNDLE_KEY,
+                        bookmarkId.toString());
+                return bundle;
+            }
         }
         if (model.containsKey(AppMenuTabItemProperties.TAB_ID)) {
             Bundle bundle = new Bundle();
             bundle.putInt(TAB_ID_BUNDLE_KEY, model.get(AppMenuTabItemProperties.TAB_ID));
-            return bundle;
-        }
-        if (model.containsKey(AppMenuRecentEntryItemProperties.RECENT_ENTRY)) {
-            Object entry = model.get(AppMenuRecentEntryItemProperties.RECENT_ENTRY);
-            assert entry != null && entry instanceof SessionRecentlyClosedEntry;
-            SessionRecentlyClosedEntry sessionEntry = (SessionRecentlyClosedEntry) entry;
-            Bundle bundle = new Bundle();
-            bundle.putInt(RECENT_ENTRY_SESSION_ID_BUNDLE_KEY, sessionEntry.getSessionId());
             return bundle;
         }
         return null;

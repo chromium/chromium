@@ -299,24 +299,6 @@ public class RecentlyClosedEntriesManager {
     }
 
     /**
-     * Finds a recently closed entry by its session ID. This method iterates through the cached
-     * recently closed entries to find the one with the matching session ID. Use of this method is
-     * discouraged if you have access to the {@link RecentlyClosedEntry} object directly.
-     *
-     * @param sessionId The session ID of the entry to find.
-     * @return The {@link SessionRecentlyClosedEntry} if found, or null otherwise.
-     */
-    public @Nullable SessionRecentlyClosedEntry findRecentlyClosedEntry(int sessionId) {
-        for (RecentlyClosedEntry entry : getRecentlyClosedEntries()) {
-            if (entry instanceof SessionRecentlyClosedEntry sessionEntry
-                    && sessionEntry.getSessionId() == sessionId) {
-                return sessionEntry;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Opens a recently closed entry, delegating to the {@link MultiInstanceManager} if entry is a
      * window, otherwise delegating to {@link RecentlyClosedTabManager}.
      *
