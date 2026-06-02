@@ -537,6 +537,11 @@ public class AutocompleteInput implements UserData {
         return this;
     }
 
+    public AutocompleteInput setSelection(Range<Integer> selection) {
+        mSelection = selection;
+        return this;
+    }
+
     public Range<Integer> getSelection() {
         return mSelection;
     }

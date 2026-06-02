@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
+import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
@@ -668,7 +669,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mLocationBarCoordinator.setUrlBarFocus(
                 new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP)
                         .setUserText(query)
-                        .setSelection(0, Integer.MAX_VALUE));
+                        .setSelection(UrlBarData.SELECT_ALL));
 
         mSearchBox.beginQuery(mIntentOrigin, mSearchType, getWindowAndroid());
     }
