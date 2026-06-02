@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "net/base/url_util.h"
@@ -727,13 +728,13 @@ String SecurityOrigin::CanonicalizeSpecialHost(const String& host,
   url::RawCanonOutputT<char> canon_output;
   if (host.Is8Bit()) {
     StringUtf8Adaptor utf8(host);
-    *success = url::CanonicalizeSpecialHost(utf8.AsStringView(),
-                                            url::Component(0, utf8.size()),
-                                            canon_output, out_host);
+    std::string_view host_view = utf8.AsStringView();
+    *success = url::CanonicalizeSpecialHost(
+        host_view, url::Component(host_view), canon_output, out_host);
   } else {
-    *success = url::CanonicalizeSpecialHost(host.View16(),
-                                            url::Component(0, host.length()),
-                                            canon_output, out_host);
+    std::u16string_view host_view = host.View16();
+    *success = url::CanonicalizeSpecialHost(
+        host_view, url::Component(host_view), canon_output, out_host);
   }
   return String::FromUtf8(canon_output.view());
 }
@@ -749,12 +750,12 @@ String SecurityOrigin::CanonicalizeHost(const String& host,
   url::RawCanonOutputT<char> canon_output;
   if (host.Is8Bit()) {
     StringUtf8Adaptor utf8(host);
-    *success = url::CanonicalizeFileHost(utf8.AsStringView(),
-                                         url::Component(0, utf8.size()),
+    std::string_view host_view = utf8.AsStringView();
+    *success = url::CanonicalizeFileHost(host_view, url::Component(host_view),
                                          canon_output, out_host);
   } else {
-    *success = url::CanonicalizeFileHost(host.View16(),
-                                         url::Component(0, host.length()),
+    std::u16string_view host_view = host.View16();
+    *success = url::CanonicalizeFileHost(host_view, url::Component(host_view),
                                          canon_output, out_host);
   }
   return String::FromUtf8(canon_output.view());
