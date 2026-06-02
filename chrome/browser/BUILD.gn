@@ -5827,10 +5827,6 @@ static_library("test_support") {
     sources += [
       "apps/intent_helper/preferred_apps_test_util.cc",
       "apps/intent_helper/preferred_apps_test_util.h",
-      "speech/fake_speech_recognition_service.cc",
-      "speech/fake_speech_recognition_service.h",
-      "speech/fake_speech_recognizer.cc",
-      "speech/fake_speech_recognizer.h",
     ]
     public_deps += [
       "//chrome/browser/privacy_sandbox:attestations_mixin",
@@ -5841,6 +5837,7 @@ static_library("test_support") {
       "//chrome/browser/hid",
       "//chrome/browser/privacy_sandbox:countries",
       "//chrome/browser/speech",
+      "//chrome/browser/speech:test_support",
       "//chrome/test:test_support_ui",
       "//components/privacy_sandbox:features",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
@@ -5852,8 +5849,6 @@ static_library("test_support") {
     sources += [
       "media_galleries/media_galleries_test_util.cc",
       "media_galleries/media_galleries_test_util.h",
-      "speech/speech_recognition_test_helper.cc",
-      "speech/speech_recognition_test_helper.h",
     ]
     configs += [ "//build/config/linux/dbus" ]
     deps += [

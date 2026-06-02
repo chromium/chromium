@@ -1829,7 +1829,6 @@ source_set("platform_browser_tests") {
       "../browser/extensions/webstore_installer_test.cc",
       "../browser/extensions/webstore_installer_test.h",
       "../browser/extensions/webstore_reinstaller_browsertest.cc",
-      "../browser/speech/extension_api/tts_extension_apitest.cc",
       "../browser/task_manager/providers/web_contents/extension_tag_browsertest.cc",
       "../browser/ui/extensions/extension_action_view_model_browsertest.cc",
       "../browser/ui/extensions/extensions_menu_view_model_browsertest.cc",
@@ -4311,19 +4310,6 @@ if (!is_android) {
       "//third_party/federated_compute:confidential_compute_crypto_test_util",
     ]
 
-    if (!is_linux || target_cpu != "arm64") {
-      # SODA doesn't support Linux on Arm64.
-
-      deps += [ "//components/live_caption:utils" ]
-
-      if (is_win || is_mac || is_linux) {
-        sources += [
-          "../browser/speech/on_device_speech_recognition_impl_browsertest.cc",
-        ]
-        deps += [ "//chrome/browser/speech" ]
-      }
-    }
-
     if (enterprise_cloud_content_analysis) {
       sources += [
         "../browser/enterprise/connectors/analysis/content_analysis_browsertest.cc",
@@ -4360,10 +4346,10 @@ if (!is_android) {
       sources += [ "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc" ]
     }
 
-    # If this target is used on Android in the future, these browser / speech/*
-    # files will probably not be applicable.
-    sources += [ "../browser/speech/speech_recognition_browsertest.cc" ]
-    deps += [ "//chrome/browser/speech" ]
+    deps += [
+      "//chrome/browser/speech",
+      "//chrome/browser/speech:browser_tests",
+    ]
 
     if (enable_on_device_translation) {
       sources += [ "//chrome/browser/on_device_translation/on_device_translation_browsertest.cc" ]
@@ -4582,25 +4568,6 @@ if (!is_android) {
       ]
 
       data_deps += [ "//chrome:packed_resources" ]
-    }
-
-    if (enable_soda_integration_tests) {
-      assert(enable_speech_service)
-      sources +=
-          [ "../browser/speech/speech_recognition_service_browsertest.cc" ]
-      deps += [
-        "//chrome/services/speech:lib",
-        "//chrome/services/speech/soda",
-      ]
-      if (is_mac) {
-        data_deps += [ "//third_party/soda-mac64:soda_resources" ]
-      } else if (is_win && target_cpu == "x86") {
-        data_deps += [ "//third_party/soda-win32:soda_resources" ]
-      } else if (is_win && target_cpu == "x64") {
-        data_deps += [ "//third_party/soda-win64:soda_resources" ]
-      } else {
-        data_deps += [ "//third_party/soda:soda_resources" ]
-      }
     }
 
     if (use_ozone) {
@@ -5553,8 +5520,6 @@ if (!is_android) {
         "../browser/sessions/tab_restore_service_browsertest.cc",
         "../browser/signin/chromeos_mirror_account_consistency_browsertest.cc",
         "../browser/signin/signin_ui_util_chromeos_browsertest.cc",
-        "../browser/speech/network_speech_recognizer_browsertest.cc",
-        "../browser/speech/speech_recognition_recognizer_client_impl_browsertest.cc",
         "../browser/support_tool/signin_data_collector_browsertest.cc",
         "../browser/ui/ash/editor_menu/editor_menu_browsertest.cc",
         "../browser/ui/ash/input_method/candidate_window_view_pixeltest.cc",
@@ -8413,7 +8378,6 @@ test("unit_tests") {
       "../browser/sessions/restore_on_startup_policy_handler_unittest.cc",
       "../browser/sessions/tab_restore_service_unittest.cc",
       "../browser/signin/signin_promo_unittest.cc",
-      "../browser/speech/speech_recognition_service_factory_unittest.cc",
       "../browser/support_tool/support_tool_handler_unittest.cc",
       "../browser/support_tool/system_log_source_data_collector_adaptor_unittest.cc",
       "../browser/sync/prefs/chrome_syncable_prefs_database_unittest.cc",
@@ -8612,6 +8576,7 @@ test("unit_tests") {
       "//chrome/browser/sharing/shared_clipboard:unit_tests",
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/speech",
+      "//chrome/browser/speech:unit_tests",
       "//chrome/browser/tab_contents",
       "//chrome/browser/tab_contents:unit_tests",
       "//chrome/browser/tab_group_sync:factories",
@@ -9176,10 +9141,6 @@ test("unit_tests") {
       "../browser/push_notification/server_client/push_notification_desktop_api_call_flow_impl_unittest.cc",
       "../browser/push_notification/server_client/push_notification_server_client_desktop_impl_unittest.cc",
       "../browser/shell_integration_chromeos_unittest.cc",
-      "../browser/speech/cros_speech_recognition_service_factory_unittest.cc",
-      "../browser/speech/cros_speech_recognition_service_unittest.cc",
-      "../browser/speech/tts_chromeos_unittest.cc",
-      "../browser/speech/tts_controller_delegate_impl_unittest.cc",
       "../browser/ssl/ssl_config_overlay_unittest.cc",
       "../browser/ui/ash/editor_menu/editor_menu_card_context_unittest.cc",
       "../browser/ui/ash/editor_menu/editor_menu_view_unittest.cc",

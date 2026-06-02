@@ -94,6 +94,7 @@ source_set("unit_tests") {
     "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/speech",
+    "//chrome/browser/speech:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
     "//components/application_locale_storage",
