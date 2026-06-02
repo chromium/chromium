@@ -144,6 +144,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
                            true),
       menu_model_(model.GetAnchoredMessageMenuModel()),
       delegate_(delegate) {
+  set_close_on_deactivate(false);
   SetProperty(views::kElementIdentifierKey, kAnchoredMessageBubbleId);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetBackgroundColor(ui::kColorSysSurface);
@@ -390,7 +391,7 @@ void AnchoredMessageBubbleView::OnThemeChanged() {
 }
 
 bool AnchoredMessageBubbleView::CanActivate() const {
-  return false;  // This widget should not take focus
+  return true;  // Needed for the widget buttons to work on Windows
 }
 
 views::View* AnchoredMessageBubbleView::GetContentsView() {
