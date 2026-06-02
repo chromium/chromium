@@ -851,11 +851,11 @@ void V4L2ImageProcessorBackend::Dequeue() {
     output_frame->set_color_space(job_record->input_frame->ColorSpace());
 
     if (job_record->start_time) {
-      TRACE_EVENT_BEGIN("media", "V4L2ImageProcessorBackend::Process",
-                        perfetto::Track::FromPointer(this),
+      auto track = perfetto::NamedTrack::FromPointer(
+          "media::V4L2ImageProcessorBackend", this);
+      TRACE_EVENT_BEGIN("media", "V4L2ImageProcessorBackend::Process", track,
                         job_record->start_time.value());
-      TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "timestamp",
-                      timestamp.InMilliseconds());
+      TRACE_EVENT_END("media", track, "timestamp", timestamp.InMilliseconds());
     }
 
     if (!job_record->legacy_ready_cb.is_null()) {

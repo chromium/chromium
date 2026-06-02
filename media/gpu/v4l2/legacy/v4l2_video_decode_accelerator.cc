@@ -85,6 +85,11 @@ bool IsVp9KSVCStream(uint32_t input_format_fourcc,
          !decoder_buffer.side_data()->spatial_layers.empty();
 }
 
+perfetto::NamedTrack GetTracingTrack(const V4L2VideoDecodeAccelerator* ptr) {
+  return perfetto::NamedTrack::FromPointer("media::V4L2VideoDecodeAccelerator",
+                                           ptr);
+}
+
 }  // namespace
 
 static const std::vector<uint32_t> kSupportedInputFourCCs = {
@@ -1441,8 +1446,7 @@ void V4L2VideoDecodeAccelerator::FlushTask() {
     return;
   }
 
-  TRACE_EVENT_BEGIN("media,gpu", "V4L2VDA::FlushTask",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media,gpu", "V4L2VDA::FlushTask", GetTracingTrack(this));
 
   // We don't support stacked flushing.
   DCHECK(!decoder_flushing_);
@@ -1513,7 +1517,7 @@ void V4L2VideoDecodeAccelerator::NotifyFlushDoneIfNeeded() {
 }
 
 void V4L2VideoDecodeAccelerator::NotifyFlushDone() {
-  TRACE_EVENT_END("media,gpu", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media,gpu", GetTracingTrack(this));
   decoder_delay_bitstream_buffer_id_ = -1;
   decoder_flushing_ = false;
   VLOGF(2) << "returning flush";
@@ -1560,8 +1564,7 @@ void V4L2VideoDecodeAccelerator::ResetTask() {
     return;
   }
 
-  TRACE_EVENT_BEGIN("media,gpu", "V4L2VDA::ResetTask",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media,gpu", "V4L2VDA::ResetTask", GetTracingTrack(this));
 
   decoder_current_bitstream_buffer_.reset();
   while (!decoder_input_queue_.empty())
@@ -1637,7 +1640,7 @@ void V4L2VideoDecodeAccelerator::ResetDoneTask() {
     return;
   }
 
-  TRACE_EVENT_END("media,gpu", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media,gpu", GetTracingTrack(this));
 
   // Start poll thread if NotifyFlushDoneIfNeeded has not already.
   if (!device_poll_thread_.IsRunning()) {
