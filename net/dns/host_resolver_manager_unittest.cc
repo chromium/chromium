@@ -2649,6 +2649,7 @@ TEST_F(HostResolverManagerTest, MultipleAttempts) {
                                   kSleepFudgeFactor);
 
   resolver_proc->WaitForAllAttemptsToFinish();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
   test_task_runner->RunUntilIdle();
 
   // Resolve returns -4 to indicate that 3rd attempt has resolved the host.
