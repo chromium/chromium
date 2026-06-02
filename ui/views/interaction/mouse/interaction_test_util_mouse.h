@@ -41,14 +41,14 @@ class InteractionTestUtilMouse {
   // details; prefer to use the static factory methods below.
   struct MouseButtonGesture {
     MouseButtonGesture(ui_controls::MouseButton button_,
-                       ui_controls::MouseButtonState button_state_,
+                       int button_state_,
                        int modifier_keys_)
         : button(button_),
           button_state(button_state_),
           modifier_keys(modifier_keys_) {}
 
     ui_controls::MouseButton button;
-    ui_controls::MouseButtonState button_state;
+    /* ui_controls::MouseButtonState */ int button_state;
     /* ui_controls::AcceleratorState */ int modifier_keys;
   };
   using MouseMoveGesture = gfx::Point;
@@ -58,7 +58,7 @@ class InteractionTestUtilMouse {
   // Parameters for performing a sequence of gestures.
   struct GestureParams {
     GestureParams();
-    GestureParams(gfx::NativeWindow window_hint, bool force_async);
+    explicit GestureParams(gfx::NativeWindow window_hint);
     GestureParams(const GestureParams&);
     GestureParams& operator=(const GestureParams&);
     GestureParams(GestureParams&&) noexcept;
@@ -69,13 +69,6 @@ class InteractionTestUtilMouse {
     //
     // Note: explicit init is required on Aura platforms, but not on Mac.
     gfx::NativeWindow window_hint = gfx::NativeWindow();  // NOLINT
-
-    // If true, mouse input will be sent asynchronously, which may be required
-    // if the input would put the system into an OS-based message pump; this
-    // happens for native context menus on Mac and drag-drop on Windows.
-    //
-    // For all other cases, this should be `false`.
-    bool force_async = false;
   };
 
   // These factory methods create individual or compound gestures. They can be
@@ -86,8 +79,8 @@ class InteractionTestUtilMouse {
       int modifier_keys = ui_controls::kNoAccelerator);
   static MouseGesture MouseUp(ui_controls::MouseButton button,
                               int modifier_keys = ui_controls::kNoAccelerator);
-  static MouseGestures Click(ui_controls::MouseButton button,
-                             int modifier_keys = ui_controls::kNoAccelerator);
+  static MouseGesture Click(ui_controls::MouseButton button,
+                            int modifier_keys = ui_controls::kNoAccelerator);
   static MouseGestures DragAndHold(gfx::Point destination);
   static MouseGestures DragAndRelease(gfx::Point destination);
 

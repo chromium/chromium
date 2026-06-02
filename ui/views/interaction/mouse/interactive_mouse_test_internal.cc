@@ -48,8 +48,7 @@ InteractiveMouseTestPrivate::GetGestureParamsForStep(
     const ui::InteractionSequence* seq) {
   // Get the native window.
   gfx::NativeWindow window = test_impl().GetNativeWindowFor(el);
-  return InteractionTestUtilMouse::GestureParams(
-      window, seq->IsCurrentStepImmediateForTesting());
+  return InteractionTestUtilMouse::GestureParams(window);
 }
 
 }  // namespace views::test::internal

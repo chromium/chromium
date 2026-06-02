@@ -42,20 +42,24 @@ namespace views::test {
 namespace {
 InteractionTestUtilMouse* g_current_mouse_util = nullptr;
 
+#if defined(USE_AURA)
 void PostTask(base::OnceClosure task) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                               std::move(task));
 }
+#endif  // defined(USE_AURA)
 
 #if TOUCH_INPUT_SUPPORTED
 
-ui_controls::TouchType GetTouchAction(ui_controls::MouseButtonState state) {
-  switch (state) {
-    case ui_controls::DOWN:
-      return ui_controls::kTouchPress;
-    case ui_controls::UP:
-      return ui_controls::kTouchRelease;
+int GetTouchAction(int state) {
+  int action = 0;
+  if (state & ui_controls::DOWN) {
+    action |= ui_controls::kTouchPress;
   }
+  if (state & ui_controls::UP) {
+    action |= ui_controls::kTouchRelease;
+  }
+  return action;
 }
 
 int GetTouchCount(ui_controls::MouseButton button) {
@@ -75,9 +79,8 @@ int GetTouchCount(ui_controls::MouseButton button) {
 
 InteractionTestUtilMouse::GestureParams::GestureParams() = default;
 InteractionTestUtilMouse::GestureParams::GestureParams(
-    gfx::NativeWindow window_hint_,
-    bool force_async_)
-    : window_hint(window_hint_), force_async(force_async_) {}
+    gfx::NativeWindow window_hint_)
+    : window_hint(window_hint_) {}
 InteractionTestUtilMouse::GestureParams::GestureParams(const GestureParams&) =
     default;
 InteractionTestUtilMouse::GestureParams&
@@ -223,11 +226,11 @@ InteractionTestUtilMouse::MouseGesture InteractionTestUtilMouse::MouseUp(
 }
 
 // static
-InteractionTestUtilMouse::MouseGestures InteractionTestUtilMouse::Click(
+InteractionTestUtilMouse::MouseGesture InteractionTestUtilMouse::Click(
     ui_controls::MouseButton button,
     int modifier_keys) {
-  return MouseGestures{MouseDown(button, modifier_keys),
-                       MouseUp(button, modifier_keys)};
+  return MouseButtonGesture(button, ui_controls::UP | ui_controls::DOWN,
+                            modifier_keys);
 }
 
 // static
@@ -272,55 +275,16 @@ bool InteractionTestUtilMouse::SendButtonPress(
     const MouseButtonGesture& gesture,
     const GestureParams& params,
     base::OnceClosure on_complete) {
-  if (!params.force_async) {
-#if TOUCH_INPUT_SUPPORTED
-    if (touch_mode_) {
-      return ui_controls::SendTouchEventsNotifyWhenDone(
-          GetTouchAction(gesture.button_state), GetTouchCount(gesture.button),
-          touch_hover_point_.x(), touch_hover_point_.y(),
-          std::move(on_complete));
-    }
-#endif  // TOUCH_INPUT_SUPPORTED
-    return ui_controls::SendMouseEventsNotifyWhenDone(
-        gesture.button, gesture.button_state, std::move(on_complete),
-        gesture.modifier_keys, params.window_hint);
-  }
-
 #if TOUCH_INPUT_SUPPORTED
   if (touch_mode_) {
-    PostTask(base::BindOnce(
-        [](base::WeakPtr<InteractionTestUtilMouse> util,
-           base::OnceClosure on_complete, MouseButtonGesture gesture,
-           gfx::Point target) {
-          if (!util) {
-            return;
-          }
-          CHECK(ui_controls::SendTouchEventsNotifyWhenDone(
-              GetTouchAction(gesture.button_state),
-              GetTouchCount(gesture.button), target.x(), target.y(),
-              std::move(on_complete)));
-        },
-        weak_ptr_factory_.GetWeakPtr(), std::move(on_complete), gesture,
-        touch_hover_point_));
-    return true;
+    return ui_controls::SendTouchEventsNotifyWhenDone(
+        GetTouchAction(gesture.button_state), GetTouchCount(gesture.button),
+        touch_hover_point_.x(), touch_hover_point_.y(), std::move(on_complete));
   }
 #endif  // TOUCH_INPUT_SUPPORTED
-
-  PostTask(base::BindOnce(
-      [](base::WeakPtr<InteractionTestUtilMouse> util,
-         base::OnceClosure on_complete, MouseButtonGesture gesture,
-         gfx::NativeWindow window_hint) {
-        if (!util) {
-          return;
-        }
-        CHECK(ui_controls::SendMouseEventsNotifyWhenDone(
-            gesture.button, gesture.button_state, std::move(on_complete),
-            gesture.modifier_keys, window_hint));
-      },
-      weak_ptr_factory_.GetWeakPtr(), std::move(on_complete), gesture,
-      params.window_hint));
-
-  return true;
+  return ui_controls::SendMouseEventsNotifyWhenDone(
+      gesture.button, gesture.button_state, std::move(on_complete),
+      gesture.modifier_keys, params.window_hint);
 }
 
 bool InteractionTestUtilMouse::SendMove(const MouseMoveGesture& gesture,
@@ -339,50 +303,15 @@ bool InteractionTestUtilMouse::SendMove(const MouseMoveGesture& gesture,
     CHECK_EQ(1U, buttons_down_.size());
   }
 #endif  // TOUCH_INPUT_SUPPORTED
-  if (!params.force_async) {
-#if TOUCH_INPUT_SUPPORTED
-    if (touch_mode_) {
-      return ui_controls::SendTouchEventsNotifyWhenDone(
-          ui_controls::kTouchMove, GetTouchCount(*buttons_down_.begin()),
-          gesture.x(), gesture.y(), std::move(on_complete));
-    }
-#endif  // TOUCH_INPUT_SUPPORTED
-    return ui_controls::SendMouseMoveNotifyWhenDone(
-        gesture.x(), gesture.y(), std::move(on_complete), params.window_hint);
-  }
-
 #if TOUCH_INPUT_SUPPORTED
   if (touch_mode_) {
-    PostTask(base::BindOnce(
-        [](base::WeakPtr<InteractionTestUtilMouse> util,
-           base::OnceClosure on_complete, MouseMoveGesture gesture) {
-          if (!util) {
-            return;
-          }
-          const int touch_count = GetTouchCount(*util->buttons_down_.begin());
-          CHECK(ui_controls::SendTouchEventsNotifyWhenDone(
-              ui_controls::kTouchMove, touch_count, gesture.x(), gesture.y(),
-              std::move(on_complete)));
-        },
-        weak_ptr_factory_.GetWeakPtr(), std::move(on_complete), gesture));
-    return true;
+    return ui_controls::SendTouchEventsNotifyWhenDone(
+        ui_controls::kTouchMove, GetTouchCount(*buttons_down_.begin()),
+        gesture.x(), gesture.y(), std::move(on_complete));
   }
 #endif  // TOUCH_INPUT_SUPPORTED
-
-  PostTask(base::BindOnce(
-      [](base::WeakPtr<InteractionTestUtilMouse> util,
-         base::OnceClosure on_complete, MouseMoveGesture gesture,
-         gfx::NativeWindow window_hint) {
-        if (!util) {
-          return;
-        }
-        CHECK(ui_controls::SendMouseMoveNotifyWhenDone(
-            gesture.x(), gesture.y(), std::move(on_complete), window_hint));
-      },
-      weak_ptr_factory_.GetWeakPtr(), std::move(on_complete), gesture,
-      params.window_hint));
-
-  return true;
+  return ui_controls::SendMouseMoveNotifyWhenDone(
+      gesture.x(), gesture.y(), std::move(on_complete), params.window_hint);
 }
 
 bool InteractionTestUtilMouse::SetTouchMode(bool touch_mode) {
@@ -438,80 +367,50 @@ void InteractionTestUtilMouse::PerformNextGesture(const GestureParams& params,
 
   MouseGesture gesture = std::move(gestures.front());
   gestures.pop_front();
-  const bool is_last_gesture = gestures.empty();
 
-  // If the gestures should be executed asynchronously, then the next gesture
-  // will be sent immediately after sending the current one. Therefore,
-  // defer `on_complete_` until all gestures have been sent.
-  //
-  // TODO(crbug.com/40249472): The `force_async` should eventually be removed
-  // altogether. The current blocker is the "click" gesture. Specifically, on
-  // MacOS 12 and earlier, which uses Carbon rather than Cocoa, the mouse down
-  // and up events must be close together to be considered a "click"; otherwise
-  // context menus will be prematurely dismissed for right-clicks. Executing
-  // the inputs sequentially (i.e. with `force_async = false`) incurs too
-  // long of a delay.
-  base::OnceClosure perform_next_gesture = base::BindOnce(
+  base::OnceClosure step_complete = base::BindOnce(
       &InteractionTestUtilMouse::PerformNextGesture,
       weak_ptr_factory_.GetWeakPtr(), params, std::move(gestures));
-  base::OnceClosure step_complete = base::DoNothing();
-  if (!params.force_async || is_last_gesture) {
-    step_complete = std::move(perform_next_gesture);
-  }
 
   if (MouseButtonGesture* const button =
           std::get_if<MouseButtonGesture>(&gesture)) {
-    switch (button->button_state) {
-      case ui_controls::UP: {
-        CHECK(buttons_down_.erase(button->button));
-        if (ShouldCancelDrag()) {
-          // This will bail out of any nested drag-drop run loop, allowing
-          // the code to proceed even if the drag somehow starts while the
-          // mouse-up is being processed.
-          step_complete = std::move(step_complete)
-                              .Then(base::BindOnce(
-                                  &InteractionTestUtilMouse::CancelFutureDrag,
-                                  weak_ptr_factory_.GetWeakPtr()));
-        }
-#if defined(USE_AURA)
-        dragging_ = false;
-#endif
-        if (!SendButtonPress(*button, params, std::move(step_complete))) {
-          LOG(ERROR) << "Mouse button " << button->button << " up failed.";
-          CancelAllGestures();
-          return;
-        }
-        break;
-      }
-      case ui_controls::DOWN:
+    if (button->button_state & ui_controls::DOWN) {
 #if TOUCH_INPUT_SUPPORTED
-        CHECK(!touch_mode_ || buttons_down_.empty())
-            << "In touch mode, only one set of fingers may be down at any "
-               "given time.";
+      CHECK(!touch_mode_ || buttons_down_.empty())
+          << "In touch mode, only one set of fingers may be down at any "
+             "given time.";
 #endif
+      // Only update the button state if this isn't a click gesture (i.e. no
+      // "up").
+      if (!(button->button_state & ui_controls::UP)) {
         CHECK(buttons_down_.insert(button->button).second);
-#if BUILDFLAG(IS_MAC)
-        if (!params.force_async && button->button == ui_controls::RIGHT) {
-          LOG(WARNING)
-              << "InteractionTestUtilMouse::PerformGestures() - "
-                 "Important note:\n"
-              << "Because right-clicking on Mac typically results in a "
-                 "context menu, and because some (but not all) context menus "
-                 "on Mac are native and take over the main message loop, "
-                 "right-clicking could cause the test to hang.\n"
-              << "If you notice your test hangs on Mac, use "
-                 "MayInvolveNativeContextMenu() and minimize the number of "
-                 "test "
-                 "steps performed while the context menu is open.";
-        }
+      }
+      CancelDragNow();
+      if (!SendButtonPress(*button, params, std::move(step_complete))) {
+        LOG(ERROR) << "Mouse button " << button->button << " down failed.";
+        CancelAllGestures();
+        return;
+      }
+    } else {
+      CHECK(button->button_state == ui_controls::UP);
+      CHECK(buttons_down_.erase(button->button));
+      if (ShouldCancelDrag()) {
+        // This will bail out of any nested drag-drop run loop, allowing
+        // the code to proceed even if the drag somehow starts while the
+        // mouse-up is being processed.
+        step_complete = std::move(step_complete)
+                            .Then(base::BindOnce(
+                                &InteractionTestUtilMouse::CancelFutureDrag,
+                                weak_ptr_factory_.GetWeakPtr()));
+      }
+#if defined(USE_AURA)
+      dragging_ = false;
 #endif
-        CancelDragNow();
-        if (!SendButtonPress(*button, params, std::move(step_complete))) {
-          LOG(ERROR) << "Mouse button " << button->button << " down failed.";
-          CancelAllGestures();
-          return;
-        }
-        break;
+      if (!SendButtonPress(*button, params, std::move(step_complete))) {
+        LOG(ERROR) << "Mouse button " << button->button << " up failed.";
+        CancelAllGestures();
+        return;
+      }
     }
   } else {
     const auto& move = std::get<MouseMoveGesture>(gesture);
@@ -526,12 +425,6 @@ void InteractionTestUtilMouse::PerformNextGesture(const GestureParams& params,
       CancelAllGestures();
       return;
     }
-  }
-
-  // Run the next gesture if it hasn't been passed as a callback to the
-  // gesture that was just performed (i.e. for async gestures).
-  if (perform_next_gesture) {
-    PostTask(std::move(perform_next_gesture));
   }
 }
 

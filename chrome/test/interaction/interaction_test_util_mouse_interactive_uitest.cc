@@ -81,8 +81,7 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, MoveAndClick) {
                              // - click the left mouse button
                              if (!mouse_->PerformGestures(
                                      Mouse::GestureParams(
-                                         view->GetWidget()->GetNativeWindow(),
-                                         false),
+                                         view->GetWidget()->GetNativeWindow()),
                                      Mouse::MoveTo(pos),
                                      Mouse::Click(ui_controls::LEFT))) {
                                seq->FailForTesting();
@@ -128,8 +127,7 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, GestureAborted) {
                              // - click the left mouse button
                              EXPECT_FALSE(mouse_->PerformGestures(
                                  Mouse::GestureParams(
-                                     view->GetWidget()->GetNativeWindow(),
-                                     false),
+                                     view->GetWidget()->GetNativeWindow()),
                                  Mouse::MoveTo(pos),
                                  Mouse::Click(ui_controls::LEFT)));
                            })))
@@ -174,8 +172,7 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, Drag) {
                         // Drag the first tab into the second spot.
                         if (!mouse_->PerformGestures(
                                 Mouse::GestureParams(
-                                    tab_strip->GetWidget()->GetNativeWindow(),
-                                    false),
+                                    tab_strip->GetWidget()->GetNativeWindow()),
                                 Mouse::MoveTo(start),
                                 Mouse::DragAndRelease(end))) {
                           seq->FailForTesting();
@@ -209,60 +206,5 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, Drag) {
                       })))
           .Build();
 
-  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
-}
-
-IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, PerformGesturesAsync) {
-  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
-  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
-  base::MockOnceClosure gestures_done;
-
-  auto sequence =
-      ui::InteractionSequence::Builder()
-          .SetContext(BrowserElements::From(browser())->GetContext())
-          .SetAbortedCallback(aborted.Get())
-          .SetCompletedCallback(completed.Get())
-          // Find the app menu button.
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetElementID(kToolbarAppMenuButtonElementId)
-                  .SetStartCallback(base::BindLambdaForTesting(
-                      [this, &gestures_done](ui::InteractionSequence* seq,
-                                             ui::TrackedElement* el) {
-                        auto* const view =
-                            el->AsA<views::TrackedElementViews>()->view();
-                        const gfx::Point pos =
-                            view->GetBoundsInScreen().CenterPoint();
-
-                        auto transition = base::BindOnce(
-                            [](ui::InteractionSequence::StepTransitionHandle
-                                   handle,
-                               bool success) {
-                              std::move(handle).Proceed(success);
-                            },
-                            seq->SeizeStepTransitionControl());
-
-                        // Perform gestures asynchronously.
-                        mouse_->PerformGestures(
-                            base::BindOnce(
-                                [](base::OnceClosure done,
-                                   base::OnceCallback<void(bool)> transition,
-                                   bool success) {
-                                  std::move(done).Run();
-                                  std::move(transition).Run(success);
-                                },
-                                gestures_done.Get(), std::move(transition)),
-                            Mouse::GestureParams(
-                                view->GetWidget()->GetNativeWindow(),
-                                /*force_async=*/true),
-                            Mouse::MoveTo(pos),
-                            Mouse::Click(ui_controls::LEFT));
-                      })))
-          // Verify that the click opened the app menu.
-          .AddStep(ui::InteractionSequence::StepBuilder().SetElementID(
-              AppMenuModel::kMoreToolsMenuItem))
-          .Build();
-
-  EXPECT_CALL(gestures_done, Run()).Times(1);
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }

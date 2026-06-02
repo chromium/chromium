@@ -734,7 +734,8 @@ class InteractiveBrowserTestHoverUiTest : public InteractiveBrowserTestUiTest {
     // Move the mouse somewhere completely outside where the dialog will show.
     auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     mouse_util().PerformGestures(
-        {browser_view->GetNativeWindow(), /*force_async=*/false},
+        views::test::InteractionTestUtilMouse::GestureParams(
+            browser_view->GetNativeWindow()),
         views::test::InteractionTestUtilMouse::MoveTo(
             browser_view->GetBoundsInScreen().origin() +
             gfx::Vector2d(10, 10)));

@@ -69,7 +69,9 @@ InteractiveMouseTestApi::StepBuilder InteractiveMouseTestApi::ClickMouse(
                    bool success) { std::move(handle).Proceed(success); },
                 seq->SeizeStepTransitionControl()),
             test->test_impl_->GetGestureParamsForStep(el, seq),
-            release ? InteractionTestUtilMouse::Click(button, modifier_keys)
+            release ? InteractionTestUtilMouse::
+                          MouseGestures{InteractionTestUtilMouse::Click(
+                              button, modifier_keys)}
                     : InteractionTestUtilMouse::MouseGestures{
                           InteractionTestUtilMouse::MouseDown(button,
                                                               modifier_keys)});

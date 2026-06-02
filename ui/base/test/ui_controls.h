@@ -138,10 +138,7 @@ enum MouseButton {
 };
 
 // Used to indicate the state of the button when generating events.
-enum MouseButtonState {
-  UP = 1,
-  DOWN = 2
-};
+enum MouseButtonState { UP = 1 << 0, DOWN = 1 << 1 };
 
 enum TouchType {
   kTouchPress = 1 << 0,

@@ -126,13 +126,11 @@ class InteractiveMouseTestApi : virtual public ui::test::InteractiveTestApi {
   // the context menu in this modifier. If your test fails to close the context
   // menu, it may hang, as there is no single automated way to clean up context
   // menus in Views.
+  //
+  // TODO(crbug.com/40249472): No longer needed. Remove this and all callsites.
   template <typename... Args>
   [[nodiscard]] static MultiStep MayInvolveNativeContextMenu(Args&&... args) {
-#if BUILDFLAG(IS_MAC)
-    return WithoutDelay(std::forward<Args>(args)...);
-#else
     return Steps(std::forward<Args>(args)...);
-#endif
   }
 
  private:
