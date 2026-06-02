@@ -528,11 +528,14 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
       return false;
   }
 
-  // The mixed |w|/|d_h| in |coded_size| is intentional. Setting the correct
-  // coded width is necessary to allow coalesced memory access, which may avoid
-  // frame copies. Setting the correct coded height however does not have any
-  // benefit, and only risk copying too much data.
-  const gfx::Size coded_size(vpx_image->w, vpx_image->d_h);
+  // The mixed |full_width|/|d_h| in |coded_size| is intentional. Setting the
+  // correct buffer width is necessary to allow coalesced memory access, which
+  // may avoid frame copies. Setting the correct coded height however does not
+  // have any benefit, and only risks copying too much data.
+  const unsigned int full_width = (vpx_image->fmt & VPX_IMG_FMT_HIGHBITDEPTH)
+                                      ? vpx_image->stride[VPX_PLANE_Y] / 2
+                                      : vpx_image->stride[VPX_PLANE_Y];
+  const gfx::Size coded_size(full_width, vpx_image->d_h);
   const gfx::Size visible_size(vpx_image->d_w, vpx_image->d_h);
   // Compute natural size by scaling visible size by *pixel* aspect ratio. Note
   // that we could instead use vpx_image r_w and r_h, but doing so would allow
