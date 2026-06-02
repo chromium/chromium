@@ -66,6 +66,7 @@ source_set("configs") {
     "//chrome/browser/ui/webui/chrome_urls",
     "//chrome/browser/ui/webui/components",
     "//chrome/browser/ui/webui/connectors_internals",
+    "//chrome/browser/ui/webui/context_hub",
     "//chrome/browser/ui/webui/crashes",
     "//chrome/browser/ui/webui/data_sharing_internals",
     "//chrome/browser/ui/webui/device_log",

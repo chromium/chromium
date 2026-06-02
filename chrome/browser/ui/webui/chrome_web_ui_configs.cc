@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/components/components_ui.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub_ui.h"
 #include "chrome/browser/ui/webui/crashes/crashes_ui.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
 #include "chrome/browser/ui/webui/device_log/device_log_ui.h"
@@ -259,6 +260,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<commerce::CommerceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ActorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ComponentsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ContextHubUIConfig>());
   map.AddWebUIConfig(std::make_unique<ContextualTasksUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<security_interstitials::ConnectionHelpUIConfig>());

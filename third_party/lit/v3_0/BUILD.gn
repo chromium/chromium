@@ -41,6 +41,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/components:build_ts",
     "//chrome/browser/resources/compose:build_ts",
     "//chrome/browser/resources/content_annotator_internals:build_ts",
+    "//chrome/browser/resources/context_hub:build_ts",
     "//chrome/browser/resources/contextual_tasks:build_ts",
     "//chrome/browser/resources/default_browser/default_browser_modal:build_ts",
     "//chrome/browser/resources/default_browser/visual_guided_setter:build_ts",

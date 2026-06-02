@@ -55,6 +55,7 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
 #if !BUILDFLAG(IS_ANDROID)
       "chrome://content-annotator-internals",
 #endif
+      "chrome://context-hub",
       "chrome://crashes",
 // TODO(crbug.com/40913109): Re-enable this test
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)

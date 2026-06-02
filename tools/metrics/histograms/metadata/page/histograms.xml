@@ -388,6 +388,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".connectivity-diagnostics"/>
   <variant name=".connectors-internals"/>
   <variant name=".constrained-test"/>
+  <variant name=".context-hub"/>
   <variant name=".contextual-tasks"/>
   <variant name=".crashes"/>
   <variant name=".credits"/>

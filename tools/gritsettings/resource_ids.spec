@@ -449,6 +449,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [3765],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/context_hub/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [3768],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/contextual_tasks/resources.grd": {
     "META": {"sizes": {"includes": [60]}},
     "includes": [3770],
