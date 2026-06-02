@@ -340,7 +340,10 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
         content::WebContents::FromRenderFrameHost(render_frame_host);
     if (web_contents) {
       for (auto* widget_view : web_contents->GetPopupWidgets()) {
-        if (widget_view && widget_view->GetRenderWidgetHost()) {
+        // Only count popup widgets that are actively visible (showing) and
+        // belong to the process of the requesting frame.
+        if (widget_view && widget_view->IsShowing() &&
+            widget_view->GetRenderWidgetHost()) {
           content::RenderWidgetHost* widget_host =
               widget_view->GetRenderWidgetHost();
           if (widget_host->GetPopupCreatorFrameId() ==
