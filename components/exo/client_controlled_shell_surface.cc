@@ -926,6 +926,8 @@ std::unique_ptr<views::FrameView> ClientControlledShellSurface::CreateFrameView(
   auto frame_view = CreateFrameViewInternal(widget);
   immersive_fullscreen_controller_ =
       std::make_unique<chromeos::ImmersiveFullscreenController>();
+  immersive_fullscreen_controller_->SetImmersiveModeChangedCallback(
+      base::BindRepeating(&ash::window_util::UpdateUiForImmersiveFullscreen));
   static_cast<ash::FrameViewAsh*>(frame_view.get())
       ->InitImmersiveFullscreenControllerForView(
           immersive_fullscreen_controller_.get());

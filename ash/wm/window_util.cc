@@ -47,6 +47,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
@@ -312,6 +313,20 @@ void SetAutoHideShelf(aura::Window* window, bool autohide) {
       autohide);
   for (aura::Window* root_window : Shell::GetAllRootWindows())
     Shelf::ForWindow(root_window)->UpdateVisibilityState();
+}
+
+void UpdateUiForImmersiveFullscreen(
+    chromeos::ImmersiveFullscreenController* controller,
+    bool entering) {
+  aura::Window* window = controller->widget()->GetNativeWindow();
+  WindowState* window_state = WindowState::Get(window);
+
+  // Auto hide the shelf in immersive fullscreen instead of hiding it.
+  window_state->SetHideShelfWhenFullscreen(!entering);
+
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+    Shelf::ForWindow(root_window)->UpdateVisibilityState();
+  }
 }
 
 bool MoveWindowToDisplay(aura::Window* window, int64_t display_id) {

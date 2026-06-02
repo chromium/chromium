@@ -11,7 +11,6 @@
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "chromeos/ui/frame/immersive/immersive_context.h"
 #include "chromeos/ui/frame/immersive/immersive_focus_watcher.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ui/aura/client/aura_constants.h"
@@ -152,6 +151,11 @@ ImmersiveRevealedLock* ImmersiveFullscreenController::GetRevealedLock(
     AnimateReveal animate_reveal) {
   return new ImmersiveRevealedLock(weak_ptr_factory_.GetWeakPtr(),
                                    animate_reveal);
+}
+
+void ImmersiveFullscreenController::SetImmersiveModeChangedCallback(
+    ImmersiveModeChangedCallback callback) {
+  immersive_mode_changed_callback_ = std::move(callback);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -790,7 +794,9 @@ void ImmersiveFullscreenController::UpdateEnabled() {
   enabled_ = enabled;
 
   // Update Shell State:
-  ImmersiveContext::Get()->OnEnteringOrExitingImmersive(this, enabled);
+  if (immersive_mode_changed_callback_) {
+    immersive_mode_changed_callback_.Run(this, enabled);
+  }
 
   if (enabled_) {
     //  Make sure UI is updated before checking reveal lock.

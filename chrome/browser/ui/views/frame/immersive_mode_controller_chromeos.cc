@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "ash/wm/window_pin_util.h"
+#include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -93,6 +94,9 @@ ImmersiveModeControllerChromeos::~ImmersiveModeControllerChromeos() = default;
 
 void ImmersiveModeControllerChromeos::Init(BrowserView* browser_view) {
   browser_view_ = browser_view;
+
+  controller_.SetImmersiveModeChangedCallback(
+      base::BindRepeating(&ash::window_util::UpdateUiForImmersiveFullscreen));
   controller_.Init(this, browser_view_->browser_widget(),
                    browser_view_->top_container());
 

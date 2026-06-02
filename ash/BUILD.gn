@@ -2955,8 +2955,6 @@ component("ash") {
     "wm/gestures/wm_fling_handler.h",
     "wm/gestures/wm_gesture_handler.cc",
     "wm/gestures/wm_gesture_handler.h",
-    "wm/immersive_context_ash.cc",
-    "wm/immersive_context_ash.h",
     "wm/layer_tree_synchronizer.cc",
     "wm/layer_tree_synchronizer.h",
     "wm/lock_layout_manager.cc",

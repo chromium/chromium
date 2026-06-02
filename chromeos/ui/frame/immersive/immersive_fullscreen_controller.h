@@ -64,6 +64,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
       public views::WidgetObserver,
       public ImmersiveRevealedLock::Delegate {
  public:
+  // Callback called when immersive mode is entered or exited.
+  using ImmersiveModeChangedCallback =
+      base::RepeatingCallback<void(ImmersiveFullscreenController*, bool)>;
+
   // How many pixels are reserved for touch-events towards the top of an
   // immersive-fullscreen window.
   static const int kImmersiveFullscreenTopEdgeInset;
@@ -113,6 +117,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
 
   views::Widget* widget() { return widget_; }
   views::View* top_container() { return top_container_; }
+
+  // Sets a callback to be called when immersive mode is entered or exited.
+  void SetImmersiveModeChangedCallback(ImmersiveModeChangedCallback callback);
 
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override;
@@ -337,6 +344,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   // but not revealed. This prevents unnecessary painting of the top container
   // when it is fully obscured or not needed.
   std::optional<views::ScopedPaintLock> top_container_paint_lock_;
+
+  ImmersiveModeChangedCallback immersive_mode_changed_callback_;
 
   // |animations_disabled_for_test_| is initialized to this. See
   // ImmersiveFullscreenControllerTestApi::GlobalAnimationDisabler for details.

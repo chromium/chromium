@@ -24,7 +24,11 @@ class PrefRegistrySimple;
 
 namespace ash {
 class WindowState;
-}
+}  // namespace ash
+
+namespace chromeos {
+class ImmersiveFullscreenController;
+}  // namespace chromeos
 
 namespace gfx {
 class Point;
@@ -99,6 +103,11 @@ ASH_EXPORT void PinWindow(aura::Window* window, bool trusted);
 // Indicates that the window should autohide the shelf when it is the active
 // window.
 ASH_EXPORT void SetAutoHideShelf(aura::Window* window, bool autohide);
+
+// Updates the shelf's visibility to hide when entering immersive fullscreen.
+ASH_EXPORT void UpdateUiForImmersiveFullscreen(
+    chromeos::ImmersiveFullscreenController* controller,
+    bool entering);
 
 // Moves |window| to the root window for the given |display_id|, if it is not
 // already in the same root window. Returns true if |window| was moved.

@@ -3,6 +3,9 @@ specific_include_rules = {
   "browser_frame_view_chromeos\\..*": [
     "+ash",
   ],
+  "immersive_mode_controller_chromeos\\..*": [
+    "+ash",
+  ],
   "browser_frame_view_chromeos_browsertest\\.cc": [
     "+ash/multi_user/multi_user_window_manager.h",
   ],
