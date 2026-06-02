@@ -70,6 +70,10 @@
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #if defined(USE_AURA)
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -637,20 +641,27 @@ class BFCachedRenderWidgetHostViewBrowserTest
 };
 }  // namespace
 
-// TODO(crbug.com/517285763): This test is failing on Linux Wayland.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_BFCacheRestoredPageHasNewLocalSurfaceId \
-  DISABLED_BFCacheRestoredPageHasNewLocalSurfaceId
-#else
-#define MAYBE_BFCacheRestoredPageHasNewLocalSurfaceId \
-  BFCacheRestoredPageHasNewLocalSurfaceId
-#endif
 IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
-                       MAYBE_BFCacheRestoredPageHasNewLocalSurfaceId) {
+                       BFCacheRestoredPageHasNewLocalSurfaceId) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   RenderFrameHostWrapper rfh1(shell()->web_contents()->GetPrimaryMainFrame());
+
+#if BUILDFLAG(IS_OZONE)
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    // Process any pending platform resize/configure events to stabilize the
+    // SurfaceId.
+    viz::SurfaceId stable_id;
+    viz::SurfaceId new_stable_id =
+        GetCurrentSurfaceIdOnDelegatedFrameHost(rfh1->GetView());
+    while (new_stable_id != stable_id) {
+      stable_id = new_stable_id;
+      GiveItSomeTime();
+      new_stable_id = GetCurrentSurfaceIdOnDelegatedFrameHost(rfh1->GetView());
+    }
+  }
+#endif
 
   const auto id_before_cached =
       GetCurrentSurfaceIdOnDelegatedFrameHost(rfh1->GetView());
