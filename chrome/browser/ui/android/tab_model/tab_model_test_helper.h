@@ -36,7 +36,8 @@ class TestTabModel : public TabModel {
  public:
   explicit TestTabModel(Profile* profile,
                         chrome::android::ActivityType activity_type =
-                            chrome::android::ActivityType::kTabbed);
+                            chrome::android::ActivityType::kTabbed,
+                        TabModelType tab_model_type = TabModelType::kStandard);
   ~TestTabModel() override;
 
   // TabModel:
@@ -158,9 +159,11 @@ class OwningTestTabModel : public TabModel {
  public:
   // Creates a TabModel that starts empty. The model will automatically be added
   // to the TabModelList, and removed when it's destroyed.
-  explicit OwningTestTabModel(Profile* profile,
-                              chrome::android::ActivityType activity_type =
-                                  chrome::android::ActivityType::kTabbed);
+  explicit OwningTestTabModel(
+      Profile* profile,
+      chrome::android::ActivityType activity_type =
+          chrome::android::ActivityType::kTabbed,
+      TabModelType tab_model_type = TabModelType::kStandard);
 
   ~OwningTestTabModel() override;
 

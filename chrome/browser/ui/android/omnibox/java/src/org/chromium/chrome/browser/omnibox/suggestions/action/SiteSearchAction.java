@@ -11,6 +11,7 @@ import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
+import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /** Omnibox action for Site Search. */
@@ -19,8 +20,15 @@ public class SiteSearchAction extends OmniboxAction {
     /** The keyword for site search. */
     public final String keyword;
 
+    /** The starter pack ID for site search. */
+    public final @StarterPackId int starterPackId;
+
     public SiteSearchAction(
-            long nativeInstance, String hint, String accessibilityHint, String keyword) {
+            long nativeInstance,
+            String hint,
+            String accessibilityHint,
+            String keyword,
+            @StarterPackId int starterPackId) {
         super(
                 OmniboxActionId.SITE_SEARCH,
                 nativeInstance,
@@ -31,11 +39,22 @@ public class SiteSearchAction extends OmniboxAction {
                 ActionPresentationMode.CHIP,
                 WindowOpenDisposition.CURRENT_TAB);
         this.keyword = keyword;
+        this.starterPackId = starterPackId;
     }
 
     @Override
     public boolean execute(OmniboxActionDelegate delegate) {
-        delegate.setSiteSearchData(new SiteSearchData(keyword, hint));
+        delegate.setSiteSearchData(
+                new SiteSearchData(keyword, hint, /* enteredViaSpace= */ false, starterPackId));
         return false; // do not clear omnibox focus.
+    }
+
+    @Override
+    public void onActionFocusedFromKeyboard(boolean isSelected, OmniboxActionDelegate delegate) {
+        delegate.setSiteSearchData(
+                isSelected
+                        ? new SiteSearchData(
+                                keyword, hint, /* enteredViaSpace= */ false, starterPackId)
+                        : null);
     }
 }

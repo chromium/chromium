@@ -13,6 +13,7 @@ import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateI
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
+import org.chromium.components.search_engines.StarterPackId;
 
 /** A factory creating the OmniboxAction instances. */
 @NullMarked
@@ -41,8 +42,10 @@ public class OmniboxActionFactory {
             long nativeInstance,
             @JniType("std::u16string") String hint,
             @JniType("std::u16string") String accessibilityHint,
-            @JniType("std::u16string") String keyword) {
-        return new SiteSearchAction(nativeInstance, hint, accessibilityHint, keyword);
+            @JniType("std::u16string") String keyword,
+            @StarterPackId int starterPackId) {
+        return new SiteSearchAction(
+                nativeInstance, hint, accessibilityHint, keyword, starterPackId);
     }
 
     @CalledByNative

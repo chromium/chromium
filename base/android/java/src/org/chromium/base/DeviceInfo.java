@@ -214,9 +214,18 @@ public final class DeviceInfo {
         ResettersForTesting.register(() -> sIsRetailDemoModeForTesting = null);
     }
 
+    @CalledByNativeForTesting
     public static void setIsDesktopForTesting(boolean isDesktop) {
         sIsDesktopForTesting = isDesktop;
         ResettersForTesting.register(() -> sIsDesktopForTesting = null);
+        if (sIsNativeLoaded) {
+            sendToNative(getInstance().mIDeviceInfo);
+        }
+    }
+
+    @CalledByNativeForTesting
+    public static void resetIsDesktopForTesting() {
+        sIsDesktopForTesting = null;
         if (sIsNativeLoaded) {
             sendToNative(getInstance().mIDeviceInfo);
         }

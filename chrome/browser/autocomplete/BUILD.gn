@@ -311,7 +311,12 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    deps += [ "//components/location/android:test_support" ]
+    sources += [ "../android/autocomplete/tab_matcher_android_unittest.cc" ]
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ui/android/tab_model:test_support",
+      "//components/location/android:test_support",
+    ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

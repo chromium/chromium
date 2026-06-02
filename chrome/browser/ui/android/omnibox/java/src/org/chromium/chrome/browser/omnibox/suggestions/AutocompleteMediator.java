@@ -75,6 +75,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -741,7 +742,10 @@ class AutocompleteMediator
         boolean isAndroidHub =
                 mAutocompleteInput.getPageClassification() == PageClassification.ANDROID_HUB_VALUE;
         boolean isTabsResult = suggestion.getType() == OmniboxSuggestionType.OPEN_TAB;
-        if ((isAndroidHub || isTabsResult) && suggestion.hasTabMatch()) {
+        @Nullable SiteSearchData siteSearchData = mAutocompleteInput.getSiteSearchData();
+        boolean isInTabsKeywordMode =
+                siteSearchData != null && siteSearchData.starterPackId == StarterPackId.TABS;
+        if ((isAndroidHub || isTabsResult || isInTabsKeywordMode) && suggestion.hasTabMatch()) {
             // Consider switching to tab for all other suggestion types that are not tab groups.
             if (suggestion.getType() == OmniboxSuggestionType.TAB_GROUP) {
                 switchToTabGroup(suggestion);
@@ -1221,7 +1225,8 @@ class AutocompleteMediator
                     new SiteSearchData(
                             templateUrl.getKeyword(),
                             TextUtils.isEmpty(fullName) ? templateUrl.getShortName() : fullName,
-                            /* enteredViaSpace= */ true);
+                            /* enteredViaSpace= */ true,
+                            templateUrl.getStarterPackId());
             onKeywordModeEntered(data);
             return true;
         }

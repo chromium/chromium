@@ -98,6 +98,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -865,13 +866,56 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(createEmptySession());
         mMediator
                 .getAutocompleteInputForTesting()
-                .setSiteSearchData(new SiteSearchData(TABS_STARTER_PACK_KEYWORD, "Tabs"));
+                .setSiteSearchData(
+                        new SiteSearchData(
+                                TABS_STARTER_PACK_KEYWORD,
+                                "Tabs",
+                                /* enteredViaSpace= */ false,
+                                StarterPackId.TABS));
         doReturn(true).when(mOmniboxActionDelegate).switchToTab(anyInt(), any());
         GURL url = new GURL("https://example.com");
         AutocompleteMatch match =
                 new AutocompleteMatchBuilder()
                         .setHasTabMatch(true)
                         .setType(OmniboxSuggestionType.OPEN_TAB)
+                        .setAndroidTabId(123)
+                        .setActions(
+                                List.of(
+                                        new OmniboxActionInSuggest(
+                                                /* nativeInstance= */ 0,
+                                                "hint",
+                                                "acc",
+                                                /* actionType= */ 1002,
+                                                "",
+                                                /* tabId= */ 123,
+                                                /* presentationMode= */ 1)))
+                        .build();
+
+        mMediator.onSuggestionClicked(match, 0, url);
+
+        verify(mOmniboxActionDelegate).switchToTab(eq(123), eq(url));
+        verify(mAutocompleteDelegate, never()).loadUrl(any());
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionClicked_TabsStarterPack_NonOpenTabMatch() {
+        mMediator.onNativeInitialized();
+        mMediator.beginInput(createEmptySession());
+        mMediator
+                .getAutocompleteInputForTesting()
+                .setSiteSearchData(
+                        new SiteSearchData(
+                                TABS_STARTER_PACK_KEYWORD,
+                                "Tabs",
+                                /* enteredViaSpace= */ false,
+                                StarterPackId.TABS));
+        doReturn(true).when(mOmniboxActionDelegate).switchToTab(anyInt(), any());
+        GURL url = new GURL("https://example.com");
+        AutocompleteMatch match =
+                new AutocompleteMatchBuilder()
+                        .setHasTabMatch(true)
+                        .setType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .setAndroidTabId(123)
                         .setActions(
                                 List.of(

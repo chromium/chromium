@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/autocomplete/tab_matcher_android.h"
 
+#include "base/android/device_info.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
@@ -129,6 +130,7 @@ std::vector<TabMatcher::TabWrapper> TabMatcherAndroid::GetOpenTabs(
 std::vector<raw_ptr<TabAndroid, VectorExperimental>>
 TabMatcherAndroid::GetOpenAndroidTabs(const AutocompleteInput* input) const {
   using chrome::android::ActivityType;
+  static const bool is_desktop = base::android::device_info::is_desktop();
   // Collect tab models that host tabs eligible for SwitchToTab.
   // Ignore:
   // - tab models for not matching profile (eg. incognito vs non-incognito)
@@ -141,6 +143,13 @@ TabMatcherAndroid::GetOpenAndroidTabs(const AutocompleteInput* input) const {
     auto type = model->activity_type();
     if (type == ActivityType::kCustomTab ||
         type == ActivityType::kTrustedWebActivity) {
+      continue;
+    }
+
+    // Ignore tab models for closed/persisted windows (headless) on Desktop
+    // Android.
+    if (is_desktop &&
+        model->GetTabModelType() == TabModel::TabModelType::kHeadless) {
       continue;
     }
 

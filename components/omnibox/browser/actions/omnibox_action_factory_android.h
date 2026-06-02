@@ -31,7 +31,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildSiteSearchAction(
     intptr_t instance,
     const std::u16string& hint,
     const std::u16string& accessibility_hint,
-    const std::u16string& keyword);
+    const std::u16string& keyword,
+    int starter_pack_id);
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     JNIEnv* env,

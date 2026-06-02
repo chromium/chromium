@@ -21,6 +21,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -75,20 +76,29 @@ public class AutocompleteInput implements UserData {
         int STANDBY_NO_FOCUS = 3;
     }
 
-    /** Data class representing the active site search mode state in the Omnibox. */
     public static class SiteSearchData {
         public final String keyword;
         public final String fullName;
         public final boolean enteredViaSpace;
+        public final @StarterPackId int starterPackId;
 
         public SiteSearchData(String keyword, String fullName) {
-            this(keyword, fullName, false);
+            this(keyword, fullName, false, StarterPackId.NONE);
         }
 
         public SiteSearchData(String keyword, String fullName, boolean enteredViaSpace) {
+            this(keyword, fullName, enteredViaSpace, StarterPackId.NONE);
+        }
+
+        public SiteSearchData(
+                String keyword,
+                String fullName,
+                boolean enteredViaSpace,
+                @StarterPackId int starterPackId) {
             this.keyword = keyword;
             this.fullName = fullName;
             this.enteredViaSpace = enteredViaSpace;
+            this.starterPackId = starterPackId;
         }
 
         @Override

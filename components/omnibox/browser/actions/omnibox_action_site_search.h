@@ -26,6 +26,7 @@ class OmniboxActionSiteSearch : public OmniboxAction {
   ~OmniboxActionSiteSearch() override;
 
   const std::u16string keyword_;
+  const int starter_pack_id_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_SITE_SEARCH_H_

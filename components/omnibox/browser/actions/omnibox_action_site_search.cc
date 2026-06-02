@@ -19,7 +19,8 @@ OmniboxActionSiteSearch::OmniboxActionSiteSearch(
                                                 u"",
                                                 template_url->GetFullName()),
                     {}),
-      keyword_(template_url->keyword()) {}
+      keyword_(template_url->keyword()),
+      starter_pack_id_(static_cast<int>(template_url->starter_pack_id())) {}
 
 OmniboxActionSiteSearch::~OmniboxActionSiteSearch() = default;
 
@@ -33,7 +34,7 @@ OmniboxActionSiteSearch::GetOrCreateJavaObject(JNIEnv* env) const {
   if (!j_omnibox_action_) {
     j_omnibox_action_.Reset(BuildSiteSearchAction(
         env, reinterpret_cast<intptr_t>(this), strings_.hint,
-        strings_.accessibility_hint, keyword_));
+        strings_.accessibility_hint, keyword_, starter_pack_id_));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }

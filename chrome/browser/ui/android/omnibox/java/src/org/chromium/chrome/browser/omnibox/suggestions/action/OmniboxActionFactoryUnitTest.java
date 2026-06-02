@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
+import org.chromium.components.search_engines.StarterPackId;
 
 /** Tests for {@link OmniboxActionFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -76,6 +77,7 @@ public class OmniboxActionFactoryUnitTest {
         // The underlying code will throw if instance is not valid.
         // Checking for null in case that changes.
         assertNotNull(
-                OmniboxActionFactory.buildSiteSearchAction(0, "hint", "accessibility", "keyword"));
+                OmniboxActionFactory.buildSiteSearchAction(
+                        0, "hint", "accessibility", "keyword", StarterPackId.NONE));
     }
 }

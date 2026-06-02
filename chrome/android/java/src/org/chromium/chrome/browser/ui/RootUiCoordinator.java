@@ -20,7 +20,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
-import android.provider.Browser;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -58,7 +57,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.WebSearchDelegate;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -2808,11 +2806,10 @@ public class RootUiCoordinator
             return;
         }
 
-        Intent intent = new Intent(mActivity, mActivity.getClass());
-        intent.setAction(Intent.ACTION_VIEW);
+        Intent intent =
+                IntentHandler.createTrustedBringTabToFrontIntent(
+                        tabId, IntentHandler.BringToFrontSource.ACTIVATE_TAB);
         intent.setData(Uri.parse(url.getSpec()));
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, mActivity.getPackageName());
-        intent.putExtra(TabOpenType.REUSE_TAB_MATCHING_ID_STRING, tabId);
         IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_OMNIBOX);
         MultiWindowUtils.launchIntentInMaybeClosedWindow(mActivity, intent, tabWindowInfo.windowId);
     }

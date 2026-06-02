@@ -148,6 +148,17 @@ void reset_is_xr_for_testing() {
   Java_DeviceInfo_resetIsXrForTesting(AttachCurrentThread());  // IN-TEST
   get_holder().reset();
 }
+
+void set_is_desktop_for_testing(bool is_desktop) {
+  Java_DeviceInfo_setIsDesktopForTesting(AttachCurrentThread(),  // IN-TEST
+                                         is_desktop);
+  get_holder().reset();
+}
+
+void reset_is_desktop_for_testing() {
+  Java_DeviceInfo_resetIsDesktopForTesting(AttachCurrentThread());  // IN-TEST
+  get_holder().reset();
+}
 }  // namespace base::android::device_info
 
 DEFINE_JNI(DeviceInfo)

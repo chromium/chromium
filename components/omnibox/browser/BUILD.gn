@@ -674,6 +674,7 @@ if (is_android) {
       "//components/embedder_support/android:util_java",
       "//components/omnibox/common:features_java",
       "//components/saved_tab_groups/public:java",
+      "//components/search_engines/android:java",
       "//components/security_state/core:security_state_enums_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
