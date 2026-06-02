@@ -280,6 +280,16 @@ struct LstmParams {
   std::array<mojom::RecurrentNetworkActivation, 3> activations;
 };
 
+struct MatmulParams {
+  OperandDataType data_type;
+  uint32_t a_rank;
+  uint32_t b_rank;
+  std::array<uint32_t, 8> a_dims;
+  std::array<uint32_t, 8> b_dims;
+  bool is_a_constant;
+  bool is_b_constant;
+};
+
 struct PadParams {
   OperandDataType data_type;
   uint32_t rank;
@@ -815,6 +825,21 @@ auto AnyLstmParams() {
       fuzztest::Arbitrary<bool>(),  // is_weight_constant
       fuzztest::Arbitrary<bool>(),  // is_recurrent_weight_constant
       fuzztest::ArrayOf<3>(AnyRecurrentNetworkActivation())  // activations
+  );
+}
+
+auto AnyMatmulParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  // Bias input dims toward 1 which is broadcastable.
+  auto any_input_dim = fuzztest::OneOf(fuzztest::Just(1u), AnyDimSize());
+  return fuzztest::StructOf<MatmulParams>(
+      AnyOperandDataTypeFor(limits.matmul_input.data_types),
+      fuzztest::InRange<uint32_t>(2, 8),    // a_rank
+      fuzztest::InRange<uint32_t>(2, 8),    // b_rank
+      fuzztest::ArrayOf<8>(any_input_dim),  // a_dims
+      fuzztest::ArrayOf<8>(any_input_dim),  // b_dims
+      fuzztest::Arbitrary<bool>(),          // is_a_constant
+      fuzztest::Arbitrary<bool>()           // is_b_constant
   );
 }
 
@@ -1850,6 +1875,7 @@ class WebNNGraphImplFuzzerImpl
   void GatherND(GatherNDParams params, uint8_t seed_for_data);
   void Gemm(GemmParams params, uint8_t seed_for_data);
   void Lstm(LstmParams params, uint8_t seed_for_data);
+  void Matmul(MatmulParams params, uint8_t seed_for_data);
   void Pad(PadParams params, uint8_t seed_for_data);
   void Pool2d(Pool2dParams params, uint8_t seed_for_data);
   void Reduce(ReduceParams params, uint8_t seed_for_data);
@@ -2460,6 +2486,82 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Lstm(LstmParams params,
   builder.BuildLstm(input_id, weight_id, recurrent_weight_id,
                     std::move(output_operand_ids), params.steps,
                     params.hidden_size, lstm_attr);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Matmul(MatmulParams params,
+                                                   uint8_t seed_for_data) {
+  std::vector<uint32_t> a_dims(params.a_dims.begin(),
+                               params.a_dims.begin() + params.a_rank);
+  std::vector<uint32_t> b_dims(params.b_dims.begin(),
+                               params.b_dims.begin() + params.b_rank);
+
+  // Matmul requires the last dimension of a to match the second-to-last
+  // dimension of b (i.e., a's columns == b's rows for the matrix multiply).
+  // Fix up b to satisfy this constraint.
+  b_dims[params.b_rank - 2] = a_dims[params.a_rank - 1];
+
+  // Fix up batch dimensions to ensure broadcast compatibility. For each aligned
+  // batch dimension pair (from the right, skipping the last 2 dims), if they're
+  // not equal and neither is 1, make b match a.
+  size_t a_batch_rank = params.a_rank - 2;
+  size_t b_batch_rank = params.b_rank - 2;
+  size_t min_batch_rank = std::min(a_batch_rank, b_batch_rank);
+  for (size_t i = 0; i < min_batch_rank; ++i) {
+    size_t a_idx = a_batch_rank - 1 - i;
+    size_t b_idx = b_batch_rank - 1 - i;
+    if (a_dims[a_idx] != b_dims[b_idx] && a_dims[a_idx] != 1 &&
+        b_dims[b_idx] != 1) {
+      b_dims[b_idx] = a_dims[a_idx];
+    }
+  }
+
+  ASSIGN_OR_RETURN_VOID(
+      auto a_desc, OperandDescriptor::Create(this->context_properties(),
+                                             params.data_type, a_dims, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto b_desc, OperandDescriptor::Create(this->context_properties(),
+                                             params.data_type, b_dims, ""));
+
+  ASSIGN_OR_RETURN_VOID(auto output_desc,
+                        ValidateMatmulAndInferOutput(this->context_properties(),
+                                                     a_desc, b_desc, ""));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  OperandId a_id;
+  OperandId b_id;
+  std::vector<uint8_t> a_data(a_desc.PackedByteLength(), seed_for_data);
+  std::vector<uint8_t> b_data(b_desc.PackedByteLength(), seed_for_data);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  if (params.is_a_constant) {
+    a_id = builder.BuildConstant(a_desc.shape(), a_desc.data_type(), a_data);
+  } else {
+    a_id = builder.BuildInput("a", a_desc.shape(), a_desc.data_type());
+    named_inputs.insert({"a", a_data});
+  }
+  if (params.is_b_constant) {
+    b_id = builder.BuildConstant(b_desc.shape(), b_desc.data_type(), b_data);
+  } else {
+    b_id = builder.BuildInput("b", b_desc.shape(), b_desc.data_type());
+    named_inputs.insert({"b", b_data});
+  }
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildMatmul(a_id, b_id, output_id);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -4260,6 +4362,20 @@ WEBNN_FUZZ_TEST_F(
                    mojom::RecurrentNetworkActivation::kTanh},
               },
               /*seed_for_data=*/1}}));
+
+WEBNN_FUZZ_TEST_F(Matmul,
+                  .WithDomains(AnyMatmulParams(),
+                               fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{MatmulParams{
+                                       /*data_type=*/OperandDataType::kFloat32,
+                                       /*a_rank=*/3,
+                                       /*b_rank=*/4,
+                                       /*a_dims=*/{4, 2, 3, 1, 1, 1, 1, 1},
+                                       /*b_dims=*/{5, 2, 3, 4, 1, 1, 1, 1},
+                                       /*is_a_constant=*/true,
+                                       /*is_b_constant=*/false,
+                                   },
+                                   /*seed_for_data=*/3}}));
 
 WEBNN_FUZZ_TEST_F(
     Pad,
