@@ -1,8 +1,3 @@
-# While chrome/browser/ is not meant to depend on chrome/browser/ui/views/, in
-# ash it's expected because Views is the only UI used in ash, so we allow
-# dependencies from chrome/browser/ash/borealis/ to
-# chrome/browser/ui/views/borealis/.
-
 include_rules = [
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
   # details.
@@ -28,8 +23,6 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/sessions",
-  "+chrome/browser/ui/views/borealis",
-  "+chrome/browser/ui/webui/ash/borealis_installer",
   "+chrome/common/chrome_features.h",
   "+chrome/test/base",
 ]
