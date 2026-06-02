@@ -40,8 +40,11 @@
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/page_content_annotations/core/tracked_element_feature.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -55,7 +58,6 @@ namespace indigo {
 namespace {
 const char kForceIndigoSwitch[] = "force-indigo";
 const char kForceIndigoOnboardingSwitch[] = "force-indigo-onboarding";
-const char kForceIndigoToolbarSwitch[] = "force-indigo-toolbar";
 
 void RecordTransformationResultCannotGenerateImage(
     const CombinedEligibility& eligibility) {
@@ -142,14 +144,22 @@ IndigoPageActionController::IndigoPageActionController(
       base::BindRepeating(&IndigoPageActionController::TabDidBecomeVisible,
                           base::Unretained(this)));
 
+  content::RenderWidgetHost* host = nullptr;
+  if (tab_interface.GetContents() &&
+      tab_interface.GetContents()->GetRenderViewHost()) {
+    host = tab_interface.GetContents()->GetRenderViewHost()->GetWidget();
+  }
+  RegisterObserverWithHost(host);
+
   UpdateEntryPointsState();
 }
 
 IndigoPageActionController::~IndigoPageActionController() {
+  UnregisterObserverFromHost(current_host_);
   // If there is a toolbar, hide it before anything else. This makes sure that
   // the OnClose delegate function isn't called after some members have been
   // destroyed.
-  HideToolbar();
+  DestroyToolbar();
 }
 
 // static
@@ -256,17 +266,7 @@ void IndigoPageActionController::ContinueInvoke(
     return;
   }
 
-  // The toolbar isn't quite ready yet (nor is it integrated with anything else)
-  // but it's useful to force it to show for manual testing.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kForceIndigoToolbarSwitch)) {
-    if (!toolbar_) {
-      toolbar_ = std::make_unique<IndigoToolbar>(this);
-    }
-    views::View* parent_view = GetIndigoOverlayView();
-    toolbar_->Show(parent_view);
-    return;
-  }
+
 }
 
 void IndigoPageActionController::ShowOnboardingDialog(
@@ -302,24 +302,9 @@ void IndigoPageActionController::ShowOnboardingDialog(
         IndigoOnboardingDialog::Show(tab(), url, std::move(callback));
   }
 }
-
-void IndigoPageActionController::ShowToolbarInside(const gfx::Rect& rect) {
-  if (!toolbar_) {
-    toolbar_ = std::make_unique<IndigoToolbar>(this);
-  }
-
-  views::View* parent_view = GetIndigoOverlayView();
-
-  // TODO(b/511166876): We assume that contents_webview and
-  // indigo_overlay_view share the same origin and coordinate space for now.
-  // In the future, if their layouts differ (e.g., in RTL or if devtools
-  // placement changes the sibling origins), we should perform an appropriate
-  // coordinate conversion using views::View::ConvertRectToTarget.
-  toolbar_->ShowInside(parent_view, rect);
-}
-
 void IndigoPageActionController::Reset(ResetType reset_type) {
-  HideToolbar();
+  DestroyToolbar();
+  tracked_bounds_ = std::nullopt;
 
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {
@@ -335,6 +320,16 @@ void IndigoPageActionController::Reset(ResetType reset_type) {
     if (auto* host = IndigoAgentHost::GetForPage(primary_page)) {
       host->Reset();
     }
+  }
+}
+void IndigoPageActionController::ShowToolbar() {
+  if (!toolbar_) {
+    toolbar_ = std::make_unique<IndigoToolbar>(this);
+  }
+  views::View* parent_view = GetIndigoOverlayView();
+  toolbar_->Show(parent_view);
+  if (tracked_bounds_) {
+    toolbar_->UpdateTrackedPosition(*tracked_bounds_);
   }
 }
 
@@ -359,6 +354,8 @@ void IndigoPageActionController::DidFinishNavigation(
   // since we don't currently support keeping extension frames in BFCache.
   if (navigation_handle->IsSameDocument()) {
     Reset(ResetType::kResetReplacementsAndContentScript);
+  } else {
+    DestroyToolbar();
   }
 
   if (onboarding_dialog_) {
@@ -553,10 +550,94 @@ views::View* IndigoPageActionController::GetIndigoOverlayView() const {
   return contents_container->indigo_overlay_view();
 }
 
-void IndigoPageActionController::HideToolbar() {
+void IndigoPageActionController::DestroyToolbar() {
   if (toolbar_) {
     toolbar_->Hide();
     toolbar_.reset();
+  }
+}
+
+void IndigoPageActionController::RenderViewHostChanged(
+    content::RenderViewHost* old_host,
+    content::RenderViewHost* new_host) {
+  content::RenderWidgetHost* new_widget =
+      new_host ? new_host->GetWidget() : nullptr;
+  RegisterObserverWithHost(new_widget);
+}
+
+void IndigoPageActionController::RegisterObserverWithHost(
+    content::RenderWidgetHost* host) {
+  if (current_host_ == host) {
+    return;
+  }
+  UnregisterObserverFromHost(current_host_);
+  current_host_ = host;
+  if (current_host_) {
+    current_host_->AddTrackedElementObserver(this);
+  }
+}
+
+void IndigoPageActionController::UnregisterObserverFromHost(
+    content::RenderWidgetHost* host) {
+  if (host) {
+    host->RemoveTrackedElementObserver(this);
+    if (current_host_ == host) {
+      current_host_ = nullptr;
+    }
+  }
+}
+
+void IndigoPageActionController::OnTrackedElementRectsChanged(
+    const viz::TrackedElementRects& rects,
+    float device_scale_factor) {
+  content::WebContents* web_contents = tab().GetContents();
+  if (!web_contents) {
+    return;
+  }
+
+  auto* manager =
+      IndigoImageReplacementManager::GetForPage(web_contents->GetPrimaryPage());
+  if (!manager) {
+    return;
+  }
+
+  std::optional<base::Token> primary_token =
+      manager->GetPrimaryTrackedElementId();
+  if (!primary_token) {
+    ClearTrackedBoundsAndHideToolbar();
+    return;
+  }
+
+  const auto feature_id = static_cast<viz::TrackedElementFeature>(
+      page_content_annotations::TrackedElementFeature::kIndigoImageReplacement);
+
+  auto it = rects.find(feature_id);
+  if (it == rects.end()) {
+    ClearTrackedBoundsAndHideToolbar();
+    return;
+  }
+
+  bool found = false;
+  for (const auto& rect : it->second) {
+    if (rect.id == *primary_token) {
+      float dip_scale = 1.0f / device_scale_factor;
+      tracked_bounds_ = gfx::ScaleToRoundedRect(rect.visible_bounds, dip_scale);
+      if (toolbar_) {
+        toolbar_->UpdateTrackedPosition(*tracked_bounds_);
+      }
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    ClearTrackedBoundsAndHideToolbar();
+  }
+}
+
+void IndigoPageActionController::ClearTrackedBoundsAndHideToolbar() {
+  tracked_bounds_ = std::nullopt;
+  if (toolbar_) {
+    toolbar_->UpdateTrackedPosition(gfx::Rect());
   }
 }
 

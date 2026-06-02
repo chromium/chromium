@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/image_replacement/image_replacement.h"
 
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -127,13 +128,15 @@ void ImageReplacement::ResetImageReplacement(base::PassKey<HTMLImageElement>,
 }
 
 void ImageReplacement::StartReplacement(
-    mojo::PendingRemote<mojom::blink::ImageReplacementHost> host_remote) {
+    mojo::PendingRemote<mojom::blink::ImageReplacementHost> host_remote,
+    std::optional<int32_t> tracked_element_feature_id) {
   CHECK(base::FeatureList::IsEnabled(features::kImageReplacement));
   CHECK(image_element_->isConnected());
   // If there's already an active replacement, we do nothing.
   if (image_element_->HasImageReplacement()) {
     return;
   }
+  tracked_element_feature_id_ = tracked_element_feature_id;
   if (!image_element_->complete()) {
     pending_host_remote_ = std::move(host_remote);
     return;
@@ -167,16 +170,20 @@ void ImageReplacement::StartReplacement(
                image_element_->GetDocument().GetTaskRunner(
                    TaskType::kInternalDefault));
 
-    gfx::QuadF quad;
-    if (LayoutBox* box = image_element_->GetLayoutBox()) {
-      PhysicalRect local_rect = box->PhysicalBorderBoxRect();
-      quad = box->LocalRectToAncestorQuad(
-          local_rect, nullptr,
-          kTraverseDocumentBoundaries | kApplyRemoteViewportTransform);
+    std::optional<base::Token> tracking_token;
+    if (tracked_element_feature_id.has_value()) {
+      tracking_token = base::Token::CreateRandom();
+      viz::TrackedElementFeature tracking_feature =
+          static_cast<viz::TrackedElementFeature>(*tracked_element_feature_id);
+      image_element_->SetTrackedElementSubRect(
+          tracking_feature,
+          TrackedElementSubRect(
+              TrackedElementId(*tracking_token),
+              /*should_add_to_compositor_frame_metadata=*/false));
     }
 
-    host_->ReplacementFrameAttached(frame->GetLocalFrameToken(), quad,
-                                    std::move(image_data));
+    host_->ReplacementFrameAttached(frame->GetLocalFrameToken(),
+                                    std::move(image_data), tracking_token);
   }
 }
 
@@ -236,6 +243,11 @@ void ImageReplacement::CreateImageReplacementShadowTree(
 }
 
 void ImageReplacement::Reset(Document& document) {
+  if (image_element_ && tracked_element_feature_id_.has_value()) {
+    viz::TrackedElementFeature tracking_feature =
+        static_cast<viz::TrackedElementFeature>(*tracked_element_feature_id_);
+    image_element_->ClearTrackedElementSubRect(tracking_feature);
+  }
   receiver_.reset();
   host_.reset();
   pending_host_remote_.reset();
@@ -260,7 +272,7 @@ bool ImageReplacement::ResumeReplacementAfterImageLoad() {
   CHECK(image_element_ && image_element_->complete());
   mojo::PendingRemote<mojom::blink::ImageReplacementHost> remote =
       std::move(pending_host_remote_);
-  StartReplacement(std::move(remote));
+  StartReplacement(std::move(remote), tracked_element_feature_id_);
   // Note: `image_element_` can be nullptr here if the image load failed with
   // an error (StartReplacement will reset the image replacement in that case).
   return image_element_ && image_element_->HasImageReplacement();

@@ -32,10 +32,16 @@ class IndigoImageReplacement {
   content::FrameTreeNodeId frame_tree_node_id() const {
     return frame_tree_node_id_;
   }
-  void ReplacementFrameAttached(content::FrameTreeNodeId frame_tree_node_id,
-                                std::vector<uint8_t> original_image_webp_bytes);
+  void ReplacementFrameAttached(
+      content::FrameTreeNodeId frame_tree_node_id,
+      std::vector<uint8_t> original_image_webp_bytes,
+      const std::optional<base::Token>& tracked_element_id);
   bool is_primary() const { return is_primary_; }
   void ReplacementImageURLReady();
+
+  const std::optional<base::Token>& tracked_element_id() const {
+    return tracked_element_id_;
+  }
 
   // Methods called by indigoPrivate extension functions:
   void OnReadyToRender();
@@ -54,6 +60,7 @@ class IndigoImageReplacement {
   std::vector<uint8_t> original_image_webp_bytes_;
   base::OnceCallback<void(const GURL&)> pending_replacement_image_callback_;
   const bool is_primary_;
+  std::optional<base::Token> tracked_element_id_;
 };
 
 }  // namespace indigo
