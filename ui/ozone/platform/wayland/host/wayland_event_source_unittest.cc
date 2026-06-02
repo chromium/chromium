@@ -278,6 +278,39 @@ TEST_P(WaylandEventSourceTest, ReleasesAllPressedPointerButtons) {
       pointer_delegate_->IsPointerButtonPressed(EF_MIDDLE_MOUSE_BUTTON));
 }
 
+TEST_P(WaylandEventSourceTest, TabletToolProximityInUAF) {
+  auto* event_source = connection_->event_source();
+
+  // Create two windows.
+  MockWaylandPlatformWindowDelegate delegate1(connection_.get());
+  auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                               kDefaultBounds, &delegate1);
+
+  MockWaylandPlatformWindowDelegate delegate2(connection_.get());
+  auto window2 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                               kDefaultBounds, &delegate2);
+
+  // Set `window1` as focused.
+  event_source->OnTabletToolProximityIn(window1.get(), gfx::PointF(), {},
+                                        base::TimeTicks::Now());
+
+  // Set up `delegate1` to destroy `window2` when it receives `kMouseExited`.
+  // When `window1` is the `tablet_tool_focused_window_`, calling
+  // `OnTabletToolProximityIn(window2)` will call `OnTabletToolProximityOut()`,
+  // which dispatches `kMouseExited` to `window1`.
+
+  EXPECT_CALL(delegate1, DispatchEvent(::testing::_))
+      .WillOnce([&](Event* event) {
+        if (event->type() == EventType::kMouseExited) {
+          window2.reset();
+        }
+      });
+
+  // This should not crash.
+  event_source->OnTabletToolProximityIn(window2.get(), gfx::PointF(), {},
+                                        base::TimeTicks::Now());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     EventsDispatchPolicyTest,
     WaylandEventSourceTest,

@@ -575,9 +575,15 @@ void WaylandEventSource::OnTabletToolProximityIn(WaylandWindow* window,
                                                  const PointerDetails& details,
                                                  base::TimeTicks time) {
   WaylandWindow* old_focus = tablet_tool_focused_window_.get();
+  base::WeakPtr<WaylandWindow> window_weak = window->AsWeakPtr();
   if (old_focus && old_focus != window) {
     OnTabletToolProximityOut(time);
   }
+
+  if (!window_weak) {
+    return;
+  }
+
   tablet_tool_focused_window_ = window->AsWeakPtr();
   tablet_tool_location_ = location;
 
