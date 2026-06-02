@@ -217,6 +217,63 @@ class UndeclaredFeaturesTest(unittest.TestCase):
                                                changed_lines)
     self.assertEqual(result, [])
 
+  def testRustFeatures(self):
+    self._create_file_in_repo(
+        'components/feature_rust.rs',
+        'base_feature!(FeatureRust, FeatureState::Disabled);')
+    json_data = {
+        'Study1': [{
+            'experiments': [{
+                'name': 'group1',
+                'enable_features': ['FeatureRust']
+            }]
+        }]
+    }
+    changed_lines = [(1, '"enable_features": ["FeatureRust"]')]
+    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
+                                               self.mock_output_api, json_data,
+                                               changed_lines)
+    self.assertEqual(result, [])
+
+  def testRustFeaturesMultiple(self):
+    self._create_file_in_repo(
+        'components/feature_rust.rs',
+        'base_feature!(FeatureRust1, FeatureState::Enabled);\n'
+        'base_feature!(FeatureRust2, FeatureState::Disabled);')
+    json_data = {
+        'Study1': [{
+            'experiments': [{
+                'name': 'group1',
+                'enable_features': ['FeatureRust1', 'FeatureRust2']
+            }]
+        }]
+    }
+    changed_lines = [(1, '"enable_features": ["FeatureRust1", "FeatureRust2"]')]
+    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
+                                               self.mock_output_api, json_data,
+                                               changed_lines)
+    self.assertEqual(result, [])
+
+  def testUndeclaredRustFeature(self):
+    self._create_file_in_repo(
+        'components/feature_rust.rs',
+        'base_feature!(FeatureRust, FeatureState::Enabled);')
+    json_data = {
+        'Study1': [{
+            'experiments': [{
+                'name':
+                'group1',
+                'enable_features': ['FeatureRust', 'UndeclaredRustFeature']
+            }]
+        }]
+    }
+    changed_lines = [(1, '"enable_features": ["UndeclaredRustFeature"]')]
+    result = PRESUBMIT.CheckUndeclaredFeatures(self.mock_input_api,
+                                               self.mock_output_api, json_data,
+                                               changed_lines)
+    self.assertEqual(len(result), 1)
+    self.assertIn('UndeclaredRustFeature', str(result[0]))
+
   def testNoFeaturesDeclaredInRepo(self):
     # No files created, so no features will be found, which is an error
     # condition.
