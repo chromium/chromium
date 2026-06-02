@@ -104,7 +104,9 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
     : CanvasRenderingContextHost(
           CanvasRenderingContextHost::HostType::kOffscreenCanvasHost,
           size),
-      execution_context_(context) {
+      execution_context_(context),
+      client_id_(client_id),
+      sink_id_(sink_id) {
   // Other code in Blink watches for destruction of the context; be
   // robust here as well.
   if (!context->IsContextDestroyed()) {
@@ -134,7 +136,6 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
 
   CanvasResourceTracker::For(context->GetIsolate())->Add(this, context);
 
-  SetFrameSinkId(client_id, sink_id);
   SetPlaceholderCanvasId(canvas_id);
 }
 

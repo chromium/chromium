@@ -115,7 +115,8 @@ class CORE_EXPORT OffscreenCanvas final
   }
 
   void SetFrameSinkIdForTesting(uint32_t client_id, uint32_t sink_id) {
-    SetFrameSinkId(client_id, sink_id);
+    client_id_ = client_id;
+    sink_id_ = sink_id;
   }
 
   uint32_t ClientId() const { return client_id_; }
@@ -254,10 +255,6 @@ class CORE_EXPORT OffscreenCanvas final
   static ContextFactoryVector& RenderingContextFactories();
   static CanvasRenderingContextFactory* GetRenderingContextFactory(int);
 
-  void SetFrameSinkId(uint32_t client_id, uint32_t sink_id) {
-    client_id_ = client_id;
-    sink_id_ = sink_id;
-  }
   void SetPlaceholderCanvasId(DOMNodeId canvas_id);
 
   Member<CanvasRenderingContext> context_;
