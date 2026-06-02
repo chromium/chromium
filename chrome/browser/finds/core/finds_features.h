@@ -19,6 +19,10 @@ BASE_DECLARE_FEATURE(kChromeFindsInternals);
 // The cooldown period in days for the model execution cooldown.
 extern const base::FeatureParam<int> kModelExecutionCooldownDurationInDays;
 
+// The history time window in days to query history entries. This should match
+// the model execution cooldown duration, except for testing configurations.
+extern const base::FeatureParam<int> kHistoryTimeWindowInDays;
+
 // The cooldown period in days for each theme not interested.
 extern const base::FeatureParam<int> kThemeCooldownDurationInDays;
 

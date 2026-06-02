@@ -450,8 +450,7 @@ TEST_F(FindsServiceTest, VerifyHistoryLookbackIntervalWithFinchParam) {
   // Override the feature param to something non-default.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      finds::features::kChromeFinds,
-      {{"model_execution_cooldown_duration_in_days", "14"}});
+      finds::features::kChromeFinds, {{"history_time_window_in_days", "14"}});
 
   EXPECT_CALL(*history_service_, QueryHistory(_, _, _, _))
       .WillOnce([](const std::u16string& text_query,

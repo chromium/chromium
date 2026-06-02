@@ -77,6 +77,10 @@ base::TimeDelta GetModelExecutionCooldownDurationTimeDelta() {
   return base::Days(features::kModelExecutionCooldownDurationInDays.Get());
 }
 
+base::TimeDelta GetHistoryTimeWindowTimeDelta() {
+  return base::Days(features::kHistoryTimeWindowInDays.Get());
+}
+
 bool IsAllowedByEnterprisePolicy(PrefService* pref_service) {
   if (!pref_service) {
     return false;

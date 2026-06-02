@@ -15,6 +15,9 @@ constexpr base::FeatureParam<int> kModelExecutionCooldownDurationInDays{
     &kChromeFinds, "model_execution_cooldown_duration_in_days",
     /*default_value=*/7};
 
+constexpr base::FeatureParam<int> kHistoryTimeWindowInDays{
+    &kChromeFinds, "history_time_window_in_days", /*default_value=*/7};
+
 constexpr base::FeatureParam<int> kThemeCooldownDurationInDays{
     &kChromeFinds, "theme_cooldown_duration_in_days", /*default_value=*/28};
 

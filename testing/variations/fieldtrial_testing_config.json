@@ -5013,6 +5013,7 @@
                         "finds_opt_in_promo_cooldown_in_days": "7",
                         "finds_opt_in_promo_max_interacted_count": "2",
                         "finds_theme_url_visit_count_for_opt_in": "3",
+                        "history_time_window_in_days": "7",
                         "max_history_entries": "50",
                         "model_execution_cooldown_duration_in_days": "7",
                         "omnibox_recent_search_suggestion_count_threshold": "2",

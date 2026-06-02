@@ -336,8 +336,7 @@ void FindsService::ExecuteModelAndScheduleNotification(
   }
 
   history::QueryOptions options;
-  options.begin_time =
-      base::Time::Now() - GetModelExecutionCooldownDurationTimeDelta();
+  options.begin_time = base::Time::Now() - GetHistoryTimeWindowTimeDelta();
   options.max_count = finds::features::kMaxHistoryEntries.Get();
 
   history_service_->QueryHistory(
