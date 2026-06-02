@@ -103,6 +103,7 @@
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/search/ntp_features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -542,6 +543,11 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"systemMode", IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_SYSTEM_LABEL},
       {"showHomeButton", IDS_SETTINGS_SHOW_HOME_BUTTON},
       {"showBookmarksBar", IDS_SETTINGS_SHOW_BOOKMARKS_BAR},
+      {"bookmarksBar", IDS_SETTINGS_BOOKMARKS_BAR},
+      {"bookmarksBarAlwaysShow", IDS_SETTINGS_BOOKMARKS_BAR_ALWAYS_SHOW},
+      {"bookmarksBarOnlyShowOnNtp",
+       IDS_SETTINGS_BOOKMARKS_BAR_ONLY_SHOW_ON_NTP},
+      {"bookmarksBarAlwaysHide", IDS_SETTINGS_BOOKMARKS_BAR_ALWAYS_HIDE},
       {"showTabSearchButton", IDS_SETTINGS_SHOW_TAB_SEARCH_BUTTON},
       {"showProjectsPanelButton", IDS_SETTINGS_SHOW_PROJECTS_PANEL_BUTTON},
       {"showEverythingMenuButton", IDS_SETTINGS_SHOW_EVERYTHING_MENU_BUTTON},
@@ -603,6 +609,10 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"themeManagedDialogBody", IDS_NTP_THEME_MANAGED_DIALOG_BODY},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddBoolean("ntpSimplificationBookmarksBarEnabled",
+                          base::FeatureList::IsEnabled(
+                              ntp_features::kNtpSimplificationBookmarkBar));
 
   html_source->AddString("presetZoomFactors",
                          zoom::GetPresetZoomFactorsAsJSON());

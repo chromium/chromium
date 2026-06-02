@@ -262,6 +262,18 @@
     <message name="IDS_SETTINGS_SHOW_BOOKMARKS_BAR" desc="Label for the checkbox which enables or disables showing the bookmarks bar in the toolbar.">
       Show bookmarks bar
     </message>
+    <message name="IDS_SETTINGS_BOOKMARKS_BAR" desc="Label for the dropdown menu which selects when to show the bookmarks bar.">
+      Bookmarks bar
+    </message>
+    <message name="IDS_SETTINGS_BOOKMARKS_BAR_ALWAYS_SHOW" desc="Label for the dropdown option to always show the bookmarks bar.">
+      Always show
+    </message>
+    <message name="IDS_SETTINGS_BOOKMARKS_BAR_ONLY_SHOW_ON_NTP" desc="Label for the dropdown option to only show the bookmarks bar on the New Tab page.">
+      Only show on New Tab page
+    </message>
+    <message name="IDS_SETTINGS_BOOKMARKS_BAR_ALWAYS_HIDE" desc="Label for the dropdown option to always hide the bookmarks bar.">
+      Always hide
+    </message>
     <message name="IDS_SETTINGS_SHOW_TAB_SEARCH_BUTTON" desc="Label for the checkbox which enables or disables showing the tab search button in the tab strip.">
       Show tab search button
     </message>
