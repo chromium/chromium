@@ -17,6 +17,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 
 namespace extensions {
 
@@ -132,6 +133,7 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
     }
   } else if (temp = extension->manifest()->FindPath(keys::kLaunchWebURL);
              temp) {
+    DCHECK(extension->is_hosted_app());
     if (!temp->is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValue,
@@ -170,6 +172,12 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
 
   // If there is no extent, we default the extent based on the launch URL.
   if (extension->web_extent().is_empty() && !launch_web_url_.is_empty()) {
+    // If `launch_web_url_` is not empty, then it was set in `kLaunchWebURL`
+    // path above.
+    DCHECK(extension->is_hosted_app());
+    // Ensure consistency of `extension->web_extent().is_empty()` with actual
+    // `Extension` origins.
+    DCHECK(URLOverrides::GetChromeURLOverrides(extension).empty());
     URLPattern pattern(Extension::kValidWebExtentSchemes);
     if (!pattern.SetScheme("*")) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -233,30 +241,6 @@ bool AppLaunchInfo::LoadLaunchContainer(Extension* extension,
   }
 
   return true;
-}
-
-void AppLaunchInfo::OverrideLaunchURL(Extension* extension,
-                                      GURL override_url) {
-  if (!override_url.is_valid()) {
-    DLOG(WARNING) << "Invalid override url given for " << extension->name();
-    return;
-  }
-  if (override_url.has_port()) {
-    DLOG(WARNING) << "Override URL passed for " << extension->name()
-                  << " should not contain a port.  Removing it.";
-
-    GURL::Replacements remove_port;
-    remove_port.ClearPort();
-    override_url = override_url.ReplaceComponents(remove_port);
-  }
-
-  launch_web_url_ = override_url;
-
-  URLPattern pattern(Extension::kValidWebExtentSchemes);
-  URLPattern::ParseResult result = pattern.Parse(override_url.spec());
-  DCHECK_EQ(result, URLPattern::ParseResult::kSuccess);
-  pattern.SetPath(pattern.path() + '*');
-  extension->AddWebExtentPattern(pattern);
 }
 
 AppLaunchManifestHandler::AppLaunchManifestHandler() = default;

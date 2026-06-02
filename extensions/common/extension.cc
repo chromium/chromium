@@ -601,6 +601,9 @@ bool Extension::is_chromeos_system_extension() const {
 }
 
 void Extension::AddWebExtentPattern(const URLPattern& pattern) {
+  // `extent_` should be immutable after manifest parsing finishes.
+  CHECK(!finished_parsing_manifest_);
+  CHECK(thread_checker_.CalledOnValidThread());
   extent_.AddPattern(pattern);
 }
 

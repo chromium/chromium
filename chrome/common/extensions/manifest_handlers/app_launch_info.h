@@ -51,7 +51,6 @@ class AppLaunchInfo : public Extension::ManifestData {
  private:
   bool LoadLaunchURL(Extension* extension, std::u16string* error);
   bool LoadLaunchContainer(Extension* extension, std::u16string* error);
-  void OverrideLaunchURL(Extension* extension, GURL override_url);
 
   GURL launch_local_url_;
 

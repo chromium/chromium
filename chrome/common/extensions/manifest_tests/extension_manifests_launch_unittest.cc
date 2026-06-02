@@ -30,6 +30,9 @@ TEST_F(AppLaunchManifestTest, AppLaunchContainer) {
   extension = LoadAndExpectSuccess("launch_panel.json");
   EXPECT_EQ(apps::LaunchContainer::kLaunchContainerPanelDeprecated,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
+  EXPECT_EQ(1u, extension->web_extent().size());
+  URLPattern pattern(Extension::kValidWebExtentSchemes, "*://www.google.com/*");
+  EXPECT_TRUE(extension->web_extent().ContainsPattern(pattern));
 
   extension = LoadAndExpectSuccess("launch_default.json");
   EXPECT_EQ(apps::LaunchContainer::kLaunchContainerTab,
@@ -110,9 +113,44 @@ TEST_F(AppLaunchManifestTest, AppLaunchURL) {
   extension = LoadAndExpectSuccess("launch_web_url_absolute.json");
   EXPECT_EQ(GURL("http://www.google.com/launch.html"),
             AppLaunchInfo::GetFullLaunchURL(extension.get()));
+  EXPECT_EQ(1u, extension->web_extent().size());
+  URLPattern pattern(Extension::kValidWebExtentSchemes, "*://www.google.com/*");
+  EXPECT_TRUE(extension->web_extent().ContainsPattern(pattern));
+
   extension = LoadAndExpectSuccess("launch_web_url_localized.json");
   EXPECT_EQ(GURL("http://www.google.com/launch.html"),
             AppLaunchInfo::GetFullLaunchURL(extension.get()));
+  EXPECT_EQ(1u, extension->web_extent().size());
+  EXPECT_TRUE(extension->web_extent().ContainsPattern(pattern));
+}
+
+// If Chrome App has a valid URL in "app.urls" manifest key, then
+// "app.launch.web_url" does not impact Extension::web_extent().
+// This test ensures that "app.urls" is parsed before "app.launch.web_url",
+// so "app.urls" gets into Extension::web_extent() before call to
+// AppLaunchInfo::Parse() which calls AppLaunchInfo::LoadLaunchURL()
+// which calls Extension::web_extent().is_empty().
+TEST_F(AppLaunchManifestTest, AppURLsAndAppLaunchWebURL) {
+  static constexpr char kManifest[] = R"({
+         "name": "No extra WebExtent",
+         "manifest_version": 2,
+         "version": "1",
+         "app": {
+           "urls": [
+             "https://www.gmail.com/"
+           ],
+           "launch": {
+             "web_url": "https://www.google.com/launch.html"
+           }
+         }
+       })";
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
+  EXPECT_EQ(GURL("https://www.google.com/launch.html"),
+            AppLaunchInfo::GetFullLaunchURL(extension.get()));
+  EXPECT_EQ(1u, extension->web_extent().size());
+  EXPECT_TRUE(extension->web_extent().ContainsPattern(URLPattern(
+      Extension::kValidWebExtentSchemes, "https://www.gmail.com/*")));
 }
 
 }  // namespace extensions
