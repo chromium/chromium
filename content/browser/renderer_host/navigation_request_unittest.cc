@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
+#include "content/browser/url_info.h"
 #include "content/common/features.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
@@ -226,10 +227,30 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         std::string() /* extra_headers */, nullptr /* frame_entry */,
         nullptr /* entry */, false /* is_form_submission */,
         nullptr /* navigation_ui_data */, std::nullopt /* impression */,
-        false /* is_pdf */);
+        EmbedderIsolationInfo::Mode::kNone);
     main_test_rfh()->frame_tree_node()->TakeNavigationRequest(
         std::move(request));
     GetNavigationRequest()->StartNavigation();
+  }
+
+  // Builds a browser-initiated subframe NavigationRequest directly.
+  // NavigationSimulator would invoke process selection, which has stricter
+  // setup than these EmbedderIsolationInfo propagation tests exercise.
+  std::unique_ptr<NavigationRequest> CreateSubframeNavigationRequest(
+      FrameTreeNode* child_node,
+      const GURL& url) {
+    auto common_params = blink::CreateCommonNavigationParams();
+    common_params->url = url;
+    common_params->method = "GET";
+    auto commit_params = blink::CreateCommitNavigationParams();
+    commit_params->original_url = url;
+    commit_params->frame_policy = child_node->pending_frame_policy();
+    return NavigationRequest::CreateBrowserInitiated(
+        child_node, std::move(common_params), std::move(commit_params),
+        /*was_opener_suppressed=*/false, /*extra_headers=*/std::string(),
+        /*frame_entry=*/nullptr, /*entry=*/nullptr,
+        /*is_form_submission=*/false, /*navigation_ui_data=*/nullptr,
+        /*impression=*/std::nullopt, EmbedderIsolationInfo::Mode::kNone);
   }
 
   FrameTreeNode* AddFrame(FrameTree& frame_tree,
@@ -1650,6 +1671,46 @@ TEST_F(NavigationRequestResponseBodyTest, PipeClosed) {
       NavigationRequest::From(navigation->GetNavigationHandle())->state());
   EXPECT_TRUE(was_callback_called());
   EXPECT_EQ(std::string(), response_body());
+}
+
+// Verifies that a subframe NavigationRequest inherits its parent
+// SiteInstance's unique-instance EmbedderIsolationInfo rather than producing
+// a fresh id from the subframe's own `navigation_id_`.
+TEST_F(NavigationRequestTest, SubframeInheritsParentMimeHandlerIsolationId) {
+  constexpr int64_t kParentIsolationId = 1234567;
+  const GURL kParentUrl("https://example.com/handler.html");
+  main_test_rfh()->GetSiteInstance()->SetSite(
+      UrlInfo(UrlInfoInit(kParentUrl)
+                  .WithEmbedderIsolationInfo(
+                      EmbedderIsolationInfo::CreateForUniqueInstance(
+                          kParentIsolationId))));
+
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
+  std::unique_ptr<NavigationRequest> request = CreateSubframeNavigationRequest(
+      child_frame->frame_tree_node(), GURL("https://example.com/sub"));
+  ASSERT_TRUE(request);
+  ASSERT_NE(request->GetNavigationId(), kParentIsolationId);
+
+  EXPECT_EQ(
+      kParentIsolationId,
+      request->GetUrlInfo().embedder_isolation_info.instance_id().value());
+}
+
+// Verifies that a subframe of a non-MIME-handler parent does not pick up a
+// unique-instance EmbedderIsolationInfo.
+TEST_F(NavigationRequestTest, SubframeWithoutMimeHandlerParentDoesNotInherit) {
+  main_test_rfh()->GetSiteInstance()->SetSite(
+      UrlInfo::CreateForTesting(GURL("https://parent.example.com")));
+
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
+  std::unique_ptr<NavigationRequest> request = CreateSubframeNavigationRequest(
+      child_frame->frame_tree_node(), GURL("https://example.com/sub"));
+  ASSERT_TRUE(request);
+
+  EXPECT_FALSE(
+      request->GetUrlInfo().embedder_isolation_info.is_unique_instance());
 }
 
 }  // namespace content

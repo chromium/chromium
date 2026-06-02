@@ -66,6 +66,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
+#include "content/browser/embedder_isolation_info.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/debug_urls.h"
@@ -4763,7 +4764,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       extra_headers_crlf, frame_entry, entry, params.is_form_submission,
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
       params.impression, started_with_transient_activation,
-      params.started_by_ad, params.is_pdf,
+      params.started_by_ad,
+      params.is_pdf ? EmbedderIsolationInfo::Mode::kPdf
+                    : EmbedderIsolationInfo::Mode::kNone,
       is_embedder_initiated_fenced_frame_navigation, is_container_initiated,
       params.has_rel_opener, embedder_shared_storage_context);
 
@@ -4907,7 +4910,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       frame_entry, entry, is_form_submission, nullptr /* navigation_ui_data */,
       std::nullopt /* impression */,
       false /* started_with_transient_activation */, false /* started_by_ad */,
-      false /* is_pdf */);
+      EmbedderIsolationInfo::Mode::kNone);
 
   request->set_remove_extra_headers_on_cross_origin_redirect(
       entry->GetRemoveExtraHeadersOnCrossOriginRedirect());
@@ -5774,7 +5777,7 @@ NavigationControllerImpl::CreateNavigationRequestForErrorPage(
           false /* was_opener_suppressed */, "" /* extra_headers */,
           nullptr /* frame_entry */, nullptr /* entry */,
           false /* is_form_submission */, nullptr /* navigation_ui_data */,
-          std::nullopt /* impression */, false /* is_pdf */);
+          std::nullopt /* impression */, EmbedderIsolationInfo::Mode::kNone);
   if (is_post_commit_error_page) {
     navigation_request->set_browser_initiated_error_navigation_type(
         NavigationRequest::BrowserInitiatedErrorNavigationType::kPostCommit);

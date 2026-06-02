@@ -28,6 +28,7 @@
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "content/browser/embedder_isolation_info.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
@@ -262,7 +263,7 @@ class CONTENT_EXPORT NavigationRequest
       bool is_form_submission,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       const std::optional<blink::Impression>& impression,
-      bool is_pdf,
+      EmbedderIsolationInfo::Mode embedder_isolation_mode,
       bool is_embedder_initiated_fenced_frame_navigation = false,
       std::optional<std::u16string> embedder_shared_storage_context =
           std::nullopt);
@@ -296,7 +297,7 @@ class CONTENT_EXPORT NavigationRequest
       const std::optional<blink::Impression>& impression,
       bool started_with_transient_activation,
       bool started_by_ad,
-      bool is_pdf,
+      EmbedderIsolationInfo::Mode embedder_isolation_mode,
       bool is_embedder_initiated_fenced_frame_navigation = false,
       bool is_container_initiated = false,
       bool has_rel_opener = false,
@@ -1883,7 +1884,7 @@ class CONTENT_EXPORT NavigationRequest
           rfh_restored_from_back_forward_cache,
       int initiator_process_id,
       bool was_opener_suppressed,
-      bool is_pdf,
+      EmbedderIsolationInfo::Mode embedder_isolation_mode,
       bool is_embedder_initiated_fenced_frame_navigation = false,
       mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
           renderer_cancellation_listener = mojo::NullReceiver(),
@@ -3272,10 +3273,10 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest.
   std::vector<ConsoleMessage> console_messages_;
 
-  // Indicates that this navigation is for PDF content in a renderer. On
-  // Android, this can only be true when a PDF NativePage is created for
-  // a main frame navigation.
-  bool is_pdf_ = false;
+  // The embedder-imposed isolation policy that applies to this navigation.
+  // As an example, this is used to specify that the navigation is for a PDF
+  // or another MimeHandler.
+  const EmbedderIsolationInfo embedder_isolation_info_;
 
   // Indicates that this navigation is an embedder-initiated navigation of a
   // fenced frame root. That is to say, the navigation is caused by a `src`

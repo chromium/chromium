@@ -550,7 +550,7 @@ class RenderFrameHostManagerTest
             entry->extra_headers(), frame_entry, entry, is_form_submission,
             nullptr /* navigation_ui_data */, std::nullopt /* impression */,
             false /* started_with_transient_activation */,
-            false /* started_by_ad */, false /* is_pdf */);
+            false /* started_by_ad */, EmbedderIsolationInfo::Mode::kNone);
 
     // Simulates request creation that triggers the 1st internal call to
     // GetFrameHostForNavigation.
@@ -3458,8 +3458,7 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
           false /* was_opener_suppressed */, entry.extra_headers(), frame_entry,
           &entry, false /* is_form_submission */,
           nullptr /* navigation_ui_data */, std::nullopt /* impression */,
-          false /* is_pdf */
-      );
+          EmbedderIsolationInfo::Mode::kNone);
   frame_tree_node->TakeNavigationRequest(std::move(navigation_request));
 
   // The initial non-live RenderFrameHost should be reused for the WebUI

@@ -537,7 +537,8 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
 
   // Embedder-specified process isolation policy for this SiteInfo. See
   // //content/browser/embedder_isolation_info.h.
-  EmbedderIsolationInfo embedder_isolation_info_;
+  EmbedderIsolationInfo embedder_isolation_info_ =
+      EmbedderIsolationInfo::CreateNone();
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,

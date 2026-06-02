@@ -7,6 +7,7 @@
 
 #include <compare>
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "content/common/content_export.h"
@@ -34,18 +35,16 @@ class CONTENT_EXPORT EmbedderIsolationInfo {
     kUniqueInstance,
   };
 
-  // kNone factory (equivalent to default constructor).
   static EmbedderIsolationInfo CreateNone();
 
   // kPdf factory. PDFs are grouped by site, not per-instance.
   static EmbedderIsolationInfo CreateForPdf();
 
   // kUniqueInstance factory. `instance_id` must be non-negative and unique
-  // per navigation; in practice this is NavigationRequest::navigation_id_,
-  // which is monotonic and never negative.
+  // per "instance" the embedder wants to isolate; the caller is responsible
+  // for sourcing it.
   static EmbedderIsolationInfo CreateForUniqueInstance(int64_t instance_id);
 
-  EmbedderIsolationInfo();
   EmbedderIsolationInfo(const EmbedderIsolationInfo&);
   EmbedderIsolationInfo& operator=(const EmbedderIsolationInfo&);
   ~EmbedderIsolationInfo();
@@ -55,8 +54,12 @@ class CONTENT_EXPORT EmbedderIsolationInfo {
   bool is_pdf() const { return mode_ == Mode::kPdf; }
   bool is_unique_instance() const { return mode_ == Mode::kUniqueInstance; }
 
-  // Only valid when mode() == kUniqueInstance. CHECKs otherwise.
-  int64_t instance_id() const;
+  // Returns the instance id when mode() == kUniqueInstance, otherwise
+  // `std::nullopt`.
+  std::optional<int64_t> instance_id() const {
+    return mode_ == Mode::kUniqueInstance ? std::optional<int64_t>(instance_id_)
+                                          : std::nullopt;
+  }
 
   std::string ToDebugString() const;
 
@@ -66,6 +69,7 @@ class CONTENT_EXPORT EmbedderIsolationInfo {
                                         const EmbedderIsolationInfo&) = default;
 
  private:
+  EmbedderIsolationInfo();
   EmbedderIsolationInfo(Mode mode, int64_t instance_id);
 
   Mode mode_ = Mode::kNone;

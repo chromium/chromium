@@ -13,7 +13,7 @@ namespace content {
 
 // static
 EmbedderIsolationInfo EmbedderIsolationInfo::CreateNone() {
-  return EmbedderIsolationInfo();
+  return EmbedderIsolationInfo(Mode::kNone, /*instance_id=*/0);
 }
 
 // static
@@ -37,11 +37,6 @@ EmbedderIsolationInfo::~EmbedderIsolationInfo() = default;
 
 EmbedderIsolationInfo::EmbedderIsolationInfo(Mode mode, int64_t instance_id)
     : mode_(mode), instance_id_(instance_id) {}
-
-int64_t EmbedderIsolationInfo::instance_id() const {
-  CHECK_EQ(mode_, Mode::kUniqueInstance);
-  return instance_id_;
-}
 
 std::string EmbedderIsolationInfo::ToDebugString() const {
   switch (mode_) {

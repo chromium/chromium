@@ -2698,7 +2698,8 @@ TEST_F(SiteInstanceTest, MimeHandlerRequiresDedicatedProcess) {
   EXPECT_TRUE(
       handler_site_info.RequiresDedicatedProcess(IsolationContext(context())));
   EXPECT_TRUE(handler_site_info.embedder_isolation_info().is_unique_instance());
-  EXPECT_EQ(100, handler_site_info.embedder_isolation_info().instance_id());
+  EXPECT_EQ(100,
+            handler_site_info.embedder_isolation_info().instance_id().value());
 
   SetBrowserClientForTesting(regular_client);
 }

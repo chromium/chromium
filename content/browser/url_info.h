@@ -160,7 +160,8 @@ struct CONTENT_EXPORT UrlInfo {
 
   // Embedder-specified process isolation policy (PDF, per-document MIME
   // handler isolation, etc.). See //content/browser/embedder_isolation_info.h.
-  EmbedderIsolationInfo embedder_isolation_info;
+  EmbedderIsolationInfo embedder_isolation_info =
+      EmbedderIsolationInfo::CreateNone();
 
   // The CrossOriginIsolationKey to use for the navigation. This represents the
   // isolation requested by the page itself through the use of COOP, COEP and
@@ -230,7 +231,8 @@ class CONTENT_EXPORT UrlInfoInit {
   int64_t unique_sandbox_id_ = UrlInfo::kInvalidUniqueSandboxId;
   std::optional<StoragePartitionConfig> storage_partition_config_;
   std::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;
-  EmbedderIsolationInfo embedder_isolation_info_;
+  EmbedderIsolationInfo embedder_isolation_info_ =
+      EmbedderIsolationInfo::CreateNone();
   std::optional<AgentClusterKey::CrossOriginIsolationKey>
       cross_origin_isolation_key_;
   std::optional<base::SafeRef<ProcessSelectionUserData>>
