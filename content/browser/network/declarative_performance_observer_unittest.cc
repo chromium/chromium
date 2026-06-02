@@ -193,6 +193,107 @@ TEST_F(DeclarativePerformanceObserverTest, ObservesVisibilityFlips) {
   EXPECT_EQ(*name2, "visible");
 }
 
+TEST_F(DeclarativePerformanceObserverTest, RecordsNavigationTiming) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kNavigation);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  base::TimeTicks nav_start = base::TimeTicks::Now();
+  ON_CALL(navigation_handle, NavigationStart())
+      .WillByDefault(testing::Return(nav_start));
+
+  NavigationHandleTiming timing;
+  timing.final_response_start_time = nav_start + base::Milliseconds(500);
+  timing.final_request_start_time = nav_start + base::Milliseconds(200);
+  timing.final_request_domain_lookup_start_time =
+      nav_start + base::Milliseconds(50);
+  timing.final_request_domain_lookup_end_time =
+      nav_start + base::Milliseconds(100);
+  timing.final_request_connect_start_time = nav_start + base::Milliseconds(120);
+  timing.final_request_connect_end_time = nav_start + base::Milliseconds(180);
+  timing.final_request_ssl_start_time = nav_start + base::Milliseconds(150);
+
+  ON_CALL(navigation_handle, GetNavigationHandleTiming())
+      .WillByDefault(testing::ReturnRef(timing));
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->DidFinishNavigation(&navigation_handle);
+
+  // Trigger unload to flush metrics
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->RenderFrameDeleted(main_rfh());
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report = network_context_.reports()[0];
+
+  const base::ListValue* entries = report.body.FindList("entries");
+  ASSERT_TRUE(entries);
+  ASSERT_EQ(entries->size(), 1u);
+
+  const base::Value& entry_val = (*entries)[0];
+  const base::DictValue* navEntry = entry_val.GetIfDict();
+  ASSERT_TRUE(navEntry);
+
+  const std::string* entryType = navEntry->FindString("entryType");
+  ASSERT_TRUE(entryType);
+  EXPECT_EQ(*entryType, "navigation");
+
+  const std::string* name = navEntry->FindString("name");
+  ASSERT_TRUE(name);
+  EXPECT_EQ(*name, kPageURL.spec());
+
+  std::optional<double> startTime = navEntry->FindDouble("startTime");
+  ASSERT_TRUE(startTime);
+  EXPECT_EQ(*startTime, 0.0);
+
+  const std::string* deliveryType = navEntry->FindString("deliveryType");
+  ASSERT_TRUE(deliveryType);
+  EXPECT_EQ(*deliveryType, "");
+
+  std::optional<double> responseStart = navEntry->FindDouble("responseStart");
+  ASSERT_TRUE(responseStart);
+  EXPECT_EQ(*responseStart, 500.0);
+
+  std::optional<double> requestStart = navEntry->FindDouble("requestStart");
+  ASSERT_TRUE(requestStart);
+  EXPECT_EQ(*requestStart, 200.0);
+
+  std::optional<double> domainLookupStart =
+      navEntry->FindDouble("domainLookupStart");
+  ASSERT_TRUE(domainLookupStart);
+  EXPECT_EQ(*domainLookupStart, 50.0);
+
+  std::optional<double> domainLookupEnd =
+      navEntry->FindDouble("domainLookupEnd");
+  ASSERT_TRUE(domainLookupEnd);
+  EXPECT_EQ(*domainLookupEnd, 100.0);
+
+  std::optional<double> connectStart = navEntry->FindDouble("connectStart");
+  ASSERT_TRUE(connectStart);
+  EXPECT_EQ(*connectStart, 120.0);
+
+  std::optional<double> connectEnd = navEntry->FindDouble("connectEnd");
+  ASSERT_TRUE(connectEnd);
+  EXPECT_EQ(*connectEnd, 180.0);
+
+  std::optional<double> secureConnectionStart =
+      navEntry->FindDouble("secureConnectionStart");
+  ASSERT_TRUE(secureConnectionStart);
+  EXPECT_EQ(*secureConnectionStart, 150.0);
+}
+
 TEST_F(DeclarativePerformanceObserverTest, RecordsBFCacheLifecycle) {
   const GURL kPageURL("https://example.com/index.html");
   const std::string kEndpoint("telemetry");
@@ -208,6 +309,10 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsBFCacheLifecycle) {
   navigation_handle.set_has_committed(true);
   navigation_handle.set_is_in_primary_main_frame(true);
   navigation_handle.set_is_error_page(false);
+
+  NavigationHandleTiming timing;
+  ON_CALL(navigation_handle, GetNavigationHandleTiming())
+      .WillByDefault(testing::ReturnRef(timing));
 
   ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
       .WillByDefault(testing::Return(policy.get()));
@@ -228,10 +333,16 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsBFCacheLifecycle) {
 
   const base::ListValue* entries1 = report1.body.FindList("entries");
   ASSERT_TRUE(entries1);
-  // initial visible + session-end
-  ASSERT_EQ(entries1->size(), 2u);
+  // initial visible + initial navigation + session-end
+  ASSERT_EQ(entries1->size(), 3u);
 
-  const base::Value& end_entry_val = (*entries1)[1];
+  const base::Value& nav_entry_val1 = (*entries1)[1];
+  const base::DictValue* nav_entry1 = nav_entry_val1.GetIfDict();
+  ASSERT_TRUE(nav_entry1);
+  EXPECT_EQ(*(nav_entry1->FindString("entryType")), "navigation");
+  EXPECT_EQ(*(nav_entry1->FindString("name")), kPageURL.spec());
+
+  const base::Value& end_entry_val = (*entries1)[2];
   const base::DictValue* end_entry = end_entry_val.GetIfDict();
   ASSERT_TRUE(end_entry);
   EXPECT_EQ(*(end_entry->FindString("entryType")), "session-end");

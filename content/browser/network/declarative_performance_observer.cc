@@ -5,9 +5,11 @@
 #include "content/browser/network/declarative_performance_observer.h"
 
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/load_timing_info.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {
@@ -94,6 +96,64 @@ void DeclarativePerformanceObserver::DidFinishNavigation(
       entry.Set("entryType", "visibility-state");
       entry.Set("startTime", 0.0);
       entry.Set("duration", 0.0);
+      AddEntryToBuffer(std::move(entry));
+    }
+
+    if (enabled_types_.contains(
+            network::mojom::PerformanceEntryType::kNavigation)) {
+      base::DictValue entry;
+      entry.Set("name", committed_url_.spec());
+      entry.Set("entryType", "navigation");
+      entry.Set("startTime", 0.0);
+
+      // Retrieve real metrics from NavigationHandleTiming safely without
+      // casting
+      const NavigationHandleTiming& timing =
+          navigation_handle->GetNavigationHandleTiming();
+
+      auto to_relative_ms = [&](base::TimeTicks t) {
+        return t.is_null() ? 0.0 : (t - navigation_start_).InMillisecondsF();
+      };
+
+      double response_start = to_relative_ms(timing.final_response_start_time);
+      double request_start = to_relative_ms(timing.final_request_start_time);
+      double domain_lookup_start =
+          to_relative_ms(timing.final_request_domain_lookup_start_time);
+      double domain_lookup_end =
+          to_relative_ms(timing.final_request_domain_lookup_end_time);
+      double connect_start =
+          to_relative_ms(timing.final_request_connect_start_time);
+      double connect_end =
+          to_relative_ms(timing.final_request_connect_end_time);
+      double secure_connection_start =
+          to_relative_ms(timing.final_request_ssl_start_time);
+
+      entry.Set("responseStart", response_start);
+      entry.Set("requestStart", request_start);
+      entry.Set("connectStart", connect_start);
+      entry.Set("connectEnd", connect_end);
+      entry.Set("domainLookupStart", domain_lookup_start);
+      entry.Set("domainLookupEnd", domain_lookup_end);
+      entry.Set("secureConnectionStart", secure_connection_start);
+
+      // Handle activationStart for Prerender to satisfy Phase 6
+      if (navigation_handle->IsPrerenderedPageActivation()) {
+        entry.Set("activationStart",
+                  0.0);  // Relative to activating navigation start
+      } else {
+        entry.Set("activationStart", 0.0);
+      }
+
+      // Handle deliveryType based on W3C spec ("", cache,
+      // navigational-prefetch)
+      std::string delivery_type = "";
+      if (navigation_handle->WasResponseCached()) {
+        delivery_type = "cache";
+      } else if (navigation_handle->IsPrerenderedPageActivation()) {
+        delivery_type = "navigational-prefetch";
+      }
+      entry.Set("deliveryType", delivery_type);
+
       AddEntryToBuffer(std::move(entry));
     }
   }

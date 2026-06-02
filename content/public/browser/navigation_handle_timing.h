@@ -167,6 +167,20 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   base::TimeDelta final_request_connect_delay;
   base::TimeDelta final_request_ssl_delay;
 
+  // Absolute timestamps for the first HTTP response ConnectTiming.
+  base::TimeTicks first_request_domain_lookup_start_time;
+  base::TimeTicks first_request_domain_lookup_end_time;
+  base::TimeTicks first_request_connect_start_time;
+  base::TimeTicks first_request_connect_end_time;
+  base::TimeTicks first_request_ssl_start_time;
+
+  // Absolute timestamps for the final HTTP response ConnectTiming.
+  base::TimeTicks final_request_domain_lookup_start_time;
+  base::TimeTicks final_request_domain_lookup_end_time;
+  base::TimeTicks final_request_connect_start_time;
+  base::TimeTicks final_request_connect_end_time;
+  base::TimeTicks final_request_ssl_start_time;
+
   // CreateStream related delay information.
   base::TimeDelta create_stream_delay;
 

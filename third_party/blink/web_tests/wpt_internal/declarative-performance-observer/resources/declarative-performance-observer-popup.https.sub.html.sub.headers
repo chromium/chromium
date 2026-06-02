@@ -1,2 +1,2 @@
 Reporting-Endpoints: telemetry="https://{{host}}:{{ports[https][0]}}/reporting/resources/report.py?op=put&reportID={{GET[reportID]}}"
-Performance-Observer: report-to="telemetry", entry-types=("visibility-state")
+Performance-Observer: report-to="telemetry", entry-types=("visibility-state" "navigation")

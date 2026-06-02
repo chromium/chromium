@@ -39,8 +39,8 @@
       assert_true(body.hasOwnProperty("entries"), "Report body should have entries");
       const entries = body.entries;
 
-      // We expect exactly 1 entry: visibility-state.
-      assert_equals(entries.length, 1, "Should have exactly 1 entry");
+      // We expect exactly 2 entries: visibility-state and navigation.
+      assert_equals(entries.length, 2, "Should have exactly 2 entries");
 
       // 1. Verify Visibility State (initial)
       const visEntry = entries.find(e => e.entryType === "visibility-state");
@@ -49,7 +49,37 @@
       assert_equals(visEntry.startTime, 0);
       assert_equals(visEntry.duration, 0);
 
-    }, "Declarative Performance Observer sends correct report format for visibility-state on session end");
+      // 2. Verify Navigation
+      const navEntry = entries.find(e => e.entryType === "navigation");
+      assert_not_equals(navEntry, undefined, "Should have navigation entry");
+      assert_equals(navEntry.name, popupURL);
+      assert_equals(navEntry.startTime, 0);
+      assert_true(navEntry.hasOwnProperty("entryType"));
+      assert_equals(navEntry.entryType, "navigation");
+      assert_true(navEntry.hasOwnProperty("deliveryType"));
+      assert_equals(typeof navEntry.deliveryType, "string");
+      assert_true(navEntry.hasOwnProperty("activationStart"));
+      assert_equals(typeof navEntry.activationStart, "number");
+      assert_equals(navEntry.activationStart, 0);
+
+      // Validate relative timing numeric fields
+      const timingFields = [
+        "responseStart",
+        "requestStart",
+        "connectStart",
+        "connectEnd",
+        "domainLookupStart",
+        "domainLookupEnd",
+        "secureConnectionStart"
+      ];
+      for (const field of timingFields) {
+        assert_true(navEntry.hasOwnProperty(field), `Entry should have ${field}`);
+        assert_equals(typeof navEntry[field], "number", `${field} should be a number`);
+        assert_true(navEntry[field] >= 0, `${field} should be >= 0`);
+      }
+
+    }, "Declarative Performance Observer sends correct report format for visibility-state and navigation on session end");
+
   </script>
 </body>
 </html>

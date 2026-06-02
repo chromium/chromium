@@ -7514,6 +7514,19 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
     navigation_handle_timing_.first_request_connect_delay = connect_delay;
     navigation_handle_timing_.first_request_ssl_delay = ssl_delay;
 
+    const net::LoadTimingInfo::ConnectTiming& connect_timing =
+        response_head_->load_timing.connect_timing;
+    navigation_handle_timing_.first_request_domain_lookup_start_time =
+        connect_timing.domain_lookup_start;
+    navigation_handle_timing_.first_request_domain_lookup_end_time =
+        connect_timing.domain_lookup_end;
+    navigation_handle_timing_.first_request_connect_start_time =
+        connect_timing.connect_start;
+    navigation_handle_timing_.first_request_connect_end_time =
+        connect_timing.connect_end;
+    navigation_handle_timing_.first_request_ssl_start_time =
+        connect_timing.ssl_start;
+
     first_fetch_start_time_ = response_head_->request_start;
   }
 
@@ -7533,10 +7546,24 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
   navigation_handle_timing_.final_non_informational_response_start_time =
       response_head_->load_timing.receive_non_informational_headers_start;
   navigation_handle_timing_.final_loader_callback_time = loader_callback_time;
+
   navigation_handle_timing_.final_request_domain_lookup_delay =
       domain_lookup_delay;
   navigation_handle_timing_.final_request_connect_delay = connect_delay;
   navigation_handle_timing_.final_request_ssl_delay = ssl_delay;
+
+  const net::LoadTimingInfo::ConnectTiming& final_connect_timing =
+      response_head_->load_timing.connect_timing;
+  navigation_handle_timing_.final_request_domain_lookup_start_time =
+      final_connect_timing.domain_lookup_start;
+  navigation_handle_timing_.final_request_domain_lookup_end_time =
+      final_connect_timing.domain_lookup_end;
+  navigation_handle_timing_.final_request_connect_start_time =
+      final_connect_timing.connect_start;
+  navigation_handle_timing_.final_request_connect_end_time =
+      final_connect_timing.connect_end;
+  navigation_handle_timing_.final_request_ssl_start_time =
+      final_connect_timing.ssl_start;
 
   if (response_head_->load_timing_internal_info) {
     navigation_handle_timing_.create_stream_delay =
