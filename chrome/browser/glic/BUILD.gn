@@ -937,6 +937,7 @@ if (!is_android) {
       "//chrome/browser/background/glic",
       "//chrome/browser/compose",
       "//chrome/browser/devtools:test_support",
+      "//chrome/browser/download:test_support",
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/glic:mojo_bindings",
       "//chrome/browser/glic/browser_ui:interactive_ui_tests",

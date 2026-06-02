@@ -5717,8 +5717,6 @@ static_library("test_support") {
   ]
 
   sources = [
-    "download/download_test_file_activity_observer.cc",
-    "download/download_test_file_activity_observer.h",
     "global_features_test_support.h",
     "history/history_test_utils.cc",
     "history/history_test_utils.h",

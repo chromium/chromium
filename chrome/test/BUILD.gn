@@ -913,8 +913,6 @@ static_library("test_support") {
     }
 
     sources += [
-      "../browser/download/download_browsertest_utils.cc",
-      "../browser/download/download_browsertest_utils.h",
       "../browser/net/profile_network_context_service_test_utils.cc",
       "../browser/net/profile_network_context_service_test_utils.h",
       "../browser/performance_manager/test_support/fake_child_process_tuning_delegate.cc",
@@ -1841,6 +1839,7 @@ source_set("platform_browser_tests") {
     deps += [
       ":test_support",
       "//chrome/app:command_ids",
+      "//chrome/browser/download:test_support",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions/api/bookmarks/test:test_support",
@@ -2783,6 +2782,8 @@ if (!is_android) {
       "//chrome/browser/digital_credentials",
       "//chrome/browser/dom_distiller:browser_tests",
       "//chrome/browser/domain_reliability:browser_tests",
+      "//chrome/browser/download:browser_tests",
+      "//chrome/browser/download:test_support",
       "//chrome/browser/engagement:browser_tests",
       "//chrome/browser/enterprise/browser_management:management_identity",
       "//chrome/browser/enterprise/data_protection:data_protection_view_lib",
@@ -3674,11 +3675,6 @@ if (!is_android) {
       "../browser/devtools/protocol/devtools_pwa_browsertest.cc",
       "../browser/devtools/protocol/form_devtools_issues_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_apitest.cc",
-      "../browser/download/download_browsertest.cc",
-      "../browser/download/download_frame_policy_browsertest.cc",
-      "../browser/download/notification/multi_profile_download_notifier_browsertest.cc",
-      "../browser/download/save_page_browsertest.cc",
-      "../browser/download/service_worker_download_browsertest.cc",
       "../browser/enterprise/browser_management/management_service_browsertest.cc",
       "../browser/enterprise/incognito/incognito_navigation_throttle_browsertest.cc",
       "../browser/enterprise/reporting/extension_request/extension_request_notification_browsertest.cc",
@@ -5555,7 +5551,6 @@ if (!is_android) {
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
         "../browser/browser_process_platform_part_ash_browsertest.cc",
         "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
-        "../browser/download/notification/download_notification_browsertest.cc",
         "../browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator_browsertest.cc",
         "../browser/feedback/show_feedback_page_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
@@ -6747,21 +6742,6 @@ test("unit_tests") {
     "../browser/component_updater/privacy_sandbox_attestations_component_installer_unittest.cc",
     "../browser/component_updater/subresource_filter_component_installer_unittest.cc",
     "../browser/custom_handlers/chrome_protocol_handler_registry_unittest.cc",
-    "../browser/download/chrome_download_manager_delegate_unittest.cc",
-    "../browser/download/deferred_client_wrapper_unittest.cc",
-    "../browser/download/download_core_service_impl_unittest.cc",
-    "../browser/download/download_history_unittest.cc",
-    "../browser/download/download_item_model_unittest.cc",
-    "../browser/download/download_item_warning_data_unittest.cc",
-    "../browser/download/download_offline_content_provider_unittest.cc",
-    "../browser/download/download_prefs_unittest.cc",
-    "../browser/download/download_query_unittest.cc",
-    "../browser/download/download_request_limiter_unittest.cc",
-    "../browser/download/download_stats_unittest.cc",
-    "../browser/download/download_status_updater_unittest.cc",
-    "../browser/download/download_target_determiner_unittest.cc",
-    "../browser/download/download_ui_controller_unittest.cc",
-    "../browser/download/offline_item_utils_unittest.cc",
     "../browser/enterprise/connectors/interstitials/enterprise_page_unittest.cc",
     "../browser/enterprise/encryption/cache_encryption_provider_impl_unittest.cc",
     "../browser/enterprise/identifiers/profile_id_service_factory_unittest.cc",
@@ -7206,6 +7186,7 @@ test("unit_tests") {
     "//chrome/browser/domain_reliability",
     "//chrome/browser/download",
     "//chrome/browser/download:status_text_builder_utils",
+    "//chrome/browser/download:unit_tests",
     "//chrome/browser/engagement",
     "//chrome/browser/engagement:unit_tests",
     "//chrome/browser/external_protocol",
@@ -8182,8 +8163,6 @@ test("unit_tests") {
       "../browser/autofill/android/save_update_address_profile_prompt_controller_unittest.cc",
       "../browser/bookmarks//android/bookmark_bridge_unittest.cc",
       "../browser/commerce/merchant_viewer/merchant_viewer_data_manager_unittest.cc",
-      "../browser/download/android/download_controller_unittest.cc",
-      "../browser/download/android/download_manager_service_unittest.cc",
       "../browser/enterprise/browser_management/platform_management_status_provider_android_unittest.cc",
       "../browser/enterprise/platform_auth/entra_provider_android_unittest.cc",
       "../browser/enterprise/util/android_enterprise_info_unittest.cc",
@@ -8413,10 +8392,6 @@ test("unit_tests") {
       "../browser/devtools/device/devtools_device_discovery_unittest.cc",
       "../browser/devtools/protocol/cast_handler_unittest.cc",
       "../browser/devtools/serialize_host_descriptions_unittest.cc",
-      "../browser/download/download_commands_unittest.cc",
-      "../browser/download/download_dir_policy_handler_unittest.cc",
-      "../browser/download/download_ui_enterprise_util_unittest.cc",
-      "../browser/download/download_warning_desktop_hats_utils_unittest.cc",
       "../browser/enterprise/reporting/extension_info_unittest.cc",
       "../browser/enterprise/reporting/extension_request/extension_request_observer_factory_unittest.cc",
       "../browser/enterprise/reporting/extension_request/extension_request_report_generator_unittest.cc",
@@ -9108,10 +9083,7 @@ test("unit_tests") {
   }
 
   if (!is_android && !is_chromeos) {
-    sources += [
-      "../browser/download/download_ui_context_menu_unittest.cc",
-      "../browser/hid/hid_status_icon_unittest.cc",
-    ]
+    sources += [ "../browser/hid/hid_status_icon_unittest.cc" ]
 
     deps += [
       "//chrome/browser/default_browser:unit_tests",
@@ -9149,7 +9121,6 @@ test("unit_tests") {
     sources += [
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
-      "../browser/download/notification/download_item_notification_unittest.cc",
       "../browser/enterprise/connectors/analysis/file_transfer_analysis_delegate_unittest.cc",
       "../browser/enterprise/connectors/analysis/source_destination_matcher_ash_unittest.cc",
       "../browser/enterprise/connectors/device_trust/ash/ash_attestation_policy_observer_unittest.cc",
@@ -11413,6 +11384,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
+      "//chrome/browser/download:test_support",
       "//chrome/browser/feedback:feedback_impl",
       "//chrome/browser/file_system_access",
       "//chrome/browser/gcm",
