@@ -43,11 +43,13 @@ void TestNetworkContextWithHostResolver::ResolveHostImpl(
       host->is_host_port_pair()
           ? host_resolver_->CreateRequest(
                 host->get_host_port_pair(), network_anonymization_key,
+                net::handles::kInvalidNetworkHandle,
                 net::NetLogWithSource::Make(net::NetLog::Get(),
                                             net::NetLogSourceType::NONE),
                 /*optional_parameters=*/std::nullopt)
           : host_resolver_->CreateRequest(
                 host->get_scheme_host_port(), network_anonymization_key,
+                net::handles::kInvalidNetworkHandle,
                 net::NetLogWithSource::Make(net::NetLog::Get(),
                                             net::NetLogSourceType::NONE),
                 /*optional_parameters=*/std::nullopt);

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include <fuzzer/FuzzedDataProvider.h>
 
 #include <iterator>
 #include <memory>
@@ -20,6 +19,7 @@
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/context_host_resolver.h"
@@ -182,7 +182,8 @@ class DnsRequest {
     const char* hostname = data_provider_->PickValueInArray(kHostNames);
     request_ = host_resolver_->CreateRequest(
         net::HostPortPair(hostname, 80), net::NetworkAnonymizationKey(),
-        net::NetLogWithSource(), parameters);
+        net::handles::kInvalidNetworkHandle, net::NetLogWithSource(),
+        parameters);
     int rv = request_->Start(
         base::BindOnce(&DnsRequest::OnCallback, base::Unretained(this)));
     if (rv != net::ERR_IO_PENDING)

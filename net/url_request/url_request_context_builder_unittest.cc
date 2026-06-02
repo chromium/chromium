@@ -294,9 +294,9 @@ TEST_F(URLRequestContextBuilderTest, ShutdownHostResolverWithPendingRequest) {
   std::unique_ptr<URLRequestContext> context(builder_.Build());
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
-      context->host_resolver()->CreateRequest(HostPortPair("example.com", 1234),
-                                              NetworkAnonymizationKey(),
-                                              NetLogWithSource(), std::nullopt);
+      context->host_resolver()->CreateRequest(
+          HostPortPair("example.com", 1234), NetworkAnonymizationKey(),
+          handles::kInvalidNetworkHandle, NetLogWithSource(), std::nullopt);
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
   ASSERT_TRUE(state->has_pending_requests());

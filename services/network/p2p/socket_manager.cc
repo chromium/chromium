@@ -17,6 +17,7 @@
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/sys_addrinfo.h"
 #include "net/dns/dns_util.h"
@@ -121,6 +122,7 @@ class P2PSocketManager::DnsRequest {
       parameters.dns_query_type = net::AddressFamilyToDnsQueryType(*family);
     }
     request_ = resolver_->CreateRequest(host, network_anonymization_key,
+                                        net::handles::kInvalidNetworkHandle,
                                         net::NetLogWithSource(), parameters);
 
     int result = request_->Start(base::BindOnce(

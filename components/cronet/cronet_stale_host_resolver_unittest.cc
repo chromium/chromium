@@ -28,6 +28,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_config.h"
@@ -242,7 +243,8 @@ class CronetStaleHostResolverTest : public testing::Test {
 
     request_ = resolver_->CreateRequest(
         net::HostPortPair(kHostname, kPort), net::NetworkAnonymizationKey(),
-        net::NetLogWithSource(), optional_parameters);
+        net::handles::kInvalidNetworkHandle, net::NetLogWithSource(),
+        optional_parameters);
     resolve_pending_ = true;
     resolve_complete_ = false;
     resolve_error_ = net::ERR_UNEXPECTED;

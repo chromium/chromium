@@ -1651,6 +1651,7 @@ ConfiguredProxyResolutionService::RequestHostResolution(
     const ProxyConfig::ProxyOverrideRule::DnsProbeCondition& dns_condition,
     base::WeakPtr<ConfiguredProxyResolutionRequest> listener,
     const NetworkAnonymizationKey& network_anonymization_key,
+    handles::NetworkHandle target_network,
     const NetLogWithSource& net_log,
     RequestPriority priority) {
   CHECK(host_resolver_for_override_rules_);
@@ -1664,14 +1665,15 @@ ConfiguredProxyResolutionService::RequestHostResolution(
   std::unique_ptr<HostResolver::ResolveHostRequest> request;
   if (GURL::SchemeIsCryptographic(dns_condition.host.scheme())) {
     request = host_resolver_for_override_rules_->CreateRequest(
-        dns_condition.host, network_anonymization_key, sub_net_log, parameters);
+        dns_condition.host, network_anonymization_key, target_network,
+        sub_net_log, parameters);
   } else {
     // If HTTPS DNS is not specified by the rule, remove the scheme as it may
     // fail if HTTPS DNS turns out to be supported for that domain
     // (crbug.com/469064221).
     request = host_resolver_for_override_rules_->CreateRequest(
         HostPortPair::FromSchemeHostPort(dns_condition.host),
-        network_anonymization_key, sub_net_log, parameters);
+        network_anonymization_key, target_network, sub_net_log, parameters);
   }
 
   // Link the two net log sources together.

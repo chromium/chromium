@@ -154,12 +154,14 @@ class NET_EXPORT HostResolverManager
   std::unique_ptr<HostResolver::ResolveHostRequest> CreateRequest(
       std::variant<url::SchemeHostPort, HostPortPair> host,
       NetworkAnonymizationKey network_anonymization_key,
+      handles::NetworkHandle target_network,
       NetLogWithSource net_log,
       std::optional<ResolveHostParameters> optional_parameters,
       ResolveContext* resolve_context);
   std::unique_ptr<HostResolver::ResolveHostRequest> CreateRequest(
       HostResolver::Host host,
       NetworkAnonymizationKey network_anonymization_key,
+      handles::NetworkHandle target_network,
       NetLogWithSource net_log,
       std::optional<ResolveHostParameters> optional_parameters,
       ResolveContext* resolve_context);
@@ -175,6 +177,7 @@ class NET_EXPORT HostResolverManager
   CreateServiceEndpointRequest(
       HostResolver::Host host,
       NetworkAnonymizationKey network_anonymization_key,
+      handles::NetworkHandle target_network,
       NetLogWithSource net_log,
       ResolveHostParameters parameters,
       ResolveContext* resolve_context);

@@ -282,8 +282,10 @@ int PacFileDecider::DoQuickCheck() {
       pac_file_fetcher_->GetRequestContext()->host_resolver();
   resolve_request_ = host_resolver->CreateRequest(
       HostPortPair(std::move(host), 80),
-      pac_file_fetcher_->isolation_info().network_anonymization_key(), net_log_,
-      parameters);
+      pac_file_fetcher_->isolation_info().network_anonymization_key(),
+      // TODO(crbug.com/516746450): Support targeting a network when fetching
+      // PAC files.
+      handles::kInvalidNetworkHandle, net_log_, parameters);
 
   CompletionRepeatingCallback callback = base::BindRepeating(
       &PacFileDecider::OnIOCompletion, base::Unretained(this));

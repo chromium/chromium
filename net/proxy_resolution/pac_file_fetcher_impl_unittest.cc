@@ -267,7 +267,7 @@ TEST_F(PacFileFetcherImplTest, IsolationInfo) {
       context_->host_resolver()->CreateRequest(
           url::SchemeHostPort(url),
           pac_fetcher->isolation_info().network_anonymization_key(),
-          net::NetLogWithSource(), params);
+          handles::kInvalidNetworkHandle, net::NetLogWithSource(), params);
   net::TestCompletionCallback callback2;
   result = host_request->Start(callback2.callback());
   EXPECT_EQ(net::OK, callback2.GetResult(result));
@@ -280,7 +280,7 @@ TEST_F(PacFileFetcherImplTest, IsolationInfo) {
   // NetworkAnonymizationKey.
   host_request = context_->host_resolver()->CreateRequest(
       url::SchemeHostPort(url), NetworkAnonymizationKey(),
-      net::NetLogWithSource(), params);
+      handles::kInvalidNetworkHandle, net::NetLogWithSource(), params);
   net::TestCompletionCallback callback3;
   result = host_request->Start(callback3.callback());
   EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, callback3.GetResult(result));

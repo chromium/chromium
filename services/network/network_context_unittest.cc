@@ -2093,6 +2093,7 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
   params.source = net::HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request1 =
       host_resolver.CreateRequest(kHostPortPair, network_anonymization_key,
+                                  net::handles::kInvalidNetworkHandle,
                                   net::NetLogWithSource(), params);
   net::TestCompletionCallback callback1;
   int result = request1->Start(callback1.callback());
@@ -2109,6 +2110,7 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
   for (const auto& other_nak : kOtherNaks) {
     std::unique_ptr<net::HostResolver::ResolveHostRequest> request2 =
         host_resolver.CreateRequest(kHostPortPair, other_nak,
+                                    net::handles::kInvalidNetworkHandle,
                                     net::NetLogWithSource(), params);
     net::TestCompletionCallback callback2;
     result = request2->Start(callback2.callback());

@@ -21,6 +21,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
@@ -40,6 +41,7 @@ class StaleHostResolver::RequestImpl : public HostResolver::ResolveHostRequest {
   RequestImpl(base::WeakPtr<StaleHostResolver> resolver,
               const HostPortPair& host,
               const NetworkAnonymizationKey& network_anonymization_key,
+              handles::NetworkHandle target_network,
               const NetLogWithSource& net_log,
               const ResolveHostParameters& input_parameters,
               const base::TickClock* tick_clock);
@@ -78,6 +80,7 @@ class StaleHostResolver::RequestImpl : public HostResolver::ResolveHostRequest {
 
   const HostPortPair host_;
   const NetworkAnonymizationKey network_anonymization_key_;
+  const handles::NetworkHandle target_network_;
   const NetLogWithSource net_log_;
   const ResolveHostParameters input_parameters_;
 
@@ -105,12 +108,14 @@ StaleHostResolver::RequestImpl::RequestImpl(
     base::WeakPtr<StaleHostResolver> resolver,
     const HostPortPair& host,
     const NetworkAnonymizationKey& network_anonymization_key,
+    handles::NetworkHandle target_network,
     const NetLogWithSource& net_log,
     const ResolveHostParameters& input_parameters,
     const base::TickClock* tick_clock)
     : resolver_(std::move(resolver)),
       host_(host),
       network_anonymization_key_(network_anonymization_key),
+      target_network_(target_network),
       net_log_(net_log),
       input_parameters_(input_parameters),
       cache_error_(ERR_DNS_CACHE_MISS),
@@ -128,7 +133,8 @@ int StaleHostResolver::RequestImpl::Start(
       HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
   cache_parameters.source = HostResolverSource::LOCAL_ONLY;
   cache_request_ = resolver_->inner_resolver_->CreateRequest(
-      host_, network_anonymization_key_, net_log_, cache_parameters);
+      host_, network_anonymization_key_, target_network_, net_log_,
+      cache_parameters);
   int error =
       cache_request_->Start(base::BindOnce([](int error) { NOTREACHED(); }));
   DCHECK_NE(ERR_IO_PENDING, error);
@@ -166,7 +172,8 @@ int StaleHostResolver::RequestImpl::Start(
   no_cache_parameters.cache_usage =
       HostResolver::ResolveHostParameters::CacheUsage::DISALLOWED;
   network_request_ = resolver_->inner_resolver_->CreateRequest(
-      host_, network_anonymization_key_, net_log_, no_cache_parameters);
+      host_, network_anonymization_key_, target_network_, net_log_,
+      no_cache_parameters);
   int network_rv = network_request_->Start(
       base::BindOnce(&StaleHostResolver::OnNetworkRequestComplete, resolver_,
                      network_request_.get(), weak_ptr_factory_.GetWeakPtr()));
@@ -361,22 +368,26 @@ std::unique_ptr<HostResolver::ResolveHostRequest>
 StaleHostResolver::CreateRequest(
     url::SchemeHostPort host,
     NetworkAnonymizationKey network_anonymization_key,
+    handles::NetworkHandle target_network,
     NetLogWithSource net_log,
     std::optional<ResolveHostParameters> optional_parameters) {
   // TODO(crbug.com/40181080): Propagate scheme.
   return CreateRequest(HostPortPair::FromSchemeHostPort(host),
-                       network_anonymization_key, net_log, optional_parameters);
+                       network_anonymization_key, target_network, net_log,
+                       optional_parameters);
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
 StaleHostResolver::CreateRequest(
     const HostPortPair& host,
     const NetworkAnonymizationKey& network_anonymization_key,
+    handles::NetworkHandle target_network,
     const NetLogWithSource& net_log,
     const std::optional<ResolveHostParameters>& optional_parameters) {
   DCHECK(tick_clock_);
   return std::make_unique<RequestImpl>(
-      weak_ptr_factory_.GetWeakPtr(), host, network_anonymization_key, net_log,
+      weak_ptr_factory_.GetWeakPtr(), host, network_anonymization_key,
+      target_network, net_log,
       optional_parameters.value_or(ResolveHostParameters()), tick_clock_);
 }
 
@@ -384,6 +395,7 @@ std::unique_ptr<HostResolver::ServiceEndpointRequest>
 StaleHostResolver::CreateServiceEndpointRequest(
     Host host,
     NetworkAnonymizationKey network_anonymization_key,
+    handles::NetworkHandle target_network,
     NetLogWithSource net_log,
     ResolveHostParameters parameters) {
   // TODO(crbug.com/335119455): Figure out a plan to support the
