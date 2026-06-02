@@ -465,7 +465,15 @@ void WaylandToplevelWindow::HandleToplevelConfigure(
     int32_t width_dip,
     int32_t height_dip,
     const WindowStates& window_states) {
+  // HandleToplevelConfigureWithOrigin() calls into the delegate
+  // (OnActivationChanged et al.), which the views layer documents may
+  // synchronously close the widget and destroy this platform window. See
+  // DesktopWindowTreeHostPlatform::OnActivationChanged().
+  auto alive = weak_ptr_factory_.GetWeakPtr();
   HandleToplevelConfigureWithOrigin(0, 0, width_dip, height_dip, window_states);
+  if (!alive) {
+    return;
+  }
   UpdateSessionStateIfNeeded();
 }
 
@@ -558,7 +566,11 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
     SetRestoredBoundsInDIP(GetBoundsInDIP());
   }
 
+  auto alive = weak_ptr_factory_.GetWeakPtr();
   UpdateActivationState();
+  if (!alive) {
+    return;
+  }
   if (prev_suspended != is_suspended_) {
     frame_manager()->OnWindowSuspensionChanged();
   }

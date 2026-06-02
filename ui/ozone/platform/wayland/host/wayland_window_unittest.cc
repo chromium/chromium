@@ -5384,6 +5384,45 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_ForceDeviceScaleFactor) {
   EXPECT_EQ(window_->applied_state(), previous_state);
 }
 
+// Regression POC: WaylandToplevelWindow::HandleToplevelConfigure() continues to
+// use `this` after delegate()->OnActivationChanged() synchronously destroys the
+// platform window. This mirrors the production path documented at
+// DesktopWindowTreeHostPlatform::OnActivationChanged where
+// HandleActivationChanged() can synchronously close the widget, which in turn
+// calls SetPlatformWindow(nullptr) and frees the WaylandToplevelWindow while
+// the xdg_toplevel.configure handler is still on the stack.
+TEST_P(WaylandWindowTest, HandleToplevelConfigureSyncCloseOnDeactivate) {
+  // After SetUp(), |window_| has already received an activated configure, so
+  // is_xdg_active_ == is_active_ == true.
+  ASSERT_TRUE(window_);
+  WaylandWindow* raw_window = window_.get();
+
+  // Simulate a delegate that destroys the platform window inside
+  // OnActivationChanged(false) — exactly what happens in production when a
+  // WidgetObserver calls Widget::CloseNow() on deactivation, leading to
+  // DesktopWindowTreeHostPlatform::OnClosed -> SetPlatformWindow(nullptr).
+  EXPECT_CALL(delegate_, OnActivationChanged(Eq(false)))
+      .WillOnce(InvokeWithoutArgs([this]() { window_.reset(); }));
+
+  // Don't try to talk to the server after the window has been torn down
+  // mid-dispatch.
+  DisableSyncOnTearDown();
+
+  // Drive the standard xdg_toplevel.configure entry point with the activated
+  // bit cleared. This calls HandleToplevelConfigureWithOrigin() ->
+  // UpdateActivationState() -> delegate()->OnActivationChanged(false), which
+  // (via the mock above) frees `this`. Control then returns to
+  // HandleToplevelConfigure:469 which calls UpdateSessionStateIfNeeded() on
+  // the freed object.
+  WaylandWindow::WindowStates deactivated_states;
+  deactivated_states.is_activated = false;
+  raw_window->HandleToplevelConfigure(800, 600, deactivated_states);
+
+  // If we got here without ASAN reporting a heap-use-after-free, the bug is
+  // fixed.
+  EXPECT_FALSE(window_);
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{}));
