@@ -76,6 +76,16 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
+      // TODO(b/517218130): Ensure Omnibox is laid out correctly when
+      //   `isTouchUi_` is true.
+      isTouchUi_: {
+        type: Boolean,
+        reflect: true,
+      },
+      omniboxPopupDebugEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -91,6 +101,11 @@ export class OmniboxPopupSearchboxElement extends
   protected accessor searchboxLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxLensSearch');
   protected accessor useWebkitSearchIcons_: boolean = false;
+  // TODO(b/519185419): Remove `isTouchUi_` property and from `loadTimeData` and
+  // get layout constants and font sizes from a C++ layout helper instead.
+  protected accessor isTouchUi_: boolean = loadTimeData.getBoolean('isTouchUi');
+  protected accessor omniboxPopupDebugEnabled_: boolean =
+      loadTimeData.getBoolean('omniboxPopupDebugEnabled');
 
   private searchboxPageHandler_: SearchboxPageHandlerInterface;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;

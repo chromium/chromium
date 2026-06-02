@@ -31,7 +31,6 @@ build_webui("build") {
   css_files = [
     "aim_app.css",
     "app.css",
-    "full_app.css",
     "omnibox_composebox.css",
     "omnibox_popup_searchbox.css",
     "omnibox_popup_shared_style.css",

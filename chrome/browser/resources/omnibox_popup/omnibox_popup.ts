@@ -10,6 +10,7 @@ export {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composeb
 export {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 export {OmniboxAimAppElement} from './aim_app.js';
 export {OmniboxPopupAppElement} from './app.js';
+export {OmniboxFullAppElement} from './full_app.js';
 export {OmniboxComposeboxElement} from './omnibox_composebox.js';
 export {browserProxyFactory as omniboxPopupBrowserProxyFactory, PageCallbackRouter as OmniboxPopupPageCallbackRouter, PageHandlerRemote as OmniboxPopupPageHandlerRemote, PageRemote as OmniboxPopupPageRemote} from './omnibox_popup.mojom-webui.js';
 export {browserProxyFactory as aimBrowserProxyFactory, PageCallbackRouter as OmniboxPopupAimPageCallbackRouter, PageHandlerRemote as OmniboxPopupAimPageHandlerRemote, PageRemote as OmniboxPopupAimPageRemote} from './omnibox_popup_aim.mojom-webui.js';
