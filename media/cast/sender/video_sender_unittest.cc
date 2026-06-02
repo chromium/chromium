@@ -85,8 +85,7 @@ int GetVideoNetworkBandwidth() {
 
 }  // namespace
 
-class VideoSenderTest : public ::testing::TestWithParam<bool>,
-                        public WithCastEnvironment {
+class VideoSenderTest : public ::testing::Test, public WithCastEnvironment {
  public:
   VideoSenderTest(const VideoSenderTest&) = delete;
   VideoSenderTest(VideoSenderTest&&) = delete;
@@ -106,8 +105,6 @@ class VideoSenderTest : public ::testing::TestWithParam<bool>,
 
     vea_factory_->SetAutoRespond(true);
     last_pixel_value_ = kPixelValue;
-    feature_list_.InitWithFeatureState(kCastStreamingMediaVideoEncoder,
-                                       GetParam());
   }
 
   ~VideoSenderTest() override {
@@ -262,7 +259,7 @@ class VideoSenderTest : public ::testing::TestWithParam<bool>,
   raw_ptr<MockVideoEncoder> mock_encoder_ = nullptr;
 };
 
-TEST_P(VideoSenderTest, BuiltInEncoder) {
+TEST_F(VideoSenderTest, BuiltInEncoder) {
   CreateSender(EncoderType::kSoftware);
   ASSERT_EQ(STATUS_INITIALIZED, status_changes().front());
 
@@ -279,7 +276,7 @@ TEST_P(VideoSenderTest, BuiltInEncoder) {
 #else
 #define MAYBE_MockEncoderGoldenCase MockEncoderGoldenCase
 #endif
-TEST_P(VideoSenderTest, MAYBE_MockEncoderGoldenCase) {
+TEST_F(VideoSenderTest, MAYBE_MockEncoderGoldenCase) {
   CreateSender(EncoderType::kMock);
 
   VideoEncoder::FrameEncodedCallback callback;
@@ -317,7 +314,7 @@ TEST_P(VideoSenderTest, MAYBE_MockEncoderGoldenCase) {
 // Make sure we properly handle the frame change callback, even if the encoded
 // frame result is nullptr. For more information on this test, see
 // https://issuetracker.google.com/393880773.
-TEST_P(VideoSenderTest, HandlesNullptrFrameChangeCallback) {
+TEST_F(VideoSenderTest, HandlesNullptrFrameChangeCallback) {
   CreateSender(EncoderType::kMock);
 
   VideoEncoder::FrameEncodedCallback callback;
@@ -350,7 +347,7 @@ TEST_P(VideoSenderTest, HandlesNullptrFrameChangeCallback) {
       }));
 }
 
-TEST_P(VideoSenderTest, ExternalEncoder) {
+TEST_F(VideoSenderTest, ExternalEncoder) {
   CreateSender(EncoderType::kHardware);
   SetVeaFactoryInitializationWillSucceed(true);
   ASSERT_EQ(STATUS_INITIALIZED, status_changes().front());
@@ -384,7 +381,7 @@ TEST_P(VideoSenderTest, ExternalEncoder) {
   EXPECT_EQ(1, VeaResponseCount());
 }
 
-TEST_P(VideoSenderTest, ExternalEncoderInitFails) {
+TEST_F(VideoSenderTest, ExternalEncoderInitFails) {
   CreateSender(EncoderType::kHardware);
   SetVeaFactoryInitializationWillSucceed(false);
   EXPECT_EQ(STATUS_INITIALIZED, status_changes().front());
@@ -398,7 +395,7 @@ TEST_P(VideoSenderTest, ExternalEncoderInitFails) {
   RunTasksAndAdvanceClock();
 }
 
-TEST_P(VideoSenderTest, GettersReturnValidValues) {
+TEST_F(VideoSenderTest, GettersReturnValidValues) {
   CreateSender(EncoderType::kSoftware);
   ASSERT_EQ(STATUS_INITIALIZED, status_changes().front());
 
@@ -416,12 +413,5 @@ TEST_P(VideoSenderTest, GettersReturnValidValues) {
   EXPECT_EQ(video_sender().GetFramesInserted(), 1);
   EXPECT_GE(video_sender().GetEncoderBitrate(), 0);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         VideoSenderTest,
-                         ::testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& param) {
-                           return param.param ? "Experimental" : "Stable";
-                         });
 
 }  // namespace media::cast

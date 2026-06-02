@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
-#include "media/cast/encoding/external_video_encoder.h"
 #include "media/media_buildflags.h"
 
 namespace media::cast::encoding_support {
@@ -82,12 +81,6 @@ bool IsHardwareH264EncodingEnabled(
 // Scan profiles for hardware HEVC encoder support.
 bool IsHardwareHevcEncodingEnabled(
     const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles) {
-  // HEVC encoding is only supported by the new media::VideoEncoder-based
-  // implementation.
-  if (!base::FeatureList::IsEnabled(media::kCastStreamingMediaVideoEncoder)) {
-    return false;
-  }
-
   if (!base::FeatureList::IsEnabled(media::kCastStreamingHardwareHevc)) {
     return false;
   }

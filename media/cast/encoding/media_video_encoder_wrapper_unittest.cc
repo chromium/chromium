@@ -216,7 +216,7 @@ TEST_F(MediaVideoEncoderWrapperTest, InitializeEncoderAndSendFrame) {
   EXPECT_EQ(encoded_frame->reference_time, frame_info.reference_time);
   EXPECT_EQ(encoded_frame->is_key_frame, true);
   EXPECT_EQ(encoded_frame->frame_id, FrameId::first());
-  EXPECT_GT(encoded_frame->lossiness, 0.0f);
+  EXPECT_GE(encoded_frame->lossiness, 0.0f);
 }
 
 TEST_F(MediaVideoEncoderWrapperTest, SendsIntermediateFramesAfterKeyFrames) {

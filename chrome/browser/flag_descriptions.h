@@ -2571,12 +2571,6 @@ inline constexpr char kCastStreamingOfferHardwareFirstDescription[] =
     "accelerated codecs first, and only offers software encoding if the "
     "receiver rejects the initial offer.";
 
-inline constexpr char kCastStreamingMediaVideoEncoderName[] =
-    "Toggles using the media::VideoEncoder implementation for Cast Streaming";
-inline constexpr char kCastStreamingMediaVideoEncoderDescription[] =
-    "When enabled, the media base VideoEncoder implementation is used instead "
-    "of the media cast implementation.";
-
 inline constexpr char kCastStreamingPerformanceOverlayName[] =
     "Toggle a performance metrics overlay while Cast Streaming";
 inline constexpr char kCastStreamingPerformanceOverlayDescription[] =

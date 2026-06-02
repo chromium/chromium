@@ -9552,7 +9552,6 @@ from previous Chrome versions.
   <int value="-1563374534" label="OmniboxAutofocusOnIncognitoNtp:disabled"/>
   <int value="-1563280385" label="Floss:enabled"/>
   <int value="-1563257536" label="VisualSearchSuggestions:enabled"/>
-  <int value="-1562554131" label="CastStreamingMediaVideoEncoder:enabled"/>
   <int value="-1562526090" label="GlicZOrderChanges:disabled"/>
   <int value="-1562505975" label="AppIconInIntentChip:enabled"/>
   <int value="-1562318579" label="EmitHistogramsEarlier:enabled"/>
@@ -11437,7 +11436,6 @@ from previous Chrome versions.
   <int value="-961427615" label="WebviewTagMPArchBehavior:enabled"/>
   <int value="-960851702" label="EcheSWADisableStunServer:disabled"/>
   <int value="-960745328" label="EnableBubbleCornerRadiusUpdate:enabled"/>
-  <int value="-960679124" label="CastStreamingMediaVideoEncoder:disabled"/>
   <int value="-960077963" label="EnableAuraTooltipsOnWindows:enabled"/>
   <int value="-960031496"
       label="AutofillAndroidDesktopKeyboardAccessoryRevamp:enabled"/>

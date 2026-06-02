@@ -160,7 +160,6 @@ MEDIA_EXPORT extern const base::FeatureParam<double>
 MEDIA_EXPORT extern const base::FeatureParam<double>
     kCastStreamingExponentialVideoBitrateAlgorithmDynamicWindowMultiplier;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingHardwareHevc);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingMediaVideoEncoder);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingPerformanceOverlay);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingVp8);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastStreamingVp9);

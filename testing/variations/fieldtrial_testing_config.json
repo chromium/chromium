@@ -4912,24 +4912,6 @@
             ]
         }
     ],
-    "CastStreamingMediaVideoEncoder": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CastStreamingMediaVideoEncoder"
-                    ]
-                }
-            ]
-        }
-    ],
     "CastStreamingWinHardwareH264": [
         {
             "platforms": [

@@ -14,7 +14,7 @@
 #include "media/base/video_encoder.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
-#include "media/cast/encoding/external_video_encoder.h"
+#include "media/cast/encoding/frame_complexity_estimator.h"
 #include "media/cast/encoding/video_encoder.h"
 
 namespace media {
@@ -72,7 +72,7 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
                    RtpTimeTicks rtp_timestamp,
                    base::TimeTicks reference_time,
                    base::TimeDelta frame_duration,
-                   std::optional<double> estimated_quantizer,
+                   std::optional<double> estimated_complexity,
                    FrameEncodedCallback frame_encoded_callback);
     CachedMetadata();
     // This type is move-only due to `frame_encoded_callback`.
@@ -88,18 +88,18 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
     RtpTimeTicks rtp_timestamp;
     base::TimeTicks reference_time;
     base::TimeDelta frame_duration;
-    std::optional<double> estimated_quantizer;
+    std::optional<double> estimated_complexity;
     FrameEncodedCallback frame_encoded_callback;
   };
 
   // Once the quantizer is estimated asynchronously, this callback is invoked
   // to enqueue the frame and call the encoder.
-  void OnQuantizerEstimated(scoped_refptr<VideoFrame> video_frame,
-                            media::VideoEncoder::EncodeOptions encode_options,
-                            base::TimeTicks reference_time,
-                            FrameEncodedCallback frame_encoded_callback,
-                            int encoder_version,
-                            std::optional<double> estimated_quantizer);
+  void OnComplexityEstimated(scoped_refptr<VideoFrame> video_frame,
+                             media::VideoEncoder::EncodeOptions encode_options,
+                             base::TimeTicks reference_time,
+                             FrameEncodedCallback frame_encoded_callback,
+                             int encoder_version,
+                             std::optional<double> estimated_complexity);
 
   // Once we know the frame size on the first call to `EncodeVideoFrame`, we
   // can then construct the encoder.
@@ -119,8 +119,8 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // Calculates the predicated frame duration for `frame`. Used to provide
   // metrics on encoder utilization.
   // TODO(crbug.com/282984511): this method is written, in some form, in several
-  // places, including the VPX and AV1 encoders both in media/base and in
-  // media/cast/encoding. Unify at least some of these as appropriate.
+  // places, including the VPX and AV1 encoders in media/base. Unify at least
+  // some of these as appropriate.
   base::TimeDelta GetFrameDuration(const VideoFrame& frame);
 
   // Posts a task to update the encoder options, such as whether a key frame
@@ -208,7 +208,7 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   base::queue<CachedMetadata> recent_metadata_;
 
   // Used to compute utilization metrics for each frame.
-  base::SequenceBound<QuantizerEstimator> quantizer_estimator_;
+  base::SequenceBound<FrameComplexityEstimator> frame_complexity_estimator_;
 
   // Pending encodes to be run when options are updated.
   std::vector<base::OnceClosure> pending_encodes_;

@@ -68,16 +68,11 @@ bool AnyOfLastFramesAreEmpty(const EncodedFrames& frames, size_t last) {
   return false;
 }
 struct VideoEncoderTestParam {
-  VideoEncoderTestParam(VideoCodec codec,
-                        bool use_hardware_encoder,
-                        bool enable_media_encoder_feature)
-      : codec(codec),
-        use_hardware_encoder(use_hardware_encoder),
-        enable_media_encoder_feature(enable_media_encoder_feature) {}
+  VideoEncoderTestParam(VideoCodec codec, bool use_hardware_encoder)
+      : codec(codec), use_hardware_encoder(use_hardware_encoder) {}
 
   VideoCodec codec;
   bool use_hardware_encoder;
-  bool enable_media_encoder_feature;
 };
 
 class VideoEncoderTest : public ::testing::TestWithParam<VideoEncoderTestParam>,
@@ -119,14 +114,6 @@ class VideoEncoderTest : public ::testing::TestWithParam<VideoEncoderTestParam>,
     std::vector<base::test::FeatureRef> enabled_features{
         kCastStreamingVp8, kCastStreamingVp9, kCastStreamingAv1};
     std::vector<base::test::FeatureRef> disabled_features;
-
-    // Enable or disable media video encoder feature based on the test param.
-    // TODO(crbug.com/282984511): Should be removed once the Finch experiment is
-    // complete.
-    auto& list_to_add_to = GetParam().enable_media_encoder_feature
-                               ? enabled_features
-                               : disabled_features;
-    list_to_add_to.push_back(kCastStreamingMediaVideoEncoder);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     codec_params_->codec = GetParam().codec;
@@ -172,7 +159,7 @@ class VideoEncoderTest : public ::testing::TestWithParam<VideoEncoderTestParam>,
            !video_config_.use_hardware_encoder;
   }
 
-  bool is_testing_external_video_encoder() const {
+  bool is_hardware_encoder() const {
     return video_config_.use_hardware_encoder;
   }
 
@@ -320,7 +307,7 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
         RunTasksAndAdvanceClock();
       }
 
-      if (!is_testing_external_video_encoder()) {
+      if (!is_hardware_encoder()) {
         EXPECT_TRUE(accepted_request);
       }
       RunTasksAndAdvanceClock();
@@ -354,15 +341,8 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
       EXPECT_GE(encoded_frame->referenced_frame_id, last_key_frame_id);
     }
 
-    // TODO(crbug.com/282984511): bots are currently showing this being empty,
-    // specifically for hardware accelerated H264 using the new
-    // media::VideoEncoder based implementation. Does not reproduce locally on
-    // Linux or Mac OS.
-    if (!(GetParam().codec == VideoCodec::kH264 &&
-          GetParam().use_hardware_encoder &&
-          GetParam().enable_media_encoder_feature)) {
-      EXPECT_FALSE(encoded_frame->data.empty());
-    }
+    // We should have some data in the frame.
+    EXPECT_FALSE(encoded_frame->data.empty());
 
     // The utilization metrics are computed for all but the Mac Video Toolbox
     // encoder.
@@ -379,10 +359,9 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
 // same but increases one of the dimensions (e.g., a rotation). This is a
 // regression test for crbug.com/504587797.
 TEST_P(VideoEncoderTest, EncodesRotatedFrameSize) {
-  if (is_testing_external_video_encoder() ||
-      (GetParam().codec != VideoCodec::kVP8 &&
-       GetParam().codec != VideoCodec::kVP9)) {
-    GTEST_SKIP() << "Skipping test for non-VP8/VP9 or external encoders.";
+  if (is_hardware_encoder() || (GetParam().codec != VideoCodec::kVP8 &&
+                                GetParam().codec != VideoCodec::kVP9)) {
+    GTEST_SKIP() << "Skipping test for non-VP8/VP9 or hardware encoders.";
   }
 
   CreateEncoder();
@@ -408,42 +387,6 @@ TEST_P(VideoEncoderTest, EncodesRotatedFrameSize) {
   RunTasksAndAdvanceClock();
 }
 
-// Verify that everything goes well even if ExternalVideoEncoder is destroyed
-// before it has a chance to receive the VEA creation callback.  For all other
-// encoders, this tests that the encoder can be safely destroyed before the task
-// is run that delivers the first EncodedFrame.
-TEST_P(VideoEncoderTest, CanBeDestroyedBeforeVEAIsCreated) {
-  // In the case of the new media video encoder wrapper implementation, creation
-  // is synchronous so this test is not relevant.
-  if (GetParam().enable_media_encoder_feature) {
-    return;
-  }
-
-  CreateEncoder();
-
-  // Send a frame to spawn creation of the ExternalVideoEncoder instance.
-  const bool encode_result = video_encoder()->EncodeVideoFrame(
-      CreateTestVideoFrame(gfx::Size(128, 72)), NowTicks(),
-      base::BindOnce([](std::unique_ptr<SenderEncodedFrame> encoded_frame) {}));
-
-  // Hardware encoders should fail to encode at this point, since the VEA has
-  // not responded yet. Since software encoders don't use VEA, they should
-  // succeed.
-  ASSERT_EQ(encode_result, !GetParam().use_hardware_encoder);
-
-  // Else, using the old encoder it should not have responded yet.
-  // Destroy the encoder, and confirm the VEA Factory did not respond yet.
-  DestroyEncoder();
-  ExpectVEAResponseForExternalVideoEncoder(0);
-
-  // Allow the VEA Factory to respond by running the creation callback.  When
-  // the task runs, it will be a no-op since the weak pointers to the
-  // ExternalVideoEncoder were invalidated.
-  SetVEAFactoryAutoRespond(true);
-  RunTasksAndAdvanceClock();
-  ExpectVEAResponseForExternalVideoEncoder(1);
-}
-
 namespace {
 
 // NOTE: since we can't test all encoders using a hardware encoder, and we don't
@@ -452,31 +395,19 @@ namespace {
 // ::testing::Combine to compute the cartesian cross product.
 std::vector<VideoEncoderTestParam> DetermineEncodersToTest() {
   std::vector<VideoEncoderTestParam> values;
-  // Fake encoder.
-  values.emplace_back(VideoCodec::kUnknown, false, false);
 
   // Software encoders.
-  values.emplace_back(VideoCodec::kVP8, false, false);
-  values.emplace_back(VideoCodec::kVP8, false, true);
-  values.emplace_back(VideoCodec::kVP9, false, false);
-  values.emplace_back(VideoCodec::kVP9, false, true);
+  values.emplace_back(VideoCodec::kVP8, false);
+  values.emplace_back(VideoCodec::kVP9, false);
 
 #if BUILDFLAG(ENABLE_LIBAOM)
-  values.emplace_back(VideoCodec::kAV1, false, false);
-  values.emplace_back(VideoCodec::kAV1, false, true);
+  values.emplace_back(VideoCodec::kAV1, false);
 #endif
 
-  // Hardware-accelerated encoders (faked).
-  values.emplace_back(VideoCodec::kVP8, true, false);
-  values.emplace_back(VideoCodec::kH264, true, false);
-  values.emplace_back(VideoCodec::kVP9, true, false);
-
-  // Hardware-accelerated encoders using media::VideoEncoder implementation.
-  // TODO(crbug.com/282984511): consider adding a fake software encoder for
-  // testing.
-  values.emplace_back(VideoCodec::kVP9, true, true);
-  values.emplace_back(VideoCodec::kVP8, true, true);
-  values.emplace_back(VideoCodec::kH264, true, true);
+  // Hardware-accelerated encoders.
+  values.emplace_back(VideoCodec::kVP8, true);
+  values.emplace_back(VideoCodec::kH264, true);
+  values.emplace_back(VideoCodec::kVP9, true);
 
   return values;
 }
@@ -490,8 +421,7 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<VideoEncoderTest::ParamType>& info) {
       return base::StrCat(
           {base::ToUpperASCII(GetCodecName(info.param.codec)),
-           (info.param.use_hardware_encoder ? "_Hardware" : "_Software"),
-           (info.param.enable_media_encoder_feature ? "_Experimental" : "")});
+           (info.param.use_hardware_encoder ? "_Hardware" : "_Software")});
     });
 
 }  // namespace media::cast

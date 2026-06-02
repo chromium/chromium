@@ -73,25 +73,12 @@ source_set("encoding") {
     "encoding/audio_encoder.h",
     "encoding/encoding_support.cc",
     "encoding/encoding_support.h",
-    "encoding/encoding_util.cc",
-    "encoding/encoding_util.h",
-    "encoding/external_video_encoder.cc",
-    "encoding/external_video_encoder.h",
-    "encoding/fake_software_video_encoder.cc",
-    "encoding/fake_software_video_encoder.h",
+    "encoding/frame_complexity_estimator.cc",
+    "encoding/frame_complexity_estimator.h",
     "encoding/media_video_encoder_wrapper.cc",
     "encoding/media_video_encoder_wrapper.h",
-    "encoding/size_adaptable_video_encoder_base.cc",
-    "encoding/size_adaptable_video_encoder_base.h",
-    "encoding/software_video_encoder.h",
     "encoding/video_encoder.cc",
     "encoding/video_encoder.h",
-    "encoding/video_encoder_impl.cc",
-    "encoding/video_encoder_impl.h",
-    "encoding/vpx_encoder.cc",
-    "encoding/vpx_encoder.h",
-    "encoding/vpx_quantizer_parser.cc",
-    "encoding/vpx_quantizer_parser.h",
   ]
 
   configs += [
@@ -119,15 +106,6 @@ source_set("encoding") {
       "CoreFoundation.framework",
       "CoreMedia.framework",
     ]
-  }
-
-  if (enable_libaom) {
-    sources += [
-      "encoding/av1_encoder.cc",
-      "encoding/av1_encoder.h",
-    ]
-
-    deps += [ "//third_party/libaom" ]
   }
 }
 
@@ -214,11 +192,9 @@ test("cast_unittests") {
     "common/openscreen_conversion_helpers_unittest.cc",
     "encoding/audio_encoder_unittest.cc",
     "encoding/encoding_support_unittest.cc",
-    "encoding/external_video_encoder_unittest.cc",
+    "encoding/frame_complexity_estimator_unittest.cc",
     "encoding/media_video_encoder_wrapper_unittest.cc",
-    "encoding/size_adaptable_video_encoder_base_unittest.cc",
     "encoding/video_encoder_unittest.cc",
-    "encoding/vpx_quantizer_parser_unittest.cc",
     "logging/log_event_dispatcher_unittest.cc",
     "logging/receiver_time_offset_estimator_impl_unittest.cc",
     "logging/stats_event_subscriber_unittest.cc",
@@ -258,13 +234,4 @@ test("cast_unittests") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-}
-
-fuzzer_test("media_vpx_quantizer_parser_fuzzer") {
-  sources = [ "encoding/vpx_quantizer_parser_fuzzer.cc" ]
-  deps = [
-    ":encoding",
-    "//components/openscreen_platform:openscreen_platform_using_net_sockets",
-    "//testing/libfuzzer:libfuzzer_base_wrappers",
-  ]
 }
