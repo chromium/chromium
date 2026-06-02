@@ -360,7 +360,8 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
                       screen_ai::ScreenAIServiceRouter::Service::kOCR)) {
                 perform_future->SetValue(mojom::VisualAnnotation::New());
                 timer->Stop();
-                LOG(ERROR) << "PerformOCR aborted as connection lost.";
+                ADD_FAILURE()
+                    << "OCR service disconnected while performing OCR.";
               }
             },
             base::Unretained(router), base::Unretained(&perform_future),
