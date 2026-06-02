@@ -922,7 +922,9 @@ void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
   if (display_client_)
     display_client_->OnDisplayReceivedCALayerParams(std::move(ca_layer_params));
 
+#if BUILDFLAG(IS_MAC)
   external_begin_frame_source()->DidReceiveNewCALayerParams();
+#endif
 #else
   NOTREACHED();
 #endif
