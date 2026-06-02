@@ -1,12 +1,16 @@
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//ui/gl/features.gni")
 
 # Override for angle_root
 angle_root = "//third_party/angle"
 
 # True if ANGLE can access build/, testing/ and other Chrome folders.
 angle_has_build = true
+
+# Whether ANGLE is being linked statically.
+angle_use_static_angle = use_static_angle
 
 # Overrides for ANGLE's dependencies
 angle_glslang_dir = "//third_party/glslang/src"
