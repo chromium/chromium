@@ -62,6 +62,7 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
     public static final String PREF_AUTOFILL_ADDRESSES = "autofill_and_passwords_addresses";
     public static final String PREF_AUTOFILL_IDENTITY_DOCS = "autofill_and_passwords_identity_docs";
     public static final String PREF_AUTOFILL_TRAVEL = "autofill_and_passwords_travel";
+    public static final String PREF_AUTOFILL_SHOPPING = "autofill_and_passwords_shopping";
     public static final String PREF_AUTOFILL_SETTINGS = "autofill_and_passwords_settings";
 
     public static final String EXTRA_REFERRER = "autofill_and_passwords_referrer";
@@ -202,6 +203,14 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
                     return SettingsNavigationHelper.showAutofillTravelSettings(getActivity());
                 });
 
+        Preference shoppingPref = findPreference(PREF_AUTOFILL_SHOPPING);
+        shoppingPref.setVisible(shouldShowShopping());
+        shoppingPref.setOnPreferenceClickListener(
+                preference -> {
+                    recordCategoryLinkClick(YourSavedInfoDataCategory.SHOPPING);
+                    return SettingsNavigationHelper.showAutofillShoppingSettings(getActivity());
+                });
+
         findPreference(PREF_AUTOFILL_SETTINGS)
                 .setOnPreferenceClickListener(
                         preference -> {
@@ -297,6 +306,11 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
     }
 
+    private static boolean shouldShowShopping() {
+        return shouldShowAutofillAiSettings()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WALLET_SHOPPING);
+    }
+
     private ManagedPreferenceDelegate createManagedPreferenceDelegate() {
         return new ChromeManagedPreferenceDelegate(getProfile()) {
             @Override
@@ -349,10 +363,14 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_SETTINGS));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_IDENTITY_DOCS));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_TRAVEL));
+                        indexData.removeEntry(getUniqueId(PREF_AUTOFILL_SHOPPING));
                     } else {
                         if (!shouldShowAutofillAiSettings()) {
                             indexData.removeEntry(getUniqueId(PREF_AUTOFILL_IDENTITY_DOCS));
                             indexData.removeEntry(getUniqueId(PREF_AUTOFILL_TRAVEL));
+                        }
+                        if (!shouldShowShopping()) {
+                            indexData.removeEntry(getUniqueId(PREF_AUTOFILL_SHOPPING));
                         }
                     }
                 }

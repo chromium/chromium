@@ -374,7 +374,8 @@ public class HomeOfTransactionsFragmentTest {
     @SmallTest
     @EnableFeatures({
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
-        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_WALLET_SHOPPING
     })
     public void testSearchIndexWhenAllEnabled() {
         ThreadUtils.runOnUiThreadBlocking(
@@ -426,7 +427,15 @@ public class HomeOfTransactionsFragmentTest {
         verify(mSearchIndexDataMock)
                 .removeEntry(
                         HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                HomeOfTransactionsFragment.PREF_AUTOFILL_IDENTITY_DOCS));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 HomeOfTransactionsFragment.PREF_AUTOFILL_TRAVEL));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                HomeOfTransactionsFragment.PREF_AUTOFILL_SHOPPING));
 
         verify(mSearchIndexDataMock)
                 .removeEntry(
@@ -540,6 +549,24 @@ public class HomeOfTransactionsFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
         mSettingsActivityTestRule.recreateActivity();
 
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_WALLET_SHOPPING
+    })
+    public void testClickShoppingLaunchesShopping() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Autofill.YourSavedInfoSettingsPage.CategoryLinkClick",
+                        YourSavedInfoDataCategory.SHOPPING);
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        testItemClick(R.string.autofill_shopping_title, AutofillShoppingFragment.class);
         histogramWatcher.assertExpected();
     }
 
