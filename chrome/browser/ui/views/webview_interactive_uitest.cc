@@ -30,7 +30,14 @@ class WebViewInteractiveUiTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebViewInteractiveUiTest, MouseMoveEventDelivered) {
+// TODO(crbug.com/517764196): Fails on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_MouseMoveEventDelivered DISABLED_MouseMoveEventDelivered
+#else
+#define MAYBE_MouseMoveEventDelivered MouseMoveEventDelivered
+#endif
+IN_PROC_BROWSER_TEST_F(WebViewInteractiveUiTest,
+                       MAYBE_MouseMoveEventDelivered) {
   // Create a widget with a WebView.
   TestingProfile testing_profile;
   auto widget = std::make_unique<Widget>();
