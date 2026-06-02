@@ -24,7 +24,8 @@ SandboxQuotaObserver::SandboxQuotaObserver(
     scoped_refptr<base::SequencedTaskRunner> update_notify_runner,
     ObfuscatedFileUtil* sandbox_file_util,
     FileSystemUsageCache* file_system_usage_cache)
-    : quota_manager_proxy_(std::move(quota_manager_proxy)),
+    : RefCountedDeleteOnSequence(update_notify_runner),
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
       update_notify_runner_(std::move(update_notify_runner)),
       sandbox_file_util_(sandbox_file_util),
       file_system_usage_cache_(file_system_usage_cache) {}
@@ -32,11 +33,11 @@ SandboxQuotaObserver::SandboxQuotaObserver(
 SandboxQuotaObserver::~SandboxQuotaObserver() = default;
 
 void SandboxQuotaObserver::AddRef() const {
-  base::RefCountedThreadSafe<SandboxQuotaObserver>::AddRef();
+  base::RefCountedDeleteOnSequence<SandboxQuotaObserver>::AddRef();
 }
 
 void SandboxQuotaObserver::Release() const {
-  base::RefCountedThreadSafe<SandboxQuotaObserver>::Release();
+  base::RefCountedDeleteOnSequence<SandboxQuotaObserver>::Release();
 }
 
 void SandboxQuotaObserver::Disable() {

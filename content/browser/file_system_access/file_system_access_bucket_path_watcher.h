@@ -5,8 +5,9 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_BUCKET_PATH_WATCHER_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_BUCKET_PATH_WATCHER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
@@ -26,7 +27,9 @@ class FileSystemAccessWatcherManager;
 class FileSystemAccessBucketPathWatcher
     : public FileSystemAccessChangeSource,
       public storage::FileChangeObserver,
-      public base::RefCountedThreadSafe<FileSystemAccessBucketPathWatcher> {
+      // `weak_factory_` must be destroyed on the correct thread.
+      public base::RefCountedDeleteOnSequence<
+          FileSystemAccessBucketPathWatcher> {
  public:
   FileSystemAccessBucketPathWatcher(
       scoped_refptr<storage::FileSystemContext> file_system_context,
@@ -58,7 +61,9 @@ class FileSystemAccessBucketPathWatcher
   void OnRemoveDirectory(const storage::FileSystemURL& url) override;
 
  private:
-  friend class base::RefCountedThreadSafe<FileSystemAccessBucketPathWatcher>;
+  friend class base::RefCountedDeleteOnSequence<
+      FileSystemAccessBucketPathWatcher>;
+  friend class base::DeleteHelper<FileSystemAccessBucketPathWatcher>;
 
   mutable base::Lock is_disabled_lock_;
   bool is_disabled_ GUARDED_BY(is_disabled_lock_) = false;
