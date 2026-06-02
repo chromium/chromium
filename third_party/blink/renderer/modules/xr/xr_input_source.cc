@@ -528,15 +528,24 @@ void XRInputSource::ProcessOverlayHitTest(
     Frame* hit_frame = frame_element->ContentFrame();
     if (hit_frame) {
       bool is_cross_origin = false;
-      if (hit_frame->IsRemoteFrame()) {
-        is_cross_origin = true;
-      } else {
-        const SecurityOrigin* hit_origin =
-            hit_frame->GetSecurityContext()->GetSecurityOrigin();
-        const SecurityOrigin* session_origin =
-            session_->GetExecutionContext()->GetSecurityOrigin();
-        if (!hit_origin->IsSameOriginWith(session_origin)) {
+      const SecurityOrigin* session_origin =
+          session_->GetExecutionContext()->GetSecurityOrigin();
+
+      // Ensure that same-origin wrapper iframes cannot be used to bypass input
+      // suppression for nested cross-origin iframes. Walk the entire frame
+      // subtree to check if any descendant frame is cross-origin or remote.
+      for (Frame* node = hit_frame; node != nullptr;
+           node = node->Tree().TraverseNext(hit_frame)) {
+        if (node->IsRemoteFrame()) {
           is_cross_origin = true;
+          break;
+        } else {
+          const SecurityOrigin* hit_origin =
+              node->GetSecurityContext()->GetSecurityOrigin();
+          if (!hit_origin->IsSameOriginWith(session_origin)) {
+            is_cross_origin = true;
+            break;
+          }
         }
       }
 
