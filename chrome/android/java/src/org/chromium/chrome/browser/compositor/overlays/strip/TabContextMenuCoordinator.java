@@ -602,7 +602,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 || modalDialogManager == null) {
             return;
         }
-        ;
 
         SendTabToSelfCoordinator sttsCoordinator =
                 sSendTabToSelfCreator.create(
@@ -719,7 +718,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
         addVerticalTabsItems(itemList, isIncognito);
         itemList.add(createCloseItem(isIncognito));
-        itemList.add(createCloseAllTabsItem(isIncognito));
+        if (!ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
+            itemList.add(createCloseAllTabsItem(isIncognito));
+        }
         if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
             if (getTabModel().getCount() > 1) {
                 itemList.add(createCloseOtherTabsItem(isIncognito));

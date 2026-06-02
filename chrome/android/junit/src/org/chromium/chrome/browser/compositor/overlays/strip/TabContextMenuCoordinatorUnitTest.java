@@ -484,7 +484,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 14, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 13, modelList.size());
 
         // List item 1
         assertEquals(
@@ -565,18 +565,13 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 12
         assertEquals(
-                R.id.close_all_tabs_menu_id,
+                R.id.close_other_tabs_menu_id,
                 modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 13
         assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(12).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 14
-        assertEquals(
                 R.id.close_tabs_to_the_right_menu_id,
-                modelList.get(13).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                modelList.get(12).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -706,7 +701,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 14, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 13, modelList.size());
 
         // List item 1
         assertEquals(
@@ -767,18 +762,13 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 12
         assertEquals(
-                R.id.close_all_tabs_menu_id,
+                R.id.close_other_tabs_menu_id,
                 modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 13
         assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(12).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 14
-        assertEquals(
                 R.id.close_tabs_to_the_right_menu_id,
-                modelList.get(13).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                modelList.get(12).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -892,7 +882,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 12, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 11, modelList.size());
 
         // List item 1
         assertEquals(
@@ -983,18 +973,13 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 10
         assertEquals(
-                R.id.close_all_incognito_tabs_menu_id,
+                R.id.close_other_tabs_menu_id,
                 modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 11
         assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-
-        // List item 12
-        assertEquals(
                 R.id.close_tabs_to_the_right_menu_id,
-                modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -2535,6 +2520,7 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS)
     public void testCloseAllTabs() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
@@ -2559,6 +2545,7 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS)
     public void testCloseAllIncognitoTabs() {
         setupWithIncognito(/* incognito= */ true);
         initializeCoordinator();
