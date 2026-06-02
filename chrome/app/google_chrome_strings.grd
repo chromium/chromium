@@ -3268,6 +3268,9 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_IOS_DESKTOP_PRICE_TRACKING_DESCRIPTION_QR" desc="The description for the iOS desktop price tracking promo bubble with a QR code.">
           Download Chrome on your phone to track prices and get alerts when the price drops on any site
         </message>
+         <message name="IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop Price Tracking promo bubble with a QR Code.">
+          Get price tracking alerts with Chrome on your phone
+        </message>
          <message name="IDS_IOS_DESKTOP_PRICE_TRACKING_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after the user chooses to be reminded of price tracking on their iOS device.">
           Next time you open Chrome on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>, you’ll see a prompt to enable price tracking alerts.
         </message>

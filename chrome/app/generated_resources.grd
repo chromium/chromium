@@ -10720,9 +10720,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop Price Tracking promo bubble with a reminder button.">
           Keep up with all your price drops on the go
         </message>
-        <message name="IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop Price Tracking promo bubble with a QR Code.">
-          Get price tracking alerts on your phone
-        </message>
         <message name="IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop Price Tracking promo bubble with a reminder button.">
           Get price tracking alerts on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
         </message>
