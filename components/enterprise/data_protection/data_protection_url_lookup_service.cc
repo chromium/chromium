@@ -4,6 +4,7 @@
 
 #include "components/enterprise/data_protection/data_protection_url_lookup_service.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -35,6 +36,12 @@ int GetCacheDurationSec(safe_browsing::RTLookupResponse* rt_lookup_response) {
   return cache_duration_sec;
 }
 
+GURL StripQueryParams(const GURL& url) {
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  return url.ReplaceComponents(replacements);
+}
+
 }  // namespace
 namespace enterprise_data_protection {
 
@@ -55,7 +62,8 @@ void DataProtectionUrlLookupService::DoLookup(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
-  auto cached_verdict = verdict_cache_.Peek(url.spec());
+  GURL cache_url = GetRemoveQueryParams() ? StripQueryParams(url) : url;
+  auto cached_verdict = verdict_cache_.Peek(cache_url.spec());
   if (cached_verdict != verdict_cache_.end() &&
       !IsVerdictExpired(cached_verdict->second)) {
     // Proto assignment has deep copy semantics. There is room to optimize by
@@ -99,7 +107,8 @@ void DataProtectionUrlLookupService::OnRealTimeLookupComplete(
           *rt_lookup_response);
       verdict.expiry_time =
           base::Time::Now() + base::Seconds(cache_duration_sec);
-      verdict_cache_.Put(url.spec(), std::move(verdict));
+      GURL cache_url = GetRemoveQueryParams() ? StripQueryParams(url) : url;
+      verdict_cache_.Put(cache_url.spec(), std::move(verdict));
     }
   }
 
@@ -119,6 +128,11 @@ size_t DataProtectionUrlLookupService::GetVerdictCacheMaxSize() {
   return max_value > 0
              ? max_value
              : enterprise_data_protection::kVerdictCacheMaxSize.default_value;
+}
+
+// static
+bool DataProtectionUrlLookupService::GetRemoveQueryParams() {
+  return enterprise_data_protection::kVerdictCacheRemoveQueryParams.Get();
 }
 
 }  // namespace enterprise_data_protection

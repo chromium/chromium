@@ -5,14 +5,19 @@
 #include "components/enterprise/data_protection/data_protection_url_lookup_service.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/enterprise/data_protection/features.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-constexpr char kUrl[] = "someurl.com";
+// The URL scheme is required to create a valid GURL instance.
+constexpr char kUrl[] = "https://someurl.com";
+constexpr char kUrlWithParams[] = "https://someurl.com?a=1";
 
 safe_browsing::RTLookupResponse::ThreatInfo GetTestThreatInfo(
     int cache_duration_sec) {
@@ -66,14 +71,41 @@ struct UrlLookupTestCase {
   int cache_duration_sec;
   int second_do_lookup_delay_sec;
   int do_lookup_call_count;
+  bool remove_query_params;
+  std::string_view first_url;
+  std::string_view second_url;
 };
 
 UrlLookupTestCase kUrlLookupTestCases[] = {{.cache_duration_sec = 90,
                                             .second_do_lookup_delay_sec = 0,
-                                            .do_lookup_call_count = 1},
+                                            .do_lookup_call_count = 1,
+                                            .remove_query_params = false,
+                                            .first_url = kUrl,
+                                            .second_url = kUrl},
                                            {.cache_duration_sec = 90,
                                             .second_do_lookup_delay_sec = 100,
-                                            .do_lookup_call_count = 2}};
+                                            .do_lookup_call_count = 2,
+                                            .remove_query_params = false,
+                                            .first_url = kUrl,
+                                            .second_url = kUrl},
+                                           {.cache_duration_sec = 90,
+                                            .second_do_lookup_delay_sec = 0,
+                                            .do_lookup_call_count = 2,
+                                            .remove_query_params = false,
+                                            .first_url = kUrl,
+                                            .second_url = kUrlWithParams},
+                                           {.cache_duration_sec = 90,
+                                            .second_do_lookup_delay_sec = 0,
+                                            .do_lookup_call_count = 1,
+                                            .remove_query_params = true,
+                                            .first_url = kUrl,
+                                            .second_url = kUrlWithParams},
+                                           {.cache_duration_sec = 90,
+                                            .second_do_lookup_delay_sec = 100,
+                                            .do_lookup_call_count = 2,
+                                            .remove_query_params = true,
+                                            .first_url = kUrl,
+                                            .second_url = kUrlWithParams}};
 
 class DataProtectionUrlLookupServiceTest
     : public testing::Test,
@@ -81,6 +113,16 @@ class DataProtectionUrlLookupServiceTest
  public:
   DataProtectionUrlLookupServiceTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        enterprise_data_protection::kEnableDeepScanVerdictCacheSize,
+        {
+            {"verdict_cache_max_size", "10"},
+            {"remove_query_params",
+             GetParam().remove_query_params ? "true" : "false"},
+        });
+  }
 
   void CreateLookupService() {
     service_ = std::make_unique<DataProtectionUrlLookupService>();
@@ -96,6 +138,7 @@ class DataProtectionUrlLookupServiceTest
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<DataProtectionUrlLookupService> service_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(DataProtectionUrlLookupServiceTest, VerdictCachePopulated) {
@@ -111,17 +154,16 @@ TEST_P(DataProtectionUrlLookupServiceTest, VerdictCachePopulated) {
   auto* dp_lookup_service = GetLookupService();
 
   // call DoLookup, passing the fake
-  GURL url(kUrl);
   SessionID session_id = SessionID::FromSerializedValue(1);
-  dp_lookup_service->DoLookup(&lookup_service, url, base::DoNothing(),
-                              session_id);
+  dp_lookup_service->DoLookup(&lookup_service, GURL(test_case.first_url),
+                              base::DoNothing(), session_id);
 
   task_environment_.FastForwardBy(
       base::Seconds(test_case.second_do_lookup_delay_sec));
 
   // second call to the same url ensure value is fetched from cache
-  dp_lookup_service->DoLookup(&lookup_service, url, base::DoNothing(),
-                              session_id);
+  dp_lookup_service->DoLookup(&lookup_service, GURL(test_case.second_url),
+                              base::DoNothing(), session_id);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

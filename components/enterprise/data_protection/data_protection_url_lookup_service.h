@@ -64,6 +64,8 @@ class DataProtectionUrlLookupService : public KeyedService {
 
   static size_t GetVerdictCacheMaxSize();
 
+  static bool GetRemoveQueryParams();
+
   static bool IsVerdictExpired(const Verdict& verdict);
 
   // cache which maps the full URL specification string to the safe-browsing
