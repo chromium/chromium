@@ -158,7 +158,6 @@ BASE_FEATURE(kV8SlowHistogramsCodeMemoryWriteProtection,
 BASE_FEATURE(kV8SlowHistogramsSparkplug, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kV8SlowHistogramsSparkplugAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kV8SlowHistogramsNoTurbofan, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kV8ConcurrentMarkingHighPriorityThreads,
              kFeatureDefaultStateControlledByV8);

@@ -485,9 +485,7 @@ void SetFeatureFlags() {
       base::FeatureList::IsEnabled(
           features::kV8SlowHistogramsCodeMemoryWriteProtection) ||
       base::FeatureList::IsEnabled(features::kV8SlowHistogramsSparkplug) ||
-      base::FeatureList::IsEnabled(
-          features::kV8SlowHistogramsSparkplugAndroid) ||
-      base::FeatureList::IsEnabled(features::kV8SlowHistogramsNoTurbofan);
+      base::FeatureList::IsEnabled(features::kV8SlowHistogramsSparkplugAndroid);
   if (any_slow_histograms_alias) {
     SetV8Flags("--slow-histograms");
   } else {
