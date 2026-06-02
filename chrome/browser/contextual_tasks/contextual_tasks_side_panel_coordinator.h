@@ -147,9 +147,14 @@ class ContextualTasksSidePanelCoordinator
  private:
   friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
   friend class ContextualTasksSidePanelCoordinatorTest;
+  friend class ContextualTasksInteractiveUiTest;
 
   void SetPanelSuppressedForTesting(bool suppressed) {
     contextual_tasks_panel_host_->SetPanelSuppressedForTesting(suppressed);
+  }
+
+  void SetSuppressHideOnContextualTasksUrlForTesting(bool suppress) {
+    suppress_hide_on_contextual_tasks_url_for_testing_ = suppress;
   }
 
   // Hide or show panel base on open state of the current task.
@@ -240,6 +245,11 @@ class ContextualTasksSidePanelCoordinator
       scoped_unowned_user_data_;
 
   bool in_cobrowsing_session_ = false;
+
+  // When true, PrimaryPageChanged() will not auto-hide the panel on a
+  // contextual tasks URL navigation. Set only by interactive tests that drive
+  // in-panel webview navigation.
+  bool suppress_hide_on_contextual_tasks_url_for_testing_ = false;
 
   base::ObserverList<ContextualTasksPanelController::Observer> observers_;
 

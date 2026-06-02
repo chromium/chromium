@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <optional>
+#include <string_view>
 
 #include "base/base64.h"
+#include "base/callback_list.h"
 #include "base/check_deref.h"
+#include "base/functional/callback_forward.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,7 +30,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
@@ -72,6 +77,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInnerWebContentsId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExistEvent);
+
+constexpr char kCujInterceptionUrl[] = "https://www.google.com/search?udm=50";
 
 class TestTabContextualizationController
     : public lens::TabContextualizationController {
@@ -283,6 +290,10 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         .WillRepeatedly(testing::Return(true));
     EXPECT_CALL(*mock_aim, IsAimEligible())
         .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(*mock_aim, RegisterEligibilityChangedCallback(_))
+        .WillRepeatedly([](base::RepeatingClosure) {
+          return base::CallbackListSubscription();
+        });
 
     // Explicitly enable user-level content sharing settings to satisfy native
     // FeatureEligibility.
@@ -290,6 +301,9 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         contextual_search::kSearchContentSharingSettings,
         static_cast<int>(
             contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+    // Disable side panel animations to avoid WaitForShow/WaitForHide flakiness.
+    browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
   }
 
   void TearDownOnMainThread() override {
@@ -671,22 +685,154 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         }));
   }
 
-  auto InputText(const ui::ElementIdentifier& contents_id,
-                 const std::string& query_text) {
+  // Inject text via web events on the composebox input, after waiting for the
+  // composebox first update + searchbox inputState init to settle.
+  auto InputText(ui::ElementIdentifier contents_id,
+                 std::string_view query_text) {
+    const DeepQuery kComposeboxHost = {"contextual-tasks-app", "#composebox",
+                                       "#composebox"};
     const DeepQuery kComposeboxInput = {"contextual-tasks-app", "#composebox",
                                         "#composebox", "#composeboxInput",
                                         "#input"};
     return Steps(
+        WaitForElementExists(contents_id, kComposeboxHost),
+        WaitForJsResultAt(contents_id, kComposeboxHost,
+                          "el => el.hasUpdated", true),
+        WaitForJsResultAt(
+            contents_id, kComposeboxHost,
+            "el => el.getSearchboxHandler().getInputState().then(() => true)",
+            true),
         ClickElement(contents_id, kComposeboxInput),
         ExecuteJsAt(
             contents_id, kComposeboxInput,
-            base::StringPrintf(
+            content::JsReplace(
                 "(el) => { "
-                "  el.value = '%s'; "
+                "  el.value = $1; "
                 "  el.dispatchEvent(new Event('input', { bubbles: true })); "
                 "  el.dispatchEvent(new Event('change', { bubbles: true })); "
                 "}",
-                query_text.c_str())));
+                query_text)));
+  }
+
+  // Drive the real tab->side-panel transition by clicking a thread link in the
+  // embedded AIM page, then rebind the inner contents onto the side panel.
+  auto SimulateThreadLinkAndOpenPanel(ui::ElementIdentifier side_panel_id) {
+    const DeepQuery kThreadLink = {"#threadLink"};
+    return Steps(
+        // New thread / in-panel navigation would otherwise trigger the active
+        // tab's PrimaryPageChanged->Hide() and close the panel under test.
+        Do(base::BindLambdaForTesting([this]() {
+          static_cast<contextual_tasks::ContextualTasksSidePanelCoordinator*>(
+              contextual_tasks::ContextualTasksPanelController::From(browser()))
+              ->SetSuppressHideOnContextualTasksUrlForTesting(true);
+        })),
+        InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
+        // Wait until the mock page has captured the WebUI postMessage source,
+        // otherwise the click handler no-ops and the panel never opens.
+        WaitForJsResult(kInnerWebContentsId,
+                        "() => window.__ctWebuiSourceReady === true"),
+        // The click detaches this tab's WebContents into the side panel, so the
+        // element disappears mid-stop; fire-and-forget to avoid kElementHidden.
+        ExecuteJsAt(kInnerWebContentsId, kThreadLink, "el => el.click()",
+                         ExecuteJsMode::kFireAndForget),
+        WaitForShow(kContextualTasksSidePanelWebViewElementId),
+        UninstrumentWebContents(kInnerWebContentsId,
+                                /*fail_if_not_instrumented=*/false),
+        InstrumentNonTabWebView(side_panel_id,
+                                kContextualTasksSidePanelWebViewElementId,
+                                /*wait_for_ready=*/true),
+        WaitForElementExists(side_panel_id, {"contextual-tasks-app"}),
+        InstrumentInnerWebContents(kInnerWebContentsId, side_panel_id, 0));
+  }
+
+  auto CloseContextualTasksSidePanel() {
+    return Steps(
+        Do(base::BindLambdaForTesting([this]() {
+          contextual_tasks::ContextualTasksPanelController::From(browser())
+              ->Close();
+        })),
+        WaitForHide(kContextualTasksSidePanelWebViewElementId));
+  }
+
+  auto WaitForInputValue(ui::ElementIdentifier contents_id,
+                         std::string_view expected,
+                         bool continue_across_navigation = false) {
+    const WebContentsInteractionTestUtil::DeepQuery kComposeboxHostPath = {
+        "contextual-tasks-app", "#composebox", "#composebox"};
+    return WaitForJsResultAt(contents_id, kComposeboxHostPath,
+                             "el => el.input", std::string(expected),
+                             /*element_must_be_present_at_start=*/false,
+                             continue_across_navigation);
+  }
+
+  auto WaitForInputCleared(ui::ElementIdentifier contents_id,
+                           bool continue_across_navigation = false) {
+    return WaitForInputValue(contents_id, "", continue_across_navigation);
+  }
+
+  // cr-composebox-submit reflects `disabled` to its host.
+  auto WaitForSubmitButtonEnabled(ui::ElementIdentifier contents_id) {
+    const WebContentsInteractionTestUtil::DeepQuery kSubmitButtonHostPath = {
+        "contextual-tasks-app", "#composebox", "#composebox",
+        "cr-composebox-submit"};
+    StateChange change;
+    change.type = StateChange::Type::kExistsAndConditionTrue;
+    change.where = kSubmitButtonHostPath;
+    change.test_function = "(el) => !el.disabled";
+    change.event = kElementExistsEvent;
+    return WaitForStateChange(contents_id, change);
+  }
+
+  auto SubmitQueryViaSubmitButton(ui::ElementIdentifier contents_id) {
+    const WebContentsInteractionTestUtil::DeepQuery kSubmitButtonHostPath = {
+        "contextual-tasks-app", "#composebox", "#composebox",
+        "cr-composebox-submit"};
+    const WebContentsInteractionTestUtil::DeepQuery kSubmitButtonPath = {
+        "contextual-tasks-app", "#composebox", "#composebox",
+        "cr-composebox-submit", "#submitContainer"};
+    return Steps(WaitForElementExists(contents_id, kSubmitButtonHostPath),
+                 WaitForSubmitButtonEnabled(contents_id),
+                 ClickButton(contents_id, kSubmitButtonPath));
+  }
+
+  auto ClickNewThreadButton(ui::ElementIdentifier side_panel_id) {
+    const WebContentsInteractionTestUtil::DeepQuery kNewThreadButtonPath = {
+        "contextual-tasks-app", "#toolbar", "#newThreadButton"};
+    // The click navigates the embedded thread frame, so the click step must not
+    // wait for a completion response that the navigation would drop.
+    return Steps(WaitForElementExists(side_panel_id, kNewThreadButtonPath),
+                 ExecuteJsAt(side_panel_id, kNewThreadButtonPath,
+                             "el => el.click()",
+                             ExecuteJsMode::kFireAndForget));
+  }
+
+  // shouldShowVoiceSearch() requires 'webkitSpeechRecognition' in window.
+  auto EnsureVoiceSearchAvailable(ui::ElementIdentifier contents_id) {
+    const WebContentsInteractionTestUtil::DeepQuery kComposeboxHostPath = {
+        "contextual-tasks-app", "#composebox", "#composebox"};
+    return ExecuteJsAt(
+        contents_id, kComposeboxHostPath,
+        "(el) => { "
+        "  if (!('webkitSpeechRecognition' in window)) {"
+        "    Object.defineProperty(window, 'webkitSpeechRecognition', { "
+        "      configurable: true,"
+        "      value: class { start() {} stop() {} abort() {} }, "
+        "    }); "
+        "  } "
+        "  el.requestUpdate(); "
+        "}");
+  }
+
+  auto DispatchVoiceSearchFinalResult(ui::ElementIdentifier contents_id,
+                                      std::string_view transcript) {
+    const WebContentsInteractionTestUtil::DeepQuery kVoiceSearchComponentPath =
+        {"contextual-tasks-app", "#composebox", "#composebox", "#voiceSearch"};
+    return ExecuteJsAt(
+        contents_id, kVoiceSearchComponentPath,
+        content::JsReplace("(el) => el.dispatchEvent(new CustomEvent("
+                           "'voice-search-final-result', "
+                           "{ detail: $1, bubbles: true, composed: true}))",
+                           transcript));
   }
 
   auto InputText(const std::string& query_text) {
@@ -1022,7 +1168,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
 
       // Type text query
-      InputText("My text-only query"),
+      InputText(kPrimaryTab, "My text-only query"),
 
       // Click Submit
       ClickButton(kPrimaryTab, kSubmitButton),
@@ -1033,7 +1179,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                                        /*expected_viewport_image_count=*/0,
                                        /*expected_upload_image_count=*/0,
                                        /*expected_upload_file_count=*/0,
-                                       /*expected_added_input_names=*/{}));
+                                       /*expected_added_input_names=*/{}),
+
+      // After submit the compsebox input should be empty.
+      WaitForInputCleared(kPrimaryTab));
 }
 
 // TODO(crbug.com/516333831): Re-enable this test on Windows.
@@ -1113,7 +1262,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       WaitForComposeboxFilesCount(5),
 
       // Type query text
-      InputText("Query with multiple attachments"),
+      InputText(kPrimaryTab, "Query with multiple attachments"),
 
       // 6. Submit
       ClickButton(kPrimaryTab, kSubmitButton),
@@ -1788,4 +1937,71 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
           lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
           std::nullopt, /*expected_message_index=*/2));
 }
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       QueryOpenAndCloseFlow) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0),
+      SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInCurrentTab(GURL(kCujInterceptionUrl)),
+      SimulateThreadLinkAndOpenPanel(kSidePanelId),
+
+      InputText(kSidePanelId, "How to make kombucha?"),
+      SubmitQueryViaSubmitButton(kSidePanelId),
+      VerifyMultipleSubmitQueryMessage("How to make kombucha?",
+                                       /*expected_viewport_image_count=*/0,
+                                       /*expected_upload_image_count=*/0,
+                                       /*expected_upload_file_count=*/0,
+                                       /*expected_added_input_names=*/{}),
+      WaitForInputCleared(kSidePanelId),
+
+      CloseContextualTasksSidePanel());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       NewTaskThreadInteraction) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0),
+      SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInCurrentTab(GURL(kCujInterceptionUrl)),
+      SimulateThreadLinkAndOpenPanel(kSidePanelId),
+
+      InputText(kSidePanelId, "some draft text"),
+      WaitForInputValue(kSidePanelId, "some draft text"),
+      ClickNewThreadButton(kSidePanelId),
+      // New thread navigates the embedded thread frame, so tolerate navigation
+      // while waiting for the composebox input to clear.
+      WaitForInputCleared(kSidePanelId,
+                          /*continue_across_navigation=*/true));
+}
+
+// Doesn't click #voiceSearchButton (would invoke
+// webkitSpeechRecognition.start).
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       IntegrationVoiceLightweight) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
+  const DeepQuery kVoiceButtonPath = {"contextual-tasks-app", "#composebox",
+                                      "#composebox", "#voiceSearchButton"};
+  const DeepQuery kVoiceSearchComponentPath = {
+      "contextual-tasks-app", "#composebox", "#composebox", "#voiceSearch"};
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0),
+      SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInCurrentTab(GURL(kCujInterceptionUrl)),
+      SimulateThreadLinkAndOpenPanel(kSidePanelId),
+
+      EnsureVoiceSearchAvailable(kSidePanelId),
+      WaitForElementExists(kSidePanelId, kVoiceButtonPath),
+      WaitForElementExists(kSidePanelId, kVoiceSearchComponentPath),
+
+      DispatchVoiceSearchFinalResult(kSidePanelId, "test query"),
+      VerifyMultipleSubmitQueryMessage("test query",
+                                       /*expected_viewport_image_count=*/0,
+                                       /*expected_upload_image_count=*/0,
+                                       /*expected_upload_file_count=*/0,
+                                       /*expected_added_input_names=*/{}));
+}
+
 }  // namespace contextual_tasks

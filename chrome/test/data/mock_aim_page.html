@@ -1,10 +1,22 @@
 <!DOCTYPE html>
 <html>
 <body>
+  <!-- Fake thread link used by interactive tests to drive the real
+       tab->side-panel transition (OnThreadLinkClicked) -->
+  <a id="threadLink" href="https://www.google.com/search?q=thread">Thread</a>
   <script>
+    let webuiSource = null;
+    let webuiOrigin = null;
     window.receivedMessages = [];
     window.addEventListener('message', (event) => {
       window.receivedMessages.push(event.data);
+      // Remember the WebUI window so a thread-link click can post back to it;
+      // the <webview> guest is isolated, so window.parent is not the embedder.
+      if (event.source) {
+        webuiSource = event.source;
+        webuiOrigin = event.origin;
+        window.__ctWebuiSourceReady = true;
+      }
       // Only send the handshake response when a HandshakePing message
       // (identified by protobuf tag byte 10) is received.
       if (event.source && new Uint8Array(event.data)[0] === 10) {
@@ -14,6 +26,23 @@
         const response = new Uint8Array([10, 0]);
         event.source.postMessage(response.buffer, event.origin);
       }
+    });
+
+    // Simulate the AIM page notifying the WebUI of a thread-link click via an
+    // AIMToClientMessage{notify_link_clicked}, which drives OnThreadLinkClicked
+    // and the tab->side-panel transfer. A plain navigation would not do this.
+    document.getElementById('threadLink').addEventListener('click', (event) => {
+      event.preventDefault();
+      if (!webuiSource) {
+        return;
+      }
+      const urlBytes =
+          new TextEncoder().encode('https://www.google.com/search?q=thread');
+      // NotifyLinkClicked{url=1, link_behavior=2=COBROWSE} inside
+      // AimToClientMessage{notify_link_clicked=14}. Single-byte length varints.
+      const inner = [0x0a, urlBytes.length, ...urlBytes, 0x10, 0x01];
+      const payload = new Uint8Array([0x72, inner.length, ...inner]);
+      webuiSource.postMessage(payload.buffer, webuiOrigin);
     });
   </script>
 </body>

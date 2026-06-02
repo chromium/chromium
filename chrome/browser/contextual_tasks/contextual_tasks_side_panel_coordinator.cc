@@ -395,7 +395,8 @@ void ContextualTasksSidePanelCoordinator::PrimaryPageChanged(
     content::Page& page) {
   // Hide panel if contextual tasks pages is loaded on tab.
   GURL url = page.GetMainDocument().GetLastCommittedURL();
-  if (ui_service_->IsContextualTasksUrl(url)) {
+  if (ui_service_->IsContextualTasksUrl(url) &&
+      !suppress_hide_on_contextual_tasks_url_for_testing_) {
     UpdateOpenState(/*is_open=*/false);
     Hide();
   }
