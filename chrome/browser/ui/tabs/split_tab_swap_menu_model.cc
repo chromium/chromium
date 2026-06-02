@@ -46,17 +46,18 @@ bool SplitTabSwapMenuModel::IsItemForCommandIdDynamic(int command_id) const {
 std::u16string SplitTabSwapMenuModel::GetLabelForCommandId(
     int command_id) const {
   const CommandId id = static_cast<CommandId>(command_id);
+  const auto layout = GetSplitLayout();
+  const bool is_side_by_side =
+      !layout.has_value() || *layout == split_tabs::SplitTabLayout::kSideBySide;
 
   if (id == CommandId::kSwapStartTab) {
-    return l10n_util::GetStringUTF16(
-        GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
-            ? IDS_SPLIT_TAB_SWAP_LEFT_VIEW
-            : IDS_SPLIT_TAB_SWAP_TOP_VIEW);
+    return l10n_util::GetStringUTF16(is_side_by_side
+                                         ? IDS_SPLIT_TAB_SWAP_LEFT_VIEW
+                                         : IDS_SPLIT_TAB_SWAP_TOP_VIEW);
   } else if (id == CommandId::kSwapEndTab) {
-    return l10n_util::GetStringUTF16(
-        GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
-            ? IDS_SPLIT_TAB_SWAP_RIGHT_VIEW
-            : IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW);
+    return l10n_util::GetStringUTF16(is_side_by_side
+                                         ? IDS_SPLIT_TAB_SWAP_RIGHT_VIEW
+                                         : IDS_SPLIT_TAB_SWAP_BOTTOM_VIEW);
   } else {
     NOTREACHED() << "There are no other commands that are dynamic so this case "
                     "should not be reached.";
@@ -67,14 +68,18 @@ ui::ImageModel SplitTabSwapMenuModel::GetIconForCommandId(
     int command_id) const {
   const CommandId id = static_cast<CommandId>(command_id);
   const gfx::VectorIcon* icon = nullptr;
+  const auto layout = GetSplitLayout();
+  const bool is_side_by_side =
+      !layout.has_value() || *layout == split_tabs::SplitTabLayout::kSideBySide;
+
   if (id == CommandId::kSwapStartTab) {
-    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
+    icon = is_side_by_side
                ? &(features::IsRoundedIconsEnabled() ? kSplitSceneLeftIcon
                                                      : kSplitSceneLeftOldIcon)
                : &(features::IsRoundedIconsEnabled() ? kSplitSceneUpIcon
                                                      : kSplitSceneUpOldIcon);
   } else if (id == CommandId::kSwapEndTab) {
-    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
+    icon = is_side_by_side
                ? &(features::IsRoundedIconsEnabled() ? kSplitSceneRightIcon
                                                      : kSplitSceneRightOldIcon)
                : &(features::IsRoundedIconsEnabled() ? kSplitSceneDownIcon
@@ -87,9 +92,15 @@ ui::ImageModel SplitTabSwapMenuModel::GetIconForCommandId(
 
 void SplitTabSwapMenuModel::ExecuteCommand(int command_id, int event_flags) {
   const CommandId id = static_cast<CommandId>(command_id);
-  const split_tabs::SplitTabId split_id = GetSplitTabId();
+  const auto split_id = GetSplitTabId();
+  // It's possible that the active tab is no longer in a split layout after the
+  // menu was created. This primarily happens if a new tab was opened while the
+  // menu was live and stole focus.
+  if (!split_id) {
+    return;
+  }
   split_tabs::SplitTabData* const split_tab_data =
-      tab_strip_model_->GetSplitData(split_id);
+      tab_strip_model_->GetSplitData(*split_id);
   std::vector<tabs::TabInterface*> tabs_in_split = split_tab_data->ListTabs();
   CHECK_EQ(tabs_in_split.size(), 2U);
 
@@ -102,14 +113,19 @@ void SplitTabSwapMenuModel::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
-split_tabs::SplitTabId SplitTabSwapMenuModel::GetSplitTabId() const {
+std::optional<split_tabs::SplitTabId> SplitTabSwapMenuModel::GetSplitTabId()
+    const {
   tabs::TabInterface* const tab = tab_strip_model_->GetActiveTab();
-  CHECK(tab->IsSplit());
-  return tab->GetSplit().value();
+  return tab->GetSplit();
 }
 
-split_tabs::SplitTabLayout SplitTabSwapMenuModel::GetSplitLayout() const {
+std::optional<split_tabs::SplitTabLayout>
+SplitTabSwapMenuModel::GetSplitLayout() const {
+  const auto split_id = GetSplitTabId();
+  if (!split_id.has_value()) {
+    return std::nullopt;
+  }
   split_tabs::SplitTabVisualData* const visual_data =
-      tab_strip_model_->GetSplitData(GetSplitTabId())->visual_data();
+      tab_strip_model_->GetSplitData(*split_id)->visual_data();
   return visual_data->split_layout();
 }

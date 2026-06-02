@@ -555,6 +555,54 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithInactiveTab) {
   EXPECT_EQ(tab_strip_model->active_index(), 2);
 }
 
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithSplitActiveTabChanged) {
+  // Add 3 tabs to the browser.
+  chrome::NewTab(browser());
+  chrome::NewTab(browser());
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(tab_strip_model->count(), 3);
+
+  // Create a split with tabs 0 and 1. Tab 0 is active.
+  tab_strip_model->ActivateTabAt(0);
+  tab_strip_model->AddToNewSplit(
+      {1},
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(1).has_value());
+  EXPECT_FALSE(tab_strip_model->GetSplitForTab(2).has_value());
+  EXPECT_EQ(tab_strip_model->active_index(), 0);
+
+  // Create the TabMenuModel for tab 2. This instantiates SplitTabSwapMenuModel.
+  TabMenuModel menu(&delegate_,
+                    browser()->GetFeatures().tab_menu_model_delegate(),
+                    tab_strip_model, 2);
+  size_t submenu_index =
+      menu.GetIndexOfCommandId(TabStripModel::CommandSwapWithActiveSplit)
+          .value();
+  ui::SimpleMenuModel* submenu =
+      static_cast<ui::SimpleMenuModel*>(menu.GetSubmenuModelAt(submenu_index));
+
+  // Now, activate tab 2 (non-split tab) to simulate focus change.
+  tab_strip_model->ActivateTabAt(2);
+  EXPECT_FALSE(tab_strip_model->GetActiveTab()->IsSplit());
+
+  // Trigger the swap start tab command from the submenu.
+  // It should not crash and should be a no-op because the active tab is no
+  // longer split.
+  submenu->ActivatedAt(static_cast<size_t>(
+      submenu
+          ->GetIndexOfCommandId(
+              static_cast<int>(SplitTabSwapMenuModel::CommandId::kSwapStartTab))
+          .value()));
+
+  // Verify that the split state did not change (tabs 0 and 1 are still split,
+  // tab 2 is not).
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(tab_strip_model->GetSplitForTab(1).has_value());
+  EXPECT_FALSE(tab_strip_model->GetSplitForTab(2).has_value());
+}
+
 class TabMenuModelGlicMultiTabTest : public TabMenuModelBrowserTest {
  public:
   TabMenuModelGlicMultiTabTest() {

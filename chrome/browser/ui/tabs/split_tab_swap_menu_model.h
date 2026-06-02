@@ -39,8 +39,8 @@ class SplitTabSwapMenuModel : public ui::SimpleMenuModel,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  split_tabs::SplitTabId GetSplitTabId() const;
-  split_tabs::SplitTabLayout GetSplitLayout() const;
+  std::optional<split_tabs::SplitTabId> GetSplitTabId() const;
+  std::optional<split_tabs::SplitTabLayout> GetSplitLayout() const;
 
   raw_ptr<TabStripModel> tab_strip_model_ = nullptr;
   int tab_index_;
