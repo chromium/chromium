@@ -90,10 +90,10 @@ void SidePanelCoordinatorAndroid::NotifyOpenAnimationFinished(JNIEnv* env) {
 
   if (pending_replaced_entry_) {
     pending_replaced_entry_->OnEntryHidden();
-    pending_replaced_entry_->OnEntryHiddenWithReason(pending_hide_reason_);
+    CHECK(pending_hide_reason_);
+    pending_replaced_entry_->OnEntryHiddenWithReason(*pending_hide_reason_);
     pending_replaced_entry_ = nullptr;
-    // TODO(crbug.com/494001968): Set `pending_hide_reason_` as
-    // std::nullopt or kUnknown
+    pending_hide_reason_ = std::nullopt;
   }
 
   state_ = SidePanelState::kShown;
@@ -118,7 +118,9 @@ void SidePanelCoordinatorAndroid::NotifyCloseAnimationFinished(JNIEnv* env) {
   // Now that the animation has completed, we can update our local state to be
   // closed, and trigger the entry hidden callbacks.
   entry->OnEntryHidden();
-  entry->OnEntryHiddenWithReason(pending_hide_reason_);
+  CHECK(pending_hide_reason_);
+  entry->OnEntryHiddenWithReason(*pending_hide_reason_);
+  pending_hide_reason_ = std::nullopt;
 
   // We need to explicitly reset the active entry for the "close side panel"
   // case.
@@ -199,7 +201,7 @@ void SidePanelCoordinatorAndroid::Close(SidePanelEntryHideReason hide_reason,
   pending_hide_reason_ = hide_reason;
 
   // TOOD(crbug.com/494001968): Handle suppressed animations case.
-  entry->OnEntryWillHide(pending_hide_reason_);
+  entry->OnEntryWillHide(*pending_hide_reason_);
   Java_SidePanelCoordinatorAndroidImpl_removeContentAndClose(
       AttachCurrentThread(), java_coordinator(), suppress_animations);
 }
@@ -473,7 +475,7 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
     pending_hide_reason_ = SidePanelEntryHideReason::kBackgrounded;
   }
 
-  pending_replaced_entry_->OnEntryWillHide(pending_hide_reason_);
+  pending_replaced_entry_->OnEntryWillHide(*pending_hide_reason_);
 
   // Now same as above, we set key before populate.
   SetCurrentKey(unique_key);

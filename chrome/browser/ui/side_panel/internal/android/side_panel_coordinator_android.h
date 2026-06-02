@@ -122,10 +122,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   SidePanelState state_ = SidePanelState::kClosed;
 
   // Tracks the hide reason for the current close operation.
-  // TODO(crbug.com/494001968): Consider using an optional or adding kUnknown.
-  // TODO(crbug.com/494001968): This may need to be a queue for many requests.
-  SidePanelEntryHideReason pending_hide_reason_ =
-      SidePanelEntryHideReason::kSidePanelClosed;
+  std::optional<SidePanelEntryHideReason> pending_hide_reason_;
 
   // A weak reference to the Java `SidePanelCoordinatorAndroid`, which is
   // the sole owner of the C++ `SidePanelCoordinatorAndroid`.
