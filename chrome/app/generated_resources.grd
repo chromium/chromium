@@ -641,7 +641,7 @@ are declared in tools/grit/grit_args.gni.
             &amp;Print...
           </message>
           <message name="IDS_CONTENT_CONTEXT_PRINT_SELECTION" desc="The name of the Print command in the content area context menu when there is a text selection.">
-            &amp;Print &quot;<ph name="SELECTION">$1<ex>selected text</ex></ph>&quot;
+            &amp;Print “<ph name="SELECTION">$1<ex>selected text</ex></ph>”
           </message>
           <message name="IDS_CONTENT_CONTEXT_VIEWPAGESOURCE" desc="The name of the View Page Source command in the content area context menu">
             &amp;View page source
@@ -659,7 +659,7 @@ are declared in tools/grit/grit_args.gni.
            Open in reading mode
           </message>
           <message name="IDS_CONTENT_CONTEXT_READING_MODE_SELECTION" desc="Context menu menuitem to open selected text in reading mode view">
-           Open &quot;<ph name="SELECTION">$1<ex>text</ex></ph>&quot; in reading mode
+           Open “<ph name="SELECTION">$1<ex>text</ex></ph>” in reading mode
           </message>
           <message name="IDS_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE" desc="Context menu item to listen to this page">
            Listen to this page
@@ -867,7 +867,7 @@ are declared in tools/grit/grit_args.gni.
             &amp;Copy
           </message>
           <message name="IDS_CONTENT_CONTEXT_COPY_SELECTION" desc="The name of the Copy command with selection in the content area context menu">
-            &amp;Copy "<ph name="SELECTION">$1<ex>text</ex></ph>"
+            &amp;Copy “<ph name="SELECTION">$1<ex>text</ex></ph>”
           </message>
           <message name="IDS_CONTENT_CONTEXT_PASTE" desc="The name of the Paste command in the content area context menu" meaning="'Paste' menu command in sentence case">
             &amp;Paste
@@ -915,7 +915,7 @@ are declared in tools/grit/grit_args.gni.
             &amp;Translate selection to <ph name="LANGUAGE">$1<ex>English</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE_SELECTION" desc="The name of the Translate command in the content area context menu when there is a text selection.">
-            &amp;Translate &quot;<ph name="SELECTION">$1<ex>text</ex></ph>&quot; to <ph name="LANGUAGE">$2<ex>English</ex></ph>
+            &amp;Translate “<ph name="SELECTION">$1<ex>text</ex></ph>” to <ph name="LANGUAGE">$2<ex>English</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFOR" desc="The name of the Search the Web for “string” command in the content area context menu">
             &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for “<ph name="SEARCH_TERMS">$2<ex>flowers</ex></ph>”
@@ -981,7 +981,7 @@ are declared in tools/grit/grit_args.gni.
             &amp;Print...
           </message>
           <message name="IDS_CONTENT_CONTEXT_PRINT_SELECTION" desc="In Title Case: The name of the Print command in the content area context menu when there is a text selection.">
-            &amp;Print &quot;<ph name="SELECTION">$1<ex>selected text</ex></ph>&quot;
+            &amp;Print “<ph name="SELECTION">$1<ex>selected text</ex></ph>”
           </message>
           <message name="IDS_CONTENT_CONTEXT_VIEWPAGESOURCE" desc="In Title Case: The name of the View Page Source command in the content area context menu">
             &amp;View Page Source
@@ -999,7 +999,7 @@ are declared in tools/grit/grit_args.gni.
            Open in Reading Mode
           </message>
           <message name="IDS_CONTENT_CONTEXT_READING_MODE_SELECTION" desc="In Title Case: Context menu menuitem to open selected text in reading mode view">
-           Open &quot;<ph name="SELECTION">$1<ex>text</ex></ph>&quot; in Reading Mode
+           Open “<ph name="SELECTION">$1<ex>text</ex></ph>” in Reading Mode
           </message>
           <message name="IDS_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE" desc="In Title Case: Context menu item to listen to this page">
            Listen to This Page
@@ -1207,7 +1207,7 @@ are declared in tools/grit/grit_args.gni.
             &amp;Copy
           </message>
           <message name="IDS_CONTENT_CONTEXT_COPY_SELECTION" desc="The name of the Copy command with selection in the content area context menu">
-            &amp;Copy "<ph name="SELECTION">$1<ex>text</ex></ph>"
+            &amp;Copy “<ph name="SELECTION">$1<ex>text</ex></ph>”
           </message>
           <!-- Paste and Match Style / Paste as Plain Text -->
           <if expr="is_macosx">
@@ -1269,7 +1269,7 @@ are declared in tools/grit/grit_args.gni.
             &amp;Translate Selection to <ph name="LANGUAGE">$1<ex>English</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE_SELECTION" desc="In Title Case: The name of the Translate command in the content area context menu when there is a text selection.">
-            &amp;Translate &quot;<ph name="SELECTION">$1<ex>text</ex></ph>&quot; to <ph name="LANGUAGE">$2<ex>English</ex></ph>
+            &amp;Translate “<ph name="SELECTION">$1<ex>text</ex></ph>” to <ph name="LANGUAGE">$2<ex>English</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHWEBFOR" desc="In Title Case: The name of the Search the Web for “string” command in the content area context menu">
             &amp;Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for “<ph name="SEARCH_TERMS">$2<ex>flowers</ex></ph>”

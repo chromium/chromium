@@ -1796,10 +1796,15 @@ TEST_F(RenderViewContextMenuPrefsTest, GetIsNewFeatureAtValue) {
                              kTestUnregisteredFeature},
                             {});
 
-  UserEducationServiceFactory::GetForBrowserContext(profile())
-      ->new_badge_registry()
-      ->RegisterFeature({user_education::features::kNewBadgeTestFeature,
-                         user_education::Metadata()});
+  auto* new_badge_registry =
+      UserEducationServiceFactory::GetForBrowserContext(profile())
+          ->new_badge_registry();
+  if (!new_badge_registry->IsFeatureRegistered(
+          user_education::features::kNewBadgeTestFeature)) {
+    new_badge_registry->RegisterFeature(
+        {user_education::features::kNewBadgeTestFeature,
+         user_education::Metadata()});
+  }
 
   // Initialize the New Badge controller, so that the new badge data for this
   // profile is set.
@@ -2098,6 +2103,9 @@ TEST_P(RenderViewContextMenuReadAnythingTest, MAYBE_AppendPageItems) {
   if (enable_region_search) {
     SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                          /*supports_image_search=*/true);
+  } else {
+    SetUserSelectedDefaultSearchProvider("https://www.example.com",
+                                         /*supports_image_search=*/false);
   }
   menu.SetBrowser(GetBrowser());
   menu.Init();
@@ -2255,7 +2263,7 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest, CopySelectionTruncated) {
   size_t index =
       menu.menu_model().GetIndexOfCommandId(IDC_CONTENT_CONTEXT_COPY).value();
   std::u16string label = menu.menu_model().GetLabelAt(index);
-  EXPECT_EQ(label, u"&Copy \"Long text exceeding twen\x2026\"");
+  EXPECT_EQ(label, u"&Copy \x201CLong text exceeding twen\x2026\x201D");
 }
 
 TEST_F(RenderViewContextMenuMenuSimplificationTest, PasswordFieldRestricted) {
