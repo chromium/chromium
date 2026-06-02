@@ -27,6 +27,7 @@ import {BrowserProxyImpl, EventDispositionFlag, INVALID_NAVIGATION_CONTROLS_STAT
 import type {BrowserProxy, IconUpdate, NavigationControlsState, NavigationControlsStateListenerHandle} from './browser_proxy.js';
 import {IconTable} from './icon_table.js';
 import {MetricsRecorder} from './metrics_recorder.js';
+import {AppMenuIconType, AppMenuSeverity} from './toolbar_ui_api_data_model.mojom-webui.js';
 // clang-format off
 // Helper so tests can find what they needed when optimization is on.
 // This should probably be a separate file, but rollup support only
@@ -178,6 +179,15 @@ export class ToolbarAppElement extends AppElementBase {
     homeControlState: {
       shouldBeShown: false,
       isContextMenuVisible: false,
+    },
+    appMenuControlState: {
+      iconType: AppMenuIconType.kNone,
+      severity: AppMenuSeverity.kNone,
+      labelText: null,
+      accessibilityText: '',
+      tooltip: '',
+      isContextMenuVisible: false,
+      trailingMargin: 0,
     },
     locationBarState: {
       omniboxViewState: {

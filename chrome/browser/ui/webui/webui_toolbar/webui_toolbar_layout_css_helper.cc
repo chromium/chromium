@@ -32,6 +32,8 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
       return "--app-menu-profile-row-avatar-icon-size";
     case kAppMenuMaximumCharacterLength:
       return "--app-menu-maximum-character-length";
+    case kAppMenuButtonImageLabelPadding:
+      return "--app-menu-button-image-label-padding";
     case kBookmarkBarHeight:
       return "--bookmark-bar-height";
     case kBookmarkBarButtonHeight:

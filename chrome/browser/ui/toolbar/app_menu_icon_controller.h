@@ -46,6 +46,7 @@ class AppMenuIconController : public GlobalErrorObserver,
     // the highest-severity global error.
     Severity severity;
     bool use_primary_colors = false;
+    bool operator==(const TypeAndSeverity& other) const = default;
   };
 
   // Delegate interface for receiving icon update notifications.

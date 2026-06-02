@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
@@ -215,6 +216,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       reload_control_(this),
       split_tabs_control_(this),
       home_control_(this),
+      app_menu_control_(*this),
       avatar_control_(this, browser->GetBrowserForMigrationOnly()),
       location_bar_(std::move(location_bar)),
       back_control_(this, BackForwardButton::Direction::kBack),
@@ -253,6 +255,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
           /*permission_dashboard=*/nullptr);
   last_queued_state_.layout_constants_version = 0;
   last_queued_state_.back_forward_control_state = GetBackForwardState();
+  last_queued_state_.app_menu_control_state = app_menu_control_.GetState();
   last_queued_state_.avatar_control_state =
       toolbar_ui_api::mojom::AvatarControlState::New();
 
@@ -478,6 +481,9 @@ void WebUIToolbarWebView::HandleContextMenu(
         kPinnedActionSidePanelShowComments:
       pinned_toolbar_actions_.HandleContextMenu(menu_type, screen_rect, source);
       break;
+    case toolbar_ui_api::mojom::ContextMenuType::kAppMenu:
+      app_menu_control_.HandleContextMenu(screen_rect, source);
+      break;
     case toolbar_ui_api::mojom::ContextMenuType::kUnspecified:
       NOTREACHED() << "Unexpected ContextMenuType::kUnspecified.";
   }
@@ -568,9 +574,9 @@ void WebUIToolbarWebView::OnPreferredSizeChanged() {
   PreferredSizeChanged();
 }
 
-const std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>&
-WebUIToolbarWebView::GetPinnedToolbarActionsState() const {
-  return last_queued_state_.pinned_toolbar_actions_state;
+const toolbar_ui_api::mojom::NavigationControlsState&
+WebUIToolbarWebView::GetState() const {
+  return last_queued_state_;
 }
 
 browser_controls_api::BrowserControlsService::BrowserControlsServiceDelegate*
@@ -940,6 +946,14 @@ void WebUIToolbarWebView::OnHomeControlStateChanged(
     toolbar_ui_api::mojom::HomeControlStatePtr state) {
   if (*state != *last_queued_state_.home_control_state) {
     last_queued_state_.home_control_state = std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnAppMenuControlStateChanged(
+    toolbar_ui_api::mojom::AppMenuControlStatePtr state) {
+  if (*state != *last_queued_state_.app_menu_control_state) {
+    last_queued_state_.app_menu_control_state = std::move(state);
     PostPushNavigationState();
   }
 }

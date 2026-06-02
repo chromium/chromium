@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/view_class_properties.h"
 
@@ -98,6 +99,29 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
 
 void AppMenuButton::SetMenuTimerForTesting(base::ElapsedTimer timer) {
   menu_->SetTimerForTesting(std::move(timer));  // IN-TEST
+}
+
+bool AppMenuButton::HasFocus() const {
+  return views::View::HasFocus();
+}
+
+void AppMenuButton::Focus(views::AccessiblePaneView* pane) {
+  pane->SetPaneFocus(this);
+}
+
+void AppMenuButton::SetTypeAndSeverity(
+    AppMenuIconController::TypeAndSeverity type_and_severity) {
+  // Empty default implementation. BrowserAppMenuButton overrides this to
+  // handle update severity badges, while WebAppMenuButton does not need
+  // this functionality.
+}
+
+void AppMenuButton::SetTrailingMargin(int margin) {
+  ToolbarButton::SetTrailingMargin(margin);
+}
+
+views::View* AppMenuButton::GetFocusablePaneView() {
+  return this;
 }
 
 BEGIN_METADATA(AppMenuButton)

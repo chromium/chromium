@@ -47,6 +47,12 @@ class AppMenuButton : public ToolbarButton, public AppMenuControl {
   void ShowMenu() override;
   void AddObserver(AppMenuButtonObserver* observer) override;
   void RemoveObserver(AppMenuButtonObserver* observer) override;
+  bool HasFocus() const override;
+  void Focus(views::AccessiblePaneView* pane) override;
+  void SetTypeAndSeverity(
+      AppMenuIconController::TypeAndSeverity type_and_severity) override;
+  void SetTrailingMargin(int margin) override;
+  views::View* GetFocusablePaneView() override;
 
   views::MenuButtonController* menu_button_controller() const {
     return menu_button_controller_;

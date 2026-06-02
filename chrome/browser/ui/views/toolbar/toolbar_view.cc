@@ -243,6 +243,13 @@ bool IsPositionInWindowCaptionForView(const views::View* view,
   return true;
 }
 
+void SetRefreshMargins(views::View* button, bool expanded) {
+  button->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(0, expanded ? kBrowserAppMenuRefreshExpandedMargin
+                                  : kBrowserAppMenuRefreshCollapsedMargin));
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -615,14 +622,18 @@ void ToolbarView::Init() {
   overflow_button_ = AddChildView(std::make_unique<OverflowButton>());
   overflow_button_->SetVisible(false);
 
-  auto app_menu_button = std::make_unique<BrowserAppMenuButton>(this);
-  app_menu_button->SetFlipCanvasOnPaintForRTLUI(true);
-  app_menu_button->GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_APP));
-  app_menu_button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_APPMENU_TOOLTIP));
-  app_menu_button->SetID(VIEW_ID_APP_MENU);
-  app_menu_button_ = AddChildView(std::move(app_menu_button));
+  // WebUI app menu button handles these internally, so no need to set these
+  // properties here, and the control is added as part of the WebUI toolbar.
+  if (!features::IsWebUIAppMenuButtonEnabled()) {
+    auto app_menu_button = std::make_unique<BrowserAppMenuButton>(this);
+    app_menu_button->SetFlipCanvasOnPaintForRTLUI(true);
+    app_menu_button->GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_ACCNAME_APP));
+    app_menu_button->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_APPMENU_TOOLTIP));
+    app_menu_button->SetID(VIEW_ID_APP_MENU);
+    app_menu_button_ = AddChildView(std::move(app_menu_button));
+  }
 
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
       contextual_tasks::GetExpandButtonOption() ==
@@ -1242,13 +1253,15 @@ void ToolbarView::ResetTabState(WebContents* tab) {
 }
 
 void ToolbarView::SetPaneFocusAndFocusAppMenu() {
-  if (app_menu_button_) {
-    SetPaneFocus(app_menu_button_);
+  AppMenuControl* app_menu_control = GetAppMenuControl();
+  if (app_menu_control) {
+    app_menu_control->Focus(GetAsAccessiblePaneView());
   }
 }
 
 bool ToolbarView::GetAppMenuFocused() const {
-  return app_menu_button_ && app_menu_button_->HasFocus();
+  const AppMenuControl* app_menu_control = GetAppMenuControl();
+  return app_menu_control && app_menu_control->HasFocus();
 }
 
 void ToolbarView::ShowIntentPickerBubble(
@@ -1632,31 +1645,20 @@ void ToolbarView::LayoutCommon() {
     interior_margin.set_left(0);
   }
 
-  if (app_menu_button_->IsLabelPresentAndVisible()) {
-    // The interior margin in an expanded state should be more than in a
-    // collapsed state.
-    interior_margin.set_right(interior_margin.right() + 1);
-    app_menu_button_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::VH(0, kBrowserAppMenuRefreshExpandedMargin));
-  } else {
-    app_menu_button_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::VH(0, kBrowserAppMenuRefreshCollapsedMargin));
+  if (app_menu_button_) {
+    const bool expanded = app_menu_button_->IsLabelPresentAndVisible();
+    if (expanded) {
+      // The interior margin in an expanded state should be more than in a
+      // collapsed state.
+      interior_margin.set_right(interior_margin.right() + 1);
+    }
+    SetRefreshMargins(app_menu_button_, expanded);
   }
 
   // The margins of the `avatar_` uses the same constants as the
   // `app_menu_button_`.
   if (avatar_) {
-    if (avatar_->IsLabelPresentAndVisible()) {
-      avatar_->SetProperty(
-          views::kMarginsKey,
-          gfx::Insets::VH(0, kBrowserAppMenuRefreshExpandedMargin));
-    } else {
-      avatar_->SetProperty(
-          views::kMarginsKey,
-          gfx::Insets::VH(0, kBrowserAppMenuRefreshCollapsedMargin));
-    }
+    SetRefreshMargins(avatar_, avatar_->IsLabelPresentAndVisible());
   }
 
   layout_manager_->SetInteriorMargin(interior_margin);
@@ -1672,8 +1674,10 @@ void ToolbarView::LayoutCommon() {
   } else {
     back_->SetLeadingMargin(margin);
   }
-  app_menu_button_->SetTrailingMargin(
-      extend_buttons_to_edge ? interior_margin.right() : 0);
+
+  const int trailing_margin =
+      extend_buttons_to_edge ? interior_margin.right() : 0;
+  GetAppMenuControl()->SetTrailingMargin(trailing_margin);
 
   if (toolbar_divider_ && extensions_container_) {
     views::ManualLayoutUtil(layout_manager_)
@@ -1685,14 +1689,10 @@ void ToolbarView::LayoutCommon() {
 // AppMenuIconController::Delegate:
 void ToolbarView::UpdateTypeAndSeverity(
     AppMenuIconController::TypeAndSeverity type_and_severity) {
-  // There's no app menu in tabless windows.
-  if (!app_menu_button_) {
-    return;
+  AppMenuControl* app_menu_control = GetAppMenuControl();
+  if (app_menu_control) {
+    app_menu_control->SetTypeAndSeverity(type_and_severity);
   }
-
-  app_menu_button_->GetViewAccessibility().SetName(
-      AppMenuIconController::GetIconAccessibleName(type_and_severity.type));
-  app_menu_button_->SetTypeAndSeverity(type_and_severity);
 }
 
 ExtensionsToolbarDesktop* ToolbarView::GetExtensionsToolbarDesktop() {
@@ -1746,6 +1746,16 @@ IconLabelBubbleView* ToolbarView::GetPageActionView(
 }
 
 AppMenuControl* ToolbarView::GetAppMenuControl() {
+  if (features::IsWebUIAppMenuButtonEnabled() && toolbar_webview_) {
+    return toolbar_webview_->GetAppMenuControl();
+  }
+  return app_menu_button_;
+}
+
+const AppMenuControl* ToolbarView::GetAppMenuControl() const {
+  if (features::IsWebUIAppMenuButtonEnabled() && toolbar_webview_) {
+    return toolbar_webview_->GetAppMenuControl();
+  }
   return app_menu_button_;
 }
 

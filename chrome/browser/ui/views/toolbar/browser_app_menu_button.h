@@ -33,8 +33,6 @@ class BrowserAppMenuButton : public AppMenuButton {
 
   // Returns true if a text is set and is visible.
   bool IsLabelPresentAndVisible() const;
-  void SetTypeAndSeverity(
-      AppMenuIconController::TypeAndSeverity type_and_severity);
 
   // Shows the app menu. |run_types| denotes the MenuRunner::RunTypes associated
   // with the menu.
@@ -52,6 +50,8 @@ class BrowserAppMenuButton : public AppMenuButton {
   void UpdateInkdrop();
 
   // AppMenuButton:
+  void SetTypeAndSeverity(
+      AppMenuIconController::TypeAndSeverity type_and_severity) override;
   void OnMenuClosed() override;
   void OnThemeChanged() override;
   // Updates the presentation according to |severity_| and the theme provider.

@@ -16,6 +16,10 @@ enum class LayoutConstant {
   // The maximum character length for strings in the app menu.
   kAppMenuMaximumCharacterLength,
 
+  // The horizontal padding between the image and the title of the app menu
+  // button.
+  kAppMenuButtonImageLabelPadding,
+
   // The height of Bookmarks Bar when attached to the toolbar. The height of the
   // Bookmarks Bar is larger than the kBookmarkBarHeight by a fixed
   // amount.

@@ -53,6 +53,10 @@ class MockWebUIToolbarControlDelegate
               (toolbar_ui_api::mojom::HomeControlStatePtr state),
               (override));
   MOCK_METHOD(void,
+              OnAppMenuControlStateChanged,
+              (toolbar_ui_api::mojom::AppMenuControlStatePtr state),
+              (override));
+  MOCK_METHOD(void,
               OnOmniboxViewStateChanged,
               (toolbar_ui_api::mojom::OmniboxViewStatePtr state),
               (override));
@@ -78,11 +82,10 @@ class MockWebUIToolbarControlDelegate
       OnContentSettingChanged,
       (std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr> state),
       (override));
-  MOCK_METHOD(
-      const std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>&,
-      GetPinnedToolbarActionsState,
-      (),
-      (const override));
+  MOCK_METHOD(const toolbar_ui_api::mojom::NavigationControlsState&,
+              GetState,
+              (),
+              (const override));
   MOCK_METHOD(void,
               OnAvatarControlStateChanged,
               (toolbar_ui_api::mojom::AvatarControlStatePtr),

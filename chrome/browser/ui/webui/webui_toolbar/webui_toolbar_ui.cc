@@ -95,6 +95,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
                      features::IsWebUIBackForwardButtonEnabled());
   source->AddBoolean("enablePinnedToolbarActions",
                      features::IsWebUIPinnedToolbarActionsEnabled());
+  source->AddBoolean("enableAppMenuButton",
+                     features::IsWebUIAppMenuButtonEnabled());
   source->AddBoolean("enableAvatarButton",
                      features::IsWebUIAvatarButtonEnabled());
   source->AddBoolean("enableExtensionsContainer",
@@ -294,7 +296,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        kReloadButtonElementId, kToolbarSplitTabsToolbarButtonElementId,
        kToolbarHomeButtonElementId, kToolbarBackButtonElementId,
        kToolbarForwardButtonElementId, kSharedTabGroupFeedbackElementId,
-       kSharedTabGroupCommentsActionElementId,
+       kToolbarAppMenuButtonElementId, kSharedTabGroupCommentsActionElementId,
        kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
        kPinnedToolbarActionShowSidePanelBookmarksElementId,
        kPinnedToolbarActionSendTabToSelfElementId,

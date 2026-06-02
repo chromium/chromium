@@ -86,6 +86,8 @@ enum ContextMenuType {
   kPinnedActionSidePanelShowMerchantTrust,
   kPinnedActionSendSharedTabGroupFeedback,
   kPinnedActionSidePanelShowComments,
+  // App Menu Button
+  kAppMenu,
 };
 
 struct BackForwardButtonState {
@@ -188,6 +190,48 @@ struct BackForwardControlState {
 struct HomeControlState {
   bool should_be_shown;
   bool is_context_menu_visible;
+};
+
+// The type of icon state for the app menu. These values drive the visual
+// "chip" state (colored background + label) but do not change the underlying
+// three-dot icon glyph.
+// (See AppMenuIconController::IconType in
+//  chrome/browser/ui/toolbar/app_menu_icon_controller.h)
+enum AppMenuIconType {
+  kNone,
+  kUpgradeNotification,
+  kGlobalError, // e.g. sign-in error.
+};
+
+// The severity level of the app menu icon (e.g., for updates or errors).
+// This determines the background color and text color of the chip in WebUI.
+// (See AppMenuIconController::Severity in
+//  chrome/browser/ui/toolbar/app_menu_icon_controller.h)
+enum AppMenuSeverity {
+  kNone,
+  kLow,
+  kMedium,
+  kHigh,
+};
+
+// The state of the app menu control.
+struct AppMenuControlState {
+  AppMenuIconType icon_type;
+  AppMenuSeverity severity;
+
+  // Text to show in control, if any.
+  mojo_base.mojom.String16? label_text;
+
+  // Accessible name (aria-label).
+  mojo_base.mojom.String16 accessibility_text;
+
+  // Tooltip text to display on hover.
+  mojo_base.mojom.String16 tooltip;
+
+  bool is_context_menu_visible;
+
+  // The trailing margin for the app menu control.
+  int32 trailing_margin;
 };
 
 struct AvatarControlState {
@@ -524,6 +568,7 @@ struct NavigationControlsState {
   SplitTabsControlState split_tabs_control_state;
   BackForwardControlState back_forward_control_state;
   HomeControlState home_control_state;
+  AppMenuControlState app_menu_control_state;
   AvatarControlState avatar_control_state;
   LocationBarState location_bar_state;
   // List of pinned toolbar action button states. Order corresponds to order

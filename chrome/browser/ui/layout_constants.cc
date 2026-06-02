@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
@@ -23,6 +24,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 24;
     case LayoutConstant::kAppMenuMaximumCharacterLength:
       return 30;
+    case LayoutConstant::kAppMenuButtonImageLabelPadding:
+      return features::IsToolbarGlowUpEnabled() ? 4 : 2;
     case LayoutConstant::kBookmarkBarHeight: {
       // The fixed margin ensures the bookmark buttons appear centered relative
       // to the white space above and below.

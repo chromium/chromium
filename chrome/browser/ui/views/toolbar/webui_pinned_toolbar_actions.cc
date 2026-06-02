@@ -441,7 +441,7 @@ void WebUIPinnedToolbarActions::HandleContextMenu(
 int WebUIPinnedToolbarActions::GetWidth() const {
   const int gap = GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
   int width = 0;
-  for (const auto& it : delegate_->GetPinnedToolbarActionsState()) {
+  for (const auto& it : delegate_->GetState().pinned_toolbar_actions_state) {
     if (it->action == toolbar_ui_api::mojom::PinnedToolbarAction::kDivider) {
       // Matches toolbar_divider.css
       width += GetLayoutConstant(LayoutConstant::kToolbarDividerWidth) +

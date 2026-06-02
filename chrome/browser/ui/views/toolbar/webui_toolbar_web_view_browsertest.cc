@@ -1687,6 +1687,25 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class WebUIAppMenuBrowserTest : public WebUIToolbarWebViewBrowserTest {
+ public:
+  WebUIAppMenuBrowserTest()
+      : WebUIToolbarWebViewBrowserTest(
+            {features::kInitialWebUI, features::kWebUIAppMenuButton},
+            {}) {}
+};
+
+// Basic test for the WebUI App Menu state.
+IN_PROC_BROWSER_TEST_F(WebUIAppMenuBrowserTest, AppMenuState) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+  const auto& state = webui_toolbar_view->GetState().app_menu_control_state;
+  ASSERT_TRUE(state);
+  EXPECT_EQ(state->severity, toolbar_ui_api::mojom::AppMenuSeverity::kNone);
+  EXPECT_FALSE(state->accessibility_text.empty());
+  EXPECT_FALSE(state->tooltip.empty());
+}
+
 struct ButtonVisibilityToggleTestParam {
   const char* test_name;
   const char* button_acc_name_key;

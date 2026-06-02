@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
+#include "chrome/browser/ui/views/toolbar/webui_app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_back_forward_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_home_control.h"
@@ -88,6 +89,8 @@ class WebUIToolbarControlDelegate {
   virtual void OnBackForwardStateChanged() = 0;
   virtual void OnHomeControlStateChanged(
       toolbar_ui_api::mojom::HomeControlStatePtr state) = 0;
+  virtual void OnAppMenuControlStateChanged(
+      toolbar_ui_api::mojom::AppMenuControlStatePtr state) = 0;
   virtual void OnOmniboxViewStateChanged(
       toolbar_ui_api::mojom::OmniboxViewStatePtr state) = 0;
   virtual void OnLocationBarFlagsChanged(
@@ -105,9 +108,9 @@ class WebUIToolbarControlDelegate {
   virtual void OnAvatarControlStateChanged(
       toolbar_ui_api::mojom::AvatarControlStatePtr state) = 0;
 
-  // Read the latest pinned toolbar actions state.
-  virtual const std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>&
-  GetPinnedToolbarActionsState() const = 0;
+  // Read the latest state.
+  virtual const toolbar_ui_api::mojom::NavigationControlsState& GetState()
+      const = 0;
 };
 
 // A view that displays one or more adjacent controls on the toolbar as a single
@@ -141,6 +144,10 @@ class WebUIToolbarWebView
     return &pinned_toolbar_actions_;
   }
   AvatarToolbarButtonInterface* GetAvatarToolbarButtonInterface();
+  WebUIAppMenuControl* GetAppMenuControl() { return &app_menu_control_; }
+  const WebUIAppMenuControl* GetAppMenuControl() const {
+    return &app_menu_control_;
+  }
 
   void SetBackButtonLeadingMargin(int margin);
   void SetBackForwardEnabled(int command_id, bool enabled);
@@ -259,6 +266,7 @@ class WebUIToolbarWebView
                            PressAndDragDownHomeButton);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarButtonPressAndDragTest,
                            PressAndDragDown);
+  FRIEND_TEST_ALL_PREFIXES(WebUIAppMenuBrowserTest, AppMenuState);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewHomeButtonBrowserTest,
                            DropFileOnHomeButtonAndUndo);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
@@ -280,6 +288,8 @@ class WebUIToolbarWebView
   void OnBackForwardStateChanged() override;
   void OnHomeControlStateChanged(
       toolbar_ui_api::mojom::HomeControlStatePtr state) override;
+  void OnAppMenuControlStateChanged(
+      toolbar_ui_api::mojom::AppMenuControlStatePtr state) override;
   void OnOmniboxViewStateChanged(
       toolbar_ui_api::mojom::OmniboxViewStatePtr state) override;
   void OnLocationBarFlagsChanged(
@@ -294,8 +304,8 @@ class WebUIToolbarWebView
   void OnContentSettingChanged(
       std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr> state)
       override;
-  const std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>&
-  GetPinnedToolbarActionsState() const override;
+  const toolbar_ui_api::mojom::NavigationControlsState& GetState()
+      const override;
   void OnAvatarControlStateChanged(
       toolbar_ui_api::mojom::AvatarControlStatePtr state) override;
 
@@ -401,6 +411,7 @@ class WebUIToolbarWebView
   WebUIReloadControl reload_control_;
   WebUISplitTabsControl split_tabs_control_;
   WebUIHomeControl home_control_;
+  WebUIAppMenuControl app_menu_control_;
   WebUIAvatarToolbarButton avatar_control_;
   // This is null if WebUILocationBar is off, or the window is in one of the
   // modes (e.g. popup) that don't use it yet.
