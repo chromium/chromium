@@ -3698,6 +3698,92 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/socket/stream_socket_close_reason.h:StreamSocketCloseReason) -->
 
+<enum name="TpmAlgorithm">
+  <int value="0" label="TPM_ALG_ERROR"/>
+  <int value="1" label="TPM_ALG_RSA"/>
+  <int value="3" label="TPM_ALG_TDES"/>
+  <int value="4" label="TPM_ALG_SHA1"/>
+  <int value="5" label="TPM_ALG_HMAC"/>
+  <int value="6" label="TPM_ALG_AES"/>
+  <int value="7" label="TPM_ALG_MGF1"/>
+  <int value="8" label="TPM_ALG_KEYEDHASH"/>
+  <int value="10" label="TPM_ALG_XOR"/>
+  <int value="11" label="TPM_ALG_SHA256"/>
+  <int value="12" label="TPM_ALG_SHA384"/>
+  <int value="13" label="TPM_ALG_SHA512"/>
+  <int value="14" label="TPM_ALG_SHA256_192"/>
+  <int value="16" label="TPM_ALG_NULL"/>
+  <int value="18" label="TPM_ALG_SM3_256"/>
+  <int value="19" label="TPM_ALG_SM4"/>
+  <int value="20" label="TPM_ALG_RSASSA"/>
+  <int value="21" label="TPM_ALG_RSAES"/>
+  <int value="22" label="TPM_ALG_RSAPSS"/>
+  <int value="23" label="TPM_ALG_OAEP"/>
+  <int value="24" label="TPM_ALG_ECDSA"/>
+  <int value="25" label="TPM_ALG_ECDH"/>
+  <int value="26" label="TPM_ALG_ECDAA"/>
+  <int value="27" label="TPM_ALG_SM2"/>
+  <int value="28" label="TPM_ALG_ECSCHNORR"/>
+  <int value="29" label="TPM_ALG_ECMQV"/>
+  <int value="32" label="TPM_ALG_KDF1_SP800_56A"/>
+  <int value="33" label="TPM_ALG_KDF2"/>
+  <int value="34" label="TPM_ALG_KDF1_SP800_108"/>
+  <int value="35" label="TPM_ALG_ECC"/>
+  <int value="37" label="TPM_ALG_SYMCIPHER"/>
+  <int value="38" label="TPM_ALG_CAMELLIA"/>
+  <int value="39" label="TPM_ALG_SHA3_256"/>
+  <int value="40" label="TPM_ALG_SHA3_384"/>
+  <int value="41" label="TPM_ALG_SHA3_512"/>
+  <int value="42" label="TPM_ALG_SHAKE128"/>
+  <int value="43" label="TPM_ALG_SHAKE256"/>
+  <int value="44" label="TPM_ALG_SHAKE256_192"/>
+  <int value="45" label="TPM_ALG_SHAKE256_256"/>
+  <int value="46" label="TPM_ALG_SHAKE256_512"/>
+  <int value="63" label="TPM_ALG_CMAC"/>
+  <int value="64" label="TPM_ALG_CTR"/>
+  <int value="65" label="TPM_ALG_OFB"/>
+  <int value="66" label="TPM_ALG_CBC"/>
+  <int value="67" label="TPM_ALG_CFB"/>
+  <int value="68" label="TPM_ALG_ECB"/>
+  <int value="80" label="TPM_ALG_CCM"/>
+  <int value="81" label="TPM_ALG_GCM"/>
+  <int value="82" label="TPM_ALG_KW"/>
+  <int value="83" label="TPM_ALG_KWP"/>
+  <int value="84" label="TPM_ALG_EAX"/>
+  <int value="96" label="TPM_ALG_EDDSA"/>
+  <int value="97" label="TPM_ALG_EDDSA_PH"/>
+  <int value="112" label="TPM_ALG_LMS"/>
+  <int value="113" label="TPM_ALG_XMSS"/>
+</enum>
+
+<!-- LINT.IfChange(TpmCertifyParseResult) -->
+
+<enum name="TpmCertifyParseResult">
+  <int value="0" label="Ok"/>
+  <int value="1" label="BufferTooSmall"/>
+  <int value="2" label="TrailingBytes"/>
+  <int value="3" label="TpmErrorResponse"/>
+  <int value="4" label="BadMagicNumber"/>
+  <int value="5" label="WrongType"/>
+  <int value="6" label="NonceMismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//crypto/tpm.rs:ParseResult) -->
+
+<!-- LINT.IfChange(TpmCertifyVerifyResult) -->
+
+<enum name="TpmCertifyVerifyResult">
+  <int value="0" label="Ok"/>
+  <int value="1" label="BufferTooSmall"/>
+  <int value="2" label="TrailingBytes"/>
+  <int value="3" label="UnsupportedSignatureAlgorithm"/>
+  <int value="4" label="UnsupportedHashAlgorithm"/>
+  <int value="5" label="InvalidPublicKey"/>
+  <int value="6" label="InvalidSignature"/>
+</enum>
+
+<!-- LINT.ThenChange(//crypto/tpm.rs:VerificationResult) -->
+
 <enum name="TPMSupport">
   <int value="0" label="None"/>
   <int value="1" label="RSA"/>
@@ -3885,12 +3971,140 @@ Called by update_net_trust_anchors.py.-->
 
 <enum name="Win32TpmErrorCodes">
 <!-- Source:
-     https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-6
+     https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-6 and
+     https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-4 (for NTE* errors)
      with some amendments-->
 
+  <int value="-2146893823" label="NTE_BAD_UID">Bad UID.</int>
+  <int value="-2146893822" label="NTE_BAD_HASH">Bad hash.</int>
+  <int value="-2146893821" label="NTE_BAD_KEY">Bad key.</int>
+  <int value="-2146893820" label="NTE_BAD_LEN">Bad length.</int>
+  <int value="-2146893819" label="NTE_BAD_DATA">Bad data.</int>
+  <int value="-2146893818" label="NTE_BAD_SIGNATURE">Invalid signature.</int>
+  <int value="-2146893817" label="NTE_BAD_VER">Bad version of provider.</int>
+  <int value="-2146893816" label="NTE_BAD_ALGID">
+    Invalid algorithm specified.
+  </int>
+  <int value="-2146893815" label="NTE_BAD_FLAGS">Invalid flags specified.</int>
+  <int value="-2146893814" label="NTE_BAD_TYPE">Invalid type specified.</int>
+  <int value="-2146893813" label="NTE_BAD_KEY_STATE">
+    Key not valid for use in specified state.
+  </int>
+  <int value="-2146893812" label="NTE_BAD_HASH_STATE">
+    Hash not valid for use in specified state.
+  </int>
+  <int value="-2146893811" label="NTE_NO_KEY">Key does not exist.</int>
+  <int value="-2146893810" label="NTE_NO_MEMORY">
+    Insufficient memory available for the operation.
+  </int>
+  <int value="-2146893809" label="NTE_EXISTS">Object already exists.</int>
   <int value="-2146893808" label="NTE_PERM">Access denied.</int>
+  <int value="-2146893807" label="NTE_NOT_FOUND">Object was not found.</int>
+  <int value="-2146893806" label="NTE_DOUBLE_ENCRYPT">
+    Data already encrypted.
+  </int>
+  <int value="-2146893805" label="NTE_BAD_PROVIDER">
+    Invalid provider specified.
+  </int>
+  <int value="-2146893804" label="NTE_BAD_PROV_TYPE">
+    Invalid provider type specified.
+  </int>
+  <int value="-2146893803" label="NTE_BAD_PUBLIC_KEY">
+    Provider's public key is invalid.
+  </int>
+  <int value="-2146893802" label="NTE_BAD_KEYSET">Key set does not exist.</int>
+  <int value="-2146893801" label="NTE_PROV_TYPE_NOT_DEF">
+    Provider type not defined.
+  </int>
+  <int value="-2146893800" label="NTE_PROV_TYPE_ENTRY_BAD">
+    The provider type, as registered, is invalid.
+  </int>
+  <int value="-2146893799" label="NTE_KEYSET_NOT_DEF">
+    The key set is not defined.
+  </int>
+  <int value="-2146893798" label="NTE_KEYSET_ENTRY_BAD">
+    The key set, as registered, is invalid.
+  </int>
+  <int value="-2146893797" label="NTE_PROV_TYPE_NO_MATCH">
+    Provider type does not match registered value.
+  </int>
+  <int value="-2146893796" label="NTE_SIGNATURE_FILE_BAD">
+    The digital signature file is corrupt.
+  </int>
+  <int value="-2146893795" label="NTE_PROVIDER_DLL_FAIL">
+    Provider DLL failed to initialize correctly.
+  </int>
+  <int value="-2146893794" label="NTE_PROV_DLL_NOT_FOUND">
+    Provider DLL could not be found.
+  </int>
+  <int value="-2146893793" label="NTE_BAD_KEYSET_PARAM">
+    The keyset parameter is invalid.
+  </int>
+  <int value="-2146893792" label="NTE_FAIL">An internal error occurred.</int>
+  <int value="-2146893791" label="NTE_SYS_ERR">A base error occurred.</int>
+  <int value="-2146893790" label="NTE_SILENT_CONTEXT">
+    Provider could not perform the action because the context was acquired as
+    silent.
+  </int>
+  <int value="-2146893789" label="NTE_TOKEN_KEYSET_STORAGE_FULL">
+    The security token does not have storage space available for an additional
+    container.
+  </int>
+  <int value="-2146893788" label="NTE_TEMPORARY_PROFILE">
+    The profile for the user is a temporary profile.
+  </int>
+  <int value="-2146893787" label="NTE_FIXEDPARAMETER">
+    The key parameters could not be set because the configuration service
+    provider (CSP) uses fixed parameters.
+  </int>
+  <int value="-2146893786" label="NTE_INVALID_HANDLE">
+    The supplied handle is invalid.
+  </int>
   <int value="-2146893785" label="NTE_INVALID_PARAMETER">
     The parameter is incorrect.
+  </int>
+  <int value="-2146893784" label="NTE_BUFFER_TOO_SMALL">
+    The buffer supplied to a function was too small.
+  </int>
+  <int value="-2146893783" label="NTE_NOT_SUPPORTED">
+    The requested operation is not supported.
+  </int>
+  <int value="-2146893782" label="NTE_NO_MORE_ITEMS">
+    No more data is available.
+  </int>
+  <int value="-2146893781" label="NTE_BUFFERS_OVERLAP">
+    The supplied buffers overlap incorrectly.
+  </int>
+  <int value="-2146893780" label="NTE_DECRYPTION_FAILURE">
+    The specified data could not be decrypted.
+  </int>
+  <int value="-2146893779" label="NTE_INTERNAL_ERROR">
+    An internal consistency check failed.
+  </int>
+  <int value="-2146893778" label="NTE_UI_REQUIRED">
+    This operation requires input from the user.
+  </int>
+  <int value="-2146893777" label="NTE_HMAC_NOT_SUPPORTED">
+    The cryptographic provider does not support Hash Message Authentication Code
+    (HMAC).
+  </int>
+  <int value="-2146893776" label="NTE_DEVICE_NOT_READY">
+    The device that is required by this cryptographic provider is not ready for
+    use.
+  </int>
+  <int value="-2146893775" label="NTE_AUTHENTICATION_IGNORED">
+    The dictionary attack mitigation is triggered and the provided authorization
+    was ignored by the provider.
+  </int>
+  <int value="-2146893774" label="NTE_VALIDATION_FAILED">
+    The validation of the provided data failed the integrity or signature
+    validation.
+  </int>
+  <int value="-2146893773" label="NTE_INCORRECT_PASSWORD">
+    Incorrect password.
+  </int>
+  <int value="-2146893772" label="NTE_ENCRYPTION_FAILURE">
+    Encryption failed.
   </int>
   <int value="-2144862208" label="TPM_E_ERROR_MASK">
     This is an error mask to convert TPM hardware errors to win errors.
@@ -4497,6 +4711,72 @@ Called by update_net_trust_anchors.py.-->
   <int value="-2144845822" label="TBS_E_BAD_PARAMETER">
     One or more input parameters is bad.
   </int>
+  <int value="-2144845821" label="TBS_E_INVALID_OUTPUT_POINTER">
+    A specified output pointer is bad.
+  </int>
+  <int value="-2144845820" label="TBS_E_INVALID_CONTEXT">
+    The specified context handle does not refer to a valid context.
+  </int>
+  <int value="-2144845819" label="TBS_E_INSUFFICIENT_BUFFER">
+    A specified output buffer is too small.
+  </int>
+  <int value="-2144845818" label="TBS_E_IOERROR">
+    An error occurred while communicating with the TPM.
+  </int>
+  <int value="-2144845817" label="TBS_E_INVALID_CONTEXT_PARAM">
+    One or more context parameters is invalid.
+  </int>
+  <int value="-2144845816" label="TBS_E_SERVICE_NOT_RUNNING">
+    The TBS service is not running and could not be started.
+  </int>
+  <int value="-2144845815" label="TBS_E_TOO_MANY_TBS_CONTEXTS">
+    A new context could not be created because there are too many open contexts.
+  </int>
+  <int value="-2144845814" label="TBS_E_TOO_MANY_RESOURCES">
+    A new virtual resource could not be created because there are too many open
+    virtual resources.
+  </int>
+  <int value="-2144845813" label="TBS_E_SERVICE_START_PENDING">
+    The TBS service has been started but is not yet running.
+  </int>
+  <int value="-2144845812" label="TBS_E_PPI_NOT_SUPPORTED">
+    The physical presence interface is not supported.
+  </int>
+  <int value="-2144845811" label="TBS_E_COMMAND_CANCELED">
+    The command was canceled.
+  </int>
+  <int value="-2144845810" label="TBS_E_BUFFER_TOO_LARGE">
+    The input or output buffer is too large.
+  </int>
+  <int value="-2144845809" label="TBS_E_TPM_NOT_FOUND">
+    A compatible Trusted Platform Module (TPM) Security Device cannot be found
+    on this computer.
+  </int>
+  <int value="-2144845808" label="TBS_E_SERVICE_DISABLED">
+    The TBS service has been disabled.
+  </int>
+  <int value="-2144845807" label="TBS_E_NO_EVENT_LOG">
+    No TCG event log is available.
+  </int>
+  <int value="-2144845806" label="TBS_E_ACCESS_DENIED">
+    The caller does not have the appropriate rights to perform the requested
+    operation.
+  </int>
+  <int value="-2144845805" label="TBS_E_PROVISIONING_NOT_ALLOWED">
+    The TPM provisioning action is not allowed by the specified flags...
+  </int>
+  <int value="-2144845804" label="TBS_E_PPI_FUNCTION_UNSUPPORTED">
+    The Physical Presence Interface of this firmware does not support the
+    requested method.
+  </int>
+  <int value="-2144845803" label="TBS_E_OWNERAUTH_NOT_FOUND">
+    The requested TPM OwnerAuth value was not found.
+  </int>
+  <int value="-2144845802" label="TBS_E_PROVISIONING_INCOMPLETE">
+    The TPM provisioning did not complete.
+  </int>
+  <int value="-2144845801" label="TBS_E_TPM_IN_EXCLUSIVE_MODE"/>
+  <int value="-2144845800" label="TBS_E_TPM_REBOOT_REQUIRED"/>
   <int value="-2144795641" label="TPM_E_PCP_INTERNAL_ERROR">
     An unexpected internal error has occurred in the Platform Crypto Provider.
   </int>

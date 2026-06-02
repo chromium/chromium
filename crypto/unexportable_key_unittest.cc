@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/logging.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/mock_unexportable_key.h"
@@ -256,6 +257,83 @@ TEST_P(UnexportableKeyTest, AttestationKeyCannotSign) {
   // For AIKs, signing arbitrary data should fail because of
   // NCRYPT_PCP_IDENTITY_KEY.
   EXPECT_NE(status, 0);
+}
+
+TEST_P(UnexportableKeyTest, CertifySlowlySucceeds) {
+  if (provider_type() != Provider::kTPM) {
+    GTEST_SKIP() << "Attestation keys are only supported on TPM.";
+  }
+
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
+  if (!provider) {
+    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+  auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
+  if (algorithm() ==
+          crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256 &&
+      !attestation_key) {
+    GTEST_SKIP()
+        << "Workaround for https://issues.chromium.org/issues/41494935";
+  }
+  ASSERT_TRUE(attestation_key);
+
+  auto signing_key = provider->GenerateSigningKeySlowly(algorithms);
+  ASSERT_TRUE(signing_key);
+
+  std::vector<uint8_t> challenge = {1, 2, 3, 4};
+  auto statement = attestation_key->CertifySlowly(*signing_key, challenge);
+
+  EXPECT_TRUE(statement.has_value());
+}
+
+TEST_P(UnexportableKeyTest, CertifyFailsForSoftwareSigningKey) {
+  if (provider_type() != Provider::kTPM) {
+    GTEST_SKIP() << "Attestation keys are only supported on TPM.";
+  }
+
+  std::unique_ptr<crypto::UnexportableKeyProvider> tpm_provider =
+      CreateProvider();
+  if (!tpm_provider) {
+    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  }
+
+  std::unique_ptr<crypto::UnexportableKeyProvider> sw_provider =
+      crypto::GetMicrosoftSoftwareUnexportableKeyProvider();
+  if (!sw_provider) {
+    GTEST_SKIP() << "Software provider not available.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+
+  auto attestation_key = tpm_provider->GenerateAttestationKeySlowly(algorithms);
+  if (algorithm() ==
+          crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256 &&
+      !attestation_key) {
+    GTEST_SKIP()
+        << "Workaround for https://issues.chromium.org/issues/41494935";
+  }
+  ASSERT_TRUE(attestation_key);
+
+  auto signing_key = tpm_provider->GenerateSigningKeySlowly(algorithms);
+  ASSERT_TRUE(signing_key);
+
+  auto software_signing_key = sw_provider->GenerateSigningKeySlowly(algorithms);
+  ASSERT_TRUE(software_signing_key);
+
+  base::HistogramTester histogram_tester;
+  std::vector<uint8_t> challenge = {1, 2, 3, 4};
+
+  auto statement =
+      attestation_key->CertifySlowly(*software_signing_key, challenge);
+
+  EXPECT_FALSE(statement.has_value());
+
+  histogram_tester.ExpectTotalCount(
+      "Crypto.TPMOperation.Win.TpmCertifyExtractProperty.Result", 1);
 }
 
 TEST_P(UnexportableKeyTest, FromWrappedAttestationKeyFailsForSigningKey) {

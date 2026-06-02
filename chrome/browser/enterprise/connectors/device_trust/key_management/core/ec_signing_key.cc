@@ -9,13 +9,10 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "base/notreached.h"
-#endif  // BUILDFLAG(IS_MAC)
 
 namespace enterprise_connectors {
 
@@ -40,7 +37,8 @@ class ECSigningKey : public crypto::UnexportableSigningKey {
   SecKeyRef GetSecKeyRef() const override;
 #elif BUILDFLAG(IS_WIN)
   bool SupportsTls13() override { return true; }
-#endif  // BUILDFLAG(IS_MAC)
+  NCRYPT_KEY_HANDLE GetNCryptKeyHandle() const override { NOTREACHED(); }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
  private:
   crypto::keypair::PrivateKey key_;

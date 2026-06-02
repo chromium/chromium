@@ -464,6 +464,8 @@ chromium-metrics-reviews@google.com.
     purposes. Note that if new key creation fails, wrapped key creation and
     message signing will not take place.
   </summary>
+<!-- TODO(crbug.com/501306222): Move variants to a central location. -->
+
   <token key="Operation">
     <variant name="MessageSigning"/>
     <variant name="MessageVerify"/>
@@ -474,6 +476,88 @@ chromium-metrics-reviews@google.com.
     <variant name="ECDSA"/>
     <variant name="RSA"/>
   </token>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Win.LoadTBSLibrary.Result" enum="Hresult"
+    expires_after="2026-11-20">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows when tbs.dll fails to load during TPM certification.
+    Records the HRESULT from loading the library.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Win.TbsSubmitCommand.Error"
+    enum="Win32TpmErrorCodes" expires_after="2026-11-20">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows when Tbsip_Submit_Command fails during TPM
+    certification. Represents the TBS_RESULT returned by the API.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Win.TpmCertifyExtractProperty.Result"
+    enum="Win32TpmErrorCodes" expires_after="2026-11-20">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows to record the result of property extraction before
+    submitting a TPM2_Certify command. Represents the SECURITY_STATUS returned
+    by the API.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Win.TpmCertifyParse.Result"
+    enum="TpmCertifyParseResult" expires_after="2026-11-20">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows to record the result of parsing the response of a
+    TPM2_Certify command. Represents the ParseResult, which is Ok on success or
+    the specific ParseError that occurred.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Win.TpmCertifyResponse.TpmResponseCode"
+    enum="TPMResponseCode" expires_after="2026-11-20">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows to record the result of a TPM2_Certify command at the
+    TPM level. Represents the TPM 2.0 response code returned by the TPM.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Win.TpmCertifyVerify.HashAlgorithm"
+    enum="TpmAlgorithm" expires_after="2026-11-20">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows during TPM2_Certify verification. Records the
+    TPM_ALG_ID of the hash algorithm unconditionally for all operations.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Win.TpmCertifyVerify.Result"
+    enum="TpmCertifyVerifyResult" expires_after="2026-11-20">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows to record the verification result of a TPM2_Certify
+    response. Records whether the signature was valid or the specific error.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.TPMOperation.Win.TpmCertifyVerify.SignatureAlgorithm"
+    enum="TpmAlgorithm" expires_after="2026-11-20">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows during TPM2_Certify verification. Records the
+    TPM_ALG_ID of the signature algorithm unconditionally for all operations.
+  </summary>
 </histogram>
 
 <histogram name="Crypto.TPMOperation.Win.{Operation}{SignatureAlgorithm}.Error"
@@ -487,6 +571,7 @@ chromium-metrics-reviews@google.com.
     corresponding with that operation.
   </summary>
   <token key="Operation">
+    <variant name="KeyCertification" summary="key certification"/>
     <variant name="MessageSigning" summary="signing"/>
     <variant name="NewKeyCreation" summary="new key creation"/>
     <variant name="SelectAlgorithm" summary="select algorithm"/>

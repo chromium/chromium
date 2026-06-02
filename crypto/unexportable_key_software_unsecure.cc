@@ -53,7 +53,8 @@ class SoftwareKey : public UnexportableSigningKey {
   SecKeyRef GetSecKeyRef() const override { NOTREACHED(); }
 #elif BUILDFLAG(IS_WIN)
   bool SupportsTls13() override { return true; }
-#endif  // BUILDFLAG(IS_APPLE)
+  NCRYPT_KEY_HANDLE GetNCryptKeyHandle() const override { NOTREACHED(); }
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
 
  private:
   sign::SignatureKind GetSignatureKind() const {

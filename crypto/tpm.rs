@@ -119,6 +119,7 @@ impl std::error::Error for TpmVerifyError {}
 #[cxx::bridge(namespace = "crypto::tpm")]
 pub mod ffi {
     /// Results that can occur during TPM response parsing.
+    // LINT.IfChange(ParseResult)
     enum ParseResult {
         /// Parsing completed successfully.
         Ok = 0,
@@ -134,7 +135,11 @@ pub mod ffi {
         WrongType = 5,
         /// The provided nonce did not match the nonce in the attestation.
         NonceMismatch = 6,
+        /// Maximum value for UMA histograms.
+        kMaxValue = 6,
     }
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:
+    // TpmCertifyParseResult)
 
     /// Response from parsing a TPM2_Certify command.
     struct CertifyResponse {
@@ -162,6 +167,7 @@ pub mod ffi {
     }
 
     /// Results that can occur during TPM signature verification.
+    // LINT.IfChange(VerificationResult)
     enum VerificationResult {
         /// Verification completed successfully.
         Ok = 0,
@@ -177,7 +183,11 @@ pub mod ffi {
         InvalidPublicKey = 5,
         /// The cryptographic verification of the signature failed.
         InvalidSignature = 6,
+        /// Maximum value for UMA histograms.
+        kMaxValue = 6,
     }
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:
+    // TpmCertifyVerifyResult)
 
     extern "Rust" {
         /// Builds a TPM2_Certify command buffer.

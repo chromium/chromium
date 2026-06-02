@@ -244,6 +244,8 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
                         wrapped_key_creation_timer.Elapsed(),
                         wrapped_key != nullptr);
 
+  // TODO(crbug.com/501306222): Add metrics for kKeyCertification.
+
   const uint8_t msg[] = {1, 2, 3, 4};
   base::ElapsedTimer message_signing_timer;
   std::optional<std::vector<uint8_t>> signed_bytes =
@@ -296,6 +298,8 @@ std::string OperationToString(TPMOperation operation) {
       return "SelectAlgorithm";
     case TPMOperation::kKeyDeletion:
       return "KeyDeletion";
+    case TPMOperation::kKeyCertification:
+      return "KeyCertification";
   }
 }
 

@@ -30,6 +30,9 @@ class MockUnexportableSigningKey : public UnexportableSigningKey,
 #if BUILDFLAG(IS_APPLE)
   MOCK_METHOD(SecKeyRef, GetSecKeyRef, (), (const, override));
 #endif  // BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_WIN)
+  MOCK_METHOD(NCRYPT_KEY_HANDLE, GetNCryptKeyHandle, (), (const, override));
+#endif  // BUILDFLAG(IS_WIN)
   MOCK_METHOD(const StatefulKey*, AsStatefulKey, (), (const, override));
 
   // StatefulKey:
@@ -66,6 +69,9 @@ class MockUnexportableAttestationKey : public UnexportableAttestationKey,
 #if BUILDFLAG(IS_APPLE)
   MOCK_METHOD(SecKeyRef, GetSecKeyRef, (), (const, override));
 #endif  // BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_WIN)
+  MOCK_METHOD(NCRYPT_KEY_HANDLE, GetNCryptKeyHandle, (), (const, override));
+#endif  // BUILDFLAG(IS_WIN)
   MOCK_METHOD(const StatefulKey*, AsStatefulKey, (), (const, override));
 
   // StatefulKey:

@@ -29,6 +29,8 @@ enum class TPMOperation {
   kSelectAlgorithm,
   // An operation to delete a TPM-protected key.
   kKeyDeletion,
+  // An operation to certify a key with an attestation key.
+  kKeyCertification,
 };
 
 // Converts the given `operation` to a string representation.

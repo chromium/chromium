@@ -4,6 +4,8 @@
 
 #include "crypto/unexportable_key_win.h"
 
+#include <tbs.h>
+
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -12,6 +14,7 @@
 #include "base/base64.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/span_rust.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,10 +30,12 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
+#include "base/win/delayload_helpers.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/random.h"
 #include "crypto/sign.h"
+#include "crypto/tpm.rs.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/unexportable_key_metrics.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -107,6 +112,8 @@ class WinKeyImpl : public BaseInterface {
     return provider_type_ == ProviderType::kTPM;
   }
 
+  NCRYPT_KEY_HANDLE GetNCryptKeyHandle() const override { return key_.get(); }
+
  protected:
   const ProviderType provider_type_;
   ScopedNCryptKey key_;
@@ -128,11 +135,26 @@ std::u16string KeyIdToWindowsLabel(base::span<const uint8_t> key_id) {
   return u"unexportable-key-" + base::UTF8ToUTF16(base::Base64Encode(key_id));
 }
 
+template <typename T>
+base::expected<T, SECURITY_STATUS> GetNCryptProperty(NCRYPT_HANDLE handle,
+                                                     LPCWSTR property) {
+  T value{};
+  DWORD cb_value = 0;
+  SECURITY_STATUS status =
+      NCryptGetProperty(handle, property, reinterpret_cast<PBYTE>(&value),
+                        sizeof(value), &cb_value, 0);
+  if (FAILED(status)) {
+    return base::unexpected(status);
+  }
+  CHECK_EQ(cb_value, sizeof(value));
+  return base::ok(value);
+}
+
 // Logs `status` and `selected_algorithm` to an error histogram capturing that
 // `operation` failed for a TPM-backed key.
 void LogTPMOperationError(
     TPMOperation operation,
-    SECURITY_STATUS status,
+    HRESULT status,
     std::optional<SignatureVerifier::SignatureAlgorithm> selected_algorithm,
     bool open_storage_provider_error = false) {
   static constexpr char kTPMOperationErrorHistogramFormat[] =
@@ -247,13 +269,10 @@ std::optional<std::wstring> GetKeyStringProperty(NCRYPT_KEY_HANDLE key,
 // Key (AIK) restricted by the TPM, meaning it cannot be used to sign arbitrary
 // data.
 bool IsIdentityKey(NCRYPT_KEY_HANDLE key) {
-  DWORD usage_policy = 0;
-  DWORD cb_usage_policy = 0;
-  SECURITY_STATUS status =
-      NCryptGetProperty(key, NCRYPT_PCP_KEY_USAGE_POLICY_PROPERTY,
-                        reinterpret_cast<PBYTE>(&usage_policy),
-                        sizeof(usage_policy), &cb_usage_policy, 0);
-  return SUCCEEDED(status) && ((usage_policy & NCRYPT_PCP_IDENTITY_KEY) != 0);
+  auto usage_policy =
+      GetNCryptProperty<DWORD>(key, NCRYPT_PCP_KEY_USAGE_POLICY_PROPERTY);
+  return usage_policy.has_value() &&
+         ((*usage_policy & NCRYPT_PCP_IDENTITY_KEY) != 0);
 }
 
 // Sets the NCRYPT_PCP_IDENTITY_KEY flag in the key's usage policy.
@@ -589,7 +608,6 @@ class RSASigningKey : public WinKeyImpl<UnexportableSigningKey> {
   std::optional<bool> is_compatible_with_tls13;
 };
 
-// AttestationKeyWin wraps an AIK stored in the given provider.
 class AttestationKeyWin : public WinKeyImpl<UnexportableAttestationKey> {
  public:
   AttestationKeyWin(ProviderType provider_type, KeyDetails details)
@@ -598,8 +616,133 @@ class AttestationKeyWin : public WinKeyImpl<UnexportableAttestationKey> {
   std::optional<AttestationStatement> CertifySlowly(
       const UnexportableSigningKey& signing_key,
       base::span<const uint8_t> challenge) override {
-    // TPM certification execution not yet implemented.
-    return std::nullopt;
+    // 1. Check TBS availability
+    // Dynamically loading tbs.dll prevents the browser from crashing on startup
+    // if the Windows TPM Base Services are missing or disabled.
+    static const bool is_tbs_available = [] {
+      base::expected<bool, HRESULT> load_result =
+          base::win::LoadAllImportsForDll("tbs.dll");
+      bool available = load_result.value_or(false);
+      base::UmaHistogramSparse(
+          "Crypto.TPMOperation.Win.LoadTBSLibrary.Result",
+          available
+              ? S_OK
+              : load_result.error_or(HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND)));
+      return available;
+    }();
+
+    if (!is_tbs_available) {
+      return std::nullopt;
+    }
+
+    NCRYPT_KEY_HANDLE attestation_key_handle = GetNCryptKeyHandle();
+    NCRYPT_KEY_HANDLE signing_key_handle = signing_key.GetNCryptKeyHandle();
+
+    // 2. Extract Provider Context and TPM handles
+    auto log_extract_property_error = [this](SECURITY_STATUS status) {
+      base::UmaHistogramSparse(
+          "Crypto.TPMOperation.Win.TpmCertifyExtractProperty.Result", status);
+      LogTPMOperationError(TPMOperation::kKeyCertification, status,
+                           Algorithm());
+      return std::nullopt;
+    };
+
+    ASSIGN_OR_RETURN(
+        NCRYPT_PROV_HANDLE prov_handle,
+        GetNCryptProperty<NCRYPT_PROV_HANDLE>(attestation_key_handle,
+                                              NCRYPT_PROVIDER_HANDLE_PROPERTY),
+        log_extract_property_error);
+
+    ASSIGN_OR_RETURN(TBS_HCONTEXT h_context,
+                     GetNCryptProperty<TBS_HCONTEXT>(
+                         prov_handle, NCRYPT_PCP_PLATFORMHANDLE_PROPERTY),
+                     log_extract_property_error);
+
+    ASSIGN_OR_RETURN(
+        uint32_t object_handle,
+        GetNCryptProperty<uint32_t>(signing_key_handle,
+                                    NCRYPT_PCP_PLATFORMHANDLE_PROPERTY),
+        log_extract_property_error);
+
+    ASSIGN_OR_RETURN(
+        uint32_t sign_handle,
+        GetNCryptProperty<uint32_t>(attestation_key_handle,
+                                    NCRYPT_PCP_PLATFORMHANDLE_PROPERTY),
+        log_extract_property_error);
+
+    // 3. Construct Command
+    rust::Vec<uint8_t> cmd = crypto::tpm::build_certify_command(
+        object_handle, sign_handle, base::SpanToRustSlice(challenge));
+
+    // 4. Submit Command
+    // A 4096-byte buffer handles the maximum theoretical TPM response
+    // (including RSA-4096 signatures). Heap-allocating it protects the local
+    // stack from potential buffer overflow vulnerabilities in the OS API.
+    std::vector<uint8_t> resp(4096);
+    UINT32 resp_len = resp.size();
+    TBS_RESULT tbs_result = ::Tbsip_Submit_Command(
+        h_context, TBS_COMMAND_LOCALITY_ZERO, TBS_COMMAND_PRIORITY_NORMAL,
+        cmd.data(), cmd.size(), resp.data(), &resp_len);
+
+    // Overwriting tbs_result safely catches buggy API returns that indicate
+    // more bytes were written than the buffer size, preventing false "Success"
+    // codes from polluting UMA metrics.
+    if (tbs_result == TBS_SUCCESS && resp_len > resp.size()) {
+      tbs_result = TBS_E_INSUFFICIENT_BUFFER;
+    }
+
+    if (tbs_result != TBS_SUCCESS) {
+      base::UmaHistogramSparse("Crypto.TPMOperation.Win.TbsSubmitCommand.Error",
+                               tbs_result);
+      LogTPMOperationError(TPMOperation::kKeyCertification, tbs_result,
+                           Algorithm());
+      return std::nullopt;
+    }
+
+    // 5. Parse and Verify via Rust
+    crypto::tpm::CertifyResponse parsed = crypto::tpm::parse_certify_response(
+        base::SpanToRustSlice(base::span(resp).first(resp_len)),
+        base::SpanToRustSlice(challenge));
+
+    base::UmaHistogramSparse(
+        "Crypto.TPMOperation.Win.TpmCertifyResponse.TpmResponseCode",
+        parsed.tpm_response_code);
+
+    base::UmaHistogramEnumeration(
+        "Crypto.TPMOperation.Win.TpmCertifyParse.Result", parsed.result);
+
+    if (parsed.result != crypto::tpm::ParseResult::Ok) {
+      return std::nullopt;
+    }
+
+    crypto::tpm::VerificationResult verified = crypto::tpm::verify_signature(
+        base::SpanToRustSlice(parsed.statement),
+        base::SpanToRustSlice(parsed.signature),
+        base::SpanToRustSlice(GetSubjectPublicKeyInfo()));
+
+    // We log local signature verification failures for telemetry, but do not
+    // early-return (e.g. return std::nullopt). The browser simply forwards
+    // the payload; strict cryptographic enforcement happens on the server.
+    base::UmaHistogramEnumeration(
+        "Crypto.TPMOperation.Win.TpmCertifyVerify.Result", verified);
+
+    crypto::tpm::SignatureAlgorithmsResponse algs =
+        crypto::tpm::extract_signature_algorithms(
+            base::SpanToRustSlice(parsed.signature));
+    if (algs.has_algorithms) {
+      base::UmaHistogramSparse(
+          "Crypto.TPMOperation.Win.TpmCertifyVerify.SignatureAlgorithm",
+          algs.sig_alg);
+      base::UmaHistogramSparse(
+          "Crypto.TPMOperation.Win.TpmCertifyVerify.HashAlgorithm",
+          algs.hash_alg);
+    }
+
+    return AttestationStatement{
+        .format = AttestationStatement::kTpm,
+        .statement = base::ToVector(parsed.statement),
+        .signature = base::ToVector(parsed.signature),
+    };
   }
 };
 
