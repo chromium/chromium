@@ -11,6 +11,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.media.AudioManager;
@@ -663,14 +664,53 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 : false;
     }
 
+    private boolean hasRepositionWindowsPermission() {
+        // Query if the system has granted us the permission to reposition and resize windows, which
+        // is required to create a movable task for Document Picture-in-Picture. This permission is
+        // granted automatically to the app currently set as the system's default web browser.
+        return ApiCompatibilityUtils.checkPermission(
+                        ContextUtils.getApplicationContext(),
+                        android.Manifest.permission.REPOSITION_SELF_WINDOWS,
+                        android.os.Process.myPid(),
+                        android.os.Process.myUid())
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * Checks if the OS currently prevents the creation of a Document Picture-in-Picture window.
+     * This check blocks window creation synchronously if:
+     *
+     * <ul>
+     *   <li>The current browser does not have the permission to reposition its windows.
+     *   <li>The app is in system-fullscreen mode.
+     * </ul>
+     *
+     * @return true if the creation of a Document Picture-in-Picture window is blocked by the
+     *     system.
+     */
     @Override
     protected boolean isDocumentPictureInPictureBlockedBySystem() {
+        if (!hasRepositionWindowsPermission()) {
+            Log.w(
+                    TAG,
+                    "isDocumentPictureInPictureBlockedBySystem: Blocked because the current browser"
+                            + " does not have the REPOSITION_SELF_WINDOWS permission.");
+            return true;
+        }
         // Document PiP requires launching a new movable task with PiP bounds.
         // This is blocked by the OS (throws InfeasibleActivityOptionsException)
         // if the current activity is in app fullscreen (i.e. not in multi-window mode).
         // TODO(b/504784078): Once the fullscreen limitation is resolved, we should update this
         // check.
-        return mActivity == null || !MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
+        boolean blockedByFullscreen =
+                mActivity == null || !MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
+        if (blockedByFullscreen) {
+            Log.w(
+                    TAG,
+                    "isDocumentPictureInPictureBlockedBySystem: Blocked because the current browser"
+                            + " is in app fullscreen (not in multi-window mode).");
+        }
+        return blockedByFullscreen;
     }
 
     @Override
