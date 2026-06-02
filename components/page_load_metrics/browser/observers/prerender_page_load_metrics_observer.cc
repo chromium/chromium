@@ -223,8 +223,89 @@ void PrerenderPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
       timing.paint_timing->first_contentful_paint.value());
 }
 
+void PrerenderPageLoadMetricsObserver::
+    RecordLargestContentfulPaintBeforeSoftNavigation() {
+  CHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
+  CHECK(navigation_to_activation_time_.has_value());
+  const page_load_metrics::ContentfulPaintTimingInfo& lcp =
+      GetDelegate()
+          .GetLargestContentfulPaintHandler()
+          .MergeMainFrameAndSubframes();
+  if (lcp.ContainsValidTime() &&
+      WasActivatedInForegroundOptionalEventInForeground(lcp.Time(),
+                                                        GetDelegate())) {
+    base::TimeDelta activation_to_lcp =
+        lcp.Time().value() - navigation_to_activation_time_.value();
+    ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+        .SetTimingBeforeSoftNavigation_ActivationToLargestContentfulPaint(
+            activation_to_lcp.InMilliseconds())
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
+void PrerenderPageLoadMetricsObserver::
+    RecordResponsivenessMetricsBeforeSoftNavigation() {
+  CHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
+  CHECK(navigation_to_activation_time_.has_value());
+
+  const page_load_metrics::InteractionToNextPaintCalculator& calculator =
+      GetDelegate().GetSoftNavigationIntervalInteractionToNextPaintCalculator();
+  std::optional<
+      page_load_metrics::InteractionToNextPaintCalculator::InteractionData>
+      inp_data = calculator.ApproximateHighPercentile();
+  if (!inp_data.has_value()) {
+    return;
+  }
+  const page_load_metrics::mojom::EventTiming& inp = inp_data->max_event;
+  ukm::builders::PrerenderPageLoad builder(GetDelegate().GetPageUkmSourceId());
+  builder
+      .SetInteractiveTimingBeforeSoftNavigation_UserInteractionLatency_HighPercentile2_MaxEventDuration(
+          inp.duration.InMilliseconds());
+  builder.SetInteractiveTimingBeforeSoftNavigation_NumInteractions(
+      ukm::GetExponentialBucketMinForCounts1000(
+          calculator.num_user_interactions()));
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+void PrerenderPageLoadMetricsObserver::RecordLayoutShiftBeforeSoftNavigation() {
+  CHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
+  CHECK(navigation_to_activation_time_.has_value());
+
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      GetDelegate().GetSoftNavigationIntervalNormalizedCLSData();
+  if (normalized_cls_data.data_tainted) {
+    return;
+  }
+  const float max_cls =
+      normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
+  ukm::builders::PrerenderPageLoad builder(GetDelegate().GetPageUkmSourceId());
+  builder
+      .SetLayoutInstabilityBeforeSoftNavigation_MaxCumulativeShiftScore_MainFrame_SessionWindow_Gap1000ms_Max5000ms(
+          page_load_metrics::LayoutShiftUkmValue(max_cls));
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
 void PrerenderPageLoadMetricsObserver::OnSoftNavigation() {
+  CHECK_GE(soft_navigation_count_, 0);
   soft_navigation_count_++;
+
+  // When the 1st soft navigation comes in, we record the CWVs before then, so
+  // that we can blend them. We also require:
+  //
+  // * Must have been prerendered and activated in the foreground.
+  //
+  // * activation time must have been captured; note:
+  //   navigation_to_activation_time is the same value as is
+  //   |main_frame_timing.activation_start| used elsewhere in this file.
+  if (soft_navigation_count_ == 1 &&
+      GetDelegate().GetPrerenderingState() ==
+          page_load_metrics::PrerenderingState::kActivated &&
+      GetDelegate().WasPrerenderedThenActivatedInForeground() &&
+      navigation_to_activation_time_.has_value()) {
+    RecordLargestContentfulPaintBeforeSoftNavigation();
+    RecordResponsivenessMetricsBeforeSoftNavigation();
+    RecordLayoutShiftBeforeSoftNavigation();
+  }
 }
 
 void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(

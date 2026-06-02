@@ -1111,6 +1111,17 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, Prerender) {
   prerender_helper_.NavigatePrimaryPage(prerender_url);
 
   waiter.Wait();
+  SimulateUserInteractionAndWait(web_contents(), &waiter, 1,
+                                 /*element_id=*/"content");
+  // Trigger a layout shift, before any soft navigation.
+  // Since we just simulated a user interaction, we must wait at
+  // least 500ms for the layout shift to be counted in the CLS computation.
+  base::PlatformThread::Sleep(base::Milliseconds(500));
+  TriggerLayoutShiftAndWait(web_contents(), &waiter, /*width=*/500,
+                            /*height=*/300);
+
+  SimulateUserInteractionAndWait(web_contents(), &waiter, 2,
+                                 /*element_id=*/"content");
 
   // 1st soft navigation: click on the next page button and wait for soft
   // navigation count and image lcp.
@@ -1137,7 +1148,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, Prerender) {
     performance_entries = GetPerformanceEntries();
     ASSERT_EQ(performance_entries.size(), 2ul);
     layout_shift_performance_entries = GetLayoutShiftPerformanceEntries();
-    ASSERT_EQ(layout_shift_performance_entries.size(), 1ul);
+    ASSERT_EQ(layout_shift_performance_entries.size(), 2ul);
   }
 
   // Navigate to about:blank (untracked) to ensure all UKM are recorded.
@@ -1171,6 +1182,49 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, Prerender) {
               Not(HasMetric(PrerenderPageLoad::kWasPrerenderedName)));
   EXPECT_THAT(initiator_page,
               Not(HasMetric(PrerenderPageLoad::kSoftNavigationCountName)));
+  //
+  // Examine the *beforesoftnavigation* metrics for the prerendered page.
+  //
+  std::optional<int64_t> cls_before_soft_navigation;
+  {
+    // For this very simple page, hard nav LCP and LCP before soft navs are the
+    // same.
+    std::optional<int64_t> prerender_lcp = GetMetricFromUkmEntry(
+        prerendered_page,
+        PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName);
+    ASSERT_TRUE(prerender_lcp.has_value());
+    EXPECT_THAT(
+        prerendered_page,
+        HasMetricWithValue(
+            PrerenderPageLoad::
+                kTimingBeforeSoftNavigation_ActivationToLargestContentfulPaintName,
+            *prerender_lcp));
+
+    // Before soft navigation metrics: num interactions is 3 (2 user
+    // interactions, plus the soft nav initiating interaction), and INP exists.
+    // TODO(crbug.com/515874398): Due to a race, the soft nav initiating
+    // interaction currently may be counted toward the first soft nav. So we
+    // also allow 2.
+    std::optional<int64_t> num_interactions_before_softnavs =
+        GetMetricFromUkmEntry(
+            prerendered_page,
+            PrerenderPageLoad::
+                kInteractiveTimingBeforeSoftNavigation_NumInteractionsName);
+    EXPECT_THAT(num_interactions_before_softnavs, testing::AnyOf(2, 3));
+    EXPECT_THAT(
+        prerendered_page,
+        HasMetric(
+            PrerenderPageLoad::
+                kInteractiveTimingBeforeSoftNavigation_UserInteractionLatency_HighPercentile2_MaxEventDurationName));
+
+    // We expect to see a CLS before layout shift, and if possible we'll
+    // compare it with the performance entries later.
+    cls_before_soft_navigation = GetMetricFromUkmEntry(
+        prerendered_page,
+        PrerenderPageLoad::
+            kLayoutInstabilityBeforeSoftNavigation_MaxCumulativeShiftScore_MainFrame_SessionWindow_Gap1000ms_Max5000msName);
+    EXPECT_TRUE(cls_before_soft_navigation.has_value());
+  }
 
   //
   // Examine the two soft navigation events from the prerendered page.
@@ -1258,13 +1312,27 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, Prerender) {
                     "interactionContentfulPaint.renderTime"),
                 *soft_nav2_start_time + *soft_nav2_lcp, /*abs_error=*/6.0);
 
-    // Compare the PerformanceObserver-based CLS with the UKM-based CLS.
-    // There was one layout shift during the first soft navigation - this
+    // There were two layout shifts: One before and one during the first soft
+    // navigation.
+    ASSERT_EQ(2u, layout_shift_performance_entries.size());
+
+    // Compare the first one with the UKM recorded value - before soft
+    // navigation.
+    {
+      std::optional<double> layout_shift_value =
+          layout_shift_performance_entries[0].GetDict().FindDouble("value");
+      ASSERT_TRUE(layout_shift_value.has_value());
+      ASSERT_TRUE(cls_before_soft_navigation.has_value());
+      EXPECT_EQ(LayoutShiftUkmValue(*layout_shift_value),
+                *cls_before_soft_navigation);
+    }
+
+    // Compare the second PerformanceObserver-based CLS with the UKM-based CLS;
+    // this layout shift was recorded during the first soft navigation - this
     // means the navigationId of the layout shift match with the navigationId
     // of the soft navigation.
-    ASSERT_EQ(1u, layout_shift_performance_entries.size());
     std::optional<int> layout_shift_navigation_id =
-        layout_shift_performance_entries[0].GetDict().FindInt("navigationId");
+        layout_shift_performance_entries[1].GetDict().FindInt("navigationId");
     ASSERT_THAT(layout_shift_navigation_id, testing::Gt(0));
     EXPECT_THAT(
         layout_shift_navigation_id,
@@ -1274,16 +1342,16 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, Prerender) {
     // Check that the UKM value and the PerformanceObserver based values for CLS
     // agree.
     std::optional<double> layout_shift_value =
-        layout_shift_performance_entries[0].GetDict().FindDouble("value");
+        layout_shift_performance_entries[1].GetDict().FindDouble("value");
     EXPECT_TRUE(layout_shift_value.has_value());
     EXPECT_EQ(LayoutShiftUkmValue(*layout_shift_value), *soft_nav1_cls);
 
     // Check other PerformanceObserver based CLS performance entry fields.
     std::optional<double> layout_shift_start_time =
-        layout_shift_performance_entries[0].GetDict().FindDouble("startTime");
+        layout_shift_performance_entries[1].GetDict().FindDouble("startTime");
     EXPECT_TRUE(layout_shift_start_time.has_value());
     std::optional<bool> layout_shift_had_recent_input =
-        layout_shift_performance_entries[0].GetDict().FindBool(
+        layout_shift_performance_entries[1].GetDict().FindBool(
             "hadRecentInput");
     EXPECT_THAT(layout_shift_had_recent_input, testing::Optional(false));
   }
