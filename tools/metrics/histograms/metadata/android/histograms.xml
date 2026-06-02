@@ -8316,6 +8316,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Navigation.DidDownloadFavicon" enum="Boolean"
+    expires_after="2026-09-30">
+  <owner>isaacmadgwick@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    For each navigation e.g. loadUrl, this histogram records if a Favicon is
+    downloaded or not. This is recorded by the value of
+    AwContents::ShouldDownloadFavicon.
+
+    Emitted everytime a WebView page navigation attempts to download a Favicon.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Navigation.MainFrame"
     enum="WebViewNavigationType" expires_after="2026-09-30">
   <owner>torne@chromium.org</owner>

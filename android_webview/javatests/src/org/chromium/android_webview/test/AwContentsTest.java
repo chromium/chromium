@@ -437,7 +437,7 @@ public class AwContentsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testGetFavicon() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        AwContents.setShouldDownloadFavicons();
+        AwSettings.setShouldDownloadFaviconsGlobal();
         final AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         final AwContents awContents = testView.getAwContents();

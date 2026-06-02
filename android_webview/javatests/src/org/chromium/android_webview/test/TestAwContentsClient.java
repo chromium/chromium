@@ -1016,6 +1016,10 @@ public class TestAwContentsClient extends NullContentsClient {
             assert getCallCount() > 0;
             return mIcon;
         }
+
+        public Bitmap getIconNullable() {
+            return mIcon;
+        }
     }
 
     @Override

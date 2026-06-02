@@ -116,6 +116,7 @@ class AwContents : public FindHelper::Listener,
                                   int64_t compositor_frame_consumer);
   base::android::ScopedJavaLocalRef<jobject> GetRenderProcess(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+  bool GetShouldDownloadFaviconsOnNavigation(JNIEnv* env);
   void Destroy(JNIEnv* env);
   void DocumentHasImages(JNIEnv* env,
                          const base::android::JavaRef<jobject>& message);
@@ -270,7 +271,7 @@ class AwContents : public FindHelper::Listener,
                             int match_count,
                             bool finished) override;
   // IconHelper::Listener implementation.
-  bool ShouldDownloadFavicon(const GURL& icon_url) override;
+  bool ShouldDownloadFavicon() override;
   void OnReceivedIcon(const GURL& icon_url, const SkBitmap& bitmap) override;
   void OnReceivedTouchIconUrl(const std::string& url,
                               const bool precomposed) override;

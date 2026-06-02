@@ -197,6 +197,7 @@ public class AwSettings {
     private String mDefaultVideoPosterUrl;
     private float mInitialPageScalePercent;
     private boolean mSpatialNavigationEnabled; // Default depends on device features.
+    private boolean mDownloadFaviconsEnabled = true;
     private boolean mEnableSupportedHardwareAcceleratedFeatures;
     private int mMixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW;
     private int mAttributionBehavior = AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER;
@@ -357,6 +358,11 @@ public class AwSettings {
         void updateSpeculativeLoadingAllowedLocked() {
             runOnUiThreadBlockingAndLocked(
                     AwSettings.this::updateSpeculativeLoadingAllowedOnUiThreadLocked);
+        }
+
+        void updateDownloadFaviconsEnabledLocked() {
+            runOnUiThreadBlockingAndLocked(
+                    AwSettings.this::updateDownloadFaviconsEnabledOnUiThreadLocked);
         }
 
         void updateBackForwardCacheEnabled() {
@@ -659,6 +665,28 @@ public class AwSettings {
         synchronized (mAwSettingsLock) {
             return mAllowFileUrlAccess;
         }
+    }
+
+    /** Sets whether a navigation will attempt to download a Favicon */
+    public void setDownloadFaviconsEnabled(boolean enabled) {
+        if (TRACE) Log.i(TAG, "setDownloadFaviconsEnabled=" + enabled);
+        synchronized (mAwSettingsLock) {
+            mDownloadFaviconsEnabled = enabled;
+            mEventHandler.updateDownloadFaviconsEnabledLocked();
+        }
+    }
+
+    /** Returns whether a navigation will download a Favicon or not */
+    public boolean getDownloadFaviconsEnabled() {
+        synchronized (mAwSettingsLock) {
+            return AwSettingsJni.get().getShouldDownloadFaviconsOnNavigation(mNativeAwSettings);
+        }
+    }
+
+    @CalledByNative
+    private boolean getDownloadFaviconsEnabledLocked() {
+        assert Thread.holdsLock(mAwSettingsLock);
+        return mDownloadFaviconsEnabled;
     }
 
     /** See {@link android.webkit.WebSettings#setAllowContentAccess}. */
@@ -1970,6 +1998,10 @@ public class AwSettings {
         }
     }
 
+    public static void setShouldDownloadFaviconsGlobal() {
+        AwSettingsJni.get().setShouldDownloadFaviconsGlobal();
+    }
+
     @CalledByNative
     public long getBackForwardCacheSettingsTimeout() {
         synchronized (mAwSettingsLock) {
@@ -2307,6 +2339,15 @@ public class AwSettings {
         }
     }
 
+    private void updateDownloadFaviconsEnabledOnUiThreadLocked() {
+        assert mEventHandler.mHandler != null;
+        ThreadUtils.assertOnUiThread();
+        if (mNativeAwSettings != 0) {
+            AwSettingsJni.get()
+                    .updateDownloadFaviconsEnabledLocked(mNativeAwSettings, AwSettings.this);
+        }
+    }
+
     private void updateBackForwardCacheEnabledOnUiThreadLocked() {
         assert mEventHandler.mHandler != null;
         ThreadUtils.assertOnUiThread();
@@ -2528,5 +2569,11 @@ public class AwSettings {
                 long nativeAwSettings, AwSettings caller);
 
         void updateGeolocationEnabledLocked(long nativeAwSettings, AwSettings caller);
+
+        void updateDownloadFaviconsEnabledLocked(long nativeAwSettings, AwSettings caller);
+
+        void setShouldDownloadFaviconsGlobal();
+
+        boolean getShouldDownloadFaviconsOnNavigation(long nativeAwSettings);
     }
 }

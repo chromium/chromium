@@ -159,8 +159,6 @@ class CompositorFrameConsumer;
 
 namespace {
 
-bool g_should_download_favicons = false;
-
 std::string* g_locale() {
   static base::NoDestructor<std::string> locale;
   return locale.get();
@@ -880,8 +878,9 @@ void AwContents::OnFindResultReceived(int active_ordinal,
                                        finished);
 }
 
-bool AwContents::ShouldDownloadFavicon(const GURL& icon_url) {
-  return g_should_download_favicons;
+bool AwContents::ShouldDownloadFavicon() {
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents_.get());
+  return aw_settings->ShouldDownloadFavicon();
 }
 
 void AwContents::OnReceivedIcon(const GURL& icon_url, const SkBitmap& bitmap) {
@@ -1635,10 +1634,6 @@ void AwContents::GrantFileSchemeAccesstoChildProcess(JNIEnv* env) {
 
 void AwContents::ResumeLoadingCreatedPopupWebContents(JNIEnv* env) {
   web_contents_->ResumeLoadingCreatedWebContents();
-}
-
-static void JNI_AwContents_SetShouldDownloadFavicons(JNIEnv* env) {
-  g_should_download_favicons = true;
 }
 
 namespace {

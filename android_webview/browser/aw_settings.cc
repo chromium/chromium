@@ -57,6 +57,8 @@ namespace android_webview {
 
 namespace {
 
+bool g_should_download_favicons = false;
+
 // Metrics on the count of difference cases when we populate the user-agent
 // metadata. These values are persisted to logs. Entries should not be
 // renumbered and numeric values should never be reused.
@@ -207,6 +209,7 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateMixedContentModeLocked(env, obj);
   UpdateAttributionBehaviorLocked(env, obj);
   UpdateSpeculativeLoadingAllowedLocked(env, obj);
+  UpdateDownloadFaviconsEnabledLocked(env, obj);
   UpdateBackForwardCacheEnabledLocked(env, obj);
   UpdateBackForwardCacheSettingsTimeoutLocked(env, obj);
   UpdateBackForwardCacheSettingsMaxPagesInCacheLocked(env, obj);
@@ -386,6 +389,17 @@ void AwSettings::UpdateOffscreenPreRasterLocked(JNIEnv* env,
     contents->SetOffscreenPreRaster(
         Java_AwSettings_getOffscreenPreRasterLocked(env, obj));
   }
+}
+
+void AwSettings::UpdateDownloadFaviconsEnabledLocked(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj) {
+  if (!web_contents()) {
+    return;
+  }
+
+  download_favicons_ =
+      Java_AwSettings_getDownloadFaviconsEnabledLocked(env, obj);
 }
 
 void AwSettings::UpdateAllowFileAccessLocked(JNIEnv* env,
@@ -588,6 +602,14 @@ void AwSettings::PopulateWebPreferences(WebPreferences* web_prefs) {
   // Grab the lock and call PopulateWebPreferencesLocked.
   Java_AwSettings_populateWebPreferences(env, scoped_obj,
                                          reinterpret_cast<int64_t>(web_prefs));
+}
+
+bool AwSettings::GetShouldDownloadFaviconsOnNavigation(JNIEnv* env) {
+  return ShouldDownloadFavicon();
+}
+
+bool AwSettings::ShouldDownloadFavicon() {
+  return g_should_download_favicons && download_favicons_;
 }
 
 void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
@@ -872,6 +894,10 @@ static ScopedJavaLocalRef<jobject> JNI_AwSettings_FromWebContents(
 static ScopedJavaLocalRef<jstring> JNI_AwSettings_GetDefaultUserAgent(
     JNIEnv* env) {
   return base::android::ConvertUTF8ToJavaString(env, GetUserAgent());
+}
+
+void JNI_AwSettings_SetShouldDownloadFaviconsGlobal(JNIEnv* env) {
+  g_should_download_favicons = true;
 }
 
 static ScopedJavaLocalRef<jobject> JNI_AwSettings_GetDefaultUserAgentMetadata(

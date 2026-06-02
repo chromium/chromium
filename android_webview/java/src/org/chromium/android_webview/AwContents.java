@@ -2044,10 +2044,6 @@ public class AwContents implements SmartClipProvider {
         AwContentsJni.get().setAwDrawSWFunctionTable(functionTablePointer);
     }
 
-    public static void setShouldDownloadFavicons() {
-        AwContentsJni.get().setShouldDownloadFavicons();
-    }
-
     /**
      * Disables contents of JS-to-Java bridge objects to be inspectable using Object.keys() method
      * and "for .. in" loops. This is intended for applications targeting earlier Android releases
@@ -3673,8 +3669,8 @@ public class AwContents implements SmartClipProvider {
     }
 
     /**
-     * Returns true if the web contents has an associated interstitial.
-     * This method is only called by tests.
+     * Returns true if the web contents has an associated interstitial. This method is only called
+     * by tests.
      */
     public boolean isDisplayingInterstitialForTesting() {
         return AwContentsJni.get().isDisplayingInterstitialForTesting(mNativeAwContents);
@@ -4940,8 +4936,6 @@ public class AwContents implements SmartClipProvider {
         void setAwDrawSWFunctionTable(long functionTablePointer);
 
         int getNativeInstanceCount();
-
-        void setShouldDownloadFavicons();
 
         void updateDefaultLocale(String locale, String localeList);
 

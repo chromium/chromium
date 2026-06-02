@@ -8,7 +8,7 @@ import android.content.ContentResolver;
 
 import com.android.webview.chromium.WebViewChromium.ApiCall;
 
-import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwSettings;
 
 /** Chromium implementation of WebIconDatabase -- big old no-op (base class is deprecated). */
 @SuppressWarnings("deprecation")
@@ -18,7 +18,7 @@ final class WebIconDatabaseAdapter extends android.webkit.WebIconDatabase {
         WebViewChromium.recordWebViewApiCall(
                 ApiCall.WEB_ICON_DATABASE_OPEN,
                 WebViewChromium.ApiCallUserAction.WEB_ICON_DATABASE_OPEN);
-        AwContents.setShouldDownloadFavicons();
+        AwSettings.setShouldDownloadFaviconsGlobal();
     }
 
     @Override

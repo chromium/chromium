@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/favicon_base/select_favicon_frames.h"
 #include "content/public/browser/browser_thread.h"
@@ -65,7 +66,6 @@ void IconHelper::DownloadFaviconCallback(
     SelectFaviconFrameIndices(original_bitmap_sizes,
                               std::vector<int>(1U, kLargestIconSize),
                               &best_indices, nullptr);
-
     listener_->OnReceivedIcon(
         image_url,
         bitmaps[best_indices.size() == 0 ? 0 : best_indices.front()]);
@@ -82,11 +82,14 @@ void IconHelper::DidUpdateFaviconURL(
 
     switch (candidate->icon_type) {
       case blink::mojom::FaviconIconType::kFavicon:
-        if ((listener_ &&
-             !listener_->ShouldDownloadFavicon(candidate->icon_url)) ||
+        if ((listener_ && !listener_->ShouldDownloadFavicon()) ||
             WasUnableToDownloadFavicon(candidate->icon_url)) {
+          base::UmaHistogramBoolean(
+              "Android.WebView.Navigation.DidDownloadFavicon", false);
           break;
         }
+        base::UmaHistogramBoolean(
+            "Android.WebView.Navigation.DidDownloadFavicon", true);
         web_contents()->DownloadImage(
             candidate->icon_url,
             true,              // Is a favicon

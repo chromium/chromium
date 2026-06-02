@@ -30,7 +30,7 @@ class IconHelper : public content::WebContentsObserver {
  public:
   class Listener {
    public:
-    virtual bool ShouldDownloadFavicon(const GURL& icon_url) = 0;
+    virtual bool ShouldDownloadFavicon() = 0;
     virtual void OnReceivedIcon(const GURL& icon_url,
                                 const SkBitmap& bitmap) = 0;
     virtual void OnReceivedTouchIconUrl(const std::string& url,

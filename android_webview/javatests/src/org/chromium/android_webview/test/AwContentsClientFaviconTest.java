@@ -21,6 +21,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -66,7 +67,7 @@ public class AwContentsClientFaviconTest extends AwParameterizedTest {
 
     @Before
     public void setUp() throws Exception {
-        AwContents.setShouldDownloadFavicons();
+        AwSettings.setShouldDownloadFaviconsGlobal();
         mContentsClient = new TestAwContentsClient();
         AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -160,5 +161,33 @@ public class AwContentsClientFaviconTest extends AwParameterizedTest {
                 mContentsClient
                         .getTouchIconHelper()
                         .hasTouchIcon(mWebServer.getBaseUrl() + TOUCHICON_REL_LINK_72));
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldDownloadFaviconFalse() throws Throwable {
+        final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+
+        settings.setDownloadFaviconsEnabled(false);
+        Assert.assertEquals(false, settings.getDownloadFaviconsEnabled());
+
+        final String faviconUrl =
+                mWebServer.setResponseBase64(
+                        FAVICON1_URL,
+                        CommonResources.FAVICON_DATA_BASE64,
+                        CommonResources.getImagePngHeaders(true));
+
+        final String pageUrl =
+                mWebServer.setResponse(
+                        FAVICON1_PAGE_URL,
+                        FAVICON1_PAGE_HTML,
+                        CommonResources.getTextHtmlHeaders(true));
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+
+        // give the favicon enough time to download
+        Thread.sleep(MAX_REQUEST_WAITING_LIMIT_MS);
+        Assert.assertEquals(0, mWebServer.getRequestCount(FAVICON1_URL));
+        Assert.assertNull(mContentsClient.getFaviconHelper().getIconNullable());
     }
 }

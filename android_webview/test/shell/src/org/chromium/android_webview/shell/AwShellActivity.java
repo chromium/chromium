@@ -106,7 +106,7 @@ public class AwShellActivity extends Activity {
         }
 
         mAwTestContainerView.getAwContents().loadUrl(startupUrl);
-        AwContents.setShouldDownloadFavicons();
+        AwSettings.setShouldDownloadFaviconsGlobal();
         mUrlTextView.setText(startupUrl);
 
         new WebContentsObserver(mWebContents) {

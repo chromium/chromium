@@ -1456,7 +1456,7 @@ class WebViewChromium
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.KITKAT) {
                 // On KK and above, favicons are automatically downloaded as the method
                 // old apps use to enable that behavior is deprecated.
-                AwContents.setShouldDownloadFavicons();
+                AwSettings.setShouldDownloadFaviconsGlobal();
             }
 
             if (mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP) {
