@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -56,6 +57,8 @@ public class NtpBackgroundDataCustomizedColorUnitTest {
                         darkModeColor,
                         lightModeBackgroundColor,
                         darkModeBackgroundColor);
+        assertNotNull(data1.getImageDrawable());
+
         NtpBackgroundDataCustomizedColor data2 =
                 new NtpBackgroundDataCustomizedColor(
                         mContext,

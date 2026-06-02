@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -50,6 +51,8 @@ public class NtpBackgroundDataColorUnitTest {
                         PlatformType.ANDROID_LOCAL,
                         id1,
                         /* isChromeColorDailyRefreshEnabled= */ true);
+        assertNotNull(data1.getImageDrawable());
+
         NtpBackgroundDataColor data2 =
                 new NtpBackgroundDataColor(
                         mContext,
