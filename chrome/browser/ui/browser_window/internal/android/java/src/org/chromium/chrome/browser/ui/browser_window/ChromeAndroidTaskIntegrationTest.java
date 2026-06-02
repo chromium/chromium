@@ -82,7 +82,6 @@ import java.util.concurrent.atomic.AtomicReference;
                 "Tests will be flaky if batched as they create/close windows and change window"
                         + " states in quick succession")
 @NullMarked
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289000
 public class ChromeAndroidTaskIntegrationTest {
 
     @Rule
@@ -380,6 +379,7 @@ public class ChromeAndroidTaskIntegrationTest {
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     @SuppressLint("NewApi" /* @MinAndroidSdkLevel already specifies the required SDK */)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289000
     public void getBoundsInDp_returnsCorrectBounds() {
         // Arrange
         mFreshCtaTransitTestRule.startOnBlankPage();
@@ -625,6 +625,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289000
     public void isMaximized_trueByDefault() {
         // Arrange
         mFreshCtaTransitTestRule.startOnBlankPage();
@@ -1011,6 +1012,7 @@ public class ChromeAndroidTaskIntegrationTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.R)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289000
     public void createBrowserWindowSync_createsMaximizedChromeTabbedActivity() {
         // Arrange.
         mFreshCtaTransitTestRule.startOnBlankPage();
@@ -1081,6 +1083,7 @@ public class ChromeAndroidTaskIntegrationTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM /* test needs freeform windows */)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289000
     public void createPendingTask_requestShowInactive_dispatchesShowInactive() {
         // Arrange.
         mFreshCtaTransitTestRule.startOnBlankPage();
