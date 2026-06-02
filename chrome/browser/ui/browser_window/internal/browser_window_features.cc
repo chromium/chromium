@@ -283,7 +283,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   browser_actions_->InitializeBrowserActions();
 
-  if (webui_browser::IsWebUIBrowserEnabled()) {
+  if (webui_browser::IsWebUIBrowserEnabled() &&
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
     browser_elements_ =
         GetUserDataFactory().CreateInstance<BrowserElementsWebUiBrowser>(
             *browser, *browser);
