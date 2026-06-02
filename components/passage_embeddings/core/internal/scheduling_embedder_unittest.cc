@@ -345,6 +345,50 @@ TEST_F(SchedulingEmbedderTest, RecordsHistograms) {
                                      3, 1);
 }
 
+TEST_F(SchedulingEmbedderTest, JobCanceledDuringQueueLimitCallback) {
+  auto embedder = std::make_unique<SchedulingEmbedder>(
+      embedder_metadata_provider_.get(),
+      base::BindRepeating(&GetEmbeddingsStub::GetEmbeddings,
+                          base::Unretained(&get_embeddings_stub_)),
+      /*max_jobs=*/2u,
+      /*max_batch_size=*/1u,
+      /*use_performance_scenario=*/false);
+
+  std::vector<SchedulingEmbedder::GetEmbeddingsResultCallback> callbacks;
+  EXPECT_CALL(get_embeddings_stub_, GetEmbeddings)
+      .WillOnce([&](std::vector<std::string> passages, PassagePriority priority,
+                    SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
+        callbacks.push_back(std::move(callback));
+      });
+
+  // Enqueue job1, `in_progress` is true since it's the only job.
+  Embedder::Job job1 = embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"test passage 1"},
+      base::BindOnce(&IgnoreResults));
+
+  // Enqueue job2, `in_progress` is false.
+  std::optional<Embedder::Job> job2;
+  bool callback_run = false;
+  job2 = embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"test passage 2"},
+      base::BindLambdaForTesting([&](std::vector<std::string> passages,
+                                     std::vector<Embedding> embeddings,
+                                     Embedder::TaskId task_id,
+                                     ComputeEmbeddingsStatus status) {
+        EXPECT_EQ(status, ComputeEmbeddingsStatus::kCanceled);
+        job2.reset();
+        callback_run = true;
+      }));
+
+  // Enqueue job3, exceeding queue limit. job2 should be synchronously canceled,
+  // triggering its callback to reset job2.
+  Embedder::Job job3 = embedder->ComputePassagesEmbeddings(
+      PassagePriority::kPassive, {"test passage 3"},
+      base::BindOnce(&IgnoreResults));
+
+  EXPECT_TRUE(callback_run);
+}
+
 TEST_F(SchedulingEmbedderTest, LimitsJobCount) {
   auto embedder = std::make_unique<SchedulingEmbedder>(
       embedder_metadata_provider_.get(),
