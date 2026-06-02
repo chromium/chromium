@@ -263,8 +263,12 @@
   text-decoration: none;
 }
 
-/* Always hide nav elements. */
-#appFlexParent nav {
+/*
+ * Hide nav elements unless there is an active selection.
+ * TODO: crbug.com/517614133 - The has_selection flag must be improved to
+ * indicate if the selection consists purely of nav elements or not.
+ */
+#appFlexParent:not(.has-selection) nav {
   display: none;
 }
 

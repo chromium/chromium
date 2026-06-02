@@ -9,7 +9,9 @@ import type {AppElement} from './app.js';
 export function getHtml(this: AppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="appFlexParent" class="${this.getImmersiveClass_()}">
+<div id="appFlexParent"
+    class="${this.getImmersiveClass_()} ${
+        this.hasValidSelection_ ? 'has-selection' : ''}">
   <!-- Overlay to prevent cursor from interacting with background elements when
   the settings menu is open. -->
   <div id="settingsOverlay" class="settings-overlay"></div>

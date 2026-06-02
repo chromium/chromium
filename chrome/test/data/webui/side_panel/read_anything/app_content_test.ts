@@ -387,6 +387,34 @@ suite('AppContent', () => {
       assertEquals(text, app.$.container.textContent);
     });
 
+    test('adds has-selection class when valid selection', async () => {
+      // Create and append a nav element to test visibility
+      const nav = document.createElement('nav');
+      app.$.appFlexParent.appendChild(nav);
+
+      readingMode.hasValidSelection = true;
+      app.updateContent();
+      await microtasksFinished();
+
+      assertTrue(app.$.appFlexParent.classList.contains('has-selection'));
+      // Verify that the nav element is visible (display is not 'none')
+      assertTrue(window.getComputedStyle(nav).display !== 'none');
+    });
+
+    test('removes has-selection class when no valid selection', async () => {
+      // Create and append a nav element to test visibility
+      const nav = document.createElement('nav');
+      app.$.appFlexParent.appendChild(nav);
+
+      readingMode.hasValidSelection = false;
+      app.updateContent();
+      await microtasksFinished();
+
+      assertFalse(app.$.appFlexParent.classList.contains('has-selection'));
+      // Verify that the nav element is hidden by the CSS rule
+      assertEquals('none', window.getComputedStyle(nav).display);
+    });
+
     test('sets empty if no new content', async () => {
       const empty = 'empty';
       readingMode.getTextContent = () => '';

@@ -88,6 +88,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       lineFocusStyle_: {type: Object},
       lineFocusMovement_: {type: Number},
       isDocsLoadMoreButtonVisible_: {type: Boolean},
+      hasValidSelection_: {type: Boolean},
     };
   }
 
@@ -98,6 +99,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor lineFocusMovement_: LineFocusMovement|null = null;
 
   protected accessor isDocsLoadMoreButtonVisible_: boolean = false;
+  protected accessor hasValidSelection_: boolean = false;
   protected isImmersiveEnabled_: boolean = false;
 
   // If the speech engine is considered "loaded." If it is, we should display
@@ -398,6 +400,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.willDrawAgainSoon_ = chrome.readingMode.requiresDistillation;
     this.isDocsLoadMoreButtonVisible_ =
         chrome.readingMode.isDocsLoadMoreButtonVisible;
+    this.hasValidSelection_ = chrome.readingMode.hasValidSelection;
 
     // Remove all children from container. Use `replaceChildren` rather than
     // setting `innerHTML = ''` in order to remove all listeners, too.
