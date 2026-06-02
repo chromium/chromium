@@ -442,4 +442,41 @@ TEST_F(SearchIntegrityTest, CheckForSpoofing_ObfuscatedUrl) {
   EXPECT_FALSE(report.has_cross_domain_search);
 }
 
+TEST_F(SearchIntegrityTest, CheckCustomPopulatedDefault_False) {
+  TemplateURL* turl = AddSearchEngine(u"Custom Engine", "http://custom.com",
+                                      /*created_by_policy=*/false,
+                                      /*prepopulate_id=*/0);
+  SetDefaultSearchProvider(turl);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_FALSE(report.custom_populated_default);
+}
+
+TEST_F(SearchIntegrityTest, CheckCustomPopulatedDefault_True) {
+  TemplateURL* turl = AddSearchEngine(u"Custom with ID", "http://custom-id.com",
+                                      /*created_by_policy=*/false,
+                                      /*prepopulate_id=*/123);
+  SetDefaultSearchProvider(turl);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.has_custom_option);
+  EXPECT_TRUE(report.custom_populated_default);
+}
+
+TEST_F(SearchIntegrityTest, Histograms_CustomPopulatedDefault) {
+  base::HistogramTester histogram_tester;
+
+  TemplateURL* turl = AddSearchEngine(u"Custom with ID", "http://custom-id.com",
+                                      /*created_by_policy=*/false,
+                                      /*prepopulate_id=*/123);
+  SetDefaultSearchProvider(turl);
+
+  TriggerAllowlistInitialized();
+
+  histogram_tester.ExpectUniqueSample("Search.Integrity.CustomPopulatedDefault",
+                                      true, 1);
+}
+
 }  // namespace search_integrity

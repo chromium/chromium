@@ -186,6 +186,8 @@ void SearchIntegrity::OnTemplateURLServiceLoaded() {
                               report.is_default_enforced_without_policy);
     base::UmaHistogramEnumeration("Search.Integrity.DuplicateKeyword",
                                   report.duplicate_keyword_status);
+    base::UmaHistogramBoolean("Search.Integrity.CustomPopulatedDefault",
+                              report.custom_populated_default);
 
     if (report.referral_param_found.has_value()) {
       base::UmaHistogramEnumeration("Search.Integrity.Referral.ParameterFound",
@@ -312,7 +314,9 @@ SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
 
   if (IsDisallowedCustomSearchEngine(default_search_provider)) {
     report.is_default_custom = true;
-
+    if (default_search_provider->prepopulate_id() != 0) {
+      report.custom_populated_default = true;
+    }
     const std::u16string& default_name = default_search_provider->short_name();
 
     for (const TemplateURL* template_url : template_urls) {

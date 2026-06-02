@@ -62,6 +62,7 @@ struct SearchIntegrityReport {
   std::optional<SearchReferralParam> referral_param_found;
   bool is_default_custom_with_matching_policy_engine = false;
   bool is_default_enforced_without_policy = false;
+  bool custom_populated_default = false;
   SearchDuplicateKeyword duplicate_keyword_status =
       SearchDuplicateKeyword::kNoDuplicates;
 };
