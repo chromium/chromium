@@ -13,7 +13,7 @@ specific_include_rules = {
     "+chromeos/ash/components/assistant/buildflags.h",
     "+chromeos/components/kiosk/kiosk_utils.h",
   ],
-  ".*test.cc": [
+  ".*test\\.cc": [
     "+cc/test",
   ],
 }

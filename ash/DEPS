@@ -181,17 +181,17 @@ specific_include_rules = {
   "keyboard_capability_unittest\\.cc": [
     "+device/udev_linux/fake_udev_loader.h",
   ],
-  "policy_recommendation_restorer_unittest.cc": [
+  "policy_recommendation_restorer_unittest\\.cc": [
     "+components/sync_preferences/testing_pref_service_syncable.h"
   ],
   "root_window_controller\\.(cc|h)": [
     "+ash/host"
   ],
-  "shell.cc": [
+  "shell\\.cc": [
     "+ash/host/ash_window_tree_host_init_params.h",
     "+chromeos/ash/components/fwupd",
   ],
-  "window_manager.cc": [
+  "window_manager\\.cc": [
     "+ash/host/ash_window_tree_host.h"
   ],
   ".*test\\.cc": [

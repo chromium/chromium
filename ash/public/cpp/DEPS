@@ -18,10 +18,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "saved_desk_delegate.h": [
+  "saved_desk_delegate\\.h": [
     "+components/favicon_base/favicon_callback.h"
   ],
-  "test_saved_desk_delegate.h": [
+  "test_saved_desk_delegate\\.h": [
     "+components/favicon_base/favicon_callback.h"
   ],
 }
