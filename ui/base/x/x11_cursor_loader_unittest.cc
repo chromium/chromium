@@ -262,4 +262,31 @@ TEST(XCursorLoaderTest, Animated) {
   EXPECT_EQ(images[1].frame_delay.InMilliseconds(), 500);
 }
 
+TEST(XCursorLoaderTest, ThemeNameValidation) {
+  const char* const kInvalidThemes[] = {
+      "",
+      ".",
+      "..",
+      "/foo",
+      "/tmp/evil",
+      "../foo",
+      "foo/..",
+      "../../../../tmp/poc-cursor-evil",
+      "foo/bar",
+  };
+  for (const char* theme : kInvalidThemes) {
+    EXPECT_FALSE(IsValidCursorThemeNameForTesting(theme));
+  }
+
+  const char* const kValidThemes[] = {
+      "default",
+      "Adwaita",
+      "DMZ-White",
+      "my_theme-123",
+  };
+  for (const char* theme : kValidThemes) {
+    EXPECT_TRUE(IsValidCursorThemeNameForTesting(theme));
+  }
+}
+
 }  // namespace ui

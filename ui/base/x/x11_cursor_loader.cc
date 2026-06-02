@@ -151,12 +151,22 @@ base::FilePath CanonicalizePath(base::FilePath path) {
   return path;
 }
 
+bool IsValidCursorThemeName(const std::string& theme) {
+  base::FilePath theme_path(theme);
+  return !theme.empty() && theme != "." && !theme_path.IsAbsolute() &&
+         !theme_path.ReferencesParent() && theme_path.BaseName() == theme_path;
+}
+
 scoped_refptr<base::RefCountedMemory> ReadCursorFromThemeImpl(
     const std::string& theme,
     const std::string& cursor_name,
     base::flat_set<ThemeAndCursorName>* parent_theme_and_cursor_names,
     base::flat_map<ThemeAndCursorName, scoped_refptr<base::RefCountedMemory>>*
         cache) {
+  if (!IsValidCursorThemeName(theme)) {
+    return nullptr;
+  }
+
   constexpr const char kCursorDir[] = "cursors";
   constexpr const char kThemeInfo[] = "index.theme";
 
@@ -265,6 +275,10 @@ std::vector<XCursorLoader::Image> ReadCursorImages(
 }
 
 }  // namespace
+
+bool IsValidCursorThemeNameForTesting(const std::string& theme) {
+  return IsValidCursorThemeName(theme);
+}
 
 XCursorLoader::XCursorLoader(x11::Connection* connection,
                              base::RepeatingClosure on_cursor_config_changed)
