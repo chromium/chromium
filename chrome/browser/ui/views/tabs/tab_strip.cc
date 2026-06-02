@@ -200,6 +200,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   void OnMouseCaptureLost() override { EndDrag(EndDragReason::kCaptureLost); }
 
   void OnGestureEvent(ui::GestureEvent* event) override {
+    auto weak_this = weak_factory_.GetWeakPtr();
+
     Liveness tabstrip_alive = Liveness::kAlive;
     switch (event->type()) {
       case ui::EventType::kGestureScrollEnd:
@@ -229,7 +231,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
 
     // If tabstrip was destroyed (during ContinueDrag above), return early to
     // avoid UAF below.
-    if (tabstrip_alive == Liveness::kDeleted) {
+    if (!weak_this || tabstrip_alive == Liveness::kDeleted) {
       return;
     }
 
