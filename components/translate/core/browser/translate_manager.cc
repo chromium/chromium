@@ -716,11 +716,6 @@ void TranslateManager::RecordTranslateEvent(int event_type) {
       event_type, translate_driver_->GetUkmSourceId(), translate_event_.get());
 }
 
-bool TranslateManager::ShouldOverrideMatchesPreviousLanguageDecision() {
-  return translate_ranker_->ShouldOverrideMatchesPreviousLanguageDecision(
-      translate_driver_->GetUkmSourceId(), translate_event_.get());
-}
-
 bool TranslateManager::ShouldSuppressBubbleUI(
     std::string_view target_language) {
   // Suppress the UI if the user navigates to a page with the same language as
@@ -731,10 +726,11 @@ bool TranslateManager::ShouldSuppressBubbleUI(
   // translation after the user navigates to another page.
   DCHECK(!target_language.empty());
   if (language_state_.href_translate() == target_language ||
-      language_state_.HasLanguageChanged() ||
-      ShouldOverrideMatchesPreviousLanguageDecision()) {
+      language_state_.HasLanguageChanged()) {
     return false;
   }
+
+  RecordTranslateEvent(metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE);
 
   GetActiveTranslateMetricsLogger()->LogTriggerDecision(
       TriggerDecision::kDisabledMatchesPreviousLanguage);

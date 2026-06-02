@@ -738,28 +738,6 @@ TEST_F(TranslateManagerTest, TestRecordTranslateEvent) {
       ::metrics::TranslateEventProto::USER_ACCEPT);
 }
 
-TEST_F(TranslateManagerTest,
-       TestShouldOverrideMatchesPreviousLanguageDecision) {
-  PrepareTranslateManager();
-  EXPECT_CALL(
-      mock_translate_ranker_,
-      ShouldOverrideMatchesPreviousLanguageDecision(
-          _,
-          Pointee(EqualsTranslateEventProto(::metrics::TranslateEventProto()))))
-      .WillOnce(Return(false));
-  EXPECT_FALSE(
-      translate_manager_->ShouldOverrideMatchesPreviousLanguageDecision());
-
-  EXPECT_CALL(
-      mock_translate_ranker_,
-      ShouldOverrideMatchesPreviousLanguageDecision(
-          _,
-          Pointee(EqualsTranslateEventProto(::metrics::TranslateEventProto()))))
-      .WillOnce(Return(true));
-  EXPECT_TRUE(
-      translate_manager_->ShouldOverrideMatchesPreviousLanguageDecision());
-}
-
 TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_Default) {
   PrepareTranslateManager();
   SetHasLanguageChanged(true);
@@ -771,24 +749,17 @@ TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_Default) {
 TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_HasLanguageChangedFalse) {
   PrepareTranslateManager();
   SetHasLanguageChanged(false);
+
+  ::metrics::TranslateEventProto expected_tep;
   EXPECT_CALL(mock_translate_ranker_,
-              ShouldOverrideMatchesPreviousLanguageDecision(_, _))
-      .WillOnce(Return(false));
+              RecordTranslateEvent(
+                  ::metrics::TranslateEventProto::MATCHES_PREVIOUS_LANGUAGE, _,
+                  Pointee(EqualsTranslateEventProto(expected_tep))))
+      .Times(1);
 
   ExpectHighestPriorityTriggerDecision(
       TriggerDecision::kDisabledMatchesPreviousLanguage);
   EXPECT_TRUE(translate_manager_->ShouldSuppressBubbleUI("fr"));
-}
-
-TEST_F(TranslateManagerTest, ShouldSuppressBubbleUI_Override) {
-  PrepareTranslateManager();
-  base::HistogramTester histogram_tester;
-  EXPECT_CALL(mock_translate_ranker_,
-              ShouldOverrideMatchesPreviousLanguageDecision(_, _))
-      .WillOnce(Return(true));
-  SetHasLanguageChanged(false);
-  EXPECT_FALSE(translate_manager_->ShouldSuppressBubbleUI("fr"));
-  histogram_tester.ExpectTotalCount(kTranslatePageLoadTriggerDecision, 0);
 }
 
 TEST_F(TranslateManagerTest,

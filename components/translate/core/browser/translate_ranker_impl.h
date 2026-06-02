@@ -48,7 +48,6 @@ extern const char kDefaultTranslateRankerModelURL[];
 // enabling enforcement implies (forces) enabling queries.
 BASE_DECLARE_FEATURE(kTranslateRankerQuery);
 BASE_DECLARE_FEATURE(kTranslateRankerEnforcement);
-BASE_DECLARE_FEATURE(kTranslateRankerPreviousLanguageMatchesOverride);
 
 struct TranslateRankerFeatures {
   TranslateRankerFeatures();
@@ -116,9 +115,6 @@ class TranslateRankerImpl : public TranslateRanker {
       int event_type,
       ukm::SourceId ukm_source_id,
       metrics::TranslateEventProto* translate_event) override;
-  bool ShouldOverrideMatchesPreviousLanguageDecision(
-      ukm::SourceId ukm_source_id,
-      metrics::TranslateEventProto* translate_event) override;
 
   void OnModelAvailable(std::unique_ptr<assist_ranker::RankerModel> model);
 
@@ -159,10 +155,6 @@ class TranslateRankerImpl : public TranslateRanker {
   // Tracks whether or not translate ranker enforcement is enabled. Note that
   // that also enables the code paths for translate ranker querying.
   bool is_enforcement_enabled_ = true;
-
-  // When set to true, overrides UI suppression when previous language
-  // matches current language in bubble UI.
-  bool is_previous_language_matches_override_enabled_ = false;
 
   // Saved cache of translate event protos.
   std::vector<metrics::TranslateEventProto> event_cache_;

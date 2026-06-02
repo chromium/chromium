@@ -52,14 +52,6 @@ class TranslateRanker : public KeyedService {
       ukm::SourceId ukm_source_id,
       metrics::TranslateEventProto* translate_event) = 0;
 
-  // If override of MATCHES_PREVIOUS_LANGUAGE is enabled, will return true and
-  // add MATCHES_PREVIOUS_LANGUAGE to |translate_event.decision_overrides()|. If
-  // override is disabled, returns false and finalizes and records
-  // |translate_event| with MATCHES_PREVIOUS_LANGUAGE event type.
-  virtual bool ShouldOverrideMatchesPreviousLanguageDecision(
-      ukm::SourceId ukm_source_id,
-      metrics::TranslateEventProto* translate_event) = 0;
-
   // Override the default enabled/disabled state of translate event logging.
   virtual void EnableLogging(bool enable_logging) = 0;
 };

@@ -211,10 +211,6 @@ class TranslateManager {
   // See https://github.com/dtapuska/html-translate
   static bool IsAvailable(const TranslatePrefs* prefs);
 
-  // Returns true if the MATCHES_PREVIOUS_LANGUAGE decision should be overridden
-  // and logs the event appropriately.
-  bool ShouldOverrideMatchesPreviousLanguageDecision();
-
   // Returns true if the BubbleUI should be suppressed, where |target_language|
   // is the target language that would be shown in the UI.
   bool ShouldSuppressBubbleUI(std::string_view target_language);
