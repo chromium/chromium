@@ -509,6 +509,11 @@ class AvdConfig:
           self._system_image_name = elements[0].getAttribute('path')
         break
 
+    # If package.xml is not found, fall back to the "system_image_name" field
+    # in the config file.
+    if not self._system_image_name:
+      self._system_image_name = self._config.system_image_name
+
     if not self._system_image_name:
       raise AvdException('Could not generate system_image_name.')
     return self._system_image_name
