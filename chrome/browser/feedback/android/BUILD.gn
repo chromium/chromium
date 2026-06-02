@@ -82,6 +82,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/util/android:java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/prefs/android:java",

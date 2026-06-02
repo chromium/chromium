@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.feedback;
 
 import android.app.Activity;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -72,4 +74,13 @@ public interface HelpAndFeedbackLauncher {
             @Nullable String url,
             final @Nullable String categoryTag,
             final @Nullable Map<String, String> feedContext);
+
+    /**
+     * @return The resource ID of the help string that is valid for the current policy.
+     */
+    static @StringRes int getHelpMenuStringRes() {
+        return FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()
+                ? R.string.menu_help
+                : R.string.menu_help_no_feedback;
+    }
 }

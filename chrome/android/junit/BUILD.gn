@@ -1536,6 +1536,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/feedback/ChromeFeedbackCollectorUnitTest.java",
       "src/org/chromium/chrome/browser/feedback/FeedFeedbackCollectorTest.java",
       "src/org/chromium/chrome/browser/feedback/FeedbackPolicyManagerTest.java",
+      "src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherTest.java",
       "src/org/chromium/chrome/browser/feedback/UploadedCrashIdsFeedbackSourceTest.java",
       "src/org/chromium/chrome/browser/findinpage/FindToolbarManagerTest.java",
       "src/org/chromium/chrome/browser/flags/BadFlagsSnackbarManagerTest.java",

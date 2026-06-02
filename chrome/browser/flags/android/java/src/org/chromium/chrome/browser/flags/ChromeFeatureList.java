@@ -1220,6 +1220,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
     public static final CachedFlag sUseWebUiNtpAndroid =
             newCachedFlag(USE_WEB_UI_NTP_ANDROID, false);
+    public static final CachedFlag sUserFeedbackAllowedPolicy =
+            newCachedFlag(USER_FEEDBACK_ALLOWED_POLICY, false);
     public static final CachedFlag sVirtualKeyboardTransientInnerHeightFix =
             newCachedFlag(VIRTUAL_KEYBOARD_TRANSIENT_INNER_HEIGHT_FIX, true);
     public static final CachedFlag sWebApkMinShellApkVersion =
@@ -1406,6 +1408,7 @@ public abstract class ChromeFeatureList {
                     sUseInitialNetworkStateAtStartup,
                     sUseLibunwindstackNativeUnwinderAndroid,
                     sUseWebUiNtpAndroid,
+                    sUserFeedbackAllowedPolicy,
                     sVirtualKeyboardTransientInnerHeightFix,
                     sWebApkMinShellApkVersion,
                     sWebAppShortEdgesCutoutMode

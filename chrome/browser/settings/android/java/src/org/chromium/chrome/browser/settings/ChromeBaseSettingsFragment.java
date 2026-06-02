@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.settings;
 
+import androidx.annotation.StringRes;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.build.annotations.Initializer;
@@ -77,6 +78,13 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
      */
     public HelpAndFeedbackLauncher getHelpAndFeedbackLauncher() {
         return HelpAndFeedbackLauncherFactory.getForProfile(mProfile);
+    }
+
+    /**
+     * @return The resource ID of the help string that is valid for the current policy.
+     */
+    protected @StringRes int getHelpMenuStringRes() {
+        return HelpAndFeedbackLauncher.getHelpMenuStringRes();
     }
 
     /**

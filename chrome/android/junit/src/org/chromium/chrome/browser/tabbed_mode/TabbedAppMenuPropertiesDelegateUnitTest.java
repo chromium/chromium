@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicEnablingJni;
@@ -272,6 +273,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private Pane mPane;
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
+    @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -362,6 +364,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Mockito.when(mAppBannerManagerJniMock.getInstallableWebAppManifestId(any()))
                 .thenReturn(null);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
+        FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
 
         SyncServiceFactory.setInstanceForTesting(mSyncService);

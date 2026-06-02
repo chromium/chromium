@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feed.FeedFeatures;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -1892,11 +1893,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private ListItem buildHelpItem() {
+        int helpString = HelpAndFeedbackLauncher.getHelpMenuStringRes();
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
                 buildModelForStandardMenuItem(
                         R.id.help_id,
-                        R.string.menu_help,
+                        helpString,
                         shouldShowIconBeforeItem() ? R.drawable.ic_help_24dp : 0));
     }
 
@@ -1906,11 +1908,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         submenuItems.add(buildHelpCenterItem());
         submenuItems.add(buildReportIssueItem());
 
+        int helpString = HelpAndFeedbackLauncher.getHelpMenuStringRes();
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
                 buildModelForMenuItemWithSubmenu(
                         R.id.help_parent_menu_id,
-                        R.string.menu_help,
+                        helpString,
                         shouldShowIconBeforeItem() ? R.drawable.ic_help_24dp : Resources.ID_NULL,
                         () -> submenuItems));
     }

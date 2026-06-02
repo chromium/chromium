@@ -576,7 +576,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                             Menu.NONE,
                             R.id.menu_id_site_settings_help,
                             Menu.NONE,
-                            R.string.menu_help);
+                            getSiteSettingsDelegate().getHelpMenuStringRes());
             help.setIcon(
                     TraceEventVectorDrawableCompat.create(
                             getResources(), R.drawable.ic_help_24dp, getContext().getTheme()));

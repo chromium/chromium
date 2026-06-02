@@ -12,6 +12,7 @@ import androidx.core.view.MenuProvider;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 
 /** A MenuProvider that adds a help icon to the toolbar and handles its clicks. */
@@ -27,7 +28,11 @@ public class AutofillHelpMenuProvider implements MenuProvider {
     public void onCreateMenu(Menu menu, MenuInflater menuInflater) {
         menu.clear();
         MenuItem help =
-                menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
+                menu.add(
+                        Menu.NONE,
+                        R.id.menu_id_targeted_help,
+                        Menu.NONE,
+                        HelpAndFeedbackLauncher.getHelpMenuStringRes());
         help.setIcon(R.drawable.ic_help_24dp);
     }
 

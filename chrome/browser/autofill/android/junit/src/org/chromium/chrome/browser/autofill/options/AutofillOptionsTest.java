@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerJni;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -132,6 +133,7 @@ public class AutofillOptionsTest {
     @Mock private PrefService mPrefs;
     @Mock private Profile mProfile;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
     @Mock private Runnable mRestartRunnable;
     @Mock private ModalDialogManager mDialogManager;
     @Mock private AutofillManager mAutofillManager;
@@ -155,6 +157,8 @@ public class AutofillOptionsTest {
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
+        FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
+        doReturn(true).when(mFeedbackPolicyManager).isUserFeedbackAllowed();
         ShadowApplication shadowApplication = Shadow.extract(RuntimeEnvironment.getApplication());
         shadowApplication.setSystemService(Context.AUTOFILL_MANAGER_SERVICE, mAutofillManager);
 

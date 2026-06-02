@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Browser;
 
+import androidx.annotation.StringRes;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.browserservices.permissiondelegation.Installe
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -235,6 +237,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean isHelpAndFeedbackEnabled() {
         return true;
+    }
+
+    @Override
+    public @StringRes int getHelpMenuStringRes() {
+        return HelpAndFeedbackLauncher.getHelpMenuStringRes();
     }
 
     @Override

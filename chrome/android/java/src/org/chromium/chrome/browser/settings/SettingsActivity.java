@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFac
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressHelper.OnKeyDownHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicHelper;
@@ -1027,7 +1028,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         Menu.NONE,
                         R.id.menu_id_general_help,
                         Menu.CATEGORY_SECONDARY,
-                        R.string.menu_help);
+                        HelpAndFeedbackLauncher.getHelpMenuStringRes());
         help.setIcon(
                 TraceEventVectorDrawableCompat.create(
                         getResources(), R.drawable.ic_help_24dp, getTheme()));

@@ -23,6 +23,9 @@ import org.chromium.components.user_prefs.UserPrefs;
 /**
  * Provides information for the user feedback related policies. Monitors changes for the feedback
  * preference. Safe to call pre-native.
+ *
+ * <p>TODO(b/467060116): Update this class from application-scoped to one-per-profile when Chrome
+ * Android supports multiple profile switching.
  */
 @NullMarked
 public class FeedbackPolicyManager {
@@ -87,7 +90,7 @@ public class FeedbackPolicyManager {
      * @return True if the user feedback is allowed by enterprise policy. Safe to call pre-native.
      */
     public boolean isUserFeedbackAllowed() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.USER_FEEDBACK_ALLOWED_POLICY)) {
+        if (!ChromeFeatureList.sUserFeedbackAllowedPolicy.isEnabled()) {
             return true; // Default fallback when flag is disabled
         }
         return mSharedPreferenceManager.readBoolean(

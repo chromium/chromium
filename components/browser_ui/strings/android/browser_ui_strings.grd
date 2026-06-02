@@ -409,6 +409,9 @@
       <message name="IDS_MENU_HELP" desc="Menu item for opening the help page. [CHAR_LIMIT=27]">
         Help &amp; feedback
       </message>
+      <message name="IDS_MENU_HELP_NO_FEEDBACK" desc="Menu item for opening the help page when feedback is disabled. [CHAR_LIMIT=27]">
+        Help
+      </message>
       <message name="IDS_AUTOMATICALLY_BLOCKED" desc="Description displayed next to an origin when it was placed under embargo by Chrome. This indicates to the user that the origin is blocked automatically instead of being the result of the user's decision.">
         Automatically blocked
       </message>
