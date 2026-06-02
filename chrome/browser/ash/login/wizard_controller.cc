@@ -24,6 +24,7 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
@@ -2913,6 +2914,15 @@ void WizardController::ObtainContextAndFinalizeAuth() {
 
 void WizardController::FinalizeAuthWithContext(
     std::unique_ptr<UserContext> context) {
+  if (!context) {
+    // Session has expired.
+    LOG(ERROR) << "Session expired before login could proceed.";
+    // Also dump to see in what scenarios would this happen.
+    base::debug::DumpWithoutCrashing(FROM_HERE);
+    session_manager::SessionManager::Get()->RequestSignOut();
+    return;
+  }
+
   auto mount_state = context->GetMountState();
   if (!mount_state.has_value()) {
     // In certain edge cases, such as a Reauthentication that transitions into
