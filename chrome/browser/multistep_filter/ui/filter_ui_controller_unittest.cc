@@ -67,11 +67,15 @@ class MockMultistepFilterService : public MultistepFilterService {
   MockMultistepFilterService(
       std::unique_ptr<AnnotationIndexClient> extraction_client,
       std::unique_ptr<FilterStore> store)
-      : MultistepFilterService(std::move(extraction_client),
-                               std::move(store),
-                               /*identity_manager=*/nullptr,
-                               /*consent_helper=*/nullptr,
-                               /*log_router=*/nullptr) {}
+      : MultistepFilterService([&]() {
+          MultistepFilterService::Params params;
+          params.annotation_index_client = std::move(extraction_client);
+          params.filter_store = std::move(store);
+          params.identity_manager = nullptr;
+          params.consent_helper = nullptr;
+          params.log_router = nullptr;
+          return params;
+        }()) {}
   ~MockMultistepFilterService() override = default;
 
   MOCK_METHOD(void,

@@ -40,6 +40,8 @@ class MultistepFilterServiceTestApi {
     service_->observer_for_test_ = observer;
   }
 
+  FilterStore* filter_store() { return service_->filter_store_.get(); }
+
  private:
   raw_ref<MultistepFilterService> service_;
 };

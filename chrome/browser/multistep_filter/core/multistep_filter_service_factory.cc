@@ -5,6 +5,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_log_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -37,6 +38,7 @@ MultistepFilterServiceFactory* MultistepFilterServiceFactory::GetInstance() {
 MultistepFilterServiceFactory::MultistepFilterServiceFactory()
     : ProfileKeyedServiceFactory("MultistepFilterService",
                                  ProfileSelections::BuildForRegularProfile()) {
+  DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(MultistepFilterLogRouterFactory::GetInstance());
 }
@@ -62,12 +64,17 @@ MultistepFilterServiceFactory::BuildServiceInstanceForBrowserContext(
               ->GetURLLoaderFactoryForBrowserProcess(),
           identity_manager, log_router);
 
-  return std::make_unique<MultistepFilterService>(
-      std::move(annotation_index_client), std::make_unique<FilterStore>(),
-      identity_manager,
-      unified_consent::UrlKeyedDataCollectionConsentHelper::
-          NewAnonymizedDataCollectionConsentHelper(profile->GetPrefs()),
-      log_router);
+  MultistepFilterService::Params params;
+  params.annotation_index_client = std::move(annotation_index_client);
+  params.filter_store = std::make_unique<FilterStore>();
+  params.identity_manager = identity_manager;
+  params.consent_helper = unified_consent::UrlKeyedDataCollectionConsentHelper::
+      NewAnonymizedDataCollectionConsentHelper(profile->GetPrefs());
+  params.log_router = log_router;
+  params.history_service = HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::EXPLICIT_ACCESS);
+
+  return std::make_unique<MultistepFilterService>(std::move(params));
 }
 
 }  // namespace multistep_filter

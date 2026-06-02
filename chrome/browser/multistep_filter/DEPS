@@ -8,6 +8,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*browsertest\.cc": [
+    "+components/history/core/browser",
     "+components/prefs",
     "+components/signin/public/identity_manager",
     "+components/version_info",

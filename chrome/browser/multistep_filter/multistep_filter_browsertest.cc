@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller_test_api.h"
@@ -26,12 +27,14 @@
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_test_utils.h"
 #include "components/multistep_filter/core/annotation_index/fake_annotation_index_server.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "components/multistep_filter/core/multistep_filter_service_test_api.h"
+#include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -43,6 +46,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -167,9 +171,9 @@ class MultistepFilterBrowserTest
   }
 
   FakeAnnotationIndexServer fake_server_;
-  raw_ptr<MultistepFilterService> service_ = nullptr;
 
  protected:
+  raw_ptr<MultistepFilterService> service_ = nullptr;
   base::test::TestFuture<std::optional<base::Uuid>> extraction_future_;
   base::test::TestFuture<std::optional<UrlFilterSuggestion>> suggestion_future_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -256,6 +260,48 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
 }
 
+IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
+                       ClearHistoryDeletesSuggestions) {
+  GURL extraction_url =
+      embedded_test_server()->GetURL(kTestAllowedDomain, kExtractionUrlPath);
+
+  fake_server().SetExtractResponse(CreateExtractTaskAttributesResponse(
+      kTestAllowedDomain, kTestTaskType,
+      {{kTestAttributeKey, kTestAttributeValue}}));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extraction_url));
+  EXPECT_TRUE(extraction_future_.Take().has_value());
+
+  // Verify data is actually in the store
+  base::test::TestFuture<std::vector<FilterAnnotation>> get_future1;
+  test_api(*service_)
+      .filter_store()
+      ->GetAnnotationsForTaskSortedByCreationTimestamp(
+          kTestTaskType, get_future1.GetCallback(), 10, base::Time());
+  EXPECT_THAT(get_future1.Get(), testing::SizeIs(1));
+
+  // Now clear history!
+  base::test::TestFuture<void> history_future;
+  base::CancelableTaskTracker task_tracker;
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+  history_service->ExpireHistoryBetween(
+      {}, std::nullopt, base::Time(), base::Time::Now(),
+      /*user_initiated=*/true, history_future.GetCallback(), &task_tracker);
+  ASSERT_TRUE(history_future.Wait());
+
+  // Wait for background DB tasks to complete.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  // Verify data is GONE from the store
+  base::test::TestFuture<std::vector<FilterAnnotation>> get_future2;
+  test_api(*service_)
+      .filter_store()
+      ->GetAnnotationsForTaskSortedByCreationTimestamp(
+          kTestTaskType, get_future2.GetCallback(), 10, base::Time());
+  EXPECT_THAT(get_future2.Get(), testing::SizeIs(0));
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 // Tests that no extraction or suggestion occurs if the user logs out of Chrome.
 IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
@@ -298,6 +344,7 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
       browser()->browser_window_features()->toast_controller();
   EXPECT_FALSE(toast_controller->IsShowingToast());
 }
+
 #endif
 
 class MultistepFilterDisabledBrowserTest : public InProcessBrowserTest {

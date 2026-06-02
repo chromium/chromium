@@ -107,9 +107,14 @@ class MultistepFilterServiceTest : public testing::Test {
     auto consent_helper = unified_consent::UrlKeyedDataCollectionConsentHelper::
         NewAnonymizedDataCollectionConsentHelper(&pref_service_);
 
-    service_ = std::make_unique<MultistepFilterService>(
-        std::move(annotation_index_client), std::move(filter_store),
-        identity_manager, std::move(consent_helper), /*log_router=*/nullptr);
+    MultistepFilterService::Params params;
+    params.annotation_index_client = std::move(annotation_index_client);
+    params.filter_store = std::move(filter_store);
+    params.identity_manager = identity_manager;
+    params.consent_helper = std::move(consent_helper);
+    params.log_router = nullptr;
+
+    service_ = std::make_unique<MultistepFilterService>(std::move(params));
 
     MultistepFilterServiceTestApi(*service_).set_filter_extractor(
         std::move(filter_extractor));

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/uuid.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "components/multistep_filter/core/extraction/filter_extractor.h"
@@ -67,29 +68,43 @@ void LogAnnotationsExpired(MultistepFilterLogRouter* log_router,
       << LogDetail{"expired_count", static_cast<int>(count.value_or(0))};
 }
 
+void LogHistoryDeleted(MultistepFilterLogRouter* log_router,
+                       bool is_all_history,
+                       std::optional<int64_t> rows_deleted) {
+  const std::string reason = is_all_history ? "Full history wipe requested"
+                                            : "Partial history cleared";
+
+  MULTISTEP_FILTER_LOG(log_router, 0, LogEventType::kSuggestionCleared,
+                       "History")
+      << LogDetail{"reason", reason}
+      << LogDetail{"rows_deleted", static_cast<int>(rows_deleted.value_or(0))};
+}
+
 }  // namespace
 
-MultistepFilterService::MultistepFilterService(
-    std::unique_ptr<AnnotationIndexClient> annotation_index_client,
-    std::unique_ptr<FilterStore> filter_store,
-    signin::IdentityManager* identity_manager,
-    std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
-        consent_helper,
-    MultistepFilterLogRouter* log_router)
-    : annotation_index_client_(std::move(annotation_index_client)),
-      filter_store_(std::move(filter_store)),
-      identity_manager_(identity_manager),
-      consent_helper_(std::move(consent_helper)),
-      log_router_(log_router) {
+MultistepFilterService::MultistepFilterService(Params params)
+    : annotation_index_client_(std::move(params.annotation_index_client)),
+      filter_store_(std::move(params.filter_store)),
+      identity_manager_(params.identity_manager),
+      consent_helper_(std::move(params.consent_helper)),
+      log_router_(params.log_router) {
   CHECK(annotation_index_client_);
   CHECK(filter_store_);
   filter_extractor_ = std::make_unique<FilterExtractor>(
       *annotation_index_client_, *filter_store_, log_router_);
   filter_suggestion_generator_ = std::make_unique<FilterSuggestionGenerator>(
       *annotation_index_client_, *filter_store_, log_router_);
+
+  if (params.history_service) {
+    history_service_observation_.Observe(params.history_service);
+  }
 }
 
 MultistepFilterService::~MultistepFilterService() = default;
+
+void MultistepFilterService::Shutdown() {
+  history_service_observation_.Reset();
+}
 
 void MultistepFilterService::ExtractAnnotation(int64_t navigation_id,
                                                const GURL& url) {
@@ -183,6 +198,27 @@ bool MultistepFilterService::IsUserSignedIn() const {
 
 bool MultistepFilterService::IsUrlKeyedDataCollectionEnabled() const {
   return consent_helper_ && consent_helper_->IsEnabled();
+}
+
+void MultistepFilterService::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  if (deletion_info.IsAllHistory()) {
+    filter_store_->ClearData();
+    LogHistoryDeleted(log_router_, /*is_all_history=*/true, std::nullopt);
+    return;
+  }
+
+  std::vector<std::string> deleted_domains;
+  for (const history::URLRow& url_row : deletion_info.deleted_rows()) {
+    deleted_domains.push_back(GetEtldPlusOne(url_row.url()));
+  }
+
+  filter_store_->DeleteAnnotationsForDomains(
+      std::move(deleted_domains), deletion_info.time_range().begin(),
+      deletion_info.time_range().end(),
+      base::BindOnce(&LogHistoryDeleted, log_router_,
+                     /*is_all_history=*/false));
 }
 
 }  // namespace multistep_filter

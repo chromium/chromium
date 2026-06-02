@@ -30,11 +30,15 @@ class MockMultistepFilterService : public MultistepFilterService {
   MockMultistepFilterService(
       std::unique_ptr<AnnotationIndexClient> annotation_index_client,
       std::unique_ptr<FilterStore> filter_store)
-      : MultistepFilterService(std::move(annotation_index_client),
-                               std::move(filter_store),
-                               /*identity_manager=*/nullptr,
-                               /*consent_helper=*/nullptr,
-                               /*log_router=*/nullptr) {
+      : MultistepFilterService([&]() {
+          MultistepFilterService::Params params;
+          params.annotation_index_client = std::move(annotation_index_client);
+          params.filter_store = std::move(filter_store);
+          params.identity_manager = nullptr;
+          params.consent_helper = nullptr;
+          params.log_router = nullptr;
+          return params;
+        }()) {
     ON_CALL(*this, GenerateFilterSuggestions)
         .WillByDefault(
             [](int64_t navigation_id, const GURL& url,

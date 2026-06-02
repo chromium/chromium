@@ -11,7 +11,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/uuid.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 
@@ -40,7 +42,8 @@ class FilterSuggestionGenerator;
 // suggestions for filters to the user. It acts as the central
 // coordinator for the Multistep Filter feature, managing the lifecycle of
 // related components like the FilterSuggestionGenerator.
-class MultistepFilterService : public KeyedService {
+class MultistepFilterService : public KeyedService,
+                               public history::HistoryServiceObserver {
  public:
   class ObserverForTest {
    public:
@@ -51,18 +54,25 @@ class MultistepFilterService : public KeyedService {
         std::optional<UrlFilterSuggestion> suggestion) = 0;
   };
 
-  MultistepFilterService(
-      std::unique_ptr<AnnotationIndexClient> annotation_index_client,
-      std::unique_ptr<FilterStore> filter_store,
-      signin::IdentityManager* identity_manager,
-      std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
-          consent_helper,
-      MultistepFilterLogRouter* log_router);
+  struct Params {
+    std::unique_ptr<AnnotationIndexClient> annotation_index_client;
+    std::unique_ptr<FilterStore> filter_store;
+    raw_ptr<signin::IdentityManager> identity_manager;
+    std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
+        consent_helper;
+    raw_ptr<MultistepFilterLogRouter> log_router;
+    raw_ptr<history::HistoryService> history_service;
+  };
+
+  explicit MultistepFilterService(Params params);
 
   MultistepFilterService(const MultistepFilterService&) = delete;
   MultistepFilterService& operator=(const MultistepFilterService&) = delete;
 
   ~MultistepFilterService() override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // Parses the given url to extract a `FilterAnnotation`. A filter annotation
   // is a set of normalized filter attributes.
@@ -80,6 +90,10 @@ class MultistepFilterService : public KeyedService {
   virtual void DeleteAnnotationsForTask(std::string_view task_type,
                                         int64_t navigation_id,
                                         std::string_view domain);
+
+  // history::HistoryServiceObserver:
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
  private:
   friend class MultistepFilterServiceTestApi;
@@ -125,6 +139,11 @@ class MultistepFilterService : public KeyedService {
 
   // Log router for the internals page.
   raw_ptr<MultistepFilterLogRouter> log_router_;
+
+  // History service observer to listen for history deletions.
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   // This should be kept at the end so that it is the first member to be
   // destroyed.
