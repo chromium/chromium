@@ -535,8 +535,9 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
   }
   for (const auto& file_token : file_tokens) {
     auto* file_info = GetFileInfo(file_token);
-    if (!file_info || !IsValidContextUploadStatusForMultimodalRequest(
-                          file_info->upload_status)) {
+    if (!file_info || file_info->is_superceded ||
+        !IsValidContextUploadStatusForMultimodalRequest(
+            file_info->upload_status)) {
       continue;
     }
 
@@ -650,7 +651,8 @@ void ComposeboxQueryController::CreateSearchUrl(
       if (!file_info) {
         continue;
       }
-      if (IsValidContextUploadStatusForMultimodalRequest(
+      if (!file_info->is_superceded &&
+          IsValidContextUploadStatusForMultimodalRequest(
               file_info->upload_status) &&
           file_info->request_id.has_value()) {
         num_valid_lens_files++;
@@ -864,7 +866,7 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
     for (const auto& file_token :
          create_client_to_aim_request_info->file_tokens) {
       auto* file_info = GetFileInfo(file_token);
-      if (!file_info ||
+      if (!file_info || file_info->is_superceded ||
           !IsValidContextUploadStatusForMultimodalRequest(
               file_info->upload_status) ||
           !file_info->request_id.has_value()) {

@@ -1880,6 +1880,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
   ContextualTasksPanelController* coordinator =
       ContextualTasksPanelController::From(browser());
 
+  // Context Management will not show tabs as chips.
+  const int expected_turn2_viewport_image_count =
+      base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) ? 1
+                                                                            : 0;
+
   RunTestSequence(
       InstrumentTab(kPrimaryTab, 0), Do([&]() {
         coordinator->Show(
@@ -1914,7 +1919,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       // Verify Turn 2 query is sent, but since the viewport did not change,
       // no new context upload occurred (0 uploads).
       VerifyMultipleSubmitQueryMessage("second query",
-                                       /*expected_viewport_image_count=*/0,
+                                       expected_turn2_viewport_image_count,
                                        /*expected_upload_image_count=*/0,
                                        /*expected_upload_file_count=*/0,
                                        /*expected_added_input_names=*/{},

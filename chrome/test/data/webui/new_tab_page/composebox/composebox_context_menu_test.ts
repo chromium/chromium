@@ -573,7 +573,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
             const items =
                 contextualActionMenu.$.menu.querySelectorAll<HTMLButtonElement>(
-                    '.dropdown-item');
+                    '.dropdown-item[data-index]');
             assertEquals(items.length, 2);
 
             // Find the button for Tab 1 (which was index 0 originally, but now
