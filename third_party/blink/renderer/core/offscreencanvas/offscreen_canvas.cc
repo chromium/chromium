@@ -86,7 +86,7 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context, gfx::Size size)
       // Per spec, dedicated workers can only load same-origin top-level
       // scripts, so grant them access to the high-performance GPU.
       //
-      // TODO(crbug.com/1050739): refine this logic. If the worker was
+      // TODO(crbug.com/40118181): refine this logic. If the worker was
       // spawned from an iframe, keep track of whether that iframe was
       // itself cross-origin.
       AllowHighPerformancePowerPreference();
