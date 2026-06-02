@@ -5,6 +5,10 @@
 import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 source_set("common") {
   sources = [
     "anchor_element_provider.cc",
@@ -176,4 +180,15 @@ source_set("unit_tests") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (is_android) {
+  java_cpp_enum("user_education_closed_reason_javagen") {
+    sources = [ "user_education_data.h" ]
+  }
+
+  android_library("user_education_common_java") {
+    srcjar_deps = [ ":user_education_closed_reason_javagen" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
 }

@@ -18,6 +18,8 @@ namespace user_education {
 // numeric values should never be reused.
 //
 // Represents the reason that a promo was ended/promo bubble was closed.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.user_education
+// GENERATED_JAVA_PREFIX_TO_STRIP: k
 enum class FeaturePromoClosedReason {
   // Actions within the FeaturePromo.
   kDismiss = 0,  // Promo dismissed by user.
