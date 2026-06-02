@@ -979,5 +979,41 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   EXPECT_EQ(3, browser()->tab_strip_model()->count());
 }
 
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       UpdateFromSyncWithLocalTabMovedOutOfGroup) {
+  // Add a second tab at index 1. It starts ungrouped.
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), 1, false);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  // Create a tab group containing ONLY the first tab (index 0).
+  LocalTabGroupID local_id = browser()->tab_strip_model()->AddToNewGroup({0});
+  WaitUntilCallbackReceived();
+
+  const SavedTabGroup* saved_group = model_->Get(local_id);
+  ASSERT_TRUE(saved_group);
+
+  LocalTabID second_tab_id =
+      browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle().raw_value();
+
+  // Create a new SavedTabGroupTab representing the second tab, and set its
+  // local_tab_id to the ungrouped tab's handle.
+  SavedTabGroupTab tab_2(GURL("chrome://newtab"), u"New Tab",
+                         saved_group->saved_guid(),
+                         /*position=*/1);
+  tab_2.SetLocalTabID(second_tab_id);
+
+  // Add the second tab to the saved group from sync.
+  // This triggers UpdateFromSync. It should not crash and should pull the
+  // ungrouped local tab into the group.
+  model_->AddTabToGroupFromSync(saved_group->saved_guid(), tab_2);
+  WaitUntilCallbackReceived();
+
+  // Verify that the tab was pulled into the group and the group now contains
+  // both tabs.
+  EXPECT_EQ(local_id, browser()->tab_strip_model()->GetTabGroupForTab(0));
+  EXPECT_EQ(local_id, browser()->tab_strip_model()->GetTabGroupForTab(1));
+  EXPECT_EQ(2u, SavedTabGroupUtils::GetTabsInGroup(local_id).size());
+}
+
 }  // namespace
 }  // namespace tab_groups
