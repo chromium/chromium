@@ -19,13 +19,6 @@
 }
 
 /*
- * Set a higher z-index for the logo when so that it's rendered above the OGB.
- */
-:host([show-tight-doodle-boxing_]) {
-  --ntp-logo-z-index: 1001;
-}
-
-/*
  * In case we use the boxed container for the Doodle, we can borrow 20px from
  * the bottom margin to make the Doodle logo larger.
  */
