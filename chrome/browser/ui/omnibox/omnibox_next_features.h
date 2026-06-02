@@ -27,6 +27,7 @@ namespace internal {
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxSimplification);
+BASE_DECLARE_FEATURE(kWebUIOmniboxAskGAboutThisPage);
 
 }  // namespace internal
 
@@ -52,6 +53,8 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxPopupSelectionControl);
 BASE_DECLARE_FEATURE(kOmniboxAnimatedCaret);
 // Enables energy effect in the omnibox.
 BASE_DECLARE_FEATURE(kEnergyEffectInOmnibox);
+BASE_DECLARE_FEATURE(kWebUIOmniboxDynamicAiModeButton);
+
 extern const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam;
 
 // The serialized base64 encoded `omnibox::NTPComposeboxConfig`.
@@ -95,6 +98,10 @@ extern const base::FeatureParam<bool> kContextButtonShowSuggestionLabel;
 // If enabled, then the WebUI Omnibox will be rendered in a WebView in the
 // BrowserView.
 extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupV2UseBrowserView;
+// Whether to open the next panel with cobrowse.
+extern const base::FeatureParam<bool> kAskGCoBrowse;
+// Whether to open the next panel with cobrowse and visual selection.
+extern const base::FeatureParam<bool> kAskGCoBrowseWithVisualSelection;
 
 // Returns true if `kWebUIOmniboxPopup` is enabled.
 bool IsWebUIOmniboxPopupEnabled();
