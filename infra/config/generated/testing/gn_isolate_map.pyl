@@ -1349,12 +1349,6 @@
     "module_scheme": "gtest",
     "skip_usage_check": True,
   },
-  "ios_swift_interop_xcuitests_module": {
-    "label": "//ios/chrome/test/swift_interop:ios_swift_interop_xcuitests_module",
-    "type": "generated_script",
-    "module_scheme": "xctest",
-    "skip_usage_check": True,
-  },
   "ios_testing_unittests": {
     "label": "//ios/testing:ios_testing_unittests",
     "type": "generated_script",

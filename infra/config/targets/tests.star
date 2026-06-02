@@ -1614,10 +1614,6 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
-    name = "ios_swift_interop_xcuitests_module",
-)
-
-targets.tests.isolated_script_test(
     name = "ios_testing_unittests",
 )
 
