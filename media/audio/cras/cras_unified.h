@@ -17,6 +17,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
@@ -67,9 +68,7 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
                          void* arg);
 
   // Writes audio for a playback stream.
-  uint32_t WriteAudio(size_t frames,
-                      uint8_t* buffer,
-                      const timespec* latency_ts);
+  uint32_t WriteAudio(base::span<int16_t> buffer, const timespec* latency_ts);
 
   // Deals with an error that occurred in the stream.  Called from
   // StreamError().

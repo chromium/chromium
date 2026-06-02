@@ -10,6 +10,7 @@
 #include <array>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -70,6 +71,8 @@ int GetDevicePin(AudioManagerCrasBase* manager, const std::string& device_id) {
   }
   return NO_DEVICE;
 }
+
+constexpr auto kSampleFormat = SND_PCM_FORMAT_S16;
 
 }  // namespace
 
@@ -225,7 +228,7 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
       stream_params, stream_direction_, frames_per_packet * 2,
       frames_per_packet, CRAS_STREAM_TYPE_DEFAULT, manager_->GetClientType(), 0,
       this, CrasUnifiedStream::UnifiedCallback, CrasUnifiedStream::StreamError,
-      params_.sample_rate(), SND_PCM_FORMAT_S16, params_.channels());
+      params_.sample_rate(), kSampleFormat, params_.channels());
 
   if (rc) {
     LOG(WARNING) << "Error setting up stream parameters.";
@@ -338,7 +341,14 @@ int CrasUnifiedStream::UnifiedCallback(struct libcras_stream_cb_data* data) {
   base::TimeDelta underrun_duration =
       base::TimeDelta::FromTimeSpec(underrun_duration_ts);
   me->CalculateAudioGlitches(underrun_duration);
-  uint32_t filled_frames = me->WriteAudio(frames, buf, &latency);
+  static_assert(kSampleFormat == SND_PCM_FORMAT_S16,
+                "cras_unified.cc assumes SND_PCM_FORMAT_S16");
+  // SAFETY: CRAS guarantees that `buf` points to a buffer with at least
+  // `frames` capacity. Since the stream is configured with S16 format, the
+  // buffer has space for `frames * channels` of `int16_t` samples.
+  auto buffer_span = UNSAFE_BUFFERS(base::span<int16_t>(
+      reinterpret_cast<int16_t*>(buf), frames * me->params_.channels()));
+  uint32_t filled_frames = me->WriteAudio(buffer_span, &latency);
   TRACE_EVENT_END("audio", [&](perfetto::EventContext ctx) {
     auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
     auto* data = event->set_chromeos_cras_unified();
@@ -358,10 +368,10 @@ int CrasUnifiedStream::StreamError(cras_client* client,
   return 0;
 }
 
-uint32_t CrasUnifiedStream::WriteAudio(size_t frames,
-                                       uint8_t* buffer,
+uint32_t CrasUnifiedStream::WriteAudio(base::span<int16_t> buffer,
                                        const timespec* latency_ts) {
-  DCHECK_EQ(frames, static_cast<size_t>(output_bus_->frames()));
+  DCHECK_EQ(buffer.size(), static_cast<size_t>(output_bus_->frames() *
+                                               output_bus_->channels()));
   const base::TimeDelta latency = base::TimeDelta::FromTimeSpec(*latency_ts);
   TRACE_EVENT("audio", "CrasUnifiedStream::WriteAudio",
               [&](perfetto::EventContext ctx) {
@@ -386,8 +396,11 @@ uint32_t CrasUnifiedStream::WriteAudio(size_t frames,
 
   // Note: If this ever changes to output raw float the data must be clipped and
   // sanitized since it may come from an untrusted source such as NaCl.
-  output_bus_->ToInterleaved<SignedInt16SampleTypeTraits>(
-      frames_filled, reinterpret_cast<int16_t*>(buffer));
+  static_assert(kSampleFormat == SND_PCM_FORMAT_S16,
+                "cras_unified.cc assumes SND_PCM_FORMAT_S16");
+  output_bus_->ToInterleavedPartial<SignedInt16SampleTypeTraits>(
+      0, buffer.first(
+             static_cast<size_t>(frames_filled * output_bus_->channels())));
 
   return frames_filled;
 }
