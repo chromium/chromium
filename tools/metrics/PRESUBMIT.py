@@ -153,6 +153,7 @@ def _ReportPythonIssuesList(input_api, output_api):
 def _ReportXmlIssuesList(input_api, output_api):
   return list(_ReportXmlIssues(input_api, output_api))
 
+
 def _ReportEnumXmlIssues(input_api: Type, output_api: Type,
                          affected_files: List[str]) -> Iterable[Any]:
   enums_changed = any(
@@ -219,6 +220,8 @@ def _CheckNoManualSysPathManipulation(input_api: Any,
 def CheckChange(input_api: Type, output_api: Type):
   problems: List[Any] = []
   problems.extend(_CheckNoManualSysPathManipulation(input_api, output_api))
+  problems.extend(
+      input_api.canned_checks.CheckPatchFormatted(input_api, output_api))
   problems.extend(
       presubmit_caching_support.RunCheckWithCache(
           _ReportPythonIssuesList,
