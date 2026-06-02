@@ -1002,8 +1002,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     }
 
     private ListItem createSendToYourDevicesItem() {
-        String title =
-                mActivity.getResources().getString(R.string.send_tab_to_self_context_menu_title);
+        String title = mActivity.getResources().getString(R.string.send_to_your_devices_menu_item);
 
         return new ListItemBuilder()
                 .withTitle(title)

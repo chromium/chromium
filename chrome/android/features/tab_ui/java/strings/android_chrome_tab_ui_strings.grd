@@ -1164,6 +1164,9 @@
       <message name="IDS_SHOW_TABS_HORIZONTALLY" desc="Context menu item text to show the horizontal tabs.">
         Show tabs horizontally
       </message>
+      <message name="IDS_SEND_TO_YOUR_DEVICES_MENU_ITEM" desc="Context menu item text to send the current tab to another device.">
+        Send to your devices
+      </message>
 
       <!-- Tab Group List Bottom Sheet -->
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_TITLE" desc="Title text for a bottom sheet which is used to add a tab to a tab group.">
