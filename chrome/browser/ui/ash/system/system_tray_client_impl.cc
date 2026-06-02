@@ -42,10 +42,10 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h"
@@ -269,7 +269,10 @@ class SystemTrayClientImpl::EnterpriseAccountObserver
     user_manager::User* user =
         user_manager::UserManager::Get()->GetActiveUser();
     Profile* profile =
-        user ? ash::ProfileHelper::Get()->GetProfileByUser(user) : nullptr;
+        user ? Profile::FromBrowserContext(
+                   ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+                       user))
+             : nullptr;
     if (profile == profile_) {
       return;
     }
