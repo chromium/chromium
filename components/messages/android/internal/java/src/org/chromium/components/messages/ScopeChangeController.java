@@ -99,6 +99,9 @@ class ScopeChangeController {
             mDelegate = delegate;
             mScopeKey = scopeKey;
             WebContents webContents = scopeKey.webContents;
+            if (webContents != null) {
+                mLastVisitedUrl = webContents.getLastCommittedUrl();
+            }
             int changeType =
                     webContents != null && webContents.getVisibility() == Visibility.VISIBLE
                             ? ChangeType.ACTIVE
@@ -125,9 +128,19 @@ class ScopeChangeController {
                 return;
             }
 
-            if (navigationHandle.isSameDocument()
-                    || !navigationHandle.hasCommitted()
-                    || navigationHandle.isReload()) {
+            if (navigationHandle.isSameDocument() || !navigationHandle.hasCommitted()) {
+                return;
+            }
+
+            if (navigationHandle.isReload()) {
+                if (MessageFeatureList.dismissNavigationMessagesOnPrimaryPageChanged()) {
+                    if (mLastVisitedUrl != null
+                            && !originEquals(mLastVisitedUrl, navigationHandle.getUrl())) {
+                        destroy();
+                        return;
+                    }
+                    mLastVisitedUrl = navigationHandle.getUrl();
+                }
                 return;
             }
 

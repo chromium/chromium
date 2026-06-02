@@ -20,6 +20,8 @@ import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Page;
@@ -32,6 +34,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** A test for {@link ScopeChangeController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(MessageFeatureList.DISMISS_NAVIGATION_MESSAGES_ON_PRIMARY_PAGE_CHANGED)
 public class ScopeChangeControllerTest {
     private static final boolean IS_SAME_DOCUMENT = true;
     private static final boolean IS_RELOAD = true;
@@ -327,6 +330,94 @@ public class ScopeChangeControllerTest {
                 "Scope type should be destroy when navigated to another domain",
                 ChangeType.DESTROY,
                 captor.getValue().changeType);
+    }
+
+    @Test
+    @SmallTest
+    public void testRedirectedReload_DismissEnabled() {
+        ScopeChangeController.Delegate delegate =
+                Mockito.mock(ScopeChangeController.Delegate.class);
+        ScopeChangeController controller = new ScopeChangeController(delegate);
+
+        MockWebContents webContents = mock(MockWebContents.class);
+        GURL url1 = JUnitTestGURLs.GOOGLE_URL;
+        Mockito.when(webContents.getLastCommittedUrl()).thenReturn(url1);
+
+        ScopeKey key = new ScopeKey(MessageScopeType.NAVIGATION, webContents);
+        controller.firstMessageEnqueued(key);
+
+        final ArgumentCaptor<WebContentsObserver> runnableCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(webContents).addObserver(runnableCaptor.capture());
+
+        WebContentsObserver observer = runnableCaptor.getValue();
+
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandleWithUrl(
+                        !IS_SAME_DOCUMENT, IS_RELOAD, DID_COMMIT, JUnitTestGURLs.EXAMPLE_URL));
+
+        ArgumentCaptor<MessageScopeChange> captor =
+                ArgumentCaptor.forClass(MessageScopeChange.class);
+        verify(delegate, times(2)).onScopeChange(captor.capture());
+        Assert.assertEquals(
+                "Scope type should be destroy when reload redirected to different origin",
+                ChangeType.DESTROY,
+                captor.getValue().changeType);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(MessageFeatureList.DISMISS_NAVIGATION_MESSAGES_ON_PRIMARY_PAGE_CHANGED)
+    public void testRedirectedReload_DismissDisabled() {
+        ScopeChangeController.Delegate delegate =
+                Mockito.mock(ScopeChangeController.Delegate.class);
+        ScopeChangeController controller = new ScopeChangeController(delegate);
+
+        MockWebContents webContents = mock(MockWebContents.class);
+        GURL url1 = JUnitTestGURLs.GOOGLE_URL;
+        Mockito.when(webContents.getLastCommittedUrl()).thenReturn(url1);
+
+        ScopeKey key = new ScopeKey(MessageScopeType.NAVIGATION, webContents);
+        controller.firstMessageEnqueued(key);
+
+        final ArgumentCaptor<WebContentsObserver> runnableCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(webContents).addObserver(runnableCaptor.capture());
+
+        WebContentsObserver observer = runnableCaptor.getValue();
+
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandleWithUrl(
+                        !IS_SAME_DOCUMENT, IS_RELOAD, DID_COMMIT, JUnitTestGURLs.EXAMPLE_URL));
+
+        verify(delegate, times(1)).onScopeChange(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testRedirectedReload_SameOrigin() {
+        ScopeChangeController.Delegate delegate =
+                Mockito.mock(ScopeChangeController.Delegate.class);
+        ScopeChangeController controller = new ScopeChangeController(delegate);
+
+        MockWebContents webContents = mock(MockWebContents.class);
+        GURL url1 = JUnitTestGURLs.GOOGLE_URL;
+        Mockito.when(webContents.getLastCommittedUrl()).thenReturn(url1);
+
+        ScopeKey key = new ScopeKey(MessageScopeType.NAVIGATION, webContents);
+        controller.firstMessageEnqueued(key);
+
+        final ArgumentCaptor<WebContentsObserver> runnableCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(webContents).addObserver(runnableCaptor.capture());
+
+        WebContentsObserver observer = runnableCaptor.getValue();
+
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandleWithUrl(
+                        !IS_SAME_DOCUMENT, IS_RELOAD, DID_COMMIT, JUnitTestGURLs.GOOGLE_URL_DOG));
+
+        verify(delegate, times(1)).onScopeChange(any());
     }
 
     private NavigationHandle createNavigationHandle(
