@@ -374,7 +374,7 @@
   </message>
 
    <!-- Screenpicker Menu String -->
-  <message name="IDS_GLIC_SCREEN_PICKER_REQUESTER" desc="Text shown on screen picker dialog that indicates the requesting source is Gemini." translateable="false">
+  <message name="IDS_GLIC_SCREEN_PICKER_REQUESTER" desc="Text shown on screen picker dialog that indicates the requesting source is Gemini.">
     Gemini
   </message>
   <message name="IDS_GLIC_SCREEN_PICKER_HEADLINE" desc="Title of the Gemini screen picker dialog used for specifying which screen to capture.">
@@ -475,7 +475,7 @@
   </message>
 
   <!-- Shortcut IPH -->
-  <message name="IDS_GLIC_SHORTCUT_IPH_TEXT_TEMPLATE" desc="Placeholder for string to be shown for IPH informing users about Glic keyboard shortcut." translateable="false">
+  <message name="IDS_GLIC_SHORTCUT_IPH_TEXT_TEMPLATE" desc="Placeholder for string to be shown for IPH informing users about Glic keyboard shortcut.">
     <ph name="message">$1<ex>Use Ctrl+⌘+G to open Gemini in Chrome</ex></ph>
   </message>
   <message name="IDS_GLIC_SHORTCUT_IPH_TEXT" desc="Title for a promo pointing to the Gemini icon in Chrome. It informs the user about a keyboard shortcut for quicly opening Gemini in Chrome.">
