@@ -590,4 +590,24 @@ public class StripTabHoverCardViewUnitTest {
                 shadowOf(mContentView.getBackground()).getCreatedFromResId());
         assertNull("Container background should be null.", mTabHoverCardView.getBackground());
     }
+
+    @Test
+    public void testComponentOrder() {
+        assertEquals(
+                "Component at index 0 should be the title.",
+                R.id.title,
+                mContentView.getChildAt(0).getId());
+        assertEquals(
+                "Component at index 1 should be the URL.",
+                R.id.url,
+                mContentView.getChildAt(1).getId());
+        assertEquals(
+                "Component at index 2 should be the thumbnail.",
+                R.id.thumbnail,
+                mContentView.getChildAt(2).getId());
+        assertEquals(
+                "Component at index 3 should be the memory usage.",
+                R.id.memory_usage,
+                mContentView.getChildAt(3).getId());
+    }
 }
