@@ -49,6 +49,8 @@ function init() {
   const errorMessage = getRequiredElement('errorMessage');
   const closeButtonError = getRequiredElement('closeButtonError');
   const tryAgainButton = getRequiredElement('tryAgainButton');
+  const optInUrl = loadTimeData.getString('glicExperimentalTriggeringOptInURL');
+  const optInOrigin = new URL(optInUrl).origin;
 
   let hasError = false;
   let loadingTimeoutId: number | null = null;
@@ -109,6 +111,28 @@ function init() {
     startWatchdog();
   });
 
+  webview.request.onBeforeRequest.addListener(
+      (details: {url: string, frameId: number}) => {
+        if (details.frameId !== 0) {
+          return {};
+        }
+        const url = URL.parse(details.url);
+        if (!url) {
+          console.error('Failed to parse URL in onBeforeRequest:', details.url);
+          return {cancel: true};
+        }
+        if (url.protocol === 'http:' || url.protocol === 'https:') {
+          if (url.origin !== optInOrigin) {
+            return {cancel: true};
+          }
+        }
+        return {};
+      },
+      {
+        urls: ['<all_urls>'],
+        types: ['main_frame'],
+      },
+      ['blocking']);
   webview.addEventListener('contentload', () => {
     clearWatchdog();
     if (hasError) {
@@ -175,7 +199,6 @@ function init() {
       webview.setAttribute('src', url);
     }
   }
-
   tryLoad();
 
   webview.addEventListener(
