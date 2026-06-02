@@ -315,7 +315,8 @@ class CommonControllerBuilder {
   std::unique_ptr<syncer::DataTypeController>
   CreateContextualTaskDataTypeController();
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  std::unique_ptr<syncer::DataTypeController> CreateSkillDataTypeController();
+  std::unique_ptr<syncer::DataTypeController> CreateSkillDataTypeController(
+      syncer::SyncService* sync_service);
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<syncer::DataTypeController>

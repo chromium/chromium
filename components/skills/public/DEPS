@@ -1,5 +1,6 @@
 include_rules = [
   "+components/sync/protocol",
+  "+components/sync/service",
   "+components/prefs",
   "+components/pref_registry",
   "+mojo/public/cpp/bindings",

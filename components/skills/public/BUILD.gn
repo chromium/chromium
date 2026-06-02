@@ -58,6 +58,8 @@ source_set("types") {
 
 source_set("public") {
   sources = [
+    "skill_data_type_controller.cc",
+    "skill_data_type_controller.h",
     "skills_features.cc",
     "skills_features.h",
     "skills_prefs.cc",
@@ -74,7 +76,7 @@ source_set("public") {
     "//components/keyed_service/core",
     "//components/skills/internal:downloader",
     "//components/skills/proto",
-    "//components/sync/protocol",
+    "//components/sync",
   ]
 
   deps = [

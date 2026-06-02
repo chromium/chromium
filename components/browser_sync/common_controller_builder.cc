@@ -66,6 +66,7 @@
 #include "components/sharing_message/sharing_message_data_type_controller.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/skills/features.h"
+#include "components/skills/public/skill_data_type_controller.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -573,7 +574,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (!disabled_types.Has(syncer::SKILL)) {
-    add_controller(CreateSkillDataTypeController());
+    add_controller(CreateSkillDataTypeController(sync_service));
   }
 #endif
 
@@ -1187,7 +1188,8 @@ CommonControllerBuilder::CreateContextualTaskDataTypeController() {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 std::unique_ptr<syncer::DataTypeController>
-CommonControllerBuilder::CreateSkillDataTypeController() {
+CommonControllerBuilder::CreateSkillDataTypeController(
+    syncer::SyncService* sync_service) {
   if (!base::FeatureList::IsEnabled(features::kSkillsEnabled) ||
       !skills_service_.value()) {
     return nullptr;
@@ -1197,8 +1199,8 @@ CommonControllerBuilder::CreateSkillDataTypeController() {
   if (!delegate) {
     return nullptr;
   }
-  return std::make_unique<syncer::DataTypeController>(
-      syncer::SKILL,
+  return std::make_unique<skills::SkillDataTypeController>(
+      sync_service, pref_service_.value(),
       /*delegate_for_full_sync_mode=*/
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
       /*delegate_for_transport_mode=*/
