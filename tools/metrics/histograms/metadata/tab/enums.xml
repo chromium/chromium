@@ -363,6 +363,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Close end tab"/>
   <int value="4" label="Exit split"/>
   <int value="5" label="Send feedback"/>
+  <int value="6" label="Toggle orientation"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/split_tab_menu_model.h:SplitViewMenuEntry) -->

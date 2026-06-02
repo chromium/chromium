@@ -48,7 +48,8 @@ class SplitTabMenuModel : public ui::SimpleMenuModel,
     kCloseEndTab,
     kExitSplit,
     kSendFeedback,
-    kMaxValue = kSendFeedback,
+    kToggleOrientation,
+    kMaxValue = kToggleOrientation,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SplitViewMenuEntry)
 

@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -79,6 +80,8 @@ std::string_view GetMetricsSuffixForCommand(
       return "ExitSplit";
     case SplitTabMenuModel::CommandId::kSendFeedback:
       return "SendFeedback";
+    case SplitTabMenuModel::CommandId::kToggleOrientation:
+      return "ToggleOrientation";
   }
 }
 
@@ -149,6 +152,10 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
     NOTREACHED() << "Unknown close menu item option";
   }
 
+  if (base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal)) {
+    AddItem(GetCommandIdInt(CommandId::kToggleOrientation), std::u16string());
+  }
+
   AddItem(GetCommandIdInt(CommandId::kReversePosition), std::u16string());
 
   SetElementIdentifierAt(
@@ -175,7 +182,7 @@ SplitTabMenuModel::~SplitTabMenuModel() = default;
 bool SplitTabMenuModel::IsItemForCommandIdDynamic(int command_id) const {
   const CommandId id = GetCommandIdEnum(command_id);
   return id == CommandId::kReversePosition || id == CommandId::kCloseStartTab ||
-         id == CommandId::kCloseEndTab;
+         id == CommandId::kCloseEndTab || id == CommandId::kToggleOrientation;
 }
 
 std::u16string SplitTabMenuModel::GetLabelForCommandId(int command_id) const {
@@ -193,6 +200,11 @@ std::u16string SplitTabMenuModel::GetLabelForCommandId(int command_id) const {
         GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
             ? IDS_SPLIT_TAB_CLOSE_RIGHT_VIEW
             : IDS_SPLIT_TAB_CLOSE_BOTTOM_VIEW);
+  } else if (id == CommandId::kToggleOrientation) {
+    return l10n_util::GetStringUTF16(
+        GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
+            ? IDS_SPLIT_TAB_SHOW_STACKED
+            : IDS_SPLIT_TAB_SHOW_SIDE_BY_SIDE);
   } else {
     NOTREACHED() << "There are no other commands that are dynamic so this case "
                     "should not be reached.";
@@ -220,6 +232,11 @@ ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
                                                   : kRightPanelCloseOldIcon)
             : &(features::IsRoundedIconsEnabled() ? kBottomPanelCloseIcon
                                                   : kBottomPanelCloseOldIcon);
+  } else if (id == CommandId::kToggleOrientation) {
+    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
+               ? &kSplitSceneHorizontalCustomIcon
+               : &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
+                                                     : kSplitSceneOldIcon);
   }
   CHECK(icon);
   return ui::ImageModel::FromVectorIcon(*icon, ui::kColorMenuIcon,
@@ -257,6 +274,14 @@ void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
     case CommandId::kSendFeedback:
       SendFeedback();
       break;
+    case CommandId::kToggleOrientation: {
+      split_tabs::SplitTabLayout new_layout =
+          GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
+              ? split_tabs::SplitTabLayout::kStacked
+              : split_tabs::SplitTabLayout::kSideBySide;
+      tab_strip_model_->UpdateSplitLayout(split_id, new_layout);
+      break;
+    }
   }
 
   base::UmaHistogramEnumeration(

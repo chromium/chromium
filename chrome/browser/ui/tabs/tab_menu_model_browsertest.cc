@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_tab_swap_menu_model.h"
 #include "chrome/browser/ui/tabs/split_view_layout_menu_model.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/menu_model_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -47,6 +49,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
@@ -359,6 +362,80 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, MultiSelectTabs) {
     EXPECT_TRUE(index.has_value());
     EXPECT_FALSE(menu_model.IsEnabledAt(index.value()));
   }
+}
+
+class TabMenuModelSplitViewHorizontalBrowserTest
+    : public TabMenuModelBrowserTest {
+ public:
+  TabMenuModelSplitViewHorizontalBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(tabs::kSplitViewHorizontal);
+  }
+
+  ui::SimpleMenuModel* GetArrangeSplitSubmenu(
+      int tab_index,
+      std::unique_ptr<TabMenuModel>& out_menu_model) {
+    out_menu_model = std::make_unique<TabMenuModel>(
+        &delegate_, browser()->GetFeatures().tab_menu_model_delegate(),
+        browser()->tab_strip_model(), tab_index);
+    size_t arrange_submenu_index =
+        out_menu_model->GetIndexOfCommandId(TabStripModel::CommandArrangeSplit)
+            .value();
+    return static_cast<ui::SimpleMenuModel*>(
+        out_menu_model->GetSubmenuModelAt(arrange_submenu_index));
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabMenuModelSplitViewHorizontalBrowserTest,
+                       ToggleOrientationMenuAction) {
+  chrome::NewTab(browser());
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(tab_strip_model->count(), 2);
+
+  // Creates a side-by-side split.
+  tab_strip_model->AddToNewSplit(
+      {0},
+      split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  auto split_id = tab_strip_model->GetSplitForTab(1);
+  ASSERT_TRUE(split_id.has_value());
+  EXPECT_EQ(tab_strip_model->GetSplitData(split_id.value())
+                ->visual_data()
+                ->split_layout(),
+            split_tabs::SplitTabLayout::kSideBySide);
+
+  // Verifies the context menu when the split view is side by side.
+  std::unique_ptr<TabMenuModel> menu_model;
+  ui::SimpleMenuModel* arrange_submenu = GetArrangeSplitSubmenu(1, menu_model);
+
+  int toggle_cmd_id =
+      ExistingBaseSubMenuModel::kMinSplitTabMenuModelCommandId +
+      static_cast<int>(SplitTabMenuModel::CommandId::kToggleOrientation);
+
+  size_t item_idx = arrange_submenu->GetIndexOfCommandId(toggle_cmd_id).value();
+  EXPECT_EQ(arrange_submenu->GetLabelAt(item_idx),
+            l10n_util::GetStringUTF16(IDS_SPLIT_TAB_SHOW_STACKED));
+
+  // Toggle split view orientation.
+  arrange_submenu->ActivatedAt(item_idx);
+  EXPECT_EQ(tab_strip_model->GetSplitData(split_id.value())
+                ->visual_data()
+                ->split_layout(),
+            split_tabs::SplitTabLayout::kStacked);
+
+  // Verifies the context menu when the split view is stacked.
+  std::unique_ptr<TabMenuModel> menu_model_2;
+  ui::SimpleMenuModel* arrange_submenu_2 =
+      GetArrangeSplitSubmenu(1, menu_model_2);
+
+  size_t item_idx_2 =
+      arrange_submenu_2->GetIndexOfCommandId(toggle_cmd_id).value();
+  EXPECT_EQ(arrange_submenu_2->GetLabelAt(item_idx_2),
+            l10n_util::GetStringUTF16(IDS_SPLIT_TAB_SHOW_SIDE_BY_SIDE));
 }
 
 class TabMenuModelSplitViewHorizontalDirectAccessBrowserTest
