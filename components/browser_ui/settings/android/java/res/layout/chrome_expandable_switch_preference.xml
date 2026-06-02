@@ -44,13 +44,20 @@ found in the LICENSE file.
                 android:layout_marginTop="@dimen/pref_summary_margin_top"
                 style="@style/PreferenceSummary" />
         </LinearLayout>
+        <!--
+          This icon is hidden from TalkBack because the parent preference container
+          already handles the collapse/expand action and announces the state
+          (expanded/collapsed) for the entire preference.
+        -->
         <org.chromium.ui.widget.CheckableImageView
             android:id="@+id/expandable_switch_expand_icon"
             android:layout_width="@dimen/pref_checkable_image_size"
             android:layout_height="@dimen/pref_checkable_image_size"
             android:scaleType="center"
             android:layout_marginEnd="@dimen/card_with_button_pref_icon_margin_right"
-            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:importantForAccessibility="no"
+            android:focusable="false"/>
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@android:id/switch_widget"
             style="@style/Widget.BrowserUI.Switch"
