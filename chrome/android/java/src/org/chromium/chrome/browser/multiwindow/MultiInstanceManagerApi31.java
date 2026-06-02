@@ -134,6 +134,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     private final Supplier<DesktopWindowStateManager> mDesktopWindowStateManagerSupplier;
     private final MultiInstanceStateObserver mOnMultiInstanceStateChanged;
 
+    private boolean mIsCreationLimitMessageEnqueued;
+
     MultiInstanceManagerApi31(
             Activity activity,
             MonotonicObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
@@ -1279,8 +1281,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     @Override
     public void showInstanceCreationLimitMessage() {
+        if (mIsCreationLimitMessageEnqueued) return;
+
+        MessageDispatcher messageDispatcher = getMessageDispatcher();
+        if (messageDispatcher == null) {
+            return;
+        }
+
+        mIsCreationLimitMessageEnqueued = true;
         MultiWindowUtils.showInstanceCreationLimitMessage(
-                getMessageDispatcher(), mActivity, this::showInstanceSwitcherDialog);
+                messageDispatcher,
+                mActivity,
+                this::showInstanceSwitcherDialog,
+                () -> mIsCreationLimitMessageEnqueued = false);
     }
 
     @VisibleForTesting

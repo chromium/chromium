@@ -78,6 +78,7 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
@@ -1482,9 +1483,14 @@ public class MultiWindowUtilsUnitTest {
         Context context = ApplicationProvider.getApplicationContext();
         CallbackHelper primaryActionCallbackHelper = new CallbackHelper();
         int primaryActionClickCount = primaryActionCallbackHelper.getCallCount();
+        CallbackHelper dismissCallbackHelper = new CallbackHelper();
+        int dismissClickCount = dismissCallbackHelper.getCallCount();
 
         MultiWindowUtils.showInstanceCreationLimitMessage(
-                messageDispatcher, context, primaryActionCallbackHelper::notifyCalled);
+                messageDispatcher,
+                context,
+                primaryActionCallbackHelper::notifyCalled,
+                dismissCallbackHelper::notifyCalled);
 
         ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
         verify(messageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
@@ -1517,6 +1523,15 @@ public class MultiWindowUtilsUnitTest {
                 "Primary action callback was not called.",
                 primaryActionClickCount + 1,
                 primaryActionCallbackHelper.getCallCount());
+
+        // Simulate and verify dismiss.
+        message.getValue()
+                .get(MessageBannerProperties.ON_DISMISSED)
+                .onResult(DismissReason.GESTURE);
+        assertEquals(
+                "Dismiss callback was not called.",
+                dismissClickCount + 1,
+                dismissCallbackHelper.getCallCount());
     }
 
     @Test

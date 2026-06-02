@@ -1517,12 +1517,14 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @param context The current context.
      * @param primaryActionRunnable The {@link Runnable} that will be executed when the message
      *     primary action button is clicked.
+     * @param dismissCallback The {@link Runnable} that will be executed when the message is
+     *     dismissed.
      */
     public static void showInstanceCreationLimitMessage(
-            @Nullable MessageDispatcher messageDispatcher,
+            MessageDispatcher messageDispatcher,
             Context context,
-            Runnable primaryActionRunnable) {
-        if (messageDispatcher == null) return;
+            Runnable primaryActionRunnable,
+            Runnable dismissCallback) {
 
         Resources resources = context.getResources();
         PropertyModel message =
@@ -1548,6 +1550,11 @@ public class MultiWindowUtils implements ActivityStateListener {
                                 () -> {
                                     primaryActionRunnable.run();
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                                })
+                        .with(
+                                MessageBannerProperties.ON_DISMISSED,
+                                (dismissReason) -> {
+                                    dismissCallback.run();
                                 })
                         .build();
 

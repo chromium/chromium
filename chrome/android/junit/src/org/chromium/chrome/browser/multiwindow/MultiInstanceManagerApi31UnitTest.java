@@ -113,6 +113,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
@@ -2070,6 +2071,30 @@ public class MultiInstanceManagerApi31UnitTest {
                 "Message identifier should match.",
                 MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT,
                 message.getValue().get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+    }
+
+    @Test
+    public void testShowInstanceCreationLimitMessage_SuppressesDuplicates() {
+        when(mCurrentActivity.getResources()).thenReturn(mock(Resources.class));
+
+        // First invocation enqueues.
+        mMultiInstanceManager.showInstanceCreationLimitMessage();
+        ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
+        reset(mMessageDispatcher);
+
+        // Second invocation does not enqueue again because it is already enqueued.
+        mMultiInstanceManager.showInstanceCreationLimitMessage();
+        verify(mMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
+
+        // Dismiss the message.
+        message.getValue()
+                .get(MessageBannerProperties.ON_DISMISSED)
+                .onResult(DismissReason.GESTURE);
+
+        // Third invocation now enqueues again because the first one was dismissed.
+        mMultiInstanceManager.showInstanceCreationLimitMessage();
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(any(), eq(false));
     }
 
     @Test
