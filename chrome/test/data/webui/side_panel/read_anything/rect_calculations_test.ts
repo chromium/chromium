@@ -144,10 +144,6 @@ suite('RectCalculations', () => {
     setup(() => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       container = document.createElement('div');
-      // Set explicit styling to ensure consistent text bounding box heights
-      // across different platforms to reduce flakiness.
-      container.style.fontSize = '20px';
-      container.style.fontFamily = 'monospace';
       container.style.lineHeight = '1';
       container.style.margin = '0';
       container.style.padding = '0';
