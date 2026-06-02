@@ -64,7 +64,8 @@ class FilterSuggestionGeneratorTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitAndEnableFeatureWithParameters(
         kMultistepFilter,
-        {{"CueTemplatesMap", "{\"SHOPPING\": {\"template\": \"Template\"}}"}});
+        {{"CueTemplatesMap", "{\"SHOPPING\": {\"template\": \"Template\"}}"},
+         {"SameDomainSuggestionSuppressionDuration", "0s"}});
     store_ = std::make_unique<FilterStore>();
     generator_ = std::make_unique<FilterSuggestionGenerator>(
         mock_client_, *store_, /*log_router=*/nullptr);
@@ -83,6 +84,7 @@ class FilterSuggestionGeneratorTest : public testing::Test {
   FilterStore* store() { return store_.get(); }
   FilterSuggestionGenerator* generator() { return generator_.get(); }
   void DestroyGenerator() { generator_.reset(); }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -799,6 +801,134 @@ TEST_F(FilterSuggestionGeneratorTest,
 
   // Should be suppressed (returns nullopt) because message generation failed!
   EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+TEST_F(FilterSuggestionGeneratorTest,
+       GenerateSuggestion_ThrottlesRecentExtractions) {
+  const GURL url(kTestUrl);
+  const base::Time now = base::Time::Now();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kMultistepFilter,
+      {{"CueTemplatesMap", "{\"SHOPPING\": {\"template\": \"Template\"}}"},
+       {"SameDomainSuggestionSuppressionDuration", "5m"}});
+
+  EXPECT_CALL(mock_client(),
+              GetSupportedTaskTypesForDomain(kTestDomain, _, kTestNavigationId))
+      .WillRepeatedly(
+          [](std::string_view domain,
+             base::OnceCallback<void(std::optional<std::vector<std::string>>)>
+                 callback,
+             int64_t navigation_id) {
+            std::move(callback).Run(std::vector<std::string>{kShoppingTask});
+          });
+
+  const std::vector<FilterAttribute> attributes = {
+      {kTestAttributeKey, kTestAttributeValue},
+      {kTestAttributeKey2, kTestAttributeValue2}};
+  FilterAnnotation annotation =
+      CreateDummyAnnotation(kShoppingTask, kTestDomain, attributes);
+  annotation.creation_timestamp = now;
+
+  base::test::TestFuture<bool> store_future;
+  store()->StoreAnnotation(annotation, store_future.GetCallback());
+  ASSERT_TRUE(store_future.Get());
+
+  task_environment().AdvanceClock(base::Minutes(2));
+
+  base::test::TestFuture<std::optional<UrlFilterSuggestion>> future1;
+  generator()->GenerateSuggestion(url, future1.GetCallback(), kTestNavigationId,
+                                  kTestDomain);
+
+  EXPECT_EQ(future1.Get(), std::nullopt);
+
+  task_environment().AdvanceClock(base::Minutes(4));
+
+  const FilterSuggestionCandidate candidate(
+      annotation.id, GURL(kTestSuggestionUrl),
+      {FilterSuggestionCandidateAttribute(kTestAttributeKey,
+                                          kTestAttributeValue16),
+       FilterSuggestionCandidateAttribute(kTestAttributeKey2,
+                                          kTestAttributeValue2_16)});
+  EXPECT_CALL(mock_client(),
+              GetFilterSuggestionCandidates(url, _, _, kTestNavigationId))
+      .WillOnce([candidate](
+                    const GURL& u,
+                    base::span<const FilterAnnotation> filter_annotations,
+                    base::OnceCallback<void(
+                        std::optional<std::vector<FilterSuggestionCandidate>>)>
+                        callback,
+                    int64_t navigation_id) {
+        std::move(callback).Run(
+            std::vector<FilterSuggestionCandidate>{candidate});
+      });
+
+  base::test::TestFuture<std::optional<UrlFilterSuggestion>> future2;
+  generator()->GenerateSuggestion(url, future2.GetCallback(), kTestNavigationId,
+                                  kTestDomain);
+
+  EXPECT_TRUE(future2.Get().has_value());
+}
+
+TEST_F(FilterSuggestionGeneratorTest,
+       GenerateSuggestion_DoesNotThrottleDifferentDomain) {
+  const GURL url(kTestUrl);
+  const base::Time now = base::Time::Now();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kMultistepFilter,
+      {{"CueTemplatesMap", "{\"SHOPPING\": {\"template\": \"Template\"}}"},
+       {"SameDomainSuggestionSuppressionDuration", "5m"}});
+
+  EXPECT_CALL(mock_client(),
+              GetSupportedTaskTypesForDomain(kTestDomain, _, kTestNavigationId))
+      .WillRepeatedly(
+          [](std::string_view domain,
+             base::OnceCallback<void(std::optional<std::vector<std::string>>)>
+                 callback,
+             int64_t navigation_id) {
+            std::move(callback).Run(std::vector<std::string>{kShoppingTask});
+          });
+
+  const std::vector<FilterAttribute> attributes = {
+      {kTestAttributeKey, kTestAttributeValue},
+      {kTestAttributeKey2, kTestAttributeValue2}};
+  FilterAnnotation annotation =
+      CreateDummyAnnotation(kShoppingTask, "different-domain.com", attributes);
+  annotation.creation_timestamp = now;
+
+  base::test::TestFuture<bool> store_future;
+  store()->StoreAnnotation(annotation, store_future.GetCallback());
+  ASSERT_TRUE(store_future.Get());
+
+  task_environment().AdvanceClock(base::Minutes(2));
+
+  const FilterSuggestionCandidate candidate(
+      annotation.id, GURL(kTestSuggestionUrl),
+      {FilterSuggestionCandidateAttribute(kTestAttributeKey,
+                                          kTestAttributeValue16),
+       FilterSuggestionCandidateAttribute(kTestAttributeKey2,
+                                          kTestAttributeValue2_16)});
+  EXPECT_CALL(mock_client(),
+              GetFilterSuggestionCandidates(url, _, _, kTestNavigationId))
+      .WillOnce([candidate](
+                    const GURL& u,
+                    base::span<const FilterAnnotation> filter_annotations,
+                    base::OnceCallback<void(
+                        std::optional<std::vector<FilterSuggestionCandidate>>)>
+                        callback,
+                    int64_t navigation_id) {
+        std::move(callback).Run(
+            std::vector<FilterSuggestionCandidate>{candidate});
+      });
+
+  base::test::TestFuture<std::optional<UrlFilterSuggestion>> future1;
+  generator()->GenerateSuggestion(url, future1.GetCallback(), kTestNavigationId,
+                                  kTestDomain);
+
+  EXPECT_TRUE(future1.Get().has_value());
 }
 
 }  // namespace

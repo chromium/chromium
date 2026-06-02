@@ -191,6 +191,17 @@ void FilterSuggestionGenerator::OnAllAnnotationsFetched(
   std::ranges::sort(all_annotations, std::ranges::greater(),
                     &FilterAnnotation::creation_timestamp);
 
+  // Suppress suggestions if the latest annotation is for the same domain and
+  // within the throttle duration.
+  if (!all_annotations.empty() &&
+      all_annotations.front().source_domain == domain &&
+      base::Time::Now() - all_annotations.front().creation_timestamp <
+          kSameDomainSuggestionSuppressionDuration.Get()) {
+    LogSuggestionSuppressed(log_router_, navigation_id, domain,
+                            "recent_extraction");
+    return;
+  }
+
   // Limit the number of candidates to bound the size of the payload sent to the
   // server.
   const size_t max_candidates = kMultistepFilterSuggestionMaxCandidates.Get();

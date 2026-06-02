@@ -46,6 +46,13 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "filter_session_duration",
                    base::Minutes(30));
 
+// The duration for which suggestions on the same domain are suppressed after
+// extraction.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSameDomainSuggestionSuppressionDuration,
+                   &kMultistepFilter,
+                   base::Minutes(2));
+
 // JSON map of task types to string templates for contextual cues.
 BASE_FEATURE_PARAM(std::string, kCueTemplatesMap, &kMultistepFilter, "{}");
 
