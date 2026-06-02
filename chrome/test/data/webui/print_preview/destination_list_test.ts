@@ -136,4 +136,11 @@ suite('DestinationListTest', function() {
     event = await whenDestinationSelected;
     assertEquals(items[1]!.destination, event.detail);
   });
+
+  test('ActiveItemHasTabindexZero', () => {
+    const items =
+        list.shadowRoot.querySelectorAll('print-preview-destination-list-item');
+    assertEquals('0', items[0]!.getAttribute('tabindex'));
+    assertEquals('-1', items[1]!.getAttribute('tabindex'));
+  });
 });

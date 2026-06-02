@@ -55,6 +55,10 @@ export class PrintPreviewDestinationListItemElement extends CrLitElement {
     }
   }
 
+  override firstUpdated() {
+    this.addEventListener('focus', this.onFocus_.bind(this));
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
@@ -109,6 +113,16 @@ export class PrintPreviewDestinationListItemElement extends CrLitElement {
     }
     return loadTimeData.getStringF(
         'extensionDestinationIconTooltip', this.destination.extensionName);
+  }
+
+  private onFocus_() {
+    if (!this.destination || !this.destination.isExtension) {
+      return;
+    }
+
+    const icon = this.shadowRoot.querySelector<HTMLElement>('.extension-icon');
+    assert(!!icon);
+    icon.focus();
   }
 }
 

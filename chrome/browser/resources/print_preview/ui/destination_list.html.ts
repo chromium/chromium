@@ -20,16 +20,14 @@ export function getHtml(this: PrintPreviewDestinationListElement) {
     aria-label="$i18n{printDestinationsTitle}" ?hidden="${this.hideList_}"
     item-size="32" chunk-size="30"
     .template="${(item: Destination, index: number, tabIndex: number) => html`
-      <div role="row" id="destination_${index}"
+      <print-preview-destination-list-item class="list-item"
+          id="destination_${index}"
           aria-rowindex="${this.getAriaRowindex_(index)}" tabindex="${tabIndex}"
-          @focus="${this.onDestinationRowFocus_}">
-        <print-preview-destination-list-item class="list-item"
-            .searchQuery="${this.searchQuery}" .destination="${item}"
-            @click="${this.onDestinationClick_}"
-            @keydown="${this.onKeydown_}" tabindex="-1"
-            role="gridcell">
-        </print-preview-destination-list-item>
-      </div>
+          .searchQuery="${this.searchQuery}" .destination="${item}"
+          @click="${this.onDestinationClick_}"
+          @keydown="${this.onKeydown_}"
+          role="row">
+      </print-preview-destination-list-item>
     `}"></cr-infinite-list>
 <div class="throbber-container" ?hidden="${this.throbberHidden_}">
   <div class="throbber"></div>

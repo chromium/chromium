@@ -891,6 +891,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationListTest,
   RunTestCase("FireDestinationSelected");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationListTest,
+                       ActiveItemHasTabindexZero) {
+  RunTestCase("ActiveItemHasTabindexZero");
+}
+
 class PrintPreviewPrintButtonTest : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {
