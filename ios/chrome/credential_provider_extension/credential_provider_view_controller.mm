@@ -642,9 +642,10 @@ enum class PasskeyUserVerificationStatus {
 
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
 
-- (void)performUserVerificationIfNeeded:(ProceduralBlock)completion {
+- (void)performUserVerificationIfNeeded:
+    (UserVerificationCompletionBlock)completion {
   if (_userVerificationStatus != PasskeyUserVerificationStatus::kRequired) {
-    completion();
+    completion(YES);
     return;
   }
 
@@ -652,9 +653,10 @@ enum class PasskeyUserVerificationStatus {
   [self
       reauthenticateIfNeededToAccessPasskeys:YES
                        withCompletionHandler:^(ReauthenticationResult result) {
-                         if (result != ReauthenticationResult::kFailure) {
-                           completion();
-                         } else {
+                         BOOL success =
+                             (result != ReauthenticationResult::kFailure);
+                         completion(success);
+                         if (!success) {
                            [weakSelf
                                exitWithErrorCode:ASExtensionErrorCodeFailed];
                          }

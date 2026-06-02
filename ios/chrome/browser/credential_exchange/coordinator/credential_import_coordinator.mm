@@ -353,10 +353,12 @@
 
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
 
-- (void)performUserVerificationIfNeeded:(ProceduralBlock)completion {
+- (void)performUserVerificationIfNeeded:
+    (UserVerificationCompletionBlock)completion {
   if (![_reauthModule canAttemptReauth]) {
     // This should not happen, as credential import starts after opening
     // password manager, which requires to have a passcode / biometrics set up.
+    completion(NO);
     NSString* title =
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE);
     [self showAlertWithTitle:title
@@ -370,10 +372,8 @@
           l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_IMPORT_TITLE)
                   canReusePreviousAuth:YES
                                handler:^(ReauthenticationResult result) {
-                                 if (result !=
-                                     ReauthenticationResult::kFailure) {
-                                   completion();
-                                 }
+                                 completion(result !=
+                                            ReauthenticationResult::kFailure);
                                }];
 }
 

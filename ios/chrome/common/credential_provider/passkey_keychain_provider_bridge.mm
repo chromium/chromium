@@ -15,6 +15,9 @@
 typedef void (^CheckEnrolledCompletionBlock)(BOOL is_enrolled, NSError* error);
 typedef void (^ErrorCompletionBlock)(NSError* error);
 
+NSString* const kPasskeyKeychainProviderBridgeErrorDomain =
+    @"PasskeyKeychainProviderBridgeErrorDomain";
+
 namespace {
 
 // Returns whether there's at least one valid key in the keys array.
@@ -355,8 +358,17 @@ bool ContainsValidKey(const webauthn::SharedKeyList& keys,
                                                   completion:
                                                       (FetchTrustedVaultKeysCompletionBlock)
                                                           completion {
-  [self.delegate performUserVerificationIfNeeded:^{
-    completion(std::move(keys), /*error=*/nil);
+  [self.delegate performUserVerificationIfNeeded:^(BOOL success) {
+    if (success) {
+      completion(std::move(keys), /*error=*/nil);
+    } else {
+      NSError* error = [NSError
+          errorWithDomain:kPasskeyKeychainProviderBridgeErrorDomain
+                     code:static_cast<NSInteger>(
+                              PasskeyKeychainError::kUserVerificationFailed)
+                 userInfo:nil];
+      completion(/*trustedVaultKeys=*/{}, error);
+    }
   }];
 }
 

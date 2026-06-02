@@ -122,10 +122,12 @@
 
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
 
-- (void)performUserVerificationIfNeeded:(ProceduralBlock)completion {
+- (void)performUserVerificationIfNeeded:
+    (UserVerificationCompletionBlock)completion {
   if (![_reauthModule canAttemptReauth]) {
     // This should not happen, as credential export is accessible from password
     // manager, which requires to have a passcode / biometrics set up.
+    completion(NO);
     [self showErrorAlert];
     return;
   }
@@ -135,10 +137,8 @@
           l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS)
                   canReusePreviousAuth:YES
                                handler:^(ReauthenticationResult result) {
-                                 if (result !=
-                                     ReauthenticationResult::kFailure) {
-                                   completion();
-                                 }
+                                 completion(result !=
+                                            ReauthenticationResult::kFailure);
                                }];
 }
 

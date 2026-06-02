@@ -17,11 +17,23 @@ typedef void (^FetchTrustedVaultKeysCompletionBlock)(
     webauthn::SharedKeyList trustedVaultKeys,
     NSError* error);
 
+typedef void (^UserVerificationCompletionBlock)(BOOL success);
+
+// Error domain for PasskeyKeychainProviderBridge.
+extern NSString* const kPasskeyKeychainProviderBridgeErrorDomain;
+
+// Error code for `kPasskeyKeychainProviderBridgeErrorDomain`.
+enum class PasskeyKeychainError : NSInteger {
+  kUserVerificationFailed = 0,
+  kMaxValue = kUserVerificationFailed,
+};
+
 // Delegate for the PasskeyKeychainProviderBridge.
 @protocol PasskeyKeychainProviderBridgeDelegate
 
 // Asks the user to reauthenticate if needed and calls the the completion block.
-- (void)performUserVerificationIfNeeded:(ProceduralBlock)completion;
+- (void)performUserVerificationIfNeeded:
+    (UserVerificationCompletionBlock)completion;
 
 // Presents the passkey welcome screen for `purpose`.
 - (void)showWelcomeScreenWithPurpose:

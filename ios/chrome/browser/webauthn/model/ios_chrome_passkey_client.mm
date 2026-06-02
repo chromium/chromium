@@ -59,9 +59,10 @@
   return self;
 }
 
-- (void)performUserVerificationIfNeeded:(ProceduralBlock)completion {
+- (void)performUserVerificationIfNeeded:
+    (UserVerificationCompletionBlock)completion {
   // TODO(crbug.com/460485614): Implement user verification.
-  completion();
+  completion(YES);
 }
 
 - (void)showWelcomeScreenWithPurpose:
