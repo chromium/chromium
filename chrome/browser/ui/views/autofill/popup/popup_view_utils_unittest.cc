@@ -558,4 +558,35 @@ TEST(PopupViewsUtilsTest, TrackAndRun_Basic) {
   EXPECT_FALSE(cb2_called);
 }
 
+// Tests that only AtMemorySearchAffordance suggestions are autoselected.
+TEST(PopupViewUtilsTest, IsSuggestionTypeAutoselected) {
+  EXPECT_TRUE(IsSuggestionTypeAutoselected(
+      SuggestionType::kAtMemorySearchAffordance));
+  EXPECT_FALSE(IsSuggestionTypeAutoselected(
+      SuggestionType::kAddressEntry));
+  EXPECT_FALSE(IsSuggestionTypeAutoselected(
+      SuggestionType::kCreditCardEntry));
+}
+
+// Tests that the first suggestion is autoselected based on the trigger source and suggestion type.
+TEST(PopupViewUtilsTest, ShouldAutoselectFirstSuggestion) {
+  // 1. Trigger source requests auto-selection:
+  EXPECT_TRUE(ShouldAutoselectFirstSuggestion(
+      AutoselectFirstSuggestion(true), std::nullopt));
+  EXPECT_TRUE(ShouldAutoselectFirstSuggestion(
+      AutoselectFirstSuggestion(true), SuggestionType::kAddressEntry));
+  EXPECT_TRUE(ShouldAutoselectFirstSuggestion(
+      AutoselectFirstSuggestion(true), SuggestionType::kAtMemorySearchAffordance));
+
+  // 2. Trigger source does NOT request auto-selection, but suggestion type overrides:
+  EXPECT_TRUE(ShouldAutoselectFirstSuggestion(
+      AutoselectFirstSuggestion(false), SuggestionType::kAtMemorySearchAffordance));
+
+  // 3. Neither requests:
+  EXPECT_FALSE(ShouldAutoselectFirstSuggestion(
+      AutoselectFirstSuggestion(false), std::nullopt));
+  EXPECT_FALSE(ShouldAutoselectFirstSuggestion(
+      AutoselectFirstSuggestion(false), SuggestionType::kAddressEntry));
+}
+
 }  // namespace autofill
