@@ -27,7 +27,7 @@ HistogramManager* HistogramManager::GetInstance() {
 void HistogramManager::RecordDelta(const base::HistogramBase& histogram,
                                    const base::HistogramSamples& snapshot) {
   EncodeHistogramDelta(histogram.histogram_name(), snapshot,
-                       uma_proto_.add_histogram_event());
+                       [&] { return uma_proto_.add_histogram_event(); });
 }
 
 bool HistogramManager::GetDeltas(std::vector<uint8_t>* data) {

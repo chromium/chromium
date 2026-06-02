@@ -22,7 +22,7 @@ PumaHistogramEncoder::~PumaHistogramEncoder() = default;
 void PumaHistogramEncoder::RecordDelta(const base::HistogramBase& histogram,
                                        const base::HistogramSamples& snapshot) {
   EncodeHistogramDelta(histogram.histogram_name(), snapshot,
-                       puma_proto_->add_histogram_events());
+                       [&] { return puma_proto_->add_histogram_events(); });
 }
 
 // static

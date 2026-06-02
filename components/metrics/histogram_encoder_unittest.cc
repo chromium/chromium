@@ -7,11 +7,21 @@
 #include <string>
 
 #include "base/metrics/bucket_ranges.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/sample_vector.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
 namespace {
+
+bool EncodeHistogramDelta(std::string_view histogram_name,
+                          const base::HistogramSamples& snapshot,
+                          ChromeUserMetricsExtension* uma_proto) {
+  return metrics::EncodeHistogramDelta(histogram_name, snapshot, [&] {
+    return uma_proto->add_histogram_event();
+  });
+}
 
 TEST(HistogramEncoder, HistogramBucketFields) {
   // Create buckets: 1-5, 5-7, 7-8, 8-9, 9-10, 10-11, 11-12.
@@ -33,7 +43,7 @@ TEST(HistogramEncoder, HistogramBucketFields) {
   samples.Accumulate(11, 1);  // Bucket 11-12.
 
   ChromeUserMetricsExtension uma_proto;
-  EncodeHistogramDelta("Test", samples, uma_proto.add_histogram_event());
+  EncodeHistogramDelta("Test", samples, &uma_proto);
 
   const HistogramEventProto& histogram_proto =
       uma_proto.histogram_event(uma_proto.histogram_event_size() - 1);
@@ -67,6 +77,26 @@ TEST(HistogramEncoder, HistogramBucketFields) {
   EXPECT_FALSE(histogram_proto.bucket(4).has_min());
   EXPECT_TRUE(histogram_proto.bucket(4).has_max());
   EXPECT_EQ(12, histogram_proto.bucket(4).max());
+}
+
+TEST(HistogramEncoder, HistogramDenylist) {
+  base::BucketRanges ranges(2);
+  ranges.set_range(0, 1);
+  ranges.set_range(1, 5);
+  base::SampleVector samples(1, &ranges);
+  samples.Accumulate(3, 1);
+
+  ChromeUserMetricsExtension uma_proto;
+  EXPECT_FALSE(
+      EncodeHistogramDelta("Variations.FeatureAccess", samples, &uma_proto));
+  EXPECT_FALSE(EncodeHistogramDelta("Variations.FeatureAccessEarly", samples,
+                                    &uma_proto));
+  EXPECT_TRUE(EncodeHistogramDelta("Test", samples, &uma_proto));
+
+  ASSERT_EQ(1, uma_proto.histogram_event_size());
+  EXPECT_TRUE(uma_proto.histogram_event(0).has_name_hash());
+  EXPECT_EQ(base::HashMetricName("Test"),
+            uma_proto.histogram_event(0).name_hash());
 }
 
 }  // namespace
