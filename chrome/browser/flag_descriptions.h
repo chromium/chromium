@@ -5780,6 +5780,11 @@ inline constexpr char kFeedAudioOverviewsName[] = "Feed audio overviews";
 inline constexpr char kFeedAudioOverviewsDescription[] =
     "Enables audio overviews in the feed";
 
+inline constexpr char kWideScreenFeedForFoldablesName[] =
+    "Wide screen single column feed";
+inline constexpr char kWideScreenFeedForFoldablesDescription[] =
+    "Enables wide screen single column feed layout in Discover for foldables.";
+
 inline constexpr char kFeedContainmentName[] = "Feed containment";
 inline constexpr char kFeedContainmentDescription[] =
     "Enables putting the feed in a container.";

@@ -5902,6 +5902,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"feed-audio-overviews", flag_descriptions::kFeedAudioOverviewsName,
      flag_descriptions::kFeedAudioOverviewsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kFeedAudioOverviews)},
+    {"wide-screen-feed-for-foldables",
+     flag_descriptions::kWideScreenFeedForFoldablesName,
+     flag_descriptions::kWideScreenFeedForFoldablesDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(feed::kWideScreenFeedForFoldables)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-force-dark", flag_descriptions::kAutoWebContentsDarkModeName,
      flag_descriptions::kAutoWebContentsDarkModeDescription, kOsAll,

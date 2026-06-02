@@ -59,4 +59,6 @@ BASE_FEATURE(kFeedAudioOverviews, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidOpenIncognitoAsWindow, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWideScreenFeedForFoldables, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace feed

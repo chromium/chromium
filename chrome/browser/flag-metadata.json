@@ -9980,6 +9980,11 @@
     "expiry_milestone": 154
   },
   {
+    "name": "wide-screen-feed-for-foldables",
+    "owners": [ "dibyendudey@google.com", "anuragsaini@google.com", "discover-android-client@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "wifi-concurrency",
     "owners": [ "jiajunz@google.com", "cros-device-enablement@google.com" ],
     "expiry_milestone": 137

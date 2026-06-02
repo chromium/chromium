@@ -10673,6 +10673,7 @@ from previous Chrome versions.
   <int value="-1210667312" label="OmniboxInspireMe:enabled"/>
   <int value="-1210522367" label="AndroidAppIntegrationModule:disabled"/>
   <int value="-1209720026" label="AppMenuMobileSiteOption:disabled"/>
+  <int value="-1208840544" label="WideScreenFeedForFoldables:disabled"/>
   <int value="-1208501269" label="AutofillScanThemeDialog:enabled"/>
   <int value="-1208313750" label="LensSidePanelUnification:enabled"/>
   <int value="-1208044478" label="InheritNativeThemeFromParentWidget:enabled"/>
@@ -18599,6 +18600,7 @@ from previous Chrome versions.
   <int value="1384102751" label="AutofillParseIBANFields:enabled"/>
   <int value="1384195698" label="FacilitatedPaymentsEnableA2APayment:disabled"/>
   <int value="1384614036" label="disable-unified-media-pipeline"/>
+  <int value="1385119256" label="WideScreenFeedForFoldables:enabled"/>
   <int value="1385652312" label="ThirdPartyProfileManagement:enabled"/>
   <int value="1385833812" label="WinrtGeolocationImplementation:disabled"/>
   <int value="1385846825" label="TabHoverCardImageSettings:disabled"/>
