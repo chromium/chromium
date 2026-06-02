@@ -70,7 +70,8 @@ patterns = [
 ]
 
 [fix.tools.java-format]
-command = ["third_party/google-java-format/google-java-format", "--aosp", "-"]
+command = ["tools/jj/formatters/java.py", "$path"]
+line-range-arg = "--lines=$first:$last"
 patterns = ["glob:'**/*.java'"]
 
 [fix.tools.rust-format]
@@ -137,6 +138,12 @@ command = [
   "vpython3.bat",
   "third_party/depot_tools/rustfmt.py",
   "--config-path=.rustfmt.toml",
+]
+[--scope.fix.tools.java-format]
+command = [
+  "vpython3.bat",
+  "tools/jj/formatters/java.py",
+  "$path",
 ]
 [--scope.fix.tools.clang-format]
 command = [
