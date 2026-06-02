@@ -20,6 +20,23 @@ import * as SourceMapScopesModule from 'devtools/models/source_map_scopes/source
   }
 
   function onAllScopesResolved() {
+    void resolveScopesAndExpand();
+  }
+
+  async function resolveScopesAndExpand() {
+    let Sources;
+    try {
+      Sources = await import('devtools/panels/sources/sources.js');
+    } catch (e) {
+      TestRunner.addResult('Failed to import sources: ' + e);
+      TestRunner.completeDebuggerTest();
+      return;
+    }
+
+    const instance = Sources.ScopeChainSidebarPane.ScopeChainSidebarPane.instance();
+    if (!instance.treeOutline) {
+      await TestRunner.addSnifferPromise(instance, 'sidebarPaneUpdatedForTest');
+    }
     SourcesTestRunner.expandScopeVariablesSidebarPane(onSidebarsExpanded);
   }
 
