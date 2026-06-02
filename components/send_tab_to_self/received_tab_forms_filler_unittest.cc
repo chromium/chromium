@@ -139,6 +139,7 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillMatchingFields) {
 TEST_F(ReceivedTabFormsFillerTest, ShouldFillFieldsByUniqueSignatureFallback) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
+  // Create a sender form to generate a signature for the pending field.
   const FormData form_sender = autofill::test::GetFormData(
       {.fields = {{.renderer_id = autofill::FieldRendererId(1),
                    .name_attribute = u"name_123",
@@ -149,6 +150,7 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillFieldsByUniqueSignatureFallback) {
                                                  u"shared_value",
                                                  GetSignature(form_sender, 0)));
 
+  // Create a receiver form with a different name/ID but same signature.
   const FormData form_receiver = autofill::test::GetFormData(
       {.fields = {{.renderer_id = autofill::FieldRendererId(2),
                    .label = u"label1",
@@ -185,6 +187,7 @@ TEST_F(ReceivedTabFormsFillerTest,
        ShouldNotFillFieldsByNonUniqueReceiverSignatureFallback) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
+  // Create a sender form to generate a signature for the pending field.
   const FormData form_sender = autofill::test::GetFormData(
       {.fields = {{.renderer_id = autofill::FieldRendererId(1),
                    .name_attribute = u"name_123",
@@ -226,12 +229,77 @@ TEST_F(ReceivedTabFormsFillerTest,
       FormFieldMatchOutcome::kNoMatch, 1);
 }
 
+// Tests that fallback signature matching works and ignores cross-origin fields
+// when determining signature uniqueness in the receiver form.
+TEST_F(ReceivedTabFormsFillerTest,
+       ShouldFillFieldsByUniqueSignatureFallbackIgnoringCrossOriginFields) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kOtherOrigin =
+      url::Origin::Create(GURL("https://other.com"));
+
+  // Create a sender form to generate a signature for the pending field.
+  // The sender form mirrors the receiver form's structure (one same-origin
+  // and one cross-origin field) to ensure the computed FormSignature matches.
+  const FormData form_sender = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(1),
+                   .name_attribute = u"name_123",
+                   .origin = kOrigin},
+                  {.renderer_id = autofill::FieldRendererId(4),
+                   .name_attribute = u"name_123",
+                   .origin = kOtherOrigin}},
+       .url = "https://example.com"});
+  PageContext::FormFieldInfo form_field_info;
+  form_field_info.fields.push_back(MakeFormField(u"id1", u"name_123", "text",
+                                                 u"shared_value",
+                                                 GetSignature(form_sender, 0)));
+
+  // Create a receiver form with TWO fields that have the SAME signature.
+  // But one is same-origin (kOrigin) and the other is cross-origin
+  // (kOtherOrigin).
+  const FormData form_receiver = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
+                   .label = u"label1",
+                   .name_attribute = u"name_123",
+                   .id_attribute = u"id2",
+                   .origin = kOrigin},
+                  {.renderer_id = autofill::FieldRendererId(3),
+                   .label = u"label2",
+                   .name_attribute = u"name_123",
+                   .id_attribute = u"id3",
+                   .origin = kOtherOrigin}},
+       .url = "https://example.com"});
+
+  const autofill::FieldGlobalId field_id =
+      form_receiver.fields()[0].global_id();
+
+  // Since the signature is unique among same-origin fields, it should be
+  // filled.
+  EXPECT_CALL(autofill_driver(),
+              ApplyFieldAction(autofill::mojom::FieldActionType::kReplaceAll,
+                               autofill::mojom::ActionPersistence::kFill,
+                               Eq(field_id), Eq(u"shared_value")));
+
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+  ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
+                                run_loop.QuitClosure());
+
+  autofill_manager().OnFormsSeen({form_receiver}, {});
+
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kMatchedBySignature, 1);
+}
+
 // Tests that fallback matching is skipped if there are multiple pending fields
 // with the same signature.
 TEST_F(ReceivedTabFormsFillerTest,
        ShouldNotFillFieldsByNonUniquePendingSignatureFallback) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
+  // Create a sender form to generate a signature for the pending field.
   const FormData form_sender = autofill::test::GetFormData(
       {.fields = {{.renderer_id = autofill::FieldRendererId(1),
                    .name_attribute = u"name_123",
@@ -250,6 +318,7 @@ TEST_F(ReceivedTabFormsFillerTest,
   form_field_info.fields.push_back(
       MakeFormField(u"id2", u"name_124", "text", u"value2", sig));
 
+  // Create a receiver form with a field that has the same signature.
   const FormData form_receiver = autofill::test::GetFormData(
       {.fields = {{.renderer_id = autofill::FieldRendererId(2),
                    .label = u"label1",

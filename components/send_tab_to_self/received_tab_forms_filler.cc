@@ -24,6 +24,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/send_tab_to_self/proto_conversions.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace send_tab_to_self {
 
@@ -59,17 +60,20 @@ base::flat_set<PageContext::FormFieldAutofillSignature> ComputeUniqueSignatures(
       base::sorted_unique, std::move(unique_signatures));
 }
 
-// Returns the set of field signatures that are unique within `form`.
-// TODO(crbug.com/485145029): Consider honoring origin-based filtering here
-// as well, similar to GetUniqueTypesInForm.
+// Returns the set of field signatures that are unique among the same-origin
+// fields in `form`.
 base::flat_set<autofill::FieldSignature> GetUniqueSignaturesInForm(
-    const autofill::FormStructure& form) {
+    const autofill::FormStructure& form,
+    const url::Origin& origin) {
   if (form.form_signature().value() == 0) {
     return {};
   }
   // Count occurrences of each signature in the form.
-  base::flat_map<autofill::FieldSignature, size_t> counts;
+  absl::flat_hash_map<autofill::FieldSignature, size_t> counts;
   for (const std::unique_ptr<autofill::AutofillField>& field : form.fields()) {
+    if (field->origin() != origin) {
+      continue;
+    }
     autofill::FieldSignature signature = field->GetFieldSignature();
     if (signature.value() != 0) {
       ++counts[signature];
@@ -83,8 +87,7 @@ base::flat_set<autofill::FieldSignature> GetUniqueSignaturesInForm(
       unique_signatures.push_back(signature);
     }
   }
-  return base::flat_set<autofill::FieldSignature>(base::sorted_unique,
-                                                  std::move(unique_signatures));
+  return base::flat_set<autofill::FieldSignature>(std::move(unique_signatures));
 }
 
 // Helper to extract the AutofillTypeSet for a given AutofillField.
@@ -377,8 +380,12 @@ void ReceivedTabFormsFiller::FillForms(
     return;
   }
   manager->ForEachCachedForm([&](const autofill::FormStructure& form) {
+    // TODO(crbug.com/511137786): Pull out the origin_ filtering logic into a
+    // common place (e.g. pre-filter fields in this loop) to avoid doing it
+    // repeatedly in GetUniqueSignaturesInForm(), GetUniqueTypeSetsInForm(),
+    // and again in the filling loop below.
     const base::flat_set<autofill::FieldSignature> form_unique_signatures =
-        GetUniqueSignaturesInForm(form);
+        GetUniqueSignaturesInForm(form, origin_);
     const base::flat_set<AutofillTypeSet> form_unique_type_sets =
         GetUniqueTypeSetsInForm(form, origin_);
 
