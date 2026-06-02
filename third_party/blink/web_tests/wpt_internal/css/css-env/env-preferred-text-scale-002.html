@@ -2,6 +2,7 @@
 <html lang="en" class="reftest-wait">
 <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0"
   name="viewport">
+<meta name="text-scale" content="scale">
 <meta name="assert"
   content="env(preferred-text-scale) exposes the user's preferred text scale from the OS, clamped to a hardcoded set of values">
 <link rel="help" href="https://drafts.csswg.org/css-env-1/#text-zoom">
@@ -12,6 +13,9 @@
     background-color: green;
     width: calc(50px * env(preferred-text-scale));
     height: calc(50px * env(preferred-text-scale));
+  }
+  p {
+    font-size: calc(1em / env(preferred-text-scale));
   }
 </style>
 

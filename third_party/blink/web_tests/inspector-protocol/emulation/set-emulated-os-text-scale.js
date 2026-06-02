@@ -1,5 +1,6 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   let {page, session, dp} = await testRunner.startHTML(`
+    <meta name="text-scale" content="scale">
     <div style='font-size: calc(100px * env(preferred-text-scale, 3));'>a</div>
     <script>
       function getPreferredTextScale() {
