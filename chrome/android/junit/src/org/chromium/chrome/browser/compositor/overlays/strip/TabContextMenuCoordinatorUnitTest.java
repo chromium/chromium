@@ -181,7 +181,8 @@ import java.util.function.BiConsumer;
 @EnableFeatures({
     ChromeFeatureList.DATA_SHARING,
     ChromeFeatureList.MEDIA_INDICATORS_ANDROID,
-    ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS
+    ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
+    ChromeFeatureList.ANDROID_CONTEXT_MENU_DISABLED_MENU_ITEMS
 })
 @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
 public class TabContextMenuCoordinatorUnitTest {

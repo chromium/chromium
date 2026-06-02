@@ -710,8 +710,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
             itemList.add(createMuteUnmuteSiteItem(tabs, isIncognito));
         }
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isIncognito) {
+        if (ChromeFeatureList.sAndroidContextMenuDisabledMenuItems.isEnabled() && !isIncognito) {
             itemList.add(createAddTabToReadingListItem(anchorInfo));
+        }
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isIncognito) {
             if (shouldShowSendToYourDevicesItem(tabs.get(0))) {
                 itemList.add(createSendToYourDevicesItem());
             }
@@ -753,7 +755,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
             itemList.add(createMuteUnmuteSiteItem(tabs, isIncognito));
         }
-        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isIncognito) {
+        if (ChromeFeatureList.sAndroidContextMenuDisabledMenuItems.isEnabled() && !isIncognito) {
             itemList.add(createAddTabToReadingListItem(anchorInfo));
         }
         addVerticalTabsItems(itemList, isIncognito);
