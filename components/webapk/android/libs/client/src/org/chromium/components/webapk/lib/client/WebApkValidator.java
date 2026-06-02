@@ -363,10 +363,9 @@ public class WebApkValidator {
         }
 
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setComponent(null);
         if (applicationPackage != null) {
             intent.setPackage(applicationPackage);
-        } else {
-            intent.setComponent(null);
         }
         Intent selector = intent.getSelector();
         if (selector != null) {
