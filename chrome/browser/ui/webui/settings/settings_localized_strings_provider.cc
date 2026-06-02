@@ -905,8 +905,6 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"glicExtensionsButton", IDS_SETTINGS_GLIC_EXTENSIONS_BUTTON},
       {"glicExtensionsButtonSublabel",
        IDS_SETTINGS_GLIC_EXTENSIONS_BUTTON_SUBLABEL},
-      {"glicActivityButtonUrl",
-       IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_URL},
       {"glicTabAccessWhenOn1",
        IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_1},
       {"glicTabAccessConsider1",
@@ -945,6 +943,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_2},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString("glicActivityButtonUrl", chrome::kGlicActivityUrl);
 
   html_source->AddLocalizedString("glicOsWidgetToggle",
                                   IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE);
