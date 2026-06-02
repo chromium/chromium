@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/view_utils.h"
 
@@ -32,4 +33,9 @@ DocumentPipWidgetDelegate::~DocumentPipWidgetDelegate() = default;
 DocumentPipContentsView*
 DocumentPipWidgetDelegate::GetDocumentPipContentsView() {
   return views::AsViewClass<DocumentPipContentsView>(GetContentsView());
+}
+
+std::unique_ptr<views::FrameView> DocumentPipWidgetDelegate::CreateFrameView(
+    views::Widget* widget) {
+  return std::make_unique<DocumentPipFrameView>(widget);
 }

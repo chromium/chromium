@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_DOCUMENT_PIP_HOST_H_
 #define CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_DOCUMENT_PIP_HOST_H_
 
+#include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -12,6 +13,7 @@
 #include "ui/views/widget/widget.h"
 
 class DocumentPipWidgetDelegate;
+class PictureInPictureTucker;
 class Profile;
 
 namespace content {
@@ -25,9 +27,11 @@ class WebContents;
 //   - Acts as WebContentsDelegate for the child WebContents.
 //   - Observes the opener WebContents to close the PiP window when the opener
 //     is destroyed or navigates to a new primary page.
+//   - Implements PictureInPictureWindow for tucking and Mac fullscreen.
 class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
                         public content::WebContentsObserver,
-                        public content::WebContentsDelegate {
+                        public content::WebContentsDelegate,
+                        public PictureInPictureWindow {
  public:
   DocumentPipHost(const DocumentPipHost&) = delete;
   DocumentPipHost& operator=(const DocumentPipHost&) = delete;
@@ -55,6 +59,12 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   blink::mojom::DisplayMode GetDisplayMode(
       const content::WebContents* web_contents) override;
   void CloseContents(content::WebContents* source) override;
+
+  // PictureInPictureWindow:
+  void SetForcedTucking(bool tuck) override;
+#if BUILDFLAG(IS_MAC)
+  void OnAnyBrowserEnteredFullscreen() override;
+#endif
 
  private:
   friend class content::WebContentsUserData<DocumentPipHost>;
@@ -86,6 +96,11 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
 
   // Initial options from the requestWindow() call.
   blink::mojom::PictureInPictureWindowOptions pip_options_;
+
+  // Manages tucking the PiP window offscreen. Created lazily on first
+  // SetForcedTucking() call.
+  std::unique_ptr<PictureInPictureTucker> tucker_;
+  bool is_tucking_forced_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

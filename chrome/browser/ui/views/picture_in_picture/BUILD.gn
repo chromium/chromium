@@ -5,17 +5,22 @@
 assert(!is_android)
 
 source_set("picture_in_picture") {
+  public = [
+    "document_pip_contents_view.h",
+    "document_pip_frame_view.h",
+    "document_pip_host.h",
+    "document_pip_widget_delegate.h",
+    "picture_in_picture_bounds_change_animation.h",
+    "picture_in_picture_tucker.h",
+  ]
+
   sources = [
     "document_pip_contents_view.cc",
-    "document_pip_contents_view.h",
+    "document_pip_frame_view.cc",
     "document_pip_host.cc",
-    "document_pip_host.h",
     "document_pip_widget_delegate.cc",
-    "document_pip_widget_delegate.h",
     "picture_in_picture_bounds_change_animation.cc",
-    "picture_in_picture_bounds_change_animation.h",
     "picture_in_picture_tucker.cc",
-    "picture_in_picture_tucker.h",
   ]
 
   public_deps = [
@@ -28,7 +33,12 @@ source_set("picture_in_picture") {
   ]
 
   deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/color:color_headers",
+    "//components/vector_icons",
+    "//ui/base",
     "//ui/base/metadata",
     "//ui/display",
     "//ui/views/controls/webview",
@@ -39,6 +49,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "document_pip_contents_view_unittest.cc",
+    "document_pip_frame_view_unittest.cc",
     "document_pip_host_unittest.cc",
     "document_pip_widget_delegate_unittest.cc",
     "picture_in_picture_bounds_change_animation_unittest.cc",

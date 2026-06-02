@@ -14,6 +14,11 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace views {
+class FrameView;
+class Widget;
+}  // namespace views
+
 class DocumentPipContentsView;
 class Profile;
 
@@ -38,6 +43,10 @@ class DocumentPipWidgetDelegate : public views::WidgetDelegate {
 
   // Returns the contents view, or nullptr if the view tree has been torn down.
   DocumentPipContentsView* GetDocumentPipContentsView();
+
+  // views::WidgetDelegate:
+  std::unique_ptr<views::FrameView> CreateFrameView(
+      views::Widget* widget) override;
 
   base::WeakPtr<DocumentPipWidgetDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
