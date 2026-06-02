@@ -208,23 +208,31 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     auto mime_type = contextual_input_data->primary_content_type.value_or(
         lens::MimeType::kUnknown);
-    size_t content_size = 0;
+    size_t page_contents_size = 0;
+
     if (contextual_input_data->context_input.has_value()) {
       for (const auto& input : *contextual_input_data->context_input) {
-        content_size += input.bytes_.size();
+        page_contents_size += input.bytes_.size();
       }
     }
 
+    size_t viewport_screenshot_size = 0;
+
     if (contextual_input_data->viewport_screenshot_bytes.has_value()) {
-      content_size += contextual_input_data->viewport_screenshot_bytes->size();
+      viewport_screenshot_size +=
+          contextual_input_data->viewport_screenshot_bytes->size();
     }
 
     if (contextual_input_data->viewport_screenshot.has_value()) {
-      content_size +=
+      viewport_screenshot_size +=
           contextual_input_data->viewport_screenshot->computeByteSize();
     }
 
+    size_t content_size = page_contents_size + viewport_screenshot_size;
+
     metrics_recorder->RecordFileSizeMetric(mime_type, content_size);
+    metrics_recorder->RecordTabPartsSizes(viewport_screenshot_size,
+                                          page_contents_size);
   }
 
   if (auto* controller = GetController()) {

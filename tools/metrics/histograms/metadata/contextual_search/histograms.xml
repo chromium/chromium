@@ -248,6 +248,39 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualSearch.File.Size.Tab.PageContents.{ContextualSearchSource}"
+    units="bytes" expires_after="2027-05-25">
+  <owner>jkoblinsky@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    The size of the extracted page contents for a tab attachment upload,
+    qualified by the contextual search source. Emitted when the upload is
+    initiated on the client side, before the upload has reached the server.
+    Duplicate tab uploads will emit duplicate samples. Both cached and
+    non-chached tabs will emit a sample. An emission will still occur if the
+    attachment is removed from the attachment list before the server upload is
+    complete.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.File.Size.Tab.ViewportScreenshot.{ContextualSearchSource}"
+    units="bytes" expires_after="2027-05-25">
+  <owner>jkoblinsky@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    The size of the viewport screenshot for a tab attachment upload, qualified
+    by the contextual search source. Emitted when the upload is initiated on the
+    client side, before the upload has reached the server. Duplicate tab uploads
+    will emit duplicate samples. Both cached and non-chached tabs will emit a
+    sample. An emission will still occur if the attachment is removed from the
+    attachment list before the server upload is complete.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.File.Size.{ContextualSearchFileTypes}.{ContextualSearchSource}"
     units="bytes" expires_after="2027-01-20">
   <owner>hujasonx@google.com</owner>

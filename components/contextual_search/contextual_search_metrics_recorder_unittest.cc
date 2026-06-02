@@ -65,6 +65,10 @@ const char kContextualSearchFileSizeAll[] =
     "ContextualSearch.File.Size.Unknown";
 const char kContextualSearchFileSizeImage[] =
     "ContextualSearch.File.Size.Image.Unknown";
+const char kContextualSearchFileSizeTabViewportScreenshot[] =
+    "ContextualSearch.File.Size.Tab.ViewportScreenshot.Unknown";
+const char kContextualSearchFileSizeTabPageContents[] =
+    "ContextualSearch.File.Size.Tab.PageContents.Unknown";
 const char kContextualSearchToolMode[] = "ContextualSearch.Tools.Unknown";
 const char kContextualSearchModelMode[] = "ContextualSearch.Models.Unknown";
 const char kContextualSearchToolModeOnSubmission[] =
@@ -670,6 +674,17 @@ TEST_F(ContextualSearchMetricsRecorderTest, AggregatedFileSizeMetrics) {
   histogram_tester().ExpectTotalCount(kContextualSearchFileSizeAll, 2);
   histogram_tester().ExpectBucketCount(kContextualSearchFileSizeAll, 100, 1);
   histogram_tester().ExpectBucketCount(kContextualSearchFileSizeAll, 200, 1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, RecordTabPartsSizes) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().RecordTabPartsSizes(100, 500);
+  DestructMetricsRecorder();
+
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchFileSizeTabViewportScreenshot, 100, 1);
+  histogram_tester().ExpectUniqueSample(
+      kContextualSearchFileSizeTabPageContents, 500, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, MultiFileUpload) {

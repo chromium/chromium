@@ -176,6 +176,9 @@ class ContextualSearchMetricsRecorder {
 
   void RecordFileSizeMetric(lens::MimeType mime_type, uint64_t file_size_bytes);
 
+  void RecordTabPartsSizes(uint64_t viewport_screenshot_size_bytes,
+                           uint64_t page_contents_size_bytes);
+
   // Should be called when a file has been deleted.
   void RecordFileDeletedMetrics(bool success,
                                 lens::MimeType file_type,

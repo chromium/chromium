@@ -286,6 +286,21 @@ void ContextualSearchMetricsRecorder::RecordFileSizeMetric(
       kContextualSearchFileSizePerType + metrics_suffix_, file_size_bytes);
 }
 
+void ContextualSearchMetricsRecorder::RecordTabPartsSizes(
+    uint64_t viewport_screenshot_size_bytes,
+    uint64_t page_contents_size_bytes) {
+  std::string tab_mime_type =
+      MimeTypeToString(lens::MimeType::kAnnotatedPageContent);
+  base::UmaHistogramCounts10M(
+      base::StrCat({kContextualSearchFileSizePerType, tab_mime_type,
+                    ".ViewportScreenshot.", metrics_suffix_}),
+      viewport_screenshot_size_bytes);
+  base::UmaHistogramCounts10M(
+      base::StrCat({kContextualSearchFileSizePerType, tab_mime_type,
+                    ".PageContents.", metrics_suffix_}),
+      page_contents_size_bytes);
+}
+
 void ContextualSearchMetricsRecorder::RecordFileDeletedMetrics(
     bool success,
     lens::MimeType file_type,
