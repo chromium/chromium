@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAVE_TO_DRIVE_SAVE_TO_DRIVE_UTILS_H_
 
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 
 namespace content {
 class RenderFrameHost;
@@ -24,6 +25,9 @@ base::WeakPtr<extensions::StreamContainer> GetStreamWeakPtr(
 
 // Gets the tab id associated with the given `render_frame_host`.
 int GetTabId(content::RenderFrameHost* render_frame_host);
+
+// Validates that the buffer starts with the PDF magic bytes "%PDF-".
+bool ValidatePdfMagic(const mojo_base::BigBuffer& buffer);
 
 }  // namespace save_to_drive
 

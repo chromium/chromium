@@ -39,6 +39,8 @@ class PDFContentReader : public ContentReader {
   void Close() override;
 
  private:
+  friend class PDFContentReaderTest;
+
   void OnOpen(OpenCallback callback,
               pdf::mojom::SaveDataBufferHandlerGetResultPtr result);
 

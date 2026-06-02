@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/save_to_drive/save_to_drive_utils.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -80,7 +81,20 @@ void PDFContentReader::Read(uint32_t offset,
     std::move(callback).Run(mojo_base::BigBuffer());
     return;
   }
-  remote_buffer_handler_->Read(offset, size, std::move(callback));
+
+  auto wrapped_callback = base::BindOnce(
+      [](uint32_t offset, ContentReadCallback original_callback,
+         mojo_base::BigBuffer buffer) {
+        if (offset == 0 && !save_to_drive::ValidatePdfMagic(buffer)) {
+          // Invalid PDF header, return empty buffer to indicate error.
+          std::move(original_callback).Run(mojo_base::BigBuffer());
+          return;
+        }
+        std::move(original_callback).Run(std::move(buffer));
+      },
+      offset, std::move(callback));
+
+  remote_buffer_handler_->Read(offset, size, std::move(wrapped_callback));
 }
 
 void PDFContentReader::Close() {
