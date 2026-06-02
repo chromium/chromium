@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.CallSuper;
 import androidx.preference.PreferenceGroup;
@@ -82,18 +81,9 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
         imageView.setImageDrawable(mDrawable);
         imageView.setChecked(mExpanded);
 
-        // For accessibility, read out the whole title and whether the group is collapsed/expanded.
+        // For accessibility, use accessibility delegate to handle expanded state and actions.
         View view = holder.itemView;
-        String description =
-                getTitle()
-                        + getContext()
-                                .getString(
-                                        mExpanded
-                                                ? R.string.accessibility_expanded_group
-                                                : R.string.accessibility_collapsed_group);
-        view.setContentDescription(description);
-        if (view.isAccessibilityFocused()) {
-            view.sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION);
-        }
+        View title = (View) holder.findViewById(android.R.id.title);
+        ExpandablePreferenceAccessibilityDelegate.apply(this, view, title, this::isExpanded);
     }
 }

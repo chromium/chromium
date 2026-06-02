@@ -12,7 +12,6 @@ import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewStub;
-import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
@@ -174,7 +173,7 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
                         setChecked(isCheckedArg);
                     });
         }
-        updatePreferenceContentDescription(holder.itemView);
+        updatePreferenceAccessibility(holder.itemView, title);
     }
 
     @Override
@@ -203,18 +202,7 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
         return getContext().getColor(R.color.default_text_color_disabled_list);
     }
 
-    private void updatePreferenceContentDescription(View view) {
-        // For accessibility, read out the whole title and whether the group is collapsed/expanded.
-        String collapseOrExpandedText =
-                getContext()
-                        .getString(
-                                mExpanded
-                                        ? R.string.accessibility_expanded_group
-                                        : R.string.accessibility_collapsed_group);
-        String description = getTitle() + ", " + collapseOrExpandedText;
-        view.setContentDescription(description);
-        if (view.isAccessibilityFocused()) {
-            view.sendAccessibilityEvent(AccessibilityEvent.CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION);
-        }
+    private void updatePreferenceAccessibility(View view, @Nullable View titleView) {
+        ExpandablePreferenceAccessibilityDelegate.apply(this, view, titleView, this::isExpanded);
     }
 }
