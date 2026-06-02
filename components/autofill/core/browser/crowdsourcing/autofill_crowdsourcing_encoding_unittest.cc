@@ -3295,6 +3295,31 @@ TEST_F(AutofillCrowdsourcingEncoding,
     ASSERT_EQ(form.field_count(), 1U);
     EXPECT_FALSE(form.field(0)->password_requirements().has_value());
   }
+
+  // Case 4: A-B-A sandwich (Form in B, field in A, main frame A).
+  {
+    field.set_origin(main_frame_origin);
+    form_data.set_fields({field});
+    form_data.set_url(GURL(kCrossOriginUrl));
+
+    FormStructure& form = SeeAndGetParsedForm(form_data);
+
+    AutofillQueryResponse response;
+    auto* form_suggestion = response.add_form_suggestions();
+    AddFieldPredictionToForm(form_data.fields()[0], ACCOUNT_CREATION_PASSWORD,
+                             form_suggestion);
+
+    auto* field_suggestion = form_suggestion->mutable_field_suggestions(0);
+    field_suggestion->mutable_password_requirements()->set_max_length(12);
+
+    test_api(autofill_manager())
+        .OnLoadedServerPredictions(SerializeAndEncode(response),
+                                   test::GetEncodedSignatures({form}),
+                                   {form_data});
+
+    ASSERT_EQ(form.field_count(), 1U);
+    EXPECT_FALSE(form.field(0)->password_requirements().has_value());
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)
