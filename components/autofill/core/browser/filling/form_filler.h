@@ -237,7 +237,8 @@ class FormFiller {
   struct AugmentedFillingPayload;
 
   // Stores a refill `context` for `form_id` and returns a raw pointer to the
-  // stored context.
+  // stored context. If `context` is null, erases the entry corresponding to
+  // `form_id` from the map and returns `nullptr`.
   RefillContext* SetRefillContext(FormGlobalId form_id,
                                   std::unique_ptr<RefillContext> context);
 
