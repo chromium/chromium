@@ -26,10 +26,6 @@ include_rules = [
   "+chrome/browser/media/router/media_router_feature.h",
   "+chrome/browser/prefs/browser_prefs.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/navigator/browser_navigator_params.h",
-  "+chrome/browser/ui/tabs/tab_strip_model.h",
-  "+chrome/browser/ui/web_applications/app_browser_controller.h",
   "+chrome/browser/web_applications/mojom/user_display_mode.mojom.h",
   "+chrome/browser/web_applications/test/fake_web_app_provider.h",
   "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
@@ -39,3 +35,10 @@ include_rules = [
   "+chrome/common/pref_names.h",
   "+chrome/test/base"
 ]
+
+specific_include_rules = {
+  "note_taking_helper_browsertest\\.cc": [
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/web_applications/app_browser_controller.h",
+  ],
+}
