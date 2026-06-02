@@ -37,6 +37,16 @@
     .dropdown-item.external-link-style cr-icon {
       --cr-icon-color: var(--cr-secondary-text-color);
     }
+
+    .vertical-list .start {
+      display: flex;
+      align-items: center;
+    }
+
+    site-favicon {
+      margin-inline-start: 20px;
+      margin-inline-end: 16px;
+    }
   </style>
   <settings-subpage page-title="[[getPageTitleLabel_(isYourSavedInfoSubpage_)]]"
       learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}"
@@ -185,21 +195,23 @@
             no-extension-indicator label="$i18n{emailVerificationLabel}"
             pref="{{prefs.autofill.email_verification_enabled}}">
         </settings-toggle-button>
-        <div class="list-frame">
-          <div class="vertical-list">
-            <template is="dom-repeat" items="[[emailVerificationAddresses_]]">
-              <div class="list-item">
-                <div class="start">[[item]]</div>
-                <cr-icon-button class="icon-more-vert email-menu"
-                    on-click="onEmailMenuClick_">
-                </cr-icon-button>
-              </div>
-            </template>
-          </div>
-          <div id="noEmailsLabel" class="list-item"
-              hidden$="[[hasSome_(emailVerificationAddresses_)]]">
-            $i18n{emailVerificationEmptyLabel}
-          </div>
+        <div class="vertical-list">
+          <template is="dom-repeat" items="[[emailVerificationAddresses_]]">
+            <div class="list-item">
+              <site-favicon
+                  url="[[getIssuerSite_(
+                      item, prefs.autofill.email_verification_state.value)]]">
+              </site-favicon>
+              <div class="start">[[item]]</div>
+              <cr-icon-button class="icon-more-vert email-menu"
+                  on-click="onEmailMenuClick_">
+              </cr-icon-button>
+            </div>
+          </template>
+        </div>
+        <div id="noEmailsLabel" class="list-item"
+            hidden$="[[hasSome_(emailVerificationAddresses_)]]">
+          $i18n{emailVerificationEmptyLabel}
         </div>
       </template>
       <cr-action-menu id="emailSharedMenu" role-description="$i18n{menu}">

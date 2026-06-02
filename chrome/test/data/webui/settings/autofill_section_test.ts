@@ -190,8 +190,8 @@ suite('AutofillSectionUiTest', function() {
     loadTimeData.overrideValues({emailVerificationProtocolEnabled: true});
 
     const emailState = {
-      'test1@example.com': {allowed: true, issuer_site: 'https://example.com'},
-      'test2@example.com': {allowed: false, issuer_site: 'https://example.com'},
+      'test1@example.com': {allowed: true, issuer_site: 'https://google.com'},
+      'test2@example.com': {allowed: false, issuer_site: 'https://yahoo.com'},
     };
 
     const section = await createAutofillSection([], {
@@ -220,14 +220,20 @@ suite('AutofillSectionUiTest', function() {
     const start0 = item0.querySelector('.start');
     assertTrue(!!start0);
     assertEquals('test1@example.com', start0.textContent.trim());
+    const favicon0 = item0.querySelector('site-favicon');
+    assertTrue(!!favicon0);
+    assertEquals('https://google.com', favicon0.url);
 
     const start1 = item1.querySelector('.start');
     assertTrue(!!start1);
     assertEquals('test2@example.com', start1.textContent.trim());
+    const favicon1 = item1.querySelector('site-favicon');
+    assertTrue(!!favicon1);
+    assertEquals('https://yahoo.com', favicon1.url);
 
     // Click menu on first item.
     button0.click();
-    flush();
+    await flushTasks();
 
     const actionMenu = section.shadowRoot!.querySelector<CrActionMenuElement>(
         '#emailSharedMenu')!;

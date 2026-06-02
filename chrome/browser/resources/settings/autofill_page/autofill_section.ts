@@ -20,6 +20,7 @@ import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
+import '../site_favicon.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
 import './passwords_shared.css.js';
@@ -440,6 +441,13 @@ export class SettingsAutofillSectionElement extends
 
   private getEmailRemoveConfirmationDescription_(issuer: string): string {
     return this.i18n('removeVerifiedEmailPermissionBody', issuer);
+  }
+
+  private getIssuerSite_(email: string): string {
+    const state = this.getPref<Record<string, {issuer_site?: string}>>(
+                          'autofill.email_verification_state')
+                      .value;
+    return state[email]?.issuer_site || '';
   }
 
   private isCloudOffVisible_(
