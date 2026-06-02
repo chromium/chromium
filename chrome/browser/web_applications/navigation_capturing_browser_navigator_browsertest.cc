@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // Create a new browser which will be considered the most recently active one.
   Browser* new_browser =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile());
-  chrome::NewTab(new_browser);
+  chrome::NewTab(new_browser, NewTabTypes::kNoUserAction);
 
   // Do a capturable navigation to the landing page, and ensure that it opens in
   // the browser().
@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(
   // one.
   Browser* new_browser =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile());
-  chrome::NewTab(new_browser);
+  chrome::NewTab(new_browser, NewTabTypes::kNoUserAction);
 
   // Do a capturable navigation to the landing page, and ensure that it
   // opens in the browser().
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
   // one.
   Browser* new_browser =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile());
-  chrome::NewTab(new_browser);
+  chrome::NewTab(new_browser, NewTabTypes::kNoUserAction);
 
   // Do a capturable navigation to the landing page, and ensure that it opens in
   // browser(). Since the web_app has a client_mode of `focus-existing`,
@@ -872,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(LaunchQueueLatencyMetricBrowserTest,
   // Create a new browser which will be considered the most recently active one.
   Browser* new_browser =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile());
-  chrome::NewTab(new_browser);
+  chrome::NewTab(new_browser, NewTabTypes::kNoUserAction);
 
   // Do a capturable navigation to the landing page, and ensure that it opens in
   // the browser().
@@ -914,12 +914,12 @@ using LaunchContainerMetricMeasurementTest =
 IN_PROC_BROWSER_TEST_F(LaunchContainerMetricMeasurementTest,
                        NavigateExistingStandaloneToTab) {
   // Load 'kNavigateExistingUrl` and `kFocusExistingUrl` in new tabs.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetNavigateExistingUrl()));
   content::WebContents* target_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetFocusExistingUrl()));
 
   // Install both apps.
@@ -1018,7 +1018,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
   // Create a new browser which will be considered the most recently active one.
   Browser* new_browser =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile());
-  chrome::NewTab(new_browser);
+  chrome::NewTab(new_browser, NewTabTypes::kNoUserAction);
 
   // Do a capturable navigation to kRedirectFromPage (which redirects to
   // kLandingPage), and ensure that it opens in the browser().
@@ -1059,7 +1059,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingWithRedirectionBrowserNavigatorTest,
   // Create a new browser which will be considered the most recently active one.
   Browser* new_browser =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(profile());
-  chrome::NewTab(new_browser);
+  chrome::NewTab(new_browser, NewTabTypes::kNoUserAction);
 
   // Do a capturable navigation to kRedirectFromPage (which redirects to
   // kLandingPage), and ensure that it opens in the browser().

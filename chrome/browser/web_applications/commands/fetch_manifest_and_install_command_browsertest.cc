@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
 
   // Create a new tab to ensure that the browser isn't destroyed with the web
   // contents closing.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   web_contents->Close();
 
   loop.Run();

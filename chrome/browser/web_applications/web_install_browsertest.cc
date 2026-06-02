@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   ASSERT_NE(intent_picker, nullptr);
 
   // Change focus to a new tab.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   // Switch back to the tab with the app to validate JS results.
   chrome::SelectPreviousTab(browser());
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
   ASSERT_NE(widget, nullptr);
 
   // Change focus to a new tab.
-  chrome::NewTab(incognito_browser);
+  chrome::NewTab(incognito_browser, NewTabTypes::kNoUserAction);
 
   // Validate JS results.
   EXPECT_FALSE(ResultExists(incognito_web_contents));

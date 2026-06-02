@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, TabsTest) {
   EXPECT_EQ(app_browser_->tab_strip_model()->count(), 2);
   EXPECT_EQ(GetActiveTabURL(), manifest);
   // Create tab3 with default URL, check URL, number of tabs.
-  chrome::NewTab(app_browser_);
+  chrome::NewTab(app_browser_, NewTabTypes::kNoUserAction);
   EXPECT_EQ(app_browser_->tab_strip_model()->count(), 3);
   EXPECT_EQ(GetActiveTabURL(), tabbed_app_url_);
   // Switch to tab1, check URL.
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs,
 
   // Second tab keeps dynamic theme until loaded.
   LoadFinishedWaiter load_waiter(app_browser_);
-  chrome::NewTab(app_browser_);
+  chrome::NewTab(app_browser_, NewTabTypes::kNoUserAction);
   load_waiter.Wait();
   EXPECT_EQ(app_browser_->tab_strip_model()->count(), 2);
   EXPECT_EQ(load_waiter.GetColorAtNavigation(), SK_ColorYELLOW);

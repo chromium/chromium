@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
     content::TestNavigationObserver observer(
         app_web_contents, content::MessageLoopRunner::QuitMode::DEFERRED);
 
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
     ReparentWebAppForActiveTab(browser());

@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_P(ReparentWebContentsTest, ReparentToAppAndBack) {
 
   // Create a second tab in the source browser to ensure it doesn't close when
   // we reparent.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   // Reparent into the app browser.
   Browser* app_browser;

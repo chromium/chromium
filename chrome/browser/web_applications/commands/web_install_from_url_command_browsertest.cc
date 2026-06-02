@@ -1074,7 +1074,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
   views::test::WidgetDestroyedWaiter destroyed(widget);
 
   // Switch to a different tab, which should dismiss the dialog.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   destroyed.Wait();
 

@@ -257,7 +257,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   };
 
   OpenTabResult OpenTab(const GURL& url) {
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     content::WebContents* web_contents = GetCurrentTab();
     auto* app_banner_manager =
         webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
@@ -624,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, LabelAnimation) {
   FastForwardAnimation(GetPageActionView());
   EXPECT_TRUE(GetPageActionView()->ShouldShowLabel());
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   EXPECT_FALSE(GetPageActionView()->GetVisible());
 
   chrome::SelectPreviousTab(browser());

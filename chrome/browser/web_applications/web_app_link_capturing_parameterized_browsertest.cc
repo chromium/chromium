@@ -982,7 +982,7 @@ class NavCaptureParameterizedBrowserTest
     if (!is_at_new_tab_page) {
       LOG(ERROR) << "opening new tab due to "
                  << last_committed_url.possibly_invalid_spec();
-      chrome::NewTab(browser);
+      chrome::NewTab(browser, NewTabTypes::kNoUserAction);
     }
   }
 
