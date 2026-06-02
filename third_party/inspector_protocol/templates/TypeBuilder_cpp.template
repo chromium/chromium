@@ -209,7 +209,7 @@ bool DomainDispatcherImpl::Dispatch({{config.crdtp.namespace}}::span<uint8_t> co
 class {{command_name_title}}CallbackImpl : public Backend::{{command_name_title}}Callback, public DomainDispatcher::Callback {
 public:
     {{command_name_title}}CallbackImpl(std::unique_ptr<DomainDispatcher::WeakPtr> backendImpl, {{config.crdtp.namespace}}::Dispatchable& dispatchable)
-        : DomainDispatcher::Callback(std::move(backendImpl), dispatchable) { }
+        : DomainDispatcher::Callback(std::move(backendImpl), dispatchable, {{config.crdtp.namespace}}::SpanFrom("{{domain.domain}}.{{command.name}}")) { }
 
     void sendSuccess(
       {%- for parameter in command.returns -%}

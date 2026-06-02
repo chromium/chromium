@@ -448,10 +448,11 @@ void DomainDispatcher::Callback::dispose() {
 
 DomainDispatcher::Callback::Callback(
     std::unique_ptr<DomainDispatcher::WeakPtr> backend_impl,
-    Dispatchable& dispatchable)
+    Dispatchable& dispatchable,
+    span<uint8_t> method)
     : backend_impl_(std::move(backend_impl)),
       call_id_(dispatchable.CallId()),
-      method_(dispatchable.Method()),
+      method_(method),
       message_(dispatchable.Serialized().begin(),
                dispatchable.Serialized().end()),
       fallthrough_callback_(dispatchable.TakeFallthroughCallback()) {}
