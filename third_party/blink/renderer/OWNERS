@@ -1,13 +1,12 @@
 # Please prefer to use more specific OWNERS where area-specific expertise is
-# useful. For example, core/rendering/OWNERS for rendering changes.
+# useful. For example, blink/renderer/core/*/OWNERS.
 
 # New owners should be proposed by email to blink-core-owners-discuss@chromium.org,
-# similar to the committer nomination process.
-# Once accepted, new owners should also be added to blink-core-owners-discuss@chromium.org.
-# https://groups.google.com/a/chromium.org/g/blink-core-owners-discuss
-# An experiment is in progress moving renderer/core/OWNERS up to renderer/,
-# with a goal of either locking this in (including changing the list name),
-# or undoing the change by June 2024.
+# similar to the committer nomination process. Once 3 "+1"s have been received,
+# the nominator should put up a CL to add the nominated person.
+# Once accepted, new owners should also be added to
+# blink-core-owners-discuss@chromium.org, by emailing one of the group owners,
+# currently including: chrishtr, jbroman, and rbyers.
 
 # Reviewers (comments indicate areas of expertise):
 alexis.menard@intel.com
@@ -61,6 +60,7 @@ mstensho@chromium.org
 # mustaq reviews input-related changes.
 mustaq@chromium.org
 nhiroki@chromium.org
+nrosenthal@google.com
 obrufau@igalia.com
 # pdr reviews many svg and text autosizing patches.
 pdr@chromium.org

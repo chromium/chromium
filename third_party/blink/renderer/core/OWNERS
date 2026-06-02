@@ -1,4 +1,3 @@
-# An experiment is in progress to prefer adding OWNERS to blink/renderer over
-# blink/renderer/core in order to reduce the need for rubber-stamp approvals.
-# But OWNERS can still be added here if they prefer to minimize their scope
-# of review.
+# The core owners list has been moved to blink/renderer/OWNERS, in order to
+# reduce the need for rubber-stamp approvals. But OWNERS can still be added
+# here if they prefer to minimize their scope of review.
