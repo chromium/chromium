@@ -294,12 +294,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     };
 
     // Record the state of this struct to UMA.
-    void RecordStartupMetrics() const { RecordMetrics("Startup"); }
-    void RecordSteadyStateMetrics() const { RecordMetrics("SteadyState"); }
+    void RecordStartupMetrics() const;
+    void RecordSteadyStateMetrics() const;
 
-    bool IsProfileEligible() const {
-      return feature_enabled && is_regular_profile;
-    }
+    bool IsProfileEligible() const;
 
     // Returns true if Glic is fully enabled and allowed to run on this profile.
     // Unlike `GlicEnabling::IsProfileEligible()`, this is a dynamic check that
@@ -307,37 +305,11 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     // the user is signed in, active user account capabilities (e.g.,
     // GAIA/Gemini capabilities), rollout groups, enterprise policies, and
     // location filters.
-    bool IsEnabled() const {
-      bool base_checks = IsProfileEligible() && is_rolled_out &&
-                         primary_account_is_capable && !DisallowedByAdmin() &&
-                         allowed_by_remote_other;
+    bool IsEnabled() const;
 
-      if (!base_checks) {
-        return false;
-      }
+    bool IsEnabledAndConsented() const;
 
-      return allowed_by_country_filter && allowed_by_locale_filter;
-    }
-
-    bool IsEnabledAndConsented() const {
-      return IsEnabled() && fre_is_consented;
-    }
-
-    bool ShouldShowSettingsPage() const {
-      const bool show_ai_settings_for_testing = base::FeatureList::IsEnabled(
-          optimization_guide::features::kAiSettingsPageForceAvailable);
-
-      // If the feature is disabled by enterprise policy, the settings page
-      // should be shown (it will be shown in a policy-disabled state) only if
-      // all other non-enterprise conditions are met: the account has all
-      // appropriate permissions and has previously completed the FRE before the
-      // policy went into effect. The settings page should also be shown if the
-      // settings testing flag is enabled.
-      return show_ai_settings_for_testing ||
-             (IsProfileEligible() && is_rolled_out &&
-              primary_account_is_capable && allowed_by_remote_other &&
-              fre_is_consented);
-    }
+    bool ShouldShowSettingsPage() const;
 
     // Returns true if the Glic button/entrypoint should be dynamically visible
     // in the UI at the current moment.
@@ -354,28 +326,13 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     //
     // Always returns false if the Glic feature is disabled by feature flag,
     // enterprise admin policy, or if the user is not in the rollout group.
-    bool ShouldShowGlicButton() const {
-      if (!feature_flag_enabled) {
-        return false;
-      }
-      if (IsEnabled()) {
-        return true;
-      }
-      if (anchor_entrypoint_override_active) {
-        return !DisallowedByAdmin() && is_rolled_out;
-      }
-      return false;
-    }
+    bool ShouldShowGlicButton() const;
 
-    bool EligibleForLive() const { return IsProfileEligible() && live_allowed; }
+    bool EligibleForLive() const;
 
-    bool EligibleForShareImage() const {
-      return IsProfileEligible() && share_image_allowed;
-    }
+    bool EligibleForShareImage() const;
 
-    bool DisallowedByAdmin() const {
-      return !allowed_by_chrome_policy || !allowed_by_remote_admin;
-    }
+    bool DisallowedByAdmin() const;
 
    private:
     // `suffix` should be either "Startup" or "SteadyState".
