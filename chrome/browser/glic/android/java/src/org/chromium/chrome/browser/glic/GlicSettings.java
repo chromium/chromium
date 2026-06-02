@@ -70,6 +70,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             "https://policies.google.com/terms/generative-ai/use-policy";
     private static final String AUTO_BROWSE_CONSIDER_UNEXPECTED_RESULTS_URL =
             "https://support.google.com/gemini/answer/16821166";
+    private static final String ACTIVITY_URL =
+            "https://myactivity.google.com/product/gemini?utm_source=gemini";
+    private static final String EXTENSIONS_URL = "https://gemini.google.com/apps";
 
     public static final String PREF_KEY_GLIC_PERMISSIONS_ACTIVITY = "glic_permissions_activity";
     public static final String PREF_KEY_GLIC_EXTENSIONS = "glic_extensions";
@@ -217,9 +220,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 assertNonNull(findPreference(PREF_KEY_GLIC_PERMISSIONS_ACTIVITY));
         permissionActivityPref.setOnPreferenceClickListener(
                 preference -> {
-                    customTabLauncher.openUrlInCct(
-                            getActivity(),
-                            getString(R.string.settings_glic_permissions_activity_button_url));
+                    customTabLauncher.openUrlInCct(getActivity(), ACTIVITY_URL);
                     return true;
                 });
 
@@ -227,9 +228,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         if (permissionConnectedAppsPref != null) {
             permissionConnectedAppsPref.setOnPreferenceClickListener(
                     preference -> {
-                        customTabLauncher.openUrlInCct(
-                                getActivity(),
-                                getString(R.string.settings_glic_extensions_button_url));
+                        customTabLauncher.openUrlInCct(getActivity(), EXTENSIONS_URL);
                         return true;
                     });
         }
