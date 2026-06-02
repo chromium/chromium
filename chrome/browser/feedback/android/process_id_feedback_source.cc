@@ -52,13 +52,18 @@ void ProcessIdFeedbackSource::PrepareProcessIds() {
            content::RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
     content::RenderProcessHost* host = it.GetCurrentValue();
-    process_ids_[content::PROCESS_TYPE_RENDERER].push_back(
-        host->GetProcess().Pid());
+    const base::Process& process = host->GetProcess();
+    if (process.IsValid()) {
+      process_ids_[content::PROCESS_TYPE_RENDERER].push_back(process.Pid());
+    }
   }
 
-  for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter)
-    process_ids_[iter.GetData().process_type].push_back(
-        iter.GetData().GetProcess().Handle());
+  for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
+    const base::Process& process = iter.GetData().GetProcess();
+    if (process.IsValid()) {
+      process_ids_[iter.GetData().process_type].push_back(process.Handle());
+    }
+  }
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
