@@ -125,6 +125,11 @@ void FontBuilder::SetStyle(FontSelectionValue slope) {
   font_description_.SetStyle(slope);
 }
 
+void FontBuilder::SetStyleSyntax(FontDescription::StyleSyntax source) {
+  Set(PropertySetFlag::kStyle);
+  font_description_.SetStyleSyntax(source);
+}
+
 void FontBuilder::SetStretch(FontSelectionValue stretch) {
   Set(PropertySetFlag::kStretch);
 
@@ -471,9 +476,11 @@ bool FontBuilder::UpdateFontDescription(FontDescription& description,
     }
   }
   if (IsSet(PropertySetFlag::kStyle)) {
-    if (description.Style() != font_description_.Style()) {
+    if (description.Style() != font_description_.Style() ||
+        description.GetStyleSyntax() != font_description_.GetStyleSyntax()) {
       modified = true;
       description.SetStyle(font_description_.Style());
+      description.SetStyleSyntax(font_description_.GetStyleSyntax());
     }
   }
   if (IsSet(PropertySetFlag::kVariantCaps)) {

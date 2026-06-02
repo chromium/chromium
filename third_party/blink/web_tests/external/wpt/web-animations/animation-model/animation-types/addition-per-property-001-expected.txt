@@ -1,8 +1,6 @@
 This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] flex-flow: "row" onto "row-reverse wrap"
   assert_equals: The value should be row at 0ms expected "row" but got "row nowrap"
-[FAIL] font-style: "oblique" onto "italic"
-  assert_equals: The value should be oblique at 0ms expected "oblique" but got "italic"
 Harness: the test ran to completion.
 

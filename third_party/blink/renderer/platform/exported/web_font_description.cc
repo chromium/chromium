@@ -59,6 +59,8 @@ WebFontDescription::operator FontDescription() const {
   desc.SetSpecifiedSize(size);
   desc.SetComputedSize(size);
   desc.SetStyle(italic ? kItalicSlopeValue : kNormalSlopeValue);
+  desc.SetStyleSyntax(italic ? FontDescription::StyleSyntax::kItalicKeyword
+                             : FontDescription::StyleSyntax::kImplicitAngle);
   desc.SetVariantCaps(small_caps ? FontDescription::kSmallCaps
                                  : FontDescription::kCapsNormal);
   static_assert(static_cast<int>(WebFontDescription::kWeight100) == 0,

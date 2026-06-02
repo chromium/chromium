@@ -126,6 +126,19 @@ class PLATFORM_EXPORT FontDescription {
   };
   static String ToString(FontVariantPosition);
 
+  // Records the syntactic form the author used for `font-style`, so that
+  // `italic`, `oblique`, and `oblique 14deg` serialize distinctly even though
+  // they share FontSelectionValue(14) internally.
+  enum class StyleSyntax : uint8_t {
+    // Author used the `italic` keyword.
+    kItalicKeyword,
+    // `normal`, `oblique`, and animation intermediates with no authored angle.
+    // Serializes from the slope value alone.
+    kImplicitAngle,
+    // Author used `oblique <angle>`: computed value preserves explicit angle.
+    kExplicitAngle,
+  };
+
   FontDescription();
   FontDescription(const FontDescription&);
 
@@ -228,6 +241,7 @@ class PLATFORM_EXPORT FontDescription {
   bool IsAbsoluteSize() const { return fields_.is_absolute_size_; }
   FontSelectionValue Weight() const { return font_selection_request_.weight; }
   FontSelectionValue Style() const { return font_selection_request_.slope; }
+  StyleSyntax GetStyleSyntax() const { return style_syntax_; }
   FontSelectionValue Stretch() const { return font_selection_request_.width; }
   static FontSelectionValue LighterWeight(FontSelectionValue);
   static FontSelectionValue BolderWeight(FontSelectionValue);
@@ -367,6 +381,7 @@ class PLATFORM_EXPORT FontDescription {
   }
 
   void SetStyle(FontSelectionValue i);
+  void SetStyleSyntax(StyleSyntax source) { style_syntax_ = source; }
   void SetWeight(FontSelectionValue w) { font_selection_request_.weight = w; }
   void SetStretch(FontSelectionValue s) { font_selection_request_.width = s; }
 
@@ -525,6 +540,10 @@ class PLATFORM_EXPORT FontDescription {
   // Covers stretch, style, weight.
   FontSelectionRequest font_selection_request_;
   FontSelectionValue original_slope;
+
+  // Preserves the author's intent for computed-value serialization without
+  // affecting font selection. See `StyleSyntax` for the meaning of each value.
+  StyleSyntax style_syntax_ = StyleSyntax::kImplicitAngle;
 
   struct BitFields {
     DISALLOW_NEW();

@@ -66,6 +66,7 @@ class CORE_EXPORT FontBuilder {
 
   void SetStretch(FontSelectionValue);
   void SetStyle(FontSelectionValue);
+  void SetStyleSyntax(FontDescription::StyleSyntax);
   void SetWeight(FontSelectionValue);
 
   void SetFamilyDescription(const FontDescription::FamilyDescription&);

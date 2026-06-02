@@ -1089,22 +1089,39 @@ CSSPrimitiveValue* ComputedStyleUtils::ValueForFontStretch(
 }
 
 CSSValue* ComputedStyleUtils::ValueForFontStyle(const ComputedStyle& style) {
-  FontSelectionValue angle =
-      style.GetFontDescription().Style().ClampToObliqueRange();
-  if (angle == kNormalSlopeValue) {
-    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  const FontDescription& font = style.GetFontDescription();
+  FontSelectionValue slope = font.Style().ClampToObliqueRange();
+
+  switch (font.GetStyleSyntax()) {
+    case FontDescription::StyleSyntax::kItalicKeyword:
+      return CSSIdentifierValue::Create(CSSValueID::kItalic);
+    case FontDescription::StyleSyntax::kImplicitAngle:
+      if (slope == kNormalSlopeValue) {
+        return CSSIdentifierValue::Create(CSSValueID::kNormal);
+      }
+      if (slope == kItalicSlopeValue) {
+        return CSSIdentifierValue::Create(CSSValueID::kOblique);
+      }
+      break;
+    case FontDescription::StyleSyntax::kExplicitAngle:
+      // `oblique 0deg` always collapses to `normal`, both for static input
+      // (because FontSelectionValue(0) == kNormalSlopeValue, independent of
+      // the FontStyleObliqueZeroDegreeAsNormal runtime flag) and for
+      // animations that interpolate the slope down to 0deg.
+      if (slope == kNormalSlopeValue) {
+        return CSSIdentifierValue::Create(CSSValueID::kNormal);
+      }
+      break;
   }
 
-  if (angle == kItalicSlopeValue) {
-    return CSSIdentifierValue::Create(CSSValueID::kItalic);
-  }
-
-  // The spec says: 'The lack of a number represents an angle of
-  // "20deg"', but since we compute that to 'italic' (handled above),
-  // we don't perform any special treatment of that value here.
+  // Either an oblique slope with an explicit author angle, or an animated
+  // intermediate slope that no longer aliases to `oblique`. Serialize as
+  // `oblique <angle>`, preserving the angle even when it equals the 14deg
+  // default per the CSSWG resolution on
+  // https://github.com/w3c/csswg-drafts/issues/8291.
   CSSValueList* oblique_values = CSSValueList::CreateSpaceSeparated();
   oblique_values->Append(*CSSNumericLiteralValue::Create(
-      angle, CSSPrimitiveValue::UnitType::kDegrees));
+      slope, CSSPrimitiveValue::UnitType::kDegrees));
   return MakeGarbageCollected<cssvalue::CSSFontStyleRangeValue>(
       *CSSIdentifierValue::Create(CSSValueID::kOblique), *oblique_values);
 }

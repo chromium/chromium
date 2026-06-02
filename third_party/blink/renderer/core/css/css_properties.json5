@@ -1544,6 +1544,7 @@
       inherited: true,
       font: true,
       name_for_methods: "Style",
+      style_builder_custom_functions: ["inherit", "value"],
       converter: "ConvertFontStyle",
       priority: 1,
       keywords: ["normal", "italic", "oblique"],
