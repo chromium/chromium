@@ -33,6 +33,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 // Specifies how the near V8 heap limit event was handled by the callback.
 // This enum is also used for UMA histogram recording. It must be kept in sync
 // with the corresponding enum in tools/metrics/histograms/enums.xml. See that
@@ -66,6 +68,7 @@ class CORE_EXPORT V8Initializer {
   static void InitializeIsolateHolder(const intptr_t* reference_table,
                                       const std::string& js_command_line_flag);
   static void InitializeV8Common(v8::Isolate*);
+  static void InitializeContext(v8::Local<v8::Context>, ExecutionContext*);
 
   static void MessageHandlerInMainThread(v8::Local<v8::Message>,
                                          v8::Local<v8::Value>);
