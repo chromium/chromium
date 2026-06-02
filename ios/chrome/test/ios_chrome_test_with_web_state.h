@@ -18,7 +18,7 @@ namespace web {
 class JavaScriptFeature;
 class WebFrame;
 class WebState;
-class WebClient;
+class ScopedTestingWebClient;
 }  // namespace web
 
 // Test fixture for //ios/chrome tests that need a WebState.
@@ -61,7 +61,7 @@ class IOSChromeTestWithWebState : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<web::WebClient> web_client_;
+  std::unique_ptr<web::ScopedTestingWebClient> web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 };

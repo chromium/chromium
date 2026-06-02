@@ -11,6 +11,7 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/navigation_test_util.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -18,15 +19,17 @@
 
 IOSChromeTestWithWebState::IOSChromeTestWithWebState(
     WebClientMode web_client_mode) {
+  std::unique_ptr<web::WebClient> client;
   switch (web_client_mode) {
     case WebClientMode::kChromeWebClient:
-      web_client_.reset(new ChromeWebClient());
+      client = std::make_unique<ChromeWebClient>();
       break;
     case WebClientMode::kFakeWebClient:
-      web_client_.reset(new web::FakeWebClient());
+      client = std::make_unique<web::FakeWebClient>();
       break;
   }
-  web::SetWebClient(web_client_.get());
+  web_client_ =
+      std::make_unique<web::ScopedTestingWebClient>(std::move(client));
   profile_ = TestProfileIOS::Builder().Build();
   web::WebState::CreateParams params(profile_.get());
   web_state_ = web::WebState::Create(params);
@@ -35,7 +38,7 @@ IOSChromeTestWithWebState::IOSChromeTestWithWebState(
 IOSChromeTestWithWebState::~IOSChromeTestWithWebState() {
   web_state_.reset();
   profile_.reset();
-  web::SetWebClient(nullptr);
+  web_client_.reset();
 }
 
 void IOSChromeTestWithWebState::LoadHtml(NSString* html) {
