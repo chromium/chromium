@@ -25332,6 +25332,27 @@
             ]
         }
     ],
+    "VoiceSearchCoherenceComposeboxesStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "CobrowsingOnly",
+                    "params": {
+                        "VoiceSearchCoherenceComposeboxCobrowsingOnly": "true"
+                    },
+                    "enable_features": [
+                        "VoiceSearchCoherenceComposeboxes"
+                    ]
+                }
+            ]
+        }
+    ],
     "WalletApiPrivatePassesConsent": [
         {
             "platforms": [
