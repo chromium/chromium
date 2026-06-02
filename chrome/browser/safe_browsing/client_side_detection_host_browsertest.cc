@@ -1422,6 +1422,8 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
       "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 0);
+  histogram_tester.ExpectTotalCount("SBClientPhishing.Viewport.PixelsPerInch",
+                                    1);
 
   EXPECT_EQ(fake_csd_service.saved_request().http_response_code(), 200);
 

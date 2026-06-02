@@ -335,6 +335,7 @@ if (safe_browsing_mode != 0) {
       "//components/zoom",
       "//content/public/browser",
       "//mojo/public/mojom/base:protobuf_support",
+      "//ui/display",
     ]
 
     if (is_android) {
