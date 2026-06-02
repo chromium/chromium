@@ -1310,7 +1310,6 @@ class ProfileMenuViewBookmarksLimitExceededTest
   ProfileMenuViewBookmarksLimitExceededTest() : SyncTest(SINGLE_CLIENT) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{
-            syncer::kSyncShowBookmarksLimitExceededError,
             // This is needed to be able to test bookmarks in transport-mode.
             syncer::kReplaceSyncPromosWithSignInPromos},
         /*disabled_features=*/{});

@@ -69,10 +69,6 @@ BASE_DECLARE_FEATURE(kSyncLoyaltyCardMetadata);
 BASE_DECLARE_FEATURE(kUnoPhase2FollowUp);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// If enabled, shows a user-actionable error when the bookmarks count limit is
-// exceeded.
-BASE_DECLARE_FEATURE(kSyncShowBookmarksLimitExceededError);
-
 // Do not use this flag directly. Use
 // IsContactInfoDataTypeForCustomPassphraseUsersEnabled() instead.
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);

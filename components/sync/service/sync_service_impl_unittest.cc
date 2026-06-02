@@ -970,9 +970,6 @@ TEST_F(
 
 class SyncServiceImplBookmarksLimitExceededErrorTest
     : public SyncServiceImplTest {
- private:
-  base::test::ScopedFeatureList feature_list_{
-      kSyncShowBookmarksLimitExceededError};
 };
 
 TEST_F(SyncServiceImplBookmarksLimitExceededErrorTest,
