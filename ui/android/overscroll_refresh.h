@@ -99,6 +99,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   virtual bool IsAwaitingScrollUpdateAck() const;
 
   void SetTouchpadOverscrollHistoryNavigation(bool enabled);
+  void SetIsGestureNavigationMode(bool is_gesture_navigation_mode);
 
  protected:
   // This constructor is for mocking only.
@@ -130,6 +131,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   const float edge_width_;  // in px
   const raw_ptr<OverscrollRefreshHandler, DanglingUntriaged> handler_;
   bool touchpad_overscroll_history_navigation_enabled_ = false;
+  bool is_gesture_navigation_mode_ = false;
 };
 
 }  // namespace ui

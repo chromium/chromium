@@ -82,6 +82,7 @@ class CONTENT_EXPORT OverscrollControllerAndroid
   void Disable();
 
   void SetTouchpadOverscrollHistoryNavigation(bool enabled);
+  void SetIsGestureNavigationMode(bool is_gesture_navigation_mode);
 
   // Returns true if the controller is actively handling the current input
   // sequence. This state persists until reset by

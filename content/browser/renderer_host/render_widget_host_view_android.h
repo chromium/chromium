@@ -454,6 +454,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   void DismissTextHandles(JNIEnv* env);
 
+  void SetIsGestureNavigationMode(JNIEnv* env, bool is_gesture_navigation_mode);
+
   // Returns an int equivalent to an Optional<SKColor>, with a value of 0
   // indicating SKTransparent for not set.
   int32_t GetBackgroundColor(JNIEnv* env);

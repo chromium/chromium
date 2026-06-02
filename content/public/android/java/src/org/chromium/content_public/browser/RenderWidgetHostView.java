@@ -42,4 +42,7 @@ public interface RenderWidgetHostView {
 
     /** Notifies that the parent activity has moved into the foreground. */
     void onResume();
+
+    /** Notifies system Gesture Navigation mode status. */
+    void setIsGestureNavigationMode(boolean isGestureNavigationMode);
 }

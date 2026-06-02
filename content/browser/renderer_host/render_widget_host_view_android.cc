@@ -1063,6 +1063,15 @@ void RenderWidgetHostViewAndroid::DismissTextHandles(JNIEnv* env) {
   DismissTextHandles();
 }
 
+void RenderWidgetHostViewAndroid::SetIsGestureNavigationMode(
+    JNIEnv* env,
+    bool is_gesture_navigation_mode) {
+  if (overscroll_controller_) {
+    overscroll_controller_->SetIsGestureNavigationMode(
+        is_gesture_navigation_mode);
+  }
+}
+
 int32_t RenderWidgetHostViewAndroid::GetBackgroundColor(JNIEnv* env) {
   std::optional<SkColor> color =
       RenderWidgetHostViewAndroid::GetCachedBackgroundColor();

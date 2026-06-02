@@ -305,6 +305,13 @@ void OverscrollControllerAndroid::SetTouchpadOverscrollHistoryNavigation(
   }
 }
 
+void OverscrollControllerAndroid::SetIsGestureNavigationMode(
+    bool is_gesture_navigation_mode) {
+  if (refresh_effect_) {
+    refresh_effect_->SetIsGestureNavigationMode(is_gesture_navigation_mode);
+  }
+}
+
 bool OverscrollControllerAndroid::ShouldHandleInputEvents() {
   if (!enabled_) {
     return false;

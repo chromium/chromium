@@ -32,6 +32,8 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
     // Remember the stack for clearing native the native stack for debugging use after destroy.
     private @Nullable Throwable mNativeDestroyThrowable;
 
+    private @Nullable Boolean mIsGestureNavigationModeCached;
+
     private @Nullable Toast mPointerLockToast;
 
     @CalledByNative
@@ -89,6 +91,18 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
     @Override
     public void onResume() {
         RenderWidgetHostViewImplJni.get().onResume(getNativePtr());
+    }
+
+    @Override
+    public void setIsGestureNavigationMode(boolean isGestureNavigationMode) {
+        if (isDestroyed()) return;
+        if (mIsGestureNavigationModeCached != null
+                && mIsGestureNavigationModeCached == isGestureNavigationMode) {
+            return;
+        }
+        mIsGestureNavigationModeCached = isGestureNavigationMode;
+        RenderWidgetHostViewImplJni.get()
+                .setIsGestureNavigationMode(getNativePtr(), isGestureNavigationMode);
     }
 
     // TODO(https://crbug.com/419544853): Move the pointer lock logic to a separate class once
@@ -159,5 +173,8 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
                 Callback<String> callback);
 
         void onResume(long nativeRenderWidgetHostViewAndroid);
+
+        void setIsGestureNavigationMode(
+                long nativeRenderWidgetHostViewAndroid, boolean isGestureNavigationMode);
     }
 }

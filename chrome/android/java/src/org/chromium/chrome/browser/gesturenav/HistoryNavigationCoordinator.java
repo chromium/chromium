@@ -16,6 +16,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
+import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
@@ -213,6 +215,10 @@ public class HistoryNavigationCoordinator
         if (mWindow.getWindow() == null) {
             return mEnabled;
         }
+
+        if (ChromeFeatureList.sActivateHistoryNavigationCoordinatorInGestureNavMode.isEnabled()) {
+            return true;
+        }
         return !UiUtils.isGestureNavigationMode(mWindow.getWindow());
     }
 
@@ -229,6 +235,7 @@ public class HistoryNavigationCoordinator
         boolean oldEnabled = mEnabled;
         mEnabled = isFeatureEnabled();
         if (mEnabled != oldEnabled) notifyNavigationState();
+        updateIsGestureNavigationMode();
     }
 
     /**
@@ -240,6 +247,7 @@ public class HistoryNavigationCoordinator
         if (webContents != null) {
             webContents.setSupportsForwardTransitionAnimation(mEnabled);
         }
+        updateIsGestureNavigationMode();
 
         // Check against |mActivityLifecycleDisptacher|/|mTouchEventProvider| prevents the flow
         // after the destruction.
@@ -324,6 +332,14 @@ public class HistoryNavigationCoordinator
     public void pull(float xDelta, float yDelta) {
         if (mNavigationHandler != null) {
             mNavigationHandler.pull(xDelta, yDelta);
+        }
+    }
+
+    private void updateIsGestureNavigationMode() {
+        if (mTab == null || mTab.getWebContents() == null) return;
+        RenderWidgetHostView rwhv = mTab.getWebContents().getRenderWidgetHostView();
+        if (rwhv != null && mWindow.getWindow() != null) {
+            rwhv.setIsGestureNavigationMode(UiUtils.isGestureNavigationMode(mWindow.getWindow()));
         }
     }
 

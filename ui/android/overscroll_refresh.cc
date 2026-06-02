@@ -113,13 +113,15 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
          touchpad_overscroll_history_navigation_enabled_ &&
          base::FeatureList::IsEnabled(
              ui::kAndroidTouchpadOverscrollHistoryNavigation));
-    // Check overscroll-behavior-x and whether initial x coordinate falls within
-    // the activation region:
-    //   - it is always activated near the horizontal edges
-    //   - if the swipe-to-navigate feature is enabled, it is activated
-    //     everywhere on touchpad (possibly converted from mousewheel)
+    // Check overscroll-behavior-x and other activation conditions for history
+    // navigation depending on the input device:
+    //   - touchscreen: iff system is not in gesture navigation mode;
+    //     only activated by swipes near the horizontal edges
+    //   - touchpad (possibly converted from mousewheel): iff the feature is
+    //     enabled; activated by swipes everywhere
     if (!(behavior.PropagatesXScroll() &&
-          (scroll_from_edge || touchpad_swipe_to_navigate))) {
+          ((scroll_from_edge && !is_gesture_navigation_mode_) ||
+           touchpad_swipe_to_navigate))) {
       Reset();
       return;
     }
@@ -204,6 +206,11 @@ void OverscrollRefresh::OnFrameUpdated(const gfx::SizeF& viewport_size,
 
 void OverscrollRefresh::SetTouchpadOverscrollHistoryNavigation(bool enabled) {
   touchpad_overscroll_history_navigation_enabled_ = enabled;
+}
+
+void OverscrollRefresh::SetIsGestureNavigationMode(
+    bool is_gesture_navigation_mode) {
+  is_gesture_navigation_mode_ = is_gesture_navigation_mode;
 }
 
 void OverscrollRefresh::Release(bool allow_refresh) {
