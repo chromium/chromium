@@ -1440,7 +1440,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Final state of the sync service at the end of the sync consent OOBE step.
     The dialog may have been shown or skipped (e.g. by enterprise policy). See
-    OOBE.SyncConsentScreen.Behavior for skip reasons.
+    OOBE.SyncConsentScreen.Behavior for skip reasons. Please note that this
+    histogram is sync-the-feature specific.
   </summary>
 </histogram>
 
