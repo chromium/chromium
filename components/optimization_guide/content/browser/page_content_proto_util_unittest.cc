@@ -412,9 +412,10 @@ TEST_F(PageContentProtoUtilTest, ConvertImageInfo) {
   image_node->content_attributes->image_info =
       blink::mojom::AIPageContentImageInfo::New();
   image_node->content_attributes->image_info->image_caption = "image caption";
-  const auto expected_origin =
-      url::Origin::Create(GURL("https://example.com/image.png"));
+  const auto expected_url = GURL("https://example.com/image.png");
+  const auto expected_origin = url::Origin::Create(expected_url);
   image_node->content_attributes->image_info->source_origin = expected_origin;
+  image_node->content_attributes->image_info->url = expected_url;
   root_content->root_node->children_nodes.emplace_back(std::move(image_node));
 
   AIPageContentResult page_content;
@@ -440,6 +441,7 @@ TEST_F(PageContentProtoUtilTest, ConvertImageInfo) {
                                .image_data();
   EXPECT_EQ(image_data.image_caption(), "image caption");
   AssertValidOrigin(image_data.security_origin(), expected_origin);
+  EXPECT_EQ(image_data.url(), expected_url.spec());
 }
 
 TEST_F(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_Image) {

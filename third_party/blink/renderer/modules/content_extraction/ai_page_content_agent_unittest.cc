@@ -203,12 +203,14 @@ class AIPageContentAgentTest : public testing::Test {
   }
 
   void CheckImageNode(const mojom::blink::AIPageContentNode& node,
-                      const String& expected_caption) {
+                      const String& expected_caption,
+                      const KURL& expected_url) {
     const auto& attributes = *node.content_attributes;
     EXPECT_EQ(attributes.attribute_type,
               mojom::blink::AIPageContentAttributeType::kImage);
     ASSERT_TRUE(attributes.image_info);
     EXPECT_EQ(attributes.image_info->image_caption, expected_caption);
+    EXPECT_EQ(attributes.image_info->url, expected_url);
   }
 
   void CheckAnchorNode(
@@ -935,13 +937,44 @@ TEST_F(AIPageContentAgentTest, Image) {
   EXPECT_EQ(root.children_nodes.size(), 1u);
 
   auto& image_node = *root.children_nodes[0];
-  CheckImageNode(image_node, "missing");
+  CheckImageNode(image_node, "missing", KURL());
   CheckGeometry(image_node, gfx::Rect(-20, -10, 30, 40),
                 gfx::Rect(0, 0, 10, 30));
   ASSERT_TRUE(image_node.content_attributes->image_info);
   ASSERT_TRUE(image_node.content_attributes->image_info->source_origin);
   EXPECT_TRUE(
       image_node.content_attributes->image_info->source_origin->IsOpaque());
+}
+
+TEST_F(AIPageContentAgentTest, ImageWithUrl) {
+  url_test_helpers::RegisterMockedURLLoad(
+      url_test_helpers::ToKURL("https://example.com/image.jpg"),
+      test::CoreTestDataPath("white-1x1.png"), "image/png");
+
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <img id='img' src='https://example.com/image.jpg' alt='hello alt "
+      "text'></img>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  auto& image_node = *root.children_nodes[0];
+  CheckImageNode(image_node, "hello alt text",
+                 blink::KURL("https://example.com/image.jpg"));
+  ASSERT_TRUE(image_node.content_attributes->image_info);
+  ASSERT_TRUE(image_node.content_attributes->image_info->source_origin);
+  EXPECT_EQ(
+      image_node.content_attributes->image_info->source_origin->ToString(),
+      "https://example.com");
+
+  url_test_helpers::RegisterMockedURLUnregister(
+      url_test_helpers::ToKURL("https://example.com/image.jpg"));
 }
 
 TEST_F(AIPageContentAgentTest, ImageWithAriaLabel) {
@@ -8587,7 +8620,7 @@ TEST_F(AIPageContentAgentTestTextEncoding, ImageCaptionCorrected) {
   GetAIPageContentWithActionableElements();
 
   auto* image_node = FindNodeBySelector("#wrong");
-  CheckImageNode(*image_node, String(u"Hello\uFFFD"));
+  CheckImageNode(*image_node, String(u"Hello\uFFFD"), KURL());
 }
 
 TEST_F(AIPageContentAgentTestTextEncoding, SVGRootCorrected) {

@@ -547,6 +547,7 @@ void ConvertImageInfo(
         *mojom_image_info.source_origin,
         proto_image_info->mutable_security_origin());
   }
+  proto_image_info->set_url(mojom_image_info.url.spec());
 }
 
 void ConvertSvgRootData(

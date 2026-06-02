@@ -918,6 +918,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   const auto& image_data = image_node.content_attributes().image_data();
   EXPECT_TRUE(image_data.security_origin().opaque());
   EXPECT_FALSE(image_data.security_origin().value().empty());
+  EXPECT_TRUE(image_data.url().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, SVG) {
@@ -993,6 +994,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   const auto& image_data = image_node.content_attributes().image_data();
   AssertValidOrigin(image_data.security_origin(),
                     url::Origin::Create(cross_origin_url));
+  EXPECT_EQ(image_data.url(),
+            https_server()->GetURL("b.com", "/image.gif").spec());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -1023,6 +1026,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   const auto& image_data = image_node.content_attributes().image_data();
   AssertValidOrigin(image_data.security_origin(),
                     url::Origin::Create(https_server()->GetURL("a.com", "/")));
+  EXPECT_EQ(image_data.url(), "about:blank");
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,

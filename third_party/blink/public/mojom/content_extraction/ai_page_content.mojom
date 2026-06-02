@@ -366,6 +366,9 @@ struct AIPageContentImageInfo {
   // rendered. For example, an image element whose resource is not available
   // will be empty.
   url.mojom.Origin? source_origin;
+
+  // The image's source (`src`) URL.
+  url.mojom.Url url;
 };
 
 struct AIPageContentSvgRootData {

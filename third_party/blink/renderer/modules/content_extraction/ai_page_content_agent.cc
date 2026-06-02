@@ -1182,6 +1182,16 @@ void ProcessImageNode(const LayoutObject& layout_image,
 
   image_info->source_origin = GetImageSourceOrigin(layout_image);
 
+  KURL image_url = ResolveImageUrl(layout_image);
+  // Skip data: URLs for both performance and security.
+  // 1. Performance: These URLs embed full binary content, which would
+  //    significantly bloat the APC payload.
+  // 2. Security: data: URLs use opaque origins to maintain isolation; exposing
+  //    them here could bypass these protections.
+  if (!image_url.ProtocolIsData()) {
+    image_info->url = image_url;
+  }
+
   attributes.image_info = std::move(image_info);
 }
 
@@ -1223,6 +1233,7 @@ void ProcessVideoNode(const HTMLVideoElement& video_element,
 
   auto video_data = mojom::blink::AIPageContentVideoData::New();
   KURL video_url = video_element.SourceURL();
+  // TODO(b/382558422): Consider filtering out data URLs.
   video_data->url = video_url;
   video_data->source_origin = GetOriginForUrl(video_url, &video_element);
   attributes.video_data = std::move(video_data);
