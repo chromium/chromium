@@ -46,6 +46,8 @@ class CORE_EXPORT SkeletonLoader : public GarbageCollected<SkeletonLoader>,
   void Trace(Visitor* visitor) const final;
 
  private:
+  friend class SkeletonLoaderTest;
+
   Document& GetDocument() { return *GetSupplementable(); }
 
   // Skeleton::Observer implementation

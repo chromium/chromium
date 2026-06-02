@@ -10613,6 +10613,12 @@ void Element::UpdateColumnPseudoElements(const StyleRecalcChange change,
 void Element::ClearSkeletonPseudo() {
   if (GetPseudoElement(kPseudoIdSkeleton)) {
     ClearPseudoElement(kPseudoIdSkeleton);
+    // Normally, pseudo elements are added/removed during style recalc,
+    // which means we do not need to notify the StyleEngine about traversal
+    // roots being removed. The ::skeleton pseudo, however is synchronously
+    // created/destroyed outside of the lifecycle update and need to notify
+    // the StyleEngine like DOM removals.
+    GetDocument().GetStyleEngine().ChildrenRemoved(*this);
   }
 }
 

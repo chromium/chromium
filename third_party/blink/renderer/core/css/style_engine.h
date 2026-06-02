@@ -1210,11 +1210,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool force_dark_mode_enabled_{false};
 
   friend class NodeTest;
-  friend class StyleEngineTest;
-  friend class WhitespaceAttacherTest;
   friend class StyleCascadeTest;
+  friend class StyleEngineTest;
   friend class StyleImageCacheTest;
+  friend class WhitespaceAttacherTest;
   FRIEND_TEST_ALL_PREFIXES(BlockChildIteratorTest, DeleteNodeWhileIteration);
+  FRIEND_TEST_ALL_PREFIXES(SkeletonLoaderTest, PseudoElementRecalcRoot);
 
   HeapHashSet<Member<TextTrack>> text_tracks_;
   Member<Element> vtt_originating_element_;
