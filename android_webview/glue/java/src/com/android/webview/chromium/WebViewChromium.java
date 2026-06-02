@@ -1335,13 +1335,7 @@ class WebViewChromium
             // In the normal case where we are currently on the UI thread, this will run initForReal
             // synchronously. For pre-JBMR2 apps we might not be on the UI thread, in which case it
             // will be posted and we do not wait for it.
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            initForReal();
-                        }
-                    });
+            mFactory.addTask(this::initForReal);
         }
 
         long elapsedTime = SystemClock.uptimeMillis() - startTime;
