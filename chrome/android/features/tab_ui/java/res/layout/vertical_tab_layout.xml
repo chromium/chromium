@@ -36,6 +36,14 @@ found in the LICENSE file.
         android:id="@+id/vertical_tab_footer_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone" />
+        android:visibility="gone">
+
+    <!-- TODO(crbug.com/518001737): Add background drawable and implement onHover. -->
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/new_tab_button"
+            android:contentDescription="@string/accessibility_toolbar_btn_new_tab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
 </LinearLayout>

@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -40,6 +41,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.function.Supplier;
 
@@ -176,7 +178,6 @@ public class VerticalTabListCoordinator {
         // TODO(crbug.com/509226293):
         // 1. Wire up header container (R.id.vertical_tab_header_container) for search & grid
         // buttons.
-        // 2. Wire up footer container (R.id.vertical_tab_footer_container)
         // 3. Attach ItemTouchHelper for vertical row dragging & reordering.
         // 4. Register Right-click / Long-press Context Menu listener for tab interactions.
 
@@ -199,6 +200,9 @@ public class VerticalTabListCoordinator {
                         return false;
                     }
                 };
+
+        ButtonCompat newTabButton = mContainerView.findViewById(R.id.new_tab_button);
+        newTabButton.setOnClickListener(v -> handleNewTabButtonClick());
 
         mMediator =
                 new TabListMediator(
@@ -297,6 +301,13 @@ public class VerticalTabListCoordinator {
                     }
                 });
         return layoutManager;
+    }
+
+    private void handleNewTabButtonClick() {
+        TabModel model = mTabModelSelector.getCurrentModel();
+
+        if (!model.isIncognitoBranded()) model.commitAllTabClosures();
+        TabCreatorUtil.launchNtp(model.getTabCreator());
     }
 
     /** Returns the default grid column span count for the Left Rail. */

@@ -390,4 +390,6 @@ public class VerticalTabListCoordinatorUnitTest {
         assertEquals(1, adapter.getModelList().size());
         assertEquals(789, adapter.getModelList().get(0).model.get(TabProperties.TAB_ID));
     }
+
+    // TODO(crbug.com/518001737): Add tests for footer's new tab button
 }
