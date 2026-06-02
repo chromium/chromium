@@ -5718,8 +5718,6 @@ static_library("test_support") {
 
   sources = [
     "global_features_test_support.h",
-    "history/history_test_utils.cc",
-    "history/history_test_utils.h",
     "media/mock_media_engagement_service.cc",
     "media/mock_media_engagement_service.h",
     "media/webrtc/fake_desktop_media_list.cc",
@@ -5735,6 +5733,7 @@ static_library("test_support") {
   public_deps = [
     ":browser",
     "//chrome/browser/autofill:test_support",
+    "//chrome/browser/history:test_support",
     "//chrome/browser/interstitials:test_support",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/notifications",

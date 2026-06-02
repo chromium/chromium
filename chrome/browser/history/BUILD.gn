@@ -176,6 +176,23 @@ if (is_android) {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "history_test_utils.cc",
+    "history_test_utils.h",
+  ]
+  public_deps = [
+    ":history",
+    "//base",
+    "//components/history/core/browser",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//content/test:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "history_tab_helper_unittest.cc" ]
@@ -213,6 +230,7 @@ if (!is_android) {
     ]
     deps = [
       ":history",
+      ":test_support",
       "//base",
       "//base/test:test_support",
       "//chrome/app:command_ids",
