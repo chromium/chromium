@@ -117,6 +117,7 @@ class ContentPasswordManagerDriver final
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
   PasswordManagerInterface* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
+  autofill::PasswordManagerDelegate* GetPasswordManagerDelegate() override;
   void SendLoggingAvailability() override;
   bool IsDirectChildOfPrimaryMainFrame() const override;
   bool IsInPrimaryMainFrame() const override;

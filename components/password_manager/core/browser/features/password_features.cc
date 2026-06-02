@@ -220,4 +220,7 @@ BASE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+BASE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInManualFallback,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace password_manager::features

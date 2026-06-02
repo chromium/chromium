@@ -27,6 +27,7 @@ struct ParsingResult;
 struct PasswordFormGenerationData;
 struct PasswordFormFillData;
 class AutofillDriver;
+class PasswordManagerDelegate;
 }  // namespace autofill
 
 namespace gfx {
@@ -187,6 +188,13 @@ class PasswordManagerDriver {
 
   // Returns the PasswordAutofillManager associated with this instance.
   virtual PasswordAutofillManager* GetPasswordAutofillManager() = 0;
+
+  // Returns the PasswordManagerDelegate associated with this instance. Unlike
+  // `GetPasswordAutofillManager`, this method returns a less concrete class for
+  // the callers that do not need a full `PasswordAutofillManager`.
+  // TODO: crbug.com/519154771 - Try to find a better split between the
+  // `PasswordAutofillManager` and `PasswordManagerDelegate`.
+  virtual autofill::PasswordManagerDelegate* GetPasswordManagerDelegate() = 0;
 
   // Sends a message to the renderer whether logging to
   // chrome://password-manager-internals is available.

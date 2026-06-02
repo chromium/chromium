@@ -37,6 +37,9 @@ class AutofillSuggestionDelegate {
     // Defines whether the suggestion appeared on a search result list (i.e.
     // the search input is not empty).
     bool from_search_result = false;
+
+    friend bool operator==(const SuggestionMetadata& lhs,
+                           const SuggestionMetadata& rhs) = default;
   };
 
   virtual ~AutofillSuggestionDelegate() = default;

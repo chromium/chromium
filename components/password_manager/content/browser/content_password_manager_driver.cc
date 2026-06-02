@@ -390,6 +390,11 @@ ContentPasswordManagerDriver::GetPasswordAutofillManager() {
   return &password_autofill_manager_;
 }
 
+autofill::PasswordManagerDelegate*
+ContentPasswordManagerDriver::GetPasswordManagerDelegate() {
+  return &password_autofill_manager_;
+}
+
 void ContentPasswordManagerDriver::SendLoggingAvailability() {
   if (const auto& agent = GetPasswordAutofillAgent()) {
     autofill::LogManager* log_manager = client_->GetCurrentLogManager();
