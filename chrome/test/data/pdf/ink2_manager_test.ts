@@ -70,6 +70,17 @@ function verifyEditTextAnnotationMessage(expected: boolean, id: number = 0) {
   }
 }
 
+function verifyFinishTextAnnotationMessage(
+    expectedMessage: TextAnnotationMessageData) {
+  const finishTextAnnotationMessage =
+      mockPlugin.findMessage<{type: string, data: TextAnnotationMessageData}>(
+          'finishTextAnnotation');
+  chrome.test.assertTrue(finishTextAnnotationMessage !== undefined);
+  chrome.test.assertEq(
+      'finishTextAnnotation', finishTextAnnotationMessage.type);
+  assertDeepEquals(expectedMessage, finishTextAnnotationMessage.data);
+}
+
 // Simulates the way the viewport is rotated from the plugin by setting updated
 // DocumentDimensions. Assumes a non-rotated pageWidth of 400 and pageHeight of
 // 500.
@@ -638,18 +649,6 @@ chrome.test.runTests([
   },
 
   function testCommitTextAnnotation() {
-    function verifyFinishTextAnnotationMessage(
-        annotationPageCoords: TextAnnotationMessageData) {
-      const finishTextAnnotationMessage =
-          mockPlugin
-              .findMessage<{type: string, data: TextAnnotationMessageData}>(
-                  'finishTextAnnotation');
-      chrome.test.assertTrue(finishTextAnnotationMessage !== undefined);
-      chrome.test.assertEq(
-          'finishTextAnnotation', finishTextAnnotationMessage.type);
-      assertDeepEquals(annotationPageCoords, finishTextAnnotationMessage.data);
-    }
-
     function testCommitAnnotation(
         annotationScreenCoords: TextAnnotation,
         annotationPageCoords: TextAnnotationMessageData) {
@@ -916,15 +915,16 @@ chrome.test.runTests([
         Ink2Manager.getInstance().initializeTextAnnotation({x: 85, y: 436}));
     verifyEditTextAnnotationMessage(false);
 
-    chrome.test.succeed();
-  },
-
-  function testTextboxFocused() {
-    // Reset viewport to position 0, 0 and 1.0 zoom.
+    // Reset state for next test.
+    manager.clearAnnotationsForTesting();
     viewport.setZoom(1.0);
     rotateViewport(/* clockwiseRotations= */ 0);  // 0 rotation.
     viewport.goToPageAndXy(0, 0, 0);
 
+    chrome.test.succeed();
+  },
+
+  function testTextboxFocused() {
     // Simulate creating a textbox at (255, 250) (near center of the viewport).
     chrome.test.assertTrue(manager.initializeTextAnnotation({x: 255, y: 250}));
 
@@ -993,6 +993,10 @@ chrome.test.runTests([
     // 450 - 10 - 50 = 390.
     chrome.test.assertEq(235, syncScrollMessage.x);
     chrome.test.assertEq(390, syncScrollMessage.y);
+
+    // Reset zoom and annotation id for next test.
+    viewport.setZoom(1.0);
+    manager.clearAnnotationsForTesting();
 
     chrome.test.succeed();
   },
@@ -1125,21 +1129,6 @@ chrome.test.runTests([
       }
     }
 
-    // Helper to verify plugin message
-    function verifyFinishTextAnnotationMessage(
-        expectedId: number, expectedText: string,
-        expectedSource: TextAnnotationSource) {
-      const message =
-          mockPlugin
-              .findMessage<{type: string, data: TextAnnotationMessageData}>(
-                  'finishTextAnnotation');
-      chrome.test.assertTrue(message !== undefined);
-      chrome.test.assertEq(expectedId, message.data.id);
-      chrome.test.assertEq(expectedSource, message.data.source);
-      chrome.test.assertEq(expectedText, message.data.text);
-      mockPlugin.clearMessages();
-    }
-
     // --- 1. TEST CREATION ---
     // Initialize new annotation (id 0)
     let whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
@@ -1150,22 +1139,39 @@ chrome.test.runTests([
     chrome.test.assertEq(0, annot0.id);
     annot0.text = 'Hello';
 
+    // Set up expectation with values shared by all checks.
+    const expectedMessage = getTestAnnotationMessageData(0);
+    expectedMessage.textBoxRect.width = 222;
+    expectedMessage.textBoxRect.height = 24;
+    expectedMessage.textBoxRect.locationX = 45;
+    expectedMessage.textBoxRect.locationY = 91;
+    expectedMessage.isEdited = true;
+
     // Commit creation
     manager.commitTextAnnotation(annot0, true, []);
     // New message is from the user.
-    verifyFinishTextAnnotationMessage(0, 'Hello', TextAnnotationSource.USER);
+    expectedMessage.text = 'Hello';
+    expectedMessage.source = TextAnnotationSource.USER;
+    verifyFinishTextAnnotationMessage(expectedMessage);
     assertAnnotationExists(0, true, 'Hello');
+    mockPlugin.clearMessages();
 
     // Undo creation -> should delete it
     manager.undo();
     assertAnnotationExists(0, false);
     // Deletion sends a message to the plugin with empty text
-    verifyFinishTextAnnotationMessage(0, '', TextAnnotationSource.UNDO);
+    expectedMessage.text = '';
+    expectedMessage.source = TextAnnotationSource.UNDO;
+    verifyFinishTextAnnotationMessage(expectedMessage);
+    mockPlugin.clearMessages();
 
     // Redo creation -> should restore it
     manager.redo();
     assertAnnotationExists(0, true, 'Hello');
-    verifyFinishTextAnnotationMessage(0, 'Hello', TextAnnotationSource.REDO);
+    expectedMessage.text = 'Hello';
+    expectedMessage.source = TextAnnotationSource.REDO;
+    verifyFinishTextAnnotationMessage(expectedMessage);
+    mockPlugin.clearMessages();
 
     // --- 2. TEST MODIFICATION ---
     // Initialize an existing annotation (id 0) for edit
@@ -1180,18 +1186,27 @@ chrome.test.runTests([
 
     // Commit modification, which is from the user.
     manager.commitTextAnnotation(annot0Edit, true, []);
-    verifyFinishTextAnnotationMessage(0, 'World', TextAnnotationSource.USER);
+    expectedMessage.text = 'World';
+    expectedMessage.source = TextAnnotationSource.USER;
+    verifyFinishTextAnnotationMessage(expectedMessage);
     assertAnnotationExists(0, true, 'World');
+    mockPlugin.clearMessages();
 
     // Undo modification -> should restore to 'Hello'
     manager.undo();
     assertAnnotationExists(0, true, 'Hello');
-    verifyFinishTextAnnotationMessage(0, 'Hello', TextAnnotationSource.UNDO);
+    expectedMessage.text = 'Hello';
+    expectedMessage.source = TextAnnotationSource.UNDO;
+    verifyFinishTextAnnotationMessage(expectedMessage);
+    mockPlugin.clearMessages();
 
     // Redo modification -> should change back to 'World'
     manager.redo();
     assertAnnotationExists(0, true, 'World');
-    verifyFinishTextAnnotationMessage(0, 'World', TextAnnotationSource.REDO);
+    expectedMessage.text = 'World';
+    expectedMessage.source = TextAnnotationSource.REDO;
+    verifyFinishTextAnnotationMessage(expectedMessage);
+    mockPlugin.clearMessages();
 
     // --- 3. TEST DELETION ---
     // Initialize existing annotation (id 0) for edit
@@ -1204,18 +1219,27 @@ chrome.test.runTests([
     // when "Delete" is pressed.
     annot0Delete.text = '';
     manager.commitTextAnnotation(annot0Delete, true, []);
-    verifyFinishTextAnnotationMessage(0, '', TextAnnotationSource.USER);
+    expectedMessage.text = '';
+    expectedMessage.source = TextAnnotationSource.USER;
+    verifyFinishTextAnnotationMessage(expectedMessage);
     assertAnnotationExists(0, false);
+    mockPlugin.clearMessages();
 
     // Undo deletion -> should restore to 'World'
     manager.undo();
     assertAnnotationExists(0, true, 'World');
-    verifyFinishTextAnnotationMessage(0, 'World', TextAnnotationSource.UNDO);
+    expectedMessage.text = 'World';
+    expectedMessage.source = TextAnnotationSource.UNDO;
+    verifyFinishTextAnnotationMessage(expectedMessage);
+    mockPlugin.clearMessages();
 
     // Redo deletion -> should delete again
     manager.redo();
     assertAnnotationExists(0, false);
-    verifyFinishTextAnnotationMessage(0, '', TextAnnotationSource.REDO);
+    expectedMessage.text = '';
+    expectedMessage.source = TextAnnotationSource.REDO;
+    verifyFinishTextAnnotationMessage(expectedMessage);
+    mockPlugin.clearMessages();
 
     chrome.test.succeed();
   },
