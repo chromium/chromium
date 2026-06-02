@@ -116,7 +116,8 @@ TEST_F(PerFillMetricsTest, RefillTriggerReason_FormChanged) {
 
   base::HistogramTester histogram_tester;
   std::vector<FormFieldData> fields = form.ExtractFields();
-  fields.push_back(fields.back());
+  fields.push_back(
+      test::GetFormFieldData({.role = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}));
   form.set_fields(std::move(fields));
 
   SeeForm({form});

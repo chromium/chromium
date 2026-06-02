@@ -1971,8 +1971,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
         const FormFieldData* const field = form.FindFieldByGlobalId(field_id);
         auto [cached_form_structure, cached_autofill_field] =
             self.GetCachedFormAndField(form.global_id(), field_id);
-        if (!IsValidFormData(form) || !field || !IsValidFormFieldData(*field) ||
-            !cached_form_structure || !cached_autofill_field) {
+        if (!field || !cached_form_structure || !cached_autofill_field) {
           return;
         }
         self.form_filler_->FillOrPreviewForm(

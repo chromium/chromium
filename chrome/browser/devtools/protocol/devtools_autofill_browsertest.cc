@@ -6,6 +6,7 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
@@ -582,27 +583,21 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AutofillInOOPIFs) {
   autofill::MockAutofillManagerObserver observer;
   main_autofill_manager().AddObserver(&observer);
 
+  base::RunLoop run_loop;
+  const FormFieldData& observed_field = form.fields()[0];
   // Expect the `AskForValuesToFill()` call below to be routed to the main
   // frame `AutofillManager`.
   EXPECT_CALL(observer,
-              OnBeforeAskForValuesToFill(_, form.global_id(),
-                                         form.fields()[0].global_id(), _));
+              OnBeforeAskForValuesToFill(
+                  _, form.global_id(), observed_field.global_id(),
+                  testing::Property(&FormData::fields,
+                                    testing::SizeIs(form.fields().size()))))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
-  const std::vector<const FormFieldData*> filled_fields_by_autofill = {
-      {&form.fields()[0], &form.fields()[1]}};
-  web_contents()->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
-    // Call the driver of the field host iframe.
-    if (rfh->GetFrameToken().ToString() ==
-        form.fields()[0].host_frame()->ToString()) {
-      ASSERT_NE(rfh->GetFrameToken(), main_frame()->GetFrameToken());
-      auto* driver = static_cast<mojom::AutofillDriver*>(
-          autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh));
-      driver->AskForValuesToFill(
-          form, form.fields()[0].renderer_id(), gfx::Rect(0, 10),
-          ::autofill::mojom::AutofillSuggestionTriggerSource::kUnspecified,
-          std::nullopt);
-    }
-  });
+  main_autofill_manager().driver().RendererShouldTriggerSuggestions(
+      observed_field.global_id(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  std::move(run_loop).Run();
 
   main_autofill_manager().RemoveObserver(&observer);
 }

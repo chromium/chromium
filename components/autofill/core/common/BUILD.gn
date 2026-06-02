@@ -152,6 +152,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "autocomplete_parsing_util_unittest.cc",
+    "autofill_data_validation_unittest.cc",
     "autofill_internals/log_message_unittest.cc",
     "autofill_internals/logging_scope_unittest.cc",
     "autofill_prefs_unittest.cc",

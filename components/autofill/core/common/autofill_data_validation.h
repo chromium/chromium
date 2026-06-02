@@ -19,18 +19,19 @@ class FormFieldData;
 struct PasswordFormFillData;
 
 // Functions to verify whether the objects passed to them satisfy basic sanity
-// checks, including being capped to the maximums defined by the constants
-// above.
-bool IsValidString(const std::string& str);
-bool IsValidString16(const std::u16string& str);
+// checks, including being capped to maximum constants.
+
+bool IsValidString(std::string_view str);
+bool IsValidString16(std::u16string_view str);
 bool IsValidGURL(const GURL& url);
 bool IsValidOption(const SelectOption& option);
 bool IsValidFormFieldData(const FormFieldData& field);
+bool IsValidFormFields(base::span<const FormFieldData> fields);
 bool IsValidFormData(const FormData& form);
 bool IsValidPasswordFormFillData(const PasswordFormFillData& form);
-bool IsValidOptionVector(const base::span<const SelectOption>& options);
-bool IsValidString16Vector(const base::span<const std::u16string>& strings);
-bool IsValidFormDataVector(const base::span<const FormData>& forms);
+bool IsValidOptionVector(base::span<const SelectOption> options);
+bool IsValidString16Vector(base::span<const std::u16string> strings);
+bool IsValidFormDataVector(base::span<const FormData> forms);
 
 }  // namespace autofill
 

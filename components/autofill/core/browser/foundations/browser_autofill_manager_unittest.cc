@@ -4563,9 +4563,9 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDifferentFields) {
   // Websites would typically invoke JavaScript either on page load or on form
   // submit to achieve this.
   test_api(form).Remove(-1);
-  FormFieldData& field = test_api(form).field(3);
+  FormFieldData field = test_api(form).field(3);
   test_api(form).field(3) = form.fields()[7];
-  test_api(form).field(7) = field;
+  test_api(form).field(7) = std::move(field);
 
   // Simulate form submission.
   FormSubmitted(form);
