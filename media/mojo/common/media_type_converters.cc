@@ -71,6 +71,7 @@ media::mojom::DecoderBufferSideDataPtr TypeConverter<
                                       input.alpha_data.end());
   }
   mojo_side_data->spatial_layers = input.spatial_layers;
+  mojo_side_data->hdr_metadata = input.hdr_metadata;
   mojo_side_data->secure_handle = input.secure_handle;
   mojo_side_data->front_discard = input.discard_padding.first;
   mojo_side_data->back_discard = input.discard_padding.second;
@@ -96,6 +97,7 @@ TypeConverter<std::unique_ptr<media::DecoderBufferSideData>,
     side_data->alpha_data =
         base::HeapArray<uint8_t>::CopiedFrom(input->alpha_data);
   }
+  side_data->hdr_metadata = input->hdr_metadata;
   side_data->secure_handle = input->secure_handle;
   side_data->discard_padding.first = input->front_discard;
   side_data->discard_padding.second = input->back_discard;

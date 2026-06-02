@@ -48,6 +48,7 @@ ValidateAndConvertMojoDecoderBufferSideData(
     media_side_data->alpha_data =
         base::HeapArray<uint8_t>::CopiedFrom(side_data->alpha_data);
   }
+  media_side_data->hdr_metadata = side_data->hdr_metadata;
   media_side_data->secure_handle = side_data->secure_handle;
   media_side_data->discard_padding.first = side_data->front_discard;
   media_side_data->discard_padding.second = side_data->back_discard;

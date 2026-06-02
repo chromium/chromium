@@ -281,6 +281,9 @@ struct DecoderBufferSideData {
   array<uint32> spatial_layers;
   array<uint8> alpha_data;
 
+  // Container-level HDR metadata.
+  gfx.mojom.HDRMetadata hdr_metadata;
+
   // Secure buffer handle corresponding to the decrypted contents of the
   // associated DecoderBuffer. A non-zero value indicates this was set.
   //

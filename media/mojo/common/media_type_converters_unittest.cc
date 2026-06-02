@@ -21,6 +21,7 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/sample_format.h"
 #include "media/base/test_helpers.h"
+#include "media/mojo/common/validation_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -101,6 +102,33 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   // Both |buffer| and |result| are not encrypted.
   EXPECT_FALSE(buffer->decrypt_config());
   EXPECT_FALSE(result->decrypt_config());
+}
+
+TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_HdrMetadata) {
+  const uint8_t kData[] = "hello, world";
+  scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(kData));
+
+  gfx::HDRMetadata hdr_metadata;
+  hdr_metadata.SetCLLI(
+      skhdr::ContentLightLevelInformation::MakeUint16(1000, 400));
+  buffer->WritableSideData().hdr_metadata = hdr_metadata;
+
+  // 1. Test TypeConverter (Round-trip)
+  mojom::DecoderBufferPtr ptr(mojom::DecoderBuffer::From(*buffer));
+  scoped_refptr<DecoderBuffer> result(ptr.To<scoped_refptr<DecoderBuffer>>());
+
+  ASSERT_TRUE(result->side_data());
+  EXPECT_EQ(buffer->side_data()->hdr_metadata,
+            result->side_data()->hdr_metadata);
+
+  // 2. Test ValidateAndConvertMojoDecoderBuffer (Used in OOPVD)
+  mojom::DecoderBufferPtr ptr2(mojom::DecoderBuffer::From(*buffer));
+  scoped_refptr<DecoderBuffer> result2(
+      ValidateAndConvertMojoDecoderBuffer(std::move(ptr2)));
+
+  ASSERT_TRUE(result2->side_data());
+  EXPECT_EQ(buffer->side_data()->hdr_metadata,
+            result2->side_data()->hdr_metadata);
 }
 
 TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS) {
