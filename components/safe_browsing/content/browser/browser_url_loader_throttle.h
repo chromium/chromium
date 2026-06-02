@@ -210,6 +210,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
   SessionID tab_id_ = SessionID::InvalidValue();
 
+  // The current URL of the request, updated on redirects.
+  GURL current_url_;
+
   // Checkers used to perform Safe Browsing checks. |sync_sb_checker_| may defer
   // the URL loader. |async_sb_checker_| doesn't defer the URL loader and may
   // be transferred to |skip_check_checker_| if it is not completed.

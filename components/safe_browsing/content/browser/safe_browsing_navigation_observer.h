@@ -143,6 +143,11 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
   void SetObserverManagerForTesting(
       SafeBrowsingNavigationObserverManager* observer_manager);
 
+  // Records a host-to-IP mapping. This is forwarded to the
+  // SafeBrowsingNavigationObserverManager, which maintains a cache of these
+  // mappings for later Safe Browsing use in lookups and reports.
+  void RecordHostToIpMapping(const std::string& host, const std::string& ip);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SBNavigationObserverTest, TestContentSettingChange);
   typedef std::unordered_map<content::NavigationHandle*,
