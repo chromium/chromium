@@ -62,12 +62,12 @@ int32_t StatsCollectingDecoder::Decode(const webrtc::EncodedImage& input_image,
                                        bool missing_frames,
                                        int64_t render_time_ms) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
-  if (!first_frame_decoded_) {
-    first_frame_decoded_ = true;
-    ++(*GetDecoderCounter());
-  }
   {
     base::AutoLock auto_lock(lock_);
+    if (!first_frame_decoded_) {
+      first_frame_decoded_ = true;
+      ++(*GetDecoderCounter());
+    }
     number_of_new_keyframes_ += input_image.IsKey();
   }
   return decoder_->Decode(input_image, missing_frames, render_time_ms);
@@ -86,21 +86,27 @@ int32_t StatsCollectingDecoder::Release() {
   DVLOG(3) << __func__;
   int32_t ret = decoder_->Release();
 
-  // There will be no new calls to Decoded() after the call to
-  // decoder_->Release(). Any outstanding calls to Decoded() will also finish
-  // before decoder_->Release() returns. It's therefore safe to access member
-  // variables here.
-  if (stats_collector_.is_active() &&
-      stats_collector_.samples_collected() >=
-          StatsCollector::kMinSamplesThreshold) {
-    ReportStats(stats_collector_.ComputeVideoStats());
-  }
+  std::optional<StatsCollector::Stats> stats_to_report;
+  {
+    base::AutoLock auto_lock(lock_);
+    // There shouldn't be any new calls to Decoded() after the call to
+    // decoder_->Release(). Any outstanding calls to Decoded() will typically
+    // finish before decoder_->Release() returns. Use lock to be safe since this
+    // is not guaranteed.
+    if (stats_collector_.is_active() &&
+        stats_collector_.samples_collected() >=
+            StatsCollector::kMinSamplesThreshold) {
+      stats_to_report = stats_collector_.ComputeVideoStats();
+    }
 
-  if (first_frame_decoded_) {
-    --(*GetDecoderCounter());
-    first_frame_decoded_ = false;
+    if (first_frame_decoded_) {
+      --(*GetDecoderCounter());
+      first_frame_decoded_ = false;
+    }
   }
-
+  if (stats_to_report) {
+    ReportStats(*stats_to_report);
+  }
   return ret;
 }
 
@@ -118,58 +124,56 @@ int32_t StatsCollectingDecoder::Decoded(webrtc::VideoFrame& decodedImage) {
 void StatsCollectingDecoder::Decoded(webrtc::VideoFrame& decodedImage,
                                      std::optional<int32_t> decode_time_ms,
                                      std::optional<uint8_t> qp) {
-  // Decoded may be called on either the decoding sequence (SW decoding) or
-  // media sequence (HW decoding). However, these calls are not happening at the
-  // same time. If there's a fallback from SW decoding to HW decoding, a call to
-  // HW decoder->Release() ensures that any potential callbacks on the media
-  // sequence are finished before the decoding continues on the decoding
-  // sequence.
+  // Decoded() may be called on either the decoding sequence (SW decoding) or
+  // media sequence (HW decoding). While these calls typically do not happen at
+  // the same time, hardware decoders can be unpredictable. If there is a
+  // fallback from HW decoding to SW decoding, a call to HW decoder->Release()
+  // is expected to ensure that any potential callbacks on the media sequence
+  // are finished. However, in rare cases, a delayed "straggler" callback could
+  // fire on the media sequence concurrently with the active decoding sequence.
   DCHECK(decoded_callback_);
   decoded_callback_->Decoded(decodedImage, decode_time_ms, qp);
-  if (stats_collector_.has_finished()) {
-    // Return early if we've already finished the stats collection.
-    return;
-  }
 
-  base::TimeTicks now = base::TimeTicks::Now();
-  // Verify that there's only a single decoder when data collection is taking
-  // place.
-  if ((now - last_check_for_simultaneous_decoders_) >
-      kCheckSimultaneousDecodersInterval) {
-    last_check_for_simultaneous_decoders_ = now;
-    DVLOG(3) << "Simultaneous decoders: " << *GetDecoderCounter();
-    if (stats_collector_.is_active()) {
-      if (*GetDecoderCounter() > kMaximumDecodersToCollectStats) {
-        // Too many decoders, cancel stats collection.
-        stats_collector_.Clear();
-      }
-    } else if (*GetDecoderCounter() <= kMaximumDecodersToCollectStats) {
-      // Start up stats collection since there's only a single decoder active.
-      stats_collector_.Start();
-    }
-  }
-
-  // Read out number of new processed keyframes since last Decoded() callback.
-  size_t number_of_new_keyframes = 0;
+  std::optional<StatsCollector::Stats> stats_to_report;
   {
     base::AutoLock auto_lock(lock_);
-    number_of_new_keyframes += number_of_new_keyframes_;
-    number_of_new_keyframes_ = 0;
-  }
-
-  if (stats_collector_.is_active() && decodedImage.processing_time()) {
-    int pixel_size = static_cast<int>(decodedImage.size());
-    bool is_hardware_accelerated =
-        decoder_->GetDecoderInfo().is_hardware_accelerated;
-    float processing_time_ms = decodedImage.processing_time()->Elapsed().ms();
-
-    std::optional<StatsCollector::Stats> stats_to_report =
-        stats_collector_.AddProcessingTimeAndGetStats(
-            pixel_size, is_hardware_accelerated, processing_time_ms,
-            number_of_new_keyframes, now);
-    if (stats_to_report) {
-      ReportStats(*stats_to_report);
+    if (stats_collector_.has_finished()) {
+      // Return early if stats collection is already finished.
+      return;
     }
+
+    base::TimeTicks now = base::TimeTicks::Now();
+    // Verify that there's only a single decoder when data collection is taking
+    // place.
+    if ((now - last_check_for_simultaneous_decoders_) >
+        kCheckSimultaneousDecodersInterval) {
+      last_check_for_simultaneous_decoders_ = now;
+      DVLOG(3) << "Simultaneous decoders: " << *GetDecoderCounter();
+      if (stats_collector_.is_active()) {
+        if (*GetDecoderCounter() > kMaximumDecodersToCollectStats) {
+          // Too many decoders, cancel stats collection.
+          stats_collector_.Clear();
+        }
+      } else if (*GetDecoderCounter() <= kMaximumDecodersToCollectStats) {
+        // Start up stats collection since there's only a single decoder active.
+        stats_collector_.Start();
+      }
+    }
+
+    if (stats_collector_.is_active() && decodedImage.processing_time()) {
+      int pixel_size = static_cast<int>(decodedImage.size());
+      bool is_hardware_accelerated =
+          decoder_->GetDecoderInfo().is_hardware_accelerated;
+      float processing_time_ms = decodedImage.processing_time()->Elapsed().ms();
+
+      stats_to_report = stats_collector_.AddProcessingTimeAndGetStats(
+          pixel_size, is_hardware_accelerated, processing_time_ms,
+          number_of_new_keyframes_, now);
+      number_of_new_keyframes_ = 0;
+    }
+  }
+  if (stats_to_report) {
+    ReportStats(*stats_to_report);
   }
 }
 

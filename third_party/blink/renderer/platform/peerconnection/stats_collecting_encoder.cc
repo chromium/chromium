@@ -68,7 +68,10 @@ int StatsCollectingEncoder::InitEncode(
   // the call to encoder->InitEncode().
   int ret = encoder_->InitEncode(codec_settings, settings);
   // Reset to the default value.
-  highest_observed_stream_index_ = 0;
+  {
+    base::AutoLock auto_lock(lock_);
+    highest_observed_stream_index_ = 0;
+  }
   return ret;
 }
 
@@ -85,21 +88,28 @@ int32_t StatsCollectingEncoder::Release() {
   // Release is called after encode_sequence has been stopped.
   DVLOG(3) << __func__;
   int32_t ret = encoder_->Release();
-  // There will be no new calls to Encoded() after the call to
-  // encoder_->Release(). Any outstanding calls to Encoded() will also finish
-  // before encoder_->Release() returns. It's therefore safe to access member
-  // variables here.
-  if (stats_collector_.is_active() &&
-      stats_collector_.samples_collected() >=
-          StatsCollector::kMinSamplesThreshold) {
-    ReportStats(stats_collector_.ComputeVideoStats());
-  }
+  std::optional<StatsCollector::Stats> stats_to_report;
+  {
+    base::AutoLock auto_lock(lock_);
 
-  if (first_frame_encoded_) {
-    --(*GetEncoderCounter());
-    first_frame_encoded_ = false;
-  }
+    // There shouldn't be any new calls to OnEncodedImage() after the call to
+    // encoder_->Release(). Any outstanding calls to Encoded() will typically
+    // finish before encoder_->Release() returns. Use lock to be safe since this
+    // is not guaranteed.
+    if (stats_collector_.is_active() &&
+        stats_collector_.samples_collected() >=
+            StatsCollector::kMinSamplesThreshold) {
+      stats_to_report = stats_collector_.ComputeVideoStats();
+    }
 
+    if (first_frame_encoded_) {
+      --(*GetEncoderCounter());
+      first_frame_encoded_ = false;
+    }
+  }
+  if (stats_to_report) {
+    ReportStats(*stats_to_report);
+  }
   return ret;
 }
 
@@ -107,15 +117,14 @@ int32_t StatsCollectingEncoder::Encode(
     const webrtc::VideoFrame& frame,
     const std::vector<webrtc::VideoFrameType>* frame_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
-  if (!first_frame_encoded_) {
-    first_frame_encoded_ = true;
-    ++(*GetEncoderCounter());
-  }
-
   base::TimeTicks now = base::TimeTicks::Now();
   {
     // Store the timestamp.
     base::AutoLock auto_lock(lock_);
+    if (!first_frame_encoded_) {
+      first_frame_encoded_ = true;
+      ++(*GetEncoderCounter());
+    }
     constexpr size_t kMaxEncodeStartInfoSize = 10;
     // If encode_start_info_.size() increases it means that stats collection is
     // not active in the OnEncodedImage() callback. Pop the oldest element here
@@ -153,78 +162,80 @@ webrtc::VideoEncoder::EncoderInfo StatsCollectingEncoder::GetEncoderInfo()
 webrtc::EncodedImageCallback::Result StatsCollectingEncoder::OnEncodedImage(
     const webrtc::EncodedImage& encoded_image,
     const webrtc::CodecSpecificInfo* codec_specific_info) {
-  // OnEncodedImage may be called on either the encoding sequence (SW encoding)
-  // or gpu sequence (HW encoding). However, these calls are not happening at
-  // the same time. If there's a fallback from SW encoding to HW encoding, a
-  // call to HW encoder->Release() ensures that any potential callbacks on the
-  // gpu sequence are finished before the encoding continues on the encoding
-  // sequence.
   DCHECK(encoded_callback_);
   webrtc::EncodedImageCallback::Result result =
       encoded_callback_->OnEncodedImage(encoded_image, codec_specific_info);
 
-  const size_t encoded_image_stream_index =
-      encoded_image.SimulcastIndex().value_or(
-          encoded_image.SpatialIndex().value_or(0));
-  highest_observed_stream_index_ =
-      std::max(highest_observed_stream_index_, encoded_image_stream_index);
+  // In multi-encoder simulcast mode (mixed HW/SW layers), per-layer
+  // OnEncodedImage callbacks can arrive concurrently on the encoder thread (SW)
+  // and the GPU media thread (HW). All StatsCollector state below is shared, so
+  // serialize the entire stats-accounting section. The forward to
+  // `encoded_callback_` above is intentionally kept outside the lock.
 
-  if (stats_collector_.has_finished() ||
-      encoded_image_stream_index != highest_observed_stream_index_) {
-    // Return early if we've already finished the stats collection or if this is
-    // a lower stream layer. We only do stats collection for the highest
-    // observed stream layer.
-    return result;
-  }
+  std::optional<StatsCollector::Stats> stats_to_report;
+  {
+    base::AutoLock auto_lock(lock_);
 
-  base::TimeTicks now = base::TimeTicks::Now();
-  // Verify that there's only a single encoder when data collection is taking
-  // place.
-  if ((now - last_check_for_simultaneous_encoders_) >
-      kCheckSimultaneousEncodersInterval) {
-    last_check_for_simultaneous_encoders_ = now;
-    DVLOG(3) << "Simultaneous encoders: " << *GetEncoderCounter();
-    if (stats_collector_.is_active()) {
-      if (*GetEncoderCounter() > kMaximumEncodersToCollectStats) {
-        // Too many encoders, cancel stats collection.
-        stats_collector_.Clear();
-      }
-    } else if (*GetEncoderCounter() <= kMaximumEncodersToCollectStats) {
-      // Start up stats collection since there's only a single encoder active.
-      stats_collector_.Start();
+    const size_t encoded_image_stream_index =
+        encoded_image.SimulcastIndex().value_or(
+            encoded_image.SpatialIndex().value_or(0));
+    highest_observed_stream_index_ =
+        std::max(highest_observed_stream_index_, encoded_image_stream_index);
+
+    if (stats_collector_.has_finished() ||
+        encoded_image_stream_index != highest_observed_stream_index_) {
+      // Return early if we've already finished the stats collection or if this
+      // is a lower stream layer. We only do stats collection for the highest
+      // observed stream layer.
+      return result;
     }
-  }
 
-  if (stats_collector_.is_active()) {
-    std::optional<base::TimeTicks> encode_start;
-    {
+    base::TimeTicks now = base::TimeTicks::Now();
+    // Verify that there's only a single encoder when data collection is taking
+    // place.
+    if ((now - last_check_for_simultaneous_encoders_) >
+        kCheckSimultaneousEncodersInterval) {
+      last_check_for_simultaneous_encoders_ = now;
+      DVLOG(3) << "Simultaneous encoders: " << *GetEncoderCounter();
+      if (stats_collector_.is_active()) {
+        if (*GetEncoderCounter() > kMaximumEncodersToCollectStats) {
+          // Too many encoders, cancel stats collection.
+          stats_collector_.Clear();
+        }
+      } else if (*GetEncoderCounter() <= kMaximumEncodersToCollectStats) {
+        // Start up stats collection since there's only a single encoder active.
+        stats_collector_.Start();
+      }
+    }
+
+    if (stats_collector_.is_active()) {
+      std::optional<base::TimeTicks> encode_start;
       // Read out encode start timestamp if we can find a matching RTP
       // timestamp.
-      base::AutoLock auto_lock(lock_);
       while (encode_start_info_.size() > 0 &&
              encode_start_info_.front().rtp_timestamp !=
                  encoded_image.RtpTimestamp()) {
         encode_start_info_.pop_front();
       }
-      if (!encode_start_info_.empty())
+      if (!encode_start_info_.empty()) {
         encode_start = encode_start_info_.front().encode_start;
-    }
+      }
 
-    if (encode_start) {
-      float encode_time_ms = (now - *encode_start).InMillisecondsF();
-      int pixel_size =
-          encoded_image._encodedWidth * encoded_image._encodedHeight;
-      bool is_hardware_accelerated =
-          encoder_->GetEncoderInfo().is_hardware_accelerated;
-      bool is_keyframe = encoded_image.IsKey();
-      std::optional<StatsCollector::Stats> stats_to_report =
-          stats_collector_.AddProcessingTimeAndGetStats(
-              pixel_size, is_hardware_accelerated, encode_time_ms, is_keyframe,
-              now);
-      if (stats_to_report) {
-        ReportStats(*stats_to_report);
+      if (encode_start) {
+        float encode_time_ms = (now - *encode_start).InMillisecondsF();
+        int pixel_size =
+            encoded_image._encodedWidth * encoded_image._encodedHeight;
+        bool is_hardware_accelerated =
+            encoder_->GetEncoderInfo().is_hardware_accelerated;
+        bool is_keyframe = encoded_image.IsKey();
+        stats_to_report = stats_collector_.AddProcessingTimeAndGetStats(
+            pixel_size, is_hardware_accelerated, encode_time_ms, is_keyframe,
+            now);
       }
     }
+  }
+  if (stats_to_report) {
+    ReportStats(*stats_to_report);
   }
   return result;
 }

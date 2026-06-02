@@ -29,10 +29,10 @@ namespace blink {
 //
 // It's assumed that Configure(), Decode(), and RegisterDecodeCompleteCallback()
 // are called on the decode sequence. Decoded() may be called on either the
-// decode sequecene or the media sequence depending on if the underlying decoder
-// is a HW or SW decoder. However, the calls to Decoded() on these sequences are
-// mutual exclusive. Release() may be called on any sequence as long as the
-// decoding sequence has stopped.
+// decode sequence or the media sequence depending on if the underlying decoder
+// is a HW or SW decoder. During a fallback from HW to SW decoding, Decoded()
+// callbacks can arrive concurrently on both sequences. Release() may be called
+// on any sequence as long as the decoding sequence has stopped.
 class PLATFORM_EXPORT StatsCollectingDecoder
     : public webrtc::VideoDecoder,
       private webrtc::DecodedImageCallback {
@@ -61,7 +61,8 @@ class PLATFORM_EXPORT StatsCollectingDecoder
   DecoderInfo GetDecoderInfo() const override;
 
  private:
-  void ReportStats(const StatsCollector::Stats& stats) const;
+  void ReportStats(const StatsCollector::Stats& stats) const
+      LOCKS_EXCLUDED(lock_);
 
   // Implementation of webrtc::DecodedImageCallback.
   int32_t Decoded(webrtc::VideoFrame& decodedImage) override;
@@ -78,14 +79,14 @@ class PLATFORM_EXPORT StatsCollectingDecoder
   // the decode sequence and the media sequence.
   base::Lock lock_;
 
-  bool first_frame_decoded_{false};
+  bool first_frame_decoded_ GUARDED_BY(lock_) = false;
   // `number_of_new_keyframes_` is used to count the number of processed key
   // frames, which is only known in Decode(). The value of this counter is
   // continuously read out in the Decoded() callback.
   size_t number_of_new_keyframes_ GUARDED_BY(lock_){0};
-  base::TimeTicks last_check_for_simultaneous_decoders_;
+  base::TimeTicks last_check_for_simultaneous_decoders_ GUARDED_BY(lock_);
 
-  StatsCollector stats_collector_;
+  StatsCollector stats_collector_ GUARDED_BY(lock_);
 
   SEQUENCE_CHECKER(decoding_sequence_checker_);
 };

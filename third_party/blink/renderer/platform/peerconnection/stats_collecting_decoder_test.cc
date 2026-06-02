@@ -6,10 +6,15 @@
 #include <optional>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/thread_annotations.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/api/make_ref_counted.h"
 #include "third_party/webrtc/api/video/i420_buffer.h"
@@ -88,6 +93,8 @@ class MockDecoder : public webrtc::VideoDecoder {
 
   int32_t Release() override { return WEBRTC_VIDEO_CODEC_OK; }
 
+  webrtc::DecodedImageCallback* GetCallback() const { return callback_; }
+
   DecoderInfo GetDecoderInfo() const override {
     DecoderInfo info;
     info.is_hardware_accelerated = *is_hw_accelerated_;
@@ -113,17 +120,23 @@ class MockDecodedImageCallback : public webrtc::DecodedImageCallback {
     // Set the processing time. Start time is set to a fixed nonzero time since
     // we're only interested in the delta.
     webrtc::Timestamp start_time = webrtc::Timestamp::Seconds(1234);
+    bool use_min_decode_time = false;
+    {
+      base::AutoLock auto_lock(lock_);
+      use_min_decode_time = frame_counter_ % 100 < 90;
+      ++frame_counter_;
+    }
     webrtc::TimeDelta decode_time = webrtc::TimeDelta::Millis(
-        frame_counter_ % 100 < 90 ? min_decode_time_ms_ : p90_decode_time_ms_);
-    decodedImage.set_processing_time({start_time, start_time + decode_time});
+        use_min_decode_time ? min_decode_time_ms_ : p90_decode_time_ms_);
 
-    ++frame_counter_;
+    decodedImage.set_processing_time({start_time, start_time + decode_time});
   }
 
  private:
-  int frame_counter_{0};
-  float min_decode_time_ms_;
-  float p90_decode_time_ms_;
+  base::Lock lock_;
+  int frame_counter_ GUARDED_BY(lock_) = 0;
+  const float min_decode_time_ms_;
+  const float p90_decode_time_ms_;
 };
 
 class StatsCollectingDecoderTest : public ::testing::Test {
@@ -131,15 +144,19 @@ class StatsCollectingDecoderTest : public ::testing::Test {
   StatsCollectingDecoderTest()
       : decoded_image_callback_(kMinDecodingTimeMs,
                                 kExpectedP99ProcessingTimeMs),
+        internal_decoder_(new MockDecoder(&is_hw_accelerated_)),
         stats_decoder_(kFormatVp9,
-                       std::make_unique<MockDecoder>(&is_hw_accelerated_),
+                       std::unique_ptr<MockDecoder>(internal_decoder_),
                        base::BindRepeating(
                            &StatsCollectingDecoderTest::StoreProcessingStatsCB,
                            base::Unretained(this))) {
     stats_decoder_.RegisterDecodeCompleteCallback(&decoded_image_callback_);
   }
 
-  void TearDown() override { stats_decoder_.Release(); }
+  void TearDown() override {
+    internal_decoder_ = nullptr;
+    stats_decoder_.Release();
+  }
 
   void StoreProcessingStatsCB(const StatsCollector::StatsKey& stats_key,
                               const StatsCollector::VideoStats& video_stats) {
@@ -191,6 +208,7 @@ class StatsCollectingDecoderTest : public ::testing::Test {
 
   bool is_hw_accelerated_{false};
   MockDecodedImageCallback decoded_image_callback_;
+  raw_ptr<MockDecoder> internal_decoder_;
   StatsCollectingDecoder stats_decoder_;
 
   uint32_t frame_counter{0};
@@ -332,6 +350,40 @@ TEST_F(StatsCollectingDecoderTest, NoCollectionAfter40000Frames) {
     // The expectation could be relaxed to allow for one callback to happen.
     EXPECT_EQ(stats_callbacks_, last_stats_callbacks);
   }
+}
+
+TEST_F(StatsCollectingDecoderTest, ConcurrentDecoded) {
+  // This test is stochastic. It relies on a "thread storm" (10 threads rapidly
+  // firing 100 callbacks each) to create overlap rather than forcing a
+  // deterministic interleaving. We rely on TSAN to catch regressions; an
+  // occasional pass in a non-TSAN build does not guarantee the absence
+  // of data races.
+
+  // Decode one frame to initialize the decoder and set it as active.
+  CreateAndDecodeFrames(kHdWidth, kHdHeight, /*is_hw_accelerated=*/false, 1,
+                        kKeyframeInterval, kFramerate);
+
+  webrtc::DecodedImageCallback* callback = internal_decoder_->GetCallback();
+  ASSERT_TRUE(callback);
+
+  constexpr int kNumThreads = 10;
+  constexpr int kCallbacksPerThread = 100;
+
+  base::RunLoop run_loop;
+  auto barrier = base::BarrierClosure(kNumThreads, run_loop.QuitClosure());
+
+  for (int i = 0; i < kNumThreads; ++i) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&, i]() {
+          for (int j = 0; j < kCallbacksPerThread; ++j) {
+            webrtc::VideoFrame video_frame = CreateMockFrame(
+                kHdWidth, kHdHeight, 100 + i * kCallbacksPerThread + j);
+            callback->Decoded(video_frame, std::nullopt, std::nullopt);
+          }
+          barrier.Run();
+        }));
+  }
+  run_loop.Run();
 }
 
 }  // namespace

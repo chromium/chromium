@@ -6,10 +6,15 @@
 #include <optional>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/thread_annotations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/api/make_ref_counted.h"
@@ -106,6 +111,9 @@ class MockEncoder : public webrtc::VideoEncoder {
     return WEBRTC_VIDEO_CODEC_OK;
   }
   int32_t Release() override { return WEBRTC_VIDEO_CODEC_OK; }
+
+  webrtc::EncodedImageCallback* GetCallback() const { return callback_; }
+
   EncoderInfo GetEncoderInfo() const override {
     EncoderInfo info;
     info.is_hardware_accelerated = *is_hw_accelerated_;
@@ -136,16 +144,21 @@ class FakeEncodedImageCallback : public webrtc::EncodedImageCallback {
   Result OnEncodedImage(
       const webrtc::EncodedImage& encoded_image,
       const webrtc::CodecSpecificInfo* codec_specific_info) override {
+    base::AutoLock auto_lock(lock_);
     ++frame_counter_;
     return {Result::OK, encoded_image.RtpTimestamp()};
   }
   void OnFrameDropped(uint32_t rtp_timestamp,
                       int spatial_id,
                       bool is_end_of_temporal_unit) override {}
-  int get_frame_counter() const { return frame_counter_; }
+  int get_frame_counter() const {
+    base::AutoLock auto_lock(lock_);
+    return frame_counter_;
+  }
 
  private:
-  int frame_counter_ = 0;
+  mutable base::Lock lock_;
+  int frame_counter_ GUARDED_BY(lock_) = 0;
 };
 
 class StatsCollectingEncoderTest : public ::testing::Test {
@@ -464,6 +477,44 @@ TEST_F(StatsCollectingEncoderTest, MethodCallsForwardedToInternalEncoder) {
                       kLossNotification.timestamp_of_last_received);
           });
   stats_encoder_.OnLossNotification(kLossNotification);
+}
+
+TEST_F(StatsCollectingEncoderTest, ConcurrentOnEncodedImage) {
+  // This test is stochastic. It relies on a "thread storm" (10 threads rapidly
+  // firing 100 callbacks each) to create overlap rather than forcing a
+  // deterministic interleaving. We rely on TSAN to catch regressions; an
+  // occasional pass in a non-TSAN build does not guarantee the absence
+  // of data races.
+
+  // Encode one frame to initialize the encoder and set it as active.
+  CreateAndEncodeFrames(kHdWidth, kHdHeight, /*spatial_layers=*/1,
+                        /*is_hw_accelerated=*/false, 1, kKeyframeInterval,
+                        kFramerate);
+
+  webrtc::EncodedImageCallback* callback = internal_encoder_->GetCallback();
+  ASSERT_TRUE(callback);
+
+  constexpr int kNumThreads = 10;
+  constexpr int kCallbacksPerThread = 100;
+
+  base::RunLoop run_loop;
+  auto barrier = base::BarrierClosure(kNumThreads, run_loop.QuitClosure());
+
+  for (int i = 0; i < kNumThreads; ++i) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&, i]() {
+          for (int j = 0; j < kCallbacksPerThread; ++j) {
+            webrtc::EncodedImage encoded_frame;
+            encoded_frame._encodedWidth = kHdWidth;
+            encoded_frame._encodedHeight = kHdHeight;
+            encoded_frame.SetSpatialIndex(0);
+            encoded_frame.SetRtpTimestamp(100 + i * kCallbacksPerThread + j);
+            callback->OnEncodedImage(encoded_frame, nullptr);
+          }
+          barrier.Run();
+        }));
+  }
+  run_loop.Run();
 }
 
 }  // namespace
