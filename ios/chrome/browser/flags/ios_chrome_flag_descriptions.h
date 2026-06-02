@@ -138,10 +138,19 @@ inline constexpr char kAutofillAiNoFillingIconsExperimentName[] =
 inline constexpr char kAutofillAiNoFillingIconsExperimentDescription[] =
     "If enabled, Autofill AI filling suggestions do not have an icon.";
 
+inline constexpr char kAutofillAiOrderName[] = "Autofill AI Order entities";
+inline constexpr char kAutofillAiOrderDescription[] =
+    "Enables Autofill AI support for order entities.";
+
 inline constexpr char kAutofillAiReauthRequiredName[] =
     "Autofill AI Reauth Required";
 inline constexpr char kAutofillAiReauthRequiredDescription[] =
     "Enables Autofill AI Reauth Required.";
+
+inline constexpr char kAutofillAiShipmentName[] =
+    "Autofill AI Shipment entities";
+inline constexpr char kAutofillAiShipmentDescription[] =
+    "Enables Autofill AI support for shipment entities.";
 
 inline constexpr char kAutofillAiValuablesIPHName[] =
     "IPH Autofill AI Valuables";
@@ -181,6 +190,11 @@ inline constexpr char kAutofillAiWithDataSchemaName[] =
     "Autofill AI With Data Schema";
 inline constexpr char kAutofillAiWithDataSchemaDescription[] =
     "Enables Autofill AI With Data Schema.";
+
+inline constexpr char kAutofillAmbientAutofillName[] =
+    "Autofill Ambient Autofill";
+inline constexpr char kAutofillAmbientAutofillDescription[] =
+    "Enables Ambient Autofill.";
 
 inline constexpr char kAutofillBottomSheetNewBlurName[] =
     "New Blur Method for Autofill Bottom Sheet";
