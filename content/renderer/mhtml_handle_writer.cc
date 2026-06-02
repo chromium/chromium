@@ -27,8 +27,9 @@ MHTMLHandleWriter::~MHTMLHandleWriter() {}
 
 void MHTMLHandleWriter::WriteContents(
     std::vector<blink::WebThreadSafeData> mhtml_contents) {
-  TRACE_EVENT_BEGIN("page-serialization", "Writing MHTML contents to handle",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "page-serialization", "Writing MHTML contents to handle",
+      perfetto::NamedTrack::FromPointer("content::MHTMLHandleWriter", this));
   is_writing_ = true;
   WriteContentsImpl(std::move(mhtml_contents));
 }
@@ -37,7 +38,9 @@ void MHTMLHandleWriter::Finish(mojom::MhtmlSaveStatus save_status) {
   DCHECK(!RenderThread::IsMainThread())
       << "Should not run in the main renderer thread";
   if (is_writing_) {
-    TRACE_EVENT_END("page-serialization", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END(
+        "page-serialization",
+        perfetto::NamedTrack::FromPointer("content::MHTMLHandleWriter", this));
   }
   Close();
 
