@@ -194,4 +194,14 @@ const SendTabToSelfEntry* FakeSendTabToSelfModel::AddEntryRemotely(
   return result;
 }
 
+void FakeSendTabToSelfModel::RemoveEntryRemotely(const std::string& guid) {
+  auto it = entries_.find(guid);
+  if (it != entries_.end()) {
+    for (auto& observer : observers_) {
+      observer.OnEntriesRemovedRemotely({guid});
+    }
+    entries_.erase(it);
+  }
+}
+
 }  // namespace send_tab_to_self

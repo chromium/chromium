@@ -39,6 +39,9 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   ~IOSSendTabToSelfInfoBarDelegate() override;
 
+  // Returns the GUID of the SendTabToSelfEntry.
+  const std::string& GetGUID() const;
+
  private:
   // ConfirmInfoBarDelegate:
   InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
@@ -64,6 +67,9 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Handler for scene commands.
   __weak id<SceneCommands> scene_handler_ = nil;
+
+  // The GUID of the entry.
+  std::string guid_;
 
   base::WeakPtrFactory<IOSSendTabToSelfInfoBarDelegate> weak_ptr_factory_;
 };

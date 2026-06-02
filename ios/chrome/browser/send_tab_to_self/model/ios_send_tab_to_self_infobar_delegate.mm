@@ -51,6 +51,10 @@ IOSSendTabToSelfInfoBarDelegate::~IOSSendTabToSelfInfoBarDelegate() {
               object:nil];
 }
 
+const std::string& IOSSendTabToSelfInfoBarDelegate::GetGUID() const {
+  return guid_;
+}
+
 IOSSendTabToSelfInfoBarDelegate::IOSSendTabToSelfInfoBarDelegate(
     const SendTabToSelfEntry* entry,
     SendTabToSelfModel* model,
@@ -58,6 +62,7 @@ IOSSendTabToSelfInfoBarDelegate::IOSSendTabToSelfInfoBarDelegate(
     : entry_(entry),
       model_(model),
       scene_handler_(scene_handler),
+      guid_(entry->GetGUID()),
       weak_ptr_factory_(this) {
   DCHECK(entry);
   DCHECK(model);

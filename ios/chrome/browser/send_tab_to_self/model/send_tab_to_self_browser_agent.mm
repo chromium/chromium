@@ -6,12 +6,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import <algorithm>
 #import <memory>
 #import <string>
 
 #import "base/check.h"
 #import "base/containers/span.h"
-#import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar.h"
@@ -29,6 +29,40 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/web/public/web_state.h"
+
+namespace {
+
+// Helper function to remove infobars corresponding to the removed GUIDs from
+// the given WebState.
+void RemoveInfoBarsForGUIDs(web::WebState* web_state,
+                            base::span<const std::string> guids) {
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  if (!infobar_manager) {
+    return;
+  }
+
+  std::vector<infobars::InfoBar*> infobars_to_remove;
+  for (infobars::InfoBar* infobar : infobar_manager->infobars()) {
+    if (infobar->GetIdentifier() !=
+        infobars::InfoBarDelegate::SEND_TAB_TO_SELF_INFOBAR_DELEGATE) {
+      continue;
+    }
+
+    auto* delegate =
+        static_cast<send_tab_to_self::IOSSendTabToSelfInfoBarDelegate*>(
+            infobar->delegate());
+    if (std::ranges::contains(guids, delegate->GetGUID())) {
+      infobars_to_remove.push_back(infobar);
+    }
+  }
+
+  for (infobars::InfoBar* infobar : infobars_to_remove) {
+    infobar_manager->RemoveInfoBar(infobar);
+  }
+}
+
+}  // namespace
 
 SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
     : BrowserUserData(browser),
@@ -78,7 +112,19 @@ void SendTabToSelfBrowserAgent::OnEntriesAddedRemotely(
 
 void SendTabToSelfBrowserAgent::OnEntriesRemovedRemotely(
     base::span<const std::string> guids) {
-  NOTIMPLEMENTED();
+  if (guids.empty()) {
+    return;
+  }
+
+  if (pending_entry_ &&
+      std::ranges::contains(guids, pending_entry_->GetGUID())) {
+    CleanUpObserversAndVariables();
+  }
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  for (int i = 0; i < web_state_list->count(); ++i) {
+    RemoveInfoBarsForGUIDs(web_state_list->GetWebStateAt(i), guids);
+  }
 }
 
 #pragma mark - WebStateListObserver

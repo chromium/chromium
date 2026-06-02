@@ -217,4 +217,42 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisibleActivated) {
   EXPECT_EQ(1UL, second_infobar_manager->infobars().size());
 }
 
+TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteRemoveSimple) {
+  web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
+
+  const SendTabToSelfEntry* entry = model_->AddEntryRemotely(
+      GURL("http://www.test.com/test-1"), "title", "device1",
+      send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
+
+  // An infobar for the entry should have been added.
+  EXPECT_EQ(1UL, infobar_manager->infobars().size());
+
+  // Remove the entry remotely.
+  model_->RemoveEntryRemotely(entry->GetGUID());
+
+  // The infobar should have been removed.
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
+}
+
+TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteRemovePending) {
+  // Remote entry added when there are no web states (so it's pending).
+  const SendTabToSelfEntry* entry = model_->AddEntryRemotely(
+      GURL("http://www.test.com/test-1"), "title", "device1",
+      send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
+
+  // Remove the entry remotely before any tab is shown.
+  model_->RemoveEntryRemotely(entry->GetGUID());
+
+  // Add a web state, active and visible.
+  web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));
+  InfoBarManagerImpl* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+
+  // No infobar should be added since the pending entry was removed.
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
+}
+
 }  // anonymous namespace

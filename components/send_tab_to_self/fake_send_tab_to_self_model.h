@@ -72,6 +72,9 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
       const PageContext& context,
       NavigationHistory navigation_history);
 
+  // Simulates an entry being removed from a remote device.
+  void RemoveEntryRemotely(const std::string& guid);
+
   const std::string& last_opened_guid() const { return last_opened_guid_; }
   const std::string& last_dismissed_guid() const {
     return last_dismissed_guid_;
