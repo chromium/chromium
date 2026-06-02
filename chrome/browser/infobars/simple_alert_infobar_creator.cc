@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -21,8 +22,10 @@ void CreateSimpleAlertInfoBar(
     bool should_animate,
     bool closeable,
     infobars::InfoBarDelegate::InfobarPriority infobar_priority) {
+#if !BUILDFLAG(IS_ANDROID)
   infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::make_unique<SimpleAlertInfoBarDelegate>(
           infobar_identifier, vector_icon, message, auto_expire, should_animate,
           closeable, infobar_priority)));
+#endif
 }

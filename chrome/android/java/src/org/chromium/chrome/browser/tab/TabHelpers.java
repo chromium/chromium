@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchTabHelper;
 import org.chromium.chrome.browser.display_cutout.DisplayCutoutTabHelper;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.media.ui.MediaSessionTabHelper;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -51,15 +50,12 @@ public final class TabHelpers {
     }
 
     /**
-     * Initializes {@link TabWebContentsUserData} and WebContents-related objects
-     * when a new WebContents is set to the tab.
+     * Initializes {@link TabWebContentsUserData} and WebContents-related objects when a new
+     * WebContents is set to the tab.
+     *
      * @param tab {@link Tab} to create helpers for.
      */
     static void initWebContentsHelpers(Tab tab) {
-        // The InfoBarContainer needs to be created after the ContentView has been natively
-        // initialized. In the case where restoring a Tab or showing a prerendered one we already
-        // have a valid infobar container, no need to recreate one.
-        InfoBarContainer.from(tab);
 
         TabWebContentsObserver.from(tab);
         SwipeRefreshHandler.from(tab);

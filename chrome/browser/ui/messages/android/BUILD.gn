@@ -22,9 +22,7 @@ android_resources("java_resources") {
 }
 
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/messages/infobar/SimpleConfirmInfoBarBuilder.java",
     "java/src/org/chromium/chrome/browser/ui/messages/snackbar/Snackbar.java",
     "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarCollection.java",
     "java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarManager.java",
@@ -46,9 +44,6 @@ android_library("java") {
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//components/cached_flags:java",
-    "//components/infobars/android:infobar_android_enums_java",
-    "//components/infobars/android:java",
-    "//components/infobars/core:infobar_enums_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -62,10 +57,6 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.chrome.ui.messages"
-}
-
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/messages/infobar/SimpleConfirmInfoBarBuilder.java" ]
 }
 
 robolectric_library("junit") {
