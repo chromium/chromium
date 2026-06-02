@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1892,6 +1893,35 @@ TEST_F(RenderViewContextMenuPrefsTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(RenderViewContextMenuPrefsTest,
+       TextSelectionShowsPartialTranslateWhenMenuSimplificationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kMenuSimplification);
+  translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
+  base::ScopedClosureRunner reset_ignore_missing_key(base::BindOnce(
+      &translate::TranslateManager::SetIgnoreMissingKeyForTesting, false));
+
+  NavigateAndCommit(GURL("https://www.example.com"));
+  SetUserSelectedDefaultSearchProvider("https://www.google.com", true);
+  ChromeTranslateClient::CreateForWebContents(web_contents());
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(web_contents());
+  ASSERT_TRUE(chrome_translate_client);
+  chrome_translate_client->GetTranslateManager()
+      ->GetLanguageState()
+      ->LanguageDetermined("fr", true);
+
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PRINTING)
 TEST_F(RenderViewContextMenuPrefsTest, PrintSelectionLabel) {
