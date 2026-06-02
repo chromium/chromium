@@ -25312,7 +25312,7 @@
             ]
         }
     ],
-    "VoiceSearchCoherenceComposeboxesStudy": [
+    "VoiceSearchCoherenceComposeboxesKillSwitch": [
         {
             "platforms": [
                 "chromeos",
@@ -25322,7 +25322,7 @@
             ],
             "experiments": [
                 {
-                    "name": "CobrowsingOnly",
+                    "name": "CobrowsingOnly_EmergencyKillSwitch",
                     "params": {
                         "VoiceSearchCoherenceComposeboxCobrowsingOnly": "true"
                     },
