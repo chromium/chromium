@@ -6,7 +6,6 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/session_manager/core/session_manager.h"
@@ -36,7 +36,6 @@ constexpr char kTestUserName2[] = "test2@test.com";
 constexpr GaiaId::Literal kTestUser2GaiaId("2222222222");
 
 void CreateAndStartUserSession(const AccountId& account_id) {
-  using ::ash::ProfileHelper;
   using session_manager::SessionManager;
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
@@ -49,7 +48,8 @@ void CreateAndStartUserSession(const AccountId& account_id) {
                                        /*has_active_session=*/false);
   profiles::testing::CreateProfileSync(
       g_browser_process->profile_manager(),
-      ProfileHelper::GetProfilePathByUserIdHash(user_id_hash));
+      ash::BrowserContextHelper::Get()->GetBrowserContextPathByUserIdHash(
+          user_id_hash));
   SessionManager::Get()->SessionStarted();
 }
 
