@@ -1005,6 +1005,24 @@ OperandId BuildFloatConstant(GraphInfoBuilder& builder,
                                base::as_byte_span(f16_values));
 }
 
+// Build an operand as either a constant or a named input depending on
+// `is_constant`. When building an input, the operand is also inserted into
+// `named_inputs`.
+OperandId BuildInputOrConstant(
+    GraphInfoBuilder& builder,
+    bool is_constant,
+    std::string name,
+    const OperandDescriptor& desc,
+    base::span<const uint8_t> data,
+    base::flat_map<std::string, base::span<const uint8_t>>& named_inputs) {
+  if (is_constant) {
+    return builder.BuildConstant(desc.shape(), desc.data_type(), data);
+  }
+  OperandId id = builder.BuildInput(name, desc.shape(), desc.data_type());
+  named_inputs.insert({std::move(name), data});
+  return id;
+}
+
 struct ConcatDescriptors {
   std::vector<OperandDescriptor> input_descs;
   OperandDescriptor output_desc;
@@ -1918,15 +1936,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Concat(ConcatParams params,
     const auto& desc = concat_descs.input_descs[i];
     input_data_buffers.emplace_back(desc.PackedByteLength(), seed_for_data);
 
-    OperandId input_id;
-    if (params.is_input_constant) {
-      input_id = builder.BuildConstant(desc.shape(), desc.data_type(),
-                                       input_data_buffers.back());
-    } else {
-      std::string name = "input" + base::NumberToString(i);
-      input_id = builder.BuildInput(name, desc.shape(), desc.data_type());
-      named_inputs.insert({std::move(name), input_data_buffers.back()});
-    }
+    OperandId input_id = BuildInputOrConstant(
+        builder, params.is_input_constant, "input" + base::NumberToString(i),
+        desc, input_data_buffers.back(), named_inputs);
     input_ids.push_back(input_id);
   }
 
@@ -1956,9 +1968,6 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Conv2d(Conv2dParams params,
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId input_id;
-  OperandId filter_id;
-  std::optional<OperandId> bias_id;
   std::vector<uint8_t> input_data(conv2d_descs.input_desc.PackedByteLength(),
                                   seed_for_data);
   std::vector<uint8_t> filter_data(conv2d_descs.filter_desc.PackedByteLength(),
@@ -1969,24 +1978,13 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Conv2d(Conv2dParams params,
   }
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  if (params.is_input_constant) {
-    input_id =
-        builder.BuildConstant(conv2d_descs.input_desc.shape(),
-                              conv2d_descs.input_desc.data_type(), input_data);
-  } else {
-    input_id = builder.BuildInput("input", conv2d_descs.input_desc.shape(),
-                                  conv2d_descs.input_desc.data_type());
-    named_inputs.insert({"input", input_data});
-  }
-  if (params.is_filter_constant) {
-    filter_id = builder.BuildConstant(conv2d_descs.filter_desc.shape(),
-                                      conv2d_descs.filter_desc.data_type(),
-                                      filter_data);
-  } else {
-    filter_id = builder.BuildInput("filter", conv2d_descs.filter_desc.shape(),
-                                   conv2d_descs.filter_desc.data_type());
-    named_inputs.insert({"filter", filter_data});
-  }
+  OperandId input_id =
+      BuildInputOrConstant(builder, params.is_input_constant, "input",
+                           conv2d_descs.input_desc, input_data, named_inputs);
+  OperandId filter_id =
+      BuildInputOrConstant(builder, params.is_filter_constant, "filter",
+                           conv2d_descs.filter_desc, filter_data, named_inputs);
+  std::optional<OperandId> bias_id;
 
   switch (params.bias_kind) {
     case OptionalOperandKind::kNone:
@@ -2070,27 +2068,14 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::ElementWiseBinary(
   std::vector<uint8_t> rhs_data(descs.rhs_desc.PackedByteLength(),
                                 seed_for_data);
 
-  OperandId lhs_id;
-  OperandId rhs_id;
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
 
-  if (params.is_lhs_constant) {
-    lhs_id = builder.BuildConstant(descs.lhs_desc.shape(),
-                                   descs.lhs_desc.data_type(), lhs_data);
-  } else {
-    lhs_id = builder.BuildInput("lhs", descs.lhs_desc.shape(),
-                                descs.lhs_desc.data_type());
-    named_inputs.insert({"lhs", lhs_data});
-  }
-
-  if (params.is_rhs_constant) {
-    rhs_id = builder.BuildConstant(descs.rhs_desc.shape(),
-                                   descs.rhs_desc.data_type(), rhs_data);
-  } else {
-    rhs_id = builder.BuildInput("rhs", descs.rhs_desc.shape(),
-                                descs.rhs_desc.data_type());
-    named_inputs.insert({"rhs", rhs_data});
-  }
+  OperandId lhs_id =
+      BuildInputOrConstant(builder, params.is_lhs_constant, "lhs",
+                           descs.lhs_desc, lhs_data, named_inputs);
+  OperandId rhs_id =
+      BuildInputOrConstant(builder, params.is_rhs_constant, "rhs",
+                           descs.rhs_desc, rhs_data, named_inputs);
 
   OperandId output_id = builder.BuildOutput("output", descs.output_desc.shape(),
                                             descs.output_desc.data_type());
@@ -2142,16 +2127,10 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Expand(ExpandParams params,
 
   std::vector<uint8_t> input_data(input_desc.PackedByteLength(), seed_for_data);
 
-  OperandId input_id;
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  if (params.is_input_constant) {
-    input_id = builder.BuildConstant(input_desc.shape(), input_desc.data_type(),
-                                     input_data);
-  } else {
-    input_id =
-        builder.BuildInput("input", input_desc.shape(), input_desc.data_type());
-    named_inputs.insert({"input", input_data});
-  }
+  OperandId input_id =
+      BuildInputOrConstant(builder, params.is_input_constant, "input",
+                           input_desc, input_data, named_inputs);
 
   OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
                                             output_desc.data_type());
@@ -2201,26 +2180,13 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::GatherND(GatherNDParams params,
       indices_desc.PackedByteLength(), params.indices_data_type,
       params.indices_fill_value);
 
-  OperandId input_id;
-  OperandId indices_id;
-
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  if (params.is_input_constant) {
-    input_id = builder.BuildConstant(input_desc.shape(), input_desc.data_type(),
-                                     input_data);
-  } else {
-    input_id =
-        builder.BuildInput("input", input_desc.shape(), input_desc.data_type());
-    named_inputs.insert({"input", input_data});
-  }
-  if (params.is_indices_constant) {
-    indices_id = builder.BuildConstant(indices_desc.shape(),
-                                       indices_desc.data_type(), indices_data);
-  } else {
-    indices_id = builder.BuildInput("indices", indices_desc.shape(),
-                                    indices_desc.data_type());
-    named_inputs.insert({"indices", indices_data});
-  }
+  OperandId input_id =
+      BuildInputOrConstant(builder, params.is_input_constant, "input",
+                           input_desc, input_data, named_inputs);
+  OperandId indices_id =
+      BuildInputOrConstant(builder, params.is_indices_constant, "indices",
+                           indices_desc, indices_data, named_inputs);
 
   OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
                                             output_desc.data_type());
@@ -2247,30 +2213,18 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Gemm(GemmParams params,
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId a_id;
-  OperandId b_id;
   std::vector<uint8_t> a_data(gemm_descs.a_desc.PackedByteLength(),
                               seed_for_data);
   std::vector<uint8_t> b_data(gemm_descs.b_desc.PackedByteLength(),
                               seed_for_data);
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  if (params.is_a_constant) {
-    a_id = builder.BuildConstant(gemm_descs.a_desc.shape(),
-                                 gemm_descs.a_desc.data_type(), a_data);
-  } else {
-    a_id = builder.BuildInput("a", gemm_descs.a_desc.shape(),
-                              gemm_descs.a_desc.data_type());
-    named_inputs.insert({"a", a_data});
-  }
-  if (params.is_b_constant) {
-    b_id = builder.BuildConstant(gemm_descs.b_desc.shape(),
-                                 gemm_descs.b_desc.data_type(), b_data);
-  } else {
-    b_id = builder.BuildInput("b", gemm_descs.b_desc.shape(),
-                              gemm_descs.b_desc.data_type());
-    named_inputs.insert({"b", b_data});
-  }
+  OperandId a_id =
+      BuildInputOrConstant(builder, params.is_a_constant, "a",
+                           gemm_descs.a_desc, a_data, named_inputs);
+  OperandId b_id =
+      BuildInputOrConstant(builder, params.is_b_constant, "b",
+                           gemm_descs.b_desc, b_data, named_inputs);
 
   BuildGemmAttributes gemm_attr;
   gemm_attr.alpha = params.alpha;
@@ -2281,16 +2235,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Gemm(GemmParams params,
   std::vector<uint8_t> c_data;
   if (params.has_c) {
     c_data.assign(gemm_descs.c_desc->PackedByteLength(), seed_for_data);
-    if (params.is_c_constant) {
-      OperandId c_id = builder.BuildConstant(
-          gemm_descs.c_desc->shape(), gemm_descs.c_desc->data_type(), c_data);
-      gemm_attr.c_operand_id = c_id;
-    } else {
-      OperandId c_id = builder.BuildInput("c", gemm_descs.c_desc->shape(),
-                                          gemm_descs.c_desc->data_type());
-      named_inputs.insert({"c", c_data});
-      gemm_attr.c_operand_id = c_id;
-    }
+    gemm_attr.c_operand_id =
+        BuildInputOrConstant(builder, params.is_c_constant, "c",
+                             *gemm_descs.c_desc, c_data, named_inputs);
   }
 
   OperandId output_id =
@@ -2433,36 +2380,15 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Lstm(LstmParams params,
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
 
-  OperandId input_id;
-  if (params.is_input_constant) {
-    input_id = builder.BuildConstant(input_desc.shape(), input_desc.data_type(),
-                                     input_data);
-  } else {
-    input_id =
-        builder.BuildInput("input", input_desc.shape(), input_desc.data_type());
-    named_inputs.insert({"input", input_data});
-  }
-
-  OperandId weight_id;
-  if (params.is_weight_constant) {
-    weight_id = builder.BuildConstant(weight_desc.shape(),
-                                      weight_desc.data_type(), weight_data);
-  } else {
-    weight_id = builder.BuildInput("weight", weight_desc.shape(),
-                                   weight_desc.data_type());
-    named_inputs.insert({"weight", weight_data});
-  }
-  OperandId recurrent_weight_id;
-  if (params.is_recurrent_weight_constant) {
-    recurrent_weight_id = builder.BuildConstant(
-        recurrent_weight_desc.shape(), recurrent_weight_desc.data_type(),
-        recurrent_weight_data);
-  } else {
-    recurrent_weight_id =
-        builder.BuildInput("recurrent_weight", recurrent_weight_desc.shape(),
-                           recurrent_weight_desc.data_type());
-    named_inputs.insert({"recurrent_weight", recurrent_weight_data});
-  }
+  OperandId input_id =
+      BuildInputOrConstant(builder, params.is_input_constant, "input",
+                           input_desc, input_data, named_inputs);
+  OperandId weight_id =
+      BuildInputOrConstant(builder, params.is_weight_constant, "weight",
+                           weight_desc, weight_data, named_inputs);
+  OperandId recurrent_weight_id = BuildInputOrConstant(
+      builder, params.is_recurrent_weight_constant, "recurrent_weight",
+      recurrent_weight_desc, recurrent_weight_data, named_inputs);
 
   BuildLstmAttributes lstm_attr;
   lstm_attr.return_sequence = params.return_sequence;
@@ -2554,20 +2480,13 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Pad(PadParams params,
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId input_id;
   std::vector<uint8_t> input_data(pad_descs.input_desc.PackedByteLength(),
                                   seed_for_data);
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  if (params.is_input_constant) {
-    input_id =
-        builder.BuildConstant(pad_descs.input_desc.shape(),
-                              pad_descs.input_desc.data_type(), input_data);
-  } else {
-    input_id = builder.BuildInput("input", pad_descs.input_desc.shape(),
-                                  pad_descs.input_desc.data_type());
-    named_inputs.insert({"input", input_data});
-  }
+  OperandId input_id =
+      BuildInputOrConstant(builder, params.is_input_constant, "input",
+                           pad_descs.input_desc, input_data, named_inputs);
 
   OperandId output_id =
       builder.BuildOutput("output", pad_descs.output_desc.shape(),
@@ -2596,20 +2515,13 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Pool2d(Pool2dParams params,
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId input_id;
   std::vector<uint8_t> input_data(pool2d_descs.input_desc.PackedByteLength(),
                                   seed_for_data);
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  if (params.is_input_constant) {
-    input_id =
-        builder.BuildConstant(pool2d_descs.input_desc.shape(),
-                              pool2d_descs.input_desc.data_type(), input_data);
-  } else {
-    input_id = builder.BuildInput("input", pool2d_descs.input_desc.shape(),
-                                  pool2d_descs.input_desc.data_type());
-    named_inputs.insert({"input", input_data});
-  }
+  OperandId input_id =
+      BuildInputOrConstant(builder, params.is_input_constant, "input",
+                           pool2d_descs.input_desc, input_data, named_inputs);
 
   OperandId output_id =
       builder.BuildOutput("output", pool2d_descs.output_desc.shape(),
@@ -2645,20 +2557,13 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Reduce(ReduceParams params,
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId input_id;
   std::vector<uint8_t> input_data(reduce_descs.input_desc.PackedByteLength(),
                                   seed_for_data);
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  if (params.is_input_constant) {
-    input_id =
-        builder.BuildConstant(reduce_descs.input_desc.shape(),
-                              reduce_descs.input_desc.data_type(), input_data);
-  } else {
-    input_id = builder.BuildInput("input", reduce_descs.input_desc.shape(),
-                                  reduce_descs.input_desc.data_type());
-    named_inputs.insert({"input", input_data});
-  }
+  OperandId input_id =
+      BuildInputOrConstant(builder, params.is_input_constant, "input",
+                           reduce_descs.input_desc, input_data, named_inputs);
 
   OperandId output_id =
       builder.BuildOutput("output", reduce_descs.output_desc.shape(),
@@ -2687,20 +2592,13 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Resample2d(Resample2dParams params,
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId input_id;
   std::vector<uint8_t> input_data(
       resample2d_descs.input_desc.PackedByteLength(), seed_for_data);
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  if (params.is_input_constant) {
-    input_id = builder.BuildConstant(resample2d_descs.input_desc.shape(),
-                                     resample2d_descs.input_desc.data_type(),
-                                     input_data);
-  } else {
-    input_id = builder.BuildInput("input", resample2d_descs.input_desc.shape(),
-                                  resample2d_descs.input_desc.data_type());
-    named_inputs.insert({"input", input_data});
-  }
+  OperandId input_id = BuildInputOrConstant(
+      builder, params.is_input_constant, "input", resample2d_descs.input_desc,
+      input_data, named_inputs);
 
   OperandId output_id =
       builder.BuildOutput("output", resample2d_descs.output_desc.shape(),
@@ -2762,35 +2660,16 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::ScatterElements(
       indices_desc.PackedByteLength(), params.indices_data_type,
       params.indices_fill_value);
 
-  OperandId input_id;
-  OperandId indices_id;
-  OperandId updates_id;
-
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  if (params.is_input_constant) {
-    input_id = builder.BuildConstant(input_desc.shape(), input_desc.data_type(),
-                                     input_data);
-  } else {
-    input_id =
-        builder.BuildInput("input", input_desc.shape(), input_desc.data_type());
-    named_inputs.insert({"input", input_data});
-  }
-  if (params.is_indices_constant) {
-    indices_id = builder.BuildConstant(indices_desc.shape(),
-                                       indices_desc.data_type(), indices_data);
-  } else {
-    indices_id = builder.BuildInput("indices", indices_desc.shape(),
-                                    indices_desc.data_type());
-    named_inputs.insert({"indices", indices_data});
-  }
-  if (params.is_updates_constant) {
-    updates_id = builder.BuildConstant(updates_desc.shape(),
-                                       updates_desc.data_type(), updates_data);
-  } else {
-    updates_id = builder.BuildInput("updates", updates_desc.shape(),
-                                    updates_desc.data_type());
-    named_inputs.insert({"updates", updates_data});
-  }
+  OperandId input_id =
+      BuildInputOrConstant(builder, params.is_input_constant, "input",
+                           input_desc, input_data, named_inputs);
+  OperandId indices_id =
+      BuildInputOrConstant(builder, params.is_indices_constant, "indices",
+                           indices_desc, indices_data, named_inputs);
+  OperandId updates_id =
+      BuildInputOrConstant(builder, params.is_updates_constant, "updates",
+                           updates_desc, updates_data, named_inputs);
 
   OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
                                             output_desc.data_type());
@@ -2818,20 +2697,13 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Transpose(TransposeParams params,
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId input_id;
   std::vector<uint8_t> input_data(transpose_descs.input_desc.PackedByteLength(),
                                   seed_for_data);
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  if (params.is_input_constant) {
-    input_id = builder.BuildConstant(transpose_descs.input_desc.shape(),
-                                     transpose_descs.input_desc.data_type(),
-                                     input_data);
-  } else {
-    input_id = builder.BuildInput("input", transpose_descs.input_desc.shape(),
-                                  transpose_descs.input_desc.data_type());
-    named_inputs.insert({"input", input_data});
-  }
+  OperandId input_id = BuildInputOrConstant(builder, params.is_input_constant,
+                                            "input", transpose_descs.input_desc,
+                                            input_data, named_inputs);
 
   OperandId output_id =
       builder.BuildOutput("output", transpose_descs.output_desc.shape(),
@@ -2947,17 +2819,10 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConcatQ(
     input_zero_data_buffers.emplace_back(input_zero_descs[i].PackedByteLength(),
                                          seed_for_zero_point);
 
-    OperandId input_dq_id;
-    if (concat_params.is_input_constant) {
-      input_dq_id = builder.BuildConstant(input_dq_descs[i].shape(),
-                                          input_dq_descs[i].data_type(),
-                                          input_dq_data_buffers.back());
-    } else {
-      std::string name = "input" + base::NumberToString(i);
-      input_dq_id = builder.BuildInput(name, input_dq_descs[i].shape(),
-                                       input_dq_descs[i].data_type());
-      named_inputs.insert({std::move(name), input_dq_data_buffers.back()});
-    }
+    OperandId input_dq_id = BuildInputOrConstant(
+        builder, concat_params.is_input_constant,
+        "input" + base::NumberToString(i), input_dq_descs[i],
+        input_dq_data_buffers.back(), named_inputs);
 
     OperandId input_scale_id = BuildFloatConstant(
         builder, input_scale_descs[i], input_scale_data_buffers.back());
@@ -3155,27 +3020,15 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQConv2dQ(
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId input_dq_id;
-  OperandId filter_dq_id;
-  std::optional<OperandId> bias_dq_id;
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
 
-  if (conv2d_params.is_input_constant) {
-    input_dq_id = builder.BuildConstant(
-        input_dq_desc.shape(), input_dq_desc.data_type(), input_dq_data);
-  } else {
-    input_dq_id = builder.BuildInput("input", input_dq_desc.shape(),
-                                     input_dq_desc.data_type());
-    named_inputs.insert({"input", input_dq_data});
-  }
-  if (conv2d_params.is_filter_constant) {
-    filter_dq_id = builder.BuildConstant(
-        filter_dq_desc.shape(), filter_dq_desc.data_type(), filter_dq_data);
-  } else {
-    filter_dq_id = builder.BuildInput("filter", filter_dq_desc.shape(),
-                                      filter_dq_desc.data_type());
-    named_inputs.insert({"filter", filter_dq_data});
-  }
+  OperandId input_dq_id =
+      BuildInputOrConstant(builder, conv2d_params.is_input_constant, "input",
+                           input_dq_desc, input_dq_data, named_inputs);
+  OperandId filter_dq_id =
+      BuildInputOrConstant(builder, conv2d_params.is_filter_constant, "filter",
+                           filter_dq_desc, filter_dq_data, named_inputs);
+  std::optional<OperandId> bias_dq_id;
   switch (conv2d_params.bias_kind) {
     case OptionalOperandKind::kNone:
       break;
@@ -3371,15 +3224,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQElementWiseBinaryQ(
   std::vector<uint8_t> lhs_zero_data(lhs_zero_desc.PackedByteLength(),
                                      seed_for_zero_point);
 
-  OperandId lhs_dq_id;
-  if (params.is_lhs_constant) {
-    lhs_dq_id = builder.BuildConstant(lhs_dq_desc.shape(),
-                                      lhs_dq_desc.data_type(), lhs_dq_data);
-  } else {
-    lhs_dq_id =
-        builder.BuildInput("lhs", lhs_dq_desc.shape(), lhs_dq_desc.data_type());
-    named_inputs.insert({"lhs", lhs_dq_data});
-  }
+  OperandId lhs_dq_id =
+      BuildInputOrConstant(builder, params.is_lhs_constant, "lhs", lhs_dq_desc,
+                           lhs_dq_data, named_inputs);
 
   OperandId lhs_scale_id =
       BuildFloatConstant(builder, lhs_scale_desc, lhs_scale_data);
@@ -3397,15 +3244,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQElementWiseBinaryQ(
   std::vector<uint8_t> rhs_zero_data(rhs_zero_desc.PackedByteLength(),
                                      seed_for_zero_point);
 
-  OperandId rhs_dq_id;
-  if (params.is_rhs_constant) {
-    rhs_dq_id = builder.BuildConstant(rhs_dq_desc.shape(),
-                                      rhs_dq_desc.data_type(), rhs_dq_data);
-  } else {
-    rhs_dq_id =
-        builder.BuildInput("rhs", rhs_dq_desc.shape(), rhs_dq_desc.data_type());
-    named_inputs.insert({"rhs", rhs_dq_data});
-  }
+  OperandId rhs_dq_id =
+      BuildInputOrConstant(builder, params.is_rhs_constant, "rhs", rhs_dq_desc,
+                           rhs_dq_data, named_inputs);
 
   OperandId rhs_scale_id =
       BuildFloatConstant(builder, rhs_scale_desc, rhs_scale_data);
@@ -3570,24 +3411,14 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGemmQ(
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId a_dq_id;
-  OperandId b_dq_id;
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
 
-  if (gemm_params.is_a_constant) {
-    a_dq_id = builder.BuildConstant(a_dq_desc.shape(), a_dq_desc.data_type(),
-                                    a_dq_data);
-  } else {
-    a_dq_id = builder.BuildInput("a", a_dq_desc.shape(), a_dq_desc.data_type());
-    named_inputs.insert({"a", a_dq_data});
-  }
-  if (gemm_params.is_b_constant) {
-    b_dq_id = builder.BuildConstant(b_dq_desc.shape(), b_dq_desc.data_type(),
-                                    b_dq_data);
-  } else {
-    b_dq_id = builder.BuildInput("b", b_dq_desc.shape(), b_dq_desc.data_type());
-    named_inputs.insert({"b", b_dq_data});
-  }
+  OperandId a_dq_id =
+      BuildInputOrConstant(builder, gemm_params.is_a_constant, "a", a_dq_desc,
+                           a_dq_data, named_inputs);
+  OperandId b_dq_id =
+      BuildInputOrConstant(builder, gemm_params.is_b_constant, "b", b_dq_desc,
+                           b_dq_data, named_inputs);
 
   OperandId a_scale_id =
       BuildFloatConstant(builder, a_scale_desc, a_scale_data);
@@ -3624,15 +3455,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQGemmQ(
     c_scale_data.assign(c_scale_desc->NumberOfElements(), 0.125f);
     c_zero_data.assign(c_zero_desc->PackedByteLength(), 0);
 
-    OperandId c_dq_id;
-    if (gemm_params.is_c_constant) {
-      c_dq_id = builder.BuildConstant(c_dq_desc->shape(),
-                                      c_dq_desc->data_type(), c_dq_data);
-    } else {
-      c_dq_id =
-          builder.BuildInput("c", c_dq_desc->shape(), c_dq_desc->data_type());
-      named_inputs.insert({"c", c_dq_data});
-    }
+    OperandId c_dq_id =
+        BuildInputOrConstant(builder, gemm_params.is_c_constant, "c",
+                             *c_dq_desc, c_dq_data, named_inputs);
 
     OperandId c_scale_id =
         BuildFloatConstant(builder, *c_scale_desc, c_scale_data);
@@ -3736,15 +3561,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPadQ(
   std::vector<uint8_t> input_zero_data(input_zero_desc.PackedByteLength(),
                                        seed_for_zero_point);
 
-  OperandId input_dq_id;
-  if (pad_params.is_input_constant) {
-    input_dq_id = builder.BuildConstant(
-        input_dq_desc.shape(), input_dq_desc.data_type(), input_dq_data);
-  } else {
-    input_dq_id = builder.BuildInput("input", input_dq_desc.shape(),
-                                     input_dq_desc.data_type());
-    named_inputs.insert({"input", input_dq_data});
-  }
+  OperandId input_dq_id =
+      BuildInputOrConstant(builder, pad_params.is_input_constant, "input",
+                           input_dq_desc, input_dq_data, named_inputs);
 
   OperandId input_scale_id =
       BuildFloatConstant(builder, input_scale_desc, input_scale_data);
@@ -3861,17 +3680,11 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQPool2dQ(
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId input_dq_id;
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
 
-  if (pool2d_params.is_input_constant) {
-    input_dq_id = builder.BuildConstant(
-        input_dq_desc.shape(), input_dq_desc.data_type(), input_dq_data);
-  } else {
-    input_dq_id = builder.BuildInput("input", input_dq_desc.shape(),
-                                     input_dq_desc.data_type());
-    named_inputs.insert({"input", input_dq_data});
-  }
+  OperandId input_dq_id =
+      BuildInputOrConstant(builder, pool2d_params.is_input_constant, "input",
+                           input_dq_desc, input_dq_data, named_inputs);
 
   OperandId input_scale_id =
       BuildFloatConstant(builder, input_scale_desc, input_scale_data);
@@ -4015,17 +3828,11 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQReduceQ(
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId input_dq_id;
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
 
-  if (reduce_params.is_input_constant) {
-    input_dq_id = builder.BuildConstant(
-        input_dq_desc.shape(), input_dq_desc.data_type(), input_dq_data);
-  } else {
-    input_dq_id = builder.BuildInput("input", input_dq_desc.shape(),
-                                     input_dq_desc.data_type());
-    named_inputs.insert({"input", input_dq_data});
-  }
+  OperandId input_dq_id =
+      BuildInputOrConstant(builder, reduce_params.is_input_constant, "input",
+                           input_dq_desc, input_dq_data, named_inputs);
 
   OperandId input_scale_id =
       BuildFloatConstant(builder, input_scale_desc, input_scale_data);
@@ -4140,17 +3947,11 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQResample2dQ(
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId input_dq_id;
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
 
-  if (resample2d_params.is_input_constant) {
-    input_dq_id = builder.BuildConstant(
-        input_dq_desc.shape(), input_dq_desc.data_type(), input_dq_data);
-  } else {
-    input_dq_id = builder.BuildInput("input", input_dq_desc.shape(),
-                                     input_dq_desc.data_type());
-    named_inputs.insert({"input", input_dq_data});
-  }
+  OperandId input_dq_id =
+      BuildInputOrConstant(builder, resample2d_params.is_input_constant,
+                           "input", input_dq_desc, input_dq_data, named_inputs);
 
   OperandId input_scale_id =
       BuildFloatConstant(builder, input_scale_desc, input_scale_data);
@@ -4281,15 +4082,9 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQTransposeQ(
   std::vector<uint8_t> input_zero_data(input_zero_desc.PackedByteLength(),
                                        seed_for_zero_point);
 
-  OperandId input_dq_id;
-  if (transpose_params.is_input_constant) {
-    input_dq_id = builder.BuildConstant(
-        input_dq_desc.shape(), input_dq_desc.data_type(), input_dq_data);
-  } else {
-    input_dq_id = builder.BuildInput("input", input_dq_desc.shape(),
-                                     input_dq_desc.data_type());
-    named_inputs.insert({"input", input_dq_data});
-  }
+  OperandId input_dq_id =
+      BuildInputOrConstant(builder, transpose_params.is_input_constant, "input",
+                           input_dq_desc, input_dq_data, named_inputs);
 
   OperandId input_scale_id =
       BuildFloatConstant(builder, input_scale_desc, input_scale_data);
