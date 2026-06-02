@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, SearchService} from 'chrome://downloads/downloads.js';
+import {browserProxyFactory, SearchService} from 'chrome://downloads/downloads.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {TestDownloadsProxy} from './test_support.js';
+import {FakePageHandler} from './test_support.js';
 
 function str(list: string[]): string {
   return JSON.stringify(list);
@@ -23,7 +23,9 @@ test('splitTerms', function() {
 });
 
 test('searchWithSimilarTerms', function() {
-  BrowserProxy.setInstance(new TestDownloadsProxy());
+  const handler = new FakePageHandler();
+  const {instance} = browserProxyFactory.createForTest(handler);
+  browserProxyFactory.setInstance(instance);
   class TestSearchService extends SearchService {
     override loadMore() { /* Remove call to backend. */
     }

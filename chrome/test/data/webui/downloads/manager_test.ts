@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 import type {CrToastManagerElement, DownloadsManagerElement, PageRemote} from 'chrome://downloads/downloads.js';
-import {BrowserProxy, DangerType, loadTimeData, State} from 'chrome://downloads/downloads.js';
+import {browserProxyFactory, DangerType, loadTimeData, State} from 'chrome://downloads/downloads.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createDownload, TestDownloadsProxy} from './test_support.js';
+import {createDownload, FakePageHandler} from './test_support.js';
 
 suite('manager tests', function() {
   let manager: DownloadsManagerElement;
-  let testBrowserProxy: TestDownloadsProxy;
+  let handler: FakePageHandler;
   let callbackRouterRemote: PageRemote;
   let toastManager: CrToastManagerElement;
 
@@ -26,9 +26,10 @@ suite('manager tests', function() {
     document.documentElement.setAttribute('style', 'height: 100%;');
     document.body.setAttribute('style', 'height: 100%;');
 
-    testBrowserProxy = new TestDownloadsProxy();
-    callbackRouterRemote = testBrowserProxy.callbackRouterRemote;
-    BrowserProxy.setInstance(testBrowserProxy);
+    handler = new FakePageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    callbackRouterRemote = remote;
+    browserProxyFactory.setInstance(instance);
 
     manager = document.createElement('downloads-manager');
     document.body.appendChild(manager);
@@ -104,7 +105,11 @@ suite('manager tests', function() {
         item.shadowRoot.querySelector<HTMLElement>('#quick-remove');
     assertTrue(!!quickRemoveButton);
     quickRemoveButton.click();
-    await testBrowserProxy.handler.whenCalled('remove');
+    await handler.whenCalled('remove');
+
+    callbackRouterRemote.removeItem(0);
+    await callbackRouterRemote.$.flushForTesting();
+
     const list = manager.shadowRoot.querySelector('cr-infinite-list')!;
     assertTrue(list.hidden);
     assertTrue(toastManager.isToastOpen);
@@ -234,8 +239,8 @@ suite('manager tests', function() {
           detail: {id: item.data?.id || ''},
         }));
         await callbackRouterRemote.$.flushForTesting();
-        const recordOpenId = await testBrowserProxy.handler.whenCalled(
-            'recordOpenBypassWarningDialog');
+        const recordOpenId =
+            await handler.whenCalled('recordOpenBypassWarningDialog');
         assertEquals('itemId', recordOpenId);
         const dialog = manager.shadowRoot.querySelector(
             'downloads-bypass-warning-confirmation-dialog');
@@ -245,8 +250,8 @@ suite('manager tests', function() {
         // Confirm the dialog to download the dangerous file.
         dialog.$.dialog.close();
         await callbackRouterRemote.$.flushForTesting();
-        const saveDangerousId = await testBrowserProxy.handler.whenCalled(
-            'saveDangerousFromDialogRequiringGesture');
+        const saveDangerousId =
+            await handler.whenCalled('saveDangerousFromDialogRequiringGesture');
         assertEquals('itemId', saveDangerousId);
         assertFalse(dialog.$.dialog.open);
       });
@@ -271,8 +276,8 @@ suite('manager tests', function() {
       detail: {id: item.data?.id || ''},
     }));
     await callbackRouterRemote.$.flushForTesting();
-    const recordOpenId = await testBrowserProxy.handler.whenCalled(
-        'recordOpenBypassWarningDialog');
+    const recordOpenId =
+        await handler.whenCalled('recordOpenBypassWarningDialog');
     assertEquals('itemId', recordOpenId);
     const dialog = manager.shadowRoot.querySelector(
         'downloads-bypass-warning-confirmation-dialog');
@@ -282,8 +287,8 @@ suite('manager tests', function() {
     // Cancel the dialog and check that it's recorded.
     dialog.$.dialog.cancel();
     await callbackRouterRemote.$.flushForTesting();
-    const recordCancelId = await testBrowserProxy.handler.whenCalled(
-        'recordCancelBypassWarningDialog');
+    const recordCancelId =
+        await handler.whenCalled('recordCancelBypassWarningDialog');
     assertEquals('itemId', recordCancelId);
     assertFalse(dialog.$.dialog.open);
   });
@@ -326,7 +331,7 @@ suite('manager tests', function() {
       async () => {
         document.body.removeChild(manager);
         loadTimeData.overrideValues({esbDownloadRowPromo: true});
-        testBrowserProxy.handler.setEligbleForEsbPromo(true);
+        handler.setEligbleForEsbPromo(true);
         manager = document.createElement('downloads-manager');
         document.body.appendChild(manager);
         const dangerousDownload = createDownload({
@@ -347,7 +352,7 @@ suite('manager tests', function() {
       async () => {
         document.body.removeChild(manager);
         loadTimeData.overrideValues({esbDownloadRowPromo: true});
-        testBrowserProxy.handler.setEligbleForEsbPromo(true);
+        handler.setEligbleForEsbPromo(true);
         manager = document.createElement('downloads-manager');
         document.body.appendChild(manager);
         const dangerousDownload = createDownload({
@@ -377,7 +382,7 @@ suite('manager tests', function() {
       async () => {
         document.body.removeChild(manager);
         loadTimeData.overrideValues({esbDownloadRowPromo: true});
-        testBrowserProxy.handler.setEligbleForEsbPromo(true);
+        handler.setEligbleForEsbPromo(true);
         manager = document.createElement('downloads-manager');
         document.body.appendChild(manager);
         const dangerousDownload = createDownload({
@@ -414,7 +419,7 @@ suite('manager tests', function() {
           dangerousDownload,
         ]);
         await callbackRouterRemote.$.flushForTesting();
-        await testBrowserProxy.handler.whenCalled('logEsbPromotionRowViewed');
+        await handler.whenCalled('logEsbPromotionRowViewed');
       });
   // </if>
 });

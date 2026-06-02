@@ -32,9 +32,9 @@ import {htmlEscape} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserProxy} from './browser_proxy.js';
 import type {MojomData} from './data.js';
-import type {PageHandlerInterface} from './downloads.mojom-webui.js';
+import {browserProxyFactory} from './downloads.mojom-webui.js';
+import type {BrowserProxy} from './downloads.mojom-webui.js';
 import {DangerType, SafeBrowsingState, State, TailoredWarningType} from './downloads.mojom-webui.js';
 import {IconLoaderImpl} from './icon_loader.js';
 import {getCss} from './item.css.js';
@@ -105,7 +105,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   // <if expr="_google_chrome">
   accessor showEsbPromotion: boolean = false;
   // </if>
-  private mojoHandler_: PageHandlerInterface|null = null;
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   protected accessor isDangerous_: boolean = false;
   protected accessor isReviewable_: boolean = false;
   protected accessor pauseOrResumeText_: string = '';
@@ -140,7 +140,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   override firstUpdated() {
     this.setAttribute('role', 'row');
-    this.mojoHandler_ = BrowserProxy.getInstance().handler;
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -1084,8 +1083,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   // <if expr="_google_chrome">
   protected onEsbPromotionClick_() {
-    assert(!!this.mojoHandler_);
-    this.mojoHandler_.openEsbSettings();
+    this.browserProxy_.handler.openEsbSettings();
   }
   // </if>
 
@@ -1123,16 +1121,14 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   protected onCancelClick_() {
     this.restoreFocusAfterCancel_ = true;
-    assert(!!this.mojoHandler_);
-    this.mojoHandler_.cancel(this.dataId_());
+    this.browserProxy_.handler.cancel(this.dataId_());
     getAnnouncerInstance().announce(
         loadTimeData.getString('screenreaderCanceled'));
     this.getMoreActionsMenu().close();
   }
 
   protected onDiscardDangerousClick_(e: Event) {
-    assert(!!this.mojoHandler_);
-    this.mojoHandler_.discardDangerous(this.dataId_());
+    this.browserProxy_.handler.discardDangerous(this.dataId_());
     this.displayRemovedToast_(/*canUndo=*/ false, e);
     this.getMoreActionsMenu().close();
   }
@@ -1142,33 +1138,33 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   protected onDeepScanClick_() {
-    this.mojoHandler_!.deepScan(this.dataId_());
+    this.browserProxy_.handler.deepScan(this.dataId_());
     this.getMoreActionsMenu().close();
   }
 
   protected onBypassDeepScanClick_() {
-    this.mojoHandler_!.bypassDeepScanRequiringGesture(this.dataId_());
+    this.browserProxy_.handler.bypassDeepScanRequiringGesture(this.dataId_());
     this.getMoreActionsMenu().close();
   }
 
   protected onReviewDangerousClick_() {
-    this.mojoHandler_!.reviewDangerousRequiringGesture(this.dataId_());
+    this.browserProxy_.handler.reviewDangerousRequiringGesture(this.dataId_());
     this.getMoreActionsMenu().close();
   }
 
   protected onOpenAnywayClick_() {
-    this.mojoHandler_!.openFileRequiringGesture(this.dataId_());
+    this.browserProxy_.handler.openFileRequiringGesture(this.dataId_());
     this.getMoreActionsMenu().close();
   }
 
   protected onDragstart_(e: Event) {
     e.preventDefault();
-    this.mojoHandler_!.drag(this.dataId_());
+    this.browserProxy_.handler.drag(this.dataId_());
   }
 
   protected onFileLinkClick_(e: Event) {
     e.preventDefault();
-    this.mojoHandler_!.openFileRequiringGesture(this.dataId_());
+    this.browserProxy_.handler.openFileRequiringGesture(this.dataId_());
   }
 
   protected onUrlClick_() {
@@ -1180,15 +1176,13 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private doPause_() {
-    assert(!!this.mojoHandler_);
-    this.mojoHandler_.pause(this.dataId_());
+    this.browserProxy_.handler.pause(this.dataId_());
     getAnnouncerInstance().announce(
         loadTimeData.getString('screenreaderPaused'));
   }
 
   private doResume_() {
-    assert(!!this.mojoHandler_);
-    this.mojoHandler_.resume(this.dataId_());
+    this.browserProxy_.handler.resume(this.dataId_());
     getAnnouncerInstance().announce(
         loadTimeData.getString('screenreaderResumed'));
   }
@@ -1258,16 +1252,15 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   protected onRemoveClick_(e: Event) {
-    assert(!!this.mojoHandler_);
     assert(this.data);
-    this.mojoHandler_.remove(this.data.id);
+    this.browserProxy_.handler.remove(this.data.id);
     const canUndo = !this.data.isDangerous && !this.data.isInsecure;
     this.displayRemovedToast_(canUndo, e);
     this.getMoreActionsMenu().close();
   }
 
   protected onRetryClick_() {
-    this.mojoHandler_!.retryDownload(this.dataId_());
+    this.browserProxy_.handler.retryDownload(this.dataId_());
     this.getMoreActionsMenu().close();
   }
 
@@ -1293,8 +1286,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     ]);
     assert(SAVED_FROM_PAGE_TYPES_ANNOUNCEMENTS.has(this.displayType_));
     assert(this.data);
-    assert(!!this.mojoHandler_);
-    this.mojoHandler_.saveSuspiciousRequiringGesture(this.data.id);
+    this.browserProxy_.handler.saveSuspiciousRequiringGesture(this.data.id);
     const announcement = loadTimeData.getString(
         SAVED_FROM_PAGE_TYPES_ANNOUNCEMENTS.get(this.displayType_) as string);
     getAnnouncerInstance().announce(announcement);
@@ -1302,7 +1294,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   protected onShowClick_() {
     assert(this.data);
-    this.mojoHandler_!.show(this.data.id);
+    this.browserProxy_.handler.show(this.data.id);
     this.getMoreActionsMenu().close();
   }
 

@@ -16,9 +16,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserProxy} from './browser_proxy.js';
 import type {MojomData} from './data.js';
-import type {PageHandlerInterface} from './downloads.mojom-webui.js';
+import {browserProxyFactory} from './downloads.mojom-webui.js';
+import type {BrowserProxy} from './downloads.mojom-webui.js';
 import {SearchService} from './search_service.js';
 import {getCss} from './toolbar.css.js';
 import {getHtml} from './toolbar.html.js';
@@ -51,14 +51,10 @@ export class DownloadsToolbarElement extends CrLitElement {
     };
   }
 
-  private mojoHandler_: PageHandlerInterface|null = null;
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   accessor hasClearableDownloads: boolean = false;
   accessor spinnerActive: boolean = false;
   accessor items: MojomData[] = [];
-
-  override firstUpdated() {
-    this.mojoHandler_ = BrowserProxy.getInstance().handler;
-  }
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
@@ -93,7 +89,7 @@ export class DownloadsToolbarElement extends CrLitElement {
 
   protected onClearAllClick_(e: Event) {
     assert(this.canClearAll());
-    this.mojoHandler_!.clearAll();
+    this.browserProxy_.handler.clearAll();
     const canUndo =
         this.items.some(data => !data.isDangerous && !data.isInsecure);
     getToastManager().show(

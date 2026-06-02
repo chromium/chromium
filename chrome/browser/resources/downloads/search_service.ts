@@ -4,13 +4,12 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {BrowserProxy} from './browser_proxy.js';
-import type {PageHandlerInterface} from './downloads.mojom-webui.js';
+import {browserProxyFactory} from './downloads.mojom-webui.js';
+import type {BrowserProxy} from './downloads.mojom-webui.js';
 
 export class SearchService {
   private searchTerms_: string[] = [];
-  private mojoHandler_: PageHandlerInterface =
-      BrowserProxy.getInstance().handler;
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   /**
    * @param searchText Input typed by the user into a search box.
@@ -24,14 +23,14 @@ export class SearchService {
   /** Instructs the browser to clear all finished downloads. */
   clearAll() {
     if (loadTimeData.getBoolean('allowDeletingHistory')) {
-      this.mojoHandler_.clearAll();
+      this.browserProxy_.handler.clearAll();
       this.search('');
     }
   }
 
   /** Loads more downloads with the current search terms. */
   loadMore() {
-    this.mojoHandler_.getDownloads(this.searchTerms_);
+    this.browserProxy_.handler.getDownloads(this.searchTerms_);
   }
 
   /**

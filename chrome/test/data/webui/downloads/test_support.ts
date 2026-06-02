@@ -2,81 +2,58 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {IconLoader, MojomData, PageHandlerInterface, PageRemote} from 'chrome://downloads/downloads.js';
-import {DangerType, PageCallbackRouter, SafeBrowsingState, State, TailoredWarningType} from 'chrome://downloads/downloads.js';
+import type {IconLoader, MojomData, PageHandlerInterface} from 'chrome://downloads/downloads.js';
+import {DangerType, SafeBrowsingState, State, TailoredWarningType} from 'chrome://downloads/downloads.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-export class TestDownloadsProxy {
-  callbackRouter: PageCallbackRouter;
-  callbackRouterRemote: PageRemote;
-  handler: FakePageHandler;
+export class FakePageHandler extends TestBrowserProxy implements
+    PageHandlerInterface {
+  private eligibleForEsbPromo_: boolean = false;
 
   constructor() {
-    this.callbackRouter = new PageCallbackRouter();
-
-    this.callbackRouterRemote =
-        this.callbackRouter.$.bindNewPipeAndPassRemote();
-
-    this.handler = new FakePageHandler(this.callbackRouterRemote);
-  }
-}
-
-class FakePageHandler implements PageHandlerInterface {
-  private eligibleForEsbPromo_: boolean = false;
-  private callbackRouterRemote_: PageRemote;
-  private callTracker_: TestBrowserProxy = new TestBrowserProxy([
-    'discardDangerous',
-    'isEligibleForEsbPromo',
-    'logEsbPromotionRowViewed',
-    'openEsbSettings',
-    'recordCancelBypassWarningDialog',
-    'recordOpenBypassWarningDialog',
-    'remove',
-    'saveDangerousFromDialogRequiringGesture',
-    'saveSuspiciousRequiringGesture',
-  ]);
-
-  constructor(callbackRouterRemote: PageRemote) {
-    this.callbackRouterRemote_ = callbackRouterRemote;
-  }
-
-  whenCalled(methodName: string): Promise<void> {
-    return this.callTracker_.whenCalled(methodName);
+    super([
+      'discardDangerous',
+      'isEligibleForEsbPromo',
+      'logEsbPromotionRowViewed',
+      'openEsbSettings',
+      'recordCancelBypassWarningDialog',
+      'recordOpenBypassWarningDialog',
+      'remove',
+      'saveDangerousFromDialogRequiringGesture',
+      'saveSuspiciousRequiringGesture',
+    ]);
   }
 
   recordCancelBypassWarningDialog(id: string) {
-    this.callTracker_.methodCalled('recordCancelBypassWarningDialog', id);
+    this.methodCalled('recordCancelBypassWarningDialog', id);
   }
 
   recordOpenBypassWarningDialog(id: string) {
-    this.callTracker_.methodCalled('recordOpenBypassWarningDialog', id);
+    this.methodCalled('recordOpenBypassWarningDialog', id);
   }
 
-  async remove(id: string) {
-    this.callbackRouterRemote_.removeItem(0);
-    await this.callbackRouterRemote_.$.flushForTesting();
-    this.callTracker_.methodCalled('remove', id);
+  remove(id: string) {
+    this.methodCalled('remove', id);
   }
 
   discardDangerous(id: string) {
-    this.callTracker_.methodCalled('discardDangerous', id);
+    this.methodCalled('discardDangerous', id);
   }
 
   saveDangerousFromDialogRequiringGesture(id: string) {
-    this.callTracker_.methodCalled(
-        'saveDangerousFromDialogRequiringGesture', id);
+    this.methodCalled('saveDangerousFromDialogRequiringGesture', id);
   }
 
   saveSuspiciousRequiringGesture(id: string) {
-    this.callTracker_.methodCalled('saveSuspiciousRequiringGesture', id);
+    this.methodCalled('saveSuspiciousRequiringGesture', id);
   }
 
   openEsbSettings() {
-    this.callTracker_.methodCalled('openEsbSettings');
+    this.methodCalled('openEsbSettings');
   }
 
   logEsbPromotionRowViewed() {
-    this.callTracker_.methodCalled('logEsbPromotionRowViewed');
+    this.methodCalled('logEsbPromotionRowViewed');
   }
 
   getDownloads(_searchTerms: string[]) {}
@@ -95,7 +72,7 @@ class FakePageHandler implements PageHandlerInterface {
   deepScan(_id: string) {}
   bypassDeepScanRequiringGesture(_id: string) {}
   isEligibleForEsbPromo(): Promise<{result: boolean}> {
-    this.callTracker_.methodCalled('isEligibleForEsbPromo');
+    this.methodCalled('isEligibleForEsbPromo');
     return Promise.resolve({result: this.eligibleForEsbPromo_});
   }
   setEligbleForEsbPromo(eligible: boolean) {
