@@ -39,7 +39,6 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scanner/chrome_scanner_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
@@ -425,10 +424,11 @@ base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
     return base::FilePath();
   }
 
-  Profile* user_profile =
-      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
-  if (user_profile) {
-    return file_manager::util::GetDownloadsFolderForProfile(user_profile);
+  content::BrowserContext* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user);
+  if (browser_context) {
+    return file_manager::util::GetDownloadsFolderForProfile(
+        Profile::FromBrowserContext(browser_context));
   }
 
   return base::FilePath();

@@ -31,7 +31,6 @@ static_library("shell_delegate") {
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/multidevice_setup",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/scanner",
     "//chrome/browser/feedback",
     "//chrome/browser/nearby_sharing",
