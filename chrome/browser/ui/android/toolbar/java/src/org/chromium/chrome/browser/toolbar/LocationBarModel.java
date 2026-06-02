@@ -27,6 +27,7 @@ import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
@@ -437,6 +438,15 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             }
 
             GURL gurl = getCurrentGurl();
+            if (ContextualTasksUtils.isContextualTasksUrl(gurl)) {
+                String urlForDisplay = getUrlForDisplay();
+                String formattedUrl = getFormattedFullUrl();
+                if (isUrlRewritten(gurl, urlForDisplay, formattedUrl)) {
+                    return buildUrlBarData(gurl, false, urlForDisplay);
+                }
+                return UrlBarData.EMPTY;
+            }
+
             boolean shouldShowUrl = UrlBarData.shouldShowUrl(gurl, isOffTheRecord());
 
             if (!shouldShowUrl) {
@@ -444,7 +454,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 // the underlying URL would normally be suppressed.
                 String urlForDisplay = getUrlForDisplay();
                 String formattedUrl = getFormattedFullUrl();
-                if (isUrlRewritten(urlForDisplay, formattedUrl)) {
+                if (isUrlRewritten(gurl, urlForDisplay, formattedUrl)) {
                     // Use urlForDisplay for both display and editing to avoid exposing the
                     // underlying URL (e.g. chrome://contextual-tasks).
                     return buildUrlBarData(
@@ -501,8 +511,25 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
     }
 
-    private boolean isUrlRewritten(String displayUrl, String formattedUrl) {
-        return !TextUtils.isEmpty(displayUrl) && !displayUrl.equals(formattedUrl);
+    /**
+     * Determines whether the URL has been rewritten (e.g. AI Mode origin-swapping) by comparing the
+     * base page URL, display URL, and formatted URL.
+     *
+     * @param basePageUrl The underlying, un-rewritten GURL of the page.
+     * @param displayUrl The URL string intended to be displayed in the omnibox.
+     * @param formattedUrl The formatted URL string used for editing or full representation.
+     * @return True if the display URL represents a rewritten URL, false otherwise.
+     */
+    private boolean isUrlRewritten(GURL basePageUrl, String displayUrl, String formattedUrl) {
+        boolean rewritten = false;
+        if (ContextualTasksUtils.isContextualTasksUrl(basePageUrl)) {
+            rewritten =
+                    !TextUtils.isEmpty(displayUrl)
+                            && !displayUrl.contains(ContextualTasksUtils.CONTEXTUAL_TASKS_HOST);
+        } else {
+            rewritten = !TextUtils.isEmpty(displayUrl) && !displayUrl.equals(formattedUrl);
+        }
+        return rewritten;
     }
 
     private UrlBarData buildUrlBarData(GURL url, boolean isOfflinePage) {

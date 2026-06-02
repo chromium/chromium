@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
@@ -88,6 +89,7 @@ public class SearchEngineUtilsUnitTest {
     @Mock SearchEngineUtils.SearchBoxHintTextObserver mHintTextObserver;
     @Mock SearchEngineUtils.SearchEngineIconObserver mEngineIconObserver;
     @Mock FuseboxSessionState mFuseboxSessionState;
+    @Mock AutocompleteInput mAutocompleteInput;
     @Mock ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
 
     private Context mContext;
@@ -116,6 +118,10 @@ public class SearchEngineUtilsUnitTest {
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
         doReturn(false).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
         LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
+
+        doReturn(mAutocompleteInput).when(mFuseboxSessionState).getAutocompleteInput();
+        doReturn(GURL.emptyGURL()).when(mAutocompleteInput).getPageUrl();
+        doReturn("").when(mAutocompleteInput).getPageTitle();
 
         lenient()
                 .doReturn(true)
@@ -565,6 +571,22 @@ public class SearchEngineUtilsUnitTest {
         assertFalse(searchEngineUtils.needToCheckForSearchEnginePromo());
 
         verify(mLocaleManagerDelegate, times(1)).needToCheckForSearchEnginePromo();
+    }
+
+    @Test
+    public void testGetOmniboxHintText_ContextualTasks() {
+        SearchEngineUtils searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+        GURL aiUrl = new GURL("chrome://contextual-tasks");
+        String aiTitle = "My AI Page";
+
+        doReturn(mAutocompleteInput).when(mFuseboxSessionState).getAutocompleteInput();
+        doReturn(aiUrl).when(mAutocompleteInput).getPageUrl();
+        doReturn(aiTitle).when(mAutocompleteInput).getPageTitle();
+
+        assertEquals(
+                aiTitle,
+                searchEngineUtils.getOmniboxHintText(
+                        AutocompleteRequestType.SEARCH, mFuseboxSessionState));
     }
 
     @Test

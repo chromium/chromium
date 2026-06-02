@@ -25,6 +25,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
@@ -249,6 +250,17 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
      */
     public String getOmniboxHintText(
             @AutocompleteRequestType int type, @Nullable FuseboxSessionState fuseboxSessionState) {
+        if (fuseboxSessionState != null) {
+            var input = fuseboxSessionState.getAutocompleteInput();
+            if (input != null) {
+                GURL url = input.getPageUrl();
+                String title = input.getPageTitle();
+                if (ContextualTasksUtils.isContextualTasksUrl(url) && !TextUtils.isEmpty(title)) {
+                    return title;
+                }
+            }
+        }
+
         if (TextUtils.isEmpty(mSearchEngineName)) {
             return OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint);
         }

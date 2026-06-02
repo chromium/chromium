@@ -241,6 +241,7 @@ android_library("core_java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/contextual_tasks:utils_java",
     "//chrome/browser/data_sharing:versioning_java",
     "//chrome/browser/device:java",
     "//chrome/browser/feature_engagement:java",

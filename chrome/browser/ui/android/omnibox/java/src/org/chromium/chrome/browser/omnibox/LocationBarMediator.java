@@ -1264,20 +1264,23 @@ class LocationBarMediator
         if (currentInput == null) return UrlBarData.EMPTY;
 
         String userText = currentInput.getUserText();
-        if (!TextUtils.isEmpty(userText)
-                && TextUtils.equals(userText, currentInput.getInitialUserText())) {
+        if (TextUtils.equals(userText, currentInput.getInitialUserText())) {
             if (ContextualTasksUtils.isContextualTasksUrl(
                     mLocationBarDataProvider.getCurrentGurl())) {
                 WebContents webContents = mLocationBarDataProvider.getWebContents();
                 if (webContents != null) {
                     GURL contextualTaskDisplayUrl =
                             ContextualTasksUtils.getContextualTasksDisplayUrl(webContents);
-                    return UrlBarData.forUrlAndText(
-                            mLocationBarDataProvider.getCurrentGurl(),
-                            contextualTaskDisplayUrl.getSpec());
+                    if (!GURL.isEmptyOrInvalid(contextualTaskDisplayUrl)) {
+                        return UrlBarData.forUrlAndText(
+                                mLocationBarDataProvider.getCurrentGurl(),
+                                contextualTaskDisplayUrl.getSpec());
+                    }
                 }
             }
-            return UrlBarData.forUrlAndText(currentInput.getPageUrl(), userText);
+            if (!TextUtils.isEmpty(userText)) {
+                return UrlBarData.forUrlAndText(currentInput.getPageUrl(), userText);
+            }
         }
         return UrlBarData.forNonUrlText(userText);
     }
@@ -2342,7 +2345,6 @@ class LocationBarMediator
 
     // LocationBarData.Observer implementation.
     // Using the default empty onSecurityStateChanged.
-    // Using the default empty onTitleChanged.
 
     @Override
     public void onIncognitoStateChanged() {
@@ -2385,6 +2387,11 @@ class LocationBarMediator
         if (mPageZoomIndicatorCoordinator != null) {
             mPageZoomIndicatorCoordinator.setTooltip();
         }
+    }
+
+    @Override
+    public void onTitleChanged() {
+        onSearchBoxHintTextChanged();
     }
 
     @Override
