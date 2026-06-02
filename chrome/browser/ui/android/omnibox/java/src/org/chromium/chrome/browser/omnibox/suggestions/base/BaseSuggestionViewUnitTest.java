@@ -236,4 +236,21 @@ public class BaseSuggestionViewUnitTest {
         view.setHovered(false);
         assertFalse(view.isHovered());
     }
+
+    @Test
+    public void setActionButtonsCount_decreaseToZeroWhileButtonSelected() {
+        mView.setActionButtonsCount(1);
+        mView.setSelected(true);
+
+        // Select the action button.
+        assertTrue(sendKey(KeyEvent.KEYCODE_TAB));
+
+        // Verify that the action button is selected.
+        assertTrue(mView.getActionButtons().get(0).isSelected());
+
+        // Now set count to 0. This should not crash.
+        mView.setActionButtonsCount(0);
+
+        assertEquals(0, mView.getActionButtons().size());
+    }
 }
