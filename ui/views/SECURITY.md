@@ -20,9 +20,15 @@ implicit nested message loops:
         callbacks (e.g., window activation, focus changes, destruction)
         firing re-entrantly and calling back into Views code.
     *   Messages already on the queue will not be dispatched during these
-        calls. Only sending a message directly to the thread will dispatch immediately.
+        calls. Only sending a message directly to the thread will dispatch
+        immediately.
     *   Any risk to these calls must originate from a direct `SendMessage` call
-        to the HWND during a cross-thread call.
+        to the HWND during a cross-thread call. When citing a direct
+        `SendMessage` call as a risk, a clear code reference must be provided.
+        `SendMessage` calls do not suddenly appear without a caller. In
+        addition, Chrome cannot mitigate `SendMessage` calls from
+        third-parties. These external callers are already running code inside
+        the environment and can perform more damaging actions.
 2.  **COM Synchronous Calls (Windows):** When a thread part of a single-threaded
     apartment (STA) blocks on a synchronous cross-apartment COM call, COM spins
     an internal message pump. This pump only processes messages from its

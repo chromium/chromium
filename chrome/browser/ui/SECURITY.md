@@ -26,4 +26,9 @@ the waiting UI thread.
 *   Messages already on the queue will not be dispatched during these calls.
     Only sending a message directly to the thread will dispatch immediately.
 *   Any risk to these calls must originate from a direct `SendMessage` call to
-    the HWND during a cross-thread call.
+    the HWND during a cross-thread call. When citing a direct `SendMessage`
+    call as a risk, a clear code reference must be provided. `SendMessage`
+    calls do not suddenly appear without a caller. In addition, Chrome cannot
+    mitigate `SendMessage` calls from third-parties. These external callers are
+    already running code inside the environment and can perform more damaging
+    actions.
