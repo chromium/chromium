@@ -90,7 +90,9 @@ class FirstRunSignInCelebrationPixelTest
   FirstRunSignInCelebrationPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam()) {
     scoped_feature_list_.InitWithFeatureStates(
-        {{switches::kFirstRunDesktopRevamp, true},
+        {{switches::kFirstRunDesktopRefresh, true},
+         {switches::kFirstRunDesktopChoiceScreenRefresh, true},
+         {switches::kFirstRunDesktopRevamp, true},
          {switches::kDisableFirstRunAnimationsForTesting, true}});
   }
 
