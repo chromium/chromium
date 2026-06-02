@@ -30,7 +30,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "send_search_feedback_handler.cc" : [
+  "send_search_feedback_handler\\.cc" : [
     "+chrome/browser/ui/browser.h",
   ],
 }
