@@ -830,11 +830,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.dynamic_safe_area_insets_enabled;
   }
 
-  static bool
-  require_transient_activation_and_user_confirmation_for_subapps_api(
-      const blink::web_pref::WebPreferences& r) {
-    return r.subapps_apis_require_user_gesture_and_authorization;
-  }
 
   static bool payment_request_enabled(
       const blink::web_pref::WebPreferences& r) {

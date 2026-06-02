@@ -239,8 +239,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetAccessibilityIncludeSvgGElement(bool) override;
   void SetWebXRImmersiveArAllowed(bool webxr_immersive_ar_allowed) override;
   void SetModalContextMenu(bool) override;
-  void SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
-      bool) override;
   void SetRootScrollbarThemeColor(std::optional<SkColor>) override;
   void SetBatterySaverEnabled(bool) override;
   void SetPreloadingDisabled(bool) override;

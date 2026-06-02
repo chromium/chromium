@@ -142,20 +142,6 @@ ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
     return ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 
-  auto* frame = GetSupplementable()->DomWindow()->GetFrame();
-  bool needsUserActivation =
-      frame->GetSettings()
-          ->GetRequireTransientActivationAndAuthorizationForSubAppsAPI();
-
-  // We don't need user activation if the right policy is set.
-  if (needsUserActivation &&
-      !LocalFrame::ConsumeTransientUserActivation(frame)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Unable to add sub-app. This API can only be called shortly after a "
-        "user activation.");
-    return ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>>();
-  }
 
   // Check that the arguments are root-relative paths.
   for (const auto& [manifest_id_path, add_params] : sub_apps_to_add) {

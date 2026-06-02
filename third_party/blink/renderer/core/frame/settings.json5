@@ -1299,12 +1299,6 @@
       invalidate: ["Style"],
       type: "bool",
     },
-    // SubApps APIs transient activation requirement can be bypassed via
-    // `SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins` policy.
-    {
-      name: "requireTransientActivationAndAuthorizationForSubAppsAPI",
-      initial: true,
-    },
     // Enable the features to change the safe-area-inset* CSS environment
     // variables based on the browser controls's shown ration.
     {

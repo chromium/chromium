@@ -159,19 +159,20 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
   webapps::AppId parent_app_id_;
 };
 
-IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, SucceedsWithGestureNoPolicy) {
+IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, SucceedsWithoutPolicy) {
   auto* iwa_frame = InstallAndOpenParentIwaApp();
   auto dialog_override = AcceptConfirmationDialog();
 
   EXPECT_THAT(CheckPolicyValue(iwa_frame), IsFalse());
 
-  auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}));
+  auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}),
+                    content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
   EXPECT_TRUE(ret.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(2));
 }
 
-IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, FailsNoGestureNoPolicy) {
+IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, FailsWhenRejectedWithoutPolicy) {
   auto* iwa_frame = InstallAndOpenParentIwaApp();
   auto dialog_override = DeclineConfirmationDialog();
   EXPECT_THAT(CheckPolicyValue(iwa_frame), IsFalse());
@@ -179,48 +180,12 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, FailsNoGestureNoPolicy) {
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}),
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
-  EXPECT_THAT(ret, content::EvalJsResult::ErrorIs(
-                       HasSubstr("This API can only be called shortly "
-                                 "after a user activation.")));
+  EXPECT_FALSE(ret.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, SucceedsNoGestureWithPolicy) {
-  auto parent = InstallIwaParentApp();
-  SetAllowlistedOrigins({parent.origin().GetURL().spec()});
-  auto dialog_override = DeclineConfirmationDialog();
-  auto* iwa_frame = OpenApp(parent.app_id());
-
-  EXPECT_THAT(CheckPolicyValue(iwa_frame), IsTrue());
-
-  auto ret1 = EvalJs(iwa_frame, AddSubAppsScript({kSub1}),
-                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_TRUE(ret1.is_ok());
-  EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(1));
-
-  EXPECT_THAT(CheckPolicyValue(iwa_frame), IsTrue());
-
-  auto ret2 = EvalJs(iwa_frame, AddSubAppsScript({kSub2}),
-                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_TRUE(ret2.is_ok());
-  EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(2));
-}
-
-IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, SucceedsWithPolicyAndGesture) {
-  auto parent = InstallIwaParentApp();
-  SetAllowlistedOrigins({parent.origin().GetURL().spec()});
-  auto dialog_override = DeclineConfirmationDialog();
-  auto* iwa_frame = OpenApp(parent.app_id());
-
-  EXPECT_THAT(CheckPolicyValue(iwa_frame), IsTrue());
-
-  auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}));
-  EXPECT_TRUE(ret.is_ok());
-  EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(2));
-}
-
 IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest,
-                       SucceedsWithMultipleOriginsInPolicyAndNoGesture) {
+                       SucceedsWithMultipleOriginsInPolicy) {
   auto parent = InstallIwaParentApp();
   SetAllowlistedOrigins({"https://www.google.com",
                          parent.origin().GetURL().spec(),
@@ -237,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest,
-                       FailsWithDifferentOriginAndNoGesture) {
+                       FailsWithDifferentOriginInPolicyWhenRejected) {
   auto parent = InstallIwaParentApp();
   SetAllowlistedOrigins({"https://www.google.com/"});
   auto dialog_override = DeclineConfirmationDialog();
@@ -248,9 +213,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest,
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}),
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
-  EXPECT_THAT(ret, content::EvalJsResult::ErrorIs(
-                       HasSubstr("This API can only be called shortly "
-                                 "after a user activation.")));
+  EXPECT_FALSE(ret.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), IsEmpty());
 }
 

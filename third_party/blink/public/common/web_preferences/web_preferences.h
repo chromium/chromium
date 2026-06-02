@@ -358,10 +358,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // `FileOrDirectoryPickerWithoutGestureAllowedForOrigins` policy.
   bool require_transient_activation_for_show_file_or_directory_picker = true;
 
-  // `navigator.subApps.{add|remove|list}()`'s user gesture and authorization
-  // can be bypassed via
-  // `SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins` policy.
-  bool subapps_apis_require_user_gesture_and_authorization = true;
 
   // The forced colors state for the web content. The forced colors state
   // is used to evaluate the forced-colors media query, as well as determining

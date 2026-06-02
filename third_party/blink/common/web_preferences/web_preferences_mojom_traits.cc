@@ -240,8 +240,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->renderer_wide_named_frame_lookup =
       data.renderer_wide_named_frame_lookup();
   out->modal_context_menu = data.modal_context_menu();
-  out->subapps_apis_require_user_gesture_and_authorization =
-      data.require_transient_activation_and_user_confirmation_for_subapps_api();
   out->payment_request_enabled = data.payment_request_enabled();
   out->ai_ot_apis_enabled = data.ai_ot_apis_enabled();
   out->ignore_duplicate_nav_enabled = data.ignore_duplicate_nav_enabled();

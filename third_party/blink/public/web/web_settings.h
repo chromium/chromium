@@ -287,8 +287,6 @@ class WebSettings {
   virtual void SetAccessibilityIncludeSvgGElement(bool) = 0;
   virtual void SetWebXRImmersiveArAllowed(bool) = 0;
   virtual void SetModalContextMenu(bool) = 0;
-  virtual void SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
-      bool) = 0;
   virtual void SetRootScrollbarThemeColor(std::optional<SkColor>) = 0;
   virtual void SetBatterySaverEnabled(bool) = 0;
   virtual void SetPreloadingDisabled(bool) = 0;
