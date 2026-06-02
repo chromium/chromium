@@ -60,9 +60,9 @@ using PositionWithAffinity = PositionWithAffinityTemplate<EditingStrategy>;
 using PositionInFlatTreeWithAffinity =
     PositionWithAffinityTemplate<EditingInFlatTreeStrategy>;
 
-PositionWithAffinity ToPositionInDOMTreeWithAffinity(
+PositionWithAffinity ToPositionInDomTreeWithAffinity(
     const PositionWithAffinity&);
-PositionWithAffinity ToPositionInDOMTreeWithAffinity(
+PositionWithAffinity ToPositionInDomTreeWithAffinity(
     const PositionInFlatTreeWithAffinity&);
 PositionInFlatTreeWithAffinity ToPositionInFlatTreeWithAffinity(
     const PositionWithAffinity&);
@@ -70,18 +70,18 @@ PositionInFlatTreeWithAffinity ToPositionInFlatTreeWithAffinity(
     const PositionInFlatTreeWithAffinity&);
 
 template <typename Strategy>
-PositionWithAffinityTemplate<Strategy> FromPositionInDOMTree(
+PositionWithAffinityTemplate<Strategy> FromPositionInDomTree(
     const PositionWithAffinity&);
 
 template <>
-inline PositionWithAffinity FromPositionInDOMTree<EditingStrategy>(
+inline PositionWithAffinity FromPositionInDomTree<EditingStrategy>(
     const PositionWithAffinity& position_with_affinity) {
   return position_with_affinity;
 }
 
 template <>
 inline PositionInFlatTreeWithAffinity
-FromPositionInDOMTree<EditingInFlatTreeStrategy>(
+FromPositionInDomTree<EditingInFlatTreeStrategy>(
     const PositionWithAffinity& position_with_affinity) {
   return PositionInFlatTreeWithAffinity(
       ToPositionInFlatTree(position_with_affinity.GetPosition()),

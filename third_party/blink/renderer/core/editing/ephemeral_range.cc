@@ -73,8 +73,8 @@ EphemeralRangeTemplate<Strategy>::EphemeralRangeTemplate(const Range* range) {
   if (!range)
     return;
   DCHECK(range->IsConnected());
-  start_position_ = FromPositionInDOMTree<Strategy>(range->StartPosition());
-  end_position_ = FromPositionInDOMTree<Strategy>(range->EndPosition());
+  start_position_ = FromPositionInDomTree<Strategy>(range->StartPosition());
+  end_position_ = FromPositionInDomTree<Strategy>(range->EndPosition());
 #if DCHECK_IS_ON()
   dom_tree_version_ = range->OwnerDocument().DomTreeVersion();
 #endif

@@ -16,18 +16,18 @@ RangeInFlatTree::RangeInFlatTree()
 RangeInFlatTree::RangeInFlatTree(const PositionInFlatTree& start,
                                  const PositionInFlatTree& end)
     : start_(MakeGarbageCollected<RelocatablePosition>(
-          ToPositionInDOMTree(start))),
+          ToPositionInDomTree(start))),
       end_(
-          MakeGarbageCollected<RelocatablePosition>(ToPositionInDOMTree(end))) {
+          MakeGarbageCollected<RelocatablePosition>(ToPositionInDomTree(end))) {
   DCHECK_LE(start, end);
 }
 
 void RangeInFlatTree::SetStart(const PositionInFlatTree& start) {
-  start_->SetPosition(ToPositionInDOMTree(start));
+  start_->SetPosition(ToPositionInDomTree(start));
 }
 
 void RangeInFlatTree::SetEnd(const PositionInFlatTree& end) {
-  end_->SetPosition(ToPositionInDOMTree(end));
+  end_->SetPosition(ToPositionInDomTree(end));
 }
 
 PositionInFlatTree RangeInFlatTree::StartPosition() const {

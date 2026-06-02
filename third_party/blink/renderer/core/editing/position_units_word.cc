@@ -340,7 +340,7 @@ PositionInFlatTree EndOfWordPosition(const PositionInFlatTree& start,
 }
 
 Position EndOfWordPosition(const Position& position, WordSide side) {
-  return ToPositionInDOMTree(
+  return ToPositionInDomTree(
       EndOfWordPosition(ToPositionInFlatTree(position), side));
 }
 
@@ -368,7 +368,7 @@ PositionWithAffinity NextWordPosition(
     PlatformWordBehavior platform_word_behavior) {
   const PositionInFlatTreeWithAffinity& next =
       NextWordPosition(ToPositionInFlatTree(start), platform_word_behavior);
-  return ToPositionInDOMTreeWithAffinity(next);
+  return ToPositionInDomTreeWithAffinity(next);
 }
 
 PositionInFlatTreeWithAffinity PreviousWordPosition(
@@ -384,7 +384,7 @@ PositionInFlatTreeWithAffinity PreviousWordPosition(
 PositionWithAffinity PreviousWordPosition(const Position& start) {
   const PositionInFlatTreeWithAffinity& prev =
       PreviousWordPosition(ToPositionInFlatTree(start));
-  return ToPositionInDOMTreeWithAffinity(prev);
+  return ToPositionInDomTreeWithAffinity(prev);
 }
 
 PositionInFlatTree StartOfWordPosition(const PositionInFlatTree& position,
@@ -396,7 +396,7 @@ PositionInFlatTree StartOfWordPosition(const PositionInFlatTree& position,
 }
 
 Position StartOfWordPosition(const Position& position, WordSide side) {
-  return ToPositionInDOMTree(
+  return ToPositionInDomTree(
       StartOfWordPosition(ToPositionInFlatTree(position), side));
 }
 
@@ -425,7 +425,7 @@ PositionInFlatTree MiddleOfWordPosition(const PositionInFlatTree& word_start,
 
 Position MiddleOfWordPosition(const Position& word_start,
                               const Position& word_end) {
-  return ToPositionInDOMTree(MiddleOfWordPosition(
+  return ToPositionInDomTree(MiddleOfWordPosition(
       ToPositionInFlatTree(word_start), ToPositionInFlatTree(word_end)));
 }
 

@@ -66,8 +66,8 @@ bool IsValidRange(const RangeInFlatTree* range) {
     // flat tree may become invalid due to slotted elements. DocumentMarkers
     // should maybe work on FlatTree types but for now just invalidate this
     // case.
-    Position start = ToPositionInDOMTree(range->StartPosition());
-    Position end = ToPositionInDOMTree(range->EndPosition());
+    Position start = ToPositionInDomTree(range->StartPosition());
+    Position end = ToPositionInDomTree(range->EndPosition());
     if (start > end) {
       return false;
     }
@@ -347,8 +347,8 @@ void AnnotationAgentImpl::Reset(base::PassKey<AnnotationAgentContainerImpl>) {
 
   if (IsAttached()) {
     EphemeralRange dom_range =
-        EphemeralRange(ToPositionInDOMTree(attached_range_->StartPosition()),
-                       ToPositionInDOMTree(attached_range_->EndPosition()));
+        EphemeralRange(ToPositionInDomTree(attached_range_->StartPosition()),
+                       ToPositionInDomTree(attached_range_->EndPosition()));
     Document* document = attached_range_->StartPosition().GetDocument();
     DCHECK(document);
 
@@ -578,8 +578,8 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
     TRACE_EVENT_INSTANT("blink", "IsAttached");
 
     EphemeralRange dom_range =
-        EphemeralRange(ToPositionInDOMTree(attached_range_->StartPosition()),
-                       ToPositionInDOMTree(attached_range_->EndPosition()));
+        EphemeralRange(ToPositionInDomTree(attached_range_->StartPosition()),
+                       ToPositionInDomTree(attached_range_->EndPosition()));
     Document* document = attached_range_->StartPosition().GetDocument();
     DCHECK(document);
 

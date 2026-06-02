@@ -517,9 +517,9 @@ TEST_F(FrameSelectionTest, ModifyExtendWithFlatTree) {
   // Select "twoone" for selection in Flat tree
   Selection().SetSelection(
       SelectionInDOMTree::Builder()
-          .Collapse(ToPositionInDOMTree(PositionInFlatTree(host, 0)))
+          .Collapse(ToPositionInDomTree(PositionInFlatTree(host, 0)))
           .Extend(
-              ToPositionInDOMTree(PositionInFlatTree(GetDocument().body(), 2)))
+              ToPositionInDomTree(PositionInFlatTree(GetDocument().body(), 2)))
           .Build(),
       SetSelectionOptions());
   Selection().Modify(SelectionModifyAlteration::kExtend,

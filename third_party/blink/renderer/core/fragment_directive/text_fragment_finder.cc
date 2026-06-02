@@ -256,10 +256,10 @@ void TextFragmentFinder::OnTextStartMatchComplete(
   }
   if (!range_end_search_start_) {
     range_end_search_start_ = MakeGarbageCollected<RelocatablePosition>(
-        ToPositionInDOMTree(potential_match.EndPosition()));
+        ToPositionInDomTree(potential_match.EndPosition()));
   } else {
     range_end_search_start_->SetPosition(
-        ToPositionInDOMTree(potential_match.EndPosition()));
+        ToPositionInDomTree(potential_match.EndPosition()));
   }
   SetPotentialMatch(potential_match);
   GoToStep(kMatchTextEnd);
@@ -338,7 +338,7 @@ void TextFragmentFinder::OnSuffixMatchComplete(
   // that we found the correct range start, but not the correct range end.
   // Continue searching for it, without restarting the range start search.
   range_end_search_start_->SetPosition(
-      ToPositionInDOMTree(potential_match_->EndPosition()));
+      ToPositionInDomTree(potential_match_->EndPosition()));
   GoToStep(kMatchTextEnd);
 }
 

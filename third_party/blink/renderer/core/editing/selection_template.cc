@@ -404,8 +404,8 @@ SelectionInDOMTree ConvertToSelectionInDOMTree(
     const SelectionInFlatTree& selection_in_flat_tree) {
   return SelectionInDOMTree::Builder()
       .SetAffinity(selection_in_flat_tree.Affinity())
-      .SetBaseAndExtent(ToPositionInDOMTree(selection_in_flat_tree.Anchor()),
-                        ToPositionInDOMTree(selection_in_flat_tree.Focus()))
+      .SetBaseAndExtent(ToPositionInDomTree(selection_in_flat_tree.Anchor()),
+                        ToPositionInDomTree(selection_in_flat_tree.Focus()))
       .Build();
 }
 

@@ -638,11 +638,11 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
 
   Position node_start =
       (&text_node == range.StartPosition().ComputeContainerNode())
-          ? ToPositionInDOMTree(range.StartPosition().ToOffsetInAnchor())
+          ? ToPositionInDomTree(range.StartPosition().ToOffsetInAnchor())
           : Position::FirstPositionInNode(text_node);
   Position node_end =
       (&text_node == range.EndPosition().ComputeContainerNode())
-          ? ToPositionInDOMTree(range.EndPosition().ToOffsetInAnchor())
+          ? ToPositionInDomTree(range.EndPosition().ToOffsetInAnchor())
           : Position::LastPositionInNode(text_node);
   unsigned last_unit_end = 0;
   bool first_unit = true;

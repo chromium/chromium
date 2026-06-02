@@ -62,7 +62,7 @@ VisiblePosition StartOfParagraphInFlatTree(
       ToPositionInFlatTree(pos.DeepEquivalent());
   const PositionInFlatTree start =
       StartOfParagraph(flat_pos, boundary_crossing_rule);
-  return CreateVisiblePosition(ToPositionInDOMTree(start));
+  return CreateVisiblePosition(ToPositionInDomTree(start));
 }
 
 VisiblePositionInFlatTree StartOfParagraph(
@@ -98,7 +98,7 @@ VisiblePosition EndOfParagraphInFlatTree(
       ToPositionInFlatTree(pos.DeepEquivalent());
   const PositionInFlatTree end =
       EndOfParagraph(flat_pos, boundary_crossing_rule);
-  return CreateVisiblePosition(ToPositionInDOMTree(end));
+  return CreateVisiblePosition(ToPositionInDomTree(end));
 }
 
 VisiblePositionInFlatTree EndOfParagraph(

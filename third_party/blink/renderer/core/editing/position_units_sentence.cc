@@ -225,7 +225,7 @@ PositionWithAffinity EndOfSentence(
     SentenceTrailingSpaceBehavior space_behavior) {
   const PositionInFlatTreeWithAffinity result =
       EndOfSentence(ToPositionInFlatTree(start), space_behavior);
-  return ToPositionInDOMTreeWithAffinity(result);
+  return ToPositionInDomTreeWithAffinity(result);
 }
 
 EphemeralRange ExpandEndToSentenceBoundary(const EphemeralRange& range) {
@@ -294,7 +294,7 @@ PositionInFlatTree StartOfSentencePosition(const PositionInFlatTree& position) {
 }
 
 Position StartOfSentencePosition(const Position& position) {
-  return ToPositionInDOMTree(
+  return ToPositionInDomTree(
       StartOfSentencePosition(ToPositionInFlatTree(position)));
 }
 

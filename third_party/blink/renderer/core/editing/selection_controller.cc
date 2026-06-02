@@ -130,7 +130,7 @@ bool CanMouseDownStartSelect(Node* node) {
 
 PositionInFlatTreeWithAffinity PositionWithAffinityOfHitTestResult(
     const HitTestResult& hit_test_result) {
-  return FromPositionInDOMTree<EditingInFlatTreeStrategy>(
+  return FromPositionInDomTree<EditingInFlatTreeStrategy>(
       hit_test_result.GetPosition());
 }
 
@@ -625,7 +625,7 @@ WebInputEventResult SelectionController::UpdateSelectionForMouseDrag(
           : PositionWithAffinity();
   const PositionInFlatTreeWithAffinity target_position =
       CreateVisiblePosition(
-          FromPositionInDOMTree<EditingInFlatTreeStrategy>(raw_target_position))
+          FromPositionInDomTree<EditingInFlatTreeStrategy>(raw_target_position))
           .ToPositionWithAffinity();
 
   // Don't modify the selection if we're not on a node.

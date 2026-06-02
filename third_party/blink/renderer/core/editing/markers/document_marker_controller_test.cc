@@ -263,8 +263,8 @@ TEST_F(DocumentMarkerControllerTest, SetMarkerActiveTest) {
   auto* b_element = To<Element>(GetDocument().body()->firstChild());
   EphemeralRange ephemeral_range = EphemeralRange::RangeOfContents(*b_element);
   Position start_b_element =
-      ToPositionInDOMTree(ephemeral_range.StartPosition());
-  Position end_b_element = ToPositionInDOMTree(ephemeral_range.EndPosition());
+      ToPositionInDomTree(ephemeral_range.StartPosition());
+  Position end_b_element = ToPositionInDomTree(ephemeral_range.EndPosition());
   const EphemeralRange range(start_b_element, end_b_element);
   // Try to make active a marker that doesn't exist.
   EXPECT_FALSE(MarkerController().SetTextMatchMarkersActive(range, true));

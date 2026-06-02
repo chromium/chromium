@@ -75,8 +75,8 @@ void SelectorDirective::ResolvePromise() const {
 
   Range* dom_range = MakeGarbageCollected<Range>(
       *selected_range_->StartPosition().GetDocument(),
-      ToPositionInDOMTree(selected_range_->StartPosition()),
-      ToPositionInDOMTree(selected_range_->EndPosition()));
+      ToPositionInDomTree(selected_range_->StartPosition()),
+      ToPositionInDomTree(selected_range_->EndPosition()));
 
   matching_range_resolver_->Resolve(dom_range);
   matching_range_resolver_ = nullptr;

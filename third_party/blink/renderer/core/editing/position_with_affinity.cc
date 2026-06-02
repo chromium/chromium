@@ -41,14 +41,14 @@ bool PositionWithAffinityTemplate<Strategy>::operator==(
   return affinity_ == other.affinity_ && position_ == other.position_;
 }
 
-PositionWithAffinity ToPositionInDOMTreeWithAffinity(
+PositionWithAffinity ToPositionInDomTreeWithAffinity(
     const PositionWithAffinity& position) {
   return position;
 }
 
-PositionWithAffinity ToPositionInDOMTreeWithAffinity(
+PositionWithAffinity ToPositionInDomTreeWithAffinity(
     const PositionInFlatTreeWithAffinity& position) {
-  return PositionWithAffinity(ToPositionInDOMTree(position.GetPosition()),
+  return PositionWithAffinity(ToPositionInDomTree(position.GetPosition()),
                               position.Affinity());
 }
 

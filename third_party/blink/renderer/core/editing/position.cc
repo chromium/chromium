@@ -610,11 +610,11 @@ PositionInFlatTree ToPositionInFlatTree(const PositionInFlatTree& position) {
   return position;
 }
 
-Position ToPositionInDOMTree(const Position& position) {
+Position ToPositionInDomTree(const Position& position) {
   return position;
 }
 
-Position ToPositionInDOMTree(const PositionInFlatTree& position) {
+Position ToPositionInDomTree(const PositionInFlatTree& position) {
   if (position.IsNull())
     return Position();
 

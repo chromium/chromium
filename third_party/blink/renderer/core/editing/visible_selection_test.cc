@@ -74,12 +74,12 @@ static void TestFlatTreePositionsToEqualToDOMTreePositions(
   // shadow root, not distributed node, we map a position in flat tree
   // to DOM tree position.
   EXPECT_EQ(selection.Start(),
-            ToPositionInDOMTree(selection_in_flat_tree.Start()));
-  EXPECT_EQ(selection.End(), ToPositionInDOMTree(selection_in_flat_tree.End()));
+            ToPositionInDomTree(selection_in_flat_tree.Start()));
+  EXPECT_EQ(selection.End(), ToPositionInDomTree(selection_in_flat_tree.End()));
   EXPECT_EQ(selection.Anchor(),
-            ToPositionInDOMTree(selection_in_flat_tree.Anchor()));
+            ToPositionInDomTree(selection_in_flat_tree.Anchor()));
   EXPECT_EQ(selection.Focus(),
-            ToPositionInDOMTree(selection_in_flat_tree.Focus()));
+            ToPositionInDomTree(selection_in_flat_tree.Focus()));
 }
 
 template <typename Strategy>

@@ -264,20 +264,20 @@ bool operator==(const PositionTemplate<Strategy>& a,
 
 CORE_EXPORT PositionInFlatTree ToPositionInFlatTree(const Position&);
 CORE_EXPORT PositionInFlatTree ToPositionInFlatTree(const PositionInFlatTree&);
-CORE_EXPORT Position ToPositionInDOMTree(const Position&);
-CORE_EXPORT Position ToPositionInDOMTree(const PositionInFlatTree&);
+CORE_EXPORT Position ToPositionInDomTree(const Position&);
+CORE_EXPORT Position ToPositionInDomTree(const PositionInFlatTree&);
 
 template <typename Strategy>
-PositionTemplate<Strategy> FromPositionInDOMTree(const Position&);
+PositionTemplate<Strategy> FromPositionInDomTree(const Position&);
 
 template <>
-inline Position FromPositionInDOMTree<EditingStrategy>(
+inline Position FromPositionInDomTree<EditingStrategy>(
     const Position& position) {
   return position;
 }
 
 template <>
-inline PositionInFlatTree FromPositionInDOMTree<EditingInFlatTreeStrategy>(
+inline PositionInFlatTree FromPositionInDomTree<EditingInFlatTreeStrategy>(
     const Position& position) {
   return ToPositionInFlatTree(position);
 }

@@ -280,7 +280,7 @@ AbstractLineBox AbstractLineBox::CreateFor(
   }
 
   const PositionWithAffinity adjusted =
-      ToPositionInDOMTreeWithAffinity(ComputeInlineAdjustedPosition(position));
+      ToPositionInDomTreeWithAffinity(ComputeInlineAdjustedPosition(position));
   if (adjusted.IsNull())
     return AbstractLineBox();
 

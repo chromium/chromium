@@ -108,7 +108,7 @@ static PositionWithAffinityTemplate<Strategy> EndPositionForLine(
     InlineCursor line_box = caret_position.cursor;
     line_box.MoveToContainingLine();
     const PositionWithAffinity end_position = line_box.PositionForEndOfLine();
-    return FromPositionInDOMTree<Strategy>(
+    return FromPositionInDomTree<Strategy>(
         AdjustForSoftLineWrap(line_box.Current(), end_position));
   }
 
@@ -147,7 +147,7 @@ PositionWithAffinityTemplate<Strategy> StartPositionForLine(
     InlineCursor line_box = caret_position.cursor;
     line_box.MoveToContainingLine();
     DCHECK(line_box.Current().IsLineBox()) << line_box;
-    return FromPositionInDOMTree<Strategy>(line_box.PositionForStartOfLine());
+    return FromPositionInDomTree<Strategy>(line_box.PositionForStartOfLine());
   }
 
   // There are VisiblePositions at offset 0 in blocks without line boxes, like

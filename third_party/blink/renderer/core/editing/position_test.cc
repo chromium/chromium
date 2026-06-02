@@ -283,7 +283,7 @@ TEST_F(PositionTest, FirstPositionInShadowHost) {
 
   Position dom = Position::FirstPositionInNode(*host);
   PositionInFlatTree flat = PositionInFlatTree::FirstPositionInNode(*host);
-  EXPECT_EQ(dom, ToPositionInDOMTree(flat));
+  EXPECT_EQ(dom, ToPositionInDomTree(flat));
   EXPECT_EQ(flat, ToPositionInFlatTree(dom));
 }
 
@@ -294,7 +294,7 @@ TEST_F(PositionTest, LastPositionInShadowHost) {
 
   Position dom = Position::LastPositionInNode(*host);
   PositionInFlatTree flat = PositionInFlatTree::LastPositionInNode(*host);
-  EXPECT_EQ(dom, ToPositionInDOMTree(flat));
+  EXPECT_EQ(dom, ToPositionInDomTree(flat));
   EXPECT_EQ(flat, ToPositionInFlatTree(dom));
 }
 

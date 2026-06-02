@@ -236,12 +236,12 @@ PositionInFlatTree EndOfEditableContent(const PositionInFlatTree& position) {
 }
 
 Position StartOfEditableContent(const Position& position) {
-  return ToPositionInDOMTree(
+  return ToPositionInDomTree(
       StartOfEditableContent(ToPositionInFlatTree(position)));
 }
 
 Position EndOfEditableContent(const Position& position) {
-  return ToPositionInDOMTree(
+  return ToPositionInDomTree(
       EndOfEditableContent(ToPositionInFlatTree(position)));
 }
 

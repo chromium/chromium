@@ -266,7 +266,7 @@ bool Editor::CanCopy() const {
       selection.ComputeVisibleSelectionInFlatTree();
   return visible_selection.IsRange() &&
          !IsInPasswordFieldWithUnrevealedPassword(
-             ToPositionInDOMTree(visible_selection.Start()));
+             ToPositionInDomTree(visible_selection.Start()));
 }
 
 bool Editor::CanPaste() const {
@@ -890,8 +890,8 @@ static Range* FindStringBetweenPositions(
 
     auto* range_object = MakeGarbageCollected<Range>(
         result_range.GetDocument(),
-        ToPositionInDOMTree(result_range.StartPosition()),
-        ToPositionInDOMTree(result_range.EndPosition()));
+        ToPositionInDomTree(result_range.StartPosition()),
+        ToPositionInDomTree(result_range.EndPosition()));
     if (!range_object->collapsed())
       return range_object;
 

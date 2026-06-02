@@ -16,18 +16,18 @@ namespace blink {
 
 const LayoutBlockFlow* NGInlineFormattingContextOf(
     const PositionInFlatTree& position) {
-  return NGInlineFormattingContextOf(ToPositionInDOMTree(position));
+  return NGInlineFormattingContextOf(ToPositionInDomTree(position));
 }
 
 InlineCaretPosition ComputeInlineCaretPosition(
     const PositionInFlatTreeWithAffinity& position) {
-  return ComputeInlineCaretPosition(ToPositionInDOMTreeWithAffinity(position));
+  return ComputeInlineCaretPosition(ToPositionInDomTreeWithAffinity(position));
 }
 
 bool InSameNGLineBox(const PositionInFlatTreeWithAffinity& position1,
                      const PositionInFlatTreeWithAffinity& position2) {
-  return InSameNGLineBox(ToPositionInDOMTreeWithAffinity(position1),
-                         ToPositionInDOMTreeWithAffinity(position2));
+  return InSameNGLineBox(ToPositionInDomTreeWithAffinity(position1),
+                         ToPositionInDomTreeWithAffinity(position2));
 }
 
 }  // namespace blink
