@@ -20,4 +20,7 @@ const base::FeatureParam<std::string> kTranslateElementExperimentFeaturesParam{
 BASE_FEATURE(kTranslateElementRegionalization,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPartialTranslateUseOnePlatformApi,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace translate

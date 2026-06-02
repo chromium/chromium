@@ -27,6 +27,12 @@ extern const base::FeatureParam<std::string>
 // Feature flag for enabling regional endpoints for webpage translation.
 BASE_DECLARE_FEATURE(kTranslateElementRegionalization);
 
+// Enables direct usage of oneplatform private translate API.
+// If disabled (default), the Contextual Search infrastructure is used to
+// perform partial translation.
+// If enabled, the OnePlatform Translate API is called directly.
+BASE_DECLARE_FEATURE(kPartialTranslateUseOnePlatformApi);
+
 }  // namespace translate
 
 #endif  // COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_FEATURES_H_

@@ -6,8 +6,14 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/touch_to_search/core/browser/contextual_search_delegate.h"
 #include "components/touch_to_search/core/browser/resolved_search_term.h"
+#include "components/translate/content/browser/contextual_translate_delegate.h"
+#include "components/translate/core/common/translate_features.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -48,12 +54,14 @@ class PartialTranslateManagerTest : public testing::Test {
   void SetUp() override {
     auto delegate = std::make_unique<FakeContextualSearchDelegate>();
     delegate_ = delegate.get();
-    manager_ = std::make_unique<PartialTranslateManager>(std::move(delegate));
+    manager_ =
+        std::make_unique<PartialTranslateManager>(std::move(delegate), nullptr);
   }
 
   void TearDown() override {}
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PartialTranslateManager> manager_;
   // Owned by manager_.
   raw_ptr<FakeContextualSearchDelegate> delegate_;
@@ -145,6 +153,58 @@ TEST_F(PartialTranslateManagerTest, SubsumeRequest) {
   delegate_->RunSearchTermCallback(ResolvedSearchTerm(200));
   ASSERT_FALSE(first_ran);
   ASSERT_TRUE(second_ran);
+}
+
+TEST_F(PartialTranslateManagerTest, UseOnePlatformApi) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      translate::kPartialTranslateUseOnePlatformApi);
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  auto shared_url_loader_factory =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory);
+  auto translate_delegate =
+      std::make_unique<ContextualTranslateDelegate>(shared_url_loader_factory);
+
+  auto fake_delegate = std::make_unique<FakeContextualSearchDelegate>();
+  delegate_ = fake_delegate.get();
+  manager_ = std::make_unique<PartialTranslateManager>(
+      std::move(fake_delegate), std::move(translate_delegate));
+
+  PartialTranslateRequest request;
+  request.selection_text = u"Selected text";
+  request.selection_encoding = "UTF16";
+  request.source_language = "en-US";
+  request.target_language = "ja-JP";
+
+  PartialTranslateResponse response;
+  PartialTranslateManager::PartialTranslateCallback callback = base::BindOnce(
+      [](PartialTranslateResponse* out_response,
+         const PartialTranslateResponse& in_response) {
+        *out_response = in_response;
+      },
+      &response);
+
+  manager_->StartPartialTranslate(nullptr, request, std::move(callback));
+
+  ASSERT_EQ(1u, test_url_loader_factory.pending_requests()->size());
+  const auto& pending_request =
+      test_url_loader_factory.pending_requests()->at(0).request;
+  EXPECT_TRUE(base::StartsWith(pending_request.url.spec(),
+                               "https://translate-pa.googleapis.com",
+                               base::CompareCase::SENSITIVE));
+
+  const std::string response_body = R"([
+    ["Translated"],
+    ["en-US"]
+  ])";
+  ASSERT_TRUE(test_url_loader_factory.SimulateResponseForPendingRequest(
+      pending_request.url.spec(), response_body));
+
+  EXPECT_EQ(response.translated_text, u"Translated");
+  EXPECT_EQ(response.source_language, "en-US");
+  EXPECT_EQ(response.target_language, "ja-JP");
 }
 
 }  // namespace

@@ -4,13 +4,18 @@
 
 #include "components/translate/content/browser/partial_translate_manager.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/prefs/pref_service.h"
+#include "components/translate/content/browser/contextual_translate_delegate.h"
+#include "components/translate/core/common/translate_features.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 
-namespace {
 const char kTranslatePartialTranslationHttpResponseCode[] =
     "Translate.PartialTranslation.HttpResponseCode";
-}  // namespace
 
 PartialTranslateRequest::PartialTranslateRequest() = default;
 PartialTranslateRequest::PartialTranslateRequest(
@@ -23,8 +28,11 @@ PartialTranslateResponse::PartialTranslateResponse(
 PartialTranslateResponse::~PartialTranslateResponse() = default;
 
 PartialTranslateManager::PartialTranslateManager(
-    std::unique_ptr<ContextualSearchDelegate> delegate)
-    : delegate_(std::move(delegate)) {}
+    std::unique_ptr<ContextualSearchDelegate> delegate,
+    std::unique_ptr<ContextualTranslateDelegate> contextual_translate_delegate)
+    : delegate_(std::move(delegate)),
+      contextual_translate_delegate_(std::move(contextual_translate_delegate)) {
+}
 
 PartialTranslateManager::~PartialTranslateManager() = default;
 
@@ -34,9 +42,23 @@ void PartialTranslateManager::StartPartialTranslate(
     PartialTranslateCallback callback) {
   // Invalidate any ongoing request.
   weak_ptr_factory_.InvalidateWeakPtrs();
+  callback_ = std::move(callback);
+
+  if (contextual_translate_delegate_ &&
+      base::FeatureList::IsEnabled(
+          translate::kPartialTranslateUseOnePlatformApi)) {
+    PrefService* prefs =
+        web_contents
+            ? user_prefs::UserPrefs::Get(web_contents->GetBrowserContext())
+            : nullptr;
+    contextual_translate_delegate_->StartPartialTranslate(
+        request, prefs,
+        base::BindOnce(&PartialTranslateManager::OnPartialTranslateResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
 
   context_ = MakeContext(request);
-  callback_ = std::move(callback);
   delegate_->StartSearchTermResolutionRequest(
       context_->AsWeakPtr(), web_contents,
       base::BindRepeating(&PartialTranslateManager::OnResolvedSearchTerm,
@@ -100,4 +122,9 @@ PartialTranslateResponse PartialTranslateManager::MakeResponse(
 void PartialTranslateManager::OnResolvedSearchTerm(
     const ResolvedSearchTerm& resolved_search_term) {
   std::move(callback_).Run(MakeResponse(resolved_search_term));
+}
+
+void PartialTranslateManager::OnPartialTranslateResponse(
+    const PartialTranslateResponse& response) {
+  std::move(callback_).Run(response);
 }

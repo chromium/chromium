@@ -7,5 +7,9 @@ include_rules = [
   "+components/optimization_guide",
   "+components/optimization_guide/content",
   "+components/ukm",
+  "+components/user_prefs",
   "+services/metrics/public/cpp",
+  "+services/data_decoder/public/cpp",
+  "+services/network/public/cpp",
+  "+services/network/test",
 ]
