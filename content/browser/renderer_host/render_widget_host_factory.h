@@ -15,6 +15,7 @@
 
 namespace content {
 class FrameTree;
+struct GlobalRenderFrameHostId;
 class RenderWidgetHostDelegate;
 class RenderWidgetHostImpl;
 class SiteInstanceGroup;
@@ -45,7 +46,8 @@ class CONTENT_EXPORT RenderWidgetHostFactory {
       RenderWidgetHostDelegate* delegate,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
-      bool hidden);
+      bool hidden,
+      GlobalRenderFrameHostId popup_creator_frame_id);
 
  protected:
   RenderWidgetHostFactory() = default;
@@ -70,8 +72,8 @@ class CONTENT_EXPORT RenderWidgetHostFactory {
       RenderWidgetHostDelegate* delegate,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
-      bool hidden);
-
+      bool hidden,
+      GlobalRenderFrameHostId popup_creator_frame_id);
   // Registers your factory to be called when new RenderWidgetHostImpls are
   // created. We have only one global factory, so there must be no factory
   // registered before the call. This class does NOT take ownership of the

@@ -663,6 +663,42 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
+                       VerifyPopupCreatorFrameIdPlumbing) {
+  // Navigate to a page with a <select> element.
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/site_isolation/page-with-select.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+
+  auto* contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* root_frame_host = root->current_frame_host();
+  RenderProcessHost* process = root_frame_host->GetProcess();
+
+  // Focus and open select box to create popup widget.
+  input::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.text[0] = ' ';
+
+  auto filter =
+      std::make_unique<ShowPopupWidgetWaiter>(contents, root_frame_host);
+  EXPECT_TRUE(ExecJs(root_frame_host, "focusSelectMenu();"));
+  root_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
+  filter->Wait();
+
+  int popup_routing_id = filter->last_routing_id();
+  EXPECT_NE(popup_routing_id, IPC::mojom::kRoutingIdNone);
+  RenderWidgetHost* popup_widget_host =
+      RenderWidgetHost::FromID(process->GetDeprecatedID(), popup_routing_id);
+  ASSERT_TRUE(popup_widget_host);
+
+  // Verify that GetPopupCreatorFrameId returns the correct Creator Frame ID.
+  EXPECT_EQ(popup_widget_host->GetPopupCreatorFrameId(),
+            root_frame_host->GetGlobalId());
+}
+
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

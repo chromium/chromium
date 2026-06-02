@@ -914,8 +914,8 @@ class CONTENT_EXPORT WebContentsImpl
           blink_popup_widget_host,
       mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
           blink_widget_host,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
-      override;
+      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
+      GlobalRenderFrameHostId creator_frame_id) override;
   void DidLoadResourceFromMemoryCache(
       RenderFrameHostImpl* source,
       const GURL& url,

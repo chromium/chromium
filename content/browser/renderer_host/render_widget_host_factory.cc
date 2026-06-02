@@ -8,6 +8,7 @@
 
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 
@@ -39,16 +40,17 @@ RenderWidgetHostImpl* RenderWidgetHostFactory::CreateSelfOwned(
     RenderWidgetHostDelegate* delegate,
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
-    bool hidden) {
+    bool hidden,
+    GlobalRenderFrameHostId popup_creator_frame_id) {
   if (factory_) {
     return factory_->CreateSelfOwnedRenderWidgetHost(
         frame_tree, delegate, std::move(site_instance_group), routing_id,
-        hidden);
+        hidden, popup_creator_frame_id);
   }
 
-  return RenderWidgetHostImpl::CreateSelfOwned({}, frame_tree, delegate,
-                                               std::move(site_instance_group),
-                                               routing_id, hidden);
+  return RenderWidgetHostImpl::CreateSelfOwned(
+      {}, frame_tree, delegate, std::move(site_instance_group), routing_id,
+      hidden, popup_creator_frame_id);
 }
 
 std::unique_ptr<RenderWidgetHostImpl>
@@ -70,10 +72,11 @@ RenderWidgetHostImpl* RenderWidgetHostFactory::CreateSelfOwnedRenderWidgetHost(
     RenderWidgetHostDelegate* delegate,
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
-    bool hidden) {
-  return RenderWidgetHostImpl::CreateSelfOwned({}, frame_tree, delegate,
-                                               std::move(site_instance_group),
-                                               routing_id, hidden);
+    bool hidden,
+    GlobalRenderFrameHostId popup_creator_frame_id) {
+  return RenderWidgetHostImpl::CreateSelfOwned(
+      {}, frame_tree, delegate, std::move(site_instance_group), routing_id,
+      hidden, popup_creator_frame_id);
 }
 
 // static

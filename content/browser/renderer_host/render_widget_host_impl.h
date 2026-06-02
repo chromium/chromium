@@ -51,6 +51,7 @@
 #include "content/common/frame.mojom-forward.h"
 #include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_controller.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host.h"
@@ -189,7 +190,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       RenderWidgetHostDelegate* delegate,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
-      bool hidden);
+      bool hidden,
+      GlobalRenderFrameHostId popup_creator_frame_id);
 
   RenderWidgetHostImpl(const RenderWidgetHostImpl&) = delete;
   RenderWidgetHostImpl& operator=(const RenderWidgetHostImpl&) = delete;
@@ -241,6 +243,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // RenderWidgetHost implementation.
   const viz::FrameSinkId& GetFrameSinkId() override;
+  std::optional<GlobalRenderFrameHostId> GetPopupCreatorFrameId()
+      const override;
   void UpdateTextDirection(base::i18n::TextDirection direction) override;
   void NotifyTextDirection() override;
   void Focus() override;
@@ -1092,7 +1096,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                        base::SafeRef<SiteInstanceGroup> site_instance_group,
                        int32_t routing_id,
                        bool hidden,
-                       bool renderer_initiated_creation);
+                       bool renderer_initiated_creation,
+                       std::optional<GlobalRenderFrameHostId>
+                           popup_creator_frame_id = std::nullopt);
   // ---------------------------------------------------------------------------
   // The following method is overridden by RenderViewHost to send upwards to
   // its delegate.
@@ -1650,6 +1656,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   base::OnceClosure ready_for_input_callback_for_testing_;
 
   std::optional<InitialFrameSinkPipes> initial_frame_sink_pipes_;
+
+  std::optional<GlobalRenderFrameHostId> popup_creator_frame_id_;
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };

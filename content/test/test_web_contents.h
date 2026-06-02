@@ -244,8 +244,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
           blink_popup_widget_host,
       mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
           blink_widget_host,
-      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
-      override;
+      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
+      GlobalRenderFrameHostId creator_frame_id) override;
   WebContents* ShowCreatedWindow(
       RenderFrameHostImpl* opener,
       int route_id,

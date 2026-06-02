@@ -377,13 +377,14 @@ RenderWidgetHostImpl* RenderWidgetHostImpl::CreateSelfOwned(
     RenderWidgetHostDelegate* delegate,
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
-    bool hidden) {
+    bool hidden,
+    GlobalRenderFrameHostId popup_creator_frame_id) {
   viz::FrameSinkId frame_sink_id =
       DefaultFrameSinkId(*site_instance_group, routing_id);
-  return new RenderWidgetHostImpl(frame_tree, /*self_owned=*/true,
-                                  frame_sink_id, delegate,
-                                  std::move(site_instance_group), routing_id,
-                                  hidden, /*renderer_initiated_creation=*/true);
+  return new RenderWidgetHostImpl(
+      frame_tree, /*self_owned=*/true, frame_sink_id, delegate,
+      std::move(site_instance_group), routing_id, hidden,
+      /*renderer_initiated_creation=*/true, popup_creator_frame_id);
 }
 
 RenderWidgetHostImpl::InitialFrameSinkPipes::InitialFrameSinkPipes() = default;
@@ -402,7 +403,8 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     bool hidden,
-    bool renderer_initiated_creation)
+    bool renderer_initiated_creation,
+    std::optional<GlobalRenderFrameHostId> popup_creator_frame_id)
     : frame_tree_(frame_tree),
       self_owned_(self_owned),
       waiting_for_init_(renderer_initiated_creation),
@@ -427,7 +429,8 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       compositor_metric_recorder_(
           (frame_tree && frame_tree->is_primary())
               ? std::make_unique<CompositorMetricRecorder>(this)
-              : nullptr) {
+              : nullptr),
+      popup_creator_frame_id_(popup_creator_frame_id) {
   base::ScopedUmaHistogramTimer histogram_timer(
       "Navigation.RenderWidgetHostConstructor");
 
@@ -626,6 +629,11 @@ RenderWidgetHostImpl::GetVisibleTimeRequestTrigger() {
 
 const viz::FrameSinkId& RenderWidgetHostImpl::GetFrameSinkId() {
   return frame_sink_id_;
+}
+
+std::optional<GlobalRenderFrameHostId>
+RenderWidgetHostImpl::GetPopupCreatorFrameId() const {
+  return popup_creator_frame_id_;
 }
 
 void RenderWidgetHostImpl::SendScreenRects() {
