@@ -762,6 +762,7 @@ TEST_F(GlicEnablingTrustFirstOnboardingTest,
 
   EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
             mojom::ProfileReadyState::kSignInRequired);
+  EXPECT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
 }
 
 TEST_F(GlicEnablingTrustFirstOnboardingTest,
@@ -779,6 +780,7 @@ TEST_F(GlicEnablingTrustFirstOnboardingTest,
 
   EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
             mojom::ProfileReadyState::kIneligible);
+  EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

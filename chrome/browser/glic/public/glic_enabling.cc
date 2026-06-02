@@ -511,56 +511,58 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
       } else {
         result.primary_account_is_capable = false;
       }
+      result.live_allowed = false;
+      result.share_image_allowed = false;
     } else {
       // Check if the profile is currently paused.
       if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
               primary_account.account_id)) {
         result.primary_account_is_fully_signed_in = false;
       }
+
+      // Check account capabilities.
+      //
+      // TODO(crbug.com/470004757): when cleaning up the
+      // kGlicEligibilitySeparateAccountCapability feature, also remove the
+      // fallback to can_use_model_execution_features().
+      signin::Tribool capability_value =
+          primary_account.capabilities.can_use_model_execution_features();
+      if (base::FeatureList::IsEnabled(
+              switches::kGlicEligibilitySeparateAccountCapability) &&
+          (CanUseGeminiInChrome(primary_account.capabilities) !=
+           signin::Tribool::kUnknown)) {
+        capability_value = CanUseGeminiInChrome(primary_account.capabilities);
+      }
+      result.primary_account_is_capable =
+          (capability_value == signin::Tribool::kTrue);
+
+      // If the feature is overridden by a field trial, and the user's
+      // eligibility is known and different for the two capabilities, add them
+      // to a synthetic trial.
+      base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(
+          switches::kGlicEligibilitySeparateAccountCapability);
+      if (field_trial &&
+          (CanUseGeminiInChrome(primary_account.capabilities) !=
+           signin::Tribool::kUnknown) &&
+          (primary_account.capabilities.can_use_model_execution_features() !=
+           signin::Tribool::kUnknown) &&
+          (CanUseGeminiInChrome(primary_account.capabilities) !=
+           primary_account.capabilities.can_use_model_execution_features())) {
+        g_browser_process->GetFeatures()
+            ->glic_synthetic_trial_manager()
+            ->SetSyntheticExperimentState(
+                kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName,
+                field_trial->GetGroupNameWithoutActivation());
+      }
+
+      result.live_allowed =
+          primary_account.capabilities.can_use_model_execution_features() ==
+          signin::Tribool::kTrue;
+
+      result.share_image_allowed =
+          primary_account.capabilities.can_use_model_execution_features() ==
+          signin::Tribool::kTrue;
     }
-
-    // Check account capabilities.
-    //
-    // TODO(crbug.com/470004757): when cleaning up the
-    // kGlicEligibilitySeparateAccountCapability feature, also remove the
-    // fallback to can_use_model_execution_features().
-    signin::Tribool capability_value =
-        primary_account.capabilities.can_use_model_execution_features();
-    if (base::FeatureList::IsEnabled(
-            switches::kGlicEligibilitySeparateAccountCapability) &&
-        (CanUseGeminiInChrome(primary_account.capabilities) !=
-         signin::Tribool::kUnknown)) {
-      capability_value = CanUseGeminiInChrome(primary_account.capabilities);
-    }
-    result.primary_account_is_capable =
-        (capability_value == signin::Tribool::kTrue);
-
-    // If the feature is overridden by a field trial, and the user's eligibility
-    // is known and different for the two capabilities, add them to a synthetic
-    // trial.
-    base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(
-        switches::kGlicEligibilitySeparateAccountCapability);
-    if (field_trial &&
-        (CanUseGeminiInChrome(primary_account.capabilities) !=
-         signin::Tribool::kUnknown) &&
-        (primary_account.capabilities.can_use_model_execution_features() !=
-         signin::Tribool::kUnknown) &&
-        (CanUseGeminiInChrome(primary_account.capabilities) !=
-         primary_account.capabilities.can_use_model_execution_features())) {
-      g_browser_process->GetFeatures()
-          ->glic_synthetic_trial_manager()
-          ->SetSyntheticExperimentState(
-              kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName,
-              field_trial->GetGroupNameWithoutActivation());
-    }
-
-    result.live_allowed =
-        primary_account.capabilities.can_use_model_execution_features() ==
-        signin::Tribool::kTrue;
-
-    result.share_image_allowed =
-        primary_account.capabilities.can_use_model_execution_features() ==
-        signin::Tribool::kTrue;
   }
 
   if (profile->GetPrefs()->GetInteger(::prefs::kGeminiSettings) !=
