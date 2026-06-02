@@ -3779,6 +3779,21 @@
       "features": [
         "disable_program_caching_for_transform_feedback"
       ]
+    },
+    {
+      "id": 479,
+      "description": "D3D12 AV1 encoding high and professional profiles query causes unexpected driver behavior on some older drivers.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "<",
+        "value": "32.0.101.6559"
+      },
+      "features": [
+        "limit_d3d12_av1_profile_to_main"
+      ]
     }
   ]
 }

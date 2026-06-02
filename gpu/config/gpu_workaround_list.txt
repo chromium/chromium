@@ -98,6 +98,7 @@ force_update_scissor_state_when_binding_fbo0
 gl_clear_broken
 init_gl_position_in_vertex_shader
 limit_d3d11_video_decoder_to_11_0
+limit_d3d12_av1_profile_to_main
 max_3d_array_texture_size_1024
 max_msaa_sample_count_2
 max_msaa_sample_count_4

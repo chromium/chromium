@@ -5,6 +5,7 @@
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 
 #include "base/rand_util.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/video_encoder.h"
 #include "media/base/win/d3d12_mocks.h"
 #include "media/base/win/d3d12_video_mocks.h"
@@ -151,8 +152,8 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, GetSupportedProfiles) {
           {AV1PROFILE_PROFILE_MAIN,
            {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE, PIXEL_FORMAT_ABGR}}};
   EXPECT_CALL(*video_device3_.Get(), CheckFeatureSupport).Times(7);
-  auto profiles =
-      D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(video_device3_.Get());
+  auto profiles = D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(
+      video_device3_.Get(), gpu::GpuDriverBugWorkarounds());
   EXPECT_EQ(profiles, expected_profiles);
 }
 
@@ -216,9 +217,48 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, GetSupportedProfiles_HighProfile) {
       });
   std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
       expected_profiles = {{AV1PROFILE_PROFILE_HIGH, {PIXEL_FORMAT_ABGR}}};
-  auto profiles =
-      D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(video_device3_.Get());
+  auto profiles = D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(
+      video_device3_.Get(), gpu::GpuDriverBugWorkarounds());
   EXPECT_EQ(profiles, expected_profiles);
+}
+
+TEST_F(D3D12VideoEncodeAV1DelegateTest,
+       GetSupportedProfiles_WorkaroundLimitsToMain) {
+  // Simulate a driver that supports all three AV1 profiles (Main, High, Pro).
+  ON_CALL(*video_device3_.Get(), CheckFeatureSupport(_, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO feature, void* pFeatureSupportData,
+                        UINT FeatureSupportDataSize) -> HRESULT {
+        if (feature == D3D12_FEATURE_VIDEO_ENCODER_CODEC) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC*>(
+                  pFeatureSupportData);
+          feature_data->IsSupported =
+              feature_data->Codec == D3D12_VIDEO_ENCODER_CODEC_AV1;
+        } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_PROFILE_LEVEL) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL*>(
+                  pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          // All profiles are supported by the driver.
+          feature_data->IsSupported = true;
+        } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_INPUT_FORMAT) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT*>(
+                  pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          feature_data->IsSupported = true;
+        }
+        return S_OK;
+      });
+
+  // With the workaround enabled, only Main profile should be returned even
+  // though the driver claims to support all profiles.
+  gpu::GpuDriverBugWorkarounds workarounds;
+  workarounds.limit_d3d12_av1_profile_to_main = true;
+  auto profiles = D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(
+      video_device3_.Get(), workarounds);
+  ASSERT_EQ(profiles.size(), 1u);
+  EXPECT_EQ(profiles[0].first, AV1PROFILE_PROFILE_MAIN);
 }
 
 TEST_F(D3D12VideoEncodeAV1DelegateTest, UnsupportedProfile) {

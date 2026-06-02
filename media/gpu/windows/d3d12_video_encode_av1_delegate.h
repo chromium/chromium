@@ -35,7 +35,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
 
   static std::vector<
       std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
-  GetSupportedProfiles(ID3D12VideoDevice3* video_device);
+  GetSupportedProfiles(ID3D12VideoDevice3* video_device,
+                       const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
   explicit D3D12VideoEncodeAV1Delegate(
       Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device,

@@ -568,7 +568,8 @@ D3D12VideoEncodeAV1Delegate::PictureControlFlags GetAV1PictureControl(
 // static
 std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
 D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(
-    ID3D12VideoDevice3* video_device) {
+    ID3D12VideoDevice3* video_device,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
   CHECK(video_device);
   std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
       profiles;
@@ -579,6 +580,11 @@ D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(
   }
 
   for (auto [codec_profile, av1_profile] : kVideoCodecProfileToD3D12Profile) {
+    if (gpu_workarounds.limit_d3d12_av1_profile_to_main &&
+        codec_profile != AV1PROFILE_PROFILE_MAIN) {
+      continue;
+    }
+
     D3D12_VIDEO_ENCODER_AV1_LEVEL_TIER_CONSTRAINTS min_level;
     D3D12_VIDEO_ENCODER_AV1_LEVEL_TIER_CONSTRAINTS max_level;
     D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL profile_level = {
@@ -674,7 +680,8 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
     return status;
   }
 
-  auto supported_profiles = GetSupportedProfiles(video_device_.Get());
+  auto supported_profiles =
+      GetSupportedProfiles(video_device_.Get(), gpu_workarounds_);
   const auto supported_profile = std::ranges::find_if(
       supported_profiles,
       [config](

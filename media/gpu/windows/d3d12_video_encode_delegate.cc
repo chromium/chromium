@@ -165,8 +165,8 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
         break;
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       case D3D12_VIDEO_ENCODER_CODEC_AV1:
-        profiles =
-            D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(video_device);
+        profiles = D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(
+            video_device, gpu_workarounds);
         break;
       default:
         NOTREACHED();
