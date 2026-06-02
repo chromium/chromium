@@ -27,6 +27,9 @@ struct ClipboardMetadata {
 
   // Sequence number of the clipboard interaction.
   ClipboardSequenceNumberToken seqno;
+
+  // True if this clipboard policy evaluation is triggered by a drag-and-drop.
+  bool is_drag_and_drop = false;
 };
 
 }  // namespace ui

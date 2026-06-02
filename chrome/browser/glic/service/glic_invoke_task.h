@@ -285,6 +285,7 @@ class ClipboardPolicyTask : public GlicInvokeTask {
   content::GlobalRenderFrameHostId source_rfh_id_;
   std::vector<uint8_t> thumbnail_data_;
   GURL src_url_;
+  bool is_drag_and_drop_ = false;
   base::OnceClosure done_callback_;
   base::OnceCallback<void(GlicInvokeError)> error_callback_;
 };

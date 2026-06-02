@@ -232,7 +232,9 @@ void OnIsClipboardOwnerByContentAnalysis(
   }
 
   dialog_data.reason =
-      enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE;
+      metadata.is_drag_and_drop
+          ? enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP
+          : enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE;
   dialog_data.clipboard_source =
       data_controls::ChromeClipboardContext::GetClipboardSource(
           source, destination,

@@ -41,10 +41,12 @@ std::u16string GetImageMarkup(const GURL& src_url,
   return base::StrCat({u"<img src=\"", spec, u"\"", alt, u"></img>"});
 }
 
-ui::ClipboardMetadata CreateClipboardMetadata(size_t size) {
+ui::ClipboardMetadata CreateClipboardMetadata(size_t size,
+                                              bool is_drag_and_drop) {
   ui::ClipboardMetadata metadata;
   metadata.format_type = ui::ClipboardFormatType::PngType();
   metadata.size = size;
+  metadata.is_drag_and_drop = is_drag_and_drop;
   return metadata;
 }
 
@@ -433,6 +435,8 @@ ClipboardPolicyTask::ClipboardPolicyTask(
   source_rfh_id_ = options.additional_context->source_rfh_id;
   ExtractThumbnailData(options, thumbnail_data_);
   src_url_ = GURL(options.additional_context->context->name.value_or(""));
+  is_drag_and_drop_ =
+      (options.GetInvocationSource() == mojom::InvocationSource::kWebDragDrop);
 }
 
 ClipboardPolicyTask::~ClipboardPolicyTask() = default;
@@ -468,7 +472,7 @@ void ClipboardPolicyTask::Start(base::OnceClosure done_callback) {
       *source_rfh);
 
   ui::ClipboardMetadata metadata =
-      CreateClipboardMetadata(thumbnail_data_.size());
+      CreateClipboardMetadata(thumbnail_data_.size(), is_drag_and_drop_);
 
   content::ClipboardPasteData data;
   data.png = thumbnail_data_;
