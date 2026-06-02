@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.accessibility.settings.CaretBrowsingDialog;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.metrics.TabbedActivityLaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -3776,7 +3777,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mRootUiCoordinator.getReadAloudControllerSupplier(),
                 mRootUiCoordinator.getPageZoomManager(),
                 mHubManagerSupplier,
-                mRootUiCoordinator.getOpenInAppMenuItemProvider());
+                mRootUiCoordinator.getOpenInAppMenuItemProvider(),
+                () -> mRecentlyClosedEntriesManager);
     }
 
     private TabDelegateFactory getTabDelegateFactory() {
@@ -4285,6 +4287,22 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_RECENT_TABS_MANAGER);
             }
             RecordUserAction.record("MobileMenuRecentTabs");
+        } else if (id == R.id.recent_entry_menu_item) {
+            assert menuItemData != null
+                    && menuItemData.get(
+                                    AppMenuPropertiesDelegateImpl
+                                            .RECENT_ENTRY_SESSION_ID_BUNDLE_KEY)
+                            != null;
+
+            int sessionId =
+                    menuItemData.getInt(
+                            AppMenuPropertiesDelegateImpl.RECENT_ENTRY_SESSION_ID_BUNDLE_KEY);
+
+            var entry = mRecentlyClosedEntriesManager.findRecentlyClosedEntry(sessionId);
+            if (entry != null) {
+                mRecentlyClosedEntriesManager.openRecentlyClosedEntry(entry);
+            }
+            RecordUserAction.record("MobileMenuRecentEntry");
         } else if (id == R.id.extensions_menu_menu_id) {
             ExtensionsToolbarCoordinator coordinator =
                     getToolbarManager().getExtensionsToolbarCoordinator();
