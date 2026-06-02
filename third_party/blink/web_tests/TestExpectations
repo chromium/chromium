@@ -9536,4 +9536,4 @@ crbug.com/485810761 external/wpt/webmcp/imperative/unregister-during-executeTool
 
 # Gardener 2026-06-01
 crbug.com/517759858 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Failure ]
-crbug.com/453144946 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Crash Failure Pass ]
+crbug.com/453144946 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Crash Failure Pass Timeout ]
