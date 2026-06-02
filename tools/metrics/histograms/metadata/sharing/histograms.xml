@@ -165,7 +165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.Android.Origin" enum="ShareOrigin"
-    expires_after="2026-09-27">
+    expires_after="2026-11-29">
   <owner>jinsukkim@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>

@@ -5250,7 +5250,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.NetworkLoaderCompletionTime2.{Source}.{Priority}"
-    units="ms" expires_after="2026-09-20">
+    units="ms" expires_after="2026-11-29">
   <owner>hayato@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

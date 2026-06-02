@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.RenderAndPaintTime" units="ms" expires_after="2026-09-27">
+<histogram name="PDF.RenderAndPaintTime" units="ms" expires_after="2026-11-29">
   <owner>thestig@chromium.org</owner>
   <owner>ask@chromium.org</owner>
   <summary>
@@ -311,7 +311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.RenderAndPaintVisiblePagesTime" units="ms"
-    expires_after="2026-09-27">
+    expires_after="2026-11-29">
   <owner>thestig@chromium.org</owner>
   <owner>ask@chromium.org</owner>
   <summary>
@@ -321,7 +321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.RenderPaintAndFlushTime" units="ms"
-    expires_after="2026-09-27">
+    expires_after="2026-11-29">
   <owner>thestig@chromium.org</owner>
   <owner>ask@chromium.org</owner>
   <summary>
