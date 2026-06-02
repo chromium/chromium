@@ -4,6 +4,7 @@
 
 #include "base/check.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -52,7 +53,13 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, IconFromTable) {
   RunTest("webui_toolbar/icon_from_table_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, PermissionChip) {
+// TODO(b/516086817): Permission chip is broken on Linux a11y build.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PermissionChip DISABLED_PermissionChip
+#else
+#define MAYBE_PermissionChip PermissionChip
+#endif
+IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, MAYBE_PermissionChip) {
   RunTest("webui_toolbar/permission_chip_test.js", "mocha.run();");
 }
 
