@@ -5,8 +5,6 @@ import("//chrome/common/features.gni")
 
 source_set("internal") {
   sources = [
-    "actor_login_delegate_impl.cc",
-    "actor_login_delegate_impl.h",
     "actor_login_federated_credentials_fetcher.cc",
     "actor_login_federated_credentials_fetcher.h",
     "actor_login_siwg_controller.cc",

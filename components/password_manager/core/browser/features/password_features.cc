@@ -10,13 +10,21 @@
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 
 namespace password_manager::features {
-#if !BUILDFLAG(IS_IOS)  // Desktop
+#if !BUILDFLAG(IS_IOS)  // Desktop and Android
 BASE_FEATURE(kActorLogin, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginConflictingPermissionCleanup,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginLocalClassificationModel,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_IOS)  // iOS
+BASE_FEATURE(kActorLogin, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kActorLoginConflictingPermissionCleanup,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kActorLoginLocalClassificationModel,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kActorLoginSyncsPasswordPermissions,
              base::FEATURE_ENABLED_BY_DEFAULT);

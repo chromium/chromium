@@ -9,6 +9,8 @@ source_set("delegate") {
     "actor_login_credentials_fetcher.h",
     "actor_login_delegate.h",
     "actor_login_delegate_client.h",
+    "actor_login_delegate_impl.cc",
+    "actor_login_delegate_impl.h",
     "actor_login_form_finder.cc",
     "actor_login_form_finder.h",
     "actor_login_get_credentials_helper.cc",
@@ -32,6 +34,7 @@ source_set("delegate") {
   ]
 
   deps = [
+    ":permission_cleaner",
     "//base",
     "//components/device_reauth",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -82,6 +85,7 @@ source_set("permission_cleaner") {
   ]
 
   visibility = [
+    ":delegate",
     ":unit_tests",
     "//chrome/browser/password_manager/actor_login:*",
     "//chrome/browser/password_manager/actor_login/internal:*",

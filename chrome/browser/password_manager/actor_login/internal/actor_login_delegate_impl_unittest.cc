@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_delegate_impl.h"
+// TODO(crbug.com/472291829): This test case will also be moved to /components
+// after decoupling.
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate_impl.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
