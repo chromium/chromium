@@ -25,9 +25,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -240,12 +242,17 @@ public class LauncherShortcutActivity extends Activity {
     private static Intent getChromeLauncherActivityIntent(
             Context context, String launcherShortcutIntentAction) {
         Intent newIntent;
-        if (launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_TAB)
-                || launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_INCOGNITO_TAB)) {
-            newIntent =
-                    IntentHandler.createTrustedOpenNewTabIntent(
-                            context,
-                            launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_INCOGNITO_TAB));
+        boolean isIncognito = launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_INCOGNITO_TAB);
+        if (launcherShortcutIntentAction.equals(ACTION_OPEN_NEW_TAB) || isIncognito) {
+            if (!isIncognito && IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+                @SupportedProfileType
+                int lastActiveProfileType =
+                        MultiWindowUtils.getLastActiveTabbedActivityProfileType(context);
+                if (lastActiveProfileType == SupportedProfileType.OFF_THE_RECORD) {
+                    isIncognito = true;
+                }
+            }
+            newIntent = IntentHandler.createTrustedOpenNewTabIntent(context, isIncognito);
         } else {
             newIntent =
                     IntentHandler.createTrustedOpenNewWindowIntent(

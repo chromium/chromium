@@ -15,6 +15,7 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,6 +33,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -102,7 +104,7 @@ public class LauncherShortcutTest {
     @After
     public void tearDown() {
         ShortcutManager shortcutManager =
-                mActivityTestRule.getActivity().getSystemService(ShortcutManager.class);
+                ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);
         List<String> idsToRemove = new ArrayList<>();
         idsToRemove.add(LauncherShortcutActivity.DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID);
         idsToRemove.add(LauncherShortcutActivity.DYNAMIC_OPEN_NEW_WINDOW_ID);
@@ -112,6 +114,46 @@ public class LauncherShortcutTest {
         List<ShortcutInfo> remainingShortcuts = shortcutManager.getDynamicShortcuts();
         Assert.assertEquals(
                 "Dynamic shortcuts should be cleared in setUp", 0, remainingShortcuts.size());
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testLauncherShortcut_OpenIncognitoWhenOnlyIncognitoInstancesExist()
+            throws Exception {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+
+        ChromeTabbedActivity incognitoActivity =
+                mActivityTestRule.getActivityTestRule().newIncognitoWindowFromMenu();
+
+        ChromeTabbedActivity regularActivity = mActivityTestRule.getActivity();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    regularActivity.finishAndRemoveTask();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            MultiWindowUtils.getInstanceCount(
+                                    PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR),
+                            Matchers.is(0));
+                });
+
+        TabModelSelector incognitoSelector = incognitoActivity.getTabModelSelector();
+        int initialTabCount =
+                ThreadUtils.runOnUiThreadBlocking(() -> incognitoSelector.getTotalTabCount());
+
+        Intent intent = new Intent(LauncherShortcutActivity.ACTION_OPEN_NEW_TAB);
+        intent.setClass(incognitoActivity, LauncherShortcutActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ContextUtils.getApplicationContext().startActivity(intent);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            incognitoSelector.getTotalTabCount(), Matchers.is(initialTabCount + 1));
+                });
     }
 
     @Test

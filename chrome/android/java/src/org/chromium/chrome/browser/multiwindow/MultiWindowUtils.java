@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WIN
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
+import android.app.ActivityManager.RecentTaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -612,7 +613,10 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (sInstanceCountForTesting != null) {
             return sInstanceCountForTesting;
         }
+        return getInstance().getInstanceCountInternal(type);
+    }
 
+    private int getInstanceCountInternal(@PersistedInstanceType int type) {
         if (!isMultiInstanceApi31Enabled()) return 0;
         Context context = ContextUtils.getApplicationContext();
         Set<Integer> appTaskIds = MultiWindowUtils.getAllAppTaskIds(context);
@@ -734,6 +738,44 @@ public class MultiWindowUtils implements ActivityStateListener {
         } else {
             return SupportedProfileType.MIXED;
         }
+    }
+
+    /**
+     * Returns the {@link SupportedProfileType} of the last active ChromeTabbedActivity task. If no
+     * Chrome tasks are active, returns {@link SupportedProfileType.REGULAR}.
+     */
+    public static @SupportedProfileType int getLastActiveTabbedActivityProfileType(
+            Context context) {
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            return SupportedProfileType.MIXED;
+        }
+
+        ActivityManager activityManager =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<AppTask> appTasks = activityManager.getAppTasks();
+
+        Set<Integer> instanceIds = ChromeMultiInstancePersistentStore.readAllInstanceIds();
+        Map<Integer, Integer> taskIdToInstanceId = new HashMap<>();
+        for (int instanceId : instanceIds) {
+            int persistedTaskId = ChromeMultiInstancePersistentStore.readTaskId(instanceId);
+            if (persistedTaskId != INVALID_TASK_ID) {
+                taskIdToInstanceId.put(persistedTaskId, instanceId);
+            }
+        }
+
+        for (AppTask task : appTasks) {
+            RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
+            if (info == null) continue;
+
+            String baseActivity = getActivityNameFromTask(task);
+            if (TextUtils.equals(baseActivity, ChromeTabbedActivity.class.getName())) {
+                Integer instanceId = taskIdToInstanceId.get(info.taskId);
+                if (instanceId != null) {
+                    return ChromeMultiInstancePersistentStore.readProfileType(instanceId);
+                }
+            }
+        }
+        return SupportedProfileType.REGULAR;
     }
 
     /**
