@@ -20,14 +20,17 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
+#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
@@ -70,7 +73,32 @@ views::View* GetOverlayView(Browser* browser, int index) {
   }
   return GetOverlayView(tab_contents);
 }
-}  // namespace
+
+class ActiveTabObserver : public TabStripModelObserver,
+                          public ui::test::StateObserver<bool> {
+ public:
+  explicit ActiveTabObserver(TabStripModel* tab_strip_model)
+      : tab_strip_model_(tab_strip_model) {
+    tab_strip_model_->AddObserver(this);
+  }
+
+  ~ActiveTabObserver() override { tab_strip_model_->RemoveObserver(this); }
+
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (selection.active_tab_changed() ||
+        change.type() == TabStripModelChange::kMoved) {
+      OnStateObserverStateChanged(true);
+    }
+  }
+
+ private:
+  raw_ptr<TabStripModel> tab_strip_model_;
+};
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ActiveTabObserver, kActiveTabChanged);
 
 class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
  public:
@@ -82,6 +110,36 @@ class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
         {});
   }
   ~SelectionOverlayInteractiveTest() override = default;
+
+  auto GetOverlayVisibilityAt(int index) {
+    return base::BindLambdaForTesting([this, index]() {
+      auto* overlay_view = GetOverlayView(browser(), index);
+      return overlay_view && overlay_view->GetVisible();
+    });
+  }
+
+  auto CheckOverlayBoundsMatchContents(int index) {
+    return CheckResult(
+        base::BindLambdaForTesting([this, index]() {
+          auto* tab_contents =
+              browser()->tab_strip_model()->GetWebContentsAt(index);
+          auto* overlay_view = GetOverlayView(tab_contents);
+          auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+          auto* contents_container =
+              browser_view->GetContentsContainerViewFor(tab_contents);
+          if (!overlay_view || !contents_container) {
+            return false;
+          }
+          auto* contents_view = contents_container->contents_view();
+          return contents_view && overlay_view->GetBoundsInScreen() ==
+                                      contents_view->GetBoundsInScreen();
+        }),
+        true);
+  }
+
+  GURL GetEmptyDocURL() const {
+    return embedded_test_server()->GetURL("/empty.html");
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -97,6 +155,24 @@ class SelectionOverlayInteractiveTestWithPolyline
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+class SelectionOverlayInteractiveTestWithSplitView
+    : public SplitViewInteractiveTestMixin<SelectionOverlayInteractiveTest> {
+ public:
+  SelectionOverlayInteractiveTestWithSplitView() = default;
+  ~SelectionOverlayInteractiveTestWithSplitView() override = default;
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    std::vector<base::test::FeatureRefAndParams> features;
+    features.push_back({::features::kInitialWebUI, {}});
+    features.push_back({::features::kWebUIReloadButton, {}});
+    features.push_back({::features::kWebUISplitTabsButton, {}});
+    return features;
+  }
+};
+
+}  // namespace
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
@@ -117,19 +193,11 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
-                       OverlayRemainsOnBackgroundedTab) {
+                       OverlayHiddenOnBackgroundedTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
-  auto get_overlay_visibility = [this]() {
-    auto* overlay_view = GetOverlayView(browser(), 0);
-    return overlay_view && overlay_view->GetVisible();
-  };
-
   RunTestSequence(
-      Do([this]() {
-        chrome::AddTabAt(
-            browser(), embedded_test_server()->GetURL("/empty.html"), -1, true);
-      }),
+      Do([this]() { chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true); }),
       Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
       OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
@@ -137,9 +205,11 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
                         "el => el.screenshot_ !== null"),
-      CheckResult(get_overlay_visibility, true),
+      CheckResult(GetOverlayVisibilityAt(0), true),
       Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
-      CheckResult(get_overlay_visibility, false));
+      CheckResult(GetOverlayVisibilityAt(0), false),
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
+      CheckResult(GetOverlayVisibilityAt(0), true));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
@@ -148,8 +218,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 
   RunTestSequence(
       Do([this]() {
-        chrome::AddTabAt(
-            browser(), embedded_test_server()->GetURL("/empty.html"), -1, true);
+        chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true);
         browser()->tab_strip_model()->AddToNewSplit(
             {0}, split_tabs::SplitTabVisualData(),
             split_tabs::SplitTabCreatedSource::kToolbarButton);
@@ -171,49 +240,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
             if (!active_contents) {
               return false;
             }
-            EXPECT_EQ(active_contents->GetURL(),
-                      embedded_test_server()->GetURL("/empty.html"));
+            EXPECT_EQ(active_contents->GetURL(), GetEmptyDocURL());
             return GetOverlayView(active_contents) != nullptr;
-          },
-          true));
-}
-
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
-                       OverlayRemainsShownWhenChangeFocusInSplitView) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-
-  RunTestSequence(
-      Do([this]() {
-        // Add a new tab and make it split with the first one.
-        chrome::AddTabAt(
-            browser(), embedded_test_server()->GetURL("/empty.html"), -1, true);
-        browser()->tab_strip_model()->AddToNewSplit(
-            {0}, split_tabs::SplitTabVisualData(),
-            split_tabs::SplitTabCreatedSource::kToolbarButton);
-        int last_index = browser()->tab_strip_model()->count() - 1;
-        browser()->tab_strip_model()->ActivateTabAt(last_index);
-        TrackGlicInstanceWithTabIndex(last_index);
-      }),
-      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
-      WaitForShow(OverlayBaseController::kOverlayId),
-      InstrumentNonTabWebView(kOverlayWebContentsId,
-                              OverlayBaseController::kOverlayId),
-      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
-                        "el => el.screenshot_ !== null"),
-      // Change focus to the other tab (index 0).
-      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
-      // Verify that the overlay is still visible on the second tab (index 1).
-      CheckResult(
-          [this]() {
-            auto* tab_contents =
-                browser()->tab_strip_model()->GetWebContentsAt(1);
-            if (!tab_contents) {
-              return false;
-            }
-            EXPECT_EQ(tab_contents->GetURL(),
-                      embedded_test_server()->GetURL("/empty.html"));
-            auto* overlay_view = GetOverlayView(tab_contents);
-            return overlay_view && overlay_view->GetVisible();
           },
           true));
 }
@@ -865,4 +893,188 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPolyline,
                                  Math.abs(p[2].y - 0.1) < 0.001;
                         })"));
 }
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
+                       OverlayRemainsOnFocusChangeInSplitView) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      Do([this]() { chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true); }),
+      EnterSplitView(/*active_tab=*/0, /*other_tab=*/1), Do([this]() {
+        browser()->tab_strip_model()->ActivateTabAt(0);
+        TrackGlicInstanceWithTabIndex(0);
+      }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      CheckResult(GetOverlayVisibilityAt(0), true),
+      ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
+      FocusInactiveTabInSplit(), WaitForState(kActiveTabChanged, true),
+      CheckResult(GetOverlayVisibilityAt(0), true));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
+                       OverlaySticksToTabOnReverse) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      Do([this]() { chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true); }),
+      EnterSplitView(/*active_tab=*/0, /*other_tab=*/1), Do([this]() {
+        browser()->tab_strip_model()->ActivateTabAt(0);
+        TrackGlicInstanceWithTabIndex(0);
+      }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      CheckResult(GetOverlayVisibilityAt(0), true),
+      ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
+      PressButton(kToolbarSplitTabsToolbarButtonElementId),
+      WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
+      SelectMenuItem(SplitTabMenuModel::kReversePositionMenuItem),
+      WaitForState(kActiveTabChanged, true),
+      CheckResult(GetOverlayVisibilityAt(1), true),
+      CheckResult(GetOverlayVisibilityAt(0), false));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
+                       OverlaySticksToTabOnSplitAndConfined) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      CheckResult(GetOverlayVisibilityAt(0), true),
+      Do([this]() { chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true); }),
+      EnterSplitView(/*active_tab=*/0, /*other_tab=*/1),
+      CheckResult(GetOverlayVisibilityAt(0), true),
+      CheckOverlayBoundsMatchContents(0));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
+                       OverlayHiddenOnSwapOutAndReshowsOnFocus) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      Do([this]() {
+        chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true);
+        chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true);
+      }),
+      // SplitView(tab0|tab1), tab2. Tab0 is the focus.
+      EnterSplitView(/*active_tab=*/0, /*other_tab=*/1), Do([this]() {
+        browser()->tab_strip_model()->ActivateTabAt(0);
+        TrackGlicInstanceWithTabIndex(0);
+      }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      CheckResult(GetOverlayVisibilityAt(0), true),
+      ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
+      // SplitView(tab2|tab1), tab0. Tab2 is the focus.
+      Do([this]() {
+        auto* tab_0 = browser()->tab_strip_model()->GetTabAtIndex(0);
+        browser()->tab_strip_model()->UpdateTabInSplit(
+            tab_0, 2, TabStripModel::SplitUpdateType::kSwap);
+      }),
+      WaitForState(kActiveTabChanged, true),
+      CheckResult(GetOverlayVisibilityAt(2), false),
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(2); }),
+      CheckResult(GetOverlayVisibilityAt(2), true),
+      CheckOverlayBoundsMatchContents(2));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
+                       OverlaySticksToTabAOnSwapSibling) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      Do([this]() {
+        chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true);
+        chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true);
+      }),
+      // SplitView(tab0|tab1), tab2. Tab0 is the focus.
+      EnterSplitView(/*active_tab=*/0, /*other_tab=*/1), Do([this]() {
+        browser()->tab_strip_model()->ActivateTabAt(0);
+        TrackGlicInstanceWithTabIndex(0);
+      }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      CheckResult(GetOverlayVisibilityAt(0), true),
+      // SplitView(tab0|tab2), tab1. Tab0 is the focus.
+      Do([this]() {
+        auto* tab_1 = browser()->tab_strip_model()->GetTabAtIndex(1);
+        browser()->tab_strip_model()->UpdateTabInSplit(
+            tab_1, 2, TabStripModel::SplitUpdateType::kSwap);
+      }),
+      CheckResult(GetOverlayVisibilityAt(0), true),
+      CheckOverlayBoundsMatchContents(0));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
+                       OverlayGoneWhenTabClosed) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      Do([this]() { chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true); }),
+      EnterSplitView(/*active_tab=*/0, /*other_tab=*/1), Do([this]() {
+        browser()->tab_strip_model()->ActivateTabAt(0);
+        TrackGlicInstanceWithTabIndex(0);
+      }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      CheckResult(GetOverlayVisibilityAt(0), true),
+      // Close tab 0 (in focus) and wait for focus change.
+      ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
+      PressButton(kToolbarSplitTabsToolbarButtonElementId),
+      WaitForShow(SplitTabMenuModel::kCloseStartTabMenuItem),
+      SelectMenuItem(SplitTabMenuModel::kCloseStartTabMenuItem),
+      WaitForState(kActiveTabChanged, true),
+      CheckResult(GetOverlayVisibilityAt(0), false));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
+                       OverlayRemainsAndExpandsWhenSiblingClosed) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      Do([this]() { chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true); }),
+      EnterSplitView(/*active_tab=*/0, /*other_tab=*/1), Do([this]() {
+        browser()->tab_strip_model()->ActivateTabAt(0);
+        TrackGlicInstanceWithTabIndex(0);
+      }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      CheckResult(GetOverlayVisibilityAt(0), true),
+      // Close tab 1 (not in focus).
+      PressButton(kToolbarSplitTabsToolbarButtonElementId),
+      WaitForShow(SplitTabMenuModel::kCloseEndTabMenuItem),
+      SelectMenuItem(SplitTabMenuModel::kCloseEndTabMenuItem),
+      WaitForHide(SplitTabMenuModel::kCloseEndTabMenuItem),
+      CheckOverlayBoundsMatchContents(0));
+}
+
 }  // namespace glic

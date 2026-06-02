@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
 #include "chrome/browser/ui/lens/overlay_base_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -30,11 +31,13 @@ struct NativeWebKeyboardEvent;
 
 namespace glic {
 
+class FocusedTabData;
 class GlicSharingManager;
 
 class SelectionOverlayController
     : public OverlayBaseController,
-      public selection::SelectionOverlayPageHandler {
+      public selection::SelectionOverlayPageHandler,
+      public TabStripModelObserver {
  public:
   SelectionOverlayController(tabs::TabInterface* tab,
                              PrefService* pref_service);
@@ -90,12 +93,16 @@ class SelectionOverlayController
   void WillDetach(tabs::TabInterface* tab,
                   tabs::TabInterface::DetachReason reason);
   void TabDeactivated(tabs::TabInterface* tab);
+  void OnFocusedTabChanged(const FocusedTabData& tab_data);
 
   void InitializeOverlay();
 
   // `content::WebContentsDelegate`:
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
+
+  // `TabStripModelObserver`:
+  void OnSplitTabChanged(const SplitTabChange& change) override;
 
   // OverlayBaseController overrides:
   void CloseUI() override;
