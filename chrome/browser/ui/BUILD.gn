@@ -3461,11 +3461,6 @@ static_library("ui") {
       "bubble_anchor_util.h",
       "toolbar_controller_util.cc",
       "toolbar_controller_util.h",
-      "views/accessibility/caption_bubble_context_views.cc",
-      "views/accessibility/caption_bubble_session_observer_views.cc",
-      "views/accessibility/caret_browsing_dialog_delegate.cc",
-      "views/accessibility/non_accessible_image_view.cc",
-      "views/accessibility/theme_tracking_non_accessible_image_view.cc",
       "views/apps/chrome_native_app_window_views.cc",
       "views/apps/chrome_native_app_window_views.h",
       "views/autofill/address_bubble_base_view.cc",
@@ -4720,6 +4715,7 @@ static_library("ui") {
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/accessibility",
+      "//chrome/browser/ui/views/accessibility:impl",
       "//chrome/browser/ui/views/animations",
       "//chrome/browser/ui/views/apps/app_info_dialog",
       "//chrome/browser/ui/views/apps/app_info_dialog:impl",
@@ -4914,6 +4910,13 @@ static_library("ui") {
       # - c/b/ui/scoped_tabbed_browser_displayer.h
       # - c/b/ui/views/chrome_layout_provider.h
       "//chrome/browser/ui/views/apps/app_info_dialog:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # the following headers get modularized:
+      # - c/b/ui/browser.h,
+      # - c/b/ui/views/frame/browser_view.h,
+      # - c/b/ui/views/chrome_layout_provider.h
+      "//chrome/browser/ui/views/accessibility:impl",
     ]
 
     if (is_linux) {
@@ -4988,7 +4991,6 @@ static_library("ui") {
     if (is_win) {
       sources += [
         "accessibility_util.h",
-        "views/accessibility/accessibility_util.cc",
         "views/chrome_views_delegate_win.cc",
       ]
     }
@@ -5023,7 +5025,6 @@ static_library("ui") {
     } else {
       sources += [
         "idle_dialog.h",
-        "views/accessibility/accessibility_focus_highlight.cc",
         "views/frame/opaque_browser_frame_view.cc",
         "views/frame/opaque_browser_frame_view.h",
         "views/frame/opaque_browser_frame_view_layout.cc",

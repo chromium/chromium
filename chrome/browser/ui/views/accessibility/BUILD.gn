@@ -35,6 +35,43 @@ source_set("accessibility") {
   }
 }
 
+source_set("impl") {
+  sources = [
+    "caption_bubble_context_views.cc",
+    "caption_bubble_session_observer_views.cc",
+    "caret_browsing_dialog_delegate.cc",
+    "non_accessible_image_view.cc",
+    "theme_tracking_non_accessible_image_view.cc",
+  ]
+  deps = [
+    ":accessibility",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/common:constants",
+    "//components/constrained_window",
+    "//components/prefs",
+    "//content/public/browser",
+    "//ui/compositor",
+  ]
+
+  if (is_win) {
+    sources += [ "accessibility_util.cc" ]
+    deps += [ "//chrome/browser/ui/waap:manager" ]
+  }
+
+  if (!is_chromeos) {
+    sources += [ "accessibility_focus_highlight.cc" ]
+  } else {
+    deps += [
+      "//chrome/browser/ash/accessibility",
+      "//ui/events/ash",
+    ]
+  }
+}
+
 if (!is_android) {
   source_set("unit_tests") {
     testonly = true
@@ -144,7 +181,7 @@ if (!is_android) {
         ]
       }
 
-      if (use_atk && toolkit_views) {
+      if (use_atk) {
         sources += [ "browser_accessibility_uitest_auralinux.cc" ]
         configs += [ "//build/config/linux/atk" ]
         deps += [
