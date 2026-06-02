@@ -285,8 +285,25 @@ _default_mojo_media_services = []
 _default_mojo_media_host = ""
 
 if (is_cast_media_device) {
-  _default_mojo_media_services = cast_mojo_media_services
-  _default_mojo_media_host = cast_mojo_media_host
+  if (enable_cast_renderer) {
+    # In this path, mojo media services are hosted in two processes:
+    # 1. "renderer" and "cdm" run in browser process.
+    # 2. "video_decoder" runs in the gpu process.
+    _default_mojo_media_services = [
+      "cdm",
+      "renderer",
+      "video_decoder",
+    ]
+  } else {
+    # On Cast Receiver on Android, all the enabled mojo media services run in
+    # the gpu process.
+    _default_mojo_media_services = [
+      "cdm",
+      "audio_decoder",
+      "video_decoder",
+    ]
+  }
+  _default_mojo_media_host = "gpu"
 } else if (is_android) {
   _default_mojo_media_services = [
     "cdm",

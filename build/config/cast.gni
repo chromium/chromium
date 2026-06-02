@@ -37,31 +37,6 @@ declare_args() {
   enable_cast_renderer = enable_cast_receiver && (is_linux || is_chromeos)
 }
 
-# Configures media options for cast.  See media/media_options.gni
-cast_mojo_media_services = []
-cast_mojo_media_host = ""
-if (enable_cast_renderer) {
-  # In this path, mojo media services are hosted in two processes:
-  # 1. "renderer" and "cdm" run in browser process. This is hard coded in the
-  # code.
-  # 2. "video_decoder" runs in the process specified by "cast_mojo_media_host".
-  cast_mojo_media_services = [
-    "cdm",
-    "renderer",
-    "video_decoder",
-  ]
-
-  cast_mojo_media_host = "gpu"
-} else if (is_android) {
-  # On Android, all the enabled mojo media services run in the process specified
-  # by "cast_mojo_media_host".
-  cast_mojo_media_services = [
-    "cdm",
-    "audio_decoder",
-    "video_decoder",
-  ]
-  cast_mojo_media_host = "gpu"
-}
 
 # Assert that Chromecast is being built for a supported platform.
 assert(is_linux || is_chromeos || is_android || is_fuchsia ||
