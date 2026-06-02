@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -23,6 +24,7 @@ import org.chromium.components.browser_ui.widget.DateDividedAdapter.PersistentHe
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.StandardHeaderItem;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.TimedItem;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -165,6 +167,79 @@ public class DateDividedAdapterUnitTest {
         assertEquals(ItemViewType.PERSISTENT_HEADER, mAdapter.getItemViewType(1));
         assertEquals(ItemViewType.DATE, mAdapter.getItemViewType(2));
         assertEquals(item2, mAdapter.getItemAt(3).second);
+    }
+
+    @Test
+    public void testUpdateGroupItems_expandAndCollapse() {
+        addHeaderGroup(/* addPersistentHeader= */ false);
+
+        TestTimedItem head = new TestTimedItem(mTodayTimestamp, 1);
+        TestTimedItem sub1 = new TestTimedItem(mTodayTimestamp, 2);
+        TestTimedItem sub2 = new TestTimedItem(mTodayTimestamp, 3);
+        TestTimedItem other = new TestTimedItem(mTodayTimestamp, 4);
+
+        mAdapter.loadItems(List.of(head, other));
+
+        // Initial state: Standard Header (0), Date Header (1), Head (2), Other (3)
+        assertEquals(4, mAdapter.getItemCount());
+        assertEquals(head, mAdapter.getItemAt(2).second);
+        assertEquals(other, mAdapter.getItemAt(3).second);
+        assertEquals(2, head.getPosition());
+        assertEquals(3, other.getPosition());
+
+        // Expand: insert sub1 and sub2 after head (position 2)
+        TestTimedItem expandedHead = new TestTimedItem(mTodayTimestamp, 1);
+        mAdapter.updateGroupItems(2, expandedHead, 0, List.of(sub1, sub2));
+
+        // Expected state: Standard Header (0), Date Header (1), ExpandedHead (2), Sub1 (3), Sub2
+        // (4), Other (5)
+        assertEquals(6, mAdapter.getItemCount());
+        assertEquals(expandedHead, mAdapter.getItemAt(2).second);
+        assertEquals(sub1, mAdapter.getItemAt(3).second);
+        assertEquals(sub2, mAdapter.getItemAt(4).second);
+        assertEquals(other, mAdapter.getItemAt(5).second);
+        assertEquals(2, expandedHead.getPosition());
+        assertEquals(3, sub1.getPosition());
+        assertEquals(4, sub2.getPosition());
+        assertEquals(5, other.getPosition());
+
+        // Collapse: remove 2 items after ExpandedHead (position 2)
+        TestTimedItem collapsedHead = new TestTimedItem(mTodayTimestamp, 1);
+        mAdapter.updateGroupItems(2, collapsedHead, 2, null);
+
+        // Expected state: Standard Header (0), Date Header (1), CollapsedHead (2), Other (3)
+        assertEquals(4, mAdapter.getItemCount());
+        assertEquals(collapsedHead, mAdapter.getItemAt(2).second);
+        assertEquals(other, mAdapter.getItemAt(3).second);
+        assertEquals(2, collapsedHead.getPosition());
+        assertEquals(3, other.getPosition());
+    }
+
+    @Test
+    public void testUpdateGroupItems_passesPayload() {
+        addHeaderGroup(/* addPersistentHeader= */ false);
+
+        TestTimedItem head = new TestTimedItem(mTodayTimestamp, 1);
+        mAdapter.loadItems(List.of(head));
+
+        final ArrayList<Object> receivedPayloads = new ArrayList<>();
+        mAdapter.registerAdapterDataObserver(
+                new RecyclerView.AdapterDataObserver() {
+                    @Override
+                    public void onItemRangeChanged(
+                            int positionStart, int itemCount, @Nullable Object payload) {
+                        if (payload != null) {
+                            receivedPayloads.add(payload);
+                        }
+                    }
+                });
+
+        TestTimedItem newHead = new TestTimedItem(mTodayTimestamp, 1);
+        // Position of head is 2 (Standard Header at 0, Date Header at 1)
+        mAdapter.updateGroupItems(2, newHead, 0, null);
+
+        assertEquals(1, receivedPayloads.size());
+        assertEquals(newHead, receivedPayloads.get(0));
     }
 
     private void addHeaderGroup(boolean addPersistentHeader) {

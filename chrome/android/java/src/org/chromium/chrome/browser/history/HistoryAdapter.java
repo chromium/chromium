@@ -871,12 +871,26 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     public void toggleCluster(HistoryItem item) {
         String key = getExpansionKey(item);
-        if (mExpandedClusterKeys.contains(key)) {
-            mExpandedClusterKeys.remove(key);
-        } else {
+        boolean expanding = !mExpandedClusterKeys.contains(key);
+        if (expanding) {
             mExpandedClusterKeys.add(key);
+        } else {
+            mExpandedClusterKeys.remove(key);
         }
-        rebuildItemList();
+
+        int pos = item.getPosition();
+        if (pos == TimedItem.INVALID_POSITION) return;
+
+        HistoryItem newHead = item.toBuilder().setIsExpanded(expanding).build();
+
+        List<HistoryItem> subItems = item.getSubItems();
+        if (subItems == null) return;
+
+        if (expanding) {
+            updateGroupItems(pos, newHead, 0, subItems);
+        } else {
+            updateGroupItems(pos, newHead, subItems.size(), null);
+        }
     }
 
     private void rebuildItemList() {
