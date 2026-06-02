@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webid/network_request_manager.h"
 #include "content/common/content_export.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "url/gurl.h"

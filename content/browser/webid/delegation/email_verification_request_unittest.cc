@@ -157,8 +157,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   EXPECT_CALL(*mock_network_manager,
               DownloadAndParseUncredentialedUrl(kJwksUri, _))
       .WillOnce(WithArgs<1>([&](ParseJsonCallback callback) {
-        std::move(callback).Run({ParseStatus::kSuccess},
-                                base::Value(std::move(jwks)));
+        std::move(callback).Run({ParseStatus::kSuccess}, std::move(jwks));
       }));
 
   const GURL kAccountsEndpoint = GURL("https://issuer.example.com/accounts");
@@ -347,7 +346,7 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
               DownloadAndParseUncredentialedUrl(kJwksUri, _))
       .WillOnce(WithArgs<1>([&](ParseJsonCallback callback) {
         std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
-                                base::Value(std::move(jwks)));
+                                std::move(jwks));
       }));
   EXPECT_CALL(*mock_dns_request,
               SendRequest("_email-verification.issuer.example.com", _))
@@ -1048,7 +1047,7 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
       .WillOnce(WithArgs<1>([&](ParseJsonCallback callback) {
         base::DictValue empty_dict;
         std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
-                                base::Value(std::move(empty_dict)));
+                                std::move(empty_dict));
       }));
   EXPECT_CALL(*mock_dns_request,
               SendRequest("_email-verification.issuer.example.com", _))

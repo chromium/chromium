@@ -4,6 +4,8 @@
 
 #include "content/browser/webid/delegation/dns_request.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/escape.h"
@@ -30,8 +32,6 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::WithArgs;
 
-using ValueOrError = data_decoder::DataDecoder::ValueOrError;
-
 static constexpr FetchStatus kStatusOk = {ParseStatus::kSuccess, net::HTTP_OK};
 
 class MockNetworkRequestManager : public EmailVerifierNetworkRequestManager {
@@ -47,11 +47,11 @@ class MockNetworkRequestManager : public EmailVerifierNetworkRequestManager {
               (override));
 };
 
-ValueOrError ParseJson(std::string_view json) {
-  std::optional<base::Value> val =
-      base::JSONReader::Read(json, base::JSON_PARSE_RFC);
+std::optional<base::DictValue> ParseJson(std::string_view json) {
+  std::optional<base::DictValue> val =
+      base::JSONReader::ReadDict(json, base::JSON_PARSE_RFC);
   CHECK(val);
-  return ValueOrError(std::move(*val));
+  return val;
 }
 
 class TestContentBrowserClient : public ContentBrowserClient {
@@ -138,7 +138,7 @@ TEST_F(DnsRequestTest, NetError) {
       .WillOnce(WithArgs<1>([](ParseJsonCallback callback) {
         std::move(callback).Run(
             {ParseStatus::kInvalidResponseError, net::ERR_FAILED},
-            base::unexpected("err"));
+            std::nullopt);
       }));
 
   DnsRequest dns_request(request_manager_getter_);

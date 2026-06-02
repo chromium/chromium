@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/types/optional_ref.h"
@@ -16,7 +17,6 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -50,25 +50,6 @@ ParseStatus GetResponseError(base::optional_ref<std::string> response_body,
   return ParseStatus::kSuccess;
 }
 
-ParseStatus GetParsingError(
-    const data_decoder::DataDecoder::ValueOrError& result) {
-  if (!result.has_value()) {
-    return ParseStatus::kInvalidResponseError;
-  }
-
-  return result->GetIfDict() ? ParseStatus::kSuccess
-                             : ParseStatus::kInvalidResponseError;
-}
-
-void OnJsonParsed(ParseJsonCallback parse_json_callback,
-                  int response_code,
-                  bool cors_error,
-                  data_decoder::DataDecoder::ValueOrError result) {
-  ParseStatus parse_status = GetParsingError(result);
-  std::move(parse_json_callback)
-      .Run({parse_status, response_code, cors_error}, std::move(result));
-}
-
 void OnDownloadedJson(ParseJsonCallback parse_json_callback,
                       std::optional<std::string> response_body,
                       int response_code,
@@ -79,15 +60,17 @@ void OnDownloadedJson(ParseJsonCallback parse_json_callback,
 
   if (parse_status != ParseStatus::kSuccess) {
     std::move(parse_json_callback)
-        .Run({parse_status, response_code, cors_error},
-             data_decoder::DataDecoder::ValueOrError());
+        .Run({parse_status, response_code, cors_error}, std::nullopt);
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body,
-      base::BindOnce(&OnJsonParsed, std::move(parse_json_callback),
-                     response_code, cors_error));
+  std::optional<base::DictValue> value =
+      base::JSONReader::ReadDict(*response_body, base::JSON_PARSE_RFC);
+
+  std::move(parse_json_callback)
+      .Run({value ? ParseStatus::kSuccess : ParseStatus::kInvalidResponseError,
+            response_code, cors_error},
+           std::move(value));
 }
 
 }  // namespace

@@ -4,6 +4,8 @@
 
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -18,7 +20,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -42,7 +43,7 @@ void OnWellKnownParsed(
     EmailVerifierNetworkRequestManager::FetchWellKnownCallback callback,
     const GURL& well_known_url,
     FetchStatus fetch_status,
-    data_decoder::DataDecoder::ValueOrError result) {
+    std::optional<base::DictValue> result) {
   EmailVerifierNetworkRequestManager::WellKnown well_known;
 
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
@@ -50,20 +51,12 @@ void OnWellKnownParsed(
     return;
   }
 
-  const base::DictValue* dict = result->GetIfDict();
-  if (!dict) {
-    std::move(callback).Run(
-        {ParseStatus::kInvalidResponseError, fetch_status.response_code},
-        std::move(well_known));
-    return;
-  }
-
   well_known.issuance_endpoint =
-      ExtractEndpoint(well_known_url, *dict, kIssuanceEndpointKey);
-  well_known.jwks_uri = ExtractEndpoint(well_known_url, *dict, kJwksUriKey);
+      ExtractEndpoint(well_known_url, *result, kIssuanceEndpointKey);
+  well_known.jwks_uri = ExtractEndpoint(well_known_url, *result, kJwksUriKey);
 
   const base::ListValue* signing_alg_values_supported_list =
-      dict->FindList(kSigningAlgValuesSupportedKey);
+      result->FindList(kSigningAlgValuesSupportedKey);
   if (signing_alg_values_supported_list) {
     for (const auto& value : *signing_alg_values_supported_list) {
       if (value.is_string()) {
@@ -86,7 +79,7 @@ void OnWellKnownParsed(
 void OnTokenRequestParsed(
     EmailVerifierNetworkRequestManager::TokenRequestCallback callback,
     FetchStatus fetch_status,
-    data_decoder::DataDecoder::ValueOrError result) {
+    std::optional<base::DictValue> result) {
   EmailVerifierNetworkRequestManager::TokenResult token_result;
 
   bool parse_succeeded = fetch_status.parse_status == ParseStatus::kSuccess;
@@ -95,14 +88,7 @@ void OnTokenRequestParsed(
     return;
   }
 
-  const base::DictValue* response = result->GetIfDict();
-  if (!response) {
-    fetch_status.parse_status = ParseStatus::kInvalidResponseError;
-    std::move(callback).Run(fetch_status, std::move(token_result));
-    return;
-  }
-
-  const std::string* issuance_token = response->FindString(kIssuanceTokenKey);
+  const std::string* issuance_token = result->FindString(kIssuanceTokenKey);
 
   if (issuance_token) {
     token_result.token = base::Value(*issuance_token);

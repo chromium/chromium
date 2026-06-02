@@ -4,6 +4,8 @@
 
 #include "content/browser/webid/delegation/email_verification_request.h"
 
+#include <optional>
+
 #include "base/barrier_closure.h"
 #include "base/base64url.h"
 #include "base/json/json_reader.h"
@@ -450,15 +452,12 @@ void EmailVerificationRequest::Verify(
       base::BindOnce(
           [](scoped_refptr<JwksResultOrError> jwks,
              base::RepeatingClosure closure, FetchStatus status,
-             data_decoder::DataDecoder::ValueOrError result) {
+             std::optional<base::DictValue> result) {
             if (status.parse_status != ParseStatus::kSuccess) {
               jwks->data = base::unexpected(
                   EmailVerificationRequestResult::kJwksHttpNotFound);
-            } else if (!result.has_value() || !result->is_dict()) {
-              jwks->data = base::unexpected(
-                  EmailVerificationRequestResult::kJwksInvalidResponse);
             } else {
-              jwks->data = std::move(*result);
+              jwks->data = base::Value(std::move(*result));
             }
             closure.Run();
           },

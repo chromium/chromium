@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -51,8 +50,7 @@ struct FetchStatus {
 };
 
 using ParseJsonCallback =
-    base::OnceCallback<void(FetchStatus,
-                            data_decoder::DataDecoder::ValueOrError)>;
+    base::OnceCallback<void(FetchStatus, std::optional<base::DictValue>)>;
 
 GURL ExtractEndpoint(const GURL& provider,
                      const base::DictValue& response,
