@@ -55,7 +55,9 @@
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_PRIMARY_ACTION);
 
   self.configuration.secondaryActionString = l10n_util::GetNSString(
-      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION);
+      self.screenIntent == DefaultBrowserScreenConsumerScreenIntent::kDefault
+          ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION
+          : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION_DONT_MAKE_DEFAULT);
 
   NSMutableArray* defaultBrowserSteps = [[NSMutableArray alloc] init];
   if (IsDefaultAppsDestinationAvailable() &&

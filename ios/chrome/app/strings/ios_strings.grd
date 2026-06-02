@@ -3208,6 +3208,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION" desc="The secondary action string on the default browser screen presented to the user on First Run [iOS only]">
         No thanks
       </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION_DONT_MAKE_DEFAULT" desc="The secondary action string on the default browser screen presented to the user on First Run when the updated FRE sequence is active [iOS only]">
+        Don't Make Default
+      </message>
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP" desc="Text of the row indicating the second step of setting the default browser [iOS only]">
         Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Default Browser App<ph name="END_BOLD">END_BOLD</ph>
       </message>
