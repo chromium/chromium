@@ -52,7 +52,7 @@ include_rules = [
 
 specific_include_rules = {
   # TODO(crbug.com/403153076): This should be removed along with browser_process.h.
-  "chrome_shell_delegate.cc": [
+  "chrome_shell_delegate\\.cc": [
     "+chrome/browser/global_features.h",
     "+chrome/browser/ui/unload_controller.h",
   ],
