@@ -497,9 +497,6 @@ void EmailVerificationRequest::OnTokenAndKeysFetchComplete(
 
   // Step 5.1: The browser parses and verifies if the SD-JWT
   // is valid.
-  // TODO: check if all of the necessary fields of the SD-JWT
-  // are present and valid.
-
   if (!parsed_token) {
     CompleteVerifyRequest(std::move(callback), std::nullopt,
                           EmailVerificationRequestResult::kTokenMalformedSdJwt);
