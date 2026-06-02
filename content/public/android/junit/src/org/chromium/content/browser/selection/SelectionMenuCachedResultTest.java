@@ -63,7 +63,7 @@ public class SelectionMenuCachedResultTest {
 
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(
-                        null, false, true, "test", MenuType.FLOATING, mMenuItems);
+                        null, false, true, "test", 0, MenuType.FLOATING, mMenuItems);
 
         assertEquals(menuParams.getResult(), mMenuItems);
     }
@@ -72,7 +72,7 @@ public class SelectionMenuCachedResultTest {
     public void testCanBeReusedForDifferentIsSelectionPassword() {
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(
-                        null, false, true, "test", MenuType.FLOATING, mMenuItems);
+                        null, false, true, "test", 0, MenuType.FLOATING, mMenuItems);
 
         assertFalse(
                 menuParams.canReuseResult(
@@ -83,7 +83,7 @@ public class SelectionMenuCachedResultTest {
     public void testCanBeReusedForDifferentIsSelectionReadOnly() {
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(
-                        null, false, true, "test", MenuType.FLOATING, mMenuItems);
+                        null, false, true, "test", 0, MenuType.FLOATING, mMenuItems);
 
         assertFalse(
                 menuParams.canReuseResult(
@@ -99,7 +99,7 @@ public class SelectionMenuCachedResultTest {
     public void testCanBeReusedForDifferentSelectedText() {
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(
-                        null, false, true, "test", MenuType.FLOATING, mMenuItems);
+                        null, false, true, "test", 0, MenuType.FLOATING, mMenuItems);
 
         assertFalse(
                 menuParams.canReuseResult(
@@ -115,7 +115,7 @@ public class SelectionMenuCachedResultTest {
     public void testCanNotBeReusedForDifferentMenuTypes() {
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(
-                        null, false, true, "test", MenuType.FLOATING, mMenuItems);
+                        null, false, true, "test", 0, MenuType.FLOATING, mMenuItems);
 
         assertFalse(
                 menuParams.canReuseResult(
@@ -128,7 +128,7 @@ public class SelectionMenuCachedResultTest {
 
         SelectionMenuCachedResult menuParams2 =
                 new SelectionMenuCachedResult(
-                        null, false, true, "test", MenuType.DROPDOWN, mMenuItems);
+                        null, false, true, "test", 0, MenuType.DROPDOWN, mMenuItems);
 
         assertFalse(
                 menuParams2.canReuseResult(
@@ -144,7 +144,13 @@ public class SelectionMenuCachedResultTest {
     public void testCanBeReusedForNullAndNonNullClassificationResult() {
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(
-                        mClassificationResult1, false, true, "test", MenuType.FLOATING, mMenuItems);
+                        mClassificationResult1,
+                        false,
+                        true,
+                        "test",
+                        0,
+                        MenuType.FLOATING,
+                        mMenuItems);
 
         assertFalse(
                 menuParams.canReuseResult(
@@ -163,7 +169,13 @@ public class SelectionMenuCachedResultTest {
 
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(
-                        mClassificationResult1, false, true, "test", MenuType.FLOATING, mMenuItems);
+                        mClassificationResult1,
+                        false,
+                        true,
+                        "test",
+                        0,
+                        MenuType.FLOATING,
+                        mMenuItems);
 
         assertFalse(
                 menuParams.canReuseResult(
@@ -179,7 +191,7 @@ public class SelectionMenuCachedResultTest {
     public void testCanBeReusedForBothNullClassificationResultAndSimilarOtherParams() {
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(
-                        null, false, true, "test", MenuType.FLOATING, mMenuItems);
+                        null, false, true, "test", 0, MenuType.FLOATING, mMenuItems);
 
         Assert.assertTrue(
                 menuParams.canReuseResult(
@@ -195,7 +207,7 @@ public class SelectionMenuCachedResultTest {
     public void testCanBeReusedForBothNullClassificationResultAndDifferentOtherParams() {
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(
-                        null, false, true, "test", MenuType.FLOATING, mMenuItems);
+                        null, false, true, "test", 0, MenuType.FLOATING, mMenuItems);
 
         assertFalse(
                 menuParams.canReuseResult(
@@ -211,7 +223,13 @@ public class SelectionMenuCachedResultTest {
     public void testCanBeReusedForSimilarClassificationResultAndSimilarOtherParams() {
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(
-                        mClassificationResult1, false, true, "test", MenuType.FLOATING, mMenuItems);
+                        mClassificationResult1,
+                        false,
+                        true,
+                        "test",
+                        0,
+                        MenuType.FLOATING,
+                        mMenuItems);
 
         Assert.assertTrue(
                 menuParams.canReuseResult(
@@ -228,7 +246,13 @@ public class SelectionMenuCachedResultTest {
             testCanBeReusedForSimilarClassificationResultAndParamsIfCachingNotAllowedByDelegate() {
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(
-                        mClassificationResult1, false, true, "test", MenuType.FLOATING, mMenuItems);
+                        mClassificationResult1,
+                        false,
+                        true,
+                        "test",
+                        0,
+                        MenuType.FLOATING,
+                        mMenuItems);
         Mockito.when(mSelectionActionMenuDelegate.canReuseCachedSelectionMenu(anyInt()))
                 .thenReturn(false);
 
@@ -240,5 +264,31 @@ public class SelectionMenuCachedResultTest {
                         "test",
                         MenuType.FLOATING,
                         mSelectionActionMenuDelegate));
+    }
+
+    @Test
+    public void testIsSameSelection() {
+        SelectionMenuCachedResult menuParams =
+                new SelectionMenuCachedResult(
+                        null, false, true, "test", 10, MenuType.FLOATING, mMenuItems);
+
+        // Same params
+        Assert.assertTrue(menuParams.isSameSelection("test", 10, false, true, MenuType.FLOATING));
+
+        // Different text
+        Assert.assertFalse(
+                menuParams.isSameSelection("different", 10, false, true, MenuType.FLOATING));
+
+        // Different offset
+        Assert.assertFalse(menuParams.isSameSelection("test", 20, false, true, MenuType.FLOATING));
+
+        // Different password
+        Assert.assertFalse(menuParams.isSameSelection("test", 10, true, true, MenuType.FLOATING));
+
+        // Different read only
+        Assert.assertFalse(menuParams.isSameSelection("test", 10, false, false, MenuType.FLOATING));
+
+        // Different menu type
+        Assert.assertFalse(menuParams.isSameSelection("test", 10, false, true, MenuType.DROPDOWN));
     }
 }

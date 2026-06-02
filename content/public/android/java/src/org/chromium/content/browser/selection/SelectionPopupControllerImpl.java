@@ -587,14 +587,43 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 return;
             }
 
-            // Show menu there is no updates from SelectionClient.
-            if (mSelectionClient == null
-                    || !mSelectionClient.requestSelectionPopupUpdates(shouldSuggest)) {
-                showSelectionMenuInternal();
+            // Check if we can reuse the cached menu. If we have a valid classification in the
+            // cache, we can bypass the expensive classification request to the SelectionClient.
+            boolean noCaching =
+                    ContentFeatureMap.isEnabled(ContentFeatures.NO_SELECTION_MENU_CACHING);
+            @MenuType final int menuType = getMenuTypeForCaching();
+
+            // Check if the user has re-selected the exact same text at the same offset.
+            // If they did, and the delegate allows caching, we can restore the cached
+            // classification result, show the menu immediately, and bypass the classifier.
+            if (!noCaching && mSelectionMenuCachedResult != null) {
+                if (mSelectionMenuCachedResult.isSameSelection(
+                                getSelectedText(),
+                                mLastSelectionOffset,
+                                isSelectionPassword(),
+                                !isFocusedNodeEditable(),
+                                menuType)
+                        && (mSelectionActionMenuDelegate == null
+                                || mSelectionActionMenuDelegate.canReuseCachedSelectionMenu(
+                                        menuType))) {
+                    mClassificationResult = mSelectionMenuCachedResult.getClassificationResult();
+                    showSelectionMenuInternal();
+                    return;
+                }
             }
-        } else {
-            showSelectionMenuInternal();
+
+            // If we cannot reuse the cached menu, request updates from the SelectionClient.
+            // If the client successfully starts an asynchronous classification request, we
+            // return early and wait for the results. Otherwise, we fall through to show the menu.
+            if (mSelectionClient != null
+                    && mSelectionClient.requestSelectionPopupUpdates(shouldSuggest)) {
+                return;
+            }
         }
+
+        // Show the menu (either immediately because of a cache hit or fallback, or later
+        // when the SelectionClient returns results via callback).
+        showSelectionMenuInternal();
     }
 
     /** Shows the correct menu based on the current state (i.e. has selection). */
@@ -961,6 +990,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                             isSelectionPassword(),
                             !isFocusedNodeEditable(),
                             getSelectedText(),
+                            mLastSelectionOffset,
                             menuType,
                             pendingMenu);
         } else {
@@ -1508,6 +1538,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 invalidateContentRect();
                 if (mIsInHandleDragging) {
                     performHapticFeedback();
+                    // Clear classification result when user drags selection handles.
+                    // The selection has changed, so the old classification is invalid.
+                    mClassificationResult = null;
                 }
                 break;
 
@@ -1515,6 +1548,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 mLastSelectedText = "";
                 mLastSelectionOffset = 0;
                 setHasSelection(false);
+                // Clear classification result when selection is cleared. This ensures we don't
+                // incorrectly reuse it.
+                mClassificationResult = null;
                 mUnselectAllOnDismiss = false;
                 mSelectionRect.setEmpty();
                 if (mSelectionClient != null) mSelectionClient.cancelAllRequests();
@@ -1711,6 +1747,12 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                         /* SelectionClient.Result = */ null);
             }
             destroyActionModeAndKeepSelection();
+            if (unSelected) {
+                // Clear classification result when selection is cleared in native. This ensures
+                // we don't incorrectly reuse it on a subsequent new selection of the same text.
+                mClassificationResult = null;
+                setHasSelection(false);
+            }
         }
         mLastSelectedText = text;
         if (mSelectionClient != null) {
@@ -1956,6 +1998,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                                 isSelectionPassword(),
                                 !isFocusedNodeEditable(),
                                 getSelectedText(),
+                                mLastSelectionOffset,
                                 menuType,
                                 pendingMenu);
             }

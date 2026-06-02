@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -51,6 +52,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
@@ -127,6 +129,7 @@ public class SelectionPopupControllerTest {
     private GestureListenerManagerImpl mGestureStateListenerManager;
     private RenderFrameHost mRenderFrameHost;
     private ActionModeCallback mActionModeCallback;
+    private @Spy TestSelectionClient mTestSelectionClient = new TestSelectionClient();
 
     private static final String MOUNTAIN_FULL = "585 Franklin Street, Mountain View, CA 94041";
     private static final String MOUNTAIN = "Mountain";
@@ -226,6 +229,7 @@ public class SelectionPopupControllerTest {
         when(mMenuModelBridge.getListItems()).thenReturn(List.of());
 
         mController = SelectionPopupControllerImpl.createForTesting(mWebContents, mPopupController);
+        mTestSelectionClient.setResultCallback(mController.getResultCallback());
         GestureListenerManagerImpl.setInstanceForTesting(mGestureStateListenerManager);
     }
 
@@ -856,6 +860,142 @@ public class SelectionPopupControllerTest {
 
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
         Assert.assertSame(pendingMenu, mController.getPendingSelectionMenu(MenuType.FLOATING));
+    }
+
+    @Test
+    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
+    public void testCacheHitBypassesClassificationRequest() {
+        Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
+
+        when(mView.startActionMode(any(), anyInt())).thenReturn(mActionMode);
+
+        SelectionClient.Result result = resultForNoChange();
+        mTestSelectionClient.setResult(result);
+        mController.setSelectionClient(mTestSelectionClient);
+
+        // First show: Cache miss, should call requestSelectionPopupUpdates
+        showSelectionMenu(
+                mController,
+                AMPHITHEATRE_FULL,
+                /* selectionStartOffset= */ 0,
+                MenuSourceType.MOUSE);
+        mController.getPendingSelectionMenu(MenuType.FLOATING);
+
+        Mockito.verify(mTestSelectionClient, times(1)).requestSelectionPopupUpdates(anyBoolean());
+        Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
+
+        // Second show (same selection): Cache hit, should NOT call requestSelectionPopupUpdates
+        showSelectionMenu(
+                mController,
+                AMPHITHEATRE_FULL,
+                /* selectionStartOffset= */ 0,
+                MenuSourceType.MOUSE);
+
+        // Verify it was still only called once (from the first show)
+        Mockito.verify(mTestSelectionClient, times(1)).requestSelectionPopupUpdates(anyBoolean());
+    }
+
+    @Test
+    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
+    public void testSelectionHandlesCleared_clearsClassificationResult() {
+        when(mView.startActionMode(any(), anyInt())).thenReturn(mActionMode);
+        mTestSelectionClient.setResult(resultForNoChange());
+        mController.setSelectionClient(mTestSelectionClient);
+
+        // Populate cache and mClassificationResult
+        showSelectionMenu(mController, AMPHITHEATRE_FULL, 0, MenuSourceType.MOUSE);
+        mController.getPendingSelectionMenu(MenuType.FLOATING);
+        Assert.assertNotNull(mController.getClassificationResult());
+
+        // Trigger SELECTION_HANDLES_CLEARED
+        mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLES_CLEARED, 0, 0, 0, 0);
+
+        // Verify mClassificationResult is cleared
+        Assert.assertNull(mController.getClassificationResult());
+
+        // Next show should be a cache hit (restored from cache)
+        showSelectionMenu(mController, AMPHITHEATRE_FULL, 0, MenuSourceType.MOUSE);
+        Assert.assertNotNull(mController.getClassificationResult());
+        Mockito.verify(mTestSelectionClient, times(1)).requestSelectionPopupUpdates(anyBoolean());
+    }
+
+    @Test
+    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
+    public void testSelectionChangedToEmpty_clearsClassificationResult() {
+        when(mView.startActionMode(any(), anyInt())).thenReturn(mActionMode);
+        mTestSelectionClient.setResult(resultForNoChange());
+        mController.setSelectionClient(mTestSelectionClient);
+
+        // Populate cache and mClassificationResult
+        showSelectionMenu(mController, AMPHITHEATRE_FULL, 0, MenuSourceType.MOUSE);
+        mController.getPendingSelectionMenu(MenuType.FLOATING);
+        Assert.assertNotNull(mController.getClassificationResult());
+
+        // Trigger onSelectionChanged("") (unselect)
+        mController.onSelectionChanged("");
+
+        // Verify mClassificationResult is cleared
+        Assert.assertNull(mController.getClassificationResult());
+
+        // Next show should be a cache hit
+        showSelectionMenu(mController, AMPHITHEATRE_FULL, 0, MenuSourceType.MOUSE);
+        Assert.assertNotNull(mController.getClassificationResult());
+        Mockito.verify(mTestSelectionClient, times(1)).requestSelectionPopupUpdates(anyBoolean());
+    }
+
+    @Test
+    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
+    public void testSelectionHandlesMovedDuringDrag_clearsClassificationResult() {
+        when(mView.startActionMode(any(), anyInt())).thenReturn(mActionMode);
+        mTestSelectionClient.setResult(resultForNoChange());
+        mController.setSelectionClient(mTestSelectionClient);
+
+        // Populate cache and mClassificationResult
+        showSelectionMenu(mController, AMPHITHEATRE_FULL, 0, MenuSourceType.MOUSE);
+        mController.getPendingSelectionMenu(MenuType.FLOATING);
+        Assert.assertNotNull(mController.getClassificationResult());
+
+        // Start drag
+        mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLE_DRAG_STARTED, 0, 0, 0, 0);
+
+        // Move handles during drag
+        mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLES_MOVED, 0, 0, 0, 0);
+
+        // Verify mClassificationResult is cleared
+        Assert.assertNull(mController.getClassificationResult());
+
+        // Drag stopped, reshow menu
+        mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED, 0, 0, 0, 0);
+
+        // Simulate reshowing the menu
+        showSelectionMenu(mController, AMPHITHEATRE_FULL, 0, MenuSourceType.MOUSE);
+
+        // Next show should be a cache hit (restored from cache)
+        Assert.assertNotNull(mController.getClassificationResult());
+        Mockito.verify(mTestSelectionClient, times(1)).requestSelectionPopupUpdates(anyBoolean());
+    }
+
+    @Test
+    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
+    public void testSelectionHandlesMovedNotDuringDrag_doesNotClearClassificationResult() {
+        when(mView.startActionMode(any(), anyInt())).thenReturn(mActionMode);
+        mTestSelectionClient.setResult(resultForNoChange());
+        mController.setSelectionClient(mTestSelectionClient);
+
+        // Populate cache and mClassificationResult
+        showSelectionMenu(mController, AMPHITHEATRE_FULL, 0, MenuSourceType.MOUSE);
+        mController.getPendingSelectionMenu(MenuType.FLOATING);
+        Assert.assertNotNull(mController.getClassificationResult());
+
+        // Move handles NOT during drag (mIsInHandleDragging is false)
+        mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLES_MOVED, 0, 0, 0, 0);
+
+        // Verify mClassificationResult is NOT cleared
+        Assert.assertNotNull(mController.getClassificationResult());
+
+        // Next show should be a cache hit (total 1 requestSelectionPopupUpdates)
+        showSelectionMenu(mController, AMPHITHEATRE_FULL, 0, MenuSourceType.MOUSE);
+        Mockito.verify(mTestSelectionClient, times(1)).requestSelectionPopupUpdates(anyBoolean());
     }
 
     @Test

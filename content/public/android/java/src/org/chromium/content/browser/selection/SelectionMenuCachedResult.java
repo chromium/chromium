@@ -31,6 +31,7 @@ public class SelectionMenuCachedResult {
     private final boolean mIsSelectionPassword;
     private final boolean mIsSelectionReadOnly;
     private final String mSelectedText;
+    private final int mSelectionOffset;
     private final @MenuType int mMenuType;
     private final PendingSelectionMenu mLastSelectionMenu;
 
@@ -39,18 +40,37 @@ public class SelectionMenuCachedResult {
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
             String selectedText,
+            int selectionOffset,
             @MenuType int menuType,
             PendingSelectionMenu lastSelectionMenu) {
         mClassificationResult = classificationResult;
         mIsSelectionPassword = isSelectionPassword;
         mIsSelectionReadOnly = isSelectionReadOnly;
         mSelectedText = selectedText;
+        mSelectionOffset = selectionOffset;
         mMenuType = menuType;
         mLastSelectionMenu = lastSelectionMenu;
     }
 
     public PendingSelectionMenu getResult() {
         return mLastSelectionMenu;
+    }
+
+    public boolean isSameSelection(
+            String selectedText,
+            int selectionOffset,
+            boolean isSelectionPassword,
+            boolean isSelectionReadOnly,
+            @MenuType int menuType) {
+        return mSelectionOffset == selectionOffset
+                && mIsSelectionPassword == isSelectionPassword
+                && mIsSelectionReadOnly == isSelectionReadOnly
+                && Objects.equals(mSelectedText, selectedText)
+                && mMenuType == menuType;
+    }
+
+    SelectionClient.@Nullable Result getClassificationResult() {
+        return mClassificationResult;
     }
 
     /**
