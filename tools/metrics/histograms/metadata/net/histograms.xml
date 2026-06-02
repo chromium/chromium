@@ -9322,33 +9322,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.UDPSocketPosix.RandomBindTime" units="microseconds"
-    expires_after="2026-05-31">
-  <owner>ricea@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The time it takes to execute UDPSocketPosix::RandomBind() during a Connect()
-    call. Measured for every UDP connect on POSIX platforms and Fuchsia. Emitted
-    by UDPSocketPosix::InternalConnect() after RandomBind() returns.
-
-    Only recorded on systems with high-resolution clocks.
-  </summary>
-</histogram>
-
-<histogram name="Net.UDPSocketPosix.SyncConnectTime" units="microseconds"
-    expires_after="2026-05-31">
-  <owner>ricea@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    The time it takes to execute a the connect() system call in
-    UDPSocketPosix::InternalConnect. This is only the synchronous blocking time,
-    it does not include any network activity. Measured for every UDP connect on
-    POSIX platforms and Fuchsia immediately after connect() returns.
-
-    Only recorded on systems with high-resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Net.UDPSocketWinClose" units="ms" expires_after="2024-03-24">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
