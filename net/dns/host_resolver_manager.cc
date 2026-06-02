@@ -1638,14 +1638,20 @@ void HostResolverManager::RunLoopbackProbeJob() {
 }
 
 void HostResolverManager::RemoveAllJobs(const ResolveContext* context) {
+  // Job destructor can re-enter jobs_.erase() (e.g., via HostResolverNat64Task
+  // destructor destroying a nested RequestImpl whose CancelRequest
+  // synchronously removes a different Job). Collect the Jobs first and destroy
+  // them after the iteration loop to prevent iterator invalidation.
+  std::vector<std::unique_ptr<Job>> jobs_to_destroy;
   for (auto it = jobs_.begin(); it != jobs_.end();) {
     const JobKey& key = it->first;
     if (&*key.resolve_context == context) {
-      RemoveJob(it++);
+      jobs_to_destroy.push_back(RemoveJob(it++));
     } else {
       ++it;
     }
   }
+  jobs_to_destroy.clear();
 }
 
 void HostResolverManager::AbortJobsWithoutTargetNetwork(bool in_progress_only) {

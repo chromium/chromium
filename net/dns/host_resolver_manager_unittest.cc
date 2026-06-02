@@ -14574,6 +14574,49 @@ TEST_F(HostResolverManagerTest,
   IPv4AddressLiteralInIPv6OnlyNetworkBadAddressTest(false);
 }
 
+// Regression test for crbug.com/513714124.
+//
+// When a ResolveContext is deregistered, all active jobs associated with it
+// are cancelled. For some requests (like NAT64 translation), a job may own
+// a nested request that is attached to a different job. If cancelling the
+// outer job synchronously cancels and removes the nested job, we must ensure
+// this nested removal does not invalidate the iteration state used to clean
+// up the remaining jobs.
+TEST_F(HostResolverManagerTest,
+       Nat64DeregisterContextDoesNotInvalidateIterator) {
+  HostResolver::ManagerOptions options = DefaultOptions();
+  CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
+                                     /*ipv6_reachable=*/true,
+                                     /*is_async=*/false,
+                                     /*ipv4_reachable=*/false);
+  proc_->AddRule("ipv4only.arpa", ADDRESS_FAMILY_IPV6,
+                 "64:ff9b::c000:aa,64:ff9b::c000:ab");
+
+  HostResolver::ResolveHostParameters params;
+  params.dns_query_type = DnsQueryType::A;
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("192.168.1.42", 80), NetworkAnonymizationKey(),
+      NetLogWithSource(), params, resolve_context_.get()));
+
+  ASSERT_FALSE(response.complete());
+  // Wait for the inner ipv4only.arpa system task's worker to block so both
+  // the outer NAT64 Job ({A}) and the inner Job ({AAAA}) are live in jobs_.
+  ASSERT_TRUE(proc_->WaitFor(1u));
+  ASSERT_EQ(2u, resolver_->num_jobs_for_testing());
+
+  // ResolveContext teardown while the inner ipv4only.arpa lookup is in
+  // flight. Without the fix this is a heap-use-after-free under ASan.
+  resolver_->DeregisterResolveContext(resolve_context_.get());
+
+  EXPECT_EQ(0u, resolver_->num_jobs_for_testing());
+
+  // Cleanup: release the blocked worker and re-register the context so
+  // TearDown's DeregisterResolveContext is balanced.
+  proc_->SignalAll();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  resolver_->RegisterResolveContext(resolve_context_.get());
+}
+
 TEST_F(HostResolverManagerDnsTest, ResolutionDetails_InsecureDnsSuccess) {
   ChangeDnsConfig(CreateValidDnsConfig());
 
