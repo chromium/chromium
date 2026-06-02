@@ -19,6 +19,10 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 
 #if BUILDFLAG(SKIA_USE_DAWN)
+#include <dawn/dawn_proc.h>
+#include <dawn/native/DawnNative.h>
+
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
 
@@ -139,6 +143,61 @@ TEST_F(SharedImageCopyManagerTestWithGraphiteDawn, CopyUsingDawnStrategy) {
   EXPECT_TRUE(
       copy_manager_->CopyImage(dawn_backing.get(), graphite_backing.get()));
 }
+
+class DawnCopyStrategyStackUARTest : public testing::Test {
+ public:
+  void SetUp() override {
+    dawnProcSetProcs(&dawn::native::GetProcs());
+
+    // Create instance WITHOUT TimedWaitAny
+    dawn_instance_ = std::make_unique<dawn::native::Instance>();
+
+    wgpu::RequestAdapterOptions adapter_options;
+    adapter_options.backendType = wgpu::BackendType::Vulkan;
+    std::vector<dawn::native::Adapter> adapters =
+        dawn_instance_->EnumerateAdapters(&adapter_options);
+    ASSERT_GT(adapters.size(), 0u);
+
+    wgpu::FeatureName dawn_internal_usage =
+        wgpu::FeatureName::DawnInternalUsages;
+    wgpu::DeviceDescriptor device_descriptor;
+    device_descriptor.requiredFeatureCount = 1;
+    device_descriptor.requiredFeatures = &dawn_internal_usage;
+
+    dawn_device_ =
+        wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
+    ASSERT_TRUE(dawn_device_) << "Failed to create Dawn device";
+  }
+
+  void TearDown() override {
+    dawn_device_ = wgpu::Device();
+    dawn_instance_.reset();
+  }
+
+ protected:
+  std::unique_ptr<dawn::native::Instance> dawn_instance_;
+  wgpu::Device dawn_device_;
+};
+
+TEST_F(DawnCopyStrategyStackUARTest,
+       MapAsyncCallbackOutlivesStackOnWaitAnyFailure) {
+  wgpu::TextureDescriptor texture_desc;
+  texture_desc.size = {4, 4, 1};
+  texture_desc.format = wgpu::TextureFormat::RGBA8Unorm;
+  texture_desc.usage =
+      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::RenderAttachment;
+  wgpu::Texture src_texture = dawn_device_.CreateTexture(&texture_desc);
+  ASSERT_TRUE(src_texture);
+
+  auto dst_backing = std::make_unique<TestImageBacking>(
+      Mailbox::Generate(), viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(4, 4),
+      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, 1024);
+
+  EXPECT_FALSE(DawnCopyStrategy::CopyFromTextureToBacking(
+      src_texture, dst_backing.get(), dawn_device_));
+}
+
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
 }  // namespace gpu
