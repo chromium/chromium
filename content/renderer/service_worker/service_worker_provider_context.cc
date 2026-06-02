@@ -99,7 +99,10 @@ ServiceWorkerProviderContext::ServiceWorkerProviderContext(
       main_thread_task_runner_(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       receiver_(this, std::move(receiver)),
-      fallback_loader_factory_(std::move(fallback_loader_factory)) {
+      fallback_loader_factory_(std::move(fallback_loader_factory)),
+      trace_track_(perfetto::NamedTrack::FromPointer(
+          "content::WebServiceWorkerProviderImpl",
+          this)) {
   if (host_remote.is_valid())
     container_host_.Bind(std::move(host_remote));
 
@@ -634,8 +637,8 @@ void ServiceWorkerProviderContext::Register(
   if (container_host_) {
     TRACE_EVENT_BEGIN("ServiceWorker",
                       "WebServiceWorkerProviderImpl::RegisterServiceWorker",
-                      perfetto::Track::FromPointer(this), "Scope",
-                      options->scope.spec(), "Script URL", script_url.spec());
+                      trace_track_, "Scope", options->scope.spec(),
+                      "Script URL", script_url.spec());
 
     container_host_->Register(std::move(script_url), std::move(options),
                               std::move(fetch_client_settings),
@@ -673,8 +676,7 @@ void ServiceWorkerProviderContext::GetRegistration(
   if (container_host_) {
     TRACE_EVENT_BEGIN("ServiceWorker",
                       "WebServiceWorkerProviderImpl::GetRegistration",
-                      perfetto::Track::FromPointer(this), "Document URL",
-                      document_url.spec());
+                      trace_track_, "Document URL", document_url.spec());
 
     container_host_->GetRegistration(document_url, std::move(callback));
   } else {
@@ -709,7 +711,7 @@ void ServiceWorkerProviderContext::GetRegistrations(
   if (container_host_) {
     TRACE_EVENT_BEGIN("ServiceWorker",
                       "WebServiceWorkerProviderImpl::GetRegistrations",
-                      perfetto::Track::FromPointer(this));
+                      trace_track_);
 
     container_host_->GetRegistrations(std::move(callback));
   } else {
@@ -744,7 +746,7 @@ void ServiceWorkerProviderContext::GetRegistrationForReady(
   if (container_host_) {
     TRACE_EVENT_BEGIN("ServiceWorker",
                       "WebServiceWorkerProviderImpl::GetRegistrationForReady",
-                      perfetto::Track::FromPointer(this));
+                      trace_track_);
 
     container_host_->GetRegistrationForReady(std::move(callback));
   }

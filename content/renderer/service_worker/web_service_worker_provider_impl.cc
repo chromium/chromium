@@ -195,7 +195,7 @@ void WebServiceWorkerProviderImpl::OnRegistered(
     const std::optional<std::string>& error_msg,
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
   // End "WebServiceWorkerProviderImpl::RegisterServiceWorker" trace event.
-  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this), "Error",
+  TRACE_EVENT_END("ServiceWorker", context_->trace_track(), "Error",
                   MojoEnumToString(error), "Message",
                   error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
@@ -221,7 +221,7 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistration(
     const std::optional<std::string>& error_msg,
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
   // End "WebServiceWorkerProviderImpl::GetRegistration" trace event.
-  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this), "Error",
+  TRACE_EVENT_END("ServiceWorker", context_->trace_track(), "Error",
                   MojoEnumToString(error), "Message",
                   error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
@@ -251,7 +251,7 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistrations(
         std::vector<blink::mojom::ServiceWorkerRegistrationObjectInfoPtr>>
         infos) {
   // End "WebServiceWorkerProviderImpl::GetRegistrations" trace event.
-  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this), "Error",
+  TRACE_EVENT_END("ServiceWorker", context_->trace_track(), "Error",
                   MojoEnumToString(error), "Message",
                   error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
@@ -274,7 +274,7 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistrationForReady(
     GetRegistrationForReadyCallback callback,
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
   // End "WebServiceWorkerProviderImpl::GetRegistrationForReady" trace event.
-  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("ServiceWorker", context_->trace_track());
   // TODO(leonhsl): Currently the only reason that we allow nullable
   // |registration| is: impl of the mojo method
   // GetRegistrationForReady() needs to respond some non-sense params even if it

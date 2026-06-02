@@ -36,6 +36,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_worker_client_registry.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_context.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -107,6 +108,7 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   blink::mojom::ServiceWorkerContainerType container_type() const {
     return container_type_;
   }
+  const perfetto::NamedTrack& trace_track() const { return trace_track_; }
 
   // TODO(crbug.com/324939068): remove the code when the feature launched.
   bool container_is_blob_url_shared_worker() const override;
@@ -387,6 +389,7 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
 
   bool sent_execution_ready_ = false;
 
+  const perfetto::NamedTrack trace_track_;
   base::WeakPtrFactory<ServiceWorkerProviderContext> weak_ptr_factory_{this};
 };
 
