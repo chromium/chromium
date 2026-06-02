@@ -655,11 +655,9 @@ void UserMediaProcessor::RequestInfo::OnTrackStarted(
   // The request fails unless:
   // 1. All tracks started successfully (result == OK), OR
   // 2. The failure is a system-level permission denial for a display audio
-  //    input, and kGetDisplayMediaIgnoreAudioPermissionFailures is enabled.
+  //    input.
   if (result != MediaStreamRequestResult::OK &&
-      !(base::FeatureList::IsEnabled(
-            features::kGetDisplayMediaIgnoreAudioPermissionFailures) &&
-        result == MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM &&
+      !(result == MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM &&
         source->device().type == MediaStreamType::DISPLAY_AUDIO_CAPTURE)) {
     request_result_ = result;
     request_result_name_ = result_name;

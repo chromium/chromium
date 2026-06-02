@@ -1889,26 +1889,6 @@ TEST_F(UserMediaClientTest, DesktopCaptureChangeSourceWithoutAudio) {
 }
 
 // This test what happens if a display audio source fail to initialize due to no
-// system permissions. If kGetDisplayMediaIgnoreAudioPermissionFailures is
-// disabled, this will cause the request to fail.
-TEST_F(UserMediaClientTest, DesktopCaptureWithoutAudioSystemPermission) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kGetDisplayMediaIgnoreAudioPermissionFailures);
-
-  display_user_media_processor_->SetAudioSourceCreationStatus(
-      SourceCreationStatus::kFailedSystemPermissionError);
-
-  user_media_client_impl_->RequestUserMediaForTest(/*is_user_media=*/false);
-  StartMockedVideoSource(display_user_media_processor_);
-  EXPECT_EQ(kRequestFailed, request_state());
-  EXPECT_EQ(blink::mojom::blink::MediaStreamRequestResult::
-                PERMISSION_DENIED_BY_SYSTEM,
-            display_user_media_processor_->error_reason());
-  blink::WebHeap::CollectAllGarbageForTesting();
-}
-
-// This test what happens if a display audio source fail to initialize due to no
 // system permissions. The default behavior is that this should be ignored and
 // result in an audio track with readyState:ended.
 TEST_F(UserMediaClientTest, DesktopCaptureIgnoreAudioSystemPermission) {

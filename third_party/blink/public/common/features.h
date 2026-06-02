@@ -734,10 +734,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGMSCoreEmoji);
 
-// If enabled, then display audio track permission failures are ignored.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kGetDisplayMediaIgnoreAudioPermissionFailures);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kHTMLParserYieldEventNameForPause);
