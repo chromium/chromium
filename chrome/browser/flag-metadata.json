@@ -5231,7 +5231,7 @@
       "mfoltz@chromium.org",
       "//chrome/browser/actor/OWNERS"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 172
   },
   {
     "name": "glic-actor-autofill",
