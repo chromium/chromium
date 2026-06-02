@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreServiceImplBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_url));
 
   // Create second tab and close it, TAB entry should be created.
-  chrome::NewTab(app_browser);
+  chrome::NewTab(app_browser, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_url));
   chrome::CloseTab(app_browser);
   ASSERT_EQ(1U, trs->entries().size());

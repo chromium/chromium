@@ -303,7 +303,7 @@ void GeolocationBrowserTest::Initialize(InitializationOptions options,
   } else {
     current_browser_ = browser();
     if (options == INITIALIZATION_NEWTAB)
-      chrome::NewTab(current_browser_);
+      chrome::NewTab(current_browser_, NewTabTypes::kNoUserAction);
   }
   ASSERT_TRUE(current_browser_);
   if (options != INITIALIZATION_OFFTHERECORD)

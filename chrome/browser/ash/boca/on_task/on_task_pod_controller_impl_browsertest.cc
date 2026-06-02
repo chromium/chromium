@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Pin another browser.
   Browser* const new_browser = browser();
-  chrome::NewTab(new_browser);
+  chrome::NewTab(new_browser, NewTabTypes::kNoUserAction);
   aura::Window* const new_window = new_browser->window()->GetNativeWindow();
   PinWindow(new_window, /*trusted=*/true);
   ASSERT_TRUE(on_task_pod_controller()->CanToggleTabStripVisibility());

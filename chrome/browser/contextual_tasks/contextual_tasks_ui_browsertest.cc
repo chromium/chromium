@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest, HandleLensButtonClick) {
             return std::unique_ptr<LensSearchController>(std::move(mock));
           }));
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   // Bind pipes
   mojo::PendingReceiver<composebox::mojom::PageHandler> handler_receiver;

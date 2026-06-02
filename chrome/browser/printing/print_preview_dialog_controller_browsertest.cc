@@ -522,11 +522,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   EXPECT_EQ(1, tab_strip_model->count());
 
   // Create some new initiators.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   WebContents* web_contents_1 = tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(web_contents_1);
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   WebContents* web_contents_2 = tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(web_contents_2);
   EXPECT_EQ(3, tab_strip_model->count());
@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   EXPECT_EQ(1, tab_strip_model->count());
 
   // Create a new tab with contents `web_contents_1`
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   WebContents* web_contents_1 = tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(web_contents_1);
   EXPECT_EQ(2, tab_strip_model->count());
@@ -795,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   EXPECT_EQ(2, tab_strip_model->count());
 
   // Create a new tab with contents `web_contents_2`
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   WebContents* web_contents_2 = tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(web_contents_2);
   EXPECT_EQ(3, tab_strip_model->count());

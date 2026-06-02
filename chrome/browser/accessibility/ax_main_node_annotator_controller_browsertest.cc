@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kAnnotateMainNode));
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ax_mode = web_contents->GetAccessibilityMode();
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityMainNodeAnnotationsEnabled, true);
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   // Wait for ChromeVox to attach to the new tab if needed.
   if (!web_contents->GetAccessibilityMode().has_mode(
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(AXMainNodeAnnotatorControllerBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityMainNodeAnnotationsEnabled, false);
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   ax_mode = web_contents->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kAnnotateMainNode));

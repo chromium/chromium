@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCreationBrowserTest, VisibilityChangeStopsTask) {
   EXPECT_FALSE(first_callback.IsReady());
 
   // Open a new tab.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(first_callback.Wait());
   EXPECT_FALSE(first_callback.Get<bool>());
   histogram_tester.ExpectBucketCount(

@@ -760,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
   EXPECT_EQ(u"My Body", (*notifications.begin())->message());
 
   // Open a new tab to a diffent origin from the one that shows notifications.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_server.GetURL("/notifications/notification_tester.html")));

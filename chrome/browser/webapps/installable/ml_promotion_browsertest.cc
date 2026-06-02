@@ -1079,7 +1079,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 
   // Creating a new tab should ensure that visibility changes.
   WebContentsObserverAdapter hidden_waiter(original_web_contents);
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   hidden_waiter.AwaitVisibilityHidden();
 
   ExpectClasificationCallReturnResult(

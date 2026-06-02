@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
   DesktopDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
       browser()->tab_strip_model()->GetActiveWebContents(),
       DataControlsDialog::Type::kClipboardCopyBlock);
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   DesktopDataControlsDialogFactory::GetInstance()->ShowDialogIfNeeded(
       browser()->tab_strip_model()->GetActiveWebContents(),
       DataControlsDialog::Type::kClipboardCopyBlock);

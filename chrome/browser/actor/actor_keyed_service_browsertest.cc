@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       profiles::testing::CreateProfileSync(profile_manager, profile_path);
 
   Browser* browser2 = Browser::Create(Browser::CreateParams(&profile2, true));
-  chrome::NewTab(browser2);
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
 
   ActorTask* task = actor_keyed_service()->GetTask(task_id);
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       profiles::testing::CreateProfileSync(profile_manager, profile_path);
 
   Browser* browser2 = Browser::Create(Browser::CreateParams(&profile2, true));
-  chrome::NewTab(browser2);
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
 
   ActorTask* task = actor_keyed_service()->GetTask(task_id);

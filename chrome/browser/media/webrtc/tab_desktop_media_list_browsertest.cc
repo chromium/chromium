@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(TabDesktopMediaListIwaTest,
   CreateDefaultList();
   int initial_list_size = list().GetSourceCount();
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(initial_list_size + 1, list().GetSourceCount());

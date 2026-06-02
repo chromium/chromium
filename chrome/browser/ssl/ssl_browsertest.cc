@@ -3164,7 +3164,7 @@ class SSLUIWorkerFetchTest
     // processes can get re-used under Site Isolation and retain their mixed
     // content status (see crbug.com/41417895). This ensures all error state is
     // cleared.
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(tab));
 

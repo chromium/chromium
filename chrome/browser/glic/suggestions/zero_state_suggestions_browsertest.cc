@@ -617,10 +617,10 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
   base::HistogramTester histogram_tester;
 
   // Open 2 tabs with new tab page.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   auto* initial_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   auto* web_contents2 = browser()->tab_strip_model()->GetActiveWebContents();
 
   SetUpSuccessfulModelExecution();

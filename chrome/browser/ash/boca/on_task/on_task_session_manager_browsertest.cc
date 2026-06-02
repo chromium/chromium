@@ -883,13 +883,13 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
 
   // Open first browser window.
   Browser* const browser_1 = browser();
-  chrome::NewTab(browser_1);
+  chrome::NewTab(browser_1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_1, GURL(kTestUrl1)));
 
   // Open second browser window.
   Browser* const browser_2 =
       Browser::Create(Browser::CreateParams(profile(), true));
-  chrome::NewTab(browser_2);
+  chrome::NewTab(browser_2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_2, GURL(kTestUrl2)));
 
   // Lock the boca app and tabs in boca app browser are not muted.

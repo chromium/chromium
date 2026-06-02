@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(PersistentStorageBrowserTest, FirstTabSeesResult) {
   EXPECT_FALSE(CheckPermission());
   EXPECT_EQ("prompt", CheckPermissionUsingPermissionApi());
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_));
   Bookmark();
 

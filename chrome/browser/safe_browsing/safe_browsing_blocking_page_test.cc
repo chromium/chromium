@@ -2427,7 +2427,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
                        CloseTab_ShouldNotCrash) {
   base::HistogramTester histograms;
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   NavigateAndAssertNoInterstitial();
   chrome::CloseTab(browser());
 }

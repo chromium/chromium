@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, PRE_CrashCrashNewBrowser) {
   EXPECT_FALSE(IsSessionServiceSavingEnabled());
   // As the crashed bubble is still open, creating a tab in the existing
   // browser should not enable saving.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   // Creating a new browser should enable saving.
   CreateBrowser(browser()->profile());
   EXPECT_TRUE(IsSessionServiceSavingEnabled());
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ExitTypeServiceTest, PRE_PRE_RestoreFromCrashBubble) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
   Browser* browser2 = CreateBrowser(browser()->profile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GetUrl2()));
-  chrome::NewTab(browser2);
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GetUrl3()));
   ExitTypeService::GetInstanceForProfile(browser()->profile())
       ->SetWaitingForUserToAckCrashForTest(true);

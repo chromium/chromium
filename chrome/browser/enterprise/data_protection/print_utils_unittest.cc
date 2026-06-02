@@ -181,7 +181,7 @@ class PrintContentAnalysisUtilsTest
 
   void SetUp() override {
     PrintPreviewTest::SetUp();
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
     SetDMTokenForTesting(policy::DMToken::CreateValidToken(kDmToken));
 

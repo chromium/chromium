@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnFocusTest, FailWhenTabFocusChangesWhileRunning) {
   virtual_device_factory()->mutable_state()->simulate_press_callback =
       base::BindRepeating(
           [](Browser* browser, device::VirtualFidoDevice* device) {
-            chrome::NewTab(browser);
+            chrome::NewTab(browser, NewTabTypes::kNoUserAction);
             return true;
           },
           browser());

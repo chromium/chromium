@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest,
                        RecordsIsTabSplitHistogram_Split) {
   base::HistogramTester histogram_tester;
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(tab_strip_model->count(), 2);
 

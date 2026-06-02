@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, SwitchTabsMac) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
   // Set up window with 2 tabs.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   EXPECT_EQ(2, tab_strip->count());
   EXPECT_TRUE(tab_strip->IsTabSelected(1));
 
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, ReopenPreviousTab) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
   // Set up window with 2 tabs.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   EXPECT_EQ(2, tab_strip->count());
 
   // Navigate the active tab to a dummy URL.
@@ -203,9 +203,9 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, MenuCommandPriority) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
 
   // Set up window with 4 tabs.
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   EXPECT_EQ(4, tab_strip->count());
   EXPECT_TRUE(tab_strip->IsTabSelected(3));
 

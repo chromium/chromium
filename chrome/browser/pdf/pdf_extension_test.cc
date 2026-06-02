@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutOopifOverride,
 
   // Open another tab and navigate it to a same-site non-PDF URL.
   ui_test_utils::TabAddedWaiter add_tab1(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   add_tab1.Wait();
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   WebContents* new_web_contents =
@@ -4254,7 +4254,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
 
   // Open another tab and navigate it to a same-site non-PDF URL.
   ui_test_utils::TabAddedWaiter add_tab1(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   add_tab1.Wait();
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   WebContents* web_contents2 =
