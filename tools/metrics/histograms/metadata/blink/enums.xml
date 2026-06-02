@@ -6626,6 +6626,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5902" label="CapabilityDelegationOfDigitalCredentialsCreate"/>
   <int value="5903" label="CapabilityDelegationOfDigitalCredentialsGet"/>
   <int value="5904" label="ModelContextGetTools"/>
+  <int value="5905" label="WebSpeechSttAvailable"/>
+  <int value="5906" label="WebSpeechSttStart"/>
+  <int value="5907" label="WebSpeechSttResultRetrieved"/>
+  <int value="5908" label="WebSpeechSttError"/>
+  <int value="5909" label="WebSpeechTtsSynthesize"/>
+  <int value="5910" label="WebSpeechTtsSuccess"/>
+  <int value="5911" label="WebSpeechTtsError"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
