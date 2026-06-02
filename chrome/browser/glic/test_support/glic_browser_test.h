@@ -158,6 +158,7 @@ class GlicBrowserTestMixin : public T {
         {features::kGlicAndroidSidePanel, {}},
 #endif
     };
+
     glic_test_environment_.SetGlicPagePath(
         "/glic/browser_tests/minimal_client.html");
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});

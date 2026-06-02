@@ -83,6 +83,86 @@ class ApiTests extends ApiTestFixtureBase {
         .waitFor((data) => data && data.invocationSource === expectedSource);
   }
 
+  private async assertCreateTabFails(url: string) {
+    assertDefined(this.host.createTab);
+    await assertRejects(
+        this.host.createTab(url, {openInBackground: false}),
+        {withErrorMessage: 'createTab: failed'});
+  }
+
+  async testCreateTab() {
+    assertDefined(this.host.createTab);
+    // Open a tab pointing to test.html.
+    const url = location.href;
+    const data = await this.host.createTab(url, {openInBackground: false});
+    assertEquals(data.url, url);
+  }
+
+  async testCreateTabSimple() {
+    assertDefined(this.host.createTab);
+    const url = location.href + '#simple';
+    const data = await this.host.createTab(url, {openInBackground: false});
+    assertEquals(data.url, url);
+  }
+
+  async testCreateTabFailsWithUnsupportedScheme() {
+    assertDefined(this.host.createTab);
+
+    this.assertCreateTabFails('chrome://settings');
+    this.assertCreateTabFails('ftps://www.google.com');
+    this.assertCreateTabFails('chrome-extension://www.google.com');
+    this.assertCreateTabFails('mailto:user@google.com');
+    this.assertCreateTabFails(
+        'data:text/html;charset=utf-8,<html>Hello World</html>');
+    this.assertCreateTabFails('file:///tmp/test.html');
+  }
+
+  async testCreateTabInBackground() {
+    assertDefined(this.host.createTab);
+
+    await this.host.createTab(
+        location.href + '#foreground', {openInBackground: false});
+
+    await this.advanceToNextStep();
+
+    await this.host.createTab(
+        location.href + '#background', {openInBackground: true});
+  }
+
+  async testCreateTabByClickingOnLink() {
+    assertDefined(this.host.setAudioDucking);
+    // Check that audio ducking still works after clicking a link.
+    this.host.setAudioDucking(true);
+    const link = document.createElement('a');
+    link.setAttribute('href', 'https://www.chromium.org');
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+
+    await this.advanceToNextStep();
+    this.host.setAudioDucking(false);
+  }
+
+  async testCreateTabByClickingOnLinkDaisyChains() {
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getPinnedTabs);
+    const link = document.createElement('a');
+    link.setAttribute('href', 'https://www.chromium.org');
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+    // The opened tab should be pinned.
+    await observeSequence(this.host.getPinnedTabs())
+        .waitFor(tabs => tabs.length === 2);
+  }
+
+  async testCreateTabFailsIfNotActive() {
+    assertDefined(this.host.closePanel);
+    assertDefined(this.host.createTab);
+    await this.closePanelAndWaitUntilInactive();
+    this.assertCreateTabFails(location.href);
+  }
+
   async testFailureForCapturedApiTestError() {
     try {
       throw new ApiTestError('Non-throwing test error');
@@ -982,6 +1062,31 @@ class AdditionalContextQueuedTest extends ApiTestFixtureBase {
   }
 }
 
+class WebClientForCreateTabInInvoke extends WebClient {
+  createTabResult = Promise.withResolvers<TabData>();
+  override async invoke(_options: InvokeOptions): Promise<void> {
+    try {
+      const url = location.href + '#invoking';
+      const data = await this.host!.createTab!(url, {openInBackground: false});
+      this.createTabResult.resolve(data);
+    } catch (e) {
+      this.createTabResult.reject(e as Error);
+    }
+  }
+}
+
+class ApiTestCreateTabInInvoke extends ApiTestFixtureBase {
+  override createWebClient(): WebClient {
+    return new WebClientForCreateTabInInvoke();
+  }
+
+  async testCreateTabSucceedsIfInvoking() {
+    const data = await (this.client as WebClientForCreateTabInInvoke)
+                     .createTabResult.promise;
+    assertEquals(data.url, location.href + '#invoking');
+  }
+}
+
 const TEST_FIXTURES = [
   ApiTests,
   AdditionalContextQueuedTest,
@@ -990,6 +1095,7 @@ const TEST_FIXTURES = [
   InvokeTest,
   ApiTestFailsToInitialize,
   TriggeringUpdatesTest,
+  ApiTestCreateTabInInvoke,
 ];
 
 

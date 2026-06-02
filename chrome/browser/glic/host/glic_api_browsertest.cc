@@ -816,73 +816,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
   EXPECT_THAT(cross_origin_rpc_request->headers, request_header_matcher);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTab) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
-                  CheckTabCount(1));
-
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  // Add a tab after the active tab to ensure we're not just appending.
-  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  tab_strip_model->ActivateTabAt(0);
-
-  tab_strip_model->AddToNewGroup({0});
-  std::optional<tab_groups::TabGroupId> group_id =
-      tab_strip_model->GetTabGroupForTab(0);
-  ASSERT_TRUE(group_id.has_value());
-
-  ExecuteJsTest();
-  RunTestSequence(CheckTabCount(3));
-
-  // The new tab should be at index 1 (next to the active tab) and inherit the
-  // tab group.
-  EXPECT_EQ(1, tab_strip_model->active_index());
-  EXPECT_EQ(group_id, tab_strip_model->GetTabGroupForTab(1));
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabFailsWithUnsupportedScheme) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
-                  CheckTabCount(1));
-  ExecuteJsTest();
-  RunTestSequence(CheckTabCount(1));
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabInBackground) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
-                  CheckTabCount(1));
-
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  // Add a tab after the active tab to ensure we're not just appending.
-  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  tab_strip_model->ActivateTabAt(0);
-
-  tab_strip_model->AddToNewGroup({0});
-  std::optional<tab_groups::TabGroupId> group_id =
-      tab_strip_model->GetTabGroupForTab(0);
-  ASSERT_TRUE(group_id.has_value());
-
-  // Creating a new tab via the glic API in the foreground should change the
-  // active tab.
-  ExecuteJsTest();
-  RunTestSequence(CheckTabCount(3));
-  tabs::TabInterface* active_tab = tab_strip_model->GetActiveTab();
-  ASSERT_THAT(active_tab->GetContents()->GetURL().spec(),
-              testing::EndsWith("#foreground"));
-
-  EXPECT_EQ(1, tab_strip_model->active_index());
-  EXPECT_EQ(group_id, tab_strip_model->GetTabGroupForTab(1));
-
-  // Creating a new tab via the glic API in the background should not change the
-  // active tab.
-  ContinueJsTest();
-  RunTestSequence(CheckTabCount(4));
-  active_tab = tab_strip_model->GetActiveTab();
-  ASSERT_THAT(active_tab->GetContents()->GetURL().spec(),
-              testing::EndsWith("#foreground"));
-
-  EXPECT_EQ(1, tab_strip_model->active_index());
-  EXPECT_EQ(group_id, tab_strip_model->GetTabGroupForTab(2));
-}
-
 // Tests that the response to a user confirmation dialog is correctly ordered
 // w.r.t. other Glic API calls. See b/465690937 and associated CLs for details.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
@@ -939,107 +872,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
             actor::ActorTask::State::kWaitingOnUser);
 }
 
-// TODO(crbug.com/469210106): Re-enable this test on ChromeOS.
-// TODO(crbug.com/515495117): Fix and re-enable this test on Mac.
-// TODO(crbug.com/517282139): Fix and re-enable this test on Linux Msan.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
-#define MAYBE_testCreateTabByClickingOnLink \
-  DISABLED_testCreateTabByClickingOnLink
-#else
-#define MAYBE_testCreateTabByClickingOnLink testCreateTabByClickingOnLink
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testCreateTabByClickingOnLink) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
-                  CheckTabCount(1));
-
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  // Add a tab after the active tab to ensure we're not just appending.
-  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  tab_strip_model->ActivateTabAt(0);
-
-  tab_strip_model->AddToNewGroup({0});
-  std::optional<tab_groups::TabGroupId> group_id =
-      tab_strip_model->GetTabGroupForTab(0);
-  ASSERT_TRUE(group_id.has_value());
-
-  // Have the test track this tab's glic instance.
-  TrackGlicInstanceWithId(GetGlicInstance()->id());
-  content::RenderFrameHost* guest_frame = FindGlicGuestMainFrame();
-  ASSERT_TRUE(guest_frame);
-  ExecuteJsTest();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return tab_strip_model->count() == 3;
-  })) << "Timed out waiting for tab count to increase. Tab count = "
-      << tab_strip_model->count();
-  // The guest frame shouldn't change.
-  ASSERT_EQ(guest_frame, FindGlicGuestMainFrame());
-
-  // Link click opens next to opener and inherits group.
-  EXPECT_EQ(1, tab_strip_model->active_index());
-  EXPECT_EQ(group_id, tab_strip_model->GetTabGroupForTab(1));
-
-  // This test is a regression test for b/416464184.
-  // Audio ducking should still work after clicking a link.
-  AudioDucker* audio_ducker =
-      AudioDucker::GetForPage(FindGlicGuestMainFrame()->GetPage());
-  ASSERT_TRUE(audio_ducker);
-  ASSERT_EQ(audio_ducker->GetAudioDuckingState(),
-            AudioDucker::AudioDuckingState::kDucking);
-
-  ContinueJsTest();
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return audio_ducker->GetAudioDuckingState() ==
-           AudioDucker::AudioDuckingState::kNoDucking;
-  }));
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPopupOpens) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckPopupCount(0));
   ExecuteJsTest();
   RunTestSequence(CheckPopupCount(1));
-}
-
-class GlicApiTestWithDaisyChain : public GlicApiTest {
- public:
-  GlicApiTestWithDaisyChain() {
-    daisy_chain_features_.InitAndEnableFeature(
-        features::kGlicDaisyChainNewTabs);
-  }
-
-  void SetUpOnMainThread() override {
-    GlicApiTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(
-        prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, true);
-  }
-
- private:
-  base::test::ScopedFeatureList daisy_chain_features_;
-};
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
-                       testCreateTabByClickingOnLinkDaisyChains) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
-                  CheckTabCount(1));
-
-  ExecuteJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabFailsIfNotActive) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabSucceedsIfInvoking) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  GetGlicInstanceImpl()->host().NotifyIsInvoking(true);
-  auto options = mojom::InvokeOptions::New();
-  options->invocation_source = mojom::InvocationSource::kTopChromeButton;
-  GetGlicInstanceImpl()->host().GetPrimaryWebClient()->Invoke(
-      std::move(options), base::DoNothing());
-  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInvoke) {
@@ -1077,6 +915,23 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                   Do([this]() { ExecuteJsTest(); }),
                   WaitForWebContentsReady(kPasswordManagerTab, settings_url));
 }
+
+class GlicApiTestWithDaisyChain : public GlicApiTest {
+ public:
+  GlicApiTestWithDaisyChain() {
+    daisy_chain_features_.InitAndEnableFeature(
+        features::kGlicDaisyChainNewTabs);
+  }
+
+  void SetUpOnMainThread() override {
+    GlicApiTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, true);
+  }
+
+ private:
+  base::test::ScopedFeatureList daisy_chain_features_;
+};
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
                        testCanAttachPanelToFallbackEmbedder) {

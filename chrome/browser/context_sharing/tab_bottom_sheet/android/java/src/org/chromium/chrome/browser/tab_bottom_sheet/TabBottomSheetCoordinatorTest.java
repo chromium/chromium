@@ -30,6 +30,8 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -51,6 +53,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -141,6 +144,17 @@ public class TabBottomSheetCoordinatorTest {
         containerView.setFocusableInTouchMode(true);
 
         View containerViewSpy = spy(containerView);
+        // Delegate post() directly to the main looper Handler. Otherwise, because containerViewSpy
+        // is a Mockito spy, calling post() delegates to the unattached containerView delegate
+        // instance, which buffers the runnable indefinitely since it never gets attached to a
+        // window.
+        doAnswer(
+                        invocation -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            return new Handler(Looper.getMainLooper()).post(runnable);
+                        })
+                .when(containerViewSpy)
+                .post(any(Runnable.class));
         mWebViewResizingHelper =
                 new WebViewResizingHelper(containerViewSpy, mWindowAndroid, Color.WHITE);
         when(mMockWebUi.getWebViewResizingHelper()).thenReturn(mWebViewResizingHelper);
@@ -229,6 +243,7 @@ public class TabBottomSheetCoordinatorTest {
                                     .thenReturn(content);
                             return true;
                         });
+        mActivityScenarioRule.getScenario().onActivity(activity -> activity.setContentView(mView));
         mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
         when(mMockBottomSheetController.getCurrentSheetContent())
                 .thenReturn(mCoordinator.getSheetContentForTesting());
@@ -359,6 +374,29 @@ public class TabBottomSheetCoordinatorTest {
     }
 
     @Test
+    public void testDoNotExpandWhenInsufficientViewportSpace() {
+        // Setup a very small viewport height
+        when(mMockDecorView.getHeight()).thenReturn(50);
+        doAnswer(
+                        invocation -> {
+                            Rect rect = invocation.getArgument(0);
+                            rect.set(0, 0, CONTAINER_WIDTH, 50);
+                            return null;
+                        })
+                .when(mMockDecorView)
+                .getWindowVisibleDisplayFrame(any(Rect.class));
+
+        simulateShowSuccessAndGetObserver();
+
+        // Flush the looper to run the runnable posted in tryToShowBottomSheet()
+        ShadowLooper.idleMainLooper();
+
+        // expandSheet(true) should NOT have been called because viewport height is insufficient
+        verify(mMockBottomSheetController, never()).expandSheet(anyBoolean());
+        verify(mMockSheetEventsCallback).onBottomSheetOpened(false);
+    }
+
+    @Test
     public void testOnConfigurationChanged() {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
@@ -475,11 +513,13 @@ public class TabBottomSheetCoordinatorTest {
             observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
             assertEquals(1, userActionTester.getActionCount("Glic.Instance.Show.BottomSheet"));
 
-            // 2. Transitioning between open expanded states (HALF to FULL) should NOT record metric again.
+            // 2. Transitioning between open expanded states (HALF to FULL) should NOT record metric
+            // again.
             observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
             assertEquals(1, userActionTester.getActionCount("Glic.Instance.Show.BottomSheet"));
 
-            // 3. Transitioning from FULL to PEEK (non-expanded) then back to HALF (expanded) should record it a second time.
+            // 3. Transitioning from FULL to PEEK (non-expanded) then back to HALF (expanded) should
+            // record it a second time.
             observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
             observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
             assertEquals(2, userActionTester.getActionCount("Glic.Instance.Show.BottomSheet"));

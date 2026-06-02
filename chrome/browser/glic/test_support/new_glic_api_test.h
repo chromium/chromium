@@ -193,7 +193,7 @@ class GlicApiBrowserTestMixin : public T {
   // called later.
   void ExecuteJsTest(ExecuteTestOptions options = {}) {
     if (options.wait_for_guest) {
-      WaitForGuest(options.instance);
+      ASSERT_OK(WaitForGuest(options.instance));
     }
     content::RenderFrameHost* glic_guest_frame =
         FindGlicGuestMainFrame(options.instance);
@@ -230,7 +230,8 @@ class GlicApiBrowserTestMixin : public T {
                         base::StrCat({"continueApiTest(", param_json, ")"})));
   }
 
-  void WaitForGuest(GlicInstanceImpl* instance = nullptr) {
+  [[nodiscard]] TestResult<content::RenderFrameHost*> WaitForGuest(
+      GlicInstanceImpl* instance = nullptr) {
     auto end_time = base::TimeTicks::Now() + base::Seconds(30);
     auto next_message_time = base::TimeTicks::Now() + base::Seconds(2);
     auto sleep_time = base::Milliseconds(200);
@@ -253,7 +254,7 @@ class GlicApiBrowserTestMixin : public T {
         auto result =
             content::EvalJs(frame, {"typeof runApiTest !== 'undefined'"});
         if (result.is_ok() && result.ExtractBool()) {
-          return;
+          return base::ok(frame);
         }
       }
       if (base::TimeTicks::Now() > next_message_time) {
@@ -265,8 +266,9 @@ class GlicApiBrowserTestMixin : public T {
       sleepWithRunLoop(sleep_time);
       sleep_time = std::min(base::Seconds(2), 2 * sleep_time);
     }
-    FAIL() << "Timed out waiting for guest frame. Guest frame: "
-           << (frame ? frame->GetLastCommittedURL().spec() : "not found");
+    return base::unexpected(base::StrCat(
+        {"Timed out waiting for guest frame. Guest frame: ",
+         (frame ? frame->GetLastCommittedURL().spec() : "not found")}));
   }
 
   void sleepWithRunLoop(base::TimeDelta duration) {
