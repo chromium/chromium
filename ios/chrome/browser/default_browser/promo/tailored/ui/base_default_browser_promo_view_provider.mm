@@ -87,8 +87,7 @@ constexpr CGFloat kHelpSymbolSize = 20;
   }
 
   OpenIOSDefaultBrowserSettingsPage(/*force_default_apps_if_available=*/false,
-                                    /*ui_application_to_use=*/nil,
-                                    self.PIPHandler);
+                                    self.application, self.PIPHandler);
 }
 
 // The "Secondary Action" was touched.

@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_TAILORED_UI_BASE_DEFAULT_BROWSER_PROMO_VIEW_PROVIDER_H_
 #define IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_TAILORED_UI_BASE_DEFAULT_BROWSER_PROMO_VIEW_PROVIDER_H_
 
+@class UIApplication;
 @protocol PictureInPictureCommands;
 @protocol PromosManagerCommands;
 
@@ -24,6 +25,10 @@
 
 // The PromosManagerCommands handler to use for promo related functionality.
 @property(nonatomic, weak) id<PromosManagerCommands> promosManagerHandler;
+
+// The UIApplication instance to use. If nil, `[UIApplication
+// sharedApplication]` is used.
+@property(nonatomic, strong) UIApplication* application;
 
 // Should be implemented in subclassses.
 - (UIImage*)promoImage;

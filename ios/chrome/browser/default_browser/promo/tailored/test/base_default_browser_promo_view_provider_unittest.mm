@@ -14,6 +14,8 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #pragma mark - Fixture.
 
@@ -47,26 +49,29 @@
   return DefaultPromoTypeAllTabs;
 }
 
-// Open settings.
-- (void)openSettings {
-  // Do nothing.
-}
-
 @end
 
 // Fixture to test BaseDefaultBrowserPromoViewProvider.
 class BaseDefaultBrowserPromoViewProviderTest : public PlatformTest {
+ public:
+  ~BaseDefaultBrowserPromoViewProviderTest() override {
+    EXPECT_OCMOCK_VERIFY(mock_application_);
+  }
+
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
 
     test_provider_ = [[TestDefaultBrowserPromoViewProvider alloc] init];
+    mock_application_ = OCMStrictClassMock([UIApplication class]);
+    test_provider_.application = mock_application_;
 
     ClearDefaultBrowserPromoData();
   }
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestDefaultBrowserPromoViewProvider* test_provider_;
+  id mock_application_;
 };
 
 #pragma mark - Tests.
@@ -92,6 +97,10 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest,
        TestRecordMetricsOnPrimaryAction) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
+
+  OCMExpect([mock_application_ openURL:[OCMArg any]
+                               options:[OCMArg any]
+                     completionHandler:[OCMArg any]]);
 
   // Notify the view provider that primary button was tapped.
   [test_provider_ standardPromoPrimaryAction];
