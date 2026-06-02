@@ -2644,36 +2644,6 @@ if (!is_android) {
     ]
   }
 
-  # Test base class for Views accessibility event tests. Shared by both
-  # browser_tests and interactive_ui_tests.
-  source_set("dump_accessibility_events_views_browsertest_base") {
-    testonly = true
-
-    sources = [
-      "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.cc",
-      "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.h",
-    ]
-
-    if (is_mac) {
-      sources += [ "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base_mac.mm" ]
-    } else if (is_linux) {
-      sources += [ "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base_auralinux.cc" ]
-    }
-
-    deps = [
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//content/public/browser",
-      "//content/test:test_support",
-      "//testing/gtest",
-      "//ui/accessibility",
-      "//ui/accessibility:test_support",
-      "//ui/views",
-      "//ui/views:test_support",
-    ]
-  }
-
   test("browser_tests") {
     use_xvfb = use_xvfb_in_this_config
 
@@ -3042,6 +3012,7 @@ if (!is_android) {
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/user_education:browser_tests",
       "//chrome/browser/ui/views:file_system_access_test_support",
+      "//chrome/browser/ui/views/accessibility",
       "//chrome/browser/ui/views/apps/app_info_dialog:browser_tests",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",
@@ -4302,6 +4273,7 @@ if (!is_android) {
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/accessibility:browser_tests",
       "//chrome/browser/ui/views/animations",
       "//chrome/browser/ui/views/infobars:browser_tests",
       "//chrome/browser/ui/views/js_optimization",
@@ -4644,10 +4616,6 @@ if (!is_android) {
         "../browser/profiles/avatar_menu_browsertest.cc",
         "../browser/profiles/delete_profile_helper_browsertest.cc",
         "../browser/profiles/profile_window_browsertest.cc",
-        "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",
-        "../browser/ui/views/accessibility/dump_accessibility_events_views_browsertest.cc",
-        "../browser/ui/views/accessibility/menu_dump_accessibility_events_browsertest.cc",
-        "../browser/ui/views/accessibility/tree_view_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/controls/button/button_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/controls/button/checkbox_dump_accessibility_events_browsertest.cc",
         "../browser/ui/views/controls/label_dump_accessibility_events_browsertest.cc",
@@ -4661,8 +4629,6 @@ if (!is_android) {
 
       if (is_win) {
         sources += [
-          "../browser/ui/views/accessibility/tab_strip_dump_accessibility_events_browsertest.cc",
-
           # Tooltip accessibility event tests rely on Aura APIs
           # (EventGenerator, TooltipControllerTestHelper).
           "../browser/ui/views/tooltip/tooltip_dump_accessibility_events_browsertest.cc",
@@ -4672,7 +4638,6 @@ if (!is_android) {
 
       sources -= [ "../browser/net/nss_context_chromeos_browsertest.cc" ]
       deps += [
-        ":dump_accessibility_events_views_browsertest_base",
         "//chrome/browser/default_browser:browser_tests",
         "//chrome/browser/download/bubble",
         "//chrome/browser/download/bubble:browser_tests",
@@ -5461,7 +5426,6 @@ if (!is_android) {
         ]
       }
       deps += [
-        ":dump_accessibility_events_views_browsertest_base",
         ":test_support_ui",
         "//chrome/browser/commerce",
         "//chrome/browser/lens/core/mojom:mojo_bindings",
@@ -5491,6 +5455,7 @@ if (!is_android) {
         "//chrome/browser/ui/toasts:browser_tests",
         "//chrome/browser/ui/translate",
         "//chrome/browser/ui/translate:test_support",
+        "//chrome/browser/ui/views/accessibility:dump_accessibility_events_views_browsertest_base",
         "//chrome/browser/ui/views/animations",
         "//chrome/browser/ui/views/infobars",
         "//chrome/browser/ui/views/permissions/chip",
@@ -8480,7 +8445,6 @@ test("unit_tests") {
       "../browser/ui/incognito_allowed_url_unittest.cc",
       "../browser/ui/intent_picker_tab_helper_unittest.cc",
       "../browser/ui/recently_audible_helper_unittest.cc",
-      "../browser/ui/views/accessibility/theme_tracking_non_accessible_image_view_unittest.cc",
       "../browser/ui/views/autofill/address_editor_view_unittest.cc",
       "../browser/ui/views/autofill/autofill_ai/autofill_ai_import_data_bubble_view_unittest.cc",
       "../browser/ui/views/autofill/autofill_ai/autofill_ai_local_save_notification_view_unittest.cc",
@@ -8692,6 +8656,7 @@ test("unit_tests") {
       "//chrome/browser/ui/translate",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/user_education:unit_tests",
+      "//chrome/browser/ui/views/accessibility:unit_tests",
       "//chrome/browser/ui/views/drive_picker_host",
       "//chrome/browser/ui/views/drive_picker_host:unit_tests",
       "//chrome/browser/ui/views/glic",
@@ -11197,22 +11162,6 @@ if (!is_android) {
   }
 }
 
-# Windows-only test support for UIA accessibility events.
-if (is_win) {
-  source_set("uia_test_support") {
-    testonly = true
-    sources = [
-      "../browser/ui/views/accessibility/uia_accessibility_event_waiter.cc",
-      "../browser/ui/views/accessibility/uia_accessibility_event_waiter.h",
-    ]
-    deps = [
-      "//base",
-      "//ui/accessibility",
-      "//ui/views",
-    ]
-  }
-}
-
 # Interactive UI test target can't run on ChromeOS device. See
 # //docs/testing/chromeos_integration for how to create an integration
 # test that works on ChromeOS VM/Device.
@@ -11346,7 +11295,6 @@ if (!is_android && !is_chromeos_device) {
 
     deps = [
       ":chrome_test_launcher",
-      ":dump_accessibility_events_views_browsertest_base",
       ":test_support",
       ":test_support_ui",
       ":webrtc_browser_tests_base",
@@ -11479,6 +11427,8 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:interactive_ui_tests",
       "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/views/accessibility:dump_accessibility_events_views_browsertest_base",
+      "//chrome/browser/ui/views/accessibility:interactive_ui_tests",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/contextual_tasks:interactive_ui_tests",
       "//chrome/browser/ui/views/download",
@@ -12082,7 +12032,6 @@ if (!is_android && !is_chromeos_device) {
       }
       if (is_win) {
         sources += [
-          "../browser/ui/views/accessibility/post_install_announcement_browsertest.cc",
           "../browser/ui/views/frame/browser_frame_view_win_interactive_uitest.cc",
           "../browser/ui/views/frame/browser_window_property_manager_browsertest_win.cc",
         ]
@@ -12148,7 +12097,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/notifications/win/fake_itoastnotifier.cc",
         "../browser/notifications/win/fake_itoastnotifier.h",
         "../browser/ui/send_mouse_move_uitest_win.cc",
-        "../browser/ui/views/accessibility/navigation_accessibility_uitest_win.cc",
         "../browser/ui/views/touch_events_interactive_uitest_win.cc",
         "//ui/base/clipboard/clipboard_win_unittest.cc",
         "//ui/display/win/test/virtual_display_util_win_interactive_uitest.cc",
@@ -12159,12 +12107,12 @@ if (!is_android && !is_chromeos_device) {
       }
 
       deps += [
-        ":uia_test_support",
         "//chrome:other_version",
         "//chrome/app:chrome_dll_resources",
         "//chrome/browser/os_crypt",
         "//chrome/browser/os_crypt:browser_tests",
         "//chrome/browser/os_crypt:test_support",
+        "//chrome/browser/ui/views/accessibility:uia_test_support",
         "//chrome/browser/win:isolated_browser_support",
         "//chrome/elevation_service:public_headers",
         "//chrome/install_static:install_static_util",
@@ -12237,11 +12185,6 @@ if (!is_android && !is_chromeos_device) {
     } else {
       sources += [ "../browser/metrics/desktop_session_duration/chrome_visibility_observer_interactive_uitest.cc" ]
       deps += [ "//chrome/browser/metrics/desktop_session_duration" ]
-    }
-
-    if (use_atk && toolkit_views) {
-      sources += [ "../browser/ui/views/accessibility/browser_accessibility_uitest_auralinux.cc" ]
-      configs += [ "//build/config/linux/atk" ]
     }
 
     if (is_linux) {
@@ -12320,10 +12263,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/glic:interactive_ui_tests",
     ]
 
-    sources += [
-      "../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc",
-      "../browser/ui/views/accessibility/caption_bubble_controller_views_browsertest.cc",
-    ]
+    sources += [ "../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc" ]
 
     deps += [
       "//components/on_device_translation:public",

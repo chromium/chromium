@@ -65,6 +65,7 @@ source_set("impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/accessibility",
       "//components/feature_engagement/public",
       "//components/javascript_dialogs",
       "//components/omnibox/browser",

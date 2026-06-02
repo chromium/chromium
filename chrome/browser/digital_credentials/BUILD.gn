@@ -52,6 +52,7 @@ source_set("impl") {
     sources += [ "digital_identity_provider_desktop.cc" ]
     deps += [
       "//chrome/browser/ui",
+      "//chrome/browser/ui/views/accessibility",
       "//components/constrained_window",
       "//components/qr_code_generator:bitmap_generator",
       "//device/fido",

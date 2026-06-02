@@ -3462,15 +3462,10 @@ static_library("ui") {
       "toolbar_controller_util.cc",
       "toolbar_controller_util.h",
       "views/accessibility/caption_bubble_context_views.cc",
-      "views/accessibility/caption_bubble_context_views.h",
       "views/accessibility/caption_bubble_session_observer_views.cc",
-      "views/accessibility/caption_bubble_session_observer_views.h",
       "views/accessibility/caret_browsing_dialog_delegate.cc",
-      "views/accessibility/caret_browsing_dialog_delegate.h",
       "views/accessibility/non_accessible_image_view.cc",
-      "views/accessibility/non_accessible_image_view.h",
       "views/accessibility/theme_tracking_non_accessible_image_view.cc",
-      "views/accessibility/theme_tracking_non_accessible_image_view.h",
       "views/apps/chrome_native_app_window_views.cc",
       "views/apps/chrome_native_app_window_views.h",
       "views/autofill/address_bubble_base_view.cc",
@@ -4724,6 +4719,7 @@ static_library("ui") {
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
       "//chrome/browser/ui/views",
+      "//chrome/browser/ui/views/accessibility",
       "//chrome/browser/ui/views/animations",
       "//chrome/browser/ui/views/apps/app_info_dialog",
       "//chrome/browser/ui/views/apps/app_info_dialog:impl",
@@ -4850,7 +4846,6 @@ static_library("ui") {
       # following headers get componentized:
       # c/b/ui/browser.h, browser_finder.h, browser_window.h
       # c/b/ui/views/chrome_layout_provider.h
-      # c/b/ui/views/accessibility/non_accessible_image_view.h
       # c/b/ui/views/controls/rich_controls_container_view.h, rich_hover_button.h
       # c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
@@ -5029,7 +5024,6 @@ static_library("ui") {
       sources += [
         "idle_dialog.h",
         "views/accessibility/accessibility_focus_highlight.cc",
-        "views/accessibility/accessibility_focus_highlight.h",
         "views/frame/opaque_browser_frame_view.cc",
         "views/frame/opaque_browser_frame_view.h",
         "views/frame/opaque_browser_frame_view_layout.cc",

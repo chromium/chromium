@@ -234,7 +234,7 @@ if (!is_android) {
       ]
       deps += [
         ":test_support",
-        "//chrome/test:uia_test_support",
+        "//chrome/browser/ui/views/accessibility:uia_test_support",
       ]
     } else {
       deps += [ "//chrome/browser/accessibility/live_caption:test_support" ]
