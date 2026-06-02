@@ -5,21 +5,24 @@
 package org.chromium.chrome.browser.ui.autofill;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
+import android.view.View.MeasureSpec;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** Implements the content for the @memory bottom sheet. */
 @NullMarked
 class AtMemoryBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
+    private final BottomSheetController mBottomSheetController;
 
-    AtMemoryBottomSheetContent(View contentView) {
+    AtMemoryBottomSheetContent(View contentView, BottomSheetController bottomSheetController) {
         mContentView = contentView;
+        mBottomSheetController = bottomSheetController;
     }
 
     @Override
@@ -62,7 +65,9 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        return BottomSheetContent.HeightMode.DISABLED;
+        return Math.min(
+                getSheetContentHeight() / (float) mBottomSheetController.getContainerHeight(),
+                0.9f);
     }
 
     @Override
@@ -83,7 +88,8 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return Resources.ID_NULL;
+        // TODO(crbug.com/502801668): Implement a string.
+        return R.string.done;
     }
 
     @Override
@@ -96,5 +102,17 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
     public int getSheetClosedAccessibilityStringId() {
         // TODO(crbug.com/502801668): Implement a string.
         return R.string.done;
+    }
+
+    // Measures the content height to achieve a wrap-content effect for the bottom sheet.
+    // Using HeightMode.WRAP_CONTENT for getFullHeightRatio() disables the view from being
+    // expandable.
+    private float getSheetContentHeight() {
+        mContentView.measure(
+                MeasureSpec.makeMeasureSpec(
+                        mBottomSheetController.getContainerWidth(), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(
+                        mBottomSheetController.getContainerHeight(), MeasureSpec.AT_MOST));
+        return mContentView.getMeasuredHeight();
     }
 }

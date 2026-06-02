@@ -20,7 +20,7 @@ found in the LICENSE file.
   <dimen name="progress_bar_dialog_margin_bottom">30dp</dimen>
   <dimen name="progress_bar_description_spacing">5dp</dimen>
 
-  <dimen name="at_memory_flyout_divider_height">2dp</dimen>
+  <dimen name="at_memory_bottom_sheet_divider_height">2dp</dimen>
   <dimen name="at_memory_flyout_default_margin">16dp</dimen>
   <dimen name="at_memory_flyout_chip_padding_vertical">6dp</dimen>
   <dimen name="at_memory_suggestion_default_margin">16dp</dimen>
@@ -40,4 +40,5 @@ found in the LICENSE file.
   <dimen name="at_memory_icon_button_size">48dp</dimen>
   <dimen name="at_memory_suggestions_margin_top">20dp</dimen>
   <dimen name="at_memory_suggestion_item_height">64dp</dimen>
+  <dimen name="at_memory_search_bar_corner_radius">40dp</dimen>
 </resources>

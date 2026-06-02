@@ -89,7 +89,7 @@ found in the LICENSE file.
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="@dimen/at_memory_flyout_divider_height"
+            android:layout_height="@dimen/at_memory_bottom_sheet_divider_height"
             android:background="@macro/default_bg_color" />
 
         <TextView

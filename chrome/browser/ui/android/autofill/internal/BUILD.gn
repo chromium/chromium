@@ -19,6 +19,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediator.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetSuggestionProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetSuggestionView.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetSuggestionViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutContent.java",
@@ -50,6 +53,7 @@ android_library("java") {
     "//chrome/browser/ui/android/ephemeraltab:java",
     "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -132,7 +136,10 @@ robolectric_library("junit") {
 android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ui.autofill.internal"
-  sources = [ "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutViewRenderTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetViewRenderTest.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutViewRenderTest.java",
+  ]
   deps = [
     ":java",
     ":java_resources",
@@ -147,6 +154,7 @@ android_library("javatests") {
     "//components/browser_ui/widget/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

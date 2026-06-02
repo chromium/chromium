@@ -6,6 +6,6 @@ found in the LICENSE file.
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="?attr/colorSurfaceContainerHigh" />
+    <solid android:color="@macro/default_card_bg_color" />
     <corners android:radius="@dimen/at_memory_suggestions_corner_radius" />
 </shape>

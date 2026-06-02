@@ -14,6 +14,7 @@ found in the LICENSE file.
     android:paddingEnd="@dimen/at_memory_bottom_sheet_horizontal_margin"
     android:paddingTop="@dimen/at_memory_bottom_sheet_margin_top"
     android:paddingBottom="@dimen/at_memory_bottom_sheet_margin_bottom"
+    android:background="@drawable/bottom_sheet_background"
     android:orientation="vertical">
 
     <LinearLayout
@@ -53,15 +54,20 @@ found in the LICENSE file.
                 "@string/accessibility_toolbar_btn_delete_url" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/suggestions_view"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="@dimen/at_memory_suggestions_margin_top"
-        android:background="@drawable/at_memory_suggestions_bg"
-        android:clipToOutline="true"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/at_memory_bottom_sheet_suggestion_item"/>
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/suggestions_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/at_memory_suggestions_margin_top"
+            android:background="@drawable/at_memory_suggestions_bg"
+            android:clipToOutline="true"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/at_memory_bottom_sheet_suggestion_item"/>
+    </FrameLayout>
 
 </LinearLayout>
