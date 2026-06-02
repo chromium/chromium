@@ -1187,4 +1187,112 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   // fails unexpectedly.)
 }
 
+// Regression test for the install_in_progress_ guard. Install #1 sits at
+// the install dialog (no auto-accept), keeping the flag set; install #2
+// hits the early-return guard and rejects with AbortError.
+IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+                       ConcurrentInstallsRejected) {
+  GURL current_doc_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_with_id_test_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
+
+  base::HistogramTester histograms;
+
+  // Fire install #1; EXECUTE_SCRIPT_NO_RESOLVE_PROMISES returns immediately
+  // without awaiting the never-resolving promise.
+  ASSERT_TRUE(content::ExecJs(web_contents(), "navigator.install();",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Fire install #2 and wait for its rejection.
+  ASSERT_TRUE(TryInstallApp());
+  EXPECT_FALSE(ResultExists());
+  EXPECT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kAbortError);
+
+  // Install #2 should fail with kInstallInProgress.
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallServiceResult::kInstallInProgress,
+      1);
+  histograms.ExpectBucketCount(
+      kVariantedInstallResultUma,
+      web_app::WebInstallServiceResult::kInstallInProgress, 1);
+
+  // Both installs are current-document.
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallServiceType::kCurrentDocument, 2);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               web_app::WebInstallServiceType::kCurrentDocument,
+                               2);
+}
+
+// Verifies the install_in_progress_ guard resets after install #1 finishes,
+// allowing a second install on the same document to proceed past the guard.
+// Both installs are declined so their callbacks fire, exercising the
+// ScopedClosureRunner reset path. If the guard reset, install #2 should be
+// counted as kCanceledByUser; a kInstallInProgress count would indicate the
+// flag was not reset.
+IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+                       InstallInProgressResets) {
+  GURL current_doc_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_with_id_test_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
+
+  base::HistogramTester histograms;
+
+  {
+    web_app::test::ScopedAutoDeclineInstallDialogs auto_decline;
+    // Install #1: dialog is declined; promise rejects with AbortError.
+    ASSERT_TRUE(TryInstallApp());
+    EXPECT_FALSE(ResultExists());
+    EXPECT_TRUE(ErrorExists());
+    EXPECT_EQ(GetErrorName(), kAbortError);
+  }
+
+  // Clear JS state so install #2's outcome doesn't collide with install #1's.
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "delete window.webInstallResult;"
+                              "delete window.webInstallError;"));
+  ASSERT_FALSE(ResultExists());
+  ASSERT_FALSE(ErrorExists());
+
+  {
+    web_app::test::ScopedAutoAcceptWebAppDialogs auto_accept;
+    // Install #2: same document, same WebInstallServiceImpl instance. The guard
+    // should've reset, and dialogs auto *accept*, so this install will succeed.
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        install_future;
+    SetInstalledCallbackForTesting(install_future.GetCallback());
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
+
+    ASSERT_TRUE(TryInstallApp());
+
+    // Verify that the app was installed.
+    EXPECT_TRUE(install_future.Wait());
+    ASSERT_TRUE(install_future.Get<webapps::InstallResultCode>() ==
+                webapps::InstallResultCode::kSuccessNewInstall);
+
+    // Verify that the app was launched.
+    auto* app_browser = browser_created_observer.Wait();
+    ASSERT_TRUE(web_app::AppBrowserController::IsWebApp(app_browser));
+    auto* app_web_contents =
+        app_browser->tab_strip_model()->GetActiveWebContents();
+
+    // Validate JS results.
+    EXPECT_TRUE(ResultExists(app_web_contents));
+    EXPECT_FALSE(ErrorExists(app_web_contents));
+    EXPECT_EQ(GetManifestIdResult(app_web_contents),
+              GenerateManifestId("some_id", current_doc_url).spec());
+  }
+
+  // One user cancellation and one successful install, and crucially zero
+  // install in progress rejections.
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallServiceResult::kCanceledByUser, 1);
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               web_app::WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallServiceResult::kInstallInProgress,
+      0);
+}
+
 }  // namespace web_app
