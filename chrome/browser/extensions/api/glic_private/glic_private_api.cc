@@ -64,6 +64,7 @@ constexpr char kPrompt[] = "prompt";
 constexpr char kGlicApiInvokeSyntheticFieldTrialName[] =
     "GlicApiInvokeSyntheticFieldTrial";
 constexpr char kUniversalCartGroupName[] = "UniversalCart";
+constexpr char kGlicServiceNotAvailable[] = "Glic service not available";
 
 using PromptCallback =
     base::OnceCallback<void(extensions::api::glic_private::ErrorCode,
@@ -84,7 +85,10 @@ enum class GlicPrivateApiStatusCodeHistogramValue {
   kLocalGlicNotEnabledAndConsented = 10,
   kLocalAccountMismatch = 11,
   kLocalInvalidDocumentId = 12,
-  kMaxValue = kLocalInvalidDocumentId,
+  kLocalConversationNotFound = 13,
+  kLocalNoBoundTabs = 14,
+  kLocalTabNotInWindow = 15,
+  kMaxValue = kLocalTabNotInWindow,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrivateApiStatusCodeHistogramValue)
 
@@ -123,6 +127,12 @@ GlicPrivateApiStatusCodeHistogramValue ConvertStatusCodeToHistogramValue(
       return GlicPrivateApiStatusCodeHistogramValue::kLocalAccountMismatch;
     case extensions::api::glic_private::ErrorCode::kLocalInvalidDocumentId:
       return GlicPrivateApiStatusCodeHistogramValue::kLocalInvalidDocumentId;
+    case extensions::api::glic_private::ErrorCode::kLocalConversationNotFound:
+      return GlicPrivateApiStatusCodeHistogramValue::kLocalConversationNotFound;
+    case extensions::api::glic_private::ErrorCode::kLocalNoBoundTabs:
+      return GlicPrivateApiStatusCodeHistogramValue::kLocalNoBoundTabs;
+    case extensions::api::glic_private::ErrorCode::kLocalTabNotInWindow:
+      return GlicPrivateApiStatusCodeHistogramValue::kLocalTabNotInWindow;
   }
 }
 
@@ -530,7 +540,10 @@ void GlicPrivateInvokeFunction::OnPromptRetrieved(
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
                                                          /*create=*/true);
-  CHECK(glic_service);
+  if (!glic_service) {
+    Respond(Error(kGlicServiceNotAvailable));
+    return;
+  }
 
   glic_service->InvokeWithAutoSubmit(
       glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
@@ -554,12 +567,55 @@ ExtensionFunction::ResponseAction GlicPrivateHasConversationFunction::Run() {
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
                                                          /*create=*/true);
-  CHECK(glic_service);
+  if (!glic_service) {
+    return RespondNow(Error(kGlicServiceNotAvailable));
+  }
 
   return RespondNow(
       ArgumentList(api::glic_private::HasConversation::Results::Create(
           glic_service->instance_coordinator().IsConversationPresent(
               params->conversation_id))));
+}
+
+GlicPrivateActivateTabWithConversationFunction::
+    GlicPrivateActivateTabWithConversationFunction() = default;
+GlicPrivateActivateTabWithConversationFunction::
+    ~GlicPrivateActivateTabWithConversationFunction() = default;
+
+ExtensionFunction::ResponseAction
+GlicPrivateActivateTabWithConversationFunction::Run() {
+  std::optional<api::glic_private::ActivateTabWithConversation::Params> params =
+      api::glic_private::ActivateTabWithConversation::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
+                                                         /*create=*/true);
+  // Can be null if the service cannot be created for the profile (e.g.,
+  // incognito).
+  if (!glic_service) {
+    return RespondNow(Error(kGlicServiceNotAvailable));
+  }
+
+  glic::GlicInstanceCoordinator::ActivateTabResult cxx_result =
+      glic_service->instance_coordinator().ActivateTabWithConversation(
+          params->conversation_id);
+
+  switch (cxx_result) {
+    case glic::GlicInstanceCoordinator::ActivateTabResult::kSuccess:
+      return RespondNow(NoArguments());
+    case glic::GlicInstanceCoordinator::ActivateTabResult::
+        kConversationNotFound:
+      return RespondNow(Error(api::glic_private::ToString(
+          api::glic_private::ErrorCode::kLocalConversationNotFound)));
+    case glic::GlicInstanceCoordinator::ActivateTabResult::kNoBoundTabs:
+      return RespondNow(Error(api::glic_private::ToString(
+          api::glic_private::ErrorCode::kLocalNoBoundTabs)));
+    case glic::GlicInstanceCoordinator::ActivateTabResult::kTabNotInWindow:
+      return RespondNow(Error(api::glic_private::ToString(
+          api::glic_private::ErrorCode::kLocalTabNotInWindow)));
+  }
 }
 
 }  // namespace extensions

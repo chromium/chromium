@@ -51,6 +51,13 @@ class GlicWidget;
 // GlicInstanceCoordinator is the interface for managing Glic instances.
 class GlicInstanceCoordinator {
  public:
+  enum class ActivateTabResult {
+    kSuccess,
+    kConversationNotFound,
+    kNoBoundTabs,
+    kTabNotInWindow,
+  };
+
   using StateObserver = PanelStateObserver;
   GlicInstanceCoordinator(const GlicInstanceCoordinator&) = delete;
   GlicInstanceCoordinator& operator=(const GlicInstanceCoordinator&) = delete;
@@ -60,6 +67,8 @@ class GlicInstanceCoordinator {
   virtual bool IsAnyPanelShowing() const = 0;
   virtual bool IsConversationPresent(
       const std::string& conversation_id) const = 0;
+  virtual ActivateTabResult ActivateTabWithConversation(
+      const std::string& conversation_id) = 0;
   virtual GlicInstance* GetInstanceForTab(
       const tabs::TabInterface* tab) const = 0;
   virtual GlicSharingManager& active_instance_sharing_manager() = 0;

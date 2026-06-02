@@ -97,6 +97,12 @@ void GlicInstanceCoordinatorMetrics::RecordSwitchConversationTarget(
                                 target);
 }
 
+void GlicInstanceCoordinatorMetrics::RecordActivateTabCandidateTabCount(
+    size_t count) {
+  base::UmaHistogramCounts100(
+      "Glic.ActivateTabWithConversation.CandidateTabCount", count);
+}
+
 void GlicInstanceCoordinatorMetrics::OnMemoryPressure(
     base::MemoryPressureLevel level) {
   std::string_view suffix = (level == base::MEMORY_PRESSURE_LEVEL_MODERATE)

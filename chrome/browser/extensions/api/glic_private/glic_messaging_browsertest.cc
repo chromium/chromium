@@ -8,11 +8,15 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_features.h"
 #include "net/dns/mock_host_resolver.h"
@@ -179,6 +183,55 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingAccessDisabledBrowserTest,
 
   std::string result_string = result.ExtractString();
   EXPECT_EQ("Uncaught Error: local-glic-not-enabled", result_string);
+}
+
+// Tests that the extension cannot query the state of a tab if the tab's URL
+// indicates a different user account (e.g., authuser=1) than the one the
+// extension is bound to. This is a security check to prevent cross-account
+// data leakage.
+IN_PROC_BROWSER_TEST_F(GlicMessagingBrowserTest, AccountMismatch) {
+  Profile* test_profile = profile();
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(test_profile), "test@example.com",
+      signin::ConsentLevel::kSignin);
+
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(),
+                    GURL("https://gemini.google.com/empty.html?authuser=1")));
+
+  // Wake up the service worker by sending a message.
+  ExecuteInvoke(GetActiveWebContents(), "dummy", "dummy");
+
+  content::RenderFrameHost* rfh = GetActiveWebContents()->GetPrimaryMainFrame();
+  std::string document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(rfh).ToString();
+
+  std::string script = base::StringPrintf(
+      R"(
+      (async () => {
+        try {
+          await chrome.glicPrivate.getState('%s');
+          chrome.test.sendScriptResult('unexpected_success');
+        } catch (e) {
+          chrome.test.sendScriptResult(e.message);
+        }
+      })()
+      )",
+      document_id.c_str());
+
+  base::Value result = BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(), script,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+
+  EXPECT_TRUE(result.is_string());
+  EXPECT_TRUE(result.GetString().find("local-account-mismatch") !=
+              std::string::npos)
+      << "Expected 'local-account-mismatch' but got: " << result.GetString();
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

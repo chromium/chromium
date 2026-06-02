@@ -194,6 +194,7 @@ class GlicInstanceImpl : public GlicInstance,
   void SetIdForRestoration(InstanceId id);
   std::optional<std::string> conversation_id() const override;
   std::string conversation_title() const override;
+  std::vector<tabs::TabInterface*> GetBoundTabs() const;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
   base::CallbackListSubscription AddConversationInfoChangedCallback(

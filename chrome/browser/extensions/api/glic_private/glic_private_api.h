@@ -71,6 +71,25 @@ class GlicPrivateHasConversationFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class GlicPrivateActivateTabWithConversationFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("glicPrivate.activateTabWithConversation",
+                             GLICPRIVATE_ACTIVATETABWITHCONVERSATION)
+
+  GlicPrivateActivateTabWithConversationFunction();
+  GlicPrivateActivateTabWithConversationFunction(
+      const GlicPrivateActivateTabWithConversationFunction&) = delete;
+  GlicPrivateActivateTabWithConversationFunction& operator=(
+      const GlicPrivateActivateTabWithConversationFunction&) = delete;
+
+ protected:
+  ~GlicPrivateActivateTabWithConversationFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_GLIC_PRIVATE_GLIC_PRIVATE_API_H_

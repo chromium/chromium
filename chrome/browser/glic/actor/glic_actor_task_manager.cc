@@ -819,6 +819,29 @@ bool GlicActorTaskManager::IsActuating() const {
   return session_ && session_->IsActuating();
 }
 
+std::vector<tabs::TabInterface*> GlicActorTaskManager::GetLastActedTabs()
+    const {
+  std::vector<tabs::TabInterface*> target_tabs;
+  if (!session_) {
+    return target_tabs;
+  }
+  actor::TaskId task_id = session_->current_task_id();
+  if (task_id.is_null()) {
+    return target_tabs;
+  }
+  actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
+  if (!task) {
+    return target_tabs;
+  }
+  actor::ActorTask::TabHandleSet handle_set = task->GetLastActedTabs();
+  for (const auto& handle : handle_set) {
+    if (tabs::TabInterface* tab = handle.Get()) {
+      target_tabs.push_back(tab);
+    }
+  }
+  return target_tabs;
+}
+
 base::CallbackListSubscription
 GlicActorTaskManager::AddActuatingChangedCallback(
     base::RepeatingCallback<void(bool)> callback) {

@@ -74,6 +74,9 @@ class GlicInstanceCoordinatorMetrics {
       const std::optional<std::string>& target_instance_conversation_id,
       raw_ptr<GlicInstance> active_instance);
 
+  // Called when activating a tab with a conversation to record candidate count.
+  void RecordActivateTabCandidateTabCount(size_t count);
+
   // Called on memory pressure events to record memory footprint metrics.
   void OnMemoryPressure(base::MemoryPressureLevel level);
 

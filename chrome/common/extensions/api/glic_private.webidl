@@ -70,10 +70,11 @@ enum ErrorCode {
   "local-glic-actuation-not-allowed",
   "local-glic-not-enabled-and-consented",
   "local-account-mismatch",
-  "local-invalid-document-id"
+  "local-invalid-document-id",
+  "local-conversation-not-found",
+  "local-no-bound-tabs",
+  "local-tab-not-in-window"
 };
-
-
 
 // Private API for Gemini (Glic) synchronization.
 [implemented_in="chrome/browser/extensions/api/glic_private/glic_private_api.h"]
@@ -91,6 +92,12 @@ interface GlicPrivate {
   // |Returns|: Promise that resolves to true if the conversation is present.
   // |PromiseValue|: isPresent: True if conversation is present, false otherwise.
   static Promise<boolean> hasConversation(DOMString conversationId);
+
+  // Activates a tab with a specific conversation open in the side panel.
+  // |Returns|: Promise that resolves when the activation operation is
+  // successful.
+  static Promise<undefined> activateTabWithConversation(
+      DOMString conversationId);
 };
 
 partial interface Browser {

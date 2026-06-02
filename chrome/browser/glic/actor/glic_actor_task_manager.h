@@ -79,6 +79,9 @@ class GlicActorTaskManager {
   void CancelTask();
   bool IsActuating() const;
 
+  // Returns the last acted tabs for the current task.
+  std::vector<tabs::TabInterface*> GetLastActedTabs() const;
+
   // Adds a callback that is run when the actuating state changes.
   base::CallbackListSubscription AddActuatingChangedCallback(
       base::RepeatingCallback<void(bool)> callback);
@@ -121,6 +124,8 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
 
   // GlicActorClientSessionInterface:
   mojom::ActorClient* GetClient() override;
+
+  actor::TaskId current_task_id() const { return current_task_id_; }
 
   // mojom::ActorHandler:
   void GetContextForActorFromTab(
