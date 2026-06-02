@@ -1336,4 +1336,52 @@ public class UrlBarUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(keyboardVisibilityDelegate).showKeyboard(mUrlBar);
     }
+
+    @Test
+    public void testCursorVisibility_WindowFocusChanges() {
+        doReturn(true).when(mUrlBar).isFocused();
+
+        // Window gains focus
+        doReturn(true).when(mUrlBar).hasWindowFocus();
+        mUrlBar.onWindowFocusChanged(true);
+        mUrlBar.setCursorVisible(true);
+        assertTrue(mUrlBar.isCursorVisible());
+
+        // Window loses focus
+        doReturn(false).when(mUrlBar).hasWindowFocus();
+        mUrlBar.onWindowFocusChanged(false);
+        assertFalse(mUrlBar.isCursorVisible());
+
+        // Window gains focus again
+        doReturn(true).when(mUrlBar).hasWindowFocus();
+        mUrlBar.onWindowFocusChanged(true);
+        assertTrue(mUrlBar.isCursorVisible());
+    }
+
+    @Test
+    public void testCursorVisibility_WindowFocusGained_NotFocused() {
+        doReturn(false).when(mUrlBar).isFocused();
+        doReturn(false).when(mUrlBar).hasWindowFocus();
+        mUrlBar.onWindowFocusChanged(false);
+        mUrlBar.setCursorVisible(true);
+        assertFalse(mUrlBar.isCursorVisible());
+
+        doReturn(true).when(mUrlBar).hasWindowFocus();
+        mUrlBar.onWindowFocusChanged(true);
+        assertFalse(mUrlBar.isCursorVisible());
+    }
+
+    @Test
+    public void testCursorVisibility_SetVisible_NoWindowFocus() {
+        doReturn(true).when(mUrlBar).isFocused();
+        doReturn(false).when(mUrlBar).hasWindowFocus();
+        mUrlBar.onWindowFocusChanged(false);
+
+        mUrlBar.setCursorVisible(true);
+        assertFalse(mUrlBar.isCursorVisible());
+
+        doReturn(true).when(mUrlBar).hasWindowFocus();
+        mUrlBar.onWindowFocusChanged(true);
+        assertTrue(mUrlBar.isCursorVisible());
+    }
 }

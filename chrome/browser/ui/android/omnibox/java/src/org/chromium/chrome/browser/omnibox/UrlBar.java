@@ -115,6 +115,7 @@ public class UrlBar extends AutocompleteEditText {
     private final Rect mClipBounds = new Rect();
 
     private boolean mFocused;
+    private boolean mDesiredCursorVisible = true;
     private boolean mFocusEventEmitted;
     private boolean mAllowFocus = true;
     private boolean mAllowMultilineInput;
@@ -396,6 +397,7 @@ public class UrlBar extends AutocompleteEditText {
             mFocusEventEmitted = false;
         }
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
+        updateCursorVisibility();
 
         updateUrlBarForMultilineInput();
         setHorizontalFadingEdgeEnabled(!focused);
@@ -412,6 +414,16 @@ public class UrlBar extends AutocompleteEditText {
             setEllipsize(focused ? null : TextUtils.TruncateAt.END);
             if (focused) clearBoundsEllipsisSpans(getText());
         }
+    }
+
+    @Override
+    public void setCursorVisible(boolean visible) {
+        mDesiredCursorVisible = visible;
+        updateCursorVisibility();
+    }
+
+    private void updateCursorVisibility() {
+        super.setCursorVisible(mDesiredCursorVisible && hasWindowFocus() && isFocused());
     }
 
     @Override
@@ -500,6 +512,7 @@ public class UrlBar extends AutocompleteEditText {
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
         if (DEBUG) Log.i(TAG, "onWindowFocusChanged: " + hasWindowFocus);
+        updateCursorVisibility();
         if (!hasWindowFocus || !isFocused()) return;
         if (mUrlBarDelegate != null && mUrlBarDelegate.isKeyboardSuppressed()) return;
 
