@@ -163,10 +163,10 @@ SandboxFileSystemBackendDelegate::SandboxFileSystemBackendDelegate(
       file_system_usage_cache_(std::make_unique<FileSystemUsageCache>(
           file_system_options.is_incognito())),
       quota_observer_(
-          std::make_unique<SandboxQuotaObserver>(quota_manager_proxy_,
-                                                 file_task_runner_,
-                                                 obfuscated_file_util(),
-                                                 usage_cache())),
+          base::MakeRefCounted<SandboxQuotaObserver>(quota_manager_proxy_,
+                                                     file_task_runner_,
+                                                     obfuscated_file_util(),
+                                                     usage_cache())),
       quota_reservation_manager_(std::make_unique<QuotaReservationManager>(
           std::make_unique<QuotaBackendImpl>(file_task_runner_,
                                              obfuscated_file_util(),
@@ -179,11 +179,22 @@ SandboxFileSystemBackendDelegate::SandboxFileSystemBackendDelegate(
 SandboxFileSystemBackendDelegate::~SandboxFileSystemBackendDelegate() {
   DETACH_FROM_THREAD(io_thread_checker_);
 
+  // `quota_observer_` holds a `raw_ptr` to `sandbox_file_util_` and
+  // `file_system_usage_cache_` so it must be disabled (clearing those
+  // pointers) before they are freed.
+  quota_observer_->Disable();
+  for (auto& pair : update_observers_) {
+    pair.second.Shutdown();
+  }
+  for (auto& pair : change_observers_) {
+    pair.second.Shutdown();
+  }
+  for (auto& pair : access_observers_) {
+    pair.second.Shutdown();
+  }
+
   if (!file_task_runner_->RunsTasksInCurrentSequence()) {
     DeleteSoon(file_task_runner_.get(), quota_reservation_manager_.release());
-    // `quota_observer_` depends on `sandbox_file_util_` and
-    // `file_system_usage_cache_` so it must be released first.
-    DeleteSoon(file_task_runner_.get(), quota_observer_.release());
     // Clear pointer to |this| to avoid holding a dangling ptr.
     obfuscated_file_util()->sandbox_delegate_ = nullptr;
     DeleteSoon(file_task_runner_.get(), sandbox_file_util_.release());
@@ -417,35 +428,35 @@ SandboxFileSystemBackendDelegate::CreateQuotaReservationOnFileTaskRunner(
 
 void SandboxFileSystemBackendDelegate::AddFileUpdateObserver(
     FileSystemType type,
-    FileUpdateObserver* observer,
+    scoped_refptr<FileUpdateObserver> observer,
     base::SequencedTaskRunner* task_runner) {
 #if DCHECK_IS_ON()
   DCHECK(!is_filesystem_opened_ || io_thread_checker_.CalledOnValidThread());
 #endif
   update_observers_[type] =
-      update_observers_[type].AddObserver(observer, task_runner);
+      update_observers_[type].AddObserver(std::move(observer), task_runner);
 }
 
 void SandboxFileSystemBackendDelegate::AddFileChangeObserver(
     FileSystemType type,
-    FileChangeObserver* observer,
+    scoped_refptr<FileChangeObserver> observer,
     base::SequencedTaskRunner* task_runner) {
 #if DCHECK_IS_ON()
   DCHECK(!is_filesystem_opened_ || io_thread_checker_.CalledOnValidThread());
 #endif
   change_observers_[type] =
-      change_observers_[type].AddObserver(observer, task_runner);
+      change_observers_[type].AddObserver(std::move(observer), task_runner);
 }
 
 void SandboxFileSystemBackendDelegate::AddFileAccessObserver(
     FileSystemType type,
-    FileAccessObserver* observer,
+    scoped_refptr<FileAccessObserver> observer,
     base::SequencedTaskRunner* task_runner) {
 #if DCHECK_IS_ON()
   DCHECK(!is_filesystem_opened_ || io_thread_checker_.CalledOnValidThread());
 #endif
   access_observers_[type] =
-      access_observers_[type].AddObserver(observer, task_runner);
+      access_observers_[type].AddObserver(std::move(observer), task_runner);
 }
 
 const UpdateObserverList* SandboxFileSystemBackendDelegate::GetUpdateObservers(

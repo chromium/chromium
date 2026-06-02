@@ -81,7 +81,9 @@ LocalFileChangeTracker::LocalFileChangeTracker(
     const base::FilePath& base_path,
     leveldb::Env* env_override,
     base::SequencedTaskRunner* file_task_runner)
-    : initialized_(false),
+    : base::RefCountedDeleteOnSequence<LocalFileChangeTracker>(
+          file_task_runner),
+      initialized_(false),
       file_task_runner_(file_task_runner),
       tracker_db_(std::make_unique<TrackerDB>(base_path, env_override)),
       current_change_seq_number_(0),
@@ -92,8 +94,25 @@ LocalFileChangeTracker::~LocalFileChangeTracker() {
   tracker_db_.reset();
 }
 
+void LocalFileChangeTracker::AddRef() const {
+  base::RefCountedDeleteOnSequence<LocalFileChangeTracker>::AddRef();
+}
+
+void LocalFileChangeTracker::Release() const {
+  base::RefCountedDeleteOnSequence<LocalFileChangeTracker>::Release();
+}
+
+void LocalFileChangeTracker::Disable() {
+  base::AutoLock lock(is_disabled_lock_);
+  is_disabled_ = true;
+}
+
 void LocalFileChangeTracker::OnStartUpdate(const FileSystemURL& url) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
+  base::AutoLock lock(is_disabled_lock_);
+  if (is_disabled_) {
+    return;
+  }
   if (base::Contains(changes_, url) || base::Contains(demoted_changes_, url)) {
     return;
   }
@@ -101,21 +120,36 @@ void LocalFileChangeTracker::OnStartUpdate(const FileSystemURL& url) {
   MarkDirtyOnDatabase(url);
 }
 
-void LocalFileChangeTracker::OnEndUpdate(const FileSystemURL& url) {}
+void LocalFileChangeTracker::OnEndUpdate(const FileSystemURL& url) {
+  // If you add code in here, make sure to take the lock and check
+  // `is_disabled_`.
+}
 
 void LocalFileChangeTracker::OnCreateFile(const FileSystemURL& url) {
+  base::AutoLock lock(is_disabled_lock_);
+  if (is_disabled_) {
+    return;
+  }
   RecordChange(url, FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
                                SYNC_FILE_TYPE_FILE));
 }
 
 void LocalFileChangeTracker::OnCreateFileFrom(const FileSystemURL& url,
                                               const FileSystemURL& src) {
+  base::AutoLock lock(is_disabled_lock_);
+  if (is_disabled_) {
+    return;
+  }
   RecordChange(url, FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
                                SYNC_FILE_TYPE_FILE));
 }
 
 void LocalFileChangeTracker::OnMoveFileFrom(const FileSystemURL& url,
                                             const FileSystemURL& src) {
+  base::AutoLock lock(is_disabled_lock_);
+  if (is_disabled_) {
+    return;
+  }
   RecordChange(url, FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
                                SYNC_FILE_TYPE_FILE));
   RecordChange(src,
@@ -123,21 +157,37 @@ void LocalFileChangeTracker::OnMoveFileFrom(const FileSystemURL& url,
 }
 
 void LocalFileChangeTracker::OnRemoveFile(const FileSystemURL& url) {
+  base::AutoLock lock(is_disabled_lock_);
+  if (is_disabled_) {
+    return;
+  }
   RecordChange(url, FileChange(FileChange::FILE_CHANGE_DELETE,
                                SYNC_FILE_TYPE_FILE));
 }
 
 void LocalFileChangeTracker::OnModifyFile(const FileSystemURL& url) {
+  base::AutoLock lock(is_disabled_lock_);
+  if (is_disabled_) {
+    return;
+  }
   RecordChange(url, FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
                                SYNC_FILE_TYPE_FILE));
 }
 
 void LocalFileChangeTracker::OnCreateDirectory(const FileSystemURL& url) {
+  base::AutoLock lock(is_disabled_lock_);
+  if (is_disabled_) {
+    return;
+  }
   RecordChange(url, FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
                                SYNC_FILE_TYPE_DIRECTORY));
 }
 
 void LocalFileChangeTracker::OnRemoveDirectory(const FileSystemURL& url) {
+  base::AutoLock lock(is_disabled_lock_);
+  if (is_disabled_) {
+    return;
+  }
   RecordChange(url, FileChange(FileChange::FILE_CHANGE_DELETE,
                                SYNC_FILE_TYPE_DIRECTORY));
 }

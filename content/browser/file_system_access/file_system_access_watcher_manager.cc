@@ -63,13 +63,16 @@ FileSystemAccessWatcherManager::FileSystemAccessWatcherManager(
     FileSystemAccessManagerImpl* manager,
     base::PassKey<FileSystemAccessManagerImpl> /*pass_key*/)
     : manager_(manager),
-      bucket_path_watcher_(std::make_unique<FileSystemAccessBucketPathWatcher>(
-          base::WrapRefCounted(manager_->context()),
-          base::PassKey<FileSystemAccessWatcherManager>())) {
+      bucket_path_watcher_(
+          base::MakeRefCounted<FileSystemAccessBucketPathWatcher>(
+              base::WrapRefCounted(manager_->context()),
+              base::PassKey<FileSystemAccessWatcherManager>())) {
   RegisterSource(bucket_path_watcher_.get());
 }
 
-FileSystemAccessWatcherManager::~FileSystemAccessWatcherManager() = default;
+FileSystemAccessWatcherManager::~FileSystemAccessWatcherManager() {
+  bucket_path_watcher_->Disable();
+}
 
 void FileSystemAccessWatcherManager::BindObserverHost(
     const BindingContext& binding_context,

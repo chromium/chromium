@@ -651,8 +651,8 @@ void LocalFileSyncContext::InitializeFileSystemContextOnIOThread(
     // Create and initialize LocalFileChangeTracker and call back this method
     // later again.
     std::set<GURL>* origins_with_changes = new std::set<GURL>;
-    std::unique_ptr<LocalFileChangeTracker>* tracker_ptr(
-        new std::unique_ptr<LocalFileChangeTracker>);
+    scoped_refptr<LocalFileChangeTracker>* tracker_ptr(
+        new scoped_refptr<LocalFileChangeTracker>);
     file_system_context->default_file_task_runner()->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
@@ -681,13 +681,13 @@ void LocalFileSyncContext::InitializeFileSystemContextOnIOThread(
 }
 
 SyncStatusCode LocalFileSyncContext::InitializeChangeTrackerOnFileThread(
-    std::unique_ptr<LocalFileChangeTracker>* tracker_ptr,
+    scoped_refptr<LocalFileChangeTracker>* tracker_ptr,
     FileSystemContext* file_system_context,
     std::set<GURL>* origins_with_changes) {
   DCHECK(file_system_context);
   DCHECK(tracker_ptr);
   DCHECK(origins_with_changes);
-  *tracker_ptr = std::make_unique<LocalFileChangeTracker>(
+  *tracker_ptr = base::MakeRefCounted<LocalFileChangeTracker>(
       file_system_context->partition_path(), env_override_,
       file_system_context->default_file_task_runner());
   const SyncStatusCode status = (*tracker_ptr)->Initialize(file_system_context);
@@ -709,7 +709,7 @@ SyncStatusCode LocalFileSyncContext::InitializeChangeTrackerOnFileThread(
 }
 
 void LocalFileSyncContext::DidInitializeChangeTrackerOnIOThread(
-    std::unique_ptr<LocalFileChangeTracker>* tracker_ptr,
+    scoped_refptr<LocalFileChangeTracker>* tracker_ptr,
     const GURL& source_url,
     FileSystemContext* file_system_context,
     std::set<GURL>* origins_with_changes,

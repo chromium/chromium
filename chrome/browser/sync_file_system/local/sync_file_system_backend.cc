@@ -52,8 +52,7 @@ SyncFileSystemBackend::SyncFileSystemBackend(Profile* profile)
 
 SyncFileSystemBackend::~SyncFileSystemBackend() {
   if (change_tracker_) {
-    GetDelegate()->file_task_runner()->DeleteSoon(
-        FROM_HERE, change_tracker_.release());
+    change_tracker_->Disable();
   }
 }
 
@@ -210,7 +209,7 @@ SyncFileSystemBackend* SyncFileSystemBackend::GetBackend(
 }
 
 void SyncFileSystemBackend::SetLocalFileChangeTracker(
-    std::unique_ptr<LocalFileChangeTracker> tracker) {
+    scoped_refptr<LocalFileChangeTracker> tracker) {
   DCHECK(!change_tracker_);
   DCHECK(tracker);
   change_tracker_ = std::move(tracker);

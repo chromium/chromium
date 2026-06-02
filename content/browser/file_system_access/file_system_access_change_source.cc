@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 
 #include "base/functional/callback.h"
+#include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 
 namespace content {
 
@@ -87,6 +88,18 @@ FileSystemAccessChangeSource::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+storage::SandboxFileSystemBackendDelegate*
+FileSystemAccessChangeSource::sandbox_delegate() const {
+  base::AutoLock lock(file_system_context_lock_);
+  return file_system_context_ ? file_system_context_->sandbox_delegate()
+                              : nullptr;
+}
+
+void FileSystemAccessChangeSource::reset_file_system_context() {
+  base::AutoLock lock(file_system_context_lock_);
+  file_system_context_.reset();
+}
+
 size_t FileSystemAccessChangeSource::current_usage() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return 0;
@@ -116,9 +129,18 @@ void FileSystemAccessChangeSource::NotifyOfChange(
   const storage::FileSystemURL& root_url = scope().root_url();
   CHECK(root_url.is_valid());
 
+  scoped_refptr<storage::FileSystemContext> file_system_context;
+  {
+    base::AutoLock lock(file_system_context_lock_);
+    if (!file_system_context_) {
+      return;
+    }
+    file_system_context = file_system_context_;
+  }
+
   for (RawChangeObserver& observer : observers_) {
     observer.OnRawChange(
-        ToFileSystemURL(*file_system_context_, root_url, relative_path), error,
+        ToFileSystemURL(*file_system_context, root_url, relative_path), error,
         change_info, scope());
   }
 }
