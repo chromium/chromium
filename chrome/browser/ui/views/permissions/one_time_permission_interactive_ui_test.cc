@@ -141,7 +141,7 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
   void Initialize(InitializationOptions options, const GURL& url) {
     current_browser_ = browser();
     if (options == INITIALIZATION_NEWTAB) {
-      chrome::NewTab(current_browser_);
+      chrome::NewTab(current_browser_, NewTabTypes::kNoUserAction);
     } else if (options == INITIALIZATION_CLOSETAB_NEWTAB) {
       chrome::NewTabToRight(current_browser_);
       current_browser_->tab_strip_model()->CloseWebContentsAt(

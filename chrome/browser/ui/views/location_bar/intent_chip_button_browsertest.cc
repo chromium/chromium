@@ -126,7 +126,7 @@ class IntentChipButtonBrowserTest
   }
 
   void OpenNewTab(const GURL& url) {
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     EXPECT_TRUE(DoAndWaitForIntentPickerIconUpdate(
         [this] { NavigateToLaunchingPage(browser()); }));
     NavigateAndWaitForIconUpdate(url);

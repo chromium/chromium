@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, BasicOmniboxState) {
   ASSERT_TRUE(omnibox);
   EXPECT_EQ("about:blank", base::UTF16ToUTF8(omnibox->GetText()));
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   tab_strip_model->SelectTabAt(1);
 
   ASSERT_TRUE(

@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(CreateDesktopShortcutDialogViewBrowserTest,
 
   views::test::WidgetDestroyedWaiter destroy_waiter(widget);
   // Navigate to a new tab.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   destroy_waiter.Wait();
   EXPECT_EQ(

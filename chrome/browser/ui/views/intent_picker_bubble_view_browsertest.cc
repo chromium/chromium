@@ -106,7 +106,7 @@ class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
 
   content::WebContents* OpenNewTab(const GURL& url,
                                    const std::string& rel = "") {
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 

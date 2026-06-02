@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_P(TabStripDumpAccessibilityEventsTest,
   ui::AXPlatform::GetInstance().NotifyAssistiveTechChanged(
       ui::AssistiveTech::kJaws);
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   WaitForBrowserSerialization();
 
   widget()->Activate();

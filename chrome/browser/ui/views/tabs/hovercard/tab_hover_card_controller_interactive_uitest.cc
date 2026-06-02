@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInterstitialBrowserTest,
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(tab));
 
   // Open another tab.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   auto* const hover_card = SimulateHoverTab(browser(), 0);
 
   EXPECT_TRUE(hover_card->GetDomainViewForTesting()->GetText().empty());
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInterstitialBrowserTest,
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(tab));
 
   // Open another tab.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   auto* const hover_card = SimulateHoverTab(browser(), 0);
 
   EXPECT_EQ(base::UTF8ToUTF16(net::GetHostAndPort(url)),

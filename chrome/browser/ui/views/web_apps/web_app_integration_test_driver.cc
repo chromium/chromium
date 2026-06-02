@@ -2467,7 +2467,7 @@ void WebAppIntegrationTestDriver::NewAppTab(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  chrome::NewTab(GetAppBrowserForSite(site));
+  chrome::NewTab(GetAppBrowserForSite(site), NewTabTypes::kNoUserAction);
   AfterStateChangeAction();
 }
 
@@ -4733,7 +4733,7 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
   content::TestNavigationObserver url_observer(url);
   if (mode == NavigationMode::kNewTab) {
     url_observer.StartWatchingNewWebContents();
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url), WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));

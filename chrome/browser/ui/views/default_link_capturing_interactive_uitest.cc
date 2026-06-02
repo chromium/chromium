@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest, BubbleIgnored) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(web_app::ClickIntentPickerAndWaitForBubble(browser()));
   // Opening a new tab should ignore the current intent picker view.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   EXPECT_EQ(1, user_action_tester.GetActionCount("IntentPickerViewIgnored"));
   // Verify no new browsers have opened.

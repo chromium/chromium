@@ -2558,7 +2558,7 @@ IN_PROC_BROWSER_TEST_F(
   helper()->GrantWindowManagementPermission();
 
   // Add second tab.
-  chrome::NewTab(helper()->app_browser());
+  chrome::NewTab(helper()->app_browser(), NewTabTypes::kNoUserAction);
   ASSERT_EQ(helper()->app_browser()->tab_strip_model()->count(), 2);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(helper()->app_browser(), second_page_url()));

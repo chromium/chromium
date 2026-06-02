@@ -72,7 +72,7 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
   ~ConstrainedWindowViewTest() override = default;
 
   void CreateNewTabAndLayout(Browser* browser) {
-    chrome::NewTab(browser);
+    chrome::NewTab(browser, NewTabTypes::kNoUserAction);
     // Layout can trigger changes in web content visibility which in turn
     // affects the visibility of tab modal dialogs.
     RunScheduledLayouts();

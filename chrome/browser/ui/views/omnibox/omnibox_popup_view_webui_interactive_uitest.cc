@@ -262,7 +262,7 @@ class OmniboxPopupViewWebUIFullV2Test : public OmniboxPopupViewWebUITest {
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test, TabSwitchStateSync) {
   // 1. Create a new tab.
   int initial_tab_index = browser()->tab_strip_model()->active_index();
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   int new_tab_index = browser()->tab_strip_model()->active_index();
   ASSERT_NE(initial_tab_index, new_tab_index);

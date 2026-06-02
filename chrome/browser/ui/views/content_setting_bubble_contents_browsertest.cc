@@ -38,7 +38,7 @@ class ContentSettingBubbleContentsBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ContentSettingBubbleContentsBrowserTest,
                        DISABLED_HidesAtWebContentsClose) {
   // Create a second tab, so closing the test tab doesn't close the browser.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   // Navigate to the test page, and have it request and be denied geolocation
   // permissions.

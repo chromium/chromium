@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, BubblesCloseOnHide) {
   EXPECT_TRUE(zoom_view->GetVisible());
   EXPECT_TRUE(zoom_bubble_coordinator_->bubble());
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   chrome::SelectNextTab(browser());
 
   base::RunLoop().RunUntilIdle();

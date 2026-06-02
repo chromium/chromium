@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, TwoHungBrowsers) {
 
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(browser1->profile(), true));
-  chrome::NewTab(browser2);
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   content::WebContents* web_contents2 =
       browser2->tab_strip_model()->GetActiveWebContents();
   content::RenderWidgetHost* widget_host2 =
