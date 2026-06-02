@@ -58,7 +58,7 @@ found in the LICENSE file.
             android:src="@color/thumbnail_placeholder_on_primary_bg"/>
 
 
-        <TextView
+        <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
             android:id="@+id/memory_usage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,6 +69,12 @@ found in the LICENSE file.
             android:maxLines="1"
             android:visibility="gone"
             android:textDirection="locale"
+            android:drawableStart="@drawable/ic_speed_24dp"
+            app:chromeDrawableTint="@color/default_icon_color_tint_list"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            app:drawableWidth="16dp"
+            app:drawableHeight="16dp"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
     </LinearLayout>
 </org.chromium.chrome.browser.compositor.overlays.strip.StripTabHoverCardView>
