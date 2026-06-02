@@ -15,10 +15,10 @@ namespace media {
 // The initialization data for encrypted media files using the ISO Common
 // Encryption ('cenc') protection scheme may contain one or more protection
 // system specific header ('pssh') boxes.
-// ref: https://w3c.github.io/encrypted-media/cenc-format.html
+// ref: https://www.w3.org/TR/eme-initdata-cenc/
 
 // CENC SystemID for the Common System.
-// https://w3c.github.io/encrypted-media/cenc-format.html#common-system
+// https://www.w3.org/TR/eme-initdata-cenc/#common-system
 constexpr auto kCencCommonSystemId =
     std::to_array<uint8_t>({0x10, 0x77, 0xef, 0xec, 0xc0, 0xb2, 0x4d, 0x02,
                             0xac, 0xe3, 0x3c, 0x1e, 0x52, 0xe2, 0xfb, 0x4b});
