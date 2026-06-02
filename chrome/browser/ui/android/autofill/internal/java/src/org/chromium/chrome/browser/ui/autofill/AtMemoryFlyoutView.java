@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.autofill;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ class AtMemoryFlyoutView {
     private final ConstraintLayout mChipsContainer;
     private final Flow mChipsFlow;
     private final List<ChipView> mActiveChips = new ArrayList<>();
-    private @MonotonicNonNull Callback<String> mChipClickCallback;
+    private @MonotonicNonNull Callback<AutofillSuggestion> mSuggestionClickedCallback;
 
     private final View.OnLayoutChangeListener mChipsLayoutListener =
             new View.OnLayoutChangeListener() {
@@ -96,33 +96,31 @@ class AtMemoryFlyoutView {
         mManageButton.setOnClickListener(v -> callback.run());
     }
 
-    void setChipClickCallback(Callback<String> callback) {
-        assert mChipClickCallback == null;
-        assert mActiveChips.isEmpty();
-        mChipClickCallback = callback;
+    void setSuggestionClickCallback(Callback<AutofillSuggestion> callback) {
+        mSuggestionClickedCallback = callback;
     }
 
-    void setChipsData(List<Pair<String, String>> chipsData) {
+    void setSuggestions(List<AutofillSuggestion> suggestions) {
         // Remove old chips.
         for (ChipView chip : mActiveChips) {
             mChipsContainer.removeView(chip);
         }
         mActiveChips.clear();
 
-        int[] ids = new int[chipsData.size()];
+        int[] ids = new int[suggestions.size()];
         Context context = mContentView.getContext();
-        int i = 0;
-        for (Pair<String, String> suggestion : chipsData) {
+        for (int i = 0; i < suggestions.size(); i++) {
+            AutofillSuggestion suggestion = suggestions.get(i);
             ChipView chip = createChipView(context, mChipsContainer, suggestion);
             ids[i] = chip.getId();
             mChipsContainer.addView(chip);
             mActiveChips.add(chip);
-            i++;
         }
         mChipsFlow.setReferencedIds(ids);
     }
 
-    private ChipView createChipView(Context context, ViewGroup parent, Pair<String, String> data) {
+    private ChipView createChipView(
+            Context context, ViewGroup parent, AutofillSuggestion suggestion) {
         ChipView chip =
                 (ChipView)
                         LayoutInflater.from(context)
@@ -133,13 +131,14 @@ class AtMemoryFlyoutView {
         int id = View.generateViewId();
         chip.setId(id);
 
-        chip.getPrimaryTextView().setText(data.first);
+        chip.getPrimaryTextView().setText(suggestion.getLabel());
 
-        chip.setOnClickListener(v -> assumeNonNull(mChipClickCallback).onResult(data.first));
+        chip.setOnClickListener(
+                v -> assumeNonNull(mSuggestionClickedCallback).onResult(suggestion));
 
-        if (!data.second.isEmpty()) {
+        if (!suggestion.getSublabel().isEmpty()) {
             TextView secondaryTextView = chip.getSecondaryTextView();
-            secondaryTextView.setText(data.second);
+            secondaryTextView.setText(suggestion.getSublabel());
             secondaryTextView.setVisibility(View.VISIBLE);
         }
 
@@ -161,9 +160,9 @@ class AtMemoryFlyoutView {
                 primaryText.getPaddingStart(),
                 paddingVerticalPx,
                 primaryText.getPaddingEnd(),
-                data.second.isEmpty() ? paddingVerticalPx : 0);
+                suggestion.getSublabel().isEmpty() ? paddingVerticalPx : 0);
 
-        if (!data.second.isEmpty()) {
+        if (!suggestion.getSublabel().isEmpty()) {
             TextView secondaryText = chip.getSecondaryTextView();
             secondaryText.setPaddingRelative(
                     secondaryText.getPaddingStart(),

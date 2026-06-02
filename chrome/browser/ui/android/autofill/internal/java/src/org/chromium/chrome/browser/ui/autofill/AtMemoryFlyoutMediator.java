@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
-import android.util.Pair;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -24,8 +23,8 @@ class AtMemoryFlyoutMediator {
         mModel = model;
     }
 
-    void setChipsData(List<Pair<String, String>> chips) {
-        mModel.set(AtMemoryFlyoutProperties.CHIPS_DATA, chips);
+    void setSuggestions(List<AutofillSuggestion> suggestions) {
+        mModel.set(AtMemoryFlyoutProperties.SUGGESTIONS, suggestions);
     }
 
     void onDismissed() {

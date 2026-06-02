@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.util.Pair;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
@@ -84,13 +84,13 @@ public class AtMemoryFlyoutCoordinatorTest {
     // or cropped data into forms.
     @Test
     public void testChipClickNotifiesDelegate() {
-        List<Pair<String, String>> chipsData = new ArrayList<>();
-        chipsData.add(new Pair<>("Elisa Beckett", ""));
-        chipsData.add(new Pair<>("123530", "Passport number"));
-        chipsData.add(new Pair<>("07-05-2026", "Issue date"));
-        chipsData.add(new Pair<>("07-05-2036", "Expiration date"));
-        chipsData.add(new Pair<>("USA", ""));
-        mCoordinator.show(chipsData);
+        List<AutofillSuggestion> suggestions = new ArrayList<>();
+        suggestions.add(createAutofillSuggestion("Elisa Beckett", ""));
+        suggestions.add(createAutofillSuggestion("123530", "Passport number"));
+        suggestions.add(createAutofillSuggestion("07-05-2026", "Issue date"));
+        suggestions.add(createAutofillSuggestion("07-05-2036", "Expiration date"));
+        suggestions.add(createAutofillSuggestion("USA", ""));
+        mCoordinator.show(suggestions);
         View view = mCoordinator.getViewForTesting();
         ViewGroup chipsContainer = view.findViewById(R.id.flyout_chips_container);
 
@@ -99,10 +99,14 @@ public class AtMemoryFlyoutCoordinatorTest {
             View childView = chipsContainer.getChildAt(i);
             if (childView instanceof ChipView) {
                 childView.performClick();
-                verify(mMockDelegate).onChipClicked(eq(chipsData.get(chipIndex).first));
+                verify(mMockDelegate).onSuggestionClicked(eq(suggestions.get(chipIndex)));
                 chipIndex++;
             }
         }
-        assertEquals(chipsData.size(), chipIndex);
+        assertEquals(suggestions.size(), chipIndex);
+    }
+
+    private AutofillSuggestion createAutofillSuggestion(String label, String subLabel) {
+        return new AutofillSuggestion.Builder().setLabel(label).setSubLabel(subLabel).build();
     }
 }

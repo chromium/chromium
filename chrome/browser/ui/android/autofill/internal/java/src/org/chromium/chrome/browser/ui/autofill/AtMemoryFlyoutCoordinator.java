@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.ui.autofill;
 
 import android.content.Context;
-import android.util.Pair;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -53,9 +53,9 @@ class AtMemoryFlyoutCoordinator {
         /**
          * Called when a suggestion chip is clicked.
          *
-         * @param text The text label of the clicked chip.
+         * @param suggestion The clicked suggestion.
          */
-        void onChipClicked(String text);
+        void onSuggestionClicked(AutofillSuggestion suggestion);
     }
 
     AtMemoryFlyoutCoordinator(
@@ -67,7 +67,9 @@ class AtMemoryFlyoutCoordinator {
                         .with(AtMemoryFlyoutProperties.ON_BACK_CLICKED, delegate::onBackClicked)
                         .with(AtMemoryFlyoutProperties.ON_SOURCE_CLICKED, delegate::onSourceClicked)
                         .with(AtMemoryFlyoutProperties.ON_MANAGE_CLICKED, delegate::onManageClicked)
-                        .with(AtMemoryFlyoutProperties.ON_CHIP_CLICKED, delegate::onChipClicked)
+                        .with(
+                                AtMemoryFlyoutProperties.ON_SUGGESTION_CLICKED,
+                                delegate::onSuggestionClicked)
                         .build();
 
         mMediator = new AtMemoryFlyoutMediator(delegate, model);
@@ -79,9 +81,8 @@ class AtMemoryFlyoutCoordinator {
         PropertyModelChangeProcessor.create(model, view, AtMemoryFlyoutViewBinder::bind);
     }
 
-    // TODO(crbug.com/505255929): Handle and display chips data.
-    void show(List<Pair<String, String>> chipsData) {
-        mMediator.setChipsData(chipsData);
+    void show(List<AutofillSuggestion> suggestions) {
+        mMediator.setSuggestions(suggestions);
         if (mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
             mBottomSheetController.addObserver(mBottomSheetObserver);
         } else {

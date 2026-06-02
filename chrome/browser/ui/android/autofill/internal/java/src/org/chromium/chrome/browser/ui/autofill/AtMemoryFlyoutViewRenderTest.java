@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import android.app.Activity;
-import android.util.Pair;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.ViewGroup;
@@ -39,6 +38,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -152,13 +152,16 @@ public class AtMemoryFlyoutViewRenderTest {
                                             "From Gmail. Captured on May 5, 2025 in Munich,"
                                                     + " Germany")
                                     .with(
-                                            AtMemoryFlyoutProperties.CHIPS_DATA,
+                                            AtMemoryFlyoutProperties.SUGGESTIONS,
                                             Arrays.asList(
-                                                    new Pair<>("Elisa Beckett", ""),
-                                                    new Pair<>("123530", "Passport number"),
-                                                    new Pair<>("07-05-2032", "Issue date"),
-                                                    new Pair<>("07-05-2032", "Expiration date"),
-                                                    new Pair<>("USA", "")))
+                                                    createAutofillSuggestion("Elisa Beckett", ""),
+                                                    createAutofillSuggestion(
+                                                            "123530", "Passport number"),
+                                                    createAutofillSuggestion(
+                                                            "07-05-2032", "Issue date"),
+                                                    createAutofillSuggestion(
+                                                            "07-05-2032", "Expiration date"),
+                                                    createAutofillSuggestion("USA", "")))
                                     .build();
 
                     mView = new AtMemoryFlyoutView(themeWrapper);
@@ -173,5 +176,9 @@ public class AtMemoryFlyoutViewRenderTest {
 
         ViewUtils.waitForStableView(mView.getContentView());
         mRenderTestRule.render(mView.getContentView(), "at_memory_flyout_view");
+    }
+
+    private AutofillSuggestion createAutofillSuggestion(String label, String subLabel) {
+        return new AutofillSuggestion.Builder().setLabel(label).setSubLabel(subLabel).build();
     }
 }
