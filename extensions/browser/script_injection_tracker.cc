@@ -447,6 +447,13 @@ void AddMatchingScriptsToProcess(const Extension& extension,
                                   &any_frame_matches_user_scripts,
                                   &extension](content::RenderFrameHost* frame) {
     const GURL& url = frame->GetLastCommittedURL();
+    // Ignore error documents, which don't allow scripts to inject.
+    // We need to check whether the committed URL is empty first to avoid a
+    // CHECK in RenderFrameHostImpl:
+    // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/render_frame_host_impl.cc;l=3630-3637;drc=6c12109a8d828bb032f4307523753f0c9660a425.
+    if (!url.is_empty() && frame->IsErrorDocument()) {
+      return;
+    }
     if (!any_frame_matches_content_scripts) {
       any_frame_matches_content_scripts =
           DoWebViewScriptsMatch(extension, *frame) ||
