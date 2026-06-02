@@ -1335,6 +1335,14 @@
       default_value: "false",
     },
     {
+      // True when @navigation is used within if(), or @function, false
+      // otherwise.
+      name: "AffectedByFunctionalNavigation",
+      field_template: "monotonic_flag",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
       name: "HasAnchorFunctions",
       field_template: "monotonic_flag",
       field_group: "surround",

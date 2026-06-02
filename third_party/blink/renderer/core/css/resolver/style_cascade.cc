@@ -2308,6 +2308,7 @@ void StyleCascade::FlattenFunctionBody(
       }
     } else if (auto* navigation_rule =
                    DynamicTo<StyleRuleNavigation>(child.Get())) {
+      state_.StyleBuilder().SetAffectedByFunctionalNavigation();
       // TODO(crbug.com/493044687): Implement
       (void)navigation_rule;
     }
@@ -2832,8 +2833,11 @@ bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
     KleeneValue EvaluateNavigationExpNode(
         const NavigationExpNode& node) override {
       // Evaluate navigation() function
+      resolver_state_.StyleBuilder().SetAffectedByFunctionalNavigation();
+      StyleEngine& style_engine =
+          resolver_state_.GetDocument().GetStyleEngine();
       bool result =
-          node.NavigationTest().Matches(resolver_state_.GetDocument());
+          style_engine.EvaluateFunctionalNavigationQuery(node.NavigationTest());
       return result ? KleeneValue::kTrue : KleeneValue::kFalse;
     }
 

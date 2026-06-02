@@ -284,7 +284,6 @@ crbug.com/1462226 wpt_internal/prerender/restriction-web-auth.https.html [ Crash
 
 crbug.com/436805487 inspector-protocol/css/css-get-navigation-queries.js [ Failure ]
 crbug.com/436805487 wpt_internal/route/route-event-001.html [ Failure ]
-crbug.com/436805487 wpt_internal/route/route-condition-002.html [ Failure ]
 crbug.com/436805487 wpt_internal/route/route-match-pseudo-003.html [ Failure ]
 
 crbug.com/1461952 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]

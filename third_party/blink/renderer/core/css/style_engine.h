@@ -94,6 +94,7 @@ class LayoutQuote;
 class HTMLAnchorElement;
 class MediaQueryEvaluator;
 class MediaQuerySet;
+class NavigationTestExpression;
 class Node;
 class ReferenceFilterOperation;
 class RuleFeatureSet;
@@ -320,6 +321,13 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // which are evaluated when building the RuleSet.
   bool EvaluateFunctionalMediaQuery(const MediaQuerySet&);
   void MediaQueryAffectingValueChanged(MediaValueChange change);
+
+  // Evaluate and store the result of a navigation test expression. This is
+  // typically called during value resolution. If navigation query evaluation
+  // changes at some later point, we may have to mark affected elements for
+  // style recalc.
+  bool EvaluateFunctionalNavigationQuery(const NavigationTestExpression&);
+
   void UpdateActiveStyle();
 
   String PreferredStylesheetSetName() const {
@@ -1000,6 +1008,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // See EvaluateFunctionalMediaQuery
   void InvalidateFunctionalMediaDependentStylesIfNeeded();
 
+  // See EvaluateFunctionalNavigationQuery
+  void InvalidateFunctionalNavigationDependentStylesIfNeeded();
+
   MixinMap EffectiveMixinsForTreeScope(TreeScope& tree_scope);
 
   Member<Document> document_;
@@ -1269,6 +1280,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // [1] CSSParserImpl::ConsumeMediaRule
   HeapHashMap<Member<const MediaQuerySet>, bool>
       functional_media_query_results_;
+
+  HeapHashMap<Member<const NavigationTestExpression>, bool>
+      functional_navigation_query_results_;
 
   // Caches for random base values which are used for generating random values
   // for the CSS random() function. For element-shared values, that are not

@@ -351,10 +351,12 @@ bool MatchedPropertiesCache::IsStyleCacheable(
     // element's position in the DOM.
     return false;
   }
-  // Functional media queries cause the style to depend directly on
-  // the current MediaValues, without going through RuleSet invalidation.
-  // These values are not captured by the MatchResult.
-  if (builder.AffectedByFunctionalMedia()) {
+  // Functional media queries cause the style to depend directly on the current
+  // MediaValues, without going through RuleSet invalidation. These values are
+  // not captured by the MatchResult. Similarly, evaluation of if() functions
+  // may be affected by navigation queries.
+  if (builder.AffectedByFunctionalMedia() ||
+      builder.AffectedByFunctionalNavigation()) {
     return false;
   }
   if (builder.HasElementDependentRandomFunctions()) {

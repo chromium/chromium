@@ -41,6 +41,7 @@ extern const char kKeyframesRuleChange[];
 extern const char kLanguage[];
 extern const char kLinkColorChange[];
 extern const char kMediaQuery[];
+extern const char kNavigationQuery[];
 extern const char kNodeInserted[];
 extern const char kPictureSourceChanged[];
 extern const char kPlatformColorChange[];
