@@ -601,7 +601,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                             mContext,
                             mTabModelSelectorSupplier,
                             mGlicClickHandler,
-                            GlicInvocationSource.TOP_CHROME_BUTTON);
+                            GlicInvocationSource.TOP_CHROME_BUTTON,
+                            GlicTaskMenuCoordinator.ButtonSource.TAB_STRIP);
         }
         mGlicTaskMenuCoordinator.show(
                 anchorRectProvider, mToolbarControlContainer.getRootView(), tasks);

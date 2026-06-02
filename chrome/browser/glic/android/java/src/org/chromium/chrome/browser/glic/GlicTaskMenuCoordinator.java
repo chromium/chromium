@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
@@ -22,7 +23,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
@@ -37,6 +37,8 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -47,11 +49,20 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class GlicTaskMenuCoordinator {
+    @IntDef({ButtonSource.TOOLBAR, ButtonSource.TAB_STRIP, ButtonSource.BOTTOM_BAR})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ButtonSource {
+        int TOOLBAR = 0;
+        int TAB_STRIP = 1;
+        int BOTTOM_BAR = 2;
+    }
+
     private final Context mContext;
 
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final GlicButtonDelegate mToggleGlicCallback;
     private final @GlicInvocationSource int mInvocationSource;
+    private final @ButtonSource int mButtonSource;
     private @Nullable AnchoredPopupWindow mMenuWindow;
 
     /**
@@ -61,17 +72,20 @@ public class GlicTaskMenuCoordinator {
      * @param tabModelSelectorSupplier Supplier for the active TabModelSelector.
      * @param toggleGlicCallback Callback to activate or open the Glic UI sheet panel.
      * @param invocationSource The Glic invocation source.
+     * @param buttonSource The source button triggering the menu.
      */
     public GlicTaskMenuCoordinator(
             Context context,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             GlicButtonDelegate toggleGlicCallback,
-            @GlicInvocationSource int invocationSource) {
+            @GlicInvocationSource int invocationSource,
+            @ButtonSource int buttonSource) {
         mContext = context;
 
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mToggleGlicCallback = toggleGlicCallback;
         mInvocationSource = invocationSource;
+        mButtonSource = buttonSource;
     }
 
     /**
@@ -138,7 +152,7 @@ public class GlicTaskMenuCoordinator {
         int maxWidthPx = AttrUtils.getDimensionPixelSize(mContext, R.attr.glicTaskMenuMaxWidth);
         int widthPx;
 
-        if (AndroidSidePanelEnabledFn.isEnabled()) {
+        if (mButtonSource == ButtonSource.TAB_STRIP) {
             widthPx = maxWidthPx;
         } else {
             int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
@@ -199,11 +213,11 @@ public class GlicTaskMenuCoordinator {
                 builder.withStartIconRes(R.drawable.ic_arrow_selector_spark_24dp);
             }
 
-            if (AndroidSidePanelEnabledFn.isEnabled()) {
+            if (mButtonSource == ButtonSource.TAB_STRIP) {
                 builder.withSubtitle(getTaskSubtitle(mContext, task));
             }
 
-            int endIconRes = getEndIconRes(needsReview, AndroidSidePanelEnabledFn.isEnabled());
+            int endIconRes = getEndIconRes(needsReview, mButtonSource == ButtonSource.TAB_STRIP);
             builder.withEndIconWidth(endIconWidthPx).withEndIconRes(endIconRes);
 
             modelList.add(builder.build());
@@ -283,8 +297,8 @@ public class GlicTaskMenuCoordinator {
     }
 
     @DrawableRes
-    private static int getEndIconRes(boolean needsReview, boolean sidePanelEnabled) {
-        if (sidePanelEnabled) {
+    private static int getEndIconRes(boolean needsReview, boolean showActionIcons) {
+        if (showActionIcons) {
             return needsReview
                     ? R.drawable.glic_menu_end_icon_needs_review
                     : R.drawable.glic_menu_end_icon_standard;
@@ -293,6 +307,6 @@ public class GlicTaskMenuCoordinator {
     }
 
     private boolean shouldShowAskGemini() {
-        return !AndroidSidePanelEnabledFn.isEnabled();
+        return mButtonSource != ButtonSource.TAB_STRIP;
     }
 }

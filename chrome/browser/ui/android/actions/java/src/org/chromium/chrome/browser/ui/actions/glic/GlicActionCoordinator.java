@@ -186,7 +186,8 @@ public class GlicActionCoordinator {
                             view.getContext(),
                             mTabModelSelectorSupplier,
                             mToggleGlicCallback,
-                            GlicInvocationSource.TOOLBAR_BUTTON);
+                            GlicInvocationSource.TOOLBAR_BUTTON,
+                            GlicTaskMenuCoordinator.ButtonSource.BOTTOM_BAR);
         }
         mTaskMenuCoordinator.show(view, tasks);
     }

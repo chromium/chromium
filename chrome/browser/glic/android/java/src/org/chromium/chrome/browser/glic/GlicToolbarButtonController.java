@@ -290,7 +290,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
                                     mActivity,
                                     mTabModelSelectorSupplier,
                                     mToggleGlicCallback,
-                                    GlicInvocationSource.TOP_CHROME_BUTTON);
+                                    GlicInvocationSource.TOP_CHROME_BUTTON,
+                                    GlicTaskMenuCoordinator.ButtonSource.TOOLBAR);
                 }
                 mTaskMenuCoordinator.show(view, tasks);
                 return;
