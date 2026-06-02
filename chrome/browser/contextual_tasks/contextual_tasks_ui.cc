@@ -1540,10 +1540,11 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     task_info_delegate_->SetTaskId(new_task_id);
     task_info_delegate_->SetThreadId(std::nullopt);
     // Replace state if last committed URL was empty (i.e. the page is
-    // reloaded), otherwise push new state.
+    // reloaded) or if zero state has not changed, otherwise push new state.
     task_info_delegate_->PushTaskDetailsToPage(
         new_task_id, url,
-        /*replace_navigation_entry=*/last_committed_url_was_empty);
+        /*replace_navigation_entry=*/last_committed_url_was_empty ||
+            !has_zero_state_changed);
     task_info_delegate_->SetThreadTitle(std::nullopt);
 
     task_info_delegate_->PrepareForTaskChange();
