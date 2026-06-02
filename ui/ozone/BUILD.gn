@@ -37,6 +37,7 @@ ozone_platform_interactive_ui_tests_sources =
 if (ozone_platform_headless) {
   ozone_platforms += [ "headless" ]
   ozone_platform_deps += [ "platform/headless" ]
+  ozone_platform_test_deps += [ "platform/headless:headless_unittests" ]
 }
 
 if (ozone_platform_drm) {
@@ -361,6 +362,7 @@ static_library("test_support") {
   visibility = [
     ":*",
     "platform/flatland:flatland_unittests",
+    "platform/headless:headless_unittests",
     "platform/wayland:test_support",
     "platform/wayland:wayland_unittests",
     "platform/x11:x11_unittests",
