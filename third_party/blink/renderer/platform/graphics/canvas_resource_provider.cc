@@ -1173,7 +1173,7 @@ void CanvasNon2DResourceProviderSharedImage::OnDestroyRecyclableCanvasResource(
 
 void Canvas2DResourceProviderSharedImage::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
-  if (recorder_->getRecordingCanvas().IsCachingImage(content_id)) {
+  if (Recorder().getRecordingCanvas().IsCachingImage(content_id)) {
     Flush();
   }
   if (cached_snapshot_ &&
@@ -1708,8 +1708,8 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   if (IsPrinting() && clear_frame_) {
     return;
   }
-  if (recorder_->ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
-      recorder_->ReleasableImageBytesUsed() > max_pinned_image_bytes_)
+  if (Recorder().ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
+      Recorder().ReleasableImageBytesUsed() > max_pinned_image_bytes_)
       [[unlikely]] {
     Flush(FlushReason::kOther);
   }
@@ -1769,7 +1769,7 @@ void CanvasResourceProvider::RecordingCleared() {
 }
 
 MemoryManagedPaintCanvas& CanvasResourceProvider::GetCanvasForTesting() {
-  return recorder_->getRecordingCanvas();
+  return Recorder().getRecordingCanvas();
 }
 
 scoped_refptr<UnacceleratedStaticBitmapImage>
@@ -1916,7 +1916,7 @@ void CanvasNon2DResourceProviderSharedImage::FlushRecording(
 
 std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
     FlushReason reason /*=FlushReason::kOther*/) {
-  if (!recorder_->HasReleasableDrawOps()) {
+  if (!Recorder().HasReleasableDrawOps()) {
     return std::nullopt;
   }
   auto timer = CreateScopedRasterTimer();
@@ -1929,7 +1929,7 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
   // printing.
   clear_frame_ = false;
   cc::PaintRecord recording;
-  recording = recorder_->ReleaseMainRecording();
+  recording = Recorder().ReleaseMainRecording();
   RasterRecord(recording);
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
@@ -2498,7 +2498,7 @@ bool CanvasResourceProvider::UnacceleratedWritePixels(
   CHECK(!IsAccelerated());
 
   DCHECK(IsValid());
-  DCHECK(!recorder_->HasRecordedDrawOps());
+  DCHECK(!Recorder().HasRecordedDrawOps());
 
   if (!skia_canvas_) {
     skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
