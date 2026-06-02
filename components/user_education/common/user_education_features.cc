@@ -240,6 +240,8 @@ std::ostream& operator<<(std::ostream& os, NtpBrowserPromoType promo_type) {
   return os;
 }
 
+BASE_FEATURE(kLazilySetCustomActionCaption, base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace testing {
 
 TimeoutOverrideHandle SetTimeoutOverridesForTest(TimeoutOverrides overrides) {

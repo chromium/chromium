@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
+#include "components/user_education/common/user_education_features.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -390,8 +391,13 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForCustomAction(
     CustomActionCallback custom_action_callback) {
   FeaturePromoSpecification spec(&feature, PromoType::kCustomAction,
                                  anchor_element_id, body_text_string_id);
-  spec.custom_action_caption_ =
-      l10n_util::GetStringUTF16(custom_action_string_id);
+
+  if (base::FeatureList::IsEnabled(features::kLazilySetCustomActionCaption)) {
+    spec.custom_action_caption_string_or_id_ = custom_action_string_id;
+  } else {
+    spec.custom_action_caption_string_or_id_ =
+        l10n_util::GetStringUTF16(custom_action_string_id);
+  }
   spec.custom_action_callback_ = custom_action_callback;
   return spec;
 }

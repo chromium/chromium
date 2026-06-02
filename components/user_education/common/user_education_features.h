@@ -133,6 +133,8 @@ extern base::TimeDelta GetNtpBrowserPromosSnoozedHideDuration();
 extern std::ostream& operator<<(std::ostream& os,
                                 NtpBrowserPromoType promo_type);
 
+BASE_DECLARE_FEATURE(kLazilySetCustomActionCaption);
+
 namespace testing {
 
 // Specifies how timings should be modified for tests.

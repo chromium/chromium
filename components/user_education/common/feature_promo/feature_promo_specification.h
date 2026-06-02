@@ -28,6 +28,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -551,7 +552,11 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   }
   const TutorialIdentifier& tutorial_id() const { return tutorial_id_; }
   const std::u16string custom_action_caption() const {
-    return custom_action_caption_;
+    if (std::holds_alternative<int>(custom_action_caption_string_or_id_)) {
+      custom_action_caption_string_or_id_ = l10n_util::GetStringUTF16(
+          std::get<int>(custom_action_caption_string_or_id_));
+    }
+    return std::get<std::u16string>(custom_action_caption_string_or_id_);
   }
   const std::optional<base::TimeDelta>& reshow_delay() const {
     return reshow_delay_;
@@ -715,7 +720,7 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   TutorialIdentifier tutorial_id_;
 
   // Custom action button text.
-  std::u16string custom_action_caption_;
+  mutable std::variant<std::u16string, int> custom_action_caption_string_or_id_;
 
   // Custom action button action.
   CustomActionCallback custom_action_callback_;

@@ -6,8 +6,11 @@
 
 #include "base/feature_list.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/user_education_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
@@ -94,6 +97,36 @@ TEST(FeaturePromoSpecificationTest, GetAnchorElementFromRotatingPromo) {
 
   EXPECT_EQ(&el1, spec.GetAnchorElement(kTestContext, 0));
   EXPECT_EQ(&el2, spec.GetAnchorElement(kTestContext, 2));
+}
+
+TEST(FeaturePromoSpecificationTest, CustomActionCaptionLazyLoad) {
+  // kLazilySetCustomActionCaption is disabled (eager evaluation).
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kLazilySetCustomActionCaption);
+
+    FeaturePromoSpecification spec =
+        FeaturePromoSpecification::CreateForCustomAction(
+            kTestSimplePromo, kTestAnchorElement, IDS_CLOSE_PROMO,
+            IDS_CLOSE_PROMO, base::DoNothing());
+
+    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE_PROMO),
+              spec.custom_action_caption());
+  }
+
+  // kLazilySetCustomActionCaption is enabled (lazy evaluation).
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kLazilySetCustomActionCaption);
+
+    FeaturePromoSpecification spec =
+        FeaturePromoSpecification::CreateForCustomAction(
+            kTestSimplePromo, kTestAnchorElement, IDS_CLOSE_PROMO,
+            IDS_CLOSE_PROMO, base::DoNothing());
+
+    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE_PROMO),
+              spec.custom_action_caption());
+  }
 }
 
 }  // namespace user_education
