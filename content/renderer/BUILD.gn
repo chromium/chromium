@@ -465,6 +465,16 @@ fuzzer_test("audio_decoder_fuzzer") {
     ":for_content_tests",
     "//content/test:test_support",
   ]
+  if (is_android) {
+    deps += [
+      # content::BlinkTestEnvironment from //content/test:test_support
+      # transitively requires org.chromium.ui.base.ResourceBundle for its
+      # execution on Android. //content/test:test_support is a static_library
+      # which wouldn't pass a java dependency to this target, thus the need of
+      # this here directly.
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+  }
   seed_corpus = "//media/test/data"
 }
 
@@ -484,6 +494,16 @@ fuzzer_test("content_security_policy_util_fuzzer") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
+  if (is_android) {
+    deps += [
+      # content::BlinkTestEnvironment from //content/test:test_support
+      # transitively requires org.chromium.ui.base.ResourceBundle for its
+      # execution on Android. //content/test:test_support is a static_library
+      # which wouldn't pass a java dependency to this target, thus the need of
+      # adding this here directly.
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+  }
   dict = "//testing/libfuzzer/fuzzers/dicts/content_security_policy.dict"
   seed_corpus = "//testing/libfuzzer/fuzzers/content_security_policy_corpus"
 }
