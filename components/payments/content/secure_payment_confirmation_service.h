@@ -15,10 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
+#include "components/webauthn/core/browser/remote_validation.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/global_routing_id.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom.h"
 
@@ -86,6 +88,16 @@ class SecurePaymentConfirmationService
       scoped_refptr<BrowserBoundKeyStore> browser_bound_key_store);
 
  private:
+  // Called after the RpId check has been completed, to continue the process of
+  // storing the payment credential.
+  void ContinueStorePaymentCredentialAfterRpIdCheck(
+      mojo::ReportBadMessageCallback bad_message_callback,
+      std::vector<uint8_t> credential_id,
+      const std::string& rp_id,
+      std::vector<uint8_t> user_id,
+      StorePaymentCredentialCallback callback,
+      blink::mojom::AuthenticatorStatus rp_id_validation_result);
+
   // MakeCredentialCallback:
   void OnAuthenticatorMakeCredential(
       SecurePaymentConfirmationService::MakePaymentCredentialCallback callback,
@@ -119,6 +131,7 @@ class SecurePaymentConfirmationService
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder_;
   scoped_refptr<BrowserBoundKeyStore> test_browser_bound_key_store_;
   std::string browser_bound_key_store_keychain_access_group_;
+  std::unique_ptr<webauthn::RemoteValidation> remote_validation_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationService> weak_ptr_factory_{
       this};

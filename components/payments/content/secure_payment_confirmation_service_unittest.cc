@@ -23,8 +23,10 @@
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -44,12 +46,6 @@ using payments::mojom::SecurePaymentConfirmationAvailabilityEnum;
 
 namespace {
 
-struct SecurePaymentConfirmationServiceDeleter {
-  void operator()(SecurePaymentConfirmationService* spc_service) {
-    spc_service->ResetAndDeleteThis();
-  }
-};
-
 #if !BUILDFLAG(IS_IOS)
 static const int32_t kAlgorithmIdentifier = 1;
 static const int32_t kAnotherAlgorithmIdentifier = 2;
@@ -57,6 +53,12 @@ static const int32_t kAnotherAlgorithmIdentifier = 2;
 constexpr bool is_win = !!BUILDFLAG(IS_WIN);
 
 #endif
+
+struct SecurePaymentConfirmationServiceDeleter {
+  void operator()(SecurePaymentConfirmationService* spc_service) {
+    spc_service->ResetAndDeleteThis();
+  }
+};
 
 }  // namespace
 
@@ -73,15 +75,20 @@ class SecurePaymentConfirmationServiceTestBase {
  protected:
   void InitializeSecurePaymentConfirmationService(
       bool with_authenticator = true,
-      bool is_off_the_record = false) {
+      bool is_off_the_record = false,
+      std::string caller_url = "https://relying-party.example") {
     context_.set_is_off_the_record(is_off_the_record);
     web_contents_ = web_contents_factory_.CreateWebContents(&context_);
     CHECK(!mock_internal_authenticator_);
     CHECK(!spc_service_);
 
-    mojo::PendingRemote<mojom::SecurePaymentConfirmationService> remote;
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents_, GURL(caller_url));
+
     mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver =
-        remote.InitWithNewPipeAndPassReceiver();
+        spc_service_remote_.BindNewPipeAndPassReceiver();
+    // Retain the remote at class scope to ensure the service remains alive
+    // during RunLoop execution.
     spc_service_ = std::unique_ptr<SecurePaymentConfirmationService,
                                    SecurePaymentConfirmationServiceDeleter>(
         new SecurePaymentConfirmationService(
@@ -116,6 +123,9 @@ class SecurePaymentConfirmationServiceTestBase {
   base::MockCallback<mojom::SecurePaymentConfirmationService::
                          SecurePaymentConfirmationAvailabilityCallback>
       mock_secure_payment_confirmation_availability_callback_;
+  // Retain the remote at class scope to prevent `spc_service_` (which is a
+  // DocumentService) from self-destructing when a RunLoop executes.
+  mojo::Remote<mojom::SecurePaymentConfirmationService> spc_service_remote_;
 };
 
 class SecurePaymentConfirmationServiceTest
@@ -295,6 +305,66 @@ TEST_F(
       "BrowserBoundKeyHardware",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(SecurePaymentConfirmationServiceTest,
+       StorePaymentCredential_RpIdCheckFailed) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({::features::kSecurePaymentConfirmation}, {});
+
+  InitializeSecurePaymentConfirmationService(
+      /*with_authenticator=*/false,
+      /*is_off_the_record=*/false,
+      /*caller_url=*/"https://attacker.example");
+
+  const std::vector<uint8_t> credential_id = {0x01, 0x02, 0x03, 0x04};
+  const std::string rp_id = "relying-party.example";
+  const std::vector<uint8_t> user_id = {0x10, 0x11, 0x12, 0x13};
+  base::MockCallback<
+      mojom::SecurePaymentConfirmationService::StorePaymentCredentialCallback>
+      mock_store_payment_credential_callback;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  spc_service_remote_->StorePaymentCredential(
+      credential_id, rp_id, user_id,
+      mock_store_payment_credential_callback.Get());
+
+  spc_service_.release();
+
+  EXPECT_EQ("Invalid RP ID in StorePaymentCredential",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(SecurePaymentConfirmationServiceTest,
+       StorePaymentCredential_RpIdCheckSuccess) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {::features::kSecurePaymentConfirmation,
+       features::kSecurePaymentConfirmationUseCredentialStoreAPIs},
+      {});
+
+  InitializeSecurePaymentConfirmationService();
+
+  const std::vector<uint8_t> credential_id = {0x01, 0x02, 0x03, 0x04};
+  const std::string rp_id = "relying-party.example";
+  const std::vector<uint8_t> user_id = {0x10, 0x11, 0x12, 0x13};
+
+  base::MockCallback<
+      mojom::SecurePaymentConfirmationService::StorePaymentCredentialCallback>
+      mock_store_payment_credential_callback;
+
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_store_payment_credential_callback,
+              Run(mojom::PaymentCredentialStorageStatus::SUCCESS))
+      .WillOnce([&run_loop] { run_loop.Quit(); });
+
+  spc_service_remote_->StorePaymentCredential(
+      credential_id, rp_id, user_id,
+      mock_store_payment_credential_callback.Get());
+
+  run_loop.Run();
 }
 
 #if !BUILDFLAG(IS_IOS)
