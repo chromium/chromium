@@ -41,6 +41,7 @@ build_webui("build") {
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/composebox:build_ts",
+    "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_components/search:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
