@@ -7712,8 +7712,14 @@ class SSLServerPaddingBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(https://crbug.com/517861023): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ValidHandshakeAndHistograms DISABLED_ValidHandshakeAndHistograms
+#else
+#define MAYBE_ValidHandshakeAndHistograms ValidHandshakeAndHistograms
+#endif
 IN_PROC_BROWSER_TEST_P(SSLServerPaddingBrowserTest,
-                       ValidHandshakeAndHistograms) {
+                       MAYBE_ValidHandshakeAndHistograms) {
   base::HistogramTester histograms;
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   net::SSLServerConfig ssl_config;
