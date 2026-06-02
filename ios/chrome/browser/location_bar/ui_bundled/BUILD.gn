@@ -26,6 +26,7 @@ source_set("ui_bundled") {
     ":location_bar_model_delegate",
     ":metrics",
     ":protocols",
+    ":utils",
     "//base",
     "//components/feature_engagement/public",
     "//components/lens",

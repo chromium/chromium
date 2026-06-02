@@ -40,6 +40,15 @@
 // Sets the location image. If `locationImage` is nil, hides the image view.
 - (void)setLocationImage:(UIImage*)locationImage;
 
+// Adds a custom view to the left of the location label with specified spacing.
+// By default, the custom view is added in an invisible state.
+- (void)addCustomLeadingView:(UIView*)view
+                 targetWidth:(CGFloat)targetWidth
+                     spacing:(CGFloat)spacing;
+
+// Sets the visibility of the custom leading view, optionally animated.
+- (void)updateCustomLeadingViewVisibility:(BOOL)visible animated:(BOOL)animated;
+
 // Sets the location label's text.
 - (void)setLocationLabelText:(NSString*)string;
 

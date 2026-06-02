@@ -238,6 +238,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Sets whether the dormant snackbar is showing.
   void SetIsShowingLiveSessionDormantSnackbar(bool showing);
 
+  // Updates the Gemini Live leading icon visibility in the location bar.
+  void UpdateGeminiLiveIconVisibility();
+
   // Returns the floaty offset based on current fullscreen progress.
   CGFloat GetFloatyOffset();
 

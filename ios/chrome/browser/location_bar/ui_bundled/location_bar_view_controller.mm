@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/fakebox_buttons_snapshot_provider.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/highlight_utils.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mutator.h"
@@ -78,6 +79,9 @@ typedef NS_ENUM(int, TrailingButtonState) {
 // The scale factor of the steady view in fullscreen.
 const CGFloat kFullscreenScaleFactor = 0.87;
 
+// Spacing between the custom leading view (Gemini Live icon) and the URL label.
+const CGFloat kGeminiLiveIconToLabelSpacing = 8.0;
+
 // The size of the symbol image.
 const CGFloat kSymbolImagePointSize = 18.;
 
@@ -92,7 +96,24 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 // The minimum width of the plus button.
 const CGFloat kPlusButtonMinimumWidth = 44.0;
 
+// The point size of the Gemini Live symbol.
+const CGFloat kGeminiLiveSymbolPointSize = 10.0;
+
+// The size of the Gemini Live circle container.
+const CGFloat kGeminiLiveCircleSize = 20.0;
 }  // namespace
+
+// Helper view to maintain a round background.
+@interface RoundGeminiLiveView : UIView
+@end
+
+@implementation RoundGeminiLiveView
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  self.layer.cornerRadius = self.bounds.size.height / 2.0;
+  self.clipsToBounds = YES;
+}
+@end
 
 @interface LocationBarViewController () <UIContextMenuInteractionDelegate,
                                          UIIndirectScribbleInteractionDelegate>
@@ -359,6 +380,58 @@ const CGFloat kPlusButtonMinimumWidth = 44.0;
   [self.view addSubview:self.locationBarSteadyView];
   self.locationBarSteadyView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.locationBarSteadyView, self.view);
+
+  if (IsGeminiLiveEnabled()) {
+    // Use the Gemini Live symbol.
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+    UIImage* image = CustomSymbolWithPointSize(kGeminiLiveLogoSymbol,
+                                               kGeminiLiveSymbolPointSize);
+#else
+    UIImage* image =
+        DefaultSymbolWithPointSize(kWaveformSymbol, kGeminiLiveSymbolPointSize);
+#endif
+
+    // Create the round container view.
+    RoundGeminiLiveView* geminiBadgeContainer =
+        [[RoundGeminiLiveView alloc] init];
+    geminiBadgeContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    geminiBadgeContainer.hidden = YES;
+
+    UIImageView* iconView = [[UIImageView alloc] initWithImage:image];
+    iconView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    if (IsChromeNextIaEnabled()) {
+      UIView* gradientView = CreateIPHGradientView();
+      gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+      [geminiBadgeContainer addSubview:gradientView];
+      AddSameConstraints(gradientView, geminiBadgeContainer);
+      ConfigureIPHImageStyleForImageView(iconView);
+    } else {
+      geminiBadgeContainer.backgroundColor =
+          [UIColor colorNamed:kStaticBlueColor];
+      iconView.tintColor = [UIColor whiteColor];
+    }
+
+    [geminiBadgeContainer addSubview:iconView];
+
+    // Force width to match height to keep it square/round.
+    [NSLayoutConstraint activateConstraints:@[
+      [geminiBadgeContainer.widthAnchor
+          constraintEqualToConstant:kGeminiLiveCircleSize],
+      [geminiBadgeContainer.heightAnchor
+          constraintEqualToConstant:kGeminiLiveCircleSize],
+      [iconView.centerXAnchor
+          constraintEqualToAnchor:geminiBadgeContainer.centerXAnchor],
+      [iconView.centerYAnchor
+          constraintEqualToAnchor:geminiBadgeContainer.centerYAnchor],
+    ]];
+
+    // Inject it directly next to the location label.
+    [self.locationBarSteadyView
+        addCustomLeadingView:geminiBadgeContainer
+                 targetWidth:kGeminiLiveCircleSize
+                     spacing:kGeminiLiveIconToLabelSpacing];
+  }
 
   [self updatePlaceholderView];
   [self updateTrailingButtonState];
@@ -1321,6 +1394,11 @@ const CGFloat kPlusButtonMinimumWidth = 44.0;
   copyView.frame = self.locationBarSteadyView.frame;
 
   return copyView;
+}
+
+- (void)setCustomLeadingViewVisible:(BOOL)visible animated:(BOOL)animated {
+  [self.locationBarSteadyView updateCustomLeadingViewVisibility:visible
+                                                       animated:animated];
 }
 
 @end

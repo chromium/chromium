@@ -27,6 +27,9 @@
 // Cancels the omnibox edit session. The completion block is executed
 // once the cancellation (and any dismissal animation) has finished.
 - (void)cancelOmniboxEditWithCompletion:(ProceduralBlock)completion;
+
+// Sets the custom leading view visibility, optionally animated.
+- (void)setCustomLeadingViewVisible:(BOOL)visible animated:(BOOL)animated;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_OMNIBOX_COMMANDS_H_
