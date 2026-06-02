@@ -352,7 +352,15 @@ enum class QuickActionsVisibility {
 
 // Verifies opening a new tab from the New Tab button on the toolbar with the
 // correct policy's New Tab Page Location URL.
-- (void)testNewTabByNewTabButtonTapWithNTPLocation {
+// TODO(crbug.com/518881258): Flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testNewTabByNewTabButtonTapWithNTPLocation \
+  FLAKY_testNewTabByNewTabButtonTapWithNTPLocation
+#else
+#define MAYBE_testNewTabByNewTabButtonTapWithNTPLocation \
+  testNewTabByNewTabButtonTapWithNTPLocation
+#endif
+- (void)MAYBE_testNewTabByNewTabButtonTapWithNTPLocation {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL expectedURL = self.testServer->GetURL(kPageURL);
 
@@ -420,7 +428,15 @@ enum class QuickActionsVisibility {
 
 // Verifies opening a new tab from the tab grid view by tapping on the New Tab
 // button with the correct policy's New Tab Page Location URL.
-- (void)testNewTabFromTabGridViewWithNTPLocation {
+// TODO(crbug.com/518881258): Flaky on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testNewTabFromTabGridViewWithNTPLocation \
+  FLAKY_testNewTabFromTabGridViewWithNTPLocation
+#else
+#define MAYBE_testNewTabFromTabGridViewWithNTPLocation \
+  testNewTabFromTabGridViewWithNTPLocation
+#endif
+- (void)MAYBE_testNewTabFromTabGridViewWithNTPLocation {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL expectedURL = self.testServer->GetURL(kPageURL);
 
