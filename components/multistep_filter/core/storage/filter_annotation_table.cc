@@ -37,6 +37,14 @@ constexpr char kKey[] = "key";
 constexpr char kValue[] = "value";
 }  // namespace filter_annotation_attributes
 
+std::string GetDeleteAttributesSql(std::string_view where_clause) {
+  return base::StrCat({"DELETE FROM ", filter_annotation_attributes::kTableName,
+                       " WHERE ", filter_annotation_attributes::kAnnotationId,
+                       " IN (SELECT ", filter_annotations::kId, " FROM ",
+                       filter_annotations::kTableName, " WHERE ", where_clause,
+                       ")"});
+}
+
 }  // namespace
 
 FilterAnnotationTable::FilterAnnotationTable() = default;
@@ -89,9 +97,16 @@ bool FilterAnnotationTable::Init(sql::Database* db) {
         {"CREATE INDEX IF NOT EXISTS filter_annotations_task_domain_idx ON ",
          filter_annotations::kTableName, "(", filter_annotations::kTaskType,
          ", ", filter_annotations::kSourceDomain, ")"});
+    const std::string kCreateAnnotationsDomainTimestampIndexSql = base::StrCat(
+        {"CREATE INDEX IF NOT EXISTS "
+         "filter_annotations_domain_timestamp_idx "
+         "ON ",
+         filter_annotations::kTableName, "(", filter_annotations::kSourceDomain,
+         ", ", filter_annotations::kCreationTimestamp, ")"});
     return db_->Execute(kCreateFilterAnnotationsIndexSql) &&
            db_->Execute(kCreateAttributesIndexSql) &&
-           db_->Execute(kCreateAnnotationsCompositeIndexSql);
+           db_->Execute(kCreateAnnotationsCompositeIndexSql) &&
+           db_->Execute(kCreateAnnotationsDomainTimestampIndexSql);
   };
 
   return create_filter_annotations_table() &&
@@ -108,13 +123,9 @@ bool FilterAnnotationTable::StoreAnnotation(
   // Delete all existing annotations for the same task type and source domain to
   // ensure we only store the latest one.
   sql::Statement delete_attributes(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StrCat({"DELETE FROM ", filter_annotation_attributes::kTableName,
-                    " WHERE ", filter_annotation_attributes::kAnnotationId,
-                    " IN (SELECT ", filter_annotations::kId, " FROM ",
-                    filter_annotations::kTableName, " WHERE ",
-                    filter_annotations::kTaskType, " = ? AND ",
-                    filter_annotations::kSourceDomain, " = ?)"})));
+      SQL_FROM_HERE, GetDeleteAttributesSql(base::StrCat(
+                         {filter_annotations::kTaskType, " = ? AND ",
+                          filter_annotations::kSourceDomain, " = ?"}))));
   delete_attributes.BindString(0, annotation.task_type);
   delete_attributes.BindString(1, annotation.source_domain);
   if (!delete_attributes.Run()) {
@@ -233,12 +244,8 @@ std::optional<int64_t> FilterAnnotationTable::DeleteAnnotationsForTask(
 
   // Delete from attributes table first to avoid orphaning
   sql::Statement delete_attributes(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      base::StrCat({"DELETE FROM ", filter_annotation_attributes::kTableName,
-                    " WHERE ", filter_annotation_attributes::kAnnotationId,
-                    " IN (SELECT ", filter_annotations::kId, " FROM ",
-                    filter_annotations::kTableName, " WHERE ",
-                    filter_annotations::kTaskType, " = ?)"})));
+      SQL_FROM_HERE, GetDeleteAttributesSql(base::StrCat(
+                         {filter_annotations::kTaskType, " = ?"}))));
   delete_attributes.BindString(0, task_type);
   if (!delete_attributes.Run()) {
     return std::nullopt;
@@ -260,6 +267,93 @@ std::optional<int64_t> FilterAnnotationTable::DeleteAnnotationsForTask(
   }
 
   return deleted_count;
+}
+
+std::optional<int64_t> FilterAnnotationTable::DeleteAnnotationsForDomains(
+    const std::vector<std::string>& domains,
+    base::Time delete_begin,
+    base::Time delete_end) {
+  if (domains.empty()) {
+    return DeleteAnnotationsForTimeRange(delete_begin, delete_end);
+  }
+
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin()) {
+    return std::nullopt;
+  }
+
+  int64_t total_deleted = 0;
+  for (const std::string& domain : domains) {
+    std::optional<int64_t> deleted =
+        DeleteAnnotationsForDomain(domain, delete_begin, delete_end);
+    if (!deleted.has_value()) {
+      return std::nullopt;
+    }
+    total_deleted += deleted.value();
+  }
+
+  if (!transaction.Commit()) {
+    return std::nullopt;
+  }
+
+  return total_deleted;
+}
+
+std::optional<int64_t> FilterAnnotationTable::DeleteAnnotationsForTimeRange(
+    base::Time begin,
+    base::Time end) {
+  sql::Statement delete_attributes(db_->GetCachedStatement(
+      SQL_FROM_HERE, GetDeleteAttributesSql(base::StrCat(
+                         {filter_annotations::kCreationTimestamp, " >= ? AND ",
+                          filter_annotations::kCreationTimestamp, " < ?"}))));
+  delete_attributes.BindTime(0, begin);
+  delete_attributes.BindTime(1, end);
+  if (!delete_attributes.Run()) {
+    return std::nullopt;
+  }
+
+  sql::Statement delete_annotations(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      base::StrCat({"DELETE FROM ", filter_annotations::kTableName, " WHERE ",
+                    filter_annotations::kCreationTimestamp, " >= ? AND ",
+                    filter_annotations::kCreationTimestamp, " < ?"})));
+  delete_annotations.BindTime(0, begin);
+  delete_annotations.BindTime(1, end);
+  if (!delete_annotations.Run()) {
+    return std::nullopt;
+  }
+  return db_->GetLastChangeCount();
+}
+
+std::optional<int64_t> FilterAnnotationTable::DeleteAnnotationsForDomain(
+    std::string_view domain,
+    base::Time begin,
+    base::Time end) {
+  sql::Statement delete_attributes(db_->GetCachedStatement(
+      SQL_FROM_HERE, GetDeleteAttributesSql(base::StrCat(
+                         {filter_annotations::kSourceDomain, " = ? AND ",
+                          filter_annotations::kCreationTimestamp, " >= ? AND ",
+                          filter_annotations::kCreationTimestamp, " < ?"}))));
+  delete_attributes.BindString(0, domain);
+  delete_attributes.BindTime(1, begin);
+  delete_attributes.BindTime(2, end);
+  if (!delete_attributes.Run()) {
+    return std::nullopt;
+  }
+
+  sql::Statement delete_annotations(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      base::StrCat({"DELETE FROM ", filter_annotations::kTableName, " WHERE ",
+                    filter_annotations::kSourceDomain, " = ? AND ",
+                    filter_annotations::kCreationTimestamp, " >= ? AND ",
+                    filter_annotations::kCreationTimestamp, " < ?"})));
+  delete_annotations.BindString(0, domain);
+  delete_annotations.BindTime(1, begin);
+  delete_annotations.BindTime(2, end);
+  if (!delete_annotations.Run()) {
+    return std::nullopt;
+  }
+  return db_->GetLastChangeCount();
 }
 
 void FilterAnnotationTable::Shutdown() {

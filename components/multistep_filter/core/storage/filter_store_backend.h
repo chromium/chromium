@@ -49,6 +49,13 @@ class FilterStoreBackend {
   // Returns the number of annotations deleted, or std::nullopt on failure.
   std::optional<int64_t> DeleteAnnotationsForTask(std::string_view task_type);
 
+  // Deletes annotations for specific domains and time range.
+  // Returns the number of annotations deleted, or std::nullopt on failure.
+  std::optional<int64_t> DeleteAnnotationsForDomains(
+      std::vector<std::string> domains,
+      base::Time delete_begin,
+      base::Time delete_end);
+
   // Clears all data from the database.
   void ClearData();
 

@@ -72,6 +72,19 @@ std::optional<int64_t> FilterStoreBackend::DeleteAnnotationsForTask(
   return filter_annotation_table_.DeleteAnnotationsForTask(task_type);
 }
 
+std::optional<int64_t> FilterStoreBackend::DeleteAnnotationsForDomains(
+    std::vector<std::string> domains,
+    base::Time delete_begin,
+    base::Time delete_end) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!IsDatabaseInitialized()) {
+    return std::nullopt;
+  }
+  return filter_annotation_table_.DeleteAnnotationsForDomains(
+      domains, delete_begin, delete_end);
+}
+
 void FilterStoreBackend::ClearData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

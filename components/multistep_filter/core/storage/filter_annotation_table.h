@@ -74,10 +74,25 @@ class FilterAnnotationTable {
   // Returns the number of annotations deleted, or std::nullopt on failure.
   std::optional<int64_t> DeleteAnnotationsForTask(std::string_view task_type);
 
+  // Deletes annotations for specific domains and time range.
+  // If `domains` is empty, deletes data for all domains in the time range.
+  // Returns the number of annotations deleted, or std::nullopt on failure.
+  std::optional<int64_t> DeleteAnnotationsForDomains(
+      const std::vector<std::string>& domains,
+      base::Time delete_begin,
+      base::Time delete_end);
+
   void Shutdown();
 
  private:
   sql::Database* db() { return db_; }
+
+  // Helper methods for DeleteAnnotationsForDomains.
+  std::optional<int64_t> DeleteAnnotationsForTimeRange(base::Time begin,
+                                                       base::Time end);
+  std::optional<int64_t> DeleteAnnotationsForDomain(std::string_view domain,
+                                                    base::Time begin,
+                                                    base::Time end);
 
   // Non-null, except before `Init()` and after `Shutdown()`. Effectively, this
   // means that it is non-null except during the constructor and destructor.
