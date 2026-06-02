@@ -21,7 +21,9 @@ namespace ui {
 namespace {
 
 // Experimentally determined constant used to allow activation even if touch
-// release results in a small upward fling (quite common during a slow scroll).
+// release results in a small fling in the opposite direction of current active
+// overscroll action (e.g. a small upward fling after pulling down to refresh,
+// quite common during a slow scroll)
 const float kMinFlingVelocityForActivation = -500.f;
 
 // Weighted value used to determine whether a scroll should trigger vertical
@@ -57,6 +59,7 @@ OverscrollRefresh::~OverscrollRefresh() {
 void OverscrollRefresh::Reset() {
   scroll_consumption_state_ = ScrollConsumptionState::kDisabled;
   handler_->PullReset();
+  active_action_ = OverscrollAction::kNone;
 }
 
 void OverscrollRefresh::OnScrollBegin(const gfx::PointF& pos) {
@@ -69,7 +72,10 @@ void OverscrollRefresh::OnScrollBegin(const gfx::PointF& pos) {
 }
 
 void OverscrollRefresh::OnScrollEnd(const gfx::Vector2dF& scroll_velocity) {
-  bool allow_activation = scroll_velocity.y() > kMinFlingVelocityForActivation;
+  // If the velocity does not meet the
+  // activation threshold, we infer the user is trying to cancel the gesture.
+  bool allow_activation = GetVelocityInActiveActionDirection(scroll_velocity) >
+                          kMinFlingVelocityForActivation;
   Release(allow_activation);
 }
 
@@ -138,6 +144,11 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
     scroll_consumption_state_ = handler_->PullStart(type, overscroll_edge)
                                     ? ScrollConsumptionState::kEnabled
                                     : ScrollConsumptionState::kDisabled;
+    if (scroll_consumption_state_ == ScrollConsumptionState::kEnabled) {
+      // Make sure active_action_ is not set yet before set
+      CHECK_EQ(active_action_, OverscrollAction::kNone);
+      active_action_ = type;
+    }
   }
 }
 
@@ -217,6 +228,21 @@ void OverscrollRefresh::Release(bool allow_refresh) {
   if (scroll_consumption_state_ == ScrollConsumptionState::kEnabled)
     handler_->PullRelease(allow_refresh);
   scroll_consumption_state_ = ScrollConsumptionState::kDisabled;
+  active_action_ = OverscrollAction::kNone;
+}
+
+float OverscrollRefresh::GetVelocityInActiveActionDirection(
+    const gfx::Vector2dF& velocity) {
+  switch (active_action_) {
+    case OverscrollAction::kPullToRefresh:
+      return velocity.y();
+    case OverscrollAction::kPullFromBottomEdge:
+      return -velocity.y();
+    default:
+      // TODO(crbug.com/491001724): set allow_activiation to true for history
+      // navigation for now. Will fix this in crrev.com/c/7849875
+      return 0.f;
+  }
 }
 
 }  // namespace ui

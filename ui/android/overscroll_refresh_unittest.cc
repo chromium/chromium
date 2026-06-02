@@ -434,6 +434,54 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfContentSizeEqualsToViewport) {
   EXPECT_FALSE(GetAndResetPullReleased());
 }
 
+TEST_F(OverscrollRefreshTest,
+       PullFromBottomEdgeTriggeredEvenWithSmallSwipeDownward) {
+  // Set yOffset as reaching the bottom of the page.
+  gfx::PointF nonzero_offset(0, 900);
+  gfx::SizeF content_size(100, 1000);
+  effect_.OnFrameUpdated(kViewport, nonzero_offset, content_size,
+                         kOverflowYNotHidden);
+
+  gfx::PointF start(2.f, 902.f);
+  effect_.OnScrollBegin(start);
+  gfx::Vector2dF scroll_down(0, -10);
+  effect_.OnOverscrolled(cc::OverscrollBehavior(), -scroll_down,
+                         blink::WebGestureDevice::kTouchscreen);
+  ASSERT_TRUE(effect_.IsActive());
+  EXPECT_TRUE(GetAndResetPullStarted());
+
+  // Terminating the pull with a small downward fling (e.g., +200 velocity)
+  // should still trigger because it is within the allowed cancellation
+  // threshold (i.e., scroll_velocity.y() < -kMinFlingVelocityForActivation
+  // which is +500).
+  effect_.OnScrollEnd(gfx::Vector2dF(0, 200));
+  EXPECT_TRUE(GetAndResetPullReleased());
+  EXPECT_TRUE(GetAndResetRefreshAllowed());
+}
+
+TEST_F(OverscrollRefreshTest, PullFromBottomEdgeNotTriggeredIfFlungDownward) {
+  // Set yOffset as reaching the bottom of the page.
+  gfx::PointF nonzero_offset(0, 900);
+  gfx::SizeF content_size(100, 1000);
+  effect_.OnFrameUpdated(kViewport, nonzero_offset, content_size,
+                         kOverflowYNotHidden);
+
+  gfx::PointF start(2.f, 902.f);
+  effect_.OnScrollBegin(start);
+  gfx::Vector2dF scroll_down(0, -10);
+  effect_.OnOverscrolled(cc::OverscrollBehavior(), -scroll_down,
+                         blink::WebGestureDevice::kTouchscreen);
+  ASSERT_TRUE(effect_.IsActive());
+  EXPECT_TRUE(GetAndResetPullStarted());
+
+  // Terminating the pull with a downward-directed fling (positive velocity)
+  // should prevent triggering because it's opposite to bottom overscroll
+  // direction.
+  effect_.OnScrollEnd(gfx::Vector2dF(0, 1000));
+  EXPECT_TRUE(GetAndResetPullReleased());
+  EXPECT_FALSE(GetAndResetRefreshAllowed());
+}
+
 TEST_F(OverscrollRefreshTest, OverscrollBehaviorYAutoTriggersStart) {
   TestOverscrollBehavior(cc::OverscrollBehavior(), gfx::Vector2dF(0, 10), true);
 }

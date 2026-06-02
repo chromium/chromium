@@ -108,6 +108,9 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
  private:
   void Release(bool allow_refresh);
 
+  // Returns velocity in the active action direction.
+  float GetVelocityInActiveActionDirection(const gfx::Vector2dF& velocity);
+
   bool scrolled_to_top_;
   bool scrolled_to_bottom_;
 
@@ -132,6 +135,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   const raw_ptr<OverscrollRefreshHandler, DanglingUntriaged> handler_;
   bool touchpad_overscroll_history_navigation_enabled_ = false;
   bool is_gesture_navigation_mode_ = false;
+  OverscrollAction active_action_ = OverscrollAction::kNone;
 };
 
 }  // namespace ui
