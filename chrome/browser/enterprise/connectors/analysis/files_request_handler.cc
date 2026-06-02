@@ -158,6 +158,8 @@ FilesRequestHandler::~FilesRequestHandler() {
 void FilesRequestHandler::MaybeCancelAndReport() {
   // If all files have been reported, then we can return early without
   // reporting a cancellation / cancelling the file opening job.
+  // We must return without cancelling the file opening job, as it may still be
+  // computing hash async for reporting.
   if (unreported_files_.empty() ||
       handler_->file_result_count() >= paths_.size()) {
     return;

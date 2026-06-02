@@ -88,6 +88,8 @@ void FileOpeningJob::Cancel() {
 }
 
 FileOpeningJob::~FileOpeningJob() {
+  // TODO(crbug.com/519162872): add a test
+  is_cancelled_.store(true, std::memory_order_relaxed);
   if (file_opening_job_handle_) {
     file_opening_job_handle_.Cancel();
   }
