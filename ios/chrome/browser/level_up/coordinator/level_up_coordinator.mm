@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/level_up/coordinator/level_up_mediator.h"
 #import "ios/chrome/browser/level_up/ui/level_up_all_tasks_view_controller.h"
-#import "ios/chrome/browser/level_up/ui/level_up_table_view_controller.h"
 #import "ios/chrome/browser/level_up/ui/level_up_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -14,7 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
-@interface LevelUpCoordinator () <LevelUpTableViewControllerDelegate>
+@interface LevelUpCoordinator () <LevelUpViewControllerDelegate>
 
 @property(nonatomic, strong) LevelUpMediator* mediator;
 @property(nonatomic, strong) LevelUpViewController* viewController;
@@ -30,7 +29,7 @@
   self.viewController = [[LevelUpViewController alloc] init];
   self.viewController.handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LevelUpCommands);
-  self.viewController.tasksConsumer.delegate = self;
+  [self.viewController setDelegate:self];
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
@@ -65,9 +64,9 @@
   [super stop];
 }
 
-#pragma mark - LevelUpTableViewControllerDelegate
+#pragma mark - LevelUpViewControllerDelegate
 
-- (void)didTapSeeAllTasks:(LevelUpTableViewController*)controller {
+- (void)didTapSeeAllTasks:(LevelUpViewController*)controller {
   LevelUpAllTasksViewController* allTasksVC =
       [[LevelUpAllTasksViewController alloc] init];
   [self.navigationController pushViewController:allTasksVC animated:YES];

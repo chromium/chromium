@@ -17,6 +17,14 @@ namespace {
 
 // The card corner radius.
 const CGFloat kCardCornerRadius = 24.0;
+// The opacity of the card shadow.
+const CGFloat kCardShadowOpacity = 1.0;
+// The blur radius of the card shadow.
+const CGFloat kCardShadowRadius = 2.0;
+// The vertical offset of the card shadow.
+const CGFloat kCardShadowOffset = 1.0;
+// The color alpha of the card shadow.
+const CGFloat kCardShadowAlpha = 0.05;
 // Unified spacing constant for padding and vertical stacks.
 const CGFloat kLayoutSpacing = 16.0;
 // The spacing inside the tasks horizontal stack view.
@@ -52,9 +60,17 @@ const CGFloat kCompletionRowSpacing = 16.0;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-    self.layer.cornerRadius = kCardCornerRadius;
-    self.layer.masksToBounds = YES;
+    self.contentView.backgroundColor =
+        [UIColor colorNamed:kPrimaryBackgroundColor];
+    self.contentView.layer.cornerRadius = kCardCornerRadius;
+    self.contentView.layer.masksToBounds = YES;
+
+    self.layer.shadowColor =
+        [UIColor colorWithRed:0 green:0 blue:0 alpha:kCardShadowAlpha].CGColor;
+    self.layer.shadowOpacity = kCardShadowOpacity;
+    self.layer.shadowRadius = kCardShadowRadius;
+    self.layer.shadowOffset = CGSizeMake(0, kCardShadowOffset);
+    self.layer.masksToBounds = NO;
 
     UIStackView* headerView = [self createHeaderView];
     _tasksView = [self createTasksView];
@@ -70,11 +86,29 @@ const CGFloat kCompletionRowSpacing = 16.0;
     mainStackView.axis = UILayoutConstraintAxisVertical;
     mainStackView.spacing = kLayoutSpacing;
 
-    [self addSubview:mainStackView];
+    [self.contentView addSubview:mainStackView];
 
-    AddSameConstraintsWithInset(mainStackView, self, kLayoutSpacing);
+    AddSameConstraintsWithInset(mainStackView, self.contentView,
+                                kLayoutSpacing);
   }
   return self;
+}
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  self.layer.shadowPath =
+      [UIBezierPath bezierPathWithRoundedRect:self.bounds
+                                 cornerRadius:kCardCornerRadius]
+          .CGPath;
+}
+
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  _levelLabel.text = nil;
+  _subtitleLabel.text = nil;
+  _completionBadgeContainer.hidden = YES;
+  _notificationToggleSwitch.hidden = YES;
+  _tasksView.hidden = NO;
 }
 
 #pragma mark - LevelUpConsumer

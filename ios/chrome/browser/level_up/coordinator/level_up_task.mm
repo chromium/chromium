@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/level_up/ui/level_up_task.h"
+#import "ios/chrome/browser/level_up/coordinator/level_up_task.h"
 
 @implementation LevelUpTask
 
@@ -22,20 +22,6 @@
     _completed = completed;
     _category = category;
     _navigationAction = [navigationAction copy];
-  }
-  return self;
-}
-
-@end
-
-@implementation LevelUpCategory
-
-- (instancetype)initWithTitle:(NSString*)title
-                        tasks:(NSArray<LevelUpTask*>*)tasks {
-  self = [super init];
-  if (self) {
-    _title = title;
-    _tasks = [tasks copy];
   }
   return self;
 }

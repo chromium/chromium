@@ -2,6 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("view_models") {
+  sources = [
+    "level_up_category.h",
+    "level_up_category.mm",
+    "level_up_task.h",
+    "level_up_task.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/level_up/model",
+  ]
+}
+
 source_set("coordinator") {
   sources = [
     "level_up_coordinator.h",
@@ -11,7 +25,9 @@ source_set("coordinator") {
   ]
 
   deps = [
+    ":view_models",
     "//base",
+    "//ios/chrome/browser/level_up/model",
     "//ios/chrome/browser/level_up/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/level_up/ui/level_up_consumer.h"
 
 // View that displays the task progress indicator card.
-@interface LevelUpProgressView : UIView <LevelUpConsumer>
+@interface LevelUpProgressView : UICollectionViewCell <LevelUpConsumer>
 
 @end
 

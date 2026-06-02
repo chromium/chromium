@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/level_up/coordinator/level_up_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/level_up/coordinator/level_up_category.h"
+#import "ios/chrome/browser/level_up/coordinator/level_up_task.h"
+#import "ios/chrome/browser/level_up/model/task_types.h"
 #import "ios/chrome/browser/level_up/ui/level_up_consumer.h"
 #import "ios/chrome/browser/level_up/ui/level_up_profile_consumer.h"
-#import "ios/chrome/browser/level_up/ui/level_up_task.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/avatar/resized_avatar_cache.h"
@@ -211,6 +213,7 @@
       [self.consumer addCategoryCard:category];
     }
   }
+
   [self.profileConsumer setUserFullName:userFullName userAvatar:userAvatar];
 }
 

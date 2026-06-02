@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/level_up/ui/level_up_view_controller.h"
 
+#import "ios/chrome/browser/level_up/coordinator/level_up_category.h"
+#import "ios/chrome/browser/level_up/coordinator/level_up_task.h"
 #import "ios/chrome/browser/level_up/ui/level_up_progress_view.h"
-#import "ios/chrome/browser/level_up/ui/level_up_table_view_controller.h"
+#import "ios/chrome/browser/level_up/ui/level_up_task_collection_view.h"
+#import "ios/chrome/browser/level_up/ui/level_up_welcome_header_view.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -14,70 +17,59 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+// Identifier for the welcome profile section and cell.
+NSString* const kWelcomeSectionIdentifier = @"WelcomeSection";
+// Identifier for the tasks progress section and cell.
+NSString* const kProgressSectionIdentifier = @"ProgressSection";
+// Identifier for the checklist tasks section and cell.
+NSString* const kTasksSectionIdentifier = @"TasksSection";
 
-// Spacing for layout margins and stacks.
+// Item identifier for the welcome card cell.
+NSString* const kWelcomeItemIdentifier = @"WelcomeHeaderItem";
+// Item identifier for the progress card cell.
+NSString* const kProgressItemIdentifier = @"ProgressCardItem";
+// Item identifier for the tasks checklist table cell.
+NSString* const kTasksItemIdentifier = @"TasksTableCardItem";
+
+// Layout spacing.
 const CGFloat kLayoutSpacing = 16.0;
-// The size of the user avatar.
-const CGFloat kAvatarSize = 56.0;
-// The corner radius of the user avatar image view.
-const CGFloat kAvatarCornerRadius = 28.0;
-// Spacing within the welcome text container.
-const CGFloat kWelcomeTextSpacing = 4.0;
-// The line height multiple for the welcome title.
-const CGFloat kWelcomeTextLineHeightMultiple = 1.2;
-// The line height multiple for the user name.
-const CGFloat kUserNameLineHeightMultiple = 1.08;
-
+// Height of the welcome card cell.
+const CGFloat kWelcomeCellHeight = 56.0;
+// Height of the progress card cell.
+const CGFloat kProgressCellHeight = 150.0;
+// Height of the tasks card cell.
+const CGFloat kTasksCellHeight = 350.0;
 }  // namespace
 
+@interface LevelUpViewController () <LevelUpTaskCollectionViewDelegate>
+@end
+
 @implementation LevelUpViewController {
-  // Subview displaying the task progress indicator card.
-  LevelUpProgressView* _progressView;
-  // The table view controller.
-  LevelUpTableViewController* _tableViewController;
-
-  // The root scroll view enclosing all contents.
-  UIScrollView* _scrollView;
-  // The main vertical container.
-  UIStackView* _mainContainer;
-
-  // View displaying the welcome user header profile.
-  UIView* _welcomeHeaderView;
-  // Image view containing user's sign-in avatar.
-  UIImageView* _userAvatarImageView;
-  // Label showing user's full name.
-  UILabel* _userNameLabel;
+  // The collection view.
+  UICollectionView* _collectionView;
+  // The list of tasks.
+  NSArray<LevelUpTask*>* _tasks;
+  // The active level.
+  NSInteger _level;
   // User's full name.
   NSString* _userFullName;
   // User's avatar image.
   UIImage* _userAvatar;
 
-  // Stored copies of levels and tasks.
-  NSArray<LevelUpTask*>* _tasks;
-  NSInteger _level;
+  // The diffable data source.
+  UICollectionViewDiffableDataSource<NSString*, NSString*>* _diffableDataSource;
 }
 
-@synthesize tasksConsumer = _tableViewController;
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _tableViewController = [[LevelUpTableViewController alloc]
-        initWithHeaderTitle:l10n_util::GetNSString(IDS_IOS_LEVEL_UP_YOUR_TASKS)
-          showsSeeAllButton:YES
-                      style:UITableViewStylePlain];
-  }
-  return self;
-}
+@synthesize delegate = _delegate;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  [self setupChildControllers];
   [self setupNavigationItems];
   [self setupContentView];
+}
 
-  [_progressView setLevel:_level tasksForLevel:_tasks];
-  [_tableViewController setLevel:_level tasksForLevel:_tasks];
+- (void)setDelegate:(id<LevelUpViewControllerDelegate>)delegate {
+  _delegate = delegate;
 }
 
 #pragma mark - LevelUpConsumer
@@ -93,26 +85,36 @@ const CGFloat kUserNameLineHeightMultiple = 1.08;
              userAvatar:(UIImage*)userAvatar {
   _userFullName = userFullName;
   _userAvatar = userAvatar;
+}
 
-  if (self.isViewLoaded) {
-    _userNameLabel.attributedText =
-        [self attributedUserNameStringWithName:userFullName];
-    _userAvatarImageView.image = userAvatar;
-  }
+#pragma mark - LevelUpTaskCollectionViewDelegate
+
+- (void)didTapSeeAllTasks:(UICollectionViewCell*)cell {
+  [self.delegate didTapSeeAllTasks:self];
 }
 
 #pragma mark - Private
 
-// Configures and layouts the child task card controllers.
-- (void)setupChildControllers {
-  _progressView = [[LevelUpProgressView alloc] init];
-  _progressView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  [self addChildViewController:_tableViewController];
-  [_tableViewController didMoveToParentViewController:self];
+// Configures the welcome header cell.
+- (void)configureWelcomeHeaderCell:(LevelUpWelcomeHeaderView*)cell {
+  cell.userAvatar = _userAvatar;
+  cell.userFullName = _userFullName;
 }
 
-// Configures the custom navigation bar button items.
+// Configures the progress cell.
+- (void)configureProgressCell:(LevelUpProgressView*)cell {
+  [cell setLevel:_level tasksForLevel:_tasks];
+}
+
+// Configures the tasks checklist cell.
+- (void)configureTasksCell:(LevelUpTaskCollectionView*)cell {
+  cell.headerTitle = l10n_util::GetNSString(IDS_IOS_LEVEL_UP_YOUR_TASKS);
+  cell.showsSeeAllButton = YES;
+  cell.delegate = self;
+  [cell setLevel:_level tasksForLevel:_tasks];
+}
+
+// Sets up the navigation bar buttons and titles.
 - (void)setupNavigationItems {
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   self.title = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_LEVEL_UP);
@@ -141,113 +143,198 @@ const CGFloat kUserNameLineHeightMultiple = 1.08;
       [[UIBarButtonItem alloc] initWithCustomView:dismissButton];
 }
 
-// Configures the scroll view, welcome header view, and container stack layouts.
+// Sets up the collection view layout.
 - (void)setupContentView {
-  _scrollView = [[UIScrollView alloc] init];
-  _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-  _scrollView.alwaysBounceVertical = YES;
-  [self.view addSubview:_scrollView];
-  AddSameConstraints(_scrollView, self.view);
+  UICollectionViewCompositionalLayoutConfiguration* config =
+      [[UICollectionViewCompositionalLayoutConfiguration alloc] init];
+  config.interSectionSpacing = kLayoutSpacing;
 
-  _welcomeHeaderView = [self createWelcomeHeaderView];
-  _userNameLabel.attributedText =
-      [self attributedUserNameStringWithName:_userFullName];
-  _userAvatarImageView.image = _userAvatar;
+  __weak __typeof(self) weakSelf = self;
+  UICollectionViewCompositionalLayout* layout =
+      [[UICollectionViewCompositionalLayout alloc]
+          initWithSectionProvider:^NSCollectionLayoutSection*(
+              NSInteger sectionIndex,
+              id<NSCollectionLayoutEnvironment> layoutEnvironment) {
+            return [weakSelf layoutSectionForIndex:sectionIndex];
+          }
+                    configuration:config];
 
-  _mainContainer = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _welcomeHeaderView, _progressView, _tableViewController.view
-  ]];
-  _mainContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  _mainContainer.axis = UILayoutConstraintAxisVertical;
-  _mainContainer.spacing = kLayoutSpacing;
-  _mainContainer.alignment = UIStackViewAlignmentFill;
-  [_scrollView addSubview:_mainContainer];
+  _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
+                                       collectionViewLayout:layout];
+  _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
+  _collectionView.backgroundColor = [UIColor clearColor];
+  _collectionView.allowsSelection = NO;
 
-  AddSameConstraintsWithInsets(
-      _mainContainer, _scrollView.contentLayoutGuide,
-      NSDirectionalEdgeInsetsMake(kLayoutSpacing, kLayoutSpacing,
-                                  kLayoutSpacing, kLayoutSpacing));
-  [_mainContainer.widthAnchor constraintEqualToAnchor:_scrollView.widthAnchor
-                                             constant:-2 * kLayoutSpacing]
-      .active = YES;
+  [self.view addSubview:_collectionView];
+  AddSameConstraints(_collectionView, self.view);
+
+  UICollectionViewCellRegistration* welcomeRegistration =
+      [UICollectionViewCellRegistration
+          registrationWithCellClass:[LevelUpWelcomeHeaderView class]
+               configurationHandler:^(LevelUpWelcomeHeaderView* cell,
+                                      NSIndexPath* indexPath,
+                                      NSString* itemIdentifier) {
+                 __strong __typeof(weakSelf) strongSelf = weakSelf;
+                 if (!strongSelf) {
+                   return;
+                 }
+                 [strongSelf configureWelcomeHeaderCell:cell];
+               }];
+
+  UICollectionViewCellRegistration* progressRegistration =
+      [UICollectionViewCellRegistration
+          registrationWithCellClass:[LevelUpProgressView class]
+               configurationHandler:^(LevelUpProgressView* cell,
+                                      NSIndexPath* indexPath,
+                                      NSString* itemIdentifier) {
+                 __strong __typeof(weakSelf) strongSelf = weakSelf;
+                 if (!strongSelf) {
+                   return;
+                 }
+                 [strongSelf configureProgressCell:cell];
+               }];
+
+  UICollectionViewCellRegistration* tasksRegistration =
+      [UICollectionViewCellRegistration
+          registrationWithCellClass:[LevelUpTaskCollectionView class]
+               configurationHandler:^(LevelUpTaskCollectionView* cell,
+                                      NSIndexPath* indexPath,
+                                      NSString* itemIdentifier) {
+                 __strong __typeof(weakSelf) strongSelf = weakSelf;
+                 if (!strongSelf) {
+                   return;
+                 }
+                 [strongSelf configureTasksCell:cell];
+               }];
+
+  _diffableDataSource = [[UICollectionViewDiffableDataSource alloc]
+      initWithCollectionView:_collectionView
+                cellProvider:^UICollectionViewCell*(
+                    UICollectionView* collectionView, NSIndexPath* indexPath,
+                    NSString* itemIdentifier) {
+                  __strong __typeof(weakSelf) strongSelf = weakSelf;
+                  if (!strongSelf) {
+                    return nil;
+                  }
+                  NSString* sectionIdentifier =
+                      [strongSelf->_diffableDataSource.snapshot
+                          sectionIdentifierForSectionContainingItemIdentifier:
+                              itemIdentifier];
+
+                  if ([sectionIdentifier
+                          isEqualToString:kWelcomeSectionIdentifier]) {
+                    return [collectionView
+                        dequeueConfiguredReusableCellWithRegistration:
+                            welcomeRegistration
+                                                         forIndexPath:indexPath
+                                                                 item:
+                                                                     itemIdentifier];
+                  }
+                  if ([sectionIdentifier
+                          isEqualToString:kProgressSectionIdentifier]) {
+                    return [collectionView
+                        dequeueConfiguredReusableCellWithRegistration:
+                            progressRegistration
+                                                         forIndexPath:indexPath
+                                                                 item:
+                                                                     itemIdentifier];
+                  }
+                  if ([sectionIdentifier
+                          isEqualToString:kTasksSectionIdentifier]) {
+                    return [collectionView
+                        dequeueConfiguredReusableCellWithRegistration:
+                            tasksRegistration
+                                                         forIndexPath:indexPath
+                                                                 item:
+                                                                     itemIdentifier];
+                  }
+                  return [[UICollectionViewCell alloc] init];
+                }];
+
+  [self applyDataSnapshotAnimated:NO];
 }
 
+// Rebuilds and applies the collection view diffable snapshot.
+- (void)applyDataSnapshotAnimated:(BOOL)animated {
+  NSDiffableDataSourceSnapshot<NSString*, NSString*>* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+
+  [snapshot appendSectionsWithIdentifiers:@[
+    kWelcomeSectionIdentifier, kProgressSectionIdentifier,
+    kTasksSectionIdentifier
+  ]];
+
+  [snapshot appendItemsWithIdentifiers:@[ kWelcomeItemIdentifier ]
+             intoSectionWithIdentifier:kWelcomeSectionIdentifier];
+
+  [snapshot appendItemsWithIdentifiers:@[ kProgressItemIdentifier ]
+             intoSectionWithIdentifier:kProgressSectionIdentifier];
+
+  [snapshot appendItemsWithIdentifiers:@[ kTasksItemIdentifier ]
+             intoSectionWithIdentifier:kTasksSectionIdentifier];
+
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:animated];
+}
+
+// Returns the collection layout section configuration for a given index path.
+- (NSCollectionLayoutSection*)layoutSectionForIndex:(NSInteger)sectionIndex {
+  NSString* sectionIdentifier = [_diffableDataSource.snapshot.sectionIdentifiers
+      objectAtIndex:sectionIndex];
+
+  NSDirectionalEdgeInsets standardInsets = NSDirectionalEdgeInsetsMake(
+      kLayoutSpacing, kLayoutSpacing, 0, kLayoutSpacing);
+
+  if ([sectionIdentifier isEqualToString:kWelcomeSectionIdentifier]) {
+    return [self
+        flatSectionWithHeightDimension:
+            [NSCollectionLayoutDimension estimatedDimension:kWelcomeCellHeight]
+                         contentInsets:standardInsets];
+  }
+  if ([sectionIdentifier isEqualToString:kProgressSectionIdentifier]) {
+    return [self
+        flatSectionWithHeightDimension:
+            [NSCollectionLayoutDimension estimatedDimension:kProgressCellHeight]
+                         contentInsets:standardInsets];
+  }
+  if ([sectionIdentifier isEqualToString:kTasksSectionIdentifier]) {
+    NSDirectionalEdgeInsets listInsets = NSDirectionalEdgeInsetsMake(
+        kLayoutSpacing, kLayoutSpacing, kLayoutSpacing, kLayoutSpacing);
+    return [self
+        flatSectionWithHeightDimension:[NSCollectionLayoutDimension
+                                           estimatedDimension:kTasksCellHeight]
+                         contentInsets:listInsets];
+  }
+  return nil;
+}
+
+// Returns a vertical section with the given height.
+- (NSCollectionLayoutSection*)
+    flatSectionWithHeightDimension:(NSCollectionLayoutDimension*)heightDimension
+                     contentInsets:(NSDirectionalEdgeInsets)insets {
+  NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
+      sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                 fractionalWidthDimension:1.0]
+             heightDimension:heightDimension];
+  NSCollectionLayoutItem* item =
+      [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
+
+  NSCollectionLayoutSize* groupSize = [NSCollectionLayoutSize
+      sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                 fractionalWidthDimension:1.0]
+             heightDimension:heightDimension];
+  NSCollectionLayoutGroup* group =
+      [NSCollectionLayoutGroup verticalGroupWithLayoutSize:groupSize
+                                                  subitems:@[ item ]];
+
+  NSCollectionLayoutSection* section =
+      [NSCollectionLayoutSection sectionWithGroup:group];
+  section.contentInsets = insets;
+  return section;
+}
+
+// Handles dismissing the view.
 - (void)dismiss {
   [self.handler dismissLevelUp];
-}
-
-// Creates the welcome user header view.
-- (UIView*)createWelcomeHeaderView {
-  _userAvatarImageView = [[UIImageView alloc] init];
-  _userAvatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  _userAvatarImageView.contentMode = UIViewContentModeScaleAspectFill;
-  _userAvatarImageView.layer.cornerRadius = kAvatarCornerRadius;
-  _userAvatarImageView.layer.masksToBounds = YES;
-  _userAvatarImageView.backgroundColor =
-      [UIColor colorNamed:kTextQuaternaryColor];
-  [NSLayoutConstraint activateConstraints:@[
-    [_userAvatarImageView.widthAnchor constraintEqualToConstant:kAvatarSize],
-    [_userAvatarImageView.heightAnchor constraintEqualToConstant:kAvatarSize],
-  ]];
-
-  UILabel* welcomeLabel = [[UILabel alloc] init];
-  welcomeLabel.translatesAutoresizingMaskIntoConstraints = NO;
-
-  NSMutableParagraphStyle* paragraphStyle =
-      [[NSMutableParagraphStyle alloc] init];
-  paragraphStyle.lineHeightMultiple = kWelcomeTextLineHeightMultiple;
-
-  NSDictionary<NSAttributedStringKey, id>* welcomeTextAttributes = @{
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
-    NSParagraphStyleAttributeName : paragraphStyle
-  };
-
-  welcomeLabel.attributedText = [[NSAttributedString alloc]
-      initWithString:l10n_util::GetNSString(IDS_IOS_LEVEL_UP_WELCOME)
-          attributes:welcomeTextAttributes];
-
-  _userNameLabel = [[UILabel alloc] init];
-  _userNameLabel.translatesAutoresizingMaskIntoConstraints = NO;
-
-  UIStackView* textStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ welcomeLabel, _userNameLabel ]];
-  textStack.translatesAutoresizingMaskIntoConstraints = NO;
-  textStack.axis = UILayoutConstraintAxisVertical;
-  textStack.spacing = kWelcomeTextSpacing;
-
-  UIStackView* headerStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ _userAvatarImageView, textStack ]];
-  headerStack.translatesAutoresizingMaskIntoConstraints = NO;
-  headerStack.axis = UILayoutConstraintAxisHorizontal;
-  headerStack.spacing = kLayoutSpacing;
-  headerStack.alignment = UIStackViewAlignmentCenter;
-
-  [headerStack.heightAnchor constraintEqualToConstant:kAvatarSize].active = YES;
-
-  return headerStack;
-}
-
-// Returns an attributed string for the user's full name.
-- (NSAttributedString*)attributedUserNameStringWithName:(NSString*)name {
-  NSMutableParagraphStyle* paragraphStyle =
-      [[NSMutableParagraphStyle alloc] init];
-  paragraphStyle.lineHeightMultiple = kUserNameLineHeightMultiple;
-
-  UIFontDescriptor* bodyDescriptor = [UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleBody];
-  UIFontDescriptor* boldDescriptor = [bodyDescriptor
-      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-  UIFont* userNameFont = [UIFont fontWithDescriptor:boldDescriptor size:0.0];
-
-  NSDictionary<NSAttributedStringKey, id>* userNameTextAttributes = @{
-    NSFontAttributeName : userNameFont,
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor],
-    NSParagraphStyleAttributeName : paragraphStyle
-  };
-  return [[NSAttributedString alloc] initWithString:name ?: @""
-                                         attributes:userNameTextAttributes];
 }
 
 @end

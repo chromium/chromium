@@ -8,10 +8,11 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/level_up/ui/level_up_task.h"
+#import "ios/chrome/browser/level_up/coordinator/level_up_category.h"
+#import "ios/chrome/browser/level_up/coordinator/level_up_task.h"
 
 @class LevelUpTask;
-@protocol LevelUpTableViewControllerDelegate;
+@protocol LevelUpViewControllerDelegate;
 
 // Consumer for the Level Up bottom sheet.
 @protocol LevelUpConsumer <NSObject>
@@ -26,7 +27,7 @@
 - (void)addCategoryCard:(LevelUpCategory*)category;
 
 // The delegate to notify the coordinator about card actions.
-@property(nonatomic, weak) id<LevelUpTableViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<LevelUpViewControllerDelegate> delegate;
 
 @end
 

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_LEVEL_UP_UI_LEVEL_UP_TASK_H_
-#define IOS_CHROME_BROWSER_LEVEL_UP_UI_LEVEL_UP_TASK_H_
+#ifndef IOS_CHROME_BROWSER_LEVEL_UP_COORDINATOR_LEVEL_UP_TASK_H_
+#define IOS_CHROME_BROWSER_LEVEL_UP_COORDINATOR_LEVEL_UP_TASK_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/level_up/model/task_types.h"
 
@@ -47,18 +47,4 @@
 
 @end
 
-// Model representing a task category.
-@interface LevelUpCategory : NSObject
-
-// The title of this category.
-@property(nonatomic, copy, readonly) NSString* title;
-
-// The list of tasks.
-@property(nonatomic, copy, readonly) NSArray<LevelUpTask*>* tasks;
-
-- (instancetype)initWithTitle:(NSString*)title
-                        tasks:(NSArray<LevelUpTask*>*)tasks;
-
-@end
-
-#endif  // IOS_CHROME_BROWSER_LEVEL_UP_UI_LEVEL_UP_TASK_H_
+#endif  // IOS_CHROME_BROWSER_LEVEL_UP_COORDINATOR_LEVEL_UP_TASK_H_
