@@ -573,7 +573,7 @@ BASE_FEATURE_PARAM(bool,
                    kInitialWebUIWithoutTranslate,
                    &features::kInitialWebUI,
                    "without_translate",
-                   false);
+                   true);
 
 // Whether initial WebUI navigations should synchronously go from navigation
 // start to commit, by doing e.g. in-renderer body loading.
