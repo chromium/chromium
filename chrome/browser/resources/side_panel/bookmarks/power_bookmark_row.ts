@@ -149,10 +149,6 @@ export class PowerBookmarkRowElement extends CrLitElement {
     if (changedProperties.has('bookmark') &&
         this.bookmark.id !== changedProperties.get('bookmark')?.id) {
       this.toggleExpand = false;
-      if (this.isFolder_() && this.bookmark.children) {
-        this.bookmarksService_.sortBookmarks(
-            this.bookmark.children, this.activeSortIndex);
-      }
     }
 
 
@@ -166,12 +162,6 @@ export class PowerBookmarkRowElement extends CrLitElement {
         this.style.setProperty(
             '--margin-per-depth', `${NESTED_BOOKMARKS_MARGIN_PER_DEPTH}px`);
       }
-    }
-
-    if (changedProperties.has('activeSortIndex') && this.isFolder_() &&
-        this.bookmark.children) {
-      this.bookmarksService_.sortBookmarks(
-          this.bookmark.children, this.activeSortIndex);
     }
   }
 
@@ -210,20 +200,15 @@ export class PowerBookmarkRowElement extends CrLitElement {
     this.currentListItem_.focus();
   }
 
-  private setExpanded_(expanded: boolean, event?: Event) {
+  private setExpanded_(expanded: boolean) {
     if (!this.isFolder_() || this.toggleExpand === expanded) {
       return;
     }
     this.toggleExpand = expanded;
 
-    if (!this.toggleExpand) {
-      this.keyArrowNavigationService_.removeElementsWithin(this);
-    }
-
     this.fire('power-bookmark-toggle', {
       bookmark: this.bookmark,
       expanded: this.toggleExpand,
-      event: event,
     });
   }
 
@@ -252,10 +237,9 @@ export class PowerBookmarkRowElement extends CrLitElement {
       if (this.isFolder_() && this.toggleExpand) {
         this.setExpanded_(false);
       } else {
-        const parentRow =
-            (this.getRootNode() as ShadowRoot)?.host as HTMLElement;
-        parentRow.focus();
-        this.keyArrowNavigationService_.setCurrentFocusIndex(parentRow);
+        this.fire('power-bookmark-row-focus-parent', {
+          parentId: this.bookmark.parentId,
+        });
       }
       e.stopPropagation();
       return;
@@ -303,14 +287,14 @@ export class PowerBookmarkRowElement extends CrLitElement {
   protected onExpandedChanged_(event: CustomEvent<{value: boolean}>) {
     event.preventDefault();
     event.stopPropagation();
-    this.setExpanded_(event.detail.value, event);
+    this.setExpanded_(event.detail.value);
   }
 
   private isPriceTracked_(): boolean {
     return !!this.bookmarksService_.getPriceTrackedInfo(this.bookmark);
   }
 
-  protected shouldExpand_(): boolean {
+  protected canExpand_(): boolean {
     return !!(this.bookmark?.children && this.compact);
   }
 
@@ -323,7 +307,14 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   protected getListItemCssClass_(): string {
+    if (this.canExpand_()) {
+      return 'expandable-folder';
+    }
     return this.compact ? 'bookmark' : '';
+  }
+
+  protected isExpanded_(): boolean {
+    return this.canExpand_() && this.toggleExpand;
   }
 }
 

@@ -66,7 +66,8 @@
       <iron-list id="list"
           items="[[displayList_]]" scroll-target="scroller" role="tree">
         <template>
-          <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
+          <power-bookmark-row id="bookmark-[[item.bookmark.id]]" bookmark="[[item.bookmark]]"
+              depth="[[item.depth]]"
               compact="[[compact_]]"
               search-query="[[searchQuery]]"
               updated-element-ids="[[updatedElementIds_]]"
@@ -83,6 +84,7 @@
               on-input-change="onRename_"
               on-list-item-size-changed="notifyBookmarksListResize_"
               on-power-bookmark-toggle="onRowToggled_"
+              on-power-bookmark-row-focus-parent="onRowFocusParent_"
               tabindex$="[[tabIndex]]"
               image-urls="[[imageUrls_]]"
               shopping-collection-folder-id=
@@ -93,7 +95,7 @@
               has-active-drag="[[hasActiveDrag_]]"
               active-folder-path="[[activeFolderPath]]"
               has-folders="[[hasFolders_]]"
-              row-heading="[[getRowHeading_(item, index, activeFolderPath.*, sectionVisibility_.*, firstSecondaryIndex_)]]">
+              row-heading="[[getRowHeading_(item.bookmark, index, activeFolderPath.*, sectionVisibility_.*, firstSecondaryIndex_)]]">
           </power-bookmark-row>
         </template>
       </iron-list>

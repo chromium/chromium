@@ -17,7 +17,7 @@
   background: var(--cr-hover-background-color);
 }
 
-power-bookmark-row-item.folder {
+power-bookmark-row-item.expandable-folder {
   --cr-expand-button-icon-size: 16px;
   --cr-expand-button-size: 24px;
 }
