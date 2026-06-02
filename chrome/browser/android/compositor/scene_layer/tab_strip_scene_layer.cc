@@ -575,6 +575,7 @@ void TabStripSceneLayer::UpdateGlicButtonInternal(
 
       text_layer->SetPosition(
           gfx::PointF(std::round(text_x_pos), std::round(text_y_offset)));
+      text_layer->SetHideLayerAndSubtree(false);
     } else {
       text_layer->SetHideLayerAndSubtree(true);
     }
