@@ -7,6 +7,9 @@ import("//testing/test.gni")
 
 config("ced_config") {
   include_dirs = [ "src" ]
+  if (is_linux || is_chromeos || is_android || is_fuchsia) {
+    defines = [ "HAVE_MEMRCHR" ]
+  }
 }
 
 config("ced_config_private") {
