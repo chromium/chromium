@@ -353,7 +353,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) Pool2dAttributes {
   // The layout format of the input.
   InputOperandLayout layout = InputOperandLayout::kNchw;
   // The rounding function used to compute the output shape.
-  RoundingType rounding_type = RoundingType::kFloor;
+  RoundingType output_shape_rounding = RoundingType::kFloor;
   // The element height and width of the output tensor.
   std::optional<Size2d<uint32_t>> output_sizes;
   // The operator label defined by the user.
