@@ -61,7 +61,8 @@ void PrivateInsightsService::TriggerUpload() {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&PrivateInsightsService::UploadBlocking),
+      base::BindOnce(&PrivateInsightsService::UploadBlocking,
+                     base::TimeTicks::Now()),
       base::BindOnce(&PrivateInsightsService::OnUploadComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -70,7 +71,9 @@ void PrivateInsightsService::TriggerUpload() {
 }
 
 // static
-bool PrivateInsightsService::UploadBlocking() {
+bool PrivateInsightsService::UploadBlocking(base::TimeTicks trigger_time) {
+  base::UmaHistogramTimes(kUploadPendingTimeHistogram,
+                          base::TimeTicks::Now() - trigger_time);
   // TODO(b/518646350): Add the RunFederatedComputation call here.
   return true;
 }

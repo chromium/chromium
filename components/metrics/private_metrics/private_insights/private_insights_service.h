@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -18,6 +19,8 @@ namespace private_insights {
 
 inline constexpr char kTriggerUploadOutcomeHistogram[] =
     "PrivateMetrics.PrivateInsights.TriggerUploadOutcome";
+inline constexpr char kUploadPendingTimeHistogram[] =
+    "PrivateMetrics.PrivateInsights.Upload.PendingTime";
 
 class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
     : public KeyedService {
@@ -46,7 +49,7 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
   void TriggerUpload();
 
   // Runs on a background thread pool sequence (allows blocking).
-  static bool UploadBlocking();
+  static bool UploadBlocking(base::TimeTicks trigger_time);
 
   void OnUploadComplete(bool result);
 
