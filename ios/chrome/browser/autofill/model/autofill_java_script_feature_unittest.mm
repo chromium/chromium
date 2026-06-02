@@ -8,9 +8,11 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "base/test/test_timeouts.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/common/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -676,6 +678,9 @@ TEST_F(AutofillJavaScriptFeatureTest, UndoForm) {
 // Tests form clearing (clearAutofilledFieldsForForm:formUniqueID:
 // fieldUniqueID:inFrame:completionHandler:) method.
 TEST_F(AutofillJavaScriptFeatureTest, ClearForm) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kAutofillUndoIos);
+
   LoadHtml(@"<html><body><form name='testform' method='post'>"
             "<input type='text' id='firstname' name='firstname'/>"
             "<input type='email' id='email' name='email'/>"

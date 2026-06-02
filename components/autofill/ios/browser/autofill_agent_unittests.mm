@@ -659,7 +659,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
       autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
                            autofill::SuggestionType::kAddressEntry));
   autofillSuggestions.push_back(
-      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
+      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kClear,
                            SuggestionType::kUndoOrClear));
   [autofill_agent_
        showAutofillPopup:autofillSuggestions
@@ -718,7 +718,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
       autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
                            autofill::SuggestionType::kCreditCardEntry));
   autofillSuggestions.push_back(
-      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kNoIcon,
+      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kClear,
                            SuggestionType::kUndoOrClear));
   [autofill_agent_
        showAutofillPopup:autofillSuggestions
@@ -1026,6 +1026,9 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_AutocompleteEntry) {
 }
 
 TEST_F(AutofillAgentTests, DidSelectSuggestion_ClearFormEntry) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kAutofillUndoIos);
+
   FormRendererId form_id(1);
   FieldRendererId field1_id(2);
   FieldRendererId field2_id(3);
