@@ -113,12 +113,6 @@ std::pair<int, int> GetTilingInterestAreaSizes() {
       2 * ::features::kDefaultInterestAreaSizeInPixels / 3);
   return {interest_area_size_in_pixels, (2 * interest_area_size_in_pixels) / 3};
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-constexpr size_t kLargeResolutionMemoryMB = 1152;
-constexpr size_t kDefaultMemoryMB = 512;
-#endif
-
 }  // namespace
 
 // static
@@ -153,6 +147,9 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
     actual.bytes_limit_when_visible = 256 * 1024 * 1024;
   }
 #else
+  static constexpr size_t kLargeResolutionMemoryMB = 1152;
+  static constexpr size_t kDefaultMemoryMB = 512;
+
   // This calculation will increase the tile memory size. It should apply to
   // the other plateforms if no regression on Mac.
   //
