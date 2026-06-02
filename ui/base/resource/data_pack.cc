@@ -246,9 +246,13 @@ base::expected<base::File, DataPack::ErrorState> OpenDataPack(
 // static
 base::expected<std::unique_ptr<DataPack::DataSource>, DataPack::ErrorState>
 DataPack::LoadFromPathInternal(const base::FilePath& path) {
+  ASSIGN_OR_RETURN(base::File data_file, OpenDataPack(path));
+  if (data_file.GetLength() == 0) {
+    // A zero-length file cannot be mapped as read-only.
+    return base::unexpected(ErrorState{FailureReason::kEmptyFile});
+  }
   std::unique_ptr<base::MemoryMappedFile> mmap =
       std::make_unique<base::MemoryMappedFile>();
-  ASSIGN_OR_RETURN(base::File data_file, OpenDataPack(path));
   if (!mmap->Initialize(std::move(data_file))) {
     const auto error = GetLastErrorOrErrno();
     DPLOG(ERROR) << "Failed to mmap datapack";

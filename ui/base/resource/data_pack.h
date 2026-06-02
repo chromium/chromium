@@ -148,6 +148,7 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
     kBoundsExceeded,
     kOrderingViolation,
     kAliasTableCorrupt,
+    kEmptyFile,
   };
 
   struct ErrorState {
