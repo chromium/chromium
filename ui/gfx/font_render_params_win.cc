@@ -152,7 +152,7 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
   return CachedFontRenderParams::GetInstance()->GetParams();
 }
 
-void ClearFontRenderParamsCacheForTest() {
+void ClearFontRenderParamsCache() {
   CachedFontRenderParams::GetInstance()->Reset();
 }
 

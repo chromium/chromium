@@ -109,7 +109,7 @@ class FontRenderParamsTest : public testing::Test {
 #if BUILDFLAG(IS_LINUX)
     ui::LinuxUi::SetInstance(&test_font_delegate_);
 #endif
-    ClearFontRenderParamsCacheForTest();
+    ClearFontRenderParamsCache();
     SetForceDisableSubpixelFontRendering(false);
 
     // Create a new fontconfig configuration and load the default fonts
@@ -192,7 +192,7 @@ TEST_F(FontRenderParamsTest, Default) {
   EXPECT_EQ(FontRenderParams::SUBPIXEL_RENDERING_RGB,
             params.subpixel_rendering);
 
-  ClearFontRenderParamsCacheForTest();
+  ClearFontRenderParamsCache();
   SetForceDisableSubpixelFontRendering(true);
 
   params = GetFontRenderParams(FontRenderParamsQuery(), nullptr);
@@ -358,7 +358,7 @@ TEST_F(FontRenderParamsTest, ForceSubpixelPositioning) {
     EXPECT_FALSE(params.subpixel_positioning);
     SetFontRenderParamsDeviceScaleFactor(1.0f);
   }
-  ClearFontRenderParamsCacheForTest();
+  ClearFontRenderParamsCache();
   SetFontRenderParamsDeviceScaleFactor(1.25f);
   // Subpixel positioning should be forced.
   {
@@ -368,7 +368,7 @@ TEST_F(FontRenderParamsTest, ForceSubpixelPositioning) {
     EXPECT_TRUE(params.subpixel_positioning);
     SetFontRenderParamsDeviceScaleFactor(1.0f);
   }
-  ClearFontRenderParamsCacheForTest();
+  ClearFontRenderParamsCache();
   SetFontRenderParamsDeviceScaleFactor(2.f);
   // Subpixel positioning should be forced on non-Chrome-OS.
   {

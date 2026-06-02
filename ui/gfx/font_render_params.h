@@ -116,9 +116,14 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
                                      std::string* family_out);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-// Clears GetFontRenderParams()'s cache. Intended to be called by tests that are
-// changing Fontconfig's configuration.
-COMPONENT_EXPORT(GFX) void ClearFontRenderParamsCacheForTest();
+// Clears GetFontRenderParams()'s cache.
+COMPONENT_EXPORT(GFX) void ClearFontRenderParamsCache();
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/517630459) Return this to `ForTesting()` after per display
+// subpixel rendering is implemented.
+COMPONENT_EXPORT(GFX) bool GetFontRenderParamsSubpixelRenderingEnabled();
 #endif
 
 // Gets the device scale factor to query the FontRenderParams.

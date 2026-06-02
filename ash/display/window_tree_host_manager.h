@@ -221,6 +221,8 @@ class ASH_EXPORT WindowTreeHostManager
   // Pause occlusion tracking during display configuration updates.
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause> scoped_pause_;
 
+  bool subpixel_rendering_enabled_ = true;
+
   base::WeakPtrFactory<WindowTreeHostManager> weak_ptr_factory_{this};
 };
 

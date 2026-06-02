@@ -101,6 +101,9 @@ class COMPONENT_EXPORT(GFX) PlatformFontSkia : public PlatformFont {
   int font_size_pixels_;
   int style_;
   float device_scale_factor_;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  bool subpixel_rendering_enabled_ = true;
+#endif
 
   // Information describing how the font should be rendered.
   FontRenderParams font_render_params_;

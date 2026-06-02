@@ -18,7 +18,7 @@ namespace gfx {
 
 class FontRenderParamsTest : public testing::Test {
  public:
-  FontRenderParamsTest() { ClearFontRenderParamsCacheForTest(); }
+  FontRenderParamsTest() { ClearFontRenderParamsCache(); }
 
   FontRenderParamsTest(const FontRenderParamsTest&) = delete;
   FontRenderParamsTest& operator=(const FontRenderParamsTest&) = delete;
