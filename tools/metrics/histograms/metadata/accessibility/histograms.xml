@@ -1939,7 +1939,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.iOS.NewLargerTextCategory" enum="BooleanHit"
-    expires_after="2026-06-01">
+    expires_after="2027-06-01">
   <owner>gambard@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>

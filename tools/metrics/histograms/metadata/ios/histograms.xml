@@ -2271,7 +2271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.FinishedNavigationHasContext" enum="Boolean"
-    expires_after="2026-05-01">
+    expires_after="2027-07-01">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -2285,7 +2285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.FinishedNavigationHasItem" enum="Boolean"
-    expires_after="2026-07-06">
+    expires_after="2027-07-06">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -2298,7 +2298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.FinishedURLMatchesCurrentItem" enum="Boolean"
-    expires_after="2026-06-19">
+    expires_after="2027-06-19">
   <owner>gambard@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -8151,13 +8151,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Web.URLDidChangeToEmptyURL" enum="BooleanHit"
-    expires_after="2026-03-30">
+    expires_after="2027-03-30">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
     A boolean that is used to indicate that the URL property of the WKWebView
     has changed to a nil or empty URL. Recorded on the KVO of the URL of the
-    WKWebView.
+    WKWebView. This histogram was expired between 2026-03-30 and 2026-06-02,
+    data may be missing.
   </summary>
 </histogram>
 
