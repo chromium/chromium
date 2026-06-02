@@ -26,6 +26,9 @@ per-file mac_toolchain.py=justincohen@chromium.org
 per-file mac_toolchain.py=file://build/mac/OWNERS
 per-file xcode_binaries.yaml=file://build/mac/OWNERS
 
+per-file util/*tast_control*.py=fqj@chromium.org
+per-file util/*tast_control*.py=yoshiki@chromium.org
+
 per-file .gitignore=*
 per-file check_gn_headers_allowlist.txt=*
 per-file whitespace_file.txt=*
