@@ -134,6 +134,10 @@ void XRWebGLTextureArraySwapChain::OnFrameEnd() {
   gl->Disable(GL_DITHER);
   gl->Disable(GL_SCISSOR_TEST);
 
+  if (webgl2()) {
+    gl->Disable(GL_RASTERIZER_DISCARD);
+  }
+
   gl->ColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   gl->DepthMask(GL_FALSE);
   gl->BindVertexArrayOES(vao_);
@@ -173,6 +177,7 @@ void XRWebGLTextureArraySwapChain::OnFrameEnd() {
       static_cast<DrawingBuffer::Client*>(context());
   client->DrawingBufferClientRestoreTexture2DArrayBinding();
   client->DrawingBufferClientRestoreScissorTest();
+  client->DrawingBufferClientRestoreRasterizerDiscard();
   client->DrawingBufferClientRestoreMaskAndClearValues();
   client->DrawingBufferClientRestoreFramebufferBinding();
 
