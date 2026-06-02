@@ -60,6 +60,43 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
+namespace {
+class OffscreenCanvasRegistry
+    : public GarbageCollected<OffscreenCanvasRegistry>,
+      public Supplement<ExecutionContext> {
+ public:
+  static const char kSupplementName[];
+  static OffscreenCanvasRegistry& From(ExecutionContext* context) {
+    auto* supplement =
+        Supplement<ExecutionContext>::From<OffscreenCanvasRegistry>(context);
+    if (!supplement) {
+      supplement = MakeGarbageCollected<OffscreenCanvasRegistry>(context);
+      Supplement<ExecutionContext>::ProvideTo(*context, supplement);
+    }
+    return *supplement;
+  }
+  explicit OffscreenCanvasRegistry(ExecutionContext* context)
+      : Supplement<ExecutionContext>(*context) {}
+  void Register(DOMNodeId id, OffscreenCanvas* canvas) {
+    if (id != kInvalidDOMNodeId) {
+      map_.Set(id, canvas);
+    }
+  }
+  OffscreenCanvas* Get(DOMNodeId id) {
+    auto it = map_.find(id);
+    return it != map_.end() ? it->value.Get() : nullptr;
+  }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(map_);
+    Supplement<ExecutionContext>::Trace(visitor);
+  }
+
+ private:
+  HeapHashMap<DOMNodeId, WeakMember<OffscreenCanvas>> map_;
+};
+const char OffscreenCanvasRegistry::kSupplementName[] =
+    "OffscreenCanvasRegistry";
+}  // namespace
 
 OffscreenCanvas::OffscreenCanvas(ExecutionContext* context, gfx::Size size)
     : CanvasRenderingContextHost(
@@ -136,7 +173,24 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
 
   CanvasResourceTracker::For(context->GetIsolate())->Add(this, context);
 
-  SetPlaceholderCanvasId(canvas_id);
+  placeholder_canvas_id_ = canvas_id;
+  if (GetExecutionContext()) {
+    OffscreenCanvasRegistry::From(GetExecutionContext())
+        .Register(canvas_id, this);
+  }
+  if (HasPlaceholderCanvas() && GetTopExecutionContext() &&
+      GetTopExecutionContext()->IsDedicatedWorkerGlobalScope()) {
+    WorkerAnimationFrameProvider* animation_frame_provider =
+        To<DedicatedWorkerGlobalScope>(GetTopExecutionContext())
+            ->GetAnimationFrameProvider();
+    DCHECK(animation_frame_provider);
+    if (animation_frame_provider) {
+      animation_frame_provider->RegisterOffscreenCanvas(this);
+    }
+  }
+  if (frame_dispatcher_) {
+    frame_dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_canvas_id_);
+  }
 }
 
 OffscreenCanvas* OffscreenCanvas::Create(ScriptState* script_state,
@@ -184,70 +238,12 @@ void OffscreenCanvas::DeregisterFromAnimationFrameProvider() {
   }
 }
 
-namespace {
-class OffscreenCanvasRegistry
-    : public GarbageCollected<OffscreenCanvasRegistry>,
-      public Supplement<ExecutionContext> {
- public:
-  static const char kSupplementName[];
-  static OffscreenCanvasRegistry& From(ExecutionContext* context) {
-    auto* supplement =
-        Supplement<ExecutionContext>::From<OffscreenCanvasRegistry>(context);
-    if (!supplement) {
-      supplement = MakeGarbageCollected<OffscreenCanvasRegistry>(context);
-      Supplement<ExecutionContext>::ProvideTo(*context, supplement);
-    }
-    return *supplement;
-  }
-  explicit OffscreenCanvasRegistry(ExecutionContext* context)
-      : Supplement<ExecutionContext>(*context) {}
-  void Register(DOMNodeId id, OffscreenCanvas* canvas) {
-    if (id != kInvalidDOMNodeId) {
-      map_.Set(id, canvas);
-    }
-  }
-  OffscreenCanvas* Get(DOMNodeId id) {
-    auto it = map_.find(id);
-    return it != map_.end() ? it->value.Get() : nullptr;
-  }
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(map_);
-    Supplement<ExecutionContext>::Trace(visitor);
-  }
-
- private:
-  HeapHashMap<DOMNodeId, WeakMember<OffscreenCanvas>> map_;
-};
-const char OffscreenCanvasRegistry::kSupplementName[] =
-    "OffscreenCanvasRegistry";
-}  // namespace
-
 OffscreenCanvas* OffscreenCanvas::FromPlaceholderId(ExecutionContext* context,
                                                     DOMNodeId canvas_id) {
   if (!context || canvas_id == kInvalidDOMNodeId) {
     return nullptr;
   }
   return OffscreenCanvasRegistry::From(context).Get(canvas_id);
-}
-
-void OffscreenCanvas::SetPlaceholderCanvasId(DOMNodeId canvas_id) {
-  placeholder_canvas_id_ = canvas_id;
-  if (GetExecutionContext()) {
-    OffscreenCanvasRegistry::From(GetExecutionContext())
-        .Register(canvas_id, this);
-  }
-  if (HasPlaceholderCanvas() && GetTopExecutionContext() &&
-      GetTopExecutionContext()->IsDedicatedWorkerGlobalScope()) {
-    WorkerAnimationFrameProvider* animation_frame_provider =
-        To<DedicatedWorkerGlobalScope>(GetTopExecutionContext())
-            ->GetAnimationFrameProvider();
-    DCHECK(animation_frame_provider);
-    if (animation_frame_provider)
-      animation_frame_provider->RegisterOffscreenCanvas(this);
-  }
-  if (frame_dispatcher_) {
-    frame_dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_canvas_id_);
-  }
 }
 
 void OffscreenCanvas::setWidth(unsigned width) {

@@ -255,8 +255,6 @@ class CORE_EXPORT OffscreenCanvas final
   static ContextFactoryVector& RenderingContextFactories();
   static CanvasRenderingContextFactory* GetRenderingContextFactory(int);
 
-  void SetPlaceholderCanvasId(DOMNodeId canvas_id);
-
   Member<CanvasRenderingContext> context_;
   WeakMember<ExecutionContext> execution_context_;
 
