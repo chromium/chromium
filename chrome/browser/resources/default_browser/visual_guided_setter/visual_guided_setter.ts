@@ -13,7 +13,7 @@ function initialize() {
   // subsequent CL in this chain.
   ColorChangeUpdater.forDocument().start();
 
-  // Hide the second step if the user cannot pin to taskbar/
+  // Hide the second step if the user cannot pin to taskbar.
   if (!loadTimeData.getBoolean('canPinToTaskbar')) {
     const step2 = document.getElementById('step-2');
     if (step2) {
