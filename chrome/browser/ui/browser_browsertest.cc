@@ -1505,11 +1505,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
   model->SetTabPinned(0, true);
 
   // Add a non pinned tab.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Add another pinned tab.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   model->SetTabPinned(2, true);
@@ -2909,7 +2909,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, IsOffTheRecordBrowserInUse) {
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, TestActiveTabChangedUserAction) {
   base::UserActionTester user_action_tester;
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   EXPECT_EQ(user_action_tester.GetActionCount("ActiveTabChanged"), 1);
 }
 
@@ -2977,7 +2977,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestTabCountMetrics) {
 
   // Create an additional browser with two tabs.
   Browser* browser2 = CreateBrowser(browser()->profile());
-  chrome::NewTab(browser2);
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser2->tab_strip_model()->GetActiveWebContents()));
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());

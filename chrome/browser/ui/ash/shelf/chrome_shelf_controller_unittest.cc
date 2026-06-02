@@ -776,7 +776,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   // Create and initialize the controller; create a tab and show the browser.
   void InitShelfControllerWithBrowser() {
     InitShelfController();
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     browser()->window()->Show();
   }
 
@@ -1603,7 +1603,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
       const std::string& url) {
     std::unique_ptr<Browser> browser(
         CreateBrowserWithTestWindowForProfile(profile));
-    chrome::NewTab(browser.get());
+    chrome::NewTab(browser.get(), NewTabTypes::kNoUserAction);
 
     browser->window()->Show();
     NavigateAndCommitActiveTabWithTitle(browser.get(), GURL(url),
@@ -3670,7 +3670,7 @@ void CheckAppMenu(ChromeShelfController* controller,
 // Check that browsers get reflected correctly in the shelf menu.
 TEST_F(ChromeShelfControllerTest, BrowserMenuGeneration) {
   EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   InitShelfController();
 
@@ -3691,7 +3691,7 @@ TEST_F(ChromeShelfControllerTest, BrowserMenuGeneration) {
   // Create one more browser/window and check that one more was added.
   std::unique_ptr<Browser> browser2(
       CreateBrowserWithTestWindowForProfile(profile()));
-  chrome::NewTab(browser2.get());
+  chrome::NewTab(browser2.get(), NewTabTypes::kNoUserAction);
   browser2->window()->Show();
   std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser2.get(), GURL("http://test2"),
@@ -3717,7 +3717,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   item_browser.id = ash::ShelfID(app_constants::kChromeAppId);
 
   // Check that the menu is empty.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   CheckAppMenu(shelf_controller_.get(), item_browser, 0, nullptr);
 
   // Show the created |browser()| by showing its window.
@@ -3786,12 +3786,12 @@ TEST_F(ChromeShelfControllerTest, V1AppMenuGeneration) {
   CheckAppMenu(shelf_controller_.get(), item_gmail, 1, one_menu_item);
 
   // Create one empty tab.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL("https://bla"), title2);
 
   // and another one with another gmail instance.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   std::u16string title3 = u"Test3";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title3);
   std::u16string two_menu_items[] = {title1, title3};
@@ -3817,7 +3817,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // Create a browser item in the controller.
   InitShelfController();
   StartPrefSyncService(syncer::SyncDataList());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   // Installing Gmail pins it to the shelf.
   const ash::ShelfID gmail_id(ash::kGmailAppId);
@@ -4212,7 +4212,7 @@ TEST_F(ChromeShelfControllerTest, V1AppMenuExecution) {
   SetRefocusURL(gmail_id, GURL(kGmailUrl));
   std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title2);
 
@@ -4260,7 +4260,7 @@ TEST_F(ChromeShelfControllerTest, V1AppMenuDeletionExecution) {
   SetRefocusURL(gmail_id, GURL(kGmailUrl));
   std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   std::u16string title2 = u"Test2";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title2);
 
@@ -4303,8 +4303,8 @@ TEST_F(ChromeShelfControllerTest, PersistShelfItemPositions) {
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(0, tab_strip_model->count());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   EXPECT_EQ(2, tab_strip_model->count());
   helper->SetAppID(tab_strip_model->GetWebContentsAt(0), "1");
   helper->SetAppID(tab_strip_model->GetWebContentsAt(1), "2");

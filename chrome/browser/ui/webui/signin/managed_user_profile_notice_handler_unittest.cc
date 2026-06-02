@@ -70,7 +70,7 @@ class ManagedUserProfileNoticeHandlerTestBase
   // BrowserWithTestWindowTest:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(

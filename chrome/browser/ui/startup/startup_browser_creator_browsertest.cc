@@ -1509,14 +1509,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, PRE_UpdateWithTwoProfiles) {
   // Open some urls with the browsers, and close them.
   Browser* browser1 = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, &profile1, true));
-  chrome::NewTab(browser1);
+  chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, embedded_test_server()->GetURL("/empty.html")));
   CloseBrowserSynchronously(browser1);
 
   Browser* browser2 = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, &profile2, true));
-  chrome::NewTab(browser2);
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser2, embedded_test_server()->GetURL("/form.html")));
   CloseBrowserSynchronously(browser2);
@@ -1643,7 +1643,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   // Open a page with profile_last.
   Browser* browser_last = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, &profile_last, true));
-  chrome::NewTab(browser_last);
+  chrome::NewTab(browser_last, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser_last, embedded_test_server()->GetURL("/empty.html")));
 
@@ -1750,12 +1750,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RestoreWithNoStartupWindow) {
 
   // Open a page with profile1 and profile2.
   Browser* browser1 = Browser::Create({Browser::TYPE_NORMAL, &profile1, true});
-  chrome::NewTab(browser1);
+  chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, embedded_test_server()->GetURL("/empty.html")));
 
   Browser* browser2 = Browser::Create({Browser::TYPE_NORMAL, &profile2, true});
-  chrome::NewTab(browser2);
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser2, embedded_test_server()->GetURL("/empty.html")));
   // Exit the browser, saving the multi-profile session state.
@@ -2387,12 +2387,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
 
   // Open some urls with the browsers, and close them.
   Browser* browser1 = Browser::Create({Browser::TYPE_NORMAL, &profile1, true});
-  chrome::NewTab(browser1);
+  chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, embedded_test_server()->GetURL("/title1.html")));
 
   Browser* browser2 = Browser::Create({Browser::TYPE_NORMAL, &profile2, true});
-  chrome::NewTab(browser2);
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser2, embedded_test_server()->GetURL("/title2.html")));
 
@@ -2658,7 +2658,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   // Open some urls with the browsers, and close them.
   SessionServiceFactory::GetForProfileForSessionRestore(&profile1);
   Browser* browser1 = Browser::Create({Browser::TYPE_NORMAL, &profile1, true});
-  chrome::NewTab(browser1);
+  chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser1, embedded_https_test_server().GetURL("/title1.html")));
   browser1->window()->Show();

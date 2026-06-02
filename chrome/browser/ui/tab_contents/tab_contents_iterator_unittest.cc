@@ -64,9 +64,9 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyCount) {
 
   // Add some tabs.
   for (size_t i = 0; i < 3; ++i) {
-    chrome::NewTab(browser2.get());
+    chrome::NewTab(browser2.get(), NewTabTypes::kNoUserAction);
   }
-  chrome::NewTab(browser3.get());
+  chrome::NewTab(browser3.get(), NewTabTypes::kNoUserAction);
 
   EXPECT_EQ(4U, CountAllTabs());
 
@@ -77,7 +77,7 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyCount) {
 
   // Add lots of tabs.
   for (size_t i = 0; i < 41; ++i) {
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   }
 
   EXPECT_EQ(42U, CountAllTabs());
@@ -109,10 +109,10 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyBrowser) {
 
   // Add some tabs.
   for (size_t i = 0; i < 3; ++i) {
-    chrome::NewTab(browser2.get());
+    chrome::NewTab(browser2.get(), NewTabTypes::kNoUserAction);
   }
   for (size_t i = 0; i < 2; ++i) {
-    chrome::NewTab(browser3.get());
+    chrome::NewTab(browser3.get(), NewTabTypes::kNoUserAction);
   }
 
   absl::flat_hash_map<BrowserWindowInterface*, size_t> tab_counts;
@@ -140,7 +140,7 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyBrowser) {
   EXPECT_EQ(1u, tab_counts[browser3.get()]);
 
   // Add one tab back to browser.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   tab_counts.clear();
   tabs::ForEachTabInterface([&tab_counts](tabs::TabInterface* const tab) {

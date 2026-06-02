@@ -80,7 +80,7 @@ class TabMenuModelBrowserTest : public MenuModelTest,
 };
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, Basics) {
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   TabMenuModel model(&delegate_,
                      browser()->GetFeatures().tab_menu_model_delegate(),
                      browser()->tab_strip_model(), 0);
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, Basics) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, MoveToNewWindow) {
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   TabMenuModel model(&delegate_,
                      browser()->GetFeatures().tab_menu_model_delegate(),
                      browser()->tab_strip_model(), 0);
@@ -109,10 +109,10 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, MoveToNewWindow) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, AddToExistingGroupSubmenu) {
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
@@ -144,10 +144,10 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, AddToExistingGroupSubmenu) {
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest,
                        AddToExistingGroupSubmenu_DoesNotIncludeCurrentGroup) {
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
@@ -182,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest,
 // Regression test for crbug.com/40055511
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest,
                        AddToExistingGroupAfterGroupDestroyed) {
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tab_strip_model->AddToNewGroup({0});
@@ -210,9 +210,9 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, ActiveTabNotSplit) {
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(tab_strip_model->count(), 4);
@@ -276,9 +276,9 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, ActiveTabNotSplit) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SplitActiveTab) {
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(tab_strip_model->count(), 4);
@@ -325,9 +325,9 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SplitActiveTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, MultiSelectTabs) {
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(tab_strip_model->count(), 4);
@@ -451,7 +451,7 @@ class TabMenuModelSplitViewHorizontalDirectAccessBrowserTest
 
   void TestNewSplit(SplitViewLayoutMenuModel::CommandId command_id,
                     split_tabs::SplitTabLayout expected_layout) {
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
     TabStripModel* tab_strip_model = browser()->tab_strip_model();
     ASSERT_EQ(tab_strip_model->count(), 2);
@@ -496,8 +496,8 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSplitViewHorizontalDirectAccessBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithActiveTab) {
   // Add 3 tabs to the browser.
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(tab_strip_model->count(), 3);
 
@@ -527,8 +527,8 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithActiveTab) {
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithInactiveTab) {
   // Add 3 tabs to the browser.
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(tab_strip_model->count(), 3);
 
@@ -628,9 +628,9 @@ class TabMenuModelGlicMultiTabTest : public TabMenuModelBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, NotShared) {
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   TabMenuModel model(&delegate_,
@@ -641,9 +641,9 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, NotShared) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, SomeShared) {
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   auto* service = glic::GlicKeyedService::Get(profile());
   service->ToggleUI(browser(), true,
@@ -672,11 +672,11 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, TooManyShared) {
   ASSERT_TRUE(instance);
   const int limit = sharing_manager().GetMaxPinnedTabs();
   for (int i = 0; i < limit; ++i) {
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     service->instance_coordinator().ShowInstanceForTabs(
         {tab_strip()->GetTabAtIndex(i)}, instance->id());
   }
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   tab_strip()->SelectTabAt(limit);
   service->instance_coordinator().ShowInstanceForTabs(
       {tab_strip()->GetTabAtIndex(limit)}, instance->id());

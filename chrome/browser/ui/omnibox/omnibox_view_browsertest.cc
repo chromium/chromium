@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_BrowserAccelerators) {
   int tab_count = browser()->tab_strip_model()->count();
 
   // Create a new Tab.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_NO_FATAL_FAILURE(WaitForTabOpenOrClose(tab_count + 1));
 
   // Select the first Tab.
@@ -1222,7 +1222,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
   ASSERT_EQ(kSearchKeyword, GetOmniboxEditModel()->keyword());
 
   // Create a new tab.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   // Switch back to the first tab.
   browser()->tab_strip_model()->ActivateTabAt(

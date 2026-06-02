@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
   ReadAnythingEntryPointController::ResetCheckCountForTesting();
 
   // Switch tabs in quick succession.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   browser()->tab_strip_model()->ActivateTabAt(1);
   browser()->tab_strip_model()->ActivateTabAt(0);
   browser()->tab_strip_model()->ActivateTabAt(1);
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
   ReadAnythingEntryPointController::ResetCheckCountForTesting();
 
   // Switch tabs in quick succession.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   browser()->tab_strip_model()->ActivateTabAt(1);
   browser()->tab_strip_model()->ActivateTabAt(0);
   browser()->tab_strip_model()->ActivateTabAt(1);
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
   VerifyUIState();
 
   // Switch to tab 1.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   browser()->tab_strip_model()->ActivateTabAt(1);
   WaitForDebounce();
   ReadAnythingEntryPointController::ResetCheckCountForTesting();
@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
   NavigateToDistillablePage();
   ReadAnythingEntryPointController::ResetCheckCountForTesting();
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   browser()->tab_strip_model()->ActivateTabAt(1);
   WaitForDebounce();
 
@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
   NavigateToDistillablePage();
   WaitForPageActionShowing(true);
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   browser()->tab_strip_model()->ActivateTabAt(1);
 
   histogram_tester.ExpectUniqueSample(
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        TabDetached_UpdatesIgnoredCountIfPageWasDistillable) {
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   RegisterPageActionObserver();
   NavigateToDistillablePage();
   WaitForPageActionShowing(true);
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     ReadAnythingOmniboxControllerBrowserTest,
     TabDetached_ShowsIconOnDistillablePageAfterIgnoredManyTimes) {
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   RegisterPageActionObserver();
   NavigateToDistillablePage();
   WaitForChipShowing(true);
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Open a new tab and navigate to a distillable page. Only the icon should
   // show.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   RegisterPageActionObserver();
   NavigateToDistillablePage();
   WaitForPageActionShowing(true);
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     ReadAnythingOmniboxControllerBrowserTest,
     TabDetached_DoesNotUpdateIgnoredCountIfPageWasNotDistillable) {
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   MockLongDwellTime();
 
   browser()->tab_strip_model()->GetActiveTab()->Close();
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     ReadAnythingOmniboxControllerBrowserTest,
     TabDetached_DoesNotUpdateIgnoredCountIfPageWasNotChecked) {
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   RegisterPageActionObserver();
   NavigateToDistillablePage();
   WaitForPageActionShowing(true);
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     ReadAnythingOmniboxControllerBrowserTest,
     TabDetached_DoesNotUpdateIgnoredCountIfPageWasNotDwelledOn) {
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   RegisterPageActionObserver();
   NavigateToDistillablePage();
   WaitForPageActionShowing(true);
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
                        TabDetached_LogsNotOpenedAfterIPH) {
   base::HistogramTester histogram_tester;
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   RegisterPageActionObserver();
   NavigateToDistillablePage();
   WaitForPageActionShowing(true);
@@ -706,7 +706,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
   Activate(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
   ExpectPageActionStateImmediate(false);
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   browser()->tab_strip_model()->ActivateTabAt(1);
 
   ExpectPageActionStateImmediate(false);
@@ -733,7 +733,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingOmniboxControllerBrowserTest,
   WaitForPageActionShowing(true);
 
   // Switch to a new tab to background the first tab, so it can be discarded.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   browser()->tab_strip_model()->ActivateTabAt(1);
 
   // Discard the first tab.

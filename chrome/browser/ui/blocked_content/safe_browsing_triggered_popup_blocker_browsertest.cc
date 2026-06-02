@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
 
   // Open a new tab to make sure the SafeBrowsingTriggeredPopupBlocker gets
   // created for the new tab.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
   // Navigate to a_url, should trigger the popup blocker.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));

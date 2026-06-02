@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, OpenerMovedToAnotherWindow) {
 IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
                        TabOpenedWithoutOpenerNoRelationship) {
   // Open a new tab directly (not from a link click)
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   content::WebContents* new_tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

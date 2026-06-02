@@ -1672,7 +1672,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   }
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
   {
@@ -1708,7 +1708,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(GetClearBrowsingDataURL(),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
   {

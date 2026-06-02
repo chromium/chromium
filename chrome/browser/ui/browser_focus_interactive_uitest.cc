@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabInitialFocus) {
   EXPECT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
 
   // Open the new tab, focus should be on the location bar.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents())));
   EXPECT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabInitialFocus) {
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusOnReload) {
   // Open the new tab, reload.
   {
-    auto& contents = chrome::NewTab(browser());
+    auto& contents = chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     content::WaitForLoadStop(&contents);
   }
   content::RunAllPendingInMessageLoop();
@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, AboutBlankNavigationLocationTest) {
 IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NoFocusForBackgroundNTP) {
   // Start at the NTP and navigate to a test page.  We will later go back to the
   // NTP, which gives the omnibox focus in some cases.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
 

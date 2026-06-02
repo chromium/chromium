@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, DismissalCausePromptTabHidden) {
   JavaScriptDialogDismissalCauseTester tester(this);
   tester.PopupDialog(content::JAVASCRIPT_DIALOG_TYPE_PROMPT);
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   EXPECT_EQ(DismissalCause::kTabHidden, tester.GetLastDismissalCause());
 }
 
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, NoDismissalAlertTabHidden) {
   JavaScriptDialogDismissalCauseTester tester(this);
   tester.PopupDialog(content::JAVASCRIPT_DIALOG_TYPE_ALERT);
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   EXPECT_EQ(std::nullopt, tester.GetLastDismissalCause());
 }
 
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest,
 IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
                        MAYBE_HandlesSwappingTabWithDialogIntoSplitView) {
   // Create three tabs with the first two in a split view.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   tab_strip_model()->ActivateTabAt(0);
   chrome::NewSplitTab(browser(), split_tabs::SplitTabLayout::kSideBySide,
                       split_tabs::SplitTabCreatedSource::kToolbarButton);

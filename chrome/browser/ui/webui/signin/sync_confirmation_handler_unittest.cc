@@ -103,7 +103,7 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     web_ui()->set_web_contents(
         browser()->tab_strip_model()->GetActiveWebContents());
 

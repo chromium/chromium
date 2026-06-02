@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(RollBackModeBInfoBarControllerBrowserTest,
                        SwitchingTabsClosesInfoBar) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://test")));
   EXPECT_TRUE(HasRollBackModeBInfoBar(browser()));
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
   EXPECT_FALSE(HasRollBackModeBInfoBar(browser()));
@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(RollBackModeBInfoBarControllerBrowserTest,
   EXPECT_TRUE(HasRollBackModeBInfoBar(browser()));
 
   Browser* new_browser = CreateBrowser(browser()->profile());
-  chrome::NewTab(new_browser);
+  chrome::NewTab(new_browser, NewTabTypes::kNoUserAction);
   ASSERT_TRUE(content::WaitForLoadStop(
       new_browser->tab_strip_model()->GetActiveWebContents()));
   ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);

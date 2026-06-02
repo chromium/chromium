@@ -70,7 +70,7 @@ class BrowserCommandsTest : public InProcessBrowserTest {
 
   void AddTabs(Browser* browser, int num_tabs) {
     for (int i = 0; i < num_tabs; ++i) {
-      chrome::NewTab(browser);
+      chrome::NewTab(browser, NewTabTypes::kNoUserAction);
     }
   }
 

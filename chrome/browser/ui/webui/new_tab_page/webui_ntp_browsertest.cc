@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, ProcessPerSite) {
   // Open a few NTPs.
   for (size_t i = 0; i < 3; i++) {
     content::WebContentsAddedObserver tab_observer;
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
     // Wait for the new tab.
     auto* tab = tab_observer.GetWebContents();
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
       LiveRenderProcessHostIds();
 
   // Open an NTP.
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   auto* ntp = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(WaitForLoadStop(ntp));
   ExpectIsWebUiNtp(ntp);

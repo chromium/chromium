@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyNTPUiTest, Reloads) {
   content::WebContents* tab1;
   {
     content::WebContentsAddedObserver tab1_observer;
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     tab1 = tab1_observer.GetWebContents();
     ASSERT_TRUE(WaitForLoadStop(tab1));
     EXPECT_EQ(ntp_url, content::EvalJs(tab1, "window.location.href"));

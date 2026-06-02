@@ -103,7 +103,7 @@ class PrintPreviewUIUnitTest : public PrintPreviewTest {
   void SetUp() override {
     PrintPreviewTest::SetUp();
 
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   }
 
   PrintPreviewUI* StartPrintPreview() {

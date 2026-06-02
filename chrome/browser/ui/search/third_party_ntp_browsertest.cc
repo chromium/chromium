@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, ProcessPerSite) {
 
     // Try to simulate as closely as possible what would have happened in the
     // real user interaction.
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
 
     // Wait for the new tab.
     tab1 = tab1_observer.GetWebContents();
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, ProcessPerSite) {
   content::WebContents* tab2;
   {
     content::WebContentsAddedObserver tab2_observer;
-    chrome::NewTab(browser());
+    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     tab2 = tab2_observer.GetWebContents();
     ASSERT_TRUE(WaitForLoadStop(tab2));
     EXPECT_EQ(ntp_url, content::EvalJs(tab2, "window.location.href"));

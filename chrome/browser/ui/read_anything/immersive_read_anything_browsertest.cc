@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveReadAnythingBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ImmersiveReadAnythingBrowserTest,
                        OverlayExistsOnSplitViewsWhenImmersiveIsEnabled) {
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   browser()->tab_strip_model()->ActivateTabAt(0);
   std::vector<int> other_tab_indices = {1};
   split_tabs::SplitTabVisualData visual_data;
