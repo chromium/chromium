@@ -590,6 +590,19 @@ class RenderFrameHostManagerTest
         site_instance_group, opener_frame_trees, nodes_with_back_links);
   }
 
+  // Exposes RenderFrameHostManager::CanUseSourceSiteInstance for testing.
+  bool CanUseSourceSiteInstance(
+      RenderFrameHostManager* render_manager,
+      const UrlInfo& dest_url_info,
+      SiteInstanceImpl* source_instance,
+      bool was_server_redirect,
+      NavigationRequest::ErrorPageProcess error_page_process,
+      std::string* reason) {
+    return render_manager->CanUseSourceSiteInstance(
+        dest_url_info, source_instance, was_server_redirect, error_page_process,
+        reason);
+  }
+
  private:
   RenderFrameHostManagerTestWebUIControllerFactory factory_;
   ScopedWebUIControllerFactoryRegistration factory_registration_{&factory_};
@@ -4028,6 +4041,97 @@ TEST_P(RenderFrameHostManagerTest,
   EXPECT_NE(foo_site_info, main_test_rfh()->GetSiteInstance()->GetSiteInfo());
 
   SetBrowserClientForTesting(regular_client);
+}
+
+// Verifies that `CanUseSourceSiteInstance()` rejects a non-MIME-handler
+// destination when the source `SiteInstance` carries a unique-instance
+// `EmbedderIsolationInfo`. A MIME handler instance must never share a
+// `SiteInstance` with non-handler content.
+TEST_P(RenderFrameHostManagerTest,
+       CanUseSourceSiteInstance_HandlerToNonHandler) {
+  // Navigate to a non-handler page so the manager has a current
+  // RenderFrameHost / FrameTreeNode wired up.
+  const GURL kSiteUrl("https://example.com/");
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kSiteUrl);
+
+  RenderFrameHostManager* render_manager =
+      contents()->GetPrimaryFrameTree().root()->render_manager();
+
+  // Build a source SiteInstance whose SiteInfo carries a valid isolation id.
+  const int64_t kIsolationId = 42;
+  scoped_refptr<SiteInstanceImpl> source_instance =
+      SiteInstanceImpl::CreateForUrlInfo(
+          browser_context(),
+          UrlInfo(UrlInfoInit(kSiteUrl).WithEmbedderIsolationInfo(
+              EmbedderIsolationInfo::CreateForUniqueInstance(kIsolationId))),
+          /*is_guest=*/false, /*is_fenced=*/false,
+          /*is_fixed_storage_partition=*/false);
+  // Sanity-check the setup so a silent miss can't masquerade as a
+  // pass.
+  ASSERT_TRUE(source_instance->GetSiteInfo()
+                  .embedder_isolation_info()
+                  .is_unique_instance());
+
+  // about:srcdoc satisfies the early IsAbout() gate at the top of
+  // `CanUseSourceSiteInstance()` so the mismatch check below runs.
+  // Destination carries no isolation id.
+  UrlInfo dest_url_info{UrlInfoInit(GURL(url::kAboutSrcdocURL))};
+
+  std::string reason;
+  EXPECT_FALSE(CanUseSourceSiteInstance(
+      render_manager, dest_url_info, source_instance.get(),
+      /*was_server_redirect=*/false,
+      NavigationRequest::ErrorPageProcess::kNotErrorPage, &reason));
+  EXPECT_NE(std::string::npos,
+            reason.find("(mime-handler-isolation-id-mismatched)"))
+      << "actual reason: " << reason;
+}
+
+// Verifies that `CanUseSourceSiteInstance()` rejects a destination whose
+// unique-instance id differs from the source instance's id, even when both
+// source and destination carry a unique-instance EmbedderIsolationInfo.
+// Two simultaneous handler instances must run in distinct processes.
+TEST_P(RenderFrameHostManagerTest,
+       CanUseSourceSiteInstance_DifferentIsolationIds) {
+  const GURL kSiteUrl("https://example.com/");
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kSiteUrl);
+
+  RenderFrameHostManager* render_manager =
+      contents()->GetPrimaryFrameTree().root()->render_manager();
+
+  // Source: valid isolation id = 42.
+  const int64_t kSourceIsolationId = 42;
+  scoped_refptr<SiteInstanceImpl> source_instance =
+      SiteInstanceImpl::CreateForUrlInfo(
+          browser_context(),
+          UrlInfo(UrlInfoInit(kSiteUrl).WithEmbedderIsolationInfo(
+              EmbedderIsolationInfo::CreateForUniqueInstance(
+                  kSourceIsolationId))),
+          /*is_guest=*/false, /*is_fenced=*/false,
+          /*is_fixed_storage_partition=*/false);
+  ASSERT_EQ(kSourceIsolationId, source_instance->GetSiteInfo()
+                                    .embedder_isolation_info()
+                                    .instance_id()
+                                    .value());
+
+  // about:srcdoc satisfies the early IsAbout() gate at the top of
+  // `CanUseSourceSiteInstance()` so the mismatch check below runs.
+  // Destination carries a valid isolation id, but different from the
+  // source.
+  const int64_t kDestIsolationId = 99;
+  UrlInfo dest_url_info(UrlInfoInit(GURL(url::kAboutSrcdocURL))
+                            .WithEmbedderIsolationInfo(
+                                EmbedderIsolationInfo::CreateForUniqueInstance(
+                                    kDestIsolationId)));
+
+  std::string reason;
+  EXPECT_FALSE(CanUseSourceSiteInstance(
+      render_manager, dest_url_info, source_instance.get(),
+      /*was_server_redirect=*/false,
+      NavigationRequest::ErrorPageProcess::kNotErrorPage, &reason));
+  EXPECT_NE(std::string::npos,
+            reason.find("(mime-handler-isolation-id-mismatched)"))
+      << "actual reason: " << reason;
 }
 
 class AdTaggingSimulator : public WebContentsObserver {

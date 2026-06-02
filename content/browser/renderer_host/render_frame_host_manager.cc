@@ -4143,6 +4143,35 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
     return false;
   }
 
+  // If `dest_url_info` is for an isolated MIME handler instance, it cannot
+  // share a SiteInstance with content of a different MIME-handler
+  // classification or with a different isolation id. A single
+  // EmbedderIsolationInfo equality check covers both directions: when one
+  // side is `Mode::kNone` the asymmetry case fails; when both are
+  // unique-instance but with different ids the per-instance isolation case
+  // fails. Two simultaneous MIME handler instances must run in distinct
+  // processes, and a MIME handler instance must never share a process with
+  // non-handler content. In particular, this prevents the PDF viewer
+  // extension from sharing a process with PDF content loaded from a data
+  // URL (crbug.com/1259635).
+  if (dest_url_info.embedder_isolation_info !=
+      source_site_info.embedder_isolation_info()) {
+    // The PDF-asymmetry case is reported with the historical
+    // "(pdf-content)" debug label to preserve existing diagnostics; other
+    // mismatches fall through to the generic reason.
+    if (dest_url_info.embedder_isolation_info.is_pdf() !=
+        source_site_info.embedder_isolation_info().is_pdf()) {
+      AppendReason(reason,
+                   "CanUseSourceSiteInstance => false "
+                   "(pdf-content)");
+    } else {
+      AppendReason(reason,
+                   "CanUseSourceSiteInstance => false "
+                   "(mime-handler-isolation-id-mismatched)");
+    }
+    return false;
+  }
+
   // One exception (where data URLs, about:srcdoc or about:blank pages are *not*
   // controlled by the initiator) is when these URLs are reached via a server
   // redirect.
@@ -4187,17 +4216,6 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
     AppendReason(reason,
                  "CanUseSourceSiteInstance => false "
                  "(cross-origin-isolation-key)");
-    return false;
-  }
-
-  // PDF content should never share a SiteInstance with non-PDF content. In
-  // practice, this prevents the PDF viewer extension from incorrectly sharing
-  // a process with PDF content that was loaded from a data URL.
-  if (dest_url_info.embedder_isolation_info.is_pdf()) {
-    CHECK(!source_instance->GetProcess()->IsPdf());
-    AppendReason(reason,
-                 "CanUseSourceSiteInstance => false "
-                 "(pdf-content)");
     return false;
   }
 
