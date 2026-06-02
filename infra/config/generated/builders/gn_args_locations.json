@@ -1028,7 +1028,6 @@
     "win-perfetto-rel": "try/win-perfetto-rel/gn-args.json",
     "win-rel": "try/win-rel/gn-args.json",
     "win-treesinviz-disabled-rel": "try/win-treesinviz-disabled-rel/gn-args.json",
-    "win-webium-product-rel": "try/win-webium-product-rel/gn-args.json",
     "win10-code-coverage": "try/win10-code-coverage/gn-args.json",
     "win10-dbg": "try/win10-dbg/gn-args.json",
     "win11-rel": "try/win11-rel/gn-args.json",
