@@ -859,8 +859,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   config.features_enabled.push_back(kFullscreenRefactoring);
   config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
-  // TODO(crbug.com/511992708): Fix these tests when Chrome Next is enabled.
-  config.features_disabled.push_back(kChromeNextIa);
+  config.features_enabled.push_back(kChromeNextIa);
   return config;
 }
 
