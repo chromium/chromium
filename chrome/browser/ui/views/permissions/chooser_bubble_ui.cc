@@ -158,8 +158,11 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
   // Drop fullscreen mode for the current webcontent so that the user sees the
   // URL.
   if (fullscreen_controller->IsTabFullscreen()) {
-    fullscreen_blocker_ =
+    auto blocker =
         contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+    if (blocker) {
+      fullscreen_blocker_ = std::move(*blocker);
+    }
   }
 }
 
