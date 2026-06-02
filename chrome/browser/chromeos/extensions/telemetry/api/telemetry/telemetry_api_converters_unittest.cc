@@ -487,10 +487,11 @@ TEST(TelemetryApiConverters, StatefulPartitionInfo) {
   constexpr uint64_t kAvailableSpace = 3000000000000000;
   constexpr uint64_t kTotalSpace = 9000000000000000;
 
-  crosapi::ProbeStatefulPartitionInfoPtr input =
-      crosapi::ProbeStatefulPartitionInfo::New(
-          crosapi::UInt64Value::New(kAvailableSpace),
-          crosapi::UInt64Value::New(kTotalSpace));
+  ash::cros_healthd::mojom::StatefulPartitionInfoPtr input =
+      ash::cros_healthd::mojom::StatefulPartitionInfo::New(
+          kAvailableSpace, kTotalSpace,
+          /*filesystem=*/std::string(),
+          /*mount_source=*/std::string());
 
   auto result = ConvertPtr(std::move(input));
   ASSERT_TRUE(result.available_space);
@@ -498,17 +499,6 @@ TEST(TelemetryApiConverters, StatefulPartitionInfo) {
 
   ASSERT_TRUE(result.total_space);
   EXPECT_EQ(kTotalSpace, *result.total_space);
-}
-
-TEST(TelemetryApiConverters, StatefulPartitionInfoNullFields) {
-  crosapi::ProbeStatefulPartitionInfoPtr input =
-      crosapi::ProbeStatefulPartitionInfo::New<crosapi::UInt64ValuePtr,
-                                               crosapi::UInt64ValuePtr>(
-          nullptr, nullptr);
-
-  auto result = ConvertPtr(std::move(input));
-  ASSERT_FALSE(result.available_space);
-  ASSERT_FALSE(result.total_space);
 }
 
 TEST(TelemetryApiConverters, NetworkStateEnum) {

@@ -336,15 +336,14 @@ void OsTelemetryGetOsVersionInfoFunction::OnResult(
 // OsTelemetryGetStatefulPartitionInfoFunction ---------------------------------
 
 void OsTelemetryGetStatefulPartitionInfoFunction::RunIfAllowed() {
-  auto cb = base::BindOnce(
-      &OsTelemetryGetStatefulPartitionInfoFunction::OnResult, this);
-
-  GetRemoteService()->ProbeTelemetryInfo(
-      {crosapi::ProbeCategoryEnum::kStatefulPartition}, std::move(cb));
+  GetService().ProbeTelemetryInfo(
+      {ash::cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition},
+      base::BindOnce(&OsTelemetryGetStatefulPartitionInfoFunction::OnResult,
+                     this));
 }
 
 void OsTelemetryGetStatefulPartitionInfoFunction::OnResult(
-    crosapi::ProbeTelemetryInfoPtr ptr) {
+    ash::cros_healthd::mojom::TelemetryInfoPtr ptr) {
   if (!ptr || !ptr->stateful_partition_result ||
       !ptr->stateful_partition_result->is_partition_info()) {
     Respond(Error("API internal error"));
@@ -352,6 +351,11 @@ void OsTelemetryGetStatefulPartitionInfoFunction::OnResult(
   }
   auto& stateful_part_info =
       ptr->stateful_partition_result->get_partition_info();
+
+  // Rounding to 100MiB.
+  constexpr uint64_t k100MiB = 100 * 1024 * 1024;
+  stateful_part_info->available_space =
+      stateful_part_info->available_space / k100MiB * k100MiB;
 
   cx_telem::StatefulPartitionInfo result =
       converters::telemetry::ConvertPtr(std::move(stateful_part_info));

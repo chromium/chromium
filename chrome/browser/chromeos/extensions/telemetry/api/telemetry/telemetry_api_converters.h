@@ -70,7 +70,7 @@ chromeos::api::os_telemetry::OsVersionInfo UncheckedConvertPtr(
     crosapi::mojom::ProbeOsVersionPtr input);
 
 chromeos::api::os_telemetry::StatefulPartitionInfo UncheckedConvertPtr(
-    crosapi::mojom::ProbeStatefulPartitionInfoPtr input);
+    ash::cros_healthd::mojom::StatefulPartitionInfoPtr input);
 
 chromeos::api::os_telemetry::TpmVersion UncheckedConvertPtr(
     crosapi::mojom::ProbeTpmVersionPtr input);

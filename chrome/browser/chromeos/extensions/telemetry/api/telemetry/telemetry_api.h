@@ -167,7 +167,7 @@ class OsTelemetryGetStatefulPartitionInfoFunction
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
+  void OnResult(ash::cros_healthd::mojom::TelemetryInfoPtr ptr);
 };
 
 class OsTelemetryGetThermalInfoFunction : public TelemetryApiFunctionBase {

@@ -209,6 +209,16 @@ cx_telem::StatefulPartitionInfo UncheckedConvertPtr(
   return result;
 }
 
+cx_telem::StatefulPartitionInfo UncheckedConvertPtr(
+    ash::cros_healthd::mojom::StatefulPartitionInfoPtr input) {
+  cx_telem::StatefulPartitionInfo result;
+
+  result.available_space = input->available_space;
+  result.total_space = input->total_space;
+
+  return result;
+}
+
 cx_telem::NetworkInfo UncheckedConvertPtr(
     chromeos::network_health::mojom::NetworkPtr input,
     bool has_mac_address_permission) {
