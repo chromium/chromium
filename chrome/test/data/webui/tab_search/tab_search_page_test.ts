@@ -7,7 +7,7 @@ import 'chrome://tab-search.top-chrome/tab_search.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import type {ProfileData, RecentlyClosedTab, Tab, TabSearchItemElement, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {SEARCH_QUERY_MAX_LENGTH, TabGroupColor, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {SEARCH_QUERY_MAX_LENGTH, SplitTabLayout, SplitViewData, TabGroupColor, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
@@ -37,7 +37,7 @@ suite('TabSearchAppTest', () => {
 
   function queryRows(): NodeListOf<HTMLElement> {
     return tabSearchPage.$.tabsList.querySelectorAll(
-        'tab-search-item, tab-search-group-item');
+        'tab-search-item, tab-search-group-item, tab-search-split-item');
   }
 
   function queryListTitle(): NodeListOf<HTMLElement> {
@@ -878,4 +878,134 @@ suite('TabSearchAppTest', () => {
     assertEquals(
         loadTimeData.getString('blobUrlSource'), tabSearchItem.data.hostname);
   });
+
+  test('group open split tabs by splitId', async () => {
+    const token = sampleToken(1n, 1n);
+    const tabs = [
+      createTab({
+        tabId: 10,
+        title: 'Tab A',
+        url: 'https://google.com',
+        splitId: token,
+        splitLayout: SplitTabLayout.kSideBySide,
+      }),
+      createTab({
+        tabId: 20,
+        title: 'Tab B',
+        url: 'https://paypal.com',
+        splitId: token,
+        splitLayout: SplitTabLayout.kSideBySide,
+      }),
+      createTab({
+        tabId: 30,
+        title: 'Tab C',
+        url: 'https://yahoo.com',
+      }),
+    ];
+
+    await setupTest(
+        createProfileData({
+          windows: [{
+            active: true,
+            isHostWindow: true,
+            height: SAMPLE_WINDOW_HEIGHT,
+            tabs,
+          }],
+        }),
+        {
+          splitViewTabRestoreEnabled: true,
+        });
+
+    assertEquals(2, queryRows().length);
+
+    const splitViewRow =
+        tabSearchPage.$.tabsList.items.find(
+            item => item instanceof SplitViewData) as SplitViewData;
+    assertTrue(!!splitViewRow);
+    assertEquals('Split View', splitViewRow.title);
+    assertEquals(2, splitViewRow.tabCount);
+    assertEquals('https://google.com', splitViewRow.tabUrls[0]);
+    assertEquals('https://paypal.com', splitViewRow.tabUrls[1]);
+  });
+
+  test('process recently closed split view into a single row', async () => {
+    const token = sampleToken(2n, 2n);
+    await setupTest(
+        createProfileData({
+          recentlyClosedSplitViews: [{
+            sessionId: 200,
+            id: token,
+            tabCount: 2,
+            lastActiveTime: {internalValue: 0n},
+            lastActiveElapsedText: '3 mins ago',
+            tabUrls: ['https://google.com', 'https://paypal.com'],
+            layout: SplitTabLayout.kSideBySide,
+            groupId: null,
+          }],
+          recentlyClosedSectionExpanded: true,
+        }),
+        {
+          splitViewTabRestoreEnabled: true,
+        });
+
+    await tabSearchPage.$.tabsList.ensureAllDomItemsAvailable();
+
+    const rows = queryRows();
+    assertEquals(7, rows.length);
+
+    const splitViewRow =
+        tabSearchPage.$.tabsList.items.find(
+            item => item instanceof SplitViewData) as SplitViewData;
+    assertTrue(!!splitViewRow);
+    assertEquals('Split View', splitViewRow.title);
+    assertEquals(2, splitViewRow.tabCount);
+    assertEquals('https://google.com', splitViewRow.tabUrls[0]);
+    assertEquals('https://paypal.com', splitViewRow.tabUrls[1]);
+  });
+
+  test('search matches across both sub-tab titles', async () => {
+    const token = sampleToken(1n, 1n);
+    const tabs = [
+      createTab({
+        tabId: 10,
+        title: 'SearchEngine',
+        url: 'https://google.com',
+        splitId: token,
+      }),
+      createTab({
+        tabId: 20,
+        title: 'PaymentGateway',
+        url: 'https://paypal.com',
+        splitId: token,
+      }),
+    ];
+
+    await setupTest(
+        createProfileData({
+          windows: [{
+            active: true,
+            isHostWindow: true,
+            height: SAMPLE_WINDOW_HEIGHT,
+            tabs,
+          }],
+        }),
+        {
+          splitViewTabRestoreEnabled: true,
+        });
+
+    assertEquals(1, queryRows().length);
+
+    setSearchText('Engine');
+    await microtasksFinished();
+    assertEquals(1, queryRows().length);
+
+    setSearchText('Payment');
+    await microtasksFinished();
+    assertEquals(1, queryRows().length);
+
+    setSearchText('Twitter');
+    await microtasksFinished();
+    assertEquals(0, queryRows().length);
+  });
+
 });

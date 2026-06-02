@@ -4,7 +4,7 @@
 
 import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabData, TabGroupData} from './tab_data.js';
+import type {SplitViewData, TabData, TabGroupData} from './tab_data.js';
 import {tokenToString} from './tab_data.js';
 import type {TabSearchPageElement} from './tab_search_page.js';
 import type {TitleItem} from './title_item.js';
@@ -40,11 +40,15 @@ export function getHtml(this: TabSearchPageElement) {
         .items="${this.filteredItems_}"
         @selected-change="${this.onSelectedChange_}"
         role="listbox"
-        .isSelectable="${(item: TitleItem|TabData|TabGroupData) => {
+        .isSelectable="${
+            (item: TitleItem|TabData|TabGroupData|SplitViewData) => {
           return item.constructor.name === 'TabData' ||
-              item.constructor.name === 'TabGroupData';
+              item.constructor.name === 'TabGroupData' ||
+              item.constructor.name === 'SplitViewData';
         }}"
-        .template="${(item: TitleItem|TabData|TabGroupData, index: number) => {
+        .template="${
+            (item: TitleItem|TabData|TabGroupData|SplitViewData,
+             index: number) => {
       switch (item.constructor.name) {
        case 'TitleItem':
         this.assertIsTitleItem_(item);
@@ -90,6 +94,19 @@ export function getHtml(this: TabSearchPageElement) {
             @keydown="${this.onItemKeydown_}"
             role="option" tabindex="0">
         </tab-search-group-item>`;
+       case 'SplitViewData':
+        this.assertIsSplitViewData_(item);
+        return html`<tab-search-split-item
+            id="${item.sessionId}"
+            class="mwb-list-item selectable"
+            .data="${item}"
+            data-index="${index}"
+            aria-label="${this.ariaLabel_(item)}"
+            @click="${this.onItemClick_}"
+            @focus="${this.onItemFocus_}"
+            @keydown="${this.onItemKeydown_}"
+            role="option" tabindex="0">
+        </tab-search-split-item>`;
        default:
         return html``;
       }
