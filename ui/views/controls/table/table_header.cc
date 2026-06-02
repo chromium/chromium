@@ -157,7 +157,7 @@ void TableHeader::InstallFocusRing() {
 }
 
 void TableHeader::UpdateFocusState() {
-  views::FocusRing::Get(this)->SchedulePaint();
+  views::FocusRing::Get(this)->Refresh();
 }
 
 int TableHeader::GetCellVerticalPadding() const {

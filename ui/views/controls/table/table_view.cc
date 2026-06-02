@@ -2286,7 +2286,7 @@ void TableView::InstallFocusRing() {
 }
 
 void TableView::UpdateFocusRings() {
-  views::FocusRing::Get(this)->SchedulePaint();
+  views::FocusRing::Get(this)->Refresh();
   if (header_) {
     header_->UpdateFocusState();
   }
