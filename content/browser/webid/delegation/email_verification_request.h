@@ -81,7 +81,8 @@ class CONTENT_EXPORT EmailVerificationRequest {
 
  private:
   sdjwt::Jwt CreateRequestToken(const std::string& email,
-                                const sdjwt::Jwk& public_key);
+                                const sdjwt::Jwk& public_key,
+                                const url::Origin& issuer);
   void OnDnsRequestComplete(
       const std::string& email,
       EmailVerifier::IsVerifiableCallback callback,

@@ -217,7 +217,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
                 jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
             EXPECT_TRUE(payload);
             EXPECT_EQ(payload->aud,
-                      main_rfh()->GetLastCommittedOrigin().Serialize());
+                      url::Origin::Create(kIssuerUrl).Serialize());
             EXPECT_EQ(payload->email, kEmail);
 
             sdjwt::SdJwt token;
@@ -423,7 +423,7 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
                 jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
             EXPECT_TRUE(payload);
             EXPECT_EQ(payload->aud,
-                      main_rfh()->GetLastCommittedOrigin().Serialize());
+                      url::Origin::Create(kIssuerUrl).Serialize());
             EXPECT_EQ(payload->email, kEmail);
 
             sdjwt::SdJwt token;
