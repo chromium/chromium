@@ -51,6 +51,14 @@ def _ProcessOtherManifest(manifest_path, min_sdk_version, target_sdk_version,
   changed_api = manifest_utils.SetTargetApiIfUnset(manifest, target_sdk_version)
 
   package_name = manifest_utils.GetPackage(manifest)
+  if package_name is None:
+    if feature_name := manifest.get('featureSplit'):
+      package_name = 'split.' + feature_name
+    else:
+      package_name = '<unnamed>'
+    manifest.set('package', package_name)
+    changed_api = True
+
   # Ignore minSdkVersion from androidx.pdf library. The client code will ensure
   # not to call into the library API on older Android versions.
   if package_name.startswith('androidx.pdf'):

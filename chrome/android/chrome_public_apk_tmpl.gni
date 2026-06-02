@@ -413,7 +413,7 @@ template("chrome_common_apk_or_module_tmpl") {
       }
       foreach(_desc, _module_descs) {
         deps += _desc.java_deps
-        if (defined(_desc.android_manifest) && _desc.name == "xr") {
+        if (defined(_desc.android_manifest)) {
           mergeable_android_manifests += [ _desc.android_manifest ]
         }
         if (defined(_desc.jni_registration)) {
