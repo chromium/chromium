@@ -283,6 +283,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       const override;
   const std::optional<blink::SubresourceLoadMetrics>&
   GetSubresourceLoadMetrics() const override;
+  const mojom::FontLoadingMetricsPtr& GetFontLoadingMetrics() const override;
   const PageRenderData& GetMainFrameRenderData() const override;
   const ui::ScopedVisibilityTracker& GetVisibilityTracker() const override;
   const ResourceTracker& GetResourceTracker() const override;
@@ -468,7 +469,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
           subresource_load_metrics,
       std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
       std::vector<mojom::LargestContentfulPaintTimingPtr>
-          soft_largest_contentful_paint);
+          soft_largest_contentful_paint,
+      mojom::FontLoadingMetricsPtr font_loading_metrics);
 
   void AddCustomUserTimings(
       std::vector<mojom::CustomUserTimingMarkPtr> custom_timings);

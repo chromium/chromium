@@ -31,11 +31,12 @@ void FakePageTimingSender::SendTiming(
     std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
     std::vector<mojom::LargestContentfulPaintTimingPtr>
         soft_largest_contentful_paint,
-    std::vector<mojom::CustomUserTimingMarkPtr> user_timings) {
+    std::vector<mojom::CustomUserTimingMarkPtr> user_timings,
+    const mojom::FontLoadingMetricsPtr& font_loading_metrics) {
   validator_->UpdateTiming(timing, metadata, new_features, resources,
                            render_data, cpu_timing, event_timings,
                            subresource_load_metrics, soft_navigation_metrics,
-                           soft_largest_contentful_paint);
+                           soft_largest_contentful_paint, font_loading_metrics);
 }
 
 void FakePageTimingSender::SendCustomUserTiming(
@@ -214,7 +215,8 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
         subresource_load_metrics,
     const std::vector<mojom::SoftNavigationMetricsPtr>& soft_navigation_metrics,
     const std::vector<mojom::LargestContentfulPaintTimingPtr>&
-        soft_largest_contentful_paint) {
+        soft_largest_contentful_paint,
+    const mojom::FontLoadingMetricsPtr& font_loading_metrics) {
   actual_timings_.push_back(timing.Clone());
   for (const auto& s : soft_navigation_metrics) {
     actual_soft_navigation_metrics_.push_back(s->Clone());

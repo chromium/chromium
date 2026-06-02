@@ -211,6 +211,7 @@ class PageLoadMetricsObserverDelegate {
   virtual const ResourceTracker& GetResourceTracker() const = 0;
   virtual const std::optional<blink::SubresourceLoadMetrics>&
   GetSubresourceLoadMetrics() const = 0;
+  virtual const mojom::FontLoadingMetricsPtr& GetFontLoadingMetrics() const = 0;
 
   // Returns a shared LargestContentfulPaintHandler for page load metrics.
   virtual const LargestContentfulPaintHandler&

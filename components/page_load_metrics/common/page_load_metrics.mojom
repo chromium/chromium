@@ -187,6 +187,23 @@ struct DomainLookupTiming {
   mojo_base.mojom.TimeDelta? domain_lookup_end;
 };
 
+struct FontLoadingMetrics {
+  // Total cumulative time spent in character fallback.
+  mojo_base.mojom.TimeDelta? fallback_duration;
+
+  // Total number of character fallback events.
+  uint32 fallback_count;
+
+  // Duration of the first fallback event in the process.
+  mojo_base.mojom.TimeDelta? fallback_initial_duration;
+
+  // NGShapeCache hits.
+  uint32 shape_cache_hit_count;
+
+  // NGShapeCache misses.
+  uint32 shape_cache_miss_count;
+};
+
 // PageLoadTiming contains timing metrics associated with a page load. Many of
 // the metrics here are based on the Navigation Timing spec:
 // http://www.w3.org/TR/navigation-timing/.
@@ -593,7 +610,8 @@ interface PageLoadMetrics {
                SubresourceLoadMetrics? subresource_load_metrics,
                array<SoftNavigationMetrics> soft_navigation_metrics,
                array<LargestContentfulPaintTiming> soft_largest_contentful_paint,
-               array<CustomUserTimingMark> custom_user_timings);
+               array<CustomUserTimingMark> custom_user_timings,
+               FontLoadingMetrics? font_loading_metrics);
 
   // Called when performance entries are added via `performance.mark()` from the
   // outermost main frame in renderer, except for the case when standard

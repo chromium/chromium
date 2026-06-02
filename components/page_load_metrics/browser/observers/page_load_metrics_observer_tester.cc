@@ -188,6 +188,19 @@ void PageLoadMetricsObserverTester::SimulateTimingAndMetadataUpdate(
       std::vector<mojom::LargestContentfulPaintTimingPtr>());
 }
 
+void PageLoadMetricsObserverTester::SimulateTimingAndFontLoadingMetricsUpdate(
+    const mojom::PageLoadTiming& timing,
+    mojom::FontLoadingMetricsPtr font_loading_metrics) {
+  SimulatePageLoadTimingUpdate(
+      timing, mojom::FrameMetadata(), /* new_features= */ {},
+      mojom::FrameRenderDataUpdate(), mojom::CpuTiming(),
+      std::vector<mojom::EventTimingPtr>(), std::nullopt,
+      web_contents()->GetPrimaryMainFrame(),
+      std::vector<mojom::SoftNavigationMetricsPtr>(),
+      std::vector<mojom::LargestContentfulPaintTimingPtr>(),
+      std::move(font_loading_metrics));
+}
+
 void PageLoadMetricsObserverTester::SimulateMetadataUpdate(
     const mojom::FrameMetadata& metadata,
     content::RenderFrameHost* rfh) {
@@ -263,7 +276,8 @@ void PageLoadMetricsObserverTester::SimulatePageLoadTimingUpdate(
     content::RenderFrameHost* rfh,
     const std::vector<mojom::SoftNavigationMetricsPtr>& soft_navigation_metrics,
     const std::vector<mojom::LargestContentfulPaintTimingPtr>&
-        soft_largest_contentful_paint) {
+        soft_largest_contentful_paint,
+    mojom::FontLoadingMetricsPtr font_loading_metrics) {
   std::vector<mojom::EventTimingPtr> event_timings_clone;
   for (const auto& entry : event_timings) {
     event_timings_clone.push_back(entry.Clone());
@@ -274,7 +288,8 @@ void PageLoadMetricsObserverTester::SimulatePageLoadTimingUpdate(
       cpu_timing.Clone(), std::move(event_timings_clone),
       subresource_load_metrics, mojo::Clone(soft_navigation_metrics),
       mojo::Clone(soft_largest_contentful_paint),
-      std::vector<mojom::CustomUserTimingMarkPtr>());
+      std::vector<mojom::CustomUserTimingMarkPtr>(),
+      std::move(font_loading_metrics));
   // If sending the timing update caused the PageLoadMetricsUpdateDispatcher to
   // schedule a buffering timer, then fire it now so metrics are dispatched to
   // observers.
@@ -302,7 +317,8 @@ void PageLoadMetricsObserverTester::SimulateResourceDataUseUpdate(
       mojom::CpuTimingPtr(std::in_place), std::vector<mojom::EventTimingPtr>(),
       std::nullopt, std::vector<mojom::SoftNavigationMetricsPtr>(),
       std::vector<mojom::LargestContentfulPaintTimingPtr>(),
-      std::vector<mojom::CustomUserTimingMarkPtr>());
+      std::vector<mojom::CustomUserTimingMarkPtr>(),
+      mojom::FontLoadingMetricsPtr());
 }
 
 void PageLoadMetricsObserverTester::SimulateLoadedResource(

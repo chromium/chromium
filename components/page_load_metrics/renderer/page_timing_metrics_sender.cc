@@ -262,8 +262,15 @@ void PageTimingMetricsSender::UpdateCustomUserTimings(
 
 void PageTimingMetricsSender::Update(
     mojom::PageLoadTimingPtr timing,
-    const PageTimingMetadataRecorder::MonotonicTiming& monotonic_timing) {
-  if (last_timing_->Equals(*timing)) {
+    const PageTimingMetadataRecorder::MonotonicTiming& monotonic_timing,
+    mojom::FontLoadingMetricsPtr font_loading_metrics) {
+  bool timing_changed = !last_timing_->Equals(*timing);
+  bool font_metrics_changed =
+      font_loading_metrics &&
+      (!last_font_loading_metrics_ ||
+       !last_font_loading_metrics_->Equals(*font_loading_metrics));
+
+  if (!timing_changed && !font_metrics_changed) {
     return;
   }
 
@@ -279,11 +286,18 @@ void PageTimingMetricsSender::Update(
   // are reached (currently parse start, DCL, and FCP) so that the browser can
   // receive the accurate number of events. This accuracy is important to
   // measure the abandoned navigation.
-  const bool send_urgently = IsFirstFCP(last_timing_, timing) ||
-                             IsFirstParseStart(last_timing_, timing) ||
-                             IsFirstDCL(last_timing_, timing);
+  const bool send_urgently =
+      timing_changed && (IsFirstFCP(last_timing_, timing) ||
+                         IsFirstParseStart(last_timing_, timing) ||
+                         IsFirstDCL(last_timing_, timing));
 
-  last_timing_ = std::move(timing);
+  if (timing_changed) {
+    last_timing_ = std::move(timing);
+  }
+  if (font_metrics_changed) {
+    last_font_loading_metrics_ = std::move(font_loading_metrics);
+  }
+
   metadata_recorder_.UpdateMetadata(monotonic_timing);
   EnsureSendTimer(send_urgently);
 }
@@ -357,12 +371,12 @@ void PageTimingMetricsSender::SendNow() {
   TRACE_EVENT("loading", "PageTimingMetricsSender::SendNow",
               "custom_user_timings_count", custom_user_timings_.size());
 
-  sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
-                      std::move(resources), render_data_, last_cpu_timing_,
-                      std::move(event_timings_), subresource_load_metrics_,
-                      std::move(soft_navigation_metrics_),
-                      std::move(soft_largest_contentful_paint_),
-                      std::move(custom_user_timings_));
+  sender_->SendTiming(
+      last_timing_, metadata_, std::move(new_features_), std::move(resources),
+      render_data_, last_cpu_timing_, std::move(event_timings_),
+      subresource_load_metrics_, std::move(soft_navigation_metrics_),
+      std::move(soft_largest_contentful_paint_),
+      std::move(custom_user_timings_), last_font_loading_metrics_);
 
   event_timings_.clear();
   new_features_.clear();

@@ -173,6 +173,11 @@ FakePageLoadMetricsObserverDelegate::GetSubresourceLoadMetrics() const {
   return subresource_load_metrics_;
 }
 
+const mojom::FontLoadingMetricsPtr&
+FakePageLoadMetricsObserverDelegate::GetFontLoadingMetrics() const {
+  return font_loading_metrics_;
+}
+
 const PageRenderData&
 FakePageLoadMetricsObserverDelegate::GetMainFrameRenderData() const {
   return main_frame_render_data_;

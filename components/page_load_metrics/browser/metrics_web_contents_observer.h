@@ -187,7 +187,8 @@ class MetricsWebContentsObserver
       std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
       std::vector<mojom::LargestContentfulPaintTimingPtr>
           soft_largest_contentful_paint,
-      std::vector<mojom::CustomUserTimingMarkPtr> user_timings);
+      std::vector<mojom::CustomUserTimingMarkPtr> user_timings,
+      mojom::FontLoadingMetricsPtr font_loading_metrics);
 
   void OnCustomUserTimingUpdated(content::RenderFrameHost* rfh,
                                  mojom::CustomUserTimingMarkPtr custom_timing);
@@ -277,7 +278,8 @@ class MetricsWebContentsObserver
       std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
       std::vector<mojom::LargestContentfulPaintTimingPtr>
           soft_largest_contentful_paint,
-      std::vector<mojom::CustomUserTimingMarkPtr> user_timings) override;
+      std::vector<mojom::CustomUserTimingMarkPtr> user_timings,
+      mojom::FontLoadingMetricsPtr font_loading_metrics) override;
   void AddCustomUserTiming(
       mojom::CustomUserTimingMarkPtr custom_timing) override;
 

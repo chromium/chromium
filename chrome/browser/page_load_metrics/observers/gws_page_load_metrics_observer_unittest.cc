@@ -691,3 +691,51 @@ TEST_F(GWSPageLoadMetricsObserverTest, NoServiceWorker) {
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramServiceWorkerLoadSearch, 0);
 }
+
+TEST_F(GWSPageLoadMetricsObserverTest, FontLoadingMetrics) {
+  page_load_metrics::mojom::PageLoadTiming timing;
+  InitializeTestPageLoadTiming(&timing);
+
+  auto font_loading_metrics =
+      page_load_metrics::mojom::FontLoadingMetrics::New();
+  font_loading_metrics->fallback_duration = base::Milliseconds(150);
+  font_loading_metrics->fallback_count = 5;
+  font_loading_metrics->fallback_initial_duration = base::Milliseconds(42);
+  font_loading_metrics->shape_cache_hit_count = 80;
+  font_loading_metrics->shape_cache_miss_count = 20;
+
+  // Wait until the browser init is complete.
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
+
+  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+  tester()->SimulateTimingAndFontLoadingMetricsUpdate(
+      timing, std::move(font_loading_metrics));
+
+  // Verify FCP metrics are logged
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.GoogleSearch.FontLoading.FallbackDuration.FCP", 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      "PageLoad.Clients.GoogleSearch.FontLoading.FallbackDuration.FCP", 150, 1);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.GoogleSearch.FontLoading.ShapeCacheHitRate.FCP", 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      "PageLoad.Clients.GoogleSearch.FontLoading.ShapeCacheHitRate.FCP", 80, 1);
+
+  // Navigate again to force Complete logging.
+  tester()->NavigateToUntrackedUrl();
+
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.GoogleSearch.FontLoading.FallbackCount.Complete", 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      "PageLoad.Clients.GoogleSearch.FontLoading.FallbackCount.Complete", 5, 1);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.GoogleSearch.FontLoading.InitialFallbackDuration."
+      "Complete",
+      1);
+  tester()->histogram_tester().ExpectBucketCount(
+      "PageLoad.Clients.GoogleSearch.FontLoading.InitialFallbackDuration."
+      "Complete",
+      42, 1);
+}

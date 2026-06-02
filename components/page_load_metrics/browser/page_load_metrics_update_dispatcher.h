@@ -188,6 +188,7 @@ class PageLoadMetricsUpdateDispatcher {
       std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
       std::vector<mojom::LargestContentfulPaintTimingPtr>
           soft_largest_contentful_paint,
+      mojom::FontLoadingMetricsPtr font_loading_metrics,
       internal::PageLoadTrackerPageType page_type);
 
   // This method is only intended to be called for PageLoadFeatures being
@@ -258,6 +259,9 @@ class PageLoadMetricsUpdateDispatcher {
       const {
     return subresource_load_metrics_;
   }
+  const mojom::FontLoadingMetricsPtr& font_loading_metrics() const {
+    return font_loading_metrics_;
+  }
   void UpdateInteractionToNextPaintCalculatorForBfcache() {
     interaction_to_next_paint_calculator_.ClearEventTimings();
   }
@@ -286,6 +290,9 @@ class PageLoadMetricsUpdateDispatcher {
 
   void UpdateMainFrameSubresourceLoadMetrics(
       const blink::SubresourceLoadMetrics& subresource_load_metrics);
+
+  void UpdateMainFrameFontLoadingMetrics(
+      const mojom::FontLoadingMetrics& font_loading_metrics);
 
   void UpdateSoftNavigationMetrics(
       std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
@@ -344,6 +351,9 @@ class PageLoadMetricsUpdateDispatcher {
 
   // SubresourceLoadMetrics for the main frame.
   std::optional<blink::SubresourceLoadMetrics> subresource_load_metrics_;
+
+  // FontLoadingMetrics for the main frame.
+  mojom::FontLoadingMetricsPtr font_loading_metrics_;
 
   // True if this page load started in prerender.
   const bool is_prerendered_page_load_;

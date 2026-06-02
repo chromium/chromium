@@ -72,14 +72,16 @@ class MojoPageTimingSender : public PageTimingSender {
       std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
       std::vector<mojom::LargestContentfulPaintTimingPtr>
           soft_largest_contentful_paint,
-      std::vector<mojom::CustomUserTimingMarkPtr> user_timings) override {
+      std::vector<mojom::CustomUserTimingMarkPtr> user_timings,
+      const mojom::FontLoadingMetricsPtr& font_loading_metrics) override {
     DCHECK(page_load_metrics_);
     page_load_metrics_->UpdateTiming(
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
         metadata->Clone(), new_features, std::move(resources),
         render_data.Clone(), cpu_timing->Clone(), std::move(event_timings),
         subresource_load_metrics, std::move(soft_navigation_metrics),
-        std::move(soft_largest_contentful_paint), std::move(user_timings));
+        std::move(soft_largest_contentful_paint), std::move(user_timings),
+        font_loading_metrics.Clone());
   }
 
   void SendCustomUserTiming(mojom::CustomUserTimingMarkPtr timing) override {
@@ -560,8 +562,10 @@ void MetricsRenderFrameObserver::SendMetrics() {
     return;
   }
   Timing timing = GetTiming();
+  mojom::FontLoadingMetricsPtr font_metrics = GetFontLoadingMetrics();
   page_timing_metrics_sender_->Update(std::move(timing.relative_timing),
-                                      timing.monotonic_timing);
+                                      timing.monotonic_timing,
+                                      std::move(font_metrics));
 
   mojom::CustomUserTimingMarkPtr user_timing = GetCustomUserTimingMark();
   if (user_timing) {
@@ -871,6 +875,24 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   }
 
   return Timing(std::move(timing), monotonic_timing);
+}
+
+mojom::FontLoadingMetricsPtr MetricsRenderFrameObserver::GetFontLoadingMetrics()
+    const {
+  const blink::WebPerformanceMetricsForReporting& perf =
+      render_frame()->GetWebFrame()->PerformanceMetricsForReporting();
+  if (perf.SystemFallbackFontCount() > 0 || perf.ShapeCacheHitCount() > 0 ||
+      perf.ShapeCacheMissCount() > 0) {
+    auto font_metrics = mojom::FontLoadingMetrics::New();
+    font_metrics->fallback_duration = perf.SystemFallbackFontTime();
+    font_metrics->fallback_count = perf.SystemFallbackFontCount();
+    font_metrics->fallback_initial_duration =
+        perf.SystemFallbackFontInitialDuration();
+    font_metrics->shape_cache_hit_count = perf.ShapeCacheHitCount();
+    font_metrics->shape_cache_miss_count = perf.ShapeCacheMissCount();
+    return font_metrics;
+  }
+  return nullptr;
 }
 
 mojom::CustomUserTimingMarkPtr

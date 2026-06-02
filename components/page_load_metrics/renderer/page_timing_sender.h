@@ -27,7 +27,8 @@ class PageTimingSender {
       std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
       std::vector<mojom::LargestContentfulPaintTimingPtr>
           soft_largest_contentful_paint,
-      std::vector<mojom::CustomUserTimingMarkPtr> user_timings) = 0;
+      std::vector<mojom::CustomUserTimingMarkPtr> user_timings,
+      const mojom::FontLoadingMetricsPtr& font_loading_metrics) = 0;
   virtual void SendCustomUserTiming(mojom::CustomUserTimingMarkPtr timing) = 0;
 };
 

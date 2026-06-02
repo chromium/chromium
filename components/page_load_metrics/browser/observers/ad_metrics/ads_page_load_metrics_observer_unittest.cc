@@ -222,7 +222,8 @@ class ResourceLoadingCancellingThrottle
         std::vector<mojom::EventTimingPtr>(), std::nullopt,
         std::vector<mojom::SoftNavigationMetricsPtr>(),
         std::vector<mojom::LargestContentfulPaintTimingPtr>(),
-        std::vector<mojom::CustomUserTimingMarkPtr>());
+        std::vector<mojom::CustomUserTimingMarkPtr>(),
+        mojom::FontLoadingMetricsPtr());
   }
 };
 
@@ -1019,7 +1020,8 @@ TEST_P(AdsPageLoadMetricsObserverTest,
       std::vector<mojom::EventTimingPtr>(), std::nullopt,
       std::vector<mojom::SoftNavigationMetricsPtr>(),
       std::vector<mojom::LargestContentfulPaintTimingPtr>(),
-      std::vector<mojom::CustomUserTimingMarkPtr>());
+      std::vector<mojom::CustomUserTimingMarkPtr>(),
+      mojom::FontLoadingMetricsPtr());
 
   // Verify that a bad message was received.
   EXPECT_TRUE(!bad_message_observer.WaitForBadMessage().empty());
