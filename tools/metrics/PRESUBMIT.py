@@ -217,9 +217,46 @@ def _CheckNoManualSysPathManipulation(input_api: Any,
   return results
 
 
+def _CheckQuoteConsistency(input_api: Any, output_api: Any) -> List[Any]:
+  """Checks that single quotes are used consistently unless double quotes are needed."""
+  results = []
+  cwd = input_api.PresubmitLocalPath()
+  # Matches double-quoted strings (e.g. "string") while ignoring:
+  # - Escaped double quotes (e.g. \").
+  # - Triple double quotes (e.g. """docstrings""").
+  # - Strings containing unescaped single quotes (e.g. "don't" or 'don\'t'),
+  #   since double quotes are preferred in these cases to avoid escaping.
+  #
+  # Breakdown:
+  # - (?<!\\)(?:\\\\)*: Matches an even number of backslashes before the quote,
+  #   ensuring the quote itself is not escaped.
+  # - (?<!")"(?!"): Matches a literal opening double quote (not part of """).
+  # - (?:[^"\'\\]|\\[^\'])*: Matches string content, allowing:
+  #   - Any char except double quotes, single quotes, or backslashes.
+  #   - Any escape sequence except an escaped single quote (\').
+  # - "(?!"): Matches the literal closing double quote.
+  double_quote_pattern = input_api.re.compile(
+      r'(?<!\\)(?:\\\\)*(?<!")"(?:[^"\'\\]|\\[^\'])*"(?!")')
+
+  for affected_file in input_api.AffectedFiles(include_deletes=False):
+    filepath = input_api.os_path.relpath(affected_file.AbsoluteLocalPath(), cwd)
+    if filepath.endswith('.py'):
+      if filepath == 'PRESUBMIT.py':
+        continue
+      for line_number, line in affected_file.ChangedContents():
+        if double_quote_pattern.search(line):
+          results.append(
+              output_api.PresubmitError(
+                  f'{filepath}:{line_number} uses double quotes. '
+                  f'Favor single quotes unless double quotes are needed to avoid escapes.'
+              ))
+  return results
+
+
 def CheckChange(input_api: Type, output_api: Type):
   problems: List[Any] = []
   problems.extend(_CheckNoManualSysPathManipulation(input_api, output_api))
+  problems.extend(_CheckQuoteConsistency(input_api, output_api))
   problems.extend(
       input_api.canned_checks.CheckPatchFormatted(input_api, output_api))
   problems.extend(
