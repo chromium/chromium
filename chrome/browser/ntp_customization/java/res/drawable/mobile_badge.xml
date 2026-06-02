@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector android:autoMirrored="true"
+    android:height="24dp"
+    android:viewportHeight="24"
+    android:viewportWidth="24"
+    android:width="24dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources">
+    <path android:fillColor="@color/baseline_primary_40"
+        android:pathData="M12,1L12,1A11,11 0,0 1,23 12L23,12A11,11 0,0 1,12 23L12,23A11,11 0,0 1,1 12L1,12A11,11 0,0 1,12 1z"/>
+    <path android:fillColor="@android:color/transparent"
+        android:pathData="M12,1L12,1A11,11 0,0 1,23 12L23,12A11,11 0,0 1,12 23L12,23A11,11 0,0 1,1 12L1,12A11,11 0,0 1,12 1z"
+        android:strokeColor="@color/ntp_customization_theme_sync_badge_stroke_color"
+        android:strokeWidth="2"/>
+    <group>
+        <clip-path android:pathData="M4,20l0,-16l16,-0l0,16z"/>
+        <path android:fillColor="@android:color/white"
+            android:pathData="M16.317,17.192C16.317,17.532 16.2,17.819 15.967,18.052C15.724,18.285 15.437,18.402 15.106,18.402L8.894,18.402C8.553,18.402 8.267,18.285 8.033,18.052C7.8,17.819 7.683,17.532 7.683,17.192L7.683,6.808C7.683,6.468 7.805,6.181 8.048,5.948C8.281,5.715 8.563,5.598 8.894,5.598L15.106,5.598C15.446,5.598 15.733,5.715 15.967,5.948C16.2,6.181 16.317,6.468 16.317,6.808V17.192ZM8.894,16.492V17.192H15.106V16.492H8.894ZM15.106,15.442L15.106,8.558L8.894,8.558L8.894,15.442L15.106,15.442ZM8.894,7.508L15.106,7.508V6.808L8.894,6.808L8.894,7.508ZM8.894,7.508L8.894,6.808L8.894,7.508ZM8.894,16.492V17.192V16.492Z"/>
+    </group>
+</vector>
