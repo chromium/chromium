@@ -17,11 +17,6 @@ msw@chromium.org        #{LAST_RESORT_SUGGESTION}
 robliao@chromium.org    #{LAST_RESORT_SUGGESTION}
 tluk@chromium.org       #{LAST_RESORT_SUGGESTION}
 
-# Prefer ellyjones@, kerenzhu@, or lgrey@ for mac specific changes.
-per-file *_mac.*=lgrey@chromium.org
-per-file *_cocoa.*=lgrey@chromium.org
-per-file *.mm=lgrey@chromium.org
-
 per-file *_win.*=davidbienvenu@chromium.org
 
 per-file *_headless.*=kvitekp@chromium.org
