@@ -48,6 +48,15 @@ function getTestAnnotationMessageData(id: number): TextAnnotationMessageData {
   };
 }
 
+function resetFontProperties() {
+  const textAttributes = getTestAnnotation(0).textAttributes;
+  manager.setTextTypeface(textAttributes.typeface);
+  manager.setTextSize(textAttributes.size);
+  manager.setTextAlignment(textAttributes.alignment);
+  manager.setTextColor(textAttributes.color);
+  manager.setTextStyles(textAttributes.styles);
+}
+
 // Verifies that the plugin received a editTextAnnotation message for annotation
 // with id 0.
 function verifyEditTextAnnotationMessage(expected: boolean, id: number = 0) {
@@ -348,7 +357,7 @@ chrome.test.runTests([
     assertTextUpdate(2, expectedAttributes);
 
     // Set color to blue.
-    const blue = {r: 0, b: 100, g: 0};
+    const blue = {r: 0, g: 0, b: 100};
     manager.setTextColor(blue);
     expectedAttributes.color = blue;
     assertTextUpdate(3, expectedAttributes);
@@ -358,6 +367,9 @@ chrome.test.runTests([
     manager.setTextStyles(boldItalic);
     expectedAttributes.styles = boldItalic;
     assertTextUpdate(4, expectedAttributes);
+
+    // Reset for subsequent tests.
+    resetFontProperties();
 
     chrome.test.succeed();
   },
@@ -385,6 +397,16 @@ chrome.test.runTests([
   },
 
   async function testInitializeTextboxNoLocation() {
+    // Use the same values as testSetFontProperties, since this test was
+    // originally written with those values accidentally leaking into this test.
+    manager.setTextTypeface(TextTypeface.SERIF);
+    manager.setTextSize(10);
+    manager.setTextAlignment(TextAlignment.CENTER);
+    const red = {r: 255, b: 0, g: 0};
+    manager.setTextColor(red);
+    const boldItalic = {bold: true, italic: true};
+    manager.setTextStyles(boldItalic);
+
     let whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
         'initialize-text-box', manager);
     // Initialize without a location. This is what happens when the user creates
@@ -487,6 +509,9 @@ chrome.test.runTests([
     // Reset zoom and annotation id for next test.
     viewport.setZoom(1.0);
     manager.clearAnnotationsForTesting();
+
+    // Reset for subsequent tests.
+    resetFontProperties();
 
     chrome.test.succeed();
   },
