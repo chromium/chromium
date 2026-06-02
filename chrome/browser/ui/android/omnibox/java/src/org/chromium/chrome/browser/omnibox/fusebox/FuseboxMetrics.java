@@ -314,7 +314,6 @@ public class FuseboxMetrics {
                     model.get(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE);
             case FuseboxAttachmentButtonType.FILES ->
                     model.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE);
-
             case FuseboxAttachmentButtonType.RECENT_TAB ->
                     model.get(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE);
             default -> false;

@@ -50,7 +50,6 @@ class FuseboxPopup {
     /* package */ final FuseboxScrollView mScrollView;
     /* package */ final View mAddCurrentTab;
     /* package */ final View mTabButton;
-
     /* package */ final View mCameraButton;
     /* package */ final View mGalleryButton;
     /* package */ final View mFileButton;
@@ -148,7 +147,6 @@ class FuseboxPopup {
 
         mAddCurrentTab = contentView.findViewById(R.id.fusebox_add_current_tab);
         mTabButton = contentView.findViewById(R.id.fusebox_pick_tabs_button);
-
         mCameraButton = contentView.findViewById(R.id.fusebox_camera_button);
         mGalleryButton = contentView.findViewById(R.id.fusebox_pick_picture_button);
         mFileButton = contentView.findViewById(R.id.fusebox_pick_file_button);
@@ -166,7 +164,6 @@ class FuseboxPopup {
                 R.string.omnibox_navattach_tabs,
                 R.drawable.ic_features_24dp,
                 R.string.accessibility_omnibox_add_tabs);
-
         initializeItem(
                 mCameraButton,
                 R.string.photo_picker_camera,

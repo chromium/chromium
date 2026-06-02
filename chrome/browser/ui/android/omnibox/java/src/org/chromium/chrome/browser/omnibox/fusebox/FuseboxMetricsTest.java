@@ -209,7 +209,6 @@ public class FuseboxMetricsTest {
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE, true);
-
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, true);
 
         var histogramWatcher =
@@ -244,7 +243,6 @@ public class FuseboxMetricsTest {
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, false);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE, false);
-
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, false);
 
         var histogramWatcher =
@@ -385,7 +383,6 @@ public class FuseboxMetricsTest {
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE, true);
-
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, true);
 
         var histogramWatcher =
