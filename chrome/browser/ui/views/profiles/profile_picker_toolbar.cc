@@ -64,6 +64,24 @@ class ProfilePickerToolbarButton : public ToolbarButton {
       delete;
 
   ~ProfilePickerToolbarButton() override = default;
+
+  // ToolbarButton:
+  SkColor GetForegroundColor(ButtonState state) const override {
+    const auto* color_provider = GetColorProvider();
+    if (!color_provider) {
+      return gfx::kPlaceholderColor;
+    }
+    switch (state) {
+      case ButtonState::STATE_HOVERED:
+      case ButtonState::STATE_PRESSED:
+      case ButtonState::STATE_NORMAL:
+        return color_provider->GetColor(ui::kColorSysPrimary);
+      case ButtonState::STATE_DISABLED:
+        return color_provider->GetColor(ui::kColorSysStateDisabled);
+      default:
+        NOTREACHED();
+    }
+  }
 };
 
 BEGIN_METADATA(ProfilePickerToolbarButton)
