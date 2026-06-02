@@ -1210,7 +1210,8 @@ bool IsGridMediatorSnapshotUpdateBatchGuardEnabled() {
 BASE_FEATURE(kAssistantSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAssistantSidePanelEnabled() {
-  return base::FeatureList::IsEnabled(kAssistantSidePanel);
+  return base::FeatureList::IsEnabled(kAssistantSidePanel) &&
+         IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled();
 }
 
 BASE_FEATURE(kYourSavedInfoSettingsPageIos, base::FEATURE_DISABLED_BY_DEFAULT);

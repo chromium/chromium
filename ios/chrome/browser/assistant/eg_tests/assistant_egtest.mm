@@ -101,7 +101,9 @@ void OpenAssistantFromOmnibox() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled_and_params.push_back({kAssistantSidePanel, {}});
+  config.features_enabled.push_back(kAssistantSidePanel);
+  config.features_enabled.push_back(kChromeNextIa);
+  config.features_enabled.push_back(kFullscreenRefactoring);
 
   return config;
 }
