@@ -2350,7 +2350,7 @@ BluetoothAllowedDevices& WebBluetoothServiceImpl::allowed_devices() {
   const url::Origin& embedding_origin =
       render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      web_contents()->GetBrowserContext()->GetDefaultStoragePartition());
+      render_frame_host().GetStoragePartition());
   return partition->GetBluetoothAllowedDevicesMap()->GetOrCreateAllowedDevices(
       embedding_origin);
 }
