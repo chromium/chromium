@@ -24,6 +24,10 @@ bool ShouldShowPersonalContextAutofillSetting(
 // Autofill settings page. Updates notice-related preferences.
 void PersonalContextInAutofillSettingFlippedOn(PrefService* pref_service);
 
+// Returns true if either Autofill Ambient Autofill or Autofill AtMemory is
+// enabled.
+bool AreAutofillPersonalContextFeaturesSupported();
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PERSONAL_CONTEXT_PERSONAL_CONTEXT_AUTOFILL_UTIL_H_

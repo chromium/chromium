@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/integrators/personal_context/personal_context_autofill_util.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -69,6 +71,47 @@ TEST(PersonalContextAutofillUtilTest,
       personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown));
   EXPECT_TRUE(pref_service.GetBoolean(
       personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown));
+}
+
+TEST(PersonalContextAutofillUtilTest,
+     AreAutofillPersonalContextFeaturesSupported) {
+  // 1. Both disabled
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kAutofillAmbientAutofill,
+                               features::kAutofillAtMemory});
+    EXPECT_FALSE(AreAutofillPersonalContextFeaturesSupported());
+  }
+
+  // 2. AmbientAutofill enabled
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillAmbientAutofill},
+        /*disabled_features=*/{features::kAutofillAtMemory});
+    EXPECT_TRUE(AreAutofillPersonalContextFeaturesSupported());
+  }
+
+  // 3. AtMemory enabled
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillAtMemory},
+        /*disabled_features=*/{features::kAutofillAmbientAutofill});
+    EXPECT_TRUE(AreAutofillPersonalContextFeaturesSupported());
+  }
+
+  // 4. Both enabled
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillAmbientAutofill,
+                              features::kAutofillAtMemory},
+        /*disabled_features=*/{});
+    EXPECT_TRUE(AreAutofillPersonalContextFeaturesSupported());
+  }
 }
 
 }  // namespace autofill
