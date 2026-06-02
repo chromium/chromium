@@ -115,3 +115,18 @@ webview {
   border: none;
   width: 512px;
 }
+
+.notice cr-button {
+  margin-top: 16px;
+  width: 90px;
+  --cr-button-height: 36px;
+  font-family: 'Google Sans Text', sans-serif;
+  font-size: var(--cr-button-font-size, 13px);
+  font-weight: 500;
+  border-radius: var(--corner-radii-fully-round, 100px);
+}
+
+.tonal-button {
+  background-color: var(--color-sys-tonal-container, var(--cr-fallback-color-tonal-container));
+  color: var(--color-sys-on-tonal-container, var(--cr-fallback-color-on-tonal-container));
+}

@@ -116,6 +116,9 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
       {"experimentalOptInOfflineNoticeMessage",
        IDS_GLIC_EXPERIMENTAL_OPT_IN_OFFLINE_NOTICE_MESSAGE},
       {"closeButtonLabel", IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL},
+      {"errorNoticeHeader", IDS_GLIC_ERROR_NOTICE_HEADER},
+      {"experimentalOptInErrorNoticeMessage", IDS_GLIC_ERROR_NOTICE},
+      {"tryAgainButtonLabel", IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON},
   };
   source->AddLocalizedStrings(kStrings);
 }
