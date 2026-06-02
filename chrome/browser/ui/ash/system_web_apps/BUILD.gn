@@ -85,7 +85,6 @@ source_set("impl") {
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/browser_delegate:impl",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
