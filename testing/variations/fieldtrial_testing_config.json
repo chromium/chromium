@@ -13802,39 +13802,6 @@
             ]
         }
     ],
-    "IOSKeyboardAccessoryTwoBubble": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithCheckmarkIcon",
-                    "params": {
-                        "use_keyboard_icon": "false"
-                    },
-                    "enable_features": [
-                        "IOSKeyboardAccessoryTwoBubble"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "IOSKeyboardAccessoryTwoBubble"
-                    ]
-                },
-                {
-                    "name": "EnabledWithKeyboardIcon",
-                    "params": {
-                        "use_keyboard_icon": "true"
-                    },
-                    "enable_features": [
-                        "IOSKeyboardAccessoryTwoBubble"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSKeyboardWillShowSuggestionRefresh": [
         {
             "platforms": [
