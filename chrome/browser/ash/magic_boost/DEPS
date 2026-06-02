@@ -29,7 +29,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "magic_boost_browsertest.cc": [
+  "magic_boost_browsertest\\.cc": [
       "+chrome/browser/ash/mahi/mahi_test_util.h",
       "+chrome/browser/ash/mahi/mahi_ui_browser_test_base.h",
       "+chrome/browser/ui/ash/magic_boost",

@@ -33,7 +33,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "cloud_external_data_policy_observer_unittest.cc": [
+  "cloud_external_data_policy_observer_unittest\\.cc": [
     "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
   ],
 }
