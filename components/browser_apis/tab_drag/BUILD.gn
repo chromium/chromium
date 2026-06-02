@@ -25,14 +25,12 @@ source_set("tab_drag") {
     ":mojom",
     "//components/browser_apis/tab_strip:mojom",
   ]
-}
-
-source_set("impl") {
-  sources = [ "tab_drag_service_impl.cc" ]
 
   deps = [
-    ":tab_drag",
     "//base",
+    "//components/browser_apis/tab_drag/adapters",
+    "//components/browser_apis/tab_drag/sessions",
+    "//components/browser_apis/tab_drag/sessions:impl",
     "//components/browser_apis/tab_strip/types",
     "//mojo/public/cpp/bindings",
     "//ui/gfx",

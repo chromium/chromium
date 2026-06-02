@@ -1,0 +1,44 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_BROWSER_APIS_TAB_DRAG_SESSIONS_TAB_DRAG_SESSION_H_
+#define COMPONENTS_BROWSER_APIS_TAB_DRAG_SESSIONS_TAB_DRAG_SESSION_H_
+
+#include <memory>
+#include <vector>
+
+#include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
+#include "components/browser_apis/tab_strip/types/node_id.h"
+
+namespace tabs_api {
+
+class TabDragSessionInputAdapter;
+
+// Platform-agnostic coordinator for tab dragging.
+// Managed and owned by TabDragSessionManager.
+class TabDragSession {
+ public:
+  TabDragSession(const std::vector<tabs_api::NodeId>& source_tab_ids,
+                 TabDragSessionInputAdapter& input_adapter,
+                 base::OnceClosure end_callback);
+  TabDragSession(const TabDragSession&) = delete;
+  TabDragSession& operator=(const TabDragSession&) = delete;
+  ~TabDragSession();
+
+  // Explicitly cancel the session.
+  void Cancel();
+
+ private:
+  void EndSession();
+
+  std::vector<tabs_api::NodeId> dragged_tabs_;
+  const raw_ref<TabDragSessionInputAdapter> input_adapter_;
+
+  base::OnceClosure end_callback_;
+};
+
+}  // namespace tabs_api
+
+#endif  // COMPONENTS_BROWSER_APIS_TAB_DRAG_SESSIONS_TAB_DRAG_SESSION_H_

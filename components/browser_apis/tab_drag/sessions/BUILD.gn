@@ -1,0 +1,37 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("sessions") {
+  sources = [
+    "tab_drag_session.h",
+    "tab_drag_session_manager.h",
+  ]
+
+  public_deps = [
+    "//components/browser_apis/tab_strip:mojom",
+    "//components/browser_apis/tab_strip/types",
+    "//ui/gfx/geometry",
+  ]
+
+  deps = [
+    "//base",
+    "//mojo/public/mojom/base",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "tab_drag_session.cc",
+    "tab_drag_session_manager.cc",
+  ]
+
+  deps = [
+    ":sessions",
+    "//base",
+    "//components/browser_apis/tab_drag:mojom",
+    "//components/browser_apis/tab_drag/adapters",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}
