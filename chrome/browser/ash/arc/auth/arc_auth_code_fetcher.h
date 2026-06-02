@@ -8,14 +8,13 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/arc/auth/arc_fetcher_base.h"
 
 namespace arc {
 
 // Interface to implement auth code token fetching.
-class ArcAuthCodeFetcher : public ArcFetcherBase {
+class ArcAuthCodeFetcher {
  public:
-  ~ArcAuthCodeFetcher() override = default;
+  virtual ~ArcAuthCodeFetcher() = default;
 
   // Fetches the auth code in the background and calls |callback| when done.
   // |success| indicates whether the operation was successful. In case of

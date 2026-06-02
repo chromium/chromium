@@ -8,14 +8,19 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_code_fetcher.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace policy {
 struct DMServerJobResult;
-}
+}  // namespace policy
 
 namespace arc {
 
@@ -33,11 +38,16 @@ class ArcRobotAuthCodeFetcher : public ArcAuthCodeFetcher {
   // ArcAuthCodeFetcher:
   void Fetch(FetchCallback callback) override;
 
+  void SetURLLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> factory);
+
  private:
   void OnFetchRobotAuthCodeCompleted(FetchCallback callback,
                                      policy::DMServerJobResult result);
 
   std::unique_ptr<policy::DeviceManagementService::Job> fetch_request_job_;
+  scoped_refptr<network::SharedURLLoaderFactory>
+      url_loader_factory_for_testing_;
   base::WeakPtrFactory<ArcRobotAuthCodeFetcher> weak_ptr_factory_{this};
 };
 

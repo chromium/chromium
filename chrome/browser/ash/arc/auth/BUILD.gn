@@ -13,8 +13,6 @@ static_library("auth") {
     "arc_auth_service.h",
     "arc_background_auth_code_fetcher.cc",
     "arc_background_auth_code_fetcher.h",
-    "arc_fetcher_base.cc",
-    "arc_fetcher_base.h",
     "arc_robot_auth_code_fetcher.cc",
     "arc_robot_auth_code_fetcher.h",
   ]

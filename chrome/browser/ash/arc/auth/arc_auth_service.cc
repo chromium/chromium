@@ -774,7 +774,7 @@ void ArcAuthService::OnSecondaryAccountAuthCodeFetched(
                           nullptr /* account_info */, true);
 }
 
-void ArcAuthService::DeletePendingTokenRequest(ArcFetcherBase* fetcher) {
+void ArcAuthService::DeletePendingTokenRequest(ArcAuthCodeFetcher* fetcher) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (auto it = pending_token_requests_.begin();

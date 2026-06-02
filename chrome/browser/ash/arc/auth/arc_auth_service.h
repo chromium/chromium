@@ -42,7 +42,6 @@ namespace arc {
 class ArcAuthCodeFetcher;
 class ArcBackgroundAuthCodeFetcher;
 class ArcBridgeService;
-class ArcFetcherBase;
 
 inline constexpr char kArcAuthRequestAccountInfoResultPrimaryHistogramName[] =
     "Arc.Auth.RequestAccountInfoResult.Primary";
@@ -203,7 +202,7 @@ class ArcAuthService : public KeyedService,
 
   // Deletes a completed enrollment token / auth code fetch request from
   // |pending_token_requests_|.
-  void DeletePendingTokenRequest(ArcFetcherBase* fetcher);
+  void DeletePendingTokenRequest(ArcAuthCodeFetcher* fetcher);
 
   // Triggers an async push of the accounts in IdentityManager to ARC.
   // If |filter_primary_account| is set to |true|, the Primary Account in Chrome
@@ -239,7 +238,7 @@ class ArcAuthService : public KeyedService,
   bool url_loader_factory_for_testing_set_ = false;
 
   // A list of pending enrollment token / auth code requests.
-  std::vector<std::unique_ptr<ArcFetcherBase>> pending_token_requests_;
+  std::vector<std::unique_ptr<ArcAuthCodeFetcher>> pending_token_requests_;
 
   // Pending callback for |GetGoogleAccountsInArc| if ARC bridge is not yet
   // ready.

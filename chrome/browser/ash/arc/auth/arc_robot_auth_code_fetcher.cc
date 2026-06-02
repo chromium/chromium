@@ -48,6 +48,11 @@ ArcRobotAuthCodeFetcher::ArcRobotAuthCodeFetcher() = default;
 
 ArcRobotAuthCodeFetcher::~ArcRobotAuthCodeFetcher() = default;
 
+void ArcRobotAuthCodeFetcher::SetURLLoaderFactoryForTesting(
+    scoped_refptr<network::SharedURLLoaderFactory> factory) {
+  url_loader_factory_for_testing_ = factory;
+}
+
 void ArcRobotAuthCodeFetcher::Fetch(FetchCallback callback) {
   DCHECK(!fetch_request_job_);
   const policy::CloudPolicyClient* client = GetCloudPolicyClient();
@@ -67,8 +72,8 @@ void ArcRobotAuthCodeFetcher::Fetch(FetchCallback callback) {
           client->client_id(), /*critical=*/false,
           policy::DMAuth::FromDMToken(client->dm_token()),
           /*oauth_token=*/std::nullopt,
-          url_loader_factory_for_testing()
-              ? url_loader_factory_for_testing()
+          url_loader_factory_for_testing_
+              ? url_loader_factory_for_testing_
               : g_browser_process->system_network_context_manager()
                     ->GetSharedURLLoaderFactory(),
           base::BindOnce(
