@@ -10,6 +10,8 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/cocoa/menu_utils.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
@@ -238,16 +240,25 @@ bool TextInputHost::HasInputContext(bool* out_has_input_context) {
   }
 
   // When not in an editable mode, or while entering passwords
-  // (http://crbug.com/23219), we don't want to show IME candidate windows.
+  // (https://crbug.com/41007509), we don't want to show IME candidate windows.
   // Returning nil prevents this view from getting messages defined as part of
   // the NSTextInputClient protocol.
-  switch (pending_text_input_client_->GetTextInputType()) {
-    case ui::TEXT_INPUT_TYPE_NONE:
-    case ui::TEXT_INPUT_TYPE_PASSWORD:
-      return true;
-    default:
-      *out_has_input_context = true;
+  //
+  // Honor TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD: a revealed password/PIN field
+  // reports TEXT_INPUT_TYPE_TEXT but must still be hidden from IMEs. See
+  // InputMethodBase::GetTextInputType().
+  if (pending_text_input_client_->GetTextInputFlags() &
+      ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD) {
+    return true;
   }
+  ui::TextInputType type = pending_text_input_client_->GetTextInputType();
+  if (type == ui::TEXT_INPUT_TYPE_NONE ||
+      type == ui::TEXT_INPUT_TYPE_PASSWORD) {
+    return true;
+  }
+
+  // Otherwise, allow a context.
+  *out_has_input_context = true;
   return true;
 }
 

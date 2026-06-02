@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #import "base/apple/foundation_util.h"
 #import "base/apple/scoped_objc_class_swizzler.h"
@@ -27,6 +28,7 @@
 #include "ui/base/cocoa/find_pasteboard.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #import "ui/base/test/cocoa_helper.h"
@@ -567,9 +569,9 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
   // Install a textfield with input type |text_input_type| in the view hierarchy
   // and make it the text input client. Also initializes |dummy_text_view_|.
   Textfield* InstallTextField(
-      const std::u16string& text,
+      std::u16string_view text,
       ui::TextInputType text_input_type = ui::TEXT_INPUT_TYPE_TEXT);
-  Textfield* InstallTextField(const std::string& text);
+  Textfield* InstallTextField(std::string_view text);
 
   // Returns the actual current text for |ns_view_|, or the selected substring.
   NSString* GetActualText();
@@ -667,7 +669,7 @@ BridgedNativeWidgetTest::BridgedNativeWidgetTest() = default;
 BridgedNativeWidgetTest::~BridgedNativeWidgetTest() = default;
 
 Textfield* BridgedNativeWidgetTest::InstallTextField(
-    const std::u16string& text,
+    std::u16string_view text,
     ui::TextInputType text_input_type) {
   Textfield* textfield = new Textfield();
   textfield->SetText(text);
@@ -692,7 +694,7 @@ Textfield* BridgedNativeWidgetTest::InstallTextField(
   return textfield;
 }
 
-Textfield* BridgedNativeWidgetTest::InstallTextField(const std::string& text) {
+Textfield* BridgedNativeWidgetTest::InstallTextField(std::string_view text) {
   return InstallTextField(base::ASCIIToUTF16(text));
 }
 
@@ -1087,15 +1089,23 @@ TEST_F(BridgedNativeWidgetInitTest, ShadowType) {
 // Ensure a nil NSTextInputContext is returned when the ui::TextInputClient is
 // not editable, a password field, or unset.
 TEST_F(BridgedNativeWidgetTest, InputContext) {
-  const std::u16string test_string = u"test_str";
+  constexpr std::u16string_view test_string = u"test_str";
+
   InstallTextField(test_string, ui::TEXT_INPUT_TYPE_PASSWORD);
-  EXPECT_FALSE([ns_view_ inputContext]);
-  InstallTextField(test_string, ui::TEXT_INPUT_TYPE_TEXT);
-  EXPECT_TRUE([ns_view_ inputContext]);
+  EXPECT_FALSE(ns_view_.inputContext);
+
+  Textfield* text_field =
+      InstallTextField(test_string, ui::TEXT_INPUT_TYPE_TEXT);
+  EXPECT_TRUE(ns_view_.inputContext);
+
+  text_field->SetTextInputFlags(ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
+  EXPECT_FALSE(ns_view_.inputContext);
+
   GetNSWindowHost()->text_input_host()->SetTextInputClient(nullptr);
-  EXPECT_FALSE([ns_view_ inputContext]);
+  EXPECT_FALSE(ns_view_.inputContext);
+
   InstallTextField(test_string, ui::TEXT_INPUT_TYPE_NONE);
-  EXPECT_FALSE([ns_view_ inputContext]);
+  EXPECT_FALSE(ns_view_.inputContext);
 }
 
 // Test getting complete string using text input protocol.
