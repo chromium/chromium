@@ -89,9 +89,9 @@ public class BrowserUiListMenuRenderTest {
     private View mView;
 
     private void setup(ModelList data, boolean nightMode, boolean incognito) {
-        Activity activity = mActivityTestRule.launchActivity(null);
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightMode);
         mRenderTestRule.setNightModeEnabled(nightMode);
+        Activity activity = mActivityTestRule.launchActivity(null);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ListMenu.Delegate delegate = (item, view) -> {};
@@ -140,8 +140,7 @@ public class BrowserUiListMenuRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/500214072): Re-enable NightModeDisabled.
-    @UseMethodParameter(NightModeOnlyParameterProvider.class)
+    @UseMethodParameter(NightModeParams.class)
     public void testRender_BasicListMenu_SubmenuScroll(boolean nightMode) throws IOException {
         setup(getModelListWithSubmenu(/* incognito= */ false), nightMode, /* incognito= */ false);
         ThreadUtils.runOnUiThreadBlocking(
