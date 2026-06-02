@@ -10,6 +10,7 @@ source_set("model") {
   ]
   deps = [
     "//components/keyed_service/core",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",

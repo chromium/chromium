@@ -19,7 +19,8 @@ namespace ios::provider {
 
 std::unique_ptr<BackendPromoService> CreateBackendPromoService(
     signin::IdentityManager* identity_manager,
-    BrowserList* browser_list) {
+    BrowserList* browser_list,
+    feature_engagement::Tracker* tracker) {
   return std::make_unique<ChromiumBackendPromoService>();
 }
 

@@ -9,6 +9,10 @@
 
 #import "components/keyed_service/core/keyed_service.h"
 
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
+
 // BackendPromoService is responsible for backend promo features.
 class BackendPromoService : public KeyedService {
  public:
@@ -30,7 +34,8 @@ namespace ios::provider {
 // Creates a new instance of BackendPromoService.
 std::unique_ptr<BackendPromoService> CreateBackendPromoService(
     signin::IdentityManager* identity_manager,
-    BrowserList* browser_list);
+    BrowserList* browser_list,
+    feature_engagement::Tracker* tracker);
 
 // Shows the backend promo debug tools.
 void ShowBackendPromoDebugTools();
