@@ -1879,6 +1879,15 @@ struct ContextData {
   string? filename;
 };
 
+// @generate glic_api
+// Metadata of the parent conversation. Some, all, or none, of this information
+// may be available, depending on what context information was available from
+// the server when the parent conversation was initiated.
+struct ParentConversationMetadata {
+  string? conversation_id;
+  string? conversation_title;
+};
+
 // Part of an additional context object.
 union AdditionalContextPart {
   ContextData data;
@@ -1890,6 +1899,7 @@ union AdditionalContextPart {
   TabContext tab_context;
   CapturedRegion region;
   PendingCapturedRegion pending_region;
+  ParentConversationMetadata parent_conversation_metadata;
 };
 
 // @generate glic_api
@@ -1900,6 +1910,7 @@ enum AdditionalContextSource {
   kRegionSelection = 1,
   kTextSelection = 3,
   [MinVersion=1] kWebDragDrop = 4,
+  [MinVersion=2] kExperimentalTriggering = 5,
 };
 
 // An additional context object.

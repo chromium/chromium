@@ -808,6 +808,13 @@ export function additionalContextPartToClient(
         },
       };
     }
+  } else if (part.parentConversationMetadata) {
+    result.parentConversationMetadata = {
+      conversationId:
+          optionalToClient(part.parentConversationMetadata.conversationId),
+      conversationTitle:
+          optionalToClient(part.parentConversationMetadata.conversationTitle),
+    };
   }
   return result;
 }

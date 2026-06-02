@@ -839,6 +839,86 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
   EXPECT_EQ(handler_->GetUpdatesHandlerMapSizeForTesting(), 0u);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       testRelaysParentConversationMetadataUpdated) {
+  OptIn();
+  auto start_message = CreateTriggeringMessage();
+  auto* start_triggering = start_message.mutable_glic_experimental_triggering();
+  start_triggering->set_context_id("test-context-id");
+  start_triggering->mutable_request()->mutable_trigger_actuation_request();
+
+  int initial_tab_count = GetTabListInterface()->GetTabCount();
+
+  base::test::TestFuture<components_sharing_message::SharingMessage> future;
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _))
+      .WillRepeatedly(
+          [&](const components_sharing_message::ServerChannelConfiguration&,
+              base::TimeDelta,
+              components_sharing_message::SharingMessage message,
+              SharingMessageSender::ResponseCallback) {
+            future.SetValue(std::move(message));
+            return base::OnceClosure();
+          });
+
+  SendMessageAndWait(std::move(start_message));
+
+  auto* new_tab = GetTabListInterface()->GetTab(initial_tab_count);
+  ASSERT_TRUE(new_tab);
+  ASSERT_OK(WaitForGlicInstanceBoundToTab(new_tab));
+
+  ExecuteJsTest();
+
+  auto update_message = CreateTriggeringMessage();
+  auto* update_triggering =
+      update_message.mutable_glic_experimental_triggering();
+  update_triggering->set_context_id("test-context-id");
+  update_triggering->mutable_task_metadata_updated();
+  auto* parent_metadata = update_triggering->mutable_task_metadata()
+                              ->mutable_parent_conversation_metadata();
+  parent_metadata->set_conversation_id("test_conv_id");
+  parent_metadata->set_conversation_title("test_title");
+
+  SendMessageAndWait(std::move(update_message));
+
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       testRelaysParentConversationMetadataInitial) {
+  OptIn();
+  auto start_message = CreateTriggeringMessage();
+  auto* start_triggering = start_message.mutable_glic_experimental_triggering();
+  start_triggering->set_context_id("test-context-id");
+  start_triggering->mutable_request()->mutable_trigger_actuation_request();
+  auto* parent_metadata = start_triggering->mutable_task_metadata()
+                              ->mutable_parent_conversation_metadata();
+  parent_metadata->set_conversation_id("test_init_id");
+  parent_metadata->set_conversation_title("test_init_title");
+
+  int initial_tab_count = GetTabListInterface()->GetTabCount();
+
+  base::test::TestFuture<components_sharing_message::SharingMessage> future;
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _))
+      .WillRepeatedly(
+          [&](const components_sharing_message::ServerChannelConfiguration&,
+              base::TimeDelta,
+              components_sharing_message::SharingMessage message,
+              SharingMessageSender::ResponseCallback) {
+            future.SetValue(std::move(message));
+            return base::OnceClosure();
+          });
+
+  SendMessageAndWait(std::move(start_message));
+
+  auto* new_tab = GetTabListInterface()->GetTab(initial_tab_count);
+  ASSERT_TRUE(new_tab);
+  ASSERT_OK(WaitForGlicInstanceBoundToTab(new_tab));
+
+  ExecuteJsTest();
+}
+
 class GlicExperimentalTriggeringOpenWindowTest
     : public GlicExperimentalTriggeringMessageHandlerBrowserTest {
  public:

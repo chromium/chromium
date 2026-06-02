@@ -78,6 +78,29 @@ glic::GlicInvokeOptions CreateInvokeOptions(
   }
 
   if (request.has_task_metadata() &&
+      request.task_metadata().has_parent_conversation_metadata()) {
+    const auto& parent_metadata =
+        request.task_metadata().parent_conversation_metadata();
+    auto context = glic::mojom::AdditionalContext::New();
+    context->source =
+        glic::mojom::AdditionalContextSource::kExperimentalTriggering;
+    auto parent_conversation = glic::mojom::ParentConversationMetadata::New();
+    if (parent_metadata.has_conversation_id()) {
+      parent_conversation->conversation_id = parent_metadata.conversation_id();
+    }
+    if (parent_metadata.has_conversation_title()) {
+      parent_conversation->conversation_title =
+          parent_metadata.conversation_title();
+    }
+    context->parts.push_back(
+        glic::mojom::AdditionalContextPart::NewParentConversationMetadata(
+            std::move(parent_conversation)));
+    options.additional_context = glic::AdditionalTabContext(
+        std::move(context), content::GlobalRenderFrameHostId(),
+        glic::PolicyCheck::kNone);
+  }
+
+  if (request.has_task_metadata() &&
       request.task_metadata().has_conversation_id() &&
       !request.task_metadata().conversation_id().empty()) {
     options.target.conversation =
@@ -205,6 +228,10 @@ class ExperimentalTriggeringUpdatesHandler
           }
         },
         message_handler_, context_id_));
+
+    if (request.has_task_metadata_updated()) {
+      return ProcessTaskMetadataUpdated(request, std::move(cleanup_runner));
+    }
 
     switch (request.request().payload_case()) {
       case components_sharing_message::GlicExperimentalTriggering::
@@ -418,6 +445,39 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
   std::unique_ptr<components_sharing_message::ResponseMessage>
+  ProcessTaskMetadataUpdated(
+      const components_sharing_message::GlicExperimentalTriggering& request,
+      base::ScopedClosureRunner cleanup_runner) {
+    if (!instance_) {
+      // Let cleanup_runner clean up this unused handler.
+      return nullptr;
+    }
+    if (request.has_task_metadata() &&
+        request.task_metadata().has_parent_conversation_metadata()) {
+      const auto& parent_metadata =
+          request.task_metadata().parent_conversation_metadata();
+      auto context = glic::mojom::AdditionalContext::New();
+      context->source =
+          glic::mojom::AdditionalContextSource::kExperimentalTriggering;
+      auto parent_conversation = glic::mojom::ParentConversationMetadata::New();
+      if (parent_metadata.has_conversation_id()) {
+        parent_conversation->conversation_id =
+            parent_metadata.conversation_id();
+      }
+      if (parent_metadata.has_conversation_title()) {
+        parent_conversation->conversation_title =
+            parent_metadata.conversation_title();
+      }
+      context->parts.push_back(
+          glic::mojom::AdditionalContextPart::NewParentConversationMetadata(
+              std::move(parent_conversation)));
+      instance_->SendAdditionalContext(std::move(context));
+    }
+    std::ignore = cleanup_runner.Release();
+    return nullptr;
+  }
+
+  std::unique_ptr<components_sharing_message::ResponseMessage>
   ProcessStopActuationRequest(
       const components_sharing_message::GlicExperimentalTriggering::
           TaskMetadata* request_metadata,
@@ -619,7 +679,6 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   CHECK(message.has_glic_experimental_triggering());
 
   const auto& request = message.glic_experimental_triggering();
-
   // If no `context_id` is present in the request, we generate one that
   // may be used by the sender in follow up actuation requests.
   const std::string context_id =
@@ -640,7 +699,7 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
     return;
   }
 
-  if (!request.has_request()) {
+  if (!request.has_request() && !request.has_task_metadata_updated()) {
     if (profile_) {
       actor::ActorKeyedService* actor_service =
           actor::ActorKeyedService::Get(profile_);

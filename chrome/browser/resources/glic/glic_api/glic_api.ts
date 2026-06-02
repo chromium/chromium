@@ -89,6 +89,13 @@ export declare interface AdditionalContextPart {
   tabContext?: TabContextResult;
   region?: CapturedRegion;
   pendingRegion?: PendingCapturedRegion;
+  parentConversationMetadata?: ParentConversationMetadata;
+}
+
+/** Metadata of the parent conversation. */
+export declare interface ParentConversationMetadata {
+  conversationId?: string;
+  conversationTitle?: string;
 }
 
 /** Payload for Universal Cart invocation. */
@@ -3142,6 +3149,7 @@ export enum AdditionalContextSource {
   REGION_SELECTION = 1,
   TEXT_SELECTION = 3,
   WEB_DRAG_DROP = 4,
+  EXPERIMENTAL_TRIGGERING = 5,
 }
 
 ///////////////////////////////////////////////
