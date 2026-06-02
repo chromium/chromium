@@ -113,7 +113,6 @@ import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -140,7 +139,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
-    @Mock private Clipboard mClipboard;
+
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private AutocompleteController mAutocompleteController;
@@ -251,7 +250,6 @@ public class FuseboxMediatorUnitTest {
                         mFuseboxStateSupplier,
                         mPopupStateSupplier,
                         mSnackbarManager,
-                        mClipboard,
                         mScrimManager,
                         () -> null,
                         mBackPressManager,
@@ -1044,30 +1042,6 @@ public class FuseboxMediatorUnitTest {
         assertEquals(
                 BrandedColorScheme.APP_DEFAULT,
                 mModel.get(FuseboxProperties.COLOR_SCHEME).intValue());
-    }
-
-    @Test
-    public void onPlusButtonClicked_clipboardHasImage_showsClipboardButton() {
-        doReturn(true).when(mClipboard).hasImage();
-        byte[] expectedPng = new byte[] {1, 2, 3};
-        doReturn(expectedPng).when(mClipboard).getPng();
-
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-
-        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN);
-
-        mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_CLICKED).run();
-        assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
-        RobolectricUtil.runAllBackgroundAndUi();
-        verify(mClipboard).getPng();
-    }
-
-    @Test
-    public void onPlusButtonClicked_clipboardDoesNotHaveImage_hidesClipboardButton() {
-        doReturn(false).when(mClipboard).hasImage();
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE));
     }
 
     @Test
@@ -1896,7 +1870,7 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
+
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
@@ -1909,7 +1883,7 @@ public class FuseboxMediatorUnitTest {
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
-        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
+
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
@@ -1920,7 +1894,7 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
+
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
@@ -1933,7 +1907,7 @@ public class FuseboxMediatorUnitTest {
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
+
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
@@ -2190,7 +2164,7 @@ public class FuseboxMediatorUnitTest {
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
-        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
+
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));

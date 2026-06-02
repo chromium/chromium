@@ -49,7 +49,6 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.AsyncLayoutInflater;
-import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -269,7 +268,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mFuseboxStateSupplier,
                         mPopupStateSupplier,
                         mSnackbarManager,
-                        Clipboard.getInstance(),
                         mScrimManager,
                         mScrimAnchorViewSupplier,
                         mBackPressManager,

@@ -50,7 +50,7 @@ class FuseboxPopup {
     /* package */ final FuseboxScrollView mScrollView;
     /* package */ final View mAddCurrentTab;
     /* package */ final View mTabButton;
-    /* package */ final View mClipboardButton;
+
     /* package */ final View mCameraButton;
     /* package */ final View mGalleryButton;
     /* package */ final View mFileButton;
@@ -148,7 +148,7 @@ class FuseboxPopup {
 
         mAddCurrentTab = contentView.findViewById(R.id.fusebox_add_current_tab);
         mTabButton = contentView.findViewById(R.id.fusebox_pick_tabs_button);
-        mClipboardButton = contentView.findViewById(R.id.fusebox_paste_from_clipboard_button);
+
         mCameraButton = contentView.findViewById(R.id.fusebox_camera_button);
         mGalleryButton = contentView.findViewById(R.id.fusebox_pick_picture_button);
         mFileButton = contentView.findViewById(R.id.fusebox_pick_file_button);
@@ -166,12 +166,7 @@ class FuseboxPopup {
                 R.string.omnibox_navattach_tabs,
                 R.drawable.ic_features_24dp,
                 R.string.accessibility_omnibox_add_tabs);
-        // TODO(crbug.com/436888404): either drop clipboard or use proper strings.
-        initializeItem(
-                mClipboardButton,
-                R.string.clipboard_permission_title,
-                R.drawable.ic_content_copy,
-                0);
+
         initializeItem(
                 mCameraButton,
                 R.string.photo_picker_camera,
@@ -196,13 +191,7 @@ class FuseboxPopup {
         mRecentTabsContainer = contentView.findViewById(R.id.fusebox_recent_tabs_container);
 
         mAttachmentButtons =
-                List.of(
-                        mAddCurrentTab,
-                        mClipboardButton,
-                        mTabButton,
-                        mCameraButton,
-                        mGalleryButton,
-                        mFileButton);
+                List.of(mAddCurrentTab, mTabButton, mCameraButton, mGalleryButton, mFileButton);
 
         mDividers =
                 mRecentTabsDivider != null

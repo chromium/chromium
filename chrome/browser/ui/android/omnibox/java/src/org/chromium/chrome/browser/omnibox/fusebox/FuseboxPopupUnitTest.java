@@ -296,7 +296,6 @@ public class FuseboxPopupUnitTest {
         // Verify that we can find the elements
         assertNotNull(mFuseboxPopup.mAddCurrentTab);
         assertNotNull(mFuseboxPopup.mTabButton);
-        assertNotNull(mFuseboxPopup.mClipboardButton);
         assertNotNull(mFuseboxPopup.mCameraButton);
         assertNotNull(mFuseboxPopup.mGalleryButton);
         assertNotNull(mFuseboxPopup.mFileButton);
@@ -313,7 +312,6 @@ public class FuseboxPopupUnitTest {
         // Verify that we can find the elements
         assertNotNull(mFuseboxPopup.mAddCurrentTab);
         assertNotNull(mFuseboxPopup.mTabButton);
-        assertNotNull(mFuseboxPopup.mClipboardButton);
         assertNotNull(mFuseboxPopup.mCameraButton);
         assertNotNull(mFuseboxPopup.mGalleryButton);
         assertNotNull(mFuseboxPopup.mFileButton);
