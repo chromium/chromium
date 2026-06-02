@@ -675,6 +675,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   EXPECT_TRUE(model_observer.content_.has_value());
   EXPECT_EQ(model_observer.content_->items.size(), 1u);
   EXPECT_FALSE(model_observer.content_->items[0].text.empty());
+  // No favicon provided, so we should have logged it as missing.
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.MissingFaviconCount",
+                                      1, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
