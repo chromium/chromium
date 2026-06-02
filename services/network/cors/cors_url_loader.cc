@@ -516,10 +516,11 @@ void CorsURLLoader::FollowRedirect(
   const std::string original_method = std::move(request_.method);
   request_.UpdateOnRedirect(redirect_info_);
 
-  // Update the shared dictionary storage location if the isolation key changed
-  // as a result of the redirect for a navigation.
-  if (request_.mode == mojom::RequestMode::kNavigate) {
-    CHECK(request_.trusted_params);
+  // Update isolation_info_ and the shared dictionary storage location if they
+  // changed as a result of the redirect for a browser-initiated request (e.g.
+  // navigation, prefetch).
+  if (request_.trusted_params &&
+      !request_.trusted_params->isolation_info.IsEmpty()) {
     isolation_info_ = request_.trusted_params->isolation_info;
     if (shared_dictionary_storage_) {
       // `client_security_state` is not set for top-level navigation requests.
