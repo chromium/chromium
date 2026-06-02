@@ -275,6 +275,9 @@ class UnsafeBuffersDiagnosticConsumer
         (is_container_diagnostic && !unsafe_buffers_config_.check_container);
 
     if (ignore_diagnostic) {
+      if (level != clang::DiagnosticsEngine::Level::Note) {
+        last_warning_suppressed_ = true;
+      }
       return;
     }
 
@@ -311,6 +314,9 @@ class UnsafeBuffersDiagnosticConsumer
 
     if (is_libc_diagnostic) {
       if (disposition == kSkipLibc || IsIgnoredLibcFunction(diag)) {
+        if (level != clang::DiagnosticsEngine::Level::Note) {
+          last_warning_suppressed_ = true;
+        }
         return;
       }
     }
