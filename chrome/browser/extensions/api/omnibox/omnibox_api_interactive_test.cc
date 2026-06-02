@@ -22,6 +22,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -140,6 +141,15 @@ class OmniboxApiTest : public ExtensionApiTest {
     // consistent.
     search_test_utils::WaitForTemplateURLServiceToLoad(
         TemplateURLServiceFactory::GetForProfile(profile()));
+  }
+
+  void TearDownOnMainThread() override {
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, AutocompleteController is a KeyedService and persists across
+    // tests. Stop it to prevent polluted state in subsequent tests.
+    GetAutocompleteController()->Stop(AutocompleteStopReason::kClobbered);
+#endif
+    ExtensionApiTest::TearDownOnMainThread();
   }
 
 #if BUILDFLAG(IS_ANDROID)
