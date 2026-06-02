@@ -57,8 +57,8 @@ TEST_F(MessagePumpAppleInitialNestingTest, DefaultNestingLevel) {
       test::SingleThreadTaskEnvironment::MainThreadType::UI);
 
   // Default behavior (no call to SetInitialNestingLevel).
-  TestMessagePump pump;
   PlaceholderDelegate delegate;
+  TestMessagePump pump;
   pump.Attach(&delegate);
   EXPECT_EQ(1, pump.nesting_level());
   EXPECT_EQ(0, pump.run_nesting_level());
@@ -72,8 +72,8 @@ TEST_F(MessagePumpAppleInitialNestingTest, SetInitialNestingLevelOne) {
   // Test SetNextInitialNestingLevelForCurrentThread(1), which should behave like
   // the default.
   MessagePumpUIApplication::SetNextInitialNestingLevelForCurrentThread(1);
-  TestMessagePump pump;
   PlaceholderDelegate delegate;
+  TestMessagePump pump;
   pump.Attach(&delegate);
   EXPECT_EQ(1, pump.nesting_level());
   EXPECT_EQ(0, pump.run_nesting_level());
@@ -86,8 +86,8 @@ TEST_F(MessagePumpAppleInitialNestingTest, SetInitialNestingLevelTwo) {
 
   // Test SetNextInitialNestingLevelForCurrentThread with a value greater than 1.
   MessagePumpUIApplication::SetNextInitialNestingLevelForCurrentThread(2);
-  TestMessagePump pump;
   PlaceholderDelegate delegate;
+  TestMessagePump pump;
   pump.Attach(&delegate);
   EXPECT_EQ(2, pump.nesting_level());
   EXPECT_EQ(0, pump.run_nesting_level());
@@ -100,15 +100,15 @@ TEST_F(MessagePumpAppleInitialNestingTest, InitialNestingLevelResetsAfterUse) {
 
   MessagePumpUIApplication::SetNextInitialNestingLevelForCurrentThread(2);
   {
-    TestMessagePump pump;
     PlaceholderDelegate delegate;
+    TestMessagePump pump;
     pump.Attach(&delegate);
     pump.Detach();
   }
 
   // Verify that the level is reset to default (1) after being used.
-  TestMessagePump pump;
   PlaceholderDelegate delegate;
+  TestMessagePump pump;
   pump.Attach(&delegate);
   EXPECT_EQ(1, pump.nesting_level());
   EXPECT_EQ(0, pump.run_nesting_level());
@@ -122,8 +122,8 @@ TEST_F(MessagePumpAppleInitialNestingTest, Unwinding) {
   // Test SetNextInitialNestingLevelForCurrentThread with a value of 4 and check
   // unwinding.
   MessagePumpUIApplication::SetNextInitialNestingLevelForCurrentThread(4);
-  TestMessagePump pump;
   PlaceholderDelegate delegate;
+  TestMessagePump pump;
   pump.Attach(&delegate);
   EXPECT_EQ(4, pump.nesting_level());
   EXPECT_EQ(0, pump.run_nesting_level());
