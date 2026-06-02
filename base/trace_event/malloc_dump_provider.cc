@@ -5,6 +5,7 @@
 #include "base/trace_event/malloc_dump_provider.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <unordered_map>
 
@@ -61,34 +62,51 @@ BASE_FEATURE(kMallocDumpProviderPopulateDiscardableBytes,
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(IS_WIN)
-// A structure containing some information about a given heap.
-struct WinHeapInfo {
-  size_t committed_size;
-  size_t uncommitted_size;
-  size_t allocated_size;
-  size_t block_count;
-};
-
-// NOTE: crbug.com/665516
-// Unfortunately, there is no safe way to collect information from secondary
-// heaps due to limitations and racy nature of this piece of WinAPI.
-void WinHeapMemoryDumpImpl(WinHeapInfo* crt_heap_info) {
-  // Iterate through whichever heap our CRT is using.
-  HANDLE crt_heap = reinterpret_cast<HANDLE>(_get_heap_handle());
-  ::HeapLock(crt_heap);
+internal::WinHeapInfo WinHeapInfoFromHandle(HANDLE heap_handle) {
+  internal::WinHeapInfo info;
+  ::HeapLock(heap_handle);
   PROCESS_HEAP_ENTRY heap_entry;
   heap_entry.lpData = nullptr;
-  // Walk over all the entries in the main heap.
-  while (::HeapWalk(crt_heap, &heap_entry) != FALSE) {
+
+  // HeapWalk emits a PROCESS_HEAP_REGION header before the blocks inside
+  // that region; large VirtualAlloc-backed allocations have no header and
+  // appear as orphan busy entries. See:
+  // https://learn.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-process_heap_entry
+  uintptr_t last_region_start = 0;
+  uintptr_t last_region_end = 0;
+
+  while (::HeapWalk(heap_handle, &heap_entry) != FALSE) {
+    const uintptr_t entry_addr = reinterpret_cast<uintptr_t>(heap_entry.lpData);
     if ((heap_entry.wFlags & PROCESS_HEAP_ENTRY_BUSY) != 0) {
-      crt_heap_info->allocated_size += heap_entry.cbData;
-      crt_heap_info->block_count++;
+      info.allocated_size += heap_entry.cbData;
+      info.block_count++;
+      if (entry_addr < last_region_start || entry_addr >= last_region_end) {
+        // Large allocations are returned by HeapWalk as orphan busy entries
+        // outside any PROCESS_HEAP_REGION. They are always committed since
+        // HeapAlloc never returns uncommitted memory.
+        info.committed_size +=
+            static_cast<size_t>(heap_entry.cbData) + heap_entry.cbOverhead;
+      }
     } else if ((heap_entry.wFlags & PROCESS_HEAP_REGION) != 0) {
-      crt_heap_info->committed_size += heap_entry.Region.dwCommittedSize;
-      crt_heap_info->uncommitted_size += heap_entry.Region.dwUnCommittedSize;
+      // dwCommittedSize / dwUnCommittedSize are documented as optional and
+      // reported as zero when unavailable. When their sum does not match
+      // cbData, fall back to treating the full reserved range as committed
+      // so the dump does not under-report.
+      if (heap_entry.Region.dwCommittedSize +
+              heap_entry.Region.dwUnCommittedSize ==
+          heap_entry.cbData) {
+        info.committed_size += heap_entry.Region.dwCommittedSize;
+        info.uncommitted_size += heap_entry.Region.dwUnCommittedSize;
+      } else {
+        info.committed_size += heap_entry.cbData;
+      }
+      last_region_start = entry_addr;
+      last_region_end = entry_addr + heap_entry.cbData;
     }
   }
-  CHECK(::HeapUnlock(crt_heap) == TRUE);
+  CHECK(::HeapUnlock(heap_handle) == TRUE);
+
+  return info;
 }
 
 void ReportWinHeapStats(MemoryDumpLevelOfDetail level_of_detail,
@@ -99,8 +117,12 @@ void ReportWinHeapStats(MemoryDumpLevelOfDetail level_of_detail,
                         size_t* allocated_objects_count) {
   // This is too expensive on Windows, crbug.com/780735.
   if (level_of_detail == MemoryDumpLevelOfDetail::kDetailed) {
-    WinHeapInfo main_heap_info = {};
-    WinHeapMemoryDumpImpl(&main_heap_info);
+    // NOTE: crbug.com/665516. Unfortunately, there is no safe way to collect
+    // information from secondary heaps due to limitations and racy nature of
+    // this piece of WinAPI. Walk only whichever heap our CRT is using.
+    auto main_heap_info =
+        WinHeapInfoFromHandle(reinterpret_cast<HANDLE>(_get_heap_handle()));
+
     *total_virtual_size +=
         main_heap_info.committed_size + main_heap_info.uncommitted_size;
     // Resident size is approximated with committed heap size. Note that it is
@@ -311,6 +333,17 @@ void ReportExtremeLightweightDetectorQuarantineStats(
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace
+
+#if BUILDFLAG(IS_WIN)
+namespace internal {
+
+WinHeapInfo WinHeapInfo::FromHandleForTesting(void* heap) {
+  HANDLE heap_handle = static_cast<HANDLE>(heap);
+  return WinHeapInfoFromHandle(heap_handle);
+}
+
+}  // namespace internal
+#endif  // BUILDFLAG(IS_WIN)
 
 // static
 const char MallocDumpProvider::kAllocatedObjects[] = "malloc/allocated_objects";

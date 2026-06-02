@@ -4562,6 +4562,7 @@ test("base_unittests") {
 
   sources += [
     "test/tracing/trace_event_analyzer_unittest.cc",
+    "trace_event/malloc_dump_provider_unittest.cc",
     "trace_event/memory_allocator_dump_unittest.cc",
     "trace_event/memory_dump_manager_unittest.cc",
     "trace_event/memory_dump_scheduler_unittest.cc",

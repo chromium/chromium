@@ -158,6 +158,24 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
+#if BUILDFLAG(IS_WIN)
+namespace internal {
+
+// Aggregated counts produced by walking a Windows heap with HeapWalk.
+struct WinHeapInfo {
+  size_t committed_size = 0;
+  size_t uncommitted_size = 0;
+  size_t allocated_size = 0;
+  size_t block_count = 0;
+
+  // Walks `heap` (a HANDLE) and accumulates the totals. Exposed for testing.
+  // Production uses a specific path for CRT-heap.
+  static BASE_EXPORT WinHeapInfo FromHandleForTesting(void* heap);
+};
+
+}  // namespace internal
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace trace_event
 }  // namespace base
 
