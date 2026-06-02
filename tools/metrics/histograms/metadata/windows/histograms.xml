@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.FeatureNotificationsSettingChange"
-    enum="BooleanEnabled" expires_after="2026-07-14">
+    enum="BooleanEnabled" expires_after="2027-07-14">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
