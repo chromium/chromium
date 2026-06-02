@@ -979,8 +979,8 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
       InAnyContext(WaitForStateChange(kClassicPopupWebView, style_applied)));
 }
 
-// TODO(crbug.com/512335990): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/512335990): Flaky on Mac and Windows ASAN.
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_HasSuggestionLabel DISABLED_HasSuggestionLabel
 #else
 #define MAYBE_HasSuggestionLabel HasSuggestionLabel
