@@ -12,6 +12,7 @@
 #include "ui/display/mac/ca_display_link_mac.h"
 #include "ui/display/mac/cv_display_link_mac.h"
 #include "ui/display/mac/external_display_link_mac.h"
+#include "ui/display/mac/screen_utils_mac.h"
 #include "ui/display/types/display_constants.h"
 
 namespace ui {
@@ -81,6 +82,19 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
 void DisplayLinkMac::RecordDisplayLinkCreation(bool success) {
   UMA_HISTOGRAM_BOOLEAN("Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2",
                         success);
+}
+
+// static
+base::TimeDelta DisplayLinkMac::GetScreenDefaultRefreshInterval(
+    int64_t vsync_display_id) {
+  if (!base::IsValueInRangeForNumericType<CGDirectDisplayID>(
+          vsync_display_id)) {
+    return base::Seconds(1) / 60.0;
+  }
+
+  CGDirectDisplayID display_id =
+      static_cast<CGDirectDisplayID>(vsync_display_id);
+  return display::GetNSScreenRefreshInterval(display_id);
 }
 
 std::unique_ptr<PresentationCallbackMac>

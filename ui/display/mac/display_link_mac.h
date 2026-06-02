@@ -130,6 +130,8 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
       PresentationCallbackMac::Callback callback);
 
   // Get the panel/monitor refresh interval
+  static base::TimeDelta GetScreenDefaultRefreshInterval(
+      int64_t vsync_display_id);
   virtual base::TimeDelta GetRefreshInterval() const = 0;
   virtual void GetRefreshIntervalRange(base::TimeDelta& min_interval,
                                        base::TimeDelta& max_interval,

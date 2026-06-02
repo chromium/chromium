@@ -125,8 +125,14 @@ void ExternalBeginFrameSourceMac::UpdateVSyncDisplay(
     // for a fallback.
     if (is_browser_vsync_supported && !did_defer_vsync_update_once_) {
       did_defer_vsync_update_once_ = true;
-      vsync_display_id_update_deferred_ = true;
-      return;
+
+      // Defer the transition to DisplayLinkMac if we are currently needing
+      // begin frames or if the first frame hasn't swapped yet. This ensures
+      // a smooth transition without jank during startup or active rendering.
+      if (!has_swapped_frame_ || needs_begin_frames_) {
+        vsync_display_id_update_deferred_ = true;
+        return;
+      }
     }
 
     vsync_display_id_update_deferred_ = false;
@@ -139,7 +145,7 @@ void ExternalBeginFrameSourceMac::DidReceiveNewCALayerParams() {
 
   // Switch to External BeginFrame source in a few seconds if using a timer.
   // Don't wait for no NeedsBeginFrames if it's a nonstop rendering.
-  if (!display_link_mac_) {
+  if (!display_link_mac_ && vsync_display_id_update_deferred_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -179,15 +185,6 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
   // Remove the old DisplayLinkMac.
   display_link_mac_.reset();
 
-  // To avoid invoking ExternalBeginFrameSourceMac::OnTimerTick() on a
-  // NextTickTask that has already been scheduled, Stop the existing
-  // DelayBasedTimeSource timer first before removing it.
-  if (time_source_) {
-    time_source_->SetActive(/*active=*/false);
-    time_source_->SetClient(nullptr);
-    time_source_.reset();
-  }
-
   display_id_ = display_id;
 
   // Get DisplayLinkMac with the new CGDirectDisplayID.
@@ -199,6 +196,14 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
   }
 
   if (display_link_mac_) {
+    // if DisplayLink fails, the same time will continue to run. Now remove the
+    // existing time after switching to DisplayLink successfully.
+    if (time_source_) {
+      time_source_->SetActive(/*active=*/false);
+      time_source_->SetClient(nullptr);
+      time_source_.reset();
+    }
+
     preferred_interval_ = min_refresh_interval_ = GetMinimumFrameInterval();
     VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
                        << "::SetVSyncDisplayID: " << display_id_
@@ -461,6 +466,10 @@ BeginFrameArgs ExternalBeginFrameSourceMac::GetMissedBeginFrameArgs(
 
 // Timer callbacks when DisplayLink is not available.
 void ExternalBeginFrameSourceMac::OnTimerTick() {
+  if (display_link_mac_) {
+    return;
+  }
+
   RecordFirstFrameHistograms(/*is_timer=*/true);
   if (!needs_begin_frames_) {
     return;
@@ -490,8 +499,7 @@ void ExternalBeginFrameSourceMac::OnTimerTick() {
 void ExternalBeginFrameSourceMac::SetPreferredInterval(
     base::TimeDelta interval) {
   if (interval.is_zero()) {
-    interval = display_link_mac_ ? min_refresh_interval_
-                                 : BeginFrameArgs::DefaultInterval();
+    interval = GetMinimumFrameInterval();
   }
   preferred_interval_ = interval;
 
@@ -530,7 +538,11 @@ base::TimeDelta ExternalBeginFrameSourceMac::GetMinimumFrameInterval() {
     return display_link_mac_->GetRefreshInterval();
   }
 
-  return BeginFrameArgs::DefaultInterval();
+  if (ui::DisplayLinkMac::SupportsDisplayLinkMacInBrowser()) {
+    return ui::DisplayLinkMac::GetScreenDefaultRefreshInterval(display_id_);
+  } else {
+    return BeginFrameArgs::DefaultInterval();
+  }
 }
 
 void ExternalBeginFrameSourceMac::SetUpdateVSyncParametersCallback(
