@@ -652,8 +652,6 @@ crbug.com/499079828 virtual/off-main-thread-css-paint/external/wpt/css/css-paint
 # Crashes due to marking paint worklet ready before loaded.
 crbug.com/496408113 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-018.https.html [ Pass Skip Timeout ]
 
-crbug.com/1339051 [ Linux ] virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
-
 # Could not load the requested resource.
 crbug.com/350292231 [ Fuchsia ] scrollbars/scrollbar-visibility-hidden.html [ Failure ]
 crbug.com/350292231 [ Fuchsia ] fast/block/float/centered-float-avoidance-complexity.html [ Failure ]
@@ -6212,9 +6210,7 @@ crbug.com/1293591 images/color-profile-svg.html [ Failure Pass ]
 crbug.com/1293591 images/jpeg-with-color-profile.html [ Failure Pass ]
 
 # crbug.com/1339051: some ref tests generate output with minor differences.
-crbug.com/1339051 [ Debug Linux ] external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure Pass ]
 crbug.com/1339051 [ Linux ] fast/forms/color/color-picker-appearance-zoom125.html [ Failure ]
-crbug.com/1339051 [ Debug Linux ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
 crbug.com/1339051 [ Linux ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces.html [ Failure ]
 
 
