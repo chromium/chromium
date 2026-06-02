@@ -7,6 +7,7 @@
 #import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/data_sharing/test_support/test_utils.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/share_kit/model/test_constants.h"
@@ -62,16 +63,29 @@ id<GREYMatcher> TabGroupIndicatorViewMatcher() {
 // Matcher for the Tab Grid button in its kNormal style with the given tab
 // count text.
 id<GREYMatcher> TabGridButtonInNormalStyle(NSString* tabCountText) {
-  return grey_allOf(ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TABS),
-                    grey_accessibilityValue(tabCountText), nil);
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    return grey_allOf(grey_accessibilityID(kAppBarTabGridButtonIdentifier),
+                      ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TABS),
+                      grey_accessibilityValue(tabCountText), nil);
+  } else {
+    return grey_allOf(ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TABS),
+                      grey_accessibilityValue(tabCountText), nil);
+  }
 }
 
 // Matcher for the Tab Grid button in its kTabGroup style with the given tab
 // count text.
 id<GREYMatcher> TabGridButtonInTabGroupStyle(NSString* tabCountText) {
-  return grey_allOf(
-      ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TAB_GROUP),
-      grey_accessibilityValue(tabCountText), nil);
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    return grey_allOf(
+        grey_accessibilityID(kAppBarTabGridButtonIdentifier),
+        ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TAB_GROUP),
+        grey_accessibilityValue(tabCountText), nil);
+  } else {
+    return grey_allOf(
+        ButtonWithAccessibilityLabelId(IDS_IOS_TOOLBAR_SHOW_TAB_GROUP),
+        grey_accessibilityValue(tabCountText), nil);
+  }
 }
 
 // Returns a matcher for the tab group indicator view with `title` as title.
@@ -173,9 +187,6 @@ void CreateSharedGroupAndOpenMenu(
   // Add the flag to use FakeTabGroupSyncService.
   config.additional_args.push_back(
       "--" + std::string(test_switches::kEnableFakeTabGroupSyncService));
-
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 
@@ -434,9 +445,10 @@ void CreateSharedGroupAndOpenMenu(
 
 // Tests that the tab group indicator is correctly displayed on the NTP.
 - (void)testTabGroupIndicatorNTP {
-  if ([ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isIPadIdiom] || [ChromeEarlGrey isChromeNextEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displayed if "
-                           @"the tab strip is visible.");
+                           @"the tab strip is visible. Indicator is also "
+                           @"visible in the NTP when Next IA is enabled.");
   }
 
   // Check that the indicator is not visible.
