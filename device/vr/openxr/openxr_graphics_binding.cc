@@ -376,6 +376,25 @@ void OpenXrGraphicsBinding::PopulateSharedImageData(
   frame_data.composition_layers_data = std::move(layers);
 }
 
+std::vector<scoped_refptr<gpu::ClientSharedImage>>
+OpenXrGraphicsBinding::GetSharedImages(const std::vector<LayerId>& layers) {
+  std::vector<scoped_refptr<gpu::ClientSharedImage>> shared_images;
+
+  if (layers_sequence_.empty() && base_layer_) {
+    shared_images.emplace_back(
+        base_layer_->GetActiveSwapchainImage()->shared_image);
+  }
+
+  for (LayerId layer_id : layers) {
+    auto layer_it = layers_.find(layer_id);
+    if (layer_it != layers_.end()) {
+      shared_images.emplace_back(
+          layer_it->second->GetActiveSwapchainImage()->shared_image);
+    }
+  }
+  return shared_images;
+}
+
 bool OpenXrGraphicsBinding::Render(
     const scoped_refptr<viz::ContextProvider>& context_provider,
     const std::vector<LayerId>& updated_layers) {

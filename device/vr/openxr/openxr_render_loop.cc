@@ -916,7 +916,6 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
   TRACE_EVENT_BEGIN("xr", "OpenXrRenderLoop::WaitSyncToken",
                     perfetto::Track(frame_index));
   DVLOG(3) << __func__ << " frame_index=" << frame_index;
-  gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
 
   if (!camera_sync_tokens.empty()) {
     presentation_receiver_.ReportBadMessage(
@@ -927,23 +926,32 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
   std::vector<LayerId> layer_ids;
   layer_ids.reserve(layer_updates.size());
   for (auto& layer : layer_updates) {
-    gl->WaitSyncTokenCHROMIUM(layer->sync_token.GetConstData());
     layer_ids.push_back(layer->layer_id);
   }
-  for (auto& camera_sync_token : camera_sync_tokens) {
-    gl->WaitSyncTokenCHROMIUM(camera_sync_token.GetConstData());
+
+  std::vector<scoped_refptr<gpu::ClientSharedImage>> shared_images =
+      graphics_binding_->GetSharedImages(layer_ids);
+
+  std::vector<gpu::SyncToken> combined_sync_tokens;
+  combined_sync_tokens.reserve(layer_updates.size() +
+                               camera_sync_tokens.size());
+  for (auto& layer : layer_updates) {
+    combined_sync_tokens.push_back(layer->sync_token);
   }
-  const GLuint id = gl->CreateGpuFenceCHROMIUM();
-  context_provider_->ContextSupport()->GetGpuFence(
-      id, base::BindOnce(&OpenXrRenderLoop::OnWebXrTokenSignaled,
-                         weak_ptr_factory_.GetWeakPtr(), frame_index, layer_ids,
-                         id));
+  for (auto& camera_sync_token : camera_sync_tokens) {
+    combined_sync_tokens.push_back(camera_sync_token);
+  }
+
+  gpu::ClientSharedImage::CreateGpuFenceForSyncTokens(
+      std::move(shared_images), std::move(combined_sync_tokens),
+      context_provider_->ContextGL(), context_provider_->ContextSupport(),
+      base::BindOnce(&OpenXrRenderLoop::OnWebXrTokenSignaled,
+                     weak_ptr_factory_.GetWeakPtr(), frame_index, layer_ids));
 }
 
 void OpenXrRenderLoop::OnWebXrTokenSignaled(
     int16_t frame_index,
     std::vector<LayerId> updated_layers,
-    GLuint id,
     std::unique_ptr<gfx::GpuFence> gpu_fence) {
   TRACE_EVENT_END("xr", /*"OpenXrRenderLoop::WaitSyncToken"*/
                   perfetto::Track(frame_index));
@@ -963,13 +971,6 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
 
   MarkFrameSubmitted(frame_index);
   MaybeCompositeAndSubmit(updated_layers);
-
-  // Calling SubmitFrameWithTextureHandle can cause openxr_ and
-  // context_provider_ to become nullptr if we decide to stop the runtime.
-  if (context_provider_) {
-    gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
-    gl->DestroyGpuFenceCHROMIUM(id);
-  }
 }
 
 void OpenXrRenderLoop::UpdateStageParameters() {
