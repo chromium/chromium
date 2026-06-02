@@ -239,7 +239,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     void reshareRequestCompleted(String selectors) {
         if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
 
-        mRemoteRequestStatus = RemoteRequestStatus.COMPLETED;
         completeRemoteRequestWithSuccess(selectors);
     }
 
@@ -279,7 +278,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     void onRemoteRequestCompleted(String selector, Integer error, Integer readyStatus) {
         if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
 
-        mRemoteRequestStatus = RemoteRequestStatus.COMPLETED;
         boolean success = !selector.isEmpty();
         assert error != null;
 
@@ -290,12 +288,14 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             LinkToTextHelper.requestCanonicalUrl(
                     mTab,
                     (canonicalUrl) -> {
+                        if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
                         if (canonicalUrl != null && !canonicalUrl.isEmpty()) {
                             mShareUrl = canonicalUrl.getSpec();
                         }
                         completeRemoteRequestWithSuccess(selector);
                     });
         } else {
+            mRemoteRequestStatus = RemoteRequestStatus.COMPLETED;
             assert error != LinkGenerationError.NONE;
             completeRequestWithFailure(error.intValue());
         }
@@ -393,6 +393,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     private void completeRemoteRequestWithSuccess(String selector) {
+        mRemoteRequestStatus = RemoteRequestStatus.COMPLETED;
         if (mChromeShareExtras.isReshareHighlightedText()) {
             LinkToTextBridge.logLinkToTextReshareStatus(LinkToTextReshareStatus.SUCCESS);
         } else {

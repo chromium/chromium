@@ -22,12 +22,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -38,6 +40,7 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -549,5 +552,72 @@ public class LinkToTextCoordinatorTest {
         // Check that histogram will be recorded correctly.
         verify(mLinkToTextBridge, times(1))
                 .logLinkToTextReshareStatus(LinkToTextReshareStatus.OMNIBOX_NAVIGATION);
+    }
+
+    @Test
+    @SmallTest
+    public void shareLinkToTextTest_NavigationDuringUrlRequest() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        RenderFrameHost renderFrameHost = Mockito.mock(RenderFrameHost.class);
+        when(mWebContents.getMainFrame()).thenReturn(renderFrameHost);
+        when(mWebContents.getFocusedFrame()).thenReturn(renderFrameHost);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Callback<GURL>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        doNothing().when(renderFrameHost).getCanonicalUrlForSharing(callbackCaptor.capture());
+
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab, mShareCallback, mChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "", false);
+
+        setGenerationRemoteRequestResults(
+                "selector",
+                Integer.valueOf(LinkGenerationError.NONE),
+                Integer.valueOf(LinkGenerationReadyStatus.REQUESTED_AFTER_READY));
+
+        mLinkToTextCoordinator.shareLinkToText();
+
+        // Verify that getCanonicalUrlForSharing was called and callback was captured.
+        verify(renderFrameHost, times(1)).getCanonicalUrlForSharing(any());
+
+        // Status should still be REQUESTED because we haven't called the callback yet.
+        Assert.assertEquals(
+                LinkToTextCoordinator.RemoteRequestStatus.REQUESTED,
+                mLinkToTextCoordinator.mRemoteRequestStatus);
+
+        // Simulate a cross-document navigation starting during the URL request.
+        mLinkToTextCoordinator.onDidStartNavigationInPrimaryMainFrame(
+                mTab,
+                NavigationHandle.createForTesting(
+                        new GURL(VISIBLE_URL),
+                        /* isInPrimaryMainFrame= */ true,
+                        /* isSameDocument= */ false,
+                        /* isRendererInitiated= */ false,
+                        PageTransition.TYPED,
+                        /* hasUserGesture= */ false,
+                        /* isReload= */ false));
+
+        // Status should now be CANCELLED.
+        Assert.assertEquals(
+                LinkToTextCoordinator.RemoteRequestStatus.CANCELLED,
+                mLinkToTextCoordinator.mRemoteRequestStatus);
+
+        // Now trigger the captured callback with a GURL.
+        callbackCaptor.getValue().onResult(JUnitTestGURLs.EXAMPLE_URL);
+
+        // Status should STILL be CANCELLED (not COMPLETED).
+        Assert.assertEquals(
+                LinkToTextCoordinator.RemoteRequestStatus.CANCELLED,
+                mLinkToTextCoordinator.mRemoteRequestStatus);
+
+        // Verify that we did NOT show share sheet at all.
+        verify(mShareCallback, times(0)).showShareSheet(any(), any(), anyLong());
+
+        // Verify that success metrics were NOT logged.
+        verify(mLinkToTextBridge, times(0)).logSuccessMetrics(any());
+
+        // Verify that failure metrics were logged with OMNIBOX_NAVIGATION.
+        verify(mLinkToTextBridge, times(1))
+                .logFailureMetrics(any(), eq(LinkGenerationError.OMNIBOX_NAVIGATION));
     }
 }
