@@ -8,8 +8,10 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/connection_allowlist.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
@@ -36,4 +38,38 @@ bool ResponseEnablesConnectionAllowlistsOriginTrial(
              request_url, response_headers, "ConnectionAllowlist",
              base::Time::Now());
 }
+
+bool EnforcesConnectionAllowlist(
+    const PolicyContainerPolicies& initiator_policies) {
+  // The connection allowlist base feature is the kill switch for the feature.
+  // It is checked first. Then connection allowlist also requires origin trial
+  // enabled. In order to check the origin trial status, the initiator policy
+  // container policies need to be retrieved.
+  if (!base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+    return false;
+  }
+
+  // The origin trial status is tied to the existence of allowlists in policy
+  // container. If the initiator doesn't have an enforced allowlist in its
+  // policies, it means either:
+  // 1. the trial was not active for that context.
+  // 2. or the parsed enforced allowlist is null. For example, the
+  // "Connection-Allowlist" header has an empty field value.
+  // The connection allowlist is not enforced in both cases.
+  return initiator_policies.connection_allowlists.enforced.has_value();
+}
+
+bool IsRedirectAllowedByConnectionAllowlist(
+    const PolicyContainerPolicies& initiator_policies) {
+  // Note: redirect_behavior defaults to kBlock if not explicitly set in the
+  // Connection-Allowlist header.
+  if (initiator_policies.connection_allowlists.enforced->redirect_behavior ==
+      network::ConnectionAllowlist::RedirectBehavior::kBlock) {
+    // TODO(crbug.com/447954811): Implement reporting.
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace content

@@ -234,6 +234,7 @@ experimental domain Preload
       PrefetchIneligibleRetryAfter
       PrefetchIsPrivacyDecoy
       PrefetchIsStale
+      PrefetchNotEligibleBlockedByConnectionAllowlist
       PrefetchNotEligibleBrowserContextOffTheRecord
       PrefetchNotEligibleDataSaverEnabled
       PrefetchNotEligibleExistingProxy

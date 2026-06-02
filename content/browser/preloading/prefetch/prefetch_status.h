@@ -252,8 +252,12 @@ enum class PrefetchStatus {
   // navigation.
   kPrefetchCancelledOnUserNavigation = 56,
 
+  // The URL is not allowed by connection allowlist.
+  // See https://github.com/WICG/connection-allowlists.
+  kPrefetchIneligibleBlockedByConnectionAllowlist = 57,
+
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchCancelledOnUserNavigation,
+  kMaxValue = kPrefetchIneligibleBlockedByConnectionAllowlist,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:PrefetchProxyPrefetchStatus)
 

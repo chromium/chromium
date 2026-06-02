@@ -1767,6 +1767,7 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
         // Prefetch is not available for HTTP, but prerender is available
         // for HTTPS/HTTP.
       case PreloadingEligibility::kSchemeIsNotHttps:
+      case PreloadingEligibility::kBlockedByConnectionAllowlist:
         return true;
       case PreloadingEligibility::kEligible:
       case PreloadingEligibility::kUnspecified:

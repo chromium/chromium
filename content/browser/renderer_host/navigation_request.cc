@@ -7715,13 +7715,11 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
   const PolicyContainerPolicies* policies =
       policy_container_builder_->InitiatorPolicies();
 
-  // The origin trial status is tied to the existence of allowlists in policy
-  // container. If the initiator doesn't have an enforced allowlist in its
-  // policies, it means either:
-  // 1. the trial was not active for that context.
-  // 2. or the parsed enforced allowlist is null. For example, the
-  // "Connection-Allowlist" header has an empty field value.
-  if (!policies || !policies->connection_allowlists.enforced) {
+  if (!policies) {
+    return true;
+  }
+
+  if (!EnforcesConnectionAllowlist(*policies)) {
     return true;
   }
 
@@ -7729,10 +7727,7 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
   // confirming the feature is active for this initiator. Note:
   // redirect_behavior defaults to kBlock if not explicitly set in the
   // Connection-Allowlist header.
-  if (is_redirect &&
-      policies->connection_allowlists.enforced->redirect_behavior ==
-          network::ConnectionAllowlist::RedirectBehavior::kBlock) {
-    // TODO(crbug.com/447954811): Implement reporting.
+  if (is_redirect && !IsRedirectAllowedByConnectionAllowlist(*policies)) {
     return false;
   }
 
@@ -7766,6 +7761,7 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
   if (network::ConnectionAllowlistMatchesUrl(
           policies->connection_allowlists.enforced.value(),
           common_params_->url)) {
+    // TODO(crbug.com/482728970): Implement reporting.
     return true;
   }
 

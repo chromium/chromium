@@ -7,12 +7,17 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -38,6 +43,7 @@
 #include "services/network/public/cpp/connection_allowlist_metrics.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
@@ -100,6 +106,29 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
   void RegisterResponse(const std::string& relative_url,
                         ResponseEntry&& entry) {
     response_map_[relative_url] = std::move(entry);
+  }
+
+  bool WaitForSpeculationRulesPrefetch(const GURL& url,
+                                       PrefetchContainer::LoadState load_state,
+                                       PrefetchStatus prefetch_status) {
+    RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+    PrefetchService* prefetch_service =
+        PrefetchService::GetFromFrameTreeNodeId(rfh->GetFrameTreeNodeId());
+    if (!prefetch_service) {
+      return false;
+    }
+
+    PrefetchKey key(
+        static_cast<const RenderFrameHostImpl*>(rfh)->GetDocumentToken(), url);
+
+    return base::test::RunUntil([&]() {
+      base::WeakPtr<PrefetchContainer> prefetch_container =
+          prefetch_service->MatchUrl(key);
+
+      return prefetch_container &&
+             prefetch_container->GetLoadState() == load_state &&
+             prefetch_container->GetPrefetchStatus() == prefetch_status;
+    });
   }
 
  protected:
@@ -1203,6 +1232,327 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
       prefetch_service->MatchUrl(PrefetchKey(document_token, same_origin_url)));
   EXPECT_FALSE(prefetch_service->MatchUrl(
       PrefetchKey(document_token, cross_origin_url)));
+}
+
+// The connection allowlist of the initiator network context is checked for
+// Speculation Rules prefetch.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       SpeculationRulesSameOriginPrefetchBlocked) {
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("a.test", "/deny.js");
+
+  RegisterResponse("/allow.js", ResponseEntry("console.log('allow');"));
+  RegisterResponse("/deny.js", ResponseEntry("console.log('deny');"));
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry(absl::StrFormat(R"(
+        <html>
+          <head>
+            <script type="speculationrules">
+            {
+              "prefetch": [
+                {
+                  "source": "list",
+                  "urls": ["%s", "%s"],
+                  "eagerness": "immediate"
+                }
+              ]
+            }
+            </script>
+          </head>
+          <body>Hello</body>
+        </html>
+      )",
+                                                 allowed_url.spec().c_str(),
+                                                 denied_url.spec().c_str()),
+                                 {{"Connection-Allowlist",
+                                   R"(("*://a.test:*/allow.js"))"}}));
+
+  URLLoaderMonitor monitor;
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  monitor.WaitForUrls({allowed_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(allowed_url).error_code, net::OK);
+
+  EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+      allowed_url, PrefetchContainer::LoadState::kCompleted,
+      PrefetchStatus::kPrefetchSuccessful));
+  EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+      denied_url, PrefetchContainer::LoadState::kFailedIneligible,
+      PrefetchStatus::kPrefetchIneligibleBlockedByConnectionAllowlist));
+}
+
+// Speculation Rules prefetch uses an isolated network context when the prefetch
+// URL is cross origin. The connection allowlist of the initiator network
+// context is checked, instead of the isolated network context.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       SpeculationRulesCrossOriginPrefetchBlocked) {
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("b.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("b.test", "/deny.js");
+
+  RegisterResponse("/allow.js", ResponseEntry("console.log('allow');"));
+  RegisterResponse("/deny.js", ResponseEntry("console.log('deny');"));
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry(absl::StrFormat(R"(
+        <html>
+          <head>
+            <script type="speculationrules">
+            {
+              "prefetch": [
+                {
+                  "source": "list",
+                  "urls": ["%s", "%s"],
+                  "eagerness": "immediate"
+                }
+              ]
+            }
+            </script>
+          </head>
+          <body>Hello</body>
+        </html>
+      )",
+                                                 allowed_url.spec().c_str(),
+                                                 denied_url.spec().c_str()),
+                                 {{"Connection-Allowlist",
+                                   R"(("*://b.test:*/allow.js"))"}}));
+
+  URLLoaderMonitor monitor;
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  monitor.WaitForUrls({allowed_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(allowed_url).error_code, net::OK);
+
+  EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+      allowed_url, PrefetchContainer::LoadState::kCompleted,
+      PrefetchStatus::kPrefetchSuccessful));
+  EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+      denied_url, PrefetchContainer::LoadState::kFailedIneligible,
+      PrefetchStatus::kPrefetchIneligibleBlockedByConnectionAllowlist));
+}
+
+// The connection allowlist of the initiator network context is checked for
+// Speculation Rules prefetch.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       SpeculationRulesHeaderSameOriginPrefetchBlocked) {
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("a.test", "/deny.js");
+
+  RegisterResponse("/allow.js", ResponseEntry("console.log('allow');"));
+  RegisterResponse("/deny.js", ResponseEntry("console.log('deny');"));
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist",
+                      R"(("*://a.test:*/rules.json" "*://a.test:*/allow.js"))"},
+                     {"Speculation-Rules", R"("/rules.json")"}}));
+
+  RegisterResponse(
+      "/rules.json",
+      ResponseEntry(absl::StrFormat(R"(
+        {
+          "prefetch": [
+            {"source": "list", "urls": ["%s", "%s"], "eagerness": "immediate"}
+          ]
+        }
+      )",
+                                    allowed_url.spec().c_str(),
+                                    denied_url.spec().c_str()),
+                    {{"Content-Type", "application/speculationrules+json"}}));
+
+  URLLoaderMonitor monitor;
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL rules_url = embedded_https_test_server().GetURL("a.test", "/rules.json");
+  monitor.WaitForUrls({rules_url, allowed_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(rules_url).error_code, net::OK);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(allowed_url).error_code, net::OK);
+
+  EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+      allowed_url, PrefetchContainer::LoadState::kCompleted,
+      PrefetchStatus::kPrefetchSuccessful));
+  EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+      denied_url, PrefetchContainer::LoadState::kFailedIneligible,
+      PrefetchStatus::kPrefetchIneligibleBlockedByConnectionAllowlist));
+}
+
+// Speculation Rules prefetch uses an isolated network context when the prefetch
+// URL is cross origin. The connection allowlist of the initiator network
+// context is checked, instead of the isolated network context.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       SpeculationRulesHeaderCrossOriginPrefetchBlocked) {
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("b.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("b.test", "/deny.js");
+
+  RegisterResponse("/allow.js", ResponseEntry("console.log('allow');"));
+  RegisterResponse("/deny.js", ResponseEntry("console.log('deny');"));
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist",
+                      R"(("*://a.test:*/rules.json" "*://b.test:*/allow.js"))"},
+                     {"Speculation-Rules", R"("/rules.json")"}}));
+
+  RegisterResponse(
+      "/rules.json",
+      ResponseEntry(absl::StrFormat(R"(
+        {
+          "prefetch": [
+            {"source": "list", "urls": ["%s", "%s"], "eagerness": "immediate"}
+          ]
+        }
+      )",
+                                    allowed_url.spec().c_str(),
+                                    denied_url.spec().c_str()),
+                    {{"Content-Type", "application/speculationrules+json"}}));
+
+  URLLoaderMonitor monitor;
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL rules_url = embedded_https_test_server().GetURL("a.test", "/rules.json");
+  monitor.WaitForUrls({rules_url, allowed_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(rules_url).error_code, net::OK);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(allowed_url).error_code, net::OK);
+
+  EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+      allowed_url, PrefetchContainer::LoadState::kCompleted,
+      PrefetchStatus::kPrefetchSuccessful));
+  EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+      denied_url, PrefetchContainer::LoadState::kFailedIneligible,
+      PrefetchStatus::kPrefetchIneligibleBlockedByConnectionAllowlist));
+}
+
+// Speculation Rules prefetch redirect is allowed by connection allowlist with
+// `redirects=allow`.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       SpeculationRulesPrefetchRedirectAllowed) {
+  net::test_server::ControllableHttpResponse controllable_response(
+      &embedded_https_test_server(), "/redirect.js");
+
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL redirect_url =
+      embedded_https_test_server().GetURL("a.test", "/redirect.js");
+  GURL target_url =
+      embedded_https_test_server().GetURL("a.test", "/redirect-target.js");
+
+  RegisterResponse("/redirect-target.js",
+                   ResponseEntry("console.log('Redirect is allowed');"));
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry(absl::StrFormat(R"(
+        <html>
+          <head>
+            <script type="speculationrules">
+            {
+              "prefetch": [
+                {
+                  "source": "list",
+                  "urls": ["%s"],
+                  "eagerness": "immediate"
+                }
+              ]
+            }
+            </script>
+          </head>
+          <body>Hello</body>
+        </html>
+      )",
+                                                 redirect_url.spec().c_str()),
+                                 {{"Connection-Allowlist",
+                                   "(response-origin);redirects=allow"}}));
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  controllable_response.WaitForRequest();
+  controllable_response.Send(
+      "HTTP/1.1 302 Found\r\n"
+      "Location: " +
+      target_url.spec() + "\r\n\r\n");
+  controllable_response.Done();
+
+  EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+      redirect_url, PrefetchContainer::LoadState::kCompleted,
+      PrefetchStatus::kPrefetchSuccessful));
+}
+
+// Speculation Rules prefetch redirect is blocked by connection allowlist with
+// `redirects=block`.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       SpeculationRulesPrefetchRedirectBlocked) {
+  net::test_server::ControllableHttpResponse controllable_response(
+      &embedded_https_test_server(), "/redirect.js");
+
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL redirect_url =
+      embedded_https_test_server().GetURL("a.test", "/redirect.js");
+  GURL target_url =
+      embedded_https_test_server().GetURL("a.test", "/redirect-target.js");
+
+  RegisterResponse("/redirect-target.js",
+                   ResponseEntry("console.log('Redirect is blocked');"));
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry(absl::StrFormat(R"(
+        <html>
+          <head>
+            <script type="speculationrules">
+            {
+              "prefetch": [
+                {
+                  "source": "list",
+                  "urls": ["%s"],
+                  "eagerness": "immediate"
+                }
+              ]
+            }
+            </script>
+          </head>
+          <body>Hello</body>
+        </html>
+      )",
+                                                 redirect_url.spec().c_str()),
+                                 {{"Connection-Allowlist",
+                                   "(response-origin);redirects=block"}}));
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  controllable_response.WaitForRequest();
+  controllable_response.Send(
+      "HTTP/1.1 302 Found\r\n"
+      "Location: " +
+      target_url.spec() + "\r\n\r\n");
+  controllable_response.Done();
+
+  // For inegligible redirect, the prefetch status is set to
+  // `PrefetchStatus::kPrefetchFailedIneligibleRedirect` ignoring the specific
+  // `PreloadingEligibility` reason.
+  EXPECT_TRUE(WaitForSpeculationRulesPrefetch(
+      redirect_url, PrefetchContainer::LoadState::kFailedDeterminedHead,
+      PrefetchStatus::kPrefetchFailedIneligibleRedirect));
 }
 
 }  // namespace content

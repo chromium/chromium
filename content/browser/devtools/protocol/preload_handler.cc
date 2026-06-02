@@ -299,6 +299,9 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
           PrefetchEvictedAfterBrowsingDataRemoved;
     case PrefetchStatus::kPrefetchCancelledOnUserNavigation:
       return Preload::PrefetchStatusEnum::PrefetchCancelledOnUserNavigation;
+    case PrefetchStatus::kPrefetchIneligibleBlockedByConnectionAllowlist:
+      return Preload::PrefetchStatusEnum::
+          PrefetchNotEligibleBlockedByConnectionAllowlist;
   }
 }
 

@@ -21,6 +21,7 @@
 #include "components/variations/net/omnibox_autofocus_http_headers.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/browser_context_impl.h"
+#include "content/browser/connection_allowlist_gating.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_handle_impl.h"
@@ -47,6 +48,7 @@
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -72,6 +74,8 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/connection_allowlist.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
@@ -271,6 +275,61 @@ bool IsReferrerPolicySufficientlyStrict(
     case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin:
       return false;
   }
+}
+
+bool IsAllowedByConnectionAllowlist(const PrefetchRequest& request,
+                                    const GURL& url,
+                                    bool is_redirect) {
+  // The connection allowlist base feature is the kill switch for the feature.
+  // It is checked first. Then connection allowlist also requires origin trial
+  // enabled. In order to check the origin trial status, the initiator policy
+  // container policies need to be retrieved.
+  if (!base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+    return false;
+  }
+
+  const PrefetchRendererInitiatorInfo* renderer_initiator_info =
+      request.GetRendererInitiatorInfo();
+  // If `renderer_initiator_info` is null, this is not a renderer initiated
+  // prefetch which is out of the scope of connection allowlist.
+  if (!renderer_initiator_info) {
+    return true;
+  }
+
+  const RenderFrameHostImpl* rfh =
+      renderer_initiator_info->GetRenderFrameHost();
+  // RenderFrameHost that triggers the prefetch has gone, or it does not have a
+  // policy container host.
+  if (!rfh || !rfh->HasPolicyContainerHost()) {
+    return true;
+  }
+
+  const PolicyContainerPolicies& policies =
+      rfh->policy_container_host()->policies();
+  if (!EnforcesConnectionAllowlist(policies)) {
+    return true;
+  }
+
+  // Perform functional checks only after confirming the feature is active for
+  // this initiator.
+  if (is_redirect && !IsRedirectAllowedByConnectionAllowlist(policies)) {
+    return false;
+  }
+
+  // The feature currently does not impact fenced frames.
+  // TODO(crbug.com/447954811): Revisit this if the feature needs to be
+  // enabled and fenced frames need to be supported.
+  if (rfh->IsNestedWithinFencedFrame()) {
+    return true;
+  }
+
+  if (network::ConnectionAllowlistMatchesUrl(
+          policies.connection_allowlists.enforced.value(), url)) {
+    // TODO(crbug.com/482728970): Implement reporting.
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -583,6 +642,7 @@ bool PrefetchService::IsPrefetchAttemptFailedOrDiscardedInternal(
     case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
     case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
     case PrefetchStatus::kPrefetchIneligibleExistingProxy:
+    case PrefetchStatus::kPrefetchIneligibleBlockedByConnectionAllowlist:
     case PrefetchStatus::kPrefetchIsStale:
     case PrefetchStatus::kPrefetchNotUsedProbeFailed:
     case PrefetchStatus::kPrefetchNotStarted:
@@ -818,6 +878,14 @@ void PrefetchService::CheckEligibilityOfPrefetch(
   // TODO(crbug.com/40215782): Clean up the following checks by: 1)
   // moving each check to a separate function, and 2) requiring that failed
   // checks provide a PrefetchStatus related to the check.
+
+  // Prefetch to an URL not allowed by connection allowlist is not eligible.
+  if (!IsAllowedByConnectionAllowlist(params.request(), params.url,
+                                      params.is_redirect)) {
+    std::move(params).Finish(
+        PreloadingEligibility::kBlockedByConnectionAllowlist);
+    return;
+  }
 
   // While a registry-controlled domain could still resolve to a non-publicly
   // routable IP, this allows hosts which are very unlikely to work via the

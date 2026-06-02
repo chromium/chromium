@@ -23690,6 +23690,11 @@ Called by update_net_error_codes.py.-->
     The prefetch canceled to prevent network congestion with user-initiated
     navigation.
   </int>
+  <int value="57"
+      label="Prefetch Not Eligible: Blocked by Connection Allowlist">
+    The prefetch was cancelled because the URL is not allowed by Connection
+    Allowlist.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/preloading/prefetch/prefetch_status.h:PrefetchStatus) -->

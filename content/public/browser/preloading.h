@@ -266,6 +266,10 @@ enum class PreloadingEligibility {
   // this will be still used for ServiceWorker-ineligible prefetches.
   kUserHasServiceWorkerNoFetchHandler = 24,
 
+  // The URL is not allowed by connection allowlist.
+  // See https://github.com/WICG/connection-allowlists.
+  kBlockedByConnectionAllowlist = 25,
+
   // ##########################################################################
   // The range 50-99 is reserved for corresponding values in `PrefetchStatus`.
   // See corresponding values in PrefetchStatus for documentation.
