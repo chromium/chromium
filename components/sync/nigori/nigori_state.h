@@ -50,8 +50,6 @@ struct NigoriState {
   // Makes a deep copy of `this`.
   NigoriState Clone() const;
 
-  bool NeedsKeystoreReencryption() const;
-
   DataTypeSet GetEncryptedTypes() const;
   bool NeedsGenerateCrossUserSharingKeyPair() const;
 

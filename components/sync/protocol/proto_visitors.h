@@ -941,7 +941,6 @@ VISIT_PROTO_FIELDS(const sync_pb::CustomPassphraseKeyDerivationParams& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::NigoriModel& proto) {
   VISIT(cryptographer_data);
-  VISIT(current_keystore_key_name);
   VISIT(pending_keys);
   VISIT(passphrase_type);
   VISIT(keystore_migration_time);

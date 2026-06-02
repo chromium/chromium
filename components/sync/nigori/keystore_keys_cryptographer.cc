@@ -62,9 +62,6 @@ KeystoreKeysCryptographer::KeystoreKeysCryptographer(
 
 KeystoreKeysCryptographer::~KeystoreKeysCryptographer() = default;
 
-std::string KeystoreKeysCryptographer::GetLastKeystoreKeyName() const {
-  return last_keystore_key_name_;
-}
 
 bool KeystoreKeysCryptographer::IsEmpty() const {
   return keystore_keys_.empty();

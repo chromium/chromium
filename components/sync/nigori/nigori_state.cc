@@ -206,10 +206,7 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
   if (pending_keys.has_value()) {
     *proto.mutable_pending_keys() = *pending_keys;
   }
-  if (!keystore_keys_cryptographer->IsEmpty()) {
-    proto.set_current_keystore_key_name(
-        keystore_keys_cryptographer->GetLastKeystoreKeyName());
-  }
+
   proto.set_passphrase_type(passphrase_type);
   if (!keystore_migration_time.is_null()) {
     proto.set_keystore_migration_time(TimeToProtoTime(keystore_migration_time));
@@ -232,9 +229,8 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
         GetSpecificsFieldNumberFromDataType(data_type));
   }
   // TODO(crbug.com/41462727): we currently store keystore keys in proto only to
-  // allow rollback of USS Nigori. Having keybag with all keystore keys and
-  // `current_keystore_key_name` is enough to support all logic. We should
-  // remove them few milestones after USS migration completed.
+  // allow rollback of USS Nigori. We should remove them few milestones after
+  // USS migration completed.
   for (const std::string& keystore_key :
        keystore_keys_cryptographer->keystore_keys()) {
     proto.add_keystore_key(keystore_key);
@@ -341,19 +337,6 @@ NigoriState NigoriState::Clone() const {
   return result;
 }
 
-bool NigoriState::NeedsKeystoreReencryption() const {
-  if (keystore_keys_cryptographer->IsEmpty() ||
-      passphrase_type != sync_pb::NigoriSpecifics::KEYSTORE_PASSPHRASE ||
-      pending_keys.has_value() ||
-      cryptographer->GetDefaultEncryptionKeyName() ==
-          keystore_keys_cryptographer->GetLastKeystoreKeyName()) {
-    return false;
-  }
-  // Either keystore key rotation or full keystore migration should be
-  // triggered, since default encryption key is not the last keystore key, while
-  // it should be.
-  return true;
-}
 
 DataTypeSet NigoriState::GetEncryptedTypes() const {
   if (!encrypt_everything) {

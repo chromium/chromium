@@ -30,7 +30,6 @@ TEST(KeystoreKeysCryptographerTest, ShouldCreateEmpty) {
 
   EXPECT_TRUE(keystore_keys_cryptographer->IsEmpty());
   EXPECT_TRUE(keystore_keys_cryptographer->keystore_keys().empty());
-  EXPECT_TRUE(keystore_keys_cryptographer->GetLastKeystoreKeyName().empty());
 
   std::unique_ptr<CryptographerImpl> underlying_cryptographer =
       keystore_keys_cryptographer->ToCryptographerImpl();
@@ -49,8 +48,6 @@ TEST(KeystoreKeysCryptographerTest, ShouldCreateNonEmpty) {
 
   EXPECT_FALSE(keystore_keys_cryptographer->IsEmpty());
   EXPECT_THAT(keystore_keys_cryptographer->keystore_keys(), Eq(kKeystoreKeys));
-  EXPECT_THAT(keystore_keys_cryptographer->GetLastKeystoreKeyName(),
-              Eq(keystore_key_name2));
 
   std::unique_ptr<CryptographerImpl> underlying_cryptographer =
       keystore_keys_cryptographer->ToCryptographerImpl();

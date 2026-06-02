@@ -56,12 +56,8 @@ message NigoriModel {
   // Represents state of the cryptographer.
   optional CryptographerData cryptographer_data = 1;
 
-  // Contains the name of the key, used for encryption of
-  // NigoriSpecifics.keystore_decryptor_token, should always be the name of the
-  // latest keystore key. Equals to cryptographer_data.default_key_name iff it
-  // is Nigori in full keystore mode (not in backward compatible keystore
-  // mode).
-  optional string current_keystore_key_name = 2;
+  reserved 2;
+  reserved "current_keystore_key_name";
 
   // Contains keybag in encrypted form, should be empty once we were able to
   // decrypt keybag from specifics.

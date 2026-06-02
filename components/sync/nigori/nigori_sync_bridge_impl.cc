@@ -325,8 +325,6 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
             ForCrossUserSharingPublicPrivateKeyInitializer());
   }
 
-  // Keystore key rotation might be not performed, but required.
-  MaybeTriggerKeystoreReencryption();
 
   // Ensure that `cryptographer` contains all keystore keys (non-keystore
   // passphrase types only).
@@ -575,7 +573,6 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
     }
   }
 
-  MaybeTriggerKeystoreReencryption();
   // Note: we don't need to persist keystore keys here, because we will receive
   // Nigori node right after this method and persist all the data during
   // UpdateLocalState().
@@ -1005,12 +1002,6 @@ sync_pb::NigoriLocalData NigoriSyncBridgeImpl::SerializeAsNigoriLocalData()
   return output;
 }
 
-void NigoriSyncBridgeImpl::MaybeTriggerKeystoreReencryption() {
-  if (state_.NeedsKeystoreReencryption()) {
-    QueuePendingLocalCommit(
-        PendingLocalNigoriCommit::ForKeystoreReencryption());
-  }
-}
 
 void NigoriSyncBridgeImpl::QueuePendingLocalCommit(
     std::unique_ptr<PendingLocalNigoriCommit> local_commit) {

@@ -21,10 +21,7 @@ class PendingLocalNigoriCommit {
  public:
   static std::unique_ptr<PendingLocalNigoriCommit> ForSetCustomPassphrase(
       const std::string& passphrase);
-
   static std::unique_ptr<PendingLocalNigoriCommit> ForKeystoreInitialization();
-
-  static std::unique_ptr<PendingLocalNigoriCommit> ForKeystoreReencryption();
 
   static std::unique_ptr<PendingLocalNigoriCommit>
   ForCrossUserSharingPublicPrivateKeyInitializer();

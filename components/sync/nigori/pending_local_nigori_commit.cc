@@ -174,34 +174,6 @@ class KeystoreInitializer : public PendingLocalNigoriCommit {
       cross_user_sharing_public_private_key_pair_;
 };
 
-class KeystoreReencryptor : public PendingLocalNigoriCommit {
- public:
-  KeystoreReencryptor() = default;
-
-  KeystoreReencryptor(const KeystoreReencryptor&) = delete;
-  KeystoreReencryptor& operator=(const KeystoreReencryptor&) = delete;
-
-  ~KeystoreReencryptor() override = default;
-
-  bool TryApply(NigoriState& state) const override {
-    if (!state.NeedsKeystoreReencryption()) {
-      return false;
-    }
-    const std::string new_default_key_name = state.cryptographer->EmplaceKey(
-        state.keystore_keys_cryptographer->keystore_keys().back(),
-        KeyDerivationParams::CreateForPbkdf2());
-    state.cryptographer->SelectDefaultEncryptionKey(new_default_key_name);
-    return true;
-  }
-
-  void OnSuccess(const NigoriState& state,
-                 SyncEncryptionHandlerObserverList& observer_list) override {
-    observer_list.NotifyCryptographerStateChanged(state.cryptographer.get(),
-                                                  /*has_pending_keys=*/false);
-  }
-
-  void OnFailure(SyncEncryptionHandlerObserverList& observer_list) override {}
-};
 
 class CrossUserSharingPublicPrivateKeyInitializer
     : public PendingLocalNigoriCommit {
@@ -255,11 +227,6 @@ PendingLocalNigoriCommit::ForKeystoreInitialization() {
   return std::make_unique<KeystoreInitializer>();
 }
 
-// static
-std::unique_ptr<PendingLocalNigoriCommit>
-PendingLocalNigoriCommit::ForKeystoreReencryption() {
-  return std::make_unique<KeystoreReencryptor>();
-}
 
 // static
 std::unique_ptr<PendingLocalNigoriCommit>

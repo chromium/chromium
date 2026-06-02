@@ -700,54 +700,6 @@ TEST_F(NigoriSyncBridgeImplTest,
               Ne(std::nullopt));
 }
 
-TEST_F(NigoriSyncBridgeImplTest, ShouldRotateKeystoreKey) {
-  const std::vector<uint8_t> kRawKeystoreKey1{kRawKeystoreKey};
-  const KeyParamsForTesting kKeystoreKeyParams1 =
-      KeystoreKeyParamsForTesting(kRawKeystoreKey1);
-
-  sync_pb::NigoriSpecifics not_rotated_specifics = BuildKeystoreNigoriSpecifics(
-      /*keybag_keys_params=*/{kKeystoreKeyParams1},
-      /*keystore_decryptor_params=*/kKeystoreKeyParams1,
-      /*keystore_key_params=*/kKeystoreKeyParams1);
-  EntityData entity_data;
-  *entity_data.specifics.mutable_nigori() = not_rotated_specifics;
-  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey1}));
-  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
-              Eq(std::nullopt));
-
-  const std::vector<uint8_t> kRawKeystoreKey2 = {5, 6, 7, 8};
-  const KeyParamsForTesting kKeystoreKeyParams2 =
-      KeystoreKeyParamsForTesting(kRawKeystoreKey2);
-  // Emulate server and client behavior: server sends both keystore keys and
-  // `not_rotated_specifics` with changed metadata. Client have already seen
-  // this specifics, but should pass it to the bridge, because bridge also
-  // issues a commit, which conflicts with `not_rotated_specifics`.
-
-  // Ensure bridge issues a commit right after SetKeystoreKeys() call, because
-  // otherwise there is no conflict and ApplyIncrementalSyncChanges() will be
-  // called with empty `data`.
-  EXPECT_CALL(*processor(), Put(HasKeystoreNigori()));
-  EXPECT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey1, kRawKeystoreKey2}));
-
-  // Populate new remote specifics to bridge, which is actually still
-  // `not_rotated_specifics`.
-  EntityData new_entity_data;
-  *new_entity_data.specifics.mutable_nigori() = not_rotated_specifics;
-  EXPECT_CALL(*processor(), Put(HasKeystoreNigori()));
-  EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(std::move(new_entity_data)),
-              Eq(std::nullopt));
-
-  // Mimic commit completion.
-  EXPECT_CALL(*observer(), OnCryptographerStateChanged(
-                               NotNull(), /*has_pending_keys=*/false));
-  EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(std::nullopt),
-              Eq(std::nullopt));
-  EXPECT_THAT(bridge()->GetDataForDebugging(), HasKeystoreNigori());
-
-  EXPECT_THAT(*cryptographer(), CanDecryptWith(kKeystoreKeyParams1));
-  EXPECT_THAT(*cryptographer(), CanDecryptWith(kKeystoreKeyParams2));
-  EXPECT_THAT(*cryptographer(), HasDefaultKeyDerivedFrom(kKeystoreKeyParams2));
-}
 
 // This test emulates late arrival of keystore keys, so neither
 // `keystore_decryptor_token` or `encryption_keybag` could be decrypted at the
@@ -1889,40 +1841,6 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_THAT(cryptographer.KeyBagSizeForTesting(), Eq(size_t(1)));
 }
 
-// Tests that upon startup bridge migrates the Nigori from backward compatible
-// keystore mode to full keystore mode.
-TEST_F(NigoriSyncBridgeImplTest, ShouldCompleteKeystoreMigration) {
-  // Perform initial sync with backward compatible keystore Nigori.
-  const KeyParamsForTesting kKeystoreKeyParams =
-      KeystoreKeyParamsForTesting(kRawKeystoreKey);
-  const KeyParamsForTesting kPassphraseKeyParams =
-      Pbkdf2PassphraseKeyParamsForTesting("passphrase");
-
-  ASSERT_TRUE(PerformInitialSyncWithNigori(BuildKeystoreNigoriSpecifics(
-      /*keybag_keys_params=*/{kKeystoreKeyParams, kPassphraseKeyParams},
-      /*keystore_decryptor_params=*/kPassphraseKeyParams,
-      /*keystore_key_params=*/kKeystoreKeyParams,
-      CreateNewCrossUserSharingKeys())));
-
-  // Upon startup bridge should issue a commit with full keystore Nigori.
-  EXPECT_CALL(*processor(), Put(HasKeystoreNigori()));
-
-  // Mimic the browser restart.
-  MimicRestartWithLocalData(nigori_local_data());
-
-  // Mimic commit completion.
-  EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(std::nullopt),
-              Eq(std::nullopt));
-  EXPECT_THAT(bridge()->GetDataForDebugging(), HasKeystoreNigori());
-
-  // Ensure the cryptographer corresponds to full keystore Nigori.
-  EXPECT_THAT(*bridge()->GetCryptographer(),
-              CanDecryptWith(kKeystoreKeyParams));
-  EXPECT_THAT(*bridge()->GetCryptographer(),
-              CanDecryptWith(kPassphraseKeyParams));
-  EXPECT_THAT(*bridge()->GetCryptographer(),
-              HasDefaultKeyDerivedFrom(kKeystoreKeyParams));
-}
 
 // Tests that upon startup bridge adds keystore keys into cryptographer, so it
 // can later decrypt the data using them.
