@@ -50,6 +50,9 @@ class DownloadCoreService : public KeyedService {
   // no HistoryService for profile. Virtual for testing.
   virtual DownloadHistory* GetDownloadHistory() = 0;
 
+  // Initialize the history system.
+  virtual void InitializeHistory() {}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   virtual extensions::ExtensionDownloadsEventRouter*
   GetExtensionEventRouter() = 0;

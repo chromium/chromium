@@ -732,6 +732,15 @@ void ChromeDownloadManagerDelegate::GetNextId(
         std::move(callback));
     return;
   }
+
+  // If deferred history loading is enabled, make sure the history system is
+  // initialized as soon as we assign an ID to a new or in-progress download,
+  // so that it can start observing and persisting download events.
+  DownloadCoreService* service =
+      DownloadCoreServiceFactory::GetForBrowserContext(profile_);
+  if (service) {
+    service->InitializeHistory();
+  }
   if (!next_id_retrieved_) {
     id_callbacks_.push_back(std::move(callback));
     return;

@@ -79,6 +79,10 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kOpenDownloadInFilesAppIfNoHandlerFound);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Whether to defer download history loading until first use.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
+    kDeferredDownloadHistoryLoading);
 }  // namespace features
 
 }  // namespace download

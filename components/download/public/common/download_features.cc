@@ -79,6 +79,9 @@ BASE_FEATURE(kEnableSavePackageForOffTheRecord,
 BASE_FEATURE(kOpenDownloadInFilesAppIfNoHandlerFound,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(kDeferredDownloadHistoryLoading,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 }  // namespace download

@@ -257,37 +257,6 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
   friend class ChromeDownloadManagerDelegateTest;
 };
 
-// A DownloadCoreService that returns the TestChromeDownloadManagerDelegate.
-class TestDownloadCoreService : public DownloadCoreServiceImpl {
- public:
-  explicit TestDownloadCoreService(Profile* profile);
-  ~TestDownloadCoreService() override;
-
-  void set_download_manager_delegate(ChromeDownloadManagerDelegate* delegate) {
-    delegate_ = delegate;
-  }
-
-  ChromeDownloadManagerDelegate* GetDownloadManagerDelegate() override;
-
-  raw_ptr<ChromeDownloadManagerDelegate> delegate_ = nullptr;
-};
-
-TestDownloadCoreService::TestDownloadCoreService(Profile* profile)
-    : DownloadCoreServiceImpl(profile) {}
-
-TestDownloadCoreService::~TestDownloadCoreService() = default;
-
-ChromeDownloadManagerDelegate*
-TestDownloadCoreService::GetDownloadManagerDelegate() {
-  return delegate_;
-}
-
-static std::unique_ptr<KeyedService> CreateTestDownloadCoreService(
-    content::BrowserContext* browser_context) {
-  return std::make_unique<TestDownloadCoreService>(
-      Profile::FromBrowserContext(browser_context));
-}
-
 class ChromeDownloadManagerDelegateTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -347,7 +316,7 @@ class ChromeDownloadManagerDelegateTest
   base::FilePath test_download_dir_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_ = nullptr;
   std::unique_ptr<content::MockDownloadManager> download_manager_;
-  std::unique_ptr<TestChromeDownloadManagerDelegate> delegate_;
+  raw_ptr<TestChromeDownloadManagerDelegate> delegate_ = nullptr;
   MockWebContentsDelegate web_contents_delegate_;
   std::vector<uint32_t> download_ids_;
   TestingProfileManager testing_profile_manager_;
@@ -367,14 +336,12 @@ void ChromeDownloadManagerDelegateTest::SetUp() {
   test_download_dir_ = profile()->GetPath().AppendASCII("TestDownloadDir");
   ASSERT_TRUE(base::CreateDirectory(test_download_dir_));
 
-  delegate_ =
+  auto delegate =
       std::make_unique<::testing::NiceMock<TestChromeDownloadManagerDelegate>>(
           profile());
-  DownloadCoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(), base::BindRepeating(&CreateTestDownloadCoreService));
-  static_cast<TestDownloadCoreService*>(
-      DownloadCoreServiceFactory::GetForBrowserContext(profile()))
-      ->set_download_manager_delegate(delegate_.get());
+  delegate_ = delegate.get();
+  DownloadCoreServiceFactory::GetForBrowserContext(profile())
+      ->SetDownloadManagerDelegateForTesting(std::move(delegate));
   download_prefs()->SkipSanitizeDownloadTargetPathForTesting();
   download_prefs()->SetDownloadPath(test_download_dir_);
   delegate_->SetDownloadManager(download_manager_.get());
@@ -391,11 +358,12 @@ void ChromeDownloadManagerDelegateTest::TearDown() {
   base::RunLoop().RunUntilIdle();
   pref_service_ = nullptr;
   delegate_->Shutdown();
+  delegate_ = nullptr;
   ChromeRenderViewHostTestHarness::TearDown();
 }
 
 void ChromeDownloadManagerDelegateTest::VerifyAndClearExpectations() {
-  ::testing::Mock::VerifyAndClearExpectations(delegate_.get());
+  ::testing::Mock::VerifyAndClearExpectations(delegate_);
 }
 
 std::unique_ptr<download::MockDownloadItem>
@@ -471,7 +439,7 @@ void ChromeDownloadManagerDelegateTest::OnConfirmationCallbackComplete(
 
 TestChromeDownloadManagerDelegate*
     ChromeDownloadManagerDelegateTest::delegate() {
-  return delegate_.get();
+  return delegate_;
 }
 
 content::MockDownloadManager*

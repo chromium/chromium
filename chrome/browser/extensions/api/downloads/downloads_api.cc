@@ -569,6 +569,14 @@ void MaybeSetUiEnabled(DownloadCoreService* service,
   }
 }
 
+void InitializeDownloadHistory(content::BrowserContext* context) {
+  DownloadCoreService* service =
+      DownloadCoreServiceFactory::GetForBrowserContext(context);
+  if (service) {
+    service->InitializeHistory();
+  }
+}
+
 DownloadItem* GetDownload(content::BrowserContext* context,
                           bool include_incognito,
                           int id) {
@@ -1105,11 +1113,42 @@ DownloadedByExtension::DownloadedByExtension(download::DownloadItem* item,
   item->SetUserData(kKey, base::WrapUnique(this));
 }
 
+DownloadsFunction::DownloadsFunction() = default;
+
+DownloadsFunction::~DownloadsFunction() = default;
+
+ExtensionFunction::ResponseAction DownloadsFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  content::DownloadManager* manager =
+      profile->GetOriginalProfile()->GetDownloadManager();
+  if (!manager->IsManagerInitialized()) {
+    InitializeDownloadHistory(manager->GetBrowserContext());
+    DownloadCoreService* service =
+        DownloadCoreServiceFactory::GetForBrowserContext(
+            manager->GetBrowserContext());
+    if (service) {
+      service->GetExtensionEventRouter()->QueuePendingFunction(this);
+      return RespondLater();
+    }
+  }
+
+  return RunInternal();
+}
+
+void DownloadsFunction::ExecuteFromQueue() {
+  ResponseAction action = RunInternal();
+  action.Execute();
+}
+
+void DownloadsFunction::OnManagerGoingDown() {
+  Respond(Error("Download manager is shutting down."));
+}
+
 DownloadsDownloadFunction::DownloadsDownloadFunction() = default;
 
 DownloadsDownloadFunction::~DownloadsDownloadFunction() = default;
 
-ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
+ExtensionFunction::ResponseAction DownloadsDownloadFunction::RunInternal() {
   std::optional<downloads::Download::Params> params =
       downloads::Download::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1248,7 +1287,7 @@ DownloadsSearchFunction::DownloadsSearchFunction() = default;
 
 DownloadsSearchFunction::~DownloadsSearchFunction() = default;
 
-ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
+ExtensionFunction::ResponseAction DownloadsSearchFunction::RunInternal() {
   std::optional<downloads::Search::Params> params =
       downloads::Search::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1278,18 +1317,16 @@ ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
   }
 
   base::ListValue json_results;
-  for (DownloadManager::DownloadVector::const_iterator it = results.begin();
-       it != results.end(); ++it) {
-    DownloadItem* download_item = *it;
-    uint32_t download_id = download_item->GetId();
+  for (const auto& result : results) {
+    uint32_t download_id = result->GetId();
     bool off_record =
         ((incognito_manager != nullptr) &&
          (incognito_manager->GetDownload(download_id) != nullptr));
     Profile* profile = Profile::FromBrowserContext(browser_context());
     base::DictValue json_item = DownloadItemToJSON(
-        *it, off_record
-                 ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-                 : profile->GetOriginalProfile());
+        result, off_record
+                    ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                    : profile->GetOriginalProfile());
     json_results.Append(std::move(json_item));
   }
   RecordApiFunctions(DownloadsFunctionName::kDownloadsFunctionSearch);
@@ -1300,7 +1337,7 @@ DownloadsPauseFunction::DownloadsPauseFunction() = default;
 
 DownloadsPauseFunction::~DownloadsPauseFunction() = default;
 
-ExtensionFunction::ResponseAction DownloadsPauseFunction::Run() {
+ExtensionFunction::ResponseAction DownloadsPauseFunction::RunInternal() {
   std::optional<downloads::Pause::Params> params =
       downloads::Pause::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1323,7 +1360,7 @@ DownloadsResumeFunction::DownloadsResumeFunction() = default;
 
 DownloadsResumeFunction::~DownloadsResumeFunction() = default;
 
-ExtensionFunction::ResponseAction DownloadsResumeFunction::Run() {
+ExtensionFunction::ResponseAction DownloadsResumeFunction::RunInternal() {
   std::optional<downloads::Resume::Params> params =
       downloads::Resume::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1348,7 +1385,7 @@ DownloadsCancelFunction::DownloadsCancelFunction() = default;
 
 DownloadsCancelFunction::~DownloadsCancelFunction() = default;
 
-ExtensionFunction::ResponseAction DownloadsCancelFunction::Run() {
+ExtensionFunction::ResponseAction DownloadsCancelFunction::RunInternal() {
   std::optional<downloads::Resume::Params> params =
       downloads::Resume::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1368,7 +1405,7 @@ DownloadsEraseFunction::DownloadsEraseFunction() = default;
 
 DownloadsEraseFunction::~DownloadsEraseFunction() = default;
 
-ExtensionFunction::ResponseAction DownloadsEraseFunction::Run() {
+ExtensionFunction::ResponseAction DownloadsEraseFunction::RunInternal() {
   std::optional<downloads::Erase::Params> params =
       downloads::Erase::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1395,7 +1432,7 @@ DownloadsRemoveFileFunction::DownloadsRemoveFileFunction() = default;
 
 DownloadsRemoveFileFunction::~DownloadsRemoveFileFunction() = default;
 
-ExtensionFunction::ResponseAction DownloadsRemoveFileFunction::Run() {
+ExtensionFunction::ResponseAction DownloadsRemoveFileFunction::RunInternal() {
   std::optional<downloads::RemoveFile::Params> params =
       downloads::RemoveFile::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1427,7 +1464,7 @@ DownloadsAcceptDangerFunction::DownloadsAcceptDangerFunction() = default;
 
 DownloadsAcceptDangerFunction::~DownloadsAcceptDangerFunction() = default;
 
-ExtensionFunction::ResponseAction DownloadsAcceptDangerFunction::Run() {
+ExtensionFunction::ResponseAction DownloadsAcceptDangerFunction::RunInternal() {
   std::optional<downloads::AcceptDanger::Params> params =
       downloads::AcceptDanger::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1554,7 +1591,7 @@ DownloadsShowFunction::DownloadsShowFunction() = default;
 
 DownloadsShowFunction::~DownloadsShowFunction() = default;
 
-ExtensionFunction::ResponseAction DownloadsShowFunction::Run() {
+ExtensionFunction::ResponseAction DownloadsShowFunction::RunInternal() {
   std::optional<downloads::Show::Params> params =
       downloads::Show::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1593,7 +1630,7 @@ DownloadsOpenFunction::DownloadsOpenFunction() = default;
 
 DownloadsOpenFunction::~DownloadsOpenFunction() = default;
 
-ExtensionFunction::ResponseAction DownloadsOpenFunction::Run() {
+ExtensionFunction::ResponseAction DownloadsOpenFunction::RunInternal() {
   std::optional<downloads::Open::Params> params =
       downloads::Open::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1790,7 +1827,7 @@ void DownloadsGetFileIconFunction::SetIconExtractorForTesting(
   icon_extractor_.reset(extractor);
 }
 
-ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::Run() {
+ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::RunInternal() {
   std::optional<downloads::GetFileIcon::Params> params =
       downloads::GetFileIcon::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -1857,6 +1894,30 @@ ExtensionDownloadsEventRouter::~ExtensionDownloadsEventRouter() {
   EventRouter* router = EventRouter::Get(profile_);
   if (router) {
     router->UnregisterObserver(this);
+  }
+  OnManagerGoingDown(nullptr);
+}
+
+void ExtensionDownloadsEventRouter::QueuePendingFunction(
+    scoped_refptr<DownloadsFunction> function) {
+  pending_functions_.push_back(std::move(function));
+}
+
+void ExtensionDownloadsEventRouter::OnManagerInitialized(
+    content::DownloadManager* manager) {
+  while (!pending_functions_.empty()) {
+    scoped_refptr<DownloadsFunction> function = pending_functions_.front();
+    pending_functions_.pop_front();
+    function->ExecuteFromQueue();
+  }
+}
+
+void ExtensionDownloadsEventRouter::OnManagerGoingDown(
+    content::DownloadManager* manager) {
+  while (!pending_functions_.empty()) {
+    scoped_refptr<DownloadsFunction> function = pending_functions_.front();
+    pending_functions_.pop_front();
+    function->OnManagerGoingDown();
   }
 }
 
