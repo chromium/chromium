@@ -3896,6 +3896,8 @@
     ],
     "expires": "never"
   },
+  "This suite disables unload deprecation and allows tests to run with unload handlers.",
+  "It should not expire as long as there are tests that use unload.",
   {
     "prefix": "unload-allowed",
     "platforms": [
@@ -3973,7 +3975,7 @@
       "external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/unload-main-frame-same-origin.window.js",
       "external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/unload-main-frame-cross-origin.window.js"
     ],
-    "expires": "Jun 1, 2026",
+    "expires": "never",
     "owners": [
       "fergal@chromium.org",
       "rakina@chromium.org"
