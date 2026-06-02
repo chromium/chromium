@@ -7383,7 +7383,7 @@
   {
     "name": "on-device-model-litert-lm-backend",
     "owners": ["//services/on_device_model/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "on-startup-window-policy",
