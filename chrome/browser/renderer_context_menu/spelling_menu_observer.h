@@ -90,6 +90,12 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
       const std::vector<SpellCheckResult>& results);
 
  private:
+  // When a misspelled word is detected, updates the context menu with
+  // suggestions, an "Add to dictionary" item, and options to use the spelling
+  // service. Suggestions may be retrieved synchronously or asynchronously
+  // depending on the platform and configuration.
+  void UpdateMenuForMisspelledWord(const content::ContextMenuParams& params);
+
   // Method that starts the asynchronous retrieval of suggestions from the
   // remote enhanced spellcheck service.
   void GetRemoteSuggestions();
