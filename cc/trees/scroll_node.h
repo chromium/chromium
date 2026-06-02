@@ -55,6 +55,7 @@ struct CC_EXPORT ScrollNode {
   bool user_scrollable_horizontal : 1 = false;
   bool user_scrollable_vertical : 1 = false;
   bool is_composited : 1 = false;
+  bool prevent_scroll_axis_locking : 1 = false;
 
   ElementId element_id;
 

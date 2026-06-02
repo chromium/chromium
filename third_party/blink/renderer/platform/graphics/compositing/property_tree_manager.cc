@@ -681,6 +681,8 @@ int PropertyTreeManager::EnsureCompositorScrollNodeInternal(
       scroll_node.MaxScrollOffsetAffectedByPageScale();
   compositor_node.overscroll_behavior = scroll_node.OverscrollBehavior();
   compositor_node.snap_container_data = scroll_node.GetSnapContainerData();
+  compositor_node.prevent_scroll_axis_locking =
+      scroll_node.PreventScrollAxisLocking();
 
   auto compositor_element_id = scroll_node.GetCompositorElementId();
   if (compositor_element_id) {

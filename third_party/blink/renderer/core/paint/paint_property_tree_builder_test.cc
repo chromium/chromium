@@ -7,6 +7,7 @@
 #include "base/compiler_specific.h"
 #include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/trees/effect_node.h"
+#include "cc/trees/layer_tree_host.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -8098,6 +8099,54 @@ TEST_P(SingleAxisPaintPropertyTest, NestedStickyShiftingContainingBlock) {
 
   EXPECT_EQ(gfx::Vector2dF(0, 25), parent_sticky->Get2dTranslation());
   EXPECT_EQ(gfx::Vector2dF(25, 0), grandchild_sticky->Get2dTranslation());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, ScrollAxisLockPropagatesToCc) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow: scroll;
+        width: 100px;
+        height: 100px;
+      }
+      .force-scroll {
+        height: 200px;
+        width: 200px;
+      }
+    </style>
+    <div id='scroller'>
+      <div class='force-scroll'></div>
+    </div>
+  )HTML");
+
+  const ObjectPaintProperties* properties =
+      PaintPropertiesForElement("scroller");
+  EXPECT_FALSE(properties->Scroll()->PreventScrollAxisLocking());
+
+  auto* frame_view = GetDocument().GetFrame()->View();
+  auto* pac = frame_view->GetPaintArtifactCompositor();
+
+  const auto* property_trees =
+      pac->RootLayer()->layer_tree_host()->property_trees();
+  const cc::ScrollTree& scroll_tree = property_trees->scroll_tree();
+
+  CompositorElementId element_id =
+      properties->Scroll()->GetCompositorElementId();
+  const cc::ScrollNode* cc_scroll_node =
+      scroll_tree.FindNodeFromElementId(element_id);
+
+  EXPECT_FALSE(cc_scroll_node->prevent_scroll_axis_locking);
+
+  GetElementById("scroller")
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString("scroll-axis-lock: none"));
+  UpdateAllLifecyclePhasesForTest();
+
+  properties = PaintPropertiesForElement("scroller");
+  EXPECT_TRUE(properties->Scroll()->PreventScrollAxisLocking());
+
+  cc_scroll_node = scroll_tree.FindNodeFromElementId(element_id);
+  EXPECT_TRUE(cc_scroll_node->prevent_scroll_axis_locking);
 }
 
 }  // namespace blink

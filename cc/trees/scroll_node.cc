@@ -53,6 +53,7 @@ void ScrollNode::AsValueInto(base::trace_event::TracedValue* value) const {
     }
   }
 
+  value->SetBoolean("prevent_scroll_axis_locking", prevent_scroll_axis_locking);
   value->SetBoolean("is_composited", is_composited);
 }
 

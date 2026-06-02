@@ -43,7 +43,8 @@ PaintPropertyChangeType ScrollPaintPropertyNode::State::ComputeChange(
       main_thread_repaint_reasons != other.main_thread_repaint_reasons ||
       compositor_element_id != other.compositor_element_id ||
       overscroll_behavior != other.overscroll_behavior ||
-      snap_container_data != other.snap_container_data) {
+      snap_container_data != other.snap_container_data ||
+      prevent_scroll_axis_locking != other.prevent_scroll_axis_locking) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
   return PaintPropertyChangeType::kUnchanged;
@@ -106,6 +107,10 @@ std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
   if (state_.overscroll_behavior.y != cc::OverscrollBehavior::Type::kAuto) {
     json->SetString("overscroll-behavior-y", OverscrollBehaviorTypeToString(
                                                  state_.overscroll_behavior.y));
+  }
+
+  if (state_.prevent_scroll_axis_locking) {
+    json->SetBoolean("preventScrollAxisLock", true);
   }
 
   if (state_.snap_container_data) {

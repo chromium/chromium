@@ -59,6 +59,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
     Member<const ClipPaintPropertyNode> overflow_clip_node;
     bool user_scrollable_horizontal = false;
     bool user_scrollable_vertical = false;
+    bool prevent_scroll_axis_locking = false;
 
     // This bit tells the compositor whether the inner viewport should be
     // scrolled using the full viewport mechanism (overscroll, top control
@@ -166,6 +167,9 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
   }
   bool MaxScrollOffsetAffectedByPageScale() const {
     return state_.max_scroll_offset_affected_by_page_scale;
+  }
+  bool PreventScrollAxisLocking() const {
+    return state_.prevent_scroll_axis_locking;
   }
   CompositedScrollingPreference GetCompositedScrollingPreference() const {
     return state_.composited_scrolling_preference;

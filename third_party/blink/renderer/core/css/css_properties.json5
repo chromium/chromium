@@ -5399,6 +5399,7 @@
       default_value: "auto",
       typedom_types: ["Keyword"],
       runtime_flag: "ScrollAxisLock",
+      invalidate: ["compositing"],
     },
     {
       name: "scroll-target-group",
