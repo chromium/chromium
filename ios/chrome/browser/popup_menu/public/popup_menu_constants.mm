@@ -52,6 +52,8 @@ NSString* const kToolsMenuNewTabGroupId = @"kToolsMenuNewTabGroupId";
 NSString* const kToolsMenuMoveTabToGroupId = @"kToolsMenuMoveTabToGroupId";
 NSString* const kToolsMenuAddTabToGroupId = @"kToolsMenuAddTabToGroupId";
 NSString* const kToolsMenuShareId = @"kToolsMenuShareId";
+NSString* const kToolsMenuSigninId = @"kToolsMenuSigninId";
+NSString* const kToolsMenuIdentityId = @"kToolsMenuIdentityId";
 
 const CGFloat kSelectedItemBackgroundAlpha = 0.05;
 const CGFloat kHighlightAnimationDuration = 0.5;

@@ -26,6 +26,7 @@ swift_source_set("ui_swift") {
     "overflow_menu_footer.swift",
     "overflow_menu_footer_row.swift",
     "overflow_menu_hosting_controller.swift",
+    "overflow_menu_identity_row.swift",
     "overflow_menu_item.swift",
     "overflow_menu_list_style.swift",
     "overflow_menu_model.swift",
