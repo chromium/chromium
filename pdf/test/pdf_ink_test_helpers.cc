@@ -113,4 +113,50 @@ void PrintTo(const InkTextInfo& info, std::ostream* os) {
       << "\n}";
 }
 
+void PrintTo(const InkTextBoxAttributes& info, std::ostream* os) {
+  std::string_view typeface;
+  switch (info.typeface) {
+    case TextTypeface::kSansSerif:
+      typeface = "Sans Serif (0)";
+      break;
+    case TextTypeface::kSerif:
+      typeface = "Serif (1)";
+      break;
+    case TextTypeface::kMonospace:
+      typeface = "Monospace (2)";
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  std::string_view alignment;
+  switch (info.alignment) {
+    case TextAlignment::kLeft:
+      alignment = "Left (0)";
+      break;
+    case TextAlignment::kCenter:
+      alignment = "Center (1)";
+      break;
+    case TextAlignment::kRight:
+      alignment = "Right (2)";
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  const SkColor color = info.color;
+  *os << "{" << "\n"
+      << "\t" << "rect=" << info.rect.ToString() << ",\n"
+      << "\t" << "color (RGBA)=(" << SkColorGetR(color) << ", "
+      << SkColorGetG(color) << ", " << SkColorGetB(color) << ", "
+      << SkColorGetA(color) << "),\n"
+      << "\t" << "css_font_size=" << info.css_font_size << ",\n"
+      << "\t" << "typeface=" << typeface << ",\n"
+      << "\t" << "alignment=" << alignment << ",\n"
+      << "\t" << "orientation=" << info.orientation << ",\n"
+      << "\t" << "is_bold=" << base::ToString(info.is_bold) << ", "
+      << "\t" << "is_italic=" << base::ToString(info.is_italic) << ",\n"
+      << "\t" << "text=" << info.text << "\n}";
+}
+
 }  // namespace chrome_pdf

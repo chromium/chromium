@@ -96,7 +96,15 @@ MATCHER_P9(InkTextBoxAttributesEq,
            is_bold,
            is_italic,
            text,
-           "matches InkTextBoxAttributes") {
+           testing::PrintToString(InkTextBoxAttributes(rect,
+                                                       color,
+                                                       css_font_size,
+                                                       typeface,
+                                                       alignment,
+                                                       orientation,
+                                                       /*is_bold=*/is_bold,
+                                                       /*is_italic=*/is_italic,
+                                                       text))) {
   return arg.rect == rect && arg.color == color &&
          arg.css_font_size == css_font_size && arg.typeface == typeface &&
          arg.alignment == alignment && arg.orientation == orientation &&
@@ -121,6 +129,7 @@ MATCHER_P5(InkTextInfoEq,
 }
 
 void PrintTo(const InkTextInfo& info, std::ostream* os);
+void PrintTo(const InkTextBoxAttributes& info, std::ostream* os);
 
 // Generate the path for test files specific to Ink.
 base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename);
