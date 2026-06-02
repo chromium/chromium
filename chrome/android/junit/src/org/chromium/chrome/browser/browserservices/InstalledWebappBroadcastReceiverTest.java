@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,13 +71,14 @@ public class InstalledWebappBroadcastReceiverTest {
         Intent intent = new Intent();
         intent.putExtra(Intent.EXTRA_UID, id);
         intent.setAction(action);
+        intent.setData(Uri.parse("package:com.package"));
         return intent;
     }
 
     private void addToRegister(int id, String appName, Set<GURL> urls) {
         for (GURL gurl : urls) {
             InstalledWebappDataRegister.registerPackageForOrigin(
-                    id, appName, "com.package", gurl.getHost(), Origin.create(gurl.getSpec()));
+                    appName, "com.package", gurl.getHost(), Origin.create(gurl.getSpec()));
         }
     }
 
@@ -86,7 +88,7 @@ public class InstalledWebappBroadcastReceiverTest {
     public void chromeHoldsNoData() {
         mReceiver.onReceive(mContext, createMockIntent(12, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
-        verify(mMockStrategy, never()).execute(any(), anyInt(), anyBoolean());
+        verify(mMockStrategy, never()).execute(any(), any(), anyBoolean());
     }
 
     /** Tests the basic flow. */
@@ -102,7 +104,7 @@ public class InstalledWebappBroadcastReceiverTest {
 
         mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
-        verify(mMockStrategy).execute(any(), eq(id), eq(true));
+        verify(mMockStrategy).execute(any(), eq("com.package"), eq(true));
     }
 
     /** Tests we plumb the correct information to the {@link ClearDataDialogActivity}. */
@@ -169,6 +171,6 @@ public class InstalledWebappBroadcastReceiverTest {
         addToRegister(id, appName, urls);
 
         mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_DATA_CLEARED));
-        verify(mMockStrategy).execute(any(), eq(id), eq(false));
+        verify(mMockStrategy).execute(any(), eq("com.package"), eq(false));
     }
 }

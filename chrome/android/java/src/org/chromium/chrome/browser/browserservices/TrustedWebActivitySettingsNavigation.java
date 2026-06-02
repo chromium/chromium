@@ -6,12 +6,10 @@ package org.chromium.chrome.browser.browserservices;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
@@ -37,13 +35,10 @@ public class TrustedWebActivitySettingsNavigation {
      * to work with each of them.
      */
     public static void launchForPackageName(Context context, String packageName) {
-        Integer applicationUid = getApplicationUid(context, packageName);
-        if (applicationUid == null) return;
-
         Collection<String> domains =
-                InstalledWebappDataRegister.getDomainsForRegisteredUid(applicationUid);
+                InstalledWebappDataRegister.getDomainsForRegisteredPackage(packageName);
         Collection<String> origins =
-                InstalledWebappDataRegister.getOriginsForRegisteredUid(applicationUid);
+                InstalledWebappDataRegister.getOriginsForRegisteredPackage(packageName);
         if (domains.isEmpty() || origins.isEmpty()) {
             Log.d(TAG, "Package " + packageName + " is not associated with any origins");
             return;
@@ -60,20 +55,8 @@ public class TrustedWebActivitySettingsNavigation {
             Log.d(TAG, "WebApk " + packageName + " can't handle url " + webApkUrl);
             return;
         }
-        if (getApplicationUid(context, packageName) == null) return;
 
         openSingleWebsitePrefs(context, webApkUrl);
-    }
-
-    private static @Nullable Integer getApplicationUid(Context context, String packageName) {
-        int applicationUid;
-        try {
-            applicationUid = context.getPackageManager().getApplicationInfo(packageName, 0).uid;
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d(TAG, "Package " + packageName + " not found");
-            return null;
-        }
-        return applicationUid;
     }
 
     /** Same as above, but with list of associated origins and domains already retrieved. */

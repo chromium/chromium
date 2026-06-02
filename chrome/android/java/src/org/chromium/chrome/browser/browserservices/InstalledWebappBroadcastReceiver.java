@@ -50,13 +50,18 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
     /**
      * An Action that will trigger clearing data on local builds only, for development. The adb
      * command to trigger is:
+     *
+     * <pre>{@code
      * adb shell am broadcast \
      *   -n com.google.android.apps.chrome/\
      * org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver \
      *   -a org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver.DEBUG \
-     *   --ei android.intent.extra.UID 23
+     *   --ei android.intent.extra.UID 23 \
+     *   -d package:org.chromium.chrome.tests.twa_support
+     * }</pre>
      *
-     * But replace 23 with the uid of a Trusted Web Activity Client app.
+     * <p>Replace 23 with the uid of the app, and org.chromium.chrome.tests.twa_support with the
+     * package name.
      */
     private static final String ACTION_DEBUG =
             "org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver.DEBUG";
@@ -88,15 +93,26 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
         boolean debug = VersionInfo.isLocalBuild() && ACTION_DEBUG.equals(intent.getAction());
         if (!debug && !BROADCASTS.contains(intent.getAction())) return;
 
+        // We only care about intents that have a package name.
+        // According to Android documentation:
+        // - ACTION_PACKAGE_DATA_CLEARED:
+        // https://developer.android.com/reference/android/content/Intent#ACTION_PACKAGE_DATA_CLEARED
+        // - ACTION_PACKAGE_FULLY_REMOVED:
+        // https://developer.android.com/reference/android/content/Intent#ACTION_PACKAGE_FULLY_REMOVED
+        // The documentation cites that "The data contains the name of the package."
+        // We don't need to execute any of the code below (including checking UID) if we don't have
+        // a package name.
+        String packageName =
+                intent.getData() != null ? intent.getData().getSchemeSpecificPart() : null;
+        if (packageName == null) return;
+
         int uid = intent.getIntExtra(Intent.EXTRA_UID, -1);
         if (uid == -1) return;
 
         boolean uninstalled = Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(intent.getAction());
 
-        if (uninstalled && intent.getData() != null) {
-            String packageName = intent.getData().getSchemeSpecificPart();
-            if (packageName != null
-                    && packageName.startsWith(WebApkConstants.WEBAPK_PACKAGE_PREFIX)) {
+        if (uninstalled) {
+            if (packageName.startsWith(WebApkConstants.WEBAPK_PACKAGE_PREFIX)) {
                 // Native is likely not loaded. Defer recording UMA and UKM till the next browser
                 // launch.
                 WebApkUninstallTracker.deferRecordWebApkUninstalled(packageName);
@@ -105,38 +121,39 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
 
         // The {@link InstalledWebappDataRegister} (because it uses Preferences) is loaded
         // lazily, so to time opening the file we must include the first read as well.
-        if (!InstalledWebappDataRegister.chromeHoldsDataForPackage(uid)) {
+        if (!InstalledWebappDataRegister.chromeHoldsDataForPackage(packageName)) {
             Log.d(TAG, "Chrome holds no data for package.");
             return;
         }
 
-        mClearDataStrategy.execute(context, uid, uninstalled);
-        clearPreferences(uid, uninstalled);
+        mClearDataStrategy.execute(context, packageName, uninstalled);
+        clearPreferences(packageName, uninstalled);
     }
 
-    private void clearPreferences(int uid, boolean uninstalled) {
-        String packageName = InstalledWebappDataRegister.getPackageNameForRegisteredUid(uid);
-        assert packageName != null;
+    private void clearPreferences(String packageName, boolean uninstalled) {
         BrowserServicesStore.removeTwaDisclosureAcceptanceForPackage(packageName);
         if (uninstalled) {
-            InstalledWebappDataRegister.removePackage(uid);
+            InstalledWebappDataRegister.removePackage(packageName);
         }
     }
 
     /** Implemented as a class partially for historic reasons, partially to help testing. */
     static class ClearDataStrategy {
-        public void execute(Context context, int uid, boolean uninstalled) {
+        public void execute(Context context, String packageName, boolean uninstalled) {
             // Retrieving domains and origins ahead of time, because the register is about to be
             // cleaned up.
-            Set<String> domains = InstalledWebappDataRegister.getDomainsForRegisteredUid(uid);
-            Set<String> origins = InstalledWebappDataRegister.getOriginsForRegisteredUid(uid);
+            Set<String> domains =
+                    InstalledWebappDataRegister.getDomainsForRegisteredPackage(packageName);
+            Set<String> origins =
+                    InstalledWebappDataRegister.getOriginsForRegisteredPackage(packageName);
 
             for (String originAsString : origins) {
                 Origin origin = Origin.create(originAsString);
                 if (origin != null) PermissionUpdater.onClientAppUninstalled(origin);
             }
 
-            String appName = InstalledWebappDataRegister.getAppNameForRegisteredUid(uid);
+            String appName =
+                    InstalledWebappDataRegister.getAppNameForRegisteredPackage(packageName);
             Intent intent =
                     ClearDataDialogActivity.createIntent(
                             context, appName, domains, origins, uninstalled);
