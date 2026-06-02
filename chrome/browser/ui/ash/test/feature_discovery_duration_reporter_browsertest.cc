@@ -11,9 +11,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -155,8 +155,9 @@ IN_PROC_BROWSER_TEST_F(FeatureDiscoveryDurationReporterBrowserTest,
 
   // Fetch the cumulated time from the pref service and check it is non-zero.
   PrefService* primary_user_pref =
-      ash::ProfileHelper::Get()
-          ->GetProfileByUser(user_manager::UserManager::Get()->GetPrimaryUser())
+      Profile::FromBrowserContext(
+          BrowserContextHelper::Get()->GetBrowserContextByUser(
+              user_manager::UserManager::Get()->GetPrimaryUser()))
           ->GetPrefs();
   const base::Value* duration_value =
       primary_user_pref->GetDict("FeatureDiscoveryReporterObservedFeatures")
