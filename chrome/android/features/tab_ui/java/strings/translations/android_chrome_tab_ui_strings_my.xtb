@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="1844381456014878100">၇ ရက်ကြာ အသုံးမပြုသည့်နောက်</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{တဘ်ကို ဖတ်ရန်စာရင်းသို့ ထည့်ရန်}other{တဘ်များကို ဖတ်ရန်စာရင်းသို့ ထည့်ရန်}}</translation>
 <translation id="1909810060368225529">သတိပေးချက်- မျှဝေထားသော ဤ ‘တဘ်အုပ်စု’ ရှိ အပြောင်းအလဲများကို လူတိုင်း မြင်နိုင်သည်။ မျှဝေထားသော သင့်တဘ်အုပ်စုများကို လူတိုင်းက ပြောင်းလဲနိုင်သည်</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{တဘ်ကို ပင်ထိုးရန်}other{တဘ်များကို ပင်ထိုးရန်}}</translation>
 <translation id="1982637982196732906">အသုံးမပြုသည်များကဏ္ဍသို့ ရွှေ့ခြင်း</translation>

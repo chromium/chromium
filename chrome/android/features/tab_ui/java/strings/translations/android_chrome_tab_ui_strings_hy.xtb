@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ներդիր խմբավորվեց</translation>
 <translation id="1844381456014878100">7 օր հետո ներդիրը կդառնա ոչ ակտիվ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Ավելացնել ներդիր ընթերցանության ցանկում}one{Ավելացնել ներդիր ընթերցանության ցանկում}other{Ավելացնել ներդիրներ ընթերցանության ցանկում}}</translation>
 <translation id="1909810060368225529">Նշում․ ներդիրների ընդհանուր խմբում կատարված փոփոխությունները տեսանելի են բոլորին։ Ցանկացած օգտատեր կարող է փոփոխություններ կատարել ներդիրների ընդհանուր խմբերում</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Ամրացնել ներդիրը}one{Ամրացնել ներդիրը}other{Ամրացնել ներդիրները}}</translation>
 <translation id="1982637982196732906">Տեղափոխում ոչ ակտիվ ներդիրների բաժին</translation>

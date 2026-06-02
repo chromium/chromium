@@ -36,6 +36,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1324107359134968521">„Chromium“ reikalinga „Bluetooth“ prieiga, kad galėtų naršyti 
  „Bluetooth“ įrenginius. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Aptikti kalbą</translation>
+<translation id="1330742950061766891">Naudoti „Chromium“ rekomenduojamus naršyklės nustatymus</translation>
 <translation id="1342274909142618978">Taip pat ištrinti duomenis iš „Chromium“ (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Prisegta! Galite vėl pasiekti vaizdų paiešką naudodami naują įrankių juostos mygtuką</translation>
 <translation id="1356661055722410047">Naujiena! Galite versti ir tekstą, ir vaizdus ekrane</translation>
@@ -373,6 +374,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="5187123684706427865">Reikia iš naujo autentifikuoti „Chromium“ paskyrą</translation>
 <translation id="5231355151045086930">Atsijungimas nuo „Chromium“</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
+<translation id="5249261924633168472">Atidaryti nuorodą „Chromium“ inko&amp;gnito lange</translation>
 <translation id="5254739261293693943">Klausti apie šį vaizdo įrašą</translation>
 <translation id="5276305953263010518">Gaukite „Chromium“ programą, kad galėtumėte išsaugoti slaptažodžius keliaudami</translation>
 <translation id="5277894862589591112">Norėdami pritaikyti pakeitimus, paleiskite „Chromium“ iš naujo</translation>

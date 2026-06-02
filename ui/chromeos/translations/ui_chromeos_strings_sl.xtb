@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Samodejni imenski strežniki</translation>
 <translation id="1210831758834677569">laoščina</translation>
 <translation id="1221555006497674479">Primanjkuje prostora za shranjevanje, še <ph name="REMAINING_PERCENTAGE" /> % od <ph name="TOTAL_SPACE" /> v deljenem prostoru za shranjevanje v Googlu Drive.</translation>
+<translation id="1239594683407221485">Vsebino naprave raziščite v aplikaciji Datoteke.</translation>
 <translation id="1243314992276662751">Prenesi</translation>
 <translation id="1249250836236328755">Zvrst</translation>
 <translation id="1254593899333212300">Neposredna internetna povezava</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Ni mogoče izbrisati. Element je v uporabi.</translation>
 <translation id="1307931752636661898">Ni si mogoče ogledati datotek za Linux</translation>
 <translation id="1313405956111467313">Samodejna konfiguracija strežnika proxy</translation>
+<translation id="1340527397989195812">Varnostno kopiranje predstavnosti v napravi z aplikacijo Datoteke.</translation>
 <translation id="134645005685694099">V napravi ni dovolj prostora za shranjevanje, da bi lahko bila sinhronizacija datotek še naprej vklopljena. Nove datoteke ne bodo več samodejno sinhronizirane.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Neuporabna datoteka ali imenik.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Brez uporabniškega potrdila</translation>
 <translation id="1403008701842173542">Povsod</translation>
 <translation id="1404323374378969387">norveščina</translation>
+<translation id="1408504635543854729">Vsebino naprave raziščite z aplikacijo Datoteke. Vsebina je omejena glede na skrbnika in je ni mogoče spreminjati.</translation>
 <translation id="1412476183660741812">Podpisani spletni paket</translation>
 <translation id="1433628812591023318">Če želite spustiti datoteke v program Parallels Desktop, morate datoteko premakniti med datoteke sistema Windows.</translation>
 <translation id="1435838927755162558">Deljenje mape s programom Parallels Desktop</translation>
 <translation id="1439919885608649279">Oseba z rožami</translation>
 <translation id="1458457385801829801">Izvrzi <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Za nastavitve naprave odprite nastavitve.</translation>
 <translation id="146691674290220697">Datotek (<ph name="NUMBER_OF_FILES" />) ni bilo mogoče kopirati, ker so šifrirane.</translation>
 <translation id="1471718551822868769">slovaščina</translation>
 <translation id="1482884275703521657">finščina</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Upravljanje v Googlu Drive</translation>
 <translation id="2004942826429452291">Datoteke bodo shranjene v oblaku in tem Chromebooku.</translation>
 <translation id="2009067268969781306">Če formatirate pogon, se izbrišejo vsi podatki, shranjeni na njem. Tega dejanja ni mogoče razveljaviti.</translation>
+<translation id="2018352199541442911">Vaša zunanja naprava za shranjevanje ni podprta.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
 <translation id="2029385776150020336">angleščina (razširjena – ZDA)</translation>
 <translation id="2037845485764049925">ruščina</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagoči</translation>
 <translation id="2468470447085858632">S sinhronizacijo datotek lahko dostopate do datotek v Googlu Drive brez povezave</translation>
 <translation id="2470939964922472929">Prevečkrat ste vnesli napačno kodo PIN. Če želite nastaviti novo kodo PIN, vnesite 8-mestno osebno kodo za odblokiranje (PUK), ki jo dobite od operaterja.</translation>
+<translation id="249113932447298600">Oprostite, naprava <ph name="DEVICE_LABEL" /> še ni podprta.</translation>
 <translation id="2500392669976258912">gudžaratščina (fonetična)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Optično preberi</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">ukrajinščina</translation>
 <translation id="3326821416087822643">Stiskanje datoteke <ph name="FILE_NAME" /> ...</translation>
 <translation id="3335337277364016868">Leto snemanja</translation>
+<translation id="3348038390189153836">Zaznane zamenljive naprave</translation>
 <translation id="3353984535370177728">Izberite mapo za prenos</translation>
 <translation id="3356580349448036450">Dokončano</translation>
 <translation id="3358452157379365236">Kitara</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Profil za prenos v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">angleščina (Združeno kraljestvo)</translation>
 <translation id="3975895378829046965">bengalščina (fonetična)</translation>
+<translation id="3983764759749072418">Aplikacije iz Trgovine Play imajo dostop do te naprave.</translation>
 <translation id="3999574733850440202">Nedavno odprte datoteke Microsoftove zbirke programov so bile premaknjene v OneDrive.</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4017788180641807848">angleščina (ZDA) s tipkovnico Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Če želite dostopati do datoteke, mora biti vzpostavljena povezava z internetom.</translation>
 <translation id="4212740939091998969">Mapa z imenom »<ph name="FOLDER_NAME" />« že obstaja. Izberite drugo ime.</translation>
 <translation id="4218274196133425560">Odstranitev izjeme za gostitelja <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Odpri nastavitve</translation>
 <translation id="4261901459838235729">Googlova predstavitev</translation>
 <translation id="4277536868133419688">Filter <ph name="FILTER_NAME" /> je vklopljen.</translation>
 <translation id="4290535918735525311">1 mapa v skupni rabi z Linuxom</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Obnovljene datoteke iz Googla Drive</translation>
 <translation id="5278111733643988471">Če želite obnoviti ta element, ga povlecite v novo mapo zunaj smetnjaka. Prvotna mapa »<ph name="PARENT_FOLDER_NAME" />« za ta element je bila izbrisana.</translation>
 <translation id="5288441970121584418">Burger</translation>
+<translation id="529175790091471945">Formatiraj to napravo</translation>
 <translation id="5293615890992542006">Premikanje te datoteke blokira skrbniški pravilnik</translation>
 <translation id="5305688511332277257">Ni nameščenih</translation>
 <translation id="5317780077021120954">Shrani</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Ne uporabljaj nastavitev proxyja za te gostitelje in domene:</translation>
 <translation id="541890217011173530">soranska kurdščina s tipkovnico na angleški osnovi</translation>
 <translation id="5422221874247253874">Dostopna točka</translation>
+<translation id="5422781158178868512">Zunanje naprave za shranjevanje ni bilo mogoče prepoznati.</translation>
 <translation id="5438282218546237410">Ni rezultatov za »<ph name="SEARCH_TERM" />«.</translation>
 <translation id="5447680084201416734">Ni dovolj prostora za shranjevanje.</translation>
 <translation id="5449551289610225147">Neveljavno geslo</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">Izbranih je toliko elementov: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">nemščina (Švica)</translation>
 <translation id="5769519078756170258">Gostitelj ali domena za izključitev</translation>
+<translation id="5774295353725270860">Odpiranje aplikacije Datoteke</translation>
 <translation id="5775750595919327203">urdujščina</translation>
 <translation id="5776325638577448643">Izbriši in formatiraj</translation>
 <translation id="57838592816432529">Izklopi zvok</translation>
 <translation id="5788127256798019331">Datoteke iz Googla Play</translation>
+<translation id="5788367137662787332">Vsaj ene particije v napravi <ph name="DEVICE_LABEL" /> ni bilo mogoče vpeti.</translation>
 <translation id="5804245609861364054">kanareščina (transkripcija)</translation>
 <translation id="5814126672212206791">Vrsta povezave</translation>
 <translation id="5817397429773072584">tradicionalna kitajščina</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">islandščina</translation>
 <translation id="7229570126336867161">Potreben je EVDO</translation>
 <translation id="7230898482850090046">Skrbnik je zahteval, da izklopite nastavitev zaklepanja kartice SIM.</translation>
+<translation id="7232750842195536390">Preimenovanje ni uspelo</translation>
 <translation id="7238097264433196391">Ime pogona</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, podrobnosti</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
+<translation id="725109152065019550">Skrbnik je žal onemogočil zunanji pomnilnik v vašem računu.</translation>
 <translation id="7256405249507348194">Neprepoznana napaka: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Razpoložljive storitve</translation>
 <translation id="7291818353625820805">Želite, da se tipke ponovijo? Izklopite naglasna znamenja v nastavitvah tipkovnice</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Googlov zemljevid</translation>
 <translation id="7419668828140929293">Obnavljanje datoteke »<ph name="FILENAME" />«</translation>
 <translation id="7435577899926900307">angleščina (Dvorak – ZDA)</translation>
+<translation id="7436921188514130341">Ti šment! Napaka med preimenovanjem.</translation>
 <translation id="7458955835361612701">Ni nedavnih slik</translation>
 <translation id="7469894403370665791">Samodejno vzpostavi povezavo s tem omrežjem</translation>
 <translation id="7486315294984620427">Če želite spustiti datoteke v program Parallels Desktop, morate datoteko kopirati med datoteke sistema Windows.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Pripenjanje na polico</translation>
 <translation id="7553492409867692754">Aplikacijam za Linux dovolite dostop do datotek v mapi <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">Trenutno ste brez povezave. Sinhronizacija datotek se bo nadaljevala, ko vzpostavite internetno povezavo</translation>
+<translation id="7589461650300748890">Počasi. Previdno.</translation>
 <translation id="7589661784326793847">Počakajte trenutek</translation>
 <translation id="7600126690270271294">srbščina</translation>
 <translation id="7603724359189955920">Mreže</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Napaka pri konfiguriranju omrežja</translation>
+<translation id="7839051173341654115">Ogled/varnostno kopiranje predstavnosti</translation>
 <translation id="7839804798877833423">Za prenos teh datotek bo porabljenih približno <ph name="FILE_SIZE" /> MB mobilnih podatkov.</translation>
 <translation id="7846076177841592234">Prekliči izbor</translation>
 <translation id="7857117644404132472">Dodaj izjemo</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">poljščina</translation>
 <translation id="7874321682039004450">filipinščina</translation>
 <translation id="78946041517601018">Diski v skupni rabi</translation>
+<translation id="7897900149154324287">Preden odklopite izmenljive naprave, jih v aplikaciji Datoteke izvrzite, sicer lahko izgubite podatke.</translation>
 <translation id="7901567919203965902">angleščina (Workman – ZDA, mednarodna)</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Vsaj ene particije v zunanji napravi za shranjevanje ni bilo mogoče vpeti.</translation>
 <translation id="7908793776359722643">Če formatirate particijo, se izbrišejo vsi podatki, shranjeni na njej. Tega dejanja ni mogoče razveljaviti.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Datoteke v Mojem disku se bodo samodejno sinhronizirale s Chromebookom, tako da boste do njih lahko dostopali brez internetne povezave.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Če želite obnoviti te elemente, jih povlecite v novo mapo. Prvotne mape za nekatere od teh elementov so bile izbrisane.</translation>
 <translation id="8874184842967597500">Ni povezano</translation>
 <translation id="8876368061475701452">V čakalni vrsti</translation>
+<translation id="8893928184421379330">Naprave <ph name="DEVICE_LABEL" /> ni bilo mogoče prepoznati.</translation>
 <translation id="8902208737522818687">angleščina (za osebne računalnike – ZDA, mednarodna)</translation>
 <translation id="8903931173357132290">Prehod na običajen račun Google</translation>
 <translation id="8912078710089354287">Kuža, ki maha z repom</translation>

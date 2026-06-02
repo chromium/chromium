@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">自動名稱伺服器</translation>
 <translation id="1210831758834677569">老撾文</translation>
 <translation id="1221555006497674479">儲存空間不足，您的 <ph name="TOTAL_SPACE" /> 共用雲端硬碟儲存空間只剩 <ph name="REMAINING_PERCENTAGE" />% 可用。</translation>
+<translation id="1239594683407221485">在「檔案」應用程式中探索裝置內容。</translation>
 <translation id="1243314992276662751">上載</translation>
 <translation id="1249250836236328755">類型</translation>
 <translation id="1254593899333212300">直接連線到互聯網</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">無法刪除。項目正在使用中。</translation>
 <translation id="1307931752636661898">無法查看 Linux 檔案</translation>
 <translation id="1313405956111467313">自動 Proxy 設定</translation>
+<translation id="1340527397989195812">透過「檔案」應用程式備份裝置中的媒體。</translation>
 <translation id="134645005685694099">裝置的儲存空間不足，無法開啟檔案同步功能，因此系統將不會自動同步新檔案。</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />：<ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">檔案或目錄無法使用。</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">不使用使用者憑證</translation>
 <translation id="1403008701842173542">所有位置</translation>
 <translation id="1404323374378969387">挪威文</translation>
+<translation id="1408504635543854729">內容受管理員限制，使用者無法修改。您可以在「檔案」應用程式中探索裝置內容。</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
 <translation id="1433628812591023318">如要將檔案拖曳至 Parallels Desktop，必須先將檔案移動至 Windows 檔案中。</translation>
 <translation id="1435838927755162558">與 Parallels Desktop 共用資料夾</translation>
 <translation id="1439919885608649279">拿著花的人</translation>
 <translation id="1458457385801829801">卸載 <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">如要開啟裝置偏好設定，請前往「設定」。</translation>
 <translation id="146691674290220697">由於 <ph name="NUMBER_OF_FILES" /> 個檔案已加密，因此無法複製。</translation>
 <translation id="1471718551822868769">斯洛伐克文</translation>
 <translation id="1482884275703521657">芬蘭文</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">在「雲端硬碟」中管理</translation>
 <translation id="2004942826429452291">檔案會儲存在雲端和此 Chromebook 中。</translation>
 <translation id="2009067268969781306">格式化硬碟將刪除其中儲存的所有資料。此操作無法復原。</translation>
+<translation id="2018352199541442911">很抱歉，系統目前不支援您的外部儲存裝置。</translation>
 <translation id="2025955442973426285">蒂格里亞文</translation>
 <translation id="2029385776150020336">美式改良鍵盤</translation>
 <translation id="2037845485764049925">俄文</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">他媽哥池</translation>
 <translation id="2468470447085858632">使用檔案同步功能，在離線時存取「Google 雲端硬碟」檔案</translation>
 <translation id="2470939964922472929">您輸入錯誤 PIN 的次數過多。如要設定新 PIN，請輸入流動網絡供應商提供的 8 位數個人解鎖金鑰(PUK)。</translation>
+<translation id="249113932447298600">很抱歉，系統目前不支援 <ph name="DEVICE_LABEL" /> 裝置。</translation>
 <translation id="2500392669976258912">古吉拉特文 (拼音)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">掃瞄</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">烏克蘭文</translation>
 <translation id="3326821416087822643">正在壓縮 <ph name="FILE_NAME" />…</translation>
 <translation id="3335337277364016868">錄音年份</translation>
+<translation id="3348038390189153836">偵測到卸除式裝置</translation>
 <translation id="3353984535370177728">選取要上載的資料夾</translation>
 <translation id="3356580349448036450">完成</translation>
 <translation id="3358452157379365236">結他</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">下載流動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">英文 (英國)</translation>
 <translation id="3975895378829046965">孟加拉文 (拼音)</translation>
+<translation id="3983764759749072418">「Play 商店」應用程式可存取此裝置。</translation>
 <translation id="3999574733850440202">最近開啟的 Microsoft 檔案已移動至 OneDrive</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4017788180641807848">英文 (美國)，Workman 鍵盤</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">您必須連接網絡才能存取這個檔案。</translation>
 <translation id="4212740939091998969">名稱為「<ph name="FOLDER_NAME" />」的資料夾已經存在，請選擇其他名稱。</translation>
 <translation id="4218274196133425560">移除 <ph name="HOST_NAME" /> 的例外情況</translation>
+<translation id="4242533952199664413">開啟設定</translation>
 <translation id="4261901459838235729">Google 簡報</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" />篩選器開咗。</translation>
 <translation id="4290535918735525311">與 Linux 分享一個資料夾</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">從 Google 雲端硬碟復原檔案</translation>
 <translation id="5278111733643988471">如要還原此項目，請將項目從垃圾桶中拖曳到新資料夾。此項目的原始資料夾「<ph name="PARENT_FOLDER_NAME" />」已刪除。</translation>
 <translation id="5288441970121584418">漢堡包</translation>
+<translation id="529175790091471945">將此裝置格式化</translation>
 <translation id="5293615890992542006">管理員政策已禁止移動此檔案</translation>
 <translation id="5305688511332277257">未安裝任何憑證</translation>
 <translation id="5317780077021120954">儲存</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">不要對以下主機和網域使用 Proxy 設定：</translation>
 <translation id="541890217011173530">索拉尼庫爾德文 (英文鍵盤)</translation>
 <translation id="5422221874247253874">接入點</translation>
+<translation id="5422781158178868512">很抱歉，系統無法識別您的外部儲存裝置。</translation>
 <translation id="5438282218546237410">搵唔到同「<ph name="SEARCH_TERM" />」相符嘅結果。</translation>
 <translation id="5447680084201416734">儲存空間不足。</translation>
 <translation id="5449551289610225147">密碼無效</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">已選取 <ph name="SELECTED_FILES_COUNT" /> 個項目</translation>
 <translation id="5763377084591234761">德文 (瑞士)</translation>
 <translation id="5769519078756170258">要排除的主機或網域</translation>
+<translation id="5774295353725270860">開啟「檔案」應用程式</translation>
 <translation id="5775750595919327203">烏都文</translation>
 <translation id="5776325638577448643">清除並格式化</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5788127256798019331">Play 檔案</translation>
+<translation id="5788367137662787332">很抱歉，<ph name="DEVICE_LABEL" /> 裝置上至少有一個分割區無法掛載。</translation>
 <translation id="5804245609861364054">卡納達文 (音譯)</translation>
 <translation id="5814126672212206791">連接類型</translation>
 <translation id="5817397429773072584">繁體中文</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">冰島文</translation>
 <translation id="7229570126336867161">需要 EVDO</translation>
 <translation id="7230898482850090046">管理員已要求您關閉「鎖定 SIM 卡」設定</translation>
+<translation id="7232750842195536390">無法重新命名</translation>
 <translation id="7238097264433196391">雲端硬碟名稱</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />，詳情</translation>
 <translation id="7246947237293279874">FTP Proxy</translation>
+<translation id="725109152065019550">很抱歉，您的管理員已停用您帳戶中的外部儲存裝置。</translation>
 <translation id="7256405249507348194">無法識別的錯誤：<ph name="DESC" /></translation>
 <translation id="7268659760406822741">可用服務</translation>
 <translation id="7291818353625820805">要重複按鍵動作嗎？請在「鍵盤設定」中關閉重音符號功能</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google 地圖</translation>
 <translation id="7419668828140929293">正在還原「<ph name="FILENAME" />」</translation>
 <translation id="7435577899926900307">美式 Dvorak 鍵盤</translation>
+<translation id="7436921188514130341">很抱歉！重新命名過程中發生錯誤。</translation>
 <translation id="7458955835361612701">最近沒有任何圖片</translation>
 <translation id="7469894403370665791">自動連線至這個網絡</translation>
 <translation id="7486315294984620427">如要將檔案拖曳至 Parallels Desktop，必須先將檔案複製到 Windows 檔案中。</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">固定至捷徑列</translation>
 <translation id="7553492409867692754">允許 Linux 應用程式存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
 <translation id="7555339735447658365">目前為離線狀態，系統會在連接互聯網後繼續同步檔案</translation>
+<translation id="7589461650300748890">噢，請注意！</translation>
 <translation id="7589661784326793847">請稍候片刻</translation>
 <translation id="7600126690270271294">塞爾維亞文</translation>
 <translation id="7603724359189955920">網格</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">設定網絡時發生錯誤</translation>
+<translation id="7839051173341654115">查看/備份媒體</translation>
 <translation id="7839804798877833423">擷取這些檔案大約會使用 <ph name="FILE_SIZE" /> 流動數據流量。</translation>
 <translation id="7846076177841592234">取消選取</translation>
 <translation id="7857117644404132472">新增例外情況</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">波蘭文</translation>
 <translation id="7874321682039004450">菲律賓文</translation>
 <translation id="78946041517601018">共用的雲端硬碟</translation>
+<translation id="7897900149154324287">以後請務必先從「檔案」應用程式中退出卸除式裝置，然後再拔出，以免遺失數據。</translation>
 <translation id="7901567919203965902">美式 Workman 國際</translation>
 <translation id="7903984238293908205">片假名</translation>
+<translation id="7908378463497120834">很抱歉，您的外部儲存裝置上至少有一個分區無法掛載。</translation>
 <translation id="7908793776359722643">格式化分割將清除其中儲存的所有資料。此操作無法復原。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣您便可在離線的情況下存取檔案。</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">如要還原這些項目，請將項目拖曳到新資料夾。部分項目的原始資料夾已刪除。</translation>
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8876368061475701452">已排入序列</translation>
+<translation id="8893928184421379330">很抱歉，系統無法識別 <ph name="DEVICE_LABEL" /> 裝置。</translation>
 <translation id="8902208737522818687">美式國際鍵盤 (PC)</translation>
 <translation id="8903931173357132290">畢業生</translation>
 <translation id="8912078710089354287">搖尾巴的狗</translation>

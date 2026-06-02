@@ -35,6 +35,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="132092532143527429">Vyskúšať s Gemini v prehliadači Chromium</translation>
 <translation id="1324107359134968521">Chromium potrebuje na preskúmanie zariadení s rozhraním Bluetooth prístup k rozhraniu Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Rozpoznať jazyk</translation>
+<translation id="1330742950061766891">Používajte odporúčané nastavenia prehliadača Chromium</translation>
 <translation id="1342274909142618978">Odstrániť aj údaje z prehliadača Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Pripnuté! K vyhľadávaniu podľa obrázkov máte opäť prístup pomocou nového tlačidla na paneli s nástrojmi.</translation>
 <translation id="1356661055722410047">Novinka! Môžete prekladať text aj obrázky na obrazovke.</translation>
@@ -372,6 +373,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5187123684706427865">Účet Chromium vyžaduje opätovné overenie</translation>
 <translation id="5231355151045086930">Odhlásenie sa z prehliadača Chromium</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
+<translation id="5249261924633168472">Otvoriť odkaz v okne inko&amp;gnito prehliadača Chromium</translation>
 <translation id="5254739261293693943">Spýtať sa otázku o tomto videu</translation>
 <translation id="5276305953263010518">Získajte aplikáciu Chromium a ukladajte si heslá kdekoľvek</translation>
 <translation id="5277894862589591112">Ak chcete zmeny použiť, spustite Chromium znova</translation>

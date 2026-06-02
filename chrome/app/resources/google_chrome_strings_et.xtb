@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Allalaadimine ...</translation>
 <translation id="1651617469580841801">Kui kasutate Google Lensi, saadetakse lehe pealkiri, URL ja sisu (sh PDF-id) Google'ile. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Teave Chrome OS Flexi kohta</translation>
+<translation id="1665867022636014702">Kasutage Google'i soovitatud brauseriseadeid</translation>
 <translation id="1674870198290878346">Ava link Chrome'i inko&amp;gnito aknas</translation>
 <translation id="1682634494516646069">Google Chrome ei saa andmekataloogi lugeda ega sellesse kirjutada:
 
@@ -240,6 +241,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="345171907106878721">Lisa Chrome'i</translation>
 <translation id="3453763134178591239">Chrome OS-i tingimused</translation>
 <translation id="3503306920980160878">Chrome vajab juurdepääsu teie asukohale, et seda selle saidiga jagada</translation>
+<translation id="3539955434060988644">Ava link Chrome'i inko&amp;gnito aknas</translation>
 <translation id="3576528680708590453">Teie süsteemiadministraator on konfigureerinud Google Chrome'i avama alternatiivset brauserit, et saada juurdepääs lehele <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sünkroonige ja isikupärastage Chrome kõigis oma seadmetes</translation>
 <translation id="3583751698304738917">Olete juba ühel teisel Chrome'i profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" /> sisse logitud</translation>

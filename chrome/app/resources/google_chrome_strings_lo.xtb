@@ -67,6 +67,7 @@
 <translation id="1640672724030957280">ກຳລັງດາວໂຫຼດ...</translation>
 <translation id="1651617469580841801">ເມື່ອທ່ານໃຊ້ Google Lens, ລະບົບຈະສົ່ງຊື່ໜ້າ, URL ແລະ ເນື້ອຫາ, ຮວມທັງ PDF ໄປຫາ Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ກ່ຽວກັບ ChromeOS Flex</translation>
+<translation id="1665867022636014702">ໃຊ້ການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບທີ່ Google ແນະນຳ</translation>
 <translation id="1674870198290878346">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chrome</translation>
 <translation id="1682634494516646069">Google Chrome ບໍ່ສາມາດອ່ານ ແລະຂຽນໄປໃສ່ໄດເຣັກຕໍຣີຂໍ້ມູນຂອງມັນ:
 
@@ -242,6 +243,7 @@
 <translation id="345171907106878721">ເພີ່ມທ່ານເອງໃສ່ Chrome</translation>
 <translation id="3453763134178591239">ຂໍ້ກຳນົດ ChromeOS</translation>
 <translation id="3503306920980160878">Chrome ຕ້ອງການເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານເພື່ອແບ່ງປັນສະຖານທີ່ຂອງທ່ານກັບເວັບໄຊນີ້</translation>
+<translation id="3539955434060988644">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chrome</translation>
 <translation id="3576528680708590453">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ກຳນົດຄ່າໃຫ້ Google Chrome ເປີດໂປຣແກຣມທ່ອງເວັບສຳຮອງເພື່ອເຂົ້າເຖິງ <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">ຊິ້ງຂໍ້ມູນ ແລະ ປັບແຕ່ງ Chrome ໃຫ້ເປັນແບບສ່ວນຕົວໃນທົ່ວອຸປະກອນຂອງທ່ານ</translation>
 <translation id="3583751698304738917">ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="USER_EMAIL_ADDRESS" /> ໃນໂປຣໄຟລ໌ Chrome ອື່ນຢູ່ກ່ອນແລ້ວ</translation>

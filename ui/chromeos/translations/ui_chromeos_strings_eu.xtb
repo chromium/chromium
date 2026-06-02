@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Izen-zerbitzari automatikoak</translation>
 <translation id="1210831758834677569">Laostarra</translation>
 <translation id="1221555006497674479">Biltegiratze gutxi gelditzen da: % <ph name="REMAINING_PERCENTAGE" /> gelditzen zaizu unitate partekatuaren <ph name="TOTAL_SPACE" />-ko biltegian.</translation>
+<translation id="1239594683407221485">Arakatu gailuko edukia Fitxategiak aplikazioan.</translation>
 <translation id="1243314992276662751">Kargatu</translation>
 <translation id="1249250836236328755">Generoa</translation>
 <translation id="1254593899333212300">Interneteko konexio zuzena</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Ezin da ezabatu. Elementua erabiltzen ari da.</translation>
 <translation id="1307931752636661898">Ezin dira ikusi Linux fitxategiak</translation>
 <translation id="1313405956111467313">Proxy-konfigurazio automatikoa</translation>
+<translation id="1340527397989195812">Egin gailuko baliabideen babeskopiak Fitxategiak aplikazioa erabilita.</translation>
 <translation id="134645005685694099">Gailuak ez dauka biltegian fitxategiak sinkronizatzeko aukera aktibatuta mantentzeko behar adina toki. Hemendik aurrera, fitxategi berriak ez dira automatikoki sinkronizatuko.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Ezin da fitxategia edo direktorioa erabili.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Ez erabili erabiltzaile-ziurtagiririk</translation>
 <translation id="1403008701842173542">Edonon</translation>
 <translation id="1404323374378969387">Norvegiarra</translation>
+<translation id="1408504635543854729">Arakatu gailuko eduki guztia Fitxategiak aplikazioan. Edukiaren inguruko aukerak murriztuta daude: administratzaileak bakarrik egin ditzake aldaketak.</translation>
 <translation id="1412476183660741812">Sinatutako web-sorta</translation>
 <translation id="1433628812591023318">Fitxategiak Parallels Desktop-en jaregin ahal izateko, Windows-eko fitxategien karpetara eraman behar dira lehendabizi.</translation>
 <translation id="1435838927755162558">Partekatu karpeta Parallels Desktop aplikazioarekin</translation>
 <translation id="1439919885608649279">Pertsona bat loreekin</translation>
 <translation id="1458457385801829801">Kanporatu <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Gailuaren hobespenak ikusteko, joan Ezarpenak atalera.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fitxategi ezin izan dira kopiatu, enkriptatuta daudelako.</translation>
 <translation id="1471718551822868769">Eslovakiarra</translation>
 <translation id="1482884275703521657">Finlandiarra</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Kudeatu Drive-n</translation>
 <translation id="2004942826429452291">Fitxategiak hodeian eta Chromebook honetan gordeko dira.</translation>
 <translation id="2009067268969781306">Unitatea formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza hori.</translation>
+<translation id="2018352199541442911">Kanpoko biltegiratze-gailua ez da bateragarria oraingoz.</translation>
 <translation id="2025955442973426285">Tigrinyarra</translation>
 <translation id="2029385776150020336">Estatubatuar hedatua</translation>
 <translation id="2037845485764049925">Errusiarra</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470447085858632">Google Drive-ko fitxategiak konexiorik gabe atzitzeko, sinkronizatu fitxategiak</translation>
 <translation id="2470939964922472929">PINa gehiegitan idatzi da oker. Beste PIN bat konfiguratzeko, idatzi operadoreak emandako zortzi digituko desblokeatzeko gako pertsonala (PUKa).</translation>
+<translation id="249113932447298600"><ph name="DEVICE_LABEL" /> gailua ez da bateragarria une honetan.</translation>
 <translation id="2500392669976258912">Gujaratar fonetikoa</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Bilatu</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukrainarra</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> konprimatzen…</translation>
 <translation id="3335337277364016868">Grabaketaren urtea</translation>
+<translation id="3348038390189153836">Gailu aldagarria hauteman da</translation>
 <translation id="3353984535370177728">Hautatu kargatu nahi duzun karpeta</translation>
 <translation id="3356580349448036450">Osatuta</translation>
 <translation id="3358452157379365236">Gitarra</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Deskargatu mugikorreko profila, <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" /> sare, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Ingelesa (Erresuma Batua)</translation>
 <translation id="3975895378829046965">Bengalar fonetikoa</translation>
+<translation id="3983764759749072418">Google Play Store-ko aplikazioek gailu hau erabiltzeko baimena dute.</translation>
 <translation id="3999574733850440202">Duela gutxi irekitako Microsoft-eko fitxategiak OneDrive-ra eraman dira</translation>
 <translation id="4002066346123236978">Izena</translation>
 <translation id="4017788180641807848">Ingelesa (AEB), Workman teklatuarekin</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Fitxategia atzitzeko, konektatuta egon behar duzu.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" izena duen karpeta bazegoen lehendik ere. Aukeratu beste izen bat.</translation>
 <translation id="4218274196133425560">Kendu <ph name="HOST_NAME" /> webgunearen salbuespena</translation>
+<translation id="4242533952199664413">Ireki ezarpenak</translation>
 <translation id="4261901459838235729">Google aurkezpena</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> iragazkia aktibo dago.</translation>
 <translation id="4290535918735525311">Karpeta bat partekatu da Linux erabilita</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Google Drive-tik berreskuratutako fitxategiak</translation>
 <translation id="5278111733643988471">Elementua leheneratzeko, arrasta ezazu zaborrontzitik kanpoko beste karpeta batera. Elementu horren jatorrizko karpeta (<ph name="PARENT_FOLDER_NAME" />) ezabatu egin da.</translation>
 <translation id="5288441970121584418">Hanburgesa</translation>
+<translation id="529175790091471945">Formateatu gailua</translation>
 <translation id="5293615890992542006">Administratzailearen gidalerroek ez dute uzten fitxategi hau mugitzen</translation>
 <translation id="5305688511332277257">Ez dago ziurtagiririk instalatuta</translation>
 <translation id="5317780077021120954">Gorde</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Ez erabili proxy-ezarpenak ostalari eta domeinu hauetan:</translation>
 <translation id="541890217011173530">Soraniarra, ingelesean oinarritutako teklatuarekin</translation>
 <translation id="5422221874247253874">Sarbide-puntua</translation>
+<translation id="5422781158178868512">Ezin izan da ezagutu kanpoko biltegiratze-gailua.</translation>
 <translation id="5438282218546237410">Ez dago "<ph name="SEARCH_TERM" />" bilaketaren emaitzarik.</translation>
 <translation id="5447680084201416734">Ez dago behar adina toki biltegian.</translation>
 <translation id="5449551289610225147">Pasahitzak ez du balio</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementu hautatu dira</translation>
 <translation id="5763377084591234761">Alemana (Suitza)</translation>
 <translation id="5769519078756170258">Kanpoan utzi beharreko ostalaria edo domeinua</translation>
+<translation id="5774295353725270860">Ireki Fitxategiak aplikazioa</translation>
 <translation id="5775750595919327203">Urdua</translation>
 <translation id="5776325638577448643">Ezabatu eduki guztia eta formatea ezazu</translation>
 <translation id="57838592816432529">Desaktibatu audioa</translation>
 <translation id="5788127256798019331">Google Play-ko fitxategiak</translation>
+<translation id="5788367137662787332">Ezin izan da muntatu <ph name="DEVICE_LABEL" /> gailuaren partizio bat edo gehiago.</translation>
 <translation id="5804245609861364054">Kannadaren transliterazioa</translation>
 <translation id="5814126672212206791">Konexio mota</translation>
 <translation id="5817397429773072584">Txinatar tradizionala</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Islandiarra</translation>
 <translation id="7229570126336867161">EvDO behar da</translation>
 <translation id="7230898482850090046">Administratzaileak "Blokeatu SIMa" ezarpena desaktibatzeko eskatu dizu</translation>
+<translation id="7232750842195536390">Ezin izan da aldatu izena</translation>
 <translation id="7238097264433196391">Unitatearen izena</translation>
 <translation id="7238643356913091553">Xehetasunak (<ph name="NETWORK_NAME" />)</translation>
 <translation id="7246947237293279874">FTP proxya</translation>
+<translation id="725109152065019550">Administratzaileak kanpoko memoria kontu honetan erabiltzeko aukera desgaitu du.</translation>
 <translation id="7256405249507348194">Errore ezezaguna: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Zerbitzu erabilgarriak</translation>
 <translation id="7291818353625820805">Teklak errepikatzea nahi duzu? Desaktibatu azentu-markak teklatuaren ezarpenetan.</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google mapa</translation>
 <translation id="7419668828140929293"><ph name="FILENAME" /> leheneratzen</translation>
 <translation id="7435577899926900307">Dvorak estatubatuarra</translation>
+<translation id="7436921188514130341">Errore bat gertatu da izena aldatzean.</translation>
 <translation id="7458955835361612701">Ez dago azkenaldiko irudirik</translation>
 <translation id="7469894403370665791">Konektatu automatikoki sare honetara</translation>
 <translation id="7486315294984620427">Fitxategiak Parallels Desktop-en jaregin ahal izateko, Windows-eko fitxategien karpetan kopiatu behar dira lehendabizi.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Ainguratu apalean</translation>
 <translation id="7553492409867692754">Eman <ph name="FOLDER_NAME" /> karpetako fitxategiak erabiltzeko baimena Linux-eko aplikazioei</translation>
 <translation id="7555339735447658365">Ez zaude konektatuta. Internetera konektatzen zarenean berrekingo zaio fitxategien sinkronizazioari.</translation>
+<translation id="7589461650300748890">Ene! Kontuz ibili.</translation>
 <translation id="7589661784326793847">Itxaron unetxo batean</translation>
 <translation id="7600126690270271294">Serbiarra</translation>
 <translation id="7603724359189955920">Saretak</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Errore bat gertatu da sarea konfiguratzean</translation>
+<translation id="7839051173341654115">Ikusi baliabideak eta egin baliabideen babeskopiak</translation>
 <translation id="7839804798877833423">Fitxategi horiek eskuratzeko, mugikorreko datuen <ph name="FILE_SIZE" /> erabiliko dira.</translation>
 <translation id="7846076177841592234">Utzi hautapena bertan behera</translation>
 <translation id="7857117644404132472">Gehitu salbuespena</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Poloniarra</translation>
 <translation id="7874321682039004450">Filipinarra</translation>
 <translation id="78946041517601018">Unitate partekatuak</translation>
+<translation id="7897900149154324287">Aurrerantzean, gailu aldagarria desentxufatu aurretik, egiaztatu Fitxategiak aplikaziotik kanporatzen duzula. Bestela, baliteke datuak galtzea.</translation>
 <translation id="7901567919203965902">Nazioarteko Workman estatubatuarra</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Ezin izan da muntatu kanpoko biltegiratze-gailuaren partizio bat edo gehiago.</translation>
 <translation id="7908793776359722643">Partizio bat formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Nire unitatea ataleko fitxategiak Chromebook-arekin automatikoki sinkronizatuko dira, Interneteko konexiorik gabe atzitu ahal izan ditzazun.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Elementuak leheneratzeko, arrasta itzazu beste karpeta batera. Elementu horietako batzuen jatorrizko karpetak ezabatu egin dira.</translation>
 <translation id="8874184842967597500">Konektatu gabe</translation>
 <translation id="8876368061475701452">Ilaran</translation>
+<translation id="8893928184421379330">Ezin izan da ezagutu <ph name="DEVICE_LABEL" /> gailua.</translation>
 <translation id="8902208737522818687">Nazioarteko estatubatuarra (PCrako)</translation>
 <translation id="8903931173357132290">Graduduna</translation>
 <translation id="8912078710089354287">Buztanari eragiten ari dion txakurra</translation>

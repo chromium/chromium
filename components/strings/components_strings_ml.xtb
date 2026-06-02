@@ -875,6 +875,7 @@
 <translation id="2354001756790975382">മറ്റ് ബുക്‌മാര്‍ക്കുകള്‍</translation>
 <translation id="2355395290879513365">നിങ്ങൾ ഈ സൈറ്റിൽ തിരയുന്ന ചിത്രങ്ങൾ കാണാനും അവയിൽ മാറ്റം വരുത്തി നിങ്ങളെ കബളിപ്പിക്കാനും അക്രമകാരികൾക്ക് കഴിഞ്ഞേക്കാം.</translation>
 <translation id="2356941001189392209">ലെഗസി ടെക്‌നോളജി ഇവന്റുകൾ നടക്കുന്ന, നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കളുടെ പരിമിതമായ ലിസ്‌റ്റ്</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{ഒരു ടാബ് പങ്കിടും}other{{NUM_TABS} ടാബുകൾ പങ്കിടും}}</translation>
 <translation id="2357481397660644965">നിങ്ങളുടെ ഉപകരണം <ph name="DEVICE_MANAGER" />-ഉം അക്കൗണ്ട് <ph name="ACCOUNT_MANAGER" />-ഉം മാനേജ് ചെയ്യുന്നു.</translation>
 <translation id="2359629602545592467">ഒന്നിലധികം</translation>
 <translation id="2359808026110333948">തുടരുക</translation>

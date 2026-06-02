@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">સ્વયંચાલિત નામ સર્વર્સ</translation>
 <translation id="1210831758834677569">લાઓ</translation>
 <translation id="1221555006497674479">સ્ટોરેજ ઓછો છે, શેર કરેલી ડ્રાઇવના તમારા <ph name="TOTAL_SPACE" /> સ્ટોરેજમાંથી <ph name="REMAINING_PERCENTAGE" />% બાકી છે.</translation>
+<translation id="1239594683407221485">Files ઍપમાં ડિવાઇસના કન્ટેન્ટ વિશે શોધખોળ કરો.</translation>
 <translation id="1243314992276662751">અપલોડ કરો</translation>
 <translation id="1249250836236328755">શૈલી</translation>
 <translation id="1254593899333212300">ડાયરેક્ટ ઇન્ટરનેટ કનેક્શન</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">ડિલીટ કરી શકતા નથી. આઇટમનો ઉપયોગ ચાલુ છે.</translation>
 <translation id="1307931752636661898">Linux ફાઇલો બતાવી શકાતી નથી</translation>
 <translation id="1313405956111467313">ઑટોમૅટિક પ્રૉક્સી ગોઠવણ</translation>
+<translation id="1340527397989195812">Files ઍપનો ઉપયોગ કરીને ડિવાઇસથી મીડિયાનો બૅકઅપ લો.</translation>
 <translation id="134645005685694099">તમારા ડિવાઇસમાં ફાઇલ સિંક કરવાનું ચાલુ રાખવા માટે પર્યાપ્ત સ્ટોરેજ સ્પેસ નથી. નવી ફાઇલો હવેથી ઑટોમૅટિક રીતે સિંક થશે નહીં.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ફાઇલ કે ડિરેક્ટરી ઉપયોગ યોગ્ય નથી.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">કોઈ વપરાશકર્તા પ્રમાણપત્ર નથી</translation>
 <translation id="1403008701842173542">ગમે ત્યાં</translation>
 <translation id="1404323374378969387">નૉર્વેજીયન</translation>
+<translation id="1408504635543854729">Files ઍપમાં ડિવાઇસના કન્ટેન્ટમાં નવું શોધો. કન્ટેન્ટ ઍડમિન દ્વારા પ્રતિબંધિત છે અને બદલી શકાતું નથી.</translation>
 <translation id="1412476183660741812">સહી કરેલું વેબ બંડલ</translation>
 <translation id="1433628812591023318">ફાઇલોને Parallels Desktopમાં મૂકવા માટે, ફાઇલને Windows ફાઇલોમાં ખસેડવી આવશ્યક છે.</translation>
 <translation id="1435838927755162558">Parallels ડેસ્કટૉપ સાથે ફોલ્ડર શેર કરો</translation>
 <translation id="1439919885608649279">ફૂલો લઈને ઉભેલી વ્યક્તિ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />ને બહાર કાઢો</translation>
+<translation id="1464781208867302907">ડિવાઇસની પસંદગીઓ માટે, સેટિંગ પર જાઓ.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ફાઇલને કૉપિ કરી શકાઈ નથી કારણ કે તે એન્ક્રિપ્ટેડ છે.</translation>
 <translation id="1471718551822868769">સ્લોવાક</translation>
 <translation id="1482884275703521657">ફિનિશ</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">ડ્રાઇવમાં મેનેજ કરો</translation>
 <translation id="2004942826429452291">ફાઇલો ક્લાઉડમાં અને આ Chromebookમાં સ્ટોર કરવામાં આવશે.</translation>
 <translation id="2009067268969781306">ડ્રાઇવને ફોર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ડિલીટ થઈ જશે. આ છેલ્લા ફેરફારને રદ કરી શકાતો નથી.</translation>
+<translation id="2018352199541442911">માફ કરશો, આ સમયે તમારા બાહ્ય ઉપકરણને સપોર્ટ નથી.</translation>
 <translation id="2025955442973426285">ટિગ્રિન્યા</translation>
 <translation id="2029385776150020336">યુએસ એક્સટેન્ડેડ</translation>
 <translation id="2037845485764049925">રશિયન</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">ટેમાગોચી</translation>
 <translation id="2468470447085858632">ફાઇલ સિંક કરવાની સાથે તમારી Google Driveમાની ફાઇલોને ઑફલાઇન ઍક્સેસ કરો</translation>
 <translation id="2470939964922472929">ઘણી બધી વખત ખોટો પિન દાખલ કર્યો છે. નવો પિન સેટઅપ કરવા માટે, તમારા મોબાઇલ ઑપરેટરે આપેલો 8-અંકનો પર્સનલ અનબ્લૉકિંગ કી (PUK) દાખલ કરો.</translation>
+<translation id="249113932447298600">માફ કરશો, આ સમયે ઉપકરણ <ph name="DEVICE_LABEL" /> ને સપોર્ટ નથી.</translation>
 <translation id="2500392669976258912">ગુજરાતી ફોનેટિક</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">સ્કૅન કરો</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">યુક્રેનિયન</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> ને ઝિપ કરી રહ્યું છે...</translation>
 <translation id="3335337277364016868">રેકોર્ડ કર્યાનું વર્ષ</translation>
+<translation id="3348038390189153836">કાઢી નાખવા યોગ્ય ઉપકરણ મળ્યું</translation>
 <translation id="3353984535370177728">અપલોડ કરવા માટે એક ફોલ્ડર પસંદ કરો</translation>
 <translation id="3356580349448036450">પૂર્ણ</translation>
 <translation id="3358452157379365236">ગિટાર</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />ના નેટવર્ક <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> મોબાઇલ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="3973925058222872294">અંગ્રેજી (યુકે)</translation>
 <translation id="3975895378829046965">બંગાળી ફોનેટિક</translation>
+<translation id="3983764759749072418">Play Store ઍપ્લિકેશનોને આ ડિવાઇસ માટે ઍક્સેસ છે.</translation>
 <translation id="3999574733850440202">તાજેતરમાં ખોલવામાં આવેલી Microsoft ફાઇલો OneDrive પર ખસેડવામાં આવી છે</translation>
 <translation id="4002066346123236978">શીર્ષક</translation>
 <translation id="4017788180641807848">અંગ્રેજી (યુએસ), વર્કમેન કીબોર્ડ સાથે</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">આ ફાઇલ એક્સેસ કરવા તમારું ઑનલાઇન હોું જરૂરી છે.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" નામનું ફોલ્ડર પહેલાંથી અસ્તિત્વમાં છે. કૃપા કરીને કોઈ અલગ નામ પસંદ કરો.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> માટે અપવાદ કાઢી નાખો</translation>
+<translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="4261901459838235729">Google પ્રસ્તુતિ</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> ફિલ્ટર ચાલુ છે.</translation>
 <translation id="4290535918735525311">Linux વડે શેર કરેલું 1 ફોલ્ડર</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Google Driveમાંથી રિકવર કરેલી ફાઇલો</translation>
 <translation id="5278111733643988471">આ આઇટમને રિસ્ટોર કરવા માટે, તેને ટ્રેશની બહાર કોઈ નવા ફોલ્ડર પર ખેંચો. આ આઇટમ માટેનું ઑરિજિનલ ફોલ્ડર "<ph name="PARENT_FOLDER_NAME" />" ડિલીટ કરવામાં આવ્યું છે.</translation>
 <translation id="5288441970121584418">બર્ગર</translation>
+<translation id="529175790091471945">આ ઉપકરણને ફોર્મેટ કરો</translation>
 <translation id="5293615890992542006">ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર આ ફાઇલ ખસેડવાનું બ્લૉક કરેલું છે</translation>
 <translation id="5305688511332277257">કશું ઇન્સ્ટોલ કરેલું નથી</translation>
 <translation id="5317780077021120954">સાચવો</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">આ હોસ્ટ અને ડોમેન માટે પ્રૉક્સી સેટિંગનો ઉપયોગ કરશો નહીંં:</translation>
 <translation id="541890217011173530">સોરાની કુર્દિશ, અંગ્રેજી-આધારિત કીબોર્ડ સાથે</translation>
 <translation id="5422221874247253874">ઍક્સેસ પૉઇન્ટ</translation>
+<translation id="5422781158178868512">માફ કરશો, તમારો બાહ્ય સ્ટોરેજ ઉપકરણ ઓળખી શકાયું નથી.</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> માટે કોઈ પરિણામ નથી.</translation>
 <translation id="5447680084201416734">પૂરતું સ્ટોરેજ નથી.</translation>
 <translation id="5449551289610225147">અમાન્ય પાસવર્ડ</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> આઇટમ પસંદ કરી</translation>
 <translation id="5763377084591234761">જર્મન (સ્વિટ્ઝર્લૅન્ડ)</translation>
 <translation id="5769519078756170258">બાકાત કરવા માટેનું હોસ્ટ અથવા ડોમેન</translation>
+<translation id="5774295353725270860">Files ઍપ ખોલો</translation>
 <translation id="5775750595919327203">ઉર્દુ</translation>
 <translation id="5776325638577448643">કાઢી નાખો અને ફોર્મેટ કરો</translation>
 <translation id="57838592816432529">અવાજ બંધ કરો</translation>
 <translation id="5788127256798019331">Play ફાઇલો</translation>
+<translation id="5788367137662787332">માફ કરશો, ઉપકરણ <ph name="DEVICE_LABEL" /> પર ઓછામાં ઓછું એક પાર્ટિશન માઉન્ટ કરી શકાયું નથી.</translation>
 <translation id="5804245609861364054">કન્નડ લિપ્યંતર</translation>
 <translation id="5814126672212206791">કનેક્શનનો પ્રકાર</translation>
 <translation id="5817397429773072584">પરંપરાગત ચાઇનીઝ</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">આઇસલેન્ડિક</translation>
 <translation id="7229570126336867161">EVDOની જરૂર છે</translation>
 <translation id="7230898482850090046">તમારા ઍડમિનિસ્ટ્રેટરે તમને "સિમ કાર્ડ લૉક કરો" સેટિંગ બંધ કરવાની વિનંતી કરી છે</translation>
+<translation id="7232750842195536390">નામ બદલવામાં નિષ્ફળ થયાં</translation>
 <translation id="7238097264433196391">ડ્રાઇવનું નામ</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, વિગતો</translation>
 <translation id="7246947237293279874">FTP પ્રૉક્સી</translation>
+<translation id="725109152065019550">માફ કરશો, તમારા એડમિને તમારા એકાઉન્ટ પર બહારના સ્ટોરેજને બંધ કર્યું છે.</translation>
 <translation id="7256405249507348194">અજ્ઞાત ભૂલ: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ઉપલબ્ધ સેવાઓ</translation>
 <translation id="7291818353625820805">કી રિપીટ કરવા માગો છો? કીબોર્ડ સેટિંગમાં ઉચ્ચાર માટેના ચિહ્નો બંધ કરો</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google નકશો</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" રિસ્ટોર કરી રહ્યાં છીએ</translation>
 <translation id="7435577899926900307">યુએસ Dvorak</translation>
+<translation id="7436921188514130341">અરેરે! નામ બદલતી વખતે એક ભૂલ આવી હતી.</translation>
 <translation id="7458955835361612701">તાજેતરની કોઈ છબી નથી</translation>
 <translation id="7469894403370665791">આ નેટવર્કમાં ઑટોમૅટિક રીતે કનેક્ટ કરો</translation>
 <translation id="7486315294984620427">ફાઇલોને Parallels Desktopમાં મૂકવા માટે, ફાઇલને Windows ફાઇલોમાં ખસેડવી આવશ્યક છે.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">શેલ્ફ પર પિન કરો</translation>
 <translation id="7553492409867692754">Linux ઍપને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
 <translation id="7555339735447658365">તમે હાલમાં ઑફલાઇન છો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ કરશો, ત્યારે ફાઇલ સિંક કરવાની પ્રક્રિયા ફરી શરૂ થશે</translation>
+<translation id="7589461650300748890">અરે, ત્યાં છો. સાવધ રહો.</translation>
 <translation id="7589661784326793847">ક્ષણભર રોકાવ</translation>
 <translation id="7600126690270271294">સર્બિયન</translation>
 <translation id="7603724359189955920">ગ્રીડ</translation>
@@ -896,6 +913,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">નેટવર્કની ગોઠવણી કરતી વખતે ભૂલ આવી</translation>
+<translation id="7839051173341654115">મીડિયા જુઓ/બૅકઅપ લો</translation>
 <translation id="7839804798877833423">આ ફાઇલોને મેળવવામાં લગભગ <ph name="FILE_SIZE" /> મોબાઇલ ડેટાનો ઉપયોગ થશે.</translation>
 <translation id="7846076177841592234">પસંદગી રદ કરો</translation>
 <translation id="7857117644404132472">અપવાદ ઉમેરો</translation>
@@ -903,8 +921,10 @@
 <translation id="7868774406711971383">પોલિશ</translation>
 <translation id="7874321682039004450">ફિલિપિનો</translation>
 <translation id="78946041517601018">શેર કરેલી ડ્રાઇવ</translation>
+<translation id="7897900149154324287">ભવિષ્યમાં, તમારા કાઢવા યોગ્ય ડિવાઇસને અનપ્લગ કરતાં પહેલાં Files ઍપમાંથી તેને કાઢવાનું યાદ રાખો. અન્યથા, તમે ડેટા ગુમાવી શકો છો.</translation>
 <translation id="7901567919203965902">US Workman આંતરરાષ્ટ્રીય</translation>
 <translation id="7903984238293908205">કટકાન</translation>
+<translation id="7908378463497120834">માફ કરશો, તમારા બાહ્ય સ્ટોરેજ ઉપકરણ પર ઓછામાં ઓછું એક પાર્ટિશન માઉન્ટ કરી શકાયું નથી.</translation>
 <translation id="7908793776359722643">વિભાગને ફૉર્મેટ કરવાથી તેમાં સ્ટોર કરેલો બધો ડેટા કાઢી નાખવામાં આવશે. આ ક્રિયા રદ કરી શકાતી નથી.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">My-Driveની તમારી ફાઇલો તમારા Chromebook સાથે ઑટોમૅટિક રીતે સિંક થશે જેથી તમે તેને ઇન્ટરનેટ કનેક્શન વિના ઍક્સેસ કરી શકશો.</translation>
@@ -1038,6 +1058,7 @@
 <translation id="8873014196523807561">આ આઇટમને રિસ્ટોર કરવા માટે, તેમને કોઈ નવા ફોલ્ડર પર ખેંચો. આ આઇટમમાંથી અમુક આઇટમ માટેના ઑરિજિનલ ફોલ્ડર ડિલીટ કરવામાં આવ્યા છે.</translation>
 <translation id="8874184842967597500">કનેક્ટ નથી</translation>
 <translation id="8876368061475701452">કતારમાં</translation>
+<translation id="8893928184421379330">માફ કરશો, ઉપકરણ <ph name="DEVICE_LABEL" /> ઓળખી શકાયું નથી.</translation>
 <translation id="8902208737522818687">US આંતરરાષ્ટ્રીય (PC)</translation>
 <translation id="8903931173357132290">સ્નાતક</translation>
 <translation id="8912078710089354287">પૂંછડી હલાવી રહેલો કૂતરો</translation>

@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Automatiska namnservrar</translation>
 <translation id="1210831758834677569">laotiska</translation>
 <translation id="1221555006497674479">Ont om lagringsutrymme – <ph name="REMAINING_PERCENTAGE" /> % kvar av den delade enhetens lagringsutrymme på <ph name="TOTAL_SPACE" />.</translation>
+<translation id="1239594683407221485">Utforska innehållet på den här enheten i appen Filer.</translation>
 <translation id="1243314992276662751">Ladda upp</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkt Internetanslutning</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Det går inte att radera. Objektet används.</translation>
 <translation id="1307931752636661898">Det går inte att visa Linux-filer</translation>
 <translation id="1313405956111467313">Automatisk proxykonfiguration</translation>
+<translation id="1340527397989195812">Säkerhetskopiera media från enheten med appen Filer.</translation>
 <translation id="134645005685694099">Du har inte tillräckligt med lagringsutrymme för att hålla filsynkroniseringen aktiverad. Nya filer synkroniseras inte längre automatiskt.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Filen eller katalogen kan inte användas.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Inget användarcertifikat</translation>
 <translation id="1403008701842173542">Överallt</translation>
 <translation id="1404323374378969387">norska</translation>
+<translation id="1408504635543854729">Utforska innehållet på den här enheten i appen Filer. Innehållet har skrivskyddats av en administratör och kan inte ändras.</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
 <translation id="1433628812591023318">För att kunna släppa en fil i Parallels Desktop behöver du först flytta den till Windows.</translation>
 <translation id="1435838927755162558">Dela mappen med Parallels Desktop</translation>
 <translation id="1439919885608649279">Person med blommor</translation>
 <translation id="1458457385801829801">Avmontera <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Öppna Inställningar om du vill visa enhetsinställningarna</translation>
 <translation id="146691674290220697">Det gick inte att kopiera <ph name="NUMBER_OF_FILES" /> eftersom de är krypterade.</translation>
 <translation id="1471718551822868769">slovakiska</translation>
 <translation id="1482884275703521657">finska</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Hantera i Drive</translation>
 <translation id="2004942826429452291">Filerna lagras i molnet och på denna Chromebook.</translation>
 <translation id="2009067268969781306">Om du formaterar en enhet raderas all data som lagras på den. Det går inte att ångra åtgärden.</translation>
+<translation id="2018352199541442911">Den externa lagringsenheten stöds tyvärr inte just nu.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
 <translation id="2029385776150020336">Utökat amerikanskt</translation>
 <translation id="2037845485764049925">ryska</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470447085858632">Få åtkomst till dina Google Drive-filer offline med filsynkronisering</translation>
 <translation id="2470939964922472929">Fel pinkod har angetts för många gånger. Innan du kan välja en ny pinkod måste du ange den åttasiffriga PUK-koden (Personal Unblocking Key) som du fått från operatören.</translation>
+<translation id="249113932447298600">Enheten <ph name="DEVICE_LABEL" /> stöds inte just nu.</translation>
 <translation id="2500392669976258912">gujarati, fonetiskt</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Sök</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">ukrainska</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> komprimeras ...</translation>
 <translation id="3335337277364016868">Inspelningsår</translation>
+<translation id="3348038390189153836">En mobil enhet har upptäckts</translation>
 <translation id="3353984535370177728">Välj en mapp för uppladdning</translation>
 <translation id="3356580349448036450">Klart</translation>
 <translation id="3358452157379365236">Gitarr</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Ladda ned mobilprofil, Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">engelska (Storbritannien)</translation>
 <translation id="3975895378829046965">bengali, fonetiskt</translation>
+<translation id="3983764759749072418">Appar i Play Butik har åtkomst till enheten.</translation>
 <translation id="3999574733850440202">Nyligen öppnade Microsoft-filer har flyttats till OneDrive</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">engelska (USA) med Workman-tangentbord</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Du måste vara online för att kunna öppna filen.</translation>
 <translation id="4212740939091998969">Det finns redan en mapp med namnet <ph name="FOLDER_NAME" />. Välj ett annat namn.</translation>
 <translation id="4218274196133425560">Ta bort undantag för <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4261901459838235729">Presentation i Google Dokument</translation>
 <translation id="4277536868133419688">Filtret <ph name="FILTER_NAME" /> är på.</translation>
 <translation id="4290535918735525311">1 mapp delas med Linux</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Återställda filer från Google Drive</translation>
 <translation id="5278111733643988471">Om du vill återställa det här objektet drar du det till en ny mapp utanför papperskorgen. Den ursprungliga mappen <ph name="PARENT_FOLDER_NAME" /> för objektet har raderats.</translation>
 <translation id="5288441970121584418">Hamburgare</translation>
+<translation id="529175790091471945">Formatera enheten</translation>
 <translation id="5293615890992542006">Möjligheten att flytta den här filen blockeras av administratörspolicyn</translation>
 <translation id="5305688511332277257">Ingen installerad</translation>
 <translation id="5317780077021120954">Spara</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Använd inte proxyinställningar för dessa värdenheter och domäner:</translation>
 <translation id="541890217011173530">sorani/kurdiska med engelskt tangentbord</translation>
 <translation id="5422221874247253874">Åtkomstpunkt</translation>
+<translation id="5422781158178868512">Den externa lagringsenheten kunde tyvärr inte identifieras.</translation>
 <translation id="5438282218546237410">Det finns inga resultat för <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Inte tillräckligt med utrymme.</translation>
 <translation id="5449551289610225147">Ogiltigt lösenord</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> objekt har valts</translation>
 <translation id="5763377084591234761">tyska (Schweiz)</translation>
 <translation id="5769519078756170258">Värd eller domän som ska uteslutas</translation>
+<translation id="5774295353725270860">Öppna appen Filer</translation>
 <translation id="5775750595919327203">urdu</translation>
 <translation id="5776325638577448643">Ta bort och formatera</translation>
 <translation id="57838592816432529">Stäng av ljudet</translation>
 <translation id="5788127256798019331">Play-filer</translation>
+<translation id="5788367137662787332">Minst en partition på enheten <ph name="DEVICE_LABEL" /> kunde inte monteras.</translation>
 <translation id="5804245609861364054">kannada, translitterering</translation>
 <translation id="5814126672212206791">Anslutningstyp</translation>
 <translation id="5817397429773072584">kinesiska (traditionell)</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Isländskt</translation>
 <translation id="7229570126336867161">Behöver EVDO</translation>
 <translation id="7230898482850090046">Administratören har begärt att du inaktiverar inställningen Lås SIM</translation>
+<translation id="7232750842195536390">Det gick inte att byta namn</translation>
 <translation id="7238097264433196391">Enhetens namn</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, information</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
+<translation id="725109152065019550">Administratören har inaktiverat extern lagring för ditt konto.</translation>
 <translation id="7256405249507348194">Okänt fel: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Tillgängliga tjänster</translation>
 <translation id="7291818353625820805">Vill du att tangenterna ska upprepas? Inaktivera accenttecken i tangentbordsinställningarna</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google-karta</translation>
 <translation id="7419668828140929293">Återställer <ph name="FILENAME" /></translation>
 <translation id="7435577899926900307">Amerikanskt (Dvorak)</translation>
+<translation id="7436921188514130341">Ett fel uppstod när namnet skulle bytas.</translation>
 <translation id="7458955835361612701">Inga nya bilder</translation>
 <translation id="7469894403370665791">Anslut automatiskt till det här nätverket.</translation>
 <translation id="7486315294984620427">För att kunna släppa en fil i Parallels Desktop behöver du först kopiera den till Windows.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Fäst på hyllan</translation>
 <translation id="7553492409867692754">Ge Linux-appar behörighet att öppna filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Du är offline för närvarande. Filsynkroniseringen återupptas när du ansluter till internet.</translation>
+<translation id="7589461650300748890">Ta det försiktigt.</translation>
 <translation id="7589661784326793847">Ett ögonblick</translation>
 <translation id="7600126690270271294">serbiska</translation>
 <translation id="7603724359189955920">Rutnät</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fel i nätverkskonfigurationen</translation>
+<translation id="7839051173341654115">Visa/säkerhetskopiera media</translation>
 <translation id="7839804798877833423">Att hämta dessa filer kräver ungefär <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Rensa val</translation>
 <translation id="7857117644404132472">Lägg till undantag</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">polska</translation>
 <translation id="7874321682039004450">filipino</translation>
 <translation id="78946041517601018">Delade enheter</translation>
+<translation id="7897900149154324287">Tänk på att mata ut löstagbara enheter i appen Filer innan du kopplar loss dem. Annars kan det hända att data förloras.</translation>
 <translation id="7901567919203965902">Internationellt amerikanskt (Workman)</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Minst en partition på den externa lagringsenheten kunde inte monteras.</translation>
 <translation id="7908793776359722643">Om du formaterar en partition raderas all data på den. Det går inte att ångra åtgärden.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Filerna på Min enhet synkroniseras automatiskt med Chromebook så att du kan komma åt dem utan internetanslutning.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Om du vill återställa objekten drar du dem till en ny mapp. De ursprungliga mapparna för vissa av dessa objekt har raderats.</translation>
 <translation id="8874184842967597500">Inte ansluten</translation>
 <translation id="8876368061475701452">I kö</translation>
+<translation id="8893928184421379330">Det gick tyvärr inte att identifiera enheten <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8902208737522818687">Internationellt amerikanskt (PC)</translation>
 <translation id="8903931173357132290">Kandidat</translation>
 <translation id="8912078710089354287">Hund som viftar på svansen</translation>

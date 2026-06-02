@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Download in corso...</translation>
 <translation id="1651617469580841801">Quando utilizzi Google Lens, il titolo della pagina, l'URL e i contenuti, inclusi i PDF, vengono inviati a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Informazioni su ChromeOS Flex</translation>
+<translation id="1665867022636014702">Utilizza le impostazioni del browser consigliate da Google</translation>
 <translation id="1674870198290878346">Apri link in una finestra di navigazione in inco&amp;gnito di Chrome</translation>
 <translation id="1682634494516646069">Google Chrome non è in grado di leggere e scrivere nella directory dei dati: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti agli strumenti di ricerca, all'AI e all'agente della tua organizzazione per ricevere suggerimenti.</translation>
@@ -238,6 +239,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="345171907106878721">Aggiungiti a Chrome</translation>
 <translation id="3453763134178591239">Termini di ChromeOS</translation>
 <translation id="3503306920980160878">Chrome deve poter accedere alla tua posizione per condividerla con questo sito</translation>
+<translation id="3539955434060988644">Apri link in una finestra Inco&amp;gnito di Chrome</translation>
 <translation id="3576528680708590453">L'amministratore di sistema ha configurato Google Chrome per l'apertura di un browser alternativo per accedere a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sincronizza e personalizza Chrome sui tuoi dispositivi</translation>
 <translation id="3583751698304738917">Hai già eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" /> in un altro profilo Chrome</translation>

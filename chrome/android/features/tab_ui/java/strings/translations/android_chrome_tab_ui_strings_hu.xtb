@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> lap csoportosítva</translation>
 <translation id="1844381456014878100">7 nap inaktivitás után</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap}other{<ph name="TABS_COUNT_MANY" /> lap}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Lap hozzáadása olvasási listához}other{Lapok hozzáadása olvasási listához}}</translation>
 <translation id="1909810060368225529">Figyelem: A megosztott lapcsoport módosításai mindenki számára láthatók. Bárki módosíthatja a megosztott lapcsoportokat</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Lap rögzítése}other{Lapok rögzítése}}</translation>
 <translation id="1982637982196732906">Áthelyezés az inaktív szakaszba</translation>

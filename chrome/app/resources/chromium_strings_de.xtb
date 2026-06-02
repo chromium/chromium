@@ -33,6 +33,7 @@
 <translation id="132092532143527429">Mit Gemini in Chromium ausprobieren</translation>
 <translation id="1324107359134968521">Chromium benötigt Bluetooth-Zugriff, um Bluetooth-Geräte zu suchen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Sprache erkennen</translation>
+<translation id="1330742950061766891">Empfohlene Browsereinstellungen von Chromium verwenden</translation>
 <translation id="1342274909142618978">Auch Daten aus Chromium löschen (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Angepinnt! Über den neuen Button in der Symbolleiste kannst du wieder auf die Bildersuche zugreifen.</translation>
 <translation id="1356661055722410047">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen lassen</translation>
@@ -370,6 +371,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="5187123684706427865">Chromium-Konto muss noch einmal authentifiziert werden</translation>
 <translation id="5231355151045086930">Von Chromium abmelden</translation>
 <translation id="5234764350956374838">Schließen</translation>
+<translation id="5249261924633168472">Link in Inkognitofenster in Chromium öffnen</translation>
 <translation id="5254739261293693943">Nach Infos zu diesem Video fragen</translation>
 <translation id="5276305953263010518">Mit der Chromium App kannst du Passwörter unterwegs speichern</translation>
 <translation id="5277894862589591112">Starte Chromium neu, um die Änderungen zu übernehmen</translation>

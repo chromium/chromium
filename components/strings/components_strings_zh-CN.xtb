@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">未知政策。</translation>
 <translation id="1227677022489889280">请提供迁移原因（必填）</translation>
 <translation id="1228893227497259893">实体标识符有误</translation>
+<translation id="122989279399348496">登录后，<ph name="DOMAIN" /> 可以在支持的网站上确认 <ph name="EMAIL" />，这样您就不必查看收件箱了</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" />（自动检测）</translation>
 <translation id="1232569758102978740">无标题</translation>
 <translation id="1234539281285007945">“<ph name="FIELD_1" />”是必填项</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />，可执行多种操作，按 Tab 键可循环浏览这些操作</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">虚拟卡详细信息</translation>
+<translation id="1802420021606590788">Chrome 会在云端的私密空间中处理网页标题和网址</translation>
 <translation id="1803254472779303354">已允许锁定鼠标</translation>
 <translation id="1803351196216024260">可以询问能否使用您的麦克风</translation>
 <translation id="1804258830776932716">关联账号即可快速启用 Pix</translation>
@@ -3023,6 +3025,7 @@
 <translation id="5742806904559466333">酒吧、俱乐部和夜生活</translation>
 <translation id="5743684619253032786">指甲护理产品</translation>
 <translation id="574392208103952083">中等</translation>
+<translation id="5745586894920491759">Chrome 会在云端处理网页标题和网址</translation>
 <translation id="5745733273847572235">可以询问能否获取您的位置信息</translation>
 <translation id="5750869797196646528">手部跟踪</translation>
 <translation id="5752327398324808817">请输入一到两个字词</translation>
@@ -3416,6 +3419,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">查看日志</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />检查代理服务器、防火墙和安全 DNS 配置<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">自动确认您的邮箱</translation>
 <translation id="6366710531182496394">双钉（左侧）</translation>
 <translation id="6367196786591004737">删除条目</translation>
 <translation id="6370022303958842211">设备访问操作，例如登录（包括登录失败的原因）、退出、锁定和解锁</translation>
@@ -4061,6 +4065,7 @@
 <translation id="7388380253839603603">油价与汽车燃料</translation>
 <translation id="7388594495505979117">{0,plural, =1{您的设备将在 1 分钟后重启}other{您的设备将在 # 分钟后重启}}</translation>
 <translation id="7393161616326137353">冒险游戏</translation>
+<translation id="7393243238767102021">要允许 <ph name="DOMAIN" /> 自动验证此邮箱吗？</translation>
 <translation id="7393475648162498734">在结账时显示凭您的卡可以享受哪些奖励和福利</translation>
 <translation id="7393971683644170444">正在连接发卡机构…</translation>
 <translation id="739728382607845710">付款处理程序图标</translation>
@@ -5057,6 +5062,7 @@
 <translation id="8963117664422609631">转到网站设置</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />建议：<ph name="MARKUP_2" />确保有数据网络连接<ph name="MARKUP_3" />稍后重新加载此网页<ph name="MARKUP_4" />检查您输入的地址是否正确<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">您的本地文件将在 <ph name="HOURS" /> 小时后被删除</translation>
+<translation id="8964904785315870349">经过验证的邮箱</translation>
 <translation id="8968766641738584599">保存银行卡</translation>
 <translation id="8970887620466824814">出了点问题。</translation>
 <translation id="8971063699422889582">服务器的证书已过期。</translation>

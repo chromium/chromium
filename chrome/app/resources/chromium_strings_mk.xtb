@@ -36,6 +36,7 @@
 <translation id="1324107359134968521">Chromium бара пристап до Bluetooth за да открива 
  уреди со Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Откриј јазик</translation>
+<translation id="1330742950061766891">Користете ги поставките за прелистувачот препорачани од Chromium</translation>
 <translation id="1342274909142618978">Избриши ги и податоците од Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Закачено! Може да пристапите до „Пребарување со слики“ повторно од новото копче на алатникот</translation>
 <translation id="1356661055722410047">Ново! Може да ги преведувате и текстот и сликите на екранот</translation>
@@ -373,6 +374,7 @@
 <translation id="5187123684706427865">Сметката на Chromium треба да се автентицира повторно</translation>
 <translation id="5231355151045086930">Одјавете се од Chromium</translation>
 <translation id="5234764350956374838">Отфрли</translation>
+<translation id="5249261924633168472">Отвори го линкот во прозорец „Инко&amp;гнито“ во Chromium</translation>
 <translation id="5254739261293693943">Прашајте за видеово</translation>
 <translation id="5276305953263010518">Преземете ја апликацијата Chromium за да зачувувате лозинки во движење</translation>
 <translation id="5277894862589591112">За да се применат измените, рестартирајте го Chromium</translation>

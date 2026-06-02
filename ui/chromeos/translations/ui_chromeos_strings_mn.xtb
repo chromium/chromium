@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Автомат нэрийн серверүүд</translation>
 <translation id="1210831758834677569">Лао</translation>
 <translation id="1221555006497674479">Хадгалах сан бага байна. Таны <ph name="TOTAL_SPACE" />-н дундын драйвын хадгалах сангаас <ph name="REMAINING_PERCENTAGE" />% үлдсэн байна.</translation>
+<translation id="1239594683407221485">Файлc апп дээр төхөөрөмжийн агуулгыг судлах</translation>
 <translation id="1243314992276662751">Байршуул</translation>
 <translation id="1249250836236328755">Төрөл</translation>
 <translation id="1254593899333212300">Интернетийн шууд холболт</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Устгах боломжгүй. Зүйлийг ашиглаж байна.</translation>
 <translation id="1307931752636661898">Linux-н файлуудыг харах боломжгүй байна</translation>
 <translation id="1313405956111467313">Автомат прокси тохиргоо</translation>
+<translation id="1340527397989195812">Files app ашиглан төхөөрөмжөөс мэдээллийг хуулан авч хадгалах.</translation>
 <translation id="134645005685694099">Таны төхөөрөмжид синк хийхийг асаалттай байлгахад хадгалах сангийн хангалттай зай байхгүй байна. Шинэ файлуудыг цаашид автоматаар синк хийхгүй.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Файл болон хадгалалтын сан нь ашиглах боломжгүй байна.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Хэрэглэгчийн гэрчилгээ алга</translation>
 <translation id="1403008701842173542">Хаа сайгүй</translation>
 <translation id="1404323374378969387">Норвег</translation>
+<translation id="1408504635543854729">Файлс апп доторх төхөөрөмжийн агуулгыг судална уу. Агуулгыг админ хязгаарласан ба өөрчлөх боломжгүй.</translation>
 <translation id="1412476183660741812">Гарын үсэг зурсан веб багц</translation>
 <translation id="1433628812591023318">Parallels Desktop-д файлууд буулгахын тулд файлыг Windows-н файлуудад зөөсөн байх ёстой.</translation>
 <translation id="1435838927755162558">Фолдерыг Parallels Desktop-тай хуваалцах</translation>
 <translation id="1439919885608649279">Цэцэгтэй хүн</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />-г гаргах</translation>
+<translation id="1464781208867302907">Төхөөрөмжийн сонголт хийхийн тулд Тохиргоо руу очно уу.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> файлыг шифрлэсэн тул тэдгээрийг хуулж чадсангүй.</translation>
 <translation id="1471718551822868769">Словак</translation>
 <translation id="1482884275703521657">Финланд</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Драйвын файлуудыг удирдах</translation>
 <translation id="2004942826429452291">Файлуудыг үүлэнд болон энэ Chromebook-д хадгална.</translation>
 <translation id="2009067268969781306">Драйвыг форматлах нь түүн дээр хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
+<translation id="2018352199541442911">Уучлаарай, таны гадаад хадгалалтын төхөөрөмж одоогоор дэмжигдэхгүй байна.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2029385776150020336">АНУ-ын өргөтгөсөн</translation>
 <translation id="2037845485764049925">Орос</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Тамагочи</translation>
 <translation id="2468470447085858632">Файл синк хийхийн тусламжтайгаар Google Драйвын файлууддаа офлайн үед хандаарай</translation>
 <translation id="2470939964922472929">ПИН-г хэт олон удаа буруу оруулсан байна. Шинэ ПИН тохируулахын тулд танай оператор компаниас өгсөн 8 оронтой Хувийн блокоос гаргах түлхүүр (PUK)-ийг оруулна уу.</translation>
+<translation id="249113932447298600">Уучлаарай, яг одоо энэ цагт <ph name="DEVICE_LABEL" /> төхөөрөмжийг дэмжиж ажиллаж чадахгүй байна.</translation>
 <translation id="2500392669976258912">Гужарати авиа зүй</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Шалгах</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Украин</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" />-ийг нэгтгэж байна...</translation>
 <translation id="3335337277364016868">Бүртгэсэн жил</translation>
+<translation id="3348038390189153836">Зөөврийн төхөөрөмж илэрсэн байна</translation>
 <translation id="3353984535370177728">Татаж оруулах хавтсыг сонгох</translation>
 <translation id="3356580349448036450">Бүрэн</translation>
 <translation id="3358452157379365236">Гитар</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Мобайл профайл татах, <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" /> сүлжээ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Англи (UK)</translation>
 <translation id="3975895378829046965">Бенгал авиа зүй</translation>
+<translation id="3983764759749072418">Play Store аппууд нь энэ төхөөрөмжид хандалт хийх эрхтэй байна.</translation>
 <translation id="3999574733850440202">Саяхан нээсэн Microsoft файлуудыг OneDrive руу зөөсөн</translation>
 <translation id="4002066346123236978">Гарчиг</translation>
 <translation id="4017788180641807848">Workman гартай англи (АНУ)</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Та энэ файлд хандахын тулд онлайн байх шаардлагатай.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" нэртэй фолдер аль хэдийн байна. Өөр нэр сонгоно уу.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-д зориулж дүрмээс гажих онцгой тохиолдлыг хасах</translation>
+<translation id="4242533952199664413">Нээлттэй тохиргоо</translation>
 <translation id="4261901459838235729">Google танилцуулга</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> шүүлтүүр асаалттай байна.</translation>
 <translation id="4290535918735525311">Linux-тай хуваалцсан 1 фолдер</translation>
@@ -553,6 +562,7 @@
 <translation id="5275973617553375938">Google Drive-аас файлуудыг сэргээлээ</translation>
 <translation id="5278111733643988471">Энэ зүйлийг сэргээхийн тулд хогийн савнаас гадагш шинэ фолдер луу чирнэ үү. Энэ зүйлийн эх фолдер болох "<ph name="PARENT_FOLDER_NAME" />"-г устгасан байна.</translation>
 <translation id="5288441970121584418">Бургер</translation>
+<translation id="529175790091471945">Төхөөрөмжийг форматлах</translation>
 <translation id="5293615890992542006">Энэ файлыг зөөхийг администраторын бодлогоор блоклосон</translation>
 <translation id="5305688511332277257">Юу ч суугдаагүй байна.</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
@@ -568,6 +578,7 @@
 <translation id="5411472733320185105">Эдгээр сүлжээ эзэмшигч болон домайнуудад прокси тохируулгыг хэрэглэхгүй:</translation>
 <translation id="541890217011173530">Англи суурьтай гартай сорани курд</translation>
 <translation id="5422221874247253874">Хандах цэг</translation>
+<translation id="5422781158178868512">Уучлаарай, таны мэдээлэл хадгалах төхөөрөмжийг танихгүй байна.</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" />-н илэрц байхгүй байна.</translation>
 <translation id="5447680084201416734">Хадгалах сан хангалтгүй байна.</translation>
 <translation id="5449551289610225147">Буруу нууц үг</translation>
@@ -615,10 +626,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> зүйл сонгосон</translation>
 <translation id="5763377084591234761">Герман (Швейцар)</translation>
 <translation id="5769519078756170258">Хасах хост эсвэл домэйн</translation>
+<translation id="5774295353725270860">Файлууд аппликейшнийг нээх</translation>
 <translation id="5775750595919327203">Урду</translation>
 <translation id="5776325638577448643">Устгах, форматлах</translation>
 <translation id="57838592816432529">Дууг хаах</translation>
 <translation id="5788127256798019331">Файлуудыг тоглуулах</translation>
+<translation id="5788367137662787332">Уучлаарай, <ph name="DEVICE_LABEL" /> төхөөрөмжийн ядаж нэг хуваалтыг засаж чадсангүй.</translation>
 <translation id="5804245609861364054">Каннада галиг</translation>
 <translation id="5814126672212206791">Холболтын төрөл</translation>
 <translation id="5817397429773072584">уламжлалт хятад</translation>
@@ -811,9 +824,11 @@
 <translation id="7224162581405244205">Исланд</translation>
 <translation id="7229570126336867161">EVDO хэрэгтэй байна</translation>
 <translation id="7230898482850090046">Таны администратор танаас "SIM-г түгжих" тохиргоог унтраахыг хүссэн</translation>
+<translation id="7232750842195536390">Нэрийг өөрчилж чадсангүй</translation>
 <translation id="7238097264433196391">Драйвын нэр</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="7246947237293279874">FTP прокси</translation>
+<translation id="725109152065019550">Уучлаарай, таны администратор таны дансанд оролтын төхөөрөмжид дата хадгалахыг хаасан.</translation>
 <translation id="7256405249507348194">Танигдаагүй алдаа: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Бэлэн үйлчилгээ</translation>
 <translation id="7291818353625820805">Товчнуудыг давтахыг хүсэж байна уу? Гарын тохиргоонд өргөлтийн тэмдгүүдийг унтраана уу</translation>
@@ -836,6 +851,7 @@
 <translation id="7417705661718309329">Google-ийн газрын зураг</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />"-г сэргээж байна</translation>
 <translation id="7435577899926900307">АНУ-ын Dvorak</translation>
+<translation id="7436921188514130341">Уучлаарай! Нэр өөрчлөхөд алдаа гарлаа.</translation>
 <translation id="7458955835361612701">Саяхны зураг байхгүй байна</translation>
 <translation id="7469894403370665791">Автоматаар энэ сүлжээ рүү холбогдох</translation>
 <translation id="7486315294984620427">Parallels Desktop-д файлууд буулгахын тулд файлыг Windows-н файлуудад хуулсан байх ёстой.</translation>
@@ -851,6 +867,7 @@
 <translation id="7551643184018910560">Програмын жагсаалтын өмнө гаргах</translation>
 <translation id="7553492409867692754">Linux аппуудад <ph name="FOLDER_NAME" /> фолдерын файлуудад хандах зөвшөөрөл өгнө үү</translation>
 <translation id="7555339735447658365">Та одоогоор офлайн байна. Таныг интернэтэд холбогдсон үед файлыг үргэлжлүүлэн синк хийнэ</translation>
+<translation id="7589461650300748890">Харж байгаа биз. Болгоомжтой байгаарай.</translation>
 <translation id="7589661784326793847">Түр хүлээнэ үү</translation>
 <translation id="7600126690270271294">Серб</translation>
 <translation id="7603724359189955920">Toрлол</translation>
@@ -896,6 +913,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Сүлжээг тохируулахад алдаа гарлаа</translation>
+<translation id="7839051173341654115">Өгөгдлийг харах/хадгалах</translation>
 <translation id="7839804798877833423">Эдгээр файлуудыг татаж авчрахад гар утасны өгөгдлийн ойролцоогоор <ph name="FILE_SIZE" />-ийг ашиглах болно.</translation>
 <translation id="7846076177841592234">Сонголтыг цуцлах</translation>
 <translation id="7857117644404132472">Онцгой тохиолдол нэмэх</translation>
@@ -903,8 +921,10 @@
 <translation id="7868774406711971383">Польш</translation>
 <translation id="7874321682039004450">Филиппин</translation>
 <translation id="78946041517601018">Дундын драйв</translation>
+<translation id="7897900149154324287">Цаашид зөөврийн төхөөрөмжөө салгахаасаа өмнө Файлууд аппликейшн дотор салгасан эсэхээ шалгаж байгаарай. Ингээгүй тохиолдолд та мэдээллээ алдаж магадгүй.</translation>
 <translation id="7901567919203965902">АНУ-ын олон улсын Workman</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Уучлаарай, таны гадаад хадгалалтын төхөөрөмжийн нэг ч хэсгийг холбож чадсангүй.</translation>
 <translation id="7908793776359722643">Хуваарилалтыг форматалснаар үүнд хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Таны Миний драйвын файлуудыг Chromebook-тэй тань автоматаар синк хийх бөгөөд ингэснээр та тэдгээрт интернэт холболтгүйгээр хандах боломжтой.</translation>
@@ -1038,6 +1058,7 @@
 <translation id="8873014196523807561">Эдгээр зүйлийг сэргээхийн тулд шинэ фолдер луу чирнэ үү. Эдгээр зүйлийн заримынх нь эх фолдерыг устгасан байна.</translation>
 <translation id="8874184842967597500">Холбогдоогүй</translation>
 <translation id="8876368061475701452">Дараалалд оруулсан</translation>
+<translation id="8893928184421379330">Уучлаарай, төхөөрөмжийг <ph name="DEVICE_LABEL" /> таних боломжгүй байна.</translation>
 <translation id="8902208737522818687">АНУ-н олон улсын (PC)</translation>
 <translation id="8903931173357132290">Төгсөгч</translation>
 <translation id="8912078710089354287">Сүүлээ годолзуулж буй нохой</translation>

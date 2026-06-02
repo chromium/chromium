@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">‏ל-Chromium נדרשת גישה ל-Bluetooth כדי למצוא 
  מכשירי Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">זיהוי שפה אוטומטי</translation>
+<translation id="1330742950061766891">‏שימוש בהגדרות הדפדפן המומלצות של Chromium</translation>
 <translation id="1342274909142618978">‏אני רוצה למחוק את הנתונים גם מ-Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">התכונה הוצמדה. מעכשיו אפשר לגשת לחיפוש התמונות דרך הכפתור החדש בסרגל הכלים</translation>
 <translation id="1356661055722410047">חדש! אפשר לתרגם טקסט ותמונות במסך</translation>
@@ -369,6 +370,7 @@
 <translation id="5187123684706427865">‏נדרש אימות מחדש לחשבון Chromium</translation>
 <translation id="5231355151045086930">‏יציאה מ-Chromium</translation>
 <translation id="5234764350956374838">סגירה</translation>
+<translation id="5249261924633168472">‏פתיחת הקישור בחלון לגלישה &amp;פרטית של Chromium</translation>
 <translation id="5254739261293693943">אפשר לשאול שאלות לגבי הסרטון הזה</translation>
 <translation id="5276305953263010518">‏כדי לשמור סיסמאות תוך כדי תנועה, צריך להוריד את אפליקציית Chromium</translation>
 <translation id="5277894862589591112">‏כדי להחיל את השינויים שביצעת, יש להפעיל מחדש את Chromium</translation>

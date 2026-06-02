@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">የራስ-ሰር ስም አገልጋዮች</translation>
 <translation id="1210831758834677569">ላኦኛ</translation>
 <translation id="1221555006497674479">ማከማቻ ዝቅተኛ ነው ከእርስዎ <ph name="TOTAL_SPACE" /> የተጋራ Drive ማከማቻ <ph name="REMAINING_PERCENTAGE" />% ቀርቷል።</translation>
+<translation id="1239594683407221485">የመሣሪያውን ይዘት በፋይሎች መተግበሪያው ውስጥ ያስሱት።</translation>
 <translation id="1243314992276662751">ስቀል</translation>
 <translation id="1249250836236328755">ዘውግ</translation>
 <translation id="1254593899333212300">ቀጥተኛ የበይነመረብ ግንኙነት</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">መሰረዝ አይቻልም። ንጥል ጥቅም ላይ እየዋለ ነው።</translation>
 <translation id="1307931752636661898">የLinux ፋይሎችን መመልከት አልተቻለም</translation>
 <translation id="1313405956111467313">ራስ-ሰር የተኪ ውቅር</translation>
+<translation id="1340527397989195812">የፋይሎች መተግበሪያውን በመጠቀም በመሣሪያው ውስጥ ያለ የማህደረመረጃ ምትኬ ያስቀምጡ።</translation>
 <translation id="134645005685694099">የእርስዎ መሣሪያ የፋይል ማስመርን አብርቶ ለማቆየት በቂ የማከማቻ ቦታ የለውም። አዲስ ፋይሎች ከአሁን ወዲህ በራስ ሰር አይሰምሩም።</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />፦ <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ፋይሉ ወይም አቃፊው ሊሰራበት የሚችል አይደለም።</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">ምንም የተጠቃሚ እውቅና ማረጋገጫ የለም</translation>
 <translation id="1403008701842173542">ሁሉም ቦታ</translation>
 <translation id="1404323374378969387">ኖርዌይኛ</translation>
+<translation id="1408504635543854729">የመሣሪያውን ይዘት በፋይሎች መተግበሪያው ውስጥ ያስሱት። ይዘቱ በአስተዳዳሪ የተገደበ ነው እና ሊሻሻል አይችልም።</translation>
 <translation id="1412476183660741812">የተፈረመ የድር ቅርቅብ</translation>
 <translation id="1433628812591023318">Parallels Desktop ውስጥ ፋይሎችን ለመጣል ፋይሉ ወደ Windows ፋይሎች መዛወር አለበት።</translation>
 <translation id="1435838927755162558">አቃፊን ለParallels ዴስክቶፕ አጋራ</translation>
 <translation id="1439919885608649279">አበቦች የያዘ ሰው</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> አስወጣ</translation>
+<translation id="1464781208867302907">ለመሣሪያ ምርጫዎች፣ ወደ ቅንብሮች ሂድ</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ፋይሎች የተመሰጠሩ በመሆናቸው ሊቀዱ አልቻሉም።</translation>
 <translation id="1471718551822868769">ስሎቫክኛ</translation>
 <translation id="1482884275703521657">ፊንላንድኛ</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">በDrive ውስጥ ያስተዳድሩ</translation>
 <translation id="2004942826429452291">ፋይሎች በደመናው ውስጥ እና በዚህ Chromebook ላይ ይቀመጣሉ።</translation>
 <translation id="2009067268969781306">አንጻፊን መቅረጽ በላዩ ላይ ያለን ሁሉንም ውሂብ ይሰርዛል። ይህ እርምጃ ሊቀለበስ አይችልም።</translation>
+<translation id="2018352199541442911">ይቅርታ፣ ውጫዊ ማከማቻዎ በዚህ ጊዜ አይደገፍም።</translation>
 <translation id="2025955442973426285">ትግርኛ</translation>
 <translation id="2029385776150020336">የአሜሪካ ተቀጥሎ</translation>
 <translation id="2037845485764049925">ሩሲያኛ</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">ታማጎቺ</translation>
 <translation id="2468470447085858632">በፋይል ማስመር የእርስዎን የGoogle Drive ፋይሎች ከመስመር ውጭ ይድረሱ</translation>
 <translation id="2470939964922472929">የተሳሳተ ፒን ከልክ በላይ ብዙ ጊዜ ገብቷል። አዲስ ፒን ለማቀናበር በአገልግሎት አቅራቢዎ የቀረበውን ባለ8 አሃዝ የግል እገዳ ማንሻ ቁልፍ (PUK) ያስገቡ።</translation>
+<translation id="249113932447298600">ይቅርታ፣ መሣሪያ <ph name="DEVICE_LABEL" /> በአሁኑ ጊዜ አይደገፍም።</translation>
 <translation id="2500392669976258912">የጉጃራቲ ፎነቲክ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">ቃኝ</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">ዩክሬንኛ</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" />ን በማጨቅ ላይ...</translation>
 <translation id="3335337277364016868">የተቀረጸበት ዓመት</translation>
+<translation id="3348038390189153836">ተነቃይ መሣሪያ ተገኝቷል</translation>
 <translation id="3353984535370177728">የሚሰቅሉትን አቃፊ ይምረጡ</translation>
 <translation id="3356580349448036450">ተጠናቅቋል</translation>
 <translation id="3358452157379365236">ጊታር</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">የሞባይል መገለጫን ያውርዱ፣ አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">እንግሊዝኛ (ዩኬ)</translation>
 <translation id="3975895378829046965">ባንግላ ፎነቲክ</translation>
+<translation id="3983764759749072418">የPlay መደብር መተግበሪያዎች የዚህ መሣሪያ መዳረሻ አላቸው።</translation>
 <translation id="3999574733850440202">በቅርቡ የተከፈቱት የMicrosoft ፋይሎች ወደ OneDrive ተንቀሳቅሰዋል</translation>
 <translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4017788180641807848">እንግሊዝኛ (አሜሪካ) ከዎርክማን ቁልፍ ሰሌዳ ጋር</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">ይህን ፋይል ለመድረስ መስመር ላይ መሆን አለብዎት።</translation>
 <translation id="4212740939091998969">«<ph name="FOLDER_NAME" />» የሚባል አቃፊ አስቀድሞ አለ። እባክዎ የተለየ ስም ይምረጡ።</translation>
 <translation id="4218274196133425560">ለ<ph name="HOST_NAME" /> ልዩ ሁኔታዎችን አስወግድ</translation>
+<translation id="4242533952199664413">ቅንብሮችን ክፈት</translation>
 <translation id="4261901459838235729">Google ማቅረቢያ</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> ማጣሪያ በርቷል።</translation>
 <translation id="4290535918735525311">1 አቃፊ ከLinux ጋር ተጋርቷል</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">ከGoogle Drive መልሰው የተገኙ ፋይሎች</translation>
 <translation id="5278111733643988471">ይህን ንጥል ወደነበረበት ለመመለስ ከመጣያ ውጭ ወደ አዲስ አቃፊ ይጎትቱት። ለዚህ ንጥል የመጀመሪያው አቃፊ «<ph name="PARENT_FOLDER_NAME" />» ተሰርዟል።</translation>
 <translation id="5288441970121584418">በርገር</translation>
+<translation id="529175790091471945">ይህን መሣሪያ ቅርጸት ይስሩለት</translation>
 <translation id="5293615890992542006">ይህን ፋይል ማንቀሳቀስ በአስተዳዳሪ መመሪያ ታግዷል</translation>
 <translation id="5305688511332277257">ምንም አልተጫነም</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">ተኪ ቅንብሮቹን ለእነዚህ አስተናጋጆች እና ጎራዎች አይጠቀሙ፦</translation>
 <translation id="541890217011173530">ሶራኒ ኩርድኛ በእንግሊዝኛ ላይ በተመሠረተ ቁልፍ ሰሌዳ</translation>
 <translation id="5422221874247253874">የመዳረሻ ነጥብ</translation>
+<translation id="5422781158178868512">ይቅርታ፣ የውጫዊ ማከማቻ መሣሪያዎ ሊታወቅ አልቻለም።</translation>
 <translation id="5438282218546237410">ለ <ph name="SEARCH_TERM" /> ምንም ውጤቶች የሉም።</translation>
 <translation id="5447680084201416734">በቂ ማከማቻ የለም።</translation>
 <translation id="5449551289610225147">ልክ ያልኾነ የይለፍ ቃል</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ንጥሎች ተመርጠዋል</translation>
 <translation id="5763377084591234761">ጀርመንኛ (ስዊዘርላንድ)</translation>
 <translation id="5769519078756170258">የሚገለል አስተናጋጅ ወይም ጎራ</translation>
+<translation id="5774295353725270860">የፋይሎች መተግበሪያን ክፈት</translation>
 <translation id="5775750595919327203">ኡርዱ</translation>
 <translation id="5776325638577448643">ደምስስ እና ቅረጽ</translation>
 <translation id="57838592816432529">ድምፅ ይዝጉ</translation>
 <translation id="5788127256798019331">የPlay ፋይሎች</translation>
+<translation id="5788367137662787332">ይቅርታ፣ በመሣሪያ <ph name="DEVICE_LABEL" /> ላይ ያለ ቢያንስ አንድ ክፍልፍል ሊፈናጠጥ አልቻለም።</translation>
 <translation id="5804245609861364054">በከናዳ ቋንቋ ፊደል መጻፍ</translation>
 <translation id="5814126672212206791">የግንኙነት ዓይነት</translation>
 <translation id="5817397429773072584">ባህላዊ ቻይንኛ</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">አይስላንድኛ</translation>
 <translation id="7229570126336867161">ኢቪዲኦ ያስፈልጋል</translation>
 <translation id="7230898482850090046">አስተዳዳሪዎ እርስዎ «የሲም ቆልፍ» ቅንብሩን እንዲያጠፉ ጠይቋል</translation>
+<translation id="7232750842195536390">ዳግም መሰየም አልተሳካም</translation>
 <translation id="7238097264433196391">የአንጻፊ ስም</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />፣ ዝርዝሮች</translation>
 <translation id="7246947237293279874">የኤፍቲፒ ተኪ</translation>
+<translation id="725109152065019550">ይቅርታ፣ አስተዳዳሪዎ በመለያዎ ላይ ውጫዊ ማከማቻን አሰናክሏል።</translation>
 <translation id="7256405249507348194">ያልታወቀ ስህተት፦ <ph name="DESC" /></translation>
 <translation id="7268659760406822741">የሚገኙ አገልግሎቶች</translation>
 <translation id="7291818353625820805">ቁልፎች እንዲደጋገሙ ይፈልጋሉ? በቁልፍ ሰሌዳ ቅንብሮች ውስጥ የአጽንዖት ምልክቶችን ያጥፉ</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google ካርታ</translation>
 <translation id="7419668828140929293">«<ph name="FILENAME" />»ን ወደነበረበት በመመለስ ላይ</translation>
 <translation id="7435577899926900307">የአሜሪካ ድቮራክ</translation>
+<translation id="7436921188514130341">ኧረ ቴች! ዳግም በሚሰየምበት ጊዜ የሆነ ስህተት ነበር።</translation>
 <translation id="7458955835361612701">ምንም የቅርብ ጊዜ ምስሎች የሉም</translation>
 <translation id="7469894403370665791">ከዚህ አውታረ መረብ ጋር በራስ-ሰር ይገናኙ</translation>
 <translation id="7486315294984620427">በParallels Desktop ውስጥ ፋይሎችን ለመጣል ፋይሉ ወደ Windows ፋይሎች መቀዳት አለበት።</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">መደርደሪያ ላይ ሰካ</translation>
 <translation id="7553492409867692754">የLinux መተግበሪያዎች በ<ph name="FOLDER_NAME" /> አቃፊ ውስጥ ያሉ ፋይሎችን እንዲደርስ ይፍቀዱ</translation>
 <translation id="7555339735447658365">በአሁኑ ጊዜ ከመስመር ውጭ ነዎት። የፋይል ማስመር ከበይነመረብ ጋር በሚገናኙበት ጊዜ ከቆመበት ይቀጥላል</translation>
+<translation id="7589461650300748890">ኸረ፣ እዚ ጋር። ጠንቀቅ ይበሉ።</translation>
 <translation id="7589661784326793847">አንድ ሰከንድ ብቻ ይጠብቁ</translation>
 <translation id="7600126690270271294">ሰርቢኛ</translation>
 <translation id="7603724359189955920">ፍርግርግ</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ቴባ</translation>
 <translation id="7831491651892296503">አውታረ መረብን ማዋቀር ላይ ስህተት</translation>
+<translation id="7839051173341654115">ማህደረመረጃን ይመልከቱ/ምትኬ ያስቀምጡ</translation>
 <translation id="7839804798877833423">እነዚህን ፋይሎች ማምጣት <ph name="FILE_SIZE" /> ገደማ የተንቀሳቃሽ ስልክ ውሂብ ይጠቀማል።</translation>
 <translation id="7846076177841592234">ምርጫ ሰርዝ</translation>
 <translation id="7857117644404132472">ለየት ያሉትን ያክሉ</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">ፖላንድኛ</translation>
 <translation id="7874321682039004450">ፊሊፒኖ</translation>
 <translation id="78946041517601018">የተጋሩ Drives</translation>
+<translation id="7897900149154324287">ለወደፊቱ የሚነቀል መሳሪያዎን ከመንቀልዎ በፊት በፋይሎች መተግበሪያው ውስጥ ማላቀቅዎን እርግጠኛ ይኑ። ያለበለዚያ የተወሰነ ውሂብ ሊጠፋብዎ ይችላል።</translation>
 <translation id="7901567919203965902">አሜሪካ ዎርክማን ዓለም አቀፍ</translation>
 <translation id="7903984238293908205">ካታካና</translation>
+<translation id="7908378463497120834">ይቅርታ፣ ቢያንስ አንድ በውጫዊ ማከማቻዎ ላይ ያለ ክፍልፍል ሊፈናጠጥ አልቻለም።</translation>
 <translation id="7908793776359722643">በክፍልፍል ላይ ቅርጸት መስራት በእሱ ላይ የተከማቸውን ሁሉም ውሂብ ያጠፋል። ይህ እርምጃ ሊቀለበስ አይችልም።</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">በMy Drive ውስጥ ያሉትን የእርስዎን ፋይሎች ያለ የበይነመረብ ግንኙነት መድረስ እንዲችሉ በራስ ሰር ወደ Chromebook ይሰምራሉ።</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">እነዚህን ንጥሎች ወደነበሩበት ለመመለስ ወደ አዲስ አቃፊ ይጎትቷቸው። የእነዚህ ንጥሎች አንዳንዶቹ የመጀመሪያ አቃፊዎች ተሰርዘዋል።</translation>
 <translation id="8874184842967597500">አልተገናኘም</translation>
 <translation id="8876368061475701452">ተሰልፏል</translation>
+<translation id="8893928184421379330">ይቅርታ፣ መሣሪያ <ph name="DEVICE_LABEL" /> ሊታወቅ አልቻለም።</translation>
 <translation id="8902208737522818687">የአሜሪካ ዓለምአቀፍ (ፒሲ)</translation>
 <translation id="8903931173357132290">ትምህርት ይጨርሱ</translation>
 <translation id="8912078710089354287">ጅራቱን የሚቆላ ውሻ</translation>

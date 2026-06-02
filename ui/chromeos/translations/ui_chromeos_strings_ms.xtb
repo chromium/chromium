@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Nama pelayan automatik</translation>
 <translation id="1210831758834677569">Lao</translation>
 <translation id="1221555006497674479">Storan rendah <ph name="REMAINING_PERCENTAGE" />% berbaki daripada <ph name="TOTAL_SPACE" /> storan drive kongsi anda.</translation>
+<translation id="1239594683407221485">Teroka kandungan peranti dalam apl Fail.</translation>
 <translation id="1243314992276662751">Muat naik</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Sambungan Internet Langsung</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Tidak dapat dipadamkan. Item sedang digunakan.</translation>
 <translation id="1307931752636661898">Tidak dapat melihat fail Linux</translation>
 <translation id="1313405956111467313">Konfigurasi proksi automatik</translation>
+<translation id="1340527397989195812">Sandarkan media dari peranti menggunakan apl Fail.</translation>
 <translation id="134645005685694099">Peranti anda tidak memiliki ruang storan yang mencukupi untuk terus menghidupkan penyegerakan fail. Fail baharu tidak akan disegerakkan secara automatik lagi.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fail atau direktori tidak boleh digunakan.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Tiada sijil pengguna</translation>
 <translation id="1403008701842173542">Di mana-mana</translation>
 <translation id="1404323374378969387">Norway</translation>
+<translation id="1408504635543854729">Teroka kandungan peranti dalam apl Fail. Kandungan dihadkan oleh pentadbir dan tidak boleh diubah suai.</translation>
 <translation id="1412476183660741812">Himpunan Web yang Ditandatangani</translation>
 <translation id="1433628812591023318">Untuk melepaskan fail dalam Parallels Desktop, fail itu mesti dialihkan ke fail Windows.</translation>
 <translation id="1435838927755162558">Kongsi folder dengan Parallels Desktop</translation>
 <translation id="1439919885608649279">Orang dengan bunga</translation>
 <translation id="1458457385801829801">Usir <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Untuk pilihan peranti, pergi ke Tetapan.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fail tidak dapat disalin kerana fail tersebut disulitkan.</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1482884275703521657">Finland</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Urus dalam Drive</translation>
 <translation id="2004942826429452291">Fail akan disimpan pada awan dalam Chromebook ini.</translation>
 <translation id="2009067268969781306">Memformatkan pemacu akan memadamkan semua data yang disimpan di dalamnya. Tindakan ini tidak boleh dibuat asal.</translation>
+<translation id="2018352199541442911">Maaf, peranti storan luaran anda tidak disokong pada masa ini.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2029385776150020336">AS lanjutan</translation>
 <translation id="2037845485764049925">Rusia</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470447085858632">Akses fail Google Drive anda luar talian dengan penyegerakan fail</translation>
 <translation id="2470939964922472929">PIN yang salah telah dimasukkan terlalu banyak kali. Untuk menyediakan PIN baharu, masukkan Kunci Penyahsekat Peribadi (PUK) 8 digit yang diberikan oleh pembawa anda.</translation>
+<translation id="249113932447298600">Maaf, peranti <ph name="DEVICE_LABEL" /> tidak disokong pada masa ini.</translation>
 <translation id="2500392669976258912">Fonetik Gujerat</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Imbas</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukraine</translation>
 <translation id="3326821416087822643">Mengezip <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Tahun dirakam</translation>
+<translation id="3348038390189153836">Peranti boleh tanggal dikesan</translation>
 <translation id="3353984535370177728">Pilih folder untuk dimuat naik</translation>
 <translation id="3356580349448036450">Selesai</translation>
 <translation id="3358452157379365236">Gitar</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Muat turun profil mudah alih, Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inggeris (UK)</translation>
 <translation id="3975895378829046965">Fonetik Bangla</translation>
+<translation id="3983764759749072418">Aplikasi Gedung Play mempunyai akses kepada peranti ini.</translation>
 <translation id="3999574733850440202">Fail Microsoft yang dibuka baru-baru ini telah dialihkan kepada OneDrive</translation>
 <translation id="4002066346123236978">Tajuk</translation>
 <translation id="4017788180641807848">Inggeris (AS) dengan papan kekunci Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Anda mesti berada dalam talian untuk mengakses fail ini.</translation>
 <translation id="4212740939091998969">Fail bernama "<ph name="FOLDER_NAME" />" sudah wujud. Sila pilih nama lain.</translation>
 <translation id="4218274196133425560">Alik keluar pengecualian untuk <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Buka tetapan</translation>
 <translation id="4261901459838235729">Persembahan Google</translation>
 <translation id="4277536868133419688">Penapis <ph name="FILTER_NAME" /> dihidupkan.</translation>
 <translation id="4290535918735525311">1 folder dikongsi dengan Linux</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Fail yang diperoleh semula dari Google Drive</translation>
 <translation id="5278111733643988471">Untuk memulihkan item ini, seret item ke folder baharu di luar sampah. Folder asal "<ph name="PARENT_FOLDER_NAME" />" untuk item ini telah dipadamkan.</translation>
 <translation id="5288441970121584418">Burger</translation>
+<translation id="529175790091471945">Formatkan peranti ini</translation>
 <translation id="5293615890992542006">Pengalihan fail ini disekat oleh dasar pentadbir</translation>
 <translation id="5305688511332277257">Tiada yang dipasang</translation>
 <translation id="5317780077021120954">Simpan</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Jangan gunakan tetapan proksi untuk hos dan domain ini:</translation>
 <translation id="541890217011173530">Kurdistan Sorani dengan papan kekunci berasaskan bahasa Inggeris</translation>
 <translation id="5422221874247253874">Titik Akses</translation>
+<translation id="5422781158178868512">Maaf, peranti storan luaran anda tidak dapat dikenali.</translation>
 <translation id="5438282218546237410">Tiada hasil carian untuk <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Storan tidak mencukupi.</translation>
 <translation id="5449551289610225147">Kata laluan tidak sah</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> item dipilih</translation>
 <translation id="5763377084591234761">Jerman (Switzerland)</translation>
 <translation id="5769519078756170258">Hos atau domain yang hendak dikecualikan</translation>
+<translation id="5774295353725270860">Buka apl Fail</translation>
 <translation id="5775750595919327203">Urdu</translation>
 <translation id="5776325638577448643">Padamkan dan Formatkan</translation>
 <translation id="57838592816432529">Redam</translation>
 <translation id="5788127256798019331">Fail Play</translation>
+<translation id="5788367137662787332">Maaf, sekurang-kurangnya satu pemetakan pada peranti <ph name="DEVICE_LABEL" /> tidak dapat dilekapkan.</translation>
 <translation id="5804245609861364054">Alih Huruf Kannada</translation>
 <translation id="5814126672212206791">Jenis sambungan</translation>
 <translation id="5817397429773072584">Bahasa China Tradisional</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Iceland</translation>
 <translation id="7229570126336867161">Perlukan EVDO</translation>
 <translation id="7230898482850090046">Pentadbir anda telah meminta anda untuk mematikan tetapan "Kunci SIM"</translation>
+<translation id="7232750842195536390">Penamaan semula gagal</translation>
 <translation id="7238097264433196391">Nama pemacu</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Butiran</translation>
 <translation id="7246947237293279874">Proksi FTP</translation>
+<translation id="725109152065019550">Maaf, pentadbir anda telah melumpuhkan storan luar pada akaun anda.</translation>
 <translation id="7256405249507348194">Ralat yang tidak dikenal pasti: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Perkhidmatan yang tersedia</translation>
 <translation id="7291818353625820805">Mahu kekunci untuk mengulang? Matikan anda aksen dalam Tetapan Papan Kekunci</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google Maps</translation>
 <translation id="7419668828140929293">Memulihkan "<ph name="FILENAME" />"</translation>
 <translation id="7435577899926900307">Dvorak AS</translation>
+<translation id="7436921188514130341">Oh, Tidak! Ralat berlaku semasa penamaan semula.</translation>
 <translation id="7458955835361612701">Tiada imej baru-baru ini</translation>
 <translation id="7469894403370665791">Menyambung ke rangkaian ini secara automatik</translation>
 <translation id="7486315294984620427">Untuk melepaskan fail dalam Parallels Desktop, fail itu mesti disalin ke fail Windows.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Sematkan pada rak</translation>
 <translation id="7553492409867692754">Beri Linux kebenaran apl untuk mengakses fail dalam folder <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Kini anda berstatus luar talian. Penyegerakan fail akan disambung semula apabila anda disambungkan kepada Internet</translation>
+<translation id="7589461650300748890">Wah, di sana. Berhati-hati.</translation>
 <translation id="7589661784326793847">Sila tunggu sebentar</translation>
 <translation id="7600126690270271294">Serbia</translation>
 <translation id="7603724359189955920">Grid</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft® OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Ralat mengkonfigurasi rangkaian</translation>
+<translation id="7839051173341654115">Lihat/Sandarkan media</translation>
 <translation id="7839804798877833423">Pengambilan fail ini akan menggunakan kira-kira <ph name="FILE_SIZE" /> data mudah alih.</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7857117644404132472">Tambah pengecualian</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Poland</translation>
 <translation id="7874321682039004450">Filipina</translation>
 <translation id="78946041517601018">Drive dikongsi</translation>
+<translation id="7897900149154324287">Pada masa hadapan, pastikan anda melentingkan peranti boleh dialih keluar anda dalam apl Fail sebelum mencabutnya. Jika tidak, anda mungkin kehilangan data.</translation>
 <translation id="7901567919203965902">US Workman international</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Maaf, sekurang-kurangnya satu pemetakan pada peranti storan luaran anda tidak boleh dilekapkan.</translation>
 <translation id="7908793776359722643">Tindakan memformatkan petakan akan memadamkan semua data yang disimpan dalam petakan itu. Tindakan ini tidak boleh dibuat asal.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Fail anda dalam My Drive akan disegerakkan dengan Chromebook anda secara automatik supaya anda boleh mengakses fail tersebut tanpa sambungan Internet.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Untuk memulihkan item ini, seret item ke folder baharu. Folder asal untuk beberapa item ini telah dipadamkan.</translation>
 <translation id="8874184842967597500">Tidak bersambung</translation>
 <translation id="8876368061475701452">Dibaris Gilir</translation>
+<translation id="8893928184421379330">Maaf, peranti <ph name="DEVICE_LABEL" /> tidak dapat dikenali.</translation>
 <translation id="8902208737522818687">Antarabangsa AS (PC)</translation>
 <translation id="8903931173357132290">Graduan</translation>
 <translation id="8912078710089354287">Anjing menggoyang-goyangkan ekor</translation>

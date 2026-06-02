@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">ນະ​ໂຍ​ບາຍ​ທີ່ບໍ່ຮູ້​ຈັກ​</translation>
 <translation id="1227677022489889280">ໃຫ້ເຫດຜົນສໍາລັບການຍ້າຍ (ຈຳເປັນ)</translation>
 <translation id="1228893227497259893">ຕົວລະບຸ​ເອກະລັກ​ທີ່​ບໍ່​ຖືກຕ້ອງ</translation>
+<translation id="122989279399348496">ໃນລະຫວ່າງທີ່ທ່ານເຂົ້າສູ່ລະບົບ, <ph name="DOMAIN" /> ສາມາດຢືນຢັນ <ph name="EMAIL" /> ຢູ່ເວັບໄຊທີ່ຮອງຮັບໄດ້ເພື່ອໃຫ້ທ່ານບໍ່ຕ້ອງກວດສອບກ່ອງອີເມວຂອງທ່ານ</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ກວດພົບອັດຕະໂນມັດ)</translation>
 <translation id="1232569758102978740">ບໍ່ມີຫົວຂໍ້</translation>
 <translation id="1234539281285007945">ຕ້ອງລະບຸ <ph name="FIELD_1" /></translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ມີຫຼາຍຄຳສັ່ງພ້ອມໃຫ້ນຳໃຊ້, ກົດ Tab ເພື່ອເບິ່ງພວກມັນ</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ລາຍລະອຽດບັດສະເໝືອນ</translation>
+<translation id="1802420021606590788">Chrome ຈະປະມວນຜົນຊື່ໜ້າ ແລະ URL ໃນພື້ນທີ່ສ່ວນບຸກຄົນໃນຄລາວ</translation>
 <translation id="1803254472779303354">ອະນຸຍາດໃຫ້ລັອກເມົ້າ</translation>
 <translation id="1803351196216024260">ສາມາດຂໍໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="1804258830776932716">ເປີດການນຳໃຊ້ Pix ໂດຍການລິ້ງບັນຊີຂອງທ່ານຢ່າງວ່ອງໄວ</translation>
@@ -3027,6 +3029,7 @@
 <translation id="5742806904559466333">ບາ, ຄລັບ ແລະ ສະຖານບັນເທີງຍາມກາງຄືນ</translation>
 <translation id="5743684619253032786">ຜະລິດຕະພັນເບິ່ງແຍງເລັບ</translation>
 <translation id="574392208103952083">ສື່ກາງ</translation>
+<translation id="5745586894920491759">Chrome ຈະປະມວນຜົນຊື່ໜ້າ ແລະ URL ໃນຄລາວ</translation>
 <translation id="5745733273847572235">ສາມາດຂໍສະຖານທີ່ຂອງທ່ານ</translation>
 <translation id="5750869797196646528">ການຕິດຕາມມື</translation>
 <translation id="5752327398324808817">ລະບຸ 1 ຄຳ ຫຼື 2 ຄຳ</translation>
@@ -3421,6 +3424,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ເບິ່ງບັນທຶກ</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ກຳລັງກວດເບິ່ງການຕັ້ງຄ່າພຣັອກຊີ, ໄຟລ໌ວໍ ແລະ DNS ທີ່ປອດໄພ<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">ຢືນຢັນອີເມວຂອງທ່ານໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6366710531182496394">ໜີບກະຫຼັບເຟີຢູ່ເບື້ອງຊ້າຍສອງເທື່ອ</translation>
 <translation id="6367196786591004737">ລຶບລາຍການ</translation>
 <translation id="6370022303958842211">ຄຳສັ່ງສິດເຂົ້າເຖິງອຸປະກອນ ເຊັ່ນ: ການເຂົ້າສູ່ລະບົບ (ຮວມທັງເຫດຜົນການເຂົ້າສູ່ລະບົບບໍ່ສຳເລັດ), ການອອກຈາກລະບົບ, ການລັອກ ແລະ ປົດລັອກ</translation>
@@ -4065,6 +4069,7 @@
 <translation id="7388380253839603603">ລາຄານ້ຳມັນ ແລະ ເຊື້ອໄຟຍານພາຫະນະ</translation>
 <translation id="7388594495505979117">{0,plural, =1{ອຸປະກອນຂອງທ່ານຈະຣີສະຕາດໃນ 1 ນາທີ}other{ອຸປະກອນຂອງທ່ານຈະຣີສະຕາດໃນ # ນາທີ}}</translation>
 <translation id="7393161616326137353">ເກມຜະຈົນໄພ</translation>
+<translation id="7393243238767102021">ອະນຸຍາດໃຫ້ <ph name="DOMAIN" /> ຢັ້ງຢືນອີເມວນີ້ໂດຍອັດຕະໂນມັດບໍ?</translation>
 <translation id="7393475648162498734">ສະແດງຮາງວັນ ແລະ ສິດທິປະໂຫຍດໃດທີ່ບັດຂອງທ່ານມີສິດເມື່ອຈ່າຍເງິນ</translation>
 <translation id="7393971683644170444">ກໍາລັງເຊື່ອມຕໍ່ກັບຜູ້ໃຫ້ບໍລິການບັດຂອງທ່ານ...</translation>
 <translation id="739728382607845710">ໄອຄອນຕົວຈັດການການຈ່າຍເງິນ</translation>
@@ -5060,6 +5065,7 @@
 <translation id="8963117664422609631">ໄປຫາການຕັ້ງຄ່າເວັບໄຊ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />ຄຳ​ແນະ​ນຳ:<ph name="MARKUP_2" />ເບິ່ງ​ໃຫ້​ແນ່​ໃຈ​ວ່າ ທ່ານ​ມີ​ການ​ເຊື່ອມ​ຕໍ່​ຂໍ້​ມູນ​ຖືກ​ຕ້ອງ​ແລ້ວ<ph name="MARKUP_3" />ໂຫຼຼດ​ໜ້າ​ເວັບ​ນີ້​ພາຍ​ຫຼັງ<ph name="MARKUP_4" />ກວດ​ເບິ່ງ​ທີ່​ຢູ່​ທີ່​ທ່ານ​ປ້ອນ​ເຂົ້າ​<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">ໄຟລ໌ໃນເຄື່ອງຂອງທ່ານຈະຖືກລຶບໃນ <ph name="HOURS" /> ຊົ່ວໂມງ</translation>
+<translation id="8964904785315870349">ອີເມວທີ່ຢັ້ງຢືນແລ້ວ</translation>
 <translation id="8968766641738584599">ບັນທຶກບັດໄວ້</translation>
 <translation id="8970887620466824814">ມີບາງຢ່າງຜິດພາດ.</translation>
 <translation id="8971063699422889582">ໃບ​ຢັ້ງ​ຢືນ​ຂອງເຊີບເວີໝົດອາຍຸແລ້ວ​.</translation>

@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">Byla seskupena <ph name="TABS_COUNT_ONE" /> karta</translation>
 <translation id="1844381456014878100">Po 7 dnech bez aktivity</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> karty}other{<ph name="TABS_COUNT_MANY" /> karet}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Přidat kartu do seznamu četby}few{Přidat karty do seznamu četby}many{Přidat karty do seznamu četby}other{Přidat karty do seznamu četby}}</translation>
 <translation id="1909810060368225529">Oznámení: Změny téhle sdílené skupiny karet jsou viditelné pro všechny. Ve sdílených skupinách karet můžou všichni provádět změny.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Připnout kartu}few{Připnout karty}many{Připnout karty}other{Připnout karty}}</translation>
 <translation id="1982637982196732906">Přesunout do neaktivní sekce</translation>

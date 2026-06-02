@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Preuzimanje...</translation>
 <translation id="1651617469580841801">Kad upotrebljavate Google objektiv, naslov, URL i sadržaj stranice, uključujući PDF-ove, šalju se Googleu. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">O ChromeOS Flexu</translation>
+<translation id="1665867022636014702">Upotrijebite postavke preglednika koje preporučuje Google</translation>
 <translation id="1674870198290878346">Otvori vezu u ano&amp;nimnom prozoru Chromea</translation>
 <translation id="1682634494516646069">Google Chrome ne može čitati iz svojeg podatkovnog direktorija niti u njega pisati: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upišete Chrome šalje alatima za pretraživanje, AI alatima i alatima za agente vaše organizacije kako bi vam pružio prijedloge.</translation>
@@ -238,6 +239,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="345171907106878721">Dodajte sebe kao korisnika Chromea</translation>
 <translation id="3453763134178591239">Uvjeti za Chrome OS</translation>
 <translation id="3503306920980160878">Chrome treba dopuštenje za pristup vašoj lokaciji da bi je podijelio s ovom web-lokacijom</translation>
+<translation id="3539955434060988644">Otvori vezu u ano&amp;nimnom prozoru Chromea</translation>
 <translation id="3576528680708590453">Vaš administrator sustava konfigurirao je Google Chrome da otvara zamjenski preglednik za pristup URL-u <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Uključite sinkronizaciju Chromea kako bi vam bio prilagođen na svim vašim uređajima</translation>
 <translation id="3583751698304738917">Već ste prijavljeni kao <ph name="USER_EMAIL_ADDRESS" /> na drugom profilu u Chromeu</translation>

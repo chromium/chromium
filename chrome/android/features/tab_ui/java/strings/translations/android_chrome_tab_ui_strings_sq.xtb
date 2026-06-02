@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> skedë e grupuar</translation>
 <translation id="1844381456014878100">Pas 7 ditësh pa aktivitet</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Shtoje skedën në listë leximi}other{Shtoji skedat në listë leximi}}</translation>
 <translation id="1909810060368225529">Njoftim: Ndryshimet në këtë grup të ndarë të skedave janë të dukshme për të gjithë. Të gjithë mund të bëjnë ndryshime te grupet e ndara të skedave</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Gozhdo skedën}other{Gozhdo skedat}}</translation>
 <translation id="1982637982196732906">Zhvendos në seksionin joaktiv</translation>

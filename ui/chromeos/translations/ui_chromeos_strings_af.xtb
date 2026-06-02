@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Outomatiese naambedieners</translation>
 <translation id="1210831758834677569">Lao</translation>
 <translation id="1221555006497674479">Berging is min; daar is <ph name="REMAINING_PERCENTAGE" />% van jou <ph name="TOTAL_SPACE" /> gedeelde Drive-berging oor.</translation>
+<translation id="1239594683407221485">Verken die toestel se inhoud in die Lêers-app.</translation>
 <translation id="1243314992276662751">Laai op</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkte internetverbinding</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Kan nie uitvee nie. Item word tans gebruik.</translation>
 <translation id="1307931752636661898">Kan nie Linux-lêers bekyk nie</translation>
 <translation id="1313405956111467313">Outomatiese instaanbedieneropstelling</translation>
+<translation id="1340527397989195812">Rugsteun media van die toestel af met die lêerprogram.</translation>
 <translation id="134645005685694099">Jou toestel het nie genoeg bergingspasie om lêersinkronisering aangeskakel te hou nie. Nuwe lêers sal nie meer outomaties gesinkroniseer word nie.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Die lêer of gids is nie bruikbaar nie.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Geen gebruikersertifikaat nie</translation>
 <translation id="1403008701842173542">Oral</translation>
 <translation id="1404323374378969387">Noors</translation>
+<translation id="1408504635543854729">Verken die toestel se inhoud in die Lêers-app. Die inhoud word deur 'n administrateur beperk en kan nie gewysig word nie.</translation>
 <translation id="1412476183660741812">Ondertekende webbondel</translation>
 <translation id="1433628812591023318">Die lêer moet na Windows-lêers geskuif word om in Parallels Desktop gelos te word.</translation>
 <translation id="1435838927755162558">Deel vouer met Parallels Desktop</translation>
 <translation id="1439919885608649279">Persoon met blomme</translation>
 <translation id="1458457385801829801">Maak <ph name="TARGET_NAME" /> los</translation>
+<translation id="1464781208867302907">Gaan na Instellings toe vir toestelvoorkeure</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> lêers kon nie gekopieer word nie omdat hulle geënkripteer is.</translation>
 <translation id="1471718551822868769">Slowaaks</translation>
 <translation id="1482884275703521657">Fins</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Bestuur in Drive</translation>
 <translation id="2004942826429452291">Lêers sal in die wolk en op hierdie Chromebook geberg word.</translation>
 <translation id="2009067268969781306">Alle data wat op 'n skyf geberg is, sal uitgevee word wanneer dit geformateer word. Hierdie handeling kan nie ontdoen word nie.</translation>
+<translation id="2018352199541442911">Jammer, jou eksterne bergingtoestel word nie in hierdie stadium gesteun nie.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
 <translation id="2029385776150020336">VSA-uitgebreid</translation>
 <translation id="2037845485764049925">Russies</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470447085858632">Kry vanlyn toeagng tot jou Google Drive-lêers met lêersinkronisering</translation>
 <translation id="2470939964922472929">'n Verkeerde PIN is te veel kere ingevoer. Voer die persoonlike deblokkeringsleutel (PUK) van 8 syfers wat deur jou selfoonmaatskappy verskaf is in om 'n nuwe PIN op te stel.</translation>
+<translation id="249113932447298600">Jammer, die toestel <ph name="DEVICE_LABEL" /> word nie op hierdie tydstip gesteun nie.</translation>
 <translation id="2500392669976258912">Goedjarati-foneties</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Skandeer</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Oekraïens</translation>
 <translation id="3326821416087822643">Kompakteer tans <ph name="FILE_NAME" /> …</translation>
 <translation id="3335337277364016868">Jaar opgeneem</translation>
+<translation id="3348038390189153836">Verwyderbare toestel bespeur</translation>
 <translation id="3353984535370177728">Kies 'n vouer om op te laai</translation>
 <translation id="3356580349448036450">Voltooi</translation>
 <translation id="3358452157379365236">Kitaar</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Laai mobiele profiel af, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engels (VK)</translation>
 <translation id="3975895378829046965">Bangla-foneties</translation>
+<translation id="3983764759749072418">Play Winkel-programme het toegang tot hierdie toestel.</translation>
 <translation id="3999574733850440202">Microsoft-lêers wat onlangs oopgemaak is, het na OneDrive toe geskuif</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Engels (VSA) met Workman-sleutelbord</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Jy moet aanlyn wees om by hierdie lêer in te gaan.</translation>
 <translation id="4212740939091998969">'n Lêer met die naam "<ph name="FOLDER_NAME" />" bestaan reeds. Kies asseblief 'n ander naam.</translation>
 <translation id="4218274196133425560">Verwyder uitsondering vir <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Maak instellings oop</translation>
 <translation id="4261901459838235729">Google-aanbieding</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" />-filter is aan.</translation>
 <translation id="4290535918735525311">1 vouer is met Linux gedeel</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Het lêers van Google Drive herwin</translation>
 <translation id="5278111733643988471">Sleep hierdie item na ’n nuwe vouer buite asblik om dit terug te stel. Die oorspronklike vouer "<ph name="PARENT_FOLDER_NAME" />" vir hierdie item is uitgevee.</translation>
 <translation id="5288441970121584418">Burger</translation>
+<translation id="529175790091471945">Formateer hierdie toestel</translation>
 <translation id="5293615890992542006">Administrateursbeleid verhoed dat hierdie lêer geskuif kan word</translation>
 <translation id="5305688511332277257">Niks geïnstalleer nie</translation>
 <translation id="5317780077021120954">Berg</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Moenie die instaanbedienerinstellings vir hierdie gashere en domeine gebruik nie:</translation>
 <translation id="541890217011173530">Sorani-Koerdies met sleutelbord wat op Engels gegrond is</translation>
 <translation id="5422221874247253874">Toegangspunt</translation>
+<translation id="5422781158178868512">Jammer, jou eksterne bergingtoestel kon nie herken word nie.</translation>
 <translation id="5438282218546237410">Daar is geen resultate vir <ph name="SEARCH_TERM" /> nie.</translation>
 <translation id="5447680084201416734">Te min bergingspasie.</translation>
 <translation id="5449551289610225147">Ongeldige wagwoord</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> items is gekies</translation>
 <translation id="5763377084591234761">Duits (Switserland)</translation>
 <translation id="5769519078756170258">Gasheer of domein om uit te sluit</translation>
+<translation id="5774295353725270860">Maak Lêers-app oop</translation>
 <translation id="5775750595919327203">Oerdoe</translation>
 <translation id="5776325638577448643">Vee uit en formateer</translation>
 <translation id="57838592816432529">Demp</translation>
 <translation id="5788127256798019331">Play-lêers</translation>
+<translation id="5788367137662787332">Jammer, ten minste een deel van die toestel <ph name="DEVICE_LABEL" /> kon nie gekoppel word nie.</translation>
 <translation id="5804245609861364054">Kannada-transliterasie</translation>
 <translation id="5814126672212206791">Verbindingtipe</translation>
 <translation id="5817397429773072584">Tradisionele Sjinees</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Yslands</translation>
 <translation id="7229570126336867161">Benodig EVDO</translation>
 <translation id="7230898482850090046">Jou administateur het jou versoek om die "Sluit SIM"-instelling af te skakel</translation>
+<translation id="7232750842195536390">Kon nie hernoem nie</translation>
 <translation id="7238097264433196391">Skyfnaam</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, besonderhede</translation>
 <translation id="7246947237293279874">FTP-instaanbediener</translation>
+<translation id="725109152065019550">Jammer, jou administrateur het eksterne berging op jou rekening gedeaktiveer.</translation>
 <translation id="7256405249507348194">Herken nie fout nie: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Beskikbare dienste</translation>
 <translation id="7291818353625820805">Wil jy hê dat sleutels herhaal word? Skakel aksenttekens af in Sleutelbordinstellings</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google-kaart</translation>
 <translation id="7419668828140929293">Stel tans "<ph name="FILENAME" />" terug</translation>
 <translation id="7435577899926900307">VSA-Dvorak</translation>
+<translation id="7436921188514130341">Ai tog! Kon nie hernoem nie.</translation>
 <translation id="7458955835361612701">Geen onlangse prente nie</translation>
 <translation id="7469894403370665791">Koppel outomaties aan hierdie netwerk</translation>
 <translation id="7486315294984620427">Die lêer moet na Windows-lêers gekopieer word om in Parallels Desktop gelos te word.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Speld aan rak vas</translation>
 <translation id="7553492409867692754">Gee Linux-programme toegang tot lêers in die <ph name="FOLDER_NAME" />-vouer</translation>
 <translation id="7555339735447658365">Jy is tans vanlyn. Lêersinkronisering sal hervat word wanneer jy aan die internet gekoppel is</translation>
+<translation id="7589461650300748890">Hokaai daar. Wees versigtig.</translation>
 <translation id="7589661784326793847">Wag net 'n oomblik</translation>
 <translation id="7600126690270271294">Serwies</translation>
 <translation id="7603724359189955920">Roosters</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Kon nie netwerk opstel nie</translation>
+<translation id="7839051173341654115">Bekyk/rugsteun media</translation>
 <translation id="7839804798877833423">Dit sal ongeveer <ph name="FILE_SIZE" /> mobiele data gebruik om hierdie lêers te gaan haal.</translation>
 <translation id="7846076177841592234">Kanselleer keuse</translation>
 <translation id="7857117644404132472">Voeg uitsondering by</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Pools</translation>
 <translation id="7874321682039004450">Filippyns</translation>
 <translation id="78946041517601018">Gedeelde Drives</translation>
+<translation id="7897900149154324287">In die toekoms moet jy seker maak dat jy jou verwyderbare toestel in die Lêersprogram verwyder voor jy dit uitprop. Anders kan jy dalk data verloor.</translation>
 <translation id="7901567919203965902">Internasionale VSA-Workman</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Jammer, minstens een deel van jou eksterne bergingtoestel kon nie gekoppel word nie.</translation>
 <translation id="7908793776359722643">Wanneer 'n verdeling geformateer word, sal alle data uitgevee word wat daarop geberg is. Hierdie handeling kan nie ontdoen word nie.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Jou lêers in My Drive sal outomaties met jou Chromebook gesinkroniseer word sodat jy hulle sonder ’n internetverbinding kan kry.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Sleep hierdie items na ’n nuwe vouer om hulle terug te stel. Die oorspronklike vouers vir sommige van hierdie items is uitgevee.</translation>
 <translation id="8874184842967597500">Nie gekoppel nie</translation>
 <translation id="8876368061475701452">Op waglys</translation>
+<translation id="8893928184421379330">Jammer, die toestel <ph name="DEVICE_LABEL" /> kon nie herken word nie.</translation>
 <translation id="8902208737522818687">VSA-internasionaal (rekenaar)</translation>
 <translation id="8903931173357132290">Gegradueerde</translation>
 <translation id="8912078710089354287">Hond waai stert</translation>

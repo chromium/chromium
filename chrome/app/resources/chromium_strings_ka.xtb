@@ -36,6 +36,7 @@
 <translation id="1324107359134968521">Chromium საჭიროებს Bluetooth-ს, რომ აღმოაჩინოს 
  Bluetooth მოწყობილობები. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">ენის ამოცნობა</translation>
+<translation id="1330742950061766891">გამოიყენეთ Chromium-ის ბრაუზერის რეკომენდებული პარამეტრები</translation>
 <translation id="1342274909142618978">ასევე, წაიშალოს მონაცემები Chromium-იდან (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">ჩამაგრებულია! სურათების ძიებაზე წვდომა შეგიძლიათ ხელსაწყოთა ზოლში ღილაკით „ახალი“</translation>
 <translation id="1356661055722410047">სიახლე! თქვენს ეკრანზე შეგიძლიათ, თარგმნოთ ტექსტი და სურათები</translation>
@@ -373,6 +374,7 @@
 <translation id="5187123684706427865">Chromium ანგარიში საჭიროებს ხელახლა ავტორიზაციას</translation>
 <translation id="5231355151045086930">Chromium-იდან გამოსვლა</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
+<translation id="5249261924633168472">ბმულის გახსნა Chromium-ის Inco&amp;gnito ფანჯარაში</translation>
 <translation id="5254739261293693943">ამ ვიდეოსთან დაკავშირებით შეკითხვების დასმა</translation>
 <translation id="5276305953263010518">ჩამოტვირთეთ Chromium აპი, რომ შეინახოთ პაროლები ნებისმიერი ადგილიდან</translation>
 <translation id="5277894862589591112">ცვლილებების მისასადაგებლად ხელახლა გაუშვით Chromium</translation>

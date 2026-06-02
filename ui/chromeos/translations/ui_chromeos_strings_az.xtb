@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Avtomatik ad serverləri</translation>
 <translation id="1210831758834677569">Laos</translation>
 <translation id="1221555006497674479">Yaddaş azdır, <ph name="TOTAL_SPACE" /> ümumi ortaq disk yaddaşından <ph name="REMAINING_PERCENTAGE" />% qalıb</translation>
+<translation id="1239594683407221485">Fayllar tətbiqində cihazın kontentini kəşf edin.</translation>
 <translation id="1243314992276662751">Yükləyin</translation>
 <translation id="1249250836236328755">Janr</translation>
 <translation id="1254593899333212300">Birbaşa İnternet bağlantısı</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Silmək olmur. Element istifadə edilir.</translation>
 <translation id="1307931752636661898">Linux fayllarını göstərmək alınmadı</translation>
 <translation id="1313405956111467313">Avtomatik proksi sazlama</translation>
+<translation id="1340527397989195812">Fayllar tətbiqini istifadə etməklə medianı cihazdan yedəkləyin.</translation>
 <translation id="134645005685694099">Fayl sinxronlaşdırmasını aktiv saxlamaq üçün cihazda yaddaş yeri kifayət deyil. Yeni fayllar avtomatik sinxronlaşdırılmayacaq.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fayl və ya direktoriya qeyri-stabildir.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">İstifadəçi sertifikatı yoxdur</translation>
 <translation id="1403008701842173542">Hər yerdə</translation>
 <translation id="1404323374378969387">Norveç</translation>
+<translation id="1408504635543854729">Fayllar tətbiqində cihazın kontentini kəşf edin. Kontent admin tərəfindən məhdudlaşdırıldığı üçün dəyişdirilə bilməz.</translation>
 <translation id="1412476183660741812">İmzalanmış veb-paketi</translation>
 <translation id="1433628812591023318">Paralellər Masaüstünə faylları əlavə etmək üçün fayl Windows fayllarına köçürülməlidir.</translation>
 <translation id="1435838927755162558">Qovluğu Parallels Desktop ilə paylaşın</translation>
 <translation id="1439919885608649279">Əlində gül olan adam</translation>
 <translation id="1458457385801829801">Çıxarın: <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Cihaz seçimləri üçün ayarlara daxil olun.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fayl şifrələndiyi üçün kopyalanmadı.</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1482884275703521657">Fin</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Diskdə idarə edin</translation>
 <translation id="2004942826429452291">Fayllar bulud və bu Chromebook-da saxlanacaq.</translation>
 <translation id="2009067268969781306">Formatdan sonra diskdə saxlanılan bütün data silinəcək. Bu əməliyyat geri qaytarıla bilməz.</translation>
+<translation id="2018352199541442911">Üzr istəyirik, xarici yaddaş cihazınız hazırda dəstəklənmir.</translation>
 <translation id="2025955442973426285">Tiqrin</translation>
 <translation id="2029385776150020336">ABŞ (genişləndirilmiş)</translation>
 <translation id="2037845485764049925">Rus</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamaqoçi</translation>
 <translation id="2468470447085858632">Fayl sinxronlaşdırması ilə Google Disk fayllarına oflayn daxil olun</translation>
 <translation id="2470939964922472929">Yanlış PİN kod dəfələrlə daxil edilib. Yeni PİN kod ayarlamaq üçün operator tərəfindən təmin edilən 8 rəqəmli Şəxsi Blokdan Çıxarma Açarını (PUK) daxil edin.</translation>
+<translation id="249113932447298600">Üzr istəyirik, <ph name="DEVICE_LABEL" /> cihazı hazırda dəstəklənmir.</translation>
 <translation id="2500392669976258912">Qucarat Fonetikası</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Skan edin</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukrayna</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> sıxılır...</translation>
 <translation id="3335337277364016868">Qeydə alındığı il</translation>
+<translation id="3348038390189153836">Çıxarıla bilən cihaz aşkarlandı</translation>
 <translation id="3353984535370177728">Yükləmək üçün qovluq seçin</translation>
 <translation id="3356580349448036450">Tamamlandı</translation>
 <translation id="3358452157379365236">Gitara</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Mobil profili endirin, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">İngilis (BK)</translation>
 <translation id="3975895378829046965">Banqla Fonetikası</translation>
+<translation id="3983764759749072418">Play Market tətbiqlərinin bu cihaza girişi var.</translation>
 <translation id="3999574733850440202">Bu yaxınlarda açılmış Microsoft faylları OneDrive-a köçürülüb</translation>
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4017788180641807848">Workman klaviaturası ilə İngilis dili (ABŞ)</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Bu fayla daxil olmaq üçün onlayn olmalısınız.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" adlı qovluq artıq mövcuddur. Başqa ad seçin.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> üçün istisnanı silin</translation>
+<translation id="4242533952199664413">Ayarları açın</translation>
 <translation id="4261901459838235729">Google təqdimatı</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> filtri aktivdir.</translation>
 <translation id="4290535918735525311">Linux'da 1 qovluq paylaşıldı</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Google Diskdən bərpa edilmiş fayllar</translation>
 <translation id="5278111733643988471">Bu elementi bərpa etmək üçün zibil qutusunun xaricində yeni bir qovluğa sürüşdürün. Bu element üçün "<ph name="PARENT_FOLDER_NAME" />" orijinal qovluğu silinib.</translation>
 <translation id="5288441970121584418">Burger</translation>
+<translation id="529175790091471945">Bu cihazı format edin</translation>
 <translation id="5293615890992542006">Bu faylın köçürülməsi administrator siyasəti əsasında bloklanıb</translation>
 <translation id="5305688511332277257">Heç biri quraşdırılmayıb</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Bu host və domenlər üçün proksi ayarlarını istifadə etməyin:</translation>
 <translation id="541890217011173530">İngilis dilli klaviaturası ilə Sorani Kürd dili</translation>
 <translation id="5422221874247253874">Giriş Nöqtəsi</translation>
+<translation id="5422781158178868512">Sizin xarici yaddaş cihazınız tanınmır.</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> üçün nəticə yoxdur.</translation>
 <translation id="5447680084201416734">Kifayət qədər yer yoxdur.</translation>
 <translation id="5449551289610225147">Yanlış parol</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> element seçilib</translation>
 <translation id="5763377084591234761">Alman (İsveçrə)</translation>
 <translation id="5769519078756170258">İstisna ediləcək host və ya domen</translation>
+<translation id="5774295353725270860">Fayl tətbiqini açın</translation>
 <translation id="5775750595919327203">Urdu dili</translation>
 <translation id="5776325638577448643">Silin və format edin</translation>
 <translation id="57838592816432529">Səssiz</translation>
 <translation id="5788127256798019331">Faylları oxudun</translation>
+<translation id="5788367137662787332">Üzr istəyirik, <ph name="DEVICE_LABEL" /> cihazının ən azı bir hissəsi montaj edilə bilməz.</translation>
 <translation id="5804245609861364054">Kannada dilində Transliterasiya</translation>
 <translation id="5814126672212206791">Bağlantı növü</translation>
 <translation id="5817397429773072584">Ənənəvi Çin</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">İsland dili</translation>
 <translation id="7229570126336867161">EVDO lazımdır</translation>
 <translation id="7230898482850090046">Administratorunuz "SIM'i kilidləyin" ayarını deaktiv etməyi tələb edib</translation>
+<translation id="7232750842195536390">Yenidən adlandırmaq alınmadı</translation>
 <translation id="7238097264433196391">Cihazın adı</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Detallar</translation>
 <translation id="7246947237293279874">FTP Proksisi</translation>
+<translation id="725109152065019550">Üzr istəyirik, administratorunuz hesabınızda xarici yaddaş ehtiyatını deaktiv edib.</translation>
 <translation id="7256405249507348194">Naməlum xəta: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Əlçatan xidmətlər</translation>
 <translation id="7291818353625820805">Düymələrin təkrarlanmasını istəyirsiniz? Klaviatura Ayarlarında aksent vurğularını deaktiv edin</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google xəritə</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" bərpa edilir</translation>
 <translation id="7435577899926900307">ABŞ (Dvorak)</translation>
+<translation id="7436921188514130341">Yenidən adlandırarkən xəta baş verdi.</translation>
 <translation id="7458955835361612701">Son şəkillər yoxdur</translation>
 <translation id="7469894403370665791">Bu şəbəkəyə avtomatik olaraq qoşulun</translation>
 <translation id="7486315294984620427">Paralellər Masaüstünə faylları əlavə etmək üçün fayl Windows fayllarına kopyalanmalıdır.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Rəfə sancaqlayın</translation>
 <translation id="7553492409867692754">Linux tətbiqlərinə <ph name="FOLDER_NAME" /> qovluğundakı fayllara giriş icazəsi verin</translation>
 <translation id="7555339735447658365">Oflaynsınız. İnternetə qoşulduqda fayl sinxronlaşdırması bərpa ediləcək</translation>
+<translation id="7589461650300748890">Ehtiyatlı olun.</translation>
 <translation id="7589661784326793847">Bir saniyə gözləyin</translation>
 <translation id="7600126690270271294">Serb</translation>
 <translation id="7603724359189955920">Cədvəl</translation>
@@ -896,6 +913,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Şəbəkə konfiqurasiya xətası</translation>
+<translation id="7839051173341654115">Mediaya baxın/yedəkləyin</translation>
 <translation id="7839804798877833423">Bu faylların əldə edilməsi təxminən <ph name="FILE_SIZE" /> mobil data istifadə edəcək.</translation>
 <translation id="7846076177841592234">Seçimi ləğv edin</translation>
 <translation id="7857117644404132472">İstisna əlavə edin</translation>
@@ -903,8 +921,10 @@
 <translation id="7868774406711971383">Polyak</translation>
 <translation id="7874321682039004450">Filippin</translation>
 <translation id="78946041517601018">Paylaşılmış disklər</translation>
+<translation id="7897900149154324287">Gələcəkdə, Fayllar tətbiqindəki çıxarıla bilən cihazınızı ayırmadan öncə əlaqəsini kəsin. Əks halda data itirə bilərsiniz.</translation>
 <translation id="7901567919203965902">ABŞ (Workman, beynəlxalq)</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Təəssüf ki, xarici yaddaş cihazınızdakı ən azı bir bölmə montaj edilə bilmədi.</translation>
 <translation id="7908793776359722643">Hissənin format edilməsi ilə orada saxlanılan bütün data silinəcək. Bu əməliyyat geri qaytarıla bilməz.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Mənim diskim bölməsindəki fayllar avtomatik Chromebook-a sinxronlaşdırılacaq ki, internet bağlantısı olmadan onlara daxil ola biləsiniz.</translation>
@@ -1038,6 +1058,7 @@
 <translation id="8873014196523807561">Bu elementləri bərpa etmək üçün yeni bir qovluğa sürüşdürün. Bu elementlərin bəziləri üçün orijinal qovluqlar silinib.</translation>
 <translation id="8874184842967597500">Qoşulmayıb</translation>
 <translation id="8876368061475701452">Növbədədir</translation>
+<translation id="8893928184421379330">Üzr istəyirik, <ph name="DEVICE_LABEL" /> cihazı tanınmadı.</translation>
 <translation id="8902208737522818687">ABŞ (kompüter, beynəlxalq)</translation>
 <translation id="8903931173357132290">Məzun</translation>
 <translation id="8912078710089354287">Quyruğunu tərpədən it</translation>

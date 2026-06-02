@@ -477,6 +477,7 @@ Se la policy viene disattivata o se non viene configurata, gli elementi da avvia
       Se viene attivata, le scorciatoie da tastiera internazionali migliorate vengono abilitate.
       Se non viene configurata, questa policy viene attivata per i dispositivi gestiti e per i dispositivi di proprietà del consumatore.
       Tieni presente che questa policy è temporanea per consentire agli utenti gestiti di poter ancora utilizzare le scorciatoie precedenti deprecate. Verrà ritirata quando le scorciatoie da tastiera personalizzate saranno disponibili.</translation>
+<translation id="1359459742455216057">L'identificatore univoco dell'app <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="1361661842732478894">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="1363275621236827384">Attiva le query in Quirks Server per i profili hardware</translation>
 <translation id="1363839375295535439">Se la policy viene attivata o se non viene configurata, la sandbox LPAC per i servizi di stampa viene attivata ogni volta che la configurazione del sistema supporta l'operazione.
@@ -2266,6 +2267,15 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa nella mile
 
       Il valore della policy deve essere specificato in giorni.</translation>
 <translation id="2466131534462628618">L'autenticazione tramite captive portal ignora il proxy</translation>
+<translation id="246680587517417824">https://github.com/WICG/service-worker-auto-preload
+La funzionalità ServiceWorkerAutoPreload invia una richiesta di rete per una risorsa principale contemporaneamente all'avvio del processo di bootstrap del Service worker.
+
+Se la policy viene attivata o se non viene configurata,
+<ph name="PRODUCT_NAME" /> attiva ServiceWorkerAutoPreload. In alcuni scenari la richiesta di navigazione viene inviata automaticamente durante l'avvio del Service worker, ad esempio se il Service worker non è in esecuzione.
+
+Se è disattivata, <ph name="PRODUCT_NAME" /> non attiverà ServiceWorkerAutoPreload. La richiesta di navigazione viene inviata sempre dopo l'avvio del Service worker.
+
+Questa policy è una misura temporanea per controllare la funzionalità e verrà rimossa nella versione M154.</translation>
 <translation id="2467181864598429837">Comportamento predefinito del browser</translation>
 <translation id="2467896267442150508">L'intervallo di tempo (massimo una settimana). Se l'ora di inizio è successiva all'ora di fine, l'intervallo verrà chiuso il giorno successivo.</translation>
 <translation id="2475594733565572760">Questa policy definisce l'impostazione predefinita per tutte le funzionalità di AI generativa incluse. Ad esempio, se questa policy viene impostata sul valore 1, 1 sarà l'impostazione predefinita per tutte le funzionalità di AI generativa incluse. Non inciderà sui valori delle policy impostate manualmente. Questa impostazione definisce i valori predefiniti per le funzionalità di AI generativa incluse in Chrome. Per un elenco delle funzionalità incluse, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.
@@ -4336,6 +4346,7 @@ Se questa policy viene disattivata o non viene impostata, la sincronizzazione di
 <translation id="3778689139323007309">Esegui i controlli delle revoche per i certificati dei server che vengono convalidati correttamente e firmati tramite certificati CA installati localmente</translation>
 <translation id="3780152581321609624">Includi porta non standard in Kerberos SPN</translation>
 <translation id="3785423718413114598">Non consentire le funzionalità di GenAI</translation>
+<translation id="378626615843371785">Configura le impostazioni di <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (BETA)</translation>
 <translation id="3788155044604525647">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
 Visita la pagina https://github.com/WICG/direct-sockets per informazioni dettagliate.
 
@@ -4847,6 +4858,7 @@ Se questa policy viene impostata su False, <ph name="PRODUCT_NAME" /> non utiliz
 <translation id="4136603825567209889">Attiva la generazione di report sulle informazioni di identificazione degli utenti</translation>
 <translation id="4138655880188755661">Limite di tempo</translation>
 <translation id="4140646780789794190">Disattiva la condivisione dei dati diagnostici con PluginVm</translation>
+<translation id="4141430435877011529">Multiregione o posizione dell'app <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />. Scopri di più sulla posizione di <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> all'indirizzo https://docs.cloud.google.com/gemini/enterprise/docs/locations.</translation>
 <translation id="4144417751555442768">IA generativa</translation>
 <translation id="4145383150978634398">Rendi la modalità Desktop unificato disponibile per l'utente</translation>
 <translation id="4146319954420095470">(Avviso! A breve questa dipendenza verrà eliminata, inizia a usare invece la policy <ph name="GLS_POLICY_NAME" />. Se questa policy viene impostata su <ph name="BLOCK_GEOLOCATION_SETTING" />, i servizi di sistema <ph name="PRODUCT_OS_NAME" /> e le app per Android non possono accedere ai dati sulla posizione. Se imposti la policy su qualsiasi altro valore o se lo lasci non selezionata, all'utente verrà chiesto il consenso quando un'app Android richiede l'accesso ai dati sulla posizione.</translation>
@@ -9023,6 +9035,7 @@ Se la policy viene impostata su Enabled, i dati vengono raccolti e caricati sull
 
 Per <ph name="PRODUCT_NAME" />, questa policy viene applicata soltanto se la macchina viene registrata con il token <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Per <ph name="PRODUCT_OS_NAME" />, questa policy viene sempre applicata.</translation>
+<translation id="6714333117401088746">L'ID del progetto <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> corrispondente all'istanza <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> da attivare.</translation>
 <translation id="6720330829631914048">Le ore trascorse dall'inizio della giornata nel formato di 24 ore.</translation>
 <translation id="6720862827454058309">Esegui l'override delle mappature dello spazio di indirizzi IP</translation>
 <translation id="6721252203593581486">WebSQL in contesti di terze parti (ad es. iframe tra siti) è disattivato per impostazione predefinita a partire da M97 e verrà completamente rimosso in M101.
@@ -10355,6 +10368,15 @@ Se la policy viene disattivata, <ph name="PRODUCT_NAME" /> si connette ai dispos
 
 Se la policy non viene configurata, <ph name="PRODUCT_NAME" /> si connette ai dispositivi di trasmissione solo su indirizzi RFC1918/RFC4193, a meno che la funzionalità CastAllowAllIPs non sia attivata.</translation>
 <translation id="7534199150025803530">Questa norma non influisce sull'app Google Drive per Android. Se vuoi impedire l'utilizzo di Google Drive tramite rete cellulare, non devi consentire l'installazione dell'app Google Drive per Android.</translation>
+<translation id="7537404002861344834">Configura le impostazioni di connessione per <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> per migliorare le risposte per le funzionalità di Gemini in Chrome.
+
+Se questa policy viene impostata, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> può essere utilizzato per migliorare le risposte di Gemini in Chrome per gli utenti che hanno eseguito l'accesso con un account gestito associato all'ID del progetto e dell'app specificati. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non sarà disponibile per i profili che hanno eseguito l'accesso con account personali.
+
+Se la policy non viene impostata, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non verrà utilizzato per migliorare le risposte di Gemini in Chrome.
+
+Tieni presente che questa policy non controlla l'integrazione generale di <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, che può essere controllata dalla policy <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Tutte le impostazioni di questa policy devono corrispondere alla configurazione del progetto <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nella console <ph name="GOOGLE_CLOUD_PRODUCT_NAME" />. Qualsiasi mancata corrispondenza causerà un comportamento imprevisto durante l'utilizzo di <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="7538583957913002726">Questa policy è impostata su Attivata per impostazione predefinita. Consente di stabilire se i dispositivi registrati devono segnalare o meno informazioni quali nome del modello, architettura e velocità di clock massima della CPU (oltre a utilizzo e temperatura della CPU per M96 e versioni successive).
 
       Se la policy viene impostata su Disattivata, i dispositivi registrati non segnalano informazioni sulla CPU.

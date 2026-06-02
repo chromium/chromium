@@ -481,6 +481,7 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
       Si habilitas esta política, se activarán las combinaciones de teclas internacionales mejoradas.
       Si no la estableces, se habilitará esta política para los dispositivos administrados y se habilitará para los dispositivos que pertenezcan a los usuarios.
       Ten en cuenta que esta es solo una política temporaria para permitir que los usuarios administrados sigan usando las combinaciones de teclas heredadas que se dieron de baja. Esta política se dará de baja después de que las combinaciones de teclas personalizadas estén disponibles.</translation>
+<translation id="1359459742455216057">El identificador único para la app de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="1361661842732478894">Mostrar el botón Página principal en la barra de herramientas</translation>
 <translation id="1363275621236827384">Habilitar las consultas a Quirks Server para perfiles de hardware</translation>
 <translation id="1363839375295535439">Si habilitas la política o no la estableces, se habilitará la zona de pruebas de LPAC para los servicios de impresión siempre que la configuración del sistema lo admita.
@@ -2301,6 +2302,15 @@ Esta política es temporal y se quitará en el evento importante 157.</translati
 
       El valor de la política deberá especificarse en días.</translation>
 <translation id="2466131534462628618">La autenticación de portal cautivo ignora el proxy</translation>
+<translation id="246680587517417824">https://github.com/WICG/service-worker-auto-preload
+La función ServiceWorkerAutoPreload envía una solicitud de red para un recurso principal al mismo tiempo que inicia el proceso de inicio de ServiceWorker.
+
+Si habilitas la política o no la estableces,
+<ph name="PRODUCT_NAME" /> habilitará ServiceWorkerAutoPreload. La solicitud de navegación se envía automáticamente cuando se inicia ServiceWorker en algunos casos, p. ej., cuando ServiceWorker no se está ejecutando.
+
+Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> no habilitará ServiceWorkerAutoPreload. La solicitud de navegación siempre se envía después de iniciar ServiceWorker.
+
+Esta política es una medida temporal para controlar la función y se quitará en la versión M154.</translation>
 <translation id="2467181864598429837">Comportamiento predeterminado del navegador</translation>
 <translation id="2467896267442150508">El intervalo de tiempo que se extiende como máximo una semana. Si la hora de inicio es más tarde que la hora de finalización, el intervalo continuará al día siguiente.</translation>
 <translation id="2475594733565572760">Esta política define el parámetro de configuración predeterminado para todas las funciones potenciadas por IA generativa cubiertas. Por ejemplo, si estableces esta política con el valor 1, ese será el parámetro predeterminado para todas las funciones potenciadas por IA generativa cubiertas. No afectará los valores de la política establecidos de forma manual. Este parámetro de configuración definirá los valores predeterminados de las funciones potenciadas por IA generativa cubiertas en Chrome. Consulta https://support.google.com/chrome/a?p=generative_ai_settings para ver la lista de funciones cubiertas.
@@ -4426,6 +4436,7 @@ Si inhabilitas esta política o no la estableces, SSO flotante solo sincronizar�
 <translation id="3778689139323007309">Comprueba la revocación de los certificados del servidor validados correctamente y firmados por certificados de CA instalados de manera local</translation>
 <translation id="3780152581321609624">Incluir puerto no estándar en el SPN de Kerberos</translation>
 <translation id="3785423718413114598">No permitir las funciones de IA generativa</translation>
+<translation id="378626615843371785">Configurar los parámetros de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (BETA)</translation>
 <translation id="3788155044604525647">La API de Direct Sockets permite la comunicación con endpoints arbitrarios a través de TCP y UDP.
 Para obtener más información, consulta https://github.com/WICG/direct-sockets.
 
@@ -4941,6 +4952,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="4136603825567209889">Habilitar la generación de informes sobre la identificación de usuarios</translation>
 <translation id="4138655880188755661">Límite de tiempo</translation>
 <translation id="4140646780789794190">Inhabilitar el uso compartido de datos de diagnóstico con PluginVm</translation>
+<translation id="4141430435877011529">La ubicación o multirregión de la app de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />. Obtén más información sobre la ubicación de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> en https://docs.cloud.google.com/gemini/enterprise/docs/locations.</translation>
 <translation id="4144417751555442768">IA generativa</translation>
 <translation id="4145383150978634398">Hacer que el Modo de escritorio unificado esté disponible para el usuario</translation>
 <translation id="4146319954420095470">(Advertencia: Pronto se descartará esta dependencia, comienza a usar <ph name="GLS_POLICY_NAME" /> en su lugar). Si estableces esta política como <ph name="BLOCK_GEOLOCATION_SETTING" />, las apps para Android y los servicios del sistema <ph name="PRODUCT_OS_NAME" /> no podrán acceder a la información de ubicación. Si estableces esta política con cualquier otro valor o no la estableces, el usuario deberá dar su consentimiento cada vez que una app para Android quiera acceder a la información de ubicación.</translation>
@@ -9250,6 +9262,7 @@ Si la habilitas, los datos se recopilan y se suben a <ph name="GOOGLE_ADMIN_CONS
 
 Esta política solo será válida si la máquina está inscrita en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
 Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="6714333117401088746">El ID del proyecto <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> correspondiente a la instancia de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> que se habilitará.</translation>
 <translation id="6720330829631914048">Las horas transcurridas desde que comienza el día (en formato de 24 horas).</translation>
 <translation id="6720862827454058309">Anular las asignaciones de espacio de direcciones IP</translation>
 <translation id="6721252203593581486">WebSQL en contextos de terceros (p. ej., iframes entre sitios) está desactivado de forma predeterminada a partir de la versión M97 y se quitará por completo en la versión M101.
@@ -10630,6 +10643,15 @@ Si inhabilitas la política, se conectará <ph name="PRODUCT_NAME" /> a disposit
 
 Si no la estableces, se conectará <ph name="PRODUCT_NAME" /> a dispositivos de transmisión solo en las direcciones RFC1918/RFC4193, a menos que se active la función CastAllowAllIPs.</translation>
 <translation id="7534199150025803530">Esta política no tiene efecto en la app de Google Drive de Android. Si quieres evitar el uso de Google Drive con conexiones móviles, debes inhabilitar la instalación de su app.</translation>
+<translation id="7537404002861344834">Configura los parámetros de conexión de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> para mejorar las respuestas de las funciones de Gemini en Chrome.
+
+Si se establece esta política, se puede usar <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> para mejorar las respuestas de Gemini en Chrome para los usuarios que accedieron con una cuenta administrada asociada con el proyecto y el ID de app especificados. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> no estará disponible para los perfiles que accedan con cuentas personales.
+
+Si no se establece la política, no se usará <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> para mejorar las respuestas de Gemini en Chrome.
+
+Ten en cuenta que esta política no controla la integración general de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que puede controlarse con la política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Todos los parámetros de configuración de esta política deben coincidir con la configuración del proyecto <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> en la consola de <ph name="GOOGLE_CLOUD_PRODUCT_NAME" />. Cualquier discrepancia provocará un comportamiento inesperado cuando se use <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="7538583957913002726">Esta política está habilitada de forma predeterminada. Controla los dispositivos inscritos a fin de que informen el nombre del modelo, la arquitectura y la frecuencia máxima de la CPU (y la utilización y temperatura de la CPU para M96 y versiones superiores).
 
       Si inhabilitas esta política, los dispositivos inscritos no enviarán información sobre la CPU.

@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> fane er gruppert</translation>
 <translation id="1844381456014878100">Etter 7 dager med inaktivitet</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Legg til fanen på leselisten}other{Legg til fanene på leselisten}}</translation>
 <translation id="1909810060368225529">Merk: Endringer i denne delte fanegruppen er synlige for alle. Alle kan gjøre endringer i de delte fanegruppene dine</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Fest fanen}other{Fest faner}}</translation>
 <translation id="1982637982196732906">Flytt til inaktiv del</translation>

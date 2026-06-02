@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Automātiski nosaukumu serveri</translation>
 <translation id="1210831758834677569">Laosiešu</translation>
 <translation id="1221555006497674479">Jūsu kopīgā diska <ph name="TOTAL_SPACE" /> krātuvē ir atlicis maz vietas (<ph name="REMAINING_PERCENTAGE" />%).</translation>
+<translation id="1239594683407221485">Pārlūkojiet ierīces saturu lietotnē Faili.</translation>
 <translation id="1243314992276662751">Augšupielādēt</translation>
 <translation id="1249250836236328755">Žanrs</translation>
 <translation id="1254593899333212300">Tiešais interneta savienojums</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Nevar dzēst vienumu. Vienums tiek izmantots.</translation>
 <translation id="1307931752636661898">Nevar skatīt Linux failus</translation>
 <translation id="1313405956111467313">Automātiska starpniekservera konfigurācija</translation>
+<translation id="1340527397989195812">Dublējiet multividi no savas ierīces, izmantojot lietotni “Faili”.</translation>
 <translation id="134645005685694099">Ierīcē nepietiek vietas, lai turpinātu failu sinhronizāciju. Jaunie faili vairs netiks automātiski sinhronizēti.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fails vai katalogs nav izmantojams.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Bez lietotāja sertifikāta</translation>
 <translation id="1403008701842173542">Visur</translation>
 <translation id="1404323374378969387">Norvēģu</translation>
+<translation id="1408504635543854729">Pārlūkojiet ierīces saturu lietotnē Faili. Saturu ierobežo administrators, un to nevar mainīt.</translation>
 <translation id="1412476183660741812">Parakstīts Web Bundle</translation>
 <translation id="1433628812591023318">Lai nomestu failus darbvirsmā Parallels Desktop, attiecīgajam failam ir jābūt pārvietotam uz Windows failiem.</translation>
 <translation id="1435838927755162558">Mapes kopīgošana ar Parallels Desktop</translation>
 <translation id="1439919885608649279">Persona ar puķēm</translation>
 <translation id="1458457385801829801">Atvienot <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Lai skatītu ierīces preferences, pārejiet uz sadaļu Iestatījumi.</translation>
 <translation id="146691674290220697">Failus (<ph name="NUMBER_OF_FILES" />) nevarēja nokopēt, jo tie ir šifrēti.</translation>
 <translation id="1471718551822868769">Slovāku</translation>
 <translation id="1482884275703521657">Somu</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Pārvaldīt Diskā</translation>
 <translation id="2004942826429452291">Faili tiks glabāti mākonī un šajā Chromebook datorā.</translation>
 <translation id="2009067268969781306">Formatējot disku, tiks dzēsti visi tajā uzglabātie dati. Šo darbību nevar atsaukt.</translation>
+<translation id="2018352199541442911">Diemžēl jūsu ārējā atmiņas ierīce šobrīd netiek atbalstīta.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
 <translation id="2029385776150020336">ASV paplašinātā</translation>
 <translation id="2037845485764049925">Krievu</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagoči</translation>
 <translation id="2468470447085858632">Piekļūstiet saviem Google diska failiem bezsaistē, iestatot failu sinhronizāciju</translation>
 <translation id="2470939964922472929">Pārāk daudz reižu tika ievadīts nepareizs PIN. Lai iestatītu jaunu PIN, ievadiet astoņu ciparu personisko atbloķēšanas atslēgu (PUK), ko nodrošina jūsu mobilo sakaru operators.</translation>
+<translation id="249113932447298600">Diemžēl ierīce <ph name="DEVICE_LABEL" /> šobrīd netiek atbalstīta.</translation>
 <translation id="2500392669976258912">Gudžaratu, fonētiskā</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Meklēt</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukraiņu</translation>
 <translation id="3326821416087822643">Notiek faila “<ph name="FILE_NAME" />” tilpsaspiešana...</translation>
 <translation id="3335337277364016868">Ieraksta izveides gads</translation>
+<translation id="3348038390189153836">Konstatēta noņemama ierīce</translation>
 <translation id="3353984535370177728">Atlasīt augšupielādējamo mapi</translation>
 <translation id="3356580349448036450">Pabeigts</translation>
 <translation id="3358452157379365236">Ģitāra</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Lejupielādēt mobilo sakaru profilu, tīkls numur <ph name="NETWORK_INDEX" />, tīklu skaits ir <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Angļu (Apvienotā Karaliste)</translation>
 <translation id="3975895378829046965">Bengāļu, fonētiskā</translation>
+<translation id="3983764759749072418">Play veikala lietojumprogrammām ir piekļuve šai ierīcei.</translation>
 <translation id="3999574733850440202">Nesen atvērtie Microsoft faili ir pārvietoti uz pakalpojumu OneDrive.</translation>
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4017788180641807848">Angļu (ASV), ar Workman tastatūru</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Lai piekļūtu šim failam, jums ir jābūt tiešsaistē.</translation>
 <translation id="4212740939091998969">Mape ar nosaukumu “<ph name="FOLDER_NAME" />” jau pastāv. Lūdzu, izvēlieties citu nosaukumu.</translation>
 <translation id="4218274196133425560">Noņemt izņēmumu, kas paredzēts <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Atvērt iestatījumus</translation>
 <translation id="4261901459838235729">Google prezentācija</translation>
 <translation id="4277536868133419688">Filtrs “<ph name="FILTER_NAME" />” ir ieslēgts.</translation>
 <translation id="4290535918735525311">1 mape kopīgota ar Linux</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">No Google diska atkoptie faili</translation>
 <translation id="5278111733643988471">Lai atjaunotu šo vienumu, velciet to uz jaunu mapi ārpus atkritnes. Šī vienuma sākotnējā mape “<ph name="PARENT_FOLDER_NAME" />” ir izdzēsta.</translation>
 <translation id="5288441970121584418">Burgers</translation>
+<translation id="529175790091471945">Formatēt šo ierīci</translation>
 <translation id="5293615890992542006">Administratora politika bloķē šī faila pārvietošanu</translation>
 <translation id="5305688511332277257">Nav instalēts</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Neizmantojiet starpniekservera iestatījumus šādiem resursdatoriem un domēniem:</translation>
 <translation id="541890217011173530">Kurdu (Sorani), ar tastatūru, kuras pamatā ir angļu valoda</translation>
 <translation id="5422221874247253874">Piekļuves punkts</translation>
+<translation id="5422781158178868512">Diemžēl jūsu ārējo atmiņas ierīci nevarēja atpazīt.</translation>
 <translation id="5438282218546237410">Meklēšanas vienumam “<ph name="SEARCH_TERM" />” nav neviena rezultāta.</translation>
 <translation id="5447680084201416734">Krātuvē nepietiek vietas.</translation>
 <translation id="5449551289610225147">Parole nav derīga.</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">Atlasīto vienumu skaits: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Vācu (Šveice)</translation>
 <translation id="5769519078756170258">Saimniekdators vai domēns, kuru nepieciešams izslēgt</translation>
+<translation id="5774295353725270860">Atvērt lietotni Files</translation>
 <translation id="5775750595919327203">Urdu</translation>
 <translation id="5776325638577448643">Dzēst un formatēt</translation>
 <translation id="57838592816432529">Izslēgt skaņu</translation>
 <translation id="5788127256798019331">Play faili</translation>
+<translation id="5788367137662787332">Diemžēl vismaz vienu ierīces <ph name="DEVICE_LABEL" /> nodalījumu nevar uzstādīt.</translation>
 <translation id="5804245609861364054">Kannadu, transliterācija</translation>
 <translation id="5814126672212206791">Savienojuma veids</translation>
 <translation id="5817397429773072584">Ķīniešu (tradicionālā)</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Islandiešu</translation>
 <translation id="7229570126336867161">Nepieciešams EVDO</translation>
 <translation id="7230898482850090046">Jūsu administrators pieprasīja jums izslēgt iestatījumu “Bloķēt SIM karti”.</translation>
+<translation id="7232750842195536390">Pārdēvēšana neizdevās</translation>
 <translation id="7238097264433196391">Diska nosaukums</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, informācija</translation>
 <translation id="7246947237293279874">FTP starpniekserveris</translation>
+<translation id="725109152065019550">Diemžēl administrators jūsu kontā ir atspējojis ārējo krātuvi.</translation>
 <translation id="7256405249507348194">Neatpazīta kļūda: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Pieejamie pakalpojumi</translation>
 <translation id="7291818353625820805">Vai vēlaties atkārtot taustiņu rakstzīmes? Tastatūras iestatījumos izslēdziet uzsvara zīmes.</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google karte</translation>
 <translation id="7419668828140929293">Notiek faila “<ph name="FILENAME" />” atjaunošana…</translation>
 <translation id="7435577899926900307">Dvorak (ASV)</translation>
+<translation id="7436921188514130341">Diemžēl pārdēvēšanas laikā radās kļūda.</translation>
 <translation id="7458955835361612701">Nav nesenu attēlu</translation>
 <translation id="7469894403370665791">Automātiski pievienoties šim tīklam</translation>
 <translation id="7486315294984620427">Lai nomestu failus darbvirsmā Parallels Desktop, attiecīgajam failam ir jābūt kopētam Windows failos.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Piespraust plauktam</translation>
 <translation id="7553492409867692754">Linux lietotnes saņems atļauju piekļūt failiem mapē <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Šobrīd esat bezsaistē. Failu sinhronizācija tiks atsākta, kad būs izveidots savienojums ar internetu.</translation>
+<translation id="7589461650300748890">Uzmanieties!</translation>
 <translation id="7589661784326793847">Mirkli uzgaidiet!</translation>
 <translation id="7600126690270271294">Serbu</translation>
 <translation id="7603724359189955920">Režģi</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Tīkla konfigurācijas kļūda</translation>
+<translation id="7839051173341654115">Skatīt/dublēt multivides saturu</translation>
 <translation id="7839804798877833423">Izgūstot šos failus, tiks izmantoti aptuveni <ph name="FILE_SIZE" /> mobilo datu.</translation>
 <translation id="7846076177841592234">Atcelt atlasi</translation>
 <translation id="7857117644404132472">Pievienot izņēmumu</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Poļu</translation>
 <translation id="7874321682039004450">Filipīniešu</translation>
 <translation id="78946041517601018">Kopīgie diski</translation>
+<translation id="7897900149154324287">Turpmāk noteikti atvienojiet noņemamo ierīci lietotnē Faili, pirms to noņemat. Pretējā gadījumā varat zaudēt datus.</translation>
 <translation id="7901567919203965902">Workman (ASV starptautiskā)</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Diemžēl vismaz vienu ārējās atmiņas ierīces nodalījumu nevarēja uzstādīt.</translation>
 <translation id="7908793776359722643">Formatējot nodalījumu, tiks izdzēsti visi tajā glabātie dati. Šo darbību nevar atsaukt.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Jūsu mapē Mans disks esošie faili tiks automātiski sinhronizēti ar jūsu Chromebook datoru, lai jūs varētu tiem piekļūt bez interneta savienojuma.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Lai atjaunotu šos vienumus, velciet tos uz jaunu mapi. Dažiem no šiem vienumiem ir izdzēstas sākotnējās mapes.</translation>
 <translation id="8874184842967597500">Savienojums nav izveidots</translation>
 <translation id="8876368061475701452">Ievietots rindā</translation>
+<translation id="8893928184421379330">Diemžēl ierīci <ph name="DEVICE_LABEL" /> nevarēja atpazīt.</translation>
 <translation id="8902208737522818687">ASV starptautiskā (PC)</translation>
 <translation id="8903931173357132290">Absolvents</translation>
 <translation id="8912078710089354287">Suns luncina asti</translation>

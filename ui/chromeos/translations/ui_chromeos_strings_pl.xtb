@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Automatyczny wybór serwerów nazw</translation>
 <translation id="1210831758834677569">Laotański</translation>
 <translation id="1221555006497674479">Mało miejsca na dane – pozostało <ph name="REMAINING_PERCENTAGE" />% z <ph name="TOTAL_SPACE" /> miejsca na dysku współdzielonym.</translation>
+<translation id="1239594683407221485">Przeglądaj zawartość urządzenia w aplikacji Pliki.</translation>
 <translation id="1243314992276662751">Prześlij</translation>
 <translation id="1249250836236328755">Gatunek</translation>
 <translation id="1254593899333212300">Bezpośrednie połączenie internetowe</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Nie można usunąć. Element jest używany.</translation>
 <translation id="1307931752636661898">Nie można wyświetlić plików Linuksa</translation>
 <translation id="1313405956111467313">Automatyczna konfiguracja serwera proxy</translation>
+<translation id="1340527397989195812">Wykonaj kopię zapasową multimediów zapisanych na urządzeniu, używając aplikacji Pliki.</translation>
 <translation id="134645005685694099">Na urządzeniu jest za mało miejsca, aby nadal synchronizować pliki. Nowe pliki nie będą już automatycznie synchronizowane.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Plik lub katalog nie nadaje się do użycia.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Brak certyfikatu użytkownika</translation>
 <translation id="1403008701842173542">Wszędzie</translation>
 <translation id="1404323374378969387">Norweski</translation>
+<translation id="1408504635543854729">Przeglądaj zawartość urządzenia w aplikacji Pliki. Dostępna zawartość jest określana przez administratora i nie można jej zmienić.</translation>
 <translation id="1412476183660741812">Podpisany pakiet internetowy</translation>
 <translation id="1433628812591023318">Aby można było przeciągnąć plik do Parallels Desktop, należy go przenieść do folderu Pliki systemu Windows.</translation>
 <translation id="1435838927755162558">Udostępnij folder aplikacji Parallels Desktop</translation>
 <translation id="1439919885608649279">Osoba z kwiatami</translation>
 <translation id="1458457385801829801">Odłącz <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Aby wyświetlić ustawienia urządzenia, otwórz Ustawienia.</translation>
 <translation id="146691674290220697">Nie udało się skopiować <ph name="NUMBER_OF_FILES" /> plików, bo są one zaszyfrowane.</translation>
 <translation id="1471718551822868769">Słowacki</translation>
 <translation id="1482884275703521657">Fiński</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Zarządzaj na Dysku</translation>
 <translation id="2004942826429452291">Pliki będą przechowywane w chmurze i na tym Chromebooku.</translation>
 <translation id="2009067268969781306">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych. Nie można tego cofnąć.</translation>
+<translation id="2018352199541442911">To urządzenie zewnętrznej pamięci masowej nie jest obecnie obsługiwane.</translation>
 <translation id="2025955442973426285">Tigrinia</translation>
 <translation id="2029385776150020336">amerykańska klawiatura rozszerzona</translation>
 <translation id="2037845485764049925">Rosyjski</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470447085858632">Uzyskiwanie dostępu do plików na Dysku Google w trybie offline dzięki synchronizacji plików</translation>
 <translation id="2470939964922472929">Zbyt wiele razy podano nieprawidłowy kod PIN. Aby ustawić nowy kod PIN, wpisz 8-cyfrowy kod PUK otrzymany od operatora.</translation>
+<translation id="249113932447298600">Niestety, urządzenie <ph name="DEVICE_LABEL" /> nie jest obecnie obsługiwane.</translation>
 <translation id="2500392669976258912">Gudżarati (znaki fonetyczne)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Skanuj</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukraiński</translation>
 <translation id="3326821416087822643">Pakuję <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Rok nagrania</translation>
+<translation id="3348038390189153836">Wykryto urządzenie wymienne</translation>
 <translation id="3353984535370177728">Wybierz folder do przesłania</translation>
 <translation id="3356580349448036450">Zakończone</translation>
 <translation id="3358452157379365236">Gitara</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Pobierz profil mobilny: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Angielski (Wielka Brytania)</translation>
 <translation id="3975895378829046965">Bengalski fonetyczny</translation>
+<translation id="3983764759749072418">Aplikacje ze Sklepu Play mają dostęp do tego urządzenia.</translation>
 <translation id="3999574733850440202">Ostatnio otwarte pliki firmy Microsoft zostały przeniesione do usługi OneDrive</translation>
 <translation id="4002066346123236978">Tytuł</translation>
 <translation id="4017788180641807848">Angielski (USA) z klawiaturą Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Musisz być w trybie online, by uzyskać dostęp do tego pliku.</translation>
 <translation id="4212740939091998969">Istnieje już folder „<ph name="FOLDER_NAME" />”. Wybierz inną nazwę.</translation>
 <translation id="4218274196133425560">Usuń wyjątek dla hosta <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4261901459838235729">Prezentacja Google</translation>
 <translation id="4277536868133419688">Filtr <ph name="FILTER_NAME" /> jest włączony.</translation>
 <translation id="4290535918735525311">Folder udostępniono Linuksowi</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Pliki odzyskane z Dysku Google</translation>
 <translation id="5278111733643988471">Aby przywrócić ten element, przeciągnij go do nowego folderu poza koszem. Pierwotny folder „<ph name="PARENT_FOLDER_NAME" />” tego elementu został usunięty.</translation>
 <translation id="5288441970121584418">Burger</translation>
+<translation id="529175790091471945">Sformatuj urządzenie</translation>
 <translation id="5293615890992542006">Przenoszenie tego pliku jest zablokowane przez zasady administratora</translation>
 <translation id="5305688511332277257">Brak zainstalowanych</translation>
 <translation id="5317780077021120954">Zapisz</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Nie używaj ustawień proxy dla następujących hostów i domen:</translation>
 <translation id="541890217011173530">Kurdyjski sorani z klawiaturą angielską</translation>
 <translation id="5422221874247253874">Punkt dostępu</translation>
+<translation id="5422781158178868512">Nie można rozpoznać urządzenia zewnętrznej pamięci masowej.</translation>
 <translation id="5438282218546237410">Brak wyników dla: <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Za mało miejsca.</translation>
 <translation id="5449551289610225147">Nieprawidłowe hasło</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">Wybrany element: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Niemiecki (Szwajcaria)</translation>
 <translation id="5769519078756170258">Host lub domena do wykluczenia</translation>
+<translation id="5774295353725270860">Otwórz aplikację Pliki</translation>
 <translation id="5775750595919327203">Urdu</translation>
 <translation id="5776325638577448643">Wykasuj i sformatuj</translation>
 <translation id="57838592816432529">Wycisz</translation>
 <translation id="5788127256798019331">Pliki Play</translation>
+<translation id="5788367137662787332">Niestety, nie można podłączyć co najmniej jednej partycji na urządzeniu <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5804245609861364054">Kannada – transliteracja</translation>
 <translation id="5814126672212206791">Typ połączenia</translation>
 <translation id="5817397429773072584">chiński tradycyjny</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">islandzki</translation>
 <translation id="7229570126336867161">Wymagana technologia EVDO</translation>
 <translation id="7230898482850090046">Administrator poprosił o wyłączenie ustawienia „Zablokuj kartę SIM”</translation>
+<translation id="7232750842195536390">Nie udało się zmienić nazwy</translation>
 <translation id="7238097264433196391">Nazwa dysku</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, szczegóły</translation>
 <translation id="7246947237293279874">Serwer proxy FTP</translation>
+<translation id="725109152065019550">Na Twoim koncie administrator wyłączył pamięć zewnętrzną.</translation>
 <translation id="7256405249507348194">Nierozpoznany błąd: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostępne usługi</translation>
 <translation id="7291818353625820805">Chcesz, żeby klawisze powtarzały ten sam znak? Wyłącz znaki akcentowane w Ustawieniach klawiatury</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Mapa Google</translation>
 <translation id="7419668828140929293">Przywracam plik „<ph name="FILENAME" />”</translation>
 <translation id="7435577899926900307">amerykańska klawiatura Dvoraka</translation>
+<translation id="7436921188514130341">Kurza twarz! Podczas zmiany nazwy wystąpił błąd.</translation>
 <translation id="7458955835361612701">Brak nowych obrazów</translation>
 <translation id="7469894403370665791">Automatycznie łącz się z tą siecią</translation>
 <translation id="7486315294984620427">Aby można było przeciągnąć plik do Parallels Desktop, należy go skopiować do folderu Pliki systemu Windows.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Przypnij do półki</translation>
 <translation id="7553492409867692754">Przyznaj aplikacjom na Linuksa uprawnienia dostępu do plików w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Jesteś teraz offline. Synchronizacja plików zostanie wznowiona, gdy będziesz mieć połączenie z internetem.</translation>
+<translation id="7589461650300748890">Nie tak szybko. Zachowaj ostrożność.</translation>
 <translation id="7589661784326793847">Chwileczkę</translation>
 <translation id="7600126690270271294">Serbski</translation>
 <translation id="7603724359189955920">Siatki</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Podczas konfigurowania sieci wystąpił błąd</translation>
+<translation id="7839051173341654115">Wyświetl multimedia lub zrób ich kopię zapasową</translation>
 <translation id="7839804798877833423">Pobranie tych plików spowoduje przesłanie <ph name="FILE_SIZE" /> przy użyciu komórkowej transmisji danych.</translation>
 <translation id="7846076177841592234">Anuluj wybór</translation>
 <translation id="7857117644404132472">Dodaj wyjątek</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Polski</translation>
 <translation id="7874321682039004450">Filipiński</translation>
 <translation id="78946041517601018">Dyski współdzielone</translation>
+<translation id="7897900149154324287">W przyszłości pamiętaj, by przed odłączeniem urządzenia wymiennego wysunąć je w aplikacji Pliki. W przeciwnym razie możesz stracić dane.</translation>
 <translation id="7901567919203965902">amerykańska klawiatura międzynarodowa Workman</translation>
 <translation id="7903984238293908205">katakana</translation>
+<translation id="7908378463497120834">Nie można podłączyć co najmniej jednej partycji na urządzeniu zewnętrznej pamięci masowej.</translation>
 <translation id="7908793776359722643">Sformatowanie partycji usunie wszystkie zapisane na niej dane. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Pliki z Mojego dysku są automatycznie synchronizowane z Chromebookiem, więc masz do nich dostęp bez połączenia z internetem.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Aby przywrócić te elementy, przeciągnij je do nowego folderu. Pierwotne foldery niektórych z nich zostały usunięte.</translation>
 <translation id="8874184842967597500">Nie połączono</translation>
 <translation id="8876368061475701452">W kolejce</translation>
+<translation id="8893928184421379330">Niestety, nie można rozpoznać urządzenia <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8902208737522818687">amerykańska klawiatura międzynarodowa (PC)</translation>
 <translation id="8903931173357132290">Absolwent</translation>
 <translation id="8912078710089354287">Pies merdający ogonem</translation>

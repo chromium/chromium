@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Yuklab olinmoqda...</translation>
 <translation id="1651617469580841801">Google Lens ishlatilganda sahifa sarlavhasi, URL manzili, kontenti, jumladan, PDF fayllar Google serverlariga yuboriladi. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex haqida</translation>
+<translation id="1665867022636014702">Google tavsiya etgan brauzer sozlamalaridan foydalanish</translation>
 <translation id="1674870198290878346">Havolani Chromening &amp;inkognito oynasida ochish</translation>
 <translation id="1682634494516646069">Google Chrome brauzeri quyidagi jildda ma’lumotlarni o‘qish va yozish amallarini bajara olmadi:
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -239,6 +240,7 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="345171907106878721">Chrome foydalanuvchisini qo‘shish</translation>
 <translation id="3453763134178591239">ChromeOS shartlari</translation>
 <translation id="3503306920980160878">Bu sayt manzilingizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
+<translation id="3539955434060988644">Havolani inko&amp;gnito oynada ochish</translation>
 <translation id="3576528680708590453">Chrome <ph name="TARGET_URL_HOSTNAME" /> havolasini muqobil brauzerda ochishi tizim administratori tomonidan sozlangan.</translation>
 <translation id="3582972582564653026">Chrome brauzerini barcha qurilmalringizda sinxronlang va o‘zingizga moslab oling</translation>
 <translation id="3583751698304738917">Siz allaqachon boshqa Chrome profilidan (<ph name="USER_EMAIL_ADDRESS" />) kirgansiz</translation>

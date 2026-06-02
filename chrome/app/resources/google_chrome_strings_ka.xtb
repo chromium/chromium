@@ -67,6 +67,7 @@
 <translation id="1640672724030957280">მიმდინარეობს ჩამოტვირთვა…</translation>
 <translation id="1651617469580841801">Google Lens-ის გამოყენებისას Google-ს ეგზავნება გვერდის სათაური, URL და კონტენტი, PDF-ების ჩათვლით. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex-ის შესახებ</translation>
+<translation id="1665867022636014702">Google-ის მიერ რეკომენდებული ბრაუზერის პარამეტრების გამოყენება</translation>
 <translation id="1674870198290878346">ბმულის გახსნა Chrome-ის ინკო&amp;გნიტო ფანჯარაში</translation>
 <translation id="1682634494516646069">Google Chrome ვერ ახერხებს თავის მონაცემთა დირექტორიაში წაკითხვას და ჩაწერის განხორციელებას:
 
@@ -242,6 +243,7 @@
 <translation id="345171907106878721">საკუთარი თავის დამატება Chrome-ში</translation>
 <translation id="3453763134178591239">ChromeOS პირობები</translation>
 <translation id="3503306920980160878">Chrome საჭიროებს თქვენს მდებარეობაზე წვდომის ნებართვას ამ საიტისთვის გასაზიარებლად</translation>
+<translation id="3539955434060988644">ბმულის გახსნა Chrome-ი Inco&amp;gnito ფანჯარაში</translation>
 <translation id="3576528680708590453">თქვენი სისტემის ადმინისტრატორმა მოახდინა Google Chrome-ის კონფიგურაცია იმგვარად, რომ <ph name="TARGET_URL_HOSTNAME" />-ზე წვდომისთვის საჭიროა ალტერნატიული ბრაუზერის გახსნა.</translation>
 <translation id="3582972582564653026">მოახდინეთ Chrome-ის სინქრონიზაცია და პერსონალიზება თქვენს ყველა მოწყობილობას შორის</translation>
 <translation id="3583751698304738917">თქვენ უკვე შესული ხართ Chrome-ის სხვა პროფილში როგორც <ph name="USER_EMAIL_ADDRESS" /></translation>

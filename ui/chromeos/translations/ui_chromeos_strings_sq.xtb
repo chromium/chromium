@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Serverët automatikë të emrave</translation>
 <translation id="1210831758834677569">Laosisht</translation>
 <translation id="1221555006497674479">Hapësira ruajtëse në nivel të ulët: <ph name="REMAINING_PERCENTAGE" />% e mbetur nga hapësira ruajtëse e diskut të ndarë prej <ph name="TOTAL_SPACE" />.</translation>
+<translation id="1239594683407221485">Eksploro përmbajtjen e pajisjes në aplikacionin "Skedarët".</translation>
 <translation id="1243314992276662751">Ngarko</translation>
 <translation id="1249250836236328755">Zhanri</translation>
 <translation id="1254593899333212300">Lidhje direkte e internetit</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Nuk mund të fshihet. Artikulli është në përdorim.</translation>
 <translation id="1307931752636661898">Nuk mund të shihen skedarët e Linux</translation>
 <translation id="1313405956111467313">Konfigurimi automatik i përfaqësuesit</translation>
+<translation id="1340527397989195812">Rezervo median nga pajisja duke përdorur aplikacionin "Skedarët".</translation>
 <translation id="134645005685694099">Pajisja jote nuk ka hapësirë ruajtëse të mjaftueshme për ta mbajtur të aktivizuar sinkronizimin e skedarëve. Skedarët e rinj nuk do të sinkronizohen më automatikisht.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Skedari ose direktoria nuk është i përdorshëm.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Nuk ka certifikatë përdoruesi</translation>
 <translation id="1403008701842173542">Kudo</translation>
 <translation id="1404323374378969387">Norvegjisht</translation>
+<translation id="1408504635543854729">Eksploro përmbajtjen e pajisjes në aplikacionin "Skedarët". Përmbajtja është e kufizuar nga një administrator dhe nuk mund të modifikohet.</translation>
 <translation id="1412476183660741812">Paketa e nënshkruar e uebit</translation>
 <translation id="1433628812591023318">Për t'i lëshuar skedarët në Parallels Desktop, skedari duhet të zhvendoset te dosja e skedarëve të Windows.</translation>
 <translation id="1435838927755162558">Ndaje dosjen me Parallels Desktop</translation>
 <translation id="1439919885608649279">Person me lule</translation>
 <translation id="1458457385801829801">Nxirr <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Për preferencat e pajisjes, shko te "Cilësimet".</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> skedarë nuk mund të kopjoheshin sepse janë të enkriptuar.</translation>
 <translation id="1471718551822868769">Sllovakisht</translation>
 <translation id="1482884275703521657">Finlandisht</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Menaxhoje te "Disku"</translation>
 <translation id="2004942826429452291">Skedarët do të ruhen në renë kompjuterike dhe në këtë Chromebook.</translation>
 <translation id="2009067268969781306">Formatimi i një disku do të fshijë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
+<translation id="2018352199541442911">Na vjen keq, por hapësira e jashtme ruajtëse në pajisjen tënde nuk mbështetet në këtë moment.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
 <translation id="2029385776150020336">Amerikane e zgjeruar</translation>
 <translation id="2037845485764049925">Rusisht</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagoçi</translation>
 <translation id="2468470447085858632">Qasu te skedarët e tu të "Diskut të Google" offline me sinkronizimin e skedarëve</translation>
 <translation id="2470939964922472929">Është futur shumë herë një kod PIN i gabuar. Për të konfiguruar një kod të ri PIN, fut "Çelësin personal të zhbllokimit" (PUK) me 8 shifra të dhënë nga operatori celular.</translation>
+<translation id="249113932447298600">Na vjen keq, por pajisja <ph name="DEVICE_LABEL" /> nuk mbështetet në këtë moment.</translation>
 <translation id="2500392669976258912">Guxharatisht fonetike</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Skano</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukrainisht</translation>
 <translation id="3326821416087822643">Po ngjesh <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Viti i regjistrimit</translation>
+<translation id="3348038390189153836">U diktua pajisje e lëvizshme</translation>
 <translation id="3353984535370177728">Përzgjidh një dosje për ta ngarkuar</translation>
 <translation id="3356580349448036450">Përfundo</translation>
 <translation id="3358452157379365236">Kitarë</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Shkarko profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Anglisht (Mbretëria e Bashkuar)</translation>
 <translation id="3975895378829046965">Bengalisht fonetike</translation>
+<translation id="3983764759749072418">Aplikacionet e "Dyqanit të Play" kanë qasje në këtë pajisje.</translation>
 <translation id="3999574733850440202">Skedarët e Microsoft të hapur së fundi janë zhvendosur tek OneDrive</translation>
 <translation id="4002066346123236978">Titulli</translation>
 <translation id="4017788180641807848">Anglisht (SHBA) me tastierën Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Duhet të jesh online për t'u qasur te ky skedar.</translation>
 <translation id="4212740939091998969">Dosja e emërtuar "<ph name="FOLDER_NAME" />" ekziston tashmë. Zgjidh një emër tjetër.</translation>
 <translation id="4218274196133425560">Hiq përjashtimin për <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Hap cilësimet</translation>
 <translation id="4261901459838235729">Prezantim i Google</translation>
 <translation id="4277536868133419688">Filtri <ph name="FILTER_NAME" /> është aktiv.</translation>
 <translation id="4290535918735525311">1 dosje e ndarë me Linux</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Skedarët e rikuperuar nga "Disku i Google"</translation>
 <translation id="5278111733643988471">Për ta restauruar këtë artikull, zvarrite atë te një dosje e re jashtë koshit. Dosja origjinale "<ph name="PARENT_FOLDER_NAME" />" për këtë artikull është fshirë.</translation>
 <translation id="5288441970121584418">Hamburger</translation>
+<translation id="529175790091471945">Formatoje këtë pajisje</translation>
 <translation id="5293615890992542006">Zhvendosja e këtij skedari është bllokuar nga politika e administratorit</translation>
 <translation id="5305688511332277257">Nuk është instaluar asnjë</translation>
 <translation id="5317780077021120954">Ruaj</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Mos i përdor cilësimet e përfaqësuesit për këta strehues dhe domene:</translation>
 <translation id="541890217011173530">Kurdishte sorani me tastierë anglisht</translation>
 <translation id="5422221874247253874">Pika e qasjes</translation>
+<translation id="5422781158178868512">Na vjen keq, por pajisja ruajtëse e jashtme nuk mund të njihej.</translation>
 <translation id="5438282218546237410">Nuk ka rezultate për <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Nuk ka hapësirë ruajtëse të mjaftueshme.</translation>
 <translation id="5449551289610225147">Fjalëkalim i pavlefshëm</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">U zgjodhën <ph name="SELECTED_FILES_COUNT" /> artikuj</translation>
 <translation id="5763377084591234761">Gjermanisht (Zvicër)</translation>
 <translation id="5769519078756170258">Pritësi ose domeni për ta përjashtuar</translation>
+<translation id="5774295353725270860">Hap aplikacionin "Skedarët"</translation>
 <translation id="5775750595919327203">Urduisht</translation>
 <translation id="5776325638577448643">Spastro dhe formato</translation>
 <translation id="57838592816432529">Hiqi zërin</translation>
 <translation id="5788127256798019331">Skedarët e Play</translation>
+<translation id="5788367137662787332">Na vjen keq, të paktën një pjesë në pajisjen <ph name="DEVICE_LABEL" /> nuk mund të montohej.</translation>
 <translation id="5804245609861364054">Kanadisht me transliterim</translation>
 <translation id="5814126672212206791">Lloji i lidhjes</translation>
 <translation id="5817397429773072584">Kinezishte tradicionale</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Islandeze</translation>
 <translation id="7229570126336867161">Nevojitet EVDO</translation>
 <translation id="7230898482850090046">Administratori yt të ka kërkuar ta çaktivizosh cilësimin "Kyç kartën SIM"</translation>
+<translation id="7232750842195536390">Riemërtimi dështoi</translation>
 <translation id="7238097264433196391">Emri i diskut</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detaje</translation>
 <translation id="7246947237293279874">Përfaqësuesi i FTP-së</translation>
+<translation id="725109152065019550">Na vjen keq, por administratori yt ka çaktivizuar hapësirën ruajtëse të jashtme në llogarinë tënde.</translation>
 <translation id="7256405249507348194">Gabim i panjohur: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Shërbimet që ofrohen</translation>
 <translation id="7291818353625820805">Dëshiron që tastet të përsëriten? Çaktivizo shenjat e theksimit te "Cilësimet e tastierës"</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Hartë e Google</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" po restaurohet</translation>
 <translation id="7435577899926900307">Amerikane Dvorak</translation>
+<translation id="7436921188514130341">Mos! Pati një gabim gjatë riemërtimit.</translation>
 <translation id="7458955835361612701">Nuk ka imazhe të fundit</translation>
 <translation id="7469894403370665791">Lidhu automatikisht me këtë rrjet</translation>
 <translation id="7486315294984620427">Për t'i lëshuar skedarët në Parallels Desktop, skedari duhet të kopjohet te dosja e skedarëve të Windows.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Gozhdo në raft</translation>
 <translation id="7553492409867692754">Jepu leje aplikacioneve të Linux që të qasen në skedarët në dosjen <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Aktualisht je offline. Sinkronizimi i skedarëve do të vazhdojë kur të jesh i lidhur me internetin.</translation>
+<translation id="7589461650300748890">Ki kujdes!</translation>
 <translation id="7589661784326793847">Prit vetëm një sekondë</translation>
 <translation id="7600126690270271294">Serbisht</translation>
 <translation id="7603724359189955920">Rrjeta</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Gabim gjatë konfigurimit të rrjetit</translation>
+<translation id="7839051173341654115">Shiko/rezervo median</translation>
 <translation id="7839804798877833423">Marrja e këtyre skedarëve do të përdorë afro <ph name="FILE_SIZE" /> të dhëna celulare.</translation>
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
 <translation id="7857117644404132472">Shto një përjashtim</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Polonisht</translation>
 <translation id="7874321682039004450">Filipinisht</translation>
 <translation id="78946041517601018">Disqet e ndara</translation>
+<translation id="7897900149154324287">Në të ardhmen, sigurohu që ta nxjerrësh pajisjen e lëvizshme në aplikacionin "Skedarët" para se ta heqësh. Në rast të kundërt, mund të humbasësh të dhëna.</translation>
 <translation id="7901567919203965902">Ndërkombëtare amerikane Workman</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Na vjen keq, të paktën një pjesë në pajisjen e hapësirës ruajtëse të jashtme  nuk mund të montohej.</translation>
 <translation id="7908793776359722643">Formatimi i një ndarjeje do të spastrojë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Skedarët e tu te "Disku im" do të sinkronizohen automatikisht te Chromebook, kështu që mund të qasesh tek ata pa një lidhje interneti.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Për t'i restauruar këta artikuj, zvarriti ata te një dosje e re. Dosjet origjinale për disa nga këta artikuj janë fshirë.</translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>
 <translation id="8876368061475701452">Në radhë</translation>
+<translation id="8893928184421379330">Na vjen keq, pajisja <ph name="DEVICE_LABEL" /> nuk mund të njihej.</translation>
 <translation id="8902208737522818687">Ndërkombëtare amerikane (PC)</translation>
 <translation id="8903931173357132290">I diplomuar</translation>
 <translation id="8912078710089354287">Qen duke tundur bishtin</translation>

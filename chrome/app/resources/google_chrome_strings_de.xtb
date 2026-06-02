@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Download wird ausgeführt...</translation>
 <translation id="1651617469580841801">Wenn du Google Lens verwendest, werden der Seitentitel, die URL und der Inhalt, einschließlich PDFs, an Google gesendet. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Über Chrome OS Flex</translation>
+<translation id="1665867022636014702">Von Google empfohlene Browsereinstellungen verwenden</translation>
 <translation id="1674870198290878346">Link in Chrome-Inkognitofenster öffnen</translation>
 <translation id="1682634494516646069">Google Chrome kann im folgenden Datenverzeichnis weder lesen noch schreiben: <ph name="USER_DATA_DIRECTORY" />.</translation>
 <translation id="1688214853608504530">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an die Such-, KI- und Hilfetools deiner Organisation, um Vorschläge zu erhalten.</translation>
@@ -238,6 +239,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="345171907106878721">Mich zu Chrome hinzufügen</translation>
 <translation id="3453763134178591239">Chrome OS-Nutzungsbedingungen</translation>
 <translation id="3503306920980160878">Chrome benötigt Zugriff auf deinen Standort, um ihn mit dieser Website zu teilen</translation>
+<translation id="3539955434060988644">Link in Inkognitofenster in Chrome öffnen</translation>
 <translation id="3576528680708590453">Dein Systemadministrator hat Google Chrome so konfiguriert, dass <ph name="TARGET_URL_HOSTNAME" /> in einem alternativen Browser geöffnet wird.</translation>
 <translation id="3582972582564653026">Chrome auf allen deinen Geräten synchronisieren und personalisieren</translation>
 <translation id="3583751698304738917">Du bist in einem anderen Chrome-Profil bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet.</translation>

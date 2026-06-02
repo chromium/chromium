@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">เซิร์ฟเวอร์ชื่ออัตโนมัติ</translation>
 <translation id="1210831758834677569">ลาว</translation>
 <translation id="1221555006497674479">มีพื้นที่เก็บข้อมูลน้อย โดยเหลือ <ph name="REMAINING_PERCENTAGE" />% จากพื้นที่เก็บข้อมูลของไดรฟ์ที่แชร์ <ph name="TOTAL_SPACE" /></translation>
+<translation id="1239594683407221485">สำรวจเนื้อหาของอุปกรณ์ในแอป Files</translation>
 <translation id="1243314992276662751">อัปโหลด</translation>
 <translation id="1249250836236328755">ประเภท</translation>
 <translation id="1254593899333212300">เชื่อมต่ออินเทอร์เน็ตโดยตรง</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">ลบไม่ได้ เนื่องจากมีการใช้รายการอยู่</translation>
 <translation id="1307931752636661898">ดูไฟล์ Linux ไม่ได้</translation>
 <translation id="1313405956111467313">กำหนดค่าพร็อกซีอัตโนมัติ</translation>
+<translation id="1340527397989195812">สำรองสื่อจากอุปกรณ์โดยใช้แอป Files</translation>
 <translation id="134645005685694099">อุปกรณ์ของคุณมีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะเปิดการซิงค์ไฟล์ไว้ ไฟล์ใหม่จะไม่ซิงค์โดยอัตโนมัติอีกต่อไป</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ไฟล์หรือไดเรกทอรีใช้งานไม่ได้</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">ไม่มีใบรับรองของผู้ใช้</translation>
 <translation id="1403008701842173542">ทุกที่</translation>
 <translation id="1404323374378969387">นอร์เวย์</translation>
+<translation id="1408504635543854729">สำรวจเนื้อหาของอุปกรณ์ในแอป Files เนื้อหาถูกผู้ดูแลระบบจำกัดไว้และไม่สามารถแก้ไขได้</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
 <translation id="1433628812591023318">ต้องย้ายไฟล์ดังกล่าวไปยังไฟล์ Windows เพื่อวางใน Parallels Desktop</translation>
 <translation id="1435838927755162558">แชร์โฟลเดอร์กับ Parallels Desktop</translation>
 <translation id="1439919885608649279">คนกับดอกไม้</translation>
 <translation id="1458457385801829801">ยกเลิกการต่อเชื่อม <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">ไปที่การตั้งค่าเพื่อตั้งค่ากำหนดของอุปกรณ์</translation>
 <translation id="146691674290220697">คัดลอกไม่ได้ <ph name="NUMBER_OF_FILES" /> ไฟล์เนื่องจากมีการเข้ารหัส</translation>
 <translation id="1471718551822868769">สโลวัก</translation>
 <translation id="1482884275703521657">ฟินแลนด์</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">จัดการใน Google ไดรฟ์</translation>
 <translation id="2004942826429452291">ระบบจะจัดเก็บไฟล์ไว้ในระบบคลาวด์และใน Chromebook เครื่องนี้</translation>
 <translation id="2009067268969781306">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์ การดำเนินการนี้ยกเลิกไม่ได้</translation>
+<translation id="2018352199541442911">ขออภัย อุปกรณ์จัดเก็บข้อมูลภายนอกของคุณไม่ได้รับการสนับสนุนในขณะนี้</translation>
 <translation id="2025955442973426285">ตีกรินยา</translation>
 <translation id="2029385776150020336">แป้นพิมพ์ขยายแบบสหรัฐอเมริกา</translation>
 <translation id="2037845485764049925">รัสเซีย</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">ทามาก็อตจิ</translation>
 <translation id="2468470447085858632">เข้าถึงไฟล์ใน Google ไดรฟ์แบบออฟไลน์ด้วยการซิงค์ไฟล์</translation>
 <translation id="2470939964922472929">ป้อน PIN ไม่ถูกต้องหลายครั้งเกินไป หากต้องการตั้งค่า PIN ใหม่ ให้ป้อนคีย์การเลิกบล็อกส่วนตัว (PUK) 8 หลักจากผู้ให้บริการของคุณ</translation>
+<translation id="249113932447298600">ขออภัย อุปกรณ์ <ph name="DEVICE_LABEL" /> ไม่ได้รับการสนับสนุนในขณะนี้</translation>
 <translation id="2500392669976258912">คุชราต (ตามการออกเสียง)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">สแกน</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">ยูเครน</translation>
 <translation id="3326821416087822643">กำลังซิป <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">ปีที่บันทึก</translation>
+<translation id="3348038390189153836">พบอุปกรณ์แบบถอดออกได้</translation>
 <translation id="3353984535370177728">เลือกโฟลเดอร์ที่จะอัปโหลด</translation>
 <translation id="3356580349448036450">เสร็จสมบูรณ์</translation>
 <translation id="3358452157379365236">กีตาร์</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">ดาวน์โหลดโปรไฟล์มือถือ, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">อังกฤษ (สหราชอาณาจักร)</translation>
 <translation id="3975895378829046965">บังกลา (ตามการออกเสียง)</translation>
+<translation id="3983764759749072418">แอปพลิเคชัน Play Store มีสิทธิ์เข้าถึงอุปกรณ์นี้</translation>
 <translation id="3999574733850440202">ไฟล์ Microsoft ที่เปิดล่าสุดได้ย้ายไปยัง OneDrive แล้ว</translation>
 <translation id="4002066346123236978">ชื่อ</translation>
 <translation id="4017788180641807848">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">คุณจะต้องออนไลน์เพื่อเข้าถึงไฟล์นี้</translation>
 <translation id="4212740939091998969">มีโฟลเดอร์ชื่อ "<ph name="FOLDER_NAME" />" อยู่แล้ว โปรดเลือกชื่ออื่น</translation>
 <translation id="4218274196133425560">นำข้อยกเว้นออกสำหรับ <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4261901459838235729">งานนำเสนอของ Google</translation>
 <translation id="4277536868133419688">ตัวกรอง <ph name="FILTER_NAME" /> เปิดอยู่</translation>
 <translation id="4290535918735525311">แชร์กับ Linux แล้ว 1 โฟลเดอร์</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">ไฟล์ที่กู้คืนจาก Google ไดรฟ์</translation>
 <translation id="5278111733643988471">หากต้องการกู้คืนรายการนี้ ให้ลากไปที่โฟลเดอร์ใหม่นอกถังขยะ ระบบลบโฟลเดอร์ "<ph name="PARENT_FOLDER_NAME" />" เดิมของรายการนี้แล้ว</translation>
 <translation id="5288441970121584418">เบอร์เกอร์</translation>
+<translation id="529175790091471945">ฟอร์แมตอุปกรณ์นี้</translation>
 <translation id="5293615890992542006">นโยบายของผู้ดูแลระบบบล็อกการย้ายไฟล์นี้</translation>
 <translation id="5305688511332277257">ไม่มีการติดตั้ง</translation>
 <translation id="5317780077021120954">บันทึก</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">อย่าใช้การตั้งค่าพร็อกซีสำหรับโฮสต์และโดเมนเหล่านี้:</translation>
 <translation id="541890217011173530">เคิร์ดโซรานีด้วยแป้นพิมพ์ตามแบบภาษาอังกฤษ</translation>
 <translation id="5422221874247253874">จุดเข้าใช้งาน</translation>
+<translation id="5422781158178868512">ขออภัย ระบบไม่รู้จักอุปกรณ์จัดเก็บข้อมูลภายนอกของคุณ</translation>
 <translation id="5438282218546237410">ไม่มีผลการค้นหาสำหรับ <ph name="SEARCH_TERM" /></translation>
 <translation id="5447680084201416734">พื้นที่เก็บข้อมูลไม่เพียงพอ</translation>
 <translation id="5449551289610225147">รหัสผ่านไม่ถูกต้อง</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">เลือกไว้ <ph name="SELECTED_FILES_COUNT" /> รายการ</translation>
 <translation id="5763377084591234761">เยอรมัน (สวิตเซอร์แลนด์)</translation>
 <translation id="5769519078756170258">โฮสต์หรือโดเมนที่จะยกเว้น</translation>
+<translation id="5774295353725270860">เปิดแอปพลิเคชันไฟล์</translation>
 <translation id="5775750595919327203">อูรดู</translation>
 <translation id="5776325638577448643">ลบและฟอร์แมต</translation>
 <translation id="57838592816432529">ปิดเสียง</translation>
 <translation id="5788127256798019331">ไฟล์ Play</translation>
+<translation id="5788367137662787332">ขออภัย ไม่สามารถติดตั้งอย่างน้อยหนึ่งพาร์ทิชันลงในอุปกรณ์ <ph name="DEVICE_LABEL" /> ได้</translation>
 <translation id="5804245609861364054">กันนาดา (การทับศัพท์)</translation>
 <translation id="5814126672212206791">ประเภทการเชื่อมต่อ</translation>
 <translation id="5817397429773072584">จีนตัวเต็ม</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">ไอซ์แลนด์</translation>
 <translation id="7229570126336867161">ต้องใช้ EVDO</translation>
 <translation id="7230898482850090046">ผู้ดูแลระบบขอให้คุณปิดการตั้งค่า "ล็อกซิม"</translation>
+<translation id="7232750842195536390">การเปลี่ยนชื่อล้มเหลว</translation>
 <translation id="7238097264433196391">ชื่อไดรฟ์</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, รายละเอียด</translation>
 <translation id="7246947237293279874">พร็อกซี FTP</translation>
+<translation id="725109152065019550">ขออภัย ผู้ดูแลระบบของคุณได้ปิดใช้งานพื้นที่เก็บข้อมูลภายนอกกับบัญชีของคุณ</translation>
 <translation id="7256405249507348194">ข้อผิดพลาดที่ไม่รู้จัก: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">บริการที่มี</translation>
 <translation id="7291818353625820805">ต้องการให้แป้นทำงานซ้ำไหม โปรดปิดเครื่องหมายการเน้นเสียงในการตั้งค่าแป้นพิมพ์</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">แผนที่ Google</translation>
 <translation id="7419668828140929293">กำลังกู้คืน "<ph name="FILENAME" />"</translation>
 <translation id="7435577899926900307">ดีโวรักสหรัฐอเมริกา</translation>
+<translation id="7436921188514130341">แย่จัง! เกิดข้อผิดพลาดในระหว่างการตั้งชื่อ</translation>
 <translation id="7458955835361612701">ไม่มีรูปภาพล่าสุด</translation>
 <translation id="7469894403370665791">เชื่อมต่อกับเครือข่ายนี้อัตโนมัติ</translation>
 <translation id="7486315294984620427">ต้องคัดลอกไฟล์ดังกล่าวไปยังไฟล์ Windows เพื่อวางใน Parallels Desktop</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">ปักหมุดที่ชั้นวาง</translation>
 <translation id="7553492409867692754">ให้สิทธิ์แอป Linux เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7555339735447658365">คุณออฟไลน์อยู่ การซิงค์ไฟล์จะดำเนินต่อเมื่อคุณเชื่อมต่ออินเทอร์เน็ต</translation>
+<translation id="7589461650300748890">อ๊ะ โปรดระวัง</translation>
 <translation id="7589661784326793847">รอสักครู่</translation>
 <translation id="7600126690270271294">เซอร์เบีย</translation>
 <translation id="7603724359189955920">ตารางกริด</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">เกิดข้อผิดพลาดในการกำหนดค่าเครือข่าย</translation>
+<translation id="7839051173341654115">ดู/สำรองสื่อ</translation>
 <translation id="7839804798877833423">การดึงไฟล์เหล่านี้จะใช้ข้อมูลมือถือขนาดประมาณ <ph name="FILE_SIZE" /></translation>
 <translation id="7846076177841592234">ยกเลิกการเลือก</translation>
 <translation id="7857117644404132472">เพิ่มข้อยกเว้น</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">โปแลนด์</translation>
 <translation id="7874321682039004450">ฟิลิปปินส์</translation>
 <translation id="78946041517601018">ไดรฟ์ที่แชร์</translation>
+<translation id="7897900149154324287">ในอนาคต โปรดตรวจสอบว่าได้ยกเลิกการเชื่อมต่ออุปกรณ์แบบถอดออกได้ในแอป Files ก่อนที่จะถอดปลั๊ก มิฉะนั้นคุณอาจสูญเสียข้อมูล</translation>
 <translation id="7901567919203965902">Workman สหรัฐอเมริกาแบบสากล</translation>
 <translation id="7903984238293908205">คะตะคะนะ</translation>
+<translation id="7908378463497120834">ขออภัย ไม่สามารถติดตั้งอย่างน้อยหนึ่งพาร์ทิชันในอุปกรณ์จัดเก็บข้อมูลภายนอกของคุณ</translation>
 <translation id="7908793776359722643">การฟอร์แมตพาร์ติชันจะลบข้อมูลทั้งหมดที่จัดเก็บในพาร์ติชันนั้น การดำเนินการนี้เลิกทำไม่ได้</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">ไฟล์ใน "ไดรฟ์ของฉัน" จะซิงค์กับ Chromebook โดยอัตโนมัติ เพื่อให้คุณเข้าถึงได้โดยไม่ต้องเชื่อมต่ออินเทอร์เน็ต</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">หากต้องการกู้คืนรายการเหล่านี้ ให้ลากไปที่โฟลเดอร์ใหม่ ระบบลบโฟลเดอร์เดิมของบางรายการเหล่านี้แล้ว</translation>
 <translation id="8874184842967597500">ไม่เชื่อมต่อ</translation>
 <translation id="8876368061475701452">อยู่ในคิว</translation>
+<translation id="8893928184421379330">ขออภัย ระบบไม่รู้จักอุปกรณ์ <ph name="DEVICE_LABEL" /></translation>
 <translation id="8902208737522818687">สหรัฐอเมริกาสากล (พีซี)</translation>
 <translation id="8903931173357132290">รับปริญญา</translation>
 <translation id="8912078710089354287">สุนัขกำลังกระดิกหาง</translation>

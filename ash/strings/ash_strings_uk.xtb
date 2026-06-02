@@ -38,9 +38,11 @@
 <translation id="109647177154844434">Якщо ви видалите додаток Parallels Desktop, то також вилучите образ, додатки, налаштування й дані Windows. Продовжити?</translation>
 <translation id="1104084341931202936">Показати налаштування функцій доступності</translation>
 <translation id="1104621072296271835">Ваші пристрої працюватимуть разом ще краще</translation>
+<translation id="1107300737351978027">Не вводьте повторювані цифри</translation>
 <translation id="1111021433905331574">Щоб змінити колір підсвічування клавіатури, перейдіть у налаштування &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Увімкнути або вимкнути мобільний Інтернет. <ph name="STATE" />.</translation>
 <translation id="1118738876271697201">Системі не вдалося визначити модель і серійний номер пристрою.</translation>
+<translation id="1119447706177454957">Внутрішня помилка</translation>
 <translation id="1122849163460178706">Приклади запитів</translation>
 <translation id="112308213915226829">Автоматично ховати панель запуску</translation>
 <translation id="1129383337808748948">Оновити <ph name="CONTENT_TITLE" /></translation>
@@ -96,6 +98,7 @@
 <translation id="1247519845643687288">Нещодавні додатки</translation>
 <translation id="1252999807265626933">Джерело заряджання: <ph name="POWER_SOURCE" /></translation>
 <translation id="126156426083987769">Виникла проблема з ліцензіями пристрою в демо-режимі.</translation>
+<translation id="1264337193001759725">Щоб переглянути журнали мережевого інтерфейсу, перейдіть на сторінку <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1269405891096105529">Периферійні пристрої не підтримуються в режимі гостя</translation>
 <translation id="1270290102613614947">Екранну клавіатуру вимкнено</translation>
 <translation id="1272079795634619415">Зупинити</translation>
@@ -105,6 +108,7 @@
 <translation id="1276975447697633661">Виберіть файл і натисніть <ph name="KEY" /></translation>
 <translation id="1276994519141842946">Не вдалося видалити додаток <ph name="APP_NAME" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1283126956823499975">Не вдалося налаштувати пристрій</translation>
 <translation id="1285992161347843613">Пошук телефона</translation>
 <translation id="1287002645302686982">Ви вже зберегти робочий стіл під назвою "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="1288276784862223576">Налаштуйте перегляд нещодавніх фотографій і медіафайлів на телефоні</translation>
@@ -228,6 +232,7 @@
 <translation id="1604857178818051494">Призупинити відтворення медіаконтенту</translation>
 <translation id="1607312127821884567">Відхилити налаштування перегляду додатків на телефоні</translation>
 <translation id="1610778689852195798">"Відмінити"</translation>
+<translation id="1611432201750675208">Пристрій заблоковано</translation>
 <translation id="1611993646327628135">Увімкнено</translation>
 <translation id="1612679292338846734">Коли ви вмикаєте ці функції, введений текст, вміст документа і URL-адреса вебсторінки можуть надсилатися на сервери ШІ від Google. Ці дані використовуються, щоб генерувати пропозиції, підсумки й відповіді на запитання, а також удосконалювати наш продукт відповідно до <ph name="LINK_TO_SERVICE_TERMS" />. Не вказуйте особисту, чутливу чи конфіденційну інформацію.</translation>
 <translation id="1619879934359211038">Не вдалося підключитися до Google Play. Перевірте з’єднання з мережею та повторіть спробу. Код помилки: <ph name="ERROR_CODE" />.</translation>
@@ -241,6 +246,7 @@
 <translation id="1647986356840967552">Попередня сторінка</translation>
 <translation id="1651914502370159744">Відкрити сторінку "Історія"</translation>
 <translation id="1668469839109562275">Вбудована мережа VPN</translation>
+<translation id="1668979692599483141">Докладніше про підказки</translation>
 <translation id="1673232940951031776">Вийти з режиму концентрації уваги. Залишилося: <ph name="REMAINING_TIME" />.</translation>
 <translation id="1675570947608765064">Зміни, які ви вносите в завдання, бачитимуть інші</translation>
 <translation id="1677472565718498478">Залишилося <ph name="TIME" /></translation>
@@ -354,6 +360,7 @@
 <translation id="2011174342667534258">Версія пакета SDK:</translation>
 <translation id="2017998995161831444">Відкрити довідку в додатку Можливості</translation>
 <translation id="2021864487439853900">Натисніть, щоб розблокувати</translation>
+<translation id="2023167225947895179">PIN-код легко вгадати</translation>
 <translation id="2034971124472263449">Усе одно зберегти</translation>
 <translation id="2041220428661959602">Рівень заряду акумулятора: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Комбінацію клавіш для дії "<ph name="SIX_PACK_KEY_NAME" />" зараз вимкнено</translation>
@@ -1059,6 +1066,7 @@
 <translation id="4099874310852108874">Сталася помилка мережі.</translation>
 <translation id="4101772068965291327">Відкривати домашню сторінку</translation>
 <translation id="4102906002417106771">Перезапустити, щоб виконати Powerwash</translation>
+<translation id="411052834366185695">Має містити принаймні 1 цифру</translation>
 <translation id="4113030288477039509">Керується адміністратором</translation>
 <translation id="4114315158543974537">Увімкнути Phone Hub</translation>
 <translation id="4115378294792113321">Пурпурний</translation>
@@ -1274,6 +1282,7 @@
 <translation id="4659419629803378708">ChromeVox увімкнено</translation>
 <translation id="4666911709726371538">Більше додатків</translation>
 <translation id="4667099493359681081">Завантажується файл <ph name="FILENAME" /></translation>
+<translation id="4668936527507421457">PIN-код має містити лише цифри</translation>
 <translation id="4672539464599646374">Режим енергозбереження ввімкнено</translation>
 <translation id="4673427585974421255">Не вимикати</translation>
 <translation id="4677040906536311086">Таблиця Google</translation>
@@ -1304,6 +1313,7 @@
 <translation id="4762573482154983647">Приховати додатки</translation>
 <translation id="4762718786438001384">На диску пристрою дуже мало вільного місця</translation>
 <translation id="4763885921995354846">Буде надано доступ до камери для всіх додатків і веб-сайтів, які мають відповідний дозвіл. Можливо, вам також доведеться оновити веб-сторінку або перезапустити додаток.</translation>
+<translation id="4769359569327438364">Має містити принаймні 4 цифри</translation>
 <translation id="4774338217796918551">Поверніться завтра о <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Пароль усе ще не вдається підтвердити. Повторіть спробу.</translation>
 <translation id="4776917500594043016">Пароль користувача  <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1358,6 +1368,7 @@
 <translation id="4925542575807923399">Адміністратору облікового запису потрібно, щоб цей обліковий запис був першим обліковим записом, з якого здійснено вхід під час сеансу паралельного входу.</translation>
 <translation id="493076006037866439">Віддалити екран</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="4934763315031217818">Не вводьте послідовності цифр</translation>
 <translation id="4936329710968938986">Усі, вимкнено</translation>
 <translation id="4937170330762390348">За допомогою функції диктування ви можете вводити текст голосом. У текстовому полі натисніть клавішу диктування або значок мікрофона внизу екрана. Вибрано таку мову диктування: <ph name="LANGUAGE" />. Буде завантажено файли для розпізнавання мовлення, щоб ви могли користуватися функцією диктування без підключення до мережі. Ви можете будь-коли змінити мову диктування в меню "Налаштування &gt; Функції доступності".</translation>
 <translation id="4938176435186993759">Приховати всі пропозиції</translation>
@@ -1437,6 +1448,7 @@
 <translation id="5147567197700016471">Розблоковано</translation>
 <translation id="5150070631291639005">Налаштування конфіденційності</translation>
 <translation id="5155897006997040331">Швидкість читання</translation>
+<translation id="5158206172605340248">Меню діакритичних знаків закрито.</translation>
 <translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Це загальна інформація про пристрій і його використання (відомості про рівень заряду акумулятора, систему, дії в додатках, помилки тощо). Ці відомості використовуватимуться, щоб покращити Android, а деякі зведені дані корисні для додатків і партнерів Google, як-от розробників Android.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Якщо вимкнути цю функцію, пристрій усе одно зможе надсилати інформацію, потрібну для отримання важливих послуг, як-от оновлень системи й засобів безпеки.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Власник може керувати цією функцією в меню "Налаштування &gt; Розширені &gt; Автоматично надсилати в Google дані про діагностику й використання".<ph name="END_PARAGRAPH3" />
@@ -1469,9 +1481,11 @@
 <translation id="5238719049014159442">Відкрити або закрити панель запуску</translation>
 <translation id="5240725217819182328">Швидкий доступ до певних сторінок або дій у встановлених додатках</translation>
 <translation id="5243355658487390559">Пошук дати</translation>
+<translation id="5243477050423867768">Має включати принаймні 8 цифр і не може містити повторювані або впорядковані послідовності</translation>
 <translation id="5243522832766285132">Повторіть спробу через кілька хвилин</translation>
 <translation id="5245201184978705914">Не вдалося створити текстову версію</translation>
 <translation id="5251174953851719648">Оновити контент</translation>
+<translation id="5252653240322147470">Максимальна кількість цифр у PIN-коді: <ph name="MAXIMUM" /></translation>
 <translation id="5253783950165989294">Підключено до пристрою "<ph name="DEVICE_NAME" />", заряд акумулятора – <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="52550593576409946">Не вдалося запустити додаток для терміналів.</translation>
 <translation id="5256939106029293271">Перевірте мікрофон</translation>
@@ -1510,6 +1524,7 @@
 <translation id="5329548388331921293">З'єднання…</translation>
 <translation id="5331975486040154427">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
 <translation id="533282197239610265">Показати пристрої для трансляції</translation>
+<translation id="5342091991439452114">Мінімальна кількість цифр у PIN-коді: <ph name="MINIMUM" /></translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Правий)</translation>
 <translation id="5352250171825660495">Темну тему ввімкнено</translation>
 <translation id="5354804064646502504">За передавання даних може стягуватися плата.
@@ -1738,6 +1753,7 @@
 <translation id="602001110135236999">Прокрутити ліворуч</translation>
 <translation id="6020147141355393792">Налаштувати перегляд сповіщень і додатків на телефоні</translation>
 <translation id="6022924867608035986">Очистити вікно пошуку</translation>
+<translation id="6023643151125006053">Адміністратор домену <ph name="SAML_DOMAIN" /> заблокував цей пристрій (серійний номер <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="602472752137106327">Показувати вікна з усіх робочих столів, перемикач вибрано</translation>
 <translation id="6024768346262692989">Не вдалося завантажити файли для функції визначення обличчя</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу –<ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
@@ -1745,6 +1761,7 @@
 <translation id="6030495522958826102">Меню переміщено в нижній лівий кут екрана.</translation>
 <translation id="6030608926359652298">Налаштуйте сенсорну панель</translation>
 <translation id="6032620807120418574">Натисніть будь-де, щоб записати весь екран</translation>
+<translation id="603539183851330738">Кнопка відміни автовиправлення. Ви можете відновити слово "<ph name="TYPED_WORD" />".  Щоб підтвердити, натисніть Enter; щоб відхилити, натисніть Escape.</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6042308850641462728">Більше</translation>
 <translation id="6043212731627905357">Ваш пристрій <ph name="DEVICE_TYPE" /> не підтримує цей монітор.</translation>
@@ -1880,6 +1897,7 @@
 <translation id="6418511932144861495">Установіть важливе оновлення</translation>
 <translation id="641867537956679916">Ваш адміністратор увійшов у систему, щоб вирішити проблему. Ви знову зможете користуватися пристроєм після того, як адміністратор поверне вам контроль над ним.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="642469772702851743">Власник заблокував цей пристрій (серійний номер <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="642644398083277086">Видаліть усі сповіщення</translation>
 <translation id="6426905245930183644">Створення…</translation>
 <translation id="6430225033895752525">Показати налаштування режиму концентрації уваги</translation>
@@ -1905,6 +1923,7 @@
 <translation id="6485086611007560630">Прогноз погоди (недоступно)</translation>
 <translation id="6490471652906364588">Пристрій із портом USB типу C (праворуч)</translation>
 <translation id="6491376743066338510">Не авторизовано</translation>
+<translation id="6494483173119160146">На пристрої сталася помилка з неможливістю відновлення. Скиньте налаштування пристрою (усі дані користувача буде видалено) і повторіть спробу.</translation>
 <translation id="649452524636452238">PIN-код розумної картки</translation>
 <translation id="6495322433318104734">Показується заставка. Щоб вийти, натисніть будь-яку клавішу.</translation>
 <translation id="6495400115277918834">Увімкнено режим "Картинка в картинці"; щоб виділити, натисніть Alt+Shift+V</translation>
@@ -1928,6 +1947,7 @@
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Нове встановлення</translation>
 <translation id="6559158502366839560">Переглянути інші додатки й ігри</translation>
+<translation id="6560151649238390891">Пропозицію вставлено</translation>
 <translation id="6562447480759345110">Вийти з режиму концентрації уваги</translation>
 <translation id="6565007273808762236">З’єднання з eSIM-картою недоступне</translation>
 <translation id="6570831796530454248">{0,plural, =1{Оновіть пристрій протягом години}one{Оновіть пристрій протягом # години}few{Оновіть пристрій протягом # годин}many{Оновіть пристрій протягом # годин}other{Оновіть пристрій протягом # години}}</translation>
@@ -1949,6 +1969,7 @@
 <translation id="6612889377159412215">підзавдання</translation>
 <translation id="6613765291890844037">Використаний обсяг пам’яті: <ph name="STORAGE_IN_USE_SIZE" /> | Усього: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Екран конфіденційності ввімкнено</translation>
+<translation id="6622212269189717101">Має включати принаймні 6 цифр і не може містити повторювані або впорядковані послідовності</translation>
 <translation id="6622679827379792051">Налаштувати перегляд додатків на телефоні</translation>
 <translation id="662279009180869175">Щоб змінювати розмір розділеного екрана, використовуйте стрілки вліво й вправо</translation>
 <translation id="6624493541160101248">Поточний робочий стіл: <ph name="DESK_NAME" />. Робочий стіл <ph name="DESK_INDEX" /> із <ph name="DESK_COUNT" />.</translation>
@@ -2142,6 +2163,7 @@
 <translation id="7228968829656641943">Виберіть ділянку на екрані, за якою хочете виконати пошук. Для навігації за допомогою клавіатури натисніть клавішу Tab, а потім – пробіл.</translation>
 <translation id="7229029500464092426">Обсяг використаної пам’яті: <ph name="AVAILABLE_MEMORY" /> | Усього: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7234010996000898150">Скасовується відновлення Linux</translation>
+<translation id="7238609589076576185">Вставлено діакритичний знак.</translation>
 <translation id="7239814253344511868">Обидві кнопки миші</translation>
 <translation id="7240636904654154599">Таблицю Google створено</translation>
 <translation id="7244725679040769470">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора. Підключіть пристрій до джерела живлення.</translation>
@@ -2223,6 +2245,7 @@
 <translation id="7489261257412536105">Відкрити на весь екран або вийти з повноекранного режиму</translation>
 <translation id="7490157877815329797">Спробуйте YouTube Music Premium, щоб слухати музику без реклами й отримувати персоналізовані добірки для зосередження</translation>
 <translation id="7490360161041035804">Ви можете закріпити важливі файли, зокрема з Google Диска. Для цього наведіть курсор на об’єкт або відкрийте додаток Файли й натисніть об’єкт правою кнопкою миші.</translation>
+<translation id="7491962110804786152">вкладка</translation>
 <translation id="7497767806359279797">Вибрати мову та клавіатуру</translation>
 <translation id="7507162824403726948">Завершити підтвердження особи</translation>
 <translation id="7508690557411636492">Відкрито минулого місяця</translation>
@@ -2459,6 +2482,7 @@
 <translation id="808894953321890993">Змінити пароль</translation>
 <translation id="8091153018031979607">Початок о <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8092380135549145188">Елементи керування прокручуванням</translation>
+<translation id="80974698889265265">PIN-коди не збігаються</translation>
 <translation id="810637681351706236">Відкріпити додаток від панелі запуску</translation>
 <translation id="8107015733319732394">Встановлення додатка Google Play Store на ваш <ph name="DEVICE_TYPE" />. Це може зайняти кілька хвилин.</translation>
 <translation id="8113515504791187892">Кнопка "Читання з екрана"</translation>
@@ -2486,10 +2510,12 @@
 <translation id="8168435359814927499">Контент</translation>
 <translation id="8169177848833352618">Цей комп’ютер не відповідає вимогам для встановлення додатка Bruschetta. Код помилки: <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Виділено маркер лівого верхнього кута. Щоб перемістити його, використовуйте клавіші зі стрілками.</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">Не вдалося вставити зображення</translation>
 <translation id="8182105986296479640">Додаток не відповідає.</translation>
 <translation id="8182412589359523143">Щоб видалити всі дані з цього пристрою <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />натисніть тут<ph name="END_LINK" />.</translation>
 <translation id="8185090165691050712">Відкрити або закрити меню режиму, що блокує змінення розміру додатка</translation>
+<translation id="8186047833733689201">Відкрито меню діакритичних знаків. Щоб переходити між знаками, натискайте клавіші зі стрілками вліво й управо або цифрами. Щоб вставити знак, натисніть клавішу Enter.</translation>
 <translation id="8192727139462702395">Якщо вимкнути Bluetooth, від <ph name="DEVICE_TYPE" /> від’єднаються такі зовнішні пристрої:</translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>
 <translation id="8200772114523450471">Відновити</translation>
@@ -2508,12 +2534,14 @@
 <translation id="8238817965863339552">Ознайомтеся з коротким оглядом <ph name="PRODUCT_NAME" />. Щоб почати роботу, виконайте 5 кроків.</translation>
 <translation id="8239034820133090126">Активувати робочий стіл праворуч</translation>
 <translation id="8241650983304689286">Додати вкладку для нового паралельного перегляду</translation>
+<translation id="8244201515061746038">Кнопка "Докладніше про автовиправлення". Перейти на сторінку налаштувань автовиправлення. Щоб підтвердити, натисніть Enter; щоб відхилити, натисніть Escape.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" /></translation>
 <translation id="8249048954461686687">Папка OEM</translation>
 <translation id="825129991941217170">Показати весь контент із Google Диска</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8261625296061301062">Програмне забезпечення для сканера встановлено</translation>
 <translation id="8262312463845990408">Увімкнути або вимкнути відтворення</translation>
+<translation id="8266751606569906450">Має містити щонайменше стільки символів: <ph name="MINIMUM" /></translation>
 <translation id="8268302343625273732">Переглянути всі завдання в Google Класі</translation>
 <translation id="8277261673056602147">Виділити текст на екрані</translation>
 <translation id="8281886186245836920">Пропустити</translation>
@@ -2549,6 +2577,7 @@
 <translation id="8388750414311082622">Останній робочий стіл не можна видалити.</translation>
 <translation id="8390392581097975659">Встановлення програмного забезпечення для сканера</translation>
 <translation id="8394567579869570560">Батьки заблокували цей пристрій</translation>
+<translation id="839949601275221554">Сталася помилка пристрою. Перезапустіть його й повторіть спробу.</translation>
 <translation id="8401850874595457088">Меню вибору мови</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Показати налаштування дисплея</translation>
@@ -2708,6 +2737,7 @@
 <translation id="8858369206579825206">Налаштування конфіденційності</translation>
 <translation id="8859402192569844210">Не вдалося завантажити Умови використання</translation>
 <translation id="8860366331836346216">Додати eSIM-карту</translation>
+<translation id="8864458770072227512">Обліковий запис <ph name="EMAIL" /> видалено з цього пристрою</translation>
 <translation id="8869149849311827122">Вимкнути керування курсором миші?</translation>
 <translation id="8870509716567206129">Додаток не підтримує розділення екрана.</translation>
 <translation id="8871551568777368300">Закріплено адміністратором</translation>
@@ -2844,6 +2874,7 @@
 <translation id="956452277966142925">Налаштування ігрової панелі</translation>
 <translation id="961856697154696964">Видалити дані вебперегляду</translation>
 <translation id="974545358917229949">Показано результати (<ph name="RESULT_COUNT" />) для запиту "<ph name="QUERY" />"</translation>
+<translation id="976499800099896273">Вікно відміни автовиправлення: "<ph name="TYPED_WORD" />" виправлено на "<ph name="CORRECTED_WORD" />".  Щоб відкрити вікно відміни, натисніть стрілку вгору; щоб закрити, натисніть клавішу Escape.</translation>
 <translation id="97905529126098460">Це вікно закриється, щойно встановлення буде скасовано.</translation>
 <translation id="981011780479609956">Термін здачі не вказано</translation>
 <translation id="981121421437150478">Офлайн</translation>

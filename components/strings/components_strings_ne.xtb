@@ -875,6 +875,7 @@
 <translation id="2354001756790975382">अन्य बुकमार्कहरू</translation>
 <translation id="2355395290879513365">आक्रमणकारीहरूले यस साइटमा तपाईँले हेरिरहनुभएका फोटो हेर्न र तिनीहरूलाई परिमार्जन गरी तपाईँलाई धोका दिन सक्छन्।</translation>
 <translation id="2356941001189392209">तपाईंले खोलेका लिगेसी प्रविधिसम्बन्धी कार्यक्रमहरू देखाइएका पेजका URL हरूको सीमित सूची</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{एउटा ट्याब सेयर गरिने छ}other{{NUM_TABS} वटा ट्याब सेयर गरिने छन्}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> ले तपाईंको यन्त्र व्यवस्थापन गर्छ र <ph name="ACCOUNT_MANAGER" /> ले तपाईंको खाता व्यवस्थापन गर्छ।</translation>
 <translation id="2359629602545592467">बहु मुद्राहरू</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>

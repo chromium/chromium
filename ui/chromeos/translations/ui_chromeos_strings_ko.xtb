@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">자동 네임서버</translation>
 <translation id="1210831758834677569">라오어</translation>
 <translation id="1221555006497674479">저장용량 부족. 공유 드라이브 저장용량 <ph name="TOTAL_SPACE" /> 중 <ph name="REMAINING_PERCENTAGE" />% 남았습니다.</translation>
+<translation id="1239594683407221485">파일 앱에서 기기의 콘텐츠를 탐색하세요.</translation>
 <translation id="1243314992276662751">업로드</translation>
 <translation id="1249250836236328755">장르</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">삭제할 수 없습니다. 항목이 사용 중입니다.</translation>
 <translation id="1307931752636661898">Linux 파일을 볼 수 없음</translation>
 <translation id="1313405956111467313">자동 프록시 설정</translation>
+<translation id="1340527397989195812">파일 앱을 사용하여 기기의 미디어를 백업합니다.</translation>
 <translation id="134645005685694099">기기의 저장공간이 부족하여 파일 동기화를 사용 설정할 수 없습니다. 새 파일이 더 이상 자동으로 동기화되지 않습니다.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">파일 또는 디렉터리를 사용할 수 없습니다.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">사용자 인증서 없음</translation>
 <translation id="1403008701842173542">어디에서나 사용</translation>
 <translation id="1404323374378969387">노르웨이어</translation>
+<translation id="1408504635543854729">파일 앱에서 기기의 콘텐츠를 탐색합니다. 콘텐츠는 관리자에 의해 제한되며 수정할 수 없습니다.</translation>
 <translation id="1412476183660741812">서명된 웹 번들</translation>
 <translation id="1433628812591023318">Parallels Desktop에 파일을 드롭하려면 파일을 Windows 파일 폴더로 이동해야 합니다.</translation>
 <translation id="1435838927755162558">Parallels Desktop과 폴더 공유</translation>
 <translation id="1439919885608649279">꽃에 둘러싸인 사람</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> 꺼내기</translation>
+<translation id="1464781208867302907">기기 환경설정을 보려면 설정으로 이동하세요.</translation>
 <translation id="146691674290220697">파일 <ph name="NUMBER_OF_FILES" />개가 암호화되어 있으므로 복사할 수 없습니다.</translation>
 <translation id="1471718551822868769">슬로바키아어</translation>
 <translation id="1482884275703521657">핀란드어</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">드라이브에서 관리</translation>
 <translation id="2004942826429452291">파일은 클라우드와 Chromebook에 저장됩니다.</translation>
 <translation id="2009067268969781306">드라이브를 포맷하면 드라이브에 저장된 데이터가 모두 삭제됩니다. 이 작업은 취소할 수 없습니다.</translation>
+<translation id="2018352199541442911">죄송합니다. 연결하신 외부 저장장치는 현재 지원되지 않습니다.</translation>
 <translation id="2025955442973426285">티그리냐어</translation>
 <translation id="2029385776150020336">영어(미국) 확장</translation>
 <translation id="2037845485764049925">러시아어</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">다마고치</translation>
 <translation id="2468470447085858632">파일 동기화를 사용해 오프라인에서 Google Drive 파일에 액세스</translation>
 <translation id="2470939964922472929">잘못된 PIN을 너무 여러 번 입력했습니다. 새 PIN을 설정하려면 이동통신사에서 제공한 8자리 PUK(Personal Unblocking Key)를 입력하세요.</translation>
+<translation id="249113932447298600">죄송합니다. 현재 이 기기(<ph name="DEVICE_LABEL" />)는 지원되지 않습니다.</translation>
 <translation id="2500392669976258912">구자라트어(표음)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">스캔</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">우크라이나어</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> 압축 중...</translation>
 <translation id="3335337277364016868">녹음된 연도</translation>
+<translation id="3348038390189153836">이동식 기기가 검색됨</translation>
 <translation id="3353984535370177728">업로드할 폴더 선택</translation>
 <translation id="3356580349448036450">완료</translation>
 <translation id="3358452157379365236">기타</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">모바일 프로필 다운로드, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">영어(영국)</translation>
 <translation id="3975895378829046965">벵골어(표음)</translation>
+<translation id="3983764759749072418">Play 스토어 애플리케이션이 이 기기에 액세스할 수 있습니다.</translation>
 <translation id="3999574733850440202">최근에 연 Microsoft 파일이 OneDrive로 이동되었습니다.</translation>
 <translation id="4002066346123236978">제목</translation>
 <translation id="4017788180641807848">영어(미국, 워크맨 키보드)</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">이 파일에 액세스하려면 온라인 상태여야 합니다.</translation>
 <translation id="4212740939091998969">이름이 '<ph name="FOLDER_NAME" />'인 폴더가 이미 존재합니다. 다른 이름을 선택하세요.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> 예외 삭제</translation>
+<translation id="4242533952199664413">설정 열기</translation>
 <translation id="4261901459838235729">Google 프레젠테이션</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> 필터가 설정되었습니다.</translation>
 <translation id="4290535918735525311">폴더 1개가 Linux와 공유됨</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Google Drive에서 복구된 파일</translation>
 <translation id="5278111733643988471">항목을 복원하려면 휴지통 외부의 새 폴더로 드래그하세요. 이 항목의 원래 폴더인 "<ph name="PARENT_FOLDER_NAME" />"이(가) 삭제되었습니다</translation>
 <translation id="5288441970121584418">햄버거</translation>
+<translation id="529175790091471945">이 기기 포맷</translation>
 <translation id="5293615890992542006">관리자 정책에 의해 이 파일의 이동이 차단되었습니다.</translation>
 <translation id="5305688511332277257">설치된 인증서 없음</translation>
 <translation id="5317780077021120954">저장</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">다음 호스트와 도메인에서 프록시 설정을 사용 안함:</translation>
 <translation id="541890217011173530">소라니 쿠르드어(영어 기반 키보드)</translation>
 <translation id="5422221874247253874">액세스포인트</translation>
+<translation id="5422781158178868512">죄송합니다. 외부 저장장치를 인식하지 못했습니다.</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" />에 관한 검색결과가 없습니다.</translation>
 <translation id="5447680084201416734">저장용량이 부족합니다.</translation>
 <translation id="5449551289610225147">비밀번호가 잘못되었습니다.</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" />개의 항목이 선택됨</translation>
 <translation id="5763377084591234761">독일어(스위스)</translation>
 <translation id="5769519078756170258">제외할 호스트 또는 도메인</translation>
+<translation id="5774295353725270860">파일 앱 열기</translation>
 <translation id="5775750595919327203">우르두어</translation>
 <translation id="5776325638577448643">삭제 및 포맷</translation>
 <translation id="57838592816432529">음소거</translation>
 <translation id="5788127256798019331">Play 파일</translation>
+<translation id="5788367137662787332">죄송합니다. 기기(<ph name="DEVICE_LABEL" />)에 있는 하나 이상의 파티션을 마운트하지 못했습니다.</translation>
 <translation id="5804245609861364054">칸나다어(음역)</translation>
 <translation id="5814126672212206791">연결 유형</translation>
 <translation id="5817397429773072584">중국어(번체)</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">아이슬란드어</translation>
 <translation id="7229570126336867161">EVDO가 필요합니다.</translation>
 <translation id="7230898482850090046">관리자가 'SIM 잠금' 설정을 사용 중지하도록 요청했습니다</translation>
+<translation id="7232750842195536390">이름 변경 실패</translation>
 <translation id="7238097264433196391">드라이브 이름</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, 세부정보</translation>
 <translation id="7246947237293279874">FTP 프록시</translation>
+<translation id="725109152065019550">관리자가 계정에서 외부 저장소를 사용 중지했습니다.</translation>
 <translation id="7256405249507348194">알 수 없는 오류(<ph name="DESC" />)입니다.</translation>
 <translation id="7268659760406822741">사용 가능한 서비스</translation>
 <translation id="7291818353625820805">키를 반복하고 싶으신가요? 키보드 설정에서 악센트 표시를 사용 중지하세요.</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google 지도</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" 복원 중</translation>
 <translation id="7435577899926900307">영어(미국) 드보락</translation>
+<translation id="7436921188514130341">이름 변경 중에 오류가 발생했습니다.</translation>
 <translation id="7458955835361612701">최근 이미지 없음</translation>
 <translation id="7469894403370665791">네트워크에 자동 연결</translation>
 <translation id="7486315294984620427">Parallels Desktop에 파일을 드롭하려면 파일을 Windows 파일 폴더로 복사해야 합니다.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">앱 표시줄에 고정</translation>
 <translation id="7553492409867692754">Linux 앱이 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 허용합니다.</translation>
 <translation id="7555339735447658365">현재 오프라인 상태입니다. 인터넷에 연결되면 파일 동기화가 재개됩니다.</translation>
+<translation id="7589461650300748890">주의하세요.</translation>
 <translation id="7589661784326793847">잠시만 기다려 주세요.</translation>
 <translation id="7600126690270271294">세르비아어</translation>
 <translation id="7603724359189955920">격자</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" />TB</translation>
 <translation id="7831491651892296503">네트워크를 설정하는 중에 오류가 발생했습니다</translation>
+<translation id="7839051173341654115">미디어 보기/백업</translation>
 <translation id="7839804798877833423">이 파일을 가져오는 데 약 <ph name="FILE_SIZE" />의 모바일 데이터가 사용됩니다.</translation>
 <translation id="7846076177841592234">선택 취소</translation>
 <translation id="7857117644404132472">예외 추가</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">폴란드어</translation>
 <translation id="7874321682039004450">필리핀어</translation>
 <translation id="78946041517601018">공유 드라이브</translation>
+<translation id="7897900149154324287">이후에 이동식 기기를 분리하기 전에 파일 앱에서 이동식 기기를 꺼내야 합니다. 그렇지 않으면 데이터가 손실될 수 있습니다.</translation>
 <translation id="7901567919203965902">영어(미국) 워크맨 국제</translation>
 <translation id="7903984238293908205">가타카나</translation>
+<translation id="7908378463497120834">죄송합니다. 외부 저장장치에 있는 하나 이상의 파티션을 마운트하지 못했습니다.</translation>
 <translation id="7908793776359722643">파티션을 포맷하면 파티션에 저장된 모든 데이터가 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">내 드라이브에 있는 파일이 Chromebook과 자동으로 동기화되므로 인터넷에 연결되지 않은 상태에서도 파일에 액세스할 수 있습니다.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">항목을 복원하려면 새 폴더로 드래그하세요. 일부 항목의 원래 폴더가 삭제되었습니다</translation>
 <translation id="8874184842967597500">연결되지 않음</translation>
 <translation id="8876368061475701452">대기 중</translation>
+<translation id="8893928184421379330">죄송합니다. 기기(<ph name="DEVICE_LABEL" />)를 인식하지 못했습니다.</translation>
 <translation id="8902208737522818687">미국 국제(PC)</translation>
 <translation id="8903931173357132290">졸업생</translation>
 <translation id="8912078710089354287">꼬리를 흔드는 개</translation>

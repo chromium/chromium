@@ -67,6 +67,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1640672724030957280">Hämtar ...</translation>
 <translation id="1651617469580841801">När du använder Google Lens skickas sidans rubrik, webbadress och innehåll, inklusive PDF:er, till Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Om ChromeOS Flex</translation>
+<translation id="1665867022636014702">Använd webbläsarinställningar som rekommenderas av Google</translation>
 <translation id="1674870198290878346">Öppna länken i ett inko&amp;gnitofönster i Chrome</translation>
 <translation id="1682634494516646069">Google Chrome kan inte läsa och skriva till datakatalogen:
 
@@ -242,6 +243,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="345171907106878721">Lägg till dig själv i Chrome</translation>
 <translation id="3453763134178591239">Villkor för ChromeOS</translation>
 <translation id="3503306920980160878">Du behöver ge Chrome åtkomst till din plats om den ska kunna delas med webbplatsen</translation>
+<translation id="3539955434060988644">Öppna länken i ett inko&amp;gnitofönster i Chrome</translation>
 <translation id="3576528680708590453">Systemadministratören har konfigurerat Google Chrome så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i en annan webbläsare.</translation>
 <translation id="3582972582564653026">Synkronisera och anpassa Chrome på alla enheter du använder</translation>
 <translation id="3583751698304738917">Du är redan inloggad som <ph name="USER_EMAIL_ADDRESS" /> i en annan Chrome-profil</translation>

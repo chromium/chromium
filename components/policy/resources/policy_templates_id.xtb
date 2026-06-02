@@ -479,6 +479,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
       Jika kebijakan ini diaktifkan, pintasan keyboard internasional yang ditingkatkan akan aktif.
       Jika tidak disetel, kebijakan ini akan diaktifkan untuk perangkat terkelola dan diaktifkan untuk perangkat yang dimiliki oleh konsumen.
       Perhatikan bahwa ini hanya kebijakan sementara untuk memungkinkan pengguna terkelola agar tetap dapat menggunakan pintasan lama yang tidak digunakan lagi. Kebijakan ini tidak akan digunakan lagi setelah pintasan keyboard khusus tersedia.</translation>
+<translation id="1359459742455216057">ID unik untuk aplikasi <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="1361661842732478894">Tampilkan tombol Layar Utama di toolbar</translation>
 <translation id="1363275621236827384">Mengaktifkan kueri ke Quirks Server untuk profil hardware</translation>
 <translation id="1363839375295535439">Jika kebijakan ini disetel ke Aktif atau tidak disetel, LPAC Sandbox akan diaktifkan untuk layanan pencetakan setiap kali konfigurasi sistem mendukungnya.
@@ -2303,6 +2304,15 @@ Kebijakan ini bersifat sementara dan akan dihapus di pencapaian 157.</translatio
 
       Nilai kebijakan harus ditentukan dalam hari.</translation>
 <translation id="2466131534462628618">Autentikasi portal tawanan mengabaikan proxy</translation>
+<translation id="246680587517417824">https://github.com/WICG/service-worker-auto-preload
+Fitur ServiceWorkerAutoPreload mengirimkan permintaan jaringan untuk resource utama pada saat yang sama ketika proses bootstrap ServiceWorker dimulai.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel,
+<ph name="PRODUCT_NAME" /> akan mengaktifkan ServiceWorkerAutoPreload. Permintaan navigasi secara otomatis dikirim saat ServiceWorker dimulai dalam beberapa skenario, misalnya ketika ServiceWorker tidak sedang berjalan,
+
+Jika dinonaktifkan, <ph name="PRODUCT_NAME" /> tidak akan mengaktifkan ServiceWorkerAutoPreload. Permintaan navigasi selalu dikirim setelah ServiceWorker dimulai.
+
+Kebijakan ini merupakan tindakan sementara untuk mengontrol fitur dan akan dihapus di M154.</translation>
 <translation id="2467181864598429837">Perilaku browser default</translation>
 <translation id="2467896267442150508">Interval waktu paling lama satu minggu. Jika waktu mulai melebihi waktu berakhir, maka intervalnya akan berakhir di hari berikutnya.</translation>
 <translation id="2475594733565572760">Kebijakan ini menentukan setelan default untuk semua fitur AI generatif yang tercakup. Misalnya, jika kebijakan ini disetel ke nilai 1, nilai 1 akan menjadi setelan default untuk semua fitur AI generatif yang tercakup. Kebijakan ini tidak akan memengaruhi nilai kebijakan yang disetel secara manual. Setelan ini akan menentukan setelan default untuk fitur AI generatif yang tercakup di Chrome. Buka https://support.google.com/chrome/a?p=generative_ai_settings untuk melihat daftar fitur yang tercakup.
@@ -4436,6 +4446,7 @@ Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, Floating SSO hanya ak
 <translation id="3778689139323007309">Lakukan pemeriksaan pembatalan sertifikat server yang berhasil divalidasi yang ditandatangani oleh sertifikat CA yang diinstal secara lokal</translation>
 <translation id="3780152581321609624">Sertakan port non-standar di SPN Kerberos</translation>
 <translation id="3785423718413114598">Jangan izinkan fitur GenAI</translation>
+<translation id="378626615843371785">Konfigurasi setelan <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (BETA)</translation>
 <translation id="3788155044604525647">Direct Sockets API memungkinkan komunikasi dengan endpoint arbitrer menggunakan TCP dan UDP.
 Lihat https://github.com/WICG/direct-sockets untuk mengetahui detail selengkapnya.
 
@@ -4951,6 +4962,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4136603825567209889">Aktifkan pelaporan informasi identifikasi pengguna</translation>
 <translation id="4138655880188755661">Batas Waktu</translation>
 <translation id="4140646780789794190">Nonaktifkan berbagi data diagnostik ke PluginVm</translation>
+<translation id="4141430435877011529">Multi-region atau lokasi aplikasi <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />. Pelajari lebih lanjut lokasi <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> di https://docs.cloud.google.com/gemini/enterprise/docs/locations.</translation>
 <translation id="4144417751555442768">AI Generatif</translation>
 <translation id="4145383150978634398">Sediakan Mode Desktop Terpadu untuk pengguna</translation>
 <translation id="4146319954420095470">(Peringatan! Dependensi ini akan segera dihentikan. Sebagai gantinya, mulai gunakan <ph name="GLS_POLICY_NAME" />) Jika kebijakan ini disetel ke <ph name="BLOCK_GEOLOCATION_SETTING" />, layanan sistem <ph name="PRODUCT_OS_NAME" /> dan aplikasi Android tidak dapat mengakses informasi lokasi. Jika kebijakan ini disetel ke nilai lain atau tidak disetel, pengguna akan dimintai izin saat aplikasi Android ingin mengakses informasi lokasi.</translation>
@@ -9261,6 +9273,7 @@ Jika kebijakan ini disetel ke Aktif, data akan dikumpulkan dan diupload ke <ph n
 
 Untuk <ph name="PRODUCT_NAME" />, kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini selalu berlaku.</translation>
+<translation id="6714333117401088746">ID project <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> yang sesuai dengan instance <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> yang akan diaktifkan.</translation>
 <translation id="6720330829631914048">Jam berlalu sejak awal hari dalam format 24 jam.</translation>
 <translation id="6720862827454058309">Ganti pemetaan ruang alamat IP</translation>
 <translation id="6721252203593581486">WebSQL di konteks pihak ketiga (misalnya, iframe lintas situs) nonaktif secara default mulai dari M97 dan akan dihapus sepenuhnya di M101.
@@ -10640,6 +10653,15 @@ Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> hanya akan terhub
 
 Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> hanya akan terhubung ke perangkat Transmisi di RFC1918/RFC4193, kecuali fitur CastAllowAllIPs diaktifkan.</translation>
 <translation id="7534199150025803530">Kebijakan ini tidak memengaruhi aplikasi Google Drive Android. Jika ingin mencegah penggunaan Google Drive melalui sambungan seluler, sebaiknya Anda tidak mengizinkan penginstalan aplikasi Google Drive Android.</translation>
+<translation id="7537404002861344834">Mengonfigurasi setelan koneksi untuk <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> guna meningkatkan kualitas respons untuk fitur Gemini di Chrome.
+
+Jika kebijakan ini disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> dapat digunakan untuk meningkatkan kualitas respons Gemini di Chrome bagi pengguna yang login dengan akun terkelola yang terkait dengan project dan ID aplikasi yang ditentukan. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan tersedia untuk profil yang login dengan akun pribadi.
+
+Jika kebijakan ini tidak disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan digunakan untuk meningkatkan kualitas respons Gemini di Chrome.
+
+Perhatikan bahwa kebijakan ini tidak mengontrol integrasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> umum, yang dapat dikontrol oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Semua setelan kebijakan ini harus sesuai dengan konfigurasi project <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> di Konsol <ph name="GOOGLE_CLOUD_PRODUCT_NAME" />. Ketidakcocokan apa pun akan menyebabkan perilaku yang tidak terduga saat menggunakan <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="7538583957913002726">Kebijakan ini disetel ke Aktif secara default. Kebijakan mengontrol perangkat terdaftar agar melaporkan nama model, arsitektur, dan kecepatan clock maksimum CPU (serta penggunaan dan suhu CPU untuk M96 dan yang lebih baru).
 
       Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan melaporkan informasi CPU apa pun.

@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> раздел е групиран</translation>
 <translation id="1844381456014878100">След 7 дни неактивност</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Добавяне на раздела към списъка за четене}other{Добавяне на разделите към списъка за четене}}</translation>
 <translation id="1909810060368225529">Известие: Промените в тази споделена група раздели са видими за всички. Всеки може да прави промени в споделените от вас групи раздели</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Фиксиране на раздела}other{Фиксиране на разделите}}</translation>
 <translation id="1982637982196732906">Преместване в секцията за неактивни</translation>

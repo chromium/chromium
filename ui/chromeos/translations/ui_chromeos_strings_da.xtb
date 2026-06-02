@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Automatiske navneservere</translation>
 <translation id="1210831758834677569">Laotisk</translation>
 <translation id="1221555006497674479">Der er kun <ph name="REMAINING_PERCENTAGE" /> % ledig lagerplads tilbage af dit fællesdrev på <ph name="TOTAL_SPACE" /></translation>
+<translation id="1239594683407221485">Udforsk enhedens indhold i appen Filer.</translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkte internetforbindelse</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Det er ikke muligt at slette. Elementet er i brug.</translation>
 <translation id="1307931752636661898">Linux-filerne kan ikke vises</translation>
 <translation id="1313405956111467313">Automatisk proxykonfiguration</translation>
+<translation id="1340527397989195812">Sikkerhedskopiér medier fra enheden ved hjælp af appen Filer.</translation>
 <translation id="134645005685694099">Din enhed har ikke nok lagerplads til at holde filsynkronisering aktiveret. Nye filer synkroniseres ikke længere automatisk.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Filen eller mappen kan ikke bruges.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Ikke noget brugercertifikat</translation>
 <translation id="1403008701842173542">Overalt</translation>
 <translation id="1404323374378969387">Norsk</translation>
+<translation id="1408504635543854729">Udforsk enhedens indhold i appen Filer. Indholdet er begrænset af en administrator og kan ikke redigeres.</translation>
 <translation id="1412476183660741812">Signeret webpakke</translation>
 <translation id="1433628812591023318">Filer skal først flyttes til mappen med Windows-filer, før du kan trække dem til Parallels Desktop.</translation>
 <translation id="1435838927755162558">Del mappe med Parallels Desktop</translation>
 <translation id="1439919885608649279">Person med blomster</translation>
 <translation id="1458457385801829801">Fjern <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Gå til indstillingerne for at se enhedspræferencer.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> filer kunne ikke kopieres, fordi de er krypteret.</translation>
 <translation id="1471718551822868769">Slovakisk</translation>
 <translation id="1482884275703521657">Finsk</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Administrer i Drev</translation>
 <translation id="2004942826429452291">Filerne gemmes i skyen og på denne Chromebook.</translation>
 <translation id="2009067268969781306">Formatering af et drev sletter alle de data, der er gemt på det. Denne handling kan ikke fortrydes.</translation>
+<translation id="2018352199541442911">Vi beklager, men din eksterne lagerenhed understøttes ikke på nuværende tidspunkt.</translation>
 <translation id="2025955442973426285">Tigrinsk</translation>
 <translation id="2029385776150020336">Amerikansk (udvidet)</translation>
 <translation id="2037845485764049925">Russisk</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470447085858632">Få adgang til dine Google Drev-filer offline med filsynkronisering</translation>
 <translation id="2470939964922472929">Der blev angivet en forkert pinkode for mange gange. Opret en ny pinkode ved at angive den ottecifrede PUK-kode, du har fået af dit mobilselskab.</translation>
+<translation id="249113932447298600">Vi beklager, men enheden <ph name="DEVICE_LABEL" /> understøttes ikke på nuværende tidspunkt.</translation>
 <translation id="2500392669976258912">Gujarati fonetisk</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Scan</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukrainsk</translation>
 <translation id="3326821416087822643">Komprimerer <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">År, det blev optaget</translation>
+<translation id="3348038390189153836">Der er registreret en flytbar enhed</translation>
 <translation id="3353984535370177728">Vælg en mappe, der skal uploades</translation>
 <translation id="3356580349448036450">Fuldført</translation>
 <translation id="3358452157379365236">Guitar</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Download mobilprofil. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engelsk (Storbritannien)</translation>
 <translation id="3975895378829046965">Bangla fonetisk</translation>
+<translation id="3983764759749072418">Apps i Play Butik har adgang til denne enhed.</translation>
 <translation id="3999574733850440202">Microsoft-filer, der er åbnet for nylig, er blevet flyttet til OneDrive</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Engelsk (USA) med Workman-tastatur</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Du skal være online for at få adgang til denne fil.</translation>
 <translation id="4212740939091998969">Der findes allerede en mappe med navnet "<ph name="FOLDER_NAME" />". Vælg et andet navn.</translation>
 <translation id="4218274196133425560">Fjern undtagelsen for <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Åbn Indstillinger</translation>
 <translation id="4261901459838235729">Google-præsentation</translation>
 <translation id="4277536868133419688">Filteret <ph name="FILTER_NAME" /> er aktiveret.</translation>
 <translation id="4290535918735525311">1 mappe er delt med Linux</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Gendannede filer fra Google Drev</translation>
 <translation id="5278111733643988471">Hvis du vil gendanne elementet, skal du trække det til en ny mappe uden for papirkurven. Den oprindelige mappe "<ph name="PARENT_FOLDER_NAME" />" for dette element er blevet slettet.</translation>
 <translation id="5288441970121584418">Burger</translation>
+<translation id="529175790091471945">Formatér denne enhed</translation>
 <translation id="5293615890992542006">Administratorpolitikken tillader ikke, at du flytter denne fil</translation>
 <translation id="5305688511332277257">Ingen installeret</translation>
 <translation id="5317780077021120954">Gem</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Brug ikke proxyindstillingerne til disse værter eller domæner:</translation>
 <translation id="541890217011173530">Sorani-kurdisk med engelskbaseret tastatur</translation>
 <translation id="5422221874247253874">Adgangspunkt</translation>
+<translation id="5422781158178868512">Vi beklager, men din eksterne lagerenhed kunne ikke genkendes.</translation>
 <translation id="5438282218546237410">Der er ingen resultater for <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Der er ikke nok lagerplads.</translation>
 <translation id="5449551289610225147">Ugyldig adgangskode</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementer er valgt</translation>
 <translation id="5763377084591234761">Tysk (Schweiz)</translation>
 <translation id="5769519078756170258">Host eller domæne, der skal ekskluderes</translation>
+<translation id="5774295353725270860">Åbn appen Filer</translation>
 <translation id="5775750595919327203">Urdu</translation>
 <translation id="5776325638577448643">Ryd og formatér</translation>
 <translation id="57838592816432529">Slå lyden fra</translation>
 <translation id="5788127256798019331">Play-filer</translation>
+<translation id="5788367137662787332">Vi beklager, men der kunne ikke oprettes forbindelse til mindst én partition på enheden <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5804245609861364054">Kannada translitteration</translation>
 <translation id="5814126672212206791">Forbindelsestype</translation>
 <translation id="5817397429773072584">Kinesisk (traditionelt)</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Islandsk</translation>
 <translation id="7229570126336867161">EVDO mangler</translation>
 <translation id="7230898482850090046">Din administrator har bedt dig om at deaktivere indstillingen "Lås SIM-kort"</translation>
+<translation id="7232750842195536390">Omdøbningen mislykkedes</translation>
 <translation id="7238097264433196391">Navn på drev</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, oplysninger</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
+<translation id="725109152065019550">Administratoren har desværre deaktiveret ekstern lagring på din konto.</translation>
 <translation id="7256405249507348194">Ukendt fejl: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Tilgængelige tjenester</translation>
 <translation id="7291818353625820805">Skal tasterne gentages? Deaktiver accenttegn i tastaturindstillingerne</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google-kort</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" gendannes</translation>
 <translation id="7435577899926900307">Amerikansk Dvorak</translation>
+<translation id="7436921188514130341">Øv, surt! Der opstod en fejl under omdøbningen.</translation>
 <translation id="7458955835361612701">Du har ikke åbnet nogen billeder for nylig</translation>
 <translation id="7469894403370665791">Opret automatisk forbindelse til dette netværk</translation>
 <translation id="7486315294984620427">Filer skal først kopieres til mappen med Windows-filer, før du kan trække dem til Parallels Desktop.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Fastgør til hylde</translation>
 <translation id="7553492409867692754">Giv Linux-apps adgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Du er i øjeblikket offline. Filsynkronisering genoptages, når du har forbindelse til internettet</translation>
+<translation id="7589461650300748890">Vær forsigtig.</translation>
 <translation id="7589661784326793847">Vent et øjeblik</translation>
 <translation id="7600126690270271294">Serbisk</translation>
 <translation id="7603724359189955920">Gitre</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Der opstod en fejl under konfigurationen af netværket</translation>
+<translation id="7839051173341654115">Se/sikkerhedskopiér medier</translation>
 <translation id="7839804798877833423">Hvis du henter disse filer, bruge du ca. <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Annuller valg</translation>
 <translation id="7857117644404132472">Tilføj undtagelse</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Polsk</translation>
 <translation id="7874321682039004450">Filippinsk</translation>
 <translation id="78946041517601018">Fællesdrev</translation>
+<translation id="7897900149154324287">For fremtiden skal du sørge for at skubbe din flytbare enhed ud i appen Filer, før du kobler den fra. Hvis ikke du gør dette, kan du risikere at miste data.</translation>
 <translation id="7901567919203965902">Amerikansk Workman international</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Vi beklager, men der kunne ikke oprettes forbindelse til mindst én partition på enheden.</translation>
 <translation id="7908793776359722643">Formatering af en partition sletter alle de data, der er gemt på den. Denne handling kan ikke fortrydes.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Dine filer i Mit drev synkroniseres automatisk med din Chromebook, så du kan få adgang til dem uden en internetforbindelse.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Hvis du vil gendanne disse elementer, skal du trække dem til en ny mappe. De oprindelige mapper for nogle af disse elementer er blevet slettet.</translation>
 <translation id="8874184842967597500">Ikke forbundet</translation>
 <translation id="8876368061475701452">I kø</translation>
+<translation id="8893928184421379330">Vi beklager, men <ph name="DEVICE_LABEL" />-enheden kunne ikke genkendes.</translation>
 <translation id="8902208737522818687">Amerikansk internationalt (pc)</translation>
 <translation id="8903931173357132290">Dimittend</translation>
 <translation id="8912078710089354287">Hund, der logrer med halen</translation>

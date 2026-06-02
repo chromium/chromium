@@ -36,6 +36,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1324107359134968521">Chromium behöver åtkomst till Bluetooth för att utforska 
  Bluetooth-enheter. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Identifiera språk</translation>
+<translation id="1330742950061766891">Använd rekommenderade webbläsarinställningar för Chromium</translation>
 <translation id="1342274909142618978">Radera även data från Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Fäst! Du kan komma åt Bildsökning igen från den nya knappen i verktygsfältet</translation>
 <translation id="1356661055722410047">Nyhet! Du kan översätta både text och bilder på skärmen</translation>
@@ -373,6 +374,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5187123684706427865">Omautentisering krävs för Chromium-kontot</translation>
 <translation id="5231355151045086930">Logga ut från Chromium</translation>
 <translation id="5234764350956374838">Stäng</translation>
+<translation id="5249261924633168472">Öppna länken i ett inko&amp;gnitofönster i Chromium</translation>
 <translation id="5254739261293693943">Ställ en fråga om den här videon</translation>
 <translation id="5276305953263010518">Skaffa Chromium-appen för att spara lösenord på språng</translation>
 <translation id="5277894862589591112">Ändringarna tillämpas när du startar om Chromium</translation>

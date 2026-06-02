@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Automatické menné servery</translation>
 <translation id="1210831758834677569">Laoská klávesnica</translation>
 <translation id="1221555006497674479">Nedostatok priestoru, z vášho priestoru na spoločnom disku <ph name="TOTAL_SPACE" /> zostáva <ph name="REMAINING_PERCENTAGE" /> %.</translation>
+<translation id="1239594683407221485">Preskúmajte obsah zariadenia v aplikácii Súbory.</translation>
 <translation id="1243314992276662751">Nahrať</translation>
 <translation id="1249250836236328755">Žáner</translation>
 <translation id="1254593899333212300">Priame pripojenie k Internetu</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Nepodarilo sa odstrániť. Položka sa používa.</translation>
 <translation id="1307931752636661898">Súbory systému Linux sa nedajú zobraziť</translation>
 <translation id="1313405956111467313">Automatická konfigurácia servera proxy</translation>
+<translation id="1340527397989195812">Zálohovať médiá zo zariadenia pomocou aplikácie Súbory</translation>
 <translation id="134645005685694099">V zariadení nie je dostatok ukladacieho priestoru na to, aby mohla zostať synchronizácia súborov zapnutá. Nové súbory sa už nebudú automaticky synchronizovať.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Súbor alebo adresár nie je možné použiť.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Žiadny certifikát používateľa</translation>
 <translation id="1403008701842173542">Všade</translation>
 <translation id="1404323374378969387">Nórska klávesnica</translation>
+<translation id="1408504635543854729">Preskúmajte obsah zariadenia v aplikácii Súbory. Tento obsah bol obmedzený správcom a nedá sa upraviť.</translation>
 <translation id="1412476183660741812">Podpísaný webový balík</translation>
 <translation id="1433628812591023318">Ak chcete vložiť súbory do aplikácie Parallels Desktop, musíte ich presunúť do súborov pre Windows.</translation>
 <translation id="1435838927755162558">Zdieľanie priečinka aplikáciou Parallels Desktop</translation>
 <translation id="1439919885608649279">Osoba s kvetinami</translation>
 <translation id="1458457385801829801">Odpojiť <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Predvoľby zariadenia nájdete v Nastaveniach.</translation>
 <translation id="146691674290220697">Niekoľko (<ph name="NUMBER_OF_FILES" />) súborov sa nepodarilo skopírovať, pretože sú šifrované.</translation>
 <translation id="1471718551822868769">Slovenská klávesnica</translation>
 <translation id="1482884275703521657">Fínska klávesnica</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Spravovať na Disku</translation>
 <translation id="2004942826429452291">Súbory budú uložené v cloude a tomto Chromebooku.</translation>
 <translation id="2009067268969781306">Formátovaním kľúča odstránite všetky dáta, ktoré sú v ňom uložené. Túto akciu nie je možné vrátiť späť.</translation>
+<translation id="2018352199541442911">Je nám ľúto, ale vaše externé pamäťové zariadenie nie je momentálne podporované.</translation>
 <translation id="2025955442973426285">Tigrinská klávesnica</translation>
 <translation id="2029385776150020336">Americká klávesnica – rozšírená</translation>
 <translation id="2037845485764049925">Ruská klávesnica</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagoči</translation>
 <translation id="2468470447085858632">Získavajte prístup k svojim súborom na Disku Google offline pomocou synchronizácie súborov</translation>
 <translation id="2470939964922472929">Príliš veľakrát bol zadaný nesprávny PIN. Ak chcete nastaviť nový, zadajte osemmiestny PUK od svojho operátora.</translation>
+<translation id="249113932447298600">Je nám ľúto, ale zariadenie <ph name="DEVICE_LABEL" /> nie je momentálne podporované.</translation>
 <translation id="2500392669976258912">Gudžarátska fonetická klávesnica</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Skenovať</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukrajinská klávesnica</translation>
 <translation id="3326821416087822643">Prebieha komprimovanie súboru <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Rok nahrávky</translation>
+<translation id="3348038390189153836">Bolo zistené odnímateľné zariadenie</translation>
 <translation id="3353984535370177728">Vyberte priečinok na nahranie</translation>
 <translation id="3356580349448036450">Dokončené</translation>
 <translation id="3358452157379365236">Gitara</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Stiahnite si mobilný profil, sieť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Anglická (UK) klávesnica</translation>
 <translation id="3975895378829046965">Bengálska fonetická klávesnica</translation>
+<translation id="3983764759749072418">Aplikácie Obchodu Play majú prístup k tomuto zariadeniu.</translation>
 <translation id="3999574733850440202">Nedávno otvorené súbory Microsoft boli presunuté do služby OneDrive</translation>
 <translation id="4002066346123236978">Názov</translation>
 <translation id="4017788180641807848">Anglická (US) klávesnica s rozložením Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Ak chcete pristupovať k tomuto súboru, musíte byť online.</translation>
 <translation id="4212740939091998969">Priečinok s názvom <ph name="FOLDER_NAME" /> už existuje. Vyberte iný názov.</translation>
 <translation id="4218274196133425560">Odstrániť výnimku pre <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Otvoriť nastavenia</translation>
 <translation id="4261901459838235729">Prezentácia Google</translation>
 <translation id="4277536868133419688">Filter <ph name="FILTER_NAME" /> je zapnutý.</translation>
 <translation id="4290535918735525311">So systémom Linux zdieľate 1 priečinok</translation>
@@ -555,6 +564,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5275973617553375938">Obnovené súbory z Disku Google</translation>
 <translation id="5278111733643988471">Ak chcete túto položku obnoviť, presuňte ju do nového priečinka mimo koša. Pôvodný priečinok <ph name="PARENT_FOLDER_NAME" /> pre túto položku bol odstránený.</translation>
 <translation id="5288441970121584418">Hamburger</translation>
+<translation id="529175790091471945">Formátovať toto zariadenie</translation>
 <translation id="5293615890992542006">Presun tohto súboru je blokovaný pravidlami správcu</translation>
 <translation id="5305688511332277257">Žiadne nainštalované</translation>
 <translation id="5317780077021120954">Uložiť</translation>
@@ -570,6 +580,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5411472733320185105">Nepoužívať nastavenia servera proxy pre nasledujúcich hostiteľov a domény:</translation>
 <translation id="541890217011173530">Kurdská klávesnica (sorání) s anglickým rozložením</translation>
 <translation id="5422221874247253874">Prístupový bod</translation>
+<translation id="5422781158178868512">Je nám ľúto, ale externé pamäťové zariadenie sa nepodarilo rozpoznať.</translation>
 <translation id="5438282218546237410">Pre dopyt <ph name="SEARCH_TERM" /> nie sú k dispozícii žiadne výsledky.</translation>
 <translation id="5447680084201416734">Nie je dostatok priestoru.</translation>
 <translation id="5449551289610225147">Neplatné heslo</translation>
@@ -617,10 +628,12 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5760252553414789727">Počet vybraných položiek: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Nemecká (Švajčiarsko) klávesnica</translation>
 <translation id="5769519078756170258">Hostiteľ alebo doména na vylúčenie</translation>
+<translation id="5774295353725270860">Otvoriť aplikáciu Súbory</translation>
 <translation id="5775750595919327203">Urdská klávesnica</translation>
 <translation id="5776325638577448643">Vymazať a formátovať</translation>
 <translation id="57838592816432529">Vypnúť zvuk</translation>
 <translation id="5788127256798019331">Súbory Play</translation>
+<translation id="5788367137662787332">Je nám ľúto, ale nepodarilo sa pripojiť minimálne jeden oddiel zariadenia <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5804245609861364054">Kannadská klávesnica (prepis)</translation>
 <translation id="5814126672212206791">Typ pripojenia</translation>
 <translation id="5817397429773072584">tradičná čínština</translation>
@@ -813,9 +826,11 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7224162581405244205">Islandská klávesnica</translation>
 <translation id="7229570126336867161">Je potrebné pripojenie EVDO</translation>
 <translation id="7230898482850090046">Správca vás požiadal o vypnutie nastavenia Uzamknúť SIM</translation>
+<translation id="7232750842195536390">Nepodarilo sa premenovať</translation>
 <translation id="7238097264433196391">Názov jednotky</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, podrobnosti</translation>
 <translation id="7246947237293279874">Proxy server FTP</translation>
+<translation id="725109152065019550">Je nám ľúto, správca vo vašom účte zakázal používanie externých ukladacích priestorov.</translation>
 <translation id="7256405249507348194">Nerozpoznaná chyba: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupné služby</translation>
 <translation id="7291818353625820805">Chcete, aby sa klávesy opakovali? Vypnite v nastaveniach klávesnice diakritické znamienka.</translation>
@@ -838,6 +853,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7417705661718309329">Mapa Google</translation>
 <translation id="7419668828140929293"><ph name="FILENAME" /> sa obnovuje</translation>
 <translation id="7435577899926900307">Americká klávesnica – Dvorak</translation>
+<translation id="7436921188514130341">Ojoj! Pri premenovaní sa vyskytla chyba.</translation>
 <translation id="7458955835361612701">Žiadne nedávne obrázky</translation>
 <translation id="7469894403370665791">Automaticky sa pripojiť k tejto sieti</translation>
 <translation id="7486315294984620427">Ak chcete vložiť súbory do aplikácie Parallels Desktop, musíte ich skopírovať do súborov pre Windows.</translation>
@@ -853,6 +869,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7551643184018910560">Pripnúť na poličku</translation>
 <translation id="7553492409867692754">Povoľte aplikáciám pre Linux prístup k súborom v priečinku <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Momentálne ste offline. Synchronizácia súborov bude pokračovať po pripojení k internetu.</translation>
+<translation id="7589461650300748890">Pozor, buďte opatrný/-á.</translation>
 <translation id="7589661784326793847">Vydržte chvíľu</translation>
 <translation id="7600126690270271294">Srbská klávesnica</translation>
 <translation id="7603724359189955920">Mriežky</translation>
@@ -898,6 +915,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Chyba pri konfigurácii siete</translation>
+<translation id="7839051173341654115">Zobraziť/zálohovať médiá</translation>
 <translation id="7839804798877833423">Načítanie týchto súborov spotrebuje približne <ph name="FILE_SIZE" /> mobilných dát.</translation>
 <translation id="7846076177841592234">Zrušiť výber</translation>
 <translation id="7857117644404132472">Pridať výnimku</translation>
@@ -905,8 +923,10 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7868774406711971383">Poľská klávesnica</translation>
 <translation id="7874321682039004450">Filipínska klávesnica</translation>
 <translation id="78946041517601018">Spoločné disky</translation>
+<translation id="7897900149154324287">V budúcnosti nezabudnite v aplikácii Súbory vysunúť odnímateľné zariadenie skôr, ako ho odpojíte. Inak by ste mohli prísť o údaje.</translation>
 <translation id="7901567919203965902">Americká medzinárodná klávesnica – Workman</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Je nám ľúto, ale nepodarilo sa pripojiť minimálne jeden oddiel externého pamäťového zariadenia.</translation>
 <translation id="7908793776359722643">Formátovaním oddielu vymažete všetky dáta, ktoré sú v ňom uložené. Táto akcia sa nedá vrátiť späť.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Súbory v sekcii Môj disk sa budú automaticky synchronizovať s Chromebookom, aby ste k nim mali prístup aj bez internetového pripojenia.</translation>
@@ -1040,6 +1060,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8873014196523807561">Ak chcete tieto položky obnoviť, presuňte ich do nového priečinka. Pôvodné priečinky pre niektoré tieto položky boli odstránené.</translation>
 <translation id="8874184842967597500">Nepripojené</translation>
 <translation id="8876368061475701452">V poradí</translation>
+<translation id="8893928184421379330">Je nám ľúto, ale zariadenie <ph name="DEVICE_LABEL" /> sa nepodarilo rozpoznať.</translation>
 <translation id="8902208737522818687">Americká klávesnica – medzinárodná (PC)</translation>
 <translation id="8903931173357132290">Absolvent</translation>
 <translation id="8912078710089354287">Pes krútiaci chvostom</translation>

@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Notiek lejupielāde...</translation>
 <translation id="1651617469580841801">Kad izmantojat Google Lens, lapas nosaukums, vietrādis URL un saturs, tostarp PDF faili, tiek nosūtīti Google serveriem. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Par Chrome OS Flex</translation>
+<translation id="1665867022636014702">Izmantojiet Google ieteicamos pārlūka iestatījumus</translation>
 <translation id="1674870198290878346">Atvērt saiti Chrome inko&amp;gnito režīma logā</translation>
 <translation id="1682634494516646069">Google Chrome nevar nolasīt savu datu direktoriju un ierakstīt tajā:
 
@@ -240,6 +241,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="345171907106878721">Pievienot savu kontu pārlūkā Chrome</translation>
 <translation id="3453763134178591239">Chrome OS noteikumi</translation>
 <translation id="3503306920980160878">Pārlūkam Chrome ir nepieciešama piekļuve jūsu atrašanās vietas datiem, lai varētu tos kopīgot ar šo vietni.</translation>
+<translation id="3539955434060988644">Atvērt saiti Chrome inko&amp;gnito režīma logā</translation>
 <translation id="3576528680708590453">Sistēmas administrators ir konfigurējis pārlūku Google Chrome, lai vietne <ph name="TARGET_URL_HOSTNAME" /> tiktu atvērta papildu pārlūkā.</translation>
 <translation id="3582972582564653026">Chrome sinhronizēšana un personalizēšana visās jūsu ierīcēs</translation>
 <translation id="3583751698304738917">Ar kontu <ph name="USER_EMAIL_ADDRESS" /> jau esat pierakstījies citā Chrome profilā</translation>

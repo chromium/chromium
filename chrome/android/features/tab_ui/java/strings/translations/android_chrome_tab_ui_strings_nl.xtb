@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tabblad gegroepeerd</translation>
 <translation id="1844381456014878100">Na 7 dagen inactiviteit</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad}other{<ph name="TABS_COUNT_MANY" /> tabbladen}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Tabblad toevoegen aan leeslijst}other{Tabbladen toevoegen aan leeslijst}}</translation>
 <translation id="1909810060368225529">Opmerking: Wijzigingen in deze gedeelde tabbladgroep zijn zichtbaar voor iedereen. Iedereen kan wijzigingen aanbrengen in je gedeelde tabbladgroepen.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Tabblad vastzetten}other{Tabbladen vastzetten}}</translation>
 <translation id="1982637982196732906">Naar gedeelte Inactief verplaatsen</translation>

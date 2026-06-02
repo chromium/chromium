@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">‏يجب منح Chromium الإذن بالوصول إلى البلوتوث لاستكشاف 
 الأجهزة التي تتضمّن بلوتوث. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">رصد اللغة</translation>
+<translation id="1330742950061766891">‏استخدام إعدادات المتصفِّح المقترَحة من Chromium</translation>
 <translation id="1342274909142618978">‏حذف البيانات من Chromium أيضًا (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">تمّ تثبيت اللوحة. يمكنك الوصول إلى ميزة "البحث بالصور" مرة أخرى من خلال الزر الجديد في شريط الأدوات</translation>
 <translation id="1356661055722410047">ميزة جديدة: يمكنك ترجمة كل من النص والصور على شاشتك</translation>
@@ -371,6 +372,7 @@
 <translation id="5187123684706427865">‏يتطلب حساب Chromium إعادة المصادقة</translation>
 <translation id="5231355151045086930">‏الخروج من Chromium</translation>
 <translation id="5234764350956374838">إغلاق</translation>
+<translation id="5249261924633168472">‏فتح الرابط في نافذة "التصفح المت&amp;خفي" في Chromium</translation>
 <translation id="5254739261293693943">طرح أسئلة حول هذا الفيديو</translation>
 <translation id="5276305953263010518">‏تنزيل تطبيق Chromium لحفظ كلمات المرور أثناء التنقل</translation>
 <translation id="5277894862589591112">‏لتطبيق التغييرات، يُرجى إعادة تشغيل Chromium</translation>

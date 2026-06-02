@@ -356,6 +356,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="253498598929009420">Laman ini akan dapat melihat kandungan skrin anda</translation>
 <translation id="2535807170289627159">Semua tab</translation>
 <translation id="2536728043171574184">Melihat salinan luar talian halaman ini</translation>
+<translation id="2537574774089209541">Beberapa alatan telah dialihkan untuk memberi anda akses mudah kepada Gemini semasa anda menyemak imbas kandungan</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, Tab Inkognito Diredamkan Dan Tersemat Yang Dipilih</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, Tab</translation>
@@ -404,6 +405,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2751271371269891762">Untuk mendapatkan penanda halaman anda serta pelbagai lagi pada semua peranti anda, log masuk sebagai <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">BB / TT</translation>
 <translation id="2762000892062317888">sebentar tadi</translation>
+<translation id="276378135349383280">Papar Gemini dlm bar alat bawah</translation>
 <translation id="276969039800130567">Log masuk sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> saat lagi</translation>
 <translation id="2779651927720337254">gagal</translation>
@@ -602,6 +604,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3602290021589620013">Pratonton</translation>
 <translation id="3614126103057878858">Cerapan harga</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616798734782988169">Pastikan anda mempercayai <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="3619255692378312441">Urus akses</translation>
 <translation id="3622349720008044802">Urus tetingkap</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 laman}other{+ # laman}}</translation>
@@ -632,6 +635,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3738139272394829648">Sentuh untuk Cari</translation>
 <translation id="3739455665973395693">Tiada kata laluan yang terjejas dalam Google Account anda</translation>
 <translation id="3739899004075612870">Ditandai halaman dalam <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Pastikan anda mempercayai laman ini</translation>
 <translation id="3740525748616366977">Carian suara tidak tersedia pada peranti ini</translation>
 <translation id="3763110477555836428">Nombor kad maya akan diisi apabila anda menyemak keluar dengan kad ini untuk melindungi butiran sebenar anda. Urus dalam Google Wallet. <ph name="BEGIN_LINK1" />Ketahui perihal kad maya dengan lebih lanjut<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Sesetengah data belum disimpan</translation>
@@ -1528,6 +1532,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7291910923717764901">Perihalan imej ditambah untuk halaman ini</translation>
 <translation id="7293429513719260019">Pilih bahasa</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, Tab Perkongsian Yang Tersemat Dan Dipilih</translation>
+<translation id="7304003340539141201">Minta Gemini membantu anda berkenaan dengan tab dan tugasan anda</translation>
 <translation id="7311244614769792472">Tiada hasil ditemukan</translation>
 <translation id="7314734791127433392">Tidak dapat menyemak kata laluan</translation>
 <translation id="7324354302972299151">Hantar permintaan "Do Not Track"</translation>
@@ -1874,6 +1879,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8696297579102085705">Hantar kepada peranti anda</translation>
 <translation id="8697753151306746444">Kongsi tetingkap atau skrin</translation>
 <translation id="8699120352855309748">Jangan tawarkan untuk menterjemahkan bahasa ini</translation>
+<translation id="8700565880437506364">Memperkenalkan Gemini dalam Chrome</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8715286883001906001">Kukuhkan kata laluan anda dalam Google Account anda</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> akan ditutup</translation>
@@ -1941,6 +1947,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8996847606757455498">Pilih penyedia lain</translation>
 <translation id="8998837250940831980">Tidak dapat meminimumkan tab. Cuba sebentar lagi.</translation>
 <translation id="9001604755921395912">Buka dalam tab Chrome Inkognito</translation>
+<translation id="9010094279589497751">Buka Gemini dengan pantas apabila anda memerlukan Gemini</translation>
 <translation id="9012585441087414258">Melindungi daripada laman, muat turun dan sambungan yang diketahui berbahaya. Jika terdapat tindakan halaman yang mencurigakan, URL dan bit kandungan halaman tersebut akan dihantar kepada Penyemakan Imbas Selamat Google.</translation>
 <translation id="9019199799064251516">Teruskan tanpa kunci profil kereta?</translation>
 <translation id="9022774213089566801">Kerap dilawat</translation>
@@ -1998,6 +2005,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="9190355771000652811">Dalam bar alamat, gunakan pintasan papan kekunci ini dengan pintasan untuk enjin carian dan carian laman.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, Tab Inkognito Tersemat Yang Dipilih</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Disemak 1 minit yang lalu}other{Disemak # minit yang lalu}}</translation>
+<translation id="9202894533863490414">Muat turun fail daripada laman ini?</translation>
 <translation id="9204836675896933765">1 fail lagi</translation>
 <translation id="9205933215779845960">Tidak menemukan halaman itu. Semak ejaan anda atau cuba cari pada <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

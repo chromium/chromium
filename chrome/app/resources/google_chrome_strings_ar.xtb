@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">جارٍ التنزيل...</translation>
 <translation id="1651617469580841801">‏عند استخدام "عدسة Google"، يتم إرسال عنوان الصفحة وعنوان URL والمحتوى (بما في ذلك ملفات PDF) إلى Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">‏لمحة عن نظام التشغيل ChromeOS Flex</translation>
+<translation id="1665867022636014702">‏استخدام إعدادات المتصفِّح المقترَحة من Google</translation>
 <translation id="1674870198290878346">‏فتح الرابط في نافذة تصفح متخفٍ في Chrome</translation>
 <translation id="1682634494516646069">‏يتعذر على Google Chrome القراءة والكتابة في دليل البيانات الخاص به:
 
@@ -240,6 +241,7 @@
 <translation id="345171907106878721">‏إضافة نفسك إلى Chrome</translation>
 <translation id="3453763134178591239">‏بنود نظام التشغيل Chrome</translation>
 <translation id="3503306920980160878">‏يحتاج Chrome للوصول إلى موقعك الجغرافي لمشاركته مع الموقع الإلكتروني هذا.</translation>
+<translation id="3539955434060988644">‏فتح الرابط في نافذة "التصفّح المت&amp;خفي" في Chrome</translation>
 <translation id="3576528680708590453">‏ضَبَط مشرف النظام Google Chrome لفتح متصفِّح بديل للوصول إلى <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">‏يمكنك مزامنة Chrome وتخصيصه على جميع أجهزتك.</translation>
 <translation id="3583751698304738917">‏سبق أن سجّلت الدخول باستخدام <ph name="USER_EMAIL_ADDRESS" /> في ملف شخصي آخر على Chrome</translation>

@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> onglet groupé</translation>
 <translation id="1844381456014878100">Après 7 jours d'inactivité</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Ajouter l'onglet à la liste de lecture}one{Ajouter l'onglet à la liste de lecture}other{Ajouter les onglets à la liste de lecture}}</translation>
 <translation id="1909810060368225529">Avis : Les modifications apportées à ce groupe d'onglets partagé sont visibles pour tout le monde. Tout le monde peut apporter des modifications à vos groupes d'onglets partagés</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Épingler l'onglet}one{Épingler l'onglet}other{Épingler les onglets}}</translation>
 <translation id="1982637982196732906">Déplacer vers la section inactive</translation>

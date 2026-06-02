@@ -678,6 +678,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, pripeti zavihek s sliko v sliki</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="395377504920307820">Uporabi brez računa</translation>
+<translation id="3955353672249727801">Strani so bile dodane na bralni seznam</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome bo naložil stran, ko bo pripravljen}one{Chrome bo naložil strani, ko bo pripravljen}two{Chrome bo naložil strani, ko bo pripravljen}few{Chrome bo naložil strani, ko bo pripravljen}other{Chrome bo naložil strani, ko bo pripravljen}}</translation>
 <translation id="3969142555815019568">Chrome ne more preveriti vaših gesel</translation>
 <translation id="3969863827134279083">Premik gor</translation>

@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> kartica je grupirana</translation>
 <translation id="1844381456014878100">Nakon 7 dana neaktivnosti</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Dodaj karticu na popis za čitanje}one{Dodaj kartice na popis za čitanje}few{Dodaj kartice na popis za čitanje}other{Dodaj kartice na popis za čitanje}}</translation>
 <translation id="1909810060368225529">Obavijest: promjene ove dijeljene grupe kartica vidljive su svima. Svi mogu unositi promjene u vaše dijeljene grupe kartica</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Prikvači karticu}one{Prikvači kartice}few{Prikvači kartice}other{Prikvači kartice}}</translation>
 <translation id="1982637982196732906">Premjesti u odjeljak Neaktivno</translation>

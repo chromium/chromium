@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Automatické názvové servery</translation>
 <translation id="1210831758834677569">laoština</translation>
 <translation id="1221555006497674479">V úložišti na sdíleném disku vám zbývá už jen <ph name="REMAINING_PERCENTAGE" /> % z <ph name="TOTAL_SPACE" />.</translation>
+<translation id="1239594683407221485">Prozkoumejte obsah zařízení v aplikaci Soubory.</translation>
 <translation id="1243314992276662751">Nahrát</translation>
 <translation id="1249250836236328755">Žánr</translation>
 <translation id="1254593899333212300">Přímé připojení k internetu</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Smazání se nezdařilo. Položka se používá.</translation>
 <translation id="1307931752636661898">Soubory systému Linux nelze zobrazit</translation>
 <translation id="1313405956111467313">Automatické nastavení proxy serveru</translation>
+<translation id="1340527397989195812">Zálohujte média ze zařízení pomocí aplikace Soubory.</translation>
 <translation id="134645005685694099">V zařízení není dostatek úložného prostoru k tomu, aby synchronizace souborů mohla zůstat zapnutá. Nové soubory se již nebudou automaticky synchronizovat.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Soubor nebo adresář nelze použít.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Žádný certifikát uživatele</translation>
 <translation id="1403008701842173542">Všude</translation>
 <translation id="1404323374378969387">norština</translation>
+<translation id="1408504635543854729">Prozkoumejte obsah zařízení v aplikaci Soubory. Přístup k obsahu je administrátorem omezen a nelze jej upravovat.</translation>
 <translation id="1412476183660741812">Podepsaný webový balíček</translation>
 <translation id="1433628812591023318">Pokud chcete soubor přetáhnout do nástroje Parallels Desktop, musíte ho přesunout mezi soubory systému Windows.</translation>
 <translation id="1435838927755162558">Sdílení složky s nástrojem Parallels Desktop</translation>
 <translation id="1439919885608649279">Člověk s květinami</translation>
 <translation id="1458457385801829801">Odpojit <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Předvolby zařízení naleznete v Nastavení.</translation>
 <translation id="146691674290220697">Některé soubory (celkem <ph name="NUMBER_OF_FILES" />) nelze zkopírovat, protože jsou zašifrované.</translation>
 <translation id="1471718551822868769">slovenština</translation>
 <translation id="1482884275703521657">finština</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Spravovat na Disku</translation>
 <translation id="2004942826429452291">Soubory budou uloženy v cloudu a na tomto Chromebooku.</translation>
 <translation id="2009067268969781306">Naformátováním jednotky smažete všechna na ní uložená data. Tuto akci nelze vrátit zpět.</translation>
+<translation id="2018352199541442911">Je nám líto, externí paměťové zařízení není v současné době podporováno.</translation>
 <translation id="2025955442973426285">tigrinijština</translation>
 <translation id="2029385776150020336">Americká klávesnice (rozšířená)</translation>
 <translation id="2037845485764049925">ruština</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagoči</translation>
 <translation id="2468470447085858632">Získejte přístup k souborům na Disku Google offline pomocí synchronizace souborů</translation>
 <translation id="2470939964922472929">Příliš mnohokrát jste zadali nesprávný PIN. Pokud chcete nastavit nový PIN, zadejte osmimístný kód PUK, který vám poskytl operátor.</translation>
+<translation id="249113932447298600">Je nám líto, zařízení <ph name="DEVICE_LABEL" /> není v současné době podporováno.</translation>
 <translation id="2500392669976258912">gudžarátština (fonetická)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Skenovat</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">ukrajinština</translation>
 <translation id="3326821416087822643">Komprimace souboru <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Rok nahrávky</translation>
+<translation id="3348038390189153836">Bylo zjištěno vyměnitelné zařízení</translation>
 <translation id="3353984535370177728">Vyberte složku pro nahrání</translation>
 <translation id="3356580349448036450">Dokončeno</translation>
 <translation id="3358452157379365236">Kytara</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Stáhněte si mobilní profil, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">angličtina (Spojené království)</translation>
 <translation id="3975895378829046965">bengálština (fonetická)</translation>
+<translation id="3983764759749072418">K tomuto zařízení mají přístup aplikace z Obchodu Play.</translation>
 <translation id="3999574733850440202">Nedávno otevřené soubory Microsoft byly přesunuty do služby OneDrive</translation>
 <translation id="4002066346123236978">Název</translation>
 <translation id="4017788180641807848">angličtina (USA) s klávesnicí Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Pro přístup k souboru musíte být online.</translation>
 <translation id="4212740939091998969">Složka s názvem „<ph name="FOLDER_NAME" />“ již existuje. Zvolte jiný název.</translation>
 <translation id="4218274196133425560">Odstranit výjimku pro web <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4261901459838235729">Prezentace Google</translation>
 <translation id="4277536868133419688">Filtr <ph name="FILTER_NAME" /> je zapnutý.</translation>
 <translation id="4290535918735525311">1 složka je sdílena se systémem Linux</translation>
@@ -554,6 +563,7 @@
 <translation id="5275973617553375938">Obnovené soubory z Disku Google</translation>
 <translation id="5278111733643988471">Pokud tuto položku chcete obnovit, přetáhněte ji do nové složky mimo koš. Původní složka „<ph name="PARENT_FOLDER_NAME" />“ pro tuto položku byla smazána.</translation>
 <translation id="5288441970121584418">Hamburger</translation>
+<translation id="529175790091471945">Naformátovat toto zařízení</translation>
 <translation id="5293615890992542006">Přesunutí tohoto souboru je blokováno zásadami administrátora</translation>
 <translation id="5305688511332277257">Není nainstalován žádný certifikát</translation>
 <translation id="5317780077021120954">Uložit</translation>
@@ -569,6 +579,7 @@
 <translation id="5411472733320185105">Nepoužívat nastavení proxy serveru pro následující hostitele a domény:</translation>
 <translation id="541890217011173530">kurdština sorání s anglickou klávesnicí</translation>
 <translation id="5422221874247253874">Přístupový bod</translation>
+<translation id="5422781158178868512">Je nám líto, externí paměťové zařízení nelze rozpoznat.</translation>
 <translation id="5438282218546237410">Pro dotaz <ph name="SEARCH_TERM" /> nebyly nalezeny žádné výsledky.</translation>
 <translation id="5447680084201416734">Nedostatek místa v úložišti.</translation>
 <translation id="5449551289610225147">Neplatné heslo</translation>
@@ -616,10 +627,12 @@
 <translation id="5760252553414789727">Vybrané položky: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">němčina (Švýcarsko)</translation>
 <translation id="5769519078756170258">Hostitelský server nebo doména k vyloučení</translation>
+<translation id="5774295353725270860">Do aplikace Soubory</translation>
 <translation id="5775750595919327203">urdština</translation>
 <translation id="5776325638577448643">Vymazat a naformátovat</translation>
 <translation id="57838592816432529">Ztlumit</translation>
 <translation id="5788127256798019331">Soubory Play</translation>
+<translation id="5788367137662787332">Je nám líto, minimálně jeden oddíl zařízení <ph name="DEVICE_LABEL" /> nelze připojit.</translation>
 <translation id="5804245609861364054">kannadština (přepis)</translation>
 <translation id="5814126672212206791">Typ připojení</translation>
 <translation id="5817397429773072584">Tradiční čínština</translation>
@@ -812,9 +825,11 @@
 <translation id="7224162581405244205">Islandská klávesnice</translation>
 <translation id="7229570126336867161">Je zapotřebí technologie EVDO.</translation>
 <translation id="7230898482850090046">Váš administrátor vás požádal o vypnutí nastavení zámku SIM karty</translation>
+<translation id="7232750842195536390">Přejmenování se nezdařilo</translation>
 <translation id="7238097264433196391">Název Disku</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, podrobnosti</translation>
 <translation id="7246947237293279874">Proxy server protokolu FTP</translation>
+<translation id="725109152065019550">Je nám líto, správce ve vašem účtu zakázal používání externích úložišť.</translation>
 <translation id="7256405249507348194">Neznámá chyba: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupné služby</translation>
 <translation id="7291818353625820805">Chcete, aby se klávesy opakovaly? Vypněte v Nastavení klávesnice diakritická znaménka</translation>
@@ -837,6 +852,7 @@
 <translation id="7417705661718309329">Mapa Google</translation>
 <translation id="7419668828140929293">Obnovování souboru <ph name="FILENAME" /></translation>
 <translation id="7435577899926900307">Americká klávesnice Dvorak</translation>
+<translation id="7436921188514130341">Aj, chyba! Při přejmenovávání došlo k chybě.</translation>
 <translation id="7458955835361612701">Žádné nedávné obrázky</translation>
 <translation id="7469894403370665791">Automaticky připojit k této síti</translation>
 <translation id="7486315294984620427">Pokud chcete soubor přetáhnout do nástroje Parallels Desktop, musíte ho zkopírovat mezi soubory systému Windows.</translation>
@@ -852,6 +868,7 @@
 <translation id="7551643184018910560">Připnout k poličce</translation>
 <translation id="7553492409867692754">Udělujete linuxovým aplikacím oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">Momentálně jste offline. Synchronizace souborů bude pokračovat, až budete připojeni k internetu.</translation>
+<translation id="7589461650300748890">Pozor, buďte opatrní!</translation>
 <translation id="7589661784326793847">Chvilku strpení</translation>
 <translation id="7600126690270271294">srbština</translation>
 <translation id="7603724359189955920">Mřížky</translation>
@@ -897,6 +914,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Chyba při konfiguraci sítě</translation>
+<translation id="7839051173341654115">Zobrazit/zálohovat média</translation>
 <translation id="7839804798877833423">Načtení souborů spotřebuje přibližně <ph name="FILE_SIZE" /> mobilních dat.</translation>
 <translation id="7846076177841592234">Zrušit výběr</translation>
 <translation id="7857117644404132472">Přidat výjimku</translation>
@@ -904,8 +922,10 @@
 <translation id="7868774406711971383">polština</translation>
 <translation id="7874321682039004450">filipínština</translation>
 <translation id="78946041517601018">Sdílené disky</translation>
+<translation id="7897900149154324287">V budoucnu vyměnitelné zařízení nezapomínejte před vyjmutím odpojit v aplikaci Soubory. Jinak byste mohli přijít o data.</translation>
 <translation id="7901567919203965902">Americká klávesnice (mezinárodní Workman)</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Je nám líto, minimálně jeden oddíl externího paměťového zařízení nelze připojit.</translation>
 <translation id="7908793776359722643">Naformátováním oddílu smažete všechna na něm uložená data. Tuto akci nelze vrátit zpět.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Vaše soubory ve složce Můj disk se automaticky synchronizují s Chromebookem, takže k nim máte přístup bez připojení k internetu.</translation>
@@ -1039,6 +1059,7 @@
 <translation id="8873014196523807561">Pokud tyto položky chcete obnovit, přetáhněte je do nové složky. Původní složky některých z těchto položek byly smazány.</translation>
 <translation id="8874184842967597500">Nepřipojeno</translation>
 <translation id="8876368061475701452">Ve frontě</translation>
+<translation id="8893928184421379330">Je nám líto, zařízení <ph name="DEVICE_LABEL" /> nelze rozpoznat.</translation>
 <translation id="8902208737522818687">Americká klávesnice (mezinárodní počítačová)</translation>
 <translation id="8903931173357132290">Absolvent</translation>
 <translation id="8912078710089354287">Pes vrtící ocasem</translation>

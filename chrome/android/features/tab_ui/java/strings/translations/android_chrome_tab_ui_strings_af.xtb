@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> oortjie gegroepeer</translation>
 <translation id="1844381456014878100">Ná 7 dae onaktief</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Voeg oortjie by leeslys}other{Voeg oortjies by leeslys}}</translation>
 <translation id="1909810060368225529">Kennisgewing: Veranderinge aan hierdie gedeelde Oortjiegroep is vir almal sigbaar. Almal kan veranderinge aan jou gedeelde oortjiegroepe aanbring</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Speld oortjie vas}other{Speld oortjies vas}}</translation>
 <translation id="1982637982196732906">Skuif na onaktiewe afdeling</translation>

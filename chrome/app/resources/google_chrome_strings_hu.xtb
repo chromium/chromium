@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Letöltés...</translation>
 <translation id="1651617469580841801">A Google Lens használatakor a rendszer elküldi az oldal címét, URL-jét és tartalmát (beleértve a PDF-eket is) a Google-nak. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">A ChromeOS Flex névjegye</translation>
+<translation id="1665867022636014702">A Google által ajánlott böngészőbeállítások használata</translation>
 <translation id="1674870198290878346">Link megnyitása Chrome-inko&amp;gnitóablakban</translation>
 <translation id="1682634494516646069">A Chrome nem tudja olvasni és írni az adatkönyvtárát: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Amikor beír valamit a címsávba vagy a keresőmezőbe, a Chrome elküldi a beírt szöveget a szervezet keresési, AI- és ügynökeszközeinek javaslatok biztosítása érdekében.</translation>
@@ -238,6 +239,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="345171907106878721">Adja hozzá magát a Chrome-ban</translation>
 <translation id="3453763134178591239">ChromeOS – Szerződési Feltételek</translation>
 <translation id="3503306920980160878">A Chrome-nak a helyadatokhoz való hozzáférésre van szüksége ahhoz, hogy megoszthassa a webhellyel az Ön tartózkodási helyét</translation>
+<translation id="3539955434060988644">Link megnyitása Chrome-inkognitóablakban</translation>
 <translation id="3576528680708590453">Rendszergazdája úgy állította be a Google Chrome-ot, hogy másik böngészőt nyisson meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>
 <translation id="3582972582564653026">Szinkronizálhatja és személyre szabhatja a Chrome-ot minden eszközén</translation>
 <translation id="3583751698304738917">Már be van jelentkezve a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókkal egy másik Chrome-profilban.</translation>

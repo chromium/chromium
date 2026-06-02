@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> табыг бүлэглэсэн</translation>
 <translation id="1844381456014878100">7 хоног идэвхгүй байсны дараа</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таб}other{<ph name="TABS_COUNT_MANY" /> таб}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Унших жагсаалтад таб нэмэх}other{Унших жагсаалтад табууд нэмэх}}</translation>
 <translation id="1909810060368225529">Мэдэгдэл: Энэ хуваалцсан табын бүлгийн өөрчлөлт хүн бүрд харагдана. Хүн бүр таны хуваалцсан табын бүлэгт өөрчлөлт хийх боломжтой</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Табыг бэхлэх}other{Табуудыг бэхлэх}}</translation>
 <translation id="1982637982196732906">Идэвхгүй хэсэг рүү зөөх</translation>

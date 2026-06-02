@@ -149,6 +149,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1227224963052638717">Neznámá zásada.</translation>
 <translation id="1227677022489889280">Uveďte důvod přesunutí (povinné)</translation>
 <translation id="1228893227497259893">Nesprávný identifikátor subjektu</translation>
+<translation id="122989279399348496">Když budete přihlášení, může <ph name="DOMAIN" /> na podporovaných webech ověřovat e‑mail <ph name="EMAIL" />, abyste nemuseli kontrolovat svou doručenou poštu</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (zjištěno automaticky)</translation>
 <translation id="1232569758102978740">Bez názvu</translation>
 <translation id="1234539281285007945">Pole <ph name="FIELD_1" /> je povinné</translation>
@@ -510,6 +511,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, je k dispozici několik akcí, můžete je procházet stisknutím klávesy Tab</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Podrobnosti virtuální karty</translation>
+<translation id="1802420021606590788">Chrome zpracovává názvy stránek a adresy URL v soukromém prostoru v cloudu</translation>
 <translation id="1803254472779303354">Zámek myši povolen</translation>
 <translation id="1803351196216024260">Může žádat o použití mikrofonu</translation>
 <translation id="1804258830776932716">Rychlým připojením účtu povolte službu Pix</translation>
@@ -3023,6 +3025,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5742806904559466333">Bary, kluby a noční život</translation>
 <translation id="5743684619253032786">Produkty péče o nehty</translation>
 <translation id="574392208103952083">Střední</translation>
+<translation id="5745586894920491759">Chrome zpracovává názvy stránek a adresy URL v cloudu</translation>
 <translation id="5745733273847572235">Může žádat o vaši polohu</translation>
 <translation id="5750869797196646528">Sledování rukou</translation>
 <translation id="5752327398324808817">Zadejte jedno nebo dvě slova</translation>
@@ -3416,6 +3419,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Zobrazit protokoly</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Zkontrolovat proxy server, firewall a konfiguraci zabezpečeného DNS<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Automaticky potvrzovat e‑maily</translation>
 <translation id="6366710531182496394">Dvě sponky vlevo</translation>
 <translation id="6367196786591004737">Smazat záznam</translation>
 <translation id="6370022303958842211">Akce s přístupem k zařízením, například přihlášení (včetně důvodů neúspěšného přihlášení), odhlášení, zamknutí a odemknutí</translation>
@@ -4060,6 +4064,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7388380253839603603">Ceny benzínu a tankování</translation>
 <translation id="7388594495505979117">{0,plural, =1{Zařízení se za 1 minutu restartuje}few{Zařízení se za # minuty restartuje}many{Zařízení se za # minuty restartuje}other{Zařízení se za # minut restartuje}}</translation>
 <translation id="7393161616326137353">Adventury</translation>
+<translation id="7393243238767102021">Povolit doméně <ph name="DOMAIN" /> automaticky tento e‑mail ověřovat?</translation>
 <translation id="7393475648162498734">Při placení ukázat, jaké odměny a výhody jsou pro vaše karty k dispozici.</translation>
 <translation id="7393971683644170444">Připojování k vydavateli karty…</translation>
 <translation id="739728382607845710">Ikona obslužného nástroje pro platby</translation>
@@ -5056,6 +5061,7 @@ Další podrobnosti:
 <translation id="8963117664422609631">Přejít do nastavení webu</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Návrhy:<ph name="MARKUP_2" />Zkontrolujte, zda máte datové připojení.<ph name="MARKUP_3" />Načtěte tuto webovou stránku znovu později.<ph name="MARKUP_4" />Zkontrolujte zadanou adresu.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Vaše místní soubory budou za <ph name="HOURS" /> h smazány</translation>
+<translation id="8964904785315870349">Ověřený e‑mail</translation>
 <translation id="8968766641738584599">Uložit kartu</translation>
 <translation id="8970887620466824814">Došlo k chybě.</translation>
 <translation id="8971063699422889582">Platnost certifikátu serveru vypršela.</translation>

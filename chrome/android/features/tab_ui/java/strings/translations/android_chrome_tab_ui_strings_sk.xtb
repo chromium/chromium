@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">Bola zoskupená <ph name="TABS_COUNT_ONE" /> karta</translation>
 <translation id="1844381456014878100">Po 7 dňoch nečinnosti</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Pridať kartu do čitateľského zoznamu}few{Pridať karty do čitateľského zoznamu}many{Add tabs to reading list}other{Pridať karty do čitateľského zoznamu}}</translation>
 <translation id="1909810060368225529">Upozornenie: Zmeny tejto zdieľanej skupiny kariet vidia všetci. Zdieľané skupiny kariet môžu meniť všetci.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Pripnúť kartu}few{Pripnúť karty}many{Pin tabs}other{Pripnúť karty}}</translation>
 <translation id="1982637982196732906">Presun do sekcie neaktívnych</translation>

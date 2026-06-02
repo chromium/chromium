@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Máy chủ có tên tự động</translation>
 <translation id="1210831758834677569">Tiếng Lào</translation>
 <translation id="1221555006497674479">Sắp hết bộ nhớ, <ph name="TOTAL_SPACE" /> bộ nhớ dùng chung còn <ph name="REMAINING_PERCENTAGE" />%.</translation>
+<translation id="1239594683407221485">Khám phá nội dung của thiết bị trong ứng dụng Files.</translation>
 <translation id="1243314992276662751">Tải lên</translation>
 <translation id="1249250836236328755">Thể loại</translation>
 <translation id="1254593899333212300">Kết nối Internet trực tiếp</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Không thể xoá. Mục đang được sử dụng.</translation>
 <translation id="1307931752636661898">Không thể xem tệp Linux</translation>
 <translation id="1313405956111467313">Cấu hình proxy tự động</translation>
+<translation id="1340527397989195812">Sao lưu phương tiện từ thiết bị bằng ứng dụng Tệp.</translation>
 <translation id="134645005685694099">Thiết bị của bạn không có đủ không gian lưu trữ để tiếp tục bật tính năng đồng bộ hoá tệp. Các tệp mới sẽ không tự động đồng bộ hoá nữa.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Không thể sử dụng được tệp hoặc thư mục.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Không có chứng chỉ người dùng</translation>
 <translation id="1403008701842173542">Mọi nơi</translation>
 <translation id="1404323374378969387">Tiếng Na Uy</translation>
+<translation id="1408504635543854729">Khám phá nội dung của thiết bị trong ứng dụng Tệp. Quản trị viên đã hạn chế nội dung và bạn không thể sửa đổi nội dung này.</translation>
 <translation id="1412476183660741812">Gói web đã ký</translation>
 <translation id="1433628812591023318">Để thả tệp vào Parallels Desktop, bạn phải chuyển tệp đó vào thư mục tệp Windows.</translation>
 <translation id="1435838927755162558">Chia sẻ thư mục với ứng dụng Parallels Desktop</translation>
 <translation id="1439919885608649279">Người với hoa</translation>
 <translation id="1458457385801829801">Ngắt kết nối <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Để xem các tùy chọn của thiết bị, hãy chuyển đến phần Cài đặt.</translation>
 <translation id="146691674290220697">Không sao chép được <ph name="NUMBER_OF_FILES" /> tệp vì các tệp này đã được mã hoá.</translation>
 <translation id="1471718551822868769">Tiếng Slovak</translation>
 <translation id="1482884275703521657">Tiếng Phần Lan</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Quản lý trong Drive</translation>
 <translation id="2004942826429452291">Các tệp sẽ được lưu trữ trên đám mây và trên Chromebook này.</translation>
 <translation id="2009067268969781306">Thao tác định dạng ổ sẽ xóa toàn bộ dữ liệu lưu trữ trên ổ đó. Bạn không thể hủy thao tác này sau khi đã thực hiện.</translation>
+<translation id="2018352199541442911">Rất tiếc, thiết bị lưu trữ bên ngoài của bạn không được hỗ trợ vào thời điểm này.</translation>
 <translation id="2025955442973426285">Tiếng Tigrinya</translation>
 <translation id="2029385776150020336">Bàn phím mở rộng (Hoa Kỳ)</translation>
 <translation id="2037845485764049925">Tiếng Nga</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Máy nuôi thú ảo</translation>
 <translation id="2468470447085858632">Truy cập vào các tệp trên Google Drive khi không có mạng nhờ tính năng đồng bộ hoá tệp</translation>
 <translation id="2470939964922472929">Bạn đã nhập sai mã PIN quá nhiều lần. Để thiết lập mã PIN mới, hãy nhập Khóa mở khóa cá nhân (PUK) gồm 8 chữ số do nhà mạng cung cấp.</translation>
+<translation id="249113932447298600">Rất tiếc, thiết bị <ph name="DEVICE_LABEL" /> không được hỗ trợ vào thời điểm này.</translation>
 <translation id="2500392669976258912">Tiếng Gujarati (phiên âm)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Quét</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Tiếng Ukraina</translation>
 <translation id="3326821416087822643">Đang nén <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Năm ghi âm</translation>
+<translation id="3348038390189153836">Phát hiện thiết bị di động</translation>
 <translation id="3353984535370177728">Chọn thư mục để tải lên</translation>
 <translation id="3356580349448036450">Hoàn tất</translation>
 <translation id="3358452157379365236">Đàn ghita</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Tải hồ sơ mạng di động xuống, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Tiếng Anh (Anh)</translation>
 <translation id="3975895378829046965">Tiếng Bangla (phiên âm)</translation>
+<translation id="3983764759749072418">Các ứng dụng trên Cửa hàng Play có quyền truy cập vào thiết bị này.</translation>
 <translation id="3999574733850440202">Các tệp Microsoft mới mở gần đây đã được chuyển sang OneDrive</translation>
 <translation id="4002066346123236978">Tiêu đề</translation>
 <translation id="4017788180641807848">Tiếng Anh (Mỹ) bằng bàn phím Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Bạn phải trực tuyến để truy cập tệp này.</translation>
 <translation id="4212740939091998969">Thư mục có tên "<ph name="FOLDER_NAME" />" đã tồn tại. Hãy chọn một tên khác.</translation>
 <translation id="4218274196133425560">Xóa trường hợp ngoại lệ đối với <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Mở phần cài đặt</translation>
 <translation id="4261901459838235729">Bản trình bày Google</translation>
 <translation id="4277536868133419688">Đang bật bộ lọc <ph name="FILTER_NAME" />.</translation>
 <translation id="4290535918735525311">Đã chia sẻ 1 thư mục với Linux</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Tệp được khôi phục từ Google Drive</translation>
 <translation id="5278111733643988471">Để khôi phục, hãy kéo mục này vào một thư mục mới bên ngoài thùng rác. Thư mục gốc "<ph name="PARENT_FOLDER_NAME" />" của mục này đã bị xoá.</translation>
 <translation id="5288441970121584418">Bánh mì kẹp</translation>
+<translation id="529175790091471945">Định dạng thiết bị này</translation>
 <translation id="5293615890992542006">Chính sách của quản trị viên không cho phép di chuyển tệp này</translation>
 <translation id="5305688511332277257">Chưa cài đặt chứng chỉ nào</translation>
 <translation id="5317780077021120954">Lưu</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Không sử dụng cài đặt proxy cho các máy chủ và tên miền này:</translation>
 <translation id="541890217011173530">Tiếng Kurd Sorani bằng bàn phím dựa trên tiếng Anh</translation>
 <translation id="5422221874247253874">Điểm truy cập</translation>
+<translation id="5422781158178868512">Rất tiếc, thiết bị lưu trữ bên ngoài của bạn không thể nhận dạng được.</translation>
 <translation id="5438282218546237410">Không có kết quả nào cho <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Không đủ bộ nhớ.</translation>
 <translation id="5449551289610225147">Mật khẩu không hợp lệ</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">Có <ph name="SELECTED_FILES_COUNT" /> mục được chọn</translation>
 <translation id="5763377084591234761">Tiếng Đức (Thụy Sĩ)</translation>
 <translation id="5769519078756170258">Máy chủ lưu trữ hoặc miền cần loại trừ</translation>
+<translation id="5774295353725270860">Mở ứng dụng tệp</translation>
 <translation id="5775750595919327203">Tiếng Urdu</translation>
 <translation id="5776325638577448643">Xóa và định dạng</translation>
 <translation id="57838592816432529">Tắt tiếng</translation>
 <translation id="5788127256798019331">Tệp Play</translation>
+<translation id="5788367137662787332">Rất tiếc, ít nhất một phân vùng trên thiết bị <ph name="DEVICE_LABEL" /> không thể kết nối được.</translation>
 <translation id="5804245609861364054">Tiếng Kannada (chuyển tự)</translation>
 <translation id="5814126672212206791">Loại kết nối</translation>
 <translation id="5817397429773072584">Tiếng Trung phồn thể</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Tiếng Iceland</translation>
 <translation id="7229570126336867161">Cần có EVDO</translation>
 <translation id="7230898482850090046">Quản trị viên đã yêu cầu bạn tắt chế độ cài đặt "Khoá SIM"</translation>
+<translation id="7232750842195536390">Không đổi tên được</translation>
 <translation id="7238097264433196391">Tên ổ</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Thông tin chi tiết</translation>
 <translation id="7246947237293279874">Proxy FTP</translation>
+<translation id="725109152065019550">Rất tiếc, quản trị viên của bạn đã tắt bộ nhớ ngoài trên tài khoản của bạn.</translation>
 <translation id="7256405249507348194">Lỗi không xác định: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dịch vụ khả dụng</translation>
 <translation id="7291818353625820805">Bạn muốn lặp lại các phím? Tắt dấu nhấn trọng âm trong Cài đặt bàn phím</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Bản đồ Google</translation>
 <translation id="7419668828140929293">Đang khôi phục "<ph name="FILENAME" />"</translation>
 <translation id="7435577899926900307">Bàn phím Dvorak tiêu chuẩn Hoa Kỳ</translation>
+<translation id="7436921188514130341">Ôi, hỏng! Đã xảy ra lỗi trong khi đổi tên.</translation>
 <translation id="7458955835361612701">Không có hình ảnh nào gần đây</translation>
 <translation id="7469894403370665791">Tự động kết nối vào mạng này</translation>
 <translation id="7486315294984620427">Để thả tệp vào Parallels Desktop, bạn phải sao chép tệp đó vào thư mục tệp Windows.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Ghim vào kệ</translation>
 <translation id="7553492409867692754">Cho phép các ứng dụng Linux truy cập vào tệp trong thư mục <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Thiết bị hiện không kết nối mạng. Quá trình đồng bộ hoá tệp sẽ tiếp tục khi thiết bị kết nối với Internet</translation>
+<translation id="7589461650300748890">Oa. Hãy cẩn thận.</translation>
 <translation id="7589661784326793847">Xin đợi một chút</translation>
 <translation id="7600126690270271294">Tiếng Serbia</translation>
 <translation id="7603724359189955920">Lưới</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Lỗi khi định cấu hình mạng</translation>
+<translation id="7839051173341654115">Xem/Sao lưu phương tiện</translation>
 <translation id="7839804798877833423">Tìm nạp các tệp này sẽ sử dụng khoảng <ph name="FILE_SIZE" /> dữ liệu di động.</translation>
 <translation id="7846076177841592234">Hủy chọn</translation>
 <translation id="7857117644404132472">Thêm ngoại lệ</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Tiếng Ba Lan</translation>
 <translation id="7874321682039004450">Tiếng Philippines</translation>
 <translation id="78946041517601018">Bộ nhớ dùng chung</translation>
+<translation id="7897900149154324287">Trong tương lai, đảm bảo rằng bạn đã ngắt kết nối thiết bị di động của mình trong ứng dụng Tệp trước khi tháo thiết bị. Nếu không, bạn có thể mất dữ liệu.</translation>
 <translation id="7901567919203965902">Bàn phím quốc tế Workman tiêu chuẩn Hoa Kỳ</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Rất tiếc, ít nhất một phân vùng trên thiết bị lưu trữ bên ngoài của bạn không thể kết nối được.</translation>
 <translation id="7908793776359722643">Thao tác định dạng một phân vùng sẽ xóa toàn bộ dữ liệu lưu trữ trên phân vùng đó. Bạn không thể hủy thao tác này sau khi thực hiện.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Các tệp trong Drive của tôi sẽ tự động đồng bộ hoá với Chromebook để bạn có thể truy cập các tệp này mà không cần kết nối Internet.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Để khôi phục, hãy kéo các mục này vào một thư mục mới. Các thư mục gốc của một vài mục trong số này đã bị xoá.</translation>
 <translation id="8874184842967597500">Chưa kết nối</translation>
 <translation id="8876368061475701452">Đã xếp vào hàng đợi</translation>
+<translation id="8893928184421379330">Rất tiếc, không thể nhận dạng thiết bị <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8902208737522818687">Bàn phím quốc tế Hoa Kỳ (dành cho PC)</translation>
 <translation id="8903931173357132290">Người tốt nghiệp</translation>
 <translation id="8912078710089354287">Chó vẫy đuôi</translation>

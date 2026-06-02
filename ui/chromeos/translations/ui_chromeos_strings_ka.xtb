@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">ავტომატური სახელის სერვერები</translation>
 <translation id="1210831758834677569">ლაოსური</translation>
 <translation id="1221555006497674479">მეხსიერება იწურება. საზიარო დისკზე <ph name="TOTAL_SPACE" /> მეხსიერებიდან <ph name="REMAINING_PERCENTAGE" />% დაგრჩათ.</translation>
+<translation id="1239594683407221485">დაათვალიერეთ მოწყობილობის შიგთავსი ფაილების აპში.</translation>
 <translation id="1243314992276662751">ატვირთვა</translation>
 <translation id="1249250836236328755">ჟანრი</translation>
 <translation id="1254593899333212300">პირდაპირი ინტერნეტ კავშირი</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">წაშლა ვერ მოხერხდა. ერთეული გამოიყენება.</translation>
 <translation id="1307931752636661898">Linux ფაილების ნახვა ვერ ხერხდება</translation>
 <translation id="1313405956111467313">პროქსის ავტომატური კონფიგურაცია</translation>
+<translation id="1340527397989195812">ფაილების აპლიკაციის გამოყენებით მოწყობილობიდან მედია მასალების სათადარიგო შენახვა.</translation>
 <translation id="134645005685694099">თქვენს მოწყობილობაში არ არის საკმარისი მეხსიერება იმისთვის, რომ ფაილების სინქრონიზაცია ჩართული დარჩეს. ახალი ფაილების სინქრონიზაცია ავტომატურად აღარ განხორციელდება.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ფაილი ან დირექტორია არ არის გამოყენებადი.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">მომხმარებლის სერტიფიკატის გარეშე</translation>
 <translation id="1403008701842173542">ყველგან</translation>
 <translation id="1404323374378969387">ნორვეგიული</translation>
+<translation id="1408504635543854729">დაათვალიერეთ მოწყობილობის კონტენტი ფაილების აპში. კონტენტზე წვდომა შეზღუდულია ადმინისტრატორის მიერ და მისი შეცვლა ვერ მოხერხდება.</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
 <translation id="1433628812591023318">Parallels Desktop-ში ფაილის ჩავლებით გადასატანად ის უნდა გადაიტანოთ Windows ფაილებში.</translation>
 <translation id="1435838927755162558">საქაღალდის გაზიარება Parallels Desktop-თან</translation>
 <translation id="1439919885608649279">პიროვნება ყვავილებით</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />-ის ამოღება</translation>
+<translation id="1464781208867302907">მოწყობილობის უპირატესი პარამეტრებისთვის გადადით პარამეტრებზე.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ფაილის კოპირება ვერ მოხერხდა, რადგან ისინი დაშიფრულია.</translation>
 <translation id="1471718551822868769">სლოვაკური</translation>
 <translation id="1482884275703521657">ფინური</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Google Drive-ში მართვა</translation>
 <translation id="2004942826429452291">ფაილები შეინახება ღრუბლოვან საცავსა და ამ Chromebook-ზე.</translation>
 <translation id="2009067268969781306">დისკის დაფორმატება წაშლის მასში შენახულ ყველა მონაცემს. ამ ქმედებას ვერ გააუქმებთ.</translation>
+<translation id="2018352199541442911">სამწუხაროდ, თქვენს გარე მეხსიერების მოწყობილობას ამჟამად არ აქვს მხარდაჭერა.</translation>
 <translation id="2025955442973426285">ტიგრინია</translation>
 <translation id="2029385776150020336">აშშ (გაფართოებული)</translation>
 <translation id="2037845485764049925">რუსული</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">ტამაგოჩი</translation>
 <translation id="2468470447085858632">იქონიეთ წვდომა თქვენს Google Drive ფაილებზე ხაზგარეშე რეჟიმში, ფაილების სინქრონიზაციის მეშვეობით</translation>
 <translation id="2470939964922472929">არასწორი PIN-კოდი ზედმეტად ბევრჯერ შეიყვანეთ. ახალი PIN-კოდის დასაყენებლად შეიყვანეთ განბლოკვის პერსონალური 8-ციფრიანი გასაღები (PUK), რომელიც თქვენმა ოპერატორმა მოგაწოდათ.</translation>
+<translation id="249113932447298600">უკაცრავად, მოწყობილობა <ph name="DEVICE_LABEL" /> ამჟამად არაა მხარდაჭერილი.</translation>
 <translation id="2500392669976258912">გუჯარათული ფონეტიკური</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">სკანირება</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">უკრაინული</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" />-ის დაარქივება…</translation>
 <translation id="3335337277364016868">ჩაწერის წელი</translation>
+<translation id="3348038390189153836">აღმოჩენილია ამოშლადი მოწყობილობა</translation>
 <translation id="3353984535370177728">აირჩიეთ საქაღალდე ატვირთვისთვის</translation>
 <translation id="3356580349448036450">დასრულებულია</translation>
 <translation id="3358452157379365236">გიტარა</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">მობილური პროფილის ჩამოტვირთვა, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ინგლისური (გაერთიანებული სამეფო)</translation>
 <translation id="3975895378829046965">ბენგალური ფონეტიკური</translation>
+<translation id="3983764759749072418">Play Store აპლიკაციებს აქვს წვდომა ამ მოწყობილობაზე.</translation>
 <translation id="3999574733850440202">ბოლო დროს გახსნილი Microsoft-ის ფაილები გადატანილია OneDrive-ზე</translation>
 <translation id="4002066346123236978">სათაური</translation>
 <translation id="4017788180641807848">ინგლისური (აშშ) Workman კლავიატურით</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">თქვენ უნდა იყოთ ონლაინ რეჟიმში, რომ განახორციელოთ წვდომა ამ ფაილზე.</translation>
 <translation id="4212740939091998969">საქაღალდე სახელად „<ph name="FOLDER_NAME" />“ უკვე არსებობს. გთხოვთ, აირჩიოთ სხვა სახელი.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-ისთვის გამონაკლისის ამოშლა</translation>
+<translation id="4242533952199664413">პარამეტრების გახსნა</translation>
 <translation id="4261901459838235729">Google პრეზენტაცია</translation>
 <translation id="4277536868133419688">ფილტრი <ph name="FILTER_NAME" /> ჩართულია.</translation>
 <translation id="4290535918735525311">1 საქაღალდე გაზიარებულია Linux-თან</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">აღდგენილი ფაილი Google Drive-დან</translation>
 <translation id="5278111733643988471">ამ ერთეულის აღსადგენად ჩავლებით გადაიტანეთ ის ახალ საქაღალდეში წაშლილებს მიღმა. ამ ერთეულის თავდაპირველი საქაღალდე „<ph name="PARENT_FOLDER_NAME" />“ წაიშალა.</translation>
 <translation id="5288441970121584418">ბურგერი</translation>
+<translation id="529175790091471945">ამ მოწყობილობის დაფორმატება</translation>
 <translation id="5293615890992542006">ამ ფაილის გადატანა დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="5305688511332277257">არცერთი არ არის დაინსტალირებული</translation>
 <translation id="5317780077021120954">შენახვა</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">არ გამოიყენოთ პროქსის პარამეტრები ამ საკვანძო კომპიუტერისთვის და დომენებისთვის:</translation>
 <translation id="541890217011173530">ცენტრალურქურთული ინგლისურზე დაფუძნებული კლავიატურით</translation>
 <translation id="5422221874247253874">წვდომის წერტილი</translation>
+<translation id="5422781158178868512">სამწუხაროდ, თქვენი გარე მეხსიერების მოწყობილობის ამოცნობა ვერ მოხერხდა.</translation>
 <translation id="5438282218546237410">მოთხოვნაზე „<ph name="SEARCH_TERM" />“ შედეგები ვერ მოიძებნა.</translation>
 <translation id="5447680084201416734">საკმარისი მეხსიერება არ არის.</translation>
 <translation id="5449551289610225147">პაროლი არასწორია</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">არჩეულია <ph name="SELECTED_FILES_COUNT" /> ერთეული</translation>
 <translation id="5763377084591234761">გერმანული (შვეიცარია)</translation>
 <translation id="5769519078756170258">გამონაკლისი ჰოსტი ან დომენი</translation>
+<translation id="5774295353725270860">ფაილების პროგრამის გახსნა</translation>
 <translation id="5775750595919327203">ურდუ</translation>
 <translation id="5776325638577448643">წაშლა და დაფორმატება</translation>
 <translation id="57838592816432529">დადუმება</translation>
 <translation id="5788127256798019331">Play ფაილები</translation>
+<translation id="5788367137662787332">სამწუხაროდ, სულ მცირე, ერთი დანაყოფის მიერთება ვერ მოხერხდა მოწყობილობაში <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5804245609861364054">კანადა ტრანსლიტერაცია</translation>
 <translation id="5814126672212206791">კავშირის ტიპი</translation>
 <translation id="5817397429773072584">ტრადიციული ჩინური</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">ისლანდიური</translation>
 <translation id="7229570126336867161">საჭიროა EVDO</translation>
 <translation id="7230898482850090046">თქვენმა ადმინისტრატორმა მოითხოვა „SIM ბარათის ჩაკეტვის“ პარამეტრის გამორთვა</translation>
+<translation id="7232750842195536390">გადარქმევა ვერ მოხერხდა</translation>
 <translation id="7238097264433196391">დისკის სახელი</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, დეტალები</translation>
 <translation id="7246947237293279874">FTP პროქსი-სერვერი</translation>
+<translation id="725109152065019550">ბოდიში, თქვენმა ადმინისტრატორმა გამორთო გარე შენახვა თქვენს ანგარიშზე.</translation>
 <translation id="7256405249507348194">ამოუცნობი შეცდომა: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ხელმისაწვდომი მომსახურებები</translation>
 <translation id="7291818353625820805">გსურთ, კლავიშები გამეორდეს? გამორთეთ მახვილის ნიშნები კლავიატურის პარამეტრებიდან</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google რუკა</translation>
 <translation id="7419668828140929293">მიმდინარეობს „<ph name="FILENAME" />“-ის აღდგენა</translation>
 <translation id="7435577899926900307">US Dvorak</translation>
+<translation id="7436921188514130341">სამწუხაროდ, გადარქმევა ვერ მოხერხდა შეცდომის გამო.</translation>
 <translation id="7458955835361612701">ბოლოდროინდელი სურათები არ არის</translation>
 <translation id="7469894403370665791">ამ ქსელთან ავტომატური დაკავშირება</translation>
 <translation id="7486315294984620427">Parallels Desktop-ში ფაილის ჩავლებით გადასატანად ის უნდა დააკოპიროთ Windows ფაილებში.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">თაროზე ჩამაგრება</translation>
 <translation id="7553492409867692754">მიეცით Linux აპებს საქაღალდეში „<ph name="FOLDER_NAME" />“ არსებულ ფაილებზე წვდომის ნებართვა</translation>
 <translation id="7555339735447658365">ამჟამად ხაზგარეშე რეჟიმში ხართ. ფაილების სინქრონიზაცია გაგრძელდება, როცა ინტერნეტს დაუკავშირდებით</translation>
+<translation id="7589461650300748890">ფრთხილად!</translation>
 <translation id="7589661784326793847">დაელოდეთ ერთი წამი</translation>
 <translation id="7600126690270271294">სერბული</translation>
 <translation id="7603724359189955920">ბადეები</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ტბაიტი</translation>
 <translation id="7831491651892296503">შეცდომა ქსელის კონფიგურაციისას</translation>
+<translation id="7839051173341654115">კალენდარი/სარეზერვო მედია</translation>
 <translation id="7839804798877833423">ამ ფაილების შერჩევას გამოყენებული იქნება დაახლოებით <ph name="FILE_SIZE" /> მობილური მონაცემებისა.</translation>
 <translation id="7846076177841592234">შერჩევის გაუქმება</translation>
 <translation id="7857117644404132472">გამონაკლისის დამატება</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">პოლონური</translation>
 <translation id="7874321682039004450">ფილიპინური</translation>
 <translation id="78946041517601018">საზიარო Drive-ები</translation>
+<translation id="7897900149154324287">მომავალში აუცილებლად გათიშეთ პორტატიული მოწყობილობა ფაილების პროგრამიდან, სანამ გამოაერთებთ მას. წინააღმდეგ შემთხვევაში, შესაძლოა, დაკარგოთ მონაცემები.</translation>
 <translation id="7901567919203965902">US Workman, საერთაშორისო</translation>
 <translation id="7903984238293908205">კატაკანა</translation>
+<translation id="7908378463497120834">უკაცრავად, მინიმუმ ერთი დანაყოფი გარე საცავის მოწყობილობაზე ვერ მიმაგრდა.</translation>
 <translation id="7908793776359722643">დანაყოფის დაფორმატება წაშლის მასში შენახულ ყველა მონაცემს. ამ მოქმედებას ვერ გააუქმებთ.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">„ჩემს Drive“-ში არსებული თქვენი ფაილების თქვენს Chromebook-თან სინქრონიზაცია ავტომატურად შესრულდება, რომ მათზე წვდომა ინტერნეტთან კავშირის გარეშე შეძლოთ.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">ამ ერთეულების აღსადგენად ჩავლებით გადაიტანეთ ისინი ახალ საქაღალდეში. ზოგიერთი ამ ერთეულის თავდაპირველი საქაღალდეები წაიშალა.</translation>
 <translation id="8874184842967597500">არ არის დაკავშირებული</translation>
 <translation id="8876368061475701452">რიგშია</translation>
+<translation id="8893928184421379330">ვწუხვართ, მოწყობილობა <ph name="DEVICE_LABEL" />-ის ამოცნობა ვერ მოხერხდა.</translation>
 <translation id="8902208737522818687">აშშ საერთაშორისო (PC)</translation>
 <translation id="8903931173357132290">კურსდამთავრებული</translation>
 <translation id="8912078710089354287">ძაღლი, რომელიც კუდს აქიცინებს</translation>

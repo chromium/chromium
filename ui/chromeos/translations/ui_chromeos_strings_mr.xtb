@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">स्वयंचलित नाव सर्व्हर</translation>
 <translation id="1210831758834677569">लाओ</translation>
 <translation id="1221555006497674479">कमी स्टोरेज, तुमच्या <ph name="TOTAL_SPACE" /> Shared Drive च्या स्टोरेजपैकी <ph name="REMAINING_PERCENTAGE" />% शिल्लक.</translation>
+<translation id="1239594683407221485">Files अ‍ॅप मधील डिव्हाइसचा आशय एक्सप्लोर करा.</translation>
 <translation id="1243314992276662751">अपलोड करा</translation>
 <translation id="1249250836236328755">शैली</translation>
 <translation id="1254593899333212300">थेट इंटरनेट कनेक्शन</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">हटवू शकत नाही. आयटम वापरात आहे.</translation>
 <translation id="1307931752636661898">Linux फाइल पाहू शकत नाही</translation>
 <translation id="1313405956111467313">ऑटोमॅटिक प्रॉक्सी कॉन्फिगरेशन</translation>
+<translation id="1340527397989195812">Files अ‍ॅप वापरून डिव्हाइसवरील मीडियाचा बॅकअप घ्या.</translation>
 <translation id="134645005685694099">फाइल सिंक करणे सुरू ठेवण्यासाठी तुमच्या डिव्हाइसमध्ये पुरेशी स्टोरेज जागा नाही. नवीन फाइल यापुढे आपोआप सिंक केल्या जाणार नाहीत.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">फाइल किंवा डिरेक्टरी वापरण्यायोग्य नाही.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">वापरकर्ता सर्टिफिकेट नाही</translation>
 <translation id="1403008701842173542">कुठेही</translation>
 <translation id="1404323374378969387">नॉर्वेजियन</translation>
+<translation id="1408504635543854729">Files ॲपमध्ये डिव्हाइसचा आशय एक्सप्लोर करा. ॲडमिनिस्ट्रेटरने आशय प्रतिबंधित केला आहे आणि त्यात बदल केला जाऊ शकत नाही.</translation>
 <translation id="1412476183660741812">स्वाक्षरी केलेले वेब बंडल</translation>
 <translation id="1433628812591023318">Parallels Desktop मध्ये फाइल ड्रॉप करण्यासाठी, Windows च्या फाइलमध्ये फाइल हलवणे आवश्यक आहे.</translation>
 <translation id="1435838927755162558">Parallels Desktop सोबत फोल्डर शेअर करा</translation>
 <translation id="1439919885608649279">हातात फुले असलेली व्यक्ती</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> बाहेर काढा</translation>
+<translation id="1464781208867302907">डिव्हाइस प्राधान्यांसाठी, सेटिंग्ज वर जा.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> फाइल कॉपी करता आल्या नाहीत, कारण त्या एन्क्रिप्ट केलेल्या आहेत.</translation>
 <translation id="1471718551822868769">स्लोव्हाक</translation>
 <translation id="1482884275703521657">फिनिश</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">ड्राइव्ह मध्ये व्यवस्थापित करा</translation>
 <translation id="2004942826429452291">फाइल क्लाउडमध्ये आणि या Chromebook वर स्टोअर केल्या जातील.</translation>
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
+<translation id="2018352199541442911">सॉरी, तुमचे बाह्य स्टोरेज डीव्हाइस आत्ता सपोर्ट करत नाही.</translation>
 <translation id="2025955442973426285">टिग्रीन्या</translation>
 <translation id="2029385776150020336">यूएस विस्तारित</translation>
 <translation id="2037845485764049925">रशियन</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">तामागोची</translation>
 <translation id="2468470447085858632">फाइल सिंक करून तुमच्या Google Drive फाइल ऑफलाइन अ‍ॅक्सेस करा</translation>
 <translation id="2470939964922472929">बऱ्याच वेळा चुकीचा पिन एंटर केला होता. नवीन पिन सेट करण्यासाठी, तुमच्या वाहकाद्वारे पुरवलेली आठ अंकी पिन असलेली अनब्लॉक करण्याची की (PUK) एंटर करा.</translation>
+<translation id="249113932447298600">क्षमस्व, <ph name="DEVICE_LABEL" /> डिव्हाइसला आता सपोर्ट नाही.</translation>
 <translation id="2500392669976258912">गुजराती फोनेटिक</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">युक्रेनियन</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> झिप करत आहे...</translation>
 <translation id="3335337277364016868">रेकॉर्ड केलेले वर्ष</translation>
+<translation id="3348038390189153836">काढण्यायोग्य डिव्हाइस आढळले</translation>
 <translation id="3353984535370177728">अपलोड करण्यासाठी एक फोल्डर निवडा</translation>
 <translation id="3356580349448036450">पूर्ण</translation>
 <translation id="3358452157379365236">गिटार</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">मोबाइल प्रोफाइल डाउनलोड करा, <ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">इंग्रजी (यूके)</translation>
 <translation id="3975895378829046965">बंगाली फोनेटिक</translation>
+<translation id="3983764759749072418">Play स्टोअर ॲप्लिकेशनला या डिव्हाइसचा ॲक्सेस आहे.</translation>
 <translation id="3999574733850440202">अलीकडे उघडलेल्या Microsoft फाइल OneDrive वर हलवल्या आहेत</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4017788180641807848">वर्कमॅन कीबोर्डसह इंग्रजी (यूएस)</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">या फाइल ॲक्सेस करण्‍यासाठी तुम्ही ऑनलाइन असणे आवश्यक आहे.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" नावाचे फोल्डर आधीच अस्तित्वात आहे. कृपया वेगळे नाव निवडा.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> साठी एक्सेप्शन काढा</translation>
+<translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4261901459838235729">Google प्रेझेंटेशन</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> फिल्टर सुरू आहे.</translation>
 <translation id="4290535918735525311">Linux सह एक फोल्डर शेअर केला</translation>
@@ -555,6 +564,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5275973617553375938">Google ड्राइव्ह वरून पुनर्प्राप्त केलेल्‍या फाइल</translation>
 <translation id="5278111733643988471">हा आयटम रिस्टोअर करण्यासाठी, तो ट्रॅशच्या बाहेरील नवीन फोल्डरमध्ये ड्रॅग करा. या आयटमसाठीचे मूळ फोल्डर "<ph name="PARENT_FOLDER_NAME" />" हटवले गेले आहे.</translation>
 <translation id="5288441970121584418">बर्गर</translation>
+<translation id="529175790091471945">हे डिव्हाइस स्वरूपित करा</translation>
 <translation id="5293615890992542006">ही फाइल हलवणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे</translation>
 <translation id="5305688511332277257">काहीही इंस्टॉल केले नाही</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
@@ -570,6 +580,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5411472733320185105">या होस्ट आणि डोमेनसाठी प्रॉक्सी सेटिंग्ज वापरू नका:</translation>
 <translation id="541890217011173530">इंग्रजी आधारित कीबोर्डसह सोरानी कुर्दिश</translation>
 <translation id="5422221874247253874">ॲक्सेस पॉइंट</translation>
+<translation id="5422781158178868512">सॉरी, तुमचे बाह्य स्टोरेज डिव्हाइस ओळखता आले नाही.</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> साठी कोणतेही परिणाम नाहीत.</translation>
 <translation id="5447680084201416734">पुरेसे स्टोरेज नाही.</translation>
 <translation id="5449551289610225147">चुकीचा पासवर्ड</translation>
@@ -617,10 +628,12 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> आयटम निवडले</translation>
 <translation id="5763377084591234761">जर्मन (स्वित्झर्लंड)</translation>
 <translation id="5769519078756170258">वगळण्यासाठी होस्ट किंवा डोमेन</translation>
+<translation id="5774295353725270860">फायलीचा ॲप्लिकेशन उघडा</translation>
 <translation id="5775750595919327203">उर्दू</translation>
 <translation id="5776325638577448643">मिटवा आणि फॉरमॅट करा</translation>
 <translation id="57838592816432529">म्यूट करा</translation>
 <translation id="5788127256798019331">Play फाइल</translation>
+<translation id="5788367137662787332">क्षमस्व, <ph name="DEVICE_LABEL" /> डिव्हाइसवरील कमीत कमी एक विभाग बसविला जाऊ शकत नाही.</translation>
 <translation id="5804245609861364054">कन्नड लिप्यंतरण</translation>
 <translation id="5814126672212206791">कनेक्शन प्रकार</translation>
 <translation id="5817397429773072584">पारंपारिक चीनी</translation>
@@ -813,9 +826,11 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7224162581405244205">आइसलँडिक</translation>
 <translation id="7229570126336867161">EVDO आवश्यक आहे</translation>
 <translation id="7230898482850090046">तुमच्या अ‍ॅडमिनिस्ट्रेटरने तुम्हाला "सिम लॉक करा" सेटिंग बंद करण्याची विनंती केली आहे</translation>
+<translation id="7232750842195536390">नाव बदलण्यात अयशस्वी</translation>
 <translation id="7238097264433196391">ड्राइव्हचे नाव</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, तपशील</translation>
 <translation id="7246947237293279874">FTP प्रॉक्सी</translation>
+<translation id="725109152065019550">क्षमस्व, तुमच्या ॲडमिनिस्ट्रेटरने तुमच्या खात्यावरील बाह्य स्टोरेज अक्षम केले आहे.</translation>
 <translation id="7256405249507348194">अपरिचित एरर: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवा</translation>
 <translation id="7291818353625820805">की रिपीट व्हाव्यात असे वाटते का? कीबोर्ड सेटिंग्ज मध्ये अ‍ॅक्सेंट मार्क बंद करा</translation>
@@ -838,6 +853,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7417705661718309329">Google नकाशा</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" रिस्टोअर करत आहे</translation>
 <translation id="7435577899926900307">यूएस Dvorak</translation>
+<translation id="7436921188514130341">ओहो! नाव बदलताना एक एरर आली होती.</translation>
 <translation id="7458955835361612701">अलीकडील कोणत्याही इमेज नाहीत</translation>
 <translation id="7469894403370665791">या नेटवर्कशी स्वयंचलितपणे कनेक्ट व्हा</translation>
 <translation id="7486315294984620427">Parallels Desktop मध्ये फाइल ड्रॉप करण्यासाठी, Windows च्या फाइलमध्ये फाइल कॉपी करणे आवश्यक आहे.</translation>
@@ -853,6 +869,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7551643184018910560">शेल्फवर पिन करा</translation>
 <translation id="7553492409867692754">Linux अ‍ॅप्सना <ph name="FOLDER_NAME" /> फोल्डरमधील फाइल ॲक्सेस करण्याची परवानगी द्या</translation>
 <translation id="7555339735447658365">तुम्ही सध्या ऑफलाइन आहात. तुम्ही इंटरनेटशी कनेक्ट केल्यावर फाइल सिंक करणे पुन्हा सुरू होईल</translation>
+<translation id="7589461650300748890">ओहो, तेथेच. काळजी घ्या.</translation>
 <translation id="7589661784326793847">फक्त एक सेकंद प्रतीक्षा करा</translation>
 <translation id="7600126690270271294">सर्बियन</translation>
 <translation id="7603724359189955920">ग्रिड</translation>
@@ -898,6 +915,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">नेटवर्क कॉन्फिगर करताना एरर आली</translation>
+<translation id="7839051173341654115">पहा/बॅकअप घ्‍या मीडिया</translation>
 <translation id="7839804798877833423">या फाइल प्राप्त करताना अंदाजे <ph name="FILE_SIZE" /> मोबाइल डेटा वापरला जाईल.</translation>
 <translation id="7846076177841592234">निवड रद्द करा</translation>
 <translation id="7857117644404132472">एक्सेप्शन जोडा</translation>
@@ -905,8 +923,10 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7868774406711971383">पोलिश</translation>
 <translation id="7874321682039004450">फिलिपिनो</translation>
 <translation id="78946041517601018">शेअर केलेली ड्राइव्ह</translation>
+<translation id="7897900149154324287">भविष्यात, तुम्ही फाइल ॲप मधील तुमचा काढण्यायोग्य डिव्हाइस अनप्लग करण्यापूर्वी तो निष्कासित करण्याचे सुनिश्चित करा. अन्यथा, तुम्ही डेटा गमावू शकता.</translation>
 <translation id="7901567919203965902">यूएस Workman international</translation>
 <translation id="7903984238293908205">कॅटाकाना</translation>
+<translation id="7908378463497120834">सॉरी, तुमच्या बाह्य डिव्हाइस स्टोरेजमधील कमीत कमी एक विभाग बसविला जाऊ शकत नाही.</translation>
 <translation id="7908793776359722643">पार्टिशन फॉरमॅट केल्याने त्यावर स्टोअर केलेला सर्व डेटा मिटवला जाईल. ही कृती पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">तुमच्या माझे ड्राइव्ह मधील फाइल या तुमच्या Chromebook मध्ये आपोआप सिंक होतील, जेणेकरून तुम्ही इंटरनेट कनेक्शनशिवाय त्या अ‍ॅक्सेस करू शकता.</translation>
@@ -1040,6 +1060,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8873014196523807561">हे आयटम रिस्टोअर करण्यासाठी, ते नवीन फोल्डरमध्ये ड्रॅग करा. यापैकी काही आयटमची मूळ फोल्डर ही हटवली गेली आहेत.</translation>
 <translation id="8874184842967597500">कनेक्ट नाही</translation>
 <translation id="8876368061475701452">क्यूमध्ये आहे</translation>
+<translation id="8893928184421379330">क्षमस्व, <ph name="DEVICE_LABEL" /> डिव्हाइस ओळखले जाऊ शकले नाही.</translation>
 <translation id="8902208737522818687">युएस international (PC)</translation>
 <translation id="8903931173357132290">पदवीधर</translation>
 <translation id="8912078710089354287">शेपुट हलवत असलेला कुत्रा</translation>

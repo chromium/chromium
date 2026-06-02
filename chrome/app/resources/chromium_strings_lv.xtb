@@ -33,6 +33,7 @@
 <translation id="132092532143527429">Izmēģināt, izmantojot Gemini pārlūkā Chromium</translation>
 <translation id="1324107359134968521">Pārlūkam Chromium ir nepieciešama Bluetooth piekļuve, lai atrastu Bluetooth ierīces. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Valodas noteikšana</translation>
+<translation id="1330742950061766891">Izmantojiet Chromium ieteicamos pārlūka iestatījumus</translation>
 <translation id="1342274909142618978">Dzēst arī datus no pārlūka Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Piesprausts! Varat atkal piekļūt funkcijai Attēlu meklēšana, izmantojot jauno pogu rīkjoslā.</translation>
 <translation id="1356661055722410047">Jaunums! Varat tulkot gan ekrānā redzamo tekstu, gan attēlus.</translation>
@@ -370,6 +371,7 @@
 <translation id="5187123684706427865">Chromium kontam nepieciešama atkārtota autentifikācija</translation>
 <translation id="5231355151045086930">Izrakstīšanās no Chromium</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
+<translation id="5249261924633168472">Atvērt saiti inko&amp;gnito režīma logā</translation>
 <translation id="5254739261293693943">Uzdot jautājumus par šo videoklipu</translation>
 <translation id="5276305953263010518">Iegūstiet lietotni Chromium, lai saglabātu paroles, atrodoties ceļā</translation>
 <translation id="5277894862589591112">Lai ieviestu veiktās izmaiņas, atkārtoti palaidiet pārlūku Chromium.</translation>

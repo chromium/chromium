@@ -33,6 +33,7 @@
 <translation id="132092532143527429">Prova con Gemini in Chromium</translation>
 <translation id="1324107359134968521">Chromium richiede l'accesso al Bluetooth per individuare i dispositivi Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Rileva lingua</translation>
+<translation id="1330742950061766891">Utilizza le impostazioni del browser consigliate di Chromium</translation>
 <translation id="1342274909142618978">Elimina i dati anche da Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Riquadro fissato. Puoi accedere nuovamente alla ricerca immagini dal nuovo pulsante sulla barra degli strumenti</translation>
 <translation id="1356661055722410047">Novità. Puoi tradurre sia testo che immagini sullo schermo</translation>
@@ -370,6 +371,7 @@
 <translation id="5187123684706427865">L'account Chromium richiede la ri-autenticazione</translation>
 <translation id="5231355151045086930">Uscita da Chromium</translation>
 <translation id="5234764350956374838">Ignora</translation>
+<translation id="5249261924633168472">Apri link in una finestra Inco&amp;gnito di Chromium</translation>
 <translation id="5254739261293693943">Fai domande sul video</translation>
 <translation id="5276305953263010518">Scarica l'app Chromium per salvare le password ovunque ti trovi</translation>
 <translation id="5277894862589591112">Riavvia Chromium per applicare le modifiche</translation>

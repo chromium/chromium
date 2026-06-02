@@ -66,6 +66,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1640672724030957280">Téléchargement en cours…</translation>
 <translation id="1651617469580841801">Lorsque vous utilisez Google Lens, le titre, l'URL et le contenu de la page, y compris les PDF, sont envoyés à Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">À propos de ChromeOS Flex</translation>
+<translation id="1665867022636014702">Utilisez les paramètres du navigateur recommandés par Google</translation>
 <translation id="1674870198290878346">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chrome</translation>
 <translation id="1682634494516646069">Google Chrome ne peut pas lire et écrire dans son répertoire de données : 
 
@@ -241,6 +242,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="345171907106878721">Ajouter un utilisateur à Chrome</translation>
 <translation id="3453763134178591239">Conditions d'utilisation de Chrome OS</translation>
 <translation id="3503306920980160878">Chrome a besoin d'accéder à votre position pour la partager avec ce site</translation>
+<translation id="3539955434060988644">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chrome</translation>
 <translation id="3576528680708590453">Votre administrateur système a configuré Google Chrome pour que <ph name="TARGET_URL_HOSTNAME" /> s'ouvre dans un autre navigateur.</translation>
 <translation id="3582972582564653026">Synchroniser et personnaliser Chrome sur vos appareils</translation>
 <translation id="3583751698304738917">Vous êtes déjà connecté en tant que <ph name="USER_EMAIL_ADDRESS" /> dans un autre profil Chrome</translation>

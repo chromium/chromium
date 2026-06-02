@@ -678,6 +678,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, kinnitatud pilt-pildis vaheleht</translation>
 <translation id="3950820424414687140">Logige sisse</translation>
 <translation id="395377504920307820">Kasuta ilma kontota</translation>
+<translation id="3955353672249727801">Lehed lisati lugemisloendisse.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome laadib teie lehe, kui see on valmis}other{Chrome laadib teie lehed, kui need on valmis}}</translation>
 <translation id="3969142555815019568">Chrome ei saa teie paroole kontrollida</translation>
 <translation id="3969863827134279083">Liiguta üles</translation>

@@ -33,6 +33,7 @@
 <translation id="132092532143527429">Wypróbuj z Gemini w Chromium</translation>
 <translation id="1324107359134968521">Aby można było przeglądać urządzenia Bluetooth, Chromium musi mieć dostęp do Bluetootha. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Wykryj język</translation>
+<translation id="1330742950061766891">Użyj zalecanych ustawień przeglądarki Chromium</translation>
 <translation id="1342274909142618978">Usuń też dane z Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Przypięto. Możesz ponownie uzyskać dostęp do wyszukiwania obrazów za pomocą nowego przycisku na pasku narzędzi</translation>
 <translation id="1356661055722410047">Nowość! Możesz tłumaczyć tekst i obrazy na ekranie</translation>
@@ -368,6 +369,7 @@
 <translation id="5187123684706427865">Konto Chromium wymaga ponownego uwierzytelnienia</translation>
 <translation id="5231355151045086930">Wylogowanie z Chromium</translation>
 <translation id="5234764350956374838">Zamknij</translation>
+<translation id="5249261924633168472">Otwórz link w oknie inco&amp;gnito Chromium</translation>
 <translation id="5254739261293693943">Zapytaj o ten film</translation>
 <translation id="5276305953263010518">Pobierz aplikację Chromium, aby zapisywać hasła, gdziekolwiek jesteś</translation>
 <translation id="5277894862589591112">Aby zastosować zmiany, uruchom ponownie Chromium</translation>

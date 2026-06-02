@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ଟାବ ଗ୍ରୁପ କରାଯାଇଛି</translation>
 <translation id="1844381456014878100">ନିଷ୍କ୍ରିୟ ରହିବାର 7 ଦିନ ପରେ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{ପଢ଼ିବା ତାଲିକାରେ ଟାବ ଯୋଗ କରନ୍ତୁ}other{ପଢ଼ିବା ତାଲିକାରେ ଟାବଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="1909810060368225529">ନୋଟିସ: ସେୟାର କରାଯାଇଥିବା ଏହି ଟାବ ଗ୍ରୁପରେ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସମସ୍ତଙ୍କୁ ଦେଖାଯିବ। ଆପଣଙ୍କର ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପରେ ସମସ୍ତେ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ଟାବ ପିନ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକ ପିନ କରନ୍ତୁ}}</translation>
 <translation id="1982637982196732906">ନିଷ୍କ୍ରିୟ ବିଭାଗକୁ ମୁଭ କରନ୍ତୁ</translation>

@@ -479,6 +479,7 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
       Bu politika etkinleştirilirse iyileştirilmiş uluslararası klavye kısayolları etkinleştirilir.
       Bu politika ayarlanmadan bırakılırsa hem yönetilen cihazlar için hem de tüketiciye ait cihazlar için etkin olur.
       Bunun, yönetilen kullanıcıların kullanımdan kaldırılmış eski kısayolları kullanmaya devam edebilmelerini sağlamaya yönelik geçici bir politika olduğunu unutmayın. Bu politika, özelleştirilmiş klavye kısayolları kullanıma sunulduktan sonra kullanımdan kaldırılacaktır.</translation>
+<translation id="1359459742455216057"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> uygulamasının benzersiz tanımlayıcısıdır.</translation>
 <translation id="1361661842732478894">Araç çubuğunda home düğmesini göster</translation>
 <translation id="1363275621236827384">Quirks Server'dan donanım profillerini sorgulamayı etkinleştir</translation>
 <translation id="1363839375295535439">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa sistem yapılandırması desteklediğinde yazdırma hizmetleri için LPAC korumalı alanı etkinleştirilir.
@@ -2264,6 +2265,15 @@ Bu politika, geçici olarak tasarlanmıştır ve 157 sürümünde kaldırılacak
 
       Politika değeri gün olarak belirtilmelidir.</translation>
 <translation id="2466131534462628618">Giriş portalı kimlik doğrulaması, proxy'yi yoksayar</translation>
+<translation id="246680587517417824">https://github.com/WICG/service-worker-auto-preload
+ServiceWorkerAutoPreload özelliği, ServiceWorker önyükleme sürecini başlattığı sırada ana kaynak için bir ağ isteği gönderir.
+
+Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa
+<ph name="PRODUCT_NAME" />, ServiceWorkerAutoPreload'u etkinleştirir. Gezinme isteği, bazı senaryolarda (ör. ServiceWorker çalışmıyorsa) ServiceWorker başlatılırken otomatik olarak gönderilir.
+
+Politika devre dışı bırakılırsa <ph name="PRODUCT_NAME" />, ServiceWorkerAutoPreload'u etkinleştirmez. Gezinme isteği her zaman ServiceWorker başlatıldıktan sonra gönderilir.
+
+Bu politika, özelliği kontrol etmek için geçici bir çözüm olup M154 sürümünde kaldırılacaktır.</translation>
 <translation id="2467181864598429837">Varsayılan tarayıcı davranışı</translation>
 <translation id="2467896267442150508">En fazla bir haftayı kapsayan zaman aralığı. Başlangıç zamanı bitiş zamanından sonra olursa aralık başa döner.</translation>
 <translation id="2475594733565572760">Bu politika, kapsanan tüm üretken yapay zeka özellikleri için varsayılan ayarı tanımlar. Örneğin, bu politika 1 değeri ayarlanırsa, kapsam dahilindeki tüm üretken yapay zeka özelliklerinin varsayılan ayarı 1 olacaktır. Manuel olarak ayarlanmış herhangi bir politika değeri etkilenmez. Bu ayar, Chrome'da kapsam dahilindeki üretken yapay zeka özellikleri için varsayılan değerleri tanımlar. Kapsam dahilindeki özellikler için https://support.google.com/chrome/a?p=generative_ai_settings adresini ziyaret edin.
@@ -4369,6 +4379,7 @@ Bu politika, Devre Dışı değerine ayarlandığında veya ayarlanmadığında 
 <translation id="3778689139323007309">Yerel olarak yüklü CA sertifikaları tarafından imzalanmış başarıyla doğrulanmış sunucu sertifikaları için iptal kontrolleri gerçekleştir</translation>
 <translation id="3780152581321609624">Kerberos SPN'sine standart dışı bağlantı noktasını dahil et</translation>
 <translation id="3785423718413114598">GenAI özelliklerine izin verme</translation>
+<translation id="378626615843371785"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ayarlarını yapılandırın (BETA)</translation>
 <translation id="3788155044604525647">Direct Sockets API, TCP ve UDP kullanarak rastgele uç noktalarla iletişime izin verir.
 Ayrıntılar için lütfen https://github.com/WICG/direct-sockets adresini inceleyin.
 
@@ -4881,6 +4892,7 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 <translation id="4136603825567209889">Kullanıcı tanımlama bilgilerinin raporlanmasını etkinleştir</translation>
 <translation id="4138655880188755661">Zaman Limiti</translation>
 <translation id="4140646780789794190">Teşhis verilerinin PluginVm ile paylaşılmasını devre dışı bırak</translation>
+<translation id="4141430435877011529"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> uygulamasının çoklu bölgesi veya konumu. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> konumu hakkında daha fazla bilgiyi https://docs.cloud.google.com/gemini/enterprise/docs/locations adresinde bulabilirsiniz.</translation>
 <translation id="4144417751555442768">Üretken yapay zeka</translation>
 <translation id="4145383150978634398">Birleşik Masaüstü modunu kullanıcının erişimine aç</translation>
 <translation id="4146319954420095470">(Uyarı: Yakında bu bağımlılık kullanımdan kaldırılacak, lütfen bunun yerine <ph name="GLS_POLICY_NAME" /> Politikası'nı kullanmaya başlayın.) Bu politika <ph name="BLOCK_GEOLOCATION_SETTING" /> olarak ayarlanırsa <ph name="PRODUCT_OS_NAME" /> sistem hizmetleri ve Android uygulamaları konum bilgilerine erişemez. Bu politikayı başka herhangi bir değer olarak ayarlar veya ayarlamadan bırakırsanız Android uygulaması konum bilgisine erişmek istediğinde kullanıcının izni istenir.</translation>
@@ -9046,6 +9058,7 @@ Bu politika Etkin değerine ayarlandığında veriler toplanıp <ph name="GOOGLE
 
 <ph name="PRODUCT_NAME" /> için bu politika yalnızca makinenin <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> kaydı yapıldığında geçerli olur.
 <ph name="PRODUCT_OS_NAME" /> için bu politika her zaman geçerlidir.</translation>
+<translation id="6714333117401088746">Etkinleştirilecek <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> örneğine karşılık gelen <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> projesinin kimliği.</translation>
 <translation id="6720330829631914048">Günün başlangıcından itibaren kaç saat geçtiği (24 saatlik biçimde).</translation>
 <translation id="6720862827454058309">IP adresi alanı eşlemelerini geçersiz kıl</translation>
 <translation id="6721252203593581486">Üçüncü taraf bağlamındaki WebSQL (ör. siteler arası iframe'ler), M97 itibarıyla varsayılan olarak kapalıdır ve M101'de tamamen kaldırılacaktır.
@@ -10386,6 +10399,15 @@ Politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yalnı
 
 Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> yalnızca RFC1918/RFC4193 adreslerinde yayın cihazlarına bağlanır (CastAllowAllIPs özelliği açılmazsa).</translation>
 <translation id="7534199150025803530">Bu politikanın Android Google Drive uygulaması üzerinde hiçbir etkisi yoktur. Google Drive'ın hücresel bağlantılarda kullanılmasını engellemek isterseniz, Android Google Drive uygulamasının yüklenmesine izin vermemeniz gerekir.</translation>
+<translation id="7537404002861344834">Chrome'da Gemini özelliklerinin yanıtlarını iyileştirmek için <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> bağlantı ayarlarını yapılandırır.
+
+Bu politika ayarlanırsa <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, belirtilen proje ve uygulama kimliğiyle ilişkilendirilmiş yönetilen bir hesapla oturum açan kullanıcılar için Chrome'da Gemini yanıtlarını iyileştirmek amacıyla kullanılabilir. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, kişisel hesaplarla oturum açılan profillerde kullanılamaz.
+
+Politika ayarlanmazsa <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, Chrome'da Gemini yanıtlarını iyileştirmek için kullanılamaz.
+
+Bu politikanın, <ph name="GEMINI_SETTINGS_POLICY_NAME" /> politikası tarafından kontrol edilebilen genel <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> entegrasyonunu kontrol etmediğini unutmayın.
+
+Bu politikanın tüm ayarları, <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> Konsolu'ndaki <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> projesinin yapılandırmasıyla eşleşmelidir. Uyuşmazlık olması durumunda <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> kullanılırken beklenmeyen davranışlar ortaya çıkar.</translation>
 <translation id="7538583957913002726">Bu politika varsayılan olarak Etkin değerine ayarlıdır. CPU model adı, mimarisi ve maksimum saat hızını (M96 ve sonraki sürümlerde ayrıca CPU kullanımı ve sıcaklığını) bildirecek kayıtlı cihazları kontrol eder.
 
       Politika, Devre Dışı değerine ayarlanırsa kayıtlı cihazlar CPU hakkında bilgi vermez.

@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">正在下载...</translation>
 <translation id="1651617469580841801">当您使用 Google 智能镜头时，系统会将网页的标题、网址和内容（包括 PDF 文件）发送给 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex 简介</translation>
+<translation id="1665867022636014702">使用 Google 推荐的浏览器设置</translation>
 <translation id="1674870198290878346">在 Chrome 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="1682634494516646069">Google Chrome 无法对其数据目录 <ph name="USER_DATA_DIRECTORY" /> 执行读写操作</translation>
 <translation id="1688214853608504530">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给组织的搜索、AI 和代理工具，以便获取建议。</translation>
@@ -238,6 +239,7 @@
 <translation id="345171907106878721">将您自己添加到Chrome</translation>
 <translation id="3453763134178591239">Chrome 操作系统条款</translation>
 <translation id="3503306920980160878">Chrome 需要获得位置权限，才能将您的位置信息共享给此网站</translation>
+<translation id="3539955434060988644">在 Chrome 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="3576528680708590453">您的系统管理员已将 Google Chrome 配置为使用备用浏览器访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="3582972582564653026">在所有设备上同步并设置个性化的 Chrome</translation>
 <translation id="3583751698304738917">您已在另一份 Chrome 个人资料中使用 <ph name="USER_EMAIL_ADDRESS" /> 登录</translation>

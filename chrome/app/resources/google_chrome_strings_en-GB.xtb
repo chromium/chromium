@@ -67,6 +67,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1640672724030957280">Downloading ...</translation>
 <translation id="1651617469580841801">When you use Google Lens, the page title, URL and content, including PDFs, are sent to Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">About Chrome OS Flex</translation>
+<translation id="1665867022636014702">Use Google-recommended browser settings</translation>
 <translation id="1674870198290878346">Open Link in Chrome Inco&amp;gnito Window</translation>
 <translation id="1682634494516646069">Google Chrome cannot read and write to its data directory:
 
@@ -242,6 +243,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="345171907106878721">Add yourself to Chrome</translation>
 <translation id="3453763134178591239">Chrome OS terms</translation>
 <translation id="3503306920980160878">Chrome needs access to your location to share your location with this site</translation>
+<translation id="3539955434060988644">Open link in Chrome Inco&amp;gnito window</translation>
 <translation id="3576528680708590453">Your system administrator has configured Google Chrome to open an alternative browser to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sync and personalise Chrome across your devices</translation>
 <translation id="3583751698304738917">You're already signed in as <ph name="USER_EMAIL_ADDRESS" /> in another Chrome profile</translation>

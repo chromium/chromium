@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">Chromium skal have adgang til Bluetooth for at finde 
  Bluetooth-enheder. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Registrer sprog</translation>
+<translation id="1330742950061766891">Brug de anbefalede browserindstillinger i Chromium</translation>
 <translation id="1342274909142618978">Slet også data fra Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Panelet er fastgjort. Du kan tilgå billedsøgning igen via den nye knap på værktøjslinjen</translation>
 <translation id="1356661055722410047">Nyhed! Du kan oversætte både tekst og billeder på din skærm</translation>
@@ -371,6 +372,7 @@
 <translation id="5187123684706427865">Chromium-kontoen kræver fornyet godkendelse</translation>
 <translation id="5231355151045086930">Log ud af Chromium</translation>
 <translation id="5234764350956374838">Luk</translation>
+<translation id="5249261924633168472">Åbn linket i et inkognitovindue i Chromium</translation>
 <translation id="5254739261293693943">Stil spørgsmål om denne video</translation>
 <translation id="5276305953263010518">Hent Chromium-appen for at gemme adgangskoder på farten</translation>
 <translation id="5277894862589591112">Åbn Chromium igen for at anvende ændringerne</translation>

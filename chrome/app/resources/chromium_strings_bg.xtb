@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">Chromium се нуждае от достъп до Bluetooth, за да преглежда
 устройствата с Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Разпознаване на езика</translation>
+<translation id="1330742950061766891">Използване на препоръчаните от Chromium настройки на браузъра</translation>
 <translation id="1342274909142618978">Изтриване на данните и от Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Успешно фиксиране. Можете да осъществявате достъп до търсенето на изображения чрез новия бутон в лентата с инструменти</translation>
 <translation id="1356661055722410047">Ново! Можете да превеждате текст и изображения на екрана си</translation>
@@ -369,6 +370,7 @@
 <translation id="5187123684706427865">Изисква се повторно удостоверяване за профила в Chromium</translation>
 <translation id="5231355151045086930">Изход от Chromium</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
+<translation id="5249261924633168472">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chromium</translation>
 <translation id="5254739261293693943">Попитайте за този видеоклип</translation>
 <translation id="5276305953263010518">Изтеглете приложението Chromium, за да запазвате пароли в движение</translation>
 <translation id="5277894862589591112">За да приложите промените си, рестартирайте Chromium</translation>

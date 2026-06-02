@@ -67,6 +67,7 @@
 <translation id="1640672724030957280">Ներբեռնում…</translation>
 <translation id="1651617469580841801">Երբ օգտագործում եք Google Տեսապակին, էջի վերնագիրը, URL-ը և բովանդակությունը՝ ներառյալ PDF-ները, ուղարկվում են Google-ին։ <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex-ի մասին</translation>
+<translation id="1665867022636014702">Օգտագործել դիտարկիչի՝ Google-ի առաջարկած կարգավորումները</translation>
 <translation id="1674870198290878346">Բացել հղումը Chrome-ի ինկ&amp;ոգնիտո պատուհանում</translation>
 <translation id="1682634494516646069">Google Chrome-ը չի կարող կարդալ և գրել <ph name="USER_DATA_DIRECTORY" /> տվյալների գրացուցակում:</translation>
 <translation id="1688214853608504530">Երբ դուք տեքստ եք մուտքագրում հասցեագոտում կամ որոնման դաշտում, Chrome-ը ձեր հարցումն ուղարկում է ձեր կազմակերպության որոնողական համակարգին, ԱԲ-ին և ագենտային գործիքներին՝ առաջարկներ ստանալու համար։</translation>
@@ -240,6 +241,7 @@
 <translation id="345171907106878721">Ավելացնել Chrome-ի օգտատիրոջ</translation>
 <translation id="3453763134178591239">ChromeOS-ի օգտագործման պայմաններ</translation>
 <translation id="3503306920980160878">Chrome-ին այս կայքի համար անհրաժեշտ է ձեզ տեղորոշելու թույլտվություն</translation>
+<translation id="3539955434060988644">Բացել հղումը Chrome-ի ինկո&amp;գնիտո պատուհանում</translation>
 <translation id="3576528680708590453">Ձեր համակարգի ադմինիստրատորն այնպես է կարգավորել Google Chrome-ը, որ <ph name="TARGET_URL_HOSTNAME" /> կայքը բացվի մեկ այլ դիտարկիչով:</translation>
 <translation id="3582972582564653026">Համաժամացրեք և անհատականացրեք Chrome-ը ձեր բոլոր սարքերում</translation>
 <translation id="3583751698304738917">Դուք արդեն մուտք եք գործել <ph name="USER_EMAIL_ADDRESS" /> հաշիվ մյուս Chrome պրոֆիլում</translation>

@@ -35,6 +35,7 @@
 <translation id="132092532143527429">Chromium의 Gemini로 사용해 보기</translation>
 <translation id="1324107359134968521">블루투스 기기를 탐색하려면 Chromium에 블루투스 액세스 권한이 필요합니다. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">언어 감지</translation>
+<translation id="1330742950061766891">Chromium 권장 브라우저 설정 사용</translation>
 <translation id="1342274909142618978">Chromium(<ph name="URL" />)에서도 데이터 삭제</translation>
 <translation id="1345251407431278948">고정되었습니다. 툴바의 새 버튼에서 이미지 검색을 다시 이용할 수 있습니다</translation>
 <translation id="1356661055722410047">New! 화면의 텍스트와 이미지를 모두 번역할 수 있습니다.</translation>
@@ -372,6 +373,7 @@
 <translation id="5187123684706427865">Chromium 계정에 재인증이 필요함</translation>
 <translation id="5231355151045086930">Chromium에서 로그아웃</translation>
 <translation id="5234764350956374838">닫기</translation>
+<translation id="5249261924633168472">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="5254739261293693943">이 동영상에 관해 질문하기</translation>
 <translation id="5276305953263010518">이동 중에도 비밀번호를 저장하려면 Chromium 앱을 다운로드하세요</translation>
 <translation id="5277894862589591112">변경사항을 적용하려면 Chromium을 다시 실행하세요.</translation>

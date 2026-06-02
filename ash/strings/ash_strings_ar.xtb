@@ -38,9 +38,11 @@
 <translation id="109647177154844434">‏سيؤدي إلغاء تثبيت نظام Parallels Desktop إلى حذف صورة نظام التشغيل Windows، ويشمل هذا تطبيقاته وإعداداته وبياناته. هل أنت متأكّد من أنّك تريد المتابعة؟</translation>
 <translation id="1104084341931202936">عرض إعدادات تسهيل الاستخدام</translation>
 <translation id="1104621072296271835">تعمل أجهزتك بشكل أفضل وهي مرتبطة معًا</translation>
+<translation id="1107300737351978027">لا يمكن أن يتضمّن رقم التعريف الشخصي أرقامًا متكرّرة</translation>
 <translation id="1111021433905331574">يمكنك تغيير لون الإضاءة الخلفية للوحة المفاتيح ضمن الإعدادات &gt; <ph name="APP_TITLE" />.</translation>
 <translation id="1117719261843403176">إيقاف/تفعيل بيانات الجوّال. <ph name="STATE" />.</translation>
 <translation id="1118738876271697201">تعذَّر على النظام تحديد طراز الجهاز أو رقمه التسلسلي.</translation>
+<translation id="1119447706177454957">خطأ داخلي</translation>
 <translation id="1122849163460178706">بعض الطلبات التي يمكنك تجربتها</translation>
 <translation id="112308213915226829">الإخفاء التلقائي للرف</translation>
 <translation id="1129383337808748948">إعادة تحميل "<ph name="CONTENT_TITLE" />"</translation>
@@ -96,6 +98,7 @@
 <translation id="1247519845643687288">التطبيقات المستخدمة مؤخرًا</translation>
 <translation id="1252999807265626933">جارٍ الشحن من <ph name="POWER_SOURCE" /></translation>
 <translation id="126156426083987769">حدثت مشكلة متعلِّقة بتراخيص الجهاز في الوضع التجريبي</translation>
+<translation id="1264337193001759725">لعرض سجلّات واجهة المستخدم للشبكة، اطّلِع على: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1269405891096105529">الأجهزة الملحقة غير متاحة للاستخدام في وضع الضيف.</translation>
 <translation id="1270290102613614947">تم إيقاف لوحة المفاتيح على الشاشة</translation>
 <translation id="1272079795634619415">إيقاف</translation>
@@ -105,6 +108,7 @@
 <translation id="1276975447697633661">اختَر الملف، ثم اضغط على <ph name="KEY" />.</translation>
 <translation id="1276994519141842946">تعذّر إلغاء تثبيت <ph name="APP_NAME" />.</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1283126956823499975">حدث خطأ أثناء إعداد الجهاز</translation>
 <translation id="1285992161347843613">تحديد الموقع الجغرافي للهاتف</translation>
 <translation id="1287002645302686982">هناك سطح مكتب محفوظ بالاسم <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="1288276784862223576">إعداد ميزة عرض الصور والوسائط الحديثة في هاتفك</translation>
@@ -229,6 +233,7 @@
 <translation id="1604857178818051494">الإيقاف المؤقت للوسائط</translation>
 <translation id="1607312127821884567">عدم إعداد ميزة عرض التطبيقات في هاتفك</translation>
 <translation id="1610778689852195798">"تراجع"</translation>
+<translation id="1611432201750675208">تم قفل جهازك</translation>
 <translation id="1611993646327628135">مُفعَّل</translation>
 <translation id="1612679292338846734">‏عند تفعيل هذه الميزات، قد يتم إرسال الإدخالات النصية ومحتوى المستندات وعنوان URL لصفحة الويب إلى خوادم ذكاء Google الاصطناعي. وتُستخدم هذه المعلومات لإنشاء اقتراحات الكتابة والملخّصات والإجابة عن الأسئلة وتحسين المنتج، وذلك بما يتوافق مع <ph name="LINK_TO_SERVICE_TERMS" />. يُرجى عدم تضمين أي معلومات شخصية أو حسّاسة أو سرية.</translation>
 <translation id="1619879934359211038">‏تعذّر الاتصال بخدمة Google Play. يُرجى التحقّق من اتصال الشبكة ثم إعادة المحاولة. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
@@ -242,6 +247,7 @@
 <translation id="1647986356840967552">الصفحة السابقة</translation>
 <translation id="1651914502370159744">فتح صفحة "السجلّ"</translation>
 <translation id="1668469839109562275">‏شبكة VPN المُدمجة</translation>
+<translation id="1668979692599483141">معرفة المزيد حول الاقتراحات</translation>
 <translation id="1673232940951031776">إنهاء "وضع التركيز". يتبقّى <ph name="REMAINING_TIME" />.</translation>
 <translation id="1675570947608765064">يمكن للآخرين الاطّلاع على التغييرات التي تجريها على هذه المهمة</translation>
 <translation id="1677472565718498478">الوقت المتبقي <ph name="TIME" /></translation>
@@ -355,6 +361,7 @@
 <translation id="2011174342667534258">‏إصدار حزمة تطوير البرامج (SDK):</translation>
 <translation id="2017998995161831444">فتح محتوى "المساعدة" في تطبيق "استكشاف"</translation>
 <translation id="2021864487439853900">انقر لفتح قفل الشبكة.</translation>
+<translation id="2023167225947895179">قد يكون رقم التعريف الشخصي سهل التخمين</translation>
 <translation id="2034971124472263449">الحفظ على أي حال</translation>
 <translation id="2041220428661959602">مستوى البطارية: %<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="204259843076055848">اختصار <ph name="SIX_PACK_KEY_NAME" /> غير مفعَّل حاليًا.</translation>
@@ -1057,6 +1064,7 @@
 <translation id="4099874310852108874">حدث خطأ في الشبكة.</translation>
 <translation id="4101772068965291327">فتح الصفحة الرئيسية</translation>
 <translation id="4102906002417106771">‏إعادة التشغيل لإجراء عملية powerwash</translation>
+<translation id="411052834366185695">يجب أن يتكوّن رقم التعريف الشخصي من رقم واحد على الأقل</translation>
 <translation id="4113030288477039509">يديره المسؤول</translation>
 <translation id="4114315158543974537">‏تفعيل Phone Hub</translation>
 <translation id="4115378294792113321">أرجواني</translation>
@@ -1272,6 +1280,7 @@
 <translation id="4659419629803378708">‏تم تفعيل ChromeVox</translation>
 <translation id="4666911709726371538">المزيد من التطبيقات</translation>
 <translation id="4667099493359681081">جارٍ تنزيل <ph name="FILENAME" /></translation>
+<translation id="4668936527507421457">يجب أن يستخدم رقم التعريف الشخصي أرقامًا فقط</translation>
 <translation id="4672539464599646374">وضع "توفير شحن البطارية" مُفعَّل.</translation>
 <translation id="4673427585974421255">عدم الإيقاف</translation>
 <translation id="4677040906536311086">‏جدول بيانات Google</translation>
@@ -1302,6 +1311,7 @@
 <translation id="4762573482154983647">إخفاء التطبيقات</translation>
 <translation id="4762718786438001384">مساحة القرص على الجهاز منخفضة للغاية</translation>
 <translation id="4763885921995354846">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا لجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن. قد تحتاج إلى إعادة تحميل صفحة الويب أو إعادة تشغيل التطبيق.</translation>
+<translation id="4769359569327438364">يجب أن يتكوّن رقم التعريف الشخصي من 4 أرقام على الأقل</translation>
 <translation id="4774338217796918551">يمكنك العودة غدًا في <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">لا يمكن حتى الآن التأكد من كلمة المرور لحسابك. يُرجى إعادة المحاولة.</translation>
 <translation id="4776917500594043016">كلمة مرور <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1356,6 +1366,7 @@
 <translation id="4925542575807923399">يحتاج مشرف هذا الحساب أن يكون هذا الحساب الأول في تسجيل الدخول إلى جلسة دخول متعدد.</translation>
 <translation id="493076006037866439">تصغير الشاشة</translation>
 <translation id="4932733599132424254">التاريخ</translation>
+<translation id="4934763315031217818">لا يمكن أن يتضمّن رقم التعريف الشخصي أرقامًا متتالية</translation>
 <translation id="4936329710968938986">الجميع: غير مفعّل</translation>
 <translation id="4937170330762390348">من خلال ميزة "إملاء"، يمكنك الكتابة باستخدام صوتك. اضغط على مفتاح ميزة "إملاء" أو اختَر رمز الميكروفون في أسفل الشاشة عندما تكون في حقل نصي. تم ضبط لغة ميزة "إملاء" على <ph name="LANGUAGE" />. سيتم تنزيل ملفات التعرّف على الكلام كي تتمكّن من استخدام ميزة "إملاء" بلا اتصال بالإنترنت. يمكنك في أي وقت تغيير لغة ميزة "إملاء" من خلال الإعدادات &gt; تسهيل الاستخدام.</translation>
 <translation id="4938176435186993759">إخفاء جميع الاقتراحات</translation>
@@ -1435,6 +1446,7 @@
 <translation id="5147567197700016471">تم فتح القفل.</translation>
 <translation id="5150070631291639005">إعدادات الخصوصية</translation>
 <translation id="5155897006997040331">سرعة القراءة</translation>
+<translation id="5158206172605340248">تم إغلاق قائمة علامات التشكيل.</translation>
 <translation id="5161445389876829235">‏<ph name="BEGIN_PARAGRAPH1" />هذه معلومات عامة حول جهازك وطريقة استخدامك له (مثل مستوى البطارية، والنشاط على التطبيقات والنظام، والأخطاء). وسيتم استخدام هذه البيانات في تحسين Android، كما ستساعد بعض المعلومات المجمّعة في تحسين تطبيقات Google والتطبيقات والمنتجات الخاصة بشركائها، مثل مطوّري تطبيقات Android.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />لن يؤثر إيقاف هذه الميزة في قدرة جهازك على إرسال المعلومات المطلوبة للحصول على الخدمات الأساسية، مثل تحديثات النظام والأمان.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />يمكن للمالك التحكّم بهذه الميزة من خلال الانتقال إلى "الإعدادات" &gt; "الإعدادات المتقدّمة" &gt; "إرسال بيانات التشخيص والاستخدام إلى Google تلقائيًا".<ph name="END_PARAGRAPH3" />
@@ -1467,9 +1479,11 @@
 <translation id="5238719049014159442">فتح/إغلاق مشغّل التطبيقات</translation>
 <translation id="5240725217819182328">الوصول سريعًا إلى صفحات أو إجراءات معيّنة ضمن التطبيقات المثبَّتة</translation>
 <translation id="5243355658487390559">تاريخ البحث</translation>
+<translation id="5243477050423867768">يجب أن يتكوّن رقم التعريف الشخصي من 8 أرقام على الأقل وألا يتضمّن تسلسلات متكرّرة أو منظّمة</translation>
 <translation id="5243522832766285132">يُرجى إعادة المحاولة بعد بضع لحظات</translation>
 <translation id="5245201184978705914">يتعذّر إنشاء النص المحوَّل إلى صوت.</translation>
 <translation id="5251174953851719648">إعادة تحميل المحتوى</translation>
+<translation id="5252653240322147470">يجب أن يكون رقم التعريف الشخصي أقل من <ph name="MAXIMUM" /> من الأرقام</translation>
 <translation id="5253783950165989294">تم الربط بجهاز يحمل الاسم <ph name="DEVICE_NAME" />، مستوى شحن البطارية <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="52550593576409946">‏تعذر إطلاق تطبيق Kiosk.</translation>
 <translation id="5256939106029293271">اختبار الميكروفون</translation>
@@ -1508,6 +1522,7 @@
 <translation id="5329548388331921293">جارٍ الاتصال…</translation>
 <translation id="5331975486040154427">‏جهاز USB-C (المنفذ الخلفي الأيسر)</translation>
 <translation id="533282197239610265">عرض أجهزة البث</translation>
+<translation id="5342091991439452114">يجب أن يتكوَّن رقم التعريف الشخصي من <ph name="MINIMUM" /> من الأرقام على الأقل</translation>
 <translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليمنى)</translation>
 <translation id="5352250171825660495">المظهر الداكن مُفعَّل.</translation>
 <translation id="5354804064646502504">قد يتم تحصيل رسوم منك مقابل ذلك.
@@ -1736,6 +1751,7 @@
 <translation id="602001110135236999">التمرير لليسار</translation>
 <translation id="6020147141355393792">إعداد ميزة عرض الإشعارات والتطبيقات في هاتفك</translation>
 <translation id="6022924867608035986">محو نص مربع البحث</translation>
+<translation id="6023643151125006053">تم إقفال هذا الجهاز (الرقم التسلسلي: <ph name="SERIAL_NUMBER" />) من خلال مشرف <ph name="SAML_DOMAIN" />.</translation>
 <translation id="602472752137106327">عرض النوافذ المفتوحة في جميع أسطح المكتب، تم النقر على زر الاختيار.</translation>
 <translation id="6024768346262692989">‏يتعذَّر تنزيل ملفات التحكّم في ميزة FaceGaze</translation>
 <translation id="6025324406281560198">حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
@@ -1743,6 +1759,7 @@
 <translation id="6030495522958826102">تم نقل القائمة إلى أسفل يمين الشاشة.</translation>
 <translation id="6030608926359652298">تخصيص لوحة اللمس</translation>
 <translation id="6032620807120418574">انقر على أي مكان لالتقاط صورة في وضع ملء الشاشة.</translation>
+<translation id="603539183851330738">‏زر التراجع عن التصحيح التلقائي. يمكنك التراجع عن تصحيح كلمة <ph name="TYPED_WORD" />.  اضغط على مفتاح enter للتراجع عن التصحيح التلقائي، أو على مفتاح escape للتجاهل.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
 <translation id="6043212731627905357">لا تتوافق هذه الشاشة مع <ph name="DEVICE_TYPE" /> (هذه الشاشة غير مدعومة).</translation>
@@ -1878,6 +1895,7 @@
 <translation id="6418511932144861495">تثبيت تحديث مهم</translation>
 <translation id="641867537956679916">لقد سجّل المشرف الدخول إلى جهازك للنظر في مشكلة. يمكنك مواصلة استخدام الجهاز بعد أن يُعيد المشرف إليك إمكانية التحكّم فيه.</translation>
 <translation id="6424520630891723617">حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="642469772702851743">أقفل المالك هذا الجهاز (الرقم التسلسلي: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="642644398083277086">محو جميع الإشعارات</translation>
 <translation id="6426905245930183644">جارٍ الإنشاء...</translation>
 <translation id="6430225033895752525">عرض إعدادات "وضع التركيز"</translation>
@@ -1903,6 +1921,7 @@
 <translation id="6485086611007560630">معلومات الطقس (غير متاحة)</translation>
 <translation id="6490471652906364588">‏جهاز USB-C (المنفذ الأيمن)</translation>
 <translation id="6491376743066338510">تعذّر التفويض</translation>
+<translation id="6494483173119160146">حدث خطأ غير قابل للإصلاح في الجهاز. يُرجى إعادة ضبط جهازك (سيؤدي ذلك إلى محو كل بيانات المستخدم) ثم إعادة المحاولة.</translation>
 <translation id="649452524636452238">رقم التعريف الشخصي للبطاقة الذكية</translation>
 <translation id="6495322433318104734">جارٍ عرض شاشة الاستراحة. اضغط على أي مفتاح للخروج منها.</translation>
 <translation id="6495400115277918834">‏تم تفعيل ميزة "نافذة ضمن النافذة". يمكنك الضغط على المفاتيح Alt+‏Shift‏+V للتركيز.</translation>
@@ -1926,6 +1945,7 @@
 <translation id="655633303491376835"><ph name="APP_NAME" />
 مثبَّت حديثًا</translation>
 <translation id="6559158502366839560">المزيد من التطبيقات والألعاب</translation>
+<translation id="6560151649238390891">تم إدراج الاقتراح.</translation>
 <translation id="6562447480759345110">إنهاء "وضع التركيز"</translation>
 <translation id="6565007273808762236">‏تعذُّر الاتصال من خلال شريحة eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{تحديث الجهاز خلال ساعة واحدة}zero{تحديث الجهاز خلال # ساعة}two{تحديث الجهاز خلال ساعتين}few{تحديث الجهاز خلال # ساعات}many{تحديث الجهاز خلال # ساعة}other{تحديث الجهاز خلال # ساعة}}</translation>
@@ -1947,6 +1967,7 @@
 <translation id="6612889377159412215">مهمة فرعية</translation>
 <translation id="6613765291890844037">مساحة التخزين المستخدَمة: <ph name="STORAGE_IN_USE_SIZE" /> | إجمالي مساحة التخزين: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">تم تفعيل شاشة الخصوصية.</translation>
+<translation id="6622212269189717101">يجب أن يتكوّن رقم التعريف الشخصي من 6 أرقام على الأقل وألا يتضمّن تسلسلات متكرّرة أو منظّمة</translation>
 <translation id="6622679827379792051">إعداد ميزة عرض التطبيقات في هاتفك</translation>
 <translation id="662279009180869175">استخدِم السهمين المتّجهَين لليسار ولليمين لتغيير حجم الشاشة المنقسمة</translation>
 <translation id="6624493541160101248">سطح المكتب الحالي: <ph name="DESK_NAME" />. سطح المكتب <ph name="DESK_INDEX" /> من <ph name="DESK_COUNT" />.</translation>
@@ -2140,6 +2161,7 @@
 <translation id="7228968829656641943">‏للبحث في الشاشة، يُرجى اختيار منطقة. ويمكنك الضغط على مفتاح Tab ثم مفتاح المسافة للتنقّل باستخدام لوحة المفاتيح.</translation>
 <translation id="7229029500464092426">الذاكرة المستخدمة: <ph name="AVAILABLE_MEMORY" /> | إجمالي الذاكرة: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7234010996000898150">‏جارٍ إلغاء عملية الاسترداد من Linux</translation>
+<translation id="7238609589076576185">تم إدخال علامة تشكيل.</translation>
 <translation id="7239814253344511868">كلا زرَّي الماوس</translation>
 <translation id="7240636904654154599">‏تم إنشاء جدول بيانات Google</translation>
 <translation id="7244725679040769470">‏يتبقّى ‎<ph name="PERCENTAGE" />%.
@@ -2222,6 +2244,7 @@
 <translation id="7489261257412536105">الدخول إلى وضع "ملء الشاشة" أو الخروج منه</translation>
 <translation id="7490157877815329797">‏جرِّب YouTube Music Premium للاستماع إلى الموسيقى بلا إعلانات وموسيقى مخصَّصة تساعدك على التركيز</translation>
 <translation id="7490360161041035804">‏يمكنك تثبيت الملفات المهمة، بما فيها ملفات Google Drive. للتثبيت، مرِّر مؤشر الماوس فوق أحد الملفات أو افتح تطبيق "الملفات" وانقر بزر الماوس الأيمن على أحد الملفات.</translation>
+<translation id="7491962110804786152">علامة تبويب</translation>
 <translation id="7497767806359279797">اختيار اللغة ولوحة المفاتيح</translation>
 <translation id="7507162824403726948">إكمال عملية إثبات هويتك</translation>
 <translation id="7508690557411636492">تم فتحه الشهر الماضي.</translation>
@@ -2458,6 +2481,7 @@
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8091153018031979607">يبدأ الحدث في <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" />.</translation>
 <translation id="8092380135549145188">عناصر التحكّم في الانتقال</translation>
+<translation id="80974698889265265">أرقام التعريف الشخصية غير متطابقة</translation>
 <translation id="810637681351706236">إزالة تثبيت التطبيق من الرف</translation>
 <translation id="8107015733319732394">‏تثبيت متجر Google Play على <ph name="DEVICE_TYPE" />. قد يستغرق ذلك بضع دقائق.</translation>
 <translation id="8113515504791187892">زر "سماع الاختيار"</translation>
@@ -2485,10 +2509,12 @@
 <translation id="8168435359814927499">المحتوى</translation>
 <translation id="8169177848833352618">‏لا يستوفي هذا الجهاز متطلبات تثبيت Bruschetta. رمز الخطأ هو <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">المقبض المحدَّد في أعلى اليمين، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="81817143961839203">تعذَّر إدراج الصورة</translation>
 <translation id="8182105986296479640">التطبيق لا يستجيب.</translation>
 <translation id="8182412589359523143">لحذف جميع البيانات من جهاز <ph name="DEVICE_TYPE" />، يمكنك <ph name="BEGIN_LINK" />النقر هنا<ph name="END_LINK" />.</translation>
 <translation id="8185090165691050712">قائمة تفعيل/إيقاف وضع القفل لميزة تغيير الحجم</translation>
+<translation id="8186047833733689201">‏تم فتح قائمة علامات التشكيل. اضغط على مفتاح السهم المتّجه لليمين أو اليسار أو مفاتيح الأرقام لاختيار علامة التشكيل ثم اضغط على Enter لإدخالها.</translation>
 <translation id="8192727139462702395">بعد إيقاف البلوتوث، سيتم إلغاء ربط هذه الأجهزة الخارجية بجهاز <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">جارٍ إرسال محتوى علامة التبويب</translation>
 <translation id="8200772114523450471">استئناف</translation>
@@ -2507,12 +2533,14 @@
 <translation id="8238817965863339552">يمكنك التعرّف سريعًا على طريقة استخدام جهاز <ph name="PRODUCT_NAME" />. ابدأ استخدام جهازك باتّباع 5 خطوات.</translation>
 <translation id="8239034820133090126">تفعيل سطح المكتب على يسار الشاشة</translation>
 <translation id="8241650983304689286">إضافة علامة التبويب إلى وضع تقسيم العرض الجديد</translation>
+<translation id="8244201515061746038">‏هذا الزر مخصَّص لعرض مزيد من المعلومات حول ميزة "التصحيح التلقائي". انتقِل إلى صفحة إعدادات ميزة "التصحيح التلقائي". اضغط على مفتاح Enter لتفعيل الميزة، أو على مفتاح Escape لإغلاق الرسالة.</translation>
 <translation id="8247060538831475781">حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، بطارية الهاتف <ph name="BATTERY_STATUS" /></translation>
 <translation id="8249048954461686687">‏مجلد OEM</translation>
 <translation id="825129991941217170">‏عرض كل محتوى Google Drive</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8261625296061301062">تم تثبيت برنامج الماسح الضوئي</translation>
 <translation id="8262312463845990408">استئناف التشغيل أو إيقافه مؤقتًا</translation>
+<translation id="8266751606569906450">يجب ألّا يقل عدد الأرقام في رقم التعريف الشخصي عن <ph name="MINIMUM" /></translation>
 <translation id="8268302343625273732">‏الاطّلاع على كل المهام في Google Classroom</translation>
 <translation id="8277261673056602147">تمييز النص على الشاشة</translation>
 <translation id="8281886186245836920">التخطّي</translation>
@@ -2548,6 +2576,7 @@
 <translation id="8388750414311082622">تتعذّر إزالة سطح المكتب الأخير.</translation>
 <translation id="8390392581097975659">جارٍ تثبيت برنامج الماسح الضوئي</translation>
 <translation id="8394567579869570560">قفّل أحد الوالدين هذا الجهاز</translation>
+<translation id="839949601275221554">حدث خطأ في الجهاز. يُرجى إعادة تشغيل الجهاز وإعادة المحاولة.</translation>
 <translation id="8401850874595457088">إدخال قائمة اللغة</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">إظهار إعدادات شاشة العرض</translation>
@@ -2707,6 +2736,7 @@
 <translation id="8858369206579825206">عناصر التحكّم في الخصوصية</translation>
 <translation id="8859402192569844210">تعذَّر تحميل بنود الخدمة</translation>
 <translation id="8860366331836346216">‏إضافة شريحة eSIM</translation>
+<translation id="8864458770072227512">تمت إزالة <ph name="EMAIL" /> من هذا الجهاز.</translation>
 <translation id="8869149849311827122">هل المطلوب فعلاً إيقاف ميزة التحكّم باستخدام مؤشر الماوس؟</translation>
 <translation id="8870509716567206129">التطبيق لا يتيح تقسيم الشاشة.</translation>
 <translation id="8871551568777368300">تم التثبيت من قبل المشرف</translation>
@@ -2843,6 +2873,7 @@
 <translation id="956452277966142925">إعدادات "لوحة بيانات الألعاب"</translation>
 <translation id="961856697154696964">حذف بيانات التصفّح</translation>
 <translation id="974545358917229949">عرض <ph name="RESULT_COUNT" /> نتيجة عن <ph name="QUERY" /></translation>
+<translation id="976499800099896273">‏يُظهر مربّع الحوار إمكانية التراجع عن التصحيح التلقائي لكلمة <ph name="TYPED_WORD" /> التي تم تصحيحها بكلمة <ph name="CORRECTED_WORD" />.  اضغط على مفتاح السهم المتّجه للأعلى للتراجع عن التصحيح التلقائي، أو اضغط على مفتاح escape للتجاهل.</translation>
 <translation id="97905529126098460">سيتم إغلاق هذه النافذة بعد اكتمال عملية الإلغاء.</translation>
 <translation id="981011780479609956">بلا تاريخ تسليم</translation>
 <translation id="981121421437150478">بلا اتصال</translation>

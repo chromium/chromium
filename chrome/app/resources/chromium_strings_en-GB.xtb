@@ -36,6 +36,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1324107359134968521">Chromium needs Bluetooth access to explore 
  Bluetooth devices. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Detect language</translation>
+<translation id="1330742950061766891">Use Chromium recommended browser settings</translation>
 <translation id="1342274909142618978">Also delete data from Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Pinned! You can access image search again from the new button on the toolbar</translation>
 <translation id="1356661055722410047">New! You can translate both text and images on your screen</translation>
@@ -373,6 +374,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5187123684706427865">Chromium account requires re-authentication</translation>
 <translation id="5231355151045086930">Sign out of Chromium</translation>
 <translation id="5234764350956374838">Dismiss</translation>
+<translation id="5249261924633168472">Open link in Chromium Inco&amp;gnito window</translation>
 <translation id="5254739261293693943">Ask about this video</translation>
 <translation id="5276305953263010518">Get the Chromium app to save passwords on the go</translation>
 <translation id="5277894862589591112">To apply your changes, relaunch Chromium</translation>

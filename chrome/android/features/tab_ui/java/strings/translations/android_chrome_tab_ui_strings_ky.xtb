@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> өтмөк топтолду</translation>
 <translation id="1844381456014878100">7 күндөн бери жигерсиз болсо</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк}other{<ph name="TABS_COUNT_MANY" /> өтмөк}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Өтмөктү окуу тизмесине кошуу}other{Өтмөктөрдү окуу тизмесине кошуу}}</translation>
 <translation id="1909810060368225529">Эскертүү: Бул бөлүшүлгөн өтмөктөр тобуна киргизилген өзгөрүүлөр баарына көрүнөт. Бөлүшүлгөн өтмөк топторуна баары өзгөртүү киргизе алышат</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Өтмөктү кадоо}other{Өтмөктөрдү кадоо}}</translation>
 <translation id="1982637982196732906">Жигерсиз бөлүмүнө жылдырыңыз</translation>

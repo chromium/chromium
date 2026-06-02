@@ -33,6 +33,7 @@
 <translation id="132092532143527429">試用 Chromium 內建的 Gemini</translation>
 <translation id="1324107359134968521">Chromium 需要藍牙存取權才能偵測藍牙裝置。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">偵測語言</translation>
+<translation id="1330742950061766891">使用 Chromium 建議的瀏覽器設定</translation>
 <translation id="1342274909142618978">一併刪除 Chromium 中的資料 (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">已固定！之後只要點選工具列上的新按鈕，就能使用「圖片搜尋」</translation>
 <translation id="1356661055722410047">新功能！你可以翻譯畫面上的文字和圖片</translation>
@@ -370,6 +371,7 @@
 <translation id="5187123684706427865">Chromium 帳戶需要重新驗證</translation>
 <translation id="5231355151045086930">登出 Chromium</translation>
 <translation id="5234764350956374838">關閉</translation>
+<translation id="5249261924633168472">在 Chromium 無痕視窗中開啟連結(&amp;G)</translation>
 <translation id="5254739261293693943">詢問這部影片的相關問題</translation>
 <translation id="5276305953263010518">取得 Chromium 應用程式，隨時隨地儲存密碼</translation>
 <translation id="5277894862589591112">如要套用變更，請重新啟動 Chromium</translation>

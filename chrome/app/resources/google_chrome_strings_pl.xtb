@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Pobieram...</translation>
 <translation id="1651617469580841801">Gdy używasz Obiektywu Google, tytuł, adres URL i zawartość strony, w tym pliki PDF, są wysyłane do Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Informacje o ChromeOS Flex</translation>
+<translation id="1665867022636014702">Użyj ustawień przeglądarki zalecanych przez Google</translation>
 <translation id="1674870198290878346">Otwórz link w oknie inco&amp;gnito Chrome</translation>
 <translation id="1682634494516646069">Google Chrome nie może odczytać ani zapisać danych w katalogu <ph name="USER_DATA_DIRECTORY" />.</translation>
 <translation id="1688214853608504530">Gdy piszesz na pasku adresu lub w polu wyszukiwania, Chrome wysyła wpisany tekst do narzędzi wyszukiwania, AI i agentów Twojej organizacji, aby uzyskać sugestie.</translation>
@@ -238,6 +239,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="345171907106878721">Dodaj siebie do Chrome</translation>
 <translation id="3453763134178591239">Warunki korzystania z Chrome OS</translation>
 <translation id="3503306920980160878">Chrome musi mieć dostęp do Twojej lokalizacji, by udostępnić ją tej stronie</translation>
+<translation id="3539955434060988644">Otwórz link w oknie inco&amp;gnito Chrome</translation>
 <translation id="3576528680708590453">Administrator systemu skonfigurował Google Chrome w taki sposób, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w alternatywnej przeglądarce.</translation>
 <translation id="3582972582564653026">Synchronizuj dane Chrome i korzystaj z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="3583751698304738917">Jesteś już zalogowany(-a) jako <ph name="USER_EMAIL_ADDRESS" /> w innym profilu Chrome</translation>

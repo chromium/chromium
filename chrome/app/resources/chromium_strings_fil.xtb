@@ -36,6 +36,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1324107359134968521">Kailangan ng Chromium ng access sa Bluetooth para i-explore ang 
  mga Bluetooth device. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">I-detect ang wika</translation>
+<translation id="1330742950061766891">Gamitin ang mga inirerekomendang setting ng browser ng Chromium</translation>
 <translation id="1342274909142618978">I-delete din ang data mula sa Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Na-pin na! Maa-access mo ulit ang Paghahanap ng Larawan mula sa bagong button sa toolbar</translation>
 <translation id="1356661055722410047">Bago! Puwede kang magsalin ng text at mga larawan sa iyong screen</translation>
@@ -373,6 +374,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5187123684706427865">Nagre-require ang Chromium account ng pag-authenticate ulit</translation>
 <translation id="5231355151045086930">Mag-sign out sa Chromium</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
+<translation id="5249261924633168472">Buksan ang link sa Inco&amp;gnito window ng Chromium</translation>
 <translation id="5254739261293693943">Magtanong tungkol sa video na ito</translation>
 <translation id="5276305953263010518">I-download ang Chromium app para mag-save ng mga password on the go</translation>
 <translation id="5277894862589591112">Para ilapat ang iyong mga pagbabago, muling ilunsad ang Chromium</translation>

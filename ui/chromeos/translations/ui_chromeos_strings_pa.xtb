@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">ਆਟੋਮੈਟਿਕ ਨਾਮ ਸਰਵਰ</translation>
 <translation id="1210831758834677569">ਲਾਓ</translation>
 <translation id="1221555006497674479">ਸਟੋਰੇਜ ਘੱਟ ਹੈ, ਤੁਹਾਡੀ ਸਾਂਝੀ ਡਰਾਈਵ ਸਟੋਰੇਜ ਦੀ ਕੁੱਲ <ph name="TOTAL_SPACE" /> ਸਟੋਰੇਜ ਵਿੱਚੋਂ <ph name="REMAINING_PERCENTAGE" />% ਸਟੋਰੇਜ ਬਾਕੀ ਬਚੀ ਹੈ।</translation>
+<translation id="1239594683407221485">Files ਐਪ ਵਿੱਚ ਡੀਵਾਈਸ ਦੀ ਸਮੱਗਰੀ ਦੀ ਪੜਚੋਲ ਕਰੋ।</translation>
 <translation id="1243314992276662751">ਅਪਲੋਡ ਕਰੋ</translation>
 <translation id="1249250836236328755">ਸ਼ੈਲੀ</translation>
 <translation id="1254593899333212300">ਸਿੱਧਾ ਇੰਟਰਨੈਟ ਕਨੈਕਸ਼ਨ</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">ਮਿਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। ਆਈਟਮ ਵਰਤੋਂ ਵਿੱਚ ਹੈ।</translation>
 <translation id="1307931752636661898">Linux ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
 <translation id="1313405956111467313">ਸਵੈਚਲਿਤ ਪ੍ਰੌਕਸੀ ਸੰਰੂਪਿਤ ਕਰੋ</translation>
+<translation id="1340527397989195812">Files ਐਪ ਵਰਤਦੇ ਹੋਏ ਡੀਵਾਈਸ ਤੋਂ ਮੀਡੀਆ ਦਾ ਬੈਕਅੱਪ ਲਓ।</translation>
 <translation id="134645005685694099">ਫ਼ਾਈਲ ਸਿੰਕ ਨੂੰ ਚਾਲੂ ਰੱਖਣ ਲਈ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿੱਚ ਲੋੜੀਂਦੀ ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਨਹੀਂ ਹੈ। ਨਵੀਆਂ ਫ਼ਾਈਲਾਂ ਹੁਣ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਿੰਕ ਨਹੀਂ ਹੋਣਗੀਆਂ।</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ਫਾਈਲ ਜਾਂ ਡਾਇਰੈਕਟਰੀ ਵਰਤੋਂ ਯੋਗ ਨਹੀਂ ਹੈ।</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">ਕੋਈ ਵਰਤੋਂਕਾਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨਹੀਂ</translation>
 <translation id="1403008701842173542">ਹਰ ਥਾਂ</translation>
 <translation id="1404323374378969387">ਨਾਰਵੇਜੀਆਈ</translation>
+<translation id="1408504635543854729">Files ਐਪ ਵਿੱਚ ਮੌਜੂਦ ਡੀਵਾਈਸ ਦੀ ਸਮੱਗਰੀ ਦੀ ਪੜਚੋਲ ਕਰੋ। ਸਮੱਗਰੀ ਇੱਕ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਤਿਬੰਧਿਤ ਕੀਤੀ ਗਈ ਹੈ ਅਤੇ ਸੋਧੀ ਨਹੀਂ ਜਾ ਸਕਦੀ।</translation>
 <translation id="1412476183660741812">ਹਸਤਾਖਰ ਕੀਤਾ ਵੈੱਬ ਬੰਡਲ</translation>
 <translation id="1433628812591023318">Parallels Desktop ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਾਉਣ ਲਈ, ਫ਼ਾਈਲ ਦਾ Windows ਫ਼ਾਈਲਾਂ 'ਤੇ ਲਿਜਾਉਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="1435838927755162558">Parallels Desktop ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="1439919885608649279">ਫੁੱਲਾਂ ਨਾਲ ਵਿਅਕਤੀ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ਨੂੰ ਬਾਹਰ ਕੱਢੋ</translation>
+<translation id="1464781208867302907">ਡੀਵਾਈਸ ਤਰਜੀਹਾਂ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਾਪੀ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਉਹ ਇਨਕ੍ਰਿਪਟਡ ਹਨ।</translation>
 <translation id="1471718551822868769">ਸਲੋਵਾਕ</translation>
 <translation id="1482884275703521657">ਫਿਨਿਸ਼</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">'ਡਰਾਈਵ' ਵਿੱਚ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2004942826429452291">ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਲਾਊਡ ਅਤੇ ਇਸ Chromebook 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2009067268969781306">ਕਿਸੇ ਡਰਾਈਵ ਨੂੰ ਫਾਰਮੈਟ ਕਰਨ ਨਾਲ ਇਸ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
+<translation id="2018352199541442911">ਮਾਫ਼ ਕਰਨਾ, ਤੁਹਾਡਾ ਬਾਹਰੀ ਸਟੋਰੇਜ ਡੀਵਾਈਸ ਇਸ ਵੇਲੇ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2025955442973426285">ਟਿਗਰੀਨਿਆ</translation>
 <translation id="2029385776150020336">ਯੂ.ਐੱਸ. ਐਕਸਟੇਂਡੇਡ</translation>
 <translation id="2037845485764049925">ਰੂਸੀ</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">ਤਾਮਾਗੋਚੀ</translation>
 <translation id="2468470447085858632">ਫ਼ਾਈਲ ਸਿੰਕ ਨਾਲ ਆਪਣੀਆਂ Google Drive ਫ਼ਾਈਲਾਂ ਤੱਕ ਆਫ਼ਲਾਈਨ ਪਹੁੰਚ ਕਰੋ</translation>
 <translation id="2470939964922472929">ਗਲਤ ਪਿੰਨ ਬਹੁਤ ਵਾਰ ਦਾਖਲ ਕੀਤਾ ਗਿਆ। ਇੱਕ ਨਵਾਂ ਪਿੰਨ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ, ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕੀਤੀ 8-ਅੰਕਾਂ ਦੀ ਨਿੱਜੀ ਅਣਬਲਾਕ ਕਰਨ ਵਾਲੀ ਕੁੰਜੀ (PUK) ਦਾਖਲ ਕਰੋ।</translation>
+<translation id="249113932447298600">ਮਾਫ਼ ਕਰਨਾ, ਡੀਵਾਈਸ <ph name="DEVICE_LABEL" /> ਇਸ ਵੇਲੇ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2500392669976258912">ਗੁਜਰਾਤੀ ਧੁਨੀਆਤਮਿਕ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">ਸਕੈਨ ਕਰੋ</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">ਯੂਕਰੇਨੀਆਈ</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> ਨੂੰ ਜ਼ਿਪ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3335337277364016868">ਰਿਕਾਰਡ ਕਰਨ ਦਾ ਸਾਲ</translation>
+<translation id="3348038390189153836">ਹਟਾਉਣਯੋਗ ਡੀਵਾਈਸ ਖੋਜੀ ਗਈ</translation>
 <translation id="3353984535370177728">ਅਪਲੋਡ ਕਰਨ ਲਈ ਇੱਕ ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="3356580349448036450">ਪੂਰਾ</translation>
 <translation id="3358452157379365236">ਗਿਟਾਰ</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">ਮੋਬਾਈਲ ਪ੍ਰੋਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰੋ, <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" /> ਨੈੱਟਵਰਕ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਕੇ.)</translation>
 <translation id="3975895378829046965">ਬੰਗਾਲੀ ਧੁਨੀਆਤਮਿਕ</translation>
+<translation id="3983764759749072418">Play Store ਐਪਲੀਕੇਸ਼ਨਾਂ ਦੀ ਇਸ ਡੀਵਾਈਸ ਤੱਕ ਪਹੁੰਚ ਹੈ।</translation>
 <translation id="3999574733850440202">ਹਾਲ ਹੀ ਵਿੱਚ ਖੋਲ੍ਹੀਆਂ ਗਈਆਂ Microsoft ਦੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ OneDrive ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ ਹੈ</translation>
 <translation id="4002066346123236978">ਸਿਰਲੇਖ</translation>
 <translation id="4017788180641807848">ਵਰਕਮੈਨ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.)</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">ਤੁਹਾਨੂੰ ਇਸ ਫ਼ਾਈਲ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਨਲਾਈਨ ਹੋਣਾ ਪਵੇਗਾ।</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" ਨਾਮਕ ਫੋਲਡਰ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੋਈ ਵੱਖਰਾ ਨਾਮ ਚੁਣੋ।</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> ਲਈ ਅਪਵਾਦ ਨੂੰ ਹਟਾਓ</translation>
+<translation id="4242533952199664413">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="4261901459838235729">Google ਪ੍ਰਸਤੁਤੀ</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> ਫਿਲਟਰ ਚਾਲੂ ਹੈ।</translation>
 <translation id="4290535918735525311">Linux ਨਾਲ ਇੱਕ ਫੋਲਡਰ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Google Drive ਤੋਂ ਰਿਕਵਰ ਕੀਤੀਆਂ ਫਾਈਲਾਂ</translation>
 <translation id="5278111733643988471">ਇਸ ਆਈਟਮ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਇਸਨੂੰ ਰੱਦੀ ਦੇ ਬਾਹਰ ਕਿਸੇ ਨਵੇਂ ਫੋਲਡਰ ਵਿੱਚ ਘਸੀਟੋ। ਇਸ ਆਈਟਮ ਦੇ ਮੂਲ ਫੋਲਡਰ "<ph name="PARENT_FOLDER_NAME" />" ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="5288441970121584418">ਬਰਗਰ</translation>
+<translation id="529175790091471945">ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਫੌਰਮੈਟ ਕਰੋ</translation>
 <translation id="5293615890992542006">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਵੱਲੋਂ ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਲਿਜਾਉਣ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="5305688511332277257">ਕੋਈ ਇੰਸਟੌਲ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">ਇਹਨਾਂ ਹੋਸਟਾਂ ਅਤੇ ਡੋਮੇਨਾਂ ਲਈ ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਨਾ ਵਰਤੋ:</translation>
 <translation id="541890217011173530">ਅੰਗਰੇਜ਼ੀ-ਆਧਾਰਿਤ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਸੋਰਾਨੀ ਕੁਰਦੀ</translation>
 <translation id="5422221874247253874">ਐਕਸੈੱਸ ਪੁਆਇੰਟ</translation>
+<translation id="5422781158178868512">ਮਾਫ਼ ਕਰਨਾ, ਤੁਹਾਡੀ ਬਾਹਰੀ ਸਟੋਰੇਜ ਡੀਵਾਈਸ ਦੀ ਪਛਾਣ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> ਲਈ ਕੋਈ ਵੀ ਨਤੀਜੇ ਨਹੀਂ ਹਨ।</translation>
 <translation id="5447680084201416734">ਲੋੜੀਂਦੀ ਸਟੋਰੇਜ ਨਹੀਂ ਹੈ।</translation>
 <translation id="5449551289610225147">ਅਵੈਧ ਪਾਸਵਰਡ</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ਆਈਟਮਾਂ ਚੁਣੀ ਗਈ</translation>
 <translation id="5763377084591234761">ਜਰਮਨ (ਸਵਿਟਜ਼ਰਲੈਂਡ)</translation>
 <translation id="5769519078756170258">ਬਾਹਰ ਰੱਖਣ ਲਈ ਹੋਸਟ ਜਾਂ ਡੋਮੇਨ</translation>
+<translation id="5774295353725270860">Files ਐਪ ਖੋਲ੍ਹੋ</translation>
 <translation id="5775750595919327203">ਉਰਦੂ</translation>
 <translation id="5776325638577448643">ਮਿਟਾਓ ਅਤੇ ਫਾਰਮੈਟ ਕਰੋ</translation>
 <translation id="57838592816432529">ਮਿਊਟ ਕਰੋ</translation>
 <translation id="5788127256798019331">Play ਦੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
+<translation id="5788367137662787332">ਮਾਫ਼ ਕਰਨਾ, ਡੀਵਾਈਸ <ph name="DEVICE_LABEL" /> 'ਤੇ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਭਾਗ ਮਾਉਂਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="5804245609861364054">ਕੰਨੜ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="5814126672212206791">ਕਨੈਕਸ਼ਨ ਕਿਸਮ</translation>
 <translation id="5817397429773072584">ਪਰੰਪਰਿਕ ਚੀਨੀ</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">ਆਈਸਲੈਂਡਿਕ</translation>
 <translation id="7229570126336867161">EVDO ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="7230898482850090046">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਨੂੰ "ਸਿਮ ਲਾਕ" ਸੈਟਿੰਗ ਬੰਦ ਕਰਨ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ</translation>
+<translation id="7232750842195536390">ਨਾਮ ਬਦਲਣਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="7238097264433196391">ਡਰਾਈਵ ਦਾ ਨਾਮ</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, ਵੇਰਵੇ</translation>
 <translation id="7246947237293279874">FTP ਪ੍ਰੌਕਸੀ</translation>
+<translation id="725109152065019550">ਮਾਫ਼ ਕਰਨਾ, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਖਾਤੇ 'ਤੇ ਬਾਹਰੀ ਸਟੋਰੇਜ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="7256405249507348194">ਬੇਪਛਾਣ ਗੜਬੜ: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ਉਪਲਬਧ ਸੇਵਾਵਾਂ</translation>
 <translation id="7291818353625820805">ਕੀ ਦੁਹਰਾਉਣ ਲਈ ਕੁੰਜੀਆਂ ਚਾਹੁੰਦੇ ਹੋ? ਕੀਬੋਰਡ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਐਕਸੈਂਟ ਚਿੰਨ੍ਹ ਬੰਦ ਕਰੋ</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google Maps</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7435577899926900307">ਯੂ.ਐੱਸ. ਡਵੋਰਕ</translation>
+<translation id="7436921188514130341">ਓਹੋ! ਨਾਮ ਬਦਲਣ ਦੌਰਾਨ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="7458955835361612701">ਕੋਈ ਹਾਲੀਆ ਚਿੱਤਰ ਨਹੀਂ</translation>
 <translation id="7469894403370665791">ਇਸ ਨੈੱਟਵਰਕ ਨਾਲ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7486315294984620427">Parallels Desktop ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਾਉਣ ਲਈ, ਫ਼ਾਈਲ ਦਾ Windows ਫ਼ਾਈਲਾਂ 'ਤੇ ਕਾਪੀ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">ਸ਼ੈਲਫ ਤੇ ਪਿਨ ਕਰੋ</translation>
 <translation id="7553492409867692754">Linux ਐਪਾਂ ਨੂੰ <ph name="FOLDER_NAME" /> ਫੋਲਡਰ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="7555339735447658365">ਫ਼ਿਲਹਾਲ ਤੁਸੀਂ ਆਫ਼ਲਾਈਨ ਹੋ। ਤੁਹਾਡੇ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋਣ 'ਤੇ ਫ਼ਾਈਲ ਸਿੰਕ ਮੁੜ-ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ</translation>
+<translation id="7589461650300748890">ਠਹਿਰੋ। ਸਾਵਧਾਨ ਰਹੋ।</translation>
 <translation id="7589661784326793847">ਕੇਵਲ ਇੱਕ ਸਕਿੰਟ ਠਹਿਰੋ</translation>
 <translation id="7600126690270271294">ਸਰਬੀਆਈ</translation>
 <translation id="7603724359189955920">ਗਰਿੱਡ</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">ਨੈੱਟਵਰਕ ਦਾ ਸੰਰੂਪਣ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ</translation>
+<translation id="7839051173341654115">ਮੀਡੀਆ ਦੇਖੋ/ਬੈਕਅੱਪ ਲਓ</translation>
 <translation id="7839804798877833423">ਇਹਨਾਂ ਫਾਈਲਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਨਾਲ ਇਹ ਲਗਭਗ <ph name="FILE_SIZE" /> ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤਣਗੀਆਂ।</translation>
 <translation id="7846076177841592234">ਚੋਣ ਰੱਦ ਕਰੋ</translation>
 <translation id="7857117644404132472">ਅਪਵਾਦ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">ਪੋਲਿਸ਼</translation>
 <translation id="7874321682039004450">ਫਿਲੀਪੀਨੋ</translation>
 <translation id="78946041517601018">ਸਾਂਝੇ ਡਰਾਈਵ</translation>
+<translation id="7897900149154324287">ਭਵਿੱਖ ਵਿੱਚ, ਆਪਣੀ ਹਟਾਉਣਯੋਗ ਡੀਵਾਈਸ ਨੂੰ ਫ਼ਾਈਲਾਂ ਐਪ ਵਿੱਚ ਇਸਨੂੰ ਅਨਪਲੱਗ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਕੱਢਣਾ ਪੱਕਾ ਕਰੋ । ਨਹੀਂ ਤਾਂ, ਤੁੁਹਾਡਾ ਡਾਟਾ ਨਸ਼ਟ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7901567919203965902">ਯੂ.ਐੱਸ. ਵਰਕਮੈਨ ਇੰਟਰਨੈਸ਼ਨਲ</translation>
 <translation id="7903984238293908205">ਕਾਟਾਕਾਨਾ</translation>
+<translation id="7908378463497120834">ਮਾਫ਼ ਕਰਨਾ, ਤੁਹਾਡੀ ਬਾਹਰੀ ਸਟੋਰੇਜ ਡੀਵਾਈਸ 'ਤੇ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਭਾਗ ਮਾਉਂਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="7908793776359722643">ਕਿਸੇ ਭਾਗ ਨੂੰ ਫਾਰਮੈਟ ਕਰਨ ਨਾਲ ਇਸ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">'ਮੇਰੀ ਡਰਾਈਵ' ਵਿੱਚ ਮੌਜੂਦ ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਆਪਣੇ ਆਪ ਤੁਹਾਡੇ Chromebook ਨਾਲ ਸਿੰਕ ਹੋ ਜਾਣਗੀਆਂ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਤੱਕ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੇ ਬਿਨਾਂ ਪਹੁੰਚ ਕਰ ਸਕੋ।</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">ਇਨ੍ਹਾਂ ਆਈਟਮਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਕਿਸੇ ਨਵੇਂ ਫੋਲਡਰ ਵਿੱਚ ਘਸੀਟੋ। ਇਨ੍ਹਾਂ ਵਿੱਚੋਂ ਕੁਝ ਆਈਟਮਾਂ ਦੇ ਮੂਲ ਫੋਲਡਰਾਂ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8874184842967597500">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="8876368061475701452">ਕਤਾਰਬੱਧ ਹੈ</translation>
+<translation id="8893928184421379330">ਮਾਫ਼ ਕਰਨਾ, <ph name="DEVICE_LABEL" /> ਦੀ ਪਛਾਣ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="8902208737522818687">ਯੂ.ਐੱਸ. ਇੰਟਰਨੈਸ਼ਨਲ (PC)</translation>
 <translation id="8903931173357132290">ਗ੍ਰੈਜੂਏਟ</translation>
 <translation id="8912078710089354287">ਪੂਛ ਹਿਲਾਉਂਦਾ ਹੋਇਆ ਕੁੱਤਾ</translation>

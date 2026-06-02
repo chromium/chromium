@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">已将 <ph name="TABS_COUNT_ONE" /> 个标签页合为一组</translation>
 <translation id="1844381456014878100">闲置 7 天后</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
 <translation id="1909810060368225529">注意：对此共享标签页分组所做的更改对所有人均可见。所有人都可以更改您的共享标签页分组</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{固定标签页}other{固定标签页}}</translation>
 <translation id="1982637982196732906">移至“闲置”部分</translation>

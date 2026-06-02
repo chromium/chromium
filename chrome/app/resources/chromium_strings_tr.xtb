@@ -33,6 +33,7 @@
 <translation id="132092532143527429">Chromium'da Gemini ile deneyin</translation>
 <translation id="1324107359134968521">Chromium'un Bluetooth cihazları keşfedebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Dili algıla</translation>
+<translation id="1330742950061766891">Chromium'un önerdiği tarayıcı ayarlarını kullanın</translation>
 <translation id="1342274909142618978">Chromium'daki verileri de sil (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Sabitlendi. Araç çubuğundaki yeni düğmeyi kullanarak Görsel Arama'ya tekrar erişebilirsiniz</translation>
 <translation id="1356661055722410047">Yeni! Ekranınızdaki metinleri ve resimleri çevirebilirsiniz</translation>
@@ -368,6 +369,7 @@
 <translation id="5187123684706427865">Chromium hesabı için yeniden kimlik doğrulama gerekiyor</translation>
 <translation id="5231355151045086930">Chromium oturumunu kapatın</translation>
 <translation id="5234764350956374838">Kapat</translation>
+<translation id="5249261924633168472">Bağlantıyı Chromium &amp;Gizli penceresinde aç</translation>
 <translation id="5254739261293693943">Bu video hakkında soru sorun</translation>
 <translation id="5276305953263010518">Hareket halindeyken şifreleri kaydetmek için Chromium uygulamasını indirin</translation>
 <translation id="5277894862589591112">Yaptığınız değişiklikleri uygulamak için Chromium'u yeniden başlatın</translation>

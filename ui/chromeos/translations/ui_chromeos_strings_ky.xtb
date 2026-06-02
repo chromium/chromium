@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Автоматтык аталыш серверлери</translation>
 <translation id="1210831758834677569">Лаосчо</translation>
 <translation id="1221555006497674479">Жалпы дисктин сактагычында орун аз. <ph name="TOTAL_SPACE" /> ичинен <ph name="REMAINING_PERCENTAGE" />% калды.</translation>
+<translation id="1239594683407221485">Түзмөктүн мазмунун Файлдар колдонмосунан изилдеңиз.</translation>
 <translation id="1243314992276662751">Жүктөп берүү</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Интернетке түз туташуу</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Өчпөй жатат. Объект колдонулууда.</translation>
 <translation id="1307931752636661898">Linux Файлдарын көрүү мүмкүн болбой жатат</translation>
 <translation id="1313405956111467313">Автоматтык прокси конфигурациясы</translation>
+<translation id="1340527397989195812">Медиа файлдардын камдык көчүрмөсүн Файлдар колдонмосу аркылуу түзмөгүңүздөн алып сактаңыз.</translation>
 <translation id="134645005685694099">Файлдарды шайкештирүү үчүн түзмөгүңүздүн сактагычында орун жетишсиз. Жаңы файлдар мындан ары автоматтык түрдө шайкештирилбейт.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Файлды же каталогду колдонуу мүмкүн эмес.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Колдонуучунун тастыктамасы колдонулбасын</translation>
 <translation id="1403008701842173542">Бардык жерде</translation>
 <translation id="1404323374378969387">Норвежче</translation>
+<translation id="1408504635543854729">Түзмөктүн мазмунун Файлдар колдонмосунан издеңиз. Администратор мазмунду өзгөртүүгө тыюу салган.</translation>
 <translation id="1412476183660741812">Кол коюлган Интернет топтому</translation>
 <translation id="1433628812591023318">Parallels Desktop'ко файлды көчүрүү үчүн файл Windows файлдарына жылдырылышы керек.</translation>
 <translation id="1435838927755162558">Файлды Parallels Desktop менен бөлүшүү</translation>
 <translation id="1439919885608649279">Гүл көтөргөн адам</translation>
 <translation id="1458457385801829801">Чыгаруу: <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Түзмөктөгү жеке параметрлерди өзгөртүү үчүн параметрлерге өтүңүз.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> файл шифрленгендиктен, алар жылдырылган жок</translation>
 <translation id="1471718551822868769">Словакча</translation>
 <translation id="1482884275703521657">Финче</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Google Drive'да ачуу</translation>
 <translation id="2004942826429452291">Файлдар булутта жана бул Chromebook түзмөгүндө сакталат.</translation>
 <translation id="2009067268969781306">Дискти форматтасаңыз, анда сакталган бардык маалыматтар өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
+<translation id="2018352199541442911">Кечиресиз, тышкы сактагыч түзмөгүңүз учурда колдоого алынбай жатат.</translation>
 <translation id="2025955442973426285">Тигринче</translation>
 <translation id="2029385776150020336">US кеңейтилген</translation>
 <translation id="2037845485764049925">Орусча</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Тамагочи</translation>
 <translation id="2468470447085858632">Файлды шайкештирип, Google Drive файлдарыңызга офлайн режиминде кириңиз</translation>
 <translation id="2470939964922472929">Туура эмес PIN код өтө көп жолу киргизилди. Жаңы PIN кодду коюу үчүн байланыш операторуңуз берген 8 орундуу Жеке бөгөттөн чыгаруу ачкычын (PUK) киргизиңиз.</translation>
+<translation id="249113932447298600">Кечиресиз, <ph name="DEVICE_LABEL" /> түзмөгү учурда колдоого алынган жок.</translation>
 <translation id="2500392669976258912">Гужаратиче (фонетикалык)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Скандоо</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Украинче</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> кысылууда…</translation>
 <translation id="3335337277364016868">Жаздырылган жылы</translation>
+<translation id="3348038390189153836">Көчмө түзмөк табылды</translation>
 <translation id="3353984535370177728">Жүктөлө турган куржунду тандоо</translation>
 <translation id="3356580349448036450">Аяктады</translation>
 <translation id="3358452157379365236">Гитара</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Мобилдик профилди жүктөп алуу, <ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Англисче (Улуу Британия)</translation>
 <translation id="3975895378829046965">Бенгаличе (фонетикалык)</translation>
+<translation id="3983764759749072418">Play Store колдонмолору бул түзмөккө кире алышат.</translation>
 <translation id="3999574733850440202">Жакында ачылган Microsoft файлдары OneDrive'га жылдырылды</translation>
 <translation id="4002066346123236978">Аталышы</translation>
 <translation id="4017788180641807848">Англисче (АКШ) жана Workman баскычтобу</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Бул файлды колдонуу үчүн онлайнда болушуңуз керек.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" деген файл мурунтан эле бар. Файлды башкача атаңыз.</translation>
 <translation id="4218274196133425560">Өзгөчө учурду <ph name="HOST_NAME" /> сайтынан алып салуу</translation>
+<translation id="4242533952199664413">Параметрлерди ачуу</translation>
 <translation id="4261901459838235729">Google презентация</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> чыпкасы күйүк.</translation>
 <translation id="4290535918735525311">1 папка Linux аркылуу бөлүшүлдү</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Калыбына келтирилген Google Drive файлдары</translation>
 <translation id="5278111733643988471">Бул нерсени калыбына келтирүү үчүн аны таштандыда болбогон жаңы папкага сүйрөңүз. Бул нерсе үчүн "<ph name="PARENT_FOLDER_NAME" />" түпнуска папкасы өчүрүлгөн.</translation>
 <translation id="5288441970121584418">Бургер</translation>
+<translation id="529175790091471945">Бул түзмөктү форматтоо</translation>
 <translation id="5293615890992542006">Бул файлды жылдыруу аракети администраторуңуздун саясаты менен бөгөттөлгөн</translation>
 <translation id="5305688511332277257">Эч бири орнотулган жок</translation>
 <translation id="5317780077021120954">Сактоо</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Бул хосттор жана домендер үчүн прокси параметрлери колдонулбасын:</translation>
 <translation id="541890217011173530">Сорани (англисче баскычтоп)</translation>
 <translation id="5422221874247253874">Жетки чекити</translation>
+<translation id="5422781158178868512">Кечиресиз, тышкы сактагыч түзмөгүңүз таанылбай койду.</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> үчүн бир да натыйжа жок.</translation>
 <translation id="5447680084201416734">Сактагычта орун жетишсиз.</translation>
 <translation id="5449551289610225147">Сырсөз жараксыз</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> нерсе тандалды</translation>
 <translation id="5763377084591234761">Немисче (Швейцария)</translation>
 <translation id="5769519078756170258">Четтетиле турган башкы түйүн же домен</translation>
+<translation id="5774295353725270860">Файлдар колдонмосун ачуу</translation>
 <translation id="5775750595919327203">Урдуча</translation>
 <translation id="5776325638577448643">Тазалоо жана форматтоо</translation>
 <translation id="57838592816432529">Үнсүз</translation>
 <translation id="5788127256798019331">Google Play файлдары</translation>
+<translation id="5788367137662787332">Кечиресиз, <ph name="DEVICE_LABEL" /> түзмөгүнүн жада калса 1 бөлүгү жалгаштырылган жок.</translation>
 <translation id="5804245609861364054">Каннадача (транслитерация)</translation>
 <translation id="5814126672212206791">Туташуу түрү</translation>
 <translation id="5817397429773072584">Салттуу кытай тили</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Исландча</translation>
 <translation id="7229570126336867161">EVDO керек</translation>
 <translation id="7230898482850090046">Администраторуңуз сизден "SIM картаны кулпулоо" параметрин күйгүзүүнү суранды</translation>
+<translation id="7232750842195536390">Аталышы өзгөртүлбөй койду</translation>
 <translation id="7238097264433196391">Дисктин аталышы</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Чоо-жайы</translation>
 <translation id="7246947237293279874">FTP проксиси</translation>
+<translation id="725109152065019550">Кечиресиз, администратор аккаунтуңуздагы тышкы сактагычты өчүрүп койгон.</translation>
 <translation id="7256405249507348194">Бейтааныш ката: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Жеткиликтүү кызматтар</translation>
 <translation id="7291818353625820805">Баскычтарды кайталап басуу керекпи? Баскычтоп параметрлеринен басым белгилерин өчүрүңүз</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google карта</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" калыбына келтирилүүдө</translation>
 <translation id="7435577899926900307">US Dvorak</translation>
+<translation id="7436921188514130341">Ка-ап! Аталышы өзгөртүлүп жатканда ката кетти.</translation>
 <translation id="7458955835361612701">Жаңы сүрөттөр жок</translation>
 <translation id="7469894403370665791">Бул тармакка автоматтык түрдө туташуу</translation>
 <translation id="7486315294984620427">Parallels Desktop'ко файлды көчүрүү үчүн файл Windows файлдарына көчүрүлүшү керек.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Текчеге кадап коюу</translation>
 <translation id="7553492409867692754">Linux колдонмолоруна <ph name="FOLDER_NAME" /> папкасындагы файлдарга кирүүгө уруксат бериңиз</translation>
 <translation id="7555339735447658365">Учурда офлайндасыз. Файлды шайкештирүү түзмөк Интернетке туташтырылганда улантылат</translation>
+<translation id="7589461650300748890">Ушундай болмок. Абайлаңыз.</translation>
 <translation id="7589661784326793847">Бир секунд күтө туруңуз</translation>
 <translation id="7600126690270271294">Сербче</translation>
 <translation id="7603724359189955920">Торчолор</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> Тб</translation>
 <translation id="7831491651892296503">Тармакты конфигурациялоо учурунда ката кетти</translation>
+<translation id="7839051173341654115">Медиа файлды көрүү/камдык көчүрмөсүн сактоо</translation>
 <translation id="7839804798877833423">Бул файлдар алынганда болжол менен мобилдик дайындардын <ph name="FILE_SIZE" /> колдонулат.</translation>
 <translation id="7846076177841592234">Тандоону жокко чыгаруу</translation>
 <translation id="7857117644404132472">Өзгөчө учурду кошуу</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Полякча</translation>
 <translation id="7874321682039004450">Филиппинче</translation>
 <translation id="78946041517601018">Жалпы дисктер</translation>
+<translation id="7897900149154324287">Кийинки жолу тышкы дискти түзмөктөн сууруп алаардан мурун, аны Файлдар колдонмосунан чыгарыңыз. Болбосо, дайындарды жоготуп алышыңыз мүмкүн.</translation>
 <translation id="7901567919203965902">US Workman эл аралык</translation>
 <translation id="7903984238293908205">Катакана</translation>
+<translation id="7908378463497120834">Кечиресиз, тышкы сактагыч түзмөгүнүн жада калса бир бөлүгү жалгаштырылган жок.</translation>
 <translation id="7908793776359722643">Бөлүмдөрдү форматтасаңыз, анда сакталган бардык нерселер өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Менин Drive'ымдагы файлдарыңыз Chromebook түзмөгүңүзгө автоматтык түрдө шайкештирилгендиктен, аларга Интернет байланышы жок кире аласыз.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Бул нерселерди калыбына келтирүү үчүн жаңы папкага сүйрөңүз. Бул нерселердин айрымдары үчүн түпнуска папкалар өчүрүлгөн.</translation>
 <translation id="8874184842967597500">Интернет жок</translation>
 <translation id="8876368061475701452">Кезекте</translation>
+<translation id="8893928184421379330">Кечиресиз, <ph name="DEVICE_LABEL" /> түзмөк таанылбай жатат.</translation>
 <translation id="8902208737522818687">Эл аралык АКШ баскычтобу (жеке компьютер үчүн)</translation>
 <translation id="8903931173357132290">Бүтүрүүчү</translation>
 <translation id="8912078710089354287">Куйругун шыйпаңдаткан ит</translation>

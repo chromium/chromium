@@ -36,6 +36,7 @@
 <translation id="1324107359134968521">Chromium ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສຳຫຼວດ 
  ອຸປະກອນ Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">ກວດຫາພາສາ</translation>
+<translation id="1330742950061766891">ໃຊ້ການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບທີ່ Chromium ແນະນຳ</translation>
 <translation id="1342274909142618978">ລຶບຂໍ້ມູນອອກຈາກ Chromium (<ph name="URL" />) ນຳ</translation>
 <translation id="1345251407431278948">ປັກໝຸດແລ້ວ! ທ່ານສາມາດເຂົ້າເຖິງການຊອກຫາຮູບໄດ້ອີກຄັ້ງຈາກປຸ່ມໃໝ່ໃນແຖບເຄື່ອງມື</translation>
 <translation id="1356661055722410047">ໃໝ່! ທ່ານສາມາດແປໄດ້ທັງຂໍ້ຄວາມ ແລະ ຮູບພາບຢູ່ໜ້າຈໍຂອງທ່ານ</translation>
@@ -373,6 +374,7 @@
 <translation id="5187123684706427865">ບັນຊີ Chromium ຕ້ອງມີການພິສູດຢືນຢັນຄືນໃໝ່</translation>
 <translation id="5231355151045086930">ອອກຈາກລະບົບ Chromium</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
+<translation id="5249261924633168472">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chromium</translation>
 <translation id="5254739261293693943">ຖາມກ່ຽວກັບວິດີໂອນີ້</translation>
 <translation id="5276305953263010518">ດາວໂຫຼດແອັບ Chromium ເພື່ອບັນທຶກລະຫັດຜ່ານໄດ້ທຸກບ່ອນທຸກເວລາ</translation>
 <translation id="5277894862589591112">ເພື່ອນຳໃຊ້ການປ່ຽນແປງຂອງທ່ານ, ກະລຸນາເປີດ Chromium ຄືນໃໝ່</translation>

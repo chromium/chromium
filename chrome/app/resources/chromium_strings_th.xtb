@@ -33,6 +33,7 @@
 <translation id="132092532143527429">ลองใช้ Gemini ใน Chromium</translation>
 <translation id="1324107359134968521">Chromium ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อสำรวจอุปกรณ์บลูทูธ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">ตรวจหาภาษา</translation>
+<translation id="1330742950061766891">ใช้การตั้งค่าเบราว์เซอร์ที่ Chromium แนะนำ</translation>
 <translation id="1342274909142618978">ลบข้อมูลออกจาก Chromium (<ph name="URL" />) ด้วย</translation>
 <translation id="1345251407431278948">ปักหมุดแล้ว คุณเข้าถึงการค้นหารูปภาพได้อีกครั้งจากปุ่มใหม่ในแถบเครื่องมือ</translation>
 <translation id="1356661055722410047">ใหม่! คุณแปลได้ทั้งข้อความและรูปภาพบนหน้าจอ</translation>
@@ -370,6 +371,7 @@
 <translation id="5187123684706427865">บัญชี Chromium ต้องมีการตรวจสอบสิทธิ์อีกครั้ง</translation>
 <translation id="5231355151045086930">ออกจากระบบ Chromium</translation>
 <translation id="5234764350956374838">ปิด</translation>
+<translation id="5249261924633168472">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
 <translation id="5254739261293693943">ถามเกี่ยวกับวิดีโอนี้</translation>
 <translation id="5276305953263010518">ดาวน์โหลดแอป Chromium เพื่อบันทึกรหัสผ่านได้ทุกที่ทุกเวลา</translation>
 <translation id="5277894862589591112">เปิด Chromium ขึ้นมาใหม่เพื่อให้การเปลี่ยนแปลงมีผล</translation>

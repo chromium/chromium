@@ -149,6 +149,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1227224963052638717">Okänd princip.</translation>
 <translation id="1227677022489889280">Ange en orsak till flytt (obligatoriskt)</translation>
 <translation id="1228893227497259893">Fel enhetsidentifierare</translation>
+<translation id="122989279399348496">När du är inloggad kan <ph name="DOMAIN" /> bekräfta <ph name="EMAIL" /> på webbplatser som stöds så att du inte behöver kolla inkorgen</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatiskt identifierad)</translation>
 <translation id="1232569758102978740">Namnlös</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> måste anges</translation>
@@ -510,6 +511,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, flera åtgärder tillgängliga, byt mellan dem med Tabb</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Virtuella kortuppgifter</translation>
+<translation id="1802420021606590788">Chrome behandlar sidtitlar och webbadresser i ett privat utrymme i molnet</translation>
 <translation id="1803254472779303354">Muslås tillåts</translation>
 <translation id="1803351196216024260">Får begära åtkomst till mikrofonen</translation>
 <translation id="1804258830776932716">Aktivera Pix genom att snabbt länka ditt konto</translation>
@@ -873,6 +875,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2354001756790975382">Övriga bokmärken</translation>
 <translation id="2355395290879513365">Det är möjligt att hackare kan se vilka bilder du visar på den här webbplatsen och att de försöker lura dig genom att modifiera dem.</translation>
 <translation id="2356941001189392209">En begränsad lista över webbadresser till sidor som du besöker där äldre teknikhändelser inträffar</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Delar 1 flik}other{Delar {NUM_TABS} flikar}}</translation>
 <translation id="2357481397660644965">Enheten hanteras av <ph name="DEVICE_MANAGER" /> och kontot hanteras av <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Flera</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
@@ -3027,6 +3030,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5742806904559466333">Barer, klubbar och nattliv</translation>
 <translation id="5743684619253032786">Nagelvårdsprodukter</translation>
 <translation id="574392208103952083">Medelstark</translation>
+<translation id="5745586894920491759">Chrome behandlar sidtitlar och webbadresser i molnet</translation>
 <translation id="5745733273847572235">Får fråga om din plats</translation>
 <translation id="5750869797196646528">Handspårning</translation>
 <translation id="5752327398324808817">Ange ett eller två ord</translation>
@@ -3421,6 +3425,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Visa loggar</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Kontrollerar proxy, brandvägg och säker DNS-konfiguration<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Bekräfta dina e-postmeddelanden automatiskt</translation>
 <translation id="6366710531182496394">Två häftklamrar till vänster</translation>
 <translation id="6367196786591004737">Radera post</translation>
 <translation id="6370022303958842211">Åtgärder för enhetsåtkomst, t.ex. inloggningar (inklusive misslyckade inloggningar), utloggningar, låsningar och upplåsningar</translation>
@@ -4066,6 +4071,7 @@ Mer information.
 <translation id="7388380253839603603">Bensinpriser och fordonsbränsle</translation>
 <translation id="7388594495505979117">{0,plural, =1{Om 1 minut startas enheten om}other{Om # minuter startas enheten om}}</translation>
 <translation id="7393161616326137353">Äventyrsspel</translation>
+<translation id="7393243238767102021">Vill du tillåta att <ph name="DOMAIN" /> verifierar den här e-postadressen automatiskt?</translation>
 <translation id="7393475648162498734">Visa vilka belöningar och förmåner som är tillgängliga för korten i kassan</translation>
 <translation id="7393971683644170444">Ansluter till kortutgivaren …</translation>
 <translation id="739728382607845710">Ikonen Betalningshanterare</translation>
@@ -5062,6 +5068,7 @@ Mer information:
 <translation id="8963117664422609631">Öppna webbplatsinställningarna</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Förslag:<ph name="MARKUP_2" />Kontrollera att du använder en dataanslutning<ph name="MARKUP_3" />Läs in den här webbsidan igen senare<ph name="MARKUP_4" />Kontrollera att du har angett rätt adress<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Dina lokala filer raderas om <ph name="HOURS" /> timmar</translation>
+<translation id="8964904785315870349">Verifierad e-postadress</translation>
 <translation id="8968766641738584599">Spara kortet</translation>
 <translation id="8970887620466824814">Något gick fel.</translation>
 <translation id="8971063699422889582">Servercertifikatet har gått ut.</translation>

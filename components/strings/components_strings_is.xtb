@@ -149,6 +149,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1227224963052638717">Óþekkt regla.</translation>
 <translation id="1227677022489889280">Gefðu upp ástæðu flutnings (áskilið)</translation>
 <translation id="1228893227497259893">Rangt auðkenni einingar</translation>
+<translation id="122989279399348496">Þegar þú ert skráð(ur) inn getur <ph name="DOMAIN" /> staðfest <ph name="EMAIL" /> á studdum vefsvæðum svo að þú þurfir ekki að athuga pósthólfið þitt</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (greint sjálfvirkt)</translation>
 <translation id="1232569758102978740">Ónefnt</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> er áskilið</translation>
@@ -510,6 +511,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, margar aðgerðir eru í boði, ýttu á Tab til að fletta í gegnum þær</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Upplýsingar um sýndarkort</translation>
+<translation id="1802420021606590788">Chrome vinnur úr síðutitlum og vefslóðum í lokuðu rými í skýinu</translation>
 <translation id="1803254472779303354">Leyfilegt að læsa mús</translation>
 <translation id="1803351196216024260">Getur beðið um að nota hljóðnemann</translation>
 <translation id="1804258830776932716">Virkjaðu Pix með því að tengja reikninginn þinn í hvelli</translation>
@@ -3027,6 +3029,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5742806904559466333">Barir, klúbbar og næturlíf</translation>
 <translation id="5743684619253032786">Naglaumhirðuvörur</translation>
 <translation id="574392208103952083">Miðlungs</translation>
+<translation id="5745586894920491759">Chrome vinnur úr síðutitlum og vefslóðum í skýinu</translation>
 <translation id="5745733273847572235">Getur beðið um staðsetningu þína</translation>
 <translation id="5750869797196646528">Rakning handahreyfinga</translation>
 <translation id="5752327398324808817">Sláðu inn eitt eða tvö orð</translation>
@@ -3421,6 +3424,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Skoða annála</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Athuga staðgengilsþjóninn, eldvegginn og stillingar fyrir öruggan DNS-þjón<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Staðfestu netföngin þín sjálfkrafa</translation>
 <translation id="6366710531182496394">Tvö hefti vinstra megin</translation>
 <translation id="6367196786591004737">Eyða færslu</translation>
 <translation id="6370022303958842211">Aðgerðir fyrir tækjaaðgang, svo sem innskráningar (þ.m.t. ástæður misheppnaðrar innskráningar), útskráningar, læsingar og opnanir</translation>
@@ -4065,6 +4069,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7388380253839603603">Eldsneytisverð og orkugjafar fyrir ökutæki</translation>
 <translation id="7388594495505979117">{0,plural, =1{Tækið verður endurræst eftir 1 mínútu}one{Tækið verður endurræst eftir # mínútu}other{Tækið verður endurræst eftir # mínútur}}</translation>
 <translation id="7393161616326137353">Ævintýraleikir</translation>
+<translation id="7393243238767102021">Leyfa <ph name="DOMAIN" /> að staðfesta þetta netfang sjálfkrafa?</translation>
 <translation id="7393475648162498734">Sjáðu hvaða fríðindi eru í boði fyrir kortin þín þegar þú gengur frá greiðslu</translation>
 <translation id="7393971683644170444">Tengist kortaútgefanda ...</translation>
 <translation id="739728382607845710">Tákn greiðslumiðlara</translation>
@@ -5060,6 +5065,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8963117664422609631">Opna stillingar vefsvæðis</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Tillögur:<ph name="MARKUP_2" />Tryggðu að gagnatenging sé fyrir hendi<ph name="MARKUP_3" />Endurnýjaðu þessa vefsíðu síðar<ph name="MARKUP_4" />Athugaðu vefslóðina sem þú slóst inn<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Staðbundnu skránum þínum verður eytt eftir <ph name="HOURS" /> klukkustundir</translation>
+<translation id="8964904785315870349">Staðfest netfang</translation>
 <translation id="8968766641738584599">Viltu vista kort?</translation>
 <translation id="8970887620466824814">Eitthvað fór úrskeiðis.</translation>
 <translation id="8971063699422889582">Vottorð þjónsins er útrunnið.</translation>

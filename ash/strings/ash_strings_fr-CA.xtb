@@ -38,9 +38,11 @@
 <translation id="109647177154844434">La désinstallation de Parallels Desktop supprimera votre image Windows. Cela comprend ses applications, ses paramètres et ses données. Souhaitez-vous vraiment continuer?</translation>
 <translation id="1104084341931202936">Afficher les paramètres d'accessibilité</translation>
 <translation id="1104621072296271835">Vos appareils fonctionnent encore mieux ensemble</translation>
+<translation id="1107300737351978027">Ne peut pas contenir de chiffres répétés</translation>
 <translation id="1111021433905331574">Vous pouvez changer la couleur du rétroéclairage de votre clavier dans Paramètres &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Basculer les données cellulaires. <ph name="STATE" />.</translation>
 <translation id="1118738876271697201">Le système n'a pas réussi à déterminer le modèle de l'appareil ni son numéro de série.</translation>
+<translation id="1119447706177454957">Erreur interne</translation>
 <translation id="1122849163460178706">Quelques exemples à essayer</translation>
 <translation id="112308213915226829">Masquer automatiquement l'étagère</translation>
 <translation id="1129383337808748948">Actualiser <ph name="CONTENT_TITLE" /></translation>
@@ -96,6 +98,7 @@
 <translation id="1247519845643687288">Applications récentes</translation>
 <translation id="1252999807265626933">Recharge à partir de <ph name="POWER_SOURCE" /> en cours</translation>
 <translation id="126156426083987769">Un problème avec les licences d'appareils en mode Démo est survenu.</translation>
+<translation id="1264337193001759725">Pour afficher les journaux de l'IU réseau, consultez cette page : <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1269405891096105529">Le mode Invité ne prend pas en charge votre périphérique</translation>
 <translation id="1270290102613614947">Clavier à l'écran désactivé</translation>
 <translation id="1272079795634619415">Arrêter</translation>
@@ -105,6 +108,7 @@
 <translation id="1276975447697633661">Sélectionnez le fichier, puis appuyez sur <ph name="KEY" /></translation>
 <translation id="1276994519141842946">Impossible de désinstaller <ph name="APP_NAME" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1283126956823499975">Un problème est survenu lors de la configuration de l'appareil</translation>
 <translation id="1285992161347843613">Localiser le téléphone</translation>
 <translation id="1287002645302686982">Un bureau enregistré nommé <ph name="DESK_TEMPLATE_NAME" /> existe déjà</translation>
 <translation id="1288276784862223576">Configurez l'affichage des photos et du contenu multimédia récents de votre téléphone</translation>
@@ -228,6 +232,7 @@
 <translation id="1604857178818051494">Mettre le contenu multimédia en pause</translation>
 <translation id="1607312127821884567">Ignorer la configuration de l'affichage des applications de votre téléphone</translation>
 <translation id="1610778689852195798">« Annuler »</translation>
+<translation id="1611432201750675208">Votre appareil est verrouillé</translation>
 <translation id="1611993646327628135">Activé</translation>
 <translation id="1612679292338846734">Lorsque vous activez ces fonctionnalités, le texte saisi, le contenu du document et l'URL de la page Web peuvent être envoyés aux serveurs de l'IA de Google. Ces informations sont utilisées pour générer des suggestions de rédaction, des résumés, répondre à des questions et améliorer le produit, sous réserve des <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel ni aucun élément confidentiel.</translation>
 <translation id="1619879934359211038">Impossible de se connecter à Google Play. Vérifiez votre connexion réseau et réessayez. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
@@ -241,6 +246,7 @@
 <translation id="1647986356840967552">Page précédente</translation>
 <translation id="1651914502370159744">Ouvrir la page Historique</translation>
 <translation id="1668469839109562275">RPV intégré</translation>
+<translation id="1668979692599483141">En savoir plus sur les suggestions</translation>
 <translation id="1673232940951031776">Terminez la séance du mode Sans distractions. Il reste <ph name="REMAINING_TIME" />.</translation>
 <translation id="1675570947608765064">D'autres utilisateurs peuvent voir les modifications que vous apportez à cette tâche</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> d'autonomie restante</translation>
@@ -354,6 +360,7 @@
 <translation id="2011174342667534258">Version de la trousse SDK :</translation>
 <translation id="2017998995161831444">Ouvrir « Aide » dans l'application Explorer</translation>
 <translation id="2021864487439853900">Cliquez pour le déverrouiller</translation>
+<translation id="2023167225947895179">Ce NIP est facile à deviner</translation>
 <translation id="2034971124472263449">Enregistrer quand même</translation>
 <translation id="2041220428661959602">Niveau de la pile : <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="204259843076055848">Le raccourci <ph name="SIX_PACK_KEY_NAME" /> est actuellement désactivé</translation>
@@ -1059,6 +1066,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4099874310852108874">Une erreur de réseau est survenue.</translation>
 <translation id="4101772068965291327">Ouvrir la page d'accueil</translation>
 <translation id="4102906002417106771">Redémarrer l'appareil pour effectuer une réinitialisation Powerwash</translation>
+<translation id="411052834366185695">Doit comporter au moins un chiffre</translation>
 <translation id="4113030288477039509">Géré par votre administrateur</translation>
 <translation id="4114315158543974537">Activer Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -1273,6 +1281,7 @@ Un appareil connecté.</translation>
 <translation id="4659419629803378708">ChromeVox activé</translation>
 <translation id="4666911709726371538">Autres applications</translation>
 <translation id="4667099493359681081">Téléchargement du fichier <ph name="FILENAME" /> en cours…</translation>
+<translation id="4668936527507421457">Le NIP doit être composé uniquement de chiffres</translation>
 <translation id="4672539464599646374">L'Économiseur de pile est activé</translation>
 <translation id="4673427585974421255">Garder activé</translation>
 <translation id="4677040906536311086">Feuille de calcul Google</translation>
@@ -1303,6 +1312,7 @@ Un appareil connecté.</translation>
 <translation id="4762573482154983647">Masquer les applications</translation>
 <translation id="4762718786438001384">Vous n'avez presque plus d'espace disque sur votre appareil</translation>
 <translation id="4763885921995354846">Cela autorise l'accès à l'appareil photo pour toutes les applications et tous les sites Web disposant de l'autorisation d'accès à l'appareil photo. Vous devrez peut-être actualiser la page Web ou redémarrer l'application.</translation>
+<translation id="4769359569327438364">Doit comporter au moins quatre chiffres</translation>
 <translation id="4774338217796918551">Reviens demain à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Votre mot de passe n'a toujours pas pu être vérifié. Réessayez.</translation>
 <translation id="4776917500594043016">Mot de passe pour <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1357,6 +1367,7 @@ Un appareil connecté.</translation>
 <translation id="4925542575807923399">L'administrateur pour ce compte l'a configuré de sorte qu'il doit être le premier compte à connecter lors de sessions de connexion multicompte.</translation>
 <translation id="493076006037866439">Zoom arrière de l'écran</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="4934763315031217818">Ne peut pas contenir de séquences ordonnées</translation>
 <translation id="4936329710968938986">Tous les utilisateurs, désactiver</translation>
 <translation id="4937170330762390348">Grâce à la Dictée, vous pouvez entrer du texte en utilisant votre voix. Appuyez sur la touche de la Dictée ou sélectionnez l'icône du microphone en bas de l'écran lorsque vous êtes sur un champ de texte. Langue de la Dictée présentement définie à : <ph name="LANGUAGE" />. Les fichiers vocaux seront téléchargés afin que vous puissiez utiliser la Dictée hors ligne. Vous pouvez changer la langue de la Dictée en tout temps dans Paramètres &gt; Accessibilité.</translation>
 <translation id="4938176435186993759">Masquer toutes les suggestions</translation>
@@ -1436,6 +1447,7 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="5147567197700016471">Déverrouillé</translation>
 <translation id="5150070631291639005">Paramètres de confidentialité</translation>
 <translation id="5155897006997040331">Vitesse de lecture</translation>
+<translation id="5158206172605340248">Menu des accents fermé.</translation>
 <translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Il s'agit d'informations générales concernant votre appareil et l'usage que vous en faites (comme le niveau de charge de la pile, l'activité du système, l'activité dans les applis et les erreurs). Ces données serviront à améliorer Android. En outre, certaines données agrégées contribueront à améliorer les applis Google et aideront nos partenaires, comme les développeurs Android, à améliorer leurs applis et leurs produits.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />La désactivation de cette fonctionnalité n'empêche pas votre appareil d'envoyer les données nécessaires aux services essentiels, comme les mises à jour du système et la sécurité.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Le propriétaire peut contrôler cette fonctionnalité sous Paramètres &gt; Paramètres avancés &gt; Envoyer automatiquement des données de diagnostic et d'utilisation à Google.<ph name="END_PARAGRAPH3" />
@@ -1468,9 +1480,11 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="5238719049014159442">Ouvrir/fermer le lanceur</translation>
 <translation id="5240725217819182328">Accès rapide à des pages ou à des actions précises dans les applications installées</translation>
 <translation id="5243355658487390559">Rechercher la date</translation>
+<translation id="5243477050423867768">Doit comporter au moins huit chiffres et ne peut pas contenir de séquences répétées ni ordonnées</translation>
 <translation id="5243522832766285132">Veuillez réessayer dans quelques instants</translation>
 <translation id="5245201184978705914">Impossible de générer la transcription</translation>
 <translation id="5251174953851719648">Actualiser le contenu</translation>
+<translation id="5252653240322147470">Le NIP doit comporter moins de <ph name="MAXIMUM" /> chiffres</translation>
 <translation id="5253783950165989294">Connecté à un appareil nommé <ph name="DEVICE_NAME" />, dont le niveau de pile est à<ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="52550593576409946">L'application Kiosque n'a pas pu être lancée.</translation>
 <translation id="5256939106029293271">Tester votre micro</translation>
@@ -1509,6 +1523,7 @@ Certaines fonctionnalités sont limitées pour augmenter l'autonomie de la pile.
 <translation id="5329548388331921293">Connexion en cours…</translation>
 <translation id="5331975486040154427">Appareil USB-C (port arrière-gauche)</translation>
 <translation id="533282197239610265">Afficher les appareils de diffusion</translation>
+<translation id="5342091991439452114">Le NIP doit comporter au moins <ph name="MINIMUM" /> chiffres</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (droite)</translation>
 <translation id="5352250171825660495">Le thème sombre est activé</translation>
 <translation id="5354804064646502504">Cela peut entraîner des coûts de données.
@@ -1737,6 +1752,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="602001110135236999">Faire défiler vers la gauche</translation>
 <translation id="6020147141355393792">Configurer l'affichage des notifications et des applications de votre téléphone</translation>
 <translation id="6022924867608035986">Effacer le texte de la zone de recherche</translation>
+<translation id="6023643151125006053">Cet appareil (numéro de série : <ph name="SERIAL_NUMBER" />) a été verrouillé par l'administrateur de <ph name="SAML_DOMAIN" />.</translation>
 <translation id="602472752137106327">Afficher les fenêtres de tous les bureaux, bouton radio sélectionné</translation>
 <translation id="6024768346262692989">Impossible de télécharger les fichiers du contrôle par le visage</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
@@ -1744,6 +1760,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6030495522958826102">Le menu a été déplacé vers le coin inférieur gauche de l'écran.</translation>
 <translation id="6030608926359652298">Personnaliser votre pavé tactile</translation>
 <translation id="6032620807120418574">Cliquez n'importe où pour capturer la totalité de l'écran</translation>
+<translation id="603539183851330738">Bouton d'annulation de la correction automatique. Revenir à <ph name="TYPED_WORD" />.  Appuyez sur Entrée pour activer cette action, ou sur Échap pour l'ignorer.</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6042308850641462728">Plus</translation>
 <translation id="6043212731627905357">Ce moniteur n'est pas compatible avec votre <ph name="DEVICE_TYPE" /> (le moniteur n'est pas pris en charge).</translation>
@@ -1879,6 +1896,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6418511932144861495">Installer une mise à jour essentielle</translation>
 <translation id="641867537956679916">Votre administrateur s'est connecté afin d'examiner un problème. Vous pouvez continuer à utiliser l'appareil une fois que l'administrateur vous en a rendu le contrôle.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="642469772702851743">Cet appareil (numéro de série : <ph name="SERIAL_NUMBER" />) a été verrouillé par son propriétaire.</translation>
 <translation id="642644398083277086">Effacer toutes les notifications</translation>
 <translation id="6426905245930183644">Création en cours…</translation>
 <translation id="6430225033895752525">Afficher les paramètres du mode Sans distractions</translation>
@@ -1904,6 +1922,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6485086611007560630">Météo (non accessible)</translation>
 <translation id="6490471652906364588">Appareil USB-C (port de droite)</translation>
 <translation id="6491376743066338510">Échec de l'autorisation</translation>
+<translation id="6494483173119160146">L'appareil a rencontré une erreur irrécupérable. Veuillez réinitialiser votre appareil (cela effacera toutes les données de l'utilisateur) et réessayez.</translation>
 <translation id="649452524636452238">NIP de la carte à puce</translation>
 <translation id="6495322433318104734">Affichage de l'économiseur d'écran, appuyez sur n'importe quelle touche pour quitter</translation>
 <translation id="6495400115277918834">Début de l'incrustation d'image, appuyez sur les touches Alt+Majuscule+V pour sélectionner</translation>
@@ -1927,6 +1946,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nouvelle installation</translation>
 <translation id="6559158502366839560">Explorer plus d'applis et de jeux</translation>
+<translation id="6560151649238390891">Suggestion insérée</translation>
 <translation id="6562447480759345110">Désactiver le mode Sans distractions</translation>
 <translation id="6565007273808762236">Connexion eSIM non proposée</translation>
 <translation id="6570831796530454248">{0,plural, =1{Mettez à jour l'appareil d'ici une heure}one{Mettez à jour l'appareil d'ici # heure}other{Mettez à jour l'appareil d'ici # heures}}</translation>
@@ -1948,6 +1968,7 @@ Nouvelle installation</translation>
 <translation id="6612889377159412215">sous-tâche</translation>
 <translation id="6613765291890844037">Espace de stockage en cours d'utilisation : <ph name="STORAGE_IN_USE_SIZE" /> | Espace de stockage total : <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
+<translation id="6622212269189717101">Doit comporter au moins six chiffres et ne peut pas contenir de séquences répétées ni ordonnées</translation>
 <translation id="6622679827379792051">Configurer l'affichage des applications de votre téléphone</translation>
 <translation id="662279009180869175">Utiliser les flèches vers la gauche et vers la droite pour redimensionner l'Écran divisé</translation>
 <translation id="6624493541160101248">Bureau actuel : <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
@@ -2141,6 +2162,7 @@ Nouvelle installation</translation>
 <translation id="7228968829656641943">Sélectionnez une zone pour rechercher sur mon écran. Appuyez sur la touche Tabulation, puis sur la touche Espace pour la navigation au clavier.</translation>
 <translation id="7229029500464092426">Mémoire <ph name="AVAILABLE_MEMORY" /> | Total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7234010996000898150">Annulation de la restauration Linux en cours…</translation>
+<translation id="7238609589076576185">Accent inséré.</translation>
 <translation id="7239814253344511868">Les deux boutons de souris</translation>
 <translation id="7240636904654154599">Feuille de calcul Google créée</translation>
 <translation id="7244725679040769470">Il reste <ph name="PERCENTAGE" /> % de pile. Branchez votre appareil à une source d'alimentation.</translation>
@@ -2222,6 +2244,7 @@ Nouvelle installation</translation>
 <translation id="7489261257412536105">Passer au mode plein écran ou le quitter</translation>
 <translation id="7490157877815329797">Pour écouter de la musique sans annonces et profiter de musique personnalisée pour la concentration, essayez YouTube Music Premium</translation>
 <translation id="7490360161041035804">Vous pouvez épingler des fichiers importants, y compris des fichiers Google Drive. Pour épingler, pointez un élément ou ouvrez Fichiers et faites un clic droit sur un élément.</translation>
+<translation id="7491962110804786152">Tabulation</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
 <translation id="7507162824403726948">Terminer la vérification de votre identité</translation>
 <translation id="7508690557411636492">Ouvert au cours du dernier mois</translation>
@@ -2458,6 +2481,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="808894953321890993">Changer le mot de passe</translation>
 <translation id="8091153018031979607">Commence à <ph name="START_TIME" /> le <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8092380135549145188">Commandes de défilement</translation>
+<translation id="80974698889265265">Les NIP ne correspondent pas</translation>
 <translation id="810637681351706236">Annuler l'épinglage de l'application dans l'étagère</translation>
 <translation id="8107015733319732394">Installation du Google Play Store sur votre <ph name="DEVICE_TYPE" /> en cours… Cela peut prendre quelques minutes.</translation>
 <translation id="8113515504791187892">Bouton Sélectionner pour énoncer</translation>
@@ -2485,10 +2509,12 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8168435359814927499">Contenu</translation>
 <translation id="8169177848833352618">Malheureusement, cette machine ne répond pas aux exigences d'installation de Bruschetta. Le code d'erreur est <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Poignée supérieure gauche sélectionnée; utilisez les touches fléchées pour déplacer la zone</translation>
+<translation id="8179976553408161302">Entrée</translation>
 <translation id="81817143961839203">Échec de l'insertion de l'image</translation>
 <translation id="8182105986296479640">L'application ne répond pas.</translation>
 <translation id="8182412589359523143">Pour supprimer toutes les données de cet appareil <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />cliquez ici<ph name="END_LINK" />.</translation>
 <translation id="8185090165691050712">Activer/désactiver le menu pour redimensionner le mode verrouiller</translation>
+<translation id="8186047833733689201">Menu des accents ouvert. Appuyez sur les touches gauche, droite ou numériques pour naviguer et sur Entrée pour insérer.</translation>
 <translation id="8192727139462702395">Lorsque vous désactivez le Bluetooth, les appareils externes suivants se déconnecteront de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet en cours…</translation>
 <translation id="8200772114523450471">Reprendre</translation>
@@ -2507,12 +2533,14 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8238817965863339552">Regardez une présentation rapide pour vous familiariser avec votre <ph name="PRODUCT_NAME" />. Configurez votre appareil en cinq étapes.</translation>
 <translation id="8239034820133090126">Activer le bureau à droite</translation>
 <translation id="8241650983304689286">Ajouter un onglet au nouvel affichage partagé</translation>
+<translation id="8244201515061746038">Correction automatique du bouton en savoir plus. Accédez à la page des paramètres de correction automatique. Appuyez sur Entrée pour activer cette action, ou sur Échap pour l'ignorer.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, pile du téléphone <ph name="BATTERY_STATUS" /></translation>
 <translation id="8249048954461686687">Dossier OEM</translation>
 <translation id="825129991941217170">Afficher tout le contenu de Google Disque</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8261625296061301062">Logiciel du numériseur installé</translation>
 <translation id="8262312463845990408">Activer/Désactiver la lecture</translation>
+<translation id="8266751606569906450">Doit comporter au moins <ph name="MINIMUM" /> caractères</translation>
 <translation id="8268302343625273732">Voir tous les devoirs dans Google Classroom</translation>
 <translation id="8277261673056602147">Mettre du texte en évidence sur votre écran</translation>
 <translation id="8281886186245836920">Ignorer</translation>
@@ -2548,6 +2576,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8388750414311082622">Impossible de supprimer le dernier bureau.</translation>
 <translation id="8390392581097975659">Installation du logiciel du numériseur en cours…</translation>
 <translation id="8394567579869570560">Ton parent a verrouillé cet appareil</translation>
+<translation id="839949601275221554">L'appareil a rencontré une erreur. Veuillez redémarrer votre appareil et réessayer.</translation>
 <translation id="8401850874595457088">Entrez la langue du menu</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Afficher les paramètres d'affichage</translation>
@@ -2706,6 +2735,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8858369206579825206">Paramètres de confidentialité</translation>
 <translation id="8859402192569844210">Impossible de charger les conditions d'utilisation</translation>
 <translation id="8860366331836346216">Ajouter une carte eSIM</translation>
+<translation id="8864458770072227512">L'adresse <ph name="EMAIL" /> a été supprimée de cet appareil</translation>
 <translation id="8869149849311827122">Voulez-vous vraiment désactiver le contrôle du curseur de la souris?</translation>
 <translation id="8870509716567206129">L'application n'est pas compatible avec l'écran partagé.</translation>
 <translation id="8871551568777368300">Épinglé par l'administrateur</translation>
@@ -2842,6 +2872,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="956452277966142925">Paramètres du Tableau de bord de jeu</translation>
 <translation id="961856697154696964">Supp. données de navigation</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
+<translation id="976499800099896273">Boîte de dialogue d'annulation de la correction automatique affichée pour la correction de <ph name="TYPED_WORD" /> en <ph name="CORRECTED_WORD" />.  Appuyez sur la flèche vers le haut pour y accéder, ou sur Échap pour l'ignorer.</translation>
 <translation id="97905529126098460">Cette fenêtre sera automatiquement fermée une fois l'annulation terminée.</translation>
 <translation id="981011780479609956">Aucune échéance</translation>
 <translation id="981121421437150478">Hors ligne</translation>

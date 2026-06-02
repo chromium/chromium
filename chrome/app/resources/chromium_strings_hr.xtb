@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">Chromium treba pristup Bluetoothu kako bi pronašao 
  Bluetooth uređaje. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />.</translation>
 <translation id="1330562121671411446">Prepoznaj jezik</translation>
+<translation id="1330742950061766891">Upotrijebite postavke preglednika koje preporučuje Chromium</translation>
 <translation id="1342274909142618978">Izbriši i podatke s Chromiuma (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Prikvačeno! Pretraživanju slika možete ponovo pristupiti pomoću novog gumba na alatnoj traci</translation>
 <translation id="1356661055722410047">Novo! Možete prevesti tekst i slike na zaslonu</translation>
@@ -371,6 +372,7 @@
 <translation id="5187123684706427865">Chromium račun zahtijeva ponovnu autentifikaciju</translation>
 <translation id="5231355151045086930">Odjava s Chromiuma</translation>
 <translation id="5234764350956374838">Odbaci</translation>
+<translation id="5249261924633168472">Otvori vezu u ano&amp;nimnom prozoru Chromiuma</translation>
 <translation id="5254739261293693943">Postavite pitanja o tom videozapisu</translation>
 <translation id="5276305953263010518">Preuzmite aplikaciju Chromium da biste spremali zaporke u pokretu</translation>
 <translation id="5277894862589591112">Da bi se vaše promjene primijenile, ponovo pokrenite Chromium</translation>

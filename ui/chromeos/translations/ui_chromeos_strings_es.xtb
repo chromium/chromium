@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Servidores de nombres automáticos</translation>
 <translation id="1210831758834677569">Laosiano</translation>
 <translation id="1221555006497674479">Queda poco espacio: te queda un <ph name="REMAINING_PERCENTAGE" /> % de <ph name="TOTAL_SPACE" /> de almacenamiento en tu unidad compartida.</translation>
+<translation id="1239594683407221485">Explora el contenido del dispositivo con la aplicación Archivos.</translation>
 <translation id="1243314992276662751">Subir</translation>
 <translation id="1249250836236328755">Género</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">No se puede eliminar. El elemento está en uso.</translation>
 <translation id="1307931752636661898">No se pueden ver archivos de Linux</translation>
 <translation id="1313405956111467313">Configuración de proxy automática</translation>
+<translation id="1340527397989195812">Realiza una copia de seguridad de los archivos multimedia desde el dispositivo con la aplicación Archivos.</translation>
 <translation id="134645005685694099">No hay suficiente espacio de almacenamiento en el dispositivo para mantener activada la sincronización de archivos. Los archivos nuevos ya no se sincronizarán automáticamente.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">No se puede utilizar el archivo o el directorio.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Sin certificado de usuario</translation>
 <translation id="1403008701842173542">En cualquier parte</translation>
 <translation id="1404323374378969387">Noruego</translation>
+<translation id="1408504635543854729">Explora el contenido del dispositivo en la aplicación Archivos. Un administrador ha restringido el contenido y este no se puede modificar.</translation>
 <translation id="1412476183660741812">Paquete web firmado</translation>
 <translation id="1433628812591023318">Para soltar archivos en Parallels Desktop, primero se tienen que mover a Archivos de Windows.</translation>
 <translation id="1435838927755162558">Compartir carpeta con Parallels Desktop</translation>
 <translation id="1439919885608649279">Persona con flores</translation>
 <translation id="1458457385801829801">Expulsar <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Para ver las preferencias del dispositivo, ve a Configuración.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> archivos no se han podido copiar porque están cifrados.</translation>
 <translation id="1471718551822868769">Eslovaco</translation>
 <translation id="1482884275703521657">Finés</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Gestionar en Drive</translation>
 <translation id="2004942826429452291">Los archivos se almacenarán en la nube y en este Chromebook.</translation>
 <translation id="2009067268969781306">Al formatear una unidad, se eliminarán todos los datos almacenados. Esta acción no se puede deshacer.</translation>
+<translation id="2018352199541442911">Tu dispositivo de almacenamiento externo no se admite en este momento.</translation>
 <translation id="2025955442973426285">Tigriña</translation>
 <translation id="2029385776150020336">Estados Unidos (ampliado)</translation>
 <translation id="2037845485764049925">Ruso</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470447085858632">Accede a tus archivos de Google Drive sin conexión usando la sincronización de archivos</translation>
 <translation id="2470939964922472929">Se ha escrito un PIN incorrecto demasiadas veces. Para establecer un nuevo PIN, escribe el código PUK de 8 dígitos proporcionado por tu operador.</translation>
+<translation id="249113932447298600">Lo sentimos, pero el dispositivo <ph name="DEVICE_LABEL" /> no se admite en este momento.</translation>
 <translation id="2500392669976258912">Guyaratí (fonético)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Escanear</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ucraniano</translation>
 <translation id="3326821416087822643">Comprimiendo <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Año de grabación</translation>
+<translation id="3348038390189153836">Se ha detectado un dispositivo extraíble.</translation>
 <translation id="3353984535370177728">Seleccionar una carpeta para subirla</translation>
 <translation id="3356580349448036450">Completo</translation>
 <translation id="3358452157379365236">Guitarra</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Descargar perfil móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inglés (Reino Unido)</translation>
 <translation id="3975895378829046965">Bengalí (fonético)</translation>
+<translation id="3983764759749072418">Las aplicaciones de Play Store tienen acceso a este dispositivo.</translation>
 <translation id="3999574733850440202">Los archivos de Microsoft abiertos recientemente se han movido a OneDrive</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4017788180641807848">Inglés (EE. UU.) con teclado Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Tienes que conectarte a Internet para acceder a este archivo.</translation>
 <translation id="4212740939091998969">Ya existe la carpeta "<ph name="FOLDER_NAME" />". Elige otro nombre.</translation>
 <translation id="4218274196133425560">Quitar excepción para <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Abrir Configuración</translation>
 <translation id="4261901459838235729">Presentación de Google</translation>
 <translation id="4277536868133419688">El filtro <ph name="FILTER_NAME" /> se ha activado.</translation>
 <translation id="4290535918735525311">1 carpeta compartida con Linux</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Archivos recuperados de Google Drive</translation>
 <translation id="5278111733643988471">Para restaurar este elemento, arrástralo a una nueva carpeta fuera de la papelera. Se ha eliminado la carpeta original "<ph name="PARENT_FOLDER_NAME" />" de este elemento.</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
+<translation id="529175790091471945">Formatear este dispositivo</translation>
 <translation id="5293615890992542006">La política del administrador ha bloqueado la opción de mover este archivo</translation>
 <translation id="5305688511332277257">No hay certificados instalados</translation>
 <translation id="5317780077021120954">Guardar</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">No utilizar la configuración de proxy para estos hosts y dominios:</translation>
 <translation id="541890217011173530">Kurdo sorani con teclado basado en el inglés</translation>
 <translation id="5422221874247253874">Punto de acceso</translation>
+<translation id="5422781158178868512">No se ha podido reconocer tu dispositivo de almacenamiento externo.</translation>
 <translation id="5438282218546237410">No hay ningún resultado para <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">No hay espacio suficiente.</translation>
 <translation id="5449551289610225147">La contraseña no es válida</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementos seleccionados</translation>
 <translation id="5763377084591234761">Alemán (Suiza)</translation>
 <translation id="5769519078756170258">Host o dominio que quieres excluir</translation>
+<translation id="5774295353725270860">Abrir Archivos</translation>
 <translation id="5775750595919327203">Urdu</translation>
 <translation id="5776325638577448643">Borrar y formatear</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5788127256798019331">Archivos de Play</translation>
+<translation id="5788367137662787332">Lo sentimos, pero no se ha podido activar al menos una partición del dispositivo <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5804245609861364054">Canarés (transliteración)</translation>
 <translation id="5814126672212206791">Tipo de conexión</translation>
 <translation id="5817397429773072584">Chino tradicional</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Islandés</translation>
 <translation id="7229570126336867161">Es necesario el estándar EVDO.</translation>
 <translation id="7230898482850090046">Tu administrador te ha solicitado que desactives el ajuste Bloquear SIM</translation>
+<translation id="7232750842195536390">No se ha podido cambiar el nombre</translation>
 <translation id="7238097264433196391">Nombre de la unidad</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalles</translation>
 <translation id="7246947237293279874">Proxy de FTP</translation>
+<translation id="725109152065019550">Tu administrador ha inhabilitado el almacenamiento externo en tu cuenta.</translation>
 <translation id="7256405249507348194">Error no reconocido: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Servicios disponibles</translation>
 <translation id="7291818353625820805">¿Quieres que se repitan las teclas? Desactiva las tildes en los ajustes del teclado.</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Mapa de Google</translation>
 <translation id="7419668828140929293">Restaurando <ph name="FILENAME" /></translation>
 <translation id="7435577899926900307">Estados Unidos (Dvorak)</translation>
+<translation id="7436921188514130341">¡Vaya! No se ha podido cambiar el nombre.</translation>
 <translation id="7458955835361612701">No hay imágenes recientes</translation>
 <translation id="7469894403370665791">Conectarse automáticamente a esta red</translation>
 <translation id="7486315294984620427">Para soltar archivos en Parallels Desktop, primero tienen que estar copiados en Archivos de Windows.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Fijar en la estantería</translation>
 <translation id="7553492409867692754">Permite que las aplicaciones de Linux accedan a los archivos de la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Actualmente no tienes conexión. La sincronización de archivos se reanudará cuando tengas conexión a Internet.</translation>
+<translation id="7589461650300748890">¡Atención! Ten cuidado.</translation>
 <translation id="7589661784326793847">Espera un segundo</translation>
 <translation id="7600126690270271294">Serbio</translation>
 <translation id="7603724359189955920">Cuadrículas</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">No se ha podido configurar la red</translation>
+<translation id="7839051173341654115">Ver archivos multimedia y realizar copia de seguridad</translation>
 <translation id="7839804798877833423">Para recuperar estos archivos se utilizarán aproximadamente <ph name="FILE_SIZE" /> de datos móviles.</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
 <translation id="7857117644404132472">Añadir excepción</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Polaco</translation>
 <translation id="7874321682039004450">Filipino</translation>
 <translation id="78946041517601018">Unidades compartidas</translation>
+<translation id="7897900149154324287">En el futuro, asegúrate de expulsar tu dispositivo extraíble en la aplicación Archivos antes de desconectarlo. De lo contrario, podrías perder datos.</translation>
 <translation id="7901567919203965902">Internacional estilo Workman (EE. UU.)</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Lo sentimos, pero al menos una partición del dispositivo de almacenamiento externo no se ha podido montar.</translation>
 <translation id="7908793776359722643">Al formatear una partición, se borrarán todos los datos almacenados en ella. Esta acción no se puede deshacer.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Tus archivos de Mi unidad se sincronizarán automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Para restaurar estos elementos, arrástralos a una nueva carpeta. Se han eliminado las carpetas originales de algunos de estos elementos.</translation>
 <translation id="8874184842967597500">No conectado</translation>
 <translation id="8876368061475701452">En cola</translation>
+<translation id="8893928184421379330">No se ha podido reconocer el dispositivo <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8902208737522818687">Estados Unidos internacional (PC)</translation>
 <translation id="8903931173357132290">Graduado</translation>
 <translation id="8912078710089354287">Perro moviendo la cola</translation>
