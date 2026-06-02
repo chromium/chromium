@@ -226,7 +226,7 @@ void SessionImpl::GetSizeInTokens(
     return;
   }
   auto input = on_device_model::mojom::Input::New();
-  input->pieces.push_back(text);
+  input->pieces.push_back(on_device_model::mojom::InputPiece::NewText(text));
   on_device_context_->GetOrCreateSession()->GetSizeInTokens(
       std::move(input), base::BindOnce([](uint32_t size) {
                           return std::optional<uint32_t>(size);

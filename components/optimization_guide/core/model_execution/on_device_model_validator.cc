@@ -82,7 +82,8 @@ void OnDeviceModelValidator::ValidateNextPrompt() {
   auto append_options = on_device_model::mojom::AppendOptions::New();
   append_options->input = on_device_model::mojom::Input::New();
   append_options->input->pieces.push_back(
-      validation_config_.validation_prompts(index_).prompt());
+      on_device_model::mojom::InputPiece::NewText(
+          validation_config_.validation_prompts(index_).prompt()));
   active_session_->Append(std::move(append_options), {});
 
   auto generate_options = on_device_model::mojom::GenerateOptions::New();

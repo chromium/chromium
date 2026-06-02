@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
@@ -58,39 +59,53 @@ std::string Placeholder(ml::Token token) {
 std::string OnDeviceInputToString(const mojom::Input& input,
                                   const Capabilities& capabilities) {
   std::string result;
+  using Tag = mojom::InputPiece::Tag;
   for (const auto& piece : input.pieces) {
-    if (std::holds_alternative<ml::Token>(piece)) {
-      result += Placeholder(std::get<ml::Token>(piece));
-    } else if (std::holds_alternative<std::string>(piece)) {
-      result += std::get<std::string>(piece);
-    } else if (std::holds_alternative<SkBitmap>(piece)) {
-      if (capabilities.Has(CapabilityFlags::kImageInput)) {
-        result += "<image>";
-      } else {
-        result += "<unsupported>";
+    switch (piece->which()) {
+      case Tag::kToken:
+        result += Placeholder(piece->get_token());
+        break;
+      case Tag::kText:
+        result += piece->get_text();
+        break;
+      case Tag::kBitmap:
+        if (capabilities.Has(CapabilityFlags::kImageInput)) {
+          result += "<image>";
+        } else {
+          result += "<unsupported>";
+        }
+        break;
+      case Tag::kAudio:
+        if (capabilities.Has(CapabilityFlags::kAudioInput)) {
+          result += "<audio>";
+        } else {
+          result += "<unsupported>";
+        }
+        break;
+      case Tag::kToolResponse: {
+        const auto& response = piece->get_tool_response();
+        base::StrAppend(&result, {"<tool-response id=", response->call_id,
+                                  " name=", response->name});
+        if (response->result) {
+          std::string result_json;
+          base::JSONWriter::Write(*response->result, &result_json);
+          base::StrAppend(&result, {" result=", result_json});
+        }
+        if (response->error_message) {
+          base::StrAppend(&result,
+                          {" error=\"", *response->error_message, "\""});
+        }
+        result += ">";
+        break;
       }
-    } else if (std::holds_alternative<ml::AudioBuffer>(piece)) {
-      if (capabilities.Has(CapabilityFlags::kAudioInput)) {
-        result += "<audio>";
-      } else {
-        result += "<unsupported>";
+      case Tag::kToolDeclaration: {
+        const auto& decl = piece->get_tool_declaration();
+        base::StrAppend(&result, {"<tool name=", decl->name, ">"});
+        break;
       }
-    } else if (std::holds_alternative<ml::ToolResponse>(piece)) {
-      const auto& response = std::get<ml::ToolResponse>(piece);
-      base::StrAppend(&result, {"<tool-response id=", response.call_id,
-                                " name=", response.name});
-      if (!response.result_json.empty()) {
-        base::StrAppend(&result, {" result=", response.result_json});
-      }
-      if (!response.error_message.empty()) {
-        base::StrAppend(&result, {" error=\"", response.error_message, "\""});
-      }
-      result += ">";
-    } else if (std::holds_alternative<ml::ToolDeclaration>(piece)) {
-      const auto& decl = std::get<ml::ToolDeclaration>(piece);
-      base::StrAppend(&result, {"<tool name=", decl.name, ">"});
-    } else {
-      result += "<unknown>";
+      case Tag::kUnknownType:
+        result += "<unknown>";
+        break;
     }
   }
   return result;
