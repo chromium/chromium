@@ -33,10 +33,6 @@ class MediaStateObserver
   // content::WebContentsObserver overrides:
   // Called when the audio muting state of the WebContents has changed.
   void DidUpdateAudioMutingState(bool muted) override;
-  // Called when the audible state changes. This is used when
-  // kEnableAudioMonitoringOnAndroid is disabled to avoid the 2-second audible
-  // polling delay.
-  void OnAudioStateChanged(bool audible) override;
 
   // MediaStreamCaptureIndicator::Observer overrides:
   // Called when the video capture state of the WebContents has changed.
@@ -55,7 +51,7 @@ class MediaStateObserver
   friend class content::WebContentsUserData<MediaStateObserver>;
 
   // Subscribes to notifications about changes in the "recently audible" state.
-  base::CallbackListSubscription MaybeSubscribeToRecentlyAudible();
+  base::CallbackListSubscription SubscribeToRecentlyAudible();
 
   // Handles debounced audible state changes from RecentlyAudibleHelper. This is
   // used when kEnableAudioMonitoringOnAndroid is enabled to prevent UI

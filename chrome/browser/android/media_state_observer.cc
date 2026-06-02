@@ -15,7 +15,7 @@
 MediaStateObserver::MediaStateObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<MediaStateObserver>(*web_contents),
-      recently_audible_subscription_(MaybeSubscribeToRecentlyAudible()) {
+      recently_audible_subscription_(SubscribeToRecentlyAudible()) {
   media_stream_capture_indicator_observation_.Observe(
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator()
@@ -32,12 +32,6 @@ void MediaStateObserver::DidUpdateAudioMutingState(bool muted) {
   UpdateMediaState();
 }
 
-void MediaStateObserver::OnAudioStateChanged(bool audible) {
-  if (recently_audible_subscription_) {
-    return;
-  }
-  UpdateAudibleState(audible);
-}
 
 void MediaStateObserver::OnIsCapturingVideoChanged(
     content::WebContents* web_contents,
@@ -83,14 +77,11 @@ void MediaStateObserver::MediaPictureInPictureChanged(
 }
 
 base::CallbackListSubscription
-MediaStateObserver::MaybeSubscribeToRecentlyAudible() {
-  if (base::FeatureList::IsEnabled(media::kEnableAudioMonitoringOnAndroid)) {
-    return RecentlyAudibleHelper::FromWebContents(web_contents())
-        ->RegisterRecentlyAudibleChangedCallback(base::BindRepeating(
-            &MediaStateObserver::OnRecentlyAudibleStateChanged,
-            base::Unretained(this)));
-  }
-  return base::CallbackListSubscription();
+MediaStateObserver::SubscribeToRecentlyAudible() {
+  return RecentlyAudibleHelper::FromWebContents(web_contents())
+      ->RegisterRecentlyAudibleChangedCallback(base::BindRepeating(
+          &MediaStateObserver::OnRecentlyAudibleStateChanged,
+          base::Unretained(this)));
 }
 
 void MediaStateObserver::OnRecentlyAudibleStateChanged(bool was_audible) {
