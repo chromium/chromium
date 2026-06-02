@@ -28,8 +28,21 @@ enum FailureType {
   GENERIC_ERROR,
 }
 
+// Setup target height and width custom properties immediately at load to
+// prevent layout shifts.
+const defaultHeight =
+    loadTimeData.getInteger('glicExperimentalOptInDefaultHeight');
+const defaultWidth =
+    loadTimeData.getInteger('glicExperimentalOptInDefaultWidth');
+document.documentElement.style.setProperty(
+    '--glic-experimental-opt-in-height', `${defaultHeight}px`);
+document.documentElement.style.setProperty(
+    '--glic-experimental-opt-in-width', `${defaultWidth}px`);
+
 function init() {
   const webview = getRequiredElement<chrome.webviewTag.WebView>('webview');
+  webview.setAttribute('minwidth', String(defaultWidth));
+  webview.setAttribute('maxwidth', String(defaultWidth));
   const errorPanel = getRequiredElement('errorPanel');
   const errorIcon = getRequiredElement('errorIcon');
   const errorHeadline = getRequiredElement('errorHeadline');
@@ -65,6 +78,7 @@ function init() {
     if (hasError || webview.hidden) {
       return;
     }
+
     const sizeEvent = e as unknown as chrome.webviewTag.SizeChangedEvent;
     window.resizeTo(sizeEvent.newWidth, sizeEvent.newHeight);
   });
@@ -84,13 +98,14 @@ function init() {
 
     errorPanel.hidden = false;
     webview.hidden = true;
-    window.resizeTo(512, 502);
+    window.resizeTo(defaultWidth, 502);
   }
 
   webview.addEventListener('loadstart', () => {
     hasError = false;
     errorPanel.hidden = true;
     webview.hidden = false;
+    webview.classList.remove('autosized');
     startWatchdog();
   });
 
@@ -100,6 +115,7 @@ function init() {
       return;
     }
     errorPanel.hidden = true;
+    webview.classList.add('autosized');
     webview.hidden = false;
     handler.onWebviewLoaded();
   });
@@ -163,21 +179,21 @@ function init() {
   tryLoad();
 
   webview.addEventListener(
-    'loadcommit', ((e: Event) => {
-      const loadCommitEvent =
-        e as unknown as chrome.webviewTag.LoadCommitEvent;
-      if (!loadCommitEvent.isTopLevel) {
-        return;
-      }
-      const urlObj = new URL(loadCommitEvent.url);
-      const urlHash = urlObj.hash;
+      'loadcommit', ((e: Event) => {
+                      const loadCommitEvent =
+                          e as unknown as chrome.webviewTag.LoadCommitEvent;
+                      if (!loadCommitEvent.isTopLevel) {
+                        return;
+                      }
+                      const urlObj = new URL(loadCommitEvent.url);
+                      const urlHash = urlObj.hash;
 
-    if (urlHash === '#continue') {
-      handler.accept();
-    } else if (urlHash.startsWith('#noThanks')) {
-      handler.reject();
-    }
-  }) as EventListener);
+                      if (urlHash === '#continue') {
+                        handler.accept();
+                      } else if (urlHash.startsWith('#noThanks')) {
+                        handler.reject();
+                      }
+                    }) as EventListener);
 
   webview.addEventListener('newwindow', onNewWindow as EventListener);
 }

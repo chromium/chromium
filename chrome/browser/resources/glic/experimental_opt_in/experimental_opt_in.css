@@ -8,14 +8,14 @@
 
 body,
 html {
+  background-color: var(--color-glic-background);
+  color: var(--cr-fallback-color-on-surface);
+  font-family: Roboto, sans-serif;
+  height: auto !important;
   margin: 0;
   padding: 0;
   width: auto !important;
-  height: auto !important;
   overflow: hidden;
-  font-family: Roboto, sans-serif;
-  background-color: var(--color-glic-background);
-  color: var(--cr-fallback-color-on-surface);
 }
 
 .panel:not([hidden]) {
@@ -24,7 +24,7 @@ html {
 
 .panel {
   flex-direction: column;
-  width: 512px;
+  width: var(--glic-experimental-opt-in-width, 512px);
   box-sizing: border-box;
   background-color: var(--color-glic-background);
 }
@@ -113,7 +113,13 @@ webview:not([hidden]) {
 
 webview {
   border: none;
-  width: 512px;
+  width: var(--glic-experimental-opt-in-width);
+  height: var(--glic-experimental-opt-in-height);
+}
+
+webview.autosized {
+  width: auto;
+  height: auto;
 }
 
 .notice cr-button {

@@ -19,6 +19,10 @@ class WebUI;
 
 namespace glic {
 
+inline constexpr int kGlicExperimentalOptInDefaultHeightGlic = 507;
+inline constexpr int kGlicExperimentalOptInDefaultHeightExperimental = 531;
+inline constexpr int kGlicExperimentalOptInDefaultWidth = 512;
+
 class GlicExperimentalOptInPageHandler;
 class GlicExperimentalOptInUI;
 

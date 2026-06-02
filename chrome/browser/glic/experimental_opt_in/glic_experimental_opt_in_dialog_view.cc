@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -27,9 +30,6 @@ namespace glic {
 
 namespace {
 
-constexpr int kDefaultWidth = 512;
-constexpr int kDefaultHeight = 600;
-
 class GlicWebView : public views::WebView {
  public:
   explicit GlicWebView(Profile* profile, tabs::TabInterface* tab_interface)
@@ -38,6 +38,17 @@ class GlicWebView : public views::WebView {
 
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override {
+    // When a dialog is initialized with Auto-Resize enabled
+    // (EnableSizingFromWebContents), Blink performs an initial layout pass on
+    // the document. Because the web contents are still being loaded, parsed,
+    // and rendering is not yet complete, the document height will not be the
+    // desired one at this time and we should suppress until the webview is
+    // ready.
+    if (!received_first_resize_) {
+      received_first_resize_ = true;
+      return;
+    }
+
     views::WebView::ResizeDueToAutoResize(source, new_size);
     if (GetWidget()) {
       tab_interface_->GetTabFeatures()
@@ -45,8 +56,10 @@ class GlicWebView : public views::WebView {
           ->UpdateModalDialogBounds();
     }
   }
+
  private:
   raw_ptr<tabs::TabInterface> tab_interface_;
+  bool received_first_resize_ = false;
 };
 
 }  // namespace
@@ -66,7 +79,20 @@ GlicExperimentalOptInDialogView::GlicExperimentalOptInDialogView(
   web_view_ = web_view.get();
   web_view->SetProperty(views::kElementIdentifierKey, kDialogElementId);
 
-  gfx::Size initial_size(kDefaultWidth, kDefaultHeight);
+  RequiredExperimentalOptIn required_state =
+      RequiredExperimentalOptIn::kExperimental;
+  if (auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile)) {
+    required_state = service->enabling().GetRequiredExperimentalOptIn();
+  }
+  if (required_state == RequiredExperimentalOptIn::kNotNeeded) {
+    required_state = RequiredExperimentalOptIn::kExperimental;
+  }
+
+  gfx::Size initial_size(
+      kGlicExperimentalOptInDefaultWidth,
+      (required_state == RequiredExperimentalOptIn::kExperimental)
+          ? kGlicExperimentalOptInDefaultHeightExperimental
+          : kGlicExperimentalOptInDefaultHeightGlic);
   web_view->SetPreferredSize(initial_size);
 
   // Create WebContents for the webview.
@@ -82,8 +108,9 @@ GlicExperimentalOptInDialogView::GlicExperimentalOptInDialogView(
 
   // Enable auto-resizing from content, with min size as initial size and a max
   // size.
-  web_view->EnableSizingFromWebContents(gfx::Size(512, 200),
-                                        gfx::Size(512, 800));
+  web_view->EnableSizingFromWebContents(
+      gfx::Size(kGlicExperimentalOptInDefaultWidth, 200),
+      gfx::Size(kGlicExperimentalOptInDefaultWidth, 800));
 
   view_observation_.Observe(web_view_);
   SetContentsView(std::move(web_view));
