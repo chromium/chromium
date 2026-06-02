@@ -208,8 +208,7 @@ TEST_F(OffscreenCanvasTest, AnimationUsesSyntheticTimerWhenHidden) {
 }
 
 TEST_F(OffscreenCanvasTest, SwitchFrameByCanvasImageSource) {
-  auto* canvas = MakeGarbageCollected<OffscreenCanvas>(
-      GetDocument().GetExecutionContext(), gfx::Size(100, 100));
+  auto* canvas = OffscreenCanvas::Create(GetScriptState(), 100, 100);
   // Make sure the canvas has the context.
   ASSERT_TRUE(canvas->GetCanvasRenderingContext(
       GetDocument().GetExecutionContext(),
@@ -224,8 +223,7 @@ TEST_F(OffscreenCanvasTest, SwitchFrameByCanvasImageSource) {
 }
 
 TEST_F(OffscreenCanvasTest, SwitchFrameByImageBitmapSource) {
-  auto* canvas = MakeGarbageCollected<OffscreenCanvas>(
-      GetDocument().GetExecutionContext(), gfx::Size(100, 100));
+  auto* canvas = OffscreenCanvas::Create(GetScriptState(), 100, 100);
   // Make sure the canvas has the context.
   ASSERT_TRUE(canvas->GetCanvasRenderingContext(
       GetDocument().GetExecutionContext(),
@@ -310,8 +308,7 @@ TEST_P(OffscreenCanvasTest, GetRasterModeAutoRecovery) {
 }
 
 TEST_F(OffscreenCanvasTest, BitmapRendererResizePreservesTaint) {
-  auto* canvas = MakeGarbageCollected<OffscreenCanvas>(
-      GetDocument().GetExecutionContext(), gfx::Size(100, 100));
+  auto* canvas = OffscreenCanvas::Create(GetScriptState(), 100, 100);
   CanvasContextCreationAttributesCore attrs;
   auto* context = static_cast<ImageBitmapRenderingContext*>(
       canvas->GetCanvasRenderingContext(

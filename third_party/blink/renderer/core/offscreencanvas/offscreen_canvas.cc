@@ -98,41 +98,6 @@ const char OffscreenCanvasRegistry::kSupplementName[] =
     "OffscreenCanvasRegistry";
 }  // namespace
 
-OffscreenCanvas::OffscreenCanvas(ExecutionContext* context, gfx::Size size)
-    : CanvasRenderingContextHost(
-          CanvasRenderingContextHost::HostType::kOffscreenCanvasHost,
-          size),
-      execution_context_(context) {
-  // Other code in Blink watches for destruction of the context; be
-  // robust here as well.
-  if (!context->IsContextDestroyed()) {
-    if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-      // Snapshot the text direction. For a offscreen transferred from
-      // an element this will be over-written by the value from the element.
-      if (window->document()->documentElement()) {
-        text_direction_ =
-            window->document()->documentElement()->CachedDirectionality();
-      }
-      // If this OffscreenCanvas is being created in the context of a
-      // cross-origin iframe, it should prefer to use the low-power GPU.
-      LocalFrame* frame = window->GetFrame();
-      if (!(frame && frame->IsCrossOriginToOutermostMainFrame())) {
-        AllowHighPerformancePowerPreference();
-      }
-    } else if (context->IsDedicatedWorkerGlobalScope()) {
-      // Per spec, dedicated workers can only load same-origin top-level
-      // scripts, so grant them access to the high-performance GPU.
-      //
-      // TODO(crbug.com/40118181): refine this logic. If the worker was
-      // spawned from an iframe, keep track of whether that iframe was
-      // itself cross-origin.
-      AllowHighPerformancePowerPreference();
-    }
-  }
-
-  CanvasResourceTracker::For(context->GetIsolate())->Add(this, context);
-}
-
 OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
                                  gfx::Size size,
                                  uint32_t client_id,
@@ -186,15 +151,6 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
       animation_frame_provider->RegisterOffscreenCanvas(this);
     }
   }
-}
-
-OffscreenCanvas* OffscreenCanvas::Create(ScriptState* script_state,
-                                         unsigned width,
-                                         unsigned height) {
-  UMA_HISTOGRAM_BOOLEAN("Blink.OffscreenCanvas.NewOffscreenCanvas", true);
-  return MakeGarbageCollected<OffscreenCanvas>(
-      ExecutionContext::From(script_state),
-      gfx::Size(ClampTo<int>(width), ClampTo<int>(height)));
 }
 
 OffscreenCanvas* OffscreenCanvas::Create(ScriptState* script_state,

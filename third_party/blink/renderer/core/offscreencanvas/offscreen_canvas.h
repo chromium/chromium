@@ -46,15 +46,13 @@ class CORE_EXPORT OffscreenCanvas final
   USING_PRE_FINALIZER(OffscreenCanvas, Dispose);
 
  public:
-  static OffscreenCanvas* Create(ScriptState*, unsigned width, unsigned height);
   static OffscreenCanvas* Create(ScriptState*,
                                  unsigned width,
                                  unsigned height,
-                                 uint32_t client_id,
-                                 uint32_t sink_id,
-                                 DOMNodeId canvas_id);
+                                 uint32_t client_id = 0,
+                                 uint32_t sink_id = 0,
+                                 DOMNodeId canvas_id = kInvalidDOMNodeId);
 
-  OffscreenCanvas(ExecutionContext*, gfx::Size);
   OffscreenCanvas(ExecutionContext*,
                   gfx::Size,
                   uint32_t client_id,
