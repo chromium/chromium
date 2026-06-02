@@ -431,6 +431,7 @@ void DeviceImpl::ClaimInterface(uint8_t interface_number,
     }
   }
 
+  device_->set_state_change_in_progress(true);
   device_handle_->ClaimInterface(
       interface_number,
       base::BindOnce(&DeviceImpl::OnInterfaceClaimed,
@@ -484,8 +485,11 @@ void DeviceImpl::SetInterfaceAlternateSetting(
     return;
   }
 
+  device_->set_state_change_in_progress(true);
   device_handle_->SetInterfaceAlternateSetting(
-      interface_number, alternate_setting, std::move(callback));
+      interface_number, alternate_setting,
+      base::BindOnce(&DeviceImpl::OnSetInterfaceAlternateSettingComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DeviceImpl::Reset(ResetCallback callback) {
@@ -673,8 +677,16 @@ void DeviceImpl::OnDeviceRemoved(scoped_refptr<device::UsbDevice> device) {
 
 void DeviceImpl::OnInterfaceClaimed(ClaimInterfaceCallback callback,
                                     bool success) {
+  device_->set_state_change_in_progress(false);
   std::move(callback).Run(success ? mojom::UsbClaimInterfaceResult::kSuccess
                                   : mojom::UsbClaimInterfaceResult::kFailure);
+}
+
+void DeviceImpl::OnSetInterfaceAlternateSettingComplete(
+    SetInterfaceAlternateSettingCallback callback,
+    bool success) {
+  device_->set_state_change_in_progress(false);
+  std::move(callback).Run(success);
 }
 
 void DeviceImpl::OnSetConfigurationComplete(SetConfigurationCallback callback,

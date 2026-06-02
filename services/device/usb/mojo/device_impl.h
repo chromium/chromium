@@ -123,6 +123,9 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   void OnDeviceRemoved(scoped_refptr<device::UsbDevice> device) override;
 
   void OnInterfaceClaimed(ClaimInterfaceCallback callback, bool success);
+  void OnSetInterfaceAlternateSettingComplete(
+      SetInterfaceAlternateSettingCallback callback,
+      bool success);
   void OnSetConfigurationComplete(SetConfigurationCallback callback,
                                   bool success);
   void OnResetComplete(ResetCallback callback, bool success);
