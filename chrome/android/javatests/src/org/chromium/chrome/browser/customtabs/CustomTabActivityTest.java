@@ -232,8 +232,7 @@ import java.util.function.Consumer;
 @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
 @DisableLeakChecks({
     "crbug.com/512492806 (NavigationInfoCaptureTrigger)",
-    "crbug.com/512492857 (NavigationInfoCaptureTrigger)",
-    "crbug.com/512491482 (BaseCustomTabActivity$2)"
+    "crbug.com/512492857 (NavigationInfoCaptureTrigger)"
 })
 public class CustomTabActivityTest {
     private static final int TIMEOUT_PAGE_LOAD_SECONDS = 10;
