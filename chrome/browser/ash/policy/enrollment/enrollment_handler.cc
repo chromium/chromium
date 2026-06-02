@@ -329,7 +329,7 @@ void EnrollmentHandler::OnPolicyFetched(CloudPolicyClient* client) {
     validator->ValidateDomain(domain);
   validator->ValidateDMToken(client->dm_token(),
                              CloudPolicyValidatorBase::DM_TOKEN_REQUIRED);
-  DeviceCloudPolicyValidator::StartValidation(
+  CloudPolicyValidatorBase::StartValidation(
       std::move(validator),
       base::BindOnce(&EnrollmentHandler::HandlePolicyValidationResult,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -548,7 +548,7 @@ std::unique_ptr<DeviceCloudPolicyValidator> EnrollmentHandler::CreateValidator(
 }
 
 void EnrollmentHandler::HandlePolicyValidationResult(
-    DeviceCloudPolicyValidator* validator) {
+    CloudPolicyValidatorBase* validator) {
   DCHECK_EQ(STEP_VALIDATION, enrollment_step_);
   if (!validator->success()) {
     ReportResult(EnrollmentStatus::ForValidationError(validator->status()));

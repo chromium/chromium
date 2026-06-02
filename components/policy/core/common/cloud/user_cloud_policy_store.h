@@ -105,7 +105,7 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
   void PolicyLoaded(bool validate_in_background,
                     PolicyLoadResult policy_load_result);
 
-  // Starts policy blob validation for user policies. |callback| is invoked once
+  // Starts policy blob validation. |callback| is invoked once
   // validation is complete. If |validate_in_background| is true, then the
   // validation work occurs on a background thread (results are sent back to the
   // calling thread).
@@ -113,46 +113,24 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       std::unique_ptr<enterprise_management::PolicySigningKey> key,
       bool validate_in_background,
-      UserCloudPolicyValidator::CompletionCallback callback) = 0;
-
-  // Starts policy blob validation for extension install policies. |callback| is
-  // invoked once validation is complete. If |validate_in_background| is true,
-  // then the validation work occurs on a background thread (results are sent
-  // back to the calling thread).
-  virtual void ValidateExtensionInstallPolicy(
-      std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
-      std::unique_ptr<enterprise_management::PolicySigningKey> key,
-      bool validate_in_background,
-      ExtensionInstallCloudPolicyValidator::CompletionCallback callback) = 0;
+      CloudPolicyValidatorBase::CompletionCallback callback) = 0;
 
   // Validate the |cached_key| with the |owning_domain|.
-  template <typename PayloadProto>
   void ValidateKeyAndSignature(
-      CloudPolicyValidator<PayloadProto>* validator,
+      CloudPolicyValidatorBase* validator,
       const enterprise_management::PolicySigningKey* cached_key,
       const std::string& owning_domain);
 
   // Callback invoked to install a just-loaded policy after validation has
   // finished.
-  template <typename PayloadProto>
-  void InstallLoadedPolicyAfterValidation(
-      bool doing_key_rotation,
-      const std::string& signing_key,
-      CloudPolicyValidator<PayloadProto>* validator);
+  void InstallLoadedPolicyAfterValidation(bool doing_key_rotation,
+                                          const std::string& signing_key,
+                                          CloudPolicyValidatorBase* validator);
 
   // Callback invoked to store the policy after validation has finished.
-  void OnPolicyToStoreValidated(UserCloudPolicyValidator* validator);
-
-  // Callback invoked to store the extension install policy after validation has
-  // finished.
-  void OnExtensionInstallPolicyToStoreValidated(
-      ExtensionInstallCloudPolicyValidator* validator);
+  void OnPolicyToStoreValidated(CloudPolicyValidatorBase* validator);
 
  private:
-  template <typename PayloadProto>
-  void OnPolicyToStoreValidatedImpl(
-      CloudPolicyValidator<PayloadProto>* validator);
-
   // Loads cloud policies that have been written on the disk at |policy_path|
   // for caching purposes. Reads the optional |key_path| to load the signing key
   // for those policies. |policy_load_filter| is used to filter the policies
@@ -228,21 +206,7 @@ class POLICY_EXPORT UserCloudPolicyStore : public DesktopCloudPolicyStore {
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       std::unique_ptr<enterprise_management::PolicySigningKey> key,
       bool validate_in_background,
-      UserCloudPolicyValidator::CompletionCallback callback) override;
-
-  void ValidateExtensionInstallPolicy(
-      std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
-      std::unique_ptr<enterprise_management::PolicySigningKey> key,
-      bool validate_in_background,
-      ExtensionInstallCloudPolicyValidator::CompletionCallback callback)
-      override;
-
-  template <typename PayloadProto>
-  void ValidateImpl(
-      std::unique_ptr<CloudPolicyValidator<PayloadProto>> validator,
-      std::unique_ptr<enterprise_management::PolicySigningKey> cached_key,
-      bool validate_in_background,
-      CloudPolicyValidator<PayloadProto>::CompletionCallback callback);
+      CloudPolicyValidatorBase::CompletionCallback callback) override;
 
   // The account id from signin for validation of the policy.
   AccountId account_id_;

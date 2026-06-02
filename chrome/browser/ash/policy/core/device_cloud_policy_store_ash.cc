@@ -177,7 +177,7 @@ DeviceCloudPolicyStoreAsh::CreateValidator(
 }
 
 void DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated(
-    DeviceCloudPolicyValidator* validator) {
+    CloudPolicyValidatorBase* validator) {
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
@@ -185,7 +185,10 @@ void DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated(
     return;
   }
 
-  if (GetDeviceBlockDevModePolicyValue(*(validator->payload())) &&
+  CHECK_EQ(validator->policy_type(), dm_protocol::kChromeDevicePolicyType);
+
+  auto* typed_validator = static_cast<DeviceCloudPolicyValidator*>(validator);
+  if (GetDeviceBlockDevModePolicyValue(*(typed_validator->payload())) &&
       !IsDeviceBlockDevModePolicyAllowed()) {
     LOG(ERROR) << "Rejected device policy: DeviceBlockDevmode not allowed";
     status_ = STATUS_BAD_STATE;

@@ -83,11 +83,7 @@ void UserCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
   std::unique_ptr<em::PolicyFetchResponse> response(
       new em::PolicyFetchResponse(policy));
   cached_policy_key_loader_->EnsurePolicyKeyLoaded(
-      base::BindOnce(policy_type() == dm_protocol::GetChromeUserPolicyType()
-                         ? &UserCloudPolicyStoreAsh::ValidatePolicyForStore<
-                               em::CloudPolicySettings>
-                         : &UserCloudPolicyStoreAsh::ValidatePolicyForStore<
-                               em::ExtensionInstallPolicies>,
+      base::BindOnce(&UserCloudPolicyStoreAsh::ValidatePolicyForStore,
                      weak_factory_.GetWeakPtr(), std::move(response)));
 }
 
@@ -104,13 +100,18 @@ void UserCloudPolicyStoreAsh::Load() {
                                  weak_factory_.GetWeakPtr()));
 }
 
-std::unique_ptr<UserCloudPolicyValidator>
+std::unique_ptr<CloudPolicyValidatorBase>
 UserCloudPolicyStoreAsh::CreateValidator(
     std::unique_ptr<em::PolicyFetchResponse> policy,
     CloudPolicyValidatorBase::ValidateTimestampOption option) {
   auto validator =
       UserCloudPolicyStoreBase::CreateValidator(std::move(policy), option);
-  validator->ValidateValues(std::make_unique<ONCUserPolicyValueValidator>());
+  if (policy_type() == dm_protocol::GetChromeUserPolicyType()) {
+    UserCloudPolicyValidator* user_validator =
+        static_cast<UserCloudPolicyValidator*>(validator.get());
+    user_validator->ValidateValues(
+        std::make_unique<ONCUserPolicyValueValidator>());
+  }
   return validator;
 }
 
@@ -159,38 +160,18 @@ void UserCloudPolicyStoreAsh::LoadImmediately() {
     return;
   }
 
-  if (policy_type() == dm_protocol::GetChromeUserPolicyType()) {
-    std::unique_ptr<UserCloudPolicyValidator> validator =
-        CreateValidatorForLoad<em::CloudPolicySettings>(std::move(policy));
-    validator->RunValidation();
-    OnRetrievedPolicyValidated(validator.get());
-  } else if (policy_type() ==
-             dm_protocol::kChromeExtensionInstallUserCloudPolicyType) {
-    std::unique_ptr<ExtensionInstallCloudPolicyValidator> validator =
-        CreateValidatorForLoad<em::ExtensionInstallPolicies>(std::move(policy));
-    validator->RunValidation();
-    OnRetrievedPolicyValidated(validator.get());
-  } else {
-    NOTREACHED() << "Unsupported policy type: " << policy_type();
-  }
+  std::unique_ptr<CloudPolicyValidatorBase> validator =
+      CreateValidatorForLoad(std::move(policy));
+  validator->RunValidation();
+  OnRetrievedPolicyValidated(validator.get());
 }
 
-template <typename PayloadProto>
 void UserCloudPolicyStoreAsh::ValidatePolicyForStore(
     std::unique_ptr<em::PolicyFetchResponse> policy) {
   // Create and configure a validator.
 
-  std::unique_ptr<CloudPolicyValidator<PayloadProto>> validator;
-
-  if constexpr (std::is_same_v<PayloadProto, em::CloudPolicySettings>) {
-    validator = CreateValidator(std::move(policy),
-                                CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
-  } else {
-    static_assert(std::is_same_v<PayloadProto, em::ExtensionInstallPolicies>,
-                  "Unsupported payload proto type.");
-    validator = CreateExtensionInstallValidator(
-        std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
-  }
+  std::unique_ptr<CloudPolicyValidatorBase> validator = CreateValidator(
+      std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
 
   CHECK(validator) << "Unsupported policy type: " << policy_type();
   validator->ValidateUser(account_id_);
@@ -204,16 +185,14 @@ void UserCloudPolicyStoreAsh::ValidatePolicyForStore(
   }
 
   // Start validation.
-  CloudPolicyValidator<PayloadProto>::StartValidation(
-      std::move(std::move(validator)),
-      base::BindOnce(
-          &UserCloudPolicyStoreAsh::OnPolicyToStoreValidated<PayloadProto>,
-          weak_factory_.GetWeakPtr()));
+  CloudPolicyValidatorBase::StartValidation(
+      std::move(validator),
+      base::BindOnce(&UserCloudPolicyStoreAsh::OnPolicyToStoreValidated,
+                     weak_factory_.GetWeakPtr()));
 }
 
-template <typename PayloadProto>
 void UserCloudPolicyStoreAsh::OnPolicyToStoreValidated(
-    CloudPolicyValidator<PayloadProto>* validator) {
+    CloudPolicyValidatorBase* validator) {
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
@@ -294,27 +273,16 @@ void UserCloudPolicyStoreAsh::OnPolicyRetrieved(
 
 void UserCloudPolicyStoreAsh::ValidateRetrievedPolicy(
     std::unique_ptr<em::PolicyFetchResponse> policy) {
-  if (policy_type() == dm_protocol::GetChromeUserPolicyType()) {
-    UserCloudPolicyValidator::StartValidation(
-        CreateValidatorForLoad<em::CloudPolicySettings>(std::move(policy)),
-        base::BindOnce(&UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated<
-                           em::CloudPolicySettings>,
-                       weak_factory_.GetWeakPtr()));
-  } else if (policy_type() ==
-             dm_protocol::kChromeExtensionInstallUserCloudPolicyType) {
-    ExtensionInstallCloudPolicyValidator::StartValidation(
-        CreateValidatorForLoad<em::ExtensionInstallPolicies>(std::move(policy)),
-        base::BindOnce(&UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated<
-                           em::ExtensionInstallPolicies>,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    NOTREACHED() << "Unsupported policy type: " << policy_type();
-  }
+  std::unique_ptr<CloudPolicyValidatorBase> validator =
+      CreateValidatorForLoad(std::move(policy));
+  CloudPolicyValidatorBase::StartValidation(
+      std::move(validator),
+      base::BindOnce(&UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated,
+                     weak_factory_.GetWeakPtr()));
 }
 
-template <typename PayloadProto>
 void UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated(
-    CloudPolicyValidator<PayloadProto>* validator) {
+    CloudPolicyValidatorBase* validator) {
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
@@ -322,34 +290,18 @@ void UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated(
     return;
   }
 
-  InstallPolicy(std::move(validator->policy_data()),
-                std::move(validator->payload()),
+  InstallPolicy(std::move(validator->policy_data()), validator,
                 cached_policy_key_loader_->cached_policy_key());
   status_ = STATUS_OK;
 
   NotifyStoreLoaded();
 }
 
-template <typename PayloadProto>
-std::unique_ptr<CloudPolicyValidator<PayloadProto>>
+std::unique_ptr<CloudPolicyValidatorBase>
 UserCloudPolicyStoreAsh::CreateValidatorForLoad(
     std::unique_ptr<em::PolicyFetchResponse> policy) {
-  std::unique_ptr<CloudPolicyValidator<PayloadProto>> validator;
-
-  if constexpr (std::is_same_v<PayloadProto, em::CloudPolicySettings>) {
-    CHECK_EQ(policy_type(), dm_protocol::GetChromeUserPolicyType())
-        << "Policy type does not match validator type.";
-    validator = CreateValidator(std::move(policy),
-                                CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
-  } else {
-    static_assert(std::is_same_v<PayloadProto, em::ExtensionInstallPolicies>,
-                  "Unsupported payload proto type.");
-    CHECK_EQ(policy_type(),
-             dm_protocol::kChromeExtensionInstallUserCloudPolicyType)
-        << "Policy type does not match validator type.";
-    validator = CreateExtensionInstallValidator(
-        std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
-  }
+  std::unique_ptr<CloudPolicyValidatorBase> validator = CreateValidator(
+      std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
 
   validator->ValidateUser(account_id_);
   // The policy loaded from session manager need not be validated using the

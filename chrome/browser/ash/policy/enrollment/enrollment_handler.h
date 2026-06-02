@@ -166,7 +166,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
 
   // Handles the policy validation result, proceeding with device lock if
   // successful.
-  void HandlePolicyValidationResult(DeviceCloudPolicyValidator* validator);
+  void HandlePolicyValidationResult(CloudPolicyValidatorBase* validator);
 
   // Updates the firmware management partition from TPM, setting the flags
   // according to enum FirmwareManagementParametersFlags from rpc.proto if

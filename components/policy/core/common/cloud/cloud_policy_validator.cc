@@ -331,9 +331,9 @@ CloudPolicyValidatorBase::GetCurrentPolicyVerificationKey() {
 }
 
 // static
-void CloudPolicyValidatorBase::PostValidationTask(
+void CloudPolicyValidatorBase::StartValidation(
     std::unique_ptr<CloudPolicyValidatorBase> validator,
-    base::OnceClosure completion_callback) {
+    CompletionCallback completion_callback) {
   const auto task_runner = validator->background_task_runner_;
   task_runner->PostTask(
       FROM_HERE,
@@ -347,7 +347,7 @@ void CloudPolicyValidatorBase::PostValidationTask(
 void CloudPolicyValidatorBase::PerformValidation(
     std::unique_ptr<CloudPolicyValidatorBase> self,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    base::OnceClosure completion_callback) {
+    CompletionCallback completion_callback) {
   // Run the validation activities on this thread.
   self->RunValidation();
 
@@ -361,8 +361,8 @@ void CloudPolicyValidatorBase::PerformValidation(
 // static
 void CloudPolicyValidatorBase::ReportCompletion(
     std::unique_ptr<CloudPolicyValidatorBase> self,
-    base::OnceClosure completion_callback) {
-  std::move(completion_callback).Run();
+    CompletionCallback completion_callback) {
+  std::move(completion_callback).Run(self.get());
 }
 
 void CloudPolicyValidatorBase::RunValidation() {

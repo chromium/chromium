@@ -56,20 +56,18 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
 
  protected:
   // UserCloudPolicyStoreBase:
-  std::unique_ptr<UserCloudPolicyValidator> CreateValidator(
+  std::unique_ptr<CloudPolicyValidatorBase> CreateValidator(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       CloudPolicyValidatorBase::ValidateTimestampOption option) override;
 
  private:
   // Starts validation of |policy| before storing it.
-  template <typename PayloadProto>
   void ValidatePolicyForStore(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
 
   // Completion handler for policy validation on the Store() path.
   // Starts a store operation if the validation succeeded.
-  template <typename PayloadProto>
-  void OnPolicyToStoreValidated(CloudPolicyValidator<PayloadProto>* validator);
+  void OnPolicyToStoreValidated(CloudPolicyValidatorBase* validator);
 
   // Called back from SessionManagerClient for policy store operations.
   void OnPolicyStored(bool success);
@@ -83,14 +81,11 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
   void ValidateRetrievedPolicy(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
 
-  template <typename PayloadProto>
   // Completion handler for policy validation on the Load() path. Installs the
   // policy and publishes it if validation succeeded.
-  void OnRetrievedPolicyValidated(
-      CloudPolicyValidator<PayloadProto>* validator);
+  void OnRetrievedPolicyValidated(CloudPolicyValidatorBase* validator);
 
-  template <typename PayloadProto>
-  std::unique_ptr<CloudPolicyValidator<PayloadProto>> CreateValidatorForLoad(
+  std::unique_ptr<CloudPolicyValidatorBase> CreateValidatorForLoad(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
 
   raw_ptr<ash::SessionManagerClient> session_manager_client_;

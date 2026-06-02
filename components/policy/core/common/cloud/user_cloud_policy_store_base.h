@@ -40,54 +40,18 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
  protected:
   // Creates a validator configured to validate a user policy. The caller owns
   // the resulting object until StartValidation() is invoked.
-  virtual std::unique_ptr<UserCloudPolicyValidator> CreateValidator(
+  virtual std::unique_ptr<CloudPolicyValidatorBase> CreateValidator(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       CloudPolicyValidatorBase::ValidateTimestampOption option);
 
-  virtual std::unique_ptr<ExtensionInstallCloudPolicyValidator>
-  CreateExtensionInstallValidator(
-      std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
-      CloudPolicyValidatorBase::ValidateTimestampOption option);
-
-  // Sets |policy_fetch_response|, |policy_data| and |payload| as the active
-  // policy, and sets |policy_signature_public_key| as the active public key.
-  template <typename PayloadProto>
+  // Sets |policy_data| as the active policy after decoding the payload from
+  // |validator|, and sets |policy_signature_public_key| as the active public key.
   void InstallPolicy(
       std::unique_ptr<enterprise_management::PolicyData> policy_data,
-      std::unique_ptr<PayloadProto> payload,
-      const std::string& policy_signature_public_key) {
-    static_assert(
-        std::is_same<PayloadProto,
-                     enterprise_management::CloudPolicySettings>() ||
-        std::is_same<PayloadProto,
-                     enterprise_management::ExtensionInstallPolicies>());
-
-    // Decode the payload.
-    policy_map_.Clear();
-    PolicyPerProfileFilter filter = PolicyPerProfileFilter::kAny;
-    DecodeProtoFields(*payload, external_data_manager(), POLICY_SOURCE_CLOUD,
-                      policy_scope_, &policy_map_, filter);
-
-    if (policy_data->user_affiliation_ids_size() > 0) {
-      policy_map_.SetUserAffiliationIds(
-          {policy_data->user_affiliation_ids().begin(),
-           policy_data->user_affiliation_ids().end()});
-    }
-    if (policy_data->device_affiliation_ids_size() > 0) {
-      policy_map_.SetDeviceAffiliationIds(
-          {policy_data->device_affiliation_ids().begin(),
-           policy_data->device_affiliation_ids().end()});
-    }
-    SetPolicy(std::move(policy_data));
-    policy_signature_public_key_ = policy_signature_public_key;
-  }
+      CloudPolicyValidatorBase* validator,
+      const std::string& policy_signature_public_key);
 
  private:
-  template <typename PayloadProto>
-  std::unique_ptr<CloudPolicyValidator<PayloadProto>> CreateValidatorImpl(
-      std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
-      CloudPolicyValidatorBase::ValidateTimestampOption option);
-
   // Task runner for background file operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   PolicyScope policy_scope_;

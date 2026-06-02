@@ -240,25 +240,33 @@ PolicyLoadResult MachineLevelUserCloudPolicyStore::LoadExternalCachedPolicies(
   return policy_cache_load_result;
 }
 
-std::unique_ptr<UserCloudPolicyValidator>
+std::unique_ptr<CloudPolicyValidatorBase>
 MachineLevelUserCloudPolicyStore::CreateValidator(
     std::unique_ptr<em::PolicyFetchResponse> policy_fetch_response,
     CloudPolicyValidatorBase::ValidateTimestampOption option) {
-  // This function is only used to validate Chrome settings policies.
-  CHECK_EQ(policy_type(), dm_protocol::kChromeMachineLevelUserCloudPolicyType);
-  return CreateValidatorImpl<em::CloudPolicySettings>(
-      std::move(policy_fetch_response), option);
-}
-
-std::unique_ptr<ExtensionInstallCloudPolicyValidator>
-MachineLevelUserCloudPolicyStore::CreateExtensionInstallValidator(
-    std::unique_ptr<em::PolicyFetchResponse> policy_fetch_response,
-    CloudPolicyValidatorBase::ValidateTimestampOption option) {
-  // This function is only used to validate Chrome extension install policies.
-  CHECK_EQ(policy_type(),
-           dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType);
-  return CreateValidatorImpl<em::ExtensionInstallPolicies>(
-      std::move(policy_fetch_response), option);
+  std::unique_ptr<CloudPolicyValidatorBase> validator;
+  if (policy_type() == dm_protocol::kChromeMachineLevelUserCloudPolicyType) {
+    validator = std::make_unique<CloudPolicyValidator<em::CloudPolicySettings>>(
+        std::move(policy_fetch_response), background_task_runner());
+  } else if (IsExtensionInstallPolicyType(policy_type())) {
+    validator =
+        std::make_unique<CloudPolicyValidator<em::ExtensionInstallPolicies>>(
+            std::move(policy_fetch_response), background_task_runner());
+  } else {
+    NOTREACHED();
+  }
+  validator->ValidatePolicyType(policy_type());
+  validator->ValidateDMToken(machine_dm_token_.value(),
+                             CloudPolicyValidatorBase::DM_TOKEN_REQUIRED);
+  validator->ValidateDeviceId(machine_client_id_,
+                              CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
+  if (has_policy()) {
+    validator->ValidateTimestamp(
+        base::Time::FromMillisecondsSinceUnixEpoch(policy()->timestamp()),
+        option);
+  }
+  validator->ValidatePayload();
+  return validator;
 }
 
 void MachineLevelUserCloudPolicyStore::SetupRegistration(
@@ -276,34 +284,9 @@ void MachineLevelUserCloudPolicyStore::Validate(
     std::unique_ptr<em::PolicyFetchResponse> policy,
     std::unique_ptr<em::PolicySigningKey> key,
     bool validate_in_background,
-    UserCloudPolicyValidator::CompletionCallback callback) {
-  auto validator = CreateValidator(
+    CloudPolicyValidatorBase::CompletionCallback callback) {
+  std::unique_ptr<CloudPolicyValidatorBase> validator = CreateValidator(
       std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
-  ValidateImpl<em::CloudPolicySettings>(std::move(validator), std::move(key),
-                                        validate_in_background,
-                                        std::move(callback));
-}
-
-void MachineLevelUserCloudPolicyStore::ValidateExtensionInstallPolicy(
-    std::unique_ptr<em::PolicyFetchResponse> policy,
-    std::unique_ptr<em::PolicySigningKey> key,
-    bool validate_in_background,
-    ExtensionInstallCloudPolicyValidator::CompletionCallback callback) {
-  auto validator = CreateExtensionInstallValidator(
-      std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
-  ValidateImpl<em::ExtensionInstallPolicies>(
-      std::move(validator), std::move(key), validate_in_background,
-      std::move(callback));
-}
-
-template <typename PayloadProto>
-void MachineLevelUserCloudPolicyStore::ValidateImpl(
-    std::unique_ptr<CloudPolicyValidator<PayloadProto>> validator,
-    std::unique_ptr<em::PolicySigningKey> key,
-    bool validate_in_background,
-    CloudPolicyValidator<PayloadProto>::CompletionCallback callback) {
-  static_assert(std::is_same<PayloadProto, em::CloudPolicySettings>() ||
-                std::is_same<PayloadProto, em::ExtensionInstallPolicies>());
 
   // Policies cached by the external provider do not require key and signature
   // validation since they are stored in a secure location.
@@ -312,33 +295,12 @@ void MachineLevelUserCloudPolicyStore::ValidateImpl(
   }
 
   if (validate_in_background) {
-    CloudPolicyValidator<PayloadProto>::StartValidation(std::move(validator),
-                                                        std::move(callback));
+    CloudPolicyValidatorBase::StartValidation(std::move(validator),
+                                              std::move(callback));
   } else {
     validator->RunValidation();
     std::move(callback).Run(validator.get());
   }
-}
-
-template <typename PayloadProto>
-std::unique_ptr<CloudPolicyValidator<PayloadProto>>
-MachineLevelUserCloudPolicyStore::CreateValidatorImpl(
-    std::unique_ptr<em::PolicyFetchResponse> policy_fetch_response,
-    CloudPolicyValidatorBase::ValidateTimestampOption timestamp_option) {
-  auto validator = std::make_unique<CloudPolicyValidator<PayloadProto>>(
-      std::move(policy_fetch_response), background_task_runner());
-  validator->ValidatePolicyType(policy_type());
-  validator->ValidateDMToken(machine_dm_token_.value(),
-                             CloudPolicyValidatorBase::DM_TOKEN_REQUIRED);
-  validator->ValidateDeviceId(machine_client_id_,
-                              CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
-  if (has_policy()) {
-    validator->ValidateTimestamp(
-        base::Time::FromMillisecondsSinceUnixEpoch(policy()->timestamp()),
-        timestamp_option);
-  }
-  validator->ValidatePayload();
-  return validator;
 }
 
 }  // namespace policy

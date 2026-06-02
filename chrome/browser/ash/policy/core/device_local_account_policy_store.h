@@ -58,7 +58,7 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
 
  protected:
   // UserCloudPolicyStoreBase:
-  std::unique_ptr<UserCloudPolicyValidator> CreateValidator(
+  std::unique_ptr<CloudPolicyValidatorBase> CreateValidator(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       CloudPolicyValidatorBase::ValidateTimestampOption option) override;
 
@@ -66,7 +66,7 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
   // The callback invoked once policy validation is complete. Passed are the
   // used public key and the validator.
   using ValidateCompletionCallback =
-      base::OnceCallback<void(const std::string&, UserCloudPolicyValidator*)>;
+      base::OnceCallback<void(const std::string&, CloudPolicyValidatorBase*)>;
 
   // Called back by |session_manager_client_| after policy retrieval. Checks for
   // success and triggers policy validation.
@@ -77,12 +77,12 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
 
   // Updates state after validation and notifies observers.
   void UpdatePolicy(const std::string& signature_validation_public_key,
-                    UserCloudPolicyValidator* validator);
+                    CloudPolicyValidatorBase* validator);
 
   // Sends the policy blob to session_manager for storing after validation.
   void OnPolicyToStoreValidated(
       const std::string& signature_validation_public_key_unused,
-      UserCloudPolicyValidator* validator);
+      CloudPolicyValidatorBase* validator);
 
   // Called back when a store operation completes, updates state and reloads the
   // policy if applicable.

@@ -128,7 +128,7 @@ class SessionManagerOperation {
       const std::string& policy_blob);
 
   // Extracts status and device settings from the validator and reports them.
-  void ReportValidatorStatus(policy::DeviceCloudPolicyValidator* validator);
+  void ReportValidatorStatus(policy::CloudPolicyValidatorBase* validator);
 
   raw_ptr<SessionManagerClient> session_manager_client_ = nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;

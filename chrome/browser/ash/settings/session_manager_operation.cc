@@ -216,7 +216,7 @@ void SessionManagerOperation::ValidateDeviceSettings(
     validator->RunValidation();
     ReportValidatorStatus(validator.get());
   } else {
-    policy::DeviceCloudPolicyValidator::StartValidation(
+    policy::CloudPolicyValidatorBase::StartValidation(
         std::move(validator),
         base::BindOnce(&SessionManagerOperation::ReportValidatorStatus,
                        weak_factory_.GetWeakPtr()));
@@ -224,11 +224,13 @@ void SessionManagerOperation::ValidateDeviceSettings(
 }
 
 void SessionManagerOperation::ReportValidatorStatus(
-    policy::DeviceCloudPolicyValidator* validator) {
+    policy::CloudPolicyValidatorBase* validator) {
   if (validator->success()) {
     policy_fetch_response_ = std::move(validator->policy());
     policy_data_ = std::move(validator->policy_data());
-    device_settings_ = std::move(validator->payload());
+    auto* typed_validator =
+        static_cast<policy::DeviceCloudPolicyValidator*>(validator);
+    device_settings_ = std::move(typed_validator->payload());
     ReportResult(DeviceSettingsService::STORE_SUCCESS);
   } else {
     LOG(ERROR) << "Policy validation failed: " << validator->status() << " ("

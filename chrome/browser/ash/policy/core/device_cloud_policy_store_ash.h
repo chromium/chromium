@@ -74,7 +74,7 @@ class DeviceCloudPolicyStoreAsh : public CloudPolicyStore,
 
   // Called on completion on the policy validation prior to storing policy.
   // Starts the actual store operation.
-  void OnPolicyToStoreValidated(DeviceCloudPolicyValidator* validator);
+  void OnPolicyToStoreValidated(CloudPolicyValidatorBase* validator);
 
   // Handles store completion operations updates status.
   void OnPolicyStored();
