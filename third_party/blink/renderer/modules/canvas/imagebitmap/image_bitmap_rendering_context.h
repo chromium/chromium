@@ -75,7 +75,8 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   // ImageBitmap.
   bool IsOpaque() const override { return false; }
   bool IsComposited() const final { return true; }
-  bool PushFrame() override;
+  scoped_refptr<CanvasResource> GetResourceForPushFrame(
+      bool& should_call_push_frame) override;
 
   cc::Layer* CcLayer() const final;
   // TODO(junov): handle lost contexts when content is GPU-backed

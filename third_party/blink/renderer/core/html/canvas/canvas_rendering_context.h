@@ -307,7 +307,11 @@ class CORE_EXPORT CanvasRenderingContext
   virtual base::ByteSize AllocatedBufferSize() const = 0;
 
   // OffscreenCanvas-specific methods.
-  virtual bool PushFrame() { return false; }
+  virtual scoped_refptr<CanvasResource> GetResourceForPushFrame(
+      bool& should_call_push_frame) {
+    should_call_push_frame = false;
+    return nullptr;
+  }
   virtual ImageBitmap* TransferToImageBitmap(ScriptState* script_state,
                                              ExceptionState& exception_state) {
     return nullptr;

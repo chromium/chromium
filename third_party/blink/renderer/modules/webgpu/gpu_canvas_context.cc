@@ -319,12 +319,14 @@ void GPUCanvasContext::SizeChanged() {
   resource_provider_.reset();
 }
 
-bool GPUCanvasContext::PushFrame() {
+scoped_refptr<CanvasResource> GPUCanvasContext::GetResourceForPushFrame(
+    bool& should_call_push_frame) {
+  should_call_push_frame = false;
   DCHECK(Host());
   DCHECK(Host()->IsOffscreenCanvas());
 
   if (!swap_buffers_) {
-    return false;
+    return nullptr;
   }
 
   gpu::SyncToken sync_token;
@@ -332,7 +334,7 @@ bool GPUCanvasContext::PushFrame() {
   auto client_si =
       swap_buffers_->ExportCurrentSharedImage(sync_token, &release_callback);
   if (!client_si) {
-    return false;
+    return nullptr;
   }
 
   auto canvas_resource = ExternalCanvasResource::Create(
@@ -340,11 +342,12 @@ bool GPUCanvasContext::PushFrame() {
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer,
       swap_buffers_->GetHDRMetadata(), std::move(release_callback),
       GetContextProviderWeakPtr());
-  if (!canvas_resource)
-    return false;
+  if (!canvas_resource) {
+    return nullptr;
+  }
 
-  bool result = Host()->PushFrame(std::move(canvas_resource));
-  return result;
+  should_call_push_frame = true;
+  return canvas_resource;
 }
 
 ImageBitmap* GPUCanvasContext::TransferToImageBitmap(

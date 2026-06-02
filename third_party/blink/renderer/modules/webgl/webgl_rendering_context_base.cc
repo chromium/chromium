@@ -1714,33 +1714,32 @@ void WebGLRenderingContextBase::MarkContextChanged(
   }
 }
 
-bool WebGLRenderingContextBase::PushFrame() {
-  TRACE_EVENT0("blink", "WebGLRenderingContextBase::PushFrame");
+scoped_refptr<CanvasResource>
+WebGLRenderingContextBase::GetResourceForPushFrame(
+    bool& should_call_push_frame) {
+  should_call_push_frame = false;
+  TRACE_EVENT0("blink", "WebGLRenderingContextBase::GetResourceForPushFrame");
   DCHECK(Host());
   DCHECK(Host()->IsOffscreenCanvas());
   if (isContextLost() || !GetDrawingBuffer()) {
-    return false;
+    return nullptr;
   }
 
   ClearIfComposited(kClearCallerOther);
 
-  bool submitted_frame = false;
-
   if (GetDrawingBuffer()->IsUsingGpuCompositing()) {
     // Export the DrawingBuffer's SI directly if possible.
     if (auto canvas_resource = GetDrawingBuffer()->ExportCanvasResource()) {
-      submitted_frame = Host()->PushFrame(std::move(canvas_resource));
+      should_call_push_frame = true;
       MarkLayerComposited();
-      if (submitted_frame) {
-        return true;
-      }
+      return canvas_resource;
     }
   }
 
   // The above call to ExportCanvasResource() might have resulted in the context
   // getting destroyed, so we need to recheck.
   if (isContextLost() || !GetDrawingBuffer()) {
-    return false;
+    return nullptr;
   }
 
   if (resource_provider_.get() &&
@@ -1749,12 +1748,13 @@ bool WebGLRenderingContextBase::PushFrame() {
     Host()->DiscardResources();
   }
 
-  if (scoped_refptr<CanvasResource> resource =
-          CopyRenderingResultsFromDrawingBufferToResource(kBackBuffer)) {
-    submitted_frame = Host()->PushFrame(std::move(resource));
+  scoped_refptr<CanvasResource> resource =
+      CopyRenderingResultsFromDrawingBufferToResource(kBackBuffer);
+  if (resource) {
+    should_call_push_frame = true;
   }
   MarkLayerComposited();
-  return submitted_frame;
+  return resource;
 }
 
 void WebGLRenderingContextBase::Dispose() {

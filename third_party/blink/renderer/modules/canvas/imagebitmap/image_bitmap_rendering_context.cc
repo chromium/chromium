@@ -154,15 +154,18 @@ void ImageBitmapRenderingContext::Trace(Visitor* visitor) const {
   CanvasRenderingContext::Trace(visitor);
 }
 
-bool ImageBitmapRenderingContext::PushFrame() {
+scoped_refptr<CanvasResource>
+ImageBitmapRenderingContext::GetResourceForPushFrame(
+    bool& should_call_push_frame) {
+  should_call_push_frame = false;
   CHECK(Host()->IsOffscreenCanvas());
   if (isContextLost() && !IsContextBeingRestored()) {
-    return false;
+    return nullptr;
   }
 
   scoped_refptr<StaticBitmapImage> image = image_layer_bridge_->GetImage();
   if (!image) {
-    return false;
+    return nullptr;
   }
 
   // If the size of the cached provider doesn't match that of the current image
@@ -185,12 +188,12 @@ bool ImageBitmapRenderingContext::PushFrame() {
       // provider that is now invalid. We can early return here, trying to
       // re-create the provider right away would just fail. We need to let
       // `TryRestoreContextEvent` wait for the GPU process to up again.
-      return false;
+      return nullptr;
     }
   } else {
     if (!Host()->IsValidImageSize() && !Host()->Size().IsEmpty()) {
       LoseContext(CanvasRenderingContext::kInvalidCanvasSize);
-      return false;
+      return nullptr;
     }
 
     // TODO(https://crbug.com/40206688): These values should reflect the
@@ -229,7 +232,7 @@ bool ImageBitmapRenderingContext::PushFrame() {
   }
 
   if (!resource_provider_for_offscreen_canvas_) {
-    return false;
+    return nullptr;
   }
 
   cc::PaintFlags paint_flags;
@@ -240,8 +243,8 @@ bool ImageBitmapRenderingContext::PushFrame() {
             canvas.drawImage(image->PaintImageForCurrentFrame(), 0, 0,
                              SkSamplingOptions(), &paint_flags);
           });
-  Host()->PushFrame(std::move(resource));
-  return true;
+  should_call_push_frame = true;
+  return resource;
 }
 
 V8RenderingContext* ImageBitmapRenderingContext::AsV8RenderingContext() {

@@ -1289,7 +1289,8 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   void Reshape(int width, int height) override;
   void Stop() override;
   void FinalizeFrame(FlushReason) override;
-  bool PushFrame() override;
+  scoped_refptr<CanvasResource> GetResourceForPushFrame(
+      bool& should_call_push_frame) override;
 
   // **************************************************************************
   // End of CanvasRenderingContext implementation

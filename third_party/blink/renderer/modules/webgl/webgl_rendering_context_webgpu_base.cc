@@ -3779,9 +3779,12 @@ void WebGLRenderingContextWebGPUBase::FinalizeFrame(FlushReason) {
   NOTIMPLEMENTED();
 }
 
-bool WebGLRenderingContextWebGPUBase::PushFrame() {
+scoped_refptr<CanvasResource>
+WebGLRenderingContextWebGPUBase::GetResourceForPushFrame(
+    bool& should_call_push_frame) {
+  should_call_push_frame = false;
   NOTIMPLEMENTED();
-  return false;
+  return nullptr;
 }
 
 // ****************************************************************************

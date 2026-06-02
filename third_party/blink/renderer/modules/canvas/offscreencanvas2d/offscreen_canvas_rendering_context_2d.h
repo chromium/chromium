@@ -113,7 +113,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   void Trace(Visitor*) const override;
 
-  bool PushFrame() override;
+  scoped_refptr<CanvasResource> GetResourceForPushFrame(
+      bool& should_call_push_frame) override;
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
   ExecutionContext* GetTopExecutionContext() const override;

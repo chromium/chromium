@@ -733,7 +733,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   cc::Layer* CcLayer() const override;
   void Stop() override;
-  bool PushFrame() override;
+  scoped_refptr<CanvasResource> GetResourceForPushFrame(
+      bool& should_call_push_frame) override;
 
   // DrawingBuffer::Client implementation.
   bool DrawingBufferClientIsBoundForDraw() override;
