@@ -9497,6 +9497,7 @@ from previous Chrome versions.
   <int value="-1532100164" label="WebViewMeasureScreenCoverage:enabled"/>
   <int value="-1532035450" label="DragTabsInTabletMode:disabled"/>
   <int value="-1532014193" label="disable-encryption-migration"/>
+  <int value="-1531081837" label="AndroidBricksNativePage:enabled"/>
   <int value="-1530711962" label="PrivacyElevatedAndroid:disabled"/>
   <int value="-1529907580" label="ImeServiceConnectable:disabled"/>
   <int value="-1529631789" label="enable-unsafe-fast-js-calls"/>
@@ -13423,6 +13424,7 @@ from previous Chrome versions.
   <int value="-256923848" label="ProfilesUIRevamp:disabled"/>
   <int value="-256745779"
       label="IsSecurePaymentConfirmationAvailableAPI:enabled"/>
+  <int value="-256347812" label="AndroidBricksNativePage:disabled"/>
   <int value="-256163762" label="AccessibilityAtomicLiveRegions:enabled"/>
   <int value="-255869867" label="eol-reset-dismissed-prefs:disabled"/>
   <int value="-255264176" label="OmniboxSearchEngineLogo:disabled"/>

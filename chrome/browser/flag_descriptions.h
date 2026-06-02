@@ -5207,6 +5207,11 @@ inline constexpr char kAndroidAutoMintedTWADescription[] =
     "Android package instead of a server-minted WebAPK. This feature "
     "additionally requires WebApp Mainline module enabled.";
 
+inline constexpr char kAndroidBricksNativePageName[] =
+    "Android Bricks Native Page";
+inline constexpr char kAndroidBricksNativePageDescription[] =
+    "Enables the chrome://bricks native page as a Compose playground.";
+
 inline constexpr char kAndroidCaretBrowsingName[] = "Enable Caret Browsing.";
 inline constexpr char kAndroidCaretBrowsingDescription[] =
     "Allows users to interact with a webpage using a keyboard.";

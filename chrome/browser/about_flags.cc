@@ -13073,6 +13073,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(enterprise_data_protection::kEnableDlpFileSystemApi)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-bricks-native-page",
+     flag_descriptions::kAndroidBricksNativePageName,
+     flag_descriptions::kAndroidBricksNativePageDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidBricksNativePage)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
