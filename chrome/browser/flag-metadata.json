@@ -856,17 +856,17 @@
   {
     "name": "autofill-android-desktop-keyboard-accessory-revamp",
     "owners": [ "piotrkotynia@google.com", "luchenpeng@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 153
   },
   {
     "name": "autofill-android-desktop-suppress-accessory-on-empty",
     "owners": [ "luchenpeng@google.com", "piotrkotynia@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 153
   },
   {
     "name": "autofill-android-keyboard-accessory-dynamic-positioning",
     "owners": [ "piotrkotynia@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 153
   },
   {
     "name": "autofill-at-memory",
