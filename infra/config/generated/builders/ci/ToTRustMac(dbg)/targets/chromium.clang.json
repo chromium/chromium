@@ -1,7 +1,0 @@
-{
-  "ToTRustMac(dbg)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  }
-}

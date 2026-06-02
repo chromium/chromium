@@ -1,1 +1,0 @@
-ci/chromeos-amd64-generic-rel-tast
