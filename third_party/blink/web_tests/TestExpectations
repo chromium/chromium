@@ -2836,7 +2836,6 @@ crbug.com/515679398 external/wpt/mathml/relations/html5-tree/link-color-001.html
 
 crbug.com/515750300 external/wpt/fullscreen/api/keyboard-lock-cross-origin-iframe.sub.html [ Skip Timeout ]
 crbug.com/515728343 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/abort-document-window-stop.sub.window.html [ Timeout ]
-crbug.com/515718315 external/wpt/html/semantics/forms/the-select-element/customizable-select/option-label-in-shadow-tree.html [ Timeout ]
 crbug.com/515776378 external/wpt/wasm/serialization/memory/window-nested-dedicated-worker-failure.tentative.https.html [ Timeout ]
 crbug.com/515776379 virtual/threaded/external/wpt/css/css-view-transitions/input-pointer-capture-while-render-blocked.html [ Timeout ]
 crbug.com/515776379 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/input-pointer-capture-while-render-blocked.html [ Timeout ]
