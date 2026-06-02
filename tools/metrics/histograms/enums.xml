@@ -16048,6 +16048,7 @@ from previous Chrome versions.
   <int value="618407424" label="OmniboxRetainSuggestionsWithHeaders:enabled"/>
   <int value="618426510" label="WaylandScreenCoordinatesEnabled:disabled"/>
   <int value="618532343" label="DesktopPWAsLocalUpdating:disabled"/>
+  <int value="619082467" label="RealboxVirtualFocusNavigation:disabled"/>
   <int value="619598806"
       label="GlanceablesTimeManagementClassroomStudentView:disabled"/>
   <int value="620189062" label="TabFreeze:enabled"/>
@@ -16755,6 +16756,7 @@ from previous Chrome versions.
   <int value="834326277" label="enable-answers-in-suggest"/>
   <int value="835018878" label="disable-quic"/>
   <int value="835399079" label="ThreadWrapperUsesMetronome:enabled"/>
+  <int value="835472834" label="RealboxVirtualFocusNavigation:enabled"/>
   <int value="835726069" label="NtpWebUI:disabled"/>
   <int value="835743450" label="MarkAllCredentialsAsLeaked:enabled"/>
   <int value="836070100"

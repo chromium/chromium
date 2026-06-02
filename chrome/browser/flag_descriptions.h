@@ -6387,6 +6387,15 @@ inline constexpr char kReadAnythingWithReadabilityDescription[] =
     "Enables the experimental text webpage distillation using readability.js "
     "method for reading mode.";
 
+inline constexpr char kRealboxVirtualFocusNavigationName[] =
+    "Enable Realbox Virtual Focus Navigation";
+inline constexpr char kRealboxVirtualFocusNavigationDescription[] =
+    "Enables a new virtual focus model for keyboard navigation within the "
+    "New Tab Page Realbox. This allows tabbing through all interactive "
+    "elements within suggestions (actions, buttons) without losing focus "
+    "from the searchbox, unifying behavior with the Omnibox and improving "
+    "accessibility.";
+
 inline constexpr char kMarkAllCredentialsAsLeakedName[] =
     "Mark all credential as leaked";
 inline constexpr char kMarkAllCredentialsAsLeakedDescription[] =

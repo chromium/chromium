@@ -7053,6 +7053,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRealboxNextDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxNext)},
 
+    {"enable-realbox-virtual-focus",
+     flag_descriptions::kRealboxVirtualFocusNavigationName,
+     flag_descriptions::kRealboxVirtualFocusNavigationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kRealboxVirtualFocusNavigation)},
+
     {"ntp-next-features", flag_descriptions::kNtpNextFeaturesName,
      flag_descriptions::kNtpNextFeaturesDescription, kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpNextFeatures,

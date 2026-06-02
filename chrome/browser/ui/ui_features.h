@@ -162,6 +162,8 @@ BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
 BASE_DECLARE_FEATURE(kProcessIsolationSettings);
 #endif  // BUILDFLAG(IS_WIN)
 
+BASE_DECLARE_FEATURE(kRealboxVirtualFocusNavigation);
+
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kShowDropTargetForTabDelay);
 
 // Overrides the `kSplitViewTabDraggingUpdates` feature flag if set.
