@@ -105,8 +105,6 @@ template("domatolpm") {
 }
 
 template("domatolpm_fuzzer") {
-  # invoker.template_file
-  # invoker.grammars [ "jsfuzzer://path/to/grammar/js.txt", "cssfuzzer":"//path/to/grammar/css.txt" ]
   _templated_deps = []
   foreach(grammar, invoker.grammars) {
     _grammars = []
