@@ -5380,12 +5380,7 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kNotificationsIgnoreRequireInteraction)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
-    {"mojo-use-eventfd", flag_descriptions::kMojoUseEventFdName,
-     flag_descriptions::kMojoUseEventFdDescription,
-     kOsCrOS | kOsLinux | kOsAndroid,
-     FEATURE_VALUE_TYPE(mojo::core::kMojoUseEventFd)},
-#endif
+
 #if BUILDFLAG(IS_ANDROID)
     {"enable-site-isolation-for-password-sites",
      flag_descriptions::kSiteIsolationForPasswordSitesName,

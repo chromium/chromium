@@ -6686,11 +6686,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "mojo-use-eventfd",
-    "owners": ["bgeffon@chromium.org", "pasko@chromium.org"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "most-visited-tiles-customization",
     "owners": [ "clank-start@google.com", "huangs@google.com" ],
     "expiry_milestone": 145

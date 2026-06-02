@@ -3102,13 +3102,6 @@ inline constexpr char kMobilePromoOnDesktopWithReminderWave1Description[] =
     "eligible users. This version highlights features not included in the "
     "existing mobile promos.";
 
-inline constexpr char kMojoUseEventFdName[] =
-    "Notify about new Mojo Channel messages using eventfd";
-inline constexpr char kMojoUseEventFdDescription[] =
-    "When enabled, prefers to use eventfd for mojo Channel over socket. "
-    "Falls back to socket communication when writing to shared memory is "
-    "not possible";
-
 inline constexpr char kMostVisitedTilesCustomizationName[] =
     "Customize Most Visiteid Tiles";
 inline constexpr char kMostVisitedTilesCustomizationDescription[] =
