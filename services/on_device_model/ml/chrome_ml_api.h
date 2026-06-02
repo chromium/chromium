@@ -470,8 +470,14 @@ struct ChromeMLASRAPI {
 // Table of C API functions defined within the library.
 struct ChromeMLAPI {
   // Initializes the Dawn proc table. This must be called before any other
-  // functions.
+  // functions. If there is a mismatch in the version of the Dawn proc table,
+  // this function will crash. Please use TryInitDawnProcs below instead.
   void (*InitDawnProcs)(const DawnProcTable& procs);
+
+  // Tries to initialize the Dawn proc table, returning false if there is a
+  // mismatch in the proc table versions. This must be called before any other
+  // functions.
+  bool (*TryInitDawnProcs)(const DawnProcTable& procs);
 
   // Sets functions which can be used to log metrics from within the library.
   void (*SetMetricsFns)(const ChromeMLMetricsFns* fns);
