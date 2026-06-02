@@ -3274,6 +3274,25 @@
             ]
         }
     ],
+    "AutofillRestrictOtpToSameTldPlusOne": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillRestrictOtpToSameTldPlusOne"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillServerQueryPredictionsEarly": [
         {
             "platforms": [
