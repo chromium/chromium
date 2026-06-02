@@ -86,6 +86,12 @@ ServiceProcessHost::Options& ServiceProcessHost::Options::WithGpuClient(
   return *this;
 }
 
+ServiceProcessHost::Options& ServiceProcessHost::Options::WithPriority(
+    base::Process::Priority pri) {
+  priority = pri;
+  return *this;
+}
+
 ServiceProcessHost::Options ServiceProcessHost::Options::Pass() {
   return std::move(*this);
 }

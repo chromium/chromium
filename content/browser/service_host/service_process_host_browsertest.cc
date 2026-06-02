@@ -34,6 +34,10 @@
 #include "content/public/browser/service_process_host_passkeys.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "content/public/browser/browser_child_process_host.h"
+#endif
+
 namespace content {
 
 #if BUILDFLAG(IS_WIN)
@@ -78,6 +82,7 @@ class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
 
   // Valid after WaitForLaunch.
   base::ProcessId pid() const { return process_.Pid(); }
+  const base::Process& process() const { return process_; }
 
  private:
   // ServiceProcessHost::Observer:
@@ -671,6 +676,31 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, UtilityCheckIsTest) {
   base::test::TestFuture<bool> future;
   echo_service->VerifyCheckIsTest(future.GetCallback());
   EXPECT_TRUE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, Priority) {
+#if BUILDFLAG(IS_ANDROID)
+  // Process priority elevation is not supported on Android utility processes.
+  GTEST_SKIP();
+#else
+  if (!base::Process::CanSetPriority()) {
+    GTEST_SKIP()
+        << "Setting process priority is not supported on this platform.";
+  }
+
+  EchoServiceProcessObserver observer;
+  auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>(
+      ServiceProcessHost::Options()
+          .WithPriority(base::Process::Priority::kUserBlocking)
+          .Pass());
+  observer.WaitForLaunch();
+  base::Process::Priority priority = observer.process().GetPriority(
+#if BUILDFLAG(IS_MAC)
+      content::BrowserChildProcessHost::GetPortProvider()
+#endif
+  );
+  EXPECT_EQ(base::Process::Priority::kUserBlocking, priority);
+#endif
 }
 
 }  // namespace content

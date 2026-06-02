@@ -281,6 +281,12 @@ UtilityProcessHost::Options::WithBoundServiceInterfaceOnChildProcess(
   return *this;
 }
 
+UtilityProcessHost::Options& UtilityProcessHost::Options::WithPriority(
+    base::Process::Priority priority) {
+  priority_ = priority;
+  return *this;
+}
+
 UtilityProcessHost::Options UtilityProcessHost::Options::Pass() {
   return std::move(*this);
 }
@@ -582,6 +588,11 @@ bool UtilityProcessHost::StartProcess() {
 
 void UtilityProcessHost::OnProcessLaunched() {
   launch_state_ = LaunchState::kLaunchComplete;
+#if !BUILDFLAG(IS_ANDROID)
+  if (options_.priority_.has_value()) {
+    process_->SetProcessPriority(options_.priority_.value());
+  }
+#endif
   if (client_) {
     client_->OnProcessLaunched(process_->GetProcess());
   }

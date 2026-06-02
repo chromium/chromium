@@ -482,6 +482,12 @@ BASE_FEATURE(kPlatformAudioEncoder,
 // Has no effect if ENABLE_CDM_HOST_VERIFICATION buildflag is false.
 BASE_FEATURE(kCdmHostVerification, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the browser process will launch the CDM service process
+// with higher priority to improve playback performance.
+BASE_FEATURE(kCdmProcessPriorityElevation,
+             "CdmProcessPriorityElevation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Reorders video context menu items if enabled.
 BASE_FEATURE(kContextMenu2026, base::FEATURE_DISABLED_BY_DEFAULT);
 

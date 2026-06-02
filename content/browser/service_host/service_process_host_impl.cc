@@ -68,6 +68,9 @@ void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
       service_options.allow_gpu_client.value()) {
     utility_options.WithGpuClientAllowed();
   }
+  if (service_options.priority) {
+    utility_options.WithPriority(*service_options.priority);
+  }
 
   utility_options.WithBoundServiceInterfaceOnChildProcess(std::move(receiver));
 

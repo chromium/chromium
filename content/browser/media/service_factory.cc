@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -248,6 +249,9 @@ T& GetService(const media::CdmType& cdm_type,
     ServiceProcessHost::Options options;
     options.WithDisplayName(display_name);
     options.WithSite(site);
+    if (base::FeatureList::IsEnabled(media::kCdmProcessPriorityElevation)) {
+      options.WithPriority(base::Process::Priority::kUserBlocking);
+    }
     ServiceProcessHost::Launch(broker_remote.BindNewPipeAndPassReceiver(),
                                options.Pass());
 
