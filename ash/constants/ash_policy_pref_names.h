@@ -5,7 +5,7 @@
 #ifndef ASH_CONSTANTS_ASH_POLICY_PREF_NAMES_H_
 #define ASH_CONSTANTS_ASH_POLICY_PREF_NAMES_H_
 
-namespace policy::prefs {
+namespace ash::prefs {
 
 // Maintain a list of last upload times of system logs in double type; this is
 // for the purpose of throttling log uploads.
@@ -16,6 +16,6 @@ inline constexpr char kStoreLogStatesAcrossReboots[] =
 inline constexpr char kEventBasedLogLastUploadTimes[] =
     "ash.policy.event_based_log_last_upload_times";
 
-}  // namespace policy::prefs
+}  // namespace ash::prefs
 
 #endif  // ASH_CONSTANTS_ASH_POLICY_PREF_NAMES_H_

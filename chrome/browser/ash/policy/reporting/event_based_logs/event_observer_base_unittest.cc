@@ -70,7 +70,7 @@ class EventObserverBaseTest : public testing::Test {
   void SetLastUploadTime(const std::string event_name,
                          base::Time last_upload_time) {
     TestingBrowserProcess::GetGlobal()->local_state()->SetDict(
-        policy::prefs::kEventBasedLogLastUploadTimes,
+        ash::prefs::kEventBasedLogLastUploadTimes,
         base::DictValue().Set(event_name, base::TimeToValue(last_upload_time)));
   }
 

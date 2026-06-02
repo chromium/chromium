@@ -171,9 +171,8 @@ void DeviceCloudPolicyManagerAsh::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(ash::prefs::kRemoveUsersRemoteCommand, false);
   registry->RegisterStringPref(ash::prefs::kLastRsuDeviceIdUploaded,
                                std::string());
-  registry->RegisterListPref(prefs::kStoreLogStatesAcrossReboots);
-  registry->RegisterDictionaryPref(
-      policy::prefs::kEventBasedLogLastUploadTimes);
+  registry->RegisterListPref(ash::prefs::kStoreLogStatesAcrossReboots);
+  registry->RegisterDictionaryPref(ash::prefs::kEventBasedLogLastUploadTimes);
 }
 
 void DeviceCloudPolicyManagerAsh::StartConnection(

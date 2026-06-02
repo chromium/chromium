@@ -34,7 +34,7 @@ namespace {
 std::optional<base::Time> GetLastUploadTimeOf(const PrefService& local_state,
                                               const std::string& event_name) {
   const base::DictValue& last_upload_times =
-      local_state.GetDict(policy::prefs::kEventBasedLogLastUploadTimes);
+      local_state.GetDict(ash::prefs::kEventBasedLogLastUploadTimes);
   const base::Value* event_upload_time = last_upload_times.Find(event_name);
 
   // If the last upload time is not stored in the local state, it means that
@@ -140,7 +140,8 @@ void EventObserverBase::RecordUploadTime(base::Time timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ::prefs::ScopedDictionaryPrefUpdate last_upload_times_update(
-      g_browser_process->local_state(), prefs::kEventBasedLogLastUploadTimes);
+      g_browser_process->local_state(),
+      ash::prefs::kEventBasedLogLastUploadTimes);
   last_upload_times_update->Set(GetEventName(), base::TimeToValue(timestamp));
 }
 
