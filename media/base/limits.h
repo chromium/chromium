@@ -41,6 +41,13 @@ inline constexpr int kMaxVideoFrames = 4;
 inline constexpr int kMaxSampleRate = 768000;
 inline constexpr int kMinSampleRate = 3000;
 inline constexpr int kMaxChannels = 32;
+// The absolute upper bound for channel counts. While `kMaxChannels` is the
+// limit for audio processing, we may still encounter devices or streams with
+// higher channel counts (e.g., high-end audio interfaces). For these cases, we
+// pass the audio as is without any mixing. 1024 was chosen as the upper bound
+// for Audio-over-IP network cards. There should be 0 cases where we encounter
+// more channels than this.
+inline constexpr int kAbsoluteMaxChannels = 1024;
 inline constexpr int kMaxBytesPerSample = 4;
 inline constexpr int kMaxBitsPerSample = kMaxBytesPerSample * 8;
 inline constexpr int kMaxSamplesPerPacket = kMaxSampleRate;

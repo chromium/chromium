@@ -4,6 +4,7 @@
 
 #include "media/mojo/mojom/channel_layout_mojom_traits.h"
 
+#include "media/base/limits.h"
 #include "media/mojo/mojom/media_types_enum_mojom_traits.h"
 
 namespace mojo {
@@ -60,7 +61,7 @@ bool UnionTraits<media::mojom::ChannelLayoutConfigDataView,
     }
     case media::mojom::ChannelLayoutConfigDataView::Tag::kDiscreteChannels: {
       uint32_t channels = input.discrete_channels();
-      if (channels == 0) {
+      if (channels == 0 || channels > media::limits::kAbsoluteMaxChannels) {
         return false;
       }
       *output =

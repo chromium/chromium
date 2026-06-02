@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_point.h"
+#include "media/base/limits.h"
 #include "media/base/media_switches.h"
 
 namespace mojo {
@@ -140,7 +141,8 @@ bool StructTraits<
     media::AudioParameters>::Read(media::mojom::AudioParametersDataView input,
                                   media::AudioParameters* output) {
   if (input.sample_rate() < 0 || input.frames_per_buffer() < 0 ||
-      input.channels() < 0) {
+      input.channels() < 0 ||
+      input.channels() > media::limits::kAbsoluteMaxChannels) {
     return false;
   }
 
