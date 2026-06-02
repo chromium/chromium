@@ -142,6 +142,7 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
           CanvasRenderingContextHost::HostType::kOffscreenCanvasHost,
           size),
       execution_context_(context),
+      placeholder_canvas_id_(canvas_id),
       client_id_(client_id),
       sink_id_(sink_id) {
   // Other code in Blink watches for destruction of the context; be
@@ -173,13 +174,10 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
 
   CanvasResourceTracker::For(context->GetIsolate())->Add(this, context);
 
-  placeholder_canvas_id_ = canvas_id;
-  if (GetExecutionContext()) {
-    OffscreenCanvasRegistry::From(GetExecutionContext())
-        .Register(canvas_id, this);
-  }
-  if (HasPlaceholderCanvas() && GetTopExecutionContext() &&
-      GetTopExecutionContext()->IsDedicatedWorkerGlobalScope()) {
+  OffscreenCanvasRegistry::From(execution_context_).Register(canvas_id, this);
+
+  if (HasPlaceholderCanvas() &&
+      execution_context_->IsDedicatedWorkerGlobalScope()) {
     WorkerAnimationFrameProvider* animation_frame_provider =
         To<DedicatedWorkerGlobalScope>(GetTopExecutionContext())
             ->GetAnimationFrameProvider();
@@ -187,9 +185,6 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
     if (animation_frame_provider) {
       animation_frame_provider->RegisterOffscreenCanvas(this);
     }
-  }
-  if (frame_dispatcher_) {
-    frame_dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_canvas_id_);
   }
 }
 
