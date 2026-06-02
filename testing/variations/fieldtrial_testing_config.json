@@ -23712,26 +23712,6 @@
             ]
         }
     ],
-    "ThreeButtonPasswordSaveDialog": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ThreeButtonPasswordSaveDialog",
-                    "enable_features": [
-                        "IPH_PasswordsSavePrimingPromo",
-                        "IPH_PasswordsSaveRecoveryPromo",
-                        "ThreeButtonPasswordSaveDialog"
-                    ]
-                }
-            ]
-        }
-    ],
     "ThrottleMainFrameTo60HzMacV3": [
         {
             "platforms": [
