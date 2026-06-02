@@ -1008,7 +1008,6 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
   std::vector<base::test::FeatureRef> GetEnabledFeatures() override {
     auto features =
         AutoPictureInPictureTabHelperBrowserTest::GetEnabledFeatures();
-    features.push_back(media::kAutoPictureInPictureForVideoPlayback);
     features.push_back(blink::features::kAutoPictureInPictureVideoHeuristics);
     return features;
   }
@@ -3590,7 +3589,6 @@ class AutoPictureInPictureTabHelperBrowserAutoPipDryRunTest
   std::vector<base::test::FeatureRef> GetEnabledFeatures() override {
     std::vector<base::test::FeatureRef> features = {
         blink::features::kDocumentPictureInPictureAPI,
-        media::kAutoPictureInPictureForVideoPlayback,
         blink::features::kAutoPictureInPictureVideoHeuristics};
 
     if (IsBrowserInitiatedAutoPipEnabled()) {

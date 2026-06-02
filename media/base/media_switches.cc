@@ -1020,12 +1020,6 @@ BASE_FEATURE(kHardwareMediaKeyHandling,
 BASE_FEATURE(kResolutionBasedDecoderPriority, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows the AutoPictureInPictureTabHelper to automatically enter
-// picture-in-picture for websites with video playback (instead of only websites
-// using camera or microphone).
-BASE_FEATURE(kAutoPictureInPictureForVideoPlayback,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Allows the AutoPictureInPictureTabHelper to automatically enter
 // picture-in-picture when a webpage is occluded by another window.
 BASE_FEATURE(kAutoPictureInPictureOnWindowOccluded,
              base::FEATURE_DISABLED_BY_DEFAULT);

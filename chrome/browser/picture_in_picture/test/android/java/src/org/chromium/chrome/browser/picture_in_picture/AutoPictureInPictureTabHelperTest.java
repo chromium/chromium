@@ -71,10 +71,7 @@ import java.util.concurrent.TimeoutException;
     ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM,
     MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
 })
-@EnableFeatures({
-    MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID,
-    MediaFeatures.AUTO_PICTURE_IN_PICTURE_FOR_VIDEO_PLAYBACK
-})
+@EnableFeatures({MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID})
 @Restriction(RESTRICTION_TYPE_NON_AUTO)
 // PictureInPicture#isEnabled() is true on Android 11+.
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.R)

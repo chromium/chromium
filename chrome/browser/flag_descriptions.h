@@ -1171,11 +1171,6 @@ inline constexpr char kAutoPictureInPictureAndroidName[] =
 inline constexpr char kAutoPictureInPictureAndroidDescription[] =
     "Enables auto picture in picture on Android";
 
-inline constexpr char kAutoPictureInPictureForVideoPlaybackName[] =
-    "Auto picture in picture for video playback";
-inline constexpr char kAutoPictureInPictureForVideoPlaybackDescription[] =
-    "Enables auto picture in picture for video playback";
-
 inline constexpr char kAutoPictureInPictureOnWindowOccludedName[] =
     "Auto picture in picture on window occluded";
 inline constexpr char kAutoPictureInPictureOnWindowOccludedDescription[] =

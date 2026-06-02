@@ -8998,12 +8998,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
-    {"auto-picture-in-picture-for-video-playback",
-     flag_descriptions::kAutoPictureInPictureForVideoPlaybackName,
-     flag_descriptions::kAutoPictureInPictureForVideoPlaybackDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kAutoPictureInPictureForVideoPlayback)},
-
     {"auto-picture-in-picture-on-window-occluded",
      flag_descriptions::kAutoPictureInPictureOnWindowOccludedName,
      flag_descriptions::kAutoPictureInPictureOnWindowOccludedDescription,
