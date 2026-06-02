@@ -45,6 +45,18 @@ HRESULT MediaFoundationProtectionManager::RuntimeClassInitialize(
   return S_OK;
 }
 
+IFACEMETHODIMP_(ULONG) MediaFoundationProtectionManager::Release() {
+  ULONG ref_count = InternalRelease();
+  if (ref_count == 0) {
+    if (task_runner_ && !task_runner_->RunsTasksInCurrentSequence()) {
+      task_runner_->DeleteSoon(FROM_HERE, this);
+    } else {
+      delete this;
+    }
+  }
+  return ref_count;
+}
+
 HRESULT MediaFoundationProtectionManager::SetCdmProxy(
     scoped_refptr<MediaFoundationCdmProxy> cdm_proxy) {
   DVLOG_FUNC(1);
