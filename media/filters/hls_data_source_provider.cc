@@ -54,21 +54,28 @@ HlsDataSourceStream::GetNextSegmentURIAndCacheStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(requires_next_data_source_);
   CHECK(!segments_.empty());
-  const auto& first = segments_.front();
+  GURL new_url;
+  DataSource::CacheMode cache_mode;
+  DataSource::EncodingMode encoding_mode;
   auto range_mode = DataSource::RangeMode::kFullRequest;
-  if (first.range) {
-    range_mode = DataSource::RangeMode::kRangeRequest;
-    read_position_ = first.range->GetOffset();
-    max_read_position_ = first.range->GetEnd();
-  } else {
-    read_position_ = 0;
-    max_read_position_ = std::nullopt;
+  {
+    const auto& first = segments_.front();
+    if (first.range) {
+      range_mode = DataSource::RangeMode::kRangeRequest;
+      read_position_ = first.range->GetOffset();
+      max_read_position_ = first.range->GetEnd();
+    } else {
+      read_position_ = 0;
+      max_read_position_ = std::nullopt;
+    }
+    new_url = std::move(first.uri);
+    cache_mode = first.cache_mode;
+    encoding_mode = first.encoding_mode;
   }
-  GURL new_url = std::move(first.uri);
   segments_.pop();
   requires_next_data_source_ = false;
-  return std::make_tuple(new_url, first.cache_mode, range_mode,
-                         first.encoding_mode);
+  return std::make_tuple(std::move(new_url), cache_mode, range_mode,
+                         encoding_mode);
 }
 
 bool HlsDataSourceStream::CanReadMore() const {
