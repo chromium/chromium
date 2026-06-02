@@ -12,11 +12,6 @@
             "webdriver_wpt_tests": {}
         }
     },
-    "Mac12 Tests (dbg)": {
-        "main": "chromium.mac",
-        "port_name": "mac-mac12",
-        "specifiers": ["Mac12", "Debug"]
-    },
     "mac14-arm64-rel-tests": {
         "main": "chromium.mac",
         "port_name": "mac-mac14-arm64",
@@ -74,30 +69,6 @@
                 "flag_specific": "disable-site-isolation-trials"
             },
             "webdriver_wpt_tests": {}
-        },
-        "is_try_builder": true
-    },
-    "mac12.0-blink-rel": {
-        "main": "tryserver.blink",
-        "port_name": "mac-mac12",
-        "specifiers": ["Mac12", "Release"],
-        "steps": {
-            "blink_web_tests": {},
-            "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
-        },
-        "is_try_builder": true
-    },
-    "mac12.0.arm64-blink-rel": {
-        "main": "tryserver.blink",
-        "port_name": "mac-mac12-arm64",
-        "specifiers": ["Mac12-arm64", "Release"],
-        "steps": {
-            "blink_web_tests": {},
-            "blink_wpt_tests": {},
-            "chrome_wpt_tests": {},
-            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
