@@ -33,7 +33,7 @@ found in the LICENSE file.
         android:src="@drawable/ic_close"
         android:background="@drawable/default_icon_background_selector"
         android:contentDescription="@string/close"
-        android:scaleType="fitCenter"
+        android:scaleType="center"
         android:layout_gravity="top"/>
 
 </LinearLayout>
