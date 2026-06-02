@@ -711,7 +711,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_valid(boolean* valid) {
 }
 
 //
-// IAccessibleAction partly implemented.
+// IAccessibleAction methods.
 //
 
 IFACEMETHODIMP BrowserAccessibilityComWin::nActions(LONG* n_actions) {
@@ -767,8 +767,12 @@ IFACEMETHODIMP BrowserAccessibilityComWin::doAction(LONG action_index) {
   // aria-actions vector. To find the corresponding index in the aria_actions
   // vector, subtract the number of Blink actions.
   int32_t aria_action_id = aria_actions[action_index - actions.size()];
+  BrowserAccessibilityComWin* aria_action_obj = GetFromID(aria_action_id);
+  if (!aria_action_obj) {
+    return E_FAIL;
+  }
   data.action = ax::mojom::Action::kDoDefault;
-  GetFromID(aria_action_id)->GetOwner()->AccessibilityPerformAction(data);
+  aria_action_obj->GetOwner()->AccessibilityPerformAction(data);
   return S_OK;
 }
 
@@ -780,8 +784,27 @@ BrowserAccessibilityComWin::get_description(LONG action_index,
   if (IsDestroyed()) {
     return E_FAIL;
   }
+
+  if (!description) {
+    return E_INVALIDARG;
+  }
+
   OnExtendedPropertiesUsed(WinApiType::kMsaa);
-  return E_NOTIMPL;
+
+  BrowserAccessibilityWin* const owner = GetOwner();
+  const std::vector<ax::mojom::Action> actions = owner->GetSupportedActions();
+  const std::vector<int32_t>& aria_actions =
+      owner->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
+
+  if (action_index < 0 ||
+      action_index >= static_cast<LONG>(actions.size() + aria_actions.size())) {
+    *description = nullptr;
+    return E_INVALIDARG;
+  }
+
+  // No descriptions are currently defined for any action type.
+  *description = nullptr;
+  return S_FALSE;
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_keyBinding(LONG action_index,
@@ -805,7 +828,11 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_keyBinding(LONG action_index,
 
   BrowserAccessibilityWin* const owner = GetOwner();
   const std::vector<ax::mojom::Action> actions = owner->GetSupportedActions();
-  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size())) {
+  const std::vector<int32_t>& aria_actions =
+      owner->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
+
+  if (action_index < 0 ||
+      action_index >= static_cast<LONG>(actions.size() + aria_actions.size())) {
     return E_INVALIDARG;
   }
 
@@ -864,6 +891,10 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
     // vector, subtract the number of Blink actions.
     int32_t aria_action_id = aria_actions[action_index - actions.size()];
     BrowserAccessibilityComWin* aria_action_obj = GetFromID(aria_action_id);
+    if (!aria_action_obj) {
+      *name = nullptr;
+      return E_FAIL;
+    }
     const std::string& html_id = aria_action_obj->GetStringAttribute(
         ax::mojom::StringAttribute::kHtmlId);
     action_verb = html_id.empty()
@@ -928,6 +959,10 @@ BrowserAccessibilityComWin::get_localizedName(LONG action_index,
     // vector, subtract the number of Blink actions.
     int32_t aria_action_id = aria_actions[action_index - actions.size()];
     BrowserAccessibilityComWin* aria_action_obj = GetFromID(aria_action_id);
+    if (!aria_action_obj) {
+      *localized_name = nullptr;
+      return E_FAIL;
+    }
 
     action_verb = aria_action_obj->GetName();
   }

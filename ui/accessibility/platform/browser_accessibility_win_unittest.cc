@@ -4049,4 +4049,83 @@ TEST_F(BrowserAccessibilityWinTest, TestHyperlinkSafeTypeCheck) {
   manager.reset();
 }
 
+TEST_F(BrowserAccessibilityWinTest, TestAriaActionStaleIdref) {
+  // Create a tree where kActionsIds references both a valid node (id=2) and
+  // a non-existent node (id=99). This simulates a stale IDREF where the
+  // target element was removed between accessibility tree snapshots.
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kGenericContainer;
+  root.AddAction(ax::mojom::Action::kDoDefault);
+  root.AddIntListAttribute(ax::mojom::IntListAttribute::kActionsIds, {2, 99});
+  root.child_ids.push_back(2);
+
+  AXNodeData child;
+  child.id = 2;
+  child.role = ax::mojom::Role::kButton;
+  child.SetName("Edit");
+  child.AddStringAttribute(ax::mojom::StringAttribute::kHtmlId, "edit");
+
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(root, child), node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityComWin* root_obj =
+      ToBrowserAccessibilityWin(manager->GetBrowserAccessibilityRoot())
+          ->GetCOM();
+  ASSERT_NE(nullptr, root_obj);
+
+  Microsoft::WRL::ComPtr<IAccessibleAction> action;
+  ASSERT_HRESULT_SUCCEEDED(root_obj->QueryInterface(IID_PPV_ARGS(&action)));
+
+  // nActions includes both blink actions and aria-actions (even stale ones),
+  // since the count is based on the serialized kActionsIds list.
+  LONG n_actions = 0;
+  EXPECT_EQ(S_OK, action->nActions(&n_actions));
+  ASSERT_GE(n_actions, 2);  // At least 2 aria-actions exist.
+
+  // The last two indices are our aria-actions (valid id=2, stale id=99).
+  LONG valid_aria_index = n_actions - 2;
+  LONG stale_aria_index = n_actions - 1;
+
+  // Valid aria-action target (id=2) should work normally.
+  base::win::ScopedBstr name;
+  EXPECT_EQ(S_OK, action->get_name(valid_aria_index, name.Receive()));
+  EXPECT_NE(nullptr, name.Get());
+  name.Release();
+
+  base::win::ScopedBstr localized_name;
+  EXPECT_EQ(S_OK, action->get_localizedName(valid_aria_index,
+                                            localized_name.Receive()));
+  EXPECT_NE(nullptr, localized_name.Get());
+  localized_name.Release();
+
+  // Stale aria-action target (id=99) — GetFromID returns null.
+  // Methods should return E_FAIL instead of crashing.
+  EXPECT_EQ(E_FAIL, action->get_name(stale_aria_index, name.Receive()));
+  EXPECT_EQ(nullptr, name.Get());
+
+  EXPECT_EQ(E_FAIL, action->get_localizedName(stale_aria_index,
+                                              localized_name.Receive()));
+  EXPECT_EQ(nullptr, localized_name.Get());
+
+  EXPECT_EQ(E_FAIL, action->doAction(stale_aria_index));
+
+  // get_description and get_keyBinding don't dereference GetFromID, so they
+  // should still return S_FALSE for valid-range indices.
+  base::win::ScopedBstr description;
+  EXPECT_EQ(S_FALSE,
+            action->get_description(stale_aria_index, description.Receive()));
+  EXPECT_EQ(nullptr, description.Get());
+
+  BSTR* key_bindings = nullptr;
+  LONG n_bindings = 0;
+  EXPECT_EQ(S_FALSE, action->get_keyBinding(stale_aria_index, 100,
+                                            &key_bindings, &n_bindings));
+  EXPECT_EQ(0, n_bindings);
+
+  manager.reset();
+}
+
 }  // namespace ui

@@ -5267,6 +5267,38 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   EXPECT_EQ(0, n_key_bindings);
   EXPECT_EQ(nullptr, key_bindings);
 
+  // get_keyBinding for aria-actions indices should return S_FALSE (no key
+  // bindings), not E_INVALIDARG.
+  EXPECT_EQ(S_FALSE,
+            div_action->get_keyBinding(2, 100, &key_bindings, &n_key_bindings));
+  EXPECT_EQ(0, n_key_bindings);
+  EXPECT_EQ(nullptr, key_bindings);
+  EXPECT_EQ(S_FALSE,
+            div_action->get_keyBinding(3, 100, &key_bindings, &n_key_bindings));
+  EXPECT_EQ(0, n_key_bindings);
+  EXPECT_EQ(nullptr, key_bindings);
+
+  // Out-of-range index should return E_INVALIDARG.
+  EXPECT_EQ(E_INVALIDARG,
+            div_action->get_keyBinding(4, 100, &key_bindings, &n_key_bindings));
+
+  // get_description returns S_FALSE for all valid indices (no descriptions
+  // are currently defined for any action type).
+  base::win::ScopedBstr action_description;
+  EXPECT_EQ(S_FALSE,
+            div_action->get_description(0, action_description.Receive()));
+  EXPECT_EQ(nullptr, action_description.Get());
+  EXPECT_EQ(S_FALSE,
+            div_action->get_description(2, action_description.Receive()));
+  EXPECT_EQ(nullptr, action_description.Get());
+  EXPECT_EQ(S_FALSE,
+            div_action->get_description(3, action_description.Receive()));
+  EXPECT_EQ(nullptr, action_description.Get());
+
+  // Out-of-range index should return E_INVALIDARG.
+  EXPECT_EQ(E_INVALIDARG,
+            div_action->get_description(4, action_description.Receive()));
+
   base::win::ScopedVariant childid_self(CHILDID_SELF);
 
   // Verify name of the edit button before doAction is called.
