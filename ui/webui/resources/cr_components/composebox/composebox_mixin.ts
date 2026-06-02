@@ -1077,6 +1077,23 @@ export const ComposeboxEmbedderMixin =
           });
         }
 
+        shouldShowSuggestionActivityLink(): boolean {
+          const showActivityLink = this.result && this.showDropdown &&
+              this.result.matches.some((match) => match.isNoncannedAimSuggestion);
+          this.fire('show-suggestion-activity-link', showActivityLink);
+          return !!showActivityLink;
+        }
+
+        onLinkClicked(e: CustomEvent<{event: Event}>) {
+          // Manually handle navigation to support WebView environments where default
+          // link clicks may be ignored.
+          e.detail.event.preventDefault();
+          const href = (e.detail.event.currentTarget as HTMLAnchorElement).href;
+          if (href) {
+            this.getPageHandler().navigateUrl(href);
+          }
+        }
+
         async addTabContextHandleCallback(
             tabUpload: TabUpload, _replaceAutoActiveTabToken: boolean = false,
             onBeforeUpdateFiles?: (attachment: ComposeboxFile) =>
@@ -2393,6 +2410,8 @@ export interface ComposeboxEmbedderMixinInterface extends
       onBeforeUpdateFiles?: (attachment: ComposeboxFile) => void): Promise<ComposeboxFile|null>;
   getFilteredCarouselFiles(): ComposeboxFile[];
   getSharedTabs(): TabInfo[];
+  shouldShowSuggestionActivityLink(): boolean;
+  onLinkClicked(e: CustomEvent<{event: Event}>): void;
 
   // Common event handlers
   onContextMenuContainerMousedown(e: FocusEvent): void;

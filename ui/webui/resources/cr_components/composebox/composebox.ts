@@ -460,13 +460,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return false;
   }
 
-  protected shouldShowSuggestionActivityLink_() {
-    const showActivityLink = this.result && this.showDropdown &&
-        this.result.matches.some((match) => match.isNoncannedAimSuggestion);
-    this.fire('show-suggestion-activity-link', showActivityLink);
-    return showActivityLink;
-  }
-
   // TODO(crbug.com/486706573): common logic moved to mixin. Move embedder
   // specific logic to the embedder class (contextual_tasks).
   override deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean):
@@ -665,16 +658,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
     return attachment;
-  }
-
-  protected onLinkClicked_(e: CustomEvent<{ event: Event }>) {
-    // Manually handle navigation to support WebView environments where default
-    // link clicks may be ignored.
-    e.detail.event.preventDefault();
-    const href = (e.detail.event.currentTarget as HTMLAnchorElement).href;
-    if (href) {
-      this.pageHandler_.navigateUrl(href);
-    }
   }
 
   protected onLensClick_() {

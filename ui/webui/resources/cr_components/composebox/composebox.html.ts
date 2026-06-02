@@ -190,12 +190,12 @@ export function getHtml(this: ComposeboxElement) {
         exportparts="voice-close-button, voice-details-link, voice-stop-button, voice-submit-button">
     </cr-composebox-voice-search>
   ` : ''}
-  ${this.shouldShowSuggestionActivityLink_()
+  ${this.shouldShowSuggestionActivityLink()
       && this.suggestionActivityEnabled ? html`
     <div id="suggestionActivity">
       <localized-link
         .localizedString="${this.i18nAdvanced('suggestionActivityLink')}"
-        @link-clicked="${this.onLinkClicked_}">
+        @link-clicked="${this.onLinkClicked}">
       </localized-link>
     </div>
   `: ''}
