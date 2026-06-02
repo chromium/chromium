@@ -180,7 +180,9 @@ content::WebContents* BrowserDelegateImpl::NavigateWebApp(
     nav_params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
   }
   if (launch_params) {
-    nav_params.launch_params = std::move(launch_params);
+    nav_params.web_app_navigation_data.emplace();
+    nav_params.web_app_navigation_data->SetLaunchParams(
+        *std::move(launch_params));
   }
 
   return web_app::NavigateWebAppUsingParams(nav_params);

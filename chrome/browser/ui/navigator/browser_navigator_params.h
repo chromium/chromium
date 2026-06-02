@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "components/captive_portal/core/captive_portal_types.h"
-#include "components/webapps/browser/launch_queue/launch_params.h"
+#include "components/webapps/browser/navigation_data.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reload_type.h"
@@ -374,14 +374,6 @@ struct NavigateParams {
   // text had an explicit http scheme.
   bool url_typed_with_http_scheme = false;
 
-  // This option forces PWA navigation capturing (which captures some
-  // navigations into PWA windows or tabs) off. This is only recommended to be
-  // used if the navigation MUST not be captured. See
-  // https://bit.ly/pwa-navigation-capturing for a description about what PWA
-  // navigation capturing does. Setting this field to `true` will disable all of
-  // the behaviors listed in that document.
-  bool pwa_navigation_capturing_force_off = false;
-
   // A text fragment selector (that uses the syntax defined in
   // https://wicg.github.io/scroll-to-text-fragment/#syntax) to scroll the
   // matched text into the viewport without applying the standard highlight
@@ -394,9 +386,9 @@ struct NavigateParams {
   // Indicates whether this navigation was started by an ad.
   bool started_by_ad = false;
 
-  // Optional launch parameters to be attached to the resulting navigation, once
-  // the navigation commits.
-  std::optional<webapps::LaunchParams> launch_params;
+  // An optional struct containing data webapps needs for navigation. Usually
+  // nullopt.
+  std::optional<webapps::NavigationData> web_app_navigation_data;
 
  private:
   NavigateParams();

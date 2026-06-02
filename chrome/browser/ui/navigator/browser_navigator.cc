@@ -980,10 +980,12 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 
   // If launch_params are provided, store them in the navigation handle so that
   // the LaunchQueue can pick them up once the navigation commits.
-  if (navigation_handle && params->launch_params) {
+  if (navigation_handle && params->web_app_navigation_data &&
+      params->web_app_navigation_data->launch_params()) {
     auto* user_data = web_app::WebAppLaunchNavigationHandleUserData::
         GetOrCreateForNavigationHandle(*navigation_handle);
-    user_data->SetLaunchParams(std::move(*params->launch_params));
+    user_data->SetLaunchParams(
+        std::move(*params->web_app_navigation_data->launch_params()));
   }
 
   if (app_navigation) {

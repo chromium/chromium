@@ -614,7 +614,8 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
     return CapturingDisabled();
   }
   if (params.started_from_context_menu ||
-      params.pwa_navigation_capturing_force_off ||
+      (params.web_app_navigation_data &&
+       params.web_app_navigation_data->navigation_capturing_force_off()) ||
       params.tabstrip_index != -1) {
     return CapturingDisabled();
   }

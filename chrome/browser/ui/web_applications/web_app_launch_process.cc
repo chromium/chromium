@@ -445,11 +445,15 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
                           network::mojom::ReferrerPolicy::kDefault));
   }
 
+  if (!nav_params.web_app_navigation_data) {
+    nav_params.web_app_navigation_data.emplace();
+  }
+
   webapps::LaunchParams launch_params;
   launch_params.app_id = web_app_->app_id();
   launch_params.target_url = launch_url;
   launch_params.paths = params_->launch_files;
-  nav_params.launch_params = std::move(launch_params);
+  nav_params.web_app_navigation_data->SetLaunchParams(std::move(launch_params));
 
   return {.web_contents = NavigateWebAppUsingParams(nav_params),
           .did_navigate = true};

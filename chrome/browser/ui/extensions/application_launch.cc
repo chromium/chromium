@@ -228,19 +228,20 @@ ui::mojom::WindowShowState DetermineWindowShowState(
   return ui::mojom::WindowShowState::kDefault;
 }
 
-void MaybePopulateLaunchParams(const apps::AppLaunchParams& params,
-                               const Extension* extension,
-                               const GURL& url,
-                               NavigateParams& nav_params) {
-  if (extension &&
-      extensions::WebFileHandlers::SupportsWebFileHandlers(*extension)) {
-    webapps::LaunchParams launch_params;
-    launch_params.app_id = extension->id();
-    launch_params.target_url = url;
-    launch_params.paths = params.launch_files;
-    launch_params.started_new_navigation = true;
-    nav_params.launch_params = std::move(launch_params);
+std::optional<webapps::LaunchParams> MaybeGetLaunchParams(
+    const apps::AppLaunchParams& params,
+    const Extension* extension,
+    const GURL& url) {
+  if (!extension ||
+      !extensions::WebFileHandlers::SupportsWebFileHandlers(*extension)) {
+    return std::nullopt;
   }
+  webapps::LaunchParams launch_params;
+  launch_params.app_id = extension->id();
+  launch_params.target_url = url;
+  launch_params.paths = params.launch_files;
+  launch_params.started_new_navigation = true;
+  return launch_params;
 }
 
 WebContents* OpenApplicationTab(Profile* profile,
@@ -285,7 +286,12 @@ WebContents* OpenApplicationTab(Profile* profile,
   NavigateParams params(browser, url, transition);
   params.tabstrip_add_types = add_type;
   params.disposition = disposition;
-  MaybePopulateLaunchParams(launch_params, extension, url, params);
+  if (auto nav_launch_params =
+          MaybeGetLaunchParams(launch_params, extension, url)) {
+    params.web_app_navigation_data.emplace();
+    params.web_app_navigation_data->SetLaunchParams(
+        std::move(*nav_launch_params));
+  }
 
   if (disposition == WindowOpenDisposition::CURRENT_TAB) {
     WebContents* existing_tab =
@@ -531,8 +537,13 @@ WebContents* NavigateApplicationWindow(Browser* browser,
 
   NavigateParams nav_params(browser, url, transition);
   nav_params.disposition = disposition;
-  nav_params.pwa_navigation_capturing_force_off = true;
-  MaybePopulateLaunchParams(params, extension, url, nav_params);
+  webapps::NavigationData web_app_navigation_data;
+  nav_params.web_app_navigation_data.emplace();
+  nav_params.web_app_navigation_data->SetNavigationCapturingForceOff(true);
+  if (auto nav_launch_params = MaybeGetLaunchParams(params, extension, url)) {
+    nav_params.web_app_navigation_data->SetLaunchParams(
+        *std::move(nav_launch_params));
+  }
   Navigate(&nav_params);
 
   WebContents* const web_contents = nav_params.navigated_or_inserted_contents;

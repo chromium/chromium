@@ -87,6 +87,8 @@ source_set("browser") {
     "launch_queue/launch_queue.cc",
     "launch_queue/launch_queue.h",
     "launch_queue/launch_queue_delegate.h",
+    "navigation_data.cc",
+    "navigation_data.h",
     "pwa_install_path_tracker.cc",
     "pwa_install_path_tracker.h",
     "web_app_url_config.cc",

@@ -711,7 +711,8 @@ bool InProcessBrowserTest::AddTabAtIndexToBrowser(
   NavigateParams params(browser, url, transition);
   params.tabstrip_index = index;
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params.pwa_navigation_capturing_force_off = true;
+  params.web_app_navigation_data.emplace();
+  params.web_app_navigation_data->SetNavigationCapturingForceOff(true);
   Navigate(&params);
   RunScheduledLayouts();
 

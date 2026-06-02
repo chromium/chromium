@@ -493,7 +493,9 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
     NavigateParams nav_params(
         existing_app_host->browser->GetBrowserForMigrationOnly(), launch_url,
         ui::PageTransition::PAGE_TRANSITION_LINK);
-    nav_params.launch_params = std::move(launch_params);
+    nav_params.web_app_navigation_data.emplace();
+    nav_params.web_app_navigation_data->SetLaunchParams(
+        std::move(launch_params));
     Navigate(&nav_params);
   } else {
     WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
@@ -745,7 +747,10 @@ Browser* CreateWebAppWindowMaybeWithHomeTab(
 }
 
 content::WebContents* NavigateWebAppUsingParams(NavigateParams& nav_params) {
-  nav_params.pwa_navigation_capturing_force_off = true;
+  if (!nav_params.web_app_navigation_data) {
+    nav_params.web_app_navigation_data.emplace();
+  }
+  nav_params.web_app_navigation_data->SetNavigationCapturingForceOff(true);
   if (nav_params.browser->GetBrowserForMigrationOnly()->app_controller() &&
       nav_params.browser->GetBrowserForMigrationOnly()
           ->app_controller()

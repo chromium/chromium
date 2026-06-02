@@ -198,7 +198,8 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   // the future to allow this behavior, but this may require an API change, and
   // likely a re-write of how this navigation is called to be compatible with
   // the navigation capturing behavior.
-  navigate_params.pwa_navigation_capturing_force_off = true;
+  navigate_params.web_app_navigation_data.emplace();
+  navigate_params.web_app_navigation_data->SetNavigationCapturingForceOff(true);
 
   MaybeSetPdfNavigateParams(function, navigate_params);
 

@@ -1202,7 +1202,9 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     // useful/desired in the future to allow this behavior, but this may require
     // an API change, or at least a re-write of how these navigations are called
     // to be compatible with the navigation capturing behavior.
-    navigate_params.pwa_navigation_capturing_force_off = true;
+    navigate_params.web_app_navigation_data.emplace();
+    navigate_params.web_app_navigation_data->SetNavigationCapturingForceOff(
+        true);
 
     if (OpenTabHelper::MaybeSetPdfNavigateParams(*this, navigate_params)) {
       return navigate_params;
@@ -1248,7 +1250,9 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
       webapps::LaunchParams launch_params;
       launch_params.app_id = iwa_id;
       launch_params.target_url = original_url;
-      navigate_params.launch_params = std::move(launch_params);
+      CHECK(navigate_params.web_app_navigation_data);
+      navigate_params.web_app_navigation_data->SetLaunchParams(
+          std::move(launch_params));
 
       // Navigate() takes care of enqueueing the launch params once the
       // navigation commits.
