@@ -324,6 +324,7 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   }
 
   const bool include_tabs_submenu =
+      base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox) &&
       base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox);
 
   ui::SimpleMenuModel* target_menu_model;
@@ -363,7 +364,9 @@ void OmniboxContextMenuController::AddRecentTabItems() {
 
     // If tab has been staged for uploading,
     // add a check mark icon.
-    if (tab.is_checked) {
+    if (tab.is_checked &&
+        base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
+        base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox)) {
       size_t index = target_menu_model->GetItemCount() - 1;
       auto check_icon = ui::ImageModel::FromVectorIcon(
           features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
@@ -522,14 +525,26 @@ void OmniboxContextMenuController::AddModelPickerItems() {
       features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
       ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
 
+  const bool show_rhs_checkmark =
+      base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
+      base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox);
+
   next_command_id_ = min_tools_and_models_command_id_;
   for (const auto model : input_state_.allowed_models) {
     auto& menu_item_info = model_info_[model];
     const auto& menu_icon =
         IsThinkingModel(model) ? thinking_model_icon : menu_item_info.menu_icon;
-    AddItemWithIcon(next_command_id_, menu_item_info.menu_label, menu_icon);
-    // If model is selected, add checkmark icon on the right.
-    if (is_aim_popup_open && input_state_.active_model == model) {
+
+    // If relevant flag is enabled, the checkmark is shown on the right.
+    // Otherwise, it is shown on the left.
+    const auto& lhs_icon = (!show_rhs_checkmark && is_aim_popup_open &&
+                            input_state_.active_model == model)
+                               ? check_icon
+                               : menu_icon;
+
+    AddItemWithIcon(next_command_id_, menu_item_info.menu_label, lhs_icon);
+    if (show_rhs_checkmark && is_aim_popup_open &&
+        input_state_.active_model == model) {
       size_t index = menu_model_->GetItemCount() - 1;
       menu_model_->SetMinorIcon(index, check_icon);
       menu_model_->SetMinorIconOnRight(
@@ -1261,6 +1276,7 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
   // verification logic below.
   if (command_id == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
     CHECK(
+        base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox) &&
         base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox));
     return true;
   }
@@ -1417,6 +1433,7 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
   // logic below.
   if (command_id == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
     CHECK(
+        base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox) &&
         base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox));
     return true;
   }
