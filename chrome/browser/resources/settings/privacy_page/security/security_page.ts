@@ -269,7 +269,7 @@ export class SettingsSecurityPageElement extends
 
     this.registerHelpBubble(
         'kEnhancedProtectionSettingElementId',
-        this.$.safeBrowsingEnhanced.getBubbleAnchor(), {anchorPaddingTop: 10});
+        this.$.safeBrowsingEnhanced.getBubbleAnchor(), {paddingTop: 10});
 
     // Initialize the last focus time on page load.
     this.lastFocusTime_ = HatsBrowserProxyImpl.getInstance().now();

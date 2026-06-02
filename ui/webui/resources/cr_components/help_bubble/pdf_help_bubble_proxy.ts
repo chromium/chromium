@@ -3,16 +3,31 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
+import {TrackedElementProxyImpl} from '//resources/js/tracked_element/tracked_element_proxy.js';
+import type {TrackedElementProxy} from '//resources/js/tracked_element/tracked_element_proxy.js';
 import type {TrackedElementHandlerInterface} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
-import {TrackedElementHandlerRemote} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
+import {TrackedElementHandlerRemote, TrackedElementManagerCallbackRouter} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 
 import type {HelpBubbleHandlerInterface} from './help_bubble.mojom-webui.js';
 import {HelpBubbleClientCallbackRouter, HelpBubbleHandlerRemote, PdfHelpBubbleHandlerFactory} from './help_bubble.mojom-webui.js';
 
 export interface PdfHelpBubbleProxy {
-  getTrackedElementHandler(): TrackedElementHandlerInterface;
   getHandler(): HelpBubbleHandlerInterface;
   getCallbackRouter(): HelpBubbleClientCallbackRouter;
+}
+
+class PdfTrackedElementProxyImpl implements TrackedElementProxy {
+  private handler_: TrackedElementHandlerInterface;
+  callbackRouter: TrackedElementManagerCallbackRouter =
+      new TrackedElementManagerCallbackRouter();
+
+  constructor(handler: TrackedElementHandlerInterface) {
+    this.handler_ = handler;
+  }
+
+  getHandler(): TrackedElementHandlerInterface {
+    return this.handler_;
+  }
 }
 
 export class PdfHelpBubbleProxyImpl implements PdfHelpBubbleProxy {
@@ -27,6 +42,8 @@ export class PdfHelpBubbleProxyImpl implements PdfHelpBubbleProxy {
           this.callbackRouter_.$.bindNewPipeAndPassRemote(),
           this.helpBubbleHandler_.$.bindNewPipeAndPassReceiver(),
           this.trackedElementHandler_.$.bindNewPipeAndPassReceiver());
+      TrackedElementProxyImpl.setInstance(
+          new PdfTrackedElementProxyImpl(this.trackedElementHandler_));
     }
   }
 
@@ -37,10 +54,6 @@ export class PdfHelpBubbleProxyImpl implements PdfHelpBubbleProxy {
   static createConnectedInstance() {
     assert(!instance);
     instance = new PdfHelpBubbleProxyImpl(true);
-  }
-
-  getTrackedElementHandler(): TrackedElementHandlerRemote {
-    return this.trackedElementHandler_;
   }
 
   getHandler(): HelpBubbleHandlerRemote {

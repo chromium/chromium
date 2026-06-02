@@ -4,6 +4,8 @@
 
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
+import type {TrackedElementProxy} from '//resources/js/tracked_element/tracked_element_proxy.js';
+import {TrackedElementProxyImpl} from '//resources/js/tracked_element/tracked_element_proxy.js';
 import type {HelpBubbleClientRemote, HelpBubbleHandlerInterface, HelpBubbleParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {HelpBubbleArrowPosition, HelpBubbleClientCallbackRouter, HelpBubbleClosedReason} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import type {HelpBubbleController} from 'chrome://resources/cr_components/help_bubble/help_bubble_controller.js';
@@ -13,6 +15,7 @@ import type {HelpBubbleProxy} from 'chrome://resources/cr_components/help_bubble
 import {HelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {TrackedElementManagerCallbackRouter} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import type {TrackedElementHandlerInterface, TrackedElementHandlerPendingReceiver, TrackedElementManagerRemote} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -182,6 +185,19 @@ class TestHelpBubbleHandler extends TestBrowserProxy implements
   }
 }
 
+class TestTrackedElementProxy implements TrackedElementProxy {
+  private handler_: TrackedElementHandlerInterface;
+  callbackRouter: TrackedElementManagerCallbackRouter =
+      new TrackedElementManagerCallbackRouter();
+
+  constructor(handler: TrackedElementHandlerInterface) {
+    this.handler_ = handler;
+  }
+  getHandler(): TrackedElementHandlerInterface {
+    return this.handler_;
+  }
+}
+
 class TestHelpBubbleProxy extends TestBrowserProxy implements HelpBubbleProxy {
   private testTrackedElementHandler_ = new TestTrackedElementHandler();
   private testHandler_ = new TestHelpBubbleHandler();
@@ -194,6 +210,8 @@ class TestHelpBubbleProxy extends TestBrowserProxy implements HelpBubbleProxy {
 
     this.callbackRouterRemote_ =
         this.callbackRouter_.$.bindNewPipeAndPassRemote();
+    TrackedElementProxyImpl.setInstance(
+        new TestTrackedElementProxy(this.testTrackedElementHandler_));
   }
 
   getTrackedElementHandler(): TestTrackedElementHandler {

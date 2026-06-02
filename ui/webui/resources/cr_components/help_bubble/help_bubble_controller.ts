@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
+import type {Options as TrackedElementOptions} from '//resources/js/tracked_element/tracked_element_manager.js';
 import type {InsetsF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import type {HelpBubbleElement} from './help_bubble.js';
@@ -16,10 +17,12 @@ export type Trackable = string|string[]|HTMLElement|Element;
 
 export const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
 
-interface Options {
-  padding: InsetsF;
-  fixed: boolean;
+export interface HelpBubbleOptions extends TrackedElementOptions {
   containerElement?: HTMLElement;
+}
+
+function clampPadding(n: number = 0) {
+  return Math.max(0, Math.min(20, n));
 }
 
 // Return whether the current language is right-to-left
@@ -76,8 +79,7 @@ export class HelpBubbleController {
   private root_: ShadowRoot;
   private anchor_: HTMLElement|null = null;
   private bubble_: HelpBubbleElement|null = null;
-  private options_:
-      Options = {padding: {top: 0, bottom: 0, left: 0, right: 0}, fixed: false};
+  private options_: HelpBubbleOptions = {};
 
   /**
    * Whether a help bubble (webui or external) is being shown for this
@@ -137,8 +139,18 @@ export class HelpBubbleController {
     return this.nativeId_;
   }
 
+  /** Returns the original options passed during registration. */
+  getOptions() {
+    return this.options_;
+  }
+
   getPadding() {
-    return this.options_.padding;
+    const padding: InsetsF = {top: 0, bottom: 0, left: 0, right: 0};
+    padding.top = clampPadding(this.options_.paddingTop);
+    padding.left = clampPadding(this.options_.paddingLeft);
+    padding.bottom = clampPadding(this.options_.paddingBottom);
+    padding.right = clampPadding(this.options_.paddingRight);
+    return padding;
   }
 
   getAnchorVisibility() {
@@ -157,11 +169,14 @@ export class HelpBubbleController {
         bounds.height !== this.lastAnchorBounds_.height;
     this.isAnchorVisible_ = isVisible;
     this.lastAnchorBounds_ = bounds;
+    if (changed && this.bubble_ && isVisible) {
+      this.bubble_.updatePosition();
+    }
     return changed;
   }
 
   isAnchorFixed(): boolean {
-    return this.options_.fixed;
+    return !!this.options_.fixed;
   }
 
   isExternal() {
@@ -174,7 +189,7 @@ export class HelpBubbleController {
     this.setAnchorHighlight_(isShowing);
   }
 
-  track(trackable: Trackable, options: Options): boolean {
+  track(trackable: Trackable, options: HelpBubbleOptions): boolean {
     assert(!this.anchor_);
 
     let anchor: HTMLElement|null = null;
@@ -194,7 +209,7 @@ export class HelpBubbleController {
       return false;
     }
 
-    anchor.dataset['nativeId'] = this.nativeId_;
+
     this.anchor_ = anchor;
     this.options_ = options;
     return true;
@@ -255,7 +270,7 @@ export class HelpBubbleController {
     this.bubble_.titleText = params.titleText || '';
     this.bubble_.progress = params.progress || null;
     this.bubble_.buttons = params.buttons;
-    this.bubble_.padding = this.options_.padding;
+    this.bubble_.padding = this.getPadding();
     this.bubble_.focusAnchor = params.focusOnShowHint === false;
 
     if (params.timeout) {

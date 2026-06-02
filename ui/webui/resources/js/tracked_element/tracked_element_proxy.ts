@@ -5,6 +5,8 @@
 import type {TrackedElementHandlerInterface, TrackedElementHandlerRemote} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import {TrackedElementHandler, TrackedElementManagerCallbackRouter} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 
+import {TrackedElementManager} from './tracked_element_manager.js';
+
 export interface TrackedElementProxy {
   getHandler(): TrackedElementHandlerInterface;
   callbackRouter: TrackedElementManagerCallbackRouter;
@@ -29,6 +31,9 @@ export class TrackedElementProxyImpl implements TrackedElementProxy {
 
   static setInstance(obj: TrackedElementProxy) {
     instance = obj;
+    // Since we changed the proxy, we need to trigger the TrackedElementManager
+    // to use the new proxy. The easiest way to do that is to recreate it.
+    TrackedElementManager.setInstance(null);
   }
 }
 

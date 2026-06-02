@@ -18,7 +18,6 @@ import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {isWindows} from '//resources/js/platform.js';
-import {debounceEnd} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {InsetsF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
@@ -177,17 +176,7 @@ export class HelpBubbleElement extends CrLitElement {
     this.style.position = this.fixed ? 'fixed' : 'absolute';
     this.style.visibility = 'visible';
     this.removeAttribute('aria-hidden');
-    this.updatePosition_();
-
-    this.debouncedUpdate = debounceEnd(() => {
-      if (this.anchorElement_) {
-        this.updatePosition_();
-      }
-    }, 50);
-
-    this.buttonListObserver_ = new MutationObserver(this.debouncedUpdate);
-    this.buttonListObserver_.observe(this.$.buttons, {childList: true});
-    window.addEventListener('resize', this.debouncedUpdate);
+    this.updatePosition();
 
     if (this.timeoutMs !== null) {
       const timedOutCallback = () => {
@@ -196,14 +185,6 @@ export class HelpBubbleElement extends CrLitElement {
         });
       };
       this.timeoutTimerId = setTimeout(timedOutCallback, this.timeoutMs);
-    }
-
-    if (this.offsetParent && !this.fixed) {
-      this.resizeObserver_ = new ResizeObserver(() => {
-        this.updatePosition_();
-        this.anchorElement_?.scrollIntoView(HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS);
-      });
-      this.resizeObserver_.observe(this.offsetParent);
     }
   }
 
@@ -216,10 +197,6 @@ export class HelpBubbleElement extends CrLitElement {
    * bubble will go away on hide.
    */
   hide() {
-    if (this.resizeObserver_) {
-      this.resizeObserver_.disconnect();
-      this.resizeObserver_ = null;
-    }
     this.style.display = 'none';
     this.style.visibility = 'hidden';
     this.setAttribute('aria-hidden', 'true');
@@ -227,14 +204,6 @@ export class HelpBubbleElement extends CrLitElement {
     if (this.timeoutTimerId !== null) {
       clearInterval(this.timeoutTimerId);
       this.timeoutTimerId = null;
-    }
-    if (this.buttonListObserver_) {
-      this.buttonListObserver_.disconnect();
-      this.buttonListObserver_ = null;
-    }
-    if (this.debouncedUpdate) {
-      window.removeEventListener('resize', this.debouncedUpdate);
-      this.debouncedUpdate = null;
     }
   }
 
@@ -451,7 +420,7 @@ export class HelpBubbleElement extends CrLitElement {
    * Sets the bubble position, as relative to that of the anchor element and
    * |this.position|.
    */
-  private updatePosition_() {
+  updatePosition() {
     assert(
         this.anchorElement_, 'Update position: expected valid anchor element.');
 

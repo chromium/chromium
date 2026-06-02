@@ -218,7 +218,7 @@ export class SettingsPersonalizationOptionsElement extends
 
     this.registerHelpBubble(
         ANONYMIZED_URL_COLLECTION_ID,
-        this.$.urlCollectionToggle.getBubbleAnchor(), {anchorPaddingTop: 10});
+        this.$.urlCollectionToggle.getBubbleAnchor(), {paddingTop: 10});
   }
 
   // <if expr="is_chromeos">

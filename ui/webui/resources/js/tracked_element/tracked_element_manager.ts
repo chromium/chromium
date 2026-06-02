@@ -184,7 +184,7 @@ export class TrackedElementManager {
     return TrackedElementManager.instance_;
   }
 
-  static setInstanceForTesting(instance: TrackedElementManager) {
+  static setInstance(instance: TrackedElementManager|null) {
     TrackedElementManager.instance_ = instance;
   }
 
@@ -327,13 +327,12 @@ export class TrackedElementManager {
   startTracking(
       element: HTMLElement, nativeId: string, options?: Options,
       onVisibilityChanged?: (visible: boolean, bounds: RectF) => void) {
-    element.dataset['nativeId'] = nativeId;
-
     // Remove tracking of the old element before registering the nativeId to a
     // new element.
     if (this.getTrackedElement_(element)) {
       this.stopTracking(element);
     }
+    element.dataset['nativeId'] = nativeId;
 
     const parsedOptions = parseOptions(options);
     const trackedElement: TrackedElement = {
@@ -364,6 +363,8 @@ export class TrackedElementManager {
       this.trackedElementHandler_.trackedElementCanHighlightChanged(
           nativeId, true);
     }
+
+    this.onElementVisibilityChanged_(element, computeIsVisible(element));
   }
 
   /**
@@ -414,7 +415,11 @@ export class TrackedElementManager {
   private onElementVisibilityChanged_(
       element: HTMLElement, isVisible: boolean) {
     const trackedElement = this.getTrackedElement_(element);
-    assert(trackedElement);
+    if (!trackedElement) {
+      // When we stop tracking an element we continue to get events for it. Just
+      // ignore these events.
+      return;
+    }
 
     const bounds: RectF = isVisible ? this.getElementBounds_(element) :
                                       {x: 0, y: 0, width: 0, height: 0};

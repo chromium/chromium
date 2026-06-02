@@ -237,7 +237,7 @@ suite('ToolbarAppTest', () => {
 
     startTrackingCalls = [];
     stopTrackingCalls = [];
-    TrackedElementManager.setInstanceForTesting(mockManager as any);
+    TrackedElementManager.setInstance(mockManager as any);
 
     helpBubbleProxy = new TestHelpBubbleProxy();
     HelpBubbleProxyImpl.setInstance(helpBubbleProxy);

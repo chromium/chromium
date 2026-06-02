@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TrackedElementProxyImpl} from '//resources/js/tracked_element/tracked_element_proxy.js';
-import type {TrackedElementHandlerInterface} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
-
 import type {HelpBubbleHandlerInterface} from './help_bubble.mojom-webui.js';
 import {HelpBubbleClientCallbackRouter, HelpBubbleHandlerFactory, HelpBubbleHandlerRemote} from './help_bubble.mojom-webui.js';
 
 export interface HelpBubbleProxy {
-  getTrackedElementHandler(): TrackedElementHandlerInterface;
   getHandler(): HelpBubbleHandlerInterface;
   getCallbackRouter(): HelpBubbleClientCallbackRouter;
 }
@@ -31,10 +27,6 @@ export class HelpBubbleProxyImpl implements HelpBubbleProxy {
 
   static setInstance(obj: HelpBubbleProxy) {
     instance = obj;
-  }
-
-  getTrackedElementHandler(): TrackedElementHandlerInterface {
-    return TrackedElementProxyImpl.getInstance().getHandler();
   }
 
   getHandler(): HelpBubbleHandlerRemote {

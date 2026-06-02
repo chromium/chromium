@@ -234,7 +234,6 @@ export class ToolbarAppElement extends AppElementBase {
 
   private browserProxy_: BrowserProxy;
   private metricsRecorder_: MetricsRecorder;
-  private trackedElementManager_: TrackedElementManager;
   private navigationStateListenerHandle_:
       NavigationControlsStateListenerHandle =
           INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE;
@@ -255,7 +254,6 @@ export class ToolbarAppElement extends AppElementBase {
     });
     this.browserProxy_ = BrowserProxyImpl.getInstance();
     this.metricsRecorder_ = new MetricsRecorder(this.browserProxy_);
-    this.trackedElementManager_ = TrackedElementManager.getInstance();
     this.iconTable_ = IconTable.getInstance();
     ColorChangeUpdater.forDocument().start();
   }
@@ -320,12 +318,11 @@ export class ToolbarAppElement extends AppElementBase {
     for (const {selector, id} of TRACKED_ELEMENTS) {
       const el = this.shadowRoot.querySelector<HTMLElement>(selector);
       if (el) {
-        this.trackedElementManager_.startTracking(el, id, {
+        this.registerHelpBubble(id, el, {
           onHighlightChanged: (highlighted: boolean) => {
             el.classList.toggle('anchor-highlight', highlighted);
           },
         });
-        this.registerHelpBubble(id, el);
       }
     }
 
@@ -366,7 +363,6 @@ export class ToolbarAppElement extends AppElementBase {
       for (const {selector, id} of TRACKED_ELEMENTS) {
         const el = this.shadowRoot.querySelector<HTMLElement>(selector);
         if (el) {
-          this.trackedElementManager_.stopTracking(el);
           this.unregisterHelpBubble(id);
         }
       }

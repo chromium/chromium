@@ -26,7 +26,7 @@ suite('PinnedToolbarAction', function() {
         stopTrackingCalls.push(element);
       },
     };
-    TrackedElementManager.setInstanceForTesting(mockManager as any);
+    TrackedElementManager.setInstance(mockManager as any);
 
     action = document.createElement('pinned-toolbar-action');
     // Set state before appending to avoid assertNotReached() in getIcon_()

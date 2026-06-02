@@ -243,7 +243,7 @@ export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
       // accordingly.
       this.registerHelpBubble(
           CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID,
-          ['ntp-customize-buttons', '.customize-icon'], {anchorPaddingTop: 10});
+          ['ntp-customize-buttons', '.customize-icon'], {paddingTop: 10});
       this.browserProxy_.handler.notifyCustomizationButtonVisible();
     }
   }
