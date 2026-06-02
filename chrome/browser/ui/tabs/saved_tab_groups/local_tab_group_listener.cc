@@ -317,7 +317,18 @@ void LocalTabGroupListener::MatchLocalTabToSavedTab(
     int target_index_in_tab_strip) {
   int current_index = local_tab ? tab_strip_model->GetIndexOfTab(local_tab)
                                 : TabStripModel::kNoTab;
-  const bool is_local_tab_valid = current_index != TabStripModel::kNoTab;
+
+  const std::optional<tab_groups::TabGroupId> current_group =
+      current_index != TabStripModel::kNoTab
+          ? tab_strip_model->GetTabGroupForTab(current_index)
+          : std::nullopt;
+
+  // The tab is valid if it exists in the tab strip and is either ungrouped or
+  // already in our group. If it is in a different group, we treat it as invalid
+  // to trigger duplication/opening from sync.
+  const bool is_local_tab_valid =
+      current_index != TabStripModel::kNoTab &&
+      (!current_group.has_value() || current_group.value() == local_id_);
 
   if (!is_local_tab_valid) {
     OpenWebContentsFromSync(
@@ -326,11 +337,7 @@ void LocalTabGroupListener::MatchLocalTabToSavedTab(
     return;
   }
 
-  const std::optional<tab_groups::TabGroupId> current_group =
-      tab_strip_model->GetTabGroupForTab(current_index);
-  if (current_group.has_value()) {
-    CHECK_EQ(local_id_, current_group.value());
-  } else {
+  if (!current_group.has_value()) {
     tab_strip_model->AddToExistingGroup({current_index}, local_id_,
                                         /*add_to_end=*/false);
     current_index = tab_strip_model->GetIndexOfTab(local_tab);

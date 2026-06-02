@@ -1015,5 +1015,60 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   EXPECT_EQ(2u, SavedTabGroupUtils::GetTabsInGroup(local_id).size());
 }
 
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       UpdateFromSyncWithLocalTabMovedToDifferentGroup) {
+  // Add a second tab at index 1. It starts ungrouped.
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), 1, false);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  // Create a tab group containing ONLY the first tab (index 0).
+  LocalTabGroupID local_id_1 = browser()->tab_strip_model()->AddToNewGroup({0});
+  WaitUntilCallbackReceived();
+
+  // Create a tab group containing ONLY the second tab (index 1).
+  LocalTabGroupID local_id_2 = browser()->tab_strip_model()->AddToNewGroup({1});
+  WaitUntilCallbackReceived();
+
+  // Unsave the second group so that it is not tracked by the sync service,
+  // preventing re-entrancy crashes during local observations, while still
+  // keeping the local tab grouped in a different group locally.
+  service_->UnsaveGroup(local_id_2);
+
+  const SavedTabGroup* saved_group_1 = model_->Get(local_id_1);
+  ASSERT_TRUE(saved_group_1);
+
+  LocalTabID second_tab_id =
+      browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle().raw_value();
+
+  // Create a new SavedTabGroupTab representing the second tab, and set its
+  // local_tab_id to the second tab's handle.
+  SavedTabGroupTab tab_2(GURL("chrome://newtab"), u"New Tab",
+                         saved_group_1->saved_guid(),
+                         /*position=*/1);
+  tab_2.SetLocalTabID(second_tab_id);
+
+  // Add the second tab to the saved group 1 from sync.
+  // This triggers UpdateFromSync on local_id_1. It should not crash and should
+  // steal the local tab from local_id_2 and add it to local_id_1.
+  model_->AddTabToGroupFromSync(saved_group_1->saved_guid(), tab_2);
+  WaitUntilCallbackReceived();
+
+  // Verify that the tab was duplicated into the first group, preserving the
+  // second group! Tab 0 and Tab 1 should be in local_id_1. Tab 2 should remain
+  // in local_id_2.
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+
+  EXPECT_EQ(local_id_1, browser()->tab_strip_model()->GetTabGroupForTab(0));
+  EXPECT_EQ(local_id_1, browser()->tab_strip_model()->GetTabGroupForTab(1));
+  EXPECT_EQ(local_id_2, browser()->tab_strip_model()->GetTabGroupForTab(2));
+
+  EXPECT_EQ(2u, SavedTabGroupUtils::GetTabsInGroup(local_id_1).size());
+  EXPECT_EQ(1u, SavedTabGroupUtils::GetTabsInGroup(local_id_2).size());
+
+  // Verify that local_id_2 still exists.
+  EXPECT_TRUE(browser()->tab_strip_model()->group_model()->ContainsTabGroup(
+      local_id_2));
+}
+
 }  // namespace
 }  // namespace tab_groups
