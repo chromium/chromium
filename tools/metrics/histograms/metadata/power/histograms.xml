@@ -1208,22 +1208,6 @@ tools/metrics/histograms/metadata/stability/enums.xml
   </token>
 </histogram>
 
-<histogram
-    name="Power.DarkMode{prefers-color-scheme}.InferredDarkPageColorScheme"
-    enum="BooleanIsDarkColorScheme" expires_after="2023-09-24">
-  <owner>michaelbai@chromium.org</owner>
-  <owner>pdr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Whether the primary main document has an inferred dark color scheme. Emitted
-    each time WebContents infers a new non-empty color scheme.
-  </summary>
-  <token key="prefers-color-scheme">
-    <variant name=""/>
-    <variant name=".DarkColorScheme" summary="when the embedder prefers dark."/>
-  </token>
-</histogram>
-
 <histogram name="Power.DarkResumeWakeDurationMs" units="ms"
     expires_after="2026-04-10">
   <owner>mka@chromium.org</owner>

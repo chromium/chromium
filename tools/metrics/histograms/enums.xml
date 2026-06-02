@@ -1277,14 +1277,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Foreground"/>
 </enum>
 
-<enum name="BooleanIsDarkColorScheme">
-  <summary>
-    A boolean for whether the web content is dark or light color scheme
-  </summary>
-  <int value="0" label="Light"/>
-  <int value="1" label="Dark"/>
-</enum>
-
 <enum name="BooleanIsFileBacked">
   <int value="0" label="Not file backed"/>
   <int value="1" label="File backed"/>

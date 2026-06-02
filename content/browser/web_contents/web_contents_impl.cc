@@ -8295,17 +8295,6 @@ void WebContentsImpl::DidInferColorScheme(PageImpl& page) {
   if (page.IsPrimary()) {
     observers_.NotifyObservers(&WebContentsObserver::InferredColorSchemeUpdated,
                                page.inferred_color_scheme());
-    if (page.inferred_color_scheme().has_value()) {
-      bool dark = page.inferred_color_scheme().value() ==
-                  blink::mojom::PreferredColorScheme::kDark;
-      base::UmaHistogramBoolean("Power.DarkMode.InferredDarkPageColorScheme",
-                                dark);
-      if (web_preferences_ && web_preferences_->preferred_color_scheme ==
-                                  blink::mojom::PreferredColorScheme::kDark) {
-        base::UmaHistogramBoolean(
-            "Power.DarkMode.DarkColorScheme.InferredDarkPageColorScheme", dark);
-      }
-    }
   }
 }
 
