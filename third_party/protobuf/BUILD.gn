@@ -13,6 +13,27 @@ if (enable_js_protobuf) {
   import("//third_party/closure_compiler/compile_js.gni")
 }
 
+# Chromium uses two distinct protobuf targets:
+# 1. `protobuf_lite`: The lightweight runtime used by production Chrome/Blink
+#     code.
+# 2. `protobuf_full`: The heavy runtime used by tests, fuzzers, and build tools
+#    (`protoc`).
+#
+# In non-component builds, these are built as two static_libraries and full
+# depends on both. In component builds, a single shared library is used for
+# both, because they can't be broken into separate shared libraries. See
+# https://crbug.com/40229487 for further background.
+#
+# On Android component builds, protobuf libraries must be static libraries to
+# avoid symbol conflicts with the system's version of protobuf. Exclude Android
+# fuzzing builds since having targets that include a proto_library and a
+# fuzzable_proto_library leads to symbol conflicts due to the inclusion of the
+# protobuf lite_runtime and full_runtime.
+# TODO(448809154): Investigate whether symbol conflicts with the system's
+# protobuf version appear on our android fuzzing devices.
+use_shared_protobuf_library =
+    is_component_build && !(is_android && !use_fuzzing_engine_with_lpm)
+
 # This group allows `gn suggest` to suggest `:absl` instead of
 # `//third_party/abseil-cpp:absl`
 group("absl") {
@@ -29,10 +50,14 @@ config("protobuf_config") {
   if (!is_win) {
     defines += [ "HAVE_PTHREAD" ]
   }
+  if (use_shared_protobuf_library) {
+    defines += [ "PROTOBUF_USE_DLLS" ]
+  }
 }
 
 config("protobuf_config_internal") {
   include_dirs = [ "./third_party/utf8_range" ]
+  visibility = [ ":*" ]
 
   if (is_clang) {
     cflags = [
@@ -45,98 +70,108 @@ config("protobuf_config_internal") {
   }
 }
 
-if (is_component_build) {
-  config("protobuf_use_dlls") {
-    defines = [ "PROTOBUF_USE_DLLS" ]
-  }
-}
-
 # This config should be applied to targets using generated code from the proto
 # compiler. It sets up the include directories properly.
 config("using_proto") {
   include_dirs = [ "src" ]
 }
 
-# Chromium uses two distinct protobuf targets:
-# 1. `protobuf_lite`: The lightweight runtime used by production Chrome/Blink
-#     code.
-# 2. `protobuf_full`: The heavy runtime used by tests, fuzzers, and build tools
-#    (`protoc`).
+# Configs to remove from the main protobuf libraries (lite and full)
 #
-# In non-component builds, these are built as two static_libraries and full
-# depends on both. In component builds, a single shared library is used for
-# both, because they can't be broken into separate shared libraries. See
-# https://crbug.com/40229487 for further background.
-#
-# On Android, we must use a static library to avoid symbol conflicts with the
-# system's version of protobuf. Exclude Android fuzzing builds since having
-# targets that include a proto_library and a fuzzable_proto_library leads to
-# symbol conflicts due to the inclusion of the protobuf lite_runtime and
-# full_runtime.
-# TODO(448809154): Investigate whether symbol conflicts with the system's
-# protobuf version appear on our android fuzzing devices.
-if (is_android && !use_fuzzing_engine_with_lpm) {
-  _protobuf_lite_target_type = "static_library"
-} else {
-  _protobuf_lite_target_type = "component"
+# Remove coverage and Sanitizers other than ASan for a performance boost when
+# fuzzing. ASan can't be removed here because of a bug preventing unsanitized
+# code from using libc++, which protobuf_full uses.
+protobuf_library_configs_to_remove =
+    [ "//build/config/compiler:chromium_code" ] + not_fuzzed_remove_configs
+
+if (is_win) {
+  protobuf_library_configs_to_remove += [ "//build/config/win:lean_and_mean" ]
 }
 
-target(_protobuf_lite_target_type, "protobuf_lite") {
-  sources = protobuf_lite_sources
+# Configs to add to the main protobuf libraries (lite and full)
+protobuf_library_configs_to_add = [
+                                    "//build/config/compiler:no_chromium_code",
+                                    ":protobuf_config_internal",
+                                  ] + not_fuzzed_needs_asan_add_configs
 
-  if (is_component_build) {
-    sources += protobuf_sources
-  }
+# Build protobuf with full optimizations so Clang can optimize the
+# initializer out. See 0029-make-initializers-optimizable.patch.
+if (!is_debug && is_android) {
+  protobuf_library_configs_to_remove +=
+      [ "//build/config/compiler:default_optimization" ]
+  protobuf_library_configs_to_add += [ "//build/config/compiler:optimize_max" ]
+}
+
+source_set("protobuf_headers_source_set") {
+  visibility = [ ":*" ]
   public = protobuf_headers
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-
-  configs += [ ":protobuf_config_internal" ]
-
-  # Build protobuf_lite with full optimizations so Clang can optimize the
-  # initializer out. See 0029-make-initializers-optimizable.patch.
-  if (!is_debug && is_android) {
-    configs -= [ "//build/config/compiler:default_optimization" ]
-    configs += [ "//build/config/compiler:optimize_max" ]
-  }
-
-  # Remove coverage and Sanitizers other than ASan for a performance boost when
-  # fuzzing. ASan can't be removed here because of a bug preventing unsanitized
-  # code from using libc++, which protobuf_full uses.
-  configs -= not_fuzzed_remove_configs
-  configs += not_fuzzed_needs_asan_add_configs
-
-  if (is_win) {
-    configs -= [ "//build/config/win:lean_and_mean" ]
-  }
-
-  public_configs = [ ":protobuf_config" ]
-
-  deps = [ ":utf8_range" ]
-
   public_deps = [ ":absl" ]
+  public_configs = [ ":protobuf_config" ]
+}
 
-  # Required for component builds. See http://crbug.com/172800.
-  if (is_component_build && _protobuf_lite_target_type == "component") {
-    public_configs += [ ":protobuf_use_dlls" ]
-    defines = [ "LIBPROTOBUF_EXPORTS" ]
+if (is_component_build) {
+  if (use_shared_protobuf_library) {
+    _library_type = "shared_library"
+  } else {
+    _library_type = "static_library"
+  }
+
+  target(_library_type, "protobuf_full_and_lite_library") {
+    visibility = [
+      ":protobuf_full",
+      ":protobuf_lite",
+    ]
+    sources = protobuf_lite_sources + protobuf_sources
+    deps = [ ":utf8_range" ]
+    public_deps = [ ":protobuf_headers_source_set" ]
+
+    configs -= protobuf_library_configs_to_remove
+    configs += protobuf_library_configs_to_add
+
+    if (use_shared_protobuf_library) {
+      defines = [ "LIBPROTOBUF_EXPORTS" ]
+    }
+  }
+} else {
+  static_library("protobuf_lite_library") {
+    visibility = [
+      ":protobuf_full_library",
+      ":protobuf_lite",
+    ]
+    sources = protobuf_lite_sources
+    deps = [ ":utf8_range" ]
+    public_deps = [ ":protobuf_headers_source_set" ]
+
+    configs -= protobuf_library_configs_to_remove
+    configs += protobuf_library_configs_to_add
+  }
+
+  static_library("protobuf_full_library") {
+    visibility = [ ":protobuf_full" ]
+    sources = protobuf_sources
+    deps = [ ":utf8_range" ]
+    public_deps = [
+      ":protobuf_headers_source_set",
+      ":protobuf_lite_library",
+    ]
+
+    configs -= protobuf_library_configs_to_remove
+    configs += protobuf_library_configs_to_add
+  }
+}
+
+group("protobuf_lite") {
+  if (is_component_build) {
+    public_deps = [ ":protobuf_full_and_lite_library" ]
+  } else {
+    public_deps = [ ":protobuf_lite_library" ]
   }
 }
 
 # This is the full, heavy protobuf lib that's needed for c++ .protos that don't
 # specify the LITE_RUNTIME option. The protocol compiler itself (protoc) falls
 # into that category. Do not use in Chrome code.
-#
-# In component builds, this just forwards the dependency to `protobuf_lite`. See
-# comment above `protobuf_lite`.
-if (is_component_build) {
-  _protobuf_full_target_type = "group"
-} else {
-  _protobuf_full_target_type = "static_library"
-}
-
-target(_protobuf_full_target_type, "protobuf_full") {
+group("protobuf_full") {
   if (defined(build_with_chromium) && build_with_chromium) {
     # Prevent people from depending on this outside our file.
     visibility = [
@@ -211,39 +246,11 @@ target(_protobuf_full_target_type, "protobuf_full") {
     ]
   }
 
-  # In component builds, this just forwards the dependency to `protobuf_lite`.
-  # See comment above `protobuf_lite`.
   if (is_component_build) {
-    public_deps = [
-      ":protobuf_lite",
-      "${protobuf_abseil_dir}:absl",
-    ]
+    public_deps = [ ":protobuf_full_and_lite_library" ]
   } else {
-    sources = protobuf_sources
-    public = protobuf_headers
-    deps = [
-      ":protobuf_lite",
-      ":utf8_range",
-    ]
-    public_deps = [ "${protobuf_abseil_dir}:absl" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-
-    configs += [ ":protobuf_config_internal" ]
-
-    # Remove coverage and Sanitizers other than ASan for a performance boost
-    # when fuzzing. ASan can't be removed here because of a bug preventing
-    # unsanitized code from using libc++, which protobuf_full uses.
-    configs -= not_fuzzed_remove_configs
-    configs += not_fuzzed_needs_asan_add_configs
-
-    if (is_win) {
-      configs -= [ "//build/config/win:lean_and_mean" ]
-    }
+    public_deps = [ ":protobuf_full_library" ]
   }
-
-  public_configs = [ ":protobuf_config" ]
 }
 
 # Only compile the compiler for the host architecture.
