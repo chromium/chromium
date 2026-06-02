@@ -27,7 +27,7 @@ tools/android/avd/avd.py list
 ```
 
 | Configurations | Android Version | Form Factor | Builder |
-|:-------------- |:--------------- |:------- |:---------- |:------- |
+|:-------------- |:--------------- |:------- |:---------- |
 | `generic_android26.textpb` | 8.0 (O) | Phone | [android-oreo-x86-rel][android-oreo-x86-rel] |
 | `generic_android27.textpb` | 8.1 (O_MR1) | Phone | N/A |
 | `android_28_google_apis_x86.textpb` | 9 (P) | Phone | [android-pie-x86-rel][android-pie-x86-rel] |
