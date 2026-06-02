@@ -441,17 +441,13 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonVisibilityHover) {
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !close_button->GetVisible(); }));
 
-  ui::test::EventGenerator event_generator(
-      views::GetRootWindow(browser()->GetBrowserView().GetWidget()),
-      browser()->GetBrowserView().GetNativeWindow());
-
   // After the mouse enters the tab, the close button should be showing.
-  event_generator.MoveMouseTo(tab_view->GetBoundsInScreen().CenterPoint());
+  tab_view->UpdateHovered(true);
   WaitForLayout(tab_view);
   EXPECT_TRUE(close_button->GetVisible());
 
   // After the mouse exits the tab, the close button should be hidden.
-  event_generator.MoveMouseTo(gfx::Point());
+  tab_view->UpdateHovered(false);
   WaitForLayout(tab_view);
   EXPECT_FALSE(close_button->GetVisible());
 }
@@ -479,18 +475,14 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonVisibilityCollapsed) {
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !close_button->GetVisible(); }));
 
-  ui::test::EventGenerator event_generator(
-      views::GetRootWindow(browser()->GetBrowserView().GetWidget()),
-      browser()->GetBrowserView().GetNativeWindow());
-
   // After the mouse enters the tab, the close button should still be hidden
   // because the tab is not active.
-  event_generator.MoveMouseTo(tab_view->GetBoundsInScreen().CenterPoint());
+  tab_view->UpdateHovered(true);
   WaitForLayout(tab_view);
   EXPECT_FALSE(close_button->GetVisible());
 
   // After the mouse exits the tab, the close button should be hidden.
-  event_generator.MoveMouseTo(gfx::Point());
+  tab_view->UpdateHovered(false);
   WaitForLayout(tab_view);
   EXPECT_FALSE(close_button->GetVisible());
 }
