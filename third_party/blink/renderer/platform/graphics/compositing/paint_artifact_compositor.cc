@@ -994,15 +994,21 @@ SynthesizedClip& PaintArtifactCompositor::CreateOrReuseSynthesizedClipLayer(
     bool needs_layer,
     CompositorElementId& mask_isolation_id,
     CompositorElementId& mask_effect_id) {
-  auto entry = std::ranges::find_if(
-      synthesized_clip_cache_, [&clip, &transform](const auto& entry) {
-        return entry.clip_key == &clip && !entry.in_use &&
-               entry.transform_key == &transform;
-      });
-  if (entry == synthesized_clip_cache_.end()) {
+  SynthesizedClipEntry* entry = nullptr;
+  {
+    auto it = std::ranges::find_if(
+        synthesized_clip_cache_, [&clip, &transform](const auto& entry) {
+          return entry.clip_key == &clip && !entry.in_use &&
+                 entry.transform_key == &transform;
+        });
+    if (it != synthesized_clip_cache_.end()) {
+      entry = &*it;
+    }
+  }
+  if (!entry) {
     synthesized_clip_cache_.push_back(SynthesizedClipEntry{
         &clip, std::make_unique<SynthesizedClip>(), false, &transform});
-    entry = UNSAFE_TODO(synthesized_clip_cache_.end() - 1);
+    entry = &synthesized_clip_cache_.back();
   }
 
   entry->in_use = true;
