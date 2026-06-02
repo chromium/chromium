@@ -111,7 +111,7 @@ public class SuggestionListViewBinderUnitTest {
     }
 
     @Test
-    public void suggestionsContainerVisible_onTopResumedPosition() {
+    public void suggestionsDropdownVisible_onTopResumedPosition() {
         assertEquals(0, mSuggestionModels.size());
         assertEquals(View.GONE, mContainer.getVisibility());
         assertEquals(View.GONE, mDropdown.getVisibility());
@@ -121,9 +121,21 @@ public class SuggestionListViewBinderUnitTest {
         mListModel.set(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, true);
         assertEquals(View.VISIBLE, mContainer.getVisibility());
         assertEquals(View.GONE, mDropdown.getVisibility());
+    }
+
+    @Test
+    public void suggestionsDropdownVisible_activityWindowFocused() {
+        List<ListItem> suggestionsList = new ArrayList<>();
+        suggestionsList.add(mDropdownItem);
+        mSuggestionModels.set(suggestionsList);
+
+        mListModel.set(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE, true);
+        mListModel.set(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, true);
+        assertEquals(View.VISIBLE, mContainer.getVisibility());
+        assertEquals(View.VISIBLE, mDropdown.getVisibility());
 
         mListModel.set(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, false);
-        assertEquals(View.GONE, mContainer.getVisibility());
+        assertEquals(View.VISIBLE, mContainer.getVisibility());
         assertEquals(View.GONE, mDropdown.getVisibility());
     }
 

@@ -156,10 +156,11 @@ class SuggestionListViewBinder {
             PropertyModel model, SuggestionListViewHolder holder) {
         ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
         boolean shouldListBeVisible =
-                model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE) && listItems.size() > 0;
-        boolean shouldContainerBeVisible =
                 model.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED)
                         && model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE)
+                        && listItems.size() > 0;
+        boolean shouldContainerBeVisible =
+                model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE)
                         && (listItems.size() > 0
                                 || model.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE));
         int listVisibility = shouldListBeVisible ? View.VISIBLE : View.GONE;
