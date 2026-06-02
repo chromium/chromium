@@ -710,7 +710,7 @@ PLATFORM_INFO = {
         'description': ('Ubuntu-22.04, Precision 3930 Rack, '
                         'NVIDIA GeForce GTX 1660'),
         'num_shards':
-        7,
+        4,
         'platform_os':
         'linux',
         'is_fyi':

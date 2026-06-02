@@ -8,7 +8,7 @@
                 "abridged": false
             },
             "rendering.desktop": {
-                "end": 20,
+                "end": 81,
                 "abridged": false
             }
         },
@@ -61,8 +61,8 @@
     "1": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 20,
-                "end": 101,
+                "begin": 81,
+                "end": 232,
                 "abridged": false
             }
         },
@@ -90,8 +90,7 @@
     "2": {
         "benchmarks": {
             "rendering.desktop": {
-                "begin": 101,
-                "end": 184,
+                "begin": 232,
                 "abridged": false
             }
         },
@@ -118,101 +117,10 @@
     },
     "3": {
         "benchmarks": {
-            "rendering.desktop": {
-                "begin": 184,
-                "end": 272,
-                "abridged": false
-            }
-        },
-        "crossbench": {
-            "jetstream2.crossbench": {
-                "crossbench_name": "jetstream_2",
-                "arguments": [
-                    "--enable-field-trials"
-                ]
-            },
-            "motionmark1.3.crossbench": {
-                "crossbench_name": "motionmark_1.3",
-                "arguments": [
-                    "--enable-field-trials"
-                ]
-            },
-            "speedometer3.crossbench": {
-                "crossbench_name": "speedometer_3",
-                "arguments": [
-                    "--enable-field-trials"
-                ]
-            }
-        }
-    },
-    "4": {
-        "benchmarks": {
-            "rendering.desktop": {
-                "begin": 272,
-                "end": 340,
-                "abridged": false
-            }
-        },
-        "crossbench": {
-            "jetstream2.crossbench": {
-                "crossbench_name": "jetstream_2",
-                "arguments": [
-                    "--enable-field-trials"
-                ]
-            },
-            "motionmark1.3.crossbench": {
-                "crossbench_name": "motionmark_1.3",
-                "arguments": [
-                    "--enable-field-trials"
-                ]
-            },
-            "speedometer3.crossbench": {
-                "crossbench_name": "speedometer_3",
-                "arguments": [
-                    "--enable-field-trials"
-                ]
-            }
-        }
-    },
-    "5": {
-        "benchmarks": {
-            "rendering.desktop": {
-                "begin": 340,
-                "abridged": false
-            },
             "rendering.desktop.notracing": {
                 "abridged": false
             },
             "system_health.common_desktop": {
-                "end": 18,
-                "abridged": false
-            }
-        },
-        "crossbench": {
-            "jetstream2.crossbench": {
-                "crossbench_name": "jetstream_2",
-                "arguments": [
-                    "--enable-field-trials"
-                ]
-            },
-            "motionmark1.3.crossbench": {
-                "crossbench_name": "motionmark_1.3",
-                "arguments": [
-                    "--enable-field-trials"
-                ]
-            },
-            "speedometer3.crossbench": {
-                "crossbench_name": "speedometer_3",
-                "arguments": [
-                    "--enable-field-trials"
-                ]
-            }
-        }
-    },
-    "6": {
-        "benchmarks": {
-            "system_health.common_desktop": {
-                "begin": 18,
                 "abridged": false
             }
         },
@@ -249,17 +157,14 @@
         }
     },
     "extra_infos": {
-        "num_stories": 467,
-        "predicted_min_shard_time": 1402.0,
-        "predicted_min_shard_index": 5,
-        "predicted_max_shard_time": 1420.0,
-        "predicted_max_shard_index": 6,
-        "shard #0": 1403.0,
-        "shard #1": 1410,
-        "shard #2": 1406.0,
-        "shard #3": 1408.0,
-        "shard #4": 1404.0,
-        "shard #5": 1402.0,
-        "shard #6": 1420.0
+        "num_stories": 458,
+        "predicted_min_shard_time": 1885.0,
+        "predicted_min_shard_index": 2,
+        "predicted_max_shard_time": 2141.0,
+        "predicted_max_shard_index": 3,
+        "shard #0": 2013.0,
+        "shard #1": 2014.0,
+        "shard #2": 1885.0,
+        "shard #3": 2141.0
     }
 }
