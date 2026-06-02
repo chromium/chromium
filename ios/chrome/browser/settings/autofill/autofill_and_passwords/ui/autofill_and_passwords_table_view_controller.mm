@@ -4,7 +4,11 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/utils/autofill_and_passwords_item_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -87,6 +91,8 @@
   _autofillSettingsDetailItem = AutofillSettingsItem();
   [model addItem:_autofillSettingsDetailItem
       toSectionWithIdentifier:SettingsSectionIdentifierBasics];
+
+  [self.delegate autofillAndPasswordsTableViewControllerDidLoadContent:self];
 }
 
 #pragma mark - UITableViewDelegate
@@ -194,6 +200,65 @@
 
 - (void)setShouldShowAutofillAIFeatures:(BOOL)shouldShow {
   _shouldShowAutofillAIFeatures = shouldShow;
+}
+
+#pragma mark - Sign-in Promo
+
+- (void)promoStateChanged:(BOOL)promoEnabled
+        promoConfigurator:(SigninPromoViewConfigurator*)promoConfigurator
+                promoText:(NSString*)promoText {
+  if (!self.tableViewModel) {
+    return;
+  }
+  TableViewModel* model = self.tableViewModel;
+  BOOL hasPromo =
+      [model hasSectionForSectionIdentifier:SettingsSectionIdentifierSignIn];
+
+  if (promoEnabled == hasPromo) {
+    return;
+  }
+
+  if (promoEnabled) {
+    [model insertSectionWithIdentifier:SettingsSectionIdentifierSignIn
+                               atIndex:0];
+
+    TableViewSigninPromoItem* promoItem = [[TableViewSigninPromoItem alloc]
+        initWithType:SettingsItemTypeSigninPromo];
+    promoItem.configurator = promoConfigurator;
+    promoItem.text = promoText;
+    promoItem.delegate = self.signinPromoDelegate;
+
+    [model addItem:promoItem
+        toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+  } else {
+    [model removeSectionWithIdentifier:SettingsSectionIdentifierSignIn];
+  }
+
+  [self.tableView reloadData];
+}
+
+- (void)configureSigninPromoWithConfigurator:
+    (SigninPromoViewConfigurator*)configurator {
+  TableViewModel* model = self.tableViewModel;
+  if (![model hasSectionForSectionIdentifier:SettingsSectionIdentifierSignIn]) {
+    return;
+  }
+
+  NSIndexPath* path =
+      [model indexPathForItemType:SettingsItemTypeSigninPromo
+                sectionIdentifier:SettingsSectionIdentifierSignIn];
+  if (!path) {
+    return;
+  }
+
+  TableViewSigninPromoItem* item =
+      base::apple::ObjCCast<TableViewSigninPromoItem>(
+          [model itemAtIndexPath:path]);
+
+  if (item) {
+    item.configurator = configurator;
+    [self reconfigureCellsForItems:@[ item ]];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol

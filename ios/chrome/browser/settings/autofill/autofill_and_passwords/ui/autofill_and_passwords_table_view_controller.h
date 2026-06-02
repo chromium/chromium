@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 @class AutofillAndPasswordsTableViewController;
+@class SigninPromoViewConfigurator;
+@protocol SigninPromoViewDelegate;
 
 // Delegate for presentation events related to
 // AutofillAndPasswordsTableViewController.
@@ -43,6 +45,10 @@
 - (void)autofillAndPasswordsTableViewControllerDidSelectAutofillSettings:
     (AutofillAndPasswordsTableViewController*)controller;
 
+// Called when the view controller has loaded its model.
+- (void)autofillAndPasswordsTableViewControllerDidLoadContent:
+    (AutofillAndPasswordsTableViewController*)controller;
+
 @end
 
 // The TableView for Autofill and passwords settings page.
@@ -54,7 +60,19 @@
 @property(nonatomic, weak) id<AutofillAndPasswordsTableViewControllerDelegate>
     delegate;
 
+// Delegate for sign-in promo view events.
+@property(nonatomic, weak) id<SigninPromoViewDelegate> signinPromoDelegate;
+
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_DESIGNATED_INITIALIZER;
+
+// Controls the visibility state of the sign-in promo.
+- (void)promoStateChanged:(BOOL)promoEnabled
+        promoConfigurator:(SigninPromoViewConfigurator*)promoConfigurator
+                promoText:(NSString*)promoText;
+
+// Updates the sign-in promo view after identity updates.
+- (void)configureSigninPromoWithConfigurator:
+    (SigninPromoViewConfigurator*)promoConfigurator;
 
 @end
 

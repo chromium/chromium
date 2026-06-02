@@ -108,6 +108,12 @@
   [self.delegate autofillAndPasswordsCoordinatorDidRemove:self];
 }
 
+- (void)autofillAndPasswordsTableViewControllerDidLoadContent:
+    (AutofillAndPasswordsTableViewController*)controller {
+  // TODO(crbug.com/491418824): Implement functionality when sign-in promo is
+  // added to the coordinator.
+}
+
 - (void)autofillAndPasswordsTableViewControllerDidSelectPasswords:
     (AutofillAndPasswordsTableViewController*)controller {
   if (_passwordsCoordinator) {
