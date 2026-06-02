@@ -104,19 +104,19 @@ namespace blink {
 
 namespace features {
 
-BASE_FEATURE(kPreventSvgFilterPaint, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPreventSvgFilterPaint, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kPreventSvgFilterPaintOnLocalFrameRestricted,
                    &kPreventSvgFilterPaint,
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kPreventSvgFilterPaintOnRemoteFrame,
                    &kPreventSvgFilterPaint,
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kPreventSvgFilterPaintOnWebPlugin,
                    &kPreventSvgFilterPaint,
-                   false);
+                   true);
 
 }  // namespace features
 

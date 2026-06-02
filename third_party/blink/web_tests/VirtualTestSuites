@@ -5298,55 +5298,6 @@
     "expires": "Jan 1, 2027"
   },
   {
-    "prefix": "prevent-svg-filter-paint",
-    "owners": [
-      "arichiv@chromium.org",
-      "pdr@chromium.org"
-    ],
-    "platforms": [
-      "Android",
-      "ChromeOS",
-      "Linux",
-      "Mac",
-      "Webview",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-cross-origin-frame.tentative.sub.https.html",
-      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-same-origin-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame.tentative.sub.https.html",
-      "external/wpt/svg/styling/svg-filter-render-cross-origin-navigation-in-srcdoc-frame.tentative.sub.https.html",
-      "external/wpt/svg/styling/svg-filter-render-same-origin-frame-in-cross-origin-frame.tentative.sub.https.html",
-      "external/wpt/svg/styling/svg-filter-render-same-origin-frame-in-same-origin-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-same-origin-frame-reload-as-sandbox.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-same-origin-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-sandbox-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-srcdoc-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html",
-      "http/tests/inspector-protocol/issues/deprecation-prevent-svg-filter-paint.js",
-      "wpt_internal/svg"
-    ],
-    "exclusive_tests": [
-      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-cross-origin-frame.tentative.sub.https.html",
-      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-same-origin-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame.tentative.sub.https.html",
-      "external/wpt/svg/styling/svg-filter-render-cross-origin-navigation-in-srcdoc-frame.tentative.sub.https.html",
-      "external/wpt/svg/styling/svg-filter-render-same-origin-frame-in-cross-origin-frame.tentative.sub.https.html",
-      "external/wpt/svg/styling/svg-filter-render-same-origin-frame-in-same-origin-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-same-origin-frame-reload-as-sandbox.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-same-origin-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-sandbox-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-srcdoc-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html",
-      "http/tests/inspector-protocol/issues/deprecation-prevent-svg-filter-paint.js",
-      "wpt_internal/svg/svg-filter-render.sub.https.html"
-    ],
-    "args": [
-      "--enable-features=PreventSvgFilterPaint:PreventSvgFilterPaintOnLocalFrameRestricted/true/PreventSvgFilterPaintOnRemoteFrame/true/PreventSvgFilterPaintOnWebPlugin/true"
-    ],
-    "expires": "Nov 1, 2026"
-  },
-  {
     "prefix": "popover-hint-new-behavior-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

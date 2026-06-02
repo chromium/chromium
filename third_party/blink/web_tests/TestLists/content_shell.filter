@@ -933,4 +933,4 @@ virtual/webnn-service-with-gpu/*
 virtual/lna-webrtc/wpt_internal/*
 
 # Requires content plugin, see crbug.com/476646486:
-virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html
+external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html
