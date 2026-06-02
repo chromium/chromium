@@ -349,7 +349,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       [weakSelf updateUIOnTraitChange:previousCollection];
     };
     [self registerForTraitChanges:@[
-      UITraitHorizontalSizeClass.class,
+      UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class,
       UITraitPreferredContentSizeCategory.class, UITraitUserInterfaceStyle.class
     ]
                       withHandler:handler];
@@ -1536,12 +1536,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                       withNewBadge:_useNewBadgeForCustomizationMenu];
 }
 
-// Creates the Tools menu and adds it to the header view (iPhone only)
+// Creates the Tools menu and adds it to the header view.
 - (void)addToolsMenuIfNeeded {
   CHECK(IsChromeNextIaEnabled());
-
-  // If the App Bar is not available (iPad), the Tools menu should not be added
-  // to the header view.
+  // If the Tools menu button is always visible in the toolbar (iPad), the Tools
+  // menu should not be added to the header view.
   if (CanShowTabStrip(self)) {
     return;
   }
@@ -1934,15 +1933,26 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 // Updates facets of the UI to reflect the change in the collection of UITraits.
 - (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
-  if (previousTraitCollection.horizontalSizeClass !=
-          self.traitCollection.horizontalSizeClass ||
+  BOOL horizontalSizeClassChanged =
+      previousTraitCollection.horizontalSizeClass !=
+      self.traitCollection.horizontalSizeClass;
+  BOOL preferredContentSizeCategoryChanged =
       previousTraitCollection.preferredContentSizeCategory !=
-          self.traitCollection.preferredContentSizeCategory) {
+      self.traitCollection.preferredContentSizeCategory;
+  if (horizontalSizeClassChanged || preferredContentSizeCategoryChanged) {
     [self updateFakeboxDisplay];
   }
 
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
+  if (IsChromeNextIaEnabled()) {
+    if (horizontalSizeClassChanged ||
+        previousTraitCollection.verticalSizeClass !=
+            self.traitCollection.verticalSizeClass) {
+      [self resetSplitToolbarResizing];
+      [self addToolsMenuIfNeeded];
+    }
+  }
+
+  if (preferredContentSizeCategoryChanged) {
     [self updateHintLabelFonts];
   }
 
@@ -1958,11 +1968,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
           AccountParticleDiscBadgeBackgroundColor(
               self.traitCollection.userInterfaceStyle);
     }
-  }
-
-  if (IsChromeNextIaEnabled()) {
-    [self resetSplitToolbarResizing];
-    [self addToolsMenuIfNeeded];
   }
 }
 
