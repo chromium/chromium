@@ -13226,6 +13226,7 @@ from previous Chrome versions.
   <int value="-367820709" label="PartitionVisitedLinkDatabase:disabled"/>
   <int value="-367474066" label="DialogTouchBar:enabled"/>
   <int value="-366949535" label="KeyboardShortcutViewerApp:enabled"/>
+  <int value="-366310479" label="AndroidContextMenuDisabledMenuItems:enabled"/>
   <int value="-365920680" label="ImageCaptureAPI:disabled"/>
   <int value="-365806433" label="BuiltInModuleAll:disabled"/>
   <int value="-365166949" label="SuspiciousSiteWarnings:enabled"/>
@@ -19347,6 +19348,7 @@ from previous Chrome versions.
   <int value="1630108932" label="SearchEngineExplicitChoiceDialog:disabled"/>
   <int value="1630159957" label="SharingSendViaSync:disabled"/>
   <int value="1630283072" label="CrOSAutoSelect:enabled"/>
+  <int value="1630913464" label="AndroidContextMenuDisabledMenuItems:disabled"/>
   <int value="1630988998" label="VrBrowsingExperimentalRendering:disabled"/>
   <int value="1631147591" label="PerformanceInterventionUI:enabled"/>
   <int value="1631646254" label="DataControlsDragEnforcement:disabled"/>

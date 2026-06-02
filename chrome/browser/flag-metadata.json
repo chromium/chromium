@@ -286,6 +286,15 @@
     "expiry_milestone": 149
   },
   {
+    "name": "android-context-menu-disabled-menu-items",
+    "owners": [
+      "hitarthkothari@google.com",
+      "ckitagawa@google.com",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-context-menu-new-actions",
     "owners": [
       "hitarthkothari@google.com",

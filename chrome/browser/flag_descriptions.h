@@ -5203,6 +5203,11 @@ inline constexpr char kAndroidCaretBrowsingName[] = "Enable Caret Browsing.";
 inline constexpr char kAndroidCaretBrowsingDescription[] =
     "Allows users to interact with a webpage using a keyboard.";
 
+inline constexpr char kAndroidContextMenuDisabledMenuItemsName[] =
+    "Android context menu disabled menu items";
+inline constexpr char kAndroidContextMenuDisabledMenuItemsDescription[] =
+    "Disables specific context menu items.";
+
 inline constexpr char kAndroidContextMenuNewActionsName[] =
     "Android context menu new actions";
 inline constexpr char kAndroidContextMenuNewActionsDescription[] =

@@ -10704,15 +10704,15 @@ const FeatureEntry kFeatureEntries[] = {
     // Glic enterprise settings
     {"glic-gemini-enterprise-settings-override",
      flag_descriptions::kGlicGeminiEnterpriseSettingsOverrideName,
-     flag_descriptions::kGlicGeminiEnterpriseSettingsOverrideDescription, kOsDesktop,
+     flag_descriptions::kGlicGeminiEnterpriseSettingsOverrideDescription,
+     kOsDesktop,
      STRING_VALUE_TYPE(switches::kGlicGeminiEnterpriseSettingsOverride, "")},
 
     {"glic-gemini-enterprise-settings-enabled",
      flag_descriptions::kGlicGeminiEnterpriseSettingsEnabledName,
      flag_descriptions::kGlicGeminiEnterpriseSettingsEnabledDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         features::kGlicGeminiEnterpriseSettingsEnabled)},
+     FEATURE_VALUE_TYPE(features::kGlicGeminiEnterpriseSettingsEnabled)},
 
     {"glic-selection-prompt", flag_descriptions::kGlicSelectionPromptName,
      flag_descriptions::kGlicSelectionPromptDescription, kOsDesktop,
@@ -11979,6 +11979,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidContextMenuNewActionsName,
      flag_descriptions::kAndroidContextMenuNewActionsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidContextMenuNewActions)},
+
+    {"android-context-menu-disabled-menu-items",
+     flag_descriptions::kAndroidContextMenuDisabledMenuItemsName,
+     flag_descriptions::kAndroidContextMenuDisabledMenuItemsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidContextMenuDisabledMenuItems)},
 #endif
 
     {"service-worker-synthetic-response",

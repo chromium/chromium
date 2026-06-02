@@ -224,6 +224,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidBookmarkBar,
     &kAndroidBottomBar,
     &kAndroidBricksNativePage,
+    &kAndroidContextMenuDisabledMenuItems,
     &kAndroidContextMenuNewActions,
     &kAndroidDeviceSignalsDisclaimer,
     &kAndroidElegantTextHeight,
@@ -579,6 +580,7 @@ BASE_FEATURE(kAndroidAtomsLogging, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBookmarkBar, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBottomBar, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBricksNativePage, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidContextMenuDisabledMenuItems, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidContextMenuNewActions, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables additional text shown during profile creation for managed users,
 // informing them about device signal collection for security purposes.
