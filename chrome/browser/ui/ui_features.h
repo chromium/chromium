@@ -390,6 +390,8 @@ BASE_DECLARE_FEATURE(kToolbarProfileChipResizing);
 BASE_DECLARE_FEATURE(kToolbarGlicButtonResizing);
 
 // Whether or not OSCryptAsyncAvailabilityInfoBarDelegate is enabled.
+// Currently only used on MacOS as that's the only platform we can
+// be sure the user has an easy remedy. See crbug.com/493148224.
 BASE_DECLARE_FEATURE(kOSCryptAsyncAvailabilityInfoBar);
 
 }  // namespace features

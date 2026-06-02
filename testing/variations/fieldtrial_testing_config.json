@@ -17001,21 +17001,6 @@
             ]
         }
     ],
-    "OSCryptAsyncAvailabilityInfoBar": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OSCryptAsyncAvailabilityInfoBar"
-                    ]
-                }
-            ]
-        }
-    ],
     "OcclusionCullingQuadSplitLimit": [
         {
             "platforms": [
