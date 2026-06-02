@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_MODEL_DISPLAY_OVERRIDE_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_MODEL_DISPLAY_OVERRIDE_H_
 
+#include <iosfwd>
 #include <optional>
-#include <ostream>
 #include <string>
 #include <vector>
 
@@ -66,7 +66,8 @@ class DisplayOverride {
   std::vector<blink::SafeUrlPattern> url_patterns_;
 };
 
-void PrintTo(const DisplayOverride& display_override, std::ostream* os);
+std::ostream& operator<<(std::ostream& os,
+                         const DisplayOverride& display_override);
 
 }  // namespace web_app
 

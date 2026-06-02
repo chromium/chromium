@@ -133,8 +133,9 @@ std::string DisplayOverride::ToString() const {
   return base::ToString(ToDebugValue());
 }
 
-void PrintTo(const DisplayOverride& display_override, ::std::ostream* os) {
-  *os << display_override.ToString();
+std::ostream& operator<<(std::ostream& os,
+                         const DisplayOverride& display_override) {
+  return os << display_override.ToString();
 }
 
 }  // namespace web_app
