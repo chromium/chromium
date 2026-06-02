@@ -27,6 +27,7 @@ source_set("search_promotion") {
   ]
 
   deps = [
+    "//chrome/browser:shell_integration",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/ui/user_education",

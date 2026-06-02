@@ -1868,6 +1868,39 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.SearchPromotion.DefaultBrowserState"
+    enum="DefaultBrowserState" expires_after="2027-05-22">
+  <owner>qlucyk@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the user's default browser state. Recorded when the user visits a
+    Google Search URL and is evaluated for the search promotion. Recorded
+    asynchronously to avoid blocking the UI thread. Only recorded on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Search.SearchPromotion.DefaultBrowserType.{Interaction}.{Arm}"
+    enum="SearchPromotionDefaultBrowserType" expires_after="2027-05-22">
+  <owner>qlucyk@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the user's default browser type (Chrome, Edge, Safari, Firefox,
+    etc.). Recorded when the user {Interaction} the search promotion IPH on
+    {Arm}. Recorded asynchronously on a background task thread. Only recorded on
+    Windows.
+  </summary>
+  <token key="Interaction">
+    <variant name="Accepted" summary="accepted"/>
+    <variant name="Dismissed" summary="dismissed or closed"/>
+  </token>
+  <token key="Arm">
+    <variant name="ArmA" summary="Arm A (promo only)"/>
+    <variant name="ArmB" summary="Arm B (promo and install)"/>
+  </token>
+</histogram>
+
 <histogram name="Search.SearchProviderOverrideStatus"
     enum="SearchProviderOverrideStatus" expires_after="2026-11-15">
   <owner>dgn@chromium.org</owner>

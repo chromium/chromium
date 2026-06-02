@@ -26,12 +26,9 @@ SearchPromotionManagerFactory::SearchPromotionManagerFactory()
     : ProfileKeyedServiceFactory(
           "SearchPromotionManager",
           ProfileSelections::Builder()
+              // Search promotions are enabled for regular profiles (disabled in
+              // incognito and guest profiles).
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // Search promotions are enabled for regular profiles.
-              // They are disabled in incognito and guest profiles.
-              //
-              // Note: Even though the factory is created for all platforms, the
-              // underlying manager is only functional on Windows.
               .Build()) {
   DependsOn(feature_engagement::TrackerFactory::GetInstance());
   DependsOn(

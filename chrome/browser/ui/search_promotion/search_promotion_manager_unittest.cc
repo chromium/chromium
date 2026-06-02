@@ -8,7 +8,12 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_reg_util_win.h"
+#include "base/win/registry.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -62,11 +67,38 @@ class SearchPromotionManagerTest : public ChromeRenderViewHostTestHarness {
   SearchPromotionManagerTest() = default;
   ~SearchPromotionManagerTest() override = default;
 
-  bool IsPromoAllowed(SearchPromotionManager& manager) {
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    // Redirect HKEY_CLASSES_ROOT registry queries to a temporary process-local
+    // key. This isolates the test from the host OS and mocks the default
+    // browser name returned by shell_integration::GetApplicationNameForScheme.
+    //
+    // This follows the standard registry virtualization pattern utilized in:
+    // - chrome/browser/default_browser/default_browser_manager_unittest.cc
+    // - chrome/browser/win/conflicts/enumerate_shell_extensions_unittest.cc
+    ASSERT_NO_FATAL_FAILURE(
+        registry_override_manager_.OverrideRegistry(HKEY_CLASSES_ROOT));
+    ASSERT_NO_FATAL_FAILURE(
+        registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
+
+    base::win::RegKey key(HKEY_CLASSES_ROOT, L"https", KEY_WRITE);
+    ASSERT_TRUE(key.Valid());
+
+    // Mock friendly name of default browser as "Firefox" (read by
+    // AssocQueryString).
+    ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(nullptr, L"Firefox"));
+
+    // Satisfy IsValidCustomScheme validation.
+    ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"URL Protocol", L""));
+  }
+
+  bool IsPromoAllowed(const SearchPromotionManager& manager) {
     return manager.IsPromoAllowedForTesting();
   }
 
   base::test::ScopedFeatureList feature_list_;
+  registry_util::RegistryOverrideManager registry_override_manager_;
 };
 
 TEST_F(SearchPromotionManagerTest, IsPromoAllowedGuardedByFeature) {
@@ -220,4 +252,141 @@ TEST_F(SearchPromotionManagerTest, ObserverIgnoresNonGoogleSearch) {
   // Simulate navigation to non-Google URL.
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("http://www.example.com/"));
+}
+
+TEST_F(SearchPromotionManagerTest, GatingEligibleRecordsDefaultBrowserState) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      feature_engagement::kIPHSearchPromotionFeature,
+      {{"arm", feature_engagement::kSearchPromotionArmA}});
+
+  segmentation_platform::MockSegmentationPlatformService* mock_service =
+      static_cast<segmentation_platform::MockSegmentationPlatformService*>(
+          segmentation_platform::SegmentationPlatformServiceFactory::
+              GetInstance()
+                  ->SetTestingFactoryAndUse(
+                      profile(), base::BindRepeating(
+                                     &BuildMockSegmentationPlatformService)));
+
+  SearchPromotionManager* manager =
+      SearchPromotionManagerFactory::GetForProfile(profile());
+  ASSERT_TRUE(manager);
+
+  segmentation_platform::SegmentSelectionResult low_engagement_result;
+  low_engagement_result.is_ready = true;
+  low_engagement_result.segment = segmentation_platform::proto::SegmentId::
+      OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+
+  EXPECT_CALL(
+      *mock_service,
+      GetCachedSegmentResult(
+          segmentation_platform::kChromeLowUserEngagementSegmentationKey))
+      .WillOnce(testing::Return(low_engagement_result));
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface;
+  // Instantiating a dummy UnownedUserDataHost for the
+  // MockBrowserWindowInterface. MockBrowserUserEducationInterface expects the
+  // window mock to return a valid reference from GetUnownedUserDataHost();
+  // providing this prevents null-pointer dereferences or test harness crashes.
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window_interface, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(window_user_data_host));
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface);
+
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(testing::_))
+      .WillOnce(testing::Return(true));
+
+  base::HistogramTester histogram_tester;
+  manager->OnTargetURLVisited(mock_user_education);
+
+  // Let the background thread pool task run and finish.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    auto samples = histogram_tester.GetHistogramSamplesSinceCreation(
+        "Search.SearchPromotion.DefaultBrowserState");
+    return samples && samples->TotalCount() >= 1;
+  }));
+
+  // Verify that the DefaultBrowserState histogram was successfully recorded
+  // exactly once.
+  histogram_tester.ExpectTotalCount(
+      "Search.SearchPromotion.DefaultBrowserState", 1);
+}
+
+TEST_F(SearchPromotionManagerTest,
+       PromoInteractionRecordsDefaultBrowserType_Accepted_ArmA) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      feature_engagement::kIPHSearchPromotionFeature,
+      {{"arm", feature_engagement::kSearchPromotionArmA}});
+
+  segmentation_platform::MockSegmentationPlatformService* mock_service =
+      static_cast<segmentation_platform::MockSegmentationPlatformService*>(
+          segmentation_platform::SegmentationPlatformServiceFactory::
+              GetInstance()
+                  ->SetTestingFactoryAndUse(
+                      profile(), base::BindRepeating(
+                                     &BuildMockSegmentationPlatformService)));
+
+  SearchPromotionManager* manager =
+      SearchPromotionManagerFactory::GetForProfile(profile());
+  ASSERT_TRUE(manager);
+
+  segmentation_platform::SegmentSelectionResult low_engagement_result;
+  low_engagement_result.is_ready = true;
+  low_engagement_result.segment = segmentation_platform::proto::SegmentId::
+      OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+
+  EXPECT_CALL(
+      *mock_service,
+      GetCachedSegmentResult(
+          segmentation_platform::kChromeLowUserEngagementSegmentationKey))
+      .WillOnce(testing::Return(low_engagement_result));
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface;
+  // Instantiating a dummy UnownedUserDataHost for the
+  // MockBrowserWindowInterface. MockBrowserUserEducationInterface expects the
+  // window mock to return a valid reference from GetUnownedUserDataHost();
+  // providing this prevents null-pointer dereferences or test harness crashes.
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window_interface, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(window_user_data_host));
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface);
+
+  // Capture the close callback from the FeaturePromoParams passed to
+  // MaybeShowFeaturePromo.
+  base::OnceClosure close_callback;
+  EXPECT_CALL(mock_user_education, MaybeShowFeaturePromo(testing::_))
+      .WillOnce([&close_callback](user_education::FeaturePromoParams params) {
+        close_callback = std::move(params.close_callback);
+        return true;
+      });
+
+  manager->OnTargetURLVisited(mock_user_education);
+
+  // Since dynamic action callbacks are not supported on FeaturePromoParams in
+  // this version of User Education, the Custom Action is registered statically
+  // at startup in browser_user_education_service.cc (which calls
+  // manager->OnPromoAccepted() directly).
+  //
+  // We simulate this flow by invoking OnPromoAccepted() directly on the
+  // manager, then executing the close callback to trigger metrics logging.
+  manager->OnPromoAccepted();
+
+  // Now close the promo, triggering close_callback.
+  ASSERT_TRUE(close_callback);
+  base::HistogramTester histogram_tester;
+  std::move(close_callback).Run();
+
+  // Let the background thread pool task run and finish.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    auto samples = histogram_tester.GetHistogramSamplesSinceCreation(
+        "Search.SearchPromotion.DefaultBrowserType.Accepted.ArmA");
+    return samples && samples->TotalCount() >= 1;
+  }));
+
+  // Verify that the arm-specific categorized DefaultBrowserType histogram was
+  // recorded and specifically contains DefaultBrowserType::kFirefox (which is
+  // 4, since we mocked "Firefox" in SetUp).
+  histogram_tester.ExpectBucketCount(
+      "Search.SearchPromotion.DefaultBrowserType.Accepted.ArmA", 4, 1);
 }

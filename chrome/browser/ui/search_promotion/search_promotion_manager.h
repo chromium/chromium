@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_SEARCH_PROMOTION_SEARCH_PROMOTION_MANAGER_H_
 #define CHROME_BROWSER_UI_SEARCH_PROMOTION_SEARCH_PROMOTION_MANAGER_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ref.h"
-#include "build/build_config.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/shell_integration.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
@@ -37,25 +40,34 @@ class SearchPromotionManager : public KeyedService {
   void OnPromoAccepted();
 
   // Returns true if the promo is allowed by feature flags.
-  bool IsPromoAllowedForTesting();
+  bool IsPromoAllowedForTesting() const;
 
   // Returns true if the profile meets the required low engagement level.
-  bool IsEngagementLowEnoughForTesting();
+  bool IsEngagementLowEnoughForTesting() const;
 
  private:
   // Checks whether the current user profile belongs to the low engagement tier
   // (defined as being active fewer than 9 days out of the last 28 days).
   // Uses cached results from SegmentationPlatformService.
-  bool IsEngagementLowEnough();
+  bool IsEngagementLowEnough() const;
 
   void PerformArmA();
   void PerformArmB();
-  void OnRegistryWriteComplete(const GURL& url, bool success);
+
+  void RecordDefaultBrowserState(
+      shell_integration::DefaultWebClientState state);
+  void OnPromoClosed();
+  void OnDefaultBrowserNameRetrieved(bool accepted,
+                                     std::string_view arm,
+                                     const std::u16string& name);
 
   bool is_promo_allowed_ = false;
-  const char* arm_ = feature_engagement::kSearchPromotionArmDefault;
+  std::string_view arm_ = feature_engagement::kSearchPromotionArmDefault;
+  bool was_accepted_ = false;
 
   const raw_ref<Profile> profile_;
+
+  base::WeakPtrFactory<SearchPromotionManager> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_PROMOTION_SEARCH_PROMOTION_MANAGER_H_
