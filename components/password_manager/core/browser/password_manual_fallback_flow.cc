@@ -38,6 +38,9 @@
 namespace password_manager {
 
 namespace {
+// The length of the password preview label for the cross-domain credentials.
+static constexpr size_t kCrossDomainPasswordPreviewLabelLength = 8;
+
 using autofill::Suggestion;
 
 // If `label` was made for an empty username, then return the empty string,
@@ -228,7 +231,7 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
           form->username_element_renderer_id,
           form->password_element_renderer_id,
           GetUsernameFromLabel(suggestion.labels[0][0].value),
-          std::u16string(payload.password.length(), '*'));
+          std::u16string(kCrossDomainPasswordPreviewLabelLength, '*'));
       break;
     }
     case autofill::SuggestionType::kPasswordFieldByFieldFilling:

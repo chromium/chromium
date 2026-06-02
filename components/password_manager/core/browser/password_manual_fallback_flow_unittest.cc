@@ -681,14 +681,15 @@ TEST_F(PasswordManualFallbackFlowTest,
   flow().RunFlow(form.username_element_renderer_id, gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
-  // Expect that the password is empty in the preview call.
+  // Expect that the password is empty in the preview call. The length of the
+  // label must be fixed and not depend on the password length.
   EXPECT_CALL(driver(), PreviewSuggestionById(form.username_element_renderer_id,
                                               form.password_element_renderer_id,
                                               std::u16string(u"username"),
                                               std::u16string(u"********")));
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
-      Suggestion::PasswordSuggestionDetails(u"username", u"password",
+      Suggestion::PasswordSuggestionDetails(u"username", u"this_password",
                                             "https://cross-domain.com/",
                                             u"cross-domain.com",
                                             /*is_cross_domain=*/true));
