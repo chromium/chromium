@@ -4,6 +4,7 @@
 
 # Please see the comments section at the top of the `run_performance_tests.py`.
 
+import io
 import json
 import os
 import pathlib
@@ -495,6 +496,57 @@ def _create_crossbench_args(browser='./chrome'):
       '--benchmark-display-name=speedometer3.crossbench',
       f'--browser={browser}',
   ]
+
+
+class ArgumentParserTest(unittest.TestCase):
+
+  def testIsolatedScriptTestLauncherRetryLimitNotPassed(self):
+    fake_args = ['./run_benchmark', '--isolated-script-test-output=output.json']
+    options = run_performance_tests.parse_arguments(fake_args)
+    self.assertIsNone(options.isolated_script_test_launcher_retry_limit)
+
+  def testIsolatedScriptTestLauncherRetryLimitZero(self):
+    fake_args = [
+        './run_benchmark', '--isolated-script-test-output=output.json',
+        '--isolated-script-test-launcher-retry-limit=0'
+    ]
+    with mock.patch('logging.warning') as mock_warn:
+      options = run_performance_tests.parse_arguments(fake_args)
+      self.assertEqual(options.isolated_script_test_launcher_retry_limit, 0)
+      mock_warn.assert_not_called()
+
+  def testIsolatedScriptTestLauncherRetryLimitPositive(self):
+    fake_args = [
+        './run_benchmark', '--isolated-script-test-output=output.json',
+        '--isolated-script-test-launcher-retry-limit=3'
+    ]
+    with mock.patch('logging.warning') as mock_warn:
+      options = run_performance_tests.parse_arguments(fake_args)
+      self.assertEqual(options.isolated_script_test_launcher_retry_limit, 0)
+      mock_warn.assert_called_once_with(
+          'Ignoring non-zero retry limit %d: '
+          'performance tests do not support retries.', 3)
+
+  def testIsolatedScriptTestLauncherRetryLimitNegative(self):
+    fake_args = [
+        './run_benchmark', '--isolated-script-test-output=output.json',
+        '--isolated-script-test-launcher-retry-limit=-2'
+    ]
+    with mock.patch('logging.warning') as mock_warn:
+      options = run_performance_tests.parse_arguments(fake_args)
+      self.assertEqual(options.isolated_script_test_launcher_retry_limit, 0)
+      mock_warn.assert_called_once_with(
+          'Ignoring non-zero retry limit %d: '
+          'performance tests do not support retries.', -2)
+
+  def testIsolatedScriptTestLauncherRetryLimitInvalidType(self):
+    fake_args = [
+        './run_benchmark', '--isolated-script-test-output=output.json',
+        '--isolated-script-test-launcher-retry-limit=abc'
+    ]
+    with mock.patch('sys.stderr', new_callable=io.StringIO):
+      with self.assertRaises(SystemExit):
+        run_performance_tests.parse_arguments(fake_args)
 
 
 if __name__ == '__main__':
