@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.xr.scenecore;
 
+import android.annotation.SuppressLint;
 import android.util.SizeF;
 import android.view.Surface;
 
@@ -18,6 +19,7 @@ import androidx.xr.scenecore.SurfaceEntity.StereoMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.xr.scenecore.XrCurvedSurfaceEntityHolder;
+import org.chromium.ui.xr.scenecore.XrMeshData;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder.Callback;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
@@ -28,10 +30,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /** Implementation of {@link XrSurfaceEntityHolder} and {@link XrCurvedSurfaceEntityHolder}. */
 @NullMarked
+@SuppressLint("RestrictedApiAndroidX")
 public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<SurfaceEntity>
         implements XrSurfaceEntityHolder<SurfaceEntity>,
                 XrCurvedSurfaceEntityHolder<SurfaceEntity> {
-    protected static final String TAG = "XrSurfaceEntityHolderImpl";
     protected static final Map<Integer, StereoMode> STEREO_MODE_MAP =
             Map.of(
                     XrSurfaceEntityStereoMode.MONO, StereoMode.MONO,
@@ -141,6 +143,8 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
             return XrSurfaceEntityShape.SPHERE;
         } else if (mEntity.getShape() instanceof Shape.Hemisphere) {
             return XrSurfaceEntityShape.HEMISPHERE;
+        } else if (mEntity.getShape() instanceof Shape.CustomMesh) {
+            return XrSurfaceEntityShape.CUSTOM;
         } else {
             throw new IllegalStateException("Unknown surface shape: " + mEntity.getShape());
         }
@@ -161,6 +165,14 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
                 break;
             default:
                 throw new IllegalArgumentException("Invalid surface shape: " + shape);
+        }
+    }
+
+    @Override
+    public void setSurfaceShape(XrMeshData[] meshDatas) {
+        Shape.CustomMesh customMesh = XrSurfaceEntityUtils.createCustomMesh(meshDatas);
+        if (customMesh != null) {
+            mEntity.setShape(customMesh);
         }
     }
 

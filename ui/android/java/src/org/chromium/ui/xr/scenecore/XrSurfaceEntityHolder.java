@@ -57,6 +57,14 @@ public interface XrSurfaceEntityHolder<EntityType> extends XrTransformableEntity
     void setSurfaceShape(@XrSurfaceEntityShape int shape);
 
     /**
+     * Sets a custom mesh for the surface shape. This is used when the surface shape is set to
+     * {@link XrSurfaceEntityShape#CUSTOM}.
+     *
+     * @param meshDatas The mesh data to apply.
+     */
+    void setSurfaceShape(XrMeshData[] meshDatas);
+
+    /**
      * Sets the pixel dimensions of the surface.
      *
      * @param width The new width of the surface in pixels.

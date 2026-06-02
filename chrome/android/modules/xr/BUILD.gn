@@ -60,6 +60,7 @@ android_library("java") {
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionInitializerImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionManagerImpl.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityHolderImpl.java",
+    "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityUtils.java",
     "internal/java/src/org/chromium/chrome/browser/xr/scenecore/XrTransformableEntityHolderImpl.java",
   ]
   deps = [
@@ -140,12 +141,14 @@ robolectric_binary("xr_junit_tests") {
   sources = [
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrEntityHolderFactoryTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrInteractableComponentImplTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrMeshDataTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrMovableComponentImplTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrPanelEntityHolderImplTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrResizableComponentImplTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionInitializerImplTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrSceneCoreSessionManagerImplTest.java",
     "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityHolderImplTest.java",
+    "internal/junit/src/org/chromium/chrome/browser/xr/scenecore/XrSurfaceEntityUtilsTest.java",
   ]
   deps = [
     ":java",

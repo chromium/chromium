@@ -29,9 +29,13 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.xr.scenecore.XrMeshData;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityHolder.Callback;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 import org.chromium.ui.xr.scenecore.XrSurfaceEntityStereoMode;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /** Tests for {@link XrSurfaceEntityHolderImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -155,5 +159,35 @@ public class XrSurfaceEntityHolderImplTest {
         Shape shape = mSurfaceEntity.getShape();
         assertTrue(shape instanceof Shape.Sphere);
         assertEquals(5f, ((Shape.Sphere) shape).getRadius(), DELTA);
+    }
+
+    @Test
+    public void testSetSurfaceShape_MeshData() {
+        float[] vertexData = {
+            1.0f, 2.0f, 3.0f, 0.1f, 0.2f,
+            4.0f, 5.0f, 6.0f, 0.4f, 0.5f
+        };
+        ByteBuffer vertices =
+                ByteBuffer.allocateDirect(vertexData.length * 4).order(ByteOrder.nativeOrder());
+        vertices.asFloatBuffer().put(vertexData);
+
+        int[] indexData = {0, 1};
+        ByteBuffer indices =
+                ByteBuffer.allocateDirect(indexData.length * 4)
+                        .order(java.nio.ByteOrder.nativeOrder());
+        indices.asIntBuffer().put(indexData);
+
+        XrMeshData data = new XrMeshData(10, 0, vertices, indices);
+        XrMeshData[] meshDatas = new XrMeshData[] {data};
+
+        mHolder.setSurfaceShape(meshDatas);
+
+        Shape shape = mSurfaceEntity.getShape();
+        assertTrue(shape instanceof Shape.CustomMesh);
+        assertEquals(XrSurfaceEntityShape.CUSTOM, mHolder.getSurfaceShape());
+
+        Shape.CustomMesh customMesh = (Shape.CustomMesh) shape;
+        assertNotNull(customMesh.getLeftEye());
+        assertEquals(data.getPositionsAsFloatBuffer(), customMesh.getLeftEye().getPositions());
     }
 }

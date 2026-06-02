@@ -12,7 +12,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Defines the possible shapes of an XR surface entity. */
-@IntDef({XrSurfaceEntityShape.QUAD, XrSurfaceEntityShape.SPHERE, XrSurfaceEntityShape.HEMISPHERE})
+@IntDef({
+    XrSurfaceEntityShape.QUAD,
+    XrSurfaceEntityShape.SPHERE,
+    XrSurfaceEntityShape.HEMISPHERE,
+    XrSurfaceEntityShape.CUSTOM
+})
 @Retention(RetentionPolicy.SOURCE)
 @NullMarked
 public @interface XrSurfaceEntityShape {
@@ -24,4 +29,7 @@ public @interface XrSurfaceEntityShape {
 
     /** A hemispherical surface. */
     int HEMISPHERE = 2;
+
+    /** A custom mesh surface. */
+    int CUSTOM = 3;
 }

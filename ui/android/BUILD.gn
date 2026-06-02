@@ -197,6 +197,7 @@ generate_jni("ui_android_jni_headers") {
     "java/src/org/chromium/ui/resources/ResourceFactory.java",
     "java/src/org/chromium/ui/resources/ResourceManager.java",
     "java/src/org/chromium/ui/resources/dynamics/CaptureResult.java",
+    "java/src/org/chromium/ui/xr/scenecore/XrMeshData.java",
   ]
 }
 
@@ -623,6 +624,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/xr/scenecore/XrEntityHolder.java",
     "java/src/org/chromium/ui/xr/scenecore/XrInteractableComponent.java",
     "java/src/org/chromium/ui/xr/scenecore/XrInteractableEntityHolder.java",
+    "java/src/org/chromium/ui/xr/scenecore/XrMeshData.java",
     "java/src/org/chromium/ui/xr/scenecore/XrMovableComponent.java",
     "java/src/org/chromium/ui/xr/scenecore/XrMovableEntityHolder.java",
     "java/src/org/chromium/ui/xr/scenecore/XrPanelEntityHolder.java",
