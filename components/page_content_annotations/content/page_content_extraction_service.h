@@ -204,8 +204,6 @@ class PageContentExtractionService : public KeyedService,
   PageContentCache* GetPageContentCache();
 
  protected:
-  friend class AnnotatedPageContentRequest;
-
   // Invoked when `page_content` is extracted for `page`, to notify the
   // observers. The `page_content` holds either the APC for a non-PDF page; or
   // the PDF text for a PDF page. `tab_id` for the tab where page is loaded, if
@@ -215,6 +213,9 @@ class PageContentExtractionService : public KeyedService,
       PageContent page_content,
       const std::vector<uint8_t>& screenshot_data,
       std::optional<int> tab_id);
+
+ private:
+  friend class AnnotatedPageContentRequest;
 
   AnnotatedPageContentRequest* GetAnnotatedPageContentRequestFromWebContents(
       content::WebContents* web_contents);
@@ -226,7 +227,6 @@ class PageContentExtractionService : public KeyedService,
   const bool is_page_content_cache_enabled_;
   const std::unique_ptr<PageContentCacheHandler> page_content_cache_handler_;
 
- private:
   base::WeakPtrFactory<PageContentExtractionService> weak_ptr_factory_{this};
 };
 
