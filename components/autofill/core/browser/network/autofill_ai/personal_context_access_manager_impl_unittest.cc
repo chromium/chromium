@@ -124,8 +124,8 @@ TEST_F(PersonalContextAccessManagerImplTest,
           RunOnceCallback<3>(personal_context::FetchContextResult(
               base::ok(std::move(any_response))))));
 
-  base::test::TestFuture<
-      base::expected<std::string, personal_context::ContextMemoryError>>
+  base::test::TestFuture<base::expected<std::vector<EntityInstance>,
+                                        personal_context::ContextMemoryError>>
       future;
 
   access_manager().PrefetchAmbientAutofillContext(requested_types,
@@ -133,12 +133,19 @@ TEST_F(PersonalContextAccessManagerImplTest,
 
   auto result = future.Take();
   ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(result->size(), 1u);
+  EXPECT_EQ(result->at(0).type().name(), EntityTypeName::kOrder);
 
-  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
-  ASSERT_TRUE(response.ParseFromString(result.value()));
-  EXPECT_EQ(response.entities_size(), 1);
-  EXPECT_EQ(response.entities(0).order().order_id(), "12345");
-  EXPECT_EQ(response.entities(0).order().merchant_name(), "Amazon");
+  base::optional_ref<const AttributeInstance> order_id_attr =
+      result->at(0).attribute(AttributeType(AttributeTypeName::kOrderId));
+  ASSERT_TRUE(order_id_attr.has_value());
+  EXPECT_EQ(order_id_attr->GetCompleteRawInfo(), u"12345");
+
+  base::optional_ref<const AttributeInstance> merchant_attr =
+      result->at(0).attribute(
+          AttributeType(AttributeTypeName::kOrderMerchantName));
+  ASSERT_TRUE(merchant_attr.has_value());
+  EXPECT_EQ(merchant_attr->GetCompleteRawInfo(), u"Amazon");
 }
 
 TEST_F(PersonalContextAccessManagerImplTest,
@@ -159,8 +166,8 @@ TEST_F(PersonalContextAccessManagerImplTest,
       .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
           base::unexpected(expected_error))));
 
-  base::test::TestFuture<
-      base::expected<std::string, personal_context::ContextMemoryError>>
+  base::test::TestFuture<base::expected<std::vector<EntityInstance>,
+                                        personal_context::ContextMemoryError>>
       future;
 
   access_manager().PrefetchAmbientAutofillContext(requested_types,

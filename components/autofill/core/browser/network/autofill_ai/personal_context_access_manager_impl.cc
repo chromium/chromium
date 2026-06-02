@@ -22,6 +22,35 @@
 
 namespace autofill {
 
+namespace {
+
+// Parses the raw protobuf string and converts it into a vector of
+// EntityInstances. Returns an unexpected error if parsing fails.
+base::expected<std::vector<EntityInstance>,
+               personal_context::ContextMemoryError>
+ExtractEntitiesFromResponse(const std::string& serialized_response) {
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  if (!response.ParseFromString(serialized_response)) {
+    return base::unexpected(
+        personal_context::ContextMemoryError::FromExecutionError(
+            personal_context::ContextMemoryError::ExecutionError::
+                kResponseParseError));
+  }
+
+  std::vector<EntityInstance> entities;
+  entities.reserve(response.entities_size());
+  for (const auto& entity : response.entities()) {
+    if (std::optional<EntityInstance> converted =
+            PersonalContextEntityToEntityInstance(entity)) {
+      entities.push_back(std::move(*converted));
+    }
+  }
+
+  return entities;
+}
+
+}  // namespace
+
 PersonalContextAccessManagerImpl::PersonalContextAccessManagerImpl(
     personal_context::PersonalContextService* personal_context_service,
     personal_context::PersonalContextEnablementService*
@@ -41,22 +70,27 @@ void PersonalContextAccessManagerImpl::PrefetchAmbientAutofillContext(
         AutofillEntityTypeToPersonalContextEntityType(type));
   }
 
-  auto fetch_callback = [](PrefetchAmbientAutofillContextCallback callback,
-                           personal_context::FetchContextResult result) {
-    if (!result.response.has_value()) {
-      std::move(callback).Run(base::unexpected(result.response.error()));
-      return;
-    }
-
-    personal_context::proto::Any any_response = result.response.value();
-    // TODO(crbug.com/516721244): Parse the response.
-    std::move(callback).Run(any_response.value());
-  };
-
   personal_context_service_->FetchContext(
       personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, request,
       /*options=*/{},
-      base::BindOnce(std::move(fetch_callback), std::move(callback)));
+      base::BindOnce(&PersonalContextAccessManagerImpl::
+                         OnPrefetchAmbientAutofillContextComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void PersonalContextAccessManagerImpl::OnPrefetchAmbientAutofillContextComplete(
+    PrefetchAmbientAutofillContextCallback callback,
+    personal_context::FetchContextResult result) {
+  if (!result.response.has_value()) {
+    std::move(callback).Run(base::unexpected(result.response.error()));
+    return;
+  }
+
+  base::expected<std::vector<EntityInstance>,
+                 personal_context::ContextMemoryError>
+      entities = ExtractEntitiesFromResponse(result.response.value().value());
+
+  std::move(callback).Run(std::move(entities));
 }
 
 std::optional<EntityInstance> PersonalContextAccessManagerImpl::GetCachedEntity(

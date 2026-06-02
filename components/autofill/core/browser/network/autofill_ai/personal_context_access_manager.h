@@ -23,7 +23,7 @@ class PersonalContextAccessManager : public KeyedService {
  public:
   // Callback invoked when the ambient autofill context fetch is complete.
   using PrefetchAmbientAutofillContextCallback = base::OnceCallback<void(
-      base::expected<std::string /*serialized_response*/,
+      base::expected<std::vector<EntityInstance>,
                      personal_context::ContextMemoryError>)>;
 
   // Callback for `GetUnmaskedSpiiEntity` requests. On success, it returns

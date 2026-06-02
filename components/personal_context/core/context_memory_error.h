@@ -28,7 +28,9 @@ class ContextMemoryError {
     kNonRetryableError = 6,
     // The request was cancelled.
     kCancelled = 7,
-    kMaxValue = kCancelled,
+    // The response could not be parsed.
+    kResponseParseError = 8,
+    kMaxValue = kResponseParseError,
   };
 
   static ContextMemoryError FromHttpStatusCode(

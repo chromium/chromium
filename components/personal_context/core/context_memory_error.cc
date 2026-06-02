@@ -42,6 +42,7 @@ bool ContextMemoryError::transient() const {
     case ExecutionError::kPermissionDenied:
     case ExecutionError::kNonRetryableError:
     case ExecutionError::kCancelled:
+    case ExecutionError::kResponseParseError:
       return false;
     case ExecutionError::kRequestThrottled:
     case ExecutionError::kGenericFailure:

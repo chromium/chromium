@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
+#include "components/personal_context/core/personal_context_types.h"
 
 namespace personal_context {
 class PersonalContextEnablementService;
@@ -61,6 +62,11 @@ class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
   // that refreshing or invalidating prefetched data also invalidates any
   // corresponding unmasked sensitive data.
   void ResetCacheForType(EntityTypeName type_name);
+
+  // Handles the asynchronous result of the ambient autofill context fetch.
+  void OnPrefetchAmbientAutofillContextComplete(
+      PrefetchAmbientAutofillContextCallback callback,
+      personal_context::FetchContextResult result);
 
   // Caches a batch of prefetched `entities`.
   // Groups them by type, clears old entities of those types, and schedules
