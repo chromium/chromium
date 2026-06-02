@@ -927,25 +927,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   }
 }
 
-// Explicitly enable both flags to activate right-hand side checkmark
-// behavior.
-class OmniboxContextMenuControllerBrowserTestWithContextManagement
-    : public OmniboxContextMenuControllerBrowserTest {
- public:
-  OmniboxContextMenuControllerBrowserTestWithContextManagement() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kContextManagementInComposebox,
-                              omnibox::kContextManagementInOmnibox},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    OmniboxContextMenuControllerBrowserTestWithContextManagement,
-    RecentTabsCheckmarkToggle) {
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
+                       RecentTabsCheckmarkToggle) {
   // Navigate the initial tab to the popup URL.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
@@ -1268,5 +1251,154 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
     // Tab 2 (unchecked, less recent):
     EXPECT_EQ(tab_items[2].first, u"Title Of More Awesomeness");
     EXPECT_FALSE(tab_items[2].second);
+  }
+}
+
+class OmniboxContextMenuControllerPecBrowserTestWithFlagsDisabled
+    : public OmniboxContextMenuControllerPecBrowserTest {
+ public:
+  OmniboxContextMenuControllerPecBrowserTestWithFlagsDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{omnibox::kContextManagementInComposebox,
+                               omnibox::kContextManagementInOmnibox});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that when the flags are disabled, the recent tabs list is rendered
+// directly in the main menu, and no flying out submenu is created.
+IN_PROC_BROWSER_TEST_F(
+    OmniboxContextMenuControllerPecBrowserTestWithFlagsDisabled,
+    VerifyNoFlyoutMenu_FlagOff) {
+  // Navigate to the target WebUI URL where the contextual handler is hosted.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+  auto* web_contents = GetWebContents();
+
+  // Force the popup state manager into AIM mode to mimic active UI conditions.
+  auto* omnibox_controller =
+      OmniboxPopupWebContentsHelper::FromWebContents(web_contents)
+          ->get_omnibox_controller();
+  ASSERT_TRUE(omnibox_controller);
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  // Initialize and inject an InputState mock that explicitly authorizes tab
+  // suggestions.
+  omnibox::InputState input_state;
+  input_state.allowed_input_types.push_back(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  input_state.max_inputs_by_type[omnibox::InputType::INPUT_TYPE_BROWSER_TAB] =
+      5;
+
+  auto* web_ui = web_contents->GetWebUI();
+  auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  auto* handler = popup_ui->composebox_handler();
+  ASSERT_TRUE(handler);
+  ASSERT_TRUE(handler->input_state_model());
+  handler->input_state_model()->set_state_for_testing(input_state);
+
+  auto owning_window = browser()->window()->GetNativeWindow();
+  auto omnibox_popup_file_selector =
+      std::make_unique<OmniboxPopupFileSelector>(owning_window);
+
+  // Seed an independent browser tab to evaluate flat menu rendering behavior.
+  GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(AddTabAtIndex(1, url1, ui::PAGE_TRANSITION_TYPED));
+
+  // Instantiate the controller which triggers menu hierarchy construction.
+  OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
+                                          web_contents);
+  ui::SimpleMenuModel* model = controller.menu_model();
+
+  // Verify that the contextual secondary flyout container remains completely
+  // omitted.
+  EXPECT_FALSE(controller.shared_tabs_menu_model());
+
+  // Traverse the primary flat menu structure to check if the candidate tab is
+  // listed.
+  bool found_tab1 = false;
+  for (size_t i = 0; i < model->GetItemCount(); ++i) {
+    std::u16string label = model->GetLabelAt(i);
+    if (label.find(u"title1") != std::u16string::npos) {
+      found_tab1 = true;
+      break;
+    }
+  }
+
+  EXPECT_TRUE(found_tab1);
+}
+
+// Verifies that when the flags are disabled, the checkmark is rendered on the
+// left-hand side  by replacing the default model icon, instead of the
+// right-hand side.
+IN_PROC_BROWSER_TEST_F(
+    OmniboxContextMenuControllerPecBrowserTestWithFlagsDisabled,
+    VerifyModelPickerCheckmark_FlagOff) {
+  // Navigate to the target WebUI URL where the contextual handler is hosted.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+  auto* web_contents = GetWebContents();
+
+  // Build the expected checkmark representation for matching menu assets later.
+  auto check_icon = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+      ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+
+  // Force the popup state manager into AIM mode to mimic active UI conditions.
+  auto* omnibox_controller =
+      OmniboxPopupWebContentsHelper::FromWebContents(web_contents)
+          ->get_omnibox_controller();
+  ASSERT_TRUE(omnibox_controller);
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  // Initialize and inject an InputState mock configured with active model
+  // selections.
+  omnibox::InputState input_state;
+  input_state.allowed_models.push_back(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  input_state.allowed_models.push_back(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI);
+  input_state.active_model =
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
+
+  auto* web_ui = web_contents->GetWebUI();
+  auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  auto* handler = popup_ui->composebox_handler();
+  ASSERT_TRUE(handler);
+  ASSERT_TRUE(handler->input_state_model());
+  handler->input_state_model()->set_state_for_testing(input_state);
+
+  auto owning_window = browser()->window()->GetNativeWindow();
+  auto omnibox_popup_file_selector =
+      std::make_unique<OmniboxPopupFileSelector>(owning_window);
+
+  // Instantiate the controller which triggers menu hierarchy construction.
+  OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
+                                          web_contents);
+
+  ui::SimpleMenuModel* model = controller.menu_model();
+
+  // Map out the bound backing command identifiers created for the target model.
+  int fast_command_id = -1;
+  for (const auto& pair : controller.model_for_command_id_) {
+    if (pair.second == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI) {
+      fast_command_id = pair.first;
+      break;
+    }
+  }
+  ASSERT_NE(fast_command_id, -1);
+  {
+    // Validate that the checkmark falls back to the left primary slot rather
+    // than the right secondary slot.
+    std::optional<size_t> index = model->GetIndexOfCommandId(fast_command_id);
+    ASSERT_TRUE(index.has_value());
+    EXPECT_TRUE(model->GetMinorIconAt(index.value()).IsEmpty());
+    EXPECT_FALSE(model->GetIconAt(index.value()).IsEmpty());
+    EXPECT_EQ(model->GetIconAt(index.value()), check_icon);
   }
 }
