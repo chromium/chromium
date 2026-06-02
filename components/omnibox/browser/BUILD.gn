@@ -400,6 +400,7 @@ static_library("browser") {
   ]
 
   deps = [
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//components/bookmarks/browser",
     "//components/component_updater",
@@ -950,6 +951,7 @@ source_set("unit_tests") {
     ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
+    "//build:android_buildflags",
     "//build:blink_buildflags",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",

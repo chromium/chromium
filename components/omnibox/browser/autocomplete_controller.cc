@@ -40,6 +40,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/lens/lens_features.h"
@@ -117,14 +118,15 @@
 
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 
-constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
-
 namespace {
 
 
 using ScoringSignals = ::metrics::OmniboxScoringSignals;
 using ProviderType = AutocompleteProvider::Type;
 
+constexpr bool kIsDesktop =
+    !(BUILDFLAG(IS_IOS) ||
+      (BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)));
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 
 void RecordMlScoreCoverage(size_t matches_with_non_null_scores,

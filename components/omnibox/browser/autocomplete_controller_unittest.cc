@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -386,7 +387,8 @@ TEST_F(AutocompleteControllerTest, CompanyEntityImageNotRemoved) {
 }
 
 // Desktop has some special handling for bare '@' inputs.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !(BUILDFLAG(IS_IOS) || \
+      (BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)))
 TEST_F(AutocompleteControllerTest, FilterMatchesForInstantKeywordWithBareAt) {
   SetAutocompleteMatches({
       CreateSearchMatch(u"@"),
