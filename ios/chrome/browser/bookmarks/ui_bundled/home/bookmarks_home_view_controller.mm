@@ -873,13 +873,13 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   }
 
   base::RecordAction(base::UserMetricsAction(userAction));
-  const BookmarkNode* editedNode = *(nodes.begin());
-  const BookmarkNode* selectedFolder = editedNode->parent();
+  const BookmarkNode* movedNode = *(nodes.begin());
+  const BookmarkNode* selectedFolder = movedNode->parent();
   _UIDisabled = YES;
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:_browser.get()
-                     hiddenNodes:nodes];
+                      movedNodes:nodes];
   [_folderChooserCoordinator setSelectedFolder:selectedFolder];
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];
@@ -1319,7 +1319,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   // Copy the list of edited nodes from BookmarksFolderChooserCoordinator before
   // `stopFolderChooserCoordinator` sets `_folderChooserCoordinator` to nil.
   std::set<raw_ptr<const bookmarks::BookmarkNode>> editedNodesSet =
-      _folderChooserCoordinator.editedNodes;
+      _folderChooserCoordinator.movedNodes;
   CHECK_GE(editedNodesSet.size(), 1u, base::NotFatalUntil::M152);
 
   [self stopFolderChooserCoordinator];

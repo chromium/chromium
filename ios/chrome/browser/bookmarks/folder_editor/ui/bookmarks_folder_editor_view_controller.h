@@ -32,10 +32,10 @@ class SyncService;
 - (void)
     showBookmarksFolderChooserWithParentFolder:
         (const bookmarks::BookmarkNode*)parent
-                                   hiddenNodes:
+                                   editedNodes:
                                        (const std::set<raw_ptr<
                                             const bookmarks::BookmarkNode>>&)
-                                           hiddenNodes;
+                                           editedNodes;
 // Called when the controller successfully created or edited `folder`.
 - (void)bookmarksFolderEditor:(BookmarksFolderEditorViewController*)folderEditor
        didFinishEditingFolder:(const bookmarks::BookmarkNode*)folder;

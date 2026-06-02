@@ -343,12 +343,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
   base::RecordAction(base::UserMetricsAction(
       "MobileBookmarksFolderEditorOpenedFolderChooser"));
-  std::set<raw_ptr<const bookmarks::BookmarkNode>> hiddenNodes;
+  std::set<raw_ptr<const bookmarks::BookmarkNode>> editedNodes;
   if (_folder) {
-    hiddenNodes.insert(_folder);
+    editedNodes.insert(_folder);
   }
   [self.delegate showBookmarksFolderChooserWithParentFolder:_parentFolder
-                                                hiddenNodes:hiddenNodes];
+                                                editedNodes:editedNodes];
 }
 
 #pragma mark - BookmarkModelBridgeObserver

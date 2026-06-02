@@ -34,29 +34,29 @@ using bookmarks::BookmarkNode;
 @end
 
 @implementation FakeBookmarksFolderChooserParentDataSource {
-  std::set<const BookmarkNode*> _editedNodes;
+  std::set<const BookmarkNode*> _movedNodes;
 }
 
 - (instancetype)initWithNodes:(const std::set<const BookmarkNode*>&)nodes {
   if ((self = [super init])) {
-    _editedNodes = nodes;
+    _movedNodes = nodes;
   }
   return self;
 }
 
 - (void)bookmarkNodeDeleted:(const BookmarkNode*)bookmarkNode {
-  if (_editedNodes.contains(bookmarkNode)) {
-    _editedNodes.erase(bookmarkNode);
+  if (_movedNodes.contains(bookmarkNode)) {
+    _movedNodes.erase(bookmarkNode);
   }
   _bookmarkNodeDeletedArg = bookmarkNode;
 }
 
 - (void)bookmarkModelWillRemoveAllNodes {
-  _editedNodes.clear();
+  _movedNodes.clear();
 }
 
-- (const std::set<const BookmarkNode*>&)editedNodes {
-  return _editedNodes;
+- (const std::set<const BookmarkNode*>&)movedNodes {
+  return _movedNodes;
 }
 
 @end
@@ -80,7 +80,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
 
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
-    edited_nodes_.insert(AddURL(mobile_node(), @"Test URL"));
+    moved_nodes_.insert(AddURL(mobile_node(), @"Test URL"));
   }
 
   const bookmarks::BookmarkNode* mobile_node() {
@@ -96,7 +96,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
   void CreateSubDataSource() {
     fake_parent_data_source_ =
         [[FakeBookmarksFolderChooserParentDataSource alloc]
-            initWithNodes:edited_nodes_];
+            initWithNodes:moved_nodes_];
     sub_data_source_ = [[BookmarksFolderChooserSubDataSourceImpl alloc]
         initWithBookmarkModel:bookmark_model_
                          type:GetParam()
@@ -140,7 +140,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
   FakeBookmarksFolderChooserParentDataSource* fake_parent_data_source_;
   NSString* test_folder_title_1 = @"Test Folder 1";
   NSString* test_folder_title_2 = @"Test Folder 2";
-  std::set<const BookmarkNode*> edited_nodes_;
+  std::set<const BookmarkNode*> moved_nodes_;
 };
 
 // Tests that the sub data source correctly fetches visible folders.
@@ -149,7 +149,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestVisibleFolderNodes) {
       AddFolder(mobile_node(), test_folder_title_1);
   const BookmarkNode* test_folder_node_2 =
       AddFolder(test_folder_node_1, test_folder_title_2);
-  edited_nodes_.insert(test_folder_node_2);
+  moved_nodes_.insert(test_folder_node_2);
   CreateSubDataSource();
 
   auto visible_folder_nodes = [sub_data_source_ visibleFolderNodes];

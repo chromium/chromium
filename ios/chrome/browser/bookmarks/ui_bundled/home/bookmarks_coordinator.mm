@@ -281,7 +281,7 @@ enum class PresentedState {
   self.folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                     hiddenNodes:std::set<
+                      movedNodes:std::set<
                                      raw_ptr<const bookmarks::BookmarkNode>>()];
   self.folderChooserCoordinator.delegate = self;
   [self.folderChooserCoordinator start];

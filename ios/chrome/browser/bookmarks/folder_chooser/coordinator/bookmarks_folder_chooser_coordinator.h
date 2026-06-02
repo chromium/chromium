@@ -33,38 +33,40 @@ class BookmarkNode;
 // Initializes BookmarksFolderChooserCoordinator. The view is pushed into
 // `navigationController`.
 // `selectedFolder` will be the folder with check mark in the UI.
-// `hiddenNodes` is a list of nodes to hide in the chooser view. This is to
-// make sure a folder cannot be moved into one of its children.
+// `movedNodes` is a list of nodes that are currently being moved, they must
+// thus be hidden in the chooser view. This is to make sure a folder cannot be
+// moved into one of its children.
 - (instancetype)
     initWithBaseNavigationController:
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
-                         hiddenNodes:
-                             (const std::set<
-                                 raw_ptr<const bookmarks::BookmarkNode>>&)
-                                 hiddenNodes;
+                          movedNodes:
+                              (const std::set<
+                                  raw_ptr<const bookmarks::BookmarkNode>>&)
+                                  movedNodes;
 
 // Initializes BookmarksFolderChooserCoordinator. A navigation controller is
 // created, with the chooser folder view as the root view controller.
 // `selectedFolder` will be the folder with check mark in the UI.
-// `hiddenNodes` is a list of nodes to hide in the chooser view. This is to
-// make sure a folder cannot be moved into one of its children.
+// `movedNodes` is a list of nodes that are currently being moved, they must
+// thus be hidden in the chooser view. This is to make sure a folder cannot be
+// moved into one of its children.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
-                   hiddenNodes:
-                       (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)
-                           hiddenNodes NS_DESIGNATED_INITIALIZER;
+                    movedNodes:
+                        (const std::set<
+                            raw_ptr<const bookmarks::BookmarkNode>>&)movedNodes
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Whether the bookmark folder chooser can be dismissed.
 - (BOOL)canDismiss;
-// The current nodes (bookmarks or folders) that are considered for a move.
-// Will be available right before this coordinator sends a confirm selection
-// signal through it's delegate.
-- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)editedNodes;
+// The value of `movedNodes` during init, minus the nodes that have been
+// deleted in the meantime.
+- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)movedNodes;
 // Puts a blue check mark beside a folder it in the UI.
 // If unset no blue check mark is shown.
 - (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder;

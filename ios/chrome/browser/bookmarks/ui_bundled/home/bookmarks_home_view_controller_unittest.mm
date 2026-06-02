@@ -36,12 +36,12 @@
 @interface FakeBookmarksFolderChooserCoordinator
     : BookmarksFolderChooserCoordinator
 @property(nonatomic, assign) std::set<raw_ptr<const bookmarks::BookmarkNode>>
-    editedNodesSet;
+    movedNodesSet;
 @end
 
 @implementation FakeBookmarksFolderChooserCoordinator
-- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)editedNodes {
-  return _editedNodesSet;
+- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)movedNodes {
+  return _movedNodesSet;
 }
 - (void)stop {
   // Do nothing.
@@ -293,8 +293,8 @@ TEST_F(BookmarksHomeViewControllerTest,
       [[FakeBookmarksFolderChooserCoordinator alloc]
           initWithBaseViewController:nil
                              browser:browser_.get()
-                         hiddenNodes:{}];
-  fakeFolderChooserCoordinator.editedNodesSet = selectedNodes;
+                          movedNodes:{}];
+  fakeFolderChooserCoordinator.movedNodesSet = selectedNodes;
   [controller setFolderChooserCoordinator:fakeFolderChooserCoordinator];
 
   // Call the delegate method with the same parent folder.
