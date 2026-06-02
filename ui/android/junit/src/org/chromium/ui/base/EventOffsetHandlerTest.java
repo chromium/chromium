@@ -82,4 +82,28 @@ public class EventOffsetHandlerTest {
         mHandler.onPostDispatchDragEvent(DragEvent.ACTION_DRAG_ENDED);
         assertOffsets(0, 0);
     }
+
+    @Test
+    public void testHoverEvents() {
+        MotionEvent hoverEnter =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 100, 100, 0);
+        mHandler.onHoverEvent(hoverEnter);
+        assertOffsets(-100, -200);
+
+        MotionEvent hoverMove =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_MOVE, 100, 100, 0);
+        mHandler.onHoverEvent(hoverMove);
+        assertOffsets(-100, -200);
+
+        MotionEvent hoverExit =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 100, 100, 0);
+        mHandler.onHoverEvent(hoverExit);
+        // Hover exit should NOT clear the offset, because a click might immediately follow.
+        assertOffsets(-100, -200);
+
+        MotionEvent actionUp = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 100, 100, 0);
+        mHandler.onTouchEvent(actionUp);
+        // Action up SHOULD clear the offset.
+        assertOffsets(0, 0);
+    }
 }

@@ -94,8 +94,7 @@ public class EventOffsetHandler {
             setTouchEventOffsets(-mDelegate.getLeft(), -mDelegate.getTop());
         } else if (canClear
                 && (actionMasked == MotionEvent.ACTION_UP
-                        || actionMasked == MotionEvent.ACTION_CANCEL
-                        || actionMasked == MotionEvent.ACTION_HOVER_EXIT)) {
+                        || actionMasked == MotionEvent.ACTION_CANCEL)) {
             setTouchEventOffsets(0.f, 0.f);
         }
     }
