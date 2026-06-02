@@ -98,6 +98,17 @@ class PdfToolbarViewBinder {
             } else {
                 fitToPageButton.setImageResource(R.drawable.ic_fit_page_width_24dp);
             }
+        } else if (PdfToolbarProperties.DOWNLOAD_BUTTON_VISIBLE == key) {
+            view.setDownloadButtonVisible(model.get(PdfToolbarProperties.DOWNLOAD_BUTTON_VISIBLE));
+        } else if (PdfToolbarProperties.ROTATE_BUTTON_VISIBLE == key) {
+            view.setRotateButtonVisible(model.get(PdfToolbarProperties.ROTATE_BUTTON_VISIBLE));
+        } else if (PdfToolbarProperties.FIT_TO_PAGE_BUTTON_VISIBLE == key) {
+            view.setFitToPageButtonVisible(
+                    model.get(PdfToolbarProperties.FIT_TO_PAGE_BUTTON_VISIBLE));
+        } else if (PdfToolbarProperties.ZOOM_CONTROLS_VISIBLE == key) {
+            view.setZoomControlsVisible(model.get(PdfToolbarProperties.ZOOM_CONTROLS_VISIBLE));
+        } else if (PdfToolbarProperties.PAGE_NAV_AND_EDIT_VISIBLE == key) {
+            view.setPageNavAndEditVisible(model.get(PdfToolbarProperties.PAGE_NAV_AND_EDIT_VISIBLE));
         }
     }
 }

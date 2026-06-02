@@ -26,11 +26,16 @@ import java.util.List;
  */
 @NullMarked
 public class PdfToolbar extends Toolbar implements View.OnLayoutChangeListener {
-    private static final float THRESHOLD_DOWNLOAD_DP = 800f;
-    private static final float THRESHOLD_ROTATE_DP = 750f;
-    private static final float THRESHOLD_FIT_DP = 700f;
-    private static final float THRESHOLD_ZOOM_DP = 650f;
-    private static final float THRESHOLD_NAV_EDIT_DP = 600f;
+    /** Listener for width changes of the toolbar. */
+    public interface OnWidthChangedListener {
+        void onWidthChanged(int widthPx);
+    }
+
+    private @Nullable OnWidthChangedListener mOnWidthChangedListener;
+
+    public void setOnWidthChangedListener(@Nullable OnWidthChangedListener listener) {
+        mOnWidthChangedListener = listener;
+    }
     private @Nullable View mDownloadButton;
     private @Nullable View mRotateButton;
     private @Nullable View mFitToPageButton;
@@ -102,39 +107,54 @@ public class PdfToolbar extends Toolbar implements View.OnLayoutChangeListener {
             int oldBottom) {
         int width = right - left;
         if (width != (oldRight - oldLeft)) {
-            adjustChildVisibilities(width);
+            if (mOnWidthChangedListener != null) {
+                mOnWidthChangedListener.onWidthChanged(width);
+            }
         }
     }
 
-    private void adjustChildVisibilities(int widthPx) {
-        float density = getResources().getDisplayMetrics().density;
-        float widthDp = widthPx / density;
+    void setDownloadButtonVisible(boolean visible) {
+        setViewVisibility(mDownloadButton, visible);
+        updateDividersAndConstraints();
+    }
 
-        // 1. Download button
-        setViewVisibility(mDownloadButton, widthDp > THRESHOLD_DOWNLOAD_DP);
+    void setRotateButtonVisible(boolean visible) {
+        setViewVisibility(mRotateButton, visible);
+        updateDividersAndConstraints();
+    }
 
-        // 2. Rotate button
-        setViewVisibility(mRotateButton, widthDp > THRESHOLD_ROTATE_DP);
+    void setFitToPageButtonVisible(boolean visible) {
+        setViewVisibility(mFitToPageButton, visible);
+        updateDividersAndConstraints();
+    }
 
-        // 3. Fit to page button
-        setViewVisibility(mFitToPageButton, widthDp > THRESHOLD_FIT_DP);
+    void setZoomControlsVisible(boolean visible) {
+        setViewsVisibility(mZoomControls, visible);
+        updateDividersAndConstraints();
+    }
 
-        // 4. Zoom controls
-        boolean showZoom = widthDp > THRESHOLD_ZOOM_DP;
-        setViewsVisibility(mZoomControls, showZoom);
+    void setPageNavAndEditVisible(boolean visible) {
+        setViewsVisibility(mPageNav, visible);
+        setViewVisibility(mEditButton, visible);
+        setViewVisibility(mCenterGroup, visible);
+        updateDividersAndConstraints();
+    }
 
-        // 5. Page nav and edit button
-        boolean showNavEdit = widthDp > THRESHOLD_NAV_EDIT_DP;
-        setViewsVisibility(mPageNav, showNavEdit);
-        setViewVisibility(mEditButton, showNavEdit);
-
-        // Hide center group if everything in it is hidden
-        setViewVisibility(mCenterGroup, showNavEdit);
+    private void updateDividersAndConstraints() {
+        boolean showNavEdit = mEditButton != null && mEditButton.getVisibility() == View.VISIBLE;
+        boolean showZoom =
+                mZoomControls != null
+                        && !mZoomControls.isEmpty()
+                        && mZoomControls.get(0) != null
+                        && mZoomControls.get(0).getVisibility() == View.VISIBLE;
+        boolean showRotate = mRotateButton != null && mRotateButton.getVisibility() == View.VISIBLE;
+        boolean showFit =
+                mFitToPageButton != null && mFitToPageButton.getVisibility() == View.VISIBLE;
 
         // Dividers
         setViewVisibility(mPageZoomDivider, showNavEdit && showZoom);
-        setViewVisibility(mZoomFitDivider, showZoom && (widthDp > THRESHOLD_FIT_DP));
-        setViewVisibility(mRotateEditDivider, (widthDp > THRESHOLD_ROTATE_DP) && showNavEdit);
+        setViewVisibility(mZoomFitDivider, showZoom && showFit);
+        setViewVisibility(mRotateEditDivider, showRotate && showNavEdit);
 
         // Adjust title constraints
         if (mConstraintLayout != null

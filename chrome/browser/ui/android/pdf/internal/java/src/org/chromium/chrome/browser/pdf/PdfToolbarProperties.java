@@ -52,6 +52,26 @@ class PdfToolbarProperties {
     static final WritableObjectPropertyKey<org.chromium.base.Callback<Integer>>
             PAGE_NUMBER_EDIT_LISTENER = new WritableObjectPropertyKey<>();
 
+    /** Whether the download button is visible. */
+    static final WritableBooleanPropertyKey DOWNLOAD_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the rotate button is visible. */
+    static final WritableBooleanPropertyKey ROTATE_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the fit to page button is visible. */
+    static final WritableBooleanPropertyKey FIT_TO_PAGE_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the zoom controls are visible. */
+    static final WritableBooleanPropertyKey ZOOM_CONTROLS_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the page navigation and edit controls are visible. */
+    static final WritableBooleanPropertyKey PAGE_NAV_AND_EDIT_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS = {
         CURRENT_PAGE_NUMBER,
         TITLE,
@@ -62,6 +82,11 @@ class PdfToolbarProperties {
         ZOOM_DECREASE_BUTTON_ENABLED,
         ZOOM_INCREASE_BUTTON_ENABLED,
         PAGE_NUMBER_EDIT_LISTENER,
-        SHOW_FIT_TO_HEIGHT_ICON
+        SHOW_FIT_TO_HEIGHT_ICON,
+        DOWNLOAD_BUTTON_VISIBLE,
+        ROTATE_BUTTON_VISIBLE,
+        FIT_TO_PAGE_BUTTON_VISIBLE,
+        ZOOM_CONTROLS_VISIBLE,
+        PAGE_NAV_AND_EDIT_VISIBLE
     };
 }

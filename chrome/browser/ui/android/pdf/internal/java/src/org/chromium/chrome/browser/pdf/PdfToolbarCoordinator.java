@@ -29,6 +29,12 @@ import java.util.List;
 /** The top-level component responsible for the setup and lifecycle of the PDF Toolbar MVC stack. */
 @NullMarked
 public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyListener {
+    private static final float THRESHOLD_DOWNLOAD_DP = 800f;
+    private static final float THRESHOLD_ROTATE_DP = 750f;
+    private static final float THRESHOLD_FIT_DP = 700f;
+    private static final float THRESHOLD_ZOOM_DP = 650f;
+    private static final float THRESHOLD_NAV_EDIT_DP = 600f;
+
     private final PropertyModel mModel;
     private final PdfToolbarActionsDelegate mDelegate;
     private final PropertyModelChangeProcessor<PropertyModel, PdfToolbar, PropertyKey>
@@ -61,7 +67,14 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
                         .with(PdfToolbarProperties.ZOOM_LEVEL, 1.0f)
                         .with(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, true)
                         .with(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, false)
+                        .with(PdfToolbarProperties.DOWNLOAD_BUTTON_VISIBLE, true)
+                        .with(PdfToolbarProperties.ROTATE_BUTTON_VISIBLE, true)
+                        .with(PdfToolbarProperties.FIT_TO_PAGE_BUTTON_VISIBLE, true)
+                        .with(PdfToolbarProperties.ZOOM_CONTROLS_VISIBLE, true)
+                        .with(PdfToolbarProperties.PAGE_NAV_AND_EDIT_VISIBLE, true)
                         .build();
+
+        toolbar.setOnWidthChangedListener(this::onWidthChanged);
 
         // Set up the MCP to sync the Model and View
         mPropertyModelChangeProcessor =
@@ -103,51 +116,47 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
     private void showMenu(View anchorView) {
         ModelList modelList = new ModelList();
 
-        if (mToolbar != null) {
-            if (!mToolbar.isDownloadButtonVisible()) {
-                modelList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(R.string.pdf_download)
-                                .withClickListener(
-                                        v -> {
-                                            mDelegate.download();
-                                            dismissMenu();
-                                        })
-                                .build());
-            }
-            if (!mToolbar.isRotateButtonVisible()) {
-                modelList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(R.string.pdf_rotate)
-                                .withClickListener(
-                                        v -> {
-                                            mDelegate.rotate();
-                                            dismissMenu();
-                                        })
-                                .build());
-            }
-            if (!mToolbar.isFitToPageButtonVisible()) {
-                boolean showFitToHeight = mModel.get(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON);
-                int fitTitleRes =
-                        showFitToHeight ? R.string.pdf_fit_height : R.string.pdf_fit_width;
-                modelList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(fitTitleRes)
-                                .withClickListener(
-                                        v -> {
-                                            int currentPageNumber =
-                                                    mModel.get(
-                                                            PdfToolbarProperties
-                                                                    .CURRENT_PAGE_NUMBER);
-                                            mDelegate.toggleFitToPage(
-                                                    showFitToHeight, currentPageNumber - 1);
-                                            mModel.set(
-                                                    PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON,
-                                                    !showFitToHeight);
-                                            dismissMenu();
-                                        })
-                                .build());
-            }
+        if (!mModel.get(PdfToolbarProperties.DOWNLOAD_BUTTON_VISIBLE)) {
+            modelList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.pdf_download)
+                            .withClickListener(
+                                    v -> {
+                                        mDelegate.download();
+                                        dismissMenu();
+                                    })
+                            .build());
+        }
+        if (!mModel.get(PdfToolbarProperties.ROTATE_BUTTON_VISIBLE)) {
+            modelList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.pdf_rotate)
+                            .withClickListener(
+                                    v -> {
+                                        mDelegate.rotate();
+                                        dismissMenu();
+                                    })
+                            .build());
+        }
+        if (!mModel.get(PdfToolbarProperties.FIT_TO_PAGE_BUTTON_VISIBLE)) {
+            boolean showFitToHeight = mModel.get(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON);
+            int fitTitleRes = showFitToHeight ? R.string.pdf_fit_height : R.string.pdf_fit_width;
+            modelList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(fitTitleRes)
+                            .withClickListener(
+                                    v -> {
+                                        int currentPageNumber =
+                                                mModel.get(
+                                                        PdfToolbarProperties.CURRENT_PAGE_NUMBER);
+                                        mDelegate.toggleFitToPage(
+                                                showFitToHeight, currentPageNumber - 1);
+                                        mModel.set(
+                                                PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON,
+                                                !showFitToHeight);
+                                        dismissMenu();
+                                    })
+                            .build());
         }
 
         // Two-page view / Single page view item
@@ -297,10 +306,27 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
         return false;
     }
 
+    private void onWidthChanged(int widthPx) {
+        if (mToolbar == null) return;
+        float density = mToolbar.getResources().getDisplayMetrics().density;
+        float widthDp = widthPx / density;
+
+        mModel.set(
+                PdfToolbarProperties.DOWNLOAD_BUTTON_VISIBLE, widthDp > THRESHOLD_DOWNLOAD_DP);
+        mModel.set(PdfToolbarProperties.ROTATE_BUTTON_VISIBLE, widthDp > THRESHOLD_ROTATE_DP);
+        mModel.set(
+                PdfToolbarProperties.FIT_TO_PAGE_BUTTON_VISIBLE, widthDp > THRESHOLD_FIT_DP);
+        mModel.set(PdfToolbarProperties.ZOOM_CONTROLS_VISIBLE, widthDp > THRESHOLD_ZOOM_DP);
+        mModel.set(PdfToolbarProperties.PAGE_NAV_AND_EDIT_VISIBLE, widthDp > THRESHOLD_NAV_EDIT_DP);
+    }
+
     /** Destroys the coordinator and releases references held by the change processor. */
     public void destroy() {
         mPropertyModelChangeProcessor.destroy();
         dismissMenu();
+        if (mToolbar != null) {
+            mToolbar.setOnWidthChangedListener(null);
+        }
         mToolbar = null;
     }
 }
