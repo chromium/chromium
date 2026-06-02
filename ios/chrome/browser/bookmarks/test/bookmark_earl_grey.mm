@@ -6,24 +6,48 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
+
+#import "base/base_paths.h"
+#import "base/no_destructor.h"
+#import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_app_interface.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+
+namespace {
+
+std::unique_ptr<net::EmbeddedTestServer> CreateAndStartSharedTestServer() {
+  auto server = std::make_unique<net::EmbeddedTestServer>();
+  server->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_ASSETS));
+  bool started = server->Start();
+  GREYAssertTrue(started, @"Failed to start the shared test server.");
+  return server;
+}
+
+net::EmbeddedTestServer* GetSharedTestServer() {
+  static base::NoDestructor<std::unique_ptr<net::EmbeddedTestServer>> server(
+      CreateAndStartSharedTestServer());
+  return server->get();
+}
+
+}  // namespace
 
 const GURL GetFirstUrl() {
-  return web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  return GetSharedTestServer()->GetURL(
+      "/ios/testing/data/http_server_files/pony.html");
 }
 
 const GURL GetSecondUrl() {
-  return web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/destination.html");
+  return GetSharedTestServer()->GetURL(
+      "/ios/testing/data/http_server_files/destination.html");
 }
 
 const GURL GetFrenchUrl() {
-  return web::test::HttpServer::MakeUrl("http://www.a.fr/");
+  return GetSharedTestServer()->GetURL("/www.a.fr/");
 }
 
 @implementation BookmarkEarlGreyImpl
@@ -39,8 +63,8 @@ const GURL GetFrenchUrl() {
 }
 
 - (void)setupStandardBookmarksInStorage:(BookmarkStorageType)storageType {
-  const GURL fourthURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/chromium_logo_page.html");
+  const GURL fourthURL = GetSharedTestServer()->GetURL(
+      "/ios/testing/data/http_server_files/chromium_logo_page.html");
 
   NSString* spec1 = base::SysUTF8ToNSString(GetFirstUrl().spec());
   NSString* spec2 = base::SysUTF8ToNSString(GetSecondUrl().spec());

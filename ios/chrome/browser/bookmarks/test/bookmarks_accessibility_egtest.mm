@@ -16,7 +16,7 @@
 #import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -26,7 +26,7 @@ using chrome_test_util::MoveButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Bookmark accessibility tests for Chrome.
-@interface BookmarksAccessibilityTestCase : WebHttpServerChromeTestCase
+@interface BookmarksAccessibilityTestCase : ChromeTestCase
 @end
 
 @implementation BookmarksAccessibilityTestCase

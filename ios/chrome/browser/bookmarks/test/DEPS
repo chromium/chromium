@@ -2,7 +2,5 @@ include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/signin/model/fake_system_identity.h",
   "+ios/chrome/browser/sync/model/sync_service_factory.h",
-  "+ios/web/public/test/http_server/http_server.h",
-  "+ios/web/public/test/http_server/http_server_util.h",
   # keep-sorted end
 ]
