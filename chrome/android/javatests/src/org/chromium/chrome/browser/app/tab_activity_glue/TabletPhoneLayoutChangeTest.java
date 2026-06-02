@@ -28,11 +28,13 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
+import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -107,8 +109,10 @@ public class TabletPhoneLayoutChangeTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        toolbarManager.setUrlBarFocusAndText(
-                                true, OmniboxFocusReason.OMNIBOX_TAP, urlBarText));
+                        toolbarManager.beginFuseboxInput(
+                                new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP)
+                                        .setUserText(urlBarText)
+                                        .setSelection(UrlBarData.SELECT_ALL)));
 
         CriteriaHelper.pollUiThread(
                 () -> {

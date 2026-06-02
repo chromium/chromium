@@ -129,6 +129,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -468,15 +469,15 @@ public class ToolbarManagerUnitTest {
 
     @Test
     public void testSetUrlBarFocusAfterDestroy() {
-        mToolbarManager.setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP);
+        mToolbarManager.beginFuseboxInput(new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP));
         assertTrue(mToolbarManager.isUrlBarFocused());
 
-        mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.OMNIBOX_TAP);
+        mToolbarManager.endFuseboxInput();
         assertFalse(mToolbarManager.isUrlBarFocused());
 
         mToolbarManager.destroy();
 
-        mToolbarManager.setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP);
+        mToolbarManager.beginFuseboxInput(new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP));
         assertFalse(mToolbarManager.isUrlBarFocused());
     }
 

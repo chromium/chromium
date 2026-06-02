@@ -31,6 +31,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -107,7 +108,8 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                     mActivityTestRule
                             .getActivity()
                             .getToolbarManager()
-                            .setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP);
+                            .beginFuseboxInput(
+                                    new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP));
                 });
         waitForOmniboxFocus();
 
@@ -137,7 +139,8 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
                 () -> {
                     ntpPage.getActivity()
                             .getToolbarManager()
-                            .setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP);
+                            .beginFuseboxInput(
+                                    new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP));
                 });
         waitForOmniboxFocus();
 

@@ -118,7 +118,7 @@ public class ToolbarPhoneTest {
 
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
 
-    @Mock private MenuButtonCoordinator.SetFocusFunction mFocusFunction;
+    @Mock private Runnable mClearOmniboxFocus;
     @Mock private Runnable mRequestRenderRunnable;
     @Mock ThemeColorProvider mThemeColorProvider;
     @Mock IncognitoStateProvider mIncognitoStateProvider;
@@ -310,7 +310,7 @@ public class ToolbarPhoneTest {
                                     new BrowserStateBrowserControlsVisibilityDelegate(
                                             ObservableSuppliers.alwaysFalse()),
                                     mActivityTestRule.getActivity().getWindowAndroid(),
-                                    mFocusFunction,
+                                    mClearOmniboxFocus,
                                     mRequestRenderRunnable,
                                     true,
                                     () -> false,

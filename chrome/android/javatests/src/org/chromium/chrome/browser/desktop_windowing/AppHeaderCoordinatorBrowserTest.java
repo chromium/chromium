@@ -69,6 +69,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -503,7 +504,8 @@ public class AppHeaderCoordinatorBrowserTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.getToolbarManager()
-                            .setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP);
+                            .beginFuseboxInput(
+                                    new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP));
                 });
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -522,10 +524,7 @@ public class AppHeaderCoordinatorBrowserTest {
                 () -> Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(0)));
 
         // Remove omnibox focus and restore state.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    activity.getToolbarManager().setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
-                });
+        ThreadUtils.runOnUiThreadBlocking(activity.getToolbarManager()::endFuseboxInput);
     }
 
     @Test

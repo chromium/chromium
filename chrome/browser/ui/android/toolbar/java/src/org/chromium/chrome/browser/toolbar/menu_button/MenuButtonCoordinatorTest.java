@@ -46,7 +46,7 @@ public class MenuButtonCoordinatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;
-    @Mock private MenuButtonCoordinator.SetFocusFunction mFocusFunction;
+    @Mock private Runnable mClearOmniboxFocus;
     @Mock private AppMenuCoordinator mAppMenuCoordinator;
     @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private AppMenuButtonHelper mAppMenuButtonHelper;
@@ -146,7 +146,7 @@ public class MenuButtonCoordinatorTest {
                         mAppMenuSupplier,
                         mControlsVisibilityDelegate,
                         mWindowAndroid,
-                        mFocusFunction,
+                        mClearOmniboxFocus,
                         mRequestRenderRunnable,
                         true,
                         () -> false,

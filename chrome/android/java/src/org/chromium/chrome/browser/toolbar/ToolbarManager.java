@@ -239,7 +239,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -416,7 +415,6 @@ public class ToolbarManager
     private int mFullscreenFindInPageToken = TokenHolder.INVALID_TOKEN;
 
     private boolean mInitializedWithNative;
-    private @Nullable Runnable mOnInitializedRunnable;
     private @Nullable Runnable mMenuStateObserver;
     private @MonotonicNonNull UpdateMenuItemHelper mUpdateMenuItemHelper;
 
@@ -988,7 +986,7 @@ public class ToolbarManager
                         appMenuCoordinatorSupplier,
                         mControlsVisibilityDelegate,
                         mWindowAndroid,
-                        this::setUrlBarFocus,
+                        this::endFuseboxInput,
                         requestFocusRunnable,
                         canShowUpdateBadge,
                         isInOverviewModeSupplier,
@@ -1009,7 +1007,7 @@ public class ToolbarManager
                         appMenuCoordinatorSupplier,
                         mControlsVisibilityDelegate,
                         mWindowAndroid,
-                        this::setUrlBarFocus,
+                        this::endFuseboxInput,
                         requestFocusRunnable,
                         canShowUpdateBadge,
                         isInOverviewModeSupplier,
@@ -1058,7 +1056,7 @@ public class ToolbarManager
                                     BrowserUiUtils.recordModuleClickHistogram(
                                             ModuleTypeOnStartAndNtp.HOME_BUTTON);
                                 }
-                                setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+                                endFuseboxInput();
 
                                 boolean hasControl = KeyEventUtils.isCtrlOn(metaState);
                                 boolean hasShift = KeyEventUtils.isShiftOn(metaState);
@@ -1216,7 +1214,7 @@ public class ToolbarManager
 
         tabObscuringHandler.addObserver(this);
 
-        Runnable clickDelegate = () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+        Runnable scrimClickAction = this::endFuseboxInput;
         View scrimTarget = mCompositorViewHolder;
         mLocationBarFocusHandler =
                 new LocationBarFocusScrimHandler(
@@ -1224,7 +1222,7 @@ public class ToolbarManager
                         new TabObscuringCallback(tabObscuringHandler),
                         /* context= */ activity,
                         mLocationBarModel,
-                        clickDelegate,
+                        scrimClickAction,
                         scrimTarget,
                         mTabStripTopControlLayer.getSupplier(),
                         mBottomControlsStacker);
@@ -1875,7 +1873,7 @@ public class ToolbarManager
     }
 
     private void back(int metaState, int buttonState) {
-        setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+        endFuseboxInput();
         boolean hasControl = KeyEventUtils.isCtrlOn(metaState);
         boolean hasShift = KeyEventUtils.isShiftOn(metaState);
         boolean isMiddleClick = MotionEventUtils.isTertiaryButton(buttonState);
@@ -2693,11 +2691,6 @@ public class ToolbarManager
             bottomAppBarCoordinator.initializeWithNative();
         }
 
-        if (mOnInitializedRunnable != null) {
-            mOnInitializedRunnable.run();
-            mOnInitializedRunnable = null;
-        }
-
         // Allow bitmap capturing once everything has been initialized.
         Tab currentTab = tabModelSelector.getCurrentTab();
         if (currentTab != null
@@ -3241,15 +3234,22 @@ public class ToolbarManager
     }
 
     /**
-     * Focuses or unfocuses the URL bar.
+     * Begin a new fusebox input session.
      *
-     * <p>If you request focus and the UrlBar was already focused, this will select all of the text.
+     * <p>If an existing session is in progress, it will be updated with supplied `input`
+     * parameters.
      *
-     * @param focused Whether URL bar should be focused.
-     * @param reason The given reason.
+     * @param input The AutocompleteInput to start the session with.
      */
-    public void setUrlBarFocus(boolean focused, @OmniboxFocusReason int reason) {
-        setUrlBarFocusAndText(focused, reason, null);
+    public void beginFuseboxInput(AutocompleteInput input) {
+        if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
+        assumeNonNull(mLocationBar.getOmniboxStub()).beginInput(input);
+    }
+
+    /** End the current fusebox input session. */
+    public void endFuseboxInput() {
+        if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
+        assumeNonNull(mLocationBar.getOmniboxStub()).endInput();
     }
 
     /**
@@ -3265,53 +3265,6 @@ public class ToolbarManager
                 (CoordinatorLayout.LayoutParams) mProgressBarContainer.getLayoutParams();
         params.setAnchorId(anchorId);
         mProgressBarContainer.setLayoutParams(params);
-    }
-
-    /**
-     * Same as {@code #setUrlBarFocus(boolean, @OmniboxFocusReason int)}, with the additional option
-     * to set URL bar text.
-     *
-     * @param focused Whether URL bar should be focused.
-     * @param reason The given reason.
-     * @param text The URL bar text. {@code null} if no text is to be set.
-     */
-    public void setUrlBarFocusAndText(
-            boolean focused, @OmniboxFocusReason int reason, @Nullable String text) {
-        if (!mInitializedWithNative || mIsDestroyed) return;
-        OmniboxStub omniboxStub = mLocationBar.getOmniboxStub();
-        if (omniboxStub == null) return;
-        if (focused) {
-            omniboxStub.beginInput(
-                    new AutocompleteInput(reason)
-                            .setUserText(text)
-                            .setSelection(0, Integer.MAX_VALUE));
-        } else {
-            omniboxStub.endInput();
-        }
-    }
-
-    /**
-     * See {@link #setUrlBarFocus}, but if native is not loaded it will queue the request instead of
-     * dropping it.
-     */
-    public void setUrlBarFocusOnceNativeInitialized(
-            boolean focused, @OmniboxFocusReason int reason) {
-        if (mInitializedWithNative) {
-            setUrlBarFocus(focused, reason);
-            return;
-        }
-
-        if (focused) {
-            // Remember requests to focus the Url bar and replay them once native has been
-            // initialized. This is important for the Launch to Incognito Tab flow (see
-            // IncognitoTabLauncher.
-            mOnInitializedRunnable =
-                    () -> {
-                        setUrlBarFocus(focused, reason);
-                    };
-        } else {
-            mOnInitializedRunnable = null;
-        }
     }
 
     /**

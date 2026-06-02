@@ -49,6 +49,7 @@ import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -590,7 +591,8 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
                         mActivityTestRule
                                 .getActivity()
                                 .getToolbarManager()
-                                .setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP);
+                                .beginFuseboxInput(
+                                        new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP));
                     });
         }
 

@@ -100,6 +100,7 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.net.NetworkChangeNotifier;
@@ -251,7 +252,9 @@ public class ToolbarTest {
                 mActivity.getTabObscuringHandler().isTabContentObscured());
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> toolbarManager.setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP));
+                () ->
+                        toolbarManager.beginFuseboxInput(
+                                new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP)));
 
         assertNotNull("The scrim should not be null.", scrimManager.getViewForTesting());
         CriteriaHelper.pollInstrumentationThread(
@@ -262,8 +265,7 @@ public class ToolbarTest {
                             Matchers.is(true));
                 });
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> toolbarManager.setUrlBarFocus(false, OmniboxFocusReason.OMNIBOX_TAP));
+        ThreadUtils.runOnUiThreadBlocking(toolbarManager::endFuseboxInput);
         assertNull("The scrim should be null.", scrimManager.getViewForTesting());
         assertFalse(
                 "All tabs should not currently be obscured.",

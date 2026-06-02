@@ -35,7 +35,6 @@ import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
-import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.webxr.XrDelegate;
 import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -251,7 +250,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
 
             ToolbarManager toolbarManager = getToolbarManager();
             if (toolbarManager != null) {
-                toolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+                toolbarManager.endFuseboxInput();
             }
 
             setMenuButtonEnabled(false);

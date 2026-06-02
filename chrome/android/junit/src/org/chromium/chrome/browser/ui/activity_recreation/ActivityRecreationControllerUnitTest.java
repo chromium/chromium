@@ -13,6 +13,7 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController.ACTIVITY_RECREATION_UI_STATE;
@@ -32,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -44,10 +46,12 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -66,6 +70,9 @@ public class ActivityRecreationControllerUnitTest {
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private Bundle mSavedInstanceState;
     @Mock private ExclusiveAccessManager mExclusiveAccessManager;
+    @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
+    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
+    @Captor private ArgumentCaptor<AutocompleteInput> mAutocompleteInputCaptor;
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private ActivityRecreationController mActivityRecreationController;
@@ -78,7 +85,7 @@ public class ActivityRecreationControllerUnitTest {
         KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
         mActivityTabProvider.setForTesting(mActivityTab);
 
-        doNothing().when(mToolbarManager).setUrlBarFocusAndText(anyBoolean(), anyInt(), any());
+        doNothing().when(mToolbarManager).beginFuseboxInput(any());
         doNothing().when(mLayoutManager).addObserver(any());
         doReturn(true).when(mLayoutManager).isLayoutStartingToShow(LayoutType.BROWSING);
         doReturn(context).when(mActivityTab).getContext();
@@ -204,19 +211,18 @@ public class ActivityRecreationControllerUnitTest {
                 /* isPointerLock= */ false,
                 /* isKeyboardLock= */ false);
         mActivityRecreationController.restoreUiState(mSavedInstanceState);
-        ArgumentCaptor<LayoutStateObserver> layoutStateObserverCaptor =
-                ArgumentCaptor.forClass(LayoutStateObserver.class);
-        verify(mLayoutManager).addObserver(layoutStateObserverCaptor.capture());
+        verify(mLayoutManager).addObserver(mLayoutStateObserverCaptor.capture());
 
         // Simulate invocation of Layout#doneShowing after invocation of #restoreUiState.
         doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.BROWSING);
-        layoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.BROWSING);
-        ArgumentCaptor<Runnable> postRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mHandler).post(postRunnableCaptor.capture());
-        postRunnableCaptor.getValue().run();
-        verify(mToolbarManager)
-                .setUrlBarFocusAndText(
-                        true, OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, text);
+        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.BROWSING);
+        verify(mHandler).post(mRunnableCaptor.capture());
+        mRunnableCaptor.getValue().run();
+        verify(mToolbarManager).beginFuseboxInput(mAutocompleteInputCaptor.capture());
+        AutocompleteInput input = mAutocompleteInputCaptor.getValue();
+        assertEquals(text, input.getUserText());
+        assertEquals(OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, input.getFocusReason());
+        assertEquals(UrlBarData.SELECT_ALL, input.getSelection());
     }
 
     @Test
@@ -233,9 +239,11 @@ public class ActivityRecreationControllerUnitTest {
                 /* isPointerLock= */ false,
                 /* isKeyboardLock= */ false);
         mActivityRecreationController.restoreUiState(mSavedInstanceState);
-        verify(mToolbarManager)
-                .setUrlBarFocusAndText(
-                        true, OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, text);
+        verify(mToolbarManager).beginFuseboxInput(mAutocompleteInputCaptor.capture());
+        AutocompleteInput input = mAutocompleteInputCaptor.getValue();
+        assertEquals(text, input.getUserText());
+        assertEquals(OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, input.getFocusReason());
+        assertEquals(UrlBarData.SELECT_ALL, input.getSelection());
         // Omnibox code should restore keyboard.
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(mContentView);
     }
@@ -282,7 +290,7 @@ public class ActivityRecreationControllerUnitTest {
                 /* isKeyboardLock= */ false);
         mActivityRecreationController.restoreUiState(mSavedInstanceState);
         verify(mLayoutManager, never()).addObserver(any());
-        verify(mToolbarManager, never()).setUrlBarFocusAndText(anyBoolean(), anyInt(), any());
+        verify(mToolbarManager, never()).beginFuseboxInput(any());
     }
 
     @Test
@@ -296,7 +304,7 @@ public class ActivityRecreationControllerUnitTest {
                 /* isKeyboardLock= */ false);
         mActivityRecreationController.restoreUiState(mSavedInstanceState);
         verify(mLayoutManager, never()).addObserver(any());
-        verify(mToolbarManager, never()).setUrlBarFocusAndText(anyBoolean(), anyInt(), any());
+        verify(mToolbarManager, never()).beginFuseboxInput(any());
         verify(mExclusiveAccessManager, never()).enterFullscreenModeForTab(any(), any());
         verify(mExclusiveAccessManager, never())
                 .requestPointerLock(any(), anyBoolean(), anyBoolean());
@@ -321,23 +329,22 @@ public class ActivityRecreationControllerUnitTest {
     @Test
     public void testRestoreOmniboxState_layoutPendingShow() {
         String text = "editText";
-        ArgumentCaptor<LayoutStateObserver> layoutStateObserverCaptor =
-                ArgumentCaptor.forClass(LayoutStateObserver.class);
         PersistableBundle persistableBundle = new PersistableBundle();
         persistableBundle.putString(URL_BAR_EDIT_TEXT, text);
 
         mActivityRecreationController.restorePersistentState(persistableBundle);
 
-        verify(mLayoutManager).addObserver(layoutStateObserverCaptor.capture());
+        verify(mLayoutManager).addObserver(mLayoutStateObserverCaptor.capture());
         // Simulate invocation of Layout#doneShowing after invocation of #restoreOmniboxState.
         doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.BROWSING);
-        layoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.BROWSING);
-        ArgumentCaptor<Runnable> postRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mHandler).post(postRunnableCaptor.capture());
-        postRunnableCaptor.getValue().run();
-        verify(mToolbarManager)
-                .setUrlBarFocusAndText(
-                        true, OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, text);
+        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.BROWSING);
+        verify(mHandler).post(mRunnableCaptor.capture());
+        mRunnableCaptor.getValue().run();
+        verify(mToolbarManager).beginFuseboxInput(mAutocompleteInputCaptor.capture());
+        AutocompleteInput input = mAutocompleteInputCaptor.getValue();
+        assertEquals(text, input.getUserText());
+        assertEquals(OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, input.getFocusReason());
+        assertEquals(UrlBarData.SELECT_ALL, input.getSelection());
     }
 
     @Test
@@ -351,16 +358,22 @@ public class ActivityRecreationControllerUnitTest {
         persistableBundle.putString(URL_BAR_EDIT_TEXT, text);
 
         mActivityRecreationController.restorePersistentState(persistableBundle);
-        verify(mToolbarManager)
-                .setUrlBarFocusAndText(
-                        true, OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, text);
+        verify(mToolbarManager).beginFuseboxInput(mAutocompleteInputCaptor.capture());
+        assertEquals(text, mAutocompleteInputCaptor.getValue().getUserText());
+        assertEquals(
+                OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION,
+                mAutocompleteInputCaptor.getValue().getFocusReason());
+        assertEquals(UrlBarData.SELECT_ALL, mAutocompleteInputCaptor.getValue().getSelection());
 
         String newText = "newEditText";
         persistableBundle.putString(URL_BAR_EDIT_TEXT, newText);
         mActivityRecreationController.restorePersistentState(persistableBundle);
-        verify(mToolbarManager)
-                .setUrlBarFocusAndText(
-                        true, OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, newText);
+        verify(mToolbarManager, times(2)).beginFuseboxInput(mAutocompleteInputCaptor.capture());
+        assertEquals(newText, mAutocompleteInputCaptor.getValue().getUserText());
+        assertEquals(
+                OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION,
+                mAutocompleteInputCaptor.getValue().getFocusReason());
+        assertEquals(UrlBarData.SELECT_ALL, mAutocompleteInputCaptor.getValue().getSelection());
 
         // Omnibox code should restore keyboard.
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(mContentView);

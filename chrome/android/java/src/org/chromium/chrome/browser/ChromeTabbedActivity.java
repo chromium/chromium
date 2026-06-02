@@ -374,6 +374,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.profile_metrics.BrowserProfileType;
@@ -2980,12 +2981,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 break;
         }
 
-        getToolbarManager()
-                .setUrlBarFocusOnceNativeInitialized(
-                        focus,
-                        focus
-                                ? OmniboxFocusReason.LAUNCH_NEW_INCOGNITO_TAB
-                                : OmniboxFocusReason.UNFOCUS);
+        var toolbarManager = assumeNonNull(getToolbarManager());
+        if (focus) {
+            toolbarManager.beginFuseboxInput(
+                    new AutocompleteInput(OmniboxFocusReason.LAUNCH_NEW_INCOGNITO_TAB));
+        } else {
+            toolbarManager.endFuseboxInput();
+        }
 
         if (tabModel.getCount() > 0 && isInOverviewMode() && !isTablet()) {
             // Hides the overview page to ensure proper layout change signals are sent.
@@ -4371,15 +4373,17 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             boolean isUrlBarFocused = getToolbarManager().isUrlBarFocused();
             if (isUrlBarVisible && !isUrlBarFocused) {
                 getToolbarManager()
-                        .setUrlBarFocus(true, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION);
+                        .beginFuseboxInput(
+                                new AutocompleteInput(OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION));
             }
         } else if (id == R.id.focus_and_clear_url_bar) {
             boolean isUrlBarVisible =
                     !isInOverviewMode() && (!isTablet() || getCurrentTabModel().getCount() != 0);
             if (isUrlBarVisible) {
                 getToolbarManager()
-                        .setUrlBarFocusAndText(
-                                true, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION, "");
+                        .beginFuseboxInput(
+                                new AutocompleteInput(OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION)
+                                        .setUserText(""));
             }
         } else if (id == R.id.downloads_menu_id) {
             OtrProfileId otrProfileId = null;

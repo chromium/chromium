@@ -407,7 +407,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                             mAppMenuCoordinatorSupplier,
                             mBrowserStateBrowserControlsVisibilityDelegate,
                             mActivityWindowAndroid,
-                            /* setUrlBarFocusFunction= */ (should, reason) -> {},
+                            /* clearOmniboxFocus= */ () -> {},
                             mRequestRenderRunnable,
                             /* canShowAppUpdateBadge= */ false,
                             /* isInOverviewModeSupplier= */ () -> false,

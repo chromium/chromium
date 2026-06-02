@@ -245,7 +245,6 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageContainer;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessagesFactory;
-import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.ukm.UkmRecorder;
@@ -2006,8 +2005,7 @@ public class RootUiCoordinator
                     mReadAloudControllerSupplier,
                     mShareDelegateSupplier,
                     /* onShareRunnable= */ () -> {
-                        assumeNonNull(mToolbarManager);
-                        mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+                        assertNonNull(mToolbarManager).endFuseboxInput();
                     },
                     mWindowAndroid,
                     mActivityResultTracker,

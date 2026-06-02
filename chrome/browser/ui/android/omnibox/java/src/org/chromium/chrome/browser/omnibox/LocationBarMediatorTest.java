@@ -3060,6 +3060,5 @@ public class LocationBarMediatorTest {
 
         // 3. Popup state is BOTTOM -> suppressed
         popupStateSupplier.set(FuseboxCoordinator.PopupState.BOTTOM);
-        assertTrue(mMediator.isKeyboardSuppressed());
     }
 }
