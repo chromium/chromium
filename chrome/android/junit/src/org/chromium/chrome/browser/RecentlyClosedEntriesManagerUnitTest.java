@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowA
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
+import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTabManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.ntp.SessionRecentlyClosedEntry;
@@ -65,6 +66,7 @@ import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1221,6 +1223,29 @@ public class RecentlyClosedEntriesManagerUnitTest {
             closureTime += 2;
         }
         when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
+    }
+
+    @Test
+    public void testFindRecentlyClosedEntry_BySessionId() {
+        int sessionId = 42;
+        RecentlyClosedTab tab =
+                new RecentlyClosedTab(
+                        sessionId,
+                        /* timestamp= */ 0,
+                        "Title",
+                        JUnitTestGURLs.URL_1,
+                        /* tabGroupId= */ null);
+
+        // We need to make sure the manager has this tab in its list.
+        when(mRecentlyClosedTabManager.getRecentlyClosedEntries(anyInt())).thenReturn(List.of(tab));
+
+        // Update entries so they are loaded into mRecentlyClosedEntries.
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+
+        SessionRecentlyClosedEntry result =
+                mRecentlyClosedEntriesManager.findRecentlyClosedEntry(sessionId);
+
+        assertEquals("Expected to find the correct entry", tab, result);
     }
 
     private static long getDaysAgoMillis(int numDaysAgo) {

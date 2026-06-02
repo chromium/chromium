@@ -29259,6 +29259,11 @@ should be able to be added at any place in this file.
   <description>User pressed 'Add to Reading List' in the app menu.</description>
 </action>
 
+<action name="MobileMenuRecentEntry">
+  <owner>massan@google.com</owner>
+  <description>User pressed a recent entry in the app menu.</description>
+</action>
+
 <action name="MobileMenuRecentTabs">
   <owner>justincohen@chromium.org</owner>
   <description>User pressed 'Recent tabs' in the app menu.</description>
