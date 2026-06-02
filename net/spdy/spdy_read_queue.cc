@@ -36,18 +36,32 @@ void SpdyReadQueue::Enqueue(std::unique_ptr<SpdyBuffer> buffer) {
 size_t SpdyReadQueue::Dequeue(base::span<uint8_t> out) {
   DCHECK_GT(out.size(), 0u);
   size_t bytes_copied = 0;
+  // The destructor of SpdyBuffer and SpdyBuffer::Consume() run ConsumeCallbacks
+  // that can re-enter arbitrary network-stack code (session WINDOW_UPDATE ->
+  // DoDrainSession) and synchronously destroy the SpdyHttpStream that owns
+  // `this`. Defer firing them until after we are done touching member state.
+  std::vector<std::unique_ptr<SpdyBuffer>> to_discard;
+  size_t to_consume = 0;
   while (!queue_.empty() && !out.empty()) {
     SpdyBuffer* buffer = queue_.front().get();
     size_t bytes_to_copy = std::min(out.size(), buffer->GetRemainingSize());
     out.take_first(bytes_to_copy)
         .copy_from(buffer->GetRemaining().first(bytes_to_copy));
     bytes_copied += bytes_to_copy;
-    if (bytes_to_copy == buffer->GetRemainingSize())
+    if (bytes_to_copy == buffer->GetRemainingSize()) {
+      to_discard.push_back(std::move(queue_.front()));
       queue_.pop_front();
-    else
-      buffer->Consume(bytes_to_copy);
+    } else {
+      to_consume = bytes_to_copy;
+      break;
+    }
   }
   total_size_ -= bytes_copied;
+  if (to_consume) {
+    // May delete `this`.
+    queue_.front()->Consume(to_consume);
+  }
+  // `to_discard` destruction may delete `this`; do not touch members past here.
   return bytes_copied;
 }
 

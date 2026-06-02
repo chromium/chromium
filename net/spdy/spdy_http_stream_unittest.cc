@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "net/base/chunked_upload_data_stream.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
@@ -169,6 +170,13 @@ class SpdyHttpStreamTest : public TestWithTaskEnvironment {
     http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
     session_ = CreateSpdySession(http_session_.get(), key_, NetLogWithSource(),
                                  std::move(resolution_details));
+  }
+
+  void set_session_max_recv_window_size(int32_t val) {
+    session_->session_max_recv_window_size_ = val;
+  }
+  void set_session_recv_window_size(int32_t val) {
+    session_->session_recv_window_size_ = val;
   }
 
   SpdyTestUtil spdy_util_;
@@ -1412,6 +1420,147 @@ TEST_F(SpdyHttpStreamTest, DownloadWithEmptyDataFrame) {
 
   sequenced_data_->Resume();
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(SpdyHttpStreamTest, ReadResponseBodyExceedsCappedFramesLimit) {
+  // Set the capped frames limit to 1.
+  session_deps_.session_max_queued_capped_frames = 1;
+
+  spdy::SpdySerializedFrame req1(spdy_util_.ConstructSpdyGet(
+      base::span<const std::string_view>(), 1, LOWEST));
+  spdy::SpdySerializedFrame req2(spdy_util_.ConstructSpdyGet(
+      base::span<const std::string_view>(), 3, LOWEST));
+  spdy::SpdySerializedFrame req3(spdy_util_.ConstructSpdyGet(
+      base::span<const std::string_view>(), 5, LOWEST));
+
+  spdy::SpdySerializedFrame rst1(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+  spdy::SpdySerializedFrame rst2(
+      spdy_util_.ConstructSpdyRstStream(3, spdy::ERROR_CODE_CANCEL));
+
+  MockWrite writes[] = {
+      CreateMockWrite(req1, 0), CreateMockWrite(req2, 1),
+      CreateMockWrite(req3, 2), CreateMockWrite(rst1, 5),
+      CreateMockWrite(rst2, 6),
+  };
+
+  spdy::SpdySerializedFrame resp3(spdy_util_.ConstructSpdyGetReply(
+      base::span<const std::string_view>(), 5));
+  spdy::SpdySerializedFrame body3(
+      spdy_util_.ConstructSpdyDataFrame(5, "some data", false));
+
+  MockRead reads[] = {
+      CreateMockRead(resp3, 3), CreateMockRead(body3, 4),
+      MockRead(ASYNC, ERR_IO_PENDING, 7), MockRead(ASYNC, 0, 8),  // EOF
+  };
+
+  InitSession(reads, writes);
+
+  // Set small session receive window so that reading "some data" (9 bytes)
+  // triggers a WINDOW_UPDATE.
+  set_session_max_recv_window_size(10);
+  set_session_recv_window_size(10);
+
+  HttpRequestInfo request1;
+  request1.method = "GET";
+  request1.url = url_;
+  request1.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  NetLogWithSource net_log;
+  auto http_stream1 = std::make_unique<SpdyHttpStream>(
+      session_, net_log.source(), /*dns_aliases=*/std::set<std::string>());
+  http_stream1->RegisterRequest(&request1);
+  ASSERT_THAT(http_stream1->InitializeStream(true, LOWEST, net_log,
+                                             CompletionOnceCallback()),
+              IsOk());
+
+  HttpRequestInfo request2;
+  request2.method = "GET";
+  request2.url = url_;
+  request2.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  auto http_stream2 = std::make_unique<SpdyHttpStream>(
+      session_, net_log.source(), /*dns_aliases=*/std::set<std::string>());
+  http_stream2->RegisterRequest(&request2);
+  ASSERT_THAT(http_stream2->InitializeStream(true, LOWEST, net_log,
+                                             CompletionOnceCallback()),
+              IsOk());
+
+  HttpRequestInfo request3;
+  request3.method = "GET";
+  request3.url = url_;
+  request3.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  auto http_stream3 = std::make_unique<SpdyHttpStream>(
+      session_, net_log.source(), /*dns_aliases=*/std::set<std::string>());
+  http_stream3->RegisterRequest(&request3);
+  ASSERT_THAT(http_stream3->InitializeStream(true, LOWEST, net_log,
+                                             CompletionOnceCallback()),
+              IsOk());
+
+  HttpResponseInfo response1;
+  HttpResponseInfo response2;
+  HttpResponseInfo response3;
+  TestCompletionCallback callback1;
+  TestCompletionCallback callback2;
+  TestCompletionCallback callback3;
+  HttpRequestHeaders headers;
+
+  EXPECT_THAT(
+      http_stream1->SendRequest(headers, &response1, callback1.callback()),
+      IsError(ERR_IO_PENDING));
+  EXPECT_THAT(
+      http_stream2->SendRequest(headers, &response2, callback2.callback()),
+      IsError(ERR_IO_PENDING));
+  EXPECT_THAT(
+      http_stream3->SendRequest(headers, &response3, callback3.callback()),
+      IsError(ERR_IO_PENDING));
+
+  EXPECT_THAT(callback3.WaitForResult(), IsOk());
+
+  // Read response headers of http_stream3 first.
+  TestCompletionCallback headers_callback3;
+  int rv = http_stream3->ReadResponseHeaders(headers_callback3.callback());
+  if (rv == ERR_IO_PENDING) {
+    rv = headers_callback3.WaitForResult();
+  }
+  EXPECT_THAT(rv, IsOk());
+
+  // Wait until body3 (sequence 4) is read and buffered before we cancel other
+  // streams.
+  base::ByteSize received_bytes_after_headers =
+      http_stream3->GetTotalReceivedBytes();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return http_stream3->GetTotalReceivedBytes() > received_bytes_after_headers;
+  }));
+
+  // Cancel stream1 and stream2 to enqueue 2 capped frames (RST_STREAM).
+  // Do not run the message loop yet, so these remain in the write queue.
+  http_stream1->Close(true);
+  http_stream2->Close(true);
+
+  // Read response body of http_stream3. This triggers Dequeue, consuming data,
+  // which will try to send a WINDOW_UPDATE frame. Since the write queue already
+  // has 2 capped frames (rst1, rst2) and the limit is 1, this third capped
+  // frame triggers draining the session asynchronously.
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(10);
+  TestCompletionCallback read_callback;
+  rv = http_stream3->ReadResponseBody(buf.get(), 10, read_callback.callback());
+
+  if (rv == ERR_IO_PENDING) {
+    rv = read_callback.WaitForResult();
+  }
+  EXPECT_GT(rv, 0);
+
+  // Wait for the posted DoDrainSession task to execute and close the stream.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return http_stream3->IsResponseBodyComplete(); }));
+
+  sequenced_data_->Resume();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return sequenced_data_->AllReadDataConsumed(); }));
+
+  EXPECT_TRUE(http_stream3->IsResponseBodyComplete());
 }
 
 // TODO(willchan): Write a longer test for SpdyStream that exercises all
