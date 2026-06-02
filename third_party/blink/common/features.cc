@@ -2143,7 +2143,13 @@ BASE_FEATURE(kPreloadingEligibilityCheckOnRenderer,
 const char kPrerender2MaxNumOfRunningSpeculationRules[] =
     "max_num_of_running_speculation_rules";
 
-BASE_FEATURE(kPrerender2MemoryControls, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrerender2MemoryControls,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 const char kPrerender2MemoryThresholdParamName[] = "memory_threshold_in_mb";
 const char kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[] =
     "acceptable_percent_of_system_memory";

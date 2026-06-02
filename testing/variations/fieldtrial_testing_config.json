@@ -19460,10 +19460,9 @@
             ]
         }
     ],
-    "Prerender2MemoryControlsAndroid": [
+    "Prerender2MemoryControlsWebView": [
         {
             "platforms": [
-                "android",
                 "android_webview"
             ],
             "experiments": [

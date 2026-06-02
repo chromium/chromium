@@ -337,4 +337,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // experiment on WebView.
   aw_feature_overrides.DisableFeature(
       ::features::kPrefetchRequestStatusListenerAsync);
+
+  // This feature is tentatively unlaunched (disabled) for Android due to issues
+  // on memory pressure handling, but still launched (enabled) for WebView.
+  // WebView is also going to run an experiment to unlaunch the feature.
+  // See crbug.com/510968973 for details.
+  aw_feature_overrides.EnableFeature(
+      blink::features::kPrerender2MemoryControls);
 }
