@@ -235,9 +235,8 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
     tabs::TabLookupFromWebContents::CreateForWebContents(
         web_contents_.get(), mock_tab_interface_.get());
 
-    delegate_ = static_cast<ActorLoginDelegateImpl*>(
-        ActorLoginDelegateImpl::GetOrCreate(web_contents_.get(),
-                                            delegate_client_.get(), &client_));
+    delegate_ = ActorLoginDelegateImpl::CreateForUserData(
+        web_contents_.get(), delegate_client_.get(), &client_);
 
     client_.profile_store()->Init();
     client_.account_store()->Init();
@@ -250,9 +249,7 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
 
     // Reset the raw pointer before it becomes dangling in
     // ChromeRenderViewHostTestHarness::TearDown()
-    if (delegate_) {
-      delegate_->OnContextDestroyed();
-    }
+    delegate_client_->WebContentsDestroyed();
     delegate_ = nullptr;
     delegate_client_.reset();
     web_contents_.reset();
@@ -360,11 +357,11 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentials_NullClient) {
       password_manager::features::kActorLogin);
   SetUpGetCredentialsDeps();
   EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(0);
-  delegate_ = nullptr;
-  web_contents_->RemoveUserData(ActorLoginDelegateImpl::UserDataKey());
 
   // Create a delegate with nullptr client and nullptr driver.
-  auto* delegate = ActorLoginDelegateImpl::GetOrCreate(
+  ActorLoginDelegateImpl::RemoveFromUserDataForTesting(web_contents_.get());
+  delegate_ = nullptr;
+  auto* delegate = ActorLoginDelegateImpl::CreateForUserData(
       web_contents_.get(), delegate_client_.get(), nullptr);
 
   base::test::TestFuture<CredentialsOrError> future;
@@ -384,13 +381,12 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentials_NullClient_HasPasswords) {
   form_fetcher_.SetBestMatches(saved_forms);
   SetUpGetCredentialsDeps();
   EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(0);
-  delegate_ = nullptr;
-  web_contents_->RemoveUserData(ActorLoginDelegateImpl::UserDataKey());
 
   // Create a delegate with nullptr client and nullptr driver.
-  auto* delegate =
-      static_cast<ActorLoginDelegateImpl*>(ActorLoginDelegateImpl::GetOrCreate(
-          web_contents_.get(), delegate_client_.get(), nullptr));
+  ActorLoginDelegateImpl::RemoveFromUserDataForTesting(web_contents_.get());
+  delegate_ = nullptr;
+  auto* delegate = ActorLoginDelegateImpl::CreateForUserData(
+      web_contents_.get(), delegate_client_.get(), nullptr);
 
   base::test::TestFuture<CredentialsOrError> future;
   delegate->GetCredentials(/*has_sign_in_with_google_button=*/false,
@@ -667,7 +663,7 @@ TEST_F(ActorLoginDelegateImplTest, ContextDestroyedDuringAttemptLogin) {
                           base::TimeTicks::Now(), future.GetCallback(),
                           /*action_sequence_delegate=*/nullptr);
 
-  delegate_->OnContextDestroyed();
+  delegate_client_->WebContentsDestroyed();
   delegate_ = nullptr;
   task_environment()->RunUntilIdle();
   // The callback should never be invoked because the
@@ -1744,7 +1740,7 @@ TEST_F(ActorLoginDelegateImplTest,
                           /*action_sequence_delegate=*/nullptr);
 
   // Trigger page navigation event.
-  delegate_->OnPrimaryPageChanged();
+  delegate_client_->PrimaryPageChanged();
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(),

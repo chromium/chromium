@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate_client.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_web_content_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -42,6 +43,8 @@ class ChromeActorLoginDelegateClient
       const ChromeActorLoginDelegateClient&) = delete;
 
   // ActorLoginDelegateClient:
+  void SetActorLoginWebContentInterface(
+      ActorLoginWebContentInterface* web_interface) override;
   PrefService* GetPrefs() override;
   password_manager::PasswordManagerDriver*
   GetPasswordManagerDriverForMainFrame() override;
@@ -89,6 +92,12 @@ class ChromeActorLoginDelegateClient
   // Callback sent into `ObserveControlStateForCurrentTask` to be invoked the
   // the task is no longer controlled by the actor.
   base::OnceClosure on_task_control_released_callback_;
+
+  // Weak reference to the registered delegate interface, used to dispatch
+  // WebContents-scoped events (such as navigations or tab destruction)
+  // to the active login flow without holding strong ownership or exposing
+  // implementation-specific methods.
+  raw_ptr<ActorLoginWebContentInterface> web_interface_ = nullptr;
 
   base::WeakPtrFactory<ChromeActorLoginDelegateClient> weak_ptr_factory_{this};
 

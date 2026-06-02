@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_DELEGATE_IMPL_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
@@ -16,7 +18,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace password_manager {
 class PasswordManagerClient;
@@ -34,19 +35,27 @@ class ActorLoginMetricsHelper;
 class ActorLoginDelegateImpl
     : public ActorLoginDelegate,
       public ActorLoginWebContentInterface,
-      public content::WebContentsUserData<ActorLoginDelegateImpl>,
+      public base::SupportsUserData::Data,
       public password_manager::PasswordManagerInterface::Observer {
  public:
-  static ActorLoginDelegate* GetOrCreate(
-      content::WebContents* web_contents,
-      ActorLoginDelegateClient* actor_login_delegate_client,
-      password_manager::PasswordManagerClient* password_manager_client);
-
   ~ActorLoginDelegateImpl() override;
 
   // Not copyable or movable.
   ActorLoginDelegateImpl(const ActorLoginDelegateImpl&) = delete;
   ActorLoginDelegateImpl& operator=(const ActorLoginDelegateImpl&) = delete;
+
+  // Retrieve the instance stored in `user_data`.
+  static ActorLoginDelegateImpl* FromUserData(
+      base::SupportsUserData* user_data);
+
+  // Create and store the instance in `user_data`.
+  static ActorLoginDelegateImpl* CreateForUserData(
+      base::SupportsUserData* user_data,
+      ActorLoginDelegateClient* actor_login_delegate_client,
+      password_manager::PasswordManagerClient* password_manager_client);
+
+  // Removes the instance stored in `user_data` for testing purposes.
+  static void RemoveFromUserDataForTesting(base::SupportsUserData* user_data);
 
   // `ActorLoginDelegate` implementation:
   void GetCredentials(
@@ -77,13 +86,7 @@ class ActorLoginDelegateImpl
 #endif
 
  private:
-  friend class content::WebContentsUserData<ActorLoginDelegateImpl>;
-
-  // Private constructor for `WebContentsUserData`.
-  // This is the constructor that `WebContentsUserData::CreateForWebContents`
-  // will call when no instance exists and it needs to create one.
   ActorLoginDelegateImpl(
-      content::WebContents* web_contents,
       ActorLoginDelegateClient* actor_login_delegate_client,
       password_manager::PasswordManagerClient* password_manager_client);
 
@@ -134,12 +137,13 @@ class ActorLoginDelegateImpl
   // request.
   LoginStatusResultOrErrorReply pending_attempt_login_done_callback_;
 
+  // TODO(crbug.com/460025687): Use raw_ptr.
   base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate_;
 
   // Helper for `GetCredentials`. Scoped to one `GetCredentials` request.
   std::unique_ptr<ActorLoginGetCredentialsHelper> get_credentials_helper_;
 
-  base::WeakPtr<ActorLoginDelegateClient> actor_login_delegate_client_;
+  raw_ptr<ActorLoginDelegateClient> actor_login_delegate_client_ = nullptr;
 
   // Can be null on Android when using third-party password manager.
   raw_ptr<password_manager::PasswordManagerClient> password_manager_client_ =
@@ -177,8 +181,6 @@ class ActorLoginDelegateImpl
       password_manager_observation_{this};
 
   base::WeakPtrFactory<ActorLoginDelegateImpl> weak_ptr_factory_{this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace actor_login

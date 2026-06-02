@@ -11,6 +11,7 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_web_content_interface.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -53,6 +54,11 @@ FakeActorLoginDelegateClient::FakeActorLoginDelegateClient(
       driver_(driver) {}
 
 FakeActorLoginDelegateClient::~FakeActorLoginDelegateClient() = default;
+
+void FakeActorLoginDelegateClient::SetActorLoginWebContentInterface(
+    ActorLoginWebContentInterface* web_interface) {
+  web_interface_ = web_interface;
+}
 
 PrefService* FakeActorLoginDelegateClient::GetPrefs() {
   return profile_->GetPrefs();
@@ -147,6 +153,16 @@ void FakeActorLoginDelegateClient::TriggerControlStateReleasedCallback() {
   if (on_released_callback_) {
     std::move(on_released_callback_).Run();
   }
+}
+
+void FakeActorLoginDelegateClient::PrimaryPageChanged() {
+  CHECK(web_interface_);
+  web_interface_->OnPrimaryPageChanged();
+}
+
+void FakeActorLoginDelegateClient::WebContentsDestroyed() {
+  CHECK(web_interface_);
+  web_interface_->OnContextDestroyed();
 }
 
 }  // namespace actor_login

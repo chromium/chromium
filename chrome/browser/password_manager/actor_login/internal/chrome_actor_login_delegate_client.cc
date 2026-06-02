@@ -9,7 +9,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_cleaning_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_delegate_impl.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_federated_credentials_fetcher.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/buildflags.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_web_content_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page.h"
@@ -39,24 +39,10 @@ ChromeActorLoginDelegateClient::ChromeActorLoginDelegateClient(
 
 ChromeActorLoginDelegateClient::~ChromeActorLoginDelegateClient() = default;
 
-void ChromeActorLoginDelegateClient::PrimaryPageChanged(content::Page& page) {
-  // TODO(crbug.com/472291829): Instead of retrieving an
-  // `ActorLoginDelegateImpl` from the web contents, maintain an
-  // `ActorLoginWebContentInterface` and use it instead.
-  if (auto* delegate =
-          ActorLoginDelegateImpl::FromWebContents(&GetWebContents())) {
-    delegate->OnPrimaryPageChanged();
-  }
-}
-
-void ChromeActorLoginDelegateClient::WebContentsDestroyed() {
-  // TODO(crbug.com/472291829): Instead of retrieving an
-  // `ActorLoginDelegateImpl` from the web contents, maintain an
-  // `ActorLoginWebContentInterface` and use it instead.
-  if (auto* delegate =
-          ActorLoginDelegateImpl::FromWebContents(&GetWebContents())) {
-    delegate->OnContextDestroyed();
-  }
+void ChromeActorLoginDelegateClient::SetActorLoginWebContentInterface(
+    ActorLoginWebContentInterface* web_interface) {
+  CHECK(web_interface);
+  web_interface_ = web_interface;
 }
 
 PrefService* ChromeActorLoginDelegateClient::GetPrefs() {
@@ -220,5 +206,18 @@ void ChromeActorLoginDelegateClient::OnActorTaskStateChanged(
 base::WeakPtr<ActorLoginDelegateClient>
 ChromeActorLoginDelegateClient::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void ChromeActorLoginDelegateClient::PrimaryPageChanged(content::Page& page) {
+  if (web_interface_) {
+    web_interface_->OnPrimaryPageChanged();
+  }
+}
+
+void ChromeActorLoginDelegateClient::WebContentsDestroyed() {
+  if (web_interface_) {
+    web_interface_->OnContextDestroyed();
+  }
+  web_interface_ = nullptr;
 }
 }  // namespace actor_login

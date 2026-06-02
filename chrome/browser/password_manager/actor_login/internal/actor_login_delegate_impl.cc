@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -32,7 +33,6 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
 
 using password_manager::ContentPasswordManagerDriver;
@@ -41,30 +41,50 @@ using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerInterface;
 namespace actor_login {
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ActorLoginDelegateImpl);
-
-// static
-ActorLoginDelegate* ActorLoginDelegateImpl::GetOrCreate(
-    content::WebContents* web_contents,
-    ActorLoginDelegateClient* actor_login_delegate_client,
-    password_manager::PasswordManagerClient* password_manager_client) {
-  CHECK(web_contents);
-  CHECK(actor_login_delegate_client);
-  return ActorLoginDelegateImpl::GetOrCreateForWebContents(
-      web_contents, actor_login_delegate_client, password_manager_client);
-}
+namespace {
+const int kActorLoginDelegateUserDataKey = 0;
+}  // namespace
 
 ActorLoginDelegateImpl::ActorLoginDelegateImpl(
-    content::WebContents* web_contents,
     ActorLoginDelegateClient* actor_login_delegate_client,
     password_manager::PasswordManagerClient* password_manager_client)
-    : content::WebContentsUserData<ActorLoginDelegateImpl>(*web_contents),
-      actor_login_delegate_client_(actor_login_delegate_client->AsWeakPtr()),
-      password_manager_client_(password_manager_client) {}
+    : actor_login_delegate_client_(actor_login_delegate_client),
+      password_manager_client_(password_manager_client) {
+  CHECK(actor_login_delegate_client_);
+  actor_login_delegate_client_->SetActorLoginWebContentInterface(this);
+}
 
 ActorLoginDelegateImpl::~ActorLoginDelegateImpl() = default;
 
-// TODO(crbug.com/434156135): move to components/ as much as possible.
+// static
+ActorLoginDelegateImpl* ActorLoginDelegateImpl::FromUserData(
+    base::SupportsUserData* user_data) {
+  CHECK(user_data);
+  return static_cast<ActorLoginDelegateImpl*>(
+      user_data->GetUserData(&kActorLoginDelegateUserDataKey));
+}
+
+// static
+ActorLoginDelegateImpl* ActorLoginDelegateImpl::CreateForUserData(
+    base::SupportsUserData* user_data,
+    ActorLoginDelegateClient* actor_login_delegate_client,
+    password_manager::PasswordManagerClient* password_manager_client) {
+  CHECK(user_data);
+  CHECK(actor_login_delegate_client);
+  auto delegate = base::WrapUnique(new ActorLoginDelegateImpl(
+      actor_login_delegate_client, password_manager_client));
+  auto* delegate_raw_ptr = delegate.get();
+  user_data->SetUserData(&kActorLoginDelegateUserDataKey, std::move(delegate));
+  return delegate_raw_ptr;
+}
+
+// static
+void ActorLoginDelegateImpl::RemoveFromUserDataForTesting(
+    base::SupportsUserData* user_data) {
+  CHECK(user_data);
+  user_data->RemoveUserData(&kActorLoginDelegateUserDataKey);
+}
+
 void ActorLoginDelegateImpl::GetCredentials(
     bool has_sign_in_with_google_button,
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
@@ -224,7 +244,7 @@ void ActorLoginDelegateImpl::AttemptLogin(
           [](base::WeakPtr<ActorLoginDelegateClient> client) {
             return client ? client->IsTaskInFocus() : false;
           },
-          actor_login_delegate_client_),
+          actor_login_delegate_client_->AsWeakPtr()),
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                          weak_ptr_factory_.GetWeakPtr())));

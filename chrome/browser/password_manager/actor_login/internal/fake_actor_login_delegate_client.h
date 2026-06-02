@@ -20,6 +20,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace actor_login {
+class ActorLoginWebContentInterface;
+}  // namespace actor_login
+
 namespace password_manager {
 class PasswordManagerDriver;
 }  // namespace password_manager
@@ -37,6 +41,8 @@ class FakeActorLoginDelegateClient : public ActorLoginDelegateClient {
   ~FakeActorLoginDelegateClient() override;
 
   // ActorLoginDelegateClient implementation:
+  void SetActorLoginWebContentInterface(
+      ActorLoginWebContentInterface* web_interface) override;
   PrefService* GetPrefs() override;
   password_manager::PasswordManagerDriver*
   GetPasswordManagerDriverForMainFrame() override;
@@ -59,10 +65,10 @@ class FakeActorLoginDelegateClient : public ActorLoginDelegateClient {
       override;
   bool IsTaskInFocus() override;
   bool SupportsFedCmEmbedderInitiatedLogin() override;
-  base::WeakPtr<ActorLoginDelegateClient> AsWeakPtr() override;
   void RemoveFederatedEmbedderLoginRequest() override;
   void ObserveControlStateForCurrentTask(
       base::OnceClosure on_released_callback) override;
+  base::WeakPtr<ActorLoginDelegateClient> AsWeakPtr() override;
 
   // Convenience methods for testing purposes:
 
@@ -83,11 +89,18 @@ class FakeActorLoginDelegateClient : public ActorLoginDelegateClient {
   // Triggers the control state released callback registered by the observer.
   void TriggerControlStateReleasedCallback();
 
+  // Simulates primary page changes.
+  void PrimaryPageChanged();
+
+  // Simulates the web contents being destroyed.
+  void WebContentsDestroyed();
+
  private:
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   url::Origin origin_;
   raw_ptr<password_manager::PasswordManagerDriver> driver_;
+  raw_ptr<ActorLoginWebContentInterface> web_interface_ = nullptr;
   bool remove_federated_embedder_login_request_called_ = false;
   base::OnceClosure on_released_callback_;
   base::WeakPtrFactory<FakeActorLoginDelegateClient> weak_ptr_factory_{this};

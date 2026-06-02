@@ -20,13 +20,18 @@ namespace actor_login {
 namespace {
 
 ActorLoginDelegate* GetOrCreateDelegate(content::WebContents* web_contents) {
-  password_manager::ContentPasswordManagerDriver* driver =
-      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
-          web_contents->GetPrimaryMainFrame());
-  ActorLoginDelegateClient* client =
-      ChromeActorLoginDelegateClient::GetOrCreateForWebContents(web_contents);
-  return ActorLoginDelegateImpl::GetOrCreate(
-      web_contents, client, driver ? driver->client() : nullptr);
+  ActorLoginDelegateImpl* delegate =
+      ActorLoginDelegateImpl::FromUserData(web_contents);
+  if (!delegate) {
+    password_manager::ContentPasswordManagerDriver* driver =
+        password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
+            web_contents->GetPrimaryMainFrame());
+    ActorLoginDelegateClient* client =
+        ChromeActorLoginDelegateClient::GetOrCreateForWebContents(web_contents);
+    delegate = ActorLoginDelegateImpl::CreateForUserData(
+        web_contents, client, driver ? driver->client() : nullptr);
+  }
+  return delegate;
 }
 
 void OnGetCredentialsResult(CredentialsOrErrorReply callback,

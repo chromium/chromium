@@ -32,6 +32,7 @@ class ActorLoginMetricsHelper;
 class ActorLoginPermissionCleaningService;
 class ActorLoginQualityLoggerInterface;
 class ActorLoginSiwgControllerInterface;
+class ActorLoginWebContentInterface;
 
 // Client interface for `ActorLoginDelegate`.
 class ActorLoginDelegateClient {
@@ -42,6 +43,11 @@ class ActorLoginDelegateClient {
   // Not copyable or movable.
   ActorLoginDelegateClient(const ActorLoginDelegateClient&) = delete;
   ActorLoginDelegateClient& operator=(const ActorLoginDelegateClient&) = delete;
+
+  // Registers the `ActorLoginWebContentInterface` interface to receive web
+  // events.
+  virtual void SetActorLoginWebContentInterface(
+      ActorLoginWebContentInterface* web_interface) = 0;
 
   // Returns the preference service associated with the profile.
   virtual PrefService* GetPrefs() = 0;
