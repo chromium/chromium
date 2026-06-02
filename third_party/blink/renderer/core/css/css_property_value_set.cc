@@ -126,7 +126,8 @@ ImmutableCSSPropertyValueSet::ImmutableCSSPropertyValueSet(
     // through Create(), we guarantee that the arrays will have storage where we
     // expect.
     UNSAFE_BUFFERS(base::span<CSSPropertyValue> array(
-        const_cast<CSSPropertyValue*>(ArrayBase()), array_size));
+        base::unchecked, const_cast<CSSPropertyValue*>(ArrayBase()),
+        array_size));
     bool has_all = false;
     for (unsigned i = 0; i < array_size; ++i) {
       new (&array[i]) CSSPropertyValue(properties[i]);

@@ -182,7 +182,7 @@ inline base::span<const uint8_t> ToSpan(
   // SAFETY: v8::ScriptCompiler::CachedData ensures its `data` and `length`
   // are safe.
   return UNSAFE_BUFFERS(
-      base::span(data.data, static_cast<size_t>(data.length)));
+      base::span(base::unchecked, data.data, static_cast<size_t>(data.length)));
 }
 
 }  // namespace blink

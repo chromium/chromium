@@ -334,7 +334,8 @@ ImmutableCSSPropertyValueSet::Properties() const {
   }
   // SAFETY: By funneling all allocation of ImmutableCSSPropertyValueSet through
   // Create(), we guarantee that the array will have the size we expect.
-  return UNSAFE_BUFFERS(base::span(ArrayBase(), bits_.get<ArraySizeField>()));
+  return UNSAFE_BUFFERS(
+      base::span(base::unchecked, ArrayBase(), bits_.get<ArraySizeField>()));
 }
 
 template <>

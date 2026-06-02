@@ -191,15 +191,15 @@ class ShareableElementData final : public ElementData {
   base::span<Attribute> AttributesSpan() {
     // SAFETY: space for bit_field_.get<ArraySize>() Attributes are allocated
     // after the main object (starting at attribute_array_) by the constructor.
-    return UNSAFE_BUFFERS(
-        base::span(attribute_array_, bit_field_.get<ArraySize>()));
+    return UNSAFE_BUFFERS(base::span(base::unchecked, attribute_array_,
+                                     bit_field_.get<ArraySize>()));
   }
 
   base::span<const Attribute> AttributesSpan() const {
     // SAFETY: space for bit_field_.get<ArraySize>() Attributes are allocated
     // after the main object (starting at attribute_array_) by the constructor.
-    return UNSAFE_BUFFERS(
-        base::span(attribute_array_, bit_field_.get<ArraySize>()));
+    return UNSAFE_BUFFERS(base::span(base::unchecked, attribute_array_,
+                                     bit_field_.get<ArraySize>()));
   }
 
   Attribute attribute_array_[0];

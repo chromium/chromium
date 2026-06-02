@@ -380,7 +380,8 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     static_assert(alignof(HTMLStackItem) >= alignof(Attribute));
     // SAFETY: Create() allocates num_token_attributes_ * sizeof(Attribute)
     // extra bytes immediately after this object via AdditionalBytes.
-    return UNSAFE_BUFFERS(base::span(reinterpret_cast<Attribute*>(this + 1),
+    return UNSAFE_BUFFERS(base::span(base::unchecked,
+                                     reinterpret_cast<Attribute*>(this + 1),
                                      num_token_attributes_));
   }
   base::span<const Attribute> TokenAttributesSpan() const {
@@ -388,7 +389,8 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     // SAFETY: Create() allocates num_token_attributes_ * sizeof(Attribute)
     // extra bytes immediately after this object via AdditionalBytes.
     return UNSAFE_BUFFERS(base::span(
-        reinterpret_cast<const Attribute*>(this + 1), num_token_attributes_));
+        base::unchecked, reinterpret_cast<const Attribute*>(this + 1),
+        num_token_attributes_));
   }
 
   Member<ContainerNode> node_;

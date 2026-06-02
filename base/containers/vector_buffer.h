@@ -101,7 +101,7 @@ class VectorBuffer {
   span<T> as_span() {
     // SAFETY: The `buffer_` array's size is `capacity_` so this gives the
     // pointer to the start and one-past-the-end of the `buffer_`.
-    return UNSAFE_BUFFERS(span(buffer_, buffer_ + capacity_));
+    return UNSAFE_BUFFERS(span(base::unchecked, buffer_, buffer_ + capacity_));
   }
 
   span<T> subspan(size_t index) { return as_span().subspan(index); }

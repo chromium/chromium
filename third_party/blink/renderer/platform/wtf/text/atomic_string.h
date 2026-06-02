@@ -91,8 +91,8 @@ class WTF_EXPORT AtomicString {
   explicit AtomicString(const char* chars)
       // SAFETY: The below span creation is safe if `chars` points to a
       // NUL-terminated string.
-      : AtomicString(base::as_bytes(
-            UNSAFE_BUFFERS(base::span(chars, chars ? strlen(chars) : 0u)))) {}
+      : AtomicString(base::as_bytes(UNSAFE_BUFFERS(
+            base::span(base::unchecked, chars, chars ? strlen(chars) : 0u)))) {}
   explicit AtomicString(base::span<const LChar> chars);
   explicit AtomicString(
       base::span<const UChar> chars,

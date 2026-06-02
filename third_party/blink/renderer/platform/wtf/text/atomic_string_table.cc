@@ -120,7 +120,7 @@ class UCharBuffer {
         // This is a very common case from HTML parsing, so we take
         // the size penalty from inlining.
         return StringHasher::ComputeHashAndMaskTop8BitsInline<Reader>(
-            UNSAFE_TODO({base::as_bytes(bytes).data(),
+            UNSAFE_TODO({base::unchecked, base::as_bytes(bytes).data(),
                          bytes.size() / Reader::kCompressionFactor}));
       }
       case AtomicStringUCharEncoding::kIs16Bit:

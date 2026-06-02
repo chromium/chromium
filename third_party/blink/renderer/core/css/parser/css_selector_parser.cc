@@ -2567,8 +2567,8 @@ WebFeature FeatureForWebKitCustomPseudoElement(const AtomicString& name) {
   for (const auto& entry : feature_table) {
     // SAFETY: The PseudoElementFeatureMapEntry constructor guarantees `key` and
     // `key_length` are safe.
-    if (name == StringView(base::as_bytes(
-                    UNSAFE_BUFFERS(base::span(entry.key, entry.key_length))))) {
+    if (name == StringView(base::as_bytes(UNSAFE_BUFFERS(base::span(
+                    base::unchecked, entry.key, entry.key_length))))) {
       return static_cast<WebFeature>(entry.feature);
     }
   }

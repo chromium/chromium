@@ -80,8 +80,8 @@ class CORE_EXPORT V8ScriptValueDeserializer
       return false;
     }
     // SAFETY: ReadRawBytes() ensures `data` and `size` are safe.
-    *out_span = UNSAFE_BUFFERS(
-        base::span(reinterpret_cast<const uint8_t*>(data), size));
+    *out_span = UNSAFE_BUFFERS(base::span(
+        base::unchecked, reinterpret_cast<const uint8_t*>(data), size));
     return true;
   }
   bool ReadUnguessableToken(base::UnguessableToken* token_out);

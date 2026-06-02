@@ -240,15 +240,17 @@ class CORE_EXPORT CSSParserToken {
   base::span<const LChar> Span8() const {
     DCHECK(value_is_8bit_);
     // SAFETY: InitValueFromStringView() ensures the expression is safe.
-    return UNSAFE_BUFFERS(
-        {static_cast<const LChar*>(ValueDataCharRaw()), value_length_});
+    return UNSAFE_BUFFERS({base::unchecked,
+                           static_cast<const LChar*>(ValueDataCharRaw()),
+                           value_length_});
   }
   base::span<const UChar> Span16() const {
     DCHECK(!value_is_8bit_);
     DCHECK(!value_is_inline_);
     // SAFETY: InitValueFromStringView() ensures the expression is safe.
-    return UNSAFE_BUFFERS(
-        {static_cast<const UChar*>(value_data_char_raw_), value_length_});
+    return UNSAFE_BUFFERS({base::unchecked,
+                           static_cast<const UChar*>(value_data_char_raw_),
+                           value_length_});
   }
 
   // Bitfields are all declared as type `unsigned` based on observation that

@@ -19,13 +19,14 @@ String ToPlatformString(const v8_inspector::StringView& string) {
   if (string.is8Bit()) {
     // SAFETY: v8_inspector::StringView guarantees characters8() and length()
     // are safe.
-    return String(
-        UNSAFE_BUFFERS(base::span(string.characters8(), string.length())));
+    return String(UNSAFE_BUFFERS(
+        base::span(base::unchecked, string.characters8(), string.length())));
   }
   // SAFETY: v8_inspector::StringView guarantees characters16() and length()
   // are safe.
   return String(UNSAFE_BUFFERS(base::span(
-      reinterpret_cast<const UChar*>(string.characters16()), string.length())));
+      base::unchecked, reinterpret_cast<const UChar*>(string.characters16()),
+      string.length())));
 }
 
 String ToPlatformString(std::unique_ptr<v8_inspector::StringBuffer> buffer) {

@@ -221,7 +221,8 @@ bool TextSearcherICU::ShouldSkipCurrentMatch(
   DCHECK_LE(result.start + result.length, text_length);
   DCHECK_GT(result.length, 0u);
   // SAFETY: Making a span same as the SetText() argument.
-  auto text_span = UNSAFE_BUFFERS(base::span<const UChar>(text, text_length));
+  auto text_span = UNSAFE_BUFFERS(
+      base::span<const UChar>(base::unchecked, text, text_length));
 
   if (!normalized_search_text_.empty() &&
       !IsCorrectKanaMatch(text_span, result)) {

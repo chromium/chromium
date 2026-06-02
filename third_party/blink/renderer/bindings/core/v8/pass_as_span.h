@@ -101,7 +101,8 @@ class SpanWithInlineStorage {
     const base::span<const uint8_t> bytes = bytes_.as_span();
     // SAFETY: `bytes.size() / sizeof(T)` * sizeof(T) is less than or equal to
     // `bytes.data()` size, so it's safe.
-    return UNSAFE_BUFFERS(base::span(reinterpret_cast<const T*>(bytes.data()),
+    return UNSAFE_BUFFERS(base::span(base::unchecked,
+                                     reinterpret_cast<const T*>(bytes.data()),
                                      bytes.size() / sizeof(T)));
   }
 

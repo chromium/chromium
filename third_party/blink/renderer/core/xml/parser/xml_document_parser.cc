@@ -165,7 +165,7 @@ struct xmlSAX2Attributes {
     // SAFETY: ValueLength() returns the distance between `end` and
     // `value`. libxml provides the attribute value as a sequence of xmlChars
     // that start at `value` and end at `end`.
-    return UNSAFE_BUFFERS(base::span(value, ValueLength()));
+    return UNSAFE_BUFFERS(base::span(base::unchecked, value, ValueLength()));
   }
 
   size_t ValueLength() const { return static_cast<size_t>(end - value); }
@@ -730,8 +730,8 @@ static int ReadFunc(void* context, char* buffer, int len) {
 
   SharedBufferReader* data = static_cast<SharedBufferReader*>(context);
   // SAFETY: libxml provides `buffer` that points to at least `len` bytes.
-  auto buffer_span =
-      UNSAFE_BUFFERS(base::span(buffer, base::checked_cast<size_t>(len)));
+  auto buffer_span = UNSAFE_BUFFERS(
+      base::span(base::unchecked, buffer, base::checked_cast<size_t>(len)));
   return base::checked_cast<int>(data->ReadData(buffer_span));
 }
 
@@ -1478,7 +1478,8 @@ static void StartElementNsHandler(void* closure,
   // xmlChar* for each 'nb_namespaces'. The xmlSAX2Namespace struct
   // encapsulates these two pointers.
   auto namespaces = UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<const xmlSAX2Namespace*>(libxml_namespaces),
+      base::span(base::unchecked,
+                 reinterpret_cast<const xmlSAX2Namespace*>(libxml_namespaces),
                  base::checked_cast<size_t>(nb_namespaces)));
   // SAFETY: libxml provides `libxml_attributes` which points to 5 const
   // xmlChar* for each 'nb_attributes' . The xmlSAX2Attributes struct
@@ -1500,8 +1501,8 @@ static void EndElementNsHandler(void* closure,
 
 static void CharactersHandler(void* closure, const xmlChar* chars, int length) {
   // SAFETY: libxml provides `chars` that point at `length` xmlChars.
-  auto chars_span =
-      UNSAFE_BUFFERS(base::span(chars, base::checked_cast<size_t>(length)));
+  auto chars_span = UNSAFE_BUFFERS(
+      base::span(base::unchecked, chars, base::checked_cast<size_t>(length)));
   GetParser(closure)->Characters(chars_span);
 }
 
@@ -1514,8 +1515,8 @@ static void ProcessingInstructionHandler(void* closure,
 
 static void CdataBlockHandler(void* closure, const xmlChar* text, int length) {
   // SAFETY: libxml provides `text` that point at `length` xmlChars.
-  auto text_span =
-      UNSAFE_BUFFERS(base::span(text, base::checked_cast<size_t>(length)));
+  auto text_span = UNSAFE_BUFFERS(
+      base::span(base::unchecked, text, base::checked_cast<size_t>(length)));
   GetParser(closure)->CdataBlock(ToString(text_span));
 }
 

@@ -487,8 +487,8 @@ const intptr_t* V8ContextSnapshotImpl::GetReferenceTable() {
   // `size_bytes` bytes. We divide by the sizeof `intptr_t` to get the
   // number of elements.
   DCHECK(!(size_bytes % sizeof(intptr_t)));
-  auto unified_table_span =
-      UNSAFE_BUFFERS(base::span(unified_table, size_bytes / sizeof(intptr_t)));
+  auto unified_table_span = UNSAFE_BUFFERS(base::span(
+      base::unchecked, unified_table, size_bytes / sizeof(intptr_t)));
   size_t offset_count = 0;
   for (const auto& table : tables) {
     unified_table_span.subspan(offset_count, table.size())

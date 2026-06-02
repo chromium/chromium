@@ -96,13 +96,13 @@ class DOMTypedArray final : public DOMArrayBufferView {
   base::span<ValueType> AsSpan() const {
     // SAFETY: Data() and length() guarantee the span is valid
     return UNSAFE_BUFFERS(
-        base::span(static_cast<ValueType*>(Data()), length()));
+        base::span(base::unchecked, static_cast<ValueType*>(Data()), length()));
   }
 
   base::span<ValueType> AsSpanMaybeShared() const {
     // SAFETY: DataMaybeShared() and length() guarantee the span is valid
-    return UNSAFE_BUFFERS(
-        base::span(static_cast<ValueType*>(DataMaybeShared()), length()));
+    return UNSAFE_BUFFERS(base::span(
+        base::unchecked, static_cast<ValueType*>(DataMaybeShared()), length()));
   }
 
   size_t length() const { return !IsDetached() ? raw_length_ : 0; }

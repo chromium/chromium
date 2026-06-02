@@ -473,8 +473,8 @@ Channel::MessagePtr Channel::Message::Deserialize(
   }
 
   uint32_t extra_header_size = 0;
-  auto data_span = UNSAFE_TODO(
-      base::span<const char>(static_cast<const char*>(data), data_num_bytes));
+  auto data_span = UNSAFE_TODO(base::span<const char>(
+      base::unchecked, static_cast<const char*>(data), data_num_bytes));
   base::span<const char> payload_span{};
   if (!header) {
     payload_span = data_span.subspan(sizeof(LegacyHeader),
@@ -1093,7 +1093,7 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
     }
 
     DispatchResult result = TryDispatchMessage(
-        UNSAFE_TODO(base::span(read_buffer_->occupied_bytes(),
+        UNSAFE_TODO(base::span(base::unchecked, read_buffer_->occupied_bytes(),
                                read_buffer_->num_occupied_bytes())),
         next_read_size_hint);
     if (result == DispatchResult::kOK) {

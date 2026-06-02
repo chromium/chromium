@@ -79,7 +79,8 @@ ArrayBufferContents::ArrayBufferContents(
     // SAFETY: Memory that was allocated is VMAllocationGranularity() aligned.
     // the overallocated bytes are at the beginning of the buffer.
     uint8_t* base = UNSAFE_BUFFERS(static_cast<uint8_t*>(buffer) - offset);
-    auto mapping = UNSAFE_BUFFERS(base::span(base, length + offset));
+    auto mapping =
+        UNSAFE_BUFFERS(base::span(base::unchecked, base, length + offset));
     auto* mapper = gin::GetSharedMemoryMapperForArrayBuffers();
     base::subtle::PlatformSharedMemoryRegion::Unmap(mapping, mapper);
   };

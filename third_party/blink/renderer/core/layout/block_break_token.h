@@ -253,7 +253,8 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
       const {
     // SAFETY: `const_num_children_` ensures buffer access never goes out of
     // range.
-    return UNSAFE_BUFFERS(base::span(child_break_tokens_, const_num_children_));
+    return UNSAFE_BUFFERS(
+        base::span(base::unchecked, child_break_tokens_, const_num_children_));
   }
 
   Member<BreakTokenAlgorithmData> data_;

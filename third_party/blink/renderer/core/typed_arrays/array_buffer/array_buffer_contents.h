@@ -141,8 +141,8 @@ class CORE_EXPORT ArrayBufferContents {
   base::span<uint8_t> ByteSpan() const {
     // SAFETY: `BackingStore` guarantees that `Data()` points to at least
     // `DataLength()` many bytes.
-    return UNSAFE_BUFFERS(
-        base::span(static_cast<uint8_t*>(Data()), DataLength()));
+    return UNSAFE_BUFFERS(base::span(
+        base::unchecked, static_cast<uint8_t*>(Data()), DataLength()));
   }
   base::span<uint8_t> ByteSpanShared() const {
     DCHECK(IsShared());
@@ -151,8 +151,9 @@ class CORE_EXPORT ArrayBufferContents {
   base::span<uint8_t> ByteSpanMaybeShared() const {
     // SAFETY: `BackingStore` guarantees that `Data()` points to at least
     // `DataLength()` many bytes.
-    return UNSAFE_BUFFERS(
-        base::span(static_cast<uint8_t*>(DataMaybeShared()), DataLength()));
+    return UNSAFE_BUFFERS(base::span(base::unchecked,
+                                     static_cast<uint8_t*>(DataMaybeShared()),
+                                     DataLength()));
   }
 
   std::shared_ptr<v8::BackingStore> BackingStore() const {

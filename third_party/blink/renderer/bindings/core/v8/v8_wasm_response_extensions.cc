@@ -130,6 +130,7 @@ class WasmCodeCachingCallback {
     // SAFETY: v8::CompiledWasmModule::Serialize ensures the
     // serialized_module.buffer size is equal to serialized_module.size.
     serialized_data.append_range(UNSAFE_BUFFERS(base::span(
+        base::unchecked,
         reinterpret_cast<const uint8_t*>(serialized_module.buffer.get()),
         serialized_module.size)));
 

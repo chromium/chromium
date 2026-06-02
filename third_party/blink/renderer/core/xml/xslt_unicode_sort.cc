@@ -87,8 +87,8 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
   }
 
   // SAFETY: sorts_ptr points to nbsorts elements.
-  auto sorts =
-      UNSAFE_BUFFERS(base::span(sorts_ptr, static_cast<size_t>(nbsorts)));
+  auto sorts = UNSAFE_BUFFERS(
+      base::span(base::unchecked, sorts_ptr, static_cast<size_t>(nbsorts)));
 
   if (!sorts[0])
     return;
@@ -153,7 +153,8 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
 
   // SAFETY: xsltComputeSortResult() returns a list of buffers that
   // have the same length as it's input - `list->nodeNr` (aka `len`).
-  auto results = UNSAFE_BUFFERS(base::span(results_tab[0], len));
+  auto results =
+      UNSAFE_BUFFERS(base::span(base::unchecked, results_tab[0], len));
 
   comp = static_cast<xsltStylePreComp*>(sorts[0]->psvi);
   int descending = comp->descending;
@@ -270,7 +271,8 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
             }
 
             // SAFETY: should points to len elements.
-            auto res = UNSAFE_BUFFERS(base::span(res_ptr, len));
+            auto res =
+                UNSAFE_BUFFERS(base::span(base::unchecked, res_ptr, len));
             if (!res[j]) {
               if (res[j + incr])
                 tst = 1;

@@ -123,7 +123,8 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
   // SAFETY: The preceding code ensures that `data.length()` matches
   // `data_buffer.data()` as a `UChar*`.
   data.CopyTo(UNSAFE_BUFFERS(base::span(
-                  reinterpret_cast<UChar*>(data_buffer.data()), data.length())),
+                  base::unchecked, reinterpret_cast<UChar*>(data_buffer.data()),
+                  data.length())),
               0);
 
   return base::AdoptRef(new SerializedScriptValue(std::move(data_buffer)));

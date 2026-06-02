@@ -49,8 +49,8 @@ int LLVMFuzzerInitialize(int* argc, char*** argv) {
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Truncate the input.
   // SAFETY: Wrapping arguments from libFuzzer in a span.
-  auto data_span =
-      UNSAFE_BUFFERS(base::span(data, base::saturated_cast<wtf_size_t>(size)));
+  auto data_span = UNSAFE_BUFFERS(base::span(
+      base::unchecked, data, base::saturated_cast<wtf_size_t>(size)));
   // Odd sizes are handled in various ways, depending how they arrive.
   // Let's not worry about that case here.
   if (data_span.size() % sizeof(UChar)) {
