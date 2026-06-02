@@ -80,9 +80,6 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // Notifies the page the widget was hidden and performs cleanup.
   virtual void Clear() = 0;
 
-  // Called when the active tab changes.
-  virtual void OnActiveTabChanged(content::WebContents* new_contents);
-
   // Returns the WebContents from within the wrapper. Don't use
   // GetWebContents() since that may be nullptr if the popup isn't visible.
   content::WebContents* GetWrappedWebContents();

@@ -77,6 +77,15 @@ class OmniboxPopupView {
   // Saves state to the given tab.
   virtual void SaveStateToTab(content::WebContents* contents) {}
 
+  // Pushes the current text to the WebUI.
+  virtual void PushTextToWebUI() {}
+
+  // Called when the active tab changes.
+  virtual void OnTabChanged(content::WebContents* contents) {}
+
+  // Called when the omnibox gains focus.
+  virtual void OnFocus() {}
+
   // Returns true if the popup controls its own selection state.
   virtual bool IsSelectionPopupControlled() const = 0;
 

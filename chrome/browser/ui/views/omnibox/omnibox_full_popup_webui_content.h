@@ -41,9 +41,6 @@ class OmniboxFullPopupWebUIContent : public OmniboxPopupWebUIContent {
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
-  // OmniboxPopupWebUIBaseContent:
-  void OnActiveTabChanged(content::WebContents* new_contents) override;
-
   base::WeakPtrFactory<OmniboxPopupWebUIContent> weak_factory_{this};
 };
 
