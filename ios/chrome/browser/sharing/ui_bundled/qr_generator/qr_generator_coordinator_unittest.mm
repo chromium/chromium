@@ -5,16 +5,20 @@
 #import "ios/chrome/browser/sharing/ui_bundled/qr_generator/qr_generator_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/sharing/model/share_file_download_tab_helper.h"
 #import "ios/chrome/browser/sharing/ui_bundled/qr_generator/qr_generator_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/platform_test.h"
@@ -41,6 +45,14 @@ class QRGeneratorCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:OCMStrictProtocolMock(@protocol(HelpCommands))
                      forProtocol:@protocol(HelpCommands)];
+
+    auto web_state = std::make_unique<web::FakeWebState>();
+    web_state->SetBrowserState(profile_.get());
+    DownloadManagerTabHelper::CreateForWebState(web_state.get());
+    ShareFileDownloadTabHelper::CreateForWebState(web_state.get());
+    browser_->GetWebStateList()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     coordinator_ = [[QRGeneratorCoordinator alloc]
         initWithBaseViewController:base_view_controller_
@@ -127,6 +139,8 @@ TEST_F(QRGeneratorCoordinatorTest, ShareAction) {
       QRGeneratorViewControllerDidTapConfirm:viewController];
 
   [vcPartialMock verify];
+
+  [coordinator_ stop];
 }
 
 // Tests that a popover is properly created and shown when the user taps on
@@ -163,4 +177,6 @@ TEST_F(QRGeneratorCoordinatorTest, LearnMore) {
   EXPECT_EQ(UIPopoverArrowDirectionUp,
             popoverViewController.popoverPresentationController
                 .permittedArrowDirections);
+
+  [coordinator_ stop];
 }

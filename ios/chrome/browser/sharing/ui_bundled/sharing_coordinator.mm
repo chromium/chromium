@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
@@ -139,7 +140,8 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 @interface SharingCoordinator () <ActivityServicePresentation,
                                   CRWWebViewDownloadDelegate,
                                   QRGenerationCommands,
-                                  ShareDownloadOverlayCommands>
+                                  ShareDownloadOverlayCommands,
+                                  WebStateListObserving>
 
 @property(nonatomic, strong)
     ActivityServiceCoordinator* activityServiceCoordinator;
@@ -177,6 +179,10 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 
 @implementation SharingCoordinator {
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
+  // The bridge to observe the WebStateList.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
+  // Whether the coordinator has been stopped.
+  BOOL _stopped;
   // The source item for the presentation.
   id<UIPopoverPresentationControllerSourceItem> _sourceItem;
   // The source view for the presentation.
@@ -189,8 +195,8 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
   // The handler that will request scan for the downloaded file.
   std::unique_ptr<enterprise_connectors::FilesRequestHandlerBase>
       _filesRequestHandler;
-  // The webstate that initiates the download.
-  base::WeakPtr<web::WebState> _downloadWebState;
+  // The webstate that initiates the sharing action.
+  base::WeakPtr<web::WebState> _originatingWebState;
   // The GURL of the download.
   GURL _downloadGURL;
 }
@@ -254,27 +260,50 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  web::WebState* activeWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  _webStateListObserverBridge =
+      std::make_unique<WebStateListObserverBridge>(self);
+  webStateList->AddObserver(_webStateListObserverBridge.get());
+
+  web::WebState* activeWebState = webStateList->GetActiveWebState();
+  if (activeWebState) {
+    _originatingWebState = activeWebState->GetWeakPtr();
+  } else {
+    _originatingWebState = nullptr;
+  }
+
   if (activeWebState &&
       ShareFileDownloadTabHelper::ShouldDownload(activeWebState)) {
     // Creating the directory can block the main thread, so perform it on a
     // background sequence, then on current sequence complete the workflow.
     __weak SharingCoordinator* weakSelf = self;
-    _downloadWebState = activeWebState->GetWeakPtr();
     _taskRunner->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&CreateDestinationDirectoryAndRemoveObsoleteFiles),
-        base::BindOnce(&StartDownloadForWebState, weakSelf, _downloadWebState));
+        base::BindOnce(&StartDownloadForWebState, weakSelf,
+                       _originatingWebState));
   } else {
     [self startActivityService];
   }
 }
 
 - (void)stop {
+  if (_stopped) {
+    return;
+  }
+  _stopped = YES;
+
+  [self.download cancelDownload:nil];
+  [self stopDisplayDownloadOverlay];
+  if (_webStateListObserverBridge) {
+    self.browser->GetWebStateList()->RemoveObserver(
+        _webStateListObserverBridge.get());
+    _webStateListObserverBridge.reset();
+  }
   [self activityServiceDidEndPresenting];
   [self hideQRCode];
   [self cleanUpAnalysisResources];
+  _originatingWebState = nullptr;
   _sourceItem = nil;
   _sourceView = nil;
   _sourceRect = CGRectZero;
@@ -290,6 +319,19 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
   // error in downloadDidFailWithError method.
   _taskRunner->PostTask(FROM_HERE,
                         base::BindOnce(&RemoveFileAtPath, self.filePath));
+}
+
+#pragma mark - WebStateListObserving
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  if (status.active_web_state_change()) {
+    if (!_originatingWebState ||
+        _originatingWebState.get() != status.new_active_web_state) {
+      [self stop];
+    }
+  }
 }
 
 #pragma mark - QRGenerationCommands
@@ -313,6 +355,9 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 
 - (void)startDownloadForWebState:(web::WebState*)webState
                 directoryCreated:(BOOL)directoryCreated {
+  if (_stopped) {
+    return;
+  }
   if (directoryCreated) {
     [self startDisplayDownloadOverlayOnWebView:webState];
     [self startDownloadFromWebState:webState];
@@ -323,6 +368,16 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 
 // Starts the share menu feature.
 - (void)startActivityService {
+  if (_stopped) {
+    return;
+  }
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!_originatingWebState || _originatingWebState.get() != activeWebState) {
+    [self stop];
+    return;
+  }
+
   if (_sourceItem) {
     self.activityServiceCoordinator = [[ActivityServiceCoordinator alloc]
         initWithBaseViewController:self.baseViewController
@@ -387,6 +442,9 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 
 // Download is successful and should proceed.
 - (void)downloadShouldProceed:(BOOL)shouldProceed {
+  if (_stopped) {
+    return;
+  }
   // Remember to clean up the analysis resources before early return if download
   // is interrupted. Otherwise, leaving the resources to be alive because we
   // might need them to report warning bypass.
@@ -439,7 +497,7 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
       std::make_unique<enterprise_connectors::FilesRequestHandlerIOS>(
           profile, base::apple::NSStringToFilePath(self.filePath),
           base::BindOnce(&enterprise_connectors::HandleScanDecision,
-                         _downloadWebState,
+                         _originatingWebState,
                          enterprise_connectors::TriggerType::kShareSheet,
                          base::BindOnce(&DownloadShouldProceed, weakSelf)));
 
@@ -482,16 +540,14 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 - (void)cleanUpAnalysisResources {
   _filesRequestHandler.reset();
   _contentAnalysisInfo.reset();
-  _downloadWebState = nullptr;
   _downloadGURL = GURL();
 }
 
 #pragma mark - CRWWebViewDownloadDelegate
 
 - (void)downloadDidFinish {
-  if (self.isDownloadCanceled) {
-    _contentAnalysisInfo.reset();
-    _downloadGURL = GURL();
+  if (_stopped || self.isDownloadCanceled) {
+    [self cleanUpAnalysisResources];
     return;
   }
   self.params.filePath = self.fileNSURL;
@@ -499,7 +555,12 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 }
 
 - (void)downloadDidFailWithError:(NSError*)error {
+  if (_stopped) {
+    return;
+  }
+
   [self cleanUpAnalysisResources];
+
   if (self.isDownloadCanceled) {
     return;
   }

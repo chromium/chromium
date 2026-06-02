@@ -159,13 +159,13 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
                           params:params
                       sourceItem:fake_origin_view_];
 
-  __block bool completion_handler_called = false;
+  auto completion_handler_called = std::make_shared<bool>(false);
   id vc_partial_mock = OCMPartialMock(base_view_controller_);
   [[vc_partial_mock expect]
       presentViewController:[OCMArg checkWithBlock:^BOOL(
                                         UIViewController* viewController) {
         if ([viewController isKindOfClass:[UIActivityViewController class]]) {
-          completion_handler_called = true;
+          *completion_handler_called = true;
           return YES;
         }
         return NO;
@@ -175,10 +175,8 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
 
   [coordinator start];
 
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return completion_handler_called;
-  }));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return *completion_handler_called; }));
 
   // Verify that the positioning is correct.
   auto activityHandler =
@@ -238,6 +236,14 @@ TEST_F(SharingCoordinatorTest, GenerateQRCode) {
 TEST_F(SharingCoordinatorTest, Start_ShareURL) {
   GURL testURL = GURL("https://example.com");
   NSString* testTitle = @"Some title";
+
+  auto test_web_state = std::make_unique<web::FakeWebState>();
+  test_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  test_web_state->SetCurrentURL(testURL);
+  test_web_state->SetBrowserState(browser_->GetProfile());
+  AppendNewWebState(std::move(test_web_state));
+
   SharingParams* params = [[SharingParams alloc] initWithURL:testURL
                                                        title:testTitle
                                                     scenario:test_scenario_];
@@ -247,11 +253,13 @@ TEST_F(SharingCoordinatorTest, Start_ShareURL) {
                           params:params
                       sourceItem:fake_origin_view_];
 
+  auto completion_handler_called = std::make_shared<bool>(false);
   id vc_partial_mock = OCMPartialMock(base_view_controller_);
   [[vc_partial_mock expect]
       presentViewController:[OCMArg checkWithBlock:^BOOL(
                                         UIViewController* viewController) {
         if ([viewController isKindOfClass:[UIActivityViewController class]]) {
+          *completion_handler_called = true;
           return YES;
         }
         return NO;
@@ -266,7 +274,8 @@ TEST_F(SharingCoordinatorTest, Start_ShareURL) {
   // Make sure share sheet finishes it's init (which means calling
   // canPerformWithActivityItems and reading prefs) before the
   // WebTaskEnvironment is shut down.
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return *completion_handler_called; }));
   [coordinator stop];
 }
 
@@ -362,6 +371,110 @@ TEST_F(SharingCoordinatorTest,
       static_cast<id<ActivityServicePresentation>>(coordinator);
 
   [activityHandler activityServiceDidEndPresenting];
+
+  EXPECT_OCMOCK_VERIFY(vc_partial_mock);
+  [coordinator stop];
+}
+
+// Tests that switching tabs while a download is in progress cancels the share
+// sheet presentation.
+TEST_F(SharingCoordinatorTest, Start_TabSwitchDuringDownloadCancelsShare) {
+  base::Value url_value = base::Value("https://example.com/test.pdf");
+  SetupForFileDownload(&url_value);
+
+  SharingParams* params =
+      [[SharingParams alloc] initWithScenario:test_scenario_];
+
+  SharingCoordinator* coordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                          params:params
+                      sourceItem:fake_origin_view_];
+
+  id vc_partial_mock = OCMPartialMock(base_view_controller_);
+  [[vc_partial_mock reject] presentViewController:[OCMArg any]
+                                         animated:YES
+                                       completion:nil];
+
+  // Start the coordinator. This starts the download flow.
+  [coordinator start];
+
+  // Simulate tab switch by activating a new web state.
+  auto other_web_state = std::make_unique<web::FakeWebState>();
+  AppendNewWebState(std::move(other_web_state));
+
+  // Finish the download.
+  [(id<CRWWebViewDownloadDelegate>)coordinator downloadDidFinish];
+
+  EXPECT_OCMOCK_VERIFY(vc_partial_mock);
+  [coordinator stop];
+}
+
+// Tests that switching tabs after download but before scan completes cancels
+// the share sheet presentation.
+TEST_F(SharingCoordinatorTest, Start_TabSwitchDuringScanningCancelsShare) {
+  base::Value url_value = base::Value("https://example.com/test.pdf");
+  SetupForFileDownload(&url_value);
+
+  SharingParams* params =
+      [[SharingParams alloc] initWithScenario:test_scenario_];
+
+  SharingCoordinator* coordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                          params:params
+                      sourceItem:fake_origin_view_];
+
+  id vc_partial_mock = OCMPartialMock(base_view_controller_);
+  [[vc_partial_mock reject] presentViewController:[OCMArg any]
+                                         animated:YES
+                                       completion:nil];
+
+  // Start the coordinator. This starts the download flow.
+  [coordinator start];
+
+  // Finish the download. This starts the scanning flow.
+  [(id<CRWWebViewDownloadDelegate>)coordinator downloadDidFinish];
+
+  // Simulate tab switch by activating a new web state during scanning.
+  auto other_web_state = std::make_unique<web::FakeWebState>();
+  AppendNewWebState(std::move(other_web_state));
+
+  EXPECT_OCMOCK_VERIFY(vc_partial_mock);
+  [coordinator stop];
+}
+
+// Tests that switching tabs away while a download is in progress cancels the
+// share sheet presentation.
+TEST_F(SharingCoordinatorTest, Start_TabStayOnDifferentTabCancelsShare) {
+  base::Value url_value = base::Value("https://example.com/test.pdf");
+  SetupForFileDownload(&url_value);
+
+  SharingParams* params =
+      [[SharingParams alloc] initWithScenario:test_scenario_];
+
+  SharingCoordinator* coordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                          params:params
+                      sourceItem:fake_origin_view_];
+
+  id vc_partial_mock = OCMPartialMock(base_view_controller_);
+  [[vc_partial_mock reject] presentViewController:[OCMArg any]
+                                         animated:YES
+                                       completion:nil];
+
+  // Start the coordinator. This starts the download flow.
+  [coordinator start];
+
+  // Simulate tab switch by activating a new web state.
+  auto other_web_state = std::make_unique<web::FakeWebState>();
+  AppendNewWebState(std::move(other_web_state));
+
+  // Stay on the new tab (index 1).
+
+  // Finish the download.
+  [(id<CRWWebViewDownloadDelegate>)coordinator downloadDidFinish];
 
   EXPECT_OCMOCK_VERIFY(vc_partial_mock);
   [coordinator stop];
