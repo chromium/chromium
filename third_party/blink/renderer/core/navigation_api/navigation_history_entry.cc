@@ -46,7 +46,8 @@ int64_t NavigationHistoryEntry::index() {
 }
 
 KURL NavigationHistoryEntry::url() {
-  return DomWindow() && !url_.IsEmpty() ? url_ : NullUrl();
+  return DomWindow() ? (url_.IsEmpty() ? NullUrl() : url_)
+                     : KURL(g_empty_string);
 }
 
 bool NavigationHistoryEntry::sameDocument() const {
