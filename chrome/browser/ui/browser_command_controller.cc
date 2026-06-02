@@ -834,7 +834,14 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       chrome::ToggleAlwaysShowToolbarInFullscreen(browser_);
       break;
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {
-      chrome::ToggleJavaScriptFromAppleEventsAllowed(browser_);
+      content::WebContents* web_contents =
+          browser_->tab_strip_model()->GetActiveWebContents();
+      if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog) &&
+          !DevToolsWindow::AllowDevToolsFor(profile(), web_contents)) {
+        DevToolsPolicyDialog::Show(web_contents);
+      } else {
+        chrome::ToggleJavaScriptFromAppleEventsAllowed(browser_);
+      }
       break;
     }
 #endif
