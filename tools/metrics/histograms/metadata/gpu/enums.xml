@@ -1019,18 +1019,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="Hit (disk)"/>
 </enum>
 
-<enum name="GPUProcessExitCode">
-  <summary>
-    The exit code returned by the GPU process when it terminated. These match
-    the enumeration in result_codes.h.
-  </summary>
-  <int value="0" label="Normal"/>
-  <int value="1" label="Killed"/>
-  <int value="2" label="Hung"/>
-  <int value="3" label="KilledBadMessage"/>
-  <int value="4" label="DeadOnArrival"/>
-</enum>
-
 <enum name="GPUProcessLifetimeEvent">
   <summary>
     Lifetime events of the GPU Process, as defined in
