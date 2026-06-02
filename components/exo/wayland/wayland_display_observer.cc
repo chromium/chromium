@@ -109,7 +109,20 @@ void WaylandDisplayHandler::SendDisplayActivated() {
 
 void WaylandDisplayHandler::OnXdgOutputCreated(
     wl_resource* xdg_output_resource) {
-  DCHECK(!xdg_output_resource_);
+  if (xdg_output_resource_) {
+    // xdg_output_manager_get_xdg_output() has already attached `this` as the
+    // user_data of `xdg_output_resource` with a destructor that calls
+    // UnsetXdgOutputResource(). The `wl_resource_post_error` below tears the
+    // client down via wl_client_destroy(), which destroys the wl_output
+    // (freeing `this`) before `xdg_output_resource`. `UnsetXdgOutputResource`
+    // would trigger a destructor that would dereference a freed pointer. Clear
+    // the back-pointer first.
+    wl_resource_set_user_data(xdg_output_resource, nullptr);
+    wl_resource_post_error(output_resource_, WL_DISPLAY_ERROR_INVALID_OBJECT,
+                           "wl_output already has xdg_output");
+    return;
+  }
+
   xdg_output_resource_ = xdg_output_resource;
 
   display::Display display;
