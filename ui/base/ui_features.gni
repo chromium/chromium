@@ -7,11 +7,10 @@ import("//build/config/ui.gni")
 
 declare_args() {
   # Optional system library.
-  use_xkbcommon =
-      use_ozone && (is_linux || is_chromeos) && !is_castos &&
-      # Avoid needing the 32-bit version of this library when Android is
-      # building things via secondary toolchains.
-      target_os != "android"
+  use_xkbcommon = use_ozone && (is_linux || is_chromeos) && !is_castos &&
+                  # Avoid needing the 32-bit version of this library when
+                  # Android is building things via secondary toolchains.
+                  target_os != "android"
 
   # Whether the platform provides a native accessibility toolkit, in other words
   # the platform has a C/C++ interface for accessibility that Chrome
@@ -36,6 +35,7 @@ declare_args() {
 
 # Android does have platform accessibility support that's implemented using
 # BrowserAccessibilityManager. But unlike Windows, Mac and Linux it does not use
-# AXPlatformNode to implement a native C++ API, instead it bridges to a Java API.
+# AXPlatformNode to implement a native C++ API, instead it bridges to a Java
+# API.
 has_platform_accessibility_support =
     has_native_accessibility || is_android || is_fuchsia
