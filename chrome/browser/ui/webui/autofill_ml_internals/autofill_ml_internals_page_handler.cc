@@ -10,16 +10,12 @@
 
 AutofillMlInternalsPageHandlerImpl::AutofillMlInternalsPageHandlerImpl(
     mojo::PendingReceiver<autofill_ml_internals::mojom::PageHandler> receiver,
+    mojo::PendingRemote<autofill_ml_internals::mojom::Page> page,
     autofill::MlLogRouter* log_router)
-    : receiver_(this, std::move(receiver)) {
+    : receiver_(this, std::move(receiver)), page_(std::move(page)) {
   if (log_router) {
     log_router_observation_.Observe(log_router);
   }
-}
-
-void AutofillMlInternalsPageHandlerImpl::SetPage(
-    mojo::PendingRemote<autofill_ml_internals::mojom::Page> page) {
-  page_.Bind(std::move(page));
 }
 
 void AutofillMlInternalsPageHandlerImpl::ProcessLog(

@@ -20,7 +20,7 @@ TEST_F(AutofillMlInternalsPageHandlerTest, RegisterAndUnregister) {
   EXPECT_FALSE(log_router_.HasReceivers());
   auto handler = std::make_unique<AutofillMlInternalsPageHandlerImpl>(
       mojo::PendingReceiver<autofill_ml_internals::mojom::PageHandler>(),
-      &log_router_);
+      mojo::PendingRemote<autofill_ml_internals::mojom::Page>(), &log_router_);
   EXPECT_TRUE(log_router_.HasReceivers());
   handler.reset();
   EXPECT_FALSE(log_router_.HasReceivers());

@@ -508,7 +508,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       AppServiceInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      ::autofill_ml_internals::mojom::PageHandler, AutofillMlInternalsUI>(map);
+      ::autofill_ml_internals::mojom::PageHandlerFactory,
+      AutofillMlInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       access_code_cast::mojom::PageHandlerFactory,

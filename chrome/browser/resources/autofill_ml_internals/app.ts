@@ -9,8 +9,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import {browserProxyFactory} from './autofill_ml_internals.mojom-webui.js';
 import type {MlPredictionLog} from './autofill_ml_internals.mojom-webui.js';
-import {AutofillMlInternalsBrowserProxy} from './browser_proxy.js';
 
 
 export class AppElement extends CrLitElement {
@@ -36,14 +36,11 @@ export class AppElement extends CrLitElement {
   protected accessor logEntries_: MlPredictionLog[] = [];
   protected accessor selectedLog_: MlPredictionLog|undefined;
 
-  private browserProxy_: AutofillMlInternalsBrowserProxy =
-      AutofillMlInternalsBrowserProxy.getInstance();
+  private browserProxy_ = browserProxyFactory.getInstance();
   private onLogAddedListenerId_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.browserProxy_.handler.setPage(
-        this.browserProxy_.callbackRouter.$.bindNewPipeAndPassRemote());
     this.onLogAddedListenerId_ =
         this.browserProxy_.callbackRouter.onLogAdded.addListener(
             (log: MlPredictionLog) => {

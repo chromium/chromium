@@ -18,16 +18,13 @@ class AutofillMlInternalsPageHandlerImpl
  public:
   AutofillMlInternalsPageHandlerImpl(
       mojo::PendingReceiver<autofill_ml_internals::mojom::PageHandler> receiver,
+      mojo::PendingRemote<autofill_ml_internals::mojom::Page> page,
       autofill::MlLogRouter* log_router);
   AutofillMlInternalsPageHandlerImpl(
       const AutofillMlInternalsPageHandlerImpl&) = delete;
   AutofillMlInternalsPageHandlerImpl& operator=(
       const AutofillMlInternalsPageHandlerImpl&) = delete;
   ~AutofillMlInternalsPageHandlerImpl() override;
-
-  // autofill_ml_internals::mojom::PageHandler:
-  void SetPage(
-      mojo::PendingRemote<autofill_ml_internals::mojom::Page> page) override;
 
   void ProcessLog(
       const autofill_ml_internals::mojom::MlPredictionLog& log) override;
