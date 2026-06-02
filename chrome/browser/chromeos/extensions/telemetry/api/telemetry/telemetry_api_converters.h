@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom-forward.h"
@@ -26,14 +27,16 @@ namespace unchecked {
 // nullptr, they should be called only via ConvertPtr wrapper that checks
 // whether input pointer is nullptr.
 
-chromeos::api::os_telemetry::AudioInputNodeInfo UncheckedConvertPtr(
-    crosapi::mojom::ProbeAudioInputNodeInfoPtr input);
+chromeos::api::os_telemetry::AudioInputNodeInfo
+UncheckedConvertInputAudioNodeInfoPtr(
+    ash::cros_healthd::mojom::AudioNodeInfoPtr input);
 
-chromeos::api::os_telemetry::AudioOutputNodeInfo UncheckedConvertPtr(
-    crosapi::mojom::ProbeAudioOutputNodeInfoPtr input);
+chromeos::api::os_telemetry::AudioOutputNodeInfo
+UncheckedConvertOutputAudioNodeInfoPtr(
+    ash::cros_healthd::mojom::AudioNodeInfoPtr input);
 
 chromeos::api::os_telemetry::AudioInfo UncheckedConvertPtr(
-    crosapi::mojom::ProbeAudioInfoPtr input);
+    ash::cros_healthd::mojom::AudioInfoPtr input);
 
 chromeos::api::os_telemetry::CpuCStateInfo UncheckedConvertPtr(
     crosapi::mojom::ProbeCpuCStateInfoPtr input);

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_api_guard_function.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
@@ -29,13 +30,14 @@ class TelemetryApiFunctionBase : public BaseTelemetryExtensionApiGuardFunction {
 class OsTelemetryGetAudioInfoFunction : public TelemetryApiFunctionBase {
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getAudioInfo",
                              OS_TELEMETRY_GETAUDIOINFO)
-  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 
  private:
   ~OsTelemetryGetAudioInfoFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
+
+  void OnResult(ash::cros_healthd::mojom::TelemetryInfoPtr ptr);
 };
 
 class OsTelemetryGetBatteryInfoFunction : public TelemetryApiFunctionBase {

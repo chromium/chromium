@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api_converters.h"
+
 #include <inttypes.h>
 
 #include <cstddef>
@@ -11,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
@@ -28,21 +29,22 @@ namespace crosapi = ::crosapi::mojom;
 
 }  // namespace
 
-TEST(TelemetryApiConverters, AudioInputNodeInfo) {
+TEST(TelemetryApiConverters, InputAudioNodeInfo) {
   constexpr uint64_t kId = 42;
   constexpr char kName[] = "Internal Mic";
   constexpr char kDeviceName[] = "HDA Intel PCH: CA0132 Analog:0,0";
   constexpr bool kActive = true;
   constexpr uint8_t kNodeGain = 1;
 
-  auto input = crosapi::ProbeAudioInputNodeInfo::New();
-  input->id = crosapi::UInt64Value::New(kId);
+  auto input = ash::cros_healthd::mojom::AudioNodeInfo::New();
+  input->id = kId;
   input->name = kName;
   input->device_name = kDeviceName;
-  input->active = crosapi::BoolValue::New(kActive);
-  input->node_gain = crosapi::UInt8Value::New(kNodeGain);
+  input->active = kActive;
+  input->input_node_gain = kNodeGain;
 
-  auto result = ConvertPtr(std::move(input));
+  auto result =
+      unchecked::UncheckedConvertInputAudioNodeInfoPtr(std::move(input));
 
   ASSERT_TRUE(result.id);
   EXPECT_EQ(kId, static_cast<uint64_t>(*result.id));
@@ -60,21 +62,22 @@ TEST(TelemetryApiConverters, AudioInputNodeInfo) {
   EXPECT_EQ(kNodeGain, static_cast<uint8_t>(*result.node_gain));
 }
 
-TEST(TelemetryApiConverters, AudioOutputNodeInfo) {
+TEST(TelemetryApiConverters, OutputAudioNodeInfo) {
   constexpr uint64_t kId = 42;
   constexpr char kName[] = "Internal Speaker";
   constexpr char kDeviceName[] = "HDA Intel PCH: CA0132 Analog:0,0";
   constexpr bool kActive = true;
   constexpr uint8_t kNodeVolume = 242;
 
-  auto input = crosapi::ProbeAudioOutputNodeInfo::New();
-  input->id = crosapi::UInt64Value::New(kId);
+  auto input = ash::cros_healthd::mojom::AudioNodeInfo::New();
+  input->id = kId;
   input->name = kName;
   input->device_name = kDeviceName;
-  input->active = crosapi::BoolValue::New(kActive);
-  input->node_volume = crosapi::UInt8Value::New(kNodeVolume);
+  input->active = kActive;
+  input->node_volume = kNodeVolume;
 
-  auto result = ConvertPtr(std::move(input));
+  auto result =
+      unchecked::UncheckedConvertOutputAudioNodeInfoPtr(std::move(input));
 
   ASSERT_TRUE(result.id);
   EXPECT_EQ(kId, static_cast<uint64_t>(*result.id));
@@ -110,29 +113,29 @@ TEST(TelemetryApiConverters, AudioInfo) {
   constexpr bool kActiveOutput = false;
   constexpr uint8_t kNodeVolumeOutput = 212;
 
-  std::vector<crosapi::ProbeAudioInputNodeInfoPtr> input_node_info;
-  auto input_node = crosapi::ProbeAudioInputNodeInfo::New();
-  input_node->id = crosapi::UInt64Value::New(kIdInput);
+  std::vector<ash::cros_healthd::mojom::AudioNodeInfoPtr> input_node_info;
+  auto input_node = ash::cros_healthd::mojom::AudioNodeInfo::New();
+  input_node->id = kIdInput;
   input_node->name = kNameInput;
   input_node->device_name = kDeviceNameInput;
-  input_node->active = crosapi::BoolValue::New(kActiveInput);
-  input_node->node_gain = crosapi::UInt8Value::New(kNodeGainInput);
+  input_node->active = kActiveInput;
+  input_node->input_node_gain = kNodeGainInput;
   input_node_info.push_back(std::move(input_node));
 
-  std::vector<crosapi::ProbeAudioOutputNodeInfoPtr> output_node_info;
-  auto output_node = crosapi::ProbeAudioOutputNodeInfo::New();
-  output_node->id = crosapi::UInt64Value::New(kIdOutput);
+  std::vector<ash::cros_healthd::mojom::AudioNodeInfoPtr> output_node_info;
+  auto output_node = ash::cros_healthd::mojom::AudioNodeInfo::New();
+  output_node->id = kIdOutput;
   output_node->name = kNameOutput;
   output_node->device_name = kDeviceNameOutput;
-  output_node->active = crosapi::BoolValue::New(kActiveOutput);
-  output_node->node_volume = crosapi::UInt8Value::New(kNodeVolumeOutput);
+  output_node->active = kActiveOutput;
+  output_node->node_volume = kNodeVolumeOutput;
   output_node_info.push_back(std::move(output_node));
 
-  auto input = crosapi::ProbeAudioInfo::New();
-  input->output_mute = crosapi::BoolValue::New(kOutputMute);
-  input->input_mute = crosapi::BoolValue::New(kInputMute);
-  input->underruns = crosapi::UInt32Value::New(kUnderruns);
-  input->severe_underruns = crosapi::UInt32Value::New(kSevereUnderruns);
+  auto input = ash::cros_healthd::mojom::AudioInfo::New();
+  input->output_mute = kOutputMute;
+  input->input_mute = kInputMute;
+  input->underruns = kUnderruns;
+  input->severe_underruns = kSevereUnderruns;
   input->output_nodes = std::move(output_node_info);
   input->input_nodes = std::move(input_node_info);
 

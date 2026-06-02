@@ -27,66 +27,61 @@ namespace crosapi = ::crosapi::mojom;
 }  // namespace
 
 namespace unchecked {
-cx_telem::AudioInputNodeInfo UncheckedConvertPtr(
-    crosapi::ProbeAudioInputNodeInfoPtr input) {
+
+cx_telem::AudioInputNodeInfo UncheckedConvertInputAudioNodeInfoPtr(
+    ash::cros_healthd::mojom::AudioNodeInfoPtr input) {
   cx_telem::AudioInputNodeInfo result;
 
-  if (input->id) {
-    result.id = input->id->value;
-  }
+  result.id = input->id;
   result.name = input->name;
   result.device_name = input->device_name;
-  if (input->active) {
-    result.active = input->active->value;
-  }
-  if (input->node_gain) {
-    result.node_gain = input->node_gain->value;
-  }
+  result.active = input->active;
+  result.node_gain = input->input_node_gain;
 
   return result;
 }
 
-cx_telem::AudioOutputNodeInfo UncheckedConvertPtr(
-    crosapi::ProbeAudioOutputNodeInfoPtr input) {
+cx_telem::AudioOutputNodeInfo UncheckedConvertOutputAudioNodeInfoPtr(
+    ash::cros_healthd::mojom::AudioNodeInfoPtr input) {
   cx_telem::AudioOutputNodeInfo result;
 
-  if (input->id) {
-    result.id = input->id->value;
-  }
+  result.id = input->id;
   result.name = input->name;
   result.device_name = input->device_name;
-  if (input->active) {
-    result.active = input->active->value;
-  }
-  if (input->node_volume) {
-    result.node_volume = input->node_volume->value;
-  }
+  result.active = input->active;
+  result.node_volume = input->node_volume;
 
   return result;
 }
 
-cx_telem::AudioInfo UncheckedConvertPtr(crosapi::ProbeAudioInfoPtr input) {
+cx_telem::AudioInfo UncheckedConvertPtr(
+    ash::cros_healthd::mojom::AudioInfoPtr input) {
   cx_telem::AudioInfo result;
 
-  if (input->output_mute) {
-    result.output_mute = input->output_mute->value;
-  }
-  if (input->input_mute) {
-    result.input_mute = input->input_mute->value;
-  }
-  if (input->underruns) {
-    result.underruns = input->underruns->value;
-  }
-  if (input->severe_underruns) {
-    result.severe_underruns = input->severe_underruns->value;
-  }
+  result.output_mute = input->output_mute;
+  result.input_mute = input->input_mute;
+  result.underruns = input->underruns;
+  result.severe_underruns = input->severe_underruns;
+
   if (input->output_nodes) {
-    result.output_nodes = ConvertPtrVector<cx_telem::AudioOutputNodeInfo>(
-        std::move(input->output_nodes.value()));
+    for (auto& node : input->output_nodes.value()) {
+      if (node) {
+        result.output_nodes.push_back(
+            UncheckedConvertOutputAudioNodeInfoPtr(std::move(node)));
+      } else {
+        result.output_nodes.emplace_back();
+      }
+    }
   }
   if (input->input_nodes) {
-    result.input_nodes = ConvertPtrVector<cx_telem::AudioInputNodeInfo>(
-        std::move(input->input_nodes.value()));
+    for (auto& node : input->input_nodes.value()) {
+      if (node) {
+        result.input_nodes.push_back(
+            UncheckedConvertInputAudioNodeInfoPtr(std::move(node)));
+      } else {
+        result.input_nodes.emplace_back();
+      }
+    }
   }
 
   return result;

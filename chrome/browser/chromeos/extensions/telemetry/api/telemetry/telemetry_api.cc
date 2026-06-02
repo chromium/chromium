@@ -20,6 +20,8 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -28,6 +30,12 @@ namespace chromeos {
 namespace {
 namespace cx_telem = api::os_telemetry;
 namespace crosapi = ::crosapi::mojom;
+
+ash::cros_healthd::mojom::CrosHealthdProbeService& GetService() {
+  return CHECK_DEREF(
+      ash::cros_healthd::ServiceConnection::GetInstance()->GetProbeService());
+}
+
 }  // namespace
 
 // TelemetryApiFunctionBase ----------------------------------------------------
@@ -44,14 +52,13 @@ crosapi::TelemetryProbeService* TelemetryApiFunctionBase::GetRemoteService() {
 // OsTelemetryGetAudioInfoFunction ---------------------------------------------
 
 void OsTelemetryGetAudioInfoFunction::RunIfAllowed() {
-  auto cb = base::BindOnce(&OsTelemetryGetAudioInfoFunction::OnResult, this);
-
-  GetRemoteService()->ProbeTelemetryInfo({crosapi::ProbeCategoryEnum::kAudio},
-                                         std::move(cb));
+  GetService().ProbeTelemetryInfo(
+      {ash::cros_healthd::mojom::ProbeCategoryEnum::kAudio},
+      base::BindOnce(&OsTelemetryGetAudioInfoFunction::OnResult, this));
 }
 
 void OsTelemetryGetAudioInfoFunction::OnResult(
-    crosapi::ProbeTelemetryInfoPtr ptr) {
+    ash::cros_healthd::mojom::TelemetryInfoPtr ptr) {
   if (!ptr || !ptr->audio_result || !ptr->audio_result->is_audio_info()) {
     Respond(Error("API internal error"));
     return;
