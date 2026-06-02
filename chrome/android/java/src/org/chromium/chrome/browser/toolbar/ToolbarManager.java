@@ -3253,6 +3253,12 @@ public class ToolbarManager
         assumeNonNull(mLocationBar.getOmniboxStub()).endInput();
     }
 
+    /** Suspend the current fusebox input session. */
+    public void suspendFuseboxInput() {
+        if (mIsDestroyed || mLocationBar == null || mLocationBar.getOmniboxStub() == null) return;
+        assumeNonNull(mLocationBar.getOmniboxStub()).suspendInput();
+    }
+
     /**
      * Sets a new anchor view for the progress bar, which is anchored to the bottom of a given view.
      * By default the progress bar is anchored to the control_container, but when the Bookmark Bar

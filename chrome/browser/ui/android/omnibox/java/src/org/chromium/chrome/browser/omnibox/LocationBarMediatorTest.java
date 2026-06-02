@@ -1395,6 +1395,18 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testEndInputDeactivatesSession() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        mMediator.beginInput(input);
+        assertTrue(mSessionState.isSessionActive());
+
+        mMediator.endInput();
+        assertFalse(mSessionState.isSessionActive());
+    }
+
+    @Test
     public void testBeginInput_NtpAIMode() {
         mMediator.onFinishNativeInitialization();
         mMediator.setProfile(mProfile);

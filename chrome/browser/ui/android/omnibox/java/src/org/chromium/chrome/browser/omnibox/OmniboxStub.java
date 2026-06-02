@@ -30,6 +30,9 @@ public interface OmniboxStub {
      */
     void endInput();
 
+    /** Suspends the current Omnibox input session. */
+    void suspendInput();
+
     /**
      * @return Whether the URL bar is currently focused.
      */

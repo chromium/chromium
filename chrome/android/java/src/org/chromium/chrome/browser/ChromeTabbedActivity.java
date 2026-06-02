@@ -1022,6 +1022,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 (getLayoutManager().getActiveLayoutType() == LayoutType.TAB_SWITCHER)
                         ? TabLaunchType.FROM_TAB_SWITCHER_UI
                         : TabLaunchType.FROM_CHROME_UI;
+        assumeNonNull(getToolbarManager()).suspendFuseboxInput();
         getCurrentTabCreator().launchNtp(tabLaunchType);
         mLocaleManager.showSearchEnginePromoIfNeeded(ChromeTabbedActivity.this, null);
         if (getTabModelSelector().isIncognitoSelected()) {
@@ -4132,6 +4133,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             reportNewTabShortcutUsed(false);
             if (fromMenu) RecordUserAction.record("MobileMenuNewTab.AppMenu");
 
+            assumeNonNull(getToolbarManager()).suspendFuseboxInput();
             TabCreatorUtil.launchNtp(getTabCreator(/* incognito= */ false));
 
             mLocaleManager.showSearchEnginePromoIfNeeded(this, null);
@@ -4149,6 +4151,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 RecordUserAction.record("MobileNewTabOpened");
                 reportNewTabShortcutUsed(true);
                 if (fromMenu) RecordUserAction.record("MobileMenuNewIncognitoTab.AppMenu");
+                assumeNonNull(getToolbarManager()).suspendFuseboxInput();
                 TabCreatorUtil.launchNtp(getTabCreator(/* incognito= */ true));
                 Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
                 tracker.notifyEvent(EventConstants.APP_MENU_NEW_INCOGNITO_TAB_CLICKED);

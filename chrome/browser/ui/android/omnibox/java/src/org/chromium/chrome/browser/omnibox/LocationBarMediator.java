@@ -430,7 +430,7 @@ class LocationBarMediator
     @SuppressWarnings("NullAway")
     /* package */ void destroy() {
         mCallbackController.destroy();
-        endInputInternal();
+        endInput();
         TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
         if (templateUrlService != null) {
             templateUrlService.removeObserver(this);
@@ -1199,7 +1199,7 @@ class LocationBarMediator
 
         // Target session must be either active, or activated.
         if (session == null || !(session.isSessionActive() || activateNewSession)) {
-            endInputInternal();
+            endInput();
             return;
         }
 
@@ -1306,38 +1306,6 @@ class LocationBarMediator
         animatorSet.setDuration(POPOVER_FADE_DURATION_MS);
         animatorSet.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
         animatorSet.start();
-    }
-
-    /** Ends the current Omnibox input session. */
-    private void endInputInternal() {
-        if (mAutocompleteCoordinator == null || mCurrentInput == null || mIsReparenting) return;
-        if (mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get()
-                        == FuseboxLayoutMode.SUGGESTIONS_POPOVER
-                && isParentedToSuggestionsContainer()) {
-            reparentToToolbar();
-        }
-        mAutocompleteCoordinator.endInput();
-
-        mStatusCoordinator.endInput();
-
-        if (mScrimHandler != null) mScrimHandler.setVisibility(false);
-        mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
-        mCurrentInput.getSiteSearchDataSupplier().removeObserver(mSiteSearchDataObserver);
-        FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
-        if (state != null) {
-            state.deactivate();
-            // Only for Contextual Tasks, we skip ending the Fusebox input to allow it to stay warm
-            // in compact mode.
-            if (!state.isContextualTasksState()) {
-                mFuseboxCoordinator.endInput();
-            }
-        }
-
-        mCurrentInput = null;
-        // The hint text depends on mCurrentInput, nulling it may change the outcome.
-        onSearchBoxHintTextChanged();
-
-        setAttachmentModelList(null);
     }
 
     @VisibleForTesting
@@ -1491,7 +1459,7 @@ class LocationBarMediator
                 beginOrResumeInput(/* activateNewSession= */ true);
             }
         } else {
-            endInputInternal();
+            endInput();
         }
 
         for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
@@ -2489,12 +2457,49 @@ class LocationBarMediator
         beginOrResumeInput(/* activateNewSession= */ true);
     }
 
+    @Override
+    public void suspendInput() {
+        if (mAutocompleteCoordinator == null || mCurrentInput == null || mIsReparenting) return;
+        if (mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get()
+                        == FuseboxLayoutMode.SUGGESTIONS_POPOVER
+                && isParentedToSuggestionsContainer()) {
+            reparentToToolbar();
+        }
+        mAutocompleteCoordinator.endInput();
+
+        mStatusCoordinator.endInput();
+
+        if (mScrimHandler != null) mScrimHandler.setVisibility(false);
+        mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
+        mCurrentInput.getSiteSearchDataSupplier().removeObserver(mSiteSearchDataObserver);
+        FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
+        if (state != null) {
+            // Only for Contextual Tasks, we skip ending the Fusebox input to allow it to stay warm
+            // in compact mode.
+            if (!state.isContextualTasksState()) {
+                mFuseboxCoordinator.endInput();
+            }
+        }
+
+        mCurrentInput = null;
+        // The hint text depends on mCurrentInput, nulling it may change the outcome.
+        onSearchBoxHintTextChanged();
+
+        setAttachmentModelList(null);
+    }
+
     /**
      * Ends the current Omnibox input session. This will typically clear the focus from the Omnibox.
      */
     @Override
     public void endInput() {
-        endInputInternal();
+        if (mAutocompleteCoordinator == null || mCurrentInput == null || mIsReparenting) return;
+
+        FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
+        if (state == null) return;
+
+        suspendInput();
+        state.deactivate();
         if (mUrlHasFocus) {
             mUrlCoordinator.clearFocus();
         }
