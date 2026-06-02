@@ -1,0 +1,14 @@
+# proto-file: https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/restrictive_license_approval.proto
+# proto-message: RestrictiveLicenseApproval
+
+license_approval {
+ # Path to the license file, relative to this directory.
+ license_path: "LICENSE"
+ id: "UnRAR"
+ bug: 515618106
+
+ # Relevant info for maintainers / context of approval.
+ note: "The owner of UnRAR has approved its use in Chromium."
+       "This library is not open source, and impacts chromium's "
+       "status as an 'Open Source' project."
+}
