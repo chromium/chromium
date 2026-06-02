@@ -1398,7 +1398,10 @@ public class StripLayoutTrailingButtonsCoordinator {
                 return true;
             }
         } else if (mGlicActorButton != null && mGlicActorButton.checkClickedOrHovered(x, y)) {
-            if (mGlicActorButton.click(x, y, buttons)) {
+            if (MotionEventUtils.isSecondaryClick(buttons)) {
+                // Consume secondary click to prevent triggering empty space context menu.
+                return true;
+            } else if (mGlicActorButton.click(x, y, buttons)) {
                 mGlicActorButton.handleClick(time, buttons, modifiers);
                 return true;
             }
