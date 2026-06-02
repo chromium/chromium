@@ -608,9 +608,10 @@ class FakeCanvasResourceProvider : public Canvas2DResourceProviderSharedImage {
             /*shared_image_interface_provider=*/nullptr));
   }
   sk_sp<SkSurface> CreateSkSurface() const override {
-    const auto info = SkImageInfo::Make(
-        size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
-        alpha_type_, color_space_.ToSkColorSpace());
+    const auto info =
+        SkImageInfo::Make(Size().width(), Size().height(),
+                          viz::ToClosestSkColorType(GetSharedImageFormat()),
+                          GetAlphaType(), GetColorSpace().ToSkColorSpace());
     return SkSurfaces::Raster(info);
   }
 

@@ -148,10 +148,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual bool IsValid() const = 0;
   virtual bool IsGpuContextLost() const = 0;
   SkSurfaceProps GetSkSurfaceProps() const;
-  viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
-  gfx::ColorSpace GetColorSpace() const { return color_space_; }
-  SkAlphaType GetAlphaType() const { return alpha_type_; }
-  gfx::Size Size() const { return size_; }
+  virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
+  virtual gfx::ColorSpace GetColorSpace() const = 0;
+  virtual SkAlphaType GetAlphaType() const = 0;
+  virtual gfx::Size Size() const = 0;
   virtual base::ByteSize EstimatedSizeInBytes() const {
     return base::ByteSize(GetSharedImageFormat().EstimatedSizeInBytes(Size()));
   }
@@ -208,10 +208,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       ImageOrientation);
 
   CanvasResourceProvider(const ResourceProviderType&,
-                         gfx::Size size,
-                         viz::SharedImageFormat format,
-                         SkAlphaType alpha_type,
-                         const gfx::ColorSpace& color_space,
                          Delegate* delegate);
 
   virtual void RasterRecord(cc::PaintRecord) = 0;
@@ -253,11 +249,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
   // callsites.
   void ClearAtCreation();
-
-  gfx::Size size_;
-  viz::SharedImageFormat format_;
-  SkAlphaType alpha_type_;
-  gfx::ColorSpace color_space_;
 
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
 
@@ -309,12 +300,12 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
       gfx::Size size,
       const Canvas2DColorParams& color_params);
 
- protected:
-  Canvas2DResourceProviderBitmap(ResourceProviderType type,
-                                 gfx::Size size,
-                                 viz::SharedImageFormat format,
-                                 SkAlphaType alpha_type,
-                                 const gfx::ColorSpace& color_space);
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return format_;
+  }
+  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
+  SkAlphaType GetAlphaType() const override { return alpha_type_; }
+  gfx::Size Size() const override { return size_; }
 
  private:
   friend class CanvasRenderingContext2D;
@@ -335,6 +326,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
                                  Delegate* delegate);
 
   sk_sp<SkSurface> CreateSkSurface() const override;
+
+  gfx::Size size_;
+  viz::SharedImageFormat format_;
+  SkAlphaType alpha_type_;
+  gfx::ColorSpace color_space_;
 };
 
 // * Subclass of CanvasResourceProvider that is specialized for usage
@@ -400,6 +396,13 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   bool IsAccelerated() const override { return is_accelerated_; }
   bool IsSoftware() const { return is_software_; }
   bool IsGpuContextLost() const override;
+
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return format_;
+  }
+  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
+  SkAlphaType GetAlphaType() const override { return alpha_type_; }
+  gfx::Size Size() const override { return size_; }
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -516,6 +519,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   bool resource_recycling_enabled_ = true;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
+
+  gfx::Size size_;
+  viz::SharedImageFormat format_;
+  SkAlphaType alpha_type_;
+  gfx::ColorSpace color_space_;
 
   base::WeakPtrFactory<Canvas2DResourceProviderSharedImage> weak_ptr_factory_{
       this};

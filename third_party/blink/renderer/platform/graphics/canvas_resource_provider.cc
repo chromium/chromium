@@ -145,12 +145,11 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     CanvasResourceProvider::Delegate* delegate)
-    : CanvasResourceProvider(kBitmap,
-                             size,
-                             format,
-                             alpha_type,
-                             color_space,
-                             delegate) {
+    : CanvasResourceProvider(kBitmap, delegate),
+      size_(size),
+      format_(format),
+      alpha_type_(alpha_type),
+      color_space_(color_space) {
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
 }
 
@@ -1671,16 +1670,8 @@ bool CanvasResourceProvider::CanvasImageProvider::IsHardwareDecodeCache()
 
 CanvasResourceProvider::CanvasResourceProvider(
     const ResourceProviderType& type,
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
     CanvasResourceProvider::Delegate* delegate)
     : type_(type),
-      size_(size),
-      format_(format),
-      alpha_type_(alpha_type),
-      color_space_(color_space),
       delegate_(delegate),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
@@ -1992,15 +1983,14 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     CanvasResourceProvider::Delegate* delegate)
-    : CanvasResourceProvider(kSharedImage,
-                             size,
-                             format,
-                             alpha_type,
-                             color_space,
-                             delegate),
+    : CanvasResourceProvider(kSharedImage, delegate),
       is_accelerated_(is_accelerated),
       is_software_(false),
-      context_provider_wrapper_(std::move(context_provider_wrapper)) {
+      context_provider_wrapper_(std::move(context_provider_wrapper)),
+      size_(size),
+      format_(format),
+      alpha_type_(alpha_type),
+      color_space_(color_space) {
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
@@ -2090,18 +2080,17 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     const gfx::ColorSpace& color_space,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     CanvasResourceProvider::Delegate* delegate)
-    : CanvasResourceProvider(kSharedImage,
-                             size,
-                             format,
-                             alpha_type,
-                             color_space,
-                             delegate),
+    : CanvasResourceProvider(kSharedImage, delegate),
       is_accelerated_(false),
       is_software_(true),
       shared_image_interface_provider_(
           shared_image_interface_provider
               ? shared_image_interface_provider->GetWeakPtr()
-              : nullptr) {
+              : nullptr),
+      size_(size),
+      format_(format),
+      alpha_type_(alpha_type),
+      color_space_(color_space) {
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);
