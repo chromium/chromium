@@ -19,6 +19,10 @@ class MediaItemUIFooter;
 enum class GlobalMediaControlsEntryPoint;
 }  // namespace global_media_controls
 
+namespace url {
+class Origin;
+}
+
 namespace media_message_center {
 class MediaNotificationItem;
 }  // namespace media_message_center
@@ -91,6 +95,11 @@ class ASH_EXPORT MediaNotificationProvider {
   BuildFooterView(
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item) = 0;
+
+  // Use MediaNotificationProvider as a bridge to update the source origin of a
+  // media notification item.
+  virtual void UpdateMediaItemSourceOrigin(const std::string& id,
+                                           const url::Origin& origin) = 0;
 };
 
 }  // namespace ash

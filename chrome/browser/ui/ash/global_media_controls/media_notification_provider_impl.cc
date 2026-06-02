@@ -32,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "ui/views/view.h"
+#include "url/origin.h"
 
 namespace ash {
 
@@ -188,6 +189,14 @@ MediaNotificationProviderImpl::BuildFooterView(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
   return BuildFooter(id, item, GetProfile(), media_color_theme_);
+}
+
+void MediaNotificationProviderImpl::UpdateMediaItemSourceOrigin(
+    const std::string& id,
+    const url::Origin& origin) {
+  if (media_session_item_producer_) {
+    media_session_item_producer_->UpdateMediaItemSourceOrigin(id, origin);
+  }
 }
 
 global_media_controls::MediaItemUI*

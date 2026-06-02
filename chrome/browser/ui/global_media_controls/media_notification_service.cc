@@ -458,6 +458,12 @@ void MediaNotificationService::OnStartPresentationContextCreated(
         GetActiveControllableSessionForWebContents(web_contents);
     media_session_item_producer_->UpdateMediaItemSourceOrigin(
         item_id, context_->presentation_request().frame_origin);
+#if BUILDFLAG(IS_CHROMEOS)
+    if (auto* provider = ash::MediaNotificationProvider::Get(); provider) {
+      provider->UpdateMediaItemSourceOrigin(
+          item_id, context_->presentation_request().frame_origin);
+    }
+#endif
   } else if (presentation_request_notification_producer_) {
     // If there do not exist active notifications, pass |context| to
     // |presentation_request_notification_producer_| to create a dummy

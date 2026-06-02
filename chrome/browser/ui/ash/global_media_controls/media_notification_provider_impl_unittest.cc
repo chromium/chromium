@@ -21,8 +21,10 @@
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
+#include "components/global_media_controls/public/media_session_notification_item.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
+#include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
@@ -39,8 +41,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using global_media_controls::mojom::DeviceListClient;
 using global_media_controls::mojom::DeviceListHost;
@@ -273,6 +278,24 @@ TEST_F(MediaNotificationProviderImplTest, RefreshMediaItem) {
   EXPECT_CALL(*observer_, OnNotificationListViewSizeChanged);
   SimulateRefreshNotification(id);
   EXPECT_EQ(notification_list_view->items_for_testing().size(), 1u);
+}
+
+TEST_F(MediaNotificationProviderImplTest, UpdateMediaItemSourceOrigin) {
+  auto id = base::UnguessableToken::Create();
+  SimulateShowNotification(id);
+  auto notification_list_view = CreateNotificationListView();
+
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  provider_->UpdateMediaItemSourceOrigin(id.ToString(), origin);
+
+  auto items = notification_list_view->items_for_testing();
+  ASSERT_EQ(1u, items.size());
+
+  auto media_item_ui_view = items.begin()->second;
+  EXPECT_EQ(media_item_ui_view->view_for_testing()
+                ->GetSourceLabelForTesting()
+                ->GetText(),
+            u"example.com");
 }
 
 TEST_F(MediaNotificationProviderImplTest, ShowCastFooterView) {
