@@ -357,6 +357,14 @@ struct ScatterElementsParams {
   bool is_updates_constant;
 };
 
+struct TransposeParams {
+  OperandDataType data_type;
+  uint32_t rank;
+  std::array<uint32_t, 8> input_dims;
+  std::array<uint32_t, 8> permutation;
+  bool is_input_constant;
+};
+
 SupportedDataTypes GetElementWiseBinaryDataTypes(
     mojom::ElementWiseBinary::Kind kind) {
   const auto& limits = GetContextPropertiesForTesting().data_type_limits;
@@ -667,7 +675,7 @@ auto AnyConcatParams() {
   const auto& limits = GetContextPropertiesForTesting().data_type_limits;
   return fuzztest::StructOf<ConcatParams>(
       AnyOperandDataTypeFor(limits.concat_inputs.data_types),
-      fuzztest::InRange<uint32_t>(1, 8),                      // rank
+      AnyTensorRank(),                                        // input_rank
       fuzztest::ArrayOf<8>(AnyDimSize()),                     // input_dims
       fuzztest::InRange<uint32_t>(0, 7),                      // axis
       fuzztest::InRange<uint32_t>(1, kMaxConcatInputs),       // num_inputs
@@ -814,7 +822,7 @@ auto AnyPadParams() {
   const auto& limits = GetContextPropertiesForTesting().data_type_limits;
   return fuzztest::StructOf<PadParams>(
       AnyOperandDataTypeFor(limits.pad_input.data_types),
-      fuzztest::InRange<uint32_t>(1, 8),         // rank
+      AnyTensorRankIncludeZero(),                // input_rank
       fuzztest::ArrayOf<8>(AnyDimSize()),        // input_dims
       fuzztest::ArrayOf<8>(AnyDimSizeOrZero()),  // beginning_padding
       fuzztest::ArrayOf<8>(AnyDimSizeOrZero()),  // ending_padding
@@ -868,7 +876,7 @@ auto AnyReduceParams() {
       },
       fuzztest::StructOf<ReduceParams>(
           AnyOperandDataTypeFor(reduce_data_types), AnyReduceKind(),
-          fuzztest::InRange<uint32_t>(1, 8),   // rank
+          AnyTensorRankIncludeZero(),          // input_rank
           fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
           fuzztest::InRange<uint32_t>(0, 8),   // num_axes
           fuzztest::ArrayOf<8>(                // axes
@@ -903,7 +911,7 @@ auto AnyScatterElementsParams() {
   return fuzztest::StructOf<ScatterElementsParams>(
       AnyOperandDataTypeFor(limits.scatter_elements_input.data_types),
       AnyOperandDataTypeFor(limits.scatter_elements_indices.data_types),
-      fuzztest::InRange<uint32_t>(1, 8),   // rank
+      AnyTensorRank(),                     // input_rank
       fuzztest::InRange<uint32_t>(0, 7),   // axis
       fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
       AnyDimSize(),                        // indices_axis_dim_size
@@ -912,6 +920,17 @@ auto AnyScatterElementsParams() {
       fuzztest::Arbitrary<bool>(),                      // is_input_constant
       fuzztest::Arbitrary<bool>(),                      // is_indices_constant
       fuzztest::Arbitrary<bool>()                       // is_updates_constant
+  );
+}
+
+auto AnyTransposeParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<TransposeParams>(
+      AnyOperandDataTypeFor(limits.transpose_input.data_types),
+      AnyTensorRankIncludeZero(),                               // input_rank
+      fuzztest::ArrayOf<8>(AnyDimSize()),                       // input_dims
+      fuzztest::ArrayOf<8>(fuzztest::InRange<uint32_t>(0, 7)),  // permutation
+      fuzztest::Arbitrary<bool>()  // is_input_constant
   );
 }
 
@@ -1502,6 +1521,46 @@ std::optional<Resample2dDescriptors> SetUpResample2dDescriptors(
   };
 }
 
+struct TransposeDescriptors {
+  OperandDescriptor input_desc;
+  OperandDescriptor output_desc;
+  std::vector<uint32_t> permutation;
+};
+
+// Helper to set up TransposeDescriptors. Returns nullopt if any validation
+// fails.
+std::optional<TransposeDescriptors> SetUpTransposeDescriptors(
+    const ContextProperties& context_properties,
+    const TransposeParams& params) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+
+  // Build a valid permutation from the raw fuzzed values by mapping them
+  // into the range [0, rank) without duplicates.
+  std::vector<uint32_t> permutation(params.rank);
+  std::iota(permutation.begin(), permutation.end(), 0);
+  // Use the fuzzed values to shuffle: for each position, swap with a position
+  // determined by the fuzzed value.
+  for (uint32_t i = 0; i < params.rank; ++i) {
+    uint32_t j = params.permutation[i] % params.rank;
+    std::swap(permutation[i], permutation[j]);
+  }
+
+  ASSIGN_OR_RETURN_NULLOPT(
+      auto input_desc,
+      OperandDescriptor::Create(context_properties, params.data_type,
+                                input_dims, ""));
+  ASSIGN_OR_RETURN_NULLOPT(
+      auto output_desc, ValidateTransposeAndInferOutput(
+                            context_properties, input_desc, permutation, ""));
+
+  return TransposeDescriptors{
+      .input_desc = std::move(input_desc),
+      .output_desc = std::move(output_desc),
+      .permutation = std::move(permutation),
+  };
+}
+
 void MaybeIncreaseTestTimeouts() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -1778,6 +1837,7 @@ class WebNNGraphImplFuzzerImpl
   void Reduce(ReduceParams params, uint8_t seed_for_data);
   void Resample2d(Resample2dParams params, uint8_t seed_for_data);
   void ScatterElements(ScatterElementsParams params, uint8_t seed_for_data);
+  void Transpose(TransposeParams params, uint8_t seed_for_data);
   void DQConcatQ(ConcatParams concat_params,
                  OperandDataType quantized_type,
                  uint8_t seed_for_input,
@@ -1813,6 +1873,12 @@ class WebNNGraphImplFuzzerImpl
                      uint8_t seed_for_input,
                      float seed_for_scale,
                      uint8_t seed_for_zero_point);
+  void DQTransposeQ(TransposeParams transpose_params,
+                    QuantizationParams quantization_params,
+                    uint32_t channel_axis,
+                    uint8_t seed_for_input,
+                    float seed_for_scale,
+                    uint8_t seed_for_zero_point);
 };
 
 template <mojom::Device device_type>
@@ -2731,6 +2797,48 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::ScatterElements(
 
   builder.BuildScatterElements(input_id, indices_id, updates_id, output_id,
                                params.axis);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Transpose(TransposeParams params,
+                                                      uint8_t seed_for_data) {
+  ASSIGN_OR_RETURN_VOID(
+      auto transpose_descs,
+      SetUpTransposeDescriptors(this->context_properties(), params));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  OperandId input_id;
+  std::vector<uint8_t> input_data(transpose_descs.input_desc.PackedByteLength(),
+                                  seed_for_data);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  if (params.is_input_constant) {
+    input_id = builder.BuildConstant(transpose_descs.input_desc.shape(),
+                                     transpose_descs.input_desc.data_type(),
+                                     input_data);
+  } else {
+    input_id = builder.BuildInput("input", transpose_descs.input_desc.shape(),
+                                  transpose_descs.input_desc.data_type());
+    named_inputs.insert({"input", input_data});
+  }
+
+  OperandId output_id =
+      builder.BuildOutput("output", transpose_descs.output_desc.shape(),
+                          transpose_descs.output_desc.data_type());
+
+  builder.BuildTranspose(input_id, output_id,
+                         std::move(transpose_descs.permutation));
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -3827,11 +3935,20 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQReduceQ(
 
   OperandDataType quantized_type = quantization_params.quantized_type;
 
-  // Clamp channel_axis to be valid for the input shape.
-  const uint32_t input_channel_axis =
-      channel_axis % reduce_descs.input_desc.shape().size();
+  // Use per-tensor quantization for the input when the input shape is empty
+  // (scalar), since per-channel/per-block quantization requires a non-empty
+  // shape. Otherwise, clamp `input_channel_axis` to be valid for the input
+  // shape.
+  QuantizationParams input_quantization_params = quantization_params;
+  uint32_t input_channel_axis = 0;
+  if (reduce_descs.input_desc.shape().empty()) {
+    input_quantization_params.quantization_kind = QuantizationKind::kPerTensor;
+  } else {
+    input_channel_axis = channel_axis % reduce_descs.input_desc.shape().size();
+  }
   auto input_scale_shape = ComputeQuantizationScaleShape(
-      reduce_descs.input_desc.shape(), quantization_params, input_channel_axis);
+      reduce_descs.input_desc.shape(), input_quantization_params,
+      input_channel_axis);
 
   ASSIGN_OR_RETURN_VOID(
       auto input_dq_desc,
@@ -4078,6 +4195,145 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQResample2dQ(
   GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
 }
 
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::DQTransposeQ(
+    TransposeParams transpose_params,
+    QuantizationParams quantization_params,
+    uint32_t channel_axis,
+    uint8_t seed_for_input,
+    float seed_for_scale,
+    uint8_t seed_for_zero_point) {
+  ASSIGN_OR_RETURN_VOID(
+      auto transpose_descs,
+      SetUpTransposeDescriptors(this->context_properties(), transpose_params));
+
+  // kPerTensor quantization is used to exercise the fusiable path for TFLite
+  // backend:
+  // https://source.chromium.org/chromium/chromium/src/+/main:services/webnn/tflite/graph_builder_tflite.cc;l=2602;drc=ce3629f6f1cdbdb670dbf759e6b7c89c4a92a8fb
+  // TODO(crbug.com/498987226): Remove this restriction to increase test
+  // coverage.
+  QuantizationParams per_tensor_quantization_params = quantization_params;
+  per_tensor_quantization_params.quantization_kind =
+      QuantizationKind::kPerTensor;
+
+  auto input_scale_shape = ComputeQuantizationScaleShape(
+      transpose_descs.input_desc.shape(), per_tensor_quantization_params);
+
+  OperandDataType quantized_type = quantization_params.quantized_type;
+  ASSIGN_OR_RETURN_VOID(
+      auto input_dq_desc,
+      OperandDescriptor::Create(this->context_properties(), quantized_type,
+                                transpose_descs.input_desc.shape(), ""));
+  ASSIGN_OR_RETURN_VOID(auto input_scale_desc,
+                        OperandDescriptor::Create(this->context_properties(),
+                                                  transpose_params.data_type,
+                                                  input_scale_shape, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto input_zero_desc,
+      OperandDescriptor::Create(this->context_properties(), quantized_type,
+                                input_scale_shape, ""));
+
+  ASSIGN_OR_RETURN_VOID(auto input_desc_result,
+                        ValidateDequantizeLinearAndInferOutput(
+                            this->context_properties(), input_dq_desc,
+                            input_scale_desc, input_zero_desc, ""));
+
+  // Use per-tensor quantization for the output when transpose produces a
+  // scalar (rank 0), since per-channel/per-block quantization requires a
+  // non-empty shape. Otherwise, clamp channel_axis to be valid for the output
+  // shape.
+  QuantizationParams output_quantization_params = quantization_params;
+  uint32_t output_channel_axis = 0;
+  if (transpose_descs.output_desc.shape().empty()) {
+    output_quantization_params.quantization_kind = QuantizationKind::kPerTensor;
+  } else {
+    output_channel_axis =
+        channel_axis % transpose_descs.output_desc.shape().size();
+  }
+  auto output_scale_shape = ComputeQuantizationScaleShape(
+      transpose_descs.output_desc.shape(), output_quantization_params,
+      output_channel_axis);
+
+  ASSIGN_OR_RETURN_VOID(auto output_scale_desc,
+                        OperandDescriptor::Create(this->context_properties(),
+                                                  transpose_params.data_type,
+                                                  output_scale_shape, ""));
+  ASSIGN_OR_RETURN_VOID(
+      auto output_zero_desc,
+      OperandDescriptor::Create(this->context_properties(), quantized_type,
+                                output_scale_shape, ""));
+
+  ASSIGN_OR_RETURN_VOID(
+      auto quantized_output_desc,
+      ValidateQuantizeLinearAndInferOutput(
+          this->context_properties(), transpose_descs.output_desc,
+          output_scale_desc, output_zero_desc, ""));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<uint8_t> input_dq_data(input_dq_desc.PackedByteLength(),
+                                     seed_for_input);
+  std::vector<float> input_scale_data(input_scale_desc.NumberOfElements(),
+                                      seed_for_scale);
+  std::vector<uint8_t> input_zero_data(input_zero_desc.PackedByteLength(),
+                                       seed_for_zero_point);
+
+  OperandId input_dq_id;
+  if (transpose_params.is_input_constant) {
+    input_dq_id = builder.BuildConstant(
+        input_dq_desc.shape(), input_dq_desc.data_type(), input_dq_data);
+  } else {
+    input_dq_id = builder.BuildInput("input", input_dq_desc.shape(),
+                                     input_dq_desc.data_type());
+    named_inputs.insert({"input", input_dq_data});
+  }
+
+  OperandId input_scale_id =
+      BuildFloatConstant(builder, input_scale_desc, input_scale_data);
+  OperandId input_zero_id = builder.BuildConstant(
+      input_zero_desc.shape(), input_zero_desc.data_type(), input_zero_data);
+  OperandId transpose_input_id =
+      builder.BuildIntermediateOperand(transpose_descs.input_desc.shape(),
+                                       transpose_descs.input_desc.data_type());
+
+  builder.BuildDequantizeLinear(input_dq_id, input_scale_id, input_zero_id,
+                                transpose_input_id);
+
+  OperandId transpose_output_id =
+      builder.BuildIntermediateOperand(transpose_descs.output_desc.shape(),
+                                       transpose_descs.output_desc.data_type());
+
+  builder.BuildTranspose(transpose_input_id, transpose_output_id,
+                         std::move(transpose_descs.permutation));
+
+  std::vector<float> output_scale_data(output_scale_desc.NumberOfElements(),
+                                       seed_for_scale);
+  std::vector<uint8_t> output_zero_data(output_zero_desc.PackedByteLength(),
+                                        seed_for_zero_point);
+  OperandId output_scale_id =
+      BuildFloatConstant(builder, output_scale_desc, output_scale_data);
+  OperandId output_zero_id = builder.BuildConstant(
+      output_zero_desc.shape(), output_zero_desc.data_type(), output_zero_data);
+
+  OperandId quantize_output_id =
+      builder.BuildOutput("output", quantized_output_desc.shape(),
+                          quantized_output_desc.data_type());
+  builder.BuildQuantizeLinear(transpose_output_id, output_scale_id,
+                              output_zero_id, quantize_output_id);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
 WEBNN_FUZZ_TEST_F(
     Concat,
     .WithDomains(AnyConcatParams(), fuzztest::Arbitrary<uint8_t>())
@@ -4295,6 +4551,18 @@ WEBNN_FUZZ_TEST_F(
                      },
                      /*seed_for_data=*/4}}));
 
+WEBNN_FUZZ_TEST_F(Transpose,
+                  .WithDomains(AnyTransposeParams(),
+                               fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{TransposeParams{
+                                       /*data_type=*/OperandDataType::kFloat32,
+                                       /*rank=*/4,
+                                       /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                                       /*permutation=*/{0, 5, 6, 3, 0, 0, 0, 0},
+                                       /*is_input_constant=*/false,
+                                   },
+                                   /*seed_for_data=*/4}}));
+
 WEBNN_FUZZ_TEST_F(
     DQConcatQ,
     .WithDomains(AnyConcatParams(),
@@ -4498,6 +4766,32 @@ WEBNN_FUZZ_TEST_F(
                          /*is_input_constant=*/false,
                      },
                      /*quantized_type=*/OperandDataType::kUint8,
+                     /*seed_for_input=*/2,
+                     /*seed_for_scale=*/0.25f,
+                     /*seed_for_zero_point=*/0}}));
+
+WEBNN_FUZZ_TEST_F(
+    DQTransposeQ,
+    .WithDomains(AnyTransposeParams(),
+                 AnyQuantizationParams(),
+                 /*channel_axis=*/fuzztest::InRange<uint32_t>(0, 7),
+                 /*seed_for_input=*/fuzztest::Arbitrary<uint8_t>(),
+                 /*seed_for_scale=*/
+                 fuzztest::ElementOf({0.125f, 0.25f, 0.5f, 1.0f, 2.0f}),
+                 /*seed_for_zero_point=*/fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{TransposeParams{
+                         /*data_type=*/OperandDataType::kFloat32,
+                         /*rank=*/4,
+                         /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                         /*permutation=*/{0, 5, 6, 3, 0, 0, 0, 0},
+                         /*is_input_constant=*/false,
+                     },
+                     QuantizationParams{
+                         /*quantized_type=*/OperandDataType::kUint8,
+                         QuantizationKind::kPerTensor,
+                         // This is unused for per tensor quantization.
+                         /*channel_block_size=*/1},
+                     /*channel_axis=*/1,
                      /*seed_for_input=*/2,
                      /*seed_for_scale=*/0.25f,
                      /*seed_for_zero_point=*/0}}));
