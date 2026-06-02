@@ -90,6 +90,11 @@ void ApplySafeAreaInsetOverride(
   }
 }
 
+perfetto::NamedTrack GetTracingTrack(InspectorEmulationAgent* ptr) {
+  return perfetto::NamedTrack::FromPointer("blink::InspectorEmulationAgent",
+                                           ptr);
+}
+
 }  // namespace
 
 InspectorEmulationAgent::InspectorEmulationAgent(
@@ -587,7 +592,7 @@ protocol::Response InspectorEmulationAgent::setVirtualTimePolicy(
   virtual_time_controller_.SetVirtualTimePolicy(scheduler_policy);
   if (virtual_time_budget_ms.value_or(0) > 0) {
     TRACE_EVENT_BEGIN("renderer.scheduler", "VirtualTimeBudget",
-                      perfetto::Track::FromPointer(this), "budget",
+                      GetTracingTrack(this), "budget",
                       virtual_time_budget_ms.value());
     const base::TimeDelta budget_amount =
         base::Milliseconds(virtual_time_budget_ms.value());
@@ -670,7 +675,7 @@ protocol::Response InspectorEmulationAgent::setNavigatorOverrides(
 }
 
 void InspectorEmulationAgent::VirtualTimeBudgetExpired() {
-  TRACE_EVENT_END("renderer.scheduler", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("renderer.scheduler", GetTracingTrack(this));
   // Disregard the event if the agent is disabled. Another agent may take care
   // of pausing the time in case of an in-process frame swap.
   if (!enabled_) {
