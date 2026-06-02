@@ -659,7 +659,8 @@ void AUAudioInputStream::SetSystemAGC(bool enable) {
       kAudioUnitScope_Global, AUElement::INPUT, &current_agc_setting,
       &property_size);
   if (result != noErr) {
-    HandleError(result, "Error reading System AGC property");
+    base::AutoLock al(lock_);
+    HandleErrorAndNotify_Locked(result, "Error reading System AGC property");
     return;
   }
 
@@ -674,7 +675,8 @@ void AUAudioInputStream::SetSystemAGC(bool enable) {
                                   &new_agc_setting, sizeof(new_agc_setting));
 
     if (result != noErr) {
-      HandleError(result, "Error setting System AGC property");
+      base::AutoLock al(lock_);
+      HandleErrorAndNotify_Locked(result, "Error setting System AGC property");
       return;
     }
 
@@ -687,7 +689,6 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << __FUNCTION__ << " this " << this;
   DCHECK(callback);
-  DCHECK(!sink_);
   DLOG_IF(ERROR, !audio_unit_) << "Open() has not been called successfully";
   if (IsRunning())
     return;
@@ -708,7 +709,11 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
   }
 #endif
 
-  sink_ = callback;
+  {
+    base::AutoLock al(lock_);
+    DCHECK(!sink_);
+    sink_ = callback;
+  }
   last_success_time_ = base::TimeTicks::Now();
 
   // Don't disable built-in noise suppression when using VPAU.
@@ -777,8 +782,11 @@ void AUAudioInputStream::Stop() {
 
   SetInputCallbackIsActive(false);
   ReportAndResetStats();
-  sink_ = nullptr;
-  fifo_.Clear();
+  {
+    base::AutoLock al(lock_);
+    sink_ = nullptr;
+    fifo_.Clear();
+  }
   got_input_callback_ = false;
 }
 
@@ -932,6 +940,15 @@ void AUAudioInputStream::ReinitializeVoiceProcessingAudioUnit() {
     DCHECK_EQ(result, noErr);
   }
 
+  // Temporarily clear the sink under lock so in-flight callbacks drain
+  // before we close the AudioUnit.
+  AudioInputCallback* temp_sink = nullptr;
+  {
+    base::AutoLock al(lock_);
+    temp_sink = sink_;
+    sink_ = nullptr;
+  }
+
   CloseAudioUnit();
 
   // Reset things to a state similar to before the audio unit was opened.
@@ -941,6 +958,12 @@ void AUAudioInputStream::ReinitializeVoiceProcessingAudioUnit() {
   got_input_callback_ = false;
 
   OpenVoiceProcessingAU();
+
+  // Restore the sink under lock.
+  {
+    base::AutoLock al(lock_);
+    sink_ = temp_sink;
+  }
 
   if (was_running) {
     result = AudioOutputUnitStart(audio_unit_);
@@ -979,6 +1002,11 @@ OSStatus AUAudioInputStream::OnDataIsAvailable(
     const AudioTimeStamp* time_stamp,
     UInt32 bus_number,
     UInt32 number_of_frames) {
+  base::AutoLock al(lock_);
+  if (!sink_) {
+    return kAudioUnitErr_Uninitialized;
+  }
+
   TRACE_EVENT1("audio", "AUAudioInputStream::OnDataIsAvailable", "frames",
                number_of_frames);
 
@@ -1077,13 +1105,14 @@ OSStatus AUAudioInputStream::OnDataIsAvailable(
     LOG(ERROR) << "Too long sequence of " << err << " errors!";
   }
 
-  HandleError(result, "AudioUnitRender() failed");
+  HandleErrorAndNotify_Locked(result, "AudioUnitRender() failed");
   return result;
 }
 
 OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
                                      AudioBufferList* io_data,
                                      const AudioTimeStamp* time_stamp) {
+  lock_.AssertAcquired();
   TRACE_EVENT1("audio", "AUAudioInputStream::Provide", "number_of_frames",
                number_of_frames);
   glitch_helper_.OnFramesReceived(*time_stamp, number_of_frames);
@@ -1199,8 +1228,17 @@ void AUAudioInputStream::HandleError(OSStatus err,
                            GetInputCallbackIsActive() ? err : (err * -1));
   SendLog(base::StringPrintf("%s at line %d", message, location.line_number()),
           err);
-  if (sink_)
+}
+
+void AUAudioInputStream::HandleErrorAndNotify_Locked(
+    OSStatus err,
+    const char* message,
+    const base::Location& location) {
+  lock_.AssertAcquired();
+  HandleError(err, message, location);
+  if (sink_) {
     sink_->OnError();
+  }
 }
 
 void AUAudioInputStream::SetInputCallbackIsActive(bool enabled) {
@@ -1233,7 +1271,32 @@ void AUAudioInputStream::CloseAudioUnit() {
   DVLOG(1) << __FUNCTION__ << " this " << this;
   if (!audio_unit_)
     return;
-  OSStatus result = AudioUnitUninitialize(audio_unit_);
+
+  // Clear the input callback.
+  AURenderCallbackStruct callback;
+  callback.inputProc = nullptr;
+  callback.inputProcRefCon = nullptr;
+  OSStatus result = AudioUnitSetProperty(
+      audio_unit_, kAudioOutputUnitProperty_SetInputCallback,
+      kAudioUnitScope_Global,
+      use_voice_processing_ ? AUElement::INPUT : AUElement::OUTPUT, &callback,
+      sizeof(callback));
+  OSSTATUS_DLOG_IF(ERROR, result != noErr, result)
+      << "Failed to clear AU input callback.";
+
+  if (use_voice_processing_) {
+    AURenderCallbackStruct playout_callback;
+    playout_callback.inputProc = nullptr;
+    playout_callback.inputProcRefCon = nullptr;
+    result =
+        AudioUnitSetProperty(audio_unit_, kAudioUnitProperty_SetRenderCallback,
+                             kAudioUnitScope_Input, AUElement::OUTPUT,
+                             &playout_callback, sizeof(playout_callback));
+    OSSTATUS_DLOG_IF(ERROR, result != noErr, result)
+        << "Failed to clear AU render callback.";
+  }
+
+  result = AudioUnitUninitialize(audio_unit_);
   OSSTATUS_DLOG_IF(ERROR, result != noErr, result)
       << "AudioUnitUninitialize() failed.";
   result = AudioComponentInstanceDispose(audio_unit_);
@@ -1243,17 +1306,24 @@ void AUAudioInputStream::CloseAudioUnit() {
 }
 
 void AUAudioInputStream::ReportAndResetStats() {
-  std::optional<std::string> log_message = glitch_helper_.LogAndReset("AU in");
+  std::optional<std::string> log_message;
+  size_t local_number_of_frames_provided = 0;
+  {
+    base::AutoLock al(lock_);
+    log_message = glitch_helper_.LogAndReset("AU in");
+    local_number_of_frames_provided = number_of_frames_provided_;
+    number_of_frames_provided_ = 0;
+  }
+
   if (log_message) {
     log_callback_.Run(*log_message);
   }
 
-  if (number_of_frames_provided_) {
+  if (local_number_of_frames_provided) {
     // A value of 0 indicates that we got the buffer size we asked for.
     base::UmaHistogramCounts10000("Media.Audio.Capture.FramesProvided",
-                                  number_of_frames_provided_);
+                                  local_number_of_frames_provided);
   }
-  number_of_frames_provided_ = 0;
 }
 
 // TODO(ossu): Ideally, we'd just use the mono stream directly. However, since
