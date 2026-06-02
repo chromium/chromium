@@ -691,8 +691,15 @@ TrustedTypesCheckForParserOptions(FragmentParserOptions options,
     unsafe_options_for_policy->setRunScripts(
         options.run_scripts() ==
         FragmentParserOptions::RunScripts::kRunScripts);
-    if (options.sanitizer_init()) {
-      unsafe_options_for_policy->setSanitizer(options.sanitizer_init());
+    auto* sanitizer = options.sanitizer_init();
+    if (sanitizer) {
+      if (sanitizer->IsSanitizer()) {
+        Sanitizer* clone = Sanitizer::CreateEmpty();
+        clone->setFrom(*sanitizer->GetAsSanitizer());
+        sanitizer->Set(clone);
+      }
+
+      unsafe_options_for_policy->setSanitizer(sanitizer);
     }
     result = default_policy->createParserOptions(unsafe_options_for_policy,
                                                  exception_state);
