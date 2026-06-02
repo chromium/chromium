@@ -6,12 +6,16 @@
 
 #include <iostream>
 
+#include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
+#include "build/build_config.h"
 #include "javascript_parser.pb.h"  // from out/gen
 #include "testing/libfuzzer/fuzzers/javascript_parser_proto_to_string.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
-
 #include "v8/include/libplatform/libplatform.h"
 #include "v8/include/v8.h"
 
@@ -56,8 +60,18 @@ std::string protobuf_to_string(
 
 extern "C" int
 LLVMFuzzerInitialize(int* argc, char*** argv) {
+// TODO(crbug.com/515765355): Consider centralizing this fallback logic in V8
+// code.
+#if BUILDFLAG(IS_ANDROID)
+  base::FilePath assets_dir;
+  CHECK(base::PathService::Get(base::DIR_ASSETS, &assets_dir));
+  v8::V8::InitializeICUDefaultLocation(assets_dir.value().c_str());
+  base::FilePath snapshot_path = assets_dir.Append("snapshot_blob.bin");
+  v8::V8::InitializeExternalStartupDataFromFile(snapshot_path.value().c_str());
+#else
   v8::V8::InitializeICUDefaultLocation((*argv)[0]);
   v8::V8::InitializeExternalStartupData((*argv)[0]);
+#endif  // BUILDFLAG(IS_ANDROID)
   v8::V8::SetFlagsFromCommandLine(argc, *argv, true);
   return 0;
 }
