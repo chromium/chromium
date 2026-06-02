@@ -36,6 +36,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob_property_bag.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_writable_pair.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
@@ -44,6 +45,8 @@
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/streams/text_decoder_transformer.h"
+#include "third_party/blink/renderer/core/streams/transform_stream.h"
 #include "third_party/blink/renderer/core/url/dom_url.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -51,7 +54,9 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 namespace blink {
 
@@ -255,6 +260,34 @@ ReadableStream* Blob::stream(ScriptState* script_state) const {
       /*signal=*/nullptr, /*cached_metadata_handler=*/nullptr);
 
   return body_buffer->Stream();
+}
+
+ReadableStream* Blob::textStream(ScriptState* script_state,
+                                 ExceptionState& exception_state) const {
+  ReadableStream* body_stream = stream(script_state);
+  if (!body_stream) {
+    return nullptr;
+  }
+
+  auto* transformer = MakeGarbageCollected<TextDecoderTransformer>(
+      script_state, Utf8Encoding(), /*fatal=*/false, /*ignore_bom=*/false);
+  TransformStream* transform_stream =
+      TransformStream::Create(script_state, transformer, exception_state);
+  if (exception_state.HadException() || !transform_stream) {
+    return nullptr;
+  }
+
+  ReadableWritablePair* pair = ReadableWritablePair::Create();
+  pair->setReadable(transform_stream->readable());
+  pair->setWritable(transform_stream->writable());
+
+  ReadableStream* piped_stream =
+      body_stream->pipeThrough(script_state, pair, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  return piped_stream;
 }
 
 ScriptPromise<IDLUSVString> Blob::text(ScriptState* script_state) {

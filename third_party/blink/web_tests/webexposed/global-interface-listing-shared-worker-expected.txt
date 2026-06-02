@@ -67,6 +67,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method slice
 [Worker]     method stream
 [Worker]     method text
+[Worker]     method textStream
 [Worker] interface BroadcastChannel : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter name

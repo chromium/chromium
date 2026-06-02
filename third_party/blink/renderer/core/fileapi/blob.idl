@@ -49,6 +49,7 @@ typedef (ArrayBuffer or ArrayBufferView or Blob or USVString) BlobPart;
     // behavior.
     [RaisesException] Blob slice(optional [Clamp] long long start = 0, optional [Clamp] long long end = 0x7FFFFFFFFFFFFFFF, optional DOMString contentType = "");
     [CallWith=ScriptState, NewObject] ReadableStream stream();
+    [RuntimeEnabled=TextStreamMethod, CallWith=ScriptState, NewObject, RaisesException] ReadableStream textStream();
     [CallWith=ScriptState, NewObject] Promise<USVString> text();
     [CallWith=ScriptState, NewObject] Promise<ArrayBuffer> arrayBuffer();
     [RuntimeEnabled=BlobBytes, CallWith=ScriptState, NewObject] Promise<Uint8Array> bytes();

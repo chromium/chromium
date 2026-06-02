@@ -80,6 +80,7 @@ class CORE_EXPORT Blob : public ScriptWrappable,
               ExceptionState&) const;
 
   ReadableStream* stream(ScriptState* script_state) const;
+  ReadableStream* textStream(ScriptState*, ExceptionState&) const;
   ScriptPromise<IDLUSVString> text(ScriptState* script_state);
   ScriptPromise<DOMArrayBuffer> arrayBuffer(ScriptState* script_state);
   ScriptPromise<NotShared<DOMUint8Array>> bytes(ScriptState* script_state);
