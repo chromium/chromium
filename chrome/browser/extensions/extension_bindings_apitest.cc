@@ -9,8 +9,6 @@
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 #include "components/embedder_support/switches.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
@@ -23,6 +21,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -30,6 +29,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/switches.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -531,9 +532,8 @@ IN_PROC_BROWSER_TEST_F(
                                                       "tabs.onCreated"));
 
   // Close one of the extension pages.
-  constexpr bool add_to_history = false;
   content::WebContentsDestroyedWatcher watcher(second_tab);
-  chrome::CloseWebContents(browser(), second_tab, add_to_history);
+  CloseTabForWebContents(second_tab);
   watcher.Wait();
   // Hacky round trip to the renderer to flush IPCs.
   ASSERT_TRUE(content::ExecJs(first_tab, ""));
@@ -774,6 +774,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                             content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
+// Desktop Android does not support side panel yet. https://crbug.com/405218955
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that, if a document has an active user gesture, a new message coming in
 // that *also* has a user gesture won't override the active one. Regression test
 // for https://crbug.com/355266358.
@@ -874,6 +876,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
   // The test succeeds if the side panel opens.
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that bindings are properly instantiated for a window navigated to an
 // extension URL after being opened with an undefined URL.
