@@ -10,6 +10,7 @@
 #include "base/containers/queue.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "base/timer/timer.h"
 #include "media/base/video_encoder.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
@@ -50,10 +51,11 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
 
   // media::VideoEncoder callbacks.
   void OnEncodedFrame(
+      int encoder_version,
       VideoEncoderOutput output,
       std::optional<media::VideoEncoder::CodecDescription> description);
-  void OnEncoderStatus(EncoderStatus error);
-  void OnEncoderInfo(const VideoEncoderInfo& encoder_info);
+  void OnEncoderStatus(int encoder_version, EncoderStatus error);
+  void OnEncoderInfo(int encoder_version, const VideoEncoderInfo& encoder_info);
 
   // Test-only API to override the backing video encoder implementation.
   void SetEncoderForTesting(std::unique_ptr<media::VideoEncoder> encoder);
@@ -103,6 +105,9 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // can then construct the encoder.
   void ConstructEncoder();
 
+  // Debounced reconstruction helper.
+  void ReconstructEncoderForNewSize(const gfx::Size& new_size);
+
   // Setter method for the video encoder.
   //
   // Takes an `encoder` with a default deleter, unwraps its contents, and takes
@@ -121,9 +126,10 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // Posts a task to update the encoder options, such as whether a key frame
   // is requested.
   void UpdateEncoderOptions();
-  void OnFlushDoneForOptionsUpdate(media::VideoEncoder::Options options,
+  void OnFlushDoneForOptionsUpdate(int encoder_version,
+                                   media::VideoEncoder::Options options,
                                    EncoderStatus status);
-  void OnOptionsUpdated(EncoderStatus status);
+  void OnOptionsUpdated(int encoder_version, EncoderStatus status);
 
   // We currently manage the threads used for interacting with the encoder
   // manually. Hardware encoding demands posting to the "accelerator thread"
@@ -143,7 +149,9 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   //
   // NOTE: the media::VideoEncoder API makes no guarantees on what order the two
   // callbacks get called in.
-  void OnFrameEncodeDone(base::TimeTicks reference_time, EncoderStatus status);
+  void OnFrameEncodeDone(int encoder_version,
+                         base::TimeTicks reference_time,
+                         EncoderStatus status);
 
   // Callback generator. Returned callbacks are intended to be called on the
   // VIDEO thread and post back to the MAIN thread.
@@ -204,6 +212,12 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
 
   // Pending encodes to be run when options are updated.
   std::vector<base::OnceClosure> pending_encodes_;
+
+  // Timer to debounce encoder reconstruction during active resizing.
+  base::OneShotTimer resize_debounce_timer_;
+
+  // The target size for the pending reconstruction.
+  std::optional<gfx::Size> target_resize_size_;
 
   // The version of the current encoder. Incremented every time the encoder
   // is reconstructed. Used to detect and drop race-conditioned frames.

@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
@@ -114,7 +115,7 @@ class MediaVideoEncoderWrapperTest : public TestWithCastEnvironment {
 
   void SetEncoderAsInitialized() {
     // We simulate the encoder as initialized for the purpose of testing.
-    encoder_->OnEncoderStatus(EncoderStatus::Codes::kOk);
+    encoder_->OnEncoderStatus(0, EncoderStatus::Codes::kOk);
   }
 
   FrameInfo CreateFrameInfo(FrameType frame_type) const {
@@ -413,6 +414,133 @@ TEST_F(MediaVideoEncoderWrapperTest, CanHandleMultiplePendingUpdates) {
   EXPECT_NE(EncodeVideoFrame(second_frame_info), nullptr);
 }
 
+TEST_F(MediaVideoEncoderWrapperTest, DebouncesSizeChanges) {
+  const gfx::Size size_initial(640, 360);
+  const gfx::Size size_b(1280, 720);
+  const gfx::Size size_c(1920, 1080);
+
+  media::VideoEncoder::Options options_initial;
+  options_initial.bitrate = Bitrate::ConstantBitrate(
+      base::checked_cast<uint32_t>(config_.start_bitrate));
+  options_initial.frame_size = size_initial;
+
+  media::VideoEncoder::Options options_c;
+  options_c.bitrate = Bitrate::ConstantBitrate(
+      base::checked_cast<uint32_t>(config_.start_bitrate));
+  options_c.frame_size = size_c;
+
+  // 1. Expect initial initialization
+  EXPECT_CALL(*mock_encoder_,
+              Initialize(kProfile, OptionsAreEqual(options_initial), _, _, _))
+      .WillOnce([&](VideoCodecProfile profile,
+                    const media::VideoEncoder::Options& options,
+                    media::VideoEncoder::EncoderInfoCB info,
+                    media::VideoEncoder::OutputCB output,
+                    media::VideoEncoder::EncoderStatusCB done) {
+        std::move(info).Run(VideoEncoderInfo());
+        std::move(done).Run(EncoderStatus::Codes::kOk);
+        output_cb_ = output;
+      });
+
+  EXPECT_CALL(*mock_encoder_, DisablePostedCallbacks()).Times(1);
+
+  // Send Frame 1 (Initial Size) -> triggers immediate initialization
+  const FrameInfo frame_info_1 =
+      FrameInfo{.frame_type = FrameType::kKey,
+                .size = size_initial,
+                .capture_begin_time = NowTicks(),
+                .capture_end_time = NowTicks() + base::Milliseconds(10),
+                .reference_time = NowTicks() + base::Milliseconds(20),
+                .frame_duration = base::Milliseconds(30)};
+
+  EXPECT_CALL(*mock_encoder_, Encode(FrameInfosAreEqual(frame_info_1), _, _))
+      .WillOnce([&, frame_info_1](
+                    scoped_refptr<VideoFrame> frame,
+                    const media::VideoEncoder::EncodeOptions& options,
+                    media::VideoEncoder::EncoderStatusCB done) {
+        std::move(done).Run(EncoderStatus::Codes::kOk);
+        if (output_cb_) {
+          VideoEncoderOutput output;
+          output.key_frame = true;
+          output.timestamp = frame_info_1.reference_time - base::TimeTicks();
+          output.data = base::HeapArray<uint8_t>::WithSize(100);
+          output_cb_.Run(std::move(output), std::nullopt);
+        }
+      });
+
+  EXPECT_NE(EncodeVideoFrame(frame_info_1), nullptr);
+
+  // Now we are initialized.
+  // Expect Frame 2 and 3 to be encoded without re-initialization.
+  const FrameInfo frame_info_2 =
+      FrameInfo{.frame_type = FrameType::kIntermediate,
+                .size = size_b,
+                .capture_begin_time = NowTicks(),
+                .capture_end_time = NowTicks() + base::Milliseconds(10),
+                .reference_time = NowTicks() + base::Milliseconds(40),
+                .frame_duration = base::Milliseconds(30)};
+
+  const FrameInfo frame_info_3 =
+      FrameInfo{.frame_type = FrameType::kIntermediate,
+                .size = size_c,
+                .capture_begin_time = NowTicks(),
+                .capture_end_time = NowTicks() + base::Milliseconds(10),
+                .reference_time = NowTicks() + base::Milliseconds(60),
+                .frame_duration = base::Milliseconds(30)};
+
+  EXPECT_CALL(*mock_encoder_, Encode(FrameInfosAreEqual(frame_info_2), _, _))
+      .WillOnce([](scoped_refptr<VideoFrame> frame,
+                   const media::VideoEncoder::EncodeOptions& options,
+                   media::VideoEncoder::EncoderStatusCB done) {
+        std::move(done).Run(EncoderStatus::Codes::kOk);
+      });
+
+  base::RunLoop encode_3_loop;
+  EXPECT_CALL(*mock_encoder_, Encode(FrameInfosAreEqual(frame_info_3), _, _))
+      .WillOnce([&](scoped_refptr<VideoFrame> frame,
+                    const media::VideoEncoder::EncodeOptions& options,
+                    media::VideoEncoder::EncoderStatusCB done) {
+        encode_3_loop.Quit();
+        std::move(done).Run(EncoderStatus::Codes::kOk);
+      });
+
+  // Send Frame 2 (Size B) -> should start timer
+  auto video_frame_2 = CreateVideoFrame(frame_info_2);
+  EXPECT_TRUE(encoder_->EncodeVideoFrame(
+      video_frame_2, frame_info_2.reference_time,
+      base::BindOnce([](std::unique_ptr<SenderEncodedFrame> frame) {})));
+
+  // Send Frame 3 (Size C) -> should restart timer for C
+  auto video_frame_3 = CreateVideoFrame(frame_info_3);
+  EXPECT_TRUE(encoder_->EncodeVideoFrame(
+      video_frame_3, frame_info_3.reference_time,
+      base::BindOnce([](std::unique_ptr<SenderEncodedFrame> frame) {})));
+
+  // 2. Expect initialization to final size C after timer fires
+  base::RunLoop init_loop;
+  EXPECT_CALL(*mock_encoder_,
+              Initialize(kProfile, OptionsAreEqual(options_c), _, _, _))
+      .WillOnce([&](VideoCodecProfile profile,
+                    const media::VideoEncoder::Options& options,
+                    media::VideoEncoder::EncoderInfoCB info,
+                    media::VideoEncoder::OutputCB output,
+                    media::VideoEncoder::EncoderStatusCB done) {
+        init_loop.Quit();
+        std::move(info).Run(VideoEncoderInfo());
+        std::move(done).Run(EncoderStatus::Codes::kOk);
+      });
+  EXPECT_CALL(*mock_encoder_, DisablePostedCallbacks()).Times(1);
+
+  // Wait for quantizer estimation and Encode to finish before firing the timer.
+  encode_3_loop.Run();
+
+  // Fast-forward time by 250ms to trigger reconstruction.
+  AdvanceClock(base::Milliseconds(250));
+
+  // Wait until Initialize (Size C) is called.
+  init_loop.Run();
+}
+
 TEST_F(MediaVideoEncoderWrapperTest, DropsFrameOnSizeChangeDuringEstimation) {
   const gfx::Size size_a(640, 360);
   const gfx::Size size_b(1280, 720);
@@ -454,30 +582,6 @@ TEST_F(MediaVideoEncoderWrapperTest, DropsFrameOnSizeChangeDuringEstimation) {
 
   EXPECT_CALL(*mock_encoder_, DisablePostedCallbacks()).Times(2);
 
-  // Expect only the second frame to be encoded.
-  const FrameInfo frame_info_b =
-      FrameInfo{.frame_type = FrameType::kKey,
-                .size = size_b,
-                .capture_begin_time = NowTicks(),
-                .capture_end_time = NowTicks() + base::Milliseconds(10),
-                .reference_time = NowTicks() + base::Milliseconds(20),
-                .frame_duration = base::Milliseconds(30)};
-
-  EXPECT_CALL(*mock_encoder_, Encode(FrameInfosAreEqual(frame_info_b), _, _))
-      .WillOnce([&, frame_info_b](
-                    scoped_refptr<VideoFrame> frame,
-                    const media::VideoEncoder::EncodeOptions& options,
-                    media::VideoEncoder::EncoderStatusCB done) {
-        std::move(done).Run(EncoderStatus::Codes::kOk);
-        if (output_cb_) {
-          VideoEncoderOutput output;
-          output.key_frame = true;
-          output.timestamp = frame_info_b.reference_time - base::TimeTicks();
-          output.data = base::HeapArray<uint8_t>::WithSize(100);
-          output_cb_.Run(std::move(output), std::nullopt);
-        }
-      });
-
   // Call EncodeVideoFrame for Frame A (should be dropped)
   const FrameInfo frame_info_a =
       FrameInfo{.frame_type = FrameType::kKey,
@@ -494,8 +598,58 @@ TEST_F(MediaVideoEncoderWrapperTest, DropsFrameOnSizeChangeDuringEstimation) {
   EXPECT_TRUE(encoder_->EncodeVideoFrame(
       video_frame_a, frame_info_a.reference_time, callback_a.Get()));
 
-  // Call EncodeVideoFrame for Frame B (should be encoded)
+  // Trigger size change to size B which starts the timer.
+  const FrameInfo frame_info_trigger =
+      FrameInfo{.frame_type = FrameType::kKey,
+                .size = size_b,
+                .capture_begin_time = NowTicks(),
+                .capture_end_time = NowTicks() + base::Milliseconds(10),
+                .reference_time = NowTicks() + base::Milliseconds(30),
+                .frame_duration = base::Milliseconds(30)};
+  auto video_frame_trigger = CreateVideoFrame(frame_info_trigger);
+
+  bool trigger_dropped = false;
+  base::MockCallback<VideoEncoder::FrameEncodedCallback> callback_trigger;
+  EXPECT_CALL(callback_trigger, Run(testing::IsNull()))
+      .WillOnce(testing::InvokeWithoutArgs([&]() { trigger_dropped = true; }));
+
+  EXPECT_TRUE(encoder_->EncodeVideoFrame(video_frame_trigger,
+                                         frame_info_trigger.reference_time,
+                                         callback_trigger.Get()));
+
+  // Fast-forward time by 250ms to fire the timer and reconstruct the encoder.
+  // This increments encoder_version_ and will cause Frame A and trigger frame
+  // to be dropped when their estimation finishes.
+  AdvanceClock(base::Milliseconds(250));
+
+  // Wait for the dropped callbacks to be executed.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return trigger_dropped; }));
+
+  // Now submit Frame B, which should be encoded by the new encoder.
+  const FrameInfo frame_info_b =
+      FrameInfo{.frame_type = FrameType::kKey,
+                .size = size_b,
+                .capture_begin_time = NowTicks(),
+                .capture_end_time = NowTicks() + base::Milliseconds(10),
+                .reference_time = NowTicks() + base::Milliseconds(40),
+                .frame_duration = base::Milliseconds(30)};
   auto video_frame_b = CreateVideoFrame(frame_info_b);
+
+  EXPECT_CALL(*mock_encoder_, Encode(FrameInfosAreEqual(frame_info_b), _, _))
+      .WillOnce([&, frame_info_b](
+                    scoped_refptr<VideoFrame> frame,
+                    const media::VideoEncoder::EncodeOptions& options,
+                    media::VideoEncoder::EncoderStatusCB done) {
+        std::move(done).Run(EncoderStatus::Codes::kOk);
+        if (output_cb_) {
+          VideoEncoderOutput output;
+          output.key_frame = true;
+          output.timestamp = frame_info_b.reference_time - base::TimeTicks();
+          output.data = base::HeapArray<uint8_t>::WithSize(100);
+          output_cb_.Run(std::move(output), std::nullopt);
+        }
+      });
+
   std::unique_ptr<SenderEncodedFrame> encoded_frame_b;
   base::RunLoop run_loop;
 
