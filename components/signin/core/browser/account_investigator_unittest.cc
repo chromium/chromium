@@ -275,8 +275,10 @@ TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedError) {
   const HistogramTester histogram_tester;
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
       /*accounts_are_fresh=*/true, {one});
-  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
-  investigator()->OnAccountsInCookieUpdated(accounts_in_cookie_jar_info, error);
+  investigator()->OnAccountsInCookieUpdated(
+      accounts_in_cookie_jar_info,
+      GoogleServiceAuthError::FromServiceUnavailable(
+          "fake service unavailable"));
   EXPECT_EQ(
       0u, histogram_tester.GetTotalCountsForPrefix("Signin.CookieJar.").size());
 }

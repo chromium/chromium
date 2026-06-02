@@ -210,8 +210,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, AuthErrorChanged) {
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   delegate.UpdateCredentials(account_id, "refresh_token");
 
-  GoogleServiceAuthError error(
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
   EXPECT_CALL(mock_observer,
               OnAuthErrorChanged(
                   account_id, error,

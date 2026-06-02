@@ -144,9 +144,9 @@ class GaiaCookieManagerServiceTest : public testing::Test {
         account_id2_(CoreAccountId::FromGaiaId(kAccountId2)),
         account_id3_(CoreAccountId::FromGaiaId(kAccountId3)),
         account_id4_(CoreAccountId::FromGaiaId(kAccountId4)),
-        no_error_(GoogleServiceAuthError::NONE),
-        error_(GoogleServiceAuthError::SERVICE_ERROR),
-        canceled_(GoogleServiceAuthError::REQUEST_CANCELED) {
+        no_error_(GoogleServiceAuthError::AuthErrorNone()),
+        error_(GoogleServiceAuthError::FromServiceError("fake service error")),
+        canceled_(GoogleServiceAuthError::CreateRequestCanceled()) {
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     GaiaCookieManagerService::RegisterPrefs(pref_service_.registry());
     signin_client_ = std::make_unique<CustomTestSigninClient>(&pref_service_);
