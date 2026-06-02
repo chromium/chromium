@@ -85,15 +85,6 @@ void RequestDesktopVersion() {
 
 @implementation FeatureEngagementTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector(testRequestDesktopTip)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
-  return config;
-}
-
 - (void)enableDemoModeForFeature:(std::string)feature {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.iph_feature_enabled = feature;
@@ -137,9 +128,6 @@ void RequestDesktopVersion() {
 
 // Verifies that the IPH for Request desktop shows when triggered
 - (void)testRequestDesktopTip {
-  // TODO(crbug.com/514608938): Fix bubble presenter anchor/direction under
-  // Chrome Next.
-
   [self enableDemoModeForFeature:"IPH_DefaultSiteView"];
 
   self.testServer->AddDefaultHandlers();
