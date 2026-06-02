@@ -1434,4 +1434,15 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_FALSE(coordinator().IsPanelShowingForBrowser(mock_bwi));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, HotkeyTriggersOpen) {
+  EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 0u);
+
+  // Simulate receiving the hotkey command.
+  bool handled = coordinator().GetHotkeyManagerForTesting()->AcceleratorPressed(
+      LocalHotkeyManager::Command::kOpenGlic);
+  EXPECT_TRUE(handled);
+
+  ASSERT_OK(WaitForGlicOpen());
+}
+
 }  // namespace glic

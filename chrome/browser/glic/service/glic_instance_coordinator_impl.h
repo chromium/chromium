@@ -193,6 +193,9 @@ class GlicInstanceCoordinatorImpl
   std::string DescribeForTesting();
   std::vector<GlicInstanceImpl*> GetInstancesForTesting();
   GlicInstanceCoordinatorMetrics& GetMetricsForTesting() { return metrics_; }
+  InstanceIndependentHotkeyManager* GetHotkeyManagerForTesting() {
+    return hotkey_manager_.get();
+  }
 
   // Testing support. These methods should not be added to the public interface.
   GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id) const;
