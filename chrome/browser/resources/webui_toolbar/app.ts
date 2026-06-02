@@ -13,6 +13,7 @@ import './icon_table.js';
 import './icon_from_table.js';
 import './icons.html.js';
 
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
@@ -232,6 +233,7 @@ export class ToolbarAppElement extends AppElementBase {
   private initializeSessionId_: number = 0;
   private dragOverListener_ = (e: DragEvent) => this.onDragOver_(e);
   private dropListener_ = (e: DragEvent) => this.onDrop_(e);
+  private keyDownListener_ = (e: KeyboardEvent) => this.onKeyDown_(e);
 
   constructor() {
     super();
@@ -259,6 +261,7 @@ export class ToolbarAppElement extends AppElementBase {
 
     this.addEventListener('dragover', this.dragOverListener_);
     this.addEventListener('drop', this.dropListener_);
+    this.addEventListener('keydown', this.keyDownListener_);
 
     // Initial setup of CSS variables
     this.style.setProperty(
@@ -339,6 +342,7 @@ export class ToolbarAppElement extends AppElementBase {
 
     this.removeEventListener('dragover', this.dragOverListener_);
     this.removeEventListener('drop', this.dropListener_);
+    this.removeEventListener('keydown', this.keyDownListener_);
 
     this.browserProxy_.removeNavigationStateListener(
         this.navigationStateListenerHandle_);
@@ -358,6 +362,109 @@ export class ToolbarAppElement extends AppElementBase {
       }
       this.isPageInitialized_ = false;
     }
+  }
+
+  // Drill down to find the actual active element
+  private getDeepActiveElement(root: Document|ShadowRoot = document): Element
+      |null {
+    let active = root.activeElement;
+    while (active && active.shadowRoot && active.shadowRoot.activeElement) {
+      active = active.shadowRoot.activeElement;
+    }
+    return active;
+  }
+
+  // Recursively find all focusable elements
+  private getDeepFocusableElements(root: Element|Document|ShadowRoot):
+      HTMLElement[] {
+    const focusableSelectors = 'button, cr-button, cr-icon-button, input';
+
+    let focusable: HTMLElement[] = [];
+
+    for (const node of Array.from(root.children)) {
+      // 1. If this element matches our selectors, check if it's visible/enabled
+      if (node.matches(focusableSelectors)) {
+        const el = node as HTMLElement;
+        const isDisabled = el.hasAttribute('disabled');
+        const isHidden = el.closest('[hidden]') !== null;
+        const isVisible = el.offsetWidth > 0 || el.offsetHeight > 0;
+
+        if (!isDisabled && !isHidden && isVisible) {
+          focusable.push(el);
+        }
+
+        // Don't bother digging into cr-buttons etc.
+        continue;
+      }
+
+      // 2. If it has a Shadow DOM, pierce into it recursively
+      if (node.shadowRoot) {
+        focusable =
+            focusable.concat(this.getDeepFocusableElements(node.shadowRoot));
+      }
+
+      // 3. Always check its Light DOM children as well (handles <slot>
+      // projections)
+      if (node.children.length > 0) {
+        focusable = focusable.concat(this.getDeepFocusableElements(node));
+      }
+    }
+
+    return focusable;
+  }
+
+  private onKeyDown_(event: KeyboardEvent) {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight' &&
+        // TODO(crbug.com/510825650): When app menu button enabled:
+        // (event.key !== 'End' || !this.isAppMenuButtonEnabled_) &&
+        (event.key !== 'Home' || !this.isBackForwardButtonEnabled_)) {
+      return;
+    }
+
+    // Find focused element, may have to recurse in.
+    const active =
+        this.getDeepActiveElement(this.shadowRoot) as HTMLElement | null;
+    if (!active) {
+      return;
+    }
+
+    // Let omnibox handle these keys.
+    if (active instanceof HTMLInputElement) {
+      return;
+    }
+
+    // Build the array of targets.
+    const focusableElements = this.getDeepFocusableElements(this.shadowRoot);
+
+    const currentIndex = focusableElements.indexOf(active);
+    assert(currentIndex !== -1);
+    let nextIndex: number = 0;
+
+    if (event.key === 'Home') {
+      nextIndex = 0;
+      // TODO(crbug.com/510825650): When app menu button enabled:
+      // } else if (event.key === 'End') {
+      //   nextIndex = focusableElements.length - 1;
+    } else if (event.key === 'ArrowRight') {
+      nextIndex = currentIndex + 1;
+      // Let parent handle this for now.
+      // TODO(crbug.com/510825650): Handle wrap around when app menu button is
+      // WebUI.
+      if (nextIndex >= focusableElements.length) {
+        return;
+      }
+    } else if (event.key === 'ArrowLeft') {
+      nextIndex = currentIndex - 1;
+      // Let parent handle this for now.
+      // TODO(crbug.com/510825650): Handle wrap around when app menu button is
+      // WebUI.
+      if (nextIndex < 0) {
+        return;
+      }
+    }
+
+    event.preventDefault();
+    focusableElements[nextIndex]!.focus();
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
