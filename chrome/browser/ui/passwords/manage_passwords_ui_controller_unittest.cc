@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
@@ -68,6 +67,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/actions/actions.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -2384,105 +2384,6 @@ TEST_P(ManagePasswordsUIControllerTest, OnKeychainErrorShouldNotShowBubble) {
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
 }
 #endif
-
-// TODO(crbug.com/376283921): These tests should be turned into browser tests to
-// avoid using `TestWithBrowserView`.
-class ManagePasswordsUIControllerWithBrowserTest
-    : public base::test::WithFeatureOverride,
-      public TestWithBrowserView {
- public:
-  explicit ManagePasswordsUIControllerWithBrowserTest(
-      base::test::TaskEnvironment::TimeSource time_source =
-          base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
-      : base::test::WithFeatureOverride(
-            autofill::features::kAutofillShowBubblesBasedOnPriorities),
-        TestWithBrowserView(time_source) {}
-
-  void SetUp() override;
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  ManagePasswordsUIController* controller() {
-    return ManagePasswordsUIController::FromWebContents(web_contents());
-  }
-
- private:
-  TestPasswordManagerClient client_;
-};
-
-void ManagePasswordsUIControllerWithBrowserTest::SetUp() {
-  TestWithBrowserView::SetUp();
-  AddTab(browser(), GURL(kExampleUrl));
-  ManagePasswordsUIController::CreateForWebContents(web_contents());
-  controller()->set_client(&client_);
-}
-
-TEST_P(ManagePasswordsUIControllerWithBrowserTest,
-       OnAutofillingSharedPasswordNotNotifiedYet) {
-  // Simulate two candidates in the dropdown menu where one of them is shared.
-  PasswordForm non_shared_credentials;
-  non_shared_credentials.url = GURL("http://example.com/login");
-  non_shared_credentials.signon_realm = non_shared_credentials.url.spec();
-  non_shared_credentials.username_value = u"username";
-  non_shared_credentials.password_value = u"12345";
-  non_shared_credentials.match_type = PasswordForm::MatchType::kExact;
-
-  PasswordForm shared_credentials = non_shared_credentials;
-  shared_credentials.type = PasswordForm::Type::kReceivedViaSharing;
-  non_shared_credentials.username_value = u"username2";
-  shared_credentials.sharing_notification_displayed = false;
-
-  std::vector<PasswordForm> forms = {shared_credentials,
-                                     non_shared_credentials};
-  EXPECT_FALSE(controller()->IsShowingBubble());
-  controller()->OnPasswordAutofilled(password_manager::FromPasswordForms(forms),
-                                     url::Origin::Create(forms.front().url),
-                                     {});
-
-  ASSERT_EQ(2u, controller()->GetCurrentForms().size());
-  EXPECT_EQ(controller()->GetState(),
-            password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS);
-  EXPECT_TRUE(controller()->IsShowingBubble());
-  // All interactions with the bubble will close it and invoke OnBubbleHidden().
-  controller()->OnBubbleHidden();
-  // The bubble should transition to the manage state upon any interaction.
-  EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
-  EXPECT_FALSE(controller()->IsShowingBubble());
-}
-
-TEST_P(ManagePasswordsUIControllerWithBrowserTest,
-       OnAutofillingSharedPasswordNotifiedAlready) {
-  // Simulate two candidates in the dropdown menu where one of them is shared,
-  // while the user has been notified about the shared password already.
-  PasswordForm non_shared_credentials;
-  non_shared_credentials.url = GURL("http://example.com/login");
-  non_shared_credentials.signon_realm = non_shared_credentials.url.spec();
-  non_shared_credentials.username_value = u"username";
-  non_shared_credentials.password_value = u"12345";
-  non_shared_credentials.match_type = PasswordForm::MatchType::kExact;
-
-  PasswordForm shared_credentials = non_shared_credentials;
-  shared_credentials.type = PasswordForm::Type::kReceivedViaSharing;
-  non_shared_credentials.username_value = u"username2";
-  shared_credentials.sharing_notification_displayed = true;
-
-  std::vector<PasswordForm> forms = {shared_credentials,
-                                     non_shared_credentials};
-  controller()->OnPasswordAutofilled(password_manager::FromPasswordForms(forms),
-                                     url::Origin::Create(forms.front().url),
-                                     {});
-
-  ASSERT_EQ(2u, controller()->GetCurrentForms().size());
-  // Shared password notification was displayed already, so the state should be
-  // MANAGE_STATE.
-  EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
-  EXPECT_FALSE(controller()->IsAutomaticallyOpeningBubble());
-  EXPECT_FALSE(controller()->IsShowingBubble());
-}
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    ManagePasswordsUIControllerWithBrowserTest);
 
 TEST_P(ManagePasswordsUIControllerTest, ShowChangePasswordBubble) {
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
