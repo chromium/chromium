@@ -137,7 +137,8 @@ void ReadbackTexturesOnGpuThread(
   }
 
   auto representation = shared_image_manager->ProduceSkia(
-      mailbox, context_state->memory_type_tracker(), context_state);
+      mailbox, context_state->memory_type_tracker(), context_state,
+      /*required_usages=*/{});
 
   SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
 
@@ -443,10 +444,11 @@ class ReadbackPixelTest : public VizPixelTest {
                          pixels.data(), pixels.size()));
       return shared_image;
     } else {
-      return sii->CreateSharedImage(
-          {format, size, color_space, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-           "TestLabels"},
-          pixels);
+      return sii->CreateSharedImage({format, size, color_space,
+                                     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                         gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE,
+                                     "TestLabels"},
+                                    pixels);
     }
   }
 
@@ -995,6 +997,7 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   auto shared_image = sii->CreateSharedImage(
       {MultiPlaneFormat::kNV12, source_size, gfx::ColorSpace::CreateREC709(),
        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+           gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
            gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
        "TestLabels"},
       gpu::kNullSurfaceHandle);

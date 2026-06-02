@@ -827,7 +827,8 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
   }
 
   auto representation = dependency_->GetSharedImageManager()->ProduceSkia(
-      mailbox, context_state_->memory_type_tracker(), context_state_);
+      mailbox, context_state_->memory_type_tracker(), context_state_,
+      /*required_usages=*/{});
   shared_image_factory_->DestroySharedImage(mailbox);
 
   return representation;
@@ -972,7 +973,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
         request->blit_request().shared_image()->mailbox();
 
     representation = dependency_->GetSharedImageManager()->ProduceSkia(
-        mailbox, context_state_->memory_type_tracker(), context_state_);
+        mailbox, context_state_->memory_type_tracker(), context_state_,
+        /*required_usages=*/{gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE});
   } else {
     auto plane_format =
         request->result_format() == CopyOutputRequest::ResultFormat::RGBA
@@ -1240,7 +1242,8 @@ bool SkiaOutputSurfaceImplOnGpu::CreateDestinationImageIfNeededAndBeginAccess(
         request->blit_request().shared_image()->mailbox();
 
     representation = dependency_->GetSharedImageManager()->ProduceSkia(
-        mailbox, context_state_->memory_type_tracker(), context_state_);
+        mailbox, context_state_->memory_type_tracker(), context_state_,
+        /*required_usages=*/{gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE});
   } else {
     representation = CreateSharedImageRepresentationSkia(
         MultiPlaneFormat::kNV12, intermediate_dst_size, color_space,

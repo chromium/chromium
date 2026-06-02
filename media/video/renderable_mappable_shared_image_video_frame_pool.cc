@@ -225,7 +225,8 @@ bool FrameResources::Initialize(VideoPixelFormat format,
       // VideoFrames (this is what "renderable" means in this context).
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
   auto si_caps = context->GetCapabilities();
 #if BUILDFLAG(IS_WIN)
