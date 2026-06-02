@@ -3840,6 +3840,39 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   ASSERT_TRUE(IsGetCredentialsSuccessful());
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
+                       NoGenerationPopupFromBFCachedFrame) {
+  // Navigate to a page with a password form eligible for password generation.
+  NavigateToFile("/password/signup_form.html");
+  content::RenderFrameHostWrapper rfh(WebContents()->GetPrimaryMainFrame());
+
+  // Navigate away so that the password form page is stored in the cache.
+  // This puts the frame in `kInBackForwardCache` state. In this state, the
+  // frame is not active (`rfh->IsActive()` is false), but it is not
+  // prerendering either.
+  ASSERT_TRUE(NavigateToURL(
+      WebContents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  ASSERT_EQ(rfh->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(WebContents());
+  TestGenerationPopupObserver observer;
+  client->SetTestObserver(&observer);
+
+  // Simulate a message from the cached frame.
+  client->SetCurrentTargetFrameForTesting(rfh.get());
+  client->ShowPasswordEditingPopup(gfx::RectF(), autofill::FormData(),
+                                   autofill::FieldRendererId(), u"password");
+
+  // Verify that the popup was not shown.
+  EXPECT_FALSE(observer.popup_showing());
+
+  // Clean up.
+  client->SetCurrentTargetFrameForTesting(nullptr);
+  client->SetTestObserver(nullptr);
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                        DetectFormSubmissionOnIframe) {
   // Start from a page without a password form.

@@ -230,6 +230,16 @@ url::Origin URLToOrigin(GURL url) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Returns true if the frame is active and not prerendering.
+// WARNING: This method will terminate the renderer process if the frame is
+// prerendering.
+bool CheckFrameActiveAndNotPrerendering(content::RenderFrameHost* rfh) {
+  if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
+    return false;
+  }
+  return rfh->IsActive();
+}
+
 }  // namespace
 
 // static
@@ -1514,7 +1524,7 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
               CPMD_BAD_ORIGIN_AUTOMATIC_GENERATION_STATUS_CHANGED)) {
     return;
   }
-  if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
+  if (!CheckFrameActiveAndNotPrerendering(rfh)) {
     return;
   }
   password_manager::ContentPasswordManagerDriver* driver =
@@ -1591,7 +1601,7 @@ void ChromePasswordManagerClient::PresaveGeneratedPassword(
           BadMessageReason::CPMD_BAD_ORIGIN_PRESAVE_GENERATED_PASSWORD)) {
     return;
   }
-  if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
+  if (!CheckFrameActiveAndNotPrerendering(rfh)) {
     return;
   }
 
@@ -1625,7 +1635,7 @@ void ChromePasswordManagerClient::PasswordNoLongerGenerated(
           BadMessageReason::CPMD_BAD_ORIGIN_PASSWORD_NO_LONGER_GENERATED)) {
     return;
   }
-  if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
+  if (!CheckFrameActiveAndNotPrerendering(rfh)) {
     return;
   }
   PasswordManagerDriver* driver =
@@ -1657,7 +1667,7 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
     const std::u16string& password_value) {
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
-  if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
+  if (!CheckFrameActiveAndNotPrerendering(rfh)) {
     return;
   }
   if (!password_manager::bad_message::CheckGeneratedPassword(rfh,
@@ -1696,7 +1706,7 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
 void ChromePasswordManagerClient::PasswordGenerationRejectedByTyping() {
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
-  if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
+  if (!CheckFrameActiveAndNotPrerendering(rfh)) {
     return;
   }
   if (popup_controller_) {
@@ -1707,7 +1717,7 @@ void ChromePasswordManagerClient::PasswordGenerationRejectedByTyping() {
 void ChromePasswordManagerClient::FrameWasScrolled() {
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
-  if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
+  if (!CheckFrameActiveAndNotPrerendering(rfh)) {
     return;
   }
   if (popup_controller_) {
@@ -1718,7 +1728,7 @@ void ChromePasswordManagerClient::FrameWasScrolled() {
 void ChromePasswordManagerClient::GenerationElementLostFocus() {
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
-  if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
+  if (!CheckFrameActiveAndNotPrerendering(rfh)) {
     return;
   }
   // TODO(crbug.com/40629608): Look into removing this since FocusedInputChanged
