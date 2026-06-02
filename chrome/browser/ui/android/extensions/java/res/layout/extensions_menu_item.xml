@@ -72,11 +72,12 @@ found in the LICENSE file.
 
         <org.chromium.ui.listmenu.ListMenuButton
             android:id="@+id/extensions_menu_item_context_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/extensions_menu_header_button_size"
+            android:layout_height="@dimen/extensions_menu_header_button_size"
             android:src="@drawable/extensions_menu_context_menu_icon_selector"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/default_icon_background_selector"
             android:contentDescription="@string/extensions_menu_context_menu_tooltip"
+            android:scaleType="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
