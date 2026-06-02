@@ -147,7 +147,8 @@ std::string AddSendTabToSelfEntryToFakeSyncServer(
     const std::string& title,
     const std::string& device_name,
     const std::string& target_device_cache_guid = "",
-    const std::map<std::string, std::string>& form_fields = {});
+    const std::map<std::string, std::string>& form_fields = {},
+    const std::string& text_fragment = "");
 
 // Returns YES if the provided `url` is present (or not) if `expected_present`
 // is YES (or NO).

@@ -11,13 +11,12 @@
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#import "components/shared_highlighting/core/common/text_fragment.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_load_navigation_user_data.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_text_fragment_selector_generator.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
-#import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "url/origin.h"
 
@@ -45,22 +44,29 @@ const send_tab_to_self::SendTabToSelfEntry* GetEntry(web::WebState* web_state,
   return model ? model->GetEntryByGUID(guid) : nullptr;
 }
 
-// Attempts to perform scroll restoration for the given `item` if a text
+// Attempts to perform scroll restoration for the given `entry` if a text
 // fragment is present.
-// TODO(crbug.com/485145029): Fetch the text fragment directly from the STTS
-// entry in the model rather than attaching it to the navigation item.
-void MaybeRestoreScrollPosition(web::WebState* web_state,
-                                web::NavigationItem* item) {
+void MaybeRestoreScrollPosition(
+    web::WebState* web_state,
+    const send_tab_to_self::SendTabToSelfEntry* entry) {
   if (!base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfPropagateScrollPosition)) {
     return;
   }
 
-  const std::optional<std::string>& fragment =
-      item->GetInternalScrollToTextFragment();
-  if (fragment.has_value() && !fragment.value().empty()) {
+  const send_tab_to_self::TextFragmentData& fragment_data =
+      entry->GetPageContext().scroll_position.text_fragment;
+  if (fragment_data.IsEmpty()) {
+    return;
+  }
+
+  std::string fragment_string =
+      fragment_data.ToSharedHighlightingTextFragment().ToEscapedString(
+          shared_highlighting::TextFragment::EscapedStringFormat::
+              kWithoutTextDirective);
+  if (!fragment_string.empty()) {
     SendTabToSelfTextFragmentSelectorGenerator::GetInstance()
-        ->ScrollToTextFragment(web_state, fragment.value());
+        ->ScrollToTextFragment(web_state, fragment_string);
   }
 }
 
@@ -113,23 +119,11 @@ void SendTabToSelfTabHelper::PageLoaded(
   // reloads of the same page, even if subsequent steps fail or return early.
   SendTabToSelfLoadNavigationUserData::RemoveFromWebState(web_state);
 
-  web::NavigationManager* navigation_manager =
-      web_state->GetNavigationManager();
-  web::NavigationItem* item = navigation_manager->GetLastCommittedItem();
-  if (!item) {
-    return;
-  }
-
-  MaybeRestoreScrollPosition(web_state, item);
-
   const send_tab_to_self::SendTabToSelfEntry* entry = GetEntry(web_state, guid);
   if (entry) {
+    MaybeRestoreScrollPosition(web_state, entry);
     MaybePerformFormFilling(web_state, entry);
   }
-
-  // Clear the fragment so that reloading the page doesn't trigger the
-  // scroll logic again.
-  item->SetInternalScrollToTextFragment(std::nullopt);
 }
 
 void SendTabToSelfTabHelper::WebStateDestroyed(web::WebState* web_state) {

@@ -299,10 +299,27 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   // Use the known text fragment for the page content.
   NSString* textFragment = @"This%20is%20a%20long,without%20any%20ambiguity.";
 
+  // Sign in first. This ensures the keystore encryption keys (Nigori) are
+  // generated and the local device cache GUID is registered.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  // Inject a fake DeviceInfo for the sender device.
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+
+  // Add fake SendTabToSelf entry.
+  NSString* guid =
+      [ChromeEarlGrey addFakeSendTabToSelfEntryWithURL:urlString
+                                                 title:@"Scroll Page"
+                                          textFragment:textFragment];
+
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
+  [ChromeEarlGrey waitForSendTabToSelfEntryWithGUID:guid];
+
   // Open the new tab marking it as from Send Tab To Self.
   [ChromeEarlGrey openSendTabToSelfNewTabWithURL:urlString
                                     textFragment:textFragment
-                                       entryGUID:@"dummy-guid"];
+                                       entryGUID:guid];
 
   // Wait for the new tab to load and the fragment to be applied.
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];
@@ -331,10 +348,27 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   // Use an invalid text fragment.
   NSString* textFragment = @"InvalidFragmentThatDoesNotMatchAnything";
 
+  // Sign in first. This ensures the keystore encryption keys (Nigori) are
+  // generated and the local device cache GUID is registered.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  // Inject a fake DeviceInfo for the sender device.
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+
+  // Add fake SendTabToSelf entry.
+  NSString* guid =
+      [ChromeEarlGrey addFakeSendTabToSelfEntryWithURL:urlString
+                                                 title:@"Scroll Page"
+                                          textFragment:textFragment];
+
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
+  [ChromeEarlGrey waitForSendTabToSelfEntryWithGUID:guid];
+
   // Open the new tab marking it as from Send Tab To Self.
   [ChromeEarlGrey openSendTabToSelfNewTabWithURL:urlString
                                     textFragment:textFragment
-                                       entryGUID:@"dummy-guid"];
+                                       entryGUID:guid];
 
   // Wait for the new tab to load.
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];
@@ -366,10 +400,27 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   // Use an empty text fragment.
   NSString* textFragment = @"";
 
+  // Sign in first. This ensures the keystore encryption keys (Nigori) are
+  // generated and the local device cache GUID is registered.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  // Inject a fake DeviceInfo for the sender device.
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+
+  // Add fake SendTabToSelf entry.
+  NSString* guid =
+      [ChromeEarlGrey addFakeSendTabToSelfEntryWithURL:urlString
+                                                 title:@"Scroll Page"
+                                          textFragment:textFragment];
+
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
+  [ChromeEarlGrey waitForSendTabToSelfEntryWithGUID:guid];
+
   // Open the new tab marking it as from Send Tab To Self.
   [ChromeEarlGrey openSendTabToSelfNewTabWithURL:urlString
                                     textFragment:textFragment
-                                       entryGUID:@"dummy-guid"];
+                                       entryGUID:guid];
 
   // Wait for the new tab to load.
   [ChromeEarlGrey waitForWebStateContainingText:kPageText];

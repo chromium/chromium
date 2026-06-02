@@ -6,10 +6,15 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 #import "components/send_tab_to_self/features.h"
+#import "components/send_tab_to_self/page_context.h"
+#import "components/send_tab_to_self/send_tab_to_self_entry.h"
+#import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_load_navigation_user_data.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
-#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -24,6 +29,17 @@ class SendTabToSelfTabHelperTest : public PlatformTest {
          send_tab_to_self::kSendTabToSelfPropagateFormFields},
         {});
 
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
+        SendTabToSelfSyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  send_tab_to_self::StubSendTabToSelfSyncService>();
+            }));
+    profile_ = std::move(test_profile_builder).Build();
+    web_state_.SetBrowserState(profile_.get());
+
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
@@ -31,85 +47,102 @@ class SendTabToSelfTabHelperTest : public PlatformTest {
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web_state_.SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
                                    std::move(frames_manager));
+
+    model_ = static_cast<send_tab_to_self::FakeSendTabToSelfModel*>(
+        SendTabToSelfSyncServiceFactory::GetForProfile(profile_.get())
+            ->GetSendTabToSelfModel());
   }
 
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_;
+  raw_ptr<send_tab_to_self::FakeSendTabToSelfModel> model_;
 };
 
 // Tests that the tab helper handles cases where there is no navigation item.
+// The user data should be successfully cleaned up even if there are no items.
 TEST_F(SendTabToSelfTabHelperTest, NoNavigationItem) {
+  SendTabToSelfLoadNavigationUserData::CreateForWebState(&web_state_,
+                                                         "test_guid");
   SendTabToSelfTabHelper::CreateForWebState(&web_state_);
-  // Trigger page loaded with no items in the navigation manager.
+
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_EQ(nullptr,
+            SendTabToSelfLoadNavigationUserData::FromWebState(&web_state_));
 }
 
-// Tests that the tab helper does nothing when the page load failed.
+// Tests that the tab helper does not remove the user data when the page load
+// fails, allowing it to be retried on a subsequent navigation or reload.
 TEST_F(SendTabToSelfTabHelperTest, PageLoadFailed) {
+  SendTabToSelfLoadNavigationUserData::CreateForWebState(&web_state_,
+                                                         "test_guid");
   SendTabToSelfTabHelper::CreateForWebState(&web_state_);
-  // Add a fake item.
-  auto item = web::NavigationItem::Create();
-  navigation_manager_->SetLastCommittedItem(item.get());
 
-  // Trigger page loaded with FAILURE.
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
+
+  EXPECT_NE(nullptr,
+            SendTabToSelfLoadNavigationUserData::FromWebState(&web_state_));
 }
 
-// Tests that the tab helper does nothing when there is no text fragment to
-// scroll to.
-TEST_F(SendTabToSelfTabHelperTest, NoTextFragment) {
+// Tests that the tab helper handles the case where there is no scroll position
+// to restore. The user data is successfully consumed and removed.
+TEST_F(SendTabToSelfTabHelperTest, NoScrollPosition) {
   SendTabToSelfTabHelper::CreateForWebState(&web_state_);
-  auto item = web::NavigationItem::Create();
-  // Don't set internal scroll to text fragment.
-  navigation_manager_->SetLastCommittedItem(item.get());
+
+  send_tab_to_self::PageContext page_context;
+  const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
+      GURL("http://www.test.com"), "title", "device1", page_context,
+      send_tab_to_self::NavigationHistory());
+
+  SendTabToSelfLoadNavigationUserData::CreateForWebState(&web_state_,
+                                                         entry->GetGUID());
 
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_EQ(nullptr,
+            SendTabToSelfLoadNavigationUserData::FromWebState(&web_state_));
 }
 
-// Tests that the tab helper handles an empty text fragment correctly.
+// Tests that the tab helper handles an empty text fragment correctly, clearing
+// the user data after execution.
 TEST_F(SendTabToSelfTabHelperTest, EmptyTextFragment) {
   SendTabToSelfTabHelper::CreateForWebState(&web_state_);
-  auto item = web::NavigationItem::Create();
-  // Set empty fragment.
-  item->SetInternalScrollToTextFragment("");
-  navigation_manager_->SetLastCommittedItem(item.get());
+
+  send_tab_to_self::PageContext page_context;
+  page_context.scroll_position.text_fragment =
+      send_tab_to_self::TextFragmentData("", "", "", "");
+  const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
+      GURL("http://www.test.com"), "title", "device1", page_context,
+      send_tab_to_self::NavigationHistory());
+
+  SendTabToSelfLoadNavigationUserData::CreateForWebState(&web_state_,
+                                                         entry->GetGUID());
 
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_EQ(nullptr,
+            SendTabToSelfLoadNavigationUserData::FromWebState(&web_state_));
 }
 
-// Tests that the tab helper successfully triggers a scroll when a valid text
-// fragment is present and the page was loaded via Send Tab to Self.
+// Tests that the tab helper successfully processes the STTS load when a valid
+// text fragment is present, and ensures the user data is cleared afterwards.
 TEST_F(SendTabToSelfTabHelperTest, SttsLoad) {
-  auto item = web::NavigationItem::Create();
-  item->SetInternalScrollToTextFragment("start,end");
-  navigation_manager_->SetLastCommittedItem(item.get());
+  send_tab_to_self::PageContext page_context;
+  page_context.scroll_position.text_fragment =
+      send_tab_to_self::TextFragmentData("start", "end", "", "");
+  const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
+      GURL("http://www.test.com"), "title", "device1", page_context,
+      send_tab_to_self::NavigationHistory());
 
   SendTabToSelfLoadNavigationUserData::CreateForWebState(&web_state_,
-                                                         "test_guid");
+                                                         entry->GetGUID());
   SendTabToSelfTabHelper::CreateForWebState(&web_state_);
 
-  EXPECT_TRUE(item->GetInternalScrollToTextFragment().has_value());
-
-  // We can't easily mock the JS invocation in this unit test without
-  // refactoring the generator to be injectable, but we can verify it doesn't
-  // crash and that the execution path handles the fragment.
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
 
-  // Verify the fragment was cleared so it doesn't run again on reload.
-  EXPECT_FALSE(item->GetInternalScrollToTextFragment().has_value());
-}
-
-// Tests that the tab helper handles the STTS signal without a fragment.
-TEST_F(SendTabToSelfTabHelperTest, SttsLoad_NoFragment) {
-  auto item = web::NavigationItem::Create();
-  navigation_manager_->SetLastCommittedItem(item.get());
-
-  SendTabToSelfLoadNavigationUserData::CreateForWebState(&web_state_,
-                                                         "test_guid");
-  SendTabToSelfTabHelper::CreateForWebState(&web_state_);
-
-  // Trigger page load. Should not crash.
-  web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  EXPECT_EQ(nullptr,
+            SendTabToSelfLoadNavigationUserData::FromWebState(&web_state_));
 }

@@ -49,6 +49,7 @@ source_set("test_support") {
     "//components/saved_tab_groups/internal:tab_group_sync_bridge",
     "//components/saved_tab_groups/public",
     "//components/send_tab_to_self",
+    "//components/shared_highlighting/core/common",
     "//components/sync:test_support",
     "//components/sync/base",
     "//components/sync_device_info",

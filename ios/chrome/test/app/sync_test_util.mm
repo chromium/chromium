@@ -29,7 +29,9 @@
 #import "components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/proto_conversions.h"
+#import "components/shared_highlighting/core/common/text_fragment.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync/base/time.h"
@@ -499,7 +501,8 @@ std::string AddSendTabToSelfEntryToFakeSyncServer(
     const std::string& title,
     const std::string& device_name,
     const std::string& target_device_cache_guid,
-    const std::map<std::string, std::string>& form_fields) {
+    const std::map<std::string, std::string>& form_fields,
+    const std::string& text_fragment) {
   DCHECK(IsFakeSyncServerSetUp());
 
   sync_pb::EntitySpecifics specifics;
@@ -529,16 +532,31 @@ std::string AddSendTabToSelfEntryToFakeSyncServer(
   stts_specifics->set_opened(false);
   stts_specifics->set_notification_dismissed(false);
 
-  if (!form_fields.empty()) {
-    sync_pb::PageContext* page_context = stts_specifics->mutable_page_context();
-    for (const auto& [name, value] : form_fields) {
-      sync_pb::FormField* field =
-          page_context->mutable_form_field_info()->add_fields();
-      field->set_name_attribute(name);
-      field->set_id_attribute(name);
-      field->set_value(value);
-      field->set_form_control_type("text");
+  if (!form_fields.empty() || !text_fragment.empty()) {
+    send_tab_to_self::PageContext context;
+
+    if (!form_fields.empty()) {
+      for (const auto& [name, value] : form_fields) {
+        send_tab_to_self::PageContext::FormField form_field;
+        form_field.id_attribute = base::UTF8ToUTF16(name);
+        form_field.name_attribute = base::UTF8ToUTF16(name);
+        form_field.value = base::UTF8ToUTF16(value);
+        form_field.form_control_type = "text";
+        context.form_field_info.fields.push_back(form_field);
+      }
     }
+
+    if (!text_fragment.empty()) {
+      std::optional<shared_highlighting::TextFragment> parsed_fragment =
+          shared_highlighting::TextFragment::FromEscapedString(text_fragment);
+      if (parsed_fragment) {
+        context.scroll_position.text_fragment =
+            send_tab_to_self::TextFragmentData(*parsed_fragment);
+      }
+    }
+
+    *stts_specifics->mutable_page_context() =
+        send_tab_to_self::PageContextToProto(context);
 
     std::vector<std::vector<uint8_t>> keystore_keys =
         gSyncFakeServer->GetKeystoreKeys();

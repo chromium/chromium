@@ -14,7 +14,6 @@
 #import "components/send_tab_to_self/outgoing_tab_form_field_extractor.h"
 #import "components/send_tab_to_self/received_tab_forms_filler.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
-#import "components/shared_highlighting/core/common/text_fragment.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -27,21 +26,6 @@ OpenNewTabCommand* CreateOpenNewTabCommand(const SendTabToSelfEntry* entry) {
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:entry->GetURL()];
   command.sendTabToSelfEntryGUID = base::SysUTF8ToNSString(entry->GetGUID());
-
-  const send_tab_to_self::ScrollPosition& scroll_position =
-      entry->GetPageContext().scroll_position;
-  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition) &&
-      !scroll_position.IsEmpty()) {
-    shared_highlighting::TextFragment fragment(
-        scroll_position.text_fragment.text_start,
-        scroll_position.text_fragment.text_end,
-        scroll_position.text_fragment.prefix,
-        scroll_position.text_fragment.suffix);
-    command.textFragment = base::SysUTF8ToNSString(fragment.ToEscapedString(
-        shared_highlighting::TextFragment::EscapedStringFormat::
-            kWithoutTextDirective));
-  }
-
   return command;
 }
 

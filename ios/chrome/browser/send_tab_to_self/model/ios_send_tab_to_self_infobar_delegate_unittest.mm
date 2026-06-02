@@ -135,7 +135,7 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, AcceptWithScrollPosition) {
   OCMExpect([mock_scene_commands_
       openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
         EXPECT_EQ(GURL("http://www.test.com"), command.URL);
-        EXPECT_NSEQ(@"start,end", command.textFragment);
+        EXPECT_NSEQ(nil, command.textFragment);
         EXPECT_NSEQ(@"test-guid", command.sendTabToSelfEntryGUID);
         return YES;
       }]]);
