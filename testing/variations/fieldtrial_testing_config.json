@@ -6442,6 +6442,21 @@
             ]
         }
     ],
+    "CloseQuicSessionsOnPreFreeze": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260601",
+                    "enable_features": [
+                        "CloseQuicSessionsOnPreFreeze"
+                    ]
+                }
+            ]
+        }
+    ],
     "Collections": [
         {
             "platforms": [
