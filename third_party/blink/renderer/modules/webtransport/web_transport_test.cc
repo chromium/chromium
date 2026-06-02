@@ -93,12 +93,20 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
             fingerprints,
         Vector<String> application_protocols,
         network::mojom::blink::WebTransportCongestionControl congestion_control,
+        std::optional<uint16_t>
+            anticipated_concurrent_incoming_unidirectional_streams,
+        std::optional<uint16_t>
+            anticipated_concurrent_incoming_bidirectional_streams,
         mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
             handshake_client)
         : url(url),
           fingerprints(std::move(fingerprints)),
           application_protocols(std::move(application_protocols)),
           congestion_control(congestion_control),
+          anticipated_concurrent_incoming_unidirectional_streams(
+              anticipated_concurrent_incoming_unidirectional_streams),
+          anticipated_concurrent_incoming_bidirectional_streams(
+              anticipated_concurrent_incoming_bidirectional_streams),
           handshake_client(std::move(handshake_client)) {}
 
     KURL url;
@@ -106,6 +114,10 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
         fingerprints;
     Vector<String> application_protocols;
     network::mojom::blink::WebTransportCongestionControl congestion_control;
+    std::optional<uint16_t>
+        anticipated_concurrent_incoming_unidirectional_streams;
+    std::optional<uint16_t>
+        anticipated_concurrent_incoming_bidirectional_streams;
     mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
         handshake_client;
   };
@@ -116,11 +128,17 @@ class WebTransportConnector final : public mojom::blink::WebTransportConnector {
           fingerprints,
       const Vector<String>& application_protocols,
       network::mojom::blink::WebTransportCongestionControl congestion_control,
+      std::optional<uint16_t>
+          anticipated_concurrent_incoming_unidirectional_streams,
+      std::optional<uint16_t>
+          anticipated_concurrent_incoming_bidirectional_streams,
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
           handshake_client) override {
-    connect_args_.push_back(
-        ConnectArgs(url, std::move(fingerprints), application_protocols,
-                    congestion_control, std::move(handshake_client)));
+    connect_args_.push_back(ConnectArgs(
+        url, std::move(fingerprints), application_protocols, congestion_control,
+        anticipated_concurrent_incoming_unidirectional_streams,
+        anticipated_concurrent_incoming_bidirectional_streams,
+        std::move(handshake_client)));
   }
 
   Vector<ConnectArgs> TakeConnectArgs() { return std::move(connect_args_); }

@@ -162,6 +162,10 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   const handles::NetworkHandle target_network_;
   const std::vector<std::string> application_protocols_;
   const WebTransportParameters::CongestionControlHint congestion_control_hint_;
+  const std::optional<uint16_t>
+      anticipated_concurrent_incoming_unidirectional_streams_;
+  const std::optional<uint16_t>
+      anticipated_concurrent_incoming_bidirectional_streams_;
   const raw_ptr<URLRequestContext> context_;          // Unowned.
   const raw_ptr<WebTransportClientVisitor> visitor_;  // Unowned.
 

@@ -1550,6 +1550,9 @@ void WebTransport::Init(const String& url_for_diagnostics,
         url_, std::move(fingerprints),
         options.hasProtocols() ? options.protocols() : Vector<String>(),
         BlinkCongestionControlToMojo(congestion_control_),
+        // TODO(crbug.com/487117768): Wire to IDL options in follow-up CL.
+        /*anticipated_concurrent_incoming_unidirectional_streams=*/std::nullopt,
+        /*anticipated_concurrent_incoming_bidirectional_streams=*/std::nullopt,
         handshake_client_receiver_.BindNewPipeAndPassRemote(
             execution_context->GetTaskRunner(TaskType::kNetworking)));
 

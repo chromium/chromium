@@ -69,6 +69,10 @@ class TestWebTransportCreator final
       Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>,
       const Vector<String>& application_protocols,
       network::mojom::blink::WebTransportCongestionControl congestion_control,
+      std::optional<uint16_t>
+          anticipated_concurrent_incoming_unidirectional_streams,
+      std::optional<uint16_t>
+          anticipated_concurrent_incoming_bidirectional_streams,
       mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>)
       override;
 

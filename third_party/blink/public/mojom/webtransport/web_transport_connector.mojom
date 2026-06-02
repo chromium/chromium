@@ -17,5 +17,7 @@ interface WebTransportConnector {
     array<network.mojom.WebTransportCertificateFingerprint> fingerprints,
     array<string> application_protocols,
     network.mojom.WebTransportCongestionControl congestion_control,
+    uint16? anticipated_concurrent_incoming_unidirectional_streams,
+    uint16? anticipated_concurrent_incoming_bidirectional_streams,
     pending_remote<network.mojom.WebTransportHandshakeClient> client);
 };

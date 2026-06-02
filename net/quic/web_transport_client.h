@@ -139,6 +139,14 @@ struct NET_EXPORT WebTransportParameters {
   // Defaults to kDefault (no algorithm change).
   CongestionControlHint congestion_control_hint =
       CongestionControlHint::kDefault;
+
+  // Hints for how many incoming streams the application anticipates the server
+  // creating. When set, the QUIC client advertises these as
+  // initial_max_streams_uni / initial_max_streams_bidi transport parameters.
+  // https://w3c.github.io/webtransport/#dom-webtransportoptions-anticipatedconcurrentincomingunidirectionalstreams
+  std::optional<uint16_t>
+      anticipated_concurrent_incoming_unidirectional_streams;
+  std::optional<uint16_t> anticipated_concurrent_incoming_bidirectional_streams;
 };
 
 // An abstract base for a WebTransport client.  Most of the useful operations
