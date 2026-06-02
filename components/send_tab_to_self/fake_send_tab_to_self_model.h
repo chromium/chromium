@@ -47,6 +47,8 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   bool IsReady() override;
   bool HasValidTargetDevice() override;
   std::vector<TargetDeviceInfo> GetTargetDeviceInfoSortedList() override;
+  std::optional<TargetDeviceInfo> GetTargetDeviceInfo(
+      const std::string& cache_guid) override;
 
   // Methods to configure the fake behavior:
   void SetIsReady(bool is_ready);

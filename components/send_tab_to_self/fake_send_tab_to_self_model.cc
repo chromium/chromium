@@ -4,6 +4,7 @@
 
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -123,6 +124,13 @@ bool FakeSendTabToSelfModel::HasValidTargetDevice() {
 std::vector<TargetDeviceInfo>
 FakeSendTabToSelfModel::GetTargetDeviceInfoSortedList() {
   return devices_;
+}
+
+std::optional<TargetDeviceInfo> FakeSendTabToSelfModel::GetTargetDeviceInfo(
+    const std::string& cache_guid) {
+  auto it =
+      std::ranges::find(devices_, cache_guid, &TargetDeviceInfo::cache_guid);
+  return it != devices_.end() ? std::make_optional(*it) : std::nullopt;
 }
 
 void FakeSendTabToSelfModel::SetIsReady(bool is_ready) {

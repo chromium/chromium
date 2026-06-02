@@ -108,6 +108,8 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   bool IsReady() override;
   bool HasValidTargetDevice() override;
   std::vector<TargetDeviceInfo> GetTargetDeviceInfoSortedList() override;
+  std::optional<TargetDeviceInfo> GetTargetDeviceInfo(
+      const std::string& cache_guid) override;
 
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService* history_service,

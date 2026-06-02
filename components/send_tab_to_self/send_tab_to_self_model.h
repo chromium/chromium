@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_MODEL_H_
 #define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_MODEL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,11 +15,11 @@
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
+#include "components/send_tab_to_self/target_device_info.h"
 #include "url/gurl.h"
 
 namespace send_tab_to_self {
 
-struct TargetDeviceInfo;
 
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.chrome.browser.share.send_tab_to_self)
@@ -110,6 +111,11 @@ class SendTabToSelfModel {
   // the last updated time stamp of the device with the most recently used
   // device listed first. This is a thin layer on top of DeviceInfoTracker.
   virtual std::vector<TargetDeviceInfo> GetTargetDeviceInfoSortedList() = 0;
+
+  // Returns information about a specific target device by its cache GUID, or
+  // std::nullopt if the device is not found or is expired.
+  virtual std::optional<TargetDeviceInfo> GetTargetDeviceInfo(
+      const std::string& cache_guid) = 0;
 
  protected:
   // The observers.

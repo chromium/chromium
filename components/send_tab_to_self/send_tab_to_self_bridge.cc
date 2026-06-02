@@ -616,6 +616,14 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
   });
 }
 
+std::optional<TargetDeviceInfo> SendTabToSelfBridge::GetTargetDeviceInfo(
+    const std::string& cache_guid) {
+  const std::vector<TargetDeviceInfo> devices = GetTargetDeviceInfoSortedList();
+  auto it =
+      std::ranges::find(devices, cache_guid, &TargetDeviceInfo::cache_guid);
+  return it != devices.end() ? std::make_optional(*it) : std::nullopt;
+}
+
 // static
 std::unique_ptr<syncer::DataTypeStore>
 SendTabToSelfBridge::DestroyAndStealStoreForTest(

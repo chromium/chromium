@@ -1473,6 +1473,33 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
                                  syncer::DeviceInfo::FormFactor::kPhone)));
 }
 
+TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfo) {
+  InitializeBridge();
+
+  std::unique_ptr<syncer::DeviceInfo> desktop =
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kLinux)
+          .WithGuid("desktop_guid")
+          .WithClientName("desktop")
+          .WithLastUpdatedTimestamp(clock()->Now())
+          .WithSendTabToSelfReceivingEnabled(true)
+          .Build();
+
+  AddTestDevice(desktop.get());
+
+  // Valid lookup.
+  std::optional<TargetDeviceInfo> device =
+      bridge()->GetTargetDeviceInfo("desktop_guid");
+  ASSERT_TRUE(device.has_value());
+  EXPECT_EQ(device->cache_guid, "desktop_guid");
+  EXPECT_EQ(device->device_name, "desktop");
+  EXPECT_EQ(device->form_factor, syncer::DeviceInfo::FormFactor::kDesktop);
+
+  // Invalid lookup.
+  std::optional<TargetDeviceInfo> invalid_device =
+      bridge()->GetTargetDeviceInfo("non_existent_guid");
+  EXPECT_FALSE(invalid_device.has_value());
+}
+
 // Tests that the local device is not returned even if its full name matches
 // another device.
 TEST_F(SendTabToSelfBridgeTest,

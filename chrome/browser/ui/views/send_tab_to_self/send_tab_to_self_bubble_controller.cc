@@ -60,27 +60,6 @@
 
 namespace send_tab_to_self {
 
-namespace {
-
-// TODO(crbug.com/492072882): Inefficiently fetches the whole sorted list just
-// to find one device by GUID. There should exist
-// SendTabToSelfModel::GetTargetDeviceInfo(guid)
-syncer::DeviceInfo::FormFactor GetFormFactorForDevice(
-    SendTabToSelfModel* model,
-    const std::string& target_device_guid) {
-  if (!model) {
-    return syncer::DeviceInfo::FormFactor::kUnknown;
-  }
-  const std::vector<TargetDeviceInfo> devices =
-      model->GetTargetDeviceInfoSortedList();
-  std::vector<TargetDeviceInfo>::const_iterator it = std::ranges::find(
-      devices, target_device_guid, &TargetDeviceInfo::cache_guid);
-  return it != devices.end() ? it->form_factor
-                             : syncer::DeviceInfo::FormFactor::kUnknown;
-}
-
-}  // namespace
-
 SendTabToSelfBubbleController::~SendTabToSelfBubbleController() {
   HideBubble();
 }
@@ -260,7 +239,14 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
       SendTabToSelfPageHandler::GetOrCreateForWebContents(&GetWebContents());
 
   syncer::DeviceInfo::FormFactor form_factor =
-      GetFormFactorForDevice(GetModel(), target_device_guid);
+      syncer::DeviceInfo::FormFactor::kUnknown;
+  if (send_tab_to_self::SendTabToSelfModel* model = GetModel()) {
+    std::optional<send_tab_to_self::TargetDeviceInfo> device =
+        model->GetTargetDeviceInfo(target_device_guid);
+    if (device) {
+      form_factor = device->form_factor;
+    }
+  }
 
   const GURL url = GetWebContents().GetLastCommittedURL();
   handler->SendTabToDevice(
