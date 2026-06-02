@@ -3522,7 +3522,7 @@
   {
     "name": "enable-gamepad-multitouch",
     "owners": [ "mattreynolds@chromium.org", "deviceapi-team@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 175
   },
   {
     "name": "enable-generic-oidc-auth-profile-management",
