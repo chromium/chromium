@@ -12,14 +12,28 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "content/public/browser/web_contents_delegate.h"
 
 class BrowserWindowInterface;
 class GlobalBrowserCollection;
 class Profile;
 
+namespace gfx {
+class Image;
+}
+
 namespace tabs {
 class TabInterface;
 }
+
+namespace blink::mojom {
+class FileChooserParams;
+}
+
+namespace content {
+class FileSelectListener;
+class RenderFrameHost;
+}  // namespace content
 
 namespace glic {
 
@@ -27,7 +41,8 @@ class GlicInstanceMetrics;
 
 class GlicSidePanelUi : public GlicUiEmbedder,
                         public Host::EmbedderDelegate,
-                        public BrowserCollectionObserver {
+                        public BrowserCollectionObserver,
+                        public content::WebContentsDelegate {
  public:
   GlicSidePanelUi(Profile* profile,
                   base::WeakPtr<tabs::TabInterface> tab,
@@ -69,6 +84,11 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   void OnReload() override;
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override {}
 
+  // content::WebContentsDelegate:
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override;
+
   // BrowserCollectionObserver
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
   void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
@@ -76,6 +96,10 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   void SidePanelStateChanged(GlicSidePanelCoordinator::State state);
 
  private:
+  void OnScreenshotCaptured(
+      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback,
+      gfx::Image snapshot);
+
   GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
 
   base::CallbackListSubscription panel_visibility_subscription_;

@@ -42,10 +42,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
-import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
-import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.EventForwarder;
@@ -65,7 +63,6 @@ public class TabBottomSheetWebUiTest {
     @Mock private ThinWebView mThinWebView;
     @Mock private View mView;
     @Mock private ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
-    @Mock private CoBrowseViewsZoomControl mZoomControl;
     @Mock private ContentView mMockContentView;
     @Mock private Window mMockWindow;
     @Mock private View mMockDecorView;
@@ -104,7 +101,6 @@ public class TabBottomSheetWebUiTest {
                         mWindowAndroid,
                         mContextMenuPopulatorFactory,
                         Color.WHITE,
-                        mZoomControl,
                         mMockContentView);
         TabBottomSheetWebUi.setInTestModeForTesting();
     }
@@ -251,25 +247,6 @@ public class TabBottomSheetWebUiTest {
     }
 
     @Test
-    public void testCreateWebContentsDelegate_ContentsZoomChange() {
-        mWebUi.setWebContents(mWebContents, true);
-
-        ArgumentCaptor<ThinWebViewAttachParams> paramsCaptor =
-                ArgumentCaptor.forClass(ThinWebViewAttachParams.class);
-        verify(mThinWebView).attachWebContents(eq(mWebContents), any(), paramsCaptor.capture());
-
-        ThinWebViewAttachParams params = paramsCaptor.getValue();
-        WebContentsDelegateAndroid delegate = params.webContentsDelegate;
-        assertNotNull(delegate);
-
-        delegate.contentsZoomChange(true);
-        verify(mZoomControl).zoomIn(mWebContents);
-
-        delegate.contentsZoomChange(false);
-        verify(mZoomControl).zoomOut(mWebContents);
-    }
-
-    @Test
     public void testSetWebContents_resetsTouchOffset() {
         mWebUi.setWebContents(mWebContents, true);
 
@@ -330,15 +307,13 @@ public class TabBottomSheetWebUiTest {
                 WindowAndroid windowAndroid,
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory,
                 int backgroundColor,
-                CoBrowseViewsZoomControl zoomControl,
                 ContentView mockContentView) {
             super(
                     context,
                     containerView,
                     windowAndroid,
                     contextMenuPopulatorFactory,
-                    backgroundColor,
-                    zoomControl);
+                    backgroundColor);
             mMockContentView = mockContentView;
         }
 

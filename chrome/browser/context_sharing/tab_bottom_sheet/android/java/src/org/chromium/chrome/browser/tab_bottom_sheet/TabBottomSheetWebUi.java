@@ -23,7 +23,6 @@ import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
-import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewAttachParams;
@@ -46,7 +45,6 @@ public class TabBottomSheetWebUi {
     private final ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
     private final WebViewResizingHelper mWebViewResizingHelper;
     private final @ColorInt int mBackgroundColor;
-    private final CoBrowseViewsZoomControl mZoomControl;
 
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
@@ -57,13 +55,11 @@ public class TabBottomSheetWebUi {
             View containerView,
             WindowAndroid windowAndroid,
             ContextMenuPopulatorFactory contextMenuPopulatorFactory,
-            @ColorInt int backgroundColor,
-            CoBrowseViewsZoomControl zoomControl) {
+            @ColorInt int backgroundColor) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
         mBackgroundColor = backgroundColor;
-        mZoomControl = zoomControl;
         mWebViewResizingHelper =
                 new WebViewResizingHelper(containerView, windowAndroid, backgroundColor);
     }
@@ -151,7 +147,6 @@ public class TabBottomSheetWebUi {
                         mWebContents,
                         contentView,
                         new ThinWebViewAttachParams.Builder()
-                                .setWebContentsDelegate(createWebContentsDelegate())
                                 .setContextMenuPopulatorFactory(mContextMenuPopulatorFactory)
                                 .setSupportTheming(true)
                                 .build());
@@ -208,20 +203,6 @@ public class TabBottomSheetWebUi {
 
     View getWebUiView() {
         return mWebViewResizingHelper.getResizingContainer();
-    }
-
-    private WebContentsDelegateAndroid createWebContentsDelegate() {
-        return new WebContentsDelegateAndroid() {
-            @Override
-            public void contentsZoomChange(boolean zoomIn) {
-                if (mWebContents == null) return;
-                if (zoomIn) {
-                    mZoomControl.zoomIn(mWebContents);
-                } else {
-                    mZoomControl.zoomOut(mWebContents);
-                }
-            }
-        };
     }
 
     @VisibleForTesting
