@@ -235,6 +235,10 @@ TEST_F(PersistentCacheCollectionTest, BaseNameFromCacheId) {
   EXPECT_EQ(PersistentCacheCollection::BaseNameFromCacheId("``"),
             base::FilePath());
 
+  // Verify '%' is mapped to '`p'.
+  EXPECT_EQ(PersistentCacheCollection::BaseNameFromCacheId("%"),
+            base::FilePath::FromASCII("`p"));
+
   // Verify file name is obfuscated.
   std::string cache_id("devs_first_db");
   base::FilePath base_name(

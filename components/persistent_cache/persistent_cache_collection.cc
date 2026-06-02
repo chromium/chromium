@@ -327,7 +327,8 @@ constexpr auto kCharacterToTokenMap =
                                                     {'\"', "`7"},
                                                     {'?', "`8"},
                                                     {'*', "`9"},
-                                                    {'\n', "`0"}});
+                                                    {'\n', "`0"},
+                                                    {'%', "`p"}});
 
 // Returns a token uniquely representing a character `c` that is not legal in
 // filenames, or an empty string if no such replacement is available.
