@@ -20,6 +20,7 @@ class Browser;
 class BrowserWindowInterface;
 struct NavigateParams;
 class TabGroup;
+class TabStripModel;
 
 namespace content {
 class BrowserContext;
@@ -145,7 +146,7 @@ void GetURLsAndFoldersForTabEntries(
 
 // Populates |folder_data| with all tabs from the tab group.
 void GetURLsAndFoldersForTabGroup(
-    const Browser* browser,
+    const TabStripModel* tab_strip_model,
     const TabGroup& tab_group,
     std::vector<BookmarkEditor::EditDetails::BookmarkData>* folder_data);
 

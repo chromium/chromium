@@ -677,7 +677,8 @@ void ShowBookmarkTabGroupDialog(
     base::OnceCallback<void(Browser*, const tab_groups::TabGroupId&)>
         on_save_callback) {
   std::vector<BookmarkEditor::EditDetails::BookmarkData> children;
-  GetURLsAndFoldersForTabGroup(browser, tab_group, &children);
+  GetURLsAndFoldersForTabGroup(browser->tab_strip_model(), tab_group,
+                               &children);
 
   ShowBookmarkTabGroupDialogHelper(
       browser, tab_group.visual_data()->title(), std::move(children),
@@ -781,10 +782,9 @@ void GetURLsAndFoldersForTabEntries(
 }
 
 void GetURLsAndFoldersForTabGroup(
-    const Browser* browser,
+    const TabStripModel* tab_strip_model,
     const TabGroup& tab_group,
     std::vector<BookmarkEditor::EditDetails::BookmarkData>* folder_data) {
-  TabStripModel* const tab_strip_model = browser->tab_strip_model();
   const gfx::Range tab_range = tab_group.ListTabs();
 
   for (size_t i = tab_range.start(); i < tab_range.end(); ++i) {

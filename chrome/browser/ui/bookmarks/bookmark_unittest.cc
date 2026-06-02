@@ -11,12 +11,17 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -30,13 +35,59 @@
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 
-class BookmarkTest : public BrowserWithTestWindowTest {
+class BookmarkTest : public ChromeRenderViewHostTestHarness {
  public:
-  TestingProfile::TestingFactories GetTestingFactories() override {
+  TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory()}};
+  }
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    // Bind Mock Browser to return test profile and a real user data host.
+    ON_CALL(mock_browser_window_interface_, GetProfile())
+        .WillByDefault(testing::Return(profile()));
+    ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(user_data_host_));
+
+    // Initialize BrowserWindowFullscreenController on our user data host,
+    // which is required by BookmarkBarController.
+    fullscreen_controller_ =
+        std::make_unique<BrowserWindowFullscreenController>(
+            mock_browser_window_interface_);
+
+    // Set up TabStripModel and delegate.
+    tab_strip_model_delegate_.SetBrowserWindowInterface(
+        &mock_browser_window_interface_);
+    tab_strip_model_ =
+        std::make_unique<TabStripModel>(&tab_strip_model_delegate_, profile());
+
+    browser_actions_ =
+        std::make_unique<BrowserActions>(&mock_browser_window_interface_);
+
+    user_education_interface_ =
+        std::make_unique<testing::NiceMock<MockBrowserUserEducationInterface>>(
+            &mock_browser_window_interface_);
+
+    ON_CALL(mock_browser_window_interface_, GetTabStripModel())
+        .WillByDefault(testing::Return(tab_strip_model_.get()));
+    ON_CALL(mock_browser_window_interface_, GetActions())
+        .WillByDefault(testing::Return(browser_actions_.get()));
+    ON_CALL(mock_browser_window_interface_, GetFeatures())
+        .WillByDefault(testing::ReturnRef(features_));
+  }
+
+  void TearDown() override {
+    user_education_interface_.reset();
+    browser_actions_.reset();
+    tab_strip_model_.reset();
+    fullscreen_controller_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void AddGroup(const std::u16string& title,
@@ -46,6 +97,16 @@ class BookmarkTest : public BrowserWithTestWindowTest {
         base::Uuid::GenerateRandomV4(), std::nullopt);
     service->AddGroup(std::move(group));
   }
+
+ protected:
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
+  ui::UnownedUserDataHost user_data_host_;
+  std::unique_ptr<BrowserWindowFullscreenController> fullscreen_controller_;
+  TestTabStripModelDelegate tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  std::unique_ptr<BrowserActions> browser_actions_;
+  std::unique_ptr<MockBrowserUserEducationInterface> user_education_interface_;
+  BrowserWindowFeatures features_;
 };
 
 TEST_F(BookmarkTest, NonEmptyBookmarkBarShownOnNTP) {
@@ -56,9 +117,18 @@ TEST_F(BookmarkTest, NonEmptyBookmarkBarShownOnNTP) {
   bookmarks::AddIfNotBookmarked(bookmark_model, GURL("https://www.test.com"),
                                 std::u16string());
 
-  AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
-  EXPECT_EQ(BookmarkBar::SHOW,
-            BookmarkBarController::From(browser())->bookmark_bar_state());
+  BookmarkBarController controller(mock_browser_window_interface_,
+                                   *tab_strip_model_);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  tab_strip_model_->AppendWebContents(std::move(web_contents),
+                                      /*foreground=*/true);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_strip_model_->GetActiveWebContents(),
+      chrome::ChromeUINewTabURLAsGURL());
+
+  EXPECT_EQ(BookmarkBar::SHOW, controller.bookmark_bar_state());
 }
 
 TEST_F(BookmarkTest, EmptyBookmarkBarNotShownOnNTP) {
@@ -66,44 +136,54 @@ TEST_F(BookmarkTest, EmptyBookmarkBarNotShownOnNTP) {
       BookmarkModelFactory::GetForBrowserContext(profile());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
-  AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
-  EXPECT_EQ(BookmarkBar::HIDDEN,
-            BookmarkBarController::From(browser())->bookmark_bar_state());
+  BookmarkBarController controller(mock_browser_window_interface_,
+                                   *tab_strip_model_);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  tab_strip_model_->AppendWebContents(std::move(web_contents),
+                                      /*foreground=*/true);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_strip_model_->GetActiveWebContents(),
+      chrome::ChromeUINewTabURLAsGURL());
+
+  EXPECT_EQ(BookmarkBar::HIDDEN, controller.bookmark_bar_state());
 }
 
-// Verify that the bookmark bar is hidden on custom NTP pages.
 TEST_F(BookmarkTest, BookmarkBarOnCustomNTP) {
-  // Create a empty commited web contents.
+  BookmarkBarController controller(mock_browser_window_interface_,
+                                   *tab_strip_model_);
+
+  // Create a empty committed web contents.
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
-  web_contents->GetController().LoadURL(
-      GURL(url::kAboutBlankURL), content::Referrer(), ui::PAGE_TRANSITION_LINK,
-      std::string());
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents.get(), GURL(url::kAboutBlankURL));
 
   // Give it a NTP virtual URL.
-  content::NavigationController* controller = &web_contents->GetController();
-  content::NavigationEntry* entry = controller->GetVisibleEntry();
+  content::NavigationController* nav_controller =
+      &web_contents->GetController();
+  content::NavigationEntry* entry = nav_controller->GetVisibleEntry();
   entry->SetVirtualURL(chrome::ChromeUINewTabURLAsGURL());
 
   // Verify that the bookmark bar is hidden.
-  EXPECT_EQ(BookmarkBar::HIDDEN,
-            BookmarkBarController::From(browser())->bookmark_bar_state());
-  browser()->tab_strip_model()->AppendWebContents(std::move(web_contents),
-                                                  true);
-  EXPECT_EQ(BookmarkBar::HIDDEN,
-            BookmarkBarController::From(browser())->bookmark_bar_state());
+  EXPECT_EQ(BookmarkBar::HIDDEN, controller.bookmark_bar_state());
+
+  tab_strip_model_->AppendWebContents(std::move(web_contents),
+                                      /*foreground=*/true);
+  EXPECT_EQ(BookmarkBar::HIDDEN, controller.bookmark_bar_state());
 }
 
 TEST_F(BookmarkTest, BookmarkReaderModePageActuallyBookmarksOriginal) {
   GURL original("https://www.example.com/article.html");
   GURL distilled = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
       dom_distiller::kDomDistillerScheme, original, "Article title");
+
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
-  web_contents->GetController().LoadURL(
-      distilled, content::Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents.get(),
+                                                             distilled);
+
   // The URL to bookmark and the title of the page should be based on the
   // original page.
   GURL bookmarked_url;
@@ -254,27 +334,34 @@ TEST_F(BookmarkTest, GetURLsAndFoldersForTabGroup) {
   // Deflake the test by setting TabGroupSyncService initialized.
   tab_groups::TabGroupSyncService* service =
       static_cast<tab_groups::TabGroupSyncService*>(
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-              browser()->profile()));
-  service->SetIsInitializedForTesting(true);
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+  if (service) {
+    service->SetIsInitializedForTesting(true);
+  }
   const std::vector<GURL> urls = {GURL("http://localhost:8000/"),
                                   GURL("http://localhost:8001/"),
                                   GURL("http://localhost:8002/")};
   for (const auto& url : urls) {
-    AddTab(browser(), url);
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents.get(), url);
+    tab_strip_model_->AppendWebContents(std::move(web_contents),
+                                        /*foreground=*/true);
   }
   std::vector<int> tab_indices = {0, 1, 2};
   tab_groups::TabGroupId group_id =
-      browser()->tab_strip_model()->AddToNewGroup(tab_indices);
+      tab_strip_model_->AddToNewGroup(tab_indices);
   const TabGroup* tab_group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
+      tab_strip_model_->group_model()->GetTabGroup(group_id);
 
   std::vector<BookmarkEditor::EditDetails::BookmarkData> folder_data;
-  bookmarks::GetURLsAndFoldersForTabGroup(browser(), *tab_group, &folder_data);
+  bookmarks::GetURLsAndFoldersForTabGroup(tab_strip_model_.get(), *tab_group,
+                                          &folder_data);
 
   EXPECT_EQ(folder_data.size(), urls.size());
   for (size_t i = 0; i < urls.size(); ++i) {
-    EXPECT_EQ(folder_data[urls.size() - 1 - i].url.value(), urls[i]);
+    EXPECT_EQ(folder_data[i].url.value(), urls[i]);
   }
 }
 
@@ -332,23 +419,20 @@ TEST_F(BookmarkTest, NtpSimplificationVisibilityPrefUpdated) {
   scoped_feature_list.InitAndEnableFeature(
       ntp_features::kNtpSimplificationBookmarkBar);
 
-  TestingProfile* test_profile =
-      profile_manager()->CreateTestingProfile("test_profile");
-  test_profile->GetPrefs()->SetBoolean(bookmarks::prefs::kShowBookmarkBar,
-                                       true);
+  profile()->GetPrefs()->SetBoolean(bookmarks::prefs::kShowBookmarkBar, true);
 
   // Verify that the pref is initially at its default value.
   EXPECT_EQ(
-      test_profile->GetPrefs()->GetInteger(
+      profile()->GetPrefs()->GetInteger(
           bookmarks::prefs::kBookmarkBarVisibilityState),
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
 
-  std::unique_ptr<Browser> test_browser =
-      CreateBrowser(test_profile, Browser::TYPE_NORMAL, false);
+  BookmarkBarController controller(mock_browser_window_interface_,
+                                   *tab_strip_model_);
 
   // Verify that the pref was updated.
   EXPECT_EQ(
-      test_profile->GetPrefs()->GetInteger(
+      profile()->GetPrefs()->GetInteger(
           bookmarks::prefs::kBookmarkBarVisibilityState),
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
 }
