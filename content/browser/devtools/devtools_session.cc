@@ -106,10 +106,12 @@ std::atomic<int> g_root_session_count{0};
 DevToolsSession::PendingMessage::PendingMessage(PendingMessage&&) = default;
 DevToolsSession::PendingMessage::PendingMessage(int call_id,
                                                 crdtp::span<uint8_t> method,
-                                                crdtp::span<uint8_t> payload)
+                                                crdtp::span<uint8_t> payload,
+                                                std::string fallthrough_data)
     : call_id(call_id),
       method(method.begin(), method.end()),
-      payload(payload.begin(), payload.end()) {}
+      payload(payload.begin(), payload.end()),
+      fallthrough_data(std::move(fallthrough_data)) {}
 
 DevToolsSession::PendingMessage::~PendingMessage() = default;
 
@@ -338,7 +340,7 @@ void DevToolsSession::DispatchProtocolMessage(
                                 weak_factory_.GetWeakPtr())](
           int call_id, crdtp::span<uint8_t> method,
           crdtp::span<uint8_t> message, std::string_view fallthrough_data) {
-        cb.Run(call_id, method, message);
+        cb.Run(call_id, method, message, fallthrough_data);
       });
   if (!dispatchable.ok()) {
     DispatchProtocolMessageToClient(
@@ -406,7 +408,7 @@ void DevToolsSession::HandleCommand(base::span<const uint8_t> message) {
                                     weak_factory_.GetWeakPtr())](
               int call_id, crdtp::span<uint8_t> method,
               crdtp::span<uint8_t> message, std::string_view fallthrough_data) {
-            cb.Run(call_id, method, message);
+            cb.Run(call_id, method, message, fallthrough_data);
           }),
       message);
 }
@@ -424,7 +426,8 @@ void DevToolsSession::HandleCommandInternal(crdtp::Dispatchable dispatchable,
 
 void DevToolsSession::FallThrough(int call_id,
                                   crdtp::span<uint8_t> method,
-                                  crdtp::span<uint8_t> message) {
+                                  crdtp::span<uint8_t> message,
+                                  std::string_view fallthrough_data) {
   if (browser_only_) {
     dispatcher_->SendMethodNotFound(call_id, method);
     return;
@@ -439,7 +442,7 @@ void DevToolsSession::FallThrough(int call_id,
   }
 
   auto it = pending_messages_.emplace(pending_messages_.end(), call_id, method,
-                                      message);
+                                      message, std::string(fallthrough_data));
   if (suspended_sending_messages_to_agent_ &&
       ShouldSuspendDuringNavigation(method))
     return;
@@ -487,7 +490,8 @@ void DevToolsSession::DispatchToAgent(const PendingMessage& message) {
                   perfetto::Flow::ProcessScoped(message.call_id), "method",
                   message.method, "call_id", message.call_id);
       io_session_->DispatchProtocolCommand(message.call_id, message.method,
-                                           message.payload);
+                                           message.payload,
+                                           message.fallthrough_data);
     }
   } else {
     if (session_) {
@@ -495,7 +499,8 @@ void DevToolsSession::DispatchToAgent(const PendingMessage& message) {
                   perfetto::Flow::ProcessScoped(message.call_id), "method",
                   message.method, "call_id", message.call_id);
       session_->DispatchProtocolCommand(message.call_id, message.method,
-                                        message.payload);
+                                        message.payload,
+                                        message.fallthrough_data);
     }
   }
 }

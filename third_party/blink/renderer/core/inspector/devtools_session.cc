@@ -103,7 +103,8 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
   // mojom::blink::DevToolsSession implementation.
   void DispatchProtocolCommand(int call_id,
                                const String& method,
-                               base::span<const uint8_t> message) override {
+                               base::span<const uint8_t> message,
+                               const String& fallthrough_data) override {
     TRACE_EVENT("devtools", "IOSession::DispatchProtocolCommand",
                 perfetto::Flow::ProcessScoped(call_id), "call_id", call_id);
     // Crash renderer.
@@ -118,12 +119,12 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
       inspector_task_runner_->AppendTask(CrossThreadBindOnce(
           &::blink::DevToolsSession::DispatchProtocolCommandImpl,
           MakeUnwrappingCrossThreadWeakHandle(session_), call_id, method,
-          std::move(message_copy)));
+          std::move(message_copy), fallthrough_data));
     } else {
       inspector_task_runner_->AppendTaskDontInterrupt(CrossThreadBindOnce(
           &::blink::DevToolsSession::DispatchProtocolCommandImpl,
           MakeUnwrappingCrossThreadWeakHandle(session_), call_id, method,
-          std::move(message_copy)));
+          std::move(message_copy), fallthrough_data));
     }
   }
 
@@ -265,19 +266,21 @@ void DevToolsSession::DetachFromV8() {
   }
 }
 
-void DevToolsSession::DispatchProtocolCommand(
-    int call_id,
-    const String& method,
-    base::span<const uint8_t> message) {
+void DevToolsSession::DispatchProtocolCommand(int call_id,
+                                              const String& method,
+                                              base::span<const uint8_t> message,
+                                              const String& fallthrough_data) {
   TRACE_EVENT("devtools", "DevToolsSession::DispatchProtocolCommand",
               perfetto::Flow::ProcessScoped(call_id), "call_id", call_id);
-  return DispatchProtocolCommandImpl(call_id, method, message);
+  return DispatchProtocolCommandImpl(call_id, method, message,
+                                     fallthrough_data);
 }
 
 void DevToolsSession::DispatchProtocolCommandImpl(
     int call_id,
     const String& method,
-    base::span<const uint8_t> data) {
+    base::span<const uint8_t> data,
+    const String& fallthrough_data) {
   DCHECK(crdtp::cbor::IsCBORMessage(
       crdtp::span<uint8_t>(data.data(), data.size())));
   TRACE_EVENT("devtools", "DevToolsSession::DispatchProtocolCommandImpl",
@@ -304,7 +307,9 @@ void DevToolsSession::DispatchProtocolCommandImpl(
     v8_session_->dispatchProtocolMessage(
         v8_inspector::StringView(data.data(), data.size()));
   } else {
-    crdtp::Dispatchable dispatchable(crdtp::SpanFrom(data), std::string_view(),
+    StringUtf8Adaptor UTF8(fallthrough_data);
+    crdtp::Dispatchable dispatchable(crdtp::SpanFrom(data),
+                                     std::string_view(UTF8.data(), UTF8.size()),
                                      /*fallthrough_callback=*/nullptr);
     // This message has already been checked by content::DevToolsSession.
     DCHECK(dispatchable.ok());

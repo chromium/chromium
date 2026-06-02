@@ -174,9 +174,12 @@ interface DevToolsSession {
   // |method| is a method name as defined in protocol (e.g. "Runtime.evaluate").
   // |call_id| is a command id as defined in protocol, and is going to be
   // reported back to host in a response message (see DevToolsSessionHost).
+  // |fallthrough_data| is an opaque, command-dependent STRING data that is
+  // passed along with the command.
   DispatchProtocolCommand(int32 call_id,
                           string method,
-                          mojo_base.mojom.ReadOnlyBuffer message);
+                          mojo_base.mojom.ReadOnlyBuffer message,
+                          string fallthrough_data);
 
   // Disables all breakpoints and terminates script currently executing.
   UnpauseAndTerminate();

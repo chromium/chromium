@@ -115,7 +115,8 @@ class CORE_EXPORT DevToolsSession
   // mojom::blink::DevToolsSession implementation.
   void DispatchProtocolCommand(int call_id,
                                const String& method,
-                               base::span<const uint8_t> message) override;
+                               base::span<const uint8_t> message,
+                               const String& fallthrough_data) override;
   void UnpauseAndTerminate() override;
   void AddScriptToEvaluateOnNewDocument(
       const String& identifier,
@@ -126,7 +127,8 @@ class CORE_EXPORT DevToolsSession
 
   void DispatchProtocolCommandImpl(int call_id,
                                    const String& method,
-                                   base::span<const uint8_t> message);
+                                   base::span<const uint8_t> message,
+                                   const String& fallthrough_data);
 
   // protocol::FrontendChannel implementation.
   void SendProtocolResponse(

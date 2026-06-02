@@ -76,10 +76,12 @@ void TestDevToolsAgentClient::RunCommand(Channel channel,
     message = base::as_byte_span(payload);
   }
 
-  if (channel == Channel::kMain)
-    session_->DispatchProtocolCommand(call_id, method, message);
-  else
-    io_session_->DispatchProtocolCommand(call_id, method, message);
+  if (channel == Channel::kMain) {
+    session_->DispatchProtocolCommand(call_id, method, message, std::string());
+  } else {
+    io_session_->DispatchProtocolCommand(call_id, method, message,
+                                         std::string());
+  }
 }
 
 TestDevToolsAgentClient::Event
