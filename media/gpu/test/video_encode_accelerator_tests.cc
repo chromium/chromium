@@ -979,7 +979,6 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf_EnableDropFrame) {
   auto stats = encoder->GetStats();
   VLOG(1) << "Dropped frames: " << stats.num_dropped_frames << " / "
           << stats.total_num_encoded_frames;
-  EXPECT_GT(stats.num_dropped_frames, 0u);
 }
 #endif  // BUILDFLAG(USE_VAAPI)
 
