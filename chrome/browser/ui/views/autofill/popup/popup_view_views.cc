@@ -287,7 +287,18 @@ bool PopupViewViews::Show(
     search_bar_->Focus();
   }
 
-  MaybeAutoSelectSuggestion(autoselect_first_suggestion);
+  if (autoselect_first_suggestion && controller_->GetLineCount() > 0) {
+    // Selecting first selectable row.
+    // TODO(crbug.com/327931044): Remove the if condition and make the else as
+    // the default as part of cleanup.
+    if (!controller_->GetSuggestionAt(0).HasDeactivatedStyle()) {
+      SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
+                      PopupCellSelectionSource::kNonUserInput);
+    } else {
+      SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
+      SelectNextRow(PopupCellSelectionSource::kNonUserInput);
+    }
+  }
 
   // `SetSelectedCell` can hide the popup and destroy the controller.
   if (!controller_) {
@@ -326,30 +337,6 @@ bool PopupViewViews::Show(
   MaybeA11yFocusInformationalSuggestion();
 
   return !CanActivate() || (GetWidget() && GetWidget()->IsActive());
-}
-
-void PopupViewViews::MaybeAutoSelectSuggestion(
-    AutoselectFirstSuggestion force_by_trigger_source) {
-  if (!controller_ || controller_->GetLineCount() == 0) {
-    return;
-  }
-
-  const SuggestionType first_suggestion_type =
-      controller_->GetSuggestionAt(0).type;
-
-  if (ShouldAutoselectFirstSuggestion(force_by_trigger_source,
-                                      first_suggestion_type)) {
-    // Selecting first selectable row.
-    // TODO(crbug.com/327931044): Remove the if condition and make the else as
-    // the default as part of cleanup.
-    if (!controller_->GetSuggestionAt(0).HasDeactivatedStyle()) {
-      SetSelectedCell(CellIndex{0u, PopupRowView::CellType::kContent},
-                      PopupCellSelectionSource::kNonUserInput);
-    } else {
-      SetSelectedCell(std::nullopt, PopupCellSelectionSource::kNonUserInput);
-      SelectNextRow(PopupCellSelectionSource::kNonUserInput);
-    }
-  }
 }
 
 void PopupViewViews::Hide() {
@@ -808,12 +795,6 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
     return;
   }
 
-  // By default, trigger-source/product-level auto-selection is not forced
-  // during asynchronous updates (e.g. as the user types in a field), as that
-  // would steal active keyboard focus. However, specific suggestion types
-  // (like search affordances) may still choose to override and force
-  // auto-selection internally.
-  MaybeAutoSelectSuggestion();
   MaybeAnnouncePasswordRecoveryPopup();
   MaybeAnnounceLoadingState();
   MaybeA11yFocusInformationalSuggestion();

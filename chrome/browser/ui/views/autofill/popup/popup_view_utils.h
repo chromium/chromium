@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/common/aliases.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
@@ -168,18 +167,6 @@ bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
 // Returns whether the suggestion with this `type` can have child
 // suggestions.
 bool IsExpandableSuggestionType(SuggestionType type);
-
-// Returns whether a suggestion of `type` is auto-selected by default.
-bool IsSuggestionTypeAutoselected(SuggestionType type);
-
-// Returns whether the first suggestion in the popup should be auto-selected.
-//
-// This is determined by:
-// - Either auto-selection is enabled on the product/trigger-source level.
-// - Or the first suggestion type itself is explicitly auto-selected by default.
-bool ShouldAutoselectFirstSuggestion(
-    AutoselectFirstSuggestion trigger_source_autoselect,
-    std::optional<SuggestionType> first_suggestion_type);
 
 // Returns bounds of a display that has most intersection with element_bounds.
 // If no display data is available (e.g display::Screen::Get() == nullptr)
