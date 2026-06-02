@@ -152,12 +152,16 @@ enum ActionResultCode {
   // Actions may not be taken when the browser is showing an error page.
   kActionsBlockedOnErrorPage = 48,
 
-  // The action was blocked because the text payload failed enterprise policy
-  // inspections for sensitive data.
-  kActionBlockedByEnterpriseContentScan = 49,
+  // Reserved for unrecoverable errors occurred during action execution.
+  // Avoid using this here, use a more specific error code instead.
+  // kUnrecoverableError = 49,
 
   // The user manually navigated away, interrupting Glic task actuation.
   kUserNavigatedAway = 50,
+
+  // The action was blocked because the text payload failed enterprise policy
+  // inspections for sensitive data.
+  kActionBlockedByEnterpriseContentScan = 51,
 
   // Please see the comment above about adding new values.
 
