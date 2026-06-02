@@ -1102,11 +1102,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "autofill-vcn-enroll-strike-expiry-time",
-    "owners": ["hvs@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 147
-  },
-  {
     "name": "automatic-usb-detach",
     "owners": ["ovn@google.com", "lt-web-apps-team@google.com"],
     "expiry_milestone": 160

@@ -124,10 +124,6 @@ BASE_DECLARE_FEATURE(kAutofillTouchToFillShowManualFillForVcnFix);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillUpstream);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUpstreamEnforceStrikeDelay);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillVcnEnrollStrikeExpiryTime);
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<int> kAutofillVcnEnrollStrikeExpiryTimeDays;
 
 // Return whether a [No thanks] button and new messaging is shown in the save
 // card bubbles. This will be called only on desktop platforms.

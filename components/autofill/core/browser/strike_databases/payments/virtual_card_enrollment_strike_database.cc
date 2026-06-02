@@ -18,15 +18,6 @@
 
 namespace autofill {
 
-VirtualCardEnrollmentStrikeDatabase::VirtualCardEnrollmentStrikeDatabase(
-    strike_database::StrikeDatabaseBase* strike_database)
-    : strike_database::StrikeDatabaseIntegratorBase(strike_database) {
-  RemoveExpiredStrikes();
-}
-
-VirtualCardEnrollmentStrikeDatabase::~VirtualCardEnrollmentStrikeDatabase() =
-    default;
-
 bool VirtualCardEnrollmentStrikeDatabase::IsLastOffer(
     const std::string& instrument_id) const {
   // This check should not be invoked for blocked bubble.
@@ -38,40 +29,6 @@ std::optional<base::TimeDelta>
 VirtualCardEnrollmentStrikeDatabase::GetRequiredDelaySinceLastStrike() const {
   return std::optional<base::TimeDelta>(
       base::Days(kEnrollmentEnforcedDelayInDays));
-}
-
-std::optional<size_t> VirtualCardEnrollmentStrikeDatabase::GetMaximumEntries()
-    const {
-  return Traits::kMaxStrikeEntities;
-}
-
-std::optional<size_t>
-VirtualCardEnrollmentStrikeDatabase::GetMaximumEntriesAfterCleanup() const {
-  return Traits::kMaxStrikeEntitiesAfterCleanup;
-}
-
-std::string VirtualCardEnrollmentStrikeDatabase::GetProjectPrefix() const {
-  return std::string(Traits::kName);
-}
-
-int VirtualCardEnrollmentStrikeDatabase::GetMaxStrikesLimit() const {
-  return Traits::kMaxStrikeLimit;
-}
-
-std::optional<base::TimeDelta>
-VirtualCardEnrollmentStrikeDatabase::GetExpiryTimeDelta() const {
-  // TODO(crbug.com/409407620): Make the class an alias of
-  // strike_database::SimpleStrikeDatabase when
-  // `kAutofillVcnEnrollStrikeExpiryTime` launches.
-  return base::FeatureList::IsEnabled(
-             features::kAutofillVcnEnrollStrikeExpiryTime)
-             ? std::optional<base::TimeDelta>(base::Days(
-                   features::kAutofillVcnEnrollStrikeExpiryTimeDays.Get()))
-             : base::Days(180);
-}
-
-bool VirtualCardEnrollmentStrikeDatabase::UniqueIdsRequired() const {
-  return Traits::kUniqueIdRequired;
 }
 
 }  // namespace autofill

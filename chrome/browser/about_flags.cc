@@ -3686,23 +3686,6 @@ const FeatureEntry::FeatureVariation
          kStandardBoundSessionCredentialsFederatedSessionsForDevelopers,
          nullptr}};
 
-// LINT.IfChange(AutofillVcnEnrollStrikeExpiryTime)
-const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_120Days[] =
-    {{"autofill_vcn_strike_expiry_time_days", "120"}};
-
-const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_60Days[] = {
-    {"autofill_vcn_strike_expiry_time_days", "60"}};
-
-const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_30Days[] = {
-    {"autofill_vcn_strike_expiry_time_days", "30"}};
-
-const FeatureEntry::FeatureVariation
-    kAutofillVcnEnrollStrikeExpiryTimeOptions[] = {
-        {"120 days", kAutofillVcnEnrollStrikeExpiryTime_120Days, nullptr},
-        {"60 days", kAutofillVcnEnrollStrikeExpiryTime_60Days, nullptr},
-        {"30 days", kAutofillVcnEnrollStrikeExpiryTime_30Days, nullptr}};
-// LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:AutofillVcnEnrollStrikeExpiryTime)
-
 // Variations on pre-warming delays.
 const FeatureEntry::FeatureParam kGlicWarmingShorterDelays[] = {
     {"glic-warming-delay-ms", "5000"},
@@ -11167,14 +11150,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAAudioPerStreamDeviceSelectionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAAudioPerStreamDeviceSelection)},
 #endif  // BUILDFLAG(IS_ANDROID)
-
-    {"autofill-vcn-enroll-strike-expiry-time",
-     flag_descriptions::kAutofillVcnEnrollStrikeExpiryTimeName,
-     flag_descriptions::kAutofillVcnEnrollStrikeExpiryTimeDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         autofill::features::kAutofillVcnEnrollStrikeExpiryTime,
-         kAutofillVcnEnrollStrikeExpiryTimeOptions,
-         "AutofillVcnEnrollStrikeExpiryTime")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"grid-tab-switcher-surface-color-update",

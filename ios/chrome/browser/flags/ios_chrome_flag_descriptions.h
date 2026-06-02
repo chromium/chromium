@@ -313,12 +313,6 @@ inline constexpr char kAutofillUseRendererIDsDescription[] =
     "When enabled, Autofill logic uses unique numeric renderer IDs instead "
     "of string form and field identifiers in form filling logic.";
 
-inline constexpr char kAutofillVcnEnrollStrikeExpiryTimeName[] =
-    "Expiry duration for VCN enrollment strikes";
-inline constexpr char kAutofillVcnEnrollStrikeExpiryTimeDescription[] =
-    "When enabled, changes the amount of time required for VCN enrollment "
-    "prompt strikes to expire.";
-
 inline constexpr char kBWGPromoConsentName[] = "BWG Promo Consent";
 inline constexpr char kBWGPromoConsentDescription[] =
     "Whether the promo consent flow is composed of a single or a double screen "

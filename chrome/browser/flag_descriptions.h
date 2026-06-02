@@ -1154,12 +1154,6 @@ inline constexpr char kAutofillUpstreamEnforceStrikeDelayDescription[] =
     "twice in a week, as the strike database enforces a 7-day delay between "
     "strikes.";
 
-inline constexpr char kAutofillVcnEnrollStrikeExpiryTimeName[] =
-    "Expiry duration for VCN enrollment strikes";
-inline constexpr char kAutofillVcnEnrollStrikeExpiryTimeDescription[] =
-    "When enabled, changes the amount of time required for VCN enrollment "
-    "prompt strikes to expire.";
-
 inline constexpr char kAutofillEnableWalletBrandingName[] =
     "Update Google Pay branding to Wallet where applicable";
 inline constexpr char kAutofillEnableWalletBrandingDescription[] =

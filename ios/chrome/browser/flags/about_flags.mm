@@ -904,23 +904,6 @@ const FeatureEntry::FeatureVariation kFeedSwipeInProductHelpVariations[] = {
      kFeedSwipeInProductHelpStaticInSecondRun, nullptr},
     {"- Animated IPH", kFeedSwipeInProductHelpAnimated, nullptr}};
 
-// LINT.IfChange(AutofillVcnEnrollStrikeExpiryTime)
-const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_120Days[] =
-    {{"autofill_vcn_strike_expiry_time_days", "120"}};
-
-const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_60Days[] = {
-    {"autofill_vcn_strike_expiry_time_days", "60"}};
-
-const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_30Days[] = {
-    {"autofill_vcn_strike_expiry_time_days", "30"}};
-
-const FeatureEntry::FeatureVariation
-    kAutofillVcnEnrollStrikeExpiryTimeOptions[] = {
-        {"120 days", kAutofillVcnEnrollStrikeExpiryTime_120Days, nullptr},
-        {"60 days", kAutofillVcnEnrollStrikeExpiryTime_60Days, nullptr},
-        {"30 days", kAutofillVcnEnrollStrikeExpiryTime_30Days, nullptr}};
-// LINT.ThenChange(/chrome/browser/about_flags.cc:AutofillVcnEnrollStrikeExpiryTime)
-
 const FeatureEntry::FeatureParam kWelcomeBackArm1[] = {
     {kWelcomeBackParam, "1"}};
 const FeatureEntry::FeatureParam kWelcomeBackArm2[] = {
@@ -2098,14 +2081,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kSyncTrustedVaultInfobarMessageImprovementsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(syncer::kSyncTrustedVaultInfobarMessageImprovements)},
-    {"autofill-vcn-enroll-strike-expiry-time",
-     flag_descriptions::kAutofillVcnEnrollStrikeExpiryTimeName,
-     flag_descriptions::kAutofillVcnEnrollStrikeExpiryTimeDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         autofill::features::kAutofillVcnEnrollStrikeExpiryTime,
-         kAutofillVcnEnrollStrikeExpiryTimeOptions,
-         "AutofillVcnEnrollStrikeExpiryTime")},
     {"ios-welcome-back-screen", flag_descriptions::kWelcomeBackName,
      flag_descriptions::kWelcomeBackDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kWelcomeBack,

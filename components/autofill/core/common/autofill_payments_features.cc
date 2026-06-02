@@ -330,15 +330,6 @@ BASE_FEATURE(kAutofillUpstream, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillUpstreamEnforceStrikeDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, updates the VCN strike database with different values of
-// kExpiryTimeDelta as part of of the VCN strike optimization experiment.
-// See go/vcn-strike-optimization-design.
-BASE_FEATURE(kAutofillVcnEnrollStrikeExpiryTime,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kAutofillVcnEnrollStrikeExpiryTimeDays{
-    &kAutofillVcnEnrollStrikeExpiryTime, "autofill_vcn_strike_expiry_time_days",
-    /*default_value=*/180};
-
 bool ShouldShowImprovedUserConsentForCreditCardSave() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
   // The new user consent UI is fully launched on MacOS, Windows and Linux.
