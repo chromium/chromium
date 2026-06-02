@@ -47,8 +47,20 @@ class CORE_EXPORT OffscreenCanvas final
 
  public:
   static OffscreenCanvas* Create(ScriptState*, unsigned width, unsigned height);
+  static OffscreenCanvas* Create(ScriptState*,
+                                 unsigned width,
+                                 unsigned height,
+                                 uint32_t client_id,
+                                 uint32_t sink_id,
+                                 DOMNodeId canvas_id);
 
   OffscreenCanvas(ExecutionContext*, gfx::Size);
+  OffscreenCanvas(ExecutionContext*,
+                  gfx::Size,
+                  uint32_t client_id,
+                  uint32_t sink_id,
+                  DOMNodeId canvas_id);
+
   void Dispose();
 
   bool IsOffscreenCanvas() const override { return true; }
@@ -80,7 +92,6 @@ class CORE_EXPORT OffscreenCanvas final
   static OffscreenCanvas* FromPlaceholderId(ExecutionContext* context,
                                             DOMNodeId canvas_id);
 
-  void SetPlaceholderCanvasId(DOMNodeId canvas_id);
   void DeregisterFromAnimationFrameProvider();
   DOMNodeId PlaceholderCanvasId() const { return placeholder_canvas_id_; }
   bool HasPlaceholderCanvas() const;
@@ -107,10 +118,6 @@ class CORE_EXPORT OffscreenCanvas final
     SetFrameSinkId(client_id, sink_id);
   }
 
-  void SetFrameSinkId(uint32_t client_id, uint32_t sink_id) {
-    client_id_ = client_id;
-    sink_id_ = sink_id;
-  }
   uint32_t ClientId() const { return client_id_; }
   uint32_t SinkId() const { return sink_id_; }
 
@@ -246,6 +253,12 @@ class CORE_EXPORT OffscreenCanvas final
       Vector<std::unique_ptr<CanvasRenderingContextFactory>>;
   static ContextFactoryVector& RenderingContextFactories();
   static CanvasRenderingContextFactory* GetRenderingContextFactory(int);
+
+  void SetFrameSinkId(uint32_t client_id, uint32_t sink_id) {
+    client_id_ = client_id;
+    sink_id_ = sink_id;
+  }
+  void SetPlaceholderCanvasId(DOMNodeId canvas_id);
 
   Member<CanvasRenderingContext> context_;
   WeakMember<ExecutionContext> execution_context_;

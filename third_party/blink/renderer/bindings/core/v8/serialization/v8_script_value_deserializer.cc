@@ -746,10 +746,8 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           !ReadUint32(&sink_id)) {
         return nullptr;
       }
-      OffscreenCanvas* canvas =
-          OffscreenCanvas::Create(GetScriptState(), width, height);
-      canvas->SetFrameSinkId(client_id, sink_id);
-      canvas->SetPlaceholderCanvasId(canvas_id);
+      OffscreenCanvas* canvas = OffscreenCanvas::Create(
+          GetScriptState(), width, height, client_id, sink_id, canvas_id);
       canvas->SetLocale(LayoutLocale::Get(AtomicString(locale_string)));
       SerializedTextDirectionSettings direction_setting(serialized_direction);
       canvas->SetTextDirection(direction_setting.GetTextDirection());

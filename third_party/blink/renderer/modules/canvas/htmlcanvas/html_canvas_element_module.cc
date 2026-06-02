@@ -82,9 +82,8 @@ OffscreenCanvas* HTMLCanvasElementModule::TransferControlToOffscreenInternal(
   }
 
   OffscreenCanvas* offscreen_canvas =
-      OffscreenCanvas::Create(script_state, canvas.width(), canvas.height());
-  offscreen_canvas->SetFrameSinkId(client_id, sink_id);
-  offscreen_canvas->SetPlaceholderCanvasId(canvas_id);
+      OffscreenCanvas::Create(script_state, canvas.width(), canvas.height(),
+                              client_id, sink_id, canvas_id);
   offscreen_canvas->SetTextDirection(canvas.GetTextDirection(nullptr));
   offscreen_canvas->SetLocale(canvas.GetLocale());
 
