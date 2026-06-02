@@ -4365,6 +4365,18 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LENS_PROMO_TITLE" desc="The title text for a Lens promo view.">
         Search with Lens
       </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_GOOGLE_LENS" desc="Feature name for Google Lens. [iOS only]">
+        Google Lens
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_PASSWORDS_AUTOFILL" desc="Feature name for Passwords and Autofill. [iOS only]">
+        Passwords and Autofill
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_PASSWORD_CHECKUP" desc="Feature name for Password checkup. [iOS only]">
+        Password checkup
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_TAB_GROUPS" desc="Feature name for Tab Groups. [iOS only]">
+        Tab Groups
+      </message>
       <message name="IDS_IOS_LEVEL_UP_HEADER_TITLE" desc="The header title displaying at the top of the Level Up task progress card. [iOS only]">
         Current Chrome Level
       </message>
@@ -4376,6 +4388,38 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       </message>
       <message name="IDS_IOS_LEVEL_UP_SEE_ALL" desc="Link button to open all available level-up tasks. [iOS only]">
         See All
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_STAT_PASSWORDS_VERIFIED" desc="Title for the passwords verified statistic card. [iOS only]">
+        {count, plural,
+          =1 {1 password instantly verified}
+          other {# passwords instantly verified}}
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_STAT_SEARCHES_SKIPPED" desc="Title for the manual searches skipped statistic card. [iOS only]">
+        {count, plural,
+          =1 {1 manual search skipped}
+          other {# manual searches skipped}}
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PASSWORDS_VERIFIED" desc="Statistic card subtitle displaying the source task for passwords verified. [iOS only]">
+        since using Password checkup
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_SEARCHES_SKIPPED" desc="Statistic card subtitle displaying the source task for manual searches skipped. [iOS only]">
+        since using Google Lens
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_TABS_DECLUTTERED" desc="Statistic card subtitle displaying the source task for tabs decluttered. [iOS only]">
+        since learning about Tab Groups
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_TYPING_SAVED" desc="Statistic card subtitle displaying the source task for typing time saved. [iOS only]">
+        since using Passwords and Autofill
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_STAT_TABS_DECLUTTERED" desc="Title for the tabs decluttered statistic card. [iOS only]">
+        {count, plural,
+          =1 {1 tab decluttered}
+          other {# tabs decluttered}}
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_STAT_TYPING_SAVED" desc="Title for the typing time saved statistic card. [iOS only]">
+        {count, plural,
+          =1 {1 minute of typing saved}
+          other {# minutes of typing saved}}
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASKS_REMAINING" desc="Progress message explaining how many tasks remain to level up. [iOS only]">
         {count, plural,

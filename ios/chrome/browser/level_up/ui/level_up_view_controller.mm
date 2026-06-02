@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/level_up/ui/level_up_view_controller.h"
 
 #import "ios/chrome/browser/level_up/coordinator/level_up_category.h"
+#import "ios/chrome/browser/level_up/coordinator/level_up_stat.h"
 #import "ios/chrome/browser/level_up/coordinator/level_up_task.h"
 #import "ios/chrome/browser/level_up/ui/level_up_progress_view.h"
+#import "ios/chrome/browser/level_up/ui/level_up_stat_view.h"
 #import "ios/chrome/browser/level_up/ui/level_up_task_collection_view.h"
 #import "ios/chrome/browser/level_up/ui/level_up_welcome_header_view.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
@@ -21,6 +23,8 @@ namespace {
 NSString* const kWelcomeSectionIdentifier = @"WelcomeSection";
 // Identifier for the tasks progress section and cell.
 NSString* const kProgressSectionIdentifier = @"ProgressSection";
+// Identifier for the stats card section and cell.
+NSString* const kStatSectionIdentifier = @"StatSection";
 // Identifier for the checklist tasks section and cell.
 NSString* const kTasksSectionIdentifier = @"TasksSection";
 
@@ -37,11 +41,16 @@ const CGFloat kLayoutSpacing = 16.0;
 const CGFloat kWelcomeCellHeight = 56.0;
 // Height of the progress card cell.
 const CGFloat kProgressCellHeight = 150.0;
+// Width ratio for stats card group.
+const CGFloat kStatCardWidthRatio = 0.88;
+// Height of the stats card cell.
+const CGFloat kStatCardHeight = 96.0;
 // Height of the tasks card cell.
 const CGFloat kTasksCellHeight = 350.0;
 }  // namespace
 
-@interface LevelUpViewController () <LevelUpTaskCollectionViewDelegate>
+@interface LevelUpViewController () <LevelUpTaskCollectionViewDelegate,
+                                     UICollectionViewDelegate>
 @end
 
 @implementation LevelUpViewController {
@@ -56,6 +65,8 @@ const CGFloat kTasksCellHeight = 350.0;
   // User's avatar image.
   UIImage* _userAvatar;
 
+  // The list of stats.
+  NSArray<LevelUpStat*>* _stats;
   // The diffable data source.
   UICollectionViewDiffableDataSource<NSString*, NSString*>* _diffableDataSource;
 }
@@ -77,6 +88,10 @@ const CGFloat kTasksCellHeight = 350.0;
 - (void)setLevel:(NSInteger)level tasksForLevel:(NSArray<LevelUpTask*>*)tasks {
   _level = level;
   _tasks = [tasks copy];
+}
+
+- (void)setStats:(NSArray<LevelUpStat*>*)stats {
+  _stats = [stats copy];
 }
 
 #pragma mark - LevelUpProfileConsumer
@@ -112,6 +127,19 @@ const CGFloat kTasksCellHeight = 350.0;
   cell.showsSeeAllButton = YES;
   cell.delegate = self;
   [cell setLevel:_level tasksForLevel:_tasks];
+}
+
+// Configures the stat card cell for a given stat item identifier.
+- (void)configureStatCell:(LevelUpStatView*)cell
+           itemIdentifier:(NSString*)itemIdentifier {
+  for (LevelUpStat* stat in _stats) {
+    NSString* statIdentifier =
+        [NSString stringWithFormat:@"StatCardItem_%d", stat.type];
+    if ([statIdentifier isEqualToString:itemIdentifier]) {
+      [cell setStatTitle:stat.title subtitle:stat.subtitle image:stat.image];
+      break;
+    }
+  }
 }
 
 // Sets up the navigation bar buttons and titles.
@@ -163,6 +191,8 @@ const CGFloat kTasksCellHeight = 350.0;
                                        collectionViewLayout:layout];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.backgroundColor = [UIColor clearColor];
+  _collectionView.alwaysBounceVertical = YES;
+  _collectionView.delegate = self;
   _collectionView.allowsSelection = NO;
 
   [self.view addSubview:_collectionView];
@@ -207,6 +237,20 @@ const CGFloat kTasksCellHeight = 350.0;
                  [strongSelf configureTasksCell:cell];
                }];
 
+  UICollectionViewCellRegistration* statRegistration =
+      [UICollectionViewCellRegistration
+          registrationWithCellClass:[LevelUpStatView class]
+               configurationHandler:^(LevelUpStatView* cell,
+                                      NSIndexPath* indexPath,
+                                      NSString* itemIdentifier) {
+                 __strong __typeof(weakSelf) strongSelf = weakSelf;
+                 if (!strongSelf) {
+                   return;
+                 }
+                 [strongSelf configureStatCell:cell
+                                itemIdentifier:itemIdentifier];
+               }];
+
   _diffableDataSource = [[UICollectionViewDiffableDataSource alloc]
       initWithCollectionView:_collectionView
                 cellProvider:^UICollectionViewCell*(
@@ -240,6 +284,15 @@ const CGFloat kTasksCellHeight = 350.0;
                                                                      itemIdentifier];
                   }
                   if ([sectionIdentifier
+                          isEqualToString:kStatSectionIdentifier]) {
+                    return [collectionView
+                        dequeueConfiguredReusableCellWithRegistration:
+                            statRegistration
+                                                         forIndexPath:indexPath
+                                                                 item:
+                                                                     itemIdentifier];
+                  }
+                  if ([sectionIdentifier
                           isEqualToString:kTasksSectionIdentifier]) {
                     return [collectionView
                         dequeueConfiguredReusableCellWithRegistration:
@@ -261,7 +314,7 @@ const CGFloat kTasksCellHeight = 350.0;
 
   [snapshot appendSectionsWithIdentifiers:@[
     kWelcomeSectionIdentifier, kProgressSectionIdentifier,
-    kTasksSectionIdentifier
+    kStatSectionIdentifier, kTasksSectionIdentifier
   ]];
 
   [snapshot appendItemsWithIdentifiers:@[ kWelcomeItemIdentifier ]
@@ -269,6 +322,15 @@ const CGFloat kTasksCellHeight = 350.0;
 
   [snapshot appendItemsWithIdentifiers:@[ kProgressItemIdentifier ]
              intoSectionWithIdentifier:kProgressSectionIdentifier];
+
+  NSMutableArray<NSString*>* statIdentifiers = [[NSMutableArray alloc] init];
+  for (LevelUpStat* stat in _stats) {
+    NSString* statIdentifier =
+        [NSString stringWithFormat:@"StatCardItem_%d", stat.type];
+    [statIdentifiers addObject:statIdentifier];
+  }
+  [snapshot appendItemsWithIdentifiers:statIdentifiers
+             intoSectionWithIdentifier:kStatSectionIdentifier];
 
   [snapshot appendItemsWithIdentifiers:@[ kTasksItemIdentifier ]
              intoSectionWithIdentifier:kTasksSectionIdentifier];
@@ -295,6 +357,32 @@ const CGFloat kTasksCellHeight = 350.0;
         flatSectionWithHeightDimension:
             [NSCollectionLayoutDimension estimatedDimension:kProgressCellHeight]
                          contentInsets:standardInsets];
+  }
+  if ([sectionIdentifier isEqualToString:kStatSectionIdentifier]) {
+    NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
+        sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                   fractionalWidthDimension:1.0]
+               heightDimension:[NSCollectionLayoutDimension
+                                   fractionalHeightDimension:1.0]];
+    NSCollectionLayoutItem* item =
+        [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
+
+    NSCollectionLayoutSize* groupSize = [NSCollectionLayoutSize
+        sizeWithWidthDimension:[NSCollectionLayoutDimension
+                                   fractionalWidthDimension:kStatCardWidthRatio]
+               heightDimension:[NSCollectionLayoutDimension
+                                   absoluteDimension:kStatCardHeight]];
+    NSCollectionLayoutGroup* group =
+        [NSCollectionLayoutGroup horizontalGroupWithLayoutSize:groupSize
+                                                      subitems:@[ item ]];
+
+    NSCollectionLayoutSection* section =
+        [NSCollectionLayoutSection sectionWithGroup:group];
+    section.orthogonalScrollingBehavior =
+        UICollectionLayoutSectionOrthogonalScrollingBehaviorGroupPaging;
+    section.interGroupSpacing = kLayoutSpacing;
+    section.contentInsets = standardInsets;
+    return section;
   }
   if ([sectionIdentifier isEqualToString:kTasksSectionIdentifier]) {
     NSDirectionalEdgeInsets listInsets = NSDirectionalEdgeInsetsMake(

@@ -26,4 +26,16 @@ enum class LevelUpTaskCategory {
 // Returns a string representation of the TaskType.
 std::string TaskTypeToString(TaskType type);
 
+// Types representing the stats associated with completed tasks.
+enum class LevelUpTaskStatType {
+  // Number of tabs decluttered from grid.
+  kTabsDecluttered,
+  // Typing time saved by forms autofill.
+  kTypingSaved,
+  // Passwords verified by checkup.
+  kPasswordsVerified,
+  // Manual queries skipped by Lens.
+  kSearchesSkipped,
+};
+
 #endif  // IOS_CHROME_BROWSER_LEVEL_UP_MODEL_TASK_TYPES_H_

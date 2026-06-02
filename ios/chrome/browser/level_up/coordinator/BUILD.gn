@@ -6,6 +6,8 @@ source_set("view_models") {
   sources = [
     "level_up_category.h",
     "level_up_category.mm",
+    "level_up_stat.h",
+    "level_up_stat.mm",
     "level_up_task.h",
     "level_up_task.mm",
   ]
@@ -27,6 +29,7 @@ source_set("coordinator") {
   deps = [
     ":view_models",
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/level_up/model",
     "//ios/chrome/browser/level_up/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

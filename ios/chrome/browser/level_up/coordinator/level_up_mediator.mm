@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/level_up/coordinator/level_up_category.h"
+#import "ios/chrome/browser/level_up/coordinator/level_up_stat.h"
 #import "ios/chrome/browser/level_up/coordinator/level_up_task.h"
 #import "ios/chrome/browser/level_up/model/task_types.h"
 #import "ios/chrome/browser/level_up/ui/level_up_consumer.h"
@@ -15,6 +16,8 @@
 #import "ios/chrome/browser/signin/model/avatar/resized_avatar_cache.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @implementation LevelUpMediator {
   // The authentication service.
@@ -213,6 +216,7 @@
       [self.consumer addCategoryCard:category];
     }
   }
+  [self configureTaskStat:allTasks];
 
   [self.profileConsumer setUserFullName:userFullName userAvatar:userAvatar];
 }
@@ -222,6 +226,62 @@
     for (LevelUpCategory* category in _categories) {
       [allTasksConsumer addCategoryCard:category];
     }
+  }
+}
+
+#pragma mark - Private
+
+// Configures the task stat.
+- (void)configureTaskStat:(NSArray<LevelUpTask*>*)allTasks {
+  NSMutableArray<LevelUpStat*>* stats = [[NSMutableArray alloc] init];
+
+  NSString* title1 =
+      l10n_util::GetPluralNSStringF(IDS_IOS_LEVEL_UP_STAT_TABS_DECLUTTERED, 3);
+  NSString* subtitle1 =
+      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_SUBTITLE_TABS_DECLUTTERED);
+  LevelUpStat* stat1 = [[LevelUpStat alloc]
+      initWithTitle:title1
+           subtitle:subtitle1
+              image:DefaultSymbolTemplateWithPointSize(kBookmarksSymbol, 28.0)
+               type:LevelUpTaskStatType::kTabsDecluttered];
+  [stats addObject:stat1];
+
+  NSString* title2 =
+      l10n_util::GetPluralNSStringF(IDS_IOS_LEVEL_UP_STAT_TYPING_SAVED, 5);
+  NSString* subtitle2 =
+      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_SUBTITLE_TYPING_SAVED);
+  LevelUpStat* stat2 = [[LevelUpStat alloc]
+      initWithTitle:title2
+           subtitle:subtitle2
+              image:DefaultSymbolTemplateWithPointSize(kKeySymbol, 28.0)
+               type:LevelUpTaskStatType::kTypingSaved];
+  [stats addObject:stat2];
+
+  NSString* title3 = l10n_util::GetPluralNSStringF(
+      IDS_IOS_LEVEL_UP_STAT_PASSWORDS_VERIFIED, 5);
+  NSString* subtitle3 =
+      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PASSWORDS_VERIFIED);
+  LevelUpStat* stat3 = [[LevelUpStat alloc]
+      initWithTitle:title3
+           subtitle:subtitle3
+              image:DefaultSymbolTemplateWithPointSize(kKeySymbol, 28.0)
+               type:LevelUpTaskStatType::kPasswordsVerified];
+  [stats addObject:stat3];
+
+  NSString* title4 =
+      l10n_util::GetPluralNSStringF(IDS_IOS_LEVEL_UP_STAT_SEARCHES_SKIPPED, 3);
+  NSString* subtitle4 =
+      l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_SUBTITLE_SEARCHES_SKIPPED);
+  LevelUpStat* stat4 =
+      [[LevelUpStat alloc] initWithTitle:title4
+                                subtitle:subtitle4
+                                   image:DefaultSymbolTemplateWithPointSize(
+                                             kDefaultBrowserSymbol, 28.0)
+                                    type:LevelUpTaskStatType::kSearchesSkipped];
+  [stats addObject:stat4];
+
+  if ([self.consumer respondsToSelector:@selector(setStats:)]) {
+    [self.consumer setStats:stats];
   }
 }
 
