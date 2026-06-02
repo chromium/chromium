@@ -44,9 +44,10 @@ template("blink_extensions_chromeos_sources") {
 }
 
 set_defaults("blink_extensions_chromeos_sources") {
-  # This sets the default list of configs when the blink_extensions_chromeos_sources
-  # target is defined. The default_compiler_configs comes from BUILDCONFIG.gn
-  # and is the list normally applied to static libraries and source sets.
+  # This sets the default list of configs when the
+  # blink_extensions_chromeos_sources target is defined. The
+  # default_compiler_configs comes from BUILDCONFIG.gn and is the list normally
+  # applied to static libraries and source sets.
   configs = default_compiler_configs
   configs -= [ "//build/config/compiler:default_symbols" ]
   configs += blink_symbols_config
@@ -95,9 +96,10 @@ template("blink_extensions_webview_sources") {
 }
 
 set_defaults("blink_extensions_webview_sources") {
-  # This sets the default list of configs when the blink_extensions_webview_sources
-  # target is defined. The default_compiler_configs comes from BUILDCONFIG.gn
-  # and is the list normally applied to static libraries and source sets.
+  # This sets the default list of configs when the
+  # blink_extensions_webview_sources target is defined. The
+  # default_compiler_configs comes from BUILDCONFIG.gn and is the list normally
+  # applied to static libraries and source sets.
   configs = default_compiler_configs
   configs -= [ "//build/config/compiler:default_symbols" ]
   configs += blink_symbols_config
