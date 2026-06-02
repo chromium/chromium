@@ -1385,15 +1385,24 @@ class LocationBarMediator
                 ConstraintSet.START);
         set.connect(
                 mDropdown.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
-        set.connect(
-                R.id.navigate_button, ConstraintSet.TOP, mDropdown.getId(), ConstraintSet.BOTTOM);
+
+        set.connect(R.id.delete_button, ConstraintSet.TOP, R.id.url_bar, ConstraintSet.TOP);
+        set.connect(R.id.delete_button, ConstraintSet.BOTTOM, R.id.url_bar, ConstraintSet.BOTTOM);
+
         set.connect(
                 R.id.location_bar_attachments_add,
                 ConstraintSet.TOP,
                 mDropdown.getId(),
                 ConstraintSet.BOTTOM);
-        set.connect(R.id.delete_button, ConstraintSet.TOP, R.id.url_bar, ConstraintSet.TOP);
-        set.connect(R.id.delete_button, ConstraintSet.BOTTOM, R.id.url_bar, ConstraintSet.BOTTOM);
+        set.connect(
+                R.id.fusebox_request_type,
+                ConstraintSet.TOP,
+                mDropdown.getId(),
+                ConstraintSet.BOTTOM);
+        // TODO(https://crbug.com/518810417): Move mic button into bottom row.
+        set.connect(
+                R.id.navigate_button, ConstraintSet.TOP, mDropdown.getId(), ConstraintSet.BOTTOM);
+
         set.constrainWidth(mDropdown.getId(), ConstraintSet.MATCH_CONSTRAINT);
         set.constrainHeight(mDropdown.getId(), ConstraintSet.WRAP_CONTENT);
         set.constrainedHeight(mDropdown.getId(), true);
