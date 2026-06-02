@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
@@ -2038,7 +2039,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (currentTab == null
                 || currentTab.isIncognito()
                 || currentTab.getWebContents() == null
-                || !ChromeFeatureList.sGlic.isEnabled()) {
+                || !GlicEnabling.isEnabledForProfile(currentTab.getProfile())) {
             return null;
         }
         return new ListItem(
