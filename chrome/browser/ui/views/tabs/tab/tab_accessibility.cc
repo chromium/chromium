@@ -36,8 +36,15 @@ int GetAccessibleTabLabelFormatStringForSplit(split_tabs::SplitTabLayout layout,
         default:
           NOTREACHED();
       }
-    default:
-      NOTREACHED();
+    case split_tabs::SplitTabLayout::kStacked:
+      switch (tab_index_in_split) {
+        case 0:
+          return IDS_TAB_AX_LABEL_SPLIT_TAB_TOP_VIEW_FORMAT;
+        case 1:
+          return IDS_TAB_AX_LABEL_SPLIT_TAB_BOTTOM_VIEW_FORMAT;
+        default:
+          NOTREACHED();
+      }
   }
 }
 }  // namespace
@@ -106,7 +113,7 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
         std::find(tabs_in_split.begin(), tabs_in_split.end(), tab));
     title = l10n_util::GetStringFUTF16(
         GetAccessibleTabLabelFormatStringForSplit(
-            split_tabs::SplitTabLayout::kSideBySide, tab_index_in_split),
+            split_data->visual_data()->split_layout(), tab_index_in_split),
         title);
   }
 

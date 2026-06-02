@@ -10270,6 +10270,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT" is_accessibility_with_no_ui="true" desc="Accessible alert announced after resizing a split view.">
         <ph name="VIEW_ONE_ORIENTATION">$1<ex>Left</ex></ph> View now <ph name="VIEW_ONE_PERCENT">$2<ex>50%</ex></ph> wide, <ph name="VIEW_TWO_ORIENTATION">$3<ex>Right</ex></ph> View now <ph name="VIEW_TWO_PERCENT">$4<ex>50%</ex></ph> wide.
       </message>
+      <message name="IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT_STACKED" is_accessibility_with_no_ui="true" desc="Accessible alert announced after resizing a stacked split view.">
+        <ph name="VIEW_ONE_ORIENTATION">$1<ex>Top</ex></ph> View now <ph name="VIEW_ONE_PERCENT">$2<ex>50%</ex></ph> tall, <ph name="VIEW_TWO_ORIENTATION">$3<ex>Bottom</ex></ph> View now <ph name="VIEW_TWO_PERCENT">$4<ex>50%</ex></ph> tall.
+      </message>
       <message name="IDS_SPLIT_VIEW_RESIZE_LEFT_SIDE_ACCESSIBLE_ALERT" is_accessibility_with_no_ui="true"
                desc="Accessible alert text used in IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT for which side the window/pane is seen on.">
                Left
@@ -16717,6 +16720,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT" desc="Accessibility label text for a tab, when it is the right tab of a split view. Example: 'Google Search - Right view'">
         <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Right view
+      </message>
+      <message name="IDS_TAB_AX_LABEL_SPLIT_TAB_TOP_VIEW_FORMAT" is_accessibility_with_no_ui="true" desc="Accessibility label text for a tab, when it is the top tab of a split view. Example: 'Google Search - Top view'">
+        <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Top view
+      </message>
+      <message name="IDS_TAB_AX_LABEL_SPLIT_TAB_BOTTOM_VIEW_FORMAT" is_accessibility_with_no_ui="true" desc="Accessibility label text for a tab, when it is the bottom tab of a split view. Example: 'Google Search - Bottom view'">
+        <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Bottom view
       </message>
       <message name="IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT" desc="Accessibility label text for a tab, when it is in a group that has not been named by the user. Example: 'Google Search - Part of unnamed group'">
         <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Part of unnamed group

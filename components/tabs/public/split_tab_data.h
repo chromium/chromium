@@ -27,6 +27,7 @@ class SplitTabData {
   const split_tabs::SplitTabId& id() const { return id_; }
 
   SplitTabVisualData* visual_data() { return &visual_data_; }
+  const SplitTabVisualData* visual_data() const { return &visual_data_; }
 
   std::vector<tabs::TabInterface*> ListTabs() const;
 

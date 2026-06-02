@@ -932,7 +932,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
             tabs::GetAccessibleTabLabel(
                 browser()->tab_strip_model()->GetTabAtIndex(1), false));
 
-  // Create a split.
+  // Create a side-by-side split.
   chrome::AddTabAt(browser(), GURL(), -1, true);
   chrome::AddTabAt(browser(), GURL(), -1, true);
   browser()->tab_strip_model()->ActivateTabAt(2);
@@ -982,6 +982,28 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
                                                   ->GetHandle()))),
             tabs::GetAccessibleTabLabel(
                 browser()->tab_strip_model()->GetTabAtIndex(5), false));
+
+  // Create a stacked split.
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  browser()->tab_strip_model()->ActivateTabAt(6);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {7}, split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kStacked),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_AX_LABEL_SPLIT_TAB_TOP_VIEW_FORMAT,
+          browser()->GetTitleForTab(
+              browser()->tab_strip_model()->GetTabAtIndex(6)->GetHandle())),
+      tabs::GetAccessibleTabLabel(
+          browser()->tab_strip_model()->GetTabAtIndex(6), false));
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_AX_LABEL_SPLIT_TAB_BOTTOM_VIEW_FORMAT,
+          browser()->GetTitleForTab(
+              browser()->tab_strip_model()->GetTabAtIndex(7)->GetHandle())),
+      tabs::GetAccessibleTabLabel(
+          browser()->tab_strip_model()->GetTabAtIndex(7), false));
 }
 
 #if BUILDFLAG(IS_MAC)

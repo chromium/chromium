@@ -144,12 +144,15 @@ bool MultiContentsResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
     const int end_percent = 100 - start_percent;
 
     auto [start_label_id, end_label_id] = GetAccessibleAlertStringIds();
-    GetViewAccessibility().AnnounceText(
-        l10n_util::GetStringFUTF16(IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT,
-                                   l10n_util::GetStringUTF16(start_label_id),
-                                   base::FormatPercent(start_percent),
-                                   l10n_util::GetStringUTF16(end_label_id),
-                                   base::FormatPercent(end_percent)));
+    const int alert_string_id =
+        axis() == Axis::kHorizontal
+            ? IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT
+            : IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT_STACKED;
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+        alert_string_id, l10n_util::GetStringUTF16(start_label_id),
+        base::FormatPercent(start_percent),
+        l10n_util::GetStringUTF16(end_label_id),
+        base::FormatPercent(end_percent)));
   }
   return true;
 }
