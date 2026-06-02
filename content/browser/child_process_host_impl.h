@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace IPC {
 class Channel;
@@ -62,16 +61,6 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
   // TODO(crbug.com/379869738): Deprecated, please use
   // ChildProcessIdToTracingProcessId above.
   static uint64_t ChildProcessUniqueIdToTracingProcessId(int child_process_id);
-
-#if BUILDFLAG(IS_WIN)
-  // Obtains the ASLR beacon reservation addresses for a `child_process` of
-  // `sandbox_type` and sends them over mojo, freeing the memory addresses in
-  // the child process. This should be called before the child process handles
-  // any untrusted data.
-  static void FreeAslrBeaconsInChildProcess(
-      mojom::ChildProcess* child_process,
-      sandbox::mojom::Sandbox sandbox_type);
-#endif
 
   // ChildProcessHost implementation
   void ForceShutdown() override;

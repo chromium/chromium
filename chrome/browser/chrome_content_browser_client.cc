@@ -826,10 +826,6 @@ BASE_FEATURE(kPrefetchRequestIntegrityHeaders,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kEnableASLRBeaconMitigation, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN)
-
 // Cached version of the locale so we can return the locale on the I/O
 // thread.
 std::string& GetIOThreadApplicationLocale() {
@@ -5566,40 +5562,6 @@ bool ChromeContentBrowserClient::ShouldRestrictCoreSharingOnRenderer() {
 std::optional<std::wstring>
 ChromeContentBrowserClient::GetWindowsSecurityAttributeName() const {
   return installer::GetIsolationAttributeName();
-}
-
-std::vector<uintptr_t> ChromeContentBrowserClient::GetAslrBeaconAddresses(
-    sandbox::mojom::Sandbox sandbox_type) {
-  if (!base::FeatureList::IsEnabled(kEnableASLRBeaconMitigation)) {
-    return {};
-  }
-
-  if (sandbox_type == sandbox::mojom::Sandbox::kNoSandbox ||
-      sandbox_type ==
-          sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
-    return {};
-  }
-
-  const auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(sandbox::policy::switches::kNoSandbox)) {
-    return {};
-  }
-
-  if (sandbox_type == sandbox::mojom::Sandbox::kGpu) {
-    if (command_line->HasSwitch(
-            sandbox::policy::switches::kDisableGpuSandbox)) {
-      return {};
-    }
-  }
-
-  // In a chrome build, kBrowserResourcesDll will be loaded. In tests, this will
-  // not exist and simply be skipped.
-  if (const auto chrome_dll =
-          base::win::GetModuleAddress(chrome::kBrowserResourcesDll)) {
-    return {reinterpret_cast<uintptr_t>(chrome_dll.value())};
-  }
-
-  return {};
 }
 #endif  // BUILDFLAG(IS_WIN)
 

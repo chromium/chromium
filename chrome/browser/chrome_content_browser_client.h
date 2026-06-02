@@ -604,8 +604,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldEnableAudioProcessHighPriority() override;
   bool ShouldRestrictCoreSharingOnRenderer() override;
   std::optional<std::wstring> GetWindowsSecurityAttributeName() const override;
-  std::vector<uintptr_t> GetAslrBeaconAddresses(
-      sandbox::mojom::Sandbox sandbox_type) override;
 #endif
   void ExposeInterfacesToRenderer(
       service_manager::BinderRegistry* registry,

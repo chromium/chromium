@@ -15,8 +15,6 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
 #include "base/win/access_token.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -50,17 +48,7 @@ bool SandboxedProcessLauncherDelegate::PreSpawnTarget(
 }
 
 void SandboxedProcessLauncherDelegate::PostSpawnTarget(
-    base::ProcessHandle process) {
-#if BUILDFLAG(IS_WIN)
-  std::vector<uintptr_t> beacon_addresses =
-      content::GetContentClient()->browser()->GetAslrBeaconAddresses(
-          GetSandboxType());
-  for (uintptr_t addr : beacon_addresses) {
-    ::VirtualAllocEx(process, reinterpret_cast<void*>(addr), 4096, MEM_RESERVE,
-                     PAGE_NOACCESS);
-  }
-#endif
-}
+    base::ProcessHandle process) {}
 
 bool SandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
   return false;

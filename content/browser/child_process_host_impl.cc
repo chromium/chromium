@@ -241,26 +241,6 @@ uint64_t ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
   return ChildProcessIdToTracingProcessId(ChildProcessId(child_process_id));
 }
 
-#if BUILDFLAG(IS_WIN)
-// static
-void ChildProcessHostImpl::FreeAslrBeaconsInChildProcess(
-    mojom::ChildProcess* child_process,
-    sandbox::mojom::Sandbox sandbox_type) {
-  std::vector<uintptr_t> beacon_addresses =
-      GetContentClient()->browser()->GetAslrBeaconAddresses(sandbox_type);
-  if (!beacon_addresses.empty()) {
-    std::vector<uint64_t> addresses_to_send;
-    addresses_to_send.reserve(beacon_addresses.size());
-    for (uintptr_t addr : beacon_addresses) {
-      // Mojo types are explicitly sized. On 32-bit builds, the uintptr_t will
-      // be safely zero-extended to uint64_t before crossing the IPC boundary.
-      addresses_to_send.push_back(static_cast<uint64_t>(addr));
-    }
-    child_process->FreeAslrBeacons(addresses_to_send);
-  }
-}
-#endif
-
 void ChildProcessHostImpl::Ping(PingCallback callback) {
   std::move(callback).Run();
 }

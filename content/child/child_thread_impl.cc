@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/base_switches.h"
-#include "base/check.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -477,29 +476,6 @@ class ChildThreadImpl::IOThreadState
         base::BindOnce(&ChildThreadImpl::SetBatterySaverMode, weak_main_thread_,
                        battery_saver_mode_enabled));
   }
-
-#if BUILDFLAG(IS_WIN)
-  void FreeAslrBeacons(const std::vector<uint64_t>& base_addresses) override {
-    for (uint64_t base_address : base_addresses) {
-      // The address is passed as a 64-bit value over Mojo to maintain a
-      // consistent cross-architecture interface. Explicitly cast it back
-      // to uintptr_t which will safely truncate on 32-bit architectures where
-      // the upper 32 bits are guaranteed to be zero. base::checked_cast ensures
-      // that it is never silently truncated to a value that doesn't fit.
-      void* address_ptr =
-          reinterpret_cast<void*>(base::checked_cast<uintptr_t>(base_address));
-
-      CHECK(::VirtualFree(address_ptr, 0, MEM_RELEASE));
-    }
-
-    // Securely clear the base_addresses from the vector to prevent leaking the
-    // browser's ASLR base to compromised child processes.
-    if (!base_addresses.empty()) {
-      ::SecureZeroMemory(const_cast<uint64_t*>(base_addresses.data()),
-                         base_addresses.size() * sizeof(uint64_t));
-    }
-  }
-#endif
 
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
   const base::WeakPtr<ChildThreadImpl> weak_main_thread_;

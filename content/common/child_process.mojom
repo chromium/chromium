@@ -111,8 +111,4 @@ interface ChildProcess {
   // energy efficiency because the embedder is in battery saver mode. The
   // default is `false`.
   SetBatterySaverMode(bool battery_saver_mode_enabled);
-
-  // Frees the ASLR collision beacons reserved by the browser broker.
-  [EnableIf=is_win]
-  FreeAslrBeacons(array<uint64> base_addresses);
 };

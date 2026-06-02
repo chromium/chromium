@@ -664,11 +664,6 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
   // IPC channel thereafter.
   DCHECK(!early_exit_watcher_.GetWatchedObject());
   early_exit_watcher_.StartWatchingOnce(process.Handle(), this);
-
-  // Must have been previously set when the process launched.
-  CHECK(data_.sandbox_type);
-  ChildProcessHostImpl::FreeAslrBeaconsInChildProcess(child_process(),
-                                                      *data_.sandbox_type);
 #endif
 
   DCHECK(!process.is_current());

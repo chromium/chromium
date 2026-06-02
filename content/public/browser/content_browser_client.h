@@ -1864,12 +1864,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // be used in child process tokens, or nullopt if there is no security
   // attribute.
   virtual std::optional<std::wstring> GetWindowsSecurityAttributeName() const;
-
-  // Returns a list of base addresses that should be reserved in sandboxed
-  // child processes to force the OS to choose a different ASLR base for them.
-  // The addresses are later freed in the child process.
-  virtual std::vector<uintptr_t> GetAslrBeaconAddresses(
-      sandbox::mojom::Sandbox sandbox_type);
 #endif
 
   // Binds a new media remoter service to |receiver|, if supported by the

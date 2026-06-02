@@ -190,11 +190,6 @@ BASE_EXPORT bool QueryDeviceConvertibility();
 // or why not a device was deemed to be a tablet.
 BASE_EXPORT bool IsDeviceUsedAsATablet(std::string* reason);
 
-// Returns the base address of the module with the given name, or std::nullopt
-// if it is not loaded.
-BASE_EXPORT std::optional<HMODULE> GetModuleAddress(
-    std::wstring_view module_name);
-
 // Executes `callback` that takes as arguments, a bit that indicates whether
 // a keyboard is detected along with a reason string ptr that will be set to to
 // the detection method that was used to detect the keyboard.

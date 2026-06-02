@@ -1088,11 +1088,6 @@ ContentBrowserClient::GetWindowsSecurityAttributeName() const {
   return std::nullopt;
 }
 
-std::vector<uintptr_t> ContentBrowserClient::GetAslrBeaconAddresses(
-    sandbox::mojom::Sandbox sandbox_type) {
-  return {};
-}
-
 #endif  // BUILDFLAG(IS_WIN)
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>

@@ -918,14 +918,6 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   return ret.value_or(is_tablet);
 }
 
-std::optional<HMODULE> GetModuleAddress(std::wstring_view module_name) {
-  const auto mod = ::GetModuleHandleW(module_name.data());
-  if (mod) {
-    return mod;
-  }
-  return std::nullopt;
-}
-
 bool IsEnrolledToDomain() {
   return *GetDomainEnrollmentStateStorage();
 }

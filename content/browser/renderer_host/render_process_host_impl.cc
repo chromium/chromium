@@ -6032,11 +6032,6 @@ void RenderProcessHostImpl::OnProcessLaunched() {
       channel_->Unpause(false /* flush */);
     }
 
-#if BUILDFLAG(IS_WIN)
-    ChildProcessHostImpl::FreeAslrBeaconsInChildProcess(
-        child_process_.get(), sandbox::mojom::Sandbox::kRenderer);
-#endif
-
     gpu_client_->SetClientPid(GetProcess().Pid());
 
     if (coordinator_connector_receiver_.is_bound())
