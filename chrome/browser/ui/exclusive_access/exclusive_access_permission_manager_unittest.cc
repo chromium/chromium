@@ -7,7 +7,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
@@ -19,18 +19,19 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
-class ExclusiveAccessPermissionManagerTest : public BrowserWithTestWindowTest {
+class ExclusiveAccessPermissionManagerTest
+    : public ChromeRenderViewHostTestHarness {
  public:
   ExclusiveAccessPermissionManagerTest()
-      : BrowserWithTestWindowTest(
-            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         manager_(nullptr) {}
   ~ExclusiveAccessPermissionManagerTest() override = default;
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
     manager_.set_permission_controller_for_test(&permission_controller_);
-    AddTab(browser(), GURL("https://example.com"));
+    NavigateAndCommit(GURL("https://example.com"));
   }
 
  protected:
@@ -82,7 +83,7 @@ class ExclusiveAccessPermissionManagerTest : public BrowserWithTestWindowTest {
   }
 
   content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return ChromeRenderViewHostTestHarness::web_contents();
   }
 
   content::MockPermissionController permission_controller_;
@@ -140,7 +141,7 @@ TEST_F(ExclusiveAccessPermissionManagerTest, HandleMultipleRequests) {
 TEST_F(ExclusiveAccessPermissionManagerTest,
        CloseTabBeforeRequestingPermission) {
   QueuePointerLockRequest();
-  browser()->tab_strip_model()->CloseAllTabs();
+  DeleteContents();
 
   EXPECT_CALL(permission_controller_, RequestPermissionsFromCurrentDocument)
       .Times(0);
