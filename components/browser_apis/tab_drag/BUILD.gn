@@ -24,6 +24,7 @@ source_set("tab_drag") {
   public_deps = [
     ":mojom",
     "//components/browser_apis/tab_strip:mojom",
+    "//components/browser_apis/tab_strip/adapters",
   ]
 
   deps = [

@@ -27,6 +27,7 @@
 #include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/browser_apis/tab_drag/sessions/tab_drag_session_manager.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "media/base/media_switches.h"
@@ -36,6 +37,7 @@
 // This causes a gn error on Android builds, because gn does not understand
 // buildflags, so we include it only on platforms where it is used.
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"  // nogncheck
+#include "chrome/browser/ui/tabs/tab_drag_api/desktop_tab_drag_impl/tab_drag_session_desktop_injector.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -166,6 +168,11 @@ void GlobalFeatures::PostBrowserProcessInit() {
             UpgradeDetector::GetInstance());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+  tab_drag_session_manager_ = std::make_unique<tabs_api::TabDragSessionManager>(
+      std::make_unique<tabs_api::TabDragSessionDesktopInjector>());
+#endif
 }
 
 void GlobalFeatures::PostBrowserProcessInitCore() {
@@ -248,6 +255,7 @@ void GlobalFeatures::PostMainMessageLoopRun() {
   optimization_guide_global_feature_.reset();
 
   application_advanced_protection_status_detector_.reset();
+  tab_drag_session_manager_.reset();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(

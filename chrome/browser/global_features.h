@@ -83,6 +83,10 @@ class SmartRestartManager;
 class SmartRestartMetricsObserver;
 }  // namespace smart_restart
 
+namespace tabs_api {
+class TabDragSessionManager;
+}
+
 // This class owns the core controllers for features that are globally
 // scoped on desktop and Android. It can be subclassed by tests to perform
 // dependency injection.
@@ -200,6 +204,10 @@ class GlobalFeatures {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  tabs_api::TabDragSessionManager* tab_drag_session_manager() {
+    return tab_drag_session_manager_.get();
+  }
+
  protected:
   GlobalFeatures();
 
@@ -283,6 +291,8 @@ class GlobalFeatures {
 
   std::unique_ptr<smart_restart::SmartRestartManager> smart_restart_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  std::unique_ptr<tabs_api::TabDragSessionManager> tab_drag_session_manager_;
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

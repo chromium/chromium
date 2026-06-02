@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/browser_apis/tab_drag/tab_drag_api.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -14,22 +15,25 @@
 
 namespace tabs_api {
 
+class TabDragSessionManager;
+
 class TabDragServiceImpl : public mojom::TabDragServiceDirectReturnStub {
  public:
-  TabDragServiceImpl();
+  explicit TabDragServiceImpl(TabDragSessionManager* session_manager);
   TabDragServiceImpl(const TabDragServiceImpl&) = delete;
   TabDragServiceImpl& operator=(const TabDragServiceImpl&) = delete;
   ~TabDragServiceImpl() override;
 
   void Accept(mojo::PendingReceiver<mojom::TabDragService> receiver);
 
-  // mojom::TabDragService overrides:
+  // mojom::TabDragServiceDirectReturnStub overrides:
   mojom::TabDragService::StartDragResult StartDrag(
       const std::vector<tabs_api::NodeId>& source_tab_ids,
       const gfx::Point& start_point) override;
 
  private:
   mojom::TabDragServiceBridge bridge_{this};
+  raw_ptr<TabDragSessionManager> session_manager_;
   mojo::ReceiverSet<mojom::TabDragService> receivers_;
 };
 

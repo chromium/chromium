@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android)
-
 source_set("tab_drag_api") {
   sources = [ "tab_drag_service_feature.h" ]
 
@@ -16,9 +14,10 @@ source_set("impl") {
   deps = [
     ":tab_drag_api",
     "//base",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//content/public/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//components/browser_apis/tab_drag",
+    "//components/browser_apis/tab_drag/sessions",
     "//mojo/public/cpp/bindings",
   ]
 }
