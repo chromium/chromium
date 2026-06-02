@@ -20,8 +20,6 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 public final class TestSideUiContainer implements SideUiContainer {
     public static final @Px int TEST_SIDE_UI_WIDTH = 412;
 
-    public static final @AnchorSide int TEST_ANCHOR_SIDE = AnchorSide.RIGHT;
-
     /** The last {@code requestedWidth} received by {@link #determineContainerWidth}. */
     public @Nullable @Px Integer mLastRequestedWidth;
 
@@ -31,24 +29,19 @@ public final class TestSideUiContainer implements SideUiContainer {
     /** The last {@code windowWidth} received by {@link #determineContainerWidth}. */
     public @Nullable @Px Integer mLastWindowWidth;
 
-    /** Width to be returned by {@link #determineContainerWidth}, if not null. */
-    public @Nullable @Px Integer mDeterminedWidth;
-
-    /** Width to be returned by {@link #getMinWidthDp()}. */
+    /** Minimum width for this {@link SideUiContainer}. */
     public int mMinWidthDp;
 
     private final SideUiCoordinator mSideUiCoordinator;
     private final View mSideUiContainerView;
     private final @AnchorSide int mAnchorSide;
 
-    public TestSideUiContainer(SideUiCoordinator sideUiCoordinator, View view) {
-        this(sideUiCoordinator, view, TEST_ANCHOR_SIDE);
-    }
-
     public TestSideUiContainer(
-            SideUiCoordinator sideUiCoordinator, View view, @AnchorSide int anchorSide) {
+            SideUiCoordinator sideUiCoordinator,
+            View sideUiContainerView,
+            @AnchorSide int anchorSide) {
         mSideUiCoordinator = sideUiCoordinator;
-        mSideUiContainerView = view;
+        mSideUiContainerView = sideUiContainerView;
         mAnchorSide = anchorSide;
     }
 
@@ -59,27 +52,34 @@ public final class TestSideUiContainer implements SideUiContainer {
 
     @Override
     public @SideUiId int getSideUiId() {
-        return SideUiId.SIDE_PANEL;
+        return SideUiId.SIDE_UI_FOR_TESTING;
     }
 
     @Override
     public int determineContainerWidth(
             @Px int requestedWidth, @Px int availableWidth, @Px int windowWidth) {
+        assert availableWidth <= windowWidth;
+
         mLastRequestedWidth = requestedWidth;
         mLastAvailableWidth = availableWidth;
         mLastWindowWidth = windowWidth;
 
-        return mDeterminedWidth != null ? mDeterminedWidth : requestedWidth;
+        if (availableWidth < mMinWidthDp) {
+            return 0;
+        }
+
+        // mMinWidthDp <= availableWidth < requestedWidth
+        if (availableWidth < requestedWidth) {
+            return availableWidth;
+        }
+
+        // requestedWidth <= availableWidth <= windowWidth
+        return requestedWidth;
     }
 
     @Override
     public int getCurrentWidth() {
         return mSideUiContainerView.getWidth();
-    }
-
-    @Override
-    public int getMinWidthDp() {
-        return mMinWidthDp;
     }
 
     @Override
@@ -103,7 +103,7 @@ public final class TestSideUiContainer implements SideUiContainer {
         @Px int requestedSideUiWidth = canShowSideUi ? TEST_SIDE_UI_WIDTH : 0;
         mSideUiCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(
-                        SideUiId.SIDE_PANEL, TEST_ANCHOR_SIDE, requestedSideUiWidth),
+                        SideUiId.SIDE_UI_FOR_TESTING, mAnchorSide, requestedSideUiWidth),
                 /* suppressAnimations= */ true);
     }
 }

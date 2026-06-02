@@ -63,9 +63,6 @@ public interface SideUiContainer {
     @Px
     int getCurrentWidth();
 
-    /** Returns the container's minimum width (in dp). */
-    int getMinWidthDp();
-
     /** Returns the container's current anchor side. */
     @AnchorSide
     int getAnchorSide();

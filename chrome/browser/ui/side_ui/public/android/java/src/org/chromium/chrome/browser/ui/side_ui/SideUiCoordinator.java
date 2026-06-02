@@ -33,11 +33,12 @@ public interface SideUiCoordinator extends SideUiStateProvider {
      * priorities by which they consume available space. The smaller number indicates higher
      * priority.
      */
-    @IntDef({SideUiId.SIDE_PANEL, SideUiId.VERTICAL_TABS})
+    @IntDef({SideUiId.SIDE_PANEL, SideUiId.VERTICAL_TABS, SideUiId.SIDE_UI_FOR_TESTING})
     @interface SideUiId {
         int VERTICAL_TABS = 0;
         int SIDE_PANEL = 1;
-        int NUM_ENTRIES = 2;
+        int SIDE_UI_FOR_TESTING = 2;
+        int NUM_ENTRIES = 3;
     }
 
     /**
