@@ -101,7 +101,10 @@ class AndroidSmsAppManagerImplTest : public testing::Test {
       test_task_runner_->PostTask(FROM_HERE, std::move(task));
     }
 
-    void RunPendingTasks() { test_task_runner_->RunUntilIdle(); }
+    void RunPendingTasks() {
+      ASSERT_TRUE(test_task_runner_->HasPendingTask());
+      test_task_runner_->RunPendingTasks();
+    }
 
    private:
     std::vector<std::string> opened_app_ids_;
