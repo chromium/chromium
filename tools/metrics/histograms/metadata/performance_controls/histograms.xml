@@ -76,7 +76,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.HealthStatusAfterDiscard.{Time}"
-    enum="PerformanceDetectionManagerHealthLevel" expires_after="2026-09-20">
+    enum="PerformanceDetectionManagerHealthLevel" expires_after="2026-11-29">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>

@@ -713,7 +713,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.Change.{NotificationChannelId}"
-    enum="BooleanEnabled" expires_after="2026-08-30">
+    enum="BooleanEnabled" expires_after="2026-11-29">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>

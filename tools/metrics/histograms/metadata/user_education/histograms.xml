@@ -243,7 +243,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserEducation.DesktopToIOSPromo.{PromoType}.BubbleView.Created"
-    enum="DesktopToIOSPromoBubbleType" expires_after="2026-09-06">
+    enum="DesktopToIOSPromoBubbleType" expires_after="2026-11-29">
   <owner>hiramahmood@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserEducation.NtpPromos.Promos.{NtpPromoIdentifier}.{NtpPromoAction}"
-    units="int" expires_after="2026-09-01">
+    units="int" expires_after="2026-11-29">
   <owner>cjgrant@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -424,7 +424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under1Hour"
-    units="minutes" expires_after="2026-09-27">
+    units="minutes" expires_after="2026-11-29">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -460,7 +460,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.IdlePeriodDuration.Min.Under24Hours"
-    units="minutes" expires_after="2026-09-27">
+    units="minutes" expires_after="2026-11-29">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
