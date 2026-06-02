@@ -15,7 +15,7 @@ namespace glic {
 // LINT.IfChange(GlicGetContextFromTabError)
 enum class GlicGetContextFromTabError {
   kUnknown = 0,
-  // Tab context requests when the panel is hidden are now reported as both as
+  // Tab context requests when the panel is hidden are now reported as both
   // "hidden" and "error" in Glic.Api.* histograms.
   kPermissionDeniedWindowNotShowing_DEPRECATED = 1,
   kTabNotFound = 2,
