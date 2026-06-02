@@ -43,6 +43,7 @@
 #endif
 
 bool ExclusiveAccessBubbleViews::skip_presentation_delay_for_testing_ = false;
+bool ExclusiveAccessBubbleViews::simulate_gpu_hang_for_testing_ = false;
 
 namespace {
 
@@ -326,7 +327,10 @@ void ExclusiveAccessBubbleViews::AnimationProgressed(
   } else {
     if (presentation_cb_) {
       ui::Compositor* compositor = popup_->GetCompositor();
-      if (!compositor || skip_presentation_delay_for_testing_) {
+      if (simulate_gpu_hang_for_testing_) {
+        // Do nothing. presentation_cb_ will never be called, triggering
+        // watchdog.
+      } else if (!compositor || skip_presentation_delay_for_testing_) {
         // Start the hide timer immediately, since we won't get any feedback.
         std::move(presentation_cb_).Run({});
       } else {
@@ -407,6 +411,11 @@ void ExclusiveAccessBubbleViews::Show() {
   }
   animation_->SetSlideDuration(base::Milliseconds(350));
   animation_->Show();
+
+  presentation_watchdog_timer_.Start(
+      FROM_HERE, base::Milliseconds(1500),
+      base::BindOnce(&ExclusiveAccessBubbleViews::OnPresentationTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ExclusiveAccessBubbleViews::ShowAndStartTimers() {
@@ -436,6 +445,7 @@ void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
 
 void ExclusiveAccessBubbleViews::OnFirstPresentation(
     const viz::FrameTimingDetails& details) {
+  presentation_watchdog_timer_.Stop();
   StartHideTimer();
 }
 
@@ -444,4 +454,8 @@ void ExclusiveAccessBubbleViews::RunHideCallbackIfNeeded(
   if (first_hide_callback_) {
     std::move(first_hide_callback_).Run(reason);
   }
+}
+
+void ExclusiveAccessBubbleViews::OnPresentationTimeout() {
+  bubble_view_context_->GetExclusiveAccessManager()->ExitExclusiveAccess();
 }

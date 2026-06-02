@@ -69,6 +69,10 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
     skip_presentation_delay_for_testing_ = skip;
   }
 
+  static void set_simulate_gpu_hang_for_testing(bool simulate) {
+    simulate_gpu_hang_for_testing_ = simulate;
+  }
+
  private:
   // Updates |popup|'s bounds given |animation_| and |animated_attribute_|.
   void UpdateBounds();
@@ -115,8 +119,15 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   // bubble visible.
   static bool skip_presentation_delay_for_testing_;
 
+  // If set, simulates a GPU hang by never running the presentation callback.
+  static bool simulate_gpu_hang_for_testing_;
+
   // If set, will be called during the 'show' animation.
   base::OnceCallback<void(const viz::FrameTimingDetails&)> presentation_cb_;
+
+  void OnPresentationTimeout();
+
+  base::OneShotTimer presentation_watchdog_timer_;
 
   base::WeakPtrFactory<ExclusiveAccessBubbleViews> weak_ptr_factory_{this};
 };

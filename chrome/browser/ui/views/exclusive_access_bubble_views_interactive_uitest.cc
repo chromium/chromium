@@ -174,3 +174,22 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, MAYBE_ReshowOnClick) {
   click_run_loop.Run();
   EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
 }
+
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, PresentationWatchdog) {
+  ExclusiveAccessBubbleViews::set_simulate_gpu_hang_for_testing(true);
+
+  // Enter fullscreen. This should trigger bubble creation.
+  EnterActiveTabFullscreen();
+  EXPECT_TRUE(GetExclusiveAccessBubbleView());
+  EXPECT_TRUE(IsFullscreenForBrowser() || IsWindowFullscreenForTabOrPending());
+
+  // Wait for the watchdog to fire (timeout is 1.5s).
+  Wait(base::Milliseconds(2000));
+
+  // The watchdog should have fired, and we should have exited fullscreen.
+  EXPECT_FALSE(IsFullscreenForBrowser() || IsWindowFullscreenForTabOrPending());
+  EXPECT_FALSE(GetExclusiveAccessBubbleView());
+
+  // Clean up.
+  ExclusiveAccessBubbleViews::set_simulate_gpu_hang_for_testing(false);
+}
