@@ -76,9 +76,10 @@ void PerformPlayBackwards(Animation& animation,
 
 void PerformPlayOnce(Animation& animation,
                      V8AnimationPlayState::Enum play_state,
+                     std::optional<base::TimeDelta> event_time,
                      ExceptionState& exception_state) {
   if (play_state != V8AnimationPlayState::Enum::kFinished) {
-    animation.PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
+    PerformPlay(animation, event_time, exception_state);
   }
 }
 
@@ -124,7 +125,7 @@ void AnimationTrigger::PerformBehavior(
       PerformPlayBackwards(animation, play_state, exception_state);
       break;
     case Behavior::kPlayOnce:
-      PerformPlayOnce(animation, play_state, exception_state);
+      PerformPlayOnce(animation, play_state, async_event_time, exception_state);
       break;
     case Behavior::kReset:
       PerformReset(animation, play_state, exception_state);
@@ -184,8 +185,8 @@ bool AnimationTrigger::CanCompositeBehavior(Behavior behavior) {
     case Behavior::kPause:
     case Behavior::kNone:
     case Behavior::kReplay:
-      return true;
     case Behavior::kPlayOnce:
+      return true;
     case Behavior::kPlayForwards:
     case Behavior::kPlayBackwards:
     case Behavior::kReset:

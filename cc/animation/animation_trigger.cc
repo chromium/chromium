@@ -154,6 +154,14 @@ void AnimationTrigger::PerformReplay(Animation& animation,
   animation.Play(monotonic_time, Animation::ForcePlayRewind::kEnabled);
 }
 
+void AnimationTrigger::PerformPlayOnce(Animation& animation,
+                                       base::TimeTicks monotonic_time) {
+  if (animation.IsFinished()) {
+    return;
+  }
+  animation.Play(monotonic_time);
+}
+
 void AnimationTrigger::PerformBehavior(Animation& animation,
                                        Behavior behavior,
                                        base::TimeTicks monotonic_time) {
@@ -168,6 +176,8 @@ void AnimationTrigger::PerformBehavior(Animation& animation,
       PerformReplay(animation, monotonic_time);
       break;
     case Behavior::kPlayOnce:
+      PerformPlayOnce(animation, monotonic_time);
+      break;
     case Behavior::kPlayForwards:
     case Behavior::kPlayBackwards:
     case Behavior::kReset:
