@@ -245,6 +245,7 @@ android_resources("java_resources") {
     "java/res/layout/ntp_customization_theme_list_upload_an_image_item_layout.xml",
     "java/res/layout/ntp_customization_theme_preview_dialog_layout.xml",
     "java/res/layout/ntp_customization_theme_sync_data_container_layout.xml",
+    "java/res/layout/ntp_customization_theme_sync_selected_item_layout.xml",
     "java/res/layout/ntp_customization_theme_tip_bottom_sheet_layout.xml",
     "java/res/layout/ntp_customization_theme_tip_illustration_box.xml",
     "java/res/values-night/colors.xml",
