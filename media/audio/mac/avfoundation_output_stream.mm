@@ -92,6 +92,7 @@ AVFoundationOutputStream::AVFoundationOutputStream(
       callback_(nullptr),
       objc_storage_(std::make_unique<ObjCStorage>()),
       audio_bus_(AudioBus::Create(params)) {
+  CHECK(params_.IsValid());
   DVLOG(1)
       << __func__
       << ": Initializing AVFoundationOutputStream with these AudioParameters:: "
@@ -144,6 +145,10 @@ bool AVFoundationOutputStream::Open() {
 
   auto scoped_layout = ChannelLayoutToAudioChannelLayout(
       params_.channel_layout(), params_.channels());
+  if (!scoped_layout) {
+    LOG(ERROR) << "Failed to create audio channel layout.";
+    return false;
+  }
 
   OSStatus status = CMAudioFormatDescriptionCreate(
       /*allocator=*/kCFAllocatorDefault,

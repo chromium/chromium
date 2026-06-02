@@ -173,6 +173,10 @@ void SetAudioChannelLayout(int channels,
 
   auto coreaudio_layout =
       ChannelLayoutToAudioChannelLayout(channel_layout, channels);
+  if (!coreaudio_layout) {
+    DLOG(ERROR) << "Failed to create audio channel layout.";
+    return;
+  }
 
   MaybeMapRearSurroundChannelToSurroundChannel(audio_unit,
                                                coreaudio_layout->layout());
