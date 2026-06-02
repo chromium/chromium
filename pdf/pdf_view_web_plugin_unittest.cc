@@ -3717,6 +3717,105 @@ TEST_P(PdfViewWebPluginInkTextHighlightTest, DrawInProgressTextHighlight) {
       start_event, {&move_event}, end_event);
 }
 
+TEST_P(PdfViewWebPluginInkTextHighlightTest,
+       DrawInProgressTextHighlightMultipage) {
+  plugin_->set_in_paint_for_testing(true);
+
+  // Plugin size is 100x100 (kCanvasSize).
+  constexpr gfx::Rect kPluginRect(kCanvasSize);
+  UpdatePluginGeometry(/*device_scale=*/1.0f, kPluginRect);
+  SetDocumentDimensions(kCanvasSize);
+
+  // Page 0: top half, Page 1: bottom half.
+  constexpr gfx::Rect kPage0Rect(0, 0, 100, 50);
+  constexpr gfx::Rect kPage1Rect(0, 50, 100, 50);
+
+  ON_CALL(*engine_ptr_, GetPageContentsRect)
+      .WillByDefault([kPage0Rect, kPage1Rect](int page_index) {
+        if (page_index == 0) {
+          return kPage0Rect;
+        }
+        if (page_index == 1) {
+          return kPage1Rect;
+        }
+        return gfx::Rect();
+      });
+  ON_CALL(*engine_ptr_, GetPageSizeInPoints)
+      .WillByDefault(Return(gfx::SizeF(100.0f, 50.0f)));
+  ON_CALL(*engine_ptr_, GetThumbnailSize)
+      .WillByDefault(Return(gfx::Size(50, 25)));
+  ON_CALL(*engine_ptr_, IsPageVisible).WillByDefault(Return(true));
+
+  // Enter annotation mode and select the highlighter.
+  plugin_->OnMessage(
+      CreateSetAnnotationModeMessageForTesting(InkAnnotationMode::kDraw));
+  plugin_->OnMessage(CreateSetAnnotationBrushMessageForTesting(
+      "highlighter", &kLightGreenBrushParams));
+
+  // The canvas starts blank.
+  canvas_.DrawColor(SK_ColorWHITE);
+  plugin_->Paint(canvas_.sk_canvas(), kPluginRect);
+  SkBitmap blank_bitmap =
+      GenerateExpectedBitmapForPaint(kPluginRect, SK_ColorWHITE);
+  EXPECT_TRUE(cc::MatchesBitmap(canvas_.GetBitmap(), blank_bitmap,
+                                cc::ExactPixelComparator()));
+
+  constexpr gfx::PointF kStartPosition{50.0f, 25.0f};
+  constexpr gfx::PointF kEndPosition{50.0f, 75.0f};
+
+  EXPECT_CALL(*engine_ptr_, OnTextOrLinkAreaClick(kStartPosition, 1));
+  EXPECT_CALL(*engine_ptr_, ExtendSelectionByPoint(kEndPosition));
+
+  // Mock the selection rect map.
+  PdfInkModuleClient::SelectionRectMap mock_selection_rect_map{
+      {0, {PdfRect(50, 15, 100, 35)}}, {1, {PdfRect(0, 15, 50, 35)}}};
+  ON_CALL(*engine_ptr_, GetSelectionRectMap())
+      .WillByDefault(Return(mock_selection_rect_map));
+  ON_CALL(*engine_ptr_, IsSelectableTextOrLinkArea(_))
+      .WillByDefault(Return(true));
+
+  // Start to draw a stroke.  There should not be a call to apply the stroke
+  // until drawing is finished.
+  EXPECT_CALL(*engine_ptr_, ApplyStroke(_, _, _)).Times(0);
+
+  // Send mouse down on Page 0.
+  TestSendInputEvent(CreateLeftClickWebMouseEventAtPosition(kStartPosition),
+                     blink::WebInputEventResult::kHandledApplication);
+  // Send mouse move to Page 1.
+  TestSendInputEvent(CreateLeftClickWebMouseMoveEventAtPosition(kEndPosition),
+                     blink::WebInputEventResult::kHandledApplication);
+
+  // Draw the canvas for the in-progress stroke.
+  plugin_->Paint(canvas_.sk_canvas(), kPluginRect);
+  const base::FilePath stroked_image_png_file = GetInkTestDataFilePath(
+      FILE_PATH_LITERAL("text_highlight_multipage_stroke.png"));
+  EXPECT_TRUE(
+      MatchesPngFile(*canvas_.GetBitmap().asImage(), stroked_image_png_file));
+
+  // Finish the stroke.
+  testing::Mock::VerifyAndClearExpectations(engine_ptr_);
+  EXPECT_CALL(*engine_ptr_, ApplyStroke(0, InkStrokeId(0), _));
+  EXPECT_CALL(*engine_ptr_, ApplyStroke(1, InkStrokeId(1), _));
+
+  blink::WebMouseEvent end_event =
+      CreateLeftClickWebMouseUpEventAtPosition(kEndPosition);
+  TestSendInputEvent(end_event,
+                     blink::WebInputEventResult::kHandledApplication);
+
+  // Verify the snapshot.
+  plugin_->Paint(canvas_.sk_canvas(), kPluginRect);
+  EXPECT_TRUE(
+      MatchesPngFile(*canvas_.GetBitmap().asImage(), stroked_image_png_file));
+  EXPECT_TRUE(plugin_->HasInkInputsSnapshotForTesting());
+
+  plugin_->UpdateSnapshot(CreateSkiaImageForTesting(
+      plugin_->GetPluginRectForTesting().size(), SK_ColorWHITE));
+  plugin_->Paint(canvas_.sk_canvas(), kPluginRect);
+  EXPECT_TRUE(cc::MatchesBitmap(canvas_.GetBitmap(), blank_bitmap,
+                                cc::ExactPixelComparator()));
+  EXPECT_FALSE(plugin_->HasInkInputsSnapshotForTesting());
+}
+
 class PdfViewWebPluginInk2SaveTest : public PdfViewWebPluginSaveTest {
  private:
   base::test::ScopedFeatureList feature_list_{features::kPdfInk2};

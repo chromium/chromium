@@ -1530,6 +1530,30 @@ TEST_P(PDFiumEngineDrawSelectionTest, DrawTextSelectionsHelloWorld) {
       *engine, kPageIndex, "hello_world_selection_3.png");
 }
 
+TEST_P(PDFiumEngineDrawSelectionTest, DrawTextSelectionsMultipage) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Update the plugin size so that all the text is visible by
+  // `SelectionChangeInvalidator`.
+  engine->PluginSizeUpdated({500, 1000});
+
+  // Select text across pages.
+  // - Page 0 selection starts at "Goodbye, world!" (char index 15).
+  // - Page 1 selection ends at "Hello, world!" (char index 13).
+  SetSelection(*engine, /*start_page_index=*/0, /*start_char_index=*/15,
+               /*end_page_index=*/1, /*end_char_index=*/13);
+  EXPECT_EQ(GetPlatformTextExpectation("Goodbye, world!\nHello, world!"),
+            engine->GetSelectedText());
+
+  DrawSelectionAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "hello_world_multipage_selection_page0.png");
+  DrawSelectionAndCompare(*engine, /*page_index=*/1,
+                          "hello_world_multipage_selection_page1.png");
+}
+
 TEST_P(PDFiumEngineDrawSelectionTest, DrawTextSelectionsBigtableMicro) {
   TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
