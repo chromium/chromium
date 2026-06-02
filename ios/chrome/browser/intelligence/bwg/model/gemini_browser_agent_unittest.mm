@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
@@ -222,6 +223,16 @@ class GeminiBrowserAgentTest : public PlatformTest {
   // Triggers `RequestPageContextGeneration()` in the browser agent.
   void RequestPageContextGeneration() {
     gemini_browser_agent_->RequestPageContextGeneration();
+  }
+
+  // Wrapper for `CreateGeminiConfiguration`.
+  GeminiConfiguration* CreateGeminiConfiguration(
+      UIViewController* base_view_controller,
+      GeminiStartupState* startup_state,
+      web::WebState* web_state,
+      GeminiPageContext* page_context) {
+    return gemini_browser_agent_->CreateGeminiConfiguration(
+        base_view_controller, startup_state, web_state, page_context);
   }
 
   // Setter for `processing_status_`.
@@ -790,6 +801,49 @@ TEST_F(GeminiBrowserAgentTest, TestOnLiveButtonTappedTriggersEvent) {
       NotifyEvent(testing::Eq(feature_engagement::events::kIOSGeminiLiveUsed)));
 
   gemini_browser_agent_->OnLiveButtonTapped();
+}
+
+// Tests that kIPHiOSGeminiLiveIPHFeature and kIPHiOSGeminiLiveNewBadgeFeature
+// are successfully triggered when starting the flow and dismissed when the
+// floaty is dismissed.
+TEST_F(GeminiBrowserAgentTest, TestGeminiLiveIPHAndNewBadgeFET) {
+  // Setup mock tracker expectations for triggering
+  EXPECT_CALL(*mock_tracker_,
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::kIPHiOSGeminiLiveIPHFeature)))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_tracker_,
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature)))
+      .WillOnce(testing::Return(true));
+
+  UIViewController* base_view_controller = [[UIViewController alloc] init];
+  GeminiStartupState* startup_state =
+      [[GeminiStartupState alloc] initWithEntryPoint:gemini::EntryPoint::Promo];
+  GeminiPageContext* page_context = [[GeminiPageContext alloc] init];
+
+  // Call CreateGeminiConfiguration to trigger the features.
+  GeminiConfiguration* config = CreateGeminiConfiguration(
+      base_view_controller, startup_state, web_state_, page_context);
+
+  EXPECT_TRUE(config.shouldShowGeminiLiveIPH);
+  EXPECT_TRUE(config.shouldShowGeminiLiveNewBadge);
+
+  // Setup mock tracker expectations for dismissal
+  EXPECT_CALL(
+      *mock_tracker_,
+      Dismissed(testing::Ref(feature_engagement::kIPHiOSGeminiLiveIPHFeature)))
+      .Times(1);
+  EXPECT_CALL(*mock_tracker_,
+              Dismissed(testing::Ref(
+                  feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature)))
+      .Times(1);
+
+  // Emulate the floaty being invoked so DismissFloaty actually runs fully.
+  SetIsFloatyInvoked(true);
+  ClearActiveHidingSources();
+
+  gemini_browser_agent_->DismissFloaty();
 }
 
 // Tests that OnProcessingStatusChanged updates processing_status_ and switches

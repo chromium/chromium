@@ -968,6 +968,19 @@ void GeminiBrowserAgent::DismissFloaty() {
     return;
   }
 
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile());
+  if (tracker) {
+    if (has_triggered_gemini_live_iph_) {
+      tracker->Dismissed(feature_engagement::kIPHiOSGeminiLiveIPHFeature);
+      has_triggered_gemini_live_iph_ = false;
+    }
+    if (has_triggered_gemini_live_new_badge_) {
+      tracker->Dismissed(feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature);
+      has_triggered_gemini_live_new_badge_ = false;
+    }
+  }
+
   // TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
   // cleaned up.
   if (IsGeminiActorEnabled() && IsActorEnabled()) {
@@ -1464,6 +1477,8 @@ GeminiConfiguration* GeminiBrowserAgent::CreateGeminiConfiguration(
         feature_engagement::kIPHiOSGeminiLiveIPHFeature);
     config.shouldShowGeminiLiveNewBadge = tracker->ShouldTriggerHelpUI(
         feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature);
+    has_triggered_gemini_live_iph_ = config.shouldShowGeminiLiveIPH;
+    has_triggered_gemini_live_new_badge_ = config.shouldShowGeminiLiveNewBadge;
   } else {
     config.shouldShowGeminiLiveIPH = NO;
     config.shouldShowGeminiLiveNewBadge = NO;
