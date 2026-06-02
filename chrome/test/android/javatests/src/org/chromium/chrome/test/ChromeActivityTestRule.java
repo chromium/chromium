@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
@@ -59,7 +58,6 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
@@ -71,7 +69,6 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -461,20 +458,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                 });
     }
 
-    /** Returns the infobars being displayed by the current tab, or null if they don't exist. */
-    public List<InfoBar> getInfoBars() {
-        return ThreadUtils.runOnUiThreadBlocking(
-                new Callable<>() {
-                    @Override
-                    public List<InfoBar> call() {
-                        Tab currentTab = getActivityTab();
-                        assertNotNull(currentTab);
-                        assertNotNull(InfoBarContainer.get(currentTab));
-                        return InfoBarContainer.get(currentTab).getInfoBarsForTesting();
-                    }
-                });
-    }
-
     /**
      * Executes the given snippet of JavaScript code within the current tab. Returns the result of
      * its execution in JSON format.
@@ -500,15 +483,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      */
     public void assertWaitForPageScaleFactorMatch(float expectedScale) {
         ChromeApplicationTestUtils.assertWaitForPageScaleFactorMatch(getActivity(), expectedScale);
-    }
-
-    /**
-     * @return {@link InfoBarContainer} of the active tab of the activity. {@code null} if there is
-     *     no tab for the activity or infobar is available.
-     */
-    public InfoBarContainer getInfoBarContainer() {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> getActivityTab() != null ? InfoBarContainer.get(getActivityTab()) : null);
     }
 
     /** Gets the ChromeActivityTestRule's EmbeddedTestServer instance if it has one. */

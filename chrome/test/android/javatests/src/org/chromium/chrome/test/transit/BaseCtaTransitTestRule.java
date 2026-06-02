@@ -14,7 +14,6 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -22,7 +21,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
-import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -30,7 +28,6 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** Base class for integration tests that start {@link ChromeTabbedActivity}. */
@@ -216,16 +213,6 @@ public class BaseCtaTransitTestRule {
                         }
                     }
                 });
-    }
-
-    // TODO(crbug.com/406324209): Cleanup infobars or support them in Public Transit.
-    public List<InfoBar> getInfoBars() {
-        return mActivityTestRule.getInfoBars();
-    }
-
-    // TODO(crbug.com/406324209): Cleanup infobars or support them in Public Transit.
-    public InfoBarContainer getInfoBarContainer() {
-        return mActivityTestRule.getInfoBarContainer();
     }
 
     /** Enables IPH again for one test case. */
