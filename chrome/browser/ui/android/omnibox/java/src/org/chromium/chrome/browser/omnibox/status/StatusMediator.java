@@ -71,6 +71,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.Objects;
+
 /** Contains the controller logic of the Status component. */
 @NullMarked
 public class StatusMediator
@@ -120,6 +122,7 @@ public class StatusMediator
     private @Nullable CookieControlsBridge mCookieControlsBridge;
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable StatusIconResource mSearchEngineIcon;
+    private @Nullable StatusIconResource mSiteSearchFavicon;
     private @Nullable NullableObservableSupplier<SiteSearchData> mSiteSearchDataSupplier;
     private @Nullable OnClickListener mOnStatusIconNavigateBackButtonPress;
     private @Nullable FuseboxSessionState mInputSessionState;
@@ -679,6 +682,7 @@ public class StatusMediator
         if (extensionIcon != null) return extensionIcon;
 
         if (mSiteSearchDataSupplier != null && mSiteSearchDataSupplier.get() != null) {
+            if (mSiteSearchFavicon != null) return mSiteSearchFavicon;
             return new StatusIconResource(
                     R.drawable.ic_suggestion_magnifier,
                     ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme));
@@ -879,7 +883,29 @@ public class StatusMediator
     }
 
     private void onSiteSearchDataChanged(@Nullable SiteSearchData siteSearchData) {
+        mSiteSearchFavicon = null;
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        if (siteSearchData == null || mSearchEngineUtils == null) return;
+
+        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
+        if (templateUrlService == null) return;
+
+        TemplateUrl templateUrl =
+                templateUrlService.getTemplateUrlForKeyword(siteSearchData.keyword);
+        if (templateUrl == null) return;
+
+        mSearchEngineUtils.retrieveFavicon(
+                templateUrl,
+                icon -> {
+                    // Only set the icon if the SiteSearchData has not changed. There might be edge
+                    // cases where site search data changes between calls.
+                    if (mSiteSearchDataSupplier != null
+                            && Objects.equals(siteSearchData, mSiteSearchDataSupplier.get())) {
+                        mSiteSearchFavicon = icon;
+                        updateLocationBarIcon(IconTransitionType.CROSSFADE);
+                    }
+                });
     }
 
     void setTranslationX(float translationX) {

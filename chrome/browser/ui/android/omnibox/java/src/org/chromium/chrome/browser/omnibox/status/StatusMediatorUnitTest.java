@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,6 +24,7 @@ import static org.chromium.chrome.browser.omnibox.status.StatusMediator.COOKIE_C
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Looper;
 import android.view.ContextThemeWrapper;
 import android.view.View.OnClickListener;
 
@@ -40,6 +42,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -72,14 +75,18 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsBridgeJni;
 import org.chromium.components.content_settings.CookieControlsState;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -120,8 +127,12 @@ public final class StatusMediatorUnitTest {
     @Mock private Runnable mTogglePopupCallback;
     @Mock private Runnable mOnStatusViewHiddenForPageInfoRemoval;
     @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
+    @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
 
     @Captor private ArgumentCaptor<PermissionDialogController.Observer> mPermissionObserverCaptor;
+
+    @Captor
+    private ArgumentCaptor<org.chromium.base.Callback<StatusIconResource>> mFaviconCallbackCaptor;
 
     private Context mContext;
     private PropertyModel mModel;
@@ -142,6 +153,8 @@ public final class StatusMediatorUnitTest {
         SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
         TrackerFactory.setTrackerForTests(mTracker);
         CookieControlsBridgeJni.setInstanceForTesting(mCookieControlsBridgeJniMock);
+        LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNatives);
+        doReturn(1L).when(mLargeIconBridgeNatives).init();
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         ComposeboxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxBridgeJni);
         doReturn(true).when(mComposeboxBridgeJni).isFuseboxEligibleForProfile(any());
@@ -971,6 +984,72 @@ public final class StatusMediatorUnitTest {
                     R.drawable.ic_add_round_20dp_with_inset,
                     mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
         }
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testSiteSearchDataChanged_omniboxIconUpdated() {
+        SettableNullableObservableSupplier<SiteSearchData> siteSearchDataSupplier =
+                ObservableSuppliers.createNullable();
+        doReturn(siteSearchDataSupplier).when(mAutocompleteInput).getSiteSearchDataSupplier();
+        mMediator.beginInput(mFuseboxSessionState);
+
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        TemplateUrl geminiTemplate = mock(TemplateUrl.class);
+        doReturn(geminiTemplate).when(mTemplateUrlService).getTemplateUrlForKeyword("gemini");
+        SiteSearchData geminiData = new SiteSearchData("gemini", "Gemini");
+        siteSearchDataSupplier.set(geminiData);
+
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mSearchEngineUtils)
+                .retrieveFavicon(eq(geminiTemplate), mFaviconCallbackCaptor.capture());
+
+        StatusIconResource geminiIcon = new StatusIconResource("gemini_icon", null, 0);
+        mFaviconCallbackCaptor.getValue().onResult(geminiIcon);
+
+        assertEquals("gemini_icon", getIconIdentifierForTesting());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testSiteSearchDataChanged_omniboxIconUpdated_withLatestSiteSearchData() {
+        SettableNullableObservableSupplier<SiteSearchData> siteSearchDataSupplier =
+                ObservableSuppliers.createNullable();
+        doReturn(siteSearchDataSupplier).when(mAutocompleteInput).getSiteSearchDataSupplier();
+        mMediator.beginInput(mFuseboxSessionState);
+
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        // 1. User triggers @wiki first
+        TemplateUrl wikiTemplate = mock(TemplateUrl.class);
+        doReturn(wikiTemplate).when(mTemplateUrlService).getTemplateUrlForKeyword("wiki");
+
+        SiteSearchData wikiData = new SiteSearchData("wiki", "Wikipedia");
+        siteSearchDataSupplier.set(wikiData);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mSearchEngineUtils)
+                .retrieveFavicon(eq(wikiTemplate), mFaviconCallbackCaptor.capture());
+
+        // 2. User changes suggestion from @wiki to @gemini
+        TemplateUrl geminiTemplate = mock(TemplateUrl.class);
+        doReturn(geminiTemplate).when(mTemplateUrlService).getTemplateUrlForKeyword("gemini");
+
+        SiteSearchData geminiData = new SiteSearchData("gemini", "Gemini");
+        siteSearchDataSupplier.set(geminiData);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        // 3. Late callback returns @wiki icon
+        StatusIconResource wikiResolvedIcon = new StatusIconResource("wiki_icon", null, 0);
+        mFaviconCallbackCaptor.getValue().onResult(wikiResolvedIcon);
+
+        // 4. Assert the late @wiki icon callback was safely discarded because active data is
+        // @gemini
+        assertNotEquals("wiki_icon", getIconIdentifierForTesting());
     }
 
     private String getIconIdentifierForTesting() {
