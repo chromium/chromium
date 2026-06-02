@@ -33,14 +33,15 @@ class TestStatus:
 def _validate_kwargs(kwargs, valid_args_set):
   """Validates if keywords in kwargs are accepted."""
   diff = set(kwargs.keys()) - valid_args_set
-  assert len(diff) == 0, 'Invalid keyword argument(s) in %s passed in!' % diff
+  assert len(diff) == 0, f'Invalid keyword argument(s) in {diff} passed in!'
 
 
 def _validate_test_status(status):
   """Raises if input isn't valid."""
   if not status in _VALID_TEST_STATUSES:
-    raise TypeError('Invalid test status: %s. Should be one of %s.' %
-                    (status, _VALID_TEST_STATUSES))
+    raise TypeError(
+        f'Invalid test status: {status}. Should be one of {_VALID_TEST_STATUSES}.'
+    )
 
 
 def _to_standard_json_literal(status):
@@ -76,8 +77,9 @@ class TestResult(object):
           "ERROR: AddressSanitizer" was found in the app side logs after a crash
     """
     _validate_kwargs(kwargs, _VALID_TEST_RESULT_INIT_KWARGS)
-    assert isinstance(name, str), (
-        'Test name should be an instance of str. We got: %s') % type(name)
+    assert isinstance(
+        name,
+        str), f'Test name should be an instance of str. We got: {type(name)}'
     self.name = name
     _validate_test_status(status)
     self.status = status
@@ -226,7 +228,7 @@ class ResultCollection(object):
   def add_name_prefix_to_tests(self, prefix):
     """Adds a prefix to all test names of results."""
     for test_result in self._test_results:
-      test_result.name = '%s%s' % (prefix, test_result.name)
+      test_result.name = f'{prefix}{test_result.name}'
 
   def add_test_names_status(self, test_names, test_status, **kwargs):
     """Adds a list of test names with given test status.
@@ -402,7 +404,7 @@ class ResultCollection(object):
         test_name = test_result.name
         name_count[test_name] = name_count.get(test_name, 0) + 1
         logs = unexpected_logs.get(test_name, [])
-        logs.append('Failure log of attempt %d:' % name_count[test_name])
+        logs.append(f'Failure log of attempt {name_count[test_name]}:')
         logs.extend(test_result.test_log.split('\n'))
         unexpected_logs[test_name] = logs
 

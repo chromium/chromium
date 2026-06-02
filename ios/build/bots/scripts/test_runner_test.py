@@ -85,13 +85,13 @@ class SimulatorTestRunnerTest(TestCase):
     self.mock(test_apps, 'get_bundle_id', lambda _: 'fake-bundle-id')
     self.mock(xcode_util, 'xctest_path', lambda _: 'fake-path')
     self.mock(test_apps.plistlib, 'dump', lambda _1, _2: '')
-    self.mock(os.path, 'abspath', lambda path: '/abs/path/to/%s' % path)
+    self.mock(os.path, 'abspath', lambda path: f'/abs/path/to/{path}')
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(test_runner.TestRunner, 'set_sigterm_handler',
       lambda self, handler: 0)
     self.mock(os, 'listdir', lambda _: [])
     self.mock(test_apps.GTestsApp, 'fill_xctest_run',
-              lambda _, folder: '/abs/path/to/%s' % folder)
+              lambda _, folder: f'/abs/path/to/{folder}')
 
   def test_app_not_found(self):
     """Ensures AppNotFoundError is raised."""
@@ -321,7 +321,7 @@ class DeviceTestRunnerTest(TestCase):
     self.mock(test_runner, 'install_xcode', install_xcode)
     self.mock(test_runner.subprocess,
               'check_output', lambda _: b'fake-bundle-id')
-    self.mock(os.path, 'abspath', lambda path: '/abs/path/to/%s' % path)
+    self.mock(os.path, 'abspath', lambda path: f'/abs/path/to/{path}')
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(os, 'listdir', lambda _: [])
     self.mock(tempfile, 'mkstemp', lambda: '/tmp/tmp_file')

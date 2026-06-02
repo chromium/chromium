@@ -103,8 +103,9 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
             _LOCAL_STATE_VARIATIONS_LAST_FETCH_TIME_KEY:
                 str(win_one_day_before_microseconds)
         })
-    LOGGER.info('Reset last fetch time to %s in Local State.' %
-                win_one_day_before_microseconds)
+    LOGGER.info(
+        f'Reset last fetch time to {win_one_day_before_microseconds} in Local State.'
+    )
 
   def _launch_app_once(self,
                        out_sub_dir,

@@ -26,21 +26,21 @@ from google.protobuf import any_pb2
 
 
 SINK_ADDRESS = 'sink/address'
-SINK_POST_URL = 'http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults' % SINK_ADDRESS
-UPATE_POST_URL = 'http://%s/prpc/luci.resultsink.v1.Sink/UpdateInvocation' % SINK_ADDRESS
+SINK_POST_URL = f'http://{SINK_ADDRESS}/prpc/luci.resultsink.v1.Sink/ReportTestResults'
+UPATE_POST_URL = f'http://{SINK_ADDRESS}/prpc/luci.resultsink.v1.Sink/UpdateInvocation'
 AUTH_TOKEN = 'some_sink_token'
-LUCI_CONTEXT_FILE_DATA = """
-{
-  "result_sink": {
-    "address": "%s",
-    "auth_token": "%s"
-  }
-}
-""" % (SINK_ADDRESS, AUTH_TOKEN)
+LUCI_CONTEXT_FILE_DATA = f"""
+{{
+  "result_sink": {{
+    "address": "{SINK_ADDRESS}",
+    "auth_token": "{AUTH_TOKEN}"
+  }}
+}}
+"""
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Authorization': 'ResultSink %s' % AUTH_TOKEN
+    'Authorization': f'ResultSink {AUTH_TOKEN}'
 }
 CRASH_TEST_LOG = """
 Exception Reason:
@@ -266,7 +266,7 @@ class UnitTest(unittest.TestCase):
     self.assertEqual(result_dict['caseNameComponents'], ['testname/param'])
 
   @mock.patch.object(requests.Session, 'post')
-  @mock.patch('%s.open' % 'result_sink_util',
+  @mock.patch(f'{"result_sink_util"}.open',
               mock.mock_open(read_data=LUCI_CONTEXT_FILE_DATA))
   @mock.patch('os.environ.get', return_value='filename')
   def test_post_test_result(self, mock_open_file, mock_session_post):
@@ -292,7 +292,7 @@ class UnitTest(unittest.TestCase):
         data=json.dumps({'testResults': [test_result]}))
 
   @mock.patch.object(requests.Session, 'post')
-  @mock.patch('%s.open' % 'result_sink_util',
+  @mock.patch(f'{"result_sink_util"}.open',
               mock.mock_open(read_data=LUCI_CONTEXT_FILE_DATA))
   @mock.patch('os.environ.get', return_value='filename')
   @mock.patch('exception_recorder._record_time')
@@ -343,7 +343,7 @@ class UnitTest(unittest.TestCase):
     mock_session_post.assert_called_with(
         url=UPATE_POST_URL, headers=HEADERS, data=inv_data)
 
-  @mock.patch('%s.open' % 'result_sink_util',
+  @mock.patch(f'{"result_sink_util"}.open',
               mock.mock_open(read_data=LUCI_CONTEXT_FILE_DATA))
   @mock.patch('os.environ.get', return_value='filename')
   @mock.patch(

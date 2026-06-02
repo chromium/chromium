@@ -48,7 +48,7 @@ def describe_cipd_ref(pkg_path, ref):
     output = subprocess.check_output(
         cmd, stderr=subprocess.STDOUT).decode('utf-8')
   except subprocess.CalledProcessError:
-    LOGGER.debug('cipd describe cmd %s returned nothing' % cmd)
+    LOGGER.debug(f'cipd describe cmd {cmd} returned nothing')
   return output
 
 
@@ -62,7 +62,7 @@ def convert_platform_version_to_cipd_ref(
     prefix = 'ios'
   else:
     prefix = 'tvos'
-  return '%s-%s' % (prefix, platform_version.replace('.', '-'))
+  return f'{prefix}-{platform_version.replace(".", "-")}'
 
 
 def _is_legacy_xcode_package(xcode_app_path):
@@ -136,7 +136,7 @@ def _install_runtime(mac_toolchain, install_path, xcode_build_version,
       install_path,
   ]
 
-  LOGGER.debug('Installing runtime with command: %s' % cmd)
+  LOGGER.debug(f'Installing runtime with command: {cmd}')
   output = subprocess.check_call(cmd, stderr=subprocess.STDOUT)
   return output
 
@@ -180,8 +180,8 @@ def move_runtime(runtime_cache_folder, xcode_app_path):
   runtimes_in_src = glob.glob(os.path.join(src_folder, '*.simruntime'))
   if len(runtimes_in_src) != 1:
     raise test_runner_errors.IOSRuntimeHandlingError(
-        'Not exactly one runtime files (files: %s) to move from %s!' %
-        (runtimes_in_src, src_folder))
+        f'Not exactly one runtime files (files: {runtimes_in_src}) to move from {src_folder}!'
+    )
 
   runtimes_in_dst = glob.glob(os.path.join(dst_folder, '*.simruntime'))
   for runtime in runtimes_in_dst:
@@ -191,8 +191,7 @@ def move_runtime(runtime_cache_folder, xcode_app_path):
   # Get the runtime package filename. It might not be the default name.
   runtime_name = os.path.basename(runtimes_in_src[0])
   dst_runtime = os.path.join(dst_folder, runtime_name)
-  LOGGER.debug('Moving %s from %s to %s.' %
-               (runtime_name, src_folder, dst_folder))
+  LOGGER.debug(f'Moving {runtime_name} from {src_folder} to {dst_folder}.')
   shutil.move(os.path.join(src_folder, runtime_name), dst_runtime)
   return
 
@@ -269,7 +268,7 @@ def _install_xcode(mac_toolchain, xcode_build_version, xcode_path):
       '-with-runtime=False',
   ]
 
-  LOGGER.debug('Installing xcode with command: %s' % cmd)
+  LOGGER.debug(f'Installing xcode with command: {cmd}')
   output = subprocess.check_call(cmd, stderr=subprocess.STDOUT)
   return output
 
@@ -316,8 +315,8 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
     for dir_name in XcodeCipdFiles:
       dir_path = os.path.join(xcode_app_path, dir_name)
       if os.path.exists(dir_path):
-        LOGGER.debug('Xcode cache will be re-created because it contains %s' %
-                     dir_path)
+        LOGGER.debug(
+            f'Xcode cache will be re-created because it contains {dir_path}')
         shutil.rmtree(xcode_app_path)
         os.mkdir(xcode_app_path)
         break
@@ -339,8 +338,8 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
     ios_version = runtime_args.get('ios_version')
     if not runtime_cache_folder or not ios_version:
       raise test_runner_errors.IOSRuntimeHandlingError(
-          'Insufficient runtime_args. runtime_cache_folder: %s, ios_version: %s'
-          % (runtime_cache_folder, ios_version))
+          f'Insufficient runtime_args. runtime_cache_folder: {runtime_cache_folder}, ios_version: {ios_version}'
+      )
 
     # Try to install the runtime to it's cache folder. mac_toolchain will test
     # and install only when the runtime doesn't exist in cache.
@@ -367,7 +366,7 @@ def _install_runtime_dmg(mac_toolchain, install_path,
       '-output-dir', install_path
   ]
 
-  LOGGER.debug('Installing runtime dmg with command: %s' % cmd)
+  LOGGER.debug(f'Installing runtime dmg with command: {cmd}')
   output = subprocess.check_call(cmd, stderr=subprocess.STDOUT)
   return output
 
@@ -513,7 +512,7 @@ def version():
       'xcodebuild',
       '-version',
   ]
-  LOGGER.debug('Checking Xcode version with command: %s' % cmd)
+  LOGGER.debug(f'Checking Xcode version with command: {cmd}')
 
   output = subprocess.check_output(cmd).decode('utf-8')
   output = output.splitlines()
@@ -724,8 +723,8 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
     # Flush buffers to ensure correct output ordering.
     sys.stdout.flush()
     sys.stderr.write(traceback.format_exc())
-    sys.stderr.write('Xcode build version %s failed to install: %s\n' %
-                     (xcode_build_version, e))
+    sys.stderr.write(
+        f'Xcode build version {xcode_build_version} failed to install: {e}\n')
     sys.stderr.flush()
     return False
   else:

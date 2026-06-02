@@ -319,8 +319,7 @@ class FileCopyPlugin(BasePlugin):
     self.glob_pattern = glob_pattern
 
   def __str__(self):
-    return "FileCopyPlugin. Glob: {}, Dest: {}".format(self.glob_pattern,
-                                                       self.out_dir)
+    return f"FileCopyPlugin. Glob: {self.glob_pattern}, Dest: {self.out_dir}"
 
   def test_bundle_will_finish(self, request):
     """ Called just as a test bundle will finish.

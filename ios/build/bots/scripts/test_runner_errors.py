@@ -33,8 +33,8 @@ class XcodeInstallFailedError(Error):
 
   def __init__(self, xcode_version):
     super(XcodeInstallFailedError, self).__init__(
-        'Xcode version %s failed to install. File a ticket to go/ios-ops-ticket'
-        % xcode_version)
+        f'Xcode version {xcode_version} failed to install. File a ticket to go/ios-ops-ticket'
+    )
 
 
 class XcodeUnsupportedFeatureError(Error):
@@ -47,7 +47,7 @@ class MacToolchainNotFoundError(XcodeInstallError):
 
   def __init__(self, mac_toolchain):
     super(MacToolchainNotFoundError, self).__init__(
-        'mac_toolchain is not specified or not found: "%s"' % mac_toolchain)
+        f'mac_toolchain is not specified or not found: "{mac_toolchain}"')
 
 
 class XcodePathNotFoundError(XcodeInstallError):
@@ -55,7 +55,7 @@ class XcodePathNotFoundError(XcodeInstallError):
 
   def __init__(self, xcode_path):
     super(XcodePathNotFoundError, self).__init__(
-        'xcode_path is not specified or does not exist: "%s"' % xcode_path)
+        f'xcode_path is not specified or does not exist: "{xcode_path}"')
 
 
 class LocalRunXcodeError(XcodeInstallError):
@@ -89,13 +89,12 @@ class RuntimeBuildNotFoundError(Error):
 
   def __init__(self, ios_version):
     super(RuntimeBuildNotFoundError, self).__init__(
-        'the desired runtime build for iOS %s is not found on cipd' %
-        ios_version)
+        f'the desired runtime build for iOS {ios_version} is not found on cipd')
 
 
 class SimRuntimeDeleteTimeoutError(Error):
   """When deleting a simulator runtime exceeds timeout."""
 
   def __init__(self, runtime_id):
-    super(SimRuntimeDeleteTimeoutError, self).__init__(
-        'Unable to delete runtime %s after timeout' % runtime_id)
+    super(SimRuntimeDeleteTimeoutError,
+          self).__init__(f'Unable to delete runtime {runtime_id} after timeout')

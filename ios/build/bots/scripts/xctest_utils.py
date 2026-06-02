@@ -127,8 +127,8 @@ class XCTestLogParser(object):
       line: text of the line at which the error occurred
       reason: a string describing the error
     """
-    self._internal_error_lines.append('%s: %s [%s]' %
-                                      (self._line_number, line.strip(), reason))
+    self._internal_error_lines.append(
+        f'{self._line_number}: {line.strip()} [{reason}]')
 
   def RunningTests(self):
     """Returns list of tests that appear to be currently running."""
@@ -179,7 +179,7 @@ class XCTestLogParser(object):
     If the test didn't fail or timeout, returns [].
     """
     test_status = self._test_status.get(test, ('', []))
-    return ['%s: ' % test] + test_status[1]
+    return [f'{test}: '] + test_status[1]
 
   def CompletedWithoutFailure(self):
     """Returns True if all tests completed and no tests failed unexpectedly."""
@@ -255,7 +255,7 @@ class XCTestLogParser(object):
                   self._current_test,
                   TestStatus.ABORT,
                   test_log='\n'.join(self._failure_description)))
-      test_name = '%s/%s' % (results.group(1), results.group(2))
+      test_name = f'{results.group(1)}/{results.group(2)}'
       self._test_status[test_name] = ('started', ['Did not complete.'])
       self._current_test = test_name
       if self.retrying_failed:
@@ -268,10 +268,10 @@ class XCTestLogParser(object):
     # Is it a test success line?
     results = self._test_ok.match(line)
     if results:
-      test_name = '%s/%s' % (results.group(1), results.group(2))
+      test_name = f'{results.group(1)}/{results.group(2)}'
       status = self._StatusOfTest(test_name)
       if status != 'started':
-        self._RecordError(line, 'success while in status %s' % status)
+        self._RecordError(line, f'success while in status {status}')
       if self.retrying_failed:
         self._test_status[test_name] = ('warning', self._failure_description)
         # This is a passed result. Previous failures were reported in separate
@@ -292,15 +292,14 @@ class XCTestLogParser(object):
     # Is it a test failure line?
     results = self._test_fail.match(line)
     if results:
-      test_name = '%s/%s' % (results.group(1), results.group(2))
+      test_name = f'{results.group(1)}/{results.group(2)}'
       status = self._StatusOfTest(test_name)
       if status not in ('started', 'failed', 'timeout'):
-        self._RecordError(line, 'failure while in status %s' % status)
+        self._RecordError(line, f'failure while in status {status}')
       if self._current_test != test_name:
         if self._current_test:
           self._RecordError(
-              line,
-              '%s failure while in test %s' % (test_name, self._current_test))
+              line, f'{test_name} failure while in test {self._current_test}')
         return
       # Don't overwrite the failure description when a failing test is listed a
       # second time in the summary, or if it was already recorded as timing

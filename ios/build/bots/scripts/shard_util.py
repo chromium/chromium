@@ -63,8 +63,9 @@ def balance_into_sublists(test_counts: collections.Counter,
     min_shard = min(shards, key=lambda shard: shard.size)
     min_shard.test_classes.append(test_class)
     min_shard.size += number_of_test_methods
-    LOGGER.debug('%s test case is allocated to shard %s with %s test methods' %
-                 (test_class, shards.index(min_shard), number_of_test_methods))
+    LOGGER.debug(
+        f'{test_class} test case is allocated to shard {shards.index(min_shard)} with {number_of_test_methods} test methods'
+    )
 
   sublists = [shard.test_classes for shard in shards]
   return sublists
@@ -101,5 +102,5 @@ def shard_eg_test_cases(all_eg_test_names: List[Tuple[str, str]]) -> List[str]:
   sublists = balance_into_sublists(test_counts, total_shards)
   tests = sublists[shard_index]
 
-  LOGGER.info("Tests to be executed this round: {}".format(tests))
+  LOGGER.info(f"Tests to be executed this round: {tests}")
   return tests
