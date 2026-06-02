@@ -193,8 +193,9 @@ void WindowEventDispatcher::HoldPointerMoves() {
     held_event_factory_.InvalidateWeakPtrs();
   }
   ++move_hold_count_;
-  TRACE_EVENT_BEGIN("ui", "WindowEventDispatcher::HoldPointerMoves",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "ui", "WindowEventDispatcher::HoldPointerMoves",
+      perfetto::NamedTrack::FromPointer("aura::WindowEventDispatcher", this));
 }
 
 void WindowEventDispatcher::ReleasePointerMoves() {
@@ -227,8 +228,9 @@ void WindowEventDispatcher::ReleasePointerMoves() {
       }
     }
   }
-  TRACE_EVENT_END("ui", /*"WindowEventDispatcher::HoldPointerMoves"*/
-                  perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END(
+      "ui", /*"WindowEventDispatcher::HoldPointerMoves"*/ perfetto::NamedTrack::
+          FromPointer("aura::WindowEventDispatcher", this));
 }
 
 gfx::Point WindowEventDispatcher::GetLastMouseLocationInRoot() const {
