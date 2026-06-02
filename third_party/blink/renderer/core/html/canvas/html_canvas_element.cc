@@ -414,6 +414,13 @@ void HTMLCanvasElement::ParseAttribute(
 void HTMLCanvasElement::AttributeChanged(
     const AttributeModificationParams& params) {
   HTMLElement::AttributeChanged(params);
+
+  if (params.name.LocalName().starts_with("aria-")) {
+    if (accessibility_manager_) {
+      accessibility_manager_->ReadAriaAttributes();
+    }
+  }
+
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
       params.name == html_names::kLayoutsubtreeAttr) {
     bool had_layoutsubtree = !params.old_value.IsNull();
@@ -421,6 +428,9 @@ void HTMLCanvasElement::AttributeChanged(
     if (had_layoutsubtree != has_layoutsubtree) {
       setLayoutSubtree(has_layoutsubtree);
       UseCounter::Count(GetDocument(), WebFeature::kHTMLInCanvas);
+      if (accessibility_manager_) {
+        accessibility_manager_->SetHasLayoutSubtree(has_layoutsubtree);
+      }
     }
   }
 }
@@ -596,6 +606,8 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
 
   context_->RecordUKMCanvasRenderingAPI();
   context_->RecordUMACanvasRenderingAPI();
+
+  // TODO(crbug.com/475512055): Remove UKM when heuristics are verified.
   context_->MaybeRecordUKMCanvasAccessibility();
 
   // Since the |context_| is created, free the transparent image,
@@ -898,6 +910,10 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
         child->SetNeedsPaintPropertyUpdate();
       }
     }
+  }
+
+  if (accessibility_manager_) {
+    accessibility_manager_->OnResize();
   }
 }
 
@@ -1577,6 +1593,7 @@ void HTMLCanvasElement::NotifyGpuContextLost() {
 void HTMLCanvasElement::Trace(Visitor* visitor) const {
   visitor->Trace(listeners_);
   visitor->Trace(context_);
+  visitor->Trace(accessibility_manager_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   CanvasRenderingContextHost::Trace(visitor);
@@ -1630,6 +1647,10 @@ void HTMLCanvasElement::SetIsDisplayed(bool displayed) {
     // there is no specific order between creating the `context_` and setting
     // `is_displayed_`, the function is called in both places.
     context_->MaybeRecordUKMCanvasAccessibility();
+  }
+
+  if (accessibility_manager_) {
+    accessibility_manager_->SetVisible(displayed);
   }
 }
 
@@ -1740,6 +1761,14 @@ void HTMLCanvasElement::PageVisibilityChanged() {
 }
 
 void HTMLCanvasElement::ContextDestroyed() {
+  if (accessibility_manager_) {
+    // If UMA has not been recorded yet, record it before the context is
+    // destroyed. Since this object and `accessibility_manager_` are destroyed
+    // using garbage collection, it's not safe to record UMA in the destructor
+    // since it may happen during browser shutdown and metric recording may be
+    // skipped.
+    accessibility_manager_->FlushUmaIfNeeded();
+  }
   if (context_)
     context_->Stop();
 }
@@ -1782,6 +1811,9 @@ void HTMLCanvasElement::StyleDidChange(const ComputedStyle* old_style,
   SetIsDisplayed(is_displayed);
   if (context_) {
     context_->StyleDidChange(old_style, new_style);
+  }
+  if (accessibility_manager_) {
+    accessibility_manager_->OnResize();
   }
   if (StyleChangeNeedsDidDraw(old_style, new_style))
     DidDraw();
@@ -1827,6 +1859,9 @@ void HTMLCanvasElement::ChildrenChanged(const ChildrenChange& change) {
     if (firstElementChild()) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kCanvasFallbackElementContent);
+    }
+    if (accessibility_manager_) {
+      accessibility_manager_->UpdateHasFallbackElementContent();
     }
   }
 
@@ -2066,5 +2101,10 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
   return LayoutObject::GetImageOrientation(GetLayoutObject());
 }
 
+void HTMLCanvasElement::OnAxObjectCreated(bool is_ignored) {
+  accessibility_manager_ = MakeGarbageCollected<HTMLCanvasAccessibilityManager>(
+      GetDocument().GetTaskRunner(TaskType::kInternalDefault), is_ignored,
+      this);
+}
 
 }  // namespace blink

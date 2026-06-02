@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_accessibility_manager.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
@@ -68,6 +69,7 @@ class DOMMatrix;
 class Element;
 class ElementImage;
 class GraphicsContext;
+class HTMLCanvasAccessibilityManager;
 class HTMLCanvasElement;
 class ImageBitmapOptions;
 class StaticBitmapImageToVideoFrameCopier;
@@ -189,6 +191,9 @@ class CORE_EXPORT HTMLCanvasElement final
 
   cc::TextureLayer* GetOrCreateCcLayerForCanvas2DIfNeeded();
   cc::TextureLayer* GetCanvas2DCcLayerForTesting() { return cc_layer_.get(); }
+  HTMLCanvasAccessibilityManager* GetAccessibilityManagerForTesting() {
+    return accessibility_manager_.Get();
+  }
   void ClearCanvas2DLayerTexture() override;
 
   void SetNeedsPushProperties();
@@ -362,6 +367,8 @@ class CORE_EXPORT HTMLCanvasElement final
 
   ElementImage* captureElementImage(Element* element, ExceptionState&);
 
+  void OnAxObjectCreated(bool is_ignored);
+
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;
@@ -441,6 +448,8 @@ class CORE_EXPORT HTMLCanvasElement final
   bool origin_clean_;
   bool needs_unbuffered_input_ = false;
   bool style_is_visible_ = false;
+
+  Member<HTMLCanvasAccessibilityManager> accessibility_manager_;
 
   // Used for OffscreenCanvas that controls this HTML canvas element
   // and for low latency mode.

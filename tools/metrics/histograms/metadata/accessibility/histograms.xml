@@ -957,6 +957,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Canvas.HeuristicResult"
+    enum="CanvasAccessibilityHeuristicResult" expires_after="2026-08-27">
+  <owner>rhalavati@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the heuristic result determining whether an HTML canvas element has
+    or needs accessibility support. Logged with a delay after the canvas
+    accessibility manager changes the heuristic result or upon context
+    destruction. This metric is recorded as a best effort and may not represent
+    the final heuristic result if the canvas element is changed frequently, or
+    may not get recorded at all if the browser is shut down too quickly after
+    the last change.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CaptionSettingsLoadedFromPrefs"
     enum="BooleanEnabled" expires_after="2027-05-19">
   <owner>evliu@google.com</owner>

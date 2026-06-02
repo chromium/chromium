@@ -1634,6 +1634,10 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   // Eagerly fill out new subtrees.
   new_obj->UpdateChildrenIfNecessary();
 
+  if (auto* canvas = DynamicTo<HTMLCanvasElement>(node)) {
+    canvas->OnAxObjectCreated(new_obj->IsIgnored());
+  }
+
   return new_obj;
 }
 
