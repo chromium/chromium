@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 # This file creates |platform_pak_locales| which is the set of packed locales
 # based on the current platform. Locales in this list are formatted based on
 # what .pak files expect. The |platform_pak_locales| variable *may* contain

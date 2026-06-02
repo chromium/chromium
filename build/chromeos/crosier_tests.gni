@@ -11,7 +11,7 @@
 # to the test sources. These files will be copied to the appropriate directory.
 # See docs/testing/chromeos_integration/crosier_metadata.md for details.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chromeos/args.gni")
 
 template("crosier_tests") {
   assert(is_chromeos_device)

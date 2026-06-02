@@ -8,7 +8,6 @@
 # to speedup creating a V8 context and setting up around it.
 
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/v8_target_cpu.gni")
 import("//v8/gni/v8.gni")
 
