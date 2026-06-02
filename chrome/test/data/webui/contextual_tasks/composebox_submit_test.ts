@@ -83,6 +83,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     loadTimeData.overrideValues({
       contextualMenuUsePecApi: false,
+      composeboxSmartTabSharingVisible: false,
       enableComposeboxJumpFix: false,
       composeboxShowTypedSuggest: true,
       composeboxShowZps: true,

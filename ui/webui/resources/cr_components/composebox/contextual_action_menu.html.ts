@@ -17,7 +17,7 @@ export function getHtml(this: ContextualActionMenuElement) {
         this.isInputTypeAllowed_(InputType.kBrowserTab) ? html`
         ${this.contextManagementInComposeboxEnabled_ ? html`
           <div class="share-tabs-container">
-            ${this.smartTabSharingVisible_ && this.smartTabSharingActive ? html`
+            ${this.smartTabSharingVisible && this.smartTabSharingActive ? html`
               <button class="dropdown-item"
                   id="smartTabSharingItem"
                   role="menuitemcheckbox"
@@ -54,7 +54,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                   @pointerenter="${this.onShareTabsFlyoutPointerenter_}"
                   @pointerleave="${this.onShareTabsFlyoutPointerleave_}"
                   @keydown="${this.onShareTabsFlyoutKeydown_}">
-                ${this.smartTabSharingVisible_ ? html`
+                ${this.smartTabSharingVisible ? html`
                   <button class="dropdown-item"
                       id="smartTabSharingItemFlyout"
                       role="menuitemcheckbox"

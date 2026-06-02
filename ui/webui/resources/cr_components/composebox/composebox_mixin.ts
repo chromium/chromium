@@ -76,6 +76,7 @@ export const ComposeboxEmbedderMixin =
             },
             showContextMenuDescription: {type: Boolean},
             smartTabSharingActive: {type: Boolean},
+            smartTabSharingVisible: {type: Boolean},
             shouldShowGhostFiles: {type: Boolean},
             showMenuOnClick: {type: Boolean},
             submitButtonIconType: {type: String},
@@ -176,6 +177,7 @@ export const ComposeboxEmbedderMixin =
         accessor smartComposeEnabled: boolean =
             loadTimeData.getBoolean('composeboxSmartComposeEnabled');
         accessor smartTabSharingActive: boolean = false;
+        accessor smartTabSharingVisible: boolean = false;
         contextMenuDescriptionEnabled: boolean =
             loadTimeData.getBoolean('composeboxShowContextMenuDescription');
         accessor showContextMenuDescription: boolean =
@@ -2320,6 +2322,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   enableImageContextualSuggestions: boolean;
   smartComposeEnabled: boolean;
   smartTabSharingActive: boolean;
+  smartTabSharingVisible: boolean;
   contextMenuDescriptionEnabled: boolean;
   showContextMenuDescription: boolean;
   shouldShowGhostFiles: boolean;

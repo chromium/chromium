@@ -149,6 +149,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       lensButtonDisabled_: {type: Boolean},
       caretAnimationsEnabled_: {type: Boolean},
       usePecApi_: {type: Boolean},
+      smartTabSharingVisible_: {type: Boolean},
       energyEffectEnabled_: {type: Boolean, reflect: true},
       energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
       glifAnimationState_: {type: String},
@@ -209,6 +210,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('caretAnimationEnabled');
   protected accessor usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
+  protected accessor smartTabSharingVisible_: boolean =
+      loadTimeData.getBoolean('composeboxSmartTabSharingVisible');
   protected accessor energyEffectEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectEnabled');
   // The use of energyEffectEnabled to set energyEffectAnimationEnabled_ is

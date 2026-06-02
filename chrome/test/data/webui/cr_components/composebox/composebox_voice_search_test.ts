@@ -117,7 +117,6 @@ suite('ComposeboxVoiceSearch', () => {
     loadTimeData.overrideValues({
       composeboxShowZps: true,
       composeboxShowTypedSuggest: true,
-      composeboxSmartTabSharingVisible: false,
     });
   });
 

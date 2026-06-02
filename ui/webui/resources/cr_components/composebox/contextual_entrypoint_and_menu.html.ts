@@ -34,6 +34,7 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
         .recentTabId="${this.recentTabId}"
         .inputState="${this.inputState}"
         .smartTabSharingActive="${this.smartTabSharingActive}"
+        .smartTabSharingVisible="${this.smartTabSharingVisible}"
         .disableAutoReposition="${this.disableAutoReposition}"
         .uploadButtonDisabled="${this.uploadButtonDisabled}"
         @close="${this.onMenuClose_}">

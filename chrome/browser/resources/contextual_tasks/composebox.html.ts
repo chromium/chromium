@@ -68,6 +68,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .clearAllInputsWhenSubmittingQuery="${true}"
           .showVoiceSearch="${true}"
           .usePecApi="${this.usePecApi_}"
+          .smartTabSharingVisible="${this.smartTabSharingVisible_}"
           .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
           .energyEffectEnabled="${this.energyEffectAnimationEnabled_}"
           .glifAnimationState="${this.glifAnimationState_}"

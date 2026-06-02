@@ -64,6 +64,7 @@ export class ContextualActionMenuElement extends
       tabSuggestions: {type: Array},
       inputState: {type: Object},
       smartTabSharingActive: {type: Boolean},
+      smartTabSharingVisible: {type: Boolean},
       enableMultiTabSelection_: {
         reflect: true,
         type: Boolean,
@@ -71,7 +72,6 @@ export class ContextualActionMenuElement extends
       tabPreviewUrl_: {type: String},
       tabPreviewsEnabled_: {type: Boolean},
       showContextMenuHeaders_: {type: Boolean},
-      smartTabSharingVisible_: {type: Boolean},
       disableAutoReposition: {type: Boolean},
       contextManagementInComposeboxEnabled_: {
         reflect: true,
@@ -94,6 +94,7 @@ export class ContextualActionMenuElement extends
   accessor tabSuggestions: TabInfo[] = [];
   accessor inputState: InputState|null = null;
   accessor smartTabSharingActive: boolean = false;
+  accessor smartTabSharingVisible: boolean = false;
   accessor disableAutoReposition: boolean = false;
   accessor uploadButtonDisabled: boolean = false;
   accessor isSidePanel: boolean = false;
@@ -108,8 +109,6 @@ export class ContextualActionMenuElement extends
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
   protected accessor showContextMenuHeaders_: boolean =
       loadTimeData.getBoolean('ShowContextMenuHeaders');
-  protected accessor smartTabSharingVisible_: boolean =
-      getLoadTimeBoolean('composeboxSmartTabSharingVisible', false);
   protected accessor contextManagementInComposeboxEnabled_: boolean =
       getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
   protected accessor shareTabsFlyoutOpen_: boolean = false;
