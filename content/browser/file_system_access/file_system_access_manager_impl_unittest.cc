@@ -1588,6 +1588,80 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
   ASSERT_TRUE(future.Wait());
 }
 
+// Covers the re-entrancy and lifetime safety of `RenderFrameHost` and
+// `WebContents` in `ShowFilePickerOnUIThread`. Specifically, it covers the
+// scenario where the frame is detached/destroyed during the
+// `CanShowFilePicker` permission check.
+//
+// Without the fix, this scenario triggers a crash when the code attempts to
+// access the destroyed `WebContents` to drop fullscreen
+// `web_contents->ForSecurityDropFullscreen(...)`.
+//
+// Note: If destruction occurred during the fullscreen exit loop instead, the
+// crash would occur in `FileSystemChooser::CreateAndShow()` when dereferencing
+// the dangling RenderFrameHost.
+TEST_F(FileSystemAccessManagerImplTest,
+       ChooseEntries_CanShowFilePickerDestroysFrameUAF) {
+  static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
+  manager_->BindReceiver(binding_context,
+                         manager_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(permission_context_,
+              CanObtainReadPermission(kTestStorageKey.origin()))
+      .WillOnce(testing::Return(true));
+
+  EXPECT_CALL(
+      permission_context_,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDocuments,
+                                kTestStorageKey.origin()))
+      .WillOnce(testing::Return(base::FilePath()));
+  EXPECT_CALL(permission_context_,
+              GetLastPickedDirectory(kTestStorageKey.origin(), std::string()))
+      .WillOnce(testing::Return(PathInfo()));
+  EXPECT_CALL(permission_context_, GetPickerTitle(testing::_))
+      .WillOnce(testing::Return(std::u16string()));
+
+  // Mock CanShowFilePicker to synchronously destroy the WebContents, which
+  // destroys the RFH. This simulates the frame being detached/destroyed
+  // during the yielding permission check.
+  EXPECT_CALL(permission_context_, CanShowFilePicker(testing::_))
+      .WillOnce([&](content::RenderFrameHost* rfh) {
+        auto* temp_wc = web_contents_.get();
+        web_contents_ = nullptr;
+        web_contents_factory_.DestroyWebContents(temp_wc);
+        return base::ok();
+      });
+
+  auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
+      blink::mojom::AcceptsTypesInfo::New(
+          std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+          /*include_accepts_all=*/true),
+      /*can_select_multiple_files=*/false);
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewOpenFilePickerOptions(std::move(open_file_picker_options)),
+      /*starting_directory_id=*/std::string(),
+      blink::mojom::FilePickerStartInOptionsUnionPtr());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         std::vector<blink::mojom::FileSystemAccessEntryPtr>>
+      future;
+  manager_remote->ChooseEntries(std::move(picker_options),
+                                future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // The call should be aborted gracefully since the frame was destroyed.
+  // Without the fix, this would have crashed during the picker call.
+  EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOperationAborted,
+            future.Get<0>()->status);
+}
+
 TEST_F(FileSystemAccessManagerImplTest,
        ChooseEntries_OpenFile_EnterpriseBlock) {
   base::FilePath test_file = dir_.GetPath().AppendASCII("foo");
