@@ -75,6 +75,12 @@ class HeightTransitionHandler {
      */
     private boolean mTabStripVisible;
 
+    /**
+     * The tab strip was suppressed by {@link suppressTapStrip()}. The method is called when the tab
+     * strip needs hiding in favor of other UI such as vertical tab.
+     */
+    private boolean mTabStripSuppressed;
+
     /** Tracks the last width seen for the tab strip. */
     private int mTabStripWidth;
 
@@ -172,6 +178,12 @@ class HeightTransitionHandler {
         }
     }
 
+    /** Called when the tab strip is suppressed in favor of other UI such as vertical tab. */
+    void suppressTabStrip(boolean suppress) {
+        mTabStripSuppressed = suppress;
+        requestTransition();
+    }
+
     /** Return the current tab strip height. */
     int getTabStripHeight() {
         return mTabStripHeight;
@@ -213,7 +225,8 @@ class HeightTransitionHandler {
         // Do not allow callback to pass through when object is destroyed.
         if (mIsDestroyed) return;
 
-        boolean showTabStrip = mTabStripWidth >= mTabStripTransitionThreshold;
+        boolean showTabStrip =
+                (mTabStripWidth >= mTabStripTransitionThreshold) && !mTabStripSuppressed;
         if (showTabStrip == mTabStripVisible && !mForceUpdateHeight) {
             // Do not transition if visibility does not change, unless we want to continue the
             // transition to update the tab strip top padding.

@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 
 /** Unit tests for {@link VerticalTabsSideUiCoordinator}. */
@@ -36,6 +37,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private VerticalTabListCoordinator mMockTabListCoordinator;
+    @Mock private SideUiCoordinator mMockSideUiCoordinator;
 
     private VerticalTabsSideUiCoordinator mCoordinator;
 
@@ -44,7 +46,9 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         View mockView = new View(activity);
         when(mMockTabListCoordinator.getView()).thenReturn(mockView);
-        mCoordinator = new VerticalTabsSideUiCoordinator(activity, mMockTabListCoordinator);
+        mCoordinator =
+                new VerticalTabsSideUiCoordinator(
+                        activity, mMockSideUiCoordinator, mMockTabListCoordinator);
     }
 
     @After
@@ -78,6 +82,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDetermineContainerWidth() {
+        assertEquals(0, mCoordinator.determineContainerWidth(200, 500, 800));
+        mCoordinator.setVisible(true);
         assertEquals(200, mCoordinator.determineContainerWidth(200, 500, 800));
     }
 

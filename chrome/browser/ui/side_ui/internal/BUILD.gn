@@ -25,6 +25,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/side_panel/android:java",
     "//chrome/browser/ui/side_ui/public:java",
+    "//chrome/browser/ui/vertical_tabs:java",
     "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",

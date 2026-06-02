@@ -201,6 +201,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResolverFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsSideUiCoordinator;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
@@ -242,6 +244,7 @@ import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninController;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninPromoLauncher;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.user_education.UserEducationUtils;
 import org.chromium.chrome.browser.user_education.UserEducationUtils.OptionalPromoType;
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
@@ -372,6 +375,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable ContextualTasksBridge mContextualTasksBridge;
     private @Nullable GlicUiCoordinator mGlicUiCoordinator;
     private @Nullable ForcedSigninController mForcedSigninController;
+    private @Nullable VerticalTabsSideUiCoordinator mVerticalTabsSideUiCoordinator;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -1342,9 +1346,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 mSnackbarManagerSupplier);
             }
         }
-        if (AndroidSidePanelEnabledFn.isEnabled()) {
-            initializeSideUi(currentlySelectedProfile);
-        }
+        initializeSideUi(currentlySelectedProfile);
     }
 
     /** Creates an instance of {@link IncognitoReauthCoordinatorFactory} for tabbed activity. */
@@ -2169,13 +2171,35 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mWindowAndroid,
                             mActivityTabProvider);
         }
-
+        if (VerticalTabUtils.isVerticalTabsEligible(mActivity)) {
+            mVerticalTabsSideUiCoordinator =
+                    new VerticalTabsSideUiCoordinator(
+                            mActivity,
+                            mSideUiCoordinator,
+                            new VerticalTabListCoordinator(
+                                    mActivity,
+                                    assumeNonNull(mTabModelSelectorSupplier.get()),
+                                    assumeNonNull(mProfileSupplier.get())));
+            mSideUiCoordinator.registerSideUiContainer(mVerticalTabsSideUiCoordinator);
+        }
         mSideUiStateProviderSupplier.set(mSideUiCoordinator);
 
         // TODO(crbug.com/510890983): Add render tests for the secondary container adjustment.
         View secondaryUiContainer = mActivity.findViewById(R.id.secondary_ui_container);
         mSecondaryUiContainerMarginAdjuster = new ViewMarginAdjusterForSideUi(secondaryUiContainer);
         mSideUiCoordinator.addObserver(mSecondaryUiContainerMarginAdjuster);
+    }
+
+    /** Toggle the visibility between horizontal tab strip and vertical tab list. */
+    public void toggleTabStrip() {
+        var transitionCoordinator =
+                assumeNonNull(mToolbarManager).getTabStripTransitionCoordinator();
+        boolean showVerticalTab = assumeNonNull(transitionCoordinator).getTabStripHeight() > 0;
+        // TODO(crbug.com/509226293):
+        //    - Coordinate horizontal/vertical tab animation.
+        //    - Persist toggle state to SharedPreference, and check the state on initialization.
+        transitionCoordinator.suppressTabStrip(showVerticalTab);
+        assumeNonNull(mVerticalTabsSideUiCoordinator).setVisible(showVerticalTab);
     }
 
     private void destroySideUi() {

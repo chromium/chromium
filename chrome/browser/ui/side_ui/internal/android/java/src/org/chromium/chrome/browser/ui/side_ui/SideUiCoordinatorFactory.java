@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 
 /** Factory for creating a {@link SideUiCoordinator}. */
 @NullMarked
@@ -41,7 +42,8 @@ public final class SideUiCoordinatorFactory {
             @Nullable ViewStub leftAnchorContainerStub,
             @Nullable ViewStub rightAnchorContainerStub,
             @Nullable NonNullObservableSupplier<Integer> topMarginSupplier) {
-        if (!AndroidSidePanelEnabledFn.isEnabled()) {
+        if (!AndroidSidePanelEnabledFn.isEnabled()
+                && !VerticalTabUtils.isVerticalTabsEligible(parentActivity)) {
             return null;
         }
 

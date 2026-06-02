@@ -602,6 +602,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/side_ui/public:factory_java",
       "//chrome/browser/ui/side_ui/public:java",
       "//chrome/browser/ui/side_ui/public:java_resources",
+      "//chrome/browser/ui/vertical_tabs:java",
       "//chrome/browser/uid/android:java",
       "//chrome/browser/url_constants/android:java",
       "//chrome/browser/usb/android:java",

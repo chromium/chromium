@@ -415,7 +415,7 @@ public class WarmupManager {
                     (ViewGroup)
                             new AsyncLayoutInflater(context)
                                     .inflateSync(
-                                            MainLayoutSwitcher.getMainLayoutRes(),
+                                            MainLayoutSwitcher.getMainLayoutRes(context),
                                             contentHolder,
                                             /* attachToRoot= */ true);
             if (toolbarContainerId != ActivityUtils.NO_RESOURCE_ID) {

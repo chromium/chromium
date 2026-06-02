@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.app;
 
+import android.content.Context;
+
 import androidx.annotation.LayoutRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 
 /**
  * Switches the main layout based on feature flags.
@@ -26,8 +29,9 @@ public final class MainLayoutSwitcher {
 
     /** Returns the resource ID for the main layout. */
     @LayoutRes
-    public static int getMainLayoutRes() {
+    public static int getMainLayoutRes(Context context) {
         return AndroidSidePanelEnabledFn.isEnabled()
+                        || VerticalTabUtils.isVerticalTabsEligible(context)
                 ? R.layout.main_forked_with_secondary_ui_container
                 : R.layout.main;
     }

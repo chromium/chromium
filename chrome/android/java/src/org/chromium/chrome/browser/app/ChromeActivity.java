@@ -863,7 +863,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             if (mBaseChromeLayout != null) {
                 setContentViewToBaseLayout();
             } else {
-                setContentView(MainLayoutSwitcher.getMainLayoutRes());
+                setContentView(MainLayoutSwitcher.getMainLayoutRes(this));
             }
             TraceEvent.end("setContentView(R.layout.main)");
             if (getControlContainerLayoutId() != ActivityUtils.NO_RESOURCE_ID) {
@@ -902,7 +902,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private void setContentViewToBaseLayout() {
         getLayoutInflater()
                 .inflate(
-                        MainLayoutSwitcher.getMainLayoutRes(),
+                        MainLayoutSwitcher.getMainLayoutRes(this),
                         mBaseChromeLayout,
                         /* attachToRoot= */ true);
         setContentView(mBaseChromeLayout);
