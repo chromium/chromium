@@ -3898,6 +3898,18 @@ chromium-metrics-reviews@google.com.
   <token key="TabStripMode" variants="TabStripMode"/>
 </histogram>
 
+<histogram name="TabStrip.{TabStripMode}.TabDragPinnedness"
+    enum="TabDragPinnedness" expires_after="2026-09-27">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The pinnedness of dragged tabs in a successful tab drag operation.
+
+    It tracks whether the dragged tabs are all unpinned, all pinned, or mixed.
+  </summary>
+  <token key="TabStripMode" variants="TabStripMode"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
