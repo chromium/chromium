@@ -5699,7 +5699,8 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
     mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
         blink_popup_widget_host,
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
-    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
+    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
+    GlobalRenderFrameHostId creator_frame_id) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::CreateNewPopupWidget",
                         "route_id", route_id);
 
@@ -5709,7 +5710,8 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
   }
 
   RenderWidgetHostImpl* widget_host = RenderWidgetHostFactory::CreateSelfOwned(
-      &primary_frame_tree_, this, site_instance_group, route_id, IsHidden());
+      &primary_frame_tree_, this, site_instance_group, route_id, IsHidden(),
+      creator_frame_id);
 
   widget_host->BindWidgetInterfaces(std::move(blink_widget_host),
                                     std::move(blink_widget));

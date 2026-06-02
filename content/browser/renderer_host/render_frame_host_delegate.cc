@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/trust_token_access_details.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -178,7 +179,8 @@ RenderWidgetHostImpl* RenderFrameHostDelegate::CreateNewPopupWidget(
     mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
         blink_popup_widget_host,
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost> blink_widget_host,
-    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget) {
+    mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget,
+    GlobalRenderFrameHostId creator_frame_id) {
   return nullptr;
 }
 

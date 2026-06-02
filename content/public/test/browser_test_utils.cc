@@ -5043,12 +5043,13 @@ void CreateNewPopupWidgetInterceptor::CreateNewPopupWidget(
         RenderWidgetHostDelegate* delegate,
         base::SafeRef<SiteInstanceGroup> site_instance_group,
         int32_t routing_id,
-        bool hidden) override {
+        bool hidden,
+        GlobalRenderFrameHostId popup_creator_frame_id) override {
       CHECK(!last_created_widget_);
       last_created_widget_ =
           RenderWidgetHostFactory::CreateSelfOwnedRenderWidgetHost(
               frame_tree, delegate, std::move(site_instance_group), routing_id,
-              hidden);
+              hidden, popup_creator_frame_id);
       return last_created_widget_;
     }
 

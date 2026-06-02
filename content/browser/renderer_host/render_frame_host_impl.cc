@@ -11488,7 +11488,7 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
   RenderWidgetHostImpl* widget = delegate_->CreateNewPopupWidget(
       site_instance_->group()->GetSafeRef(), widget_route_id,
       std::move(blink_popup_widget_host), std::move(blink_widget_host),
-      std::move(blink_widget));
+      std::move(blink_widget), GetGlobalId());
   if (!widget) {
     return;
   }

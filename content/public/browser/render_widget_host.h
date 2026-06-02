@@ -56,6 +56,7 @@ class FrameSinkId;
 }
 
 namespace content {
+struct GlobalRenderFrameHostId;
 class RenderProcessHost;
 class RenderWidgetHostIterator;
 class RenderWidgetHostObserver;
@@ -362,6 +363,11 @@ class CONTENT_EXPORT RenderWidgetHost {
 
   // Sets the timeout for the hung renderer detection.
   virtual void SetHungRendererDelay(const base::TimeDelta& delay) = 0;
+
+  // Returns the creator/opener frame's ID if this widget is a popup widget.
+  // Otherwise, returns std::nullopt.
+  virtual std::optional<GlobalRenderFrameHostId> GetPopupCreatorFrameId()
+      const = 0;
 };
 
 }  // namespace content
