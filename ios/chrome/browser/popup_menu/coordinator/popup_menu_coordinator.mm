@@ -330,6 +330,8 @@ using base::UserMetricsAction;
       profile->GetOriginalProfile());
   mediator.identityManager =
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
+  mediator.identityAvatarProvider =
+      GetApplicationContext()->GetIdentityAvatarProvider();
   mediator.tabBasedIPHBrowserAgent =
       TabBasedIPHBrowserAgent::FromBrowser(browser);
   mediator.hasSettingsBlueDot =

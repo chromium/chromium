@@ -89,6 +89,10 @@ IOSOverflowMenuAction HistogramActionFromActionType(
       NOTREACHED();
     case overflow_menu::ActionType::ShareThisPage:
       return IOSOverflowMenuAction::kShareThisPage;
+    case overflow_menu::ActionType::Signin:
+      return IOSOverflowMenuAction::kSignin;
+    case overflow_menu::ActionType::Identity:
+      return IOSOverflowMenuAction::kIdentity;
   }
 }
 

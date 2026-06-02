@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -29,6 +30,8 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/sync/service/sync_service.h"
@@ -104,6 +107,9 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_metrics.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
@@ -174,7 +180,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                     PrefObserverDelegate,
                                     ReadingListModelBridgeObserver,
                                     SearchEngineObserving,
-                                    WebStateListObserving> {
+                                    WebStateListObserving,
+                                    AuthenticationServiceObserving,
+                                    IdentityManagerObserverBridgeDelegate> {
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 
@@ -200,6 +208,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   // Whether or not model initialization has finished.
   BOOL _modelInitialized;
+
+  // Bridge to register for AuthenticationService changes.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
+
+  // Bridge to register for IdentityManager changes.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserverBridge;
 }
 
 // The current web state.
@@ -232,10 +248,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 @property(nonatomic, strong) OverflowMenuDestination* cobaltDestination;
 @property(nonatomic, strong) OverflowMenuDestination* levelUpDestination;
 
+@property(nonatomic, strong) OverflowMenuActionGroup* identityActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* appActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* pageActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* helpActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* editActionsGroup;
+
+@property(nonatomic, strong) OverflowMenuAction* signinAction;
+@property(nonatomic, strong) OverflowMenuAction* identityAction;
 
 @property(nonatomic, strong) OverflowMenuAction* reloadAction;
 @property(nonatomic, strong) OverflowMenuAction* stopLoadAction;
@@ -331,7 +351,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   self.syncService = nullptr;
   self.browserManagementService = nullptr;
+
   _searchEngineObserver.reset();
+  _authenticationService = nullptr;
+  _authServiceObserverBridge.reset();
+  _identityManager = nullptr;
+  _identityManagerObserverBridge.reset();
 }
 
 #pragma mark - Property getters/setters
@@ -490,6 +515,28 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self updateModel];
 }
 
+- (void)setIdentityManager:(signin::IdentityManager*)identityManager {
+  _identityManagerObserverBridge.reset();
+  _identityManager = identityManager;
+  if (_identityManager) {
+    _identityManagerObserverBridge =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
+  }
+  [self updateModel];
+}
+
+- (void)setAuthenticationService:(AuthenticationService*)authenticationService {
+  _authServiceObserverBridge.reset();
+  _authenticationService = authenticationService;
+  if (_authenticationService) {
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            _authenticationService, self);
+  }
+  [self updateModel];
+}
+
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
   _templateURLService = templateURLService;
   if (_templateURLService) {
@@ -553,6 +600,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   self.levelUpDestination = [self newLevelUpDestination];
 
   [self logTranslateAvailability];
+
+  if (IsIdentityAwarenessEnabled()) {
+    self.signinAction = [self newSigninAction];
+    self.identityAction = [self newIdentityAction];
+    [self updateIdentityAction];
+  }
 
   self.reloadAction =
       [self createOverflowMenuActionWithNameID:IDS_IOS_TOOLS_MENU_RELOAD
@@ -759,6 +812,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       initWithGroupName:@"edit_actions"
                 actions:@[ self.editActionsAction ]
                  footer:nil];
+
+  if (IsIdentityAwarenessEnabled()) {
+    self.identityActionsGroup =
+        [[OverflowMenuActionGroup alloc] initWithGroupName:kIdentityGroupName
+                                                   actions:@[]
+                                                    footer:nil];
+  }
 
   self.model.actionGroups = @[
     self.appActionsGroup, self.pageActionsGroup, self.editActionsGroup,
@@ -979,6 +1039,41 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                  handler:^{
                                    [weakSelf openClearBrowsingData];
                                  }];
+}
+
+- (OverflowMenuAction*)newSigninAction {
+  __weak __typeof(self) weakSelf = self;
+  OverflowMenuAction* action =
+      [self createOverflowMenuActionWithNameID:IDS_IOS_SIGNIN_BUTTON_TEXT
+                                    actionType:overflow_menu::ActionType::Signin
+                                    symbolName:kPersonCropCircleSymbol
+                                  systemSymbol:YES
+                              monochromeSymbol:NO
+                               accessibilityID:kToolsMenuSigninId
+                                  hideItemText:nil
+                                       handler:^{
+                                         [weakSelf showSignin];
+                                       }];
+  action.subtitle =
+      l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
+  return action;
+}
+
+- (OverflowMenuAction*)newIdentityAction {
+  __weak __typeof(self) weakSelf = self;
+  // The name, the subtitle and the image will be will set in
+  // `updateIdentityAction` method.
+  return
+      [self createOverflowMenuActionWithName:@""
+                                  actionType:overflow_menu::ActionType::Identity
+                                  symbolName:kPersonCropCircleSymbol
+                                systemSymbol:YES
+                            monochromeSymbol:NO
+                             accessibilityID:kToolsMenuIdentityId
+                                hideItemText:nil
+                                     handler:^{
+                                       [weakSelf showAccountMenu];
+                                     }];
 }
 
 - (OverflowMenuAction*)newTranslateAction {
@@ -1617,6 +1712,48 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   NSMutableArray<OverflowMenuAction*>* appActions =
       [[NSMutableArray alloc] init];
 
+  if (IsIdentityAwarenessEnabled() && self.authenticationService) {
+    NSMutableArray<OverflowMenuAction*>* identityActions =
+        [NSMutableArray array];
+    if (self.authenticationService->GetPrimaryIdentity()) {
+      [self updateIdentityAction];
+      [identityActions addObject:self.identityAction];
+    } else {
+      // Hide identity action if sign-in is not allowed.
+      AuthenticationService::ServiceStatus status =
+          self.authenticationService->GetServiceStatus();
+      switch (status) {
+        case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+        case AuthenticationService::ServiceStatus::SigninAllowed:
+          [identityActions addObject:self.signinAction];
+          break;
+        case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+        case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+        case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+          break;
+      }
+    }
+    self.identityActionsGroup.actions = identityActions;
+
+    BOOL hasIdentityGroup =
+        [self.model.actionGroups containsObject:self.identityActionsGroup];
+    if ((identityActions.count > 0) && !hasIdentityGroup) {
+      // The identity group is needed, but it is currently not visible.
+      // Add the identity group from the overflow menu model.
+      NSMutableArray<OverflowMenuActionGroup*>* actionGroups =
+          [self.model.actionGroups mutableCopy];
+      [actionGroups insertObject:self.identityActionsGroup atIndex:0];
+      self.model.actionGroups = actionGroups;
+    } else if ((identityActions.count == 0) && hasIdentityGroup) {
+      // The identity group is not needed, but it is currently visible.
+      // Remove the identity group from the overflow menu model.
+      NSMutableArray<OverflowMenuActionGroup*>* actionGroups =
+          [self.model.actionGroups mutableCopy];
+      [actionGroups removeObject:self.identityActionsGroup];
+      self.model.actionGroups = actionGroups;
+    }
+  }
+
   if ((base::FeatureList::IsEnabled(kShareInOverflowMenu) ||
        (IsChromeNextIaEnabled() && !IsChromeNextIaShareIconVisible())) &&
       [self isCurrentURLWebURL]) {
@@ -1656,6 +1793,30 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [helpActions addObject:self.shareChromeAction];
 
   self.helpActionsGroup.actions = helpActions;
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  [self updateModel];
+}
+
+#pragma mark - Private
+
+- (void)updateIdentityAction {
+  if (!self.identityAction || !self.authenticationService ||
+      !self.authenticationService->HasPrimaryIdentity()) {
+    return;
+  }
+  id<SystemIdentity> primaryIdentity =
+      self.authenticationService->GetPrimaryIdentity();
+  self.identityAction.name = primaryIdentity.userFullName;
+  self.identityAction.subtitle = primaryIdentity.userEmail;
+  self.identityAction.symbolName = nil;
+  if (self.identityAvatarProvider) {
+    self.identityAction.image = self.identityAvatarProvider->GetIdentityAvatar(
+        primaryIdentity, IdentityAvatarSize::Regular);
+  }
 }
 
 // Returns whether the page can be manually translated. If `forceMenuLogging` is
@@ -2281,6 +2442,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       NOTREACHED();
     case overflow_menu::ActionType::ShareThisPage:
       return self.shareAction;
+    case overflow_menu::ActionType::Signin:
+      return self.signinAction;
+    case overflow_menu::ActionType::Identity:
+      return self.identityAction;
   }
 }
 
@@ -2301,6 +2466,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::ShareChrome:
     case overflow_menu::ActionType::EditActions:
     case overflow_menu::ActionType::ShareThisPage:
+    case overflow_menu::ActionType::Signin:
+    case overflow_menu::ActionType::Identity:
       NOTREACHED();
     case overflow_menu::ActionType::Bookmark:
       return [self newAddBookmarkAction];
@@ -2459,6 +2626,18 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   RecordAction(UserMetricsAction("MobileMenuFindInPage"));
   [self dismissMenu];
   [self.findInPageHandler openFindInPage];
+}
+
+// Dismisses the menu and opens the sign-in bottom sheet.
+- (void)showSignin {
+  // TODO(crbug.com/517130807): Needs to open the sign-in bottom sheet.
+  NOTIMPLEMENTED();
+}
+
+// Dismisses the menu and opens the account menu.
+- (void)showAccountMenu {
+  // TODO(crbug.com/517131639): Needs to open the account menu.
+  NOTIMPLEMENTED();
 }
 
 // Dismisses the menu and opens Text Zoom
@@ -2767,6 +2946,24 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self.menuOrderer customizationUpdateToggledShown:destination.shown
                                 forLinkedActionType:correspondingActionType
                                      actionSubtitle:subtitle];
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      [self updateModel];
+      break;
+  }
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  [self updateModel];
 }
 
 @end

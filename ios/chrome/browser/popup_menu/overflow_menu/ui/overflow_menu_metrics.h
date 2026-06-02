@@ -102,7 +102,9 @@ enum class IOSOverflowMenuAction {
   kHideToolbars = 21,
   // kTabGroupDeprecated = 22,  // Deprecated M150.
   kShareThisPage = 23,
-  kMaxValue = kShareThisPage,
+  kSignin = 24,
+  kIdentity = 25,
+  kMaxValue = kIdentity,
 };
 // LINT.ThenChange(/ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h:actionType,
 // /tools/metrics/histograms/metadata/ios/enums.xml:IOSOverflowMenuAction)

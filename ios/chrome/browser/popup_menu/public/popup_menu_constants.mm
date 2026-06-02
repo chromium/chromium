@@ -9,6 +9,8 @@ NSString* const kPopupMenuToolsMenuTableViewId =
 NSString* const kPopupMenuToolsMenuActionListId =
     @"kPopupMenuToolsMenuActionListId";
 
+NSString* const kIdentityGroupName = @"identity_actions";
+
 NSString* const kToolsMenuDownloadsId = @"kToolsMenuDownloadsId";
 NSString* const kToolsMenuReload = @"kToolsMenuReload";
 NSString* const kToolsMenuStop = @"kToolsMenuStop";

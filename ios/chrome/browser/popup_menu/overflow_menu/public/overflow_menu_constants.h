@@ -60,6 +60,8 @@ enum class ActionType {
   HideToolbars,
   TabGroupDeprecated,  // This enum is deprecated due to feature cleanup.
   ShareThisPage,
+  Signin,
+  Identity,
 };
 // LINT.ThenChange(/ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h:actionType)
 

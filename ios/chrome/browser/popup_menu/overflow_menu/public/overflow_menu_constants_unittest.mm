@@ -153,6 +153,12 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::ShareThisPage:
         finalExpectedActionType = overflow_menu::ActionType::ShareThisPage;
         break;
+      case overflow_menu::ActionType::Identity:
+        finalExpectedActionType = overflow_menu::ActionType::Identity;
+        break;
+      case overflow_menu::ActionType::Signin:
+        finalExpectedActionType = overflow_menu::ActionType::Signin;
+        break;
     }
 
     // If there's no finalExpectedActionType, then the loop has looped through

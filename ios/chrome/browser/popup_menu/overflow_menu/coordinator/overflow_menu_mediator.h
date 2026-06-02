@@ -19,6 +19,7 @@ namespace feature_engagement {
 class Tracker;
 }
 namespace signin {
+class AvatarProvider;
 class IdentityManager;
 }
 namespace syncer {
@@ -167,6 +168,9 @@ class WebStateList;
 
 // If settings destination has a blue dot.
 @property(nonatomic, assign) bool hasSettingsBlueDot;
+
+// The AvatarProvider to get identity avatars.
+@property(nonatomic, assign) signin::AvatarProvider* identityAvatarProvider;
 
 // Disconnect the mediator.
 - (void)disconnect;

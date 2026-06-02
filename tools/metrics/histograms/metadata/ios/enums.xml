@@ -1394,6 +1394,8 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="HideToolbars"/>
   <int value="22" label="Obsolete in M150 - TabGroup"/>
   <int value="23" label="ShareThisPage"/>
+  <int value="24" label="Signin"/>
+  <int value="25" label="Identity"/>
 </enum>
 
 <!-- LINT.ThenChange(

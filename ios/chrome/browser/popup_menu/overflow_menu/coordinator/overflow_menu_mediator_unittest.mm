@@ -94,6 +94,8 @@
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 #import "ios/chrome/browser/whats_new/public/constants.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
@@ -109,6 +111,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using sync_preferences::PrefServiceMockFactory;
 using sync_preferences::PrefServiceSyncable;
@@ -265,6 +268,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
     mediator_.baseViewController = baseViewController_;
     mediator_.localStatePrefs = localStatePrefs_.get();
     mediator_.profilePrefs = profilePrefs_.get();
+    mediator_.identityAvatarProvider =
+        GetApplicationContext()->GetIdentityAvatarProvider();
     SetUpReadingList();
     return mediator_;
   }
@@ -937,6 +942,67 @@ TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoShown) {
   mediator_.model = model_;
 
   ASSERT_TRUE(HasFamilyLinkInfoItem());
+}
+
+// Tests that the sign-in button is shown in its own group when user is signed
+// out and the IdentityAwareness feature is enabled.
+TEST_F(OverflowMenuMediatorTest, TestIdentityButtonVisibleWhenSignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIdentityAwareness);
+
+  // Setup the mediator.
+  CreateMediator(/*incognito=*/NO);
+  mediator_.authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile_.get());
+  mediator_.model = model_;
+
+  // Check the identity group.
+  EXPECT_TRUE(HasItem(kToolsMenuSigninId, /*enabled=*/YES));
+  EXPECT_EQ(5u, mediator_.model.actionGroups.count);
+  OverflowMenuActionGroup* identity_group = mediator_.model.actionGroups[0];
+  EXPECT_NSEQ(kIdentityGroupName, identity_group.groupName);
+  EXPECT_EQ(1u, identity_group.actions.count);
+
+  // Check the sign-in action button.
+  OverflowMenuAction* signin_action = identity_group.actions[0];
+  EXPECT_NSEQ(kToolsMenuSigninId, signin_action.accessibilityIdentifier);
+  NSString* expectedSubtitle =
+      l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL);
+  EXPECT_NSEQ(expectedSubtitle, signin_action.subtitle);
+}
+
+// Tests that the identity button is shown in its own group when user is signed
+// out and the IdentityAwareness feature is enabled.
+TEST_F(OverflowMenuMediatorTest, TestIdentityButtonVisibleWhenSignedIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIdentityAwareness);
+
+  // Sign in user.
+  const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentity(identity);
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
+      ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
+
+  // Check the identity group.
+  CreateMediator(/*incognito=*/NO);
+  mediator_.authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile_.get());
+  mediator_.model = model_;
+
+  // Check the identity group.
+  EXPECT_TRUE(HasItem(kToolsMenuIdentityId, /*enabled=*/YES));
+  EXPECT_EQ(5u, mediator_.model.actionGroups.count);
+  OverflowMenuActionGroup* identity_group = mediator_.model.actionGroups[0];
+  EXPECT_NSEQ(kIdentityGroupName, identity_group.groupName);
+  EXPECT_EQ(1u, identity_group.actions.count);
+
+  // Check the identity action button.
+  OverflowMenuAction* identity_action = identity_group.actions[0];
+  EXPECT_NSEQ(kToolsMenuIdentityId, identity_action.accessibilityIdentifier);
+  NSString* expectedName = identity.userFullName;
+  EXPECT_NSEQ(expectedName, identity_action.name);
+  NSString* expectedSubtitle = identity.userEmail;
+  EXPECT_NSEQ(expectedSubtitle, identity_action.subtitle);
 }
 
 // Tests that 1) the tools menu has an enabled 'Add to Bookmarks' button when

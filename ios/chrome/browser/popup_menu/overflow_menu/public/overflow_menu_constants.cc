@@ -183,6 +183,10 @@ std::optional<ActionType> ActionTypeForStringName(std::string action) {
     NOTREACHED();
   } else if (action == "ShareThisPage") {
     return overflow_menu::ActionType::ShareThisPage;
+  } else if (action == "Signin") {
+    return overflow_menu::ActionType::Signin;
+  } else if (action == "Identity") {
+    return overflow_menu::ActionType::Identity;
   } else {
     return std::nullopt;
   }
@@ -238,6 +242,10 @@ std::string StringNameForActionType(ActionType action) {
       NOTREACHED();
     case overflow_menu::ActionType::ShareThisPage:
       return "ShareThisPage";
+    case overflow_menu::ActionType::Signin:
+      return "Signin";
+    case overflow_menu::ActionType::Identity:
+      return "Identity";
   }
 }
 // LINT.ThenChange(/ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.cc:stringToActionType)

@@ -11,6 +11,9 @@
 extern NSString* const kPopupMenuToolsMenuTableViewId;
 extern NSString* const kPopupMenuToolsMenuActionListId;
 
+// Name for the identity group.
+extern NSString* const kIdentityGroupName;
+
 // Accessibility IDs for the Tools Menu items.
 // Downloads item accessibility Identifier.
 extern NSString* const kToolsMenuDownloadsId;
