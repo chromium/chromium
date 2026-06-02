@@ -295,7 +295,11 @@ void BookmarkContextMenuController::BuildMenu() {
   AddItem(IDC_BOOKMARK_BAR_NEW_FOLDER, IDS_BOOKMARK_BAR_NEW_FOLDER);
 
   AddSeparator();
-  AddItem(IDC_BOOKMARK_MANAGER, IDS_BOOKMARK_MANAGER);
+  if (features::IsMenuSimplificationEnabled()) {
+    AddItem(IDC_BOOKMARK_MANAGER, IDS_BOOKMARK_MANAGER_V2);
+  } else {
+    AddItem(IDC_BOOKMARK_MANAGER, IDS_BOOKMARK_MANAGER);
+  }
   // Use the native host desktop type in tests.
   if (chrome::IsAppsShortcutEnabled(profile_)) {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,

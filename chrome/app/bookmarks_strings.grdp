@@ -357,6 +357,9 @@
   <message name="IDS_BOOKMARK_MANAGER_SEARCH_BUTTON" desc="Title of the button in the bookmark manager that triggers a search">
     Search bookmarks
   </message>
+  <message name="IDS_BOOKMARK_MANAGER_V2" desc="The label of the menu item that shows the bookmark manager">
+    &amp;Open Bookmark Manager
+  </message>
   <if expr="not use_titlecase">
     <message name="IDS_BOOKMARK_MANAGER" desc="The label of the menu item that shows the bookmark manager">
       &amp;Open Bookmarks Manager

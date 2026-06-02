@@ -416,12 +416,15 @@ NSMenuItem* BuildBookmarksMenu(NSApplication* nsapp,
     return nil;
   }
 
+  const int bookmarks_manager_string_id =
+      features::IsMenuSimplificationEnabled() ? IDS_BOOKMARK_MANAGER_V2
+                                              : IDS_BOOKMARK_MANAGER;
   // clang-format off
   NSMenuItem* item =
       Item(IDS_BOOKMARKS_MENU)
           .tag(IDC_BOOKMARKS_MENU)
           .submenu({
-              Item(IDS_BOOKMARK_MANAGER)
+              Item(bookmarks_manager_string_id)
                   .command_id(IDC_SHOW_BOOKMARK_MANAGER),
               Item().is_separator()
                   .tag(IDC_BOOKMARK_THIS_TAB),
