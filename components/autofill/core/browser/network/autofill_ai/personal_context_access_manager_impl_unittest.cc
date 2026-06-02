@@ -13,6 +13,8 @@
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager_impl_test_api.h"
+#include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -27,6 +29,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::UnorderedElementsAre;
 using ::testing::WithArg;
 
 class MockPersonalContextService
@@ -63,30 +66,34 @@ class PersonalContextAccessManagerImplTest : public testing::Test {
   PersonalContextAccessManagerImplTest() = default;
   ~PersonalContextAccessManagerImplTest() override = default;
 
-  void SetUp() override {
-    access_manager_ = std::make_unique<PersonalContextAccessManagerImpl>(
-        &mock_personal_context_service_,
-        &mock_personal_context_enablement_service_);
-  }
-
-  PersonalContextAccessManagerImpl& access_manager() {
-    return *access_manager_;
-  }
+  PersonalContextAccessManagerImpl& access_manager() { return access_manager_; }
 
   MockPersonalContextService& mock_personal_context_service() {
     return mock_personal_context_service_;
   }
 
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
+  std::optional<EntityInstance> GetUnmaskedSpiiEntitySync(
+      const EntityInstance::EntityId& id) {
+    base::test::TestFuture<std::optional<EntityInstance>> future;
+    access_manager().GetUnmaskedSpiiEntity(id, future.GetCallback());
+    return future.Get();
+  }
+
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockPersonalContextService mock_personal_context_service_;
-  MockPersonalContextEnablementService
-      mock_personal_context_enablement_service_;
-  std::unique_ptr<PersonalContextAccessManagerImpl> access_manager_;
+  MockPersonalContextEnablementService mock_enablement_service_;
+  PersonalContextAccessManagerImpl access_manager_{
+      &mock_personal_context_service_, &mock_enablement_service_};
 };
 
 TEST_F(PersonalContextAccessManagerImplTest,
-       FetchAmbientAutofillContextSuccess) {
+       PrefetchAmbientAutofillContextSuccess) {
   const std::vector<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder)};
 
@@ -121,8 +128,8 @@ TEST_F(PersonalContextAccessManagerImplTest,
       base::expected<std::string, personal_context::ContextMemoryError>>
       future;
 
-  access_manager().FetchAmbientAutofillContext(requested_types,
-                                               future.GetCallback());
+  access_manager().PrefetchAmbientAutofillContext(requested_types,
+                                                  future.GetCallback());
 
   auto result = future.Take();
   ASSERT_TRUE(result.has_value());
@@ -135,7 +142,7 @@ TEST_F(PersonalContextAccessManagerImplTest,
 }
 
 TEST_F(PersonalContextAccessManagerImplTest,
-       FetchAmbientAutofillContextFailure) {
+       PrefetchAmbientAutofillContextFailure) {
   const std::vector<EntityType> requested_types = {
       EntityType(EntityTypeName::kOrder)};
 
@@ -156,14 +163,180 @@ TEST_F(PersonalContextAccessManagerImplTest,
       base::expected<std::string, personal_context::ContextMemoryError>>
       future;
 
-  access_manager().FetchAmbientAutofillContext(requested_types,
-                                               future.GetCallback());
+  access_manager().PrefetchAmbientAutofillContext(requested_types,
+                                                  future.GetCallback());
 
   auto result = future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().error(), expected_error.error());
 }
 
-}  // namespace
+// Tests that prefetched entities are cached with a 30-minute TTL, and that the
+// TTL is tracked per entity type.
+TEST_F(PersonalContextAccessManagerImplTest, CachePrefetchedEntities_TTL) {
+  EntityInstance passport =
+      test::MaskEntityInstance(test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kPersonalContext}));
+  EntityInstance dl =
+      test::MaskEntityInstance(test::GetDriversLicenseEntityInstance(
+          {.record_type = EntityInstance::RecordType::kPersonalContext}));
 
+  // 1. Cache Passport.
+  test_api(access_manager()).CachePrefetchedEntities({passport});
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kDriversLicense));
+  EXPECT_EQ(access_manager().GetCachedEntity(passport.guid()), passport);
+
+  // Fast forward 15 minutes (Passport still valid).
+  FastForwardBy(base::Minutes(15));
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+  EXPECT_EQ(access_manager().GetCachedEntity(passport.guid()), passport);
+
+  // 2. Cache DL at T+15.
+  test_api(access_manager()).CachePrefetchedEntities({dl});
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kDriversLicense));
+
+  // Fast forward another 15 minutes (Total T+30). Passport should expire, DL
+  // should be valid.
+  FastForwardBy(base::Minutes(15));
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kDriversLicense));
+  EXPECT_EQ(access_manager().GetCachedEntity(passport.guid()), std::nullopt);
+  EXPECT_EQ(access_manager().GetCachedEntity(dl.guid()), dl);
+
+  // Fast forward another 15 minutes (Total T+45). DL should expire.
+  FastForwardBy(base::Minutes(15));
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kDriversLicense));
+  EXPECT_EQ(access_manager().GetCachedEntity(dl.guid()), std::nullopt);
+}
+
+// Tests that unmasked SPII entities are cached with a 1-minute TTL.
+TEST_F(PersonalContextAccessManagerImplTest, CacheUnmaskedSpiiEntity_TTL) {
+  EntityInstance passport = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+
+  test_api(access_manager()).CacheUnmaskedSpiiEntity(passport);
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport.guid()), passport);
+
+  // Fast forward 30 seconds (still valid).
+  FastForwardBy(base::Seconds(30));
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport.guid()), passport);
+
+  // Fast forward another 31 seconds (expired).
+  FastForwardBy(base::Seconds(31));
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport.guid()), std::nullopt);
+}
+
+// Tests that resetting the cache for a type clears any existing cached entities
+// of that type (useful for caching empty results).
+TEST_F(PersonalContextAccessManagerImplTest, ResetCacheForType) {
+  EntityInstance passport =
+      test::MaskEntityInstance(test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kPersonalContext}));
+
+  // Cache passport.
+  test_api(access_manager()).CachePrefetchedEntities({passport});
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+  EXPECT_EQ(access_manager().GetCachedEntity(passport.guid()), passport);
+
+  // Reset cache (empty). Should clear passport.
+  test_api(access_manager()).ResetCacheForType(EntityTypeName::kPassport);
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+  EXPECT_EQ(access_manager().GetCachedEntity(passport.guid()), std::nullopt);
+}
+
+// Tests that GetCachedEntities returns only the prefetched (masked)
+// entities and excludes any unmasked SPII entities.
+TEST_F(PersonalContextAccessManagerImplTest, GetCachedEntities) {
+  EntityInstance passport_unmasked = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance passport_masked = test::MaskEntityInstance(passport_unmasked);
+
+  EntityInstance dl_masked =
+      test::MaskEntityInstance(test::GetDriversLicenseEntityInstance(
+          {.record_type = EntityInstance::RecordType::kPersonalContext}));
+
+  // Cache prefetched (masked Passport and DL).
+  test_api(access_manager())
+      .CachePrefetchedEntities({passport_masked, dl_masked});
+
+  // GetCachedEntities should return masked Passport and DL.
+  EXPECT_THAT(access_manager().GetCachedEntities(),
+              UnorderedElementsAre(passport_masked, dl_masked));
+
+  // Now cache unmasked Passport.
+  test_api(access_manager()).CacheUnmaskedSpiiEntity(passport_unmasked);
+
+  // GetCachedEntities should STILL return masked Passport and DL.
+  EXPECT_THAT(access_manager().GetCachedEntities(),
+              UnorderedElementsAre(passport_masked, dl_masked));
+}
+
+// Tests that caching new prefetched entities resets the unmasked SPII cache
+// only for the corresponding entity types, leaving other types unaffected.
+TEST_F(PersonalContextAccessManagerImplTest,
+       CachePrefetchedEntities_ResetsUnmaskedCacheForType) {
+  EntityInstance passport_unmasked = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance passport_masked = test::MaskEntityInstance(passport_unmasked);
+
+  EntityInstance dl_unmasked = test::GetDriversLicenseEntityInstance(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance dl_masked = test::MaskEntityInstance(dl_unmasked);
+
+  // 1. Cache unmasked Passport and DL.
+  test_api(access_manager())
+      .CachePrefetchedEntities({passport_masked, dl_masked});
+  test_api(access_manager()).CacheUnmaskedSpiiEntity(passport_unmasked);
+  test_api(access_manager()).CacheUnmaskedSpiiEntity(dl_unmasked);
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_unmasked.guid()),
+            passport_unmasked);
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(dl_unmasked.guid()), dl_unmasked);
+
+  // 2. Cache prefetched Passport. This should reset the unmasked Passport
+  // cache, but NOT the DL cache (since it's a different type).
+  test_api(access_manager()).CachePrefetchedEntities({passport_masked});
+
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_unmasked.guid()), std::nullopt);
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(dl_unmasked.guid()), dl_unmasked);
+}
+
+// Tests that natural expiration of the prefetched cache also evicts any
+// corresponding unmasked SPII entities, even if they haven't reached their
+// individual TTL yet.
+TEST_F(PersonalContextAccessManagerImplTest,
+       CachePrefetchedEntities_ExpirationResetsUnmaskedCache) {
+  EntityInstance passport_unmasked = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  EntityInstance passport_masked = test::MaskEntityInstance(passport_unmasked);
+
+  // 1. Cache prefetched (masked) Passport at T=0.
+  test_api(access_manager()).CachePrefetchedEntities({passport_masked});
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+
+  // 2. Fast forward 29.5 minutes.
+  FastForwardBy(base::Minutes(29) + base::Seconds(30));
+
+  // The prefetched cache is still valid (expires in 30 seconds).
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+  EXPECT_EQ(access_manager().GetCachedEntity(passport_masked.guid()),
+            passport_masked);
+
+  // 3. Cache unmasked SPII Passport at T=29.5.
+  test_api(access_manager()).CacheUnmaskedSpiiEntity(passport_unmasked);
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_unmasked.guid()),
+            passport_unmasked);
+
+  // 4. Fast forward 30 seconds (Total T+30). The prefetched cache expires.
+  // This should also trigger the eviction of the unmasked SPII cache.
+  FastForwardBy(base::Seconds(30));
+
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+  EXPECT_EQ(access_manager().GetCachedEntity(passport_masked.guid()),
+            std::nullopt);
+  EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_unmasked.guid()), std::nullopt);
+}
+
+}  // namespace
 }  // namespace autofill

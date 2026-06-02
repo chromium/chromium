@@ -5,7 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_H_
 
+#include <vector>
+
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
 
 namespace personal_context {
@@ -17,6 +24,12 @@ namespace autofill {
 
 class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
  public:
+  // The TTL for prefetched (masked/non-SPII) entities.
+  static constexpr base::TimeDelta kPrefetchedEntitiesCacheTTL =
+      base::Minutes(30);
+  // The TTL for unmasked sensitive PII (SPII) entities.
+  static constexpr base::TimeDelta kUnmaskedSpiiCacheTTL = base::Minutes(1);
+
   PersonalContextAccessManagerImpl(
       personal_context::PersonalContextService* personal_context_service,
       personal_context::PersonalContextEnablementService*
@@ -30,15 +43,77 @@ class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
   ~PersonalContextAccessManagerImpl() override;
 
   // PersonalContextAccessManager:
-  void FetchAmbientAutofillContext(
+  void PrefetchAmbientAutofillContext(
       base::span<const EntityType> requested_types,
-      FetchAmbientAutofillContextCallback callback) override;
+      PrefetchAmbientAutofillContextCallback callback) override;
+  std::optional<EntityInstance> GetCachedEntity(
+      const EntityInstance::EntityId& id) const override;
+  void GetUnmaskedSpiiEntity(const EntityInstance::EntityId& id,
+                             GetUnmaskedSpiiEntityCallback callback) override;
+  std::vector<EntityInstance> GetCachedEntities() const override;
+  bool IsTypeCached(EntityTypeName type_name) const override;
 
  private:
+  friend class PersonalContextAccessManagerImplTestApi;
+
+  // Resets the cache state for `type_name` by clearing both the prefetched
+  // (masked) entities and the unmasked SPII entities of this type. This ensures
+  // that refreshing or invalidating prefetched data also invalidates any
+  // corresponding unmasked sensitive data.
+  void ResetCacheForType(EntityTypeName type_name);
+
+  // Caches a batch of prefetched `entities`.
+  // Groups them by type, clears old entities of those types, and schedules
+  // their invalidation after kPrefetchedEntitiesCacheTTL".
+  void CachePrefetchedEntities(std::vector<EntityInstance> entities);
+
+  // Caches an unmasked SPII `entity`, so it can be refilled without an
+  // additional network round trip for `kUnmaskedSpiiCacheTTL`.
+  void CacheUnmaskedSpiiEntity(EntityInstance entity);
+
   const raw_ref<personal_context::PersonalContextService>
       personal_context_service_;
   const raw_ref<personal_context::PersonalContextEnablementService>
       personal_context_enablement_service_;
+
+  // Cache of prefetched entity instances (containing masked/obfuscated values).
+  //
+  // **Eviction Mechanism**: Managed **per entity type** (not per individual
+  // entity). When a type is prefetched, its lifetime is tracked in
+  // `prefetched_type_expiry_`. After `kPrefetchedEntitiesCacheTTL` the entire
+  // type expires, and all entities belonging to this type are evicted together
+  // from this cache.
+  //
+  // **Interaction with SPII Cache**:
+  // - When a type is explicitly reset or updated with new prefetched entities
+  //   (via `ResetCacheForType`), both this cache and the `unmasked_spii_cache_`
+  //   are cleared for that type to prevent stale unmasked data.
+  // - Natural expiration of this cache also forcibly evicts all entries of this
+  //   type from `unmasked_spii_cache_`.
+  base::flat_set<EntityInstance, EntityInstance::CompareByGuid>
+      prefetched_entity_cache_;
+
+  // Cache of unmasked sensitive PII (SPII) entity instances.
+  //
+  // **Eviction Mechanism**: Managed **per individual entity** (not per type).
+  // When an entity is individually unmasked, it is added here, and a separate
+  // task is scheduled to evict just this entity after `kUnmaskedSpiiCacheTTL`.
+  //
+  // **Interaction with Prefetched Cache**:
+  // - This cache is dependent on the freshness of the prefetched data. If the
+  //   prefetched cache for a type is reset, updated or naturally expires, all
+  //   unmasked entities of that type are immediately evicted from this cache
+  //   (via `ResetCacheForType`). This ensures we do not serve unmasked SPII for
+  //   entities that have been removed or updated in the masked cache, or when
+  //   the prefetch cache has expired.
+  base::flat_set<EntityInstance, EntityInstance::CompareByGuid>
+      unmasked_spii_cache_;
+
+  // Entity types for which their corresponding prefetched entities are within
+  // their TTL.
+  base::flat_set<EntityTypeName> prefetched_type_expiry_;
+
+  base::WeakPtrFactory<PersonalContextAccessManagerImpl> weak_factory_{this};
 };
 
 }  // namespace autofill

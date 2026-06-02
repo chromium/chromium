@@ -1311,6 +1311,7 @@ static_library("test_support") {
     "mock_form_predictions_tracker.h",
     "network/autofill_ai/mock_wallet_pass_access_manager.cc",
     "network/autofill_ai/mock_wallet_pass_access_manager.h",
+    "network/autofill_ai/personal_context_access_manager_impl_test_api.h",
     "payments/amount_extraction_manager_test_api.h",
     "payments/bnpl_manager_test_api.h",
     "payments/credit_card_access_manager_test_api.h",

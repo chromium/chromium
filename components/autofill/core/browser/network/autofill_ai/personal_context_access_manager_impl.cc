@@ -4,13 +4,21 @@
 
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager_impl.h"
 
+#include <optional>
+#include <utility>
+
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/ambient_autofill.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 
@@ -24,16 +32,16 @@ PersonalContextAccessManagerImpl::PersonalContextAccessManagerImpl(
 
 PersonalContextAccessManagerImpl::~PersonalContextAccessManagerImpl() = default;
 
-void PersonalContextAccessManagerImpl::FetchAmbientAutofillContext(
+void PersonalContextAccessManagerImpl::PrefetchAmbientAutofillContext(
     base::span<const EntityType> requested_types,
-    FetchAmbientAutofillContextCallback callback) {
+    PrefetchAmbientAutofillContextCallback callback) {
   personal_context::proto::ContextMemoryAmbientAutofillRequest request;
   for (const EntityType& type : requested_types) {
     request.add_requested_types(
         AutofillEntityTypeToPersonalContextEntityType(type));
   }
 
-  auto fetch_callback = [](FetchAmbientAutofillContextCallback callback,
+  auto fetch_callback = [](PrefetchAmbientAutofillContextCallback callback,
                            personal_context::FetchContextResult result) {
     if (!result.response.has_value()) {
       std::move(callback).Run(base::unexpected(result.response.error()));
@@ -49,6 +57,102 @@ void PersonalContextAccessManagerImpl::FetchAmbientAutofillContext(
       personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, request,
       /*options=*/{},
       base::BindOnce(std::move(fetch_callback), std::move(callback)));
+}
+
+std::optional<EntityInstance> PersonalContextAccessManagerImpl::GetCachedEntity(
+    const EntityInstance::EntityId& id) const {
+  if (auto it = prefetched_entity_cache_.find(id);
+      it != prefetched_entity_cache_.end()) {
+    return *it;
+  }
+  return std::nullopt;
+}
+
+void PersonalContextAccessManagerImpl::GetUnmaskedSpiiEntity(
+    const EntityInstance::EntityId& id,
+    GetUnmaskedSpiiEntityCallback callback) {
+  if (auto it = unmasked_spii_cache_.find(id);
+      it != unmasked_spii_cache_.end()) {
+    std::move(callback).Run(*it);
+    return;
+  }
+
+  // TODO(crbug.com/516721244): Trigger a network request to unmask the entity,
+  // cache the result, and run the callback.
+  std::move(callback).Run(std::nullopt);
+}
+
+std::vector<EntityInstance>
+PersonalContextAccessManagerImpl::GetCachedEntities() const {
+  return base::ToVector(prefetched_entity_cache_);
+}
+
+bool PersonalContextAccessManagerImpl::IsTypeCached(
+    EntityTypeName type_name) const {
+  return prefetched_type_expiry_.contains(type_name);
+}
+
+void PersonalContextAccessManagerImpl::ResetCacheForType(
+    EntityTypeName type_name) {
+  const auto is_entity_type_name = [type_name](EntityInstance& entity) {
+    return entity.type().name() == type_name;
+  };
+  // Clear existing entities of this type.
+  base::EraseIf(prefetched_entity_cache_, is_entity_type_name);
+
+  // Clear unmasked SPII of this type.
+  base::EraseIf(unmasked_spii_cache_, is_entity_type_name);
+
+  prefetched_type_expiry_.erase(type_name);
+}
+
+void PersonalContextAccessManagerImpl::CachePrefetchedEntities(
+    std::vector<EntityInstance> entities) {
+  // Group entities by type.
+  absl::flat_hash_map<EntityTypeName, std::vector<EntityInstance>>
+      grouped_entities;
+  for (EntityInstance& entity : entities) {
+    grouped_entities[entity.type().name()].push_back(std::move(entity));
+  }
+
+  // For each type present, reset cache (which clears old), insert new data and
+  // schedule wipeout.
+  for (auto& [type_name, type_entities] : grouped_entities) {
+    ResetCacheForType(type_name);
+    prefetched_entity_cache_.insert(
+        std::make_move_iterator(type_entities.begin()),
+        std::make_move_iterator(type_entities.end()));
+    prefetched_type_expiry_.insert(type_name);
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PersonalContextAccessManagerImpl::ResetCacheForType,
+                       weak_factory_.GetWeakPtr(), type_name),
+        kPrefetchedEntitiesCacheTTL);
+  }
+}
+
+void PersonalContextAccessManagerImpl::CacheUnmaskedSpiiEntity(
+    EntityInstance entity) {
+  EntityInstance::EntityId id = entity.guid();
+  auto [it, inserted] = unmasked_spii_cache_.insert(std::move(entity));
+  if (!inserted) {
+    return;
+  }
+  // Clear the cache entry after `kUnmaskedSpiiCacheTTL`.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<PersonalContextAccessManagerImpl> access_manager,
+             const EntityInstance::EntityId& id) {
+            if (!access_manager) {
+              return;
+            }
+            // Remove if exists.
+            access_manager->unmasked_spii_cache_.erase(id);
+          },
+          weak_factory_.GetWeakPtr(), id),
+      kUnmaskedSpiiCacheTTL);
 }
 
 }  // namespace autofill
