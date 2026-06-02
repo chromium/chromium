@@ -528,7 +528,7 @@ public class TabListEditorCoordinator {
     /**
      * Inserts a special item into the underlying TabListCoordinator.
      *
-     * @see TabListCoordinator#addSpecialItemToModel(int, int, PropertyModel).
+     * @see TabListMediator#addSpecialItemToModel(int, int, PropertyModel).
      */
     public void addSpecialListItem(int index, @UiType int uiType, PropertyModel model) {
         assert mTabListCoordinator != null;

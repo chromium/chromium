@@ -193,6 +193,11 @@ public class VerticalTabListCoordinator {
                     public boolean shouldActOnRelatedTabs() {
                         return true;
                     }
+
+                    @Override
+                    public boolean supportsMessageCards() {
+                        return false;
+                    }
                 };
 
         mMediator =

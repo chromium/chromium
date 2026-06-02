@@ -156,6 +156,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
@@ -551,6 +552,7 @@ public class TabListMediatorUnitTest {
 
         when(mTabListConfigDelegate.supportsNestedTabGroups()).thenReturn(false);
         when(mTabListConfigDelegate.shouldActOnRelatedTabs()).thenReturn(true);
+        when(mTabListConfigDelegate.supportsMessageCards()).thenReturn(true);
 
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
@@ -6450,5 +6452,26 @@ public class TabListMediatorUnitTest {
 
         // Verify that the Group Header card is also removed, leaving the list empty.
         assertEquals(0, mModelList.size());
+    }
+
+    @Test
+    public void testPriceMessageDisabled_WhenMessageCardsNotSupported() {
+        when(mTabListConfigDelegate.supportsMessageCards()).thenReturn(false);
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+
+        // Verify getPriceWelcomeMessageInsertionIndex returns INVALID_TAB_INDEX without throwing
+        // assertion errors.
+        assertEquals(TabList.INVALID_TAB_INDEX, mMediator.getPriceWelcomeMessageInsertionIndex());
+
+        // Verify updateLayout returns early without throwing assertion errors.
+        mMediator.updateLayout();
+
+        // Verify addSpecialItemToModel with an invalid index is safely ignored
+        int initialSize = mModelList.size();
+        mMediator.addSpecialItemToModel(
+                TabList.INVALID_TAB_INDEX,
+                UiType.PRICE_MESSAGE,
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build());
+        assertEquals(initialSize, mModelList.size());
     }
 }

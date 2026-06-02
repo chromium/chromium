@@ -273,6 +273,9 @@ public class TabListMediator implements TabListNotificationHandler {
 
         /** Returns whether operations (closes, drags) act on all related tabs in a group. */
         boolean shouldActOnRelatedTabs();
+
+        /** Returns whether the layout supports message card items. */
+        boolean supportsMessageCards();
     }
 
     /** Interface for toggling whether item animations will run on the recycler view. */
@@ -386,6 +389,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private int mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
     private boolean mActionsOnAllRelatedTabs;
     private final boolean mSupportsNestedTabGroups;
+    private final boolean mSupportsMessageCards;
     private @TabComponentId int mComponentId;
     private @TabActionState int mTabActionState;
     private @Nullable Profile mOriginalProfile;
@@ -1089,7 +1093,7 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param tabListItemOnClickListenerProvider Provides click listeners for regular tabs and tab
      *     group cards.
      * @param tabListConfigDelegate Delegate providing configuration policies and visual
-     *     capabilities.
+     *     capabilities (e.g. nested tab groups, message cards, etc).
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
      * @param priceWelcomeMessageControllerSupplier A supplier of a controller to show
      *     PriceWelcomeMessage.
@@ -1138,6 +1142,7 @@ public class TabListMediator implements TabListNotificationHandler {
         mTabListItemOnClickListenerProvider = tabListItemOnClickListenerProvider;
         mActionsOnAllRelatedTabs = tabListConfigDelegate.shouldActOnRelatedTabs();
         mSupportsNestedTabGroups = tabListConfigDelegate.supportsNestedTabGroups();
+        mSupportsMessageCards = tabListConfigDelegate.supportsMessageCards();
         mTabGridDialogHandler = dialogHandler;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         mComponentId = componentId;
@@ -2807,7 +2812,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
     private void setupPersistedTabDataFetcherForTab(Tab tab, int index) {
         PropertyModel model = mModelList.get(index).model;
-        if (mMode == TabListMode.GRID && !tab.isIncognito()) {
+        if (mSupportsMessageCards && !tab.isIncognito()) {
             assert mOriginalProfile != null;
             if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mOriginalProfile)
                     && !isTabInTabGroup(tab)) {
@@ -2850,11 +2855,14 @@ public class TabListMediator implements TabListNotificationHandler {
      * the current {@link TabListModel}.
      *
      * @param index The index of the {@link org.chromium.ui.modelutil.MVCListAdapter.ListItem} to be
-     *     inserted.
+     *     inserted, or TabList.INVALID_TAB_INDEX to ignore.
      * @param uiType The view type the model will bind to.
      * @param model The model that will be bound to a view.
      */
     void addSpecialItemToModel(int index, @UiType int uiType, PropertyModel model) {
+        if (index < 0 || index > mModelList.size()) {
+            return;
+        }
         mModelList.add(index, new ListItem(uiType, model));
     }
 
@@ -2932,9 +2940,13 @@ public class TabListMediator implements TabListNotificationHandler {
      * exactly below the currently selected tab.
      *
      * @return Where the PriceWelcomeMessage should be inserted in the {@link TabListModel} when
-     *         user enters the tab switcher.
+     *     user enters the tab switcher, or TabList.INVALID_TAB_INDEX if message cards are not
+     *     supported.
      */
     int getPriceWelcomeMessageInsertionIndex() {
+        if (!mSupportsMessageCards) {
+            return TabList.INVALID_TAB_INDEX;
+        }
         assert mGridLayoutManager != null;
         int spanCount = mGridLayoutManager.getSpanCount();
         int selectedTabIndex =
@@ -2955,6 +2967,9 @@ public class TabListMediator implements TabListNotificationHandler {
     void updateLayout() {
         // Right now we need to update layout only if there is a price welcome message card in tab
         // switcher.
+        if (!mSupportsMessageCards) {
+            return;
+        }
         if (mOriginalProfile == null
                 || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mOriginalProfile)
                 || getCurrentTabModelChecked().isIncognitoBranded()) {
