@@ -114,13 +114,17 @@ HostResolverManager::JobKey& HostResolverManager::JobKey::operator=(
     const JobKey& other) = default;
 
 bool HostResolverManager::JobKey::operator<(const JobKey& other) const {
+  // Use `GetTargetNetwork()` instead of `target_network` to ensure a consistent
+  // view of a JobKey's target network. This makes sure every piece of code has
+  // a consistent view of a JobKey's target network. See the comments in
+  // `GetTargetNetwork()` for more details.
   return std::forward_as_tuple(query_types.ToEnumBitmask(), flags, source,
                                secure_dns_mode, &*resolve_context, host,
-                               network_anonymization_key, target_network) <
+                               network_anonymization_key, GetTargetNetwork()) <
          std::forward_as_tuple(
              other.query_types.ToEnumBitmask(), other.flags, other.source,
              other.secure_dns_mode, &*other.resolve_context, other.host,
-             other.network_anonymization_key, other.target_network);
+             other.network_anonymization_key, other.GetTargetNetwork());
 }
 
 bool HostResolverManager::JobKey::operator==(const JobKey& other) const {
@@ -832,8 +836,9 @@ void HostResolverManager::Job::StartDnsTask(
   dns_task_ = std::make_unique<HostResolverDnsTask>(
       resolver_->dns_client_.get(), key_.host, key_.network_anonymization_key,
       key_.query_types, &*key_.resolve_context, attempt_mode,
-      key_.secure_dns_mode, this, net_log_, tick_clock_,
-      !tasks_.empty() /* fallback_available */, https_svcb_options_);
+      key_.secure_dns_mode, key_.GetTargetNetwork(), this, net_log_,
+      tick_clock_, !tasks_.empty() /* fallback_available */,
+      https_svcb_options_);
   dns_task_executed_ = true;
   if (secure) {
     secure_dns_attempted_ = true;

@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/resolution_details.h"
@@ -127,6 +128,7 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
       const NetLogWithSource& net_log,
       AttemptMode attempt_mode,
       SecureDnsMode secure_dns_mode,
+      handles::NetworkHandle target_network,
       ResolveContext* resolve_context,
       bool fast_timeout) = 0;
 

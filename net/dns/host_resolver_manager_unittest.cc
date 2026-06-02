@@ -5161,6 +5161,116 @@ TEST_F(HostResolverManagerDnsTest, FallbackBySource_Dns) {
   EXPECT_THAT(response1.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
 }
 
+// Built-in client and config overrides not available on iOS.
+#if !BUILDFLAG(IS_IOS)
+TEST_F(HostResolverManagerDnsTest,
+       ResolutionForTargetNetworkFailsOnInsecureDnsAndFallbackToSystem) {
+  set_allow_fallback_to_systemtask(true);
+
+  proc_->AddRuleForAllFamilies("ok", "192.168.1.102");
+  proc_->AddRuleForAllFamilies("ok.", "192.168.1.102");
+
+  auto dns_client = DnsClient::CreateClient(nullptr);
+  SetDnsClient(std::move(dns_client));
+  resolver_->SetInsecureDnsClientEnabled(
+      HostResolverManager::InsecureDnsMode::kEnabledBuiltIn,
+      /*additional_dns_types_enabled=*/true);
+  ChangeDnsConfig(CreateValidDnsConfig());
+
+  // Target a specific network.
+  handles::NetworkHandle target_network = 12345;
+
+  RecordingNetLogObserver net_log_observer;
+  NetLogWithSource request_net_log =
+      NetLogWithSource::Make(net::NetLog::Get(), NetLogSourceType::NONE);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("ok.", 80), NetworkAnonymizationKey(), target_network,
+      request_net_log, std::nullopt, resolve_context_.get()));
+
+  // DnsTask should fail immediately with ERR_INVALID_ARGUMENT,
+  // then fallback to SystemTask which should call proc_.
+  proc_->SignalMultiple(1u);
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults(),
+              testing::ElementsAre(CreateExpected("192.168.1.102", 80)));
+
+  // Verify that TaskType::DNS was attempted and failed with
+  // ERR_INVALID_ARGUMENT.
+  auto dns_task_events = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HOST_RESOLVER_DNS_TASK);
+  ASSERT_EQ(2U, dns_task_events.size());
+  EXPECT_EQ(dns_task_events[0].phase, NetLogEventPhase::BEGIN);
+  EXPECT_EQ(dns_task_events[1].phase, NetLogEventPhase::END);
+
+  int error_code =
+      GetIntegerValueFromParams(dns_task_events[1], "failure_result.error");
+  EXPECT_THAT(error_code, IsError(ERR_INVALID_ARGUMENT));
+}
+
+TEST_F(HostResolverManagerDnsTest,
+       ResolutionForTargetNetworkFailsOnSecureDnsAndFallbackToSystem) {
+  set_allow_fallback_to_systemtask(true);
+
+  proc_->AddRuleForAllFamilies("ok", "192.168.1.102");
+  proc_->AddRuleForAllFamilies("ok.", "192.168.1.102");
+
+  auto dns_client = DnsClient::CreateClient(nullptr);
+  SetDnsClient(std::move(dns_client));
+
+  // Disable insecure DNS, but secure DNS remains enabled because we have DoH
+  // servers.
+  resolver_->SetInsecureDnsClientEnabled(
+      HostResolverManager::InsecureDnsMode::kDisabled,
+      /*additional_dns_types_enabled=*/false);
+
+  // Configure DnsConfig with SecureDnsMode::kAutomatic and a DoH server.
+  DnsConfig config = CreateValidDnsConfig();
+  config.secure_dns_mode = SecureDnsMode::kAutomatic;
+  ChangeDnsConfig(config);
+
+  // Mark DoH server as successful so it is considered available in Automatic
+  // mode.
+  resolve_context_->RecordServerSuccess(0, /*is_doh_server=*/true,
+                                        GetDnsClient()->GetCurrentSession());
+
+  // Target a specific network.
+  handles::NetworkHandle target_network = 12345;
+
+  RecordingNetLogObserver net_log_observer;
+  NetLogWithSource request_net_log =
+      NetLogWithSource::Make(net::NetLog::Get(), NetLogSourceType::NONE);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("ok.", 80), NetworkAnonymizationKey(), target_network,
+      request_net_log, std::nullopt, resolve_context_.get()));
+
+  // SECURE_DNS task should fail immediately with ERR_INVALID_ARGUMENT,
+  // then fallback to SystemTask which should call proc_.
+  proc_->SignalMultiple(1u);
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults(),
+              testing::ElementsAre(CreateExpected("192.168.1.102", 80)));
+
+  // Verify that TaskType::SECURE_DNS was attempted and failed with
+  // ERR_INVALID_ARGUMENT.
+  auto dns_task_events = net_log_observer.GetEntriesWithType(
+      NetLogEventType::HOST_RESOLVER_DNS_TASK);
+  ASSERT_EQ(2U, dns_task_events.size());
+  EXPECT_EQ(dns_task_events[0].phase, NetLogEventPhase::BEGIN);
+  EXPECT_EQ(dns_task_events[1].phase, NetLogEventPhase::END);
+
+  // Verify it was secure.
+  EXPECT_TRUE(GetBooleanValueFromParams(dns_task_events[0], "secure"));
+
+  int error_code =
+      GetIntegerValueFromParams(dns_task_events[1], "failure_result.error");
+  EXPECT_THAT(error_code, IsError(ERR_INVALID_ARGUMENT));
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
 // Fallback to proc on DnsClient change allowed with ANY source.
 TEST_F(HostResolverManagerDnsTest, FallbackOnAbortBySource_Any) {
   // Ensure fallback is otherwise allowed by resolver settings.

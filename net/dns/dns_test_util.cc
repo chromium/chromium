@@ -736,6 +736,7 @@ std::unique_ptr<DnsTransaction> MockDnsTransactionFactory::CreateTransaction(
     const NetLogWithSource&,
     AttemptMode attempt_mode,
     SecureDnsMode secure_dns_mode,
+    handles::NetworkHandle target_network,
     ResolveContext* resolve_context,
     bool fast_timeout) {
   std::unique_ptr<MockTransaction> transaction =

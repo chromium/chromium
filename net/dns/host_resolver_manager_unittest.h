@@ -128,6 +128,8 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
 
   ~HostResolverManagerDnsTest() override;
 
+  DnsClient* GetDnsClient() { return resolver_->dns_client_.get(); }
+
   void DestroyResolver() override;
 
   // Note that this clears `mock_dns_client_`.

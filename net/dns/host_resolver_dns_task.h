@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/host_resolver.h"
@@ -97,6 +98,7 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
                       ResolveContext* resolve_context,
                       DnsTransactionFactory::AttemptMode attempt_mode,
                       SecureDnsMode secure_dns_mode,
+                      handles::NetworkHandle target_network,
                       Delegate* delegate,
                       const NetLogWithSource& job_net_log,
                       const base::TickClock* tick_clock,
@@ -260,6 +262,8 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
 
   const DnsTransactionFactory::AttemptMode attempt_mode_;
   const SecureDnsMode secure_dns_mode_;
+
+  const handles::NetworkHandle target_network_ = handles::kInvalidNetworkHandle;
 
   // The listener to the results of this DnsTask.
   const raw_ptr<Delegate> delegate_;

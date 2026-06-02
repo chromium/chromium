@@ -19,6 +19,7 @@
 #include "base/time/tick_clock.h"
 #include "base/types/optional_util.h"
 #include "net/base/features.h"
+#include "net/base/network_handle.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_names_util.h"
@@ -249,6 +250,7 @@ HostResolverDnsTask::HostResolverDnsTask(
     ResolveContext* resolve_context,
     DnsTransactionFactory::AttemptMode attempt_mode,
     SecureDnsMode secure_dns_mode,
+    handles::NetworkHandle target_network,
     Delegate* delegate,
     const NetLogWithSource& job_net_log,
     const base::TickClock* tick_clock,
@@ -260,6 +262,7 @@ HostResolverDnsTask::HostResolverDnsTask(
       resolve_context_(resolve_context->AsSafeRef()),
       attempt_mode_(attempt_mode),
       secure_dns_mode_(secure_dns_mode),
+      target_network_(target_network),
       delegate_(delegate),
       net_log_(job_net_log),
       tick_clock_(tick_clock),
@@ -436,7 +439,7 @@ void HostResolverDnsTask::CreateAndStartTransaction(
       client_->GetTransactionFactory()->CreateTransaction(
           std::move(transaction_hostname),
           DnsQueryTypeToQtype(transaction_info->type), net_log_, attempt_mode_,
-          secure_dns_mode_, &*resolve_context_,
+          secure_dns_mode_, target_network_, &*resolve_context_,
           fallback_available_ /* fast_timeout */);
   transaction_info->transaction->SetRequestPriority(delegate_->priority());
 

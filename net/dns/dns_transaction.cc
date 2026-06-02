@@ -52,6 +52,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/dns/dns_attempt.h"
 #include "net/dns/dns_config.h"
@@ -385,6 +386,7 @@ class DnsTransactionImpl final : public DnsTransaction {
       const OptRecordRdata* opt_rdata,
       DnsTransactionFactory::AttemptMode attempt_mode,
       SecureDnsMode secure_dns_mode,
+      handles::NetworkHandle target_network,
       ResolveContext* resolve_context,
       bool fast_timeout)
       : session_(session),
@@ -393,6 +395,7 @@ class DnsTransactionImpl final : public DnsTransaction {
         opt_rdata_(opt_rdata),
         attempt_mode_(attempt_mode),
         secure_dns_mode_(secure_dns_mode),
+        target_network_(target_network),
         fast_timeout_(fast_timeout),
         net_log_(NetLogWithSource::Make(NetLog::Get(),
                                         NetLogSourceType::DNS_TRANSACTION)),
@@ -626,6 +629,13 @@ class DnsTransactionImpl final : public DnsTransaction {
   }
 
   AttemptResult MakeClassicDnsAttempt() {
+    // Currently only system resolvers support targeting a specific network.
+    // TODO(crbug.com/517832375): Reconsider this restriction, and support
+    // targeting a specific network for all values of
+    // DnsTransactionFactory::AttemptMode.
+    if (target_network_ != handles::kInvalidNetworkHandle) {
+      return AttemptResult(ERR_INVALID_ARGUMENT, nullptr);
+    }
     uint16_t id = session_->NextQueryId();
     std::unique_ptr<DnsQuery> query;
     if (attempts_.empty()) {
@@ -692,6 +702,13 @@ class DnsTransactionImpl final : public DnsTransaction {
   }
 
   AttemptResult MakeHTTPAttempt() {
+    // Currently only system resolvers support targeting a specific network.
+    // TODO(crbug.com/517832375): Reconsider this restriction, and support
+    // targeting a specific network for all values of
+    // DnsTransactionFactory::AttemptMode.
+    if (target_network_ != handles::kInvalidNetworkHandle) {
+      return AttemptResult(ERR_INVALID_ARGUMENT, nullptr);
+    }
     DCHECK_EQ(attempt_mode_, DnsTransactionFactory::AttemptMode::kHttp);
 
     size_t doh_server_index = dns_server_iterator_->GetNextAttemptIndex();
@@ -920,6 +937,7 @@ class DnsTransactionImpl final : public DnsTransaction {
         case ERR_DNS_SERVER_REQUIRES_TCP:
           result = RetryUdpAttemptAsTcp(result.attempt);
           break;
+        case ERR_INVALID_ARGUMENT:
         case ERR_BLOCKED_BY_CLIENT:
           net_log_.EndEventWithNetErrorCode(
               NetLogEventType::DNS_TRANSACTION_QUERY, result.rv);
@@ -1031,12 +1049,12 @@ class DnsTransactionImpl final : public DnsTransaction {
   AttemptResult MakePlatformAttempt() {
     const size_t attempt_number = attempts_.size();
 
-    attempts_.push_back(
-        resolve_context_->url_request_context()
-            ->dns_platform_attempt_factory()
-            ->CreateDnsPlatformAttempt(
-                dns_server_iterator_->GetNextAttemptIndex(), qnames_.front(),
-                qtype_, resolve_context_->GetTargetNetwork(), net_log_));
+    attempts_.push_back(resolve_context_->url_request_context()
+                            ->dns_platform_attempt_factory()
+                            ->CreateDnsPlatformAttempt(
+                                dns_server_iterator_->GetNextAttemptIndex(),
+                                qnames_.front(), qtype_, target_network_,
+                                net_log_));
 
     ++attempts_count_;
 
@@ -1059,6 +1077,7 @@ class DnsTransactionImpl final : public DnsTransaction {
   raw_ptr<const OptRecordRdata, DanglingUntriaged> opt_rdata_;
   const DnsTransactionFactory::AttemptMode attempt_mode_;
   const SecureDnsMode secure_dns_mode_;
+  const handles::NetworkHandle target_network_ = handles::kInvalidNetworkHandle;
   // Cleared in DoCallback.
   ResponseCallback callback_;
 
@@ -1113,14 +1132,15 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
       const NetLogWithSource& net_log,
       AttemptMode attempt_mode,
       SecureDnsMode secure_dns_mode,
+      handles::NetworkHandle target_network,
       ResolveContext* resolve_context,
       bool fast_timeout) override {
     return std::make_unique<DnsTransactionImpl>(
         session_.get(), std::move(hostname), qtype, net_log,
         // No factory-level EDNS option injection; per-transaction options are
         // passed through other call sites when needed.
-        /*opt_rdata=*/nullptr, attempt_mode, secure_dns_mode, resolve_context,
-        fast_timeout);
+        /*opt_rdata=*/nullptr, attempt_mode, secure_dns_mode, target_network,
+        resolve_context, fast_timeout);
   }
 
   std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(

@@ -391,6 +391,7 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
       const NetLogWithSource&,
       AttemptMode attempt_mode,
       SecureDnsMode secure_dns_mode,
+      handles::NetworkHandle target_network,
       ResolveContext* resolve_context,
       bool fast_timeout) override;
 
