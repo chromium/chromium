@@ -48,5 +48,11 @@ action("rustc_print_cfg") {
     "--output-path",
     rebase_path(rustc_print_cfg_path, root_build_dir),
   ]
+  inputs = []
+  if (host_os == "win") {
+    inputs += [ "${rust_sysroot}/bin/rustc.exe" ]
+  } else {
+    inputs += [ "${rust_sysroot}/bin/rustc" ]
+  }
   outputs = [ rustc_print_cfg_path ]
 }
