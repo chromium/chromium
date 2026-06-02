@@ -29,8 +29,8 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_process_information.h"
 #include "chrome/elevation_service/elevator.h"
-#include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/installer/util/google_update_constants.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/windows_services/service_program/scoped_client_impersonation.h"
 #include "components/crx_file/crx_verifier.h"
@@ -325,12 +325,11 @@ HRESULT RunChromeRecoveryCRX(const base::FilePath& crx_path,
   // Read version autonomously from secured HKLM machine registries based on
   // AppID. We use the installed app GUID instead of the potentially spoofable
   // |browser_appid| passed over RPC.
-  base::win::RegKey key(
-      HKEY_LOCAL_MACHINE,
-      install_static::GetClientsKeyPath(install_static::GetAppGuid()).c_str(),
-      KEY_QUERY_VALUE);
+  base::win::RegKey key(HKEY_LOCAL_MACHINE,
+                        install_static::GetClientsKeyPath().c_str(),
+                        KEY_QUERY_VALUE | KEY_WOW64_32KEY);
   std::wstring registry_version;
-  if (key.ReadValue(FILE_PATH_LITERAL("version"), &registry_version) !=
+  if (key.ReadValue(google_update::kRegVersionField, &registry_version) !=
       ERROR_SUCCESS) {
     // Fall back on RPC caller version if registry read fails. Registry keys
     // may be missing or corrupted on severely broken environments that recovery

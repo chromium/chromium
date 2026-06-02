@@ -14,9 +14,12 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/test/test_reg_util_win.h"
 #include "base/version.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/elevation_service/elevated_recovery_impl.h"
+#include "chrome/install_static/install_util.h"
 #include "chrome/windows_services/service_program/test_support/scoped_mock_context.h"
 #include "components/crx_file/crx_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -182,6 +185,24 @@ TEST_F(ElevatedRecoveryTest, Do_RunCRX_VersionCheck) {
                       GetRunactionTestWinCrx3Hash(), GetUnpackDir(),
                       base::FilePath(kRecoveryExeName), ::GetCurrentProcessId(),
                       &proc_handle));
+}
+
+TEST_F(ElevatedRecoveryTest, RunChromeRecoveryCRX_RegistryFloorEngages) {
+  registry_util::RegistryOverrideManager override_manager;
+  ASSERT_NO_FATAL_FAILURE(
+      override_manager.OverrideRegistry(HKEY_LOCAL_MACHINE));
+
+  base::win::RegKey version_key(HKEY_LOCAL_MACHINE,
+                                install_static::GetClientsKeyPath().c_str(),
+                                KEY_SET_VALUE | KEY_WOW64_32KEY);
+  ASSERT_TRUE(version_key.Valid());
+  ASSERT_EQ(ERROR_SUCCESS, version_key.WriteValue(L"pv", L"10.0.0.0"));
+
+  base::win::ScopedHandle proc_handle;
+  EXPECT_EQ(E_ACCESSDENIED, elevation_service::RunChromeRecoveryCRX(
+                                TestFile("ChromeRecovery.crx3"), L"1.0.0.0",
+                                L"{c49ab053-2387-4809-b188-1902648802e1}",
+                                ::GetCurrentProcessId(), &proc_handle));
 }
 
 TEST(ElevatedRecoveryCleanupTest, Do_CleanupChromeRecoveryDirectory) {
