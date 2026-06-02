@@ -876,14 +876,13 @@ const FeatureEntry::FeatureParam kChromeFindsTestConfiguration[] = {
 const FeatureEntry::FeatureParam kChromeFindsTestOptInConditions[] = {
     {"enable_srp_return_count_opt_in", "true"},
     {"enable_theme_url_visit_count_opt_in", "true"},
-    {"enable_omnibox_recent_search_opt_in", "true"},
+    {"enable_omnibox_recent_search_suggestion_opt_in", "true"},
     {"finds_opt_in_promo_cooldown_in_days", "0"},
     {"finds_opt_in_promo_max_interacted_count", "9999"}};
 
 const FeatureEntry::FeatureVariation kChromeFindsVariations[] = {
-    {" - Always Show Opt-In & Zero Cooldowns", kChromeFindsTestConfiguration,
-     nullptr},
-    {" - Test Opt-In Conditions", kChromeFindsTestOptInConditions, nullptr}};
+    {"Enabled (notifications testing)", kChromeFindsTestConfiguration, nullptr},
+    {"Enabled (opt-in testing)", kChromeFindsTestOptInConditions, nullptr}};
 
 const FeatureEntry::FeatureParam kPopularSitesRefreshUsParamArm1[] = {
     {"arm", "1"}};  // ntp_tiles::kPopularSitesRefreshUsArm.name

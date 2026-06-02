@@ -106,6 +106,10 @@ public class FindsUtils {
             return false;
         }
 
+        if (FindsFeatures.sAlwaysShowOptInPromo.getValue()) {
+            return true;
+        }
+
         // Check that the promo hasn't been shown too many times.
         int showCount = prefs.getInteger(FINDS_OPT_IN_PROMO_SHOWN_COUNT);
         int maxShowCount = FindsFeatures.sMaxOptInPromoInteractionCount.getValue();

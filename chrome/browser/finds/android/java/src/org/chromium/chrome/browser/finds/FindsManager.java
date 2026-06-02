@@ -10,6 +10,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /**
  * Manages the Finds flow on startup. Listens to {@link FindsService} and shows the UI when criteria
@@ -45,7 +46,10 @@ public class FindsManager implements FindsService.Observer {
         mFindsService.maybeRescheduleNotifications();
 
         if (FindsFeatures.sAlwaysShowOptInPromo.getValue()) {
-            onOptInCriteriaFulfilled();
+            if (!UserPrefs.get(mProfile)
+                    .getBoolean(FindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED)) {
+                onOptInCriteriaFulfilled();
+            }
         }
     }
 
