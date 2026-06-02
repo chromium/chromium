@@ -17,6 +17,13 @@ const kModelContextRegisterDeclarativeTool = 5792;
 const kModelContextExecuteTool = 5799;
 const kModelContextExecuteDeclarativeTool = 5800;
 const kModelContextExecuteDeclarativeAutosubmit = 5801;
+const kModelContextGetTools = 5904;
+
+promise_test(async () => {
+    assert_false(internals.isUseCounted(document, kModelContextGetTools));
+    await document.modelContext.getTools();
+    assert_true(internals.isUseCounted(document, kModelContextGetTools));
+}, "getTools use counter");
 
 promise_test(async () => {
     assert_false(internals.isUseCounted(document, kModelContextRegisterTool));

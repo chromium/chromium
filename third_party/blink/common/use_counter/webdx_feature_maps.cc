@@ -477,6 +477,8 @@ GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kWriter_WriteStreaming, WebDXFeature::kWriter},
           {WebFeature::kModelContextRegisterTool,
            WebDXFeature::kNavigatorModelcontext},
+          {WebFeature::kModelContextGetTools,
+           WebDXFeature::kNavigatorModelcontext},
           {WebFeature::kModelContextRegisterDeclarativeTool,
            WebDXFeature::kDeclarativeWebmcp},
           {WebFeature::kIdentityDigitalCredentials,
