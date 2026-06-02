@@ -1452,9 +1452,11 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
   // The backend sets the frontend ID for loaded text annotations.
   int frontend_id = 0;
 
+  std::set<InkTextId> loaded_pdf_ink_text_ids;
   for (auto& [page_index, text_boxes] : document_text_boxes) {
     for (const auto& item : text_boxes) {
       text_id_map_[frontend_id] = item.ink_text_id;
+      loaded_pdf_ink_text_ids.insert(item.ink_text_id);
 
       auto text_attributes =
           base::DictValue()
@@ -1489,6 +1491,8 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
       ++frontend_id;
     }
   }
+
+  undo_redo_model_.SetLoadedPdfInkTextIds(std::move(loaded_pdf_ink_text_ids));
 
   client_->PostMessage(
       PrepareReplyMessage(message).Set("annotations", std::move(annotations)));

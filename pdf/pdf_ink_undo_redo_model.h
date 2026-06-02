@@ -85,6 +85,9 @@ class PdfInkUndoRedoModel {
   // be called after Start().
   [[nodiscard]] bool Finish();
 
+  // Sets the pre-existing text annotation IDs loaded from the PDF.
+  void SetLoadedPdfInkTextIds(std::set<InkTextId> loaded_pdf_ink_text_ids);
+
   // Returns the `InkTextId` to use when creating a new text annotation to
   // satisfy an undo/redo command.
   [[nodiscard]] std::optional<InkTextId> GetUndoInkTextId() const;
@@ -107,12 +110,16 @@ class PdfInkUndoRedoModel {
   // (3) IDs used in `Commands::removes` are unique among all
   //     `Commands::removes` elements.
   // (4) IDs added to a `Commands::removes` must exist in the `Commands::adds`
-  //     set of a different `Commands` in the stack.
+  //     set of a different `Commands` in the stack or in
+  //     `loaded_pdf_ink_text_ids_`.
   // (5) `Commands::adds` only contains `InkStrokeId` and `InkTextId` elements
   //     here. The reason `Commands::adds` can hold `InkModeledShapeId` is to
   //     undo an `InkModeledShapeId` removal, where the caller needs to know
   //     they need to draw the shape or text annotation.
   std::vector<Commands> commands_stack_;
+
+  // Pre-existing text annotations loaded from the PDF.
+  std::set<InkTextId> loaded_pdf_ink_text_ids_;
 
   // Invariants:
   // (6) Always less than or equal to the size of `commands_stack_`.

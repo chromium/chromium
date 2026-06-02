@@ -111,12 +111,21 @@ bool PdfInkUndoRedoModel::Remove(IdType id) {
     return false;  // Failed invariant 3.
   }
 
-  if (IsAllowedInCommandsStack(id) && !HasIdInPreviousAddCommands(id)) {
-    return false;  // Failed invariant 4.
+  if (!HasIdInPreviousAddCommands(id)) {
+    if (std::holds_alternative<InkStrokeId>(id) ||
+        (std::holds_alternative<InkTextId>(id) &&
+         !loaded_pdf_ink_text_ids_.contains(std::get<InkTextId>(id)))) {
+      return false;  // Failed invariant 4.
+    }
   }
 
   commands_stack_.back().removes.insert(id);
   return true;
+}
+
+void PdfInkUndoRedoModel::SetLoadedPdfInkTextIds(
+    std::set<InkTextId> loaded_pdf_ink_text_ids) {
+  loaded_pdf_ink_text_ids_ = std::move(loaded_pdf_ink_text_ids);
 }
 
 bool PdfInkUndoRedoModel::Finish() {
