@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/buffering_bytes_consumer.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -291,7 +292,7 @@ class BufferingBytesConsumerMaxBytesTest
   // `ChunkSize()`.
   void FillReplayingBytesConsumer() {
     CHECK_EQ(TotalSize() % ChunkSize(), 0u);
-    Vector<char> chunk(ChunkSize(), 'a');
+    Vector<char> chunk(base::checked_cast<wtf_size_t>(ChunkSize()), 'a');
     for (size_t size = 0; size < TotalSize(); size += ChunkSize()) {
       replaying_bytes_consumer_->Add(Command(Command::kData, chunk));
     }

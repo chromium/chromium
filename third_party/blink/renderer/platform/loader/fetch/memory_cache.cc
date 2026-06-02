@@ -330,7 +330,7 @@ void MemoryCache::RemoveInternal(ResourceMap* resource_map,
   if (base::FeatureList::IsEnabled(features::kMemoryCacheIntelligentPruning)) {
     // If intelligent pruning is on, the resource can only be in the new
     // tiered vector. We perform a "lazy" remove for performance.
-    size_t index = tiered_strong_references_.Find(resource);
+    wtf_size_t index = tiered_strong_references_.Find(resource);
     if (index != kNotFound) {
       tiered_strong_references_[index] = nullptr;
     }

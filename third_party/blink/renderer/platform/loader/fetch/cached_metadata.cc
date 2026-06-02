@@ -36,8 +36,8 @@ Vector<uint8_t> GetSerializedData(uint32_t data_type_id,
   DCHECK(data_type_id);
   DCHECK(data.data());
 
-  Vector<uint8_t> vector =
-      CachedMetadata::GetSerializedDataHeader(data_type_id, data.size(), tag);
+  Vector<uint8_t> vector = CachedMetadata::GetSerializedDataHeader(
+      data_type_id, base::checked_cast<wtf_size_t>(data.size()), tag);
   vector.append_range(data);
   return vector;
 }

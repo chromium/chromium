@@ -501,7 +501,7 @@ void MojoURLLoaderClient::FlushDeferredMessages() {
   //  - transfer size change
   //  - completion
   // These two types of messages are dispatched later.
-  for (size_t index = 0; index < messages.size(); ++index) {
+  for (wtf_size_t index = 0; index < messages.size(); ++index) {
     if (messages[index]->IsCompletionMessage()) {
       // The completion message arrives at the end of the message queue.
       DCHECK(!has_completion_message);
@@ -515,8 +515,9 @@ void MojoURLLoaderClient::FlushDeferredMessages() {
       return;
     if (freeze_mode_ != LoaderFreezeMode::kNone) {
       deferred_messages_.reserve(messages.size() - index - 1);
-      for (size_t i = index + 1; i < messages.size(); ++i)
+      for (wtf_size_t i = index + 1; i < messages.size(); ++i) {
         deferred_messages_.emplace_back(std::move(messages[i]));
+      }
       return;
     }
   }
