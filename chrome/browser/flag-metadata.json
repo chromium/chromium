@@ -8980,7 +8980,7 @@
   {
     "name": "tab-bottom-sheet",
     "owners": [ "hitarthkothari@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com"],
-    "expiry_milestone": 151
+    "expiry_milestone": 155
   },
   {
     "name": "tab-closure-method-refactor",
