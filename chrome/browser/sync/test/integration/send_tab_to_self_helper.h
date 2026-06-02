@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -54,10 +55,10 @@ class SendTabToSelfUrlChecker
 
   // SendTabToSelfModelObserver implementation.
   void OnEntriesAddedRemotely(
-      const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-          new_entries) override;
+      base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries)
+      override;
   void OnEntriesRemovedRemotely(
-      const std::vector<std::string>& guids_removed) override;
+      base::span<const std::string> guids_removed) override;
 
  private:
   const GURL url_;
@@ -90,12 +91,12 @@ class SendTabToSelfUrlOpenedChecker
 
   // SendTabToSelfModelObserver implementation.
   void OnEntriesAddedRemotely(
-      const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-          new_entries) override;
+      base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries)
+      override;
   void OnEntriesRemovedRemotely(
-      const std::vector<std::string>& guids_removed) override;
+      base::span<const std::string> guids_removed) override;
   void OnEntriesOpenedRemotely(
-      const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
+      base::span<const send_tab_to_self::SendTabToSelfEntry* const>
           opened_entries) override;
 
  private:
@@ -130,10 +131,10 @@ class SendTabToSelfModelEqualityChecker
 
   // SendTabToSelfModelObserver implementation.
   void OnEntriesAddedRemotely(
-      const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-          new_entries) override;
+      base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries)
+      override;
   void OnEntriesRemovedRemotely(
-      const std::vector<std::string>& guids_removed) override;
+      base::span<const std::string> guids_removed) override;
 
  private:
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service0_;
@@ -167,10 +168,10 @@ class SendTabToSelfActiveChecker
 
   // SendTabToSelfModelObserver implementation.
   void OnEntriesAddedRemotely(
-      const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-          new_entries) override;
+      base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries)
+      override;
   void OnEntriesRemovedRemotely(
-      const std::vector<std::string>& guids_removed) override;
+      base::span<const std::string> guids_removed) override;
 
  private:
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
@@ -252,7 +253,7 @@ class SendTabToSelfUrlDeletedChecker
 
   // SendTabToSelfModelObserver implementation.
   void OnEntriesRemovedRemotely(
-      const std::vector<std::string>& guids_removed) override;
+      base::span<const std::string> guids_removed) override;
 
  private:
   const GURL url_;

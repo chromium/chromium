@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -59,9 +60,9 @@ class SendTabToSelfToolbarIconController
 
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(
-      const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-          new_entries) override;
-  void DismissEntries(const std::vector<std::string>& guids) override;
+      base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries)
+      override;
+  void DismissEntries(base::span<const std::string> guids) override;
 
   // BrowserCollectionObserver implementation
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
@@ -77,7 +78,7 @@ class SendTabToSelfToolbarIconController
   void OnToastClosed();
 
  private:
-  void StorePendingEntries(const std::vector<const SendTabToSelfEntry*>&
+  void StorePendingEntries(base::span<const SendTabToSelfEntry* const>
                                new_entries_pending_notification);
 
   void ShowToolbarButton(const SendTabToSelfEntry& entry,

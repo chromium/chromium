@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_CLIENT_SERVICE_H_
 
 #include <string>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
@@ -43,10 +43,10 @@ class SendTabToSelfClientService : public KeyedService,
   // Updates the UI to reflect the new entries. Calls the handlers
   // registered through ReceivingUIRegistry.
   void OnEntriesAddedRemotely(
-      const std::vector<const SendTabToSelfEntry*>& new_entries) override;
+      base::span<const SendTabToSelfEntry* const> new_entries) override;
   // Updates the UI to reflect the removal of entries. Calls the handlers
   // registered through ReceivingUIRegistry.
-  void OnEntriesRemovedRemotely(const std::vector<std::string>& guids) override;
+  void OnEntriesRemovedRemotely(base::span<const std::string> guids) override;
 
   // Returns the registered ReceivingUiHandler.
   ReceivingUiHandler* GetReceivingUiHandler() const;

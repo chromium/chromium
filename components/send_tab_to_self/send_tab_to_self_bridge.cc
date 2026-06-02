@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -637,7 +638,7 @@ void SendTabToSelfBridge::SetLocalDeviceNameForTest(
 }
 
 void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryAdded(
-    const std::vector<const SendTabToSelfEntry*>& new_entries) {
+    base::span<const SendTabToSelfEntry* const> new_entries) {
   if (new_entries.empty()) {
     return;
   }
@@ -669,7 +670,7 @@ void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryAdded(
 }
 
 void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryDeleted(
-    const std::vector<std::string>& guids) {
+    base::span<const std::string> guids) {
   if (guids.empty()) {
     return;
   }
@@ -680,7 +681,7 @@ void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryDeleted(
 }
 
 void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryOpened(
-    const std::vector<const SendTabToSelfEntry*>& opened_entries) {
+    base::span<const SendTabToSelfEntry* const> opened_entries) {
   if (opened_entries.empty()) {
     return;
   }
@@ -688,7 +689,6 @@ void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryOpened(
     observer.OnEntriesOpenedRemotely(opened_entries);
   }
 }
-
 
 void SendTabToSelfBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,

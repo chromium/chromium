@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_SEND_TAB_TO_SELF_RECEIVING_UI_HANDLER_H_
 
 #include <string>
-#include <vector>
+
+#include "base/containers/span.h"
 
 namespace send_tab_to_self {
 
@@ -24,11 +25,11 @@ class ReceivingUiHandler {
   // Display the new entries passed in as an argument. The entries are owned by
   // the model and should not be modified.
   virtual void DisplayNewEntries(
-      const std::vector<const SendTabToSelfEntry*>& new_entries) = 0;
+      base::span<const SendTabToSelfEntry* const> new_entries) = 0;
   // Dismiss any UI associated with this entry.
   // Entry object is owned by the the model and should not be
   // modified by any implementors of this class.
-  virtual void DismissEntries(const std::vector<std::string>& guids) = 0;
+  virtual void DismissEntries(base::span<const std::string> guids) = 0;
 };
 
 }  // namespace send_tab_to_self

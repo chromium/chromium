@@ -51,7 +51,6 @@ namespace send_tab_to_self {
 enum class SendTabToSelfResult;
 class SendTabToSelfBubbleView;
 struct TargetDeviceInfo;
-class SendTabToSelfEntry;
 
 class SendTabToSelfModel;
 
@@ -137,9 +136,6 @@ class SendTabToSelfBubbleController
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // send_tab_to_self::SendTabToSelfModelObserver:
-  void OnEntriesAddedRemotely(
-      const std::vector<const SendTabToSelfEntry*>& new_entries) override;
-  void OnEntriesRemovedRemotely(const std::vector<std::string>& guids) override;
   void OnModelReady() override;
 
   // Returns true if the user is signed in to their Chrome profile but the Send

@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/android/application_status_listener.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
@@ -47,8 +49,8 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
 
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(
-      const std::vector<const SendTabToSelfEntry*>& new_entries) override;
-  void DismissEntries(const std::vector<std::string>& guids) override;
+      base::span<const SendTabToSelfEntry* const> new_entries) override;
+  void DismissEntries(base::span<const std::string> guids) override;
 
   // TabModelListObserver:
   void OnTabModelAdded(TabModel* tab_model) override;

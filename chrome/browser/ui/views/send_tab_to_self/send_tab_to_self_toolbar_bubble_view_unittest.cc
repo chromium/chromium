@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
@@ -33,8 +34,8 @@ class StubReceivingUiHandler : public ReceivingUiHandler {
   ~StubReceivingUiHandler() override = default;
 
   void DisplayNewEntries(
-      const std::vector<const SendTabToSelfEntry*>& new_entries) override {}
-  void DismissEntries(const std::vector<std::string>& guids) override {}
+      base::span<const SendTabToSelfEntry* const> new_entries) override {}
+  void DismissEntries(base::span<const std::string> guids) override {}
 };
 
 }  // namespace

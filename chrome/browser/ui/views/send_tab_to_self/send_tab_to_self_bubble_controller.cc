@@ -341,11 +341,6 @@ void SendTabToSelfBubbleController::SetSelectorGenerationTimeoutForTesting(
       ->SetSelectorGenerationTimeoutForTesting(timeout);
 }
 
-void SendTabToSelfBubbleController::OnEntriesAddedRemotely(
-    const std::vector<const SendTabToSelfEntry*>& new_entries) {}
-
-void SendTabToSelfBubbleController::OnEntriesRemovedRemotely(
-    const std::vector<std::string>& guids) {}
 
 void SendTabToSelfBubbleController::OnModelReady() {
   model_observation_.Reset();

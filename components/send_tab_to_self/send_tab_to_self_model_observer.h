@@ -6,8 +6,8 @@
 #define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_MODEL_OBSERVER_H_
 
 #include <string>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "base/observer_list_types.h"
 
 namespace send_tab_to_self {
@@ -28,20 +28,17 @@ class SendTabToSelfModelObserver : public base::CheckedObserver {
 
 
   // Invoked when new entries are added to the model by the  sync server.
-  // TODO(crbug.com/40619926) move OnEntriesAddedRemotely to use const refs to
-  // clarify ownership.
   virtual void OnEntriesAddedRemotely(
-      const std::vector<const SendTabToSelfEntry*>& new_entries) {}
+      base::span<const SendTabToSelfEntry* const> new_entries) {}
   // Invoked when a new entry is added on the local device.
   virtual void OnEntryAddedLocally(const SendTabToSelfEntry* entry) {}
   // Invoked when entries are removed from the model by the sync server.
   // `guids` contains the unique identifiers of the removed entries.
-  virtual void OnEntriesRemovedRemotely(
-      const std::vector<std::string>& guids) {}
+  virtual void OnEntriesRemovedRemotely(base::span<const std::string> guids) {}
   // Invoked when new and existing entries have been marked as opened by the
   // sync server.
   virtual void OnEntriesOpenedRemotely(
-      const std::vector<const SendTabToSelfEntry*>& opened_entries) {}
+      base::span<const SendTabToSelfEntry* const> opened_entries) {}
   // Invoked when the model becomes operational and ready to sync (initial data
   // is loaded).
   virtual void OnModelReady() {}

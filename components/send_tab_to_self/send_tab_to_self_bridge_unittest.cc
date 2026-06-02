@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -117,12 +118,18 @@ sync_pb::DataTypeState StateWithEncryption(
 
 class MockSendTabToSelfModelObserver : public SendTabToSelfModelObserver {
  public:
-  MOCK_METHOD1(OnEntriesAddedRemotely,
-               void(const std::vector<const SendTabToSelfEntry*>&));
-  MOCK_METHOD1(OnEntriesOpenedRemotely,
-               void(const std::vector<const SendTabToSelfEntry*>&));
-
-  MOCK_METHOD1(OnEntriesRemovedRemotely, void(const std::vector<std::string>&));
+  MOCK_METHOD(void,
+              OnEntriesAddedRemotely,
+              (base::span<const SendTabToSelfEntry* const>),
+              (override));
+  MOCK_METHOD(void,
+              OnEntriesOpenedRemotely,
+              (base::span<const SendTabToSelfEntry* const>),
+              (override));
+  MOCK_METHOD(void,
+              OnEntriesRemovedRemotely,
+              (base::span<const std::string>),
+              (override));
 };
 
 class FakeSessionSyncService : public sync_sessions::SessionSyncService {

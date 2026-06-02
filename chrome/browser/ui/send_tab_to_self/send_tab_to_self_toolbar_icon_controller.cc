@@ -51,7 +51,7 @@ bool SendTabToSelfToolbarIconController::CanShowOnBrowser(
 }
 
 void SendTabToSelfToolbarIconController::DisplayNewEntries(
-    const std::vector<const SendTabToSelfEntry*>& new_entries) {
+    base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
   // TODO(crbug.com/40180897): Any entries that were never shown are lost.
   // This is consistent with current behavior and we don't have UI for
   // showing multiple entries with this iteration.
@@ -100,7 +100,7 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
 }
 
 void SendTabToSelfToolbarIconController::StorePendingEntries(
-    const std::vector<const SendTabToSelfEntry*>&
+    base::span<const SendTabToSelfEntry* const>
         new_entries_pending_notification) {
   CHECK(!new_entries_pending_notification.empty());
   const bool had_entry_pending_notification = !pending_entries_.empty();
@@ -128,7 +128,7 @@ void SendTabToSelfToolbarIconController::StorePendingEntries(
 }
 
 void SendTabToSelfToolbarIconController::DismissEntries(
-    const std::vector<std::string>& guids) {
+    base::span<const std::string> guids) {
   auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
                     ->GetSendTabToSelfModel();
   for (const std::string& guid : guids) {

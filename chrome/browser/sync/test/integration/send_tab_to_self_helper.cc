@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -89,13 +90,12 @@ bool SendTabToSelfUrlChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 void SendTabToSelfUrlChecker::OnEntriesAddedRemotely(
-    const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-        new_entries) {
+    base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
   CheckExitCondition();
 }
 
 void SendTabToSelfUrlChecker::OnEntriesRemovedRemotely(
-    const std::vector<std::string>& guids_removed) {
+    base::span<const std::string> guids_removed) {
   CheckExitCondition();
 }
 
@@ -125,18 +125,17 @@ bool SendTabToSelfUrlOpenedChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 void SendTabToSelfUrlOpenedChecker::OnEntriesAddedRemotely(
-    const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-        new_entries) {
+    base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
   CheckExitCondition();
 }
 
 void SendTabToSelfUrlOpenedChecker::OnEntriesRemovedRemotely(
-    const std::vector<std::string>& guids_removed) {
+    base::span<const std::string> guids_removed) {
   CheckExitCondition();
 }
 
 void SendTabToSelfUrlOpenedChecker::OnEntriesOpenedRemotely(
-    const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
+    base::span<const send_tab_to_self::SendTabToSelfEntry* const>
         opened_entries) {
   CheckExitCondition();
 }
@@ -187,13 +186,12 @@ bool SendTabToSelfModelEqualityChecker::IsExitConditionSatisfied(
 }
 
 void SendTabToSelfModelEqualityChecker::OnEntriesAddedRemotely(
-    const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-        new_entries) {
+    base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
   CheckExitCondition();
 }
 
 void SendTabToSelfModelEqualityChecker::OnEntriesRemovedRemotely(
-    const std::vector<std::string>& guids_removed) {
+    base::span<const std::string> guids_removed) {
   CheckExitCondition();
 }
 
@@ -212,13 +210,12 @@ bool SendTabToSelfActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 void SendTabToSelfActiveChecker::OnEntriesAddedRemotely(
-    const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-        new_entries) {
+    base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
   CheckExitCondition();
 }
 
 void SendTabToSelfActiveChecker::OnEntriesRemovedRemotely(
-    const std::vector<std::string>& guids_removed) {
+    base::span<const std::string> guids_removed) {
   CheckExitCondition();
 }
 
@@ -295,7 +292,7 @@ bool SendTabToSelfUrlDeletedChecker::IsExitConditionSatisfied(
 }
 
 void SendTabToSelfUrlDeletedChecker::OnEntriesRemovedRemotely(
-    const std::vector<std::string>& guids_removed) {
+    base::span<const std::string> guids_removed) {
   CheckExitCondition();
 }
 

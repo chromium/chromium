@@ -8,9 +8,9 @@
 
 #import <memory>
 #import <string>
-#import <vector>
 
 #import "base/check.h"
+#import "base/containers/span.h"
 #import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -40,10 +40,8 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
 
 SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() = default;
 
-
 void SendTabToSelfBrowserAgent::OnEntriesAddedRemotely(
-    const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-        new_entries) {
+    base::span<const send_tab_to_self::SendTabToSelfEntry* const> new_entries) {
   if (new_entries.empty()) {
     return;
   }
@@ -79,7 +77,7 @@ void SendTabToSelfBrowserAgent::OnEntriesAddedRemotely(
 }
 
 void SendTabToSelfBrowserAgent::OnEntriesRemovedRemotely(
-    const std::vector<std::string>& guids) {
+    base::span<const std::string> guids) {
   NOTIMPLEMENTED();
 }
 

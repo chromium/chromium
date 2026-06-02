@@ -117,7 +117,7 @@ AndroidNotificationHandler::~AndroidNotificationHandler() {
 }
 
 void AndroidNotificationHandler::DisplayNewEntries(
-    const std::vector<const SendTabToSelfEntry*>& new_entries) {
+    base::span<const SendTabToSelfEntry* const> new_entries) {
   if (new_entries.empty()) {
     return;
   }
@@ -190,7 +190,7 @@ void AndroidNotificationHandler::HideNotification(const std::string& guid) {
 }
 
 void AndroidNotificationHandler::DismissEntries(
-    const std::vector<std::string>& guids) {
+    base::span<const std::string> guids) {
   // Hides system notifications for the specified GUIDs (e.g., after they have
   // been successfully opened or deleted remotely).
   for (const std::string& guid : guids) {

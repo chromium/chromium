@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -127,18 +128,17 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
   // Notify all observers of any added |new_entries| when they are added the the
   // model via sync.
   void NotifyRemoteSendTabToSelfEntryAdded(
-      const std::vector<const SendTabToSelfEntry*>& new_entries);
+      base::span<const SendTabToSelfEntry* const> new_entries);
 
   // Notify all observers when the entries with |guids| have been removed from
   // the model via sync or via history deletion.
   void NotifyRemoteSendTabToSelfEntryDeleted(
-      const std::vector<std::string>& guids);
+      base::span<const std::string> guids);
 
   // Notify all observers when any new or existing |opened_entries| have been
   // marked as opened in the model via sync.
   void NotifyRemoteSendTabToSelfEntryOpened(
-      const std::vector<const SendTabToSelfEntry*>& opened_entries);
-
+      base::span<const SendTabToSelfEntry* const> opened_entries);
 
   // Methods used as callbacks given to DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,

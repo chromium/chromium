@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
@@ -25,11 +26,11 @@ class TestReceivingUiHandler : public ReceivingUiHandler {
   ~TestReceivingUiHandler() override = default;
 
   void DisplayNewEntries(
-      const std::vector<const SendTabToSelfEntry*>& new_entries) override {
+      base::span<const SendTabToSelfEntry* const> new_entries) override {
     number_displayed_entries_ = number_displayed_entries_ + new_entries.size();
   }
 
-  void DismissEntries(const std::vector<std::string>& guids) override {}
+  void DismissEntries(base::span<const std::string> guids) override {}
 
   size_t number_displayed_entries() const { return number_displayed_entries_; }
 

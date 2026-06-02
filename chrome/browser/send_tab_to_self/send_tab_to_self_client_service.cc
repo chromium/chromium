@@ -6,8 +6,8 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -28,16 +28,15 @@ void SendTabToSelfClientService::Shutdown() {
   receiving_ui_handler_.reset();
 }
 
-
 void SendTabToSelfClientService::OnEntriesAddedRemotely(
-    const std::vector<const SendTabToSelfEntry*>& new_entries) {
+    base::span<const SendTabToSelfEntry* const> new_entries) {
   if (receiving_ui_handler_) {
     receiving_ui_handler_->DisplayNewEntries(new_entries);
   }
 }
 
 void SendTabToSelfClientService::OnEntriesRemovedRemotely(
-    const std::vector<std::string>& guids) {
+    base::span<const std::string> guids) {
   if (receiving_ui_handler_) {
     receiving_ui_handler_->DismissEntries(guids);
   }

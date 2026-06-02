@@ -19,13 +19,13 @@ SendTabToSelfModelBridge::SendTabToSelfModelBridge(
 
 SendTabToSelfModelBridge::~SendTabToSelfModelBridge() = default;
 
-void SendTabToSelfModelBridge::EntriesAddedRemotely(
-    const std::vector<const SendTabToSelfEntry*>& new_entries) {
+void SendTabToSelfModelBridge::OnEntriesAddedRemotely(
+    base::span<const SendTabToSelfEntry* const> new_entries) {
   [observer_ sendTabToSelfModel:model_ didAddEntriesRemotely:new_entries];
 }
 
-void SendTabToSelfModelBridge::EntriesRemovedRemotely(
-    const std::vector<std::string>& guids) {
+void SendTabToSelfModelBridge::OnEntriesRemovedRemotely(
+    base::span<const std::string> guids) {
   [observer_ sendTabToSelfModel:model_ didRemoveEntriesRemotely:guids];
 }
 
