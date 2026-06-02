@@ -73,6 +73,7 @@ constexpr wchar_t kRegDeviceDetailsUploadFailures[] =
 constexpr wchar_t kRegDeveloperMode[] = L"developer_mode";
 constexpr wchar_t kRegUpdateCredentialsOnChange[] =
     L"update_credentials_on_change";
+constexpr wchar_t kRegEnableGcpwModalDialog[] = L"enable_gcpw_modal_dialog";
 constexpr wchar_t kRegUseShorterAccountName[] = L"use_shorter_account_name";
 constexpr wchar_t kEmailDomainsKey[] = L"ed";  // deprecated.
 constexpr wchar_t kEmailDomainsKeyNew[] = L"domains_allowed_to_login";

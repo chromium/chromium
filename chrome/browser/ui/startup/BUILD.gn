@@ -112,12 +112,15 @@ source_set("startup") {
     assert(use_aura)
 
     sources += [
+      "credential_provider_signin_dialog_view_with_modal.h",
       "credential_provider_signin_dialog_win.h",
       "credential_provider_signin_info_fetcher_win.h",
     ]
     public_deps += [
       ":buildflags",
+      "//components/web_modal",
       "//google_apis",
+      "//ui/views/controls/webview",
     ]
   }
 }
@@ -347,6 +350,7 @@ source_set("impl") {
     assert(use_aura)
 
     sources += [
+      "credential_provider_signin_dialog_view_with_modal.cc",
       "credential_provider_signin_dialog_win.cc",
       "credential_provider_signin_info_fetcher_win.cc",
     ]

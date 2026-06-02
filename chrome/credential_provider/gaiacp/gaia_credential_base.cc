@@ -1102,7 +1102,11 @@ HRESULT CGaiaCredentialBase::GetBaseGlsCommandline(
   if (IsSecurityKeySupportEnabled()) {
     command_line->AppendSwitchASCII("disable-features",
                                     "WebAuthenticationUseNativeWinApi");
+    if (GetGlobalFlagOrDefault(kRegEnableGcpwModalDialog, 1)) {
+      command_line->AppendSwitch(kEnableGcpwModalDialog);
+    }
   }
+
   return S_OK;
 }
 
