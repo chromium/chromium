@@ -574,6 +574,14 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
              event->button_flags());
   }
 
+  // Ensure that a mouse release event aborts any pending drag operation, even
+  // if the cursor is not over an Exo surface. This ensures that maliciously
+  // delayed drags are cancelled when the user releases the button over native
+  // UI.
+  if (event->type() == ui::EventType::kMouseReleased) {
+    seat_->AbortPendingDragOperation();
+  }
+
   if (!focus_surface_)
     return;
 
@@ -636,8 +644,6 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   }
   switch (event->type()) {
     case ui::EventType::kMouseReleased:
-      seat_->AbortPendingDragOperation();
-      [[fallthrough]];
     case ui::EventType::kMousePressed: {
       if (!capture_permitted_) {
         // Clicking any surface with a constraint delegate permits capture

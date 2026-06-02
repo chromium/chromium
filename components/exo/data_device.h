@@ -92,6 +92,10 @@ class DataDevice : public DataOfferObserver,
 
   DataDeviceDelegate* get_delegate() { return delegate_; }
 
+  // Returns the seat associated with this data device. Used for authorization
+  // checks in Wayland delegates.
+  Seat* seat() { return seat_; }
+
  private:
   Surface* GetEffectiveTargetForEvent(const ui::DropTargetEvent& event) const;
   void SetSelectionToCurrentClipboardData();

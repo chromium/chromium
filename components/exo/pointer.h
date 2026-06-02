@@ -151,6 +151,11 @@ class Pointer : public SurfaceTreeHost,
     return capture_window_ != nullptr;
   }
 
+  int button_flags_on_drag_drop_start_for_testing() const {
+    return button_flags_on_drag_drop_start_;
+  }
+  Surface* focus_surface_for_testing() const { return focus_surface_; }
+
  private:
   class ScopedCursorLocker;
 

@@ -15,6 +15,8 @@
 #include "components/exo/wayland/test/test_client.h"
 #include "components/exo/wayland/test/wayland_server_test.h"
 #include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/client/focus_client.h"
+#include "ui/views/widget/widget.h"
 
 namespace exo::wayland {
 
@@ -223,6 +225,83 @@ TEST_F(DataDeviceManagerTest, MAYBE_Touch) {
       shell_client_data->StartDrag(serial);
     });
     EXPECT_EQ(step, Released);
+  }
+}
+
+// Verifies that a stale serial cannot be replayed to start a drag if the client
+// no longer has focus.
+TEST_F(DataDeviceManagerTest, StaleSerialReplay) {
+  test::ResourceKey surface_key;
+  InputListenerImpl* input_listener = nullptr;
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    ASSERT_TRUE(client->InitShmBufferFactory(256 * 256 * 4));
+    auto* data_ptr =
+        client->set_data(std::make_unique<test::ShellClientData>(client));
+
+    auto input_listener_impl = std::make_unique<InputListenerImpl>();
+    input_listener = input_listener_impl.get();
+    data_ptr->set_input_listener(std::move(input_listener_impl));
+
+    data_ptr->CreateXdgToplevel();
+    data_ptr->CreateAndAttachBuffer({256, 256});
+    data_ptr->Commit();
+
+    surface_key = data_ptr->GetSurfaceResourceKey();
+  });
+
+  Surface* surface = test::server_util::GetUserDataForResource<Surface>(
+      server_.get(), surface_key);
+
+  auto* drag_drop_controller = static_cast<ash::DragDropController*>(
+      aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow()));
+
+  auto* generator = GetEventGenerator();
+
+  // 1. Capture a serial by clicking on the Exo surface.
+  generator->MoveMouseToCenterOf(surface->window());
+  generator->PressLeftButton();
+  generator->ReleaseLeftButton();
+
+  uint32_t stale_serial = 0;
+  PostToClientAndWait([&](test::TestClient* client) {
+    ASSERT_TRUE(input_listener->button_serial_map.contains(BTN_LEFT));
+    stale_serial = input_listener->button_serial_map[BTN_LEFT];
+  });
+
+  // 2. Create another window and focus it to simulate moving focus away from
+  // Exo.
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->Show();
+  aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+      ->FocusWindow(widget->GetNativeWindow());
+
+  // 3. Press left button on the new window.
+  generator->MoveMouseToCenterOf(widget->GetNativeWindow());
+  generator->PressLeftButton();
+
+  // 4. Try to start drag with stale serial.
+  bool nested_loop_started = false;
+  auto* nested_loop_started_ptr = &nested_loop_started;
+  drag_drop_controller->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([generator, nested_loop_started_ptr]() {
+        generator->ReleaseLeftButton();
+        *nested_loop_started_ptr = true;
+      }),
+      base::DoNothing());
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    auto* shell_client_data = client->GetDataAs<test::ShellClientData>();
+    shell_client_data->StartDrag(stale_serial);
+  });
+
+  // After the fix, nested_loop_started should be false because the client
+  // does not have focus.
+  EXPECT_FALSE(nested_loop_started);
+
+  // Cleanup for the test.
+  if (!nested_loop_started) {
+    generator->ReleaseLeftButton();
   }
 }
 

@@ -345,6 +345,15 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
     LOG(ERROR) << "Start Drag Button Mask=" << button_mask
                << ", event type=" << SerialTracker::ToString(*event_type);
 
+    // Ensure that the client requesting the drag currently has pointer focus.
+    // This prevents background clients from initiating drags.
+    if (!CanAcceptDataEventsForSurface(
+            data_device->seat()->GetFocusedSurface())) {
+      LOG(ERROR) << "The client does not have focus to StartDrag.";
+      source->Cancelled();
+      return;
+    }
+
     if (button_mask) {
       if ((aura::Env::GetInstance()->mouse_button_flags() & button_mask) == 0) {
         LOG(ERROR) << "The mouse button used to StartDrag has already been "
