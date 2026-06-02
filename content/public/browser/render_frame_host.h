@@ -135,6 +135,7 @@ class RenderWidgetHostView;
 class SiteInstance;
 class StoragePartition;
 class WeakDocumentPtr;
+class WebAuthRequestSecurityChecker;
 class WebUI;
 class Page;
 
@@ -1189,6 +1190,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // access to unpartitioned cookies/storage.
   virtual void SetStorageAccessApiStatus(
       net::StorageAccessApiStatus status) = 0;
+
+  // Returns the centralized security checker for Web Authentication requests
+  // originating in this frame.
+  virtual scoped_refptr<WebAuthRequestSecurityChecker>
+  GetWebAuthRequestSecurityChecker() = 0;
 
   // Creates `DownloadUrlParameters` for downloads initiated by `this` frame.
   virtual std::unique_ptr<download::DownloadUrlParameters>

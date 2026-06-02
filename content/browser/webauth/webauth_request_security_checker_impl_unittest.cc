@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webauth/webauth_request_security_checker.h"
+#include "content/browser/webauth/webauth_request_security_checker_impl.h"
 
 #include <string_view>
 
@@ -166,9 +166,8 @@ TEST_P(WebAuthRequestSecurityCheckerTest, ValidateAncestorOrigins) {
   ASSERT_NE(nullptr, sub_frame);
   sub_frame = NavigationSimulator::NavigateAndCommitFromDocument(
       GURL(GetParam().url), sub_frame);
-  scoped_refptr<WebAuthRequestSecurityChecker> checker =
-      static_cast<RenderFrameHostImpl*>(sub_frame)
-          ->GetWebAuthRequestSecurityChecker();
+  auto checker = static_cast<RenderFrameHostImpl*>(sub_frame)
+                     ->GetWebAuthRequestSecurityCheckerImpl();
 
   bool actual_is_cross_origin = false;
   blink::mojom::AuthenticatorStatus actual_status =
@@ -336,9 +335,9 @@ TEST_P(WebAuthRequestSecurityCheckerSingleFrameTest,
   navigation->Commit();
   ASSERT_NE(nullptr, web_contents()->GetPrimaryMainFrame());
 
-  scoped_refptr<WebAuthRequestSecurityChecker> checker =
+  auto checker =
       static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame())
-          ->GetWebAuthRequestSecurityChecker();
+          ->GetWebAuthRequestSecurityCheckerImpl();
 
   bool actual_is_cross_origin = false;
   blink::mojom::AuthenticatorStatus actual_status =
@@ -479,12 +478,12 @@ TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
   MockWebAuthnContentBrowserClient mock_client;
   mock_client.set_shared_url_loader_factory(shared_url_loader_factory);
   ContentBrowserClient* old_client = SetBrowserClientForTesting(&mock_client);
-  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
-      true;
+  WebAuthRequestSecurityCheckerImpl::
+      UseSystemSharedURLLoaderFactoryForTesting() = true;
 
-  scoped_refptr<WebAuthRequestSecurityChecker> checker =
+  scoped_refptr<WebAuthRequestSecurityCheckerImpl> checker =
       static_cast<RenderFrameHostImpl*>(frame)
-          ->GetWebAuthRequestSecurityChecker();
+          ->GetWebAuthRequestSecurityCheckerImpl();
 
   base::HistogramTester histograms;
 
@@ -522,8 +521,8 @@ TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
   histograms.ExpectBucketCount("WebAuthentication.CspAllow.Remote", false, 1);
   histograms.ExpectTotalCount("WebAuthentication.CspAllow.Remote", 2);
 
-  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
-      false;
+  WebAuthRequestSecurityCheckerImpl::
+      UseSystemSharedURLLoaderFactoryForTesting() = false;
   SetBrowserClientForTesting(old_client);
 }
 
@@ -545,9 +544,9 @@ TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
       ->policy_container_host()
       ->AddContentSecurityPolicies(std::move(policies));
 
-  scoped_refptr<WebAuthRequestSecurityChecker> checker =
+  scoped_refptr<WebAuthRequestSecurityCheckerImpl> checker =
       static_cast<RenderFrameHostImpl*>(frame)
-          ->GetWebAuthRequestSecurityChecker();
+          ->GetWebAuthRequestSecurityCheckerImpl();
 
   // 1. Valid GURL, allowed by CSP, matches RP ID.
   EXPECT_TRUE(checker->ValidateCrossDeviceFallbackUrl(

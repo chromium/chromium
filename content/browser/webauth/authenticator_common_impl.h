@@ -46,7 +46,7 @@ namespace content {
 
 class BrowserContext;
 class RenderFrameHost;
-class WebAuthRequestSecurityChecker;
+class WebAuthRequestSecurityCheckerImpl;
 
 enum class RequestExtension;
 enum class AttestationErasureOption;
@@ -370,7 +370,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
 
   const GlobalRenderFrameHostId render_frame_host_id_;
   const ServingRequestsFor serving_requests_for_;
-  const scoped_refptr<WebAuthRequestSecurityChecker> security_checker_;
+  const scoped_refptr<WebAuthRequestSecurityCheckerImpl> security_checker_;
 
   // These members hold state that spans different requests. All
   // request-specific state should go in `RequestState` to ensure that it's

@@ -206,7 +206,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/containers/id_map.h"
-#include "content/browser/webauth/webauth_request_security_checker.h"
 #else
 #include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 #endif
@@ -272,6 +271,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kDoNotEvictOnAXLocationChange);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnforceUserActivationForBeforeUnload);
 }  // namespace features
 
+namespace webauthn {
+class RemoteValidation;
+}
+
 namespace content {
 
 class AgentSchedulingGroupHost;
@@ -310,6 +313,7 @@ class ServiceWorkerClient;
 class SiteInfo;
 class SpeechSynthesisImpl;
 class WebAuthRequestSecurityChecker;
+class WebAuthRequestSecurityCheckerImpl;
 class WebUIImpl;
 struct ResourceTimingInfo;
 
@@ -485,6 +489,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderFrameHostImpl* GetParentOrOuterDocumentOrEmbedder() const override;
   RenderFrameHostImpl* GetMainFrame() override;
   PageImpl& GetPage() override;
+  scoped_refptr<WebAuthRequestSecurityChecker>
+  GetWebAuthRequestSecurityChecker() override;
   bool IsInPrimaryMainFrame() override;
   RenderFrameHostImpl* GetOutermostMainFrame() override;
   RenderFrameHostImpl* GetOutermostMainFrameOrEmbedder() override;
@@ -2463,8 +2469,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   bool DocumentUsedWebOTP() override;
 
-  scoped_refptr<WebAuthRequestSecurityChecker>
-  GetWebAuthRequestSecurityChecker();
+  scoped_refptr<WebAuthRequestSecurityCheckerImpl>
+  GetWebAuthRequestSecurityCheckerImpl();
 
   base::WeakPtr<RenderFrameHostImpl> GetWeakPtr();
   base::SafeRef<RenderFrameHostImpl> GetSafeRef() const;
@@ -5266,7 +5272,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // (crbug/351953350).
   bool boost_render_process_for_loading_ = false;
 
-  scoped_refptr<WebAuthRequestSecurityChecker>
+  scoped_refptr<WebAuthRequestSecurityCheckerImpl>
       webauth_request_security_checker_;
 
   // Reset immediately before a RenderFrameHost is reused for hosting a new

@@ -55,7 +55,7 @@
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
-#include "content/browser/webauth/webauth_request_security_checker.h"
+#include "content/browser/webauth/webauth_request_security_checker_impl.h"
 #include "content/public/browser/authenticator_common.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -65,6 +65,7 @@
 #include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webauth_request_security_checker.h"
 #include "content/public/common/content_client.h"
 #include "crypto/hash.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -852,7 +853,7 @@ AuthenticatorCommonImpl::AuthenticatorCommonImpl(
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
       serving_requests_for_(serving_requests_for),
       security_checker_(static_cast<RenderFrameHostImpl*>(render_frame_host)
-                            ->GetWebAuthRequestSecurityChecker()) {}
+                            ->GetWebAuthRequestSecurityCheckerImpl()) {}
 
 AuthenticatorCommonImpl::~AuthenticatorCommonImpl() = default;
 

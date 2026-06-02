@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webauth/webauth_request_security_checker.h"
+#include "content/browser/webauth/webauth_request_security_checker_impl.h"
 
 #include <optional>
 #include <string>
@@ -79,13 +79,14 @@ blink::mojom::AuthenticatorStatus ToAuthenticatorStatus(
 }
 }  // namespace
 
-WebAuthRequestSecurityChecker::WebAuthRequestSecurityChecker(
+WebAuthRequestSecurityCheckerImpl::WebAuthRequestSecurityCheckerImpl(
     RenderFrameHost* host)
     : render_frame_host_(host) {}
 
-WebAuthRequestSecurityChecker::~WebAuthRequestSecurityChecker() = default;
+WebAuthRequestSecurityCheckerImpl::~WebAuthRequestSecurityCheckerImpl() =
+    default;
 
-bool WebAuthRequestSecurityChecker::IsSameOriginWithAncestors(
+bool WebAuthRequestSecurityCheckerImpl::IsSameOriginWithAncestors(
     const url::Origin& origin) {
   RenderFrameHost* parent = render_frame_host_->GetParentOrOuterDocument();
   while (parent) {
@@ -98,7 +99,7 @@ bool WebAuthRequestSecurityChecker::IsSameOriginWithAncestors(
 }
 
 blink::mojom::AuthenticatorStatus
-WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
+WebAuthRequestSecurityCheckerImpl::ValidateAncestorOrigins(
     const url::Origin& origin,
     RequestType type,
     bool* is_cross_origin) {
@@ -151,7 +152,7 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
 }
 
 std::unique_ptr<webauthn::RemoteValidation>
-WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
+WebAuthRequestSecurityCheckerImpl::ValidateDomainAndRelyingPartyID(
     const url::Origin& caller_origin,
     const std::string& relying_party_id,
     RequestType request_type,
@@ -212,7 +213,7 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-  if (!WebAuthRequestSecurityChecker::
+  if (!WebAuthRequestSecurityCheckerImpl::
           UseSystemSharedURLLoaderFactoryForTesting()) {
     url_loader_factory = render_frame_host_->GetStoragePartition()
                              ->GetURLLoaderFactoryForBrowserProcess();
@@ -249,12 +250,12 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
 }
 
 blink::mojom::AuthenticatorStatus
-WebAuthRequestSecurityChecker::ValidateAppIdExtension(
+WebAuthRequestSecurityCheckerImpl::ValidateAppIdExtension(
     std::string appid,
     url::Origin caller_origin,
     const blink::mojom::RemoteDesktopClientOverridePtr&
         remote_desktop_client_override,
-    std::string* out_appid) {
+    std::string* out_app_id) {
   if (remote_desktop_client_override) {
     if (!GetContentClient()
              ->browser()
@@ -303,7 +304,7 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
   // This check is repeated inside |SameDomainOrHost|, just after this. However
   // it's cheap and mirrors the structure of the spec.
   if (appid_url.host() == caller_origin.host()) {
-    *out_appid = appid;
+    *out_app_id = appid;
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
 
@@ -314,7 +315,7 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
   if (net::registry_controlled_domains::SameDomainOrHost(
           appid_url, caller_origin,
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    *out_appid = appid;
+    *out_app_id = appid;
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
 
@@ -327,14 +328,14 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
   if (caller_origin.DomainIs("google.com") && !appid_url.has_ref() &&
       (appid_url.EqualsIgnoringRef(gstatic_appid) ||
        appid_url.EqualsIgnoringRef(gstatic_corp_appid))) {
-    *out_appid = appid;
+    *out_app_id = appid;
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
 
   return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
 }
 
-bool WebAuthRequestSecurityChecker::
+bool WebAuthRequestSecurityCheckerImpl::
     DeduplicateCredentialDescriptorListAndValidateLength(
         std::vector<device::PublicKeyCredentialDescriptor>* list) {
   // Credential descriptor lists should not exceed 64 entries, which is enforced
@@ -382,13 +383,13 @@ bool WebAuthRequestSecurityChecker::
 }
 
 // static
-bool& WebAuthRequestSecurityChecker::
+bool& WebAuthRequestSecurityCheckerImpl::
     UseSystemSharedURLLoaderFactoryForTesting() {
   static bool value = false;
   return value;
 }
 
-bool WebAuthRequestSecurityChecker::ValidateCrossDeviceFallbackUrl(
+bool WebAuthRequestSecurityCheckerImpl::ValidateCrossDeviceFallbackUrl(
     const std::string& relying_party_id,
     const GURL& fallback_url) {
   CHECK(base::FeatureList::IsEnabled(device::kWebAuthnCrossDeviceFallbackUrl));
