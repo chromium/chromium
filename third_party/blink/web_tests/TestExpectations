@@ -489,9 +489,6 @@ crbug.com/730267 virtual/gpu-rasterization/images/yuv-decode-eligible/color-prof
 
 # Flaky virtual/threaded-prefer-compositing tests
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Failure Pass Timeout ]
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snap-scrolls-visual-viewport.html [ Failure Pass ]
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-thumb.html [ Failure Pass ]
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling.html [ Failure Pass ]
 crbug.com/841567 virtual/threaded-prefer-compositing/fast/scrolling/overflow-scrollability.html [ Failure Pass Timeout ]
 crbug.com/451847488 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/range-bounding-client-rect-with-display-contents.html [ Pass Timeout ]
 
