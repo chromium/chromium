@@ -291,8 +291,7 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kDocumentPictureInPictureAPI,
-                              media::kPictureInPictureOcclusionTracking,
-                              media::kPictureInPictureShowWindowAnimation},
+                              media::kPictureInPictureOcclusionTracking},
         /*disabled_features=*/{});
     InProcessBrowserTest::SetUp();
   }

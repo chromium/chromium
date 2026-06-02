@@ -6261,12 +6261,6 @@ inline constexpr char kPictureInPictureMuteControlName[] =
 inline constexpr char kPictureInPictureMuteControlDescription[] =
     "Adds a mute/unmute button to the Video Picture-in-Picture window.";
 
-inline constexpr char kPictureInPictureShowWindowAnimationName[] =
-    "Picture-in-Picture show window animation";
-inline constexpr char kPictureInPictureShowWindowAnimationDescription[] =
-    "When enabled, Picture-in-Picture windows will use a fade-in show "
-    "animation. On Windows OS this is a no-op.";
-
 inline constexpr char kCastMirroringTargetPlayoutDelayName[] =
     "Changes the target playout delay for Cast mirroring.";
 inline constexpr char kCastMirroringTargetPlayoutDelayDescription[] =

@@ -352,10 +352,6 @@ BASE_FEATURE(kPictureInPictureMuteControl, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPictureInPictureOcclusionTracking,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the animation of the Picture-in-Picture window creation.
-BASE_FEATURE(kPictureInPictureShowWindowAnimation,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables video Picture-in-Picture display smoothness optimization.
 //
 // Ensures that the video PiP window title view is properly sized to only fit

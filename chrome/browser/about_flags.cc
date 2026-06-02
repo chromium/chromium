@@ -9034,12 +9034,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPictureInPictureMuteControlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kPictureInPictureMuteControl)},
 
-    {"picture-in-picture-show-window-animation",
-     flag_descriptions::kPictureInPictureShowWindowAnimationName,
-     flag_descriptions::kPictureInPictureShowWindowAnimationDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kPictureInPictureShowWindowAnimation)},
-
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 

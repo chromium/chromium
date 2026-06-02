@@ -1661,7 +1661,6 @@ class VideoOverlayWindowWithShowAnimationTest
     : public VideoOverlayWindowViewsTest {
  public:
   void SetUp() override {
-    AddEnabledFeature(media::kPictureInPictureShowWindowAnimation);
     VideoOverlayWindowViewsTest::SetUp();
 #if BUILDFLAG(IS_WIN)
     GTEST_SKIP() << "Fade in animation is disabled on Windows.";

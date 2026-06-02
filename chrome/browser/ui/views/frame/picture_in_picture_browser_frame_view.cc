@@ -951,14 +951,11 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
 // Windows. On Windows, resizable windows can not be translucent. See
 // crbug.com/425711450.
 #if !BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(
-          media::kPictureInPictureShowWindowAnimation)) {
-    if (!fade_animator_) {
-      fade_animator_ = std::make_unique<PictureInPictureWidgetFadeAnimator>();
-    }
-    fade_animator_->AnimateShowWindow(
-        GetWidget(), PictureInPictureWidgetFadeAnimator::WidgetShowType::kNone);
+  if (!fade_animator_) {
+    fade_animator_ = std::make_unique<PictureInPictureWidgetFadeAnimator>();
   }
+  fade_animator_->AnimateShowWindow(
+      GetWidget(), PictureInPictureWidgetFadeAnimator::WidgetShowType::kNone);
 #endif
 
   // If the AutoPiP setting overlay is set, then post a task to show it.  Don't

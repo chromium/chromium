@@ -7730,11 +7730,6 @@
     "expiry_milestone": 151
   },
   {
-    "name": "picture-in-picture-show-window-animation",
-    "owners": [ "bkeen@google.com", "media-dev@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "platform-keys-changes-wave-1",
     "owners": [
       "fsandrade@chromium.org",
