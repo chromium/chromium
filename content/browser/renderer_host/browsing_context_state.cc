@@ -408,6 +408,15 @@ void BrowsingContextState::CheckIfSiteInstanceGroupIsUnused(
                         ChromeTrackEvent::kRenderFrameProxyHost, proxy);
   }
 
+  // Unregister the RVH from the FrameTree map before deleting the proxy.
+  // After proxy deletion, the RVH would have no proxy or main frame
+  // associated with it. Without this, the stale RVH remains discoverable
+  // in the FrameTree map and can be reused in an uninitialized state,
+  // leading to CHECK failures. This is consistent with the DisallowReuse()
+  // call in RenderFrameHostManager::CommitPending().
+  if (RenderViewHostImpl* rvh = proxy->GetRenderViewHost()) {
+    rvh->DisallowReuse();
+  }
   DeleteRenderFrameProxyHost(site_instance_group);
 }
 
