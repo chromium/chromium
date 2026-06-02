@@ -87,6 +87,13 @@ TabSimpleMenuModel::TabSimpleMenuModel(OmniboxContextMenuController* controller)
 
 const gfx::FontList* TabSimpleMenuModel::GetLabelFontListAt(
     size_t index) const {
+  if (GetTypeAt(index) == ui::MenuModel::TYPE_TITLE) {
+    return ui::SimpleMenuModel::GetLabelFontListAt(index);
+  }
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    return &ui::ResourceBundle::GetSharedInstance().GetFontList(
+        ui::ResourceBundle::SmallFont);
+  }
   int command_id = GetCommandIdAt(index);
   // Check if the command ID belongs to the recent tabs section. Tabs have
   // commands starting at `kMinOmniboxContextMenuRecentTabsCommandId`.
