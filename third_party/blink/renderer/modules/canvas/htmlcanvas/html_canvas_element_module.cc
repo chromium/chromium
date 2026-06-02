@@ -70,20 +70,24 @@ OffscreenCanvas* HTMLCanvasElementModule::transferControlToOffscreen(
 OffscreenCanvas* HTMLCanvasElementModule::TransferControlToOffscreenInternal(
     ScriptState* script_state,
     HTMLCanvasElement& canvas) {
-  OffscreenCanvas* offscreen_canvas =
-      OffscreenCanvas::Create(script_state, canvas.width(), canvas.height());
-
   DOMNodeId canvas_id = canvas.GetDomNodeId();
   canvas.RegisterPlaceholderCanvas(static_cast<int>(canvas_id));
+
+  uint32_t client_id = 0;
+  uint32_t sink_id = 0;
+
+  if (SurfaceLayerBridge* bridge = canvas.SurfaceLayerBridge()) {
+    client_id = bridge->GetFrameSinkId().client_id();
+    sink_id = bridge->GetFrameSinkId().sink_id();
+  }
+
+  OffscreenCanvas* offscreen_canvas =
+      OffscreenCanvas::Create(script_state, canvas.width(), canvas.height());
+  offscreen_canvas->SetFrameSinkId(client_id, sink_id);
   offscreen_canvas->SetPlaceholderCanvasId(canvas_id);
   offscreen_canvas->SetTextDirection(canvas.GetTextDirection(nullptr));
   offscreen_canvas->SetLocale(canvas.GetLocale());
 
-  SurfaceLayerBridge* bridge = canvas.SurfaceLayerBridge();
-  if (bridge) {
-    offscreen_canvas->SetFrameSinkId(bridge->GetFrameSinkId().client_id(),
-                                     bridge->GetFrameSinkId().sink_id());
-  }
   return offscreen_canvas;
 }
 

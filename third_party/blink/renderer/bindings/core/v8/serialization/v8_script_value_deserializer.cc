@@ -748,11 +748,11 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       }
       OffscreenCanvas* canvas =
           OffscreenCanvas::Create(GetScriptState(), width, height);
+      canvas->SetFrameSinkId(client_id, sink_id);
+      canvas->SetPlaceholderCanvasId(canvas_id);
       canvas->SetLocale(LayoutLocale::Get(AtomicString(locale_string)));
       SerializedTextDirectionSettings direction_setting(serialized_direction);
       canvas->SetTextDirection(direction_setting.GetTextDirection());
-      canvas->SetPlaceholderCanvasId(canvas_id);
-      canvas->SetFrameSinkId(client_id, sink_id);
       return canvas;
     }
     case kReadableStreamTransferTag: {
