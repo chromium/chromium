@@ -22,6 +22,8 @@ suite('Toolbar Settings Menu', () => {
   let menuButton: CrIconButtonElement;
   let settingsMenu: SettingsMenuElement;
 
+  const preventResizeClose = (e: Event) => e.stopImmediatePropagation();
+
   async function createToolbar(): Promise<void> {
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
@@ -64,16 +66,14 @@ suite('Toolbar Settings Menu', () => {
     // test environments, the constrained viewport and deferred layout
     // calculations when opening a <dialog> often trigger phantom resize events,
     // causing the menu to close immediately and flake the test.
-    const preventResizeClose = (e: Event) => e.stopImmediatePropagation();
     window.addEventListener('resize', preventResizeClose, true);
 
     menuButton.click();
     await microtasksFinished();
-
-    window.removeEventListener('resize', preventResizeClose, true);
   });
 
   teardown(async () => {
+    window.removeEventListener('resize', preventResizeClose, true);
     if (settingsMenu) {
       const lazyMenu = settingsMenu.$.lazyMenu.getIfExists();
       if (lazyMenu && lazyMenu.open) {
