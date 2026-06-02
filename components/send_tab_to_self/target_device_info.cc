@@ -17,13 +17,13 @@
 namespace send_tab_to_self {
 
 TargetDeviceInfo::TargetDeviceInfo(
-    const std::string& device_name,
-    const std::string& cache_guid,
+    std::string device_name,
+    std::string cache_guid,
     const syncer::DeviceInfo::FormFactor form_factor,
     base::Time last_updated_timestamp,
     bool has_high_precision_timestamp)
-    : device_name(device_name),
-      cache_guid(cache_guid),
+    : device_name(std::move(device_name)),
+      cache_guid(std::move(cache_guid)),
       form_factor(form_factor),
       last_updated_timestamp(last_updated_timestamp),
       has_high_precision_timestamp(has_high_precision_timestamp) {}

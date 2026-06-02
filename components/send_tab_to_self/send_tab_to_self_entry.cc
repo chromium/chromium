@@ -76,19 +76,19 @@ base::Time ProtoTimeToTime(int64_t proto_t) {
 }  // namespace
 
 SendTabToSelfEntry::SendTabToSelfEntry(
-    const std::string& guid,
+    std::string guid,
     const GURL& url,
-    const std::string& title,
+    std::string title,
     base::Time shared_time,
-    const std::string& device_name,
-    const std::string& target_device_sync_cache_guid,
+    std::string device_name,
+    std::string target_device_sync_cache_guid,
     const PageContext& page_context,
     NavigationHistory navigation_history)
-    : guid_(guid),
+    : guid_(std::move(guid)),
       url_(url),
-      title_(title),
-      device_name_(device_name),
-      target_device_sync_cache_guid_(target_device_sync_cache_guid),
+      title_(std::move(title)),
+      device_name_(std::move(device_name)),
+      target_device_sync_cache_guid_(std::move(target_device_sync_cache_guid)),
       shared_time_(shared_time),
       notification_dismissed_(false),
       page_context_(page_context),
@@ -254,8 +254,8 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromProto(
   }
 
   auto entry = std::make_unique<SendTabToSelfEntry>(
-      guid, url, pb_entry.title(), shared_time, pb_entry.device_name(),
-      pb_entry.target_device_sync_cache_guid(),
+      std::move(guid), url, pb_entry.title(), shared_time,
+      pb_entry.device_name(), pb_entry.target_device_sync_cache_guid(),
       PageContextFromProto(pb_entry.page_context()),
       std::move(navigation_history));
 
@@ -294,15 +294,16 @@ bool SendTabToSelfEntry::IsExpired(base::Time current_time) const {
 }
 
 std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromRequiredFields(
-    const std::string& guid,
+    std::string guid,
     const GURL& url,
-    const std::string& target_device_sync_cache_guid) {
+    std::string target_device_sync_cache_guid) {
   if (guid.empty() || !url.is_valid()) {
     return nullptr;
   }
   return std::make_unique<SendTabToSelfEntry>(
-      guid, url, "", base::Time(), "", target_device_sync_cache_guid,
-      PageContext{}, NavigationHistory{});
+      std::move(guid), url, "", base::Time(), "",
+      std::move(target_device_sync_cache_guid), PageContext{},
+      NavigationHistory{});
 }
 
 }  // namespace send_tab_to_self

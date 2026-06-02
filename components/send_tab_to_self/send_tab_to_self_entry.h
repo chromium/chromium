@@ -63,12 +63,12 @@ class SendTabToSelfEntry {
  public:
   // Creates a SendTabToSelf entry. |url| and |title| are the main fields of the
   // entry.
-  SendTabToSelfEntry(const std::string& guid,
+  SendTabToSelfEntry(std::string guid,
                      const GURL& url,
-                     const std::string& title,
+                     std::string title,
                      base::Time shared_time,
-                     const std::string& device_name,
-                     const std::string& target_device_sync_cache_guid,
+                     std::string device_name,
+                     std::string target_device_sync_cache_guid,
                      const PageContext& page_context,
                      NavigationHistory navigation_history);
 
@@ -136,9 +136,9 @@ class SendTabToSelfEntry {
   // This entry will have an expired SharedTime and therefor this function
   // should only be used for testing.
   static std::unique_ptr<SendTabToSelfEntry> FromRequiredFields(
-      const std::string& guid,
+      std::string guid,
       const GURL& url,
-      const std::string& target_device_sync_cache_guid);
+      std::string target_device_sync_cache_guid);
 
  private:
   std::string guid_;

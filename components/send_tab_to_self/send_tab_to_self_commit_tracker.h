@@ -6,6 +6,7 @@
 #define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_COMMIT_TRACKER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -41,7 +42,7 @@ class SendTabToSelfCommitTracker {
 
   // Starts tracking a commit for `guid`. `callback` will be invoked when
   // the commit succeeds, fails, or times out.
-  void TrackCommit(const std::string& guid,
+  void TrackCommit(std::string guid,
                    base::OnceCallback<void(SendTabToSelfResult)> callback);
 
   // Checks if any tracked entities are no longer unsynced, indicating
@@ -59,7 +60,7 @@ class SendTabToSelfCommitTracker {
   void OnSyncDisabled();
 
   // Called when an entry is removed before its commit completes.
-  void OnEntryRemoved(const std::string& guid);
+  void OnEntryRemoved(std::string_view guid);
 
   // Called when all entries are removed (bulk deletion).
   void OnAllEntriesRemoved();
