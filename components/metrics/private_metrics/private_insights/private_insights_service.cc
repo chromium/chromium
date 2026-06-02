@@ -74,8 +74,14 @@ void PrivateInsightsService::TriggerUpload() {
 bool PrivateInsightsService::UploadBlocking(base::TimeTicks trigger_time) {
   base::UmaHistogramTimes(kUploadPendingTimeHistogram,
                           base::TimeTicks::Now() - trigger_time);
+  base::TimeTicks upload_start_time = base::TimeTicks::Now();
+
   // TODO(b/518646350): Add the RunFederatedComputation call here.
-  return true;
+  bool result = true;
+
+  base::UmaHistogramTimes(kUploadTimeHistogram,
+                          base::TimeTicks::Now() - upload_start_time);
+  return result;
 }
 
 void PrivateInsightsService::OnUploadComplete(bool _result) {

@@ -40,6 +40,7 @@ TEST_F(PrivateInsightsServiceTest,
       base::test::RunUntil([&]() { return !service.is_upload_running_; }));
 
   histogram_tester.ExpectTotalCount(kUploadPendingTimeHistogram, 1);
+  histogram_tester.ExpectTotalCount(kUploadTimeHistogram, 1);
 
   // Third call: now that task completed, should post the task again.
   service.TriggerUpload();

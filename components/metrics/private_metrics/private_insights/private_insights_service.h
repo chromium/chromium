@@ -21,6 +21,8 @@ inline constexpr char kTriggerUploadOutcomeHistogram[] =
     "PrivateMetrics.PrivateInsights.TriggerUploadOutcome";
 inline constexpr char kUploadPendingTimeHistogram[] =
     "PrivateMetrics.PrivateInsights.Upload.PendingTime";
+inline constexpr char kUploadTimeHistogram[] =
+    "PrivateMetrics.PrivateInsights.Upload.Time";
 
 class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
     : public KeyedService {

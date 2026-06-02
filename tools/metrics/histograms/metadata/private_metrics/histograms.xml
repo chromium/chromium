@@ -91,6 +91,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrivateMetrics.PrivateInsights.Upload.Time" units="ms"
+    expires_after="2027-06-01">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The time spent running UploadBlocking on the background thread. Logged when
+    UploadBlocking finishes.
+  </summary>
+</histogram>
+
 <histogram name="PrivateMetrics.ProtoCompressionRatio" units="%"
     expires_after="2026-09-01">
   <owner>zhouzj@google.com</owner>
