@@ -75,6 +75,7 @@ import("//third_party/blink/renderer/core/script/build.gni")
 import("//third_party/blink/renderer/core/script_tools/build.gni")
 import("//third_party/blink/renderer/core/scroll/build.gni")
 import("//third_party/blink/renderer/core/shadow_realm/build.gni")
+import("//third_party/blink/renderer/core/skeleton/build.gni")
 import("//third_party/blink/renderer/core/speculation_rules/build.gni")
 import("//third_party/blink/renderer/core/streams/build.gni")
 import("//third_party/blink/renderer/core/style/build.gni")
@@ -339,6 +340,7 @@ component("core") {
   sources +=
       rebase_path(blink_core_sources_route_matching, "", "route_matching")
   sources += rebase_path(blink_core_sources_sanitizer, "", "sanitizer")
+  sources += rebase_path(blink_core_sources_skeleton, "", "skeleton")
   sources +=
       rebase_path(blink_core_sources_speculation_rules, "", "speculation_rules")
   sources += rebase_path(blink_core_sources_scheduler, "", "scheduler")
@@ -1551,6 +1553,7 @@ source_set("unit_tests") {
   sources += rebase_path(blink_core_tests_script, "", "script")
   sources += rebase_path(blink_core_tests_script_tools, "", "script_tools")
   sources += rebase_path(blink_core_tests_scroll, "", "scroll")
+  sources += rebase_path(blink_core_tests_skeleton, "", "skeleton")
   sources +=
       rebase_path(blink_core_tests_speculation_rules, "", "speculation_rules")
   sources += rebase_path(blink_core_tests_streams, "", "streams")

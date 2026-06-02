@@ -78,6 +78,7 @@ domain DOM
       picker
       permission-icon
       overscroll-area-parent
+      skeleton
 
   # Shadow root type.
   type ShadowRootType extends string

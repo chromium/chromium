@@ -317,6 +317,8 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ViewTransitionOld;
     case kPseudoIdOverscrollAreaParent:
       return protocol::DOM::PseudoTypeEnum::OverscrollAreaParent;
+    case kPseudoIdSkeleton:
+      return protocol::DOM::PseudoTypeEnum::Skeleton;
     case kAfterLastInternalPseudoId:
     case kPseudoIdNone:
     case kPseudoIdInvalid:

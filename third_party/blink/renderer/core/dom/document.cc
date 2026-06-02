@@ -341,6 +341,7 @@
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer_builtins.h"
 #include "third_party/blink/renderer/core/script/detect_javascript_frameworks.h"
 #include "third_party/blink/renderer/core/script/script_runner.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"

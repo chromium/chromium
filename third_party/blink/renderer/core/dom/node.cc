@@ -2856,6 +2856,10 @@ static void AppendMarkedTree(const String& base_indent,
       if (Element* pseudo = element->GetPseudoElement(kPseudoIdBackdrop))
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
                          marked_node2, marked_label2, builder);
+      if (Element* pseudo = element->GetPseudoElement(kPseudoIdSkeleton)) {
+        AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
+                         marked_node2, marked_label2, builder);
+      }
     }
 
     if (ShadowRoot* shadow_root = node.GetShadowRoot()) {

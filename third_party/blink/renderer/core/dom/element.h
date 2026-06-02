@@ -2090,6 +2090,9 @@ class CORE_EXPORT Element : public ContainerNode {
   // heuristics.
   void SetHasBeenHeuristicCustomPasswordCSS();
 
+  void ClearSkeletonPseudo();
+  PseudoElement& EnsureSkeletonPseudo();
+
  protected:
   // Returns true if this element is a native password field or has been
   // identified as a custom password field via CSS or JS heuristics.
@@ -2343,6 +2346,7 @@ class CORE_EXPORT Element : public ContainerNode {
 
   void UpdateColumnPseudoElements(const StyleRecalcChange,
                                   const StyleRecalcContext&);
+  void UpdateSkeleton(const StyleRecalcChange, const StyleRecalcContext&);
   PseudoElement* UpdatePseudoElement(
       PseudoId,
       const StyleRecalcChange,

@@ -86,6 +86,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_scroll_button_inline_end_);
     visitor->Trace(generated_scroll_button_block_end_);
     visitor->Trace(backdrop_);
+    visitor->Trace(skeleton_);
     visitor->Trace(transition_data_);
     visitor->Trace(column_pseudo_elements_);
     ElementRareDataField::Trace(visitor);
@@ -109,6 +110,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   Member<PseudoElement> generated_scroll_button_inline_end_;
   Member<PseudoElement> generated_scroll_button_block_end_;
   Member<PseudoElement> backdrop_;
+  Member<PseudoElement> skeleton_;
 
   Member<TransitionPseudoElementData> transition_data_;
 
@@ -123,7 +125,7 @@ inline bool PseudoElementData::HasPseudoElements() const {
   return generated_check_ || generated_before_ || generated_after_ ||
          generated_expand_icon_ || generated_picker_icon_ ||
          generated_interest_button_ || generated_marker_ || backdrop_ ||
-         generated_first_letter_ || transition_data_ ||
+         skeleton_ || generated_first_letter_ || transition_data_ ||
          generated_overscroll_area_parent_ ||
          generated_scroll_marker_group_before_ ||
          generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
@@ -234,6 +236,10 @@ inline void PseudoElementData::SetPseudoElement(
       previous_element = backdrop_;
       backdrop_ = element;
       break;
+    case kPseudoIdSkeleton:
+      previous_element = skeleton_;
+      skeleton_ = element;
+      break;
     case kPseudoIdFirstLetter:
       previous_element = generated_first_letter_;
       generated_first_letter_ = element;
@@ -284,6 +290,9 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
   if (kPseudoIdOverscrollAreaParent == pseudo_id) {
     return generated_overscroll_area_parent_.Get();
   }
+  if (kPseudoIdSkeleton == pseudo_id) {
+    return skeleton_.Get();
+  }
   if (kPseudoIdScrollMarkerGroupBefore == pseudo_id) {
     return generated_scroll_marker_group_before_.Get();
   }
@@ -310,10 +319,15 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
 #if defined(ARCH_CPU_ARMEL)
   __asm__ volatile("");
 #endif
-  if (kPseudoIdBackdrop == pseudo_id)
+  if (kPseudoIdBackdrop == pseudo_id) {
     return backdrop_.Get();
-  if (kPseudoIdFirstLetter == pseudo_id)
+  }
+  if (kPseudoIdSkeleton == pseudo_id) {
+    return backdrop_.Get();
+  }
+  if (kPseudoIdFirstLetter == pseudo_id) {
     return generated_first_letter_.Get();
+  }
   if (IsTransitionPseudoElement(pseudo_id)) {
     return transition_data_
                ? transition_data_->GetPseudoElement(pseudo_id, pseudo_argument)
@@ -355,6 +369,9 @@ PseudoElementData::GetPseudoElements() const {
     result.push_back(generated_first_letter_);
   if (backdrop_)
     result.push_back(backdrop_);
+  if (skeleton_) {
+    result.push_back(skeleton_);
+  }
   if (transition_data_)
     transition_data_->AddPseudoElements(&result);
   if (generated_scroll_marker_group_before_) {

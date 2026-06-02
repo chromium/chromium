@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/html/link_rel_attribute.h"
 
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -88,6 +89,9 @@ LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
       is_expect_ = true;
     } else if (link_type == "facilitated-payment") {
       is_facilitated_payment_ = true;
+    } else if (RuntimeEnabledFeatures::DeclarativeSkeletonsEnabled() &&
+               EqualIgnoringAsciiCase(link_type, "prefetch-skeleton")) {
+      is_link_prefetch_skeleton_ = true;
     }
 
     // Adding or removing a value here whose processing model is web-visible

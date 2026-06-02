@@ -2141,6 +2141,9 @@
       origin_trial_feature_name: "DeclarativeCSSModules",
     },
     {
+      name: "DeclarativeSkeletons",
+    },
+    {
       // https://chromestatus.com/feature/5133099851317248
       name: "DecoupleComputedBorderWidthFromStyle",
       public: true,

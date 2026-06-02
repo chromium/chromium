@@ -43,6 +43,8 @@ class CORE_EXPORT HTMLHtmlElement final : public HTMLElement {
   void InsertedByParser();
 
   bool HasNonInBodyInsertionMode() const override { return true; }
+  void AttachLayoutTree(AttachContext&) override;
+  void DetachLayoutTree(bool performing_reattach) override;
   void PropagateWritingModeAndDirectionFromBody();
   const ComputedStyle* LayoutStyleForElement(const ComputedStyle* style);
 

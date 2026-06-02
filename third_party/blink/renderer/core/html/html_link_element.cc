@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
+#include "third_party/blink/renderer/core/skeleton/skeleton_loader.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
@@ -121,6 +122,9 @@ void HTMLLinkElement::ParseAttribute(
             dict.Add("url", url.GetString());
           });
     }
+    if (rel_attribute_.IsLinkPrefetchSkeleton()) {
+      HandleSkeletonPrefetchLink();
+    }
     rel_list_->DidUpdateAttributeValue(params.old_value, value);
     // We can respond to attribute mutations as usual, per the above code, but
     // the link fetch & processing model must not be re-invoked for idempotent
@@ -142,6 +146,7 @@ void HTMLLinkElement::ParseAttribute(
     LogUpdateAttributeIfIsolatedWorldAndInDocument("link", params);
     HandleExpectHrefChanges(params.old_value, value);
     MaybeHandlePaymentLink();
+    HandleSkeletonPrefetchLink();
     // We can respond to attribute mutations as usual, per the above code, but
     // the link fetch & processing model must not be re-invoked for idempotent
     // attribute mutations. See https://github.com/whatwg/html/issues/11400.
@@ -324,6 +329,7 @@ Node::InsertionNotificationRequest HTMLLinkElement::InsertedInto(
   DCHECK(isConnected());
 
   MaybeHandlePaymentLink();
+  HandleSkeletonPrefetchLink();
 
   GetDocument().GetStyleEngine().AddStyleSheetCandidateNode(*this);
 
@@ -615,6 +621,18 @@ void HTMLLinkElement::MaybeHandlePaymentLink() {
     GetDocument().HandlePaymentLink(payment_link);
   }
 #endif
+}
+
+void HTMLLinkElement::HandleSkeletonPrefetchLink() {
+  if (!RuntimeEnabledFeatures::DeclarativeSkeletonsEnabled()) {
+    return;
+  }
+  KURL skeleton_prefetch_link = GetNonEmptyURLAttribute(html_names::kHrefAttr);
+  if (rel_attribute_.IsLinkPrefetchSkeleton() &&
+      !skeleton_prefetch_link.IsEmpty() && isConnected()) {
+    SkeletonLoader::Ensure(GetDocument())
+        .AddSkeletonPrefetchLink(skeleton_prefetch_link);
+  }
 }
 
 }  // namespace blink

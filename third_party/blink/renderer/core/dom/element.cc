@@ -263,6 +263,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/core/skeleton/skeleton_loader.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_interest_delay.h"
@@ -5268,6 +5269,13 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     // ViewTransitionUtils::GetTransition(*this).
     UpdateTransitionPseudoElements(child_change, child_recalc_context);
 
+    if (RuntimeEnabledFeatures::DeclarativeSkeletonsEnabled() &&
+        IsDocumentElement()) {
+      // ::skeleton is created based on an available skeleton from
+      // SkeletonLoader and does not rely on bits on ComputedStyle.
+      UpdateSkeleton(child_change, child_recalc_context);
+    }
+
     if (need_to_check_pseudos) {
       UpdatePseudoElement(kPseudoIdAfter, child_change, child_recalc_context);
       if (IsA<HTMLSelectElement>(this)) {
@@ -5957,6 +5965,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
       child_attacher = &whitespace_attacher;
     }
     RebuildTransitionLayoutTree(*child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdSkeleton, *child_attacher);
     RebuildOverscrollAreaLayoutTree(*child_attacher);
     if (has_pseudo_elements) {
       RebuildPseudoElementLayoutTree(kPseudoIdInterestButton, *child_attacher);
@@ -10285,6 +10294,17 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
     return true;
   }
 
+  if (IsSkeletonPseudoElement()) {
+    // The ::skeleton pseudo element does not create a layout box, but it has
+    // a set of initial styles to make sure style recalc traverses into its
+    // shadow tree which contains the DOM tree for rendering the skeleton.
+    // We could probably have forced it to be display:contents to return true
+    // for the last condition in this function, but then an explicit inherit of
+    // the display property for the skeleton DOM root element would have
+    // computed to 'contents'.
+    return true;
+  }
+
   if (IsPseudoElement() && style.Display() == EDisplay::kNone) {
     if (const ComputedStyle* base = style.GetBaseComputedStyle()) {
       if (base->Display() != EDisplay::kNone) {
@@ -10586,6 +10606,32 @@ void Element::UpdateColumnPseudoElements(const StyleRecalcChange change,
   for (ColumnPseudoElement* column : *columns) {
     if (change.ShouldUpdatePseudoElement(*column)) {
       column->RecalcStyle(change, context);
+    }
+  }
+}
+
+void Element::ClearSkeletonPseudo() {
+  if (GetPseudoElement(kPseudoIdSkeleton)) {
+    ClearPseudoElement(kPseudoIdSkeleton);
+  }
+}
+
+PseudoElement& Element::EnsureSkeletonPseudo() {
+  CHECK(RuntimeEnabledFeatures::DeclarativeSkeletonsEnabled());
+  ClearSkeletonPseudo();
+  PseudoElement* pseudo_element =
+      PseudoElement::Create(this, kPseudoIdSkeleton);
+  data_ = EnsureRareData().SetPseudoElement(kPseudoIdSkeleton, pseudo_element);
+  pseudo_element->InsertedInto(*this);
+  pseudo_element->SetStyleChangeOnInsertion();
+  return *pseudo_element;
+}
+
+void Element::UpdateSkeleton(const StyleRecalcChange change,
+                             const StyleRecalcContext& context) {
+  if (PseudoElement* skeleton_pseudo = GetPseudoElement(kPseudoIdSkeleton)) {
+    if (change.ShouldUpdatePseudoElement(*skeleton_pseudo)) {
+      skeleton_pseudo->RecalcStyle(change, context);
     }
   }
 }

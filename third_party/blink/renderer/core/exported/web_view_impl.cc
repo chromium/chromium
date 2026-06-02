@@ -163,6 +163,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/core/skeleton/skeleton_loader.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
@@ -2616,6 +2617,16 @@ void WebViewImpl::SetPageLifecycleStateInternal(
     if (frame->IsWebLocalFrame()) {
       frame->ToWebLocalFrame()->Client()->DidSetPageLifecycleState(
           bfcache_change);
+    }
+  }
+
+  if (restoring_from_bfcache) {
+    if (LocalFrame* frame = DynamicTo<LocalFrame>(GetPage()->MainFrame())) {
+      if (Document* document = frame->GetDocument()) {
+        if (SkeletonLoader* skeleton_loader = SkeletonLoader::Get(*document)) {
+          skeleton_loader->RestoringFromBFCache();
+        }
+      }
     }
   }
 

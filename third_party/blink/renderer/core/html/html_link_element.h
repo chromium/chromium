@@ -180,6 +180,15 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   // 3. the link element is already attached to the document.
   void MaybeHandlePaymentLink();
 
+  // Temporary way behind the Skeleton runtime flag to tell the SkeletonLoader
+  // to load a skeleton for a given url via:
+  //
+  // <link rel="prefetch-skeleton" href="...">
+  //
+  // TODO(crbug.com/513276602): This will most likely be done via speculation
+  // rules instead.
+  void HandleSkeletonPrefetchLink();
+
   void DispatchEventWithTaskState(const AtomicString& type,
                                   scheduler::TaskAttributionInfo*);
 

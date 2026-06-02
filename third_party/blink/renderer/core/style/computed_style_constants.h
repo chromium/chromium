@@ -119,6 +119,7 @@ enum PseudoId : uint8_t {
   kPseudoIdDetailsContent,
   kPseudoIdPickerSelect,
   kPseudoIdPermissionIcon,
+  kPseudoIdSkeleton,
 
   // Special values follow:
   kAfterLastInternalPseudoId,

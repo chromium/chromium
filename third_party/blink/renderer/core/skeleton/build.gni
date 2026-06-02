@@ -1,0 +1,14 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_skeleton = [
+  "skeleton.cc",
+  "skeleton.h",
+  "skeleton_loader.cc",
+  "skeleton_loader.h",
+  "skeleton_pseudo_element.cc",
+  "skeleton_pseudo_element.h",
+]
+
+blink_core_tests_skeleton = [ "skeleton_loader_test.cc" ]

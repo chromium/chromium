@@ -339,6 +339,7 @@ class CORE_EXPORT Node : public EventTarget {
       kPseudoIdPickerIcon,
       kPseudoIdInterestButton,
       kPseudoIdScrollMarkerGroupAfter,
+      kPseudoIdSkeleton,
       kPseudoIdViewTransition,  // layout traversals special case this when it
                                 // is a child of the document
   };
@@ -473,6 +474,9 @@ class CORE_EXPORT Node : public EventTarget {
   }
   DISABLE_CFI_PERF bool IsViewTransitionPseudoElement() const {
     return IsTransitionPseudoElement(GetPseudoId());
+  }
+  DISABLE_CFI_PERF bool IsSkeletonPseudoElement() const {
+    return GetPseudoId() == kPseudoIdSkeleton;
   }
   virtual PseudoId GetPseudoId() const { return kPseudoIdNone; }
   virtual PseudoId GetPseudoIdForStyling() const { return kPseudoIdNone; }
