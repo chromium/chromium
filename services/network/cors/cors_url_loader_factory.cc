@@ -915,13 +915,8 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     return false;
   }
 
-  // Don't allow forbidden methods for any requests except RequestMode::kNoCors.
-  // Don't allow CONNECT method for any request.
-  if ((request.mode != mojom::RequestMode::kNoCors &&
-       cors::IsForbiddenMethod(request.method)) ||
-      (request.mode == mojom::RequestMode::kNoCors &&
-       base::EqualsCaseInsensitiveASCII(
-           request.method, net::HttpRequestHeaders::kConnectMethod))) {
+  // Don't allow forbidden methods.
+  if (cors::IsForbiddenMethod(request.method)) {
     mojo::ReportBadMessage("CorsURLLoaderFactory: Forbidden method");
     return false;
   }

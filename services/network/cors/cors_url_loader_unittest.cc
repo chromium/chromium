@@ -109,11 +109,10 @@ TEST_F(CorsURLLoaderTest, ForbiddenMethods) {
     std::string forbidden_method;
     bool expect_allowed_for_no_cors;
   } kTestCases[] = {
-      // CONNECT is never allowed, while TRACE and TRACK are allowed only with
-      // RequestMode::kNoCors.
+      // CONNECT, TRACE and TRACK are not allowed for any mode.
       {"CONNECT", false},
-      {"TRACE", true},
-      {"TRACK", true},
+      {"TRACE", false},
+      {"TRACK", false},
   };
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.forbidden_method);
