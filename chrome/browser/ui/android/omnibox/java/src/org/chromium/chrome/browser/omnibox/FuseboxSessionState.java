@@ -25,6 +25,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.content_public.browser.WebContents;
 
@@ -67,7 +68,8 @@ public class FuseboxSessionState implements UserData {
      * Details about the user input in the Omnibox. Retained to allow session reconstruction, for
      * example when the user switches tabs.
      */
-    private final AutocompleteInput mAutocompleteInput = new AutocompleteInput();
+    private final AutocompleteInput mAutocompleteInput =
+            new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP);
 
     private @Nullable FuseboxMetrics mMetrics;
     protected @Nullable Profile mProfile;

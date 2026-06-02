@@ -660,9 +660,8 @@ class LocationBarMediator
         // This method should only be called on devices with a hardware keyboard attached, as
         // described in the documentation for LocationBar#showUrlBarCursorWithoutFocusAnimations.
         beginInput(
-                new AutocompleteInput()
-                        .setAutocompleteState(AutocompleteState.STANDBY)
-                        .setFocusReason(OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD));
+                new AutocompleteInput(OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD)
+                        .setAutocompleteState(AutocompleteState.STANDBY));
     }
 
     /**

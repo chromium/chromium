@@ -3281,10 +3281,9 @@ public class ToolbarManager
         if (omniboxStub == null) return;
         if (focused) {
             omniboxStub.beginInput(
-                    new AutocompleteInput()
+                    new AutocompleteInput(reason)
                             .setUserText(text)
-                            .setSelection(0, Integer.MAX_VALUE)
-                            .setFocusReason(reason));
+                            .setSelection(0, Integer.MAX_VALUE));
         } else {
             omniboxStub.endInput();
         }

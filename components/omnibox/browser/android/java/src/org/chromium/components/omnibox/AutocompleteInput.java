@@ -144,8 +144,14 @@ public class AutocompleteInput implements UserData {
 
     // LINT.ThenChange(:CopyFrom)
 
+    @VisibleForTesting
     public AutocompleteInput() {
         reset();
+    }
+
+    public AutocompleteInput(@OmniboxFocusReason int focusReason) {
+        reset();
+        mFocusReason = focusReason;
     }
 
     /**

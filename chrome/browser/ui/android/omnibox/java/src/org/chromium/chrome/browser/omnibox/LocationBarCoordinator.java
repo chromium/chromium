@@ -688,8 +688,7 @@ public class LocationBarCoordinator
             mFuseboxCoordinator.plusButtonClicked();
         } else {
             mLocationBarMediator.beginInput(
-                    new AutocompleteInput()
-                            .setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP)
+                    new AutocompleteInput(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP)
                             .setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS));
         }
     }

@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -665,7 +666,9 @@ public class SearchActivity extends AsyncInitializationActivity
                 HISTOGRAM_LAUNCHED_WITH_QUERY, !TextUtils.isEmpty(query));
 
         mLocationBarCoordinator.setUrlBarFocus(
-                new AutocompleteInput().setUserText(query).setSelection(0, Integer.MAX_VALUE));
+                new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP)
+                        .setUserText(query)
+                        .setSelection(0, Integer.MAX_VALUE));
 
         mSearchBox.beginQuery(mIntentOrigin, mSearchType, getWindowAndroid());
     }

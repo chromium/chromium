@@ -307,9 +307,8 @@ public class NewTabPage
                 }
 
                 mOmniboxStub.beginInput(
-                        new AutocompleteInput()
+                        new AutocompleteInput(focusReason)
                                 .setUserText(pastedText)
-                                .setFocusReason(focusReason)
                                 .setRequestType(requestType)
                                 .setAutocompleteState(autocompleteState));
             }

@@ -72,6 +72,7 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteStopReason;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.omnibox.action.OmniboxAction;
@@ -1558,7 +1559,7 @@ class AutocompleteMediator
      */
     /* package */ void startPrefetch(@Nullable WebContents webContents) {
         if (mAutocomplete != null) {
-            final AutocompleteInput input = new AutocompleteInput();
+            final AutocompleteInput input = new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP);
             input.setPageClassification(mDataProvider.getPageClassification(true));
             input.setPageUrl(mDataProvider.getCurrentGurl());
             input.setPageTitle(mDataProvider.getTitle());
@@ -1988,7 +1989,7 @@ class AutocompleteMediator
                     new CachedZeroSuggestionsManager.JumpStartContext(pageUrl, pageClass));
             CachedZeroSuggestionsManager.eraseCachedSuggestionsByPageClass(pageClass);
         }
-        var input = new AutocompleteInput();
+        var input = new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP);
         input.setPageUrl(pageUrl);
         input.setPageClassification(pageClass);
 

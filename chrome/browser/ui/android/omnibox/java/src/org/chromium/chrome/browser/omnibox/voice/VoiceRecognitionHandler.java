@@ -264,11 +264,10 @@ public class VoiceRecognitionHandler {
     private void beginInputWithVerbatimText(
             String query, @AutocompleteRequestType int requestType) {
         AutocompleteInput input =
-                new AutocompleteInput()
+                new AutocompleteInput(OmniboxFocusReason.SEARCH_QUERY)
                         .setUserText(query)
                         .setSelection(0, query.length())
-                        .setRequestType(requestType)
-                        .setFocusReason(OmniboxFocusReason.SEARCH_QUERY);
+                        .setRequestType(requestType);
         mOmniboxStub.beginInput(input);
     }
 
