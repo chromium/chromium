@@ -81,68 +81,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           const contextMenuButton = $$(testProxy.element, '#contextEntrypoint');
 
           assertFalse(!!contextMenuButton);
-        });
-
-    test('add tab context', async () => {
-      createComposeboxElement(testProxy);
-      testProxy.searchboxHandler.setPromiseResolveFor(
-          ADD_TAB_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});
-
-      // Assert no files.
-      assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
-
-      const contextMenuButton = $$(testProxy.element, '#contextEntrypoint');
-      assertTrue(!!contextMenuButton);
-      const sampleTabTitle = 'Sample Tab';
-      contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
-        detail: {id: 1, title: sampleTabTitle},
-        bubbles: true,
-        composed: true,
-      }));
-
-      await testProxy.searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
-      await microtasksFinished();
-      const files = testProxy.element.$.carousel.files;
-      assertEquals(files.length, 1);
-      assertEquals(files[0]!.type, 'tab');
-      assertEquals(files[0]!.name, sampleTabTitle);
-    });
-
-    test('add tab context fails', async () => {
-      createComposeboxElement(testProxy);
-      // Set the promise to reject to simulate a failure.
-      testProxy.searchboxHandler.setResultMapperFor(ADD_TAB_CONTEXT_FN, () => {
-        return Promise.reject(ContextUploadErrorType.kBrowserProcessingError);
       });
-
-      // Assert no files.
-      assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
-
-      const contextMenuButton = $$(testProxy.element, '#contextEntrypoint');
-      assertTrue(!!contextMenuButton);
-      const sampleTabTitle = 'Sample Tab';
-      let contextAdded = false;
-      const callback = (_file: unknown) => {
-        contextAdded = true;
-      };
-
-      contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
-        detail: {id: 1, title: sampleTabTitle, onContextAdded: callback},
-        bubbles: true,
-        composed: true,
-      }));
-
-      await testProxy.searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
-      await microtasksFinished();
-
-      // Assert callback was not called and no files in carousel.
-      assertFalse(contextAdded);
-      assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
-
-      assertEquals(
-          loadTimeData.getString('composeboxFileUploadFailed'),
-          testProxy.element.$.errorScrim.errorMessage);
-    });
   });
 
   suite('Context menu mouse events', () => {
@@ -280,6 +219,71 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             const contextMenuButton =
                 $$(testProxy.element, '#contextEntrypoint');
             assertTrue(!!contextMenuButton);
+          });
+
+          test('add tab context', async () => {
+            createComposeboxElement(testProxy);
+            testProxy.searchboxHandler.setPromiseResolveFor(
+                ADD_TAB_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});
+
+            // Assert no files.
+            assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
+
+            const contextMenuButton =
+                $$(testProxy.element, '#contextEntrypoint');
+            assertTrue(!!contextMenuButton);
+            const sampleTabTitle = 'Sample Tab';
+            contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
+              detail: {id: 1, title: sampleTabTitle},
+              bubbles: true,
+              composed: true,
+            }));
+
+            await testProxy.searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
+            await microtasksFinished();
+            const files = testProxy.element.$.carousel.files;
+            assertEquals(files.length, 1);
+            assertEquals(files[0]!.type, 'tab');
+            assertEquals(files[0]!.name, sampleTabTitle);
+          });
+
+          test('add tab context fails', async () => {
+            createComposeboxElement(testProxy);
+            // Set the promise to reject to simulate a failure.
+            testProxy.searchboxHandler.setResultMapperFor(
+                ADD_TAB_CONTEXT_FN, () => {
+                  return Promise.reject(
+                      ContextUploadErrorType.kBrowserProcessingError);
+                });
+
+            // Assert no files.
+            assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
+
+            const contextMenuButton =
+                $$(testProxy.element, '#contextEntrypoint');
+            assertTrue(!!contextMenuButton);
+            const sampleTabTitle = 'Sample Tab';
+            let contextAdded = false;
+            const callback = (_file: unknown) => {
+              contextAdded = true;
+            };
+
+            contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
+              detail: {id: 1, title: sampleTabTitle, onContextAdded: callback},
+              bubbles: true,
+              composed: true,
+            }));
+
+            await testProxy.searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
+            await microtasksFinished();
+
+            // Assert callback was not called and no files in carousel.
+            assertFalse(contextAdded);
+            assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
+
+            assertEquals(
+                loadTimeData.getString('composeboxFileUploadFailed'),
+                testProxy.element.$.errorScrim.errorMessage);
           });
 
           test('tab changes calls getRecentTabs', async () => {

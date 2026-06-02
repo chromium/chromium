@@ -201,85 +201,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(event.defaultPrevented);
   });
 
-  test('set and delete visual selection thumbnail', async () => {
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
 
-    // Initially, carousel is not shown.
-    assertFalse(testProxy.element.hasAttribute('show-file-carousel'));
-
-    // Set a thumbnail.
-    const thumbnailUrl = 'data:image/png;base64,sometestdata';
-    testProxy.searchboxCallbackRouterRemote.addFileContext(FAKE_TOKEN_STRING, {
-      fileName: 'Visual Selection',
-      mimeType: 'image/png',
-      imageDataUrl: thumbnailUrl,
-      isDeletable: true,
-      selectionTime: new Date(),
-    } as SelectedFileInfo);
-    await microtasksFinished();
-
-    // Assert thumbnail is shown.
-    assertTrue(testProxy.element.hasAttribute('show-file-carousel'));
-    const fileCarousel = testProxy.element.$.carousel;
-    await microtasksFinished();
-
-    assertEquals(fileCarousel.files.length, 1);
-    assertDeepEquals(fileCarousel.files[0]!.uuid, FAKE_TOKEN_STRING);
-    assertEquals(fileCarousel.files[0]!.dataUrl, thumbnailUrl);
-    assertTrue(fileCarousel.files[0]!.isDeletable);
-
-    // Delete the thumbnail.
-    const fileThumbnail =
-        fileCarousel.shadowRoot.querySelector('cr-composebox-file-thumbnail');
-    assertTrue(!!fileThumbnail);
-
-    const removeImgButton =
-        fileThumbnail.shadowRoot.querySelector<HTMLElement>('#removeImgButton');
-    removeImgButton!.click();
-    await microtasksFinished();
-
-    // Assert thumbnail is removed.
-    assertEquals(testProxy.searchboxHandler.getCallCount('deleteContext'), 1);
-    const [idArg, fromChip] =
-        testProxy.searchboxHandler.getArgs('deleteContext')[0];
-    assertEquals(idArg, FAKE_TOKEN_STRING);
-    assertFalse(fromChip);
-    // The carousel is removed from the DOM when there are no files, so
-    // assert its absence.
-    assertFalse(!!testProxy.element.shadowRoot.querySelector('#carousel'));
-    assertFalse(testProxy.element.hasAttribute('show-file-carousel'));
-  });
-
-  test('setVisualSelectionThumbnail not deletable', async () => {
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Set a thumbnail that is not deletable.
-    const thumbnailUrl = 'data:image/png;base64,sometestdata';
-    testProxy.searchboxCallbackRouterRemote.addFileContext(FAKE_TOKEN_STRING, {
-      fileName: 'Visual Selection',
-      mimeType: 'image/png',
-      imageDataUrl: thumbnailUrl,
-      isDeletable: false,
-      selectionTime: new Date(),
-    } as SelectedFileInfo);
-    await microtasksFinished();
-
-    // Assert thumbnail is shown.
-    assertTrue(testProxy.element.hasAttribute('show-file-carousel'));
-    const fileCarousel = testProxy.element.$.carousel;
-    assertEquals(fileCarousel.files.length, 1);
-    assertFalse(fileCarousel.files[0]!.isDeletable);
-
-    // Assert delete button is not present.
-    const fileThumbnail =
-        fileCarousel.shadowRoot.querySelector('cr-composebox-file-thumbnail');
-    assertTrue(!!fileThumbnail);
-    const removeButton =
-        fileThumbnail.shadowRoot.querySelector<HTMLElement>('#removeImgButton');
-    assertEquals(null, removeButton);
-  });
 
   test(
       'cr-composebox-submit is rendered when searchboxNextEnabled is false',
@@ -653,35 +575,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals('', collapsibleInput.value, 'Input should be cleared');
   });
 
-  test('delete tool chip', async () => {
-    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
 
-    // Set active tool mode to DeepSearch.
-    const inputState = new MockInputState({
-      activeTool: ToolMode.kDeepSearch,
-    });
-    testProxy.searchboxCallbackRouterRemote.onInputStateChanged(inputState);
-    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    // Click on the same tool mode to deselect/delete it.
-    testProxy.element.handleToolClick(ToolMode.kDeepSearch);
-    await microtasksFinished();
-
-    // Assert tool mode is reset.
-    const activeTool =
-        await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
-    assertEquals(ToolMode.kUnspecified, activeTool);
-
-    const metricName =
-        'ContextualSearch.UserAction.InputStateDeletion.NewTabPage';
-    assertEquals(
-        1,
-        testProxy.metrics.count(
-            metricName, ContextualSearchInputStateDeletionType.TOOL));
-  });
 });
 
 // =========================================================================
@@ -1434,6 +1328,119 @@ suite('NewTabPageComposeboxTest', () => {
       const crActionMenu = contextualActionMenu.$.menu;
       assertTrue(crActionMenu.autoReposition);
       assertTrue(crActionMenu.hasAttribute('auto-reposition'));
+    });
+
+    test('set and delete visual selection thumbnail', async () => {
+      createComposeboxElement(testProxy);
+      await microtasksFinished();
+
+      // Initially, carousel is not shown.
+      assertFalse(testProxy.element.hasAttribute('show-file-carousel'));
+
+      // Set a thumbnail.
+      const thumbnailUrl = 'data:image/png;base64,sometestdata';
+      testProxy.searchboxCallbackRouterRemote.addFileContext(
+          FAKE_TOKEN_STRING, {
+            fileName: 'Visual Selection',
+            mimeType: 'image/png',
+            imageDataUrl: thumbnailUrl,
+            isDeletable: true,
+            selectionTime: new Date(),
+          } as SelectedFileInfo);
+      await microtasksFinished();
+
+      // Assert thumbnail is shown.
+      assertTrue(testProxy.element.hasAttribute('show-file-carousel'));
+      const fileCarousel = testProxy.element.$.carousel;
+      await microtasksFinished();
+
+      assertEquals(fileCarousel.files.length, 1);
+      assertDeepEquals(fileCarousel.files[0]!.uuid, FAKE_TOKEN_STRING);
+      assertEquals(fileCarousel.files[0]!.dataUrl, thumbnailUrl);
+      assertTrue(fileCarousel.files[0]!.isDeletable);
+
+      // Delete the thumbnail.
+      const fileThumbnail =
+          fileCarousel.shadowRoot.querySelector('cr-composebox-file-thumbnail');
+      assertTrue(!!fileThumbnail);
+
+      const removeImgButton =
+          fileThumbnail.shadowRoot.querySelector<HTMLElement>(
+              '#removeImgButton');
+      removeImgButton!.click();
+      await microtasksFinished();
+
+      // Assert thumbnail is removed.
+      assertEquals(testProxy.searchboxHandler.getCallCount('deleteContext'), 1);
+      const [idArg, fromChip] =
+          testProxy.searchboxHandler.getArgs('deleteContext')[0];
+      assertEquals(idArg, FAKE_TOKEN_STRING);
+      assertFalse(fromChip);
+      // The carousel is removed from the DOM when there are no files, so
+      // assert its absence.
+      assertFalse(!!testProxy.element.shadowRoot.querySelector('#carousel'));
+      assertFalse(testProxy.element.hasAttribute('show-file-carousel'));
+    });
+
+    test('setVisualSelectionThumbnail not deletable', async () => {
+      createComposeboxElement(testProxy);
+      await microtasksFinished();
+
+      // Set a thumbnail that is not deletable.
+      const thumbnailUrl = 'data:image/png;base64,sometestdata';
+      testProxy.searchboxCallbackRouterRemote.addFileContext(
+          FAKE_TOKEN_STRING, {
+            fileName: 'Visual Selection',
+            mimeType: 'image/png',
+            imageDataUrl: thumbnailUrl,
+            isDeletable: false,
+            selectionTime: new Date(),
+          } as SelectedFileInfo);
+      await microtasksFinished();
+
+      // Assert thumbnail is shown.
+      assertTrue(testProxy.element.hasAttribute('show-file-carousel'));
+      const fileCarousel = testProxy.element.$.carousel;
+      assertEquals(fileCarousel.files.length, 1);
+      assertFalse(fileCarousel.files[0]!.isDeletable);
+
+      // Assert delete button is not present.
+      const fileThumbnail =
+          fileCarousel.shadowRoot.querySelector('cr-composebox-file-thumbnail');
+      assertTrue(!!fileThumbnail);
+      const removeButton = fileThumbnail.shadowRoot.querySelector<HTMLElement>(
+          '#removeImgButton');
+      assertEquals(null, removeButton);
+    });
+
+    test('delete tool chip', async () => {
+      loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+      createComposeboxElement(testProxy);
+      await microtasksFinished();
+
+      // Set active tool mode to DeepSearch.
+      const inputState = new MockInputState({
+        activeTool: ToolMode.kDeepSearch,
+      });
+      testProxy.searchboxCallbackRouterRemote.onInputStateChanged(inputState);
+      await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+
+      // Click on the same tool mode to deselect/delete it.
+      testProxy.element.handleToolClick(ToolMode.kDeepSearch);
+      await microtasksFinished();
+
+      // Assert tool mode is reset.
+      const activeTool =
+          await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
+      assertEquals(ToolMode.kUnspecified, activeTool);
+
+      const metricName =
+          'ContextualSearch.UserAction.InputStateDeletion.NewTabPage';
+      assertEquals(
+          1,
+          testProxy.metrics.count(
+              metricName, ContextualSearchInputStateDeletionType.TOOL));
     });
   });
 });

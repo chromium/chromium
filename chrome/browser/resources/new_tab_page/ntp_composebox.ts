@@ -11,6 +11,7 @@ import '//resources/cr_components/composebox/file_carousel.js';
 import '//resources/cr_components/composebox/composebox_tool_chip.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import type {ComposeboxFile} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
 import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
@@ -25,6 +26,7 @@ import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_h
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import {getCss} from './ntp_composebox.css.js';
 import {getHtml} from './ntp_composebox.html.js';
@@ -123,6 +125,15 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
       return this.showDropdown;
     }
     return super.shouldShowDivider();
+  }
+
+  override deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean):
+      ComposeboxFile|null {
+    const file = super.deleteFile(uuidToDelete, fromUserAction);
+    if (file) {
+      this.queryAutocomplete(/* clearMatches= */ true);
+    }
+    return file;
   }
 }
 
