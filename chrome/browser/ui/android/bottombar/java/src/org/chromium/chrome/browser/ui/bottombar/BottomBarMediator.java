@@ -15,9 +15,9 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -25,10 +25,6 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
-import org.chromium.components.sync.SyncService;
-import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the bottom bar */
@@ -69,23 +65,10 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
     private final boolean mShouldIncludeHomeButton;
     private final NullableObservableSupplier<Profile> mProfileSupplier;
     private final Callback<@Nullable Profile> mProfileObserver = this::updateGlicVisibility;
-    private final IdentityManager.Observer mIdentityManagerObserver =
-            new IdentityManager.Observer() {
-                @Override
-                public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-                    updateGlicVisibility(mProfileSupplier.get());
-                }
-            };
-    private @Nullable IdentityManager mIdentityManager;
+    private @Nullable GlicKeyedService mGlicKeyedService;
+    private final GlicKeyedService.AllowedChangedObserver mAllowedChangedObserver =
+            this::onGlicAllowedChanged;
 
-    private final SyncService.SyncStateChangedListener mSyncStateListener =
-            new SyncService.SyncStateChangedListener() {
-                @Override
-                public void syncStateChanged() {
-                    updateGlicVisibility(mProfileSupplier.get());
-                }
-            };
-    private @Nullable SyncService mSyncService;
     private @Nullable Profile mOriginalProfile;
 
     private @Nullable Tab mCurrentTab;
@@ -198,7 +181,7 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
 
         // Calculate and set visibility.
         long startTime = SystemClock.uptimeMillis();
-        boolean shouldBeVisible = shouldShowGlicButton(originalProfile);
+        boolean shouldBeVisible = GlicEnabling.isEnabledForProfile(originalProfile);
         long decisionDuration = SystemClock.uptimeMillis() - startTime;
 
         RecordHistogram.recordTimesHistogram(
@@ -224,44 +207,20 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
         }
         mOriginalProfile = originalProfile;
 
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(originalProfile);
-        if (mIdentityManager != identityManager) {
-            if (mIdentityManager != null) {
-                mIdentityManager.removeObserver(mIdentityManagerObserver);
-            }
-            mIdentityManager = identityManager;
-            if (mIdentityManager != null) {
-                mIdentityManager.addObserver(mIdentityManagerObserver);
-            }
+        if (mGlicKeyedService != null) {
+            mGlicKeyedService.removeAllowedChangedObserver(mAllowedChangedObserver);
+            mGlicKeyedService = null;
         }
 
-        SyncService syncService = SyncServiceFactory.getForProfile(originalProfile);
-        if (mSyncService != syncService) {
-            if (mSyncService != null) {
-                mSyncService.removeSyncStateChangedListener(mSyncStateListener);
-            }
-            mSyncService = syncService;
-            if (mSyncService != null) {
-                mSyncService.addSyncStateChangedListener(mSyncStateListener);
-            }
+        GlicKeyedService glicKeyedService = GlicKeyedServiceFactory.getForProfile(originalProfile);
+        mGlicKeyedService = glicKeyedService;
+        if (mGlicKeyedService != null) {
+            mGlicKeyedService.addAllowedChangedObserver(mAllowedChangedObserver);
         }
     }
 
-    private boolean shouldShowGlicButton(Profile originalProfile) {
-        if (!GlicEnabling.isEnabledForProfile(originalProfile)) {
-            return false;
-        }
-
-        if (mIdentityManager == null || !mIdentityManager.hasPrimaryAccount()) {
-            return false;
-        }
-
-        // Only show the button if there are no authentication errors (e.g. account paused).
-        if (mSyncService == null) {
-            return true;
-        }
-        return mSyncService.getAuthError().getState() == GoogleServiceAuthErrorState.NONE;
+    private void onGlicAllowedChanged() {
+        updateGlicVisibility(mProfileSupplier.get());
     }
 
     private void onHomepageEnabledChanged(boolean isEnabled) {
@@ -308,14 +267,11 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
             mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
         }
         mProfileSupplier.removeObserver(mProfileObserver);
-        if (mIdentityManager != null) {
-            mIdentityManager.removeObserver(mIdentityManagerObserver);
-            mIdentityManager = null;
+        if (mGlicKeyedService != null) {
+            mGlicKeyedService.removeAllowedChangedObserver(mAllowedChangedObserver);
+            mGlicKeyedService = null;
         }
-        if (mSyncService != null) {
-            mSyncService.removeSyncStateChangedListener(mSyncStateListener);
-            mSyncService = null;
-        }
+
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
     }
 }
