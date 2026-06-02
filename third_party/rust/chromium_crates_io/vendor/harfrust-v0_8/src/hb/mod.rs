@@ -64,10 +64,12 @@ mod ot_shaper_use;
 mod ot_shaper_use_machine;
 #[rustfmt::skip]
 mod ot_shaper_use_table;
+#[allow(clippy::collapsible_match)]
 mod ot_shaper_vowel_constraints;
 pub(crate) mod set_digest;
 mod tables;
 mod tag;
+#[allow(clippy::collapsible_match)]
 mod tag_table;
 mod text_parser;
 #[rustfmt::skip]

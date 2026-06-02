@@ -94,7 +94,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "harfrust"
   cargo_pkg_description = "A complete HarfBuzz shaping algorithm port to Rust."
   cargo_pkg_repository = "https://github.com/harfbuzz/harfrust"
-  cargo_pkg_version = "0.8.2"
+  cargo_pkg_version = "0.8.4"
 
   allow_unsafe = false
 

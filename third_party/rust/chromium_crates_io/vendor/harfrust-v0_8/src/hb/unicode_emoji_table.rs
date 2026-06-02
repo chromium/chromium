@@ -23,6 +23,7 @@
 
 use crate::hb::unicode::Codepoint;
 
+#[allow(dead_code, non_upper_case_globals, clippy::allow_attributes_without_reason, missing_docs)]
 pub(crate) static _hb_emoji_u8: [u8; 624]=
 [
     1,  0,  0,  0, 50,  4,  5,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -66,16 +67,19 @@ pub(crate) static _hb_emoji_u8: [u8; 624]=
   191,255,255,255,255,255,255,255,  0,  0,  0,255,  0,192,255,255,
 ];
 
+#[allow(dead_code, unused_parens, trivial_numeric_casts, clippy::allow_attributes_without_reason, clippy::unseparated_literal_suffix, clippy::double_parens, clippy::unnecessary_cast)]
 #[inline(always)]
 fn _hb_emoji_b4 (a: &[u8], i: usize) -> u8
 {
   (a[i>>1]>>((i&1)<<2))&15
 }
+#[allow(dead_code, unused_parens, trivial_numeric_casts, clippy::allow_attributes_without_reason, clippy::unseparated_literal_suffix, clippy::double_parens, clippy::unnecessary_cast)]
 #[inline(always)]
 fn _hb_emoji_b1 (a: &[u8], i: usize) -> u8
 {
   (a[i>>3]>>((i&7)<<0))&1
 }
+#[allow(dead_code, unused_parens, trivial_numeric_casts, clippy::allow_attributes_without_reason, clippy::unseparated_literal_suffix, clippy::double_parens, clippy::unnecessary_cast, missing_docs)]
 #[inline]
 pub(crate) fn _hb_emoji_is_Extended_Pictographic_u8 (u: usize) -> u8
 {

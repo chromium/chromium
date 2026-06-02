@@ -1894,6 +1894,19 @@ impl UnicodeBuffer {
         self.0.set_post_context_codepoints(codepoints);
     }
 
+    /// Appends glyph infos to a buffer.
+    #[inline]
+    pub fn push_glyph_infos(&mut self, infos: &[GlyphInfo]) -> bool {
+        let len = infos.len();
+        if !self.0.ensure(self.0.len + len) {
+            return false;
+        }
+
+        self.0.info[self.0.len..self.0.len + len].copy_from_slice(infos);
+        self.0.len += len;
+        true
+    }
+
     /// Appends a character to a buffer with the given cluster value.
     #[inline]
     pub fn add(&mut self, codepoint: char, cluster: u32) {

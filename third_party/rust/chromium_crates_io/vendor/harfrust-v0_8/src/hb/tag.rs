@@ -30,17 +30,16 @@ pub fn tags_from_script_and_language(
     let mut languages = SmallVec::new();
 
     let mut private_use_subtag = None;
-    let mut prefix = "";
+    let mut prefix = b"" as &[u8];
     if let Some(language) = language {
-        let language = language.as_str();
-        if language.starts_with("x-") {
+        let language = language.as_bytes();
+        if language.starts_with(b"x-") {
             private_use_subtag = Some(language);
         } else {
-            let bytes = language.as_bytes();
             let mut i = 1;
-            while i < bytes.len() {
-                if bytes.get(i - 1) == Some(&b'-') && bytes.get(i + 1) == Some(&b'-') {
-                    if bytes[i] == b'x' {
+            while i < language.len() {
+                if language.get(i - 1) == Some(&b'-') && language.get(i + 1) == Some(&b'-') {
+                    if language[i] == b'x' {
                         private_use_subtag = Some(&language[i..]);
                         if prefix.is_empty() {
                             prefix = &language[..i - 1];
@@ -62,14 +61,14 @@ pub fn tags_from_script_and_language(
 
         needs_script = !parse_private_use_subtag(
             private_use_subtag,
-            "-hbsc",
+            b"-hbsc",
             u8::to_ascii_lowercase,
             &mut scripts,
         );
 
         let needs_language = !parse_private_use_subtag(
             private_use_subtag,
-            "-hbot",
+            b"-hbot",
             u8::to_ascii_uppercase,
             &mut languages,
         );
@@ -89,8 +88,8 @@ pub fn tags_from_script_and_language(
 }
 
 fn parse_private_use_subtag(
-    private_use_subtag: Option<&str>,
-    prefix: &str,
+    private_use_subtag: Option<&[u8]>,
+    prefix: &[u8],
     normalize: fn(&u8) -> u8,
     tags: &mut ThreeTags,
 ) -> bool {
@@ -98,15 +97,18 @@ fn parse_private_use_subtag(
         return false;
     };
 
-    let private_use_subtag = match private_use_subtag.find(prefix) {
+    let private_use_subtag = match private_use_subtag
+        .windows(prefix.len())
+        .position(|window| window == prefix)
+    {
         Some(idx) => &private_use_subtag[idx + prefix.len()..],
         None => return false,
     };
 
     let mut tag = SmallVec::<[u8; 4]>::new();
-    for c in private_use_subtag.bytes().take(4) {
+    for c in private_use_subtag.iter().take(4) {
         if c.is_ascii_alphanumeric() {
-            tag.push((normalize)(&c));
+            tag.push((normalize)(c));
         } else {
             break;
         }
@@ -128,18 +130,31 @@ fn parse_private_use_subtag(
     true
 }
 
-fn lang_cmp(s1: &str, s2: &str) -> core::cmp::Ordering {
-    let da = s1.find('-').unwrap_or(s1.len());
-    let db = s2.find('-').unwrap_or(s2.len());
+fn lang_cmp(s1: &[u8], s2: &[u8]) -> core::cmp::Ordering {
+    let da = s1
+        .iter()
+        .position(|&c| c == b'-' || c == b'\0')
+        .unwrap_or(s1.len());
+    let db = s2
+        .iter()
+        .position(|&c| c == b'-' || c == b'\0')
+        .unwrap_or(s2.len());
     let n = core::cmp::max(da, db);
     let ea = core::cmp::min(n, s1.len());
     let eb = core::cmp::min(n, s2.len());
     s1[..ea].cmp(&s2[..eb])
 }
 
-pub(super) fn subtag_matches(language: &str, subtag: &str) -> bool {
-    for (i, _) in language.match_indices(subtag) {
-        if let Some(c) = language.as_bytes().get(i + subtag.len()) {
+pub(super) fn subtag_matches(language: impl AsRef<[u8]>, subtag: impl AsRef<[u8]>) -> bool {
+    let language = language.as_ref();
+    let subtag = subtag.as_ref();
+
+    for i in language
+        .windows(subtag.len())
+        .enumerate()
+        .filter_map(|(i, window)| (window == subtag).then_some(i))
+    {
+        if let Some(c) = language.get(i + subtag.len()) {
             if !c.is_ascii_alphanumeric() {
                 return true;
             }
@@ -151,40 +166,48 @@ pub(super) fn subtag_matches(language: &str, subtag: &str) -> bool {
     false
 }
 
-pub(super) fn lang_matches(language: &str, spec: &str) -> bool {
+pub(super) fn lang_matches(language: impl AsRef<[u8]>, spec: impl AsRef<[u8]>) -> bool {
+    let language = language.as_ref();
+    let spec = spec.as_ref();
+
     if language.starts_with(spec) {
-        return language.len() == spec.len() || language.as_bytes().get(spec.len()) == Some(&b'-');
+        return language.len() == spec.len() || language.get(spec.len()) == Some(&b'-');
     }
 
     false
 }
 
-pub(super) fn strncmp(s1: &str, s2: &str, n: usize) -> bool {
+pub(super) fn strncmp(s1: impl AsRef<[u8]>, s2: impl AsRef<[u8]>, n: usize) -> bool {
+    let s1 = s1.as_ref();
+    let s2 = s2.as_ref();
+
     let n1 = core::cmp::min(n, s1.len());
     let n2 = core::cmp::min(n, s2.len());
     s1[..n1] == s2[..n2]
 }
 
 fn tags_from_language(language: &Language, tags: &mut ThreeTags) {
-    let language = language.as_str();
+    let language = language.as_bytes();
 
     // Check for matches of multiple subtags.
-    if tag_table::tags_from_complex_language(language, tags) {
-        return;
+    if let Ok(language_str) = core::str::from_utf8(language) {
+        if tag_table::tags_from_complex_language(language_str, tags) {
+            return;
+        }
     }
 
     let mut sublang = language;
 
     // Find a language matching in the first component.
-    if let Some(i) = language.find('-') {
+    if let Some(i) = language.iter().position(|&c| c == b'-') {
         // If there is an extended language tag, use it.
         if language.len() >= 6 {
-            let extlang = match language[i + 1..].find('-') {
+            let extlang = match language[i + 1..].iter().position(|&c| c == b'-') {
                 Some(idx) => idx == 3,
                 None => language.len() - i - 1 == 3,
             };
 
-            if extlang && language.as_bytes()[i + 1].is_ascii_alphabetic() {
+            if extlang && language[i + 1].is_ascii_alphabetic() {
                 sublang = &language[i + 1..];
             }
         }
@@ -192,7 +215,7 @@ fn tags_from_language(language: &Language, tags: &mut ThreeTags) {
 
     use tag_table::OPEN_TYPE_LANGUAGES as LANGUAGES;
 
-    if let Ok(mut idx) = LANGUAGES.binary_search_by(|v| lang_cmp(v.language, sublang)) {
+    if let Ok(mut idx) = LANGUAGES.binary_search_by(|v| lang_cmp(&v.language, sublang)) {
         while idx != 0 && LANGUAGES[idx].language == LANGUAGES[idx - 1].language {
             idx -= 1;
         }
@@ -218,7 +241,7 @@ fn tags_from_language(language: &Language, tags: &mut ThreeTags) {
     }
 
     if language.len() == 3 {
-        tags.push(hb_tag_t::from_bytes_lossy(language.as_bytes()).to_uppercase());
+        tags.push(hb_tag_t::from_bytes_lossy(language).to_uppercase());
     }
 }
 

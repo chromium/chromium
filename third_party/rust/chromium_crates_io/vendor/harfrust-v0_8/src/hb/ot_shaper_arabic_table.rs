@@ -20,6 +20,7 @@ use crate::hb::unicode::Codepoint;
 
 use super::ot_shaper_arabic::hb_arabic_joining_type_t::{self, D, GroupAlaph, GroupDalathRish, L, R, T, U, X};
 
+#[allow(dead_code, non_upper_case_globals, clippy::allow_attributes_without_reason, missing_docs)]
 pub(crate) static _hb_arabic_joining_u8: [u8; 737]=
 [
     0, 16,  2,  0,  0,  0,  3,  0,  4,  0,  0,  0,  0,  0,  0,  0,
@@ -71,11 +72,13 @@ pub(crate) static _hb_arabic_joining_u8: [u8; 737]=
   119,
 ];
 
+#[allow(dead_code, unused_parens, trivial_numeric_casts, clippy::allow_attributes_without_reason, clippy::unseparated_literal_suffix, clippy::double_parens, clippy::unnecessary_cast)]
 #[inline(always)]
 fn _hb_arabic_joining_b4 (a: &[u8], i: usize) -> u8
 {
   (a[i>>1]>>((i&1)<<2))&15
 }
+#[allow(dead_code, unused_parens, trivial_numeric_casts, clippy::allow_attributes_without_reason, clippy::unseparated_literal_suffix, clippy::double_parens, clippy::unnecessary_cast, missing_docs)]
 #[inline]
 pub(crate) fn _hb_arabic_joining_joining_type_u8 (u: usize) -> u8
 {

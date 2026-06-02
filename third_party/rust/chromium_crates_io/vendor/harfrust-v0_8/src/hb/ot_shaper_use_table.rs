@@ -50,6 +50,7 @@
 use super::ot_shaper_use::category::*;
 
 
+#[allow(dead_code, non_upper_case_globals, clippy::allow_attributes_without_reason, missing_docs)]
 pub(crate) static hb_use_u8: [u8; 3343]=
 [
      33,    3,    0,    0,    0,    4,    0,   80,  118,  128,    9,   10,   11,  192,  208,   14,
@@ -262,6 +263,7 @@ pub(crate) static hb_use_u8: [u8; 3343]=
     SUB,  SUB,   GB,CMAbv,   IS, VBlw,   IS,    R, MBlw,   GB, VAbv,    R,VMPst,    J,   SB,   SE,
       J,   HR,    G,    G,   HM,    G,    O, MPre, MPre, MPst,VMAbv, MBlw, VBlw,    O, VBlw,
 ];
+#[allow(dead_code, non_upper_case_globals, clippy::allow_attributes_without_reason, missing_docs)]
 pub(crate) static hb_use_u16: [u16; 864]=
 [
      0,   0,   0,   0,   0,   0,   0,   0,   8,   8,   8,   8,   8,   8,   8,   8,
@@ -320,11 +322,13 @@ pub(crate) static hb_use_u16: [u16; 864]=
     40,  40,  40,  40,  40,  40,  40,  40,  40,  40,  40,  40,  40,  40,  40,  16,
 ];
 
+#[allow(dead_code, unused_parens, trivial_numeric_casts, clippy::allow_attributes_without_reason, clippy::unseparated_literal_suffix, clippy::double_parens, clippy::unnecessary_cast)]
 #[inline(always)]
 fn hb_use_b4 (a: &[u8], i: usize) -> u8
 {
   (a[i>>1]>>((i&1)<<2))&15
 }
+#[allow(dead_code, unused_parens, trivial_numeric_casts, clippy::allow_attributes_without_reason, clippy::unseparated_literal_suffix, clippy::double_parens, clippy::unnecessary_cast, missing_docs)]
 #[inline]
 pub(crate) fn hb_use_get_category (u: usize) -> u8
 {

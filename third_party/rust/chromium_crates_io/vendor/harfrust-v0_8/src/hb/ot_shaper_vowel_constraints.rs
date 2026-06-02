@@ -63,14 +63,15 @@ pub fn preprocess_text_vowel_constraints(buffer: &mut hb_buffer_t) {
                         }
                         _ => {}
                     },
-                    0x0930
+                    0x0930 => {
                         if 0x094D == buffer.cur(1).glyph_id
                             && buffer.idx + 2 < buffer.len
-                            && 0x0907 == buffer.cur(2).glyph_id =>
-                    {
-                        buffer.next_glyph();
-                        buffer.next_glyph();
-                        output_dotted_circle(buffer);
+                            && 0x0907 == buffer.cur(2).glyph_id
+                        {
+                            buffer.next_glyph();
+                            buffer.next_glyph();
+                            output_dotted_circle(buffer);
+                        }
                     }
                     _ => {}
                 }

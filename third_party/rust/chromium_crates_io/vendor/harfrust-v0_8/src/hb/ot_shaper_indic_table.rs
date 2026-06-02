@@ -25,9 +25,9 @@ use super::ot_shaper_indic::ot_position_t::*;
 
 use OT_A     as _OT_A;          /*  53 chars; A */
 use OT_As    as _OT_As;         /*   1 chars; As */
-use OT_C     as _OT_C;          /* 478 chars; C */
+use OT_C     as _OT_C;          /* 476 chars; C */
 use OT_CM    as _OT_CM;         /*   1 chars; CM */
-use OT_CS    as _OT_CS;         /*   2 chars; CS */
+use OT_CS    as _OT_CS;         /*   4 chars; CS */
 use OT_DOTTEDCIRCLE as _OT_DC;         /*   1 chars; DOTTEDCIRCLE */
 use OT_H     as _OT_H;          /*  11 chars; H */
 use OT_M     as _OT_M;          /* 142 chars; M */
@@ -77,6 +77,7 @@ const fn indic_combine_categories (s: u8, m: u8) -> u16
 }
 
 
+#[allow(dead_code, non_upper_case_globals, clippy::allow_attributes_without_reason, missing_docs)]
 pub(crate) static _hb_indic_values: [u16; 42]=
 [
     indic_combine_categories(_OT_A, _POS_SM),  indic_combine_categories(_OT_As, _POS_X),
@@ -101,6 +102,7 @@ pub(crate) static _hb_indic_values: [u16; 42]=
     indic_combine_categories(_OT_Xg, _POS_X),  indic_combine_categories(_OT_Yg, _POS_X),
    indic_combine_categories(_OT_ZWJ, _POS_X),indic_combine_categories(_OT_ZWNJ, _POS_X),
 ];
+#[allow(dead_code, non_upper_case_globals, clippy::allow_attributes_without_reason, missing_docs)]
 pub(crate) static _hb_indic_u8: [u8; 1220]=
 [
     1,  0, 50,  4,  5, 96,  0,  7,  8,  9,  0,  0,  0,  0,  0,  0,
@@ -178,15 +180,17 @@ pub(crate) static _hb_indic_u8: [u8; 1220]=
     2, 24, 31, 35, 33, 34,  0, 32, 29,  9,  1, 21, 19, 20, 16,  2,
    21, 21, 17,  2, 23,  2,  2, 35, 32,  2, 20, 35, 34, 32, 32, 29,
     2, 29, 29, 32, 32, 35, 35, 34, 34, 34, 38, 39, 39, 26,  9, 39,
-   27, 39,  0, 37,  0, 27, 27,  0,  0,  2,  2,  0, 41, 40,  5, 37,
+   27, 39,  0, 37,  0, 27, 27,  0,  0,  4,  4,  0, 41, 40,  5, 37,
    31, 12,  2, 23,
 ];
 
+#[allow(dead_code, unused_parens, trivial_numeric_casts, clippy::allow_attributes_without_reason, clippy::unseparated_literal_suffix, clippy::double_parens, clippy::unnecessary_cast)]
 #[inline(always)]
 fn _hb_indic_b4 (a: &[u8], i: usize) -> u8
 {
   (a[i>>1]>>((i&1)<<2))&15
 }
+#[allow(dead_code, unused_parens, trivial_numeric_casts, clippy::allow_attributes_without_reason, clippy::unseparated_literal_suffix, clippy::double_parens, clippy::unnecessary_cast, missing_docs)]
 #[inline]
 pub(crate) fn _hb_indic_get_categories_index (u: usize) -> u8
 {
