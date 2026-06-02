@@ -153,6 +153,7 @@ template("single_gcc_toolchain") {
       host_toolchain_msan_track_origins = _host_toolchain_msan_track_origins
 
       use_mold = use_mold && (invoker_toolchain_args.current_cpu == "x64" ||
+                              invoker_toolchain_args.current_cpu == "x86" ||
                               invoker_toolchain_args.current_cpu == "arm64")
     }
 
