@@ -15,11 +15,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.CleanupReference;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.TestThreadUtils;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Test suite for {@link CleanupReference}. */
@@ -27,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
 public class CleanupReferenceTest {
-    private static final AtomicInteger sObjectCount = new AtomicInteger();
+    private static final AtomicInteger sObjectCount = new AtomicInteger(0);
 
     private static class ReferredObject {
 
@@ -39,11 +42,25 @@ public class CleanupReferenceTest {
             // create a reference cycle and defeat GC of this object.
             mRef = new CleanupReference(this, (e) -> sObjectCount.decrementAndGet());
         }
+
+        public void cleanupNow() {
+            mRef.cleanupNow();
+        }
     }
 
     @Before
     public void setUp() {
-        sObjectCount.set(0);
+        // Force garbage collection and wait for the count to drop to 0, in case there's anything
+        // left over from another test run. (Do it in setup rather than teardown to avoid
+        // clobbering any test failures.)
+        collectGarbage();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> Criteria.checkThat(sObjectCount.get(), Matchers.is(0)));
+        Assert.assertEquals(
+                "Expected sObjectCount to be 0 before setUp. This probably means there are"
+                        + " unprocessed objects carried over from another test.",
+                0,
+                sObjectCount.get());
     }
 
     private void collectGarbage() {
@@ -73,6 +90,31 @@ public class CleanupReferenceTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    public void testPartialCleanup() {
+        Assert.assertEquals(0, sObjectCount.get());
+
+        // Verify that unrelated objects are not affected by cleanup of the target object.
+        ReferredObject unrelatedInstance = new ReferredObject();
+
+        Assert.assertEquals(1, sObjectCount.get());
+
+        ReferredObject instance = new ReferredObject();
+        Assert.assertEquals(2, sObjectCount.get());
+
+        instance = null;
+        // Ensure compiler / instrumentation does not strip out the assignment.
+        Assert.assertNull(instance);
+        collectGarbage();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> Criteria.checkThat(sObjectCount.get(), Matchers.is(1)));
+
+        TestThreadUtils.flushNonDelayedLooperTasks();
+        Assert.assertEquals(1, sObjectCount.get());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
     public void testCreateMany() {
         Assert.assertEquals(0, sObjectCount.get());
 
@@ -91,6 +133,89 @@ public class CleanupReferenceTest {
         // to be GC'ed only when building using GN.
         Assert.assertNotEquals(sObjectCount.get(), -1);
         collectGarbage();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> Criteria.checkThat(sObjectCount.get(), Matchers.is(0)));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCleanupNowOffMainThread() {
+        Assert.assertEquals(0, sObjectCount.get());
+
+        // Verify that unrelated objects are not affected by cleanup of the target object.
+        ReferredObject unrelatedInstance = new ReferredObject();
+
+        Assert.assertEquals(1, sObjectCount.get());
+
+        ReferredObject instance = new ReferredObject();
+        Assert.assertEquals(2, sObjectCount.get());
+
+        // Ensure the UI thread can't process our message immediately.
+        CountDownLatch latch = new CountDownLatch(1);
+        ThreadUtils.postOnUiThread(
+                () -> {
+                    try {
+                        latch.await();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        // Cleanup always happens on the UI thread, so should not happen from this instrumentation
+        // thread.
+        instance.cleanupNow();
+        Assert.assertEquals(2, sObjectCount.get());
+        latch.countDown();
+
+        // The UI thread should now get to it.
+        collectGarbage();
+        CriteriaHelper.pollInstrumentationThread(
+                () -> Criteria.checkThat(sObjectCount.get(), Matchers.is(1)));
+
+        // Best effort check that cleanup doesn't happen twice.
+        instance.cleanupNow();
+        TestThreadUtils.flushNonDelayedLooperTasks();
+        Assert.assertEquals(1, sObjectCount.get());
+
+        // Best effort check that cleanup also doesn't happen again after dropping the reference.
+        instance = null;
+        // Ensure compiler / instrumentation does not strip out the assignment.
+        Assert.assertNull(instance);
+        collectGarbage();
+        Assert.assertEquals(1, sObjectCount.get());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCleanupNowOnMainThread() {
+        Assert.assertEquals(0, sObjectCount.get());
+
+        ReferredObject unrelatedInstance = new ReferredObject();
+        Assert.assertEquals(1, sObjectCount.get());
+
+        ReferredObject instance = new ReferredObject();
+        Assert.assertEquals(2, sObjectCount.get());
+
+        CountDownLatch latch = new CountDownLatch(1);
+        ThreadUtils.postOnUiThread(
+                () -> {
+                    Assert.assertEquals(2, sObjectCount.get());
+
+                    instance.cleanupNow();
+
+                    // cleanupNow called on the UI thread should be synchronous, but not trigger
+                    // cleanup of unrelated objects.
+                    Assert.assertEquals(1, sObjectCount.get());
+                });
+
+        // Ensure cleanup also doesn't happen again after dropping the reference.
+        unrelatedInstance = null;
+        // Ensure compiler / instrumentation does not strip out the assignment.
+        Assert.assertNull(unrelatedInstance);
+        collectGarbage();
+        latch.countDown();
+
         CriteriaHelper.pollInstrumentationThread(
                 () -> Criteria.checkThat(sObjectCount.get(), Matchers.is(0)));
     }
