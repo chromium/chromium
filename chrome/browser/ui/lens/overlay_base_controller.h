@@ -126,9 +126,6 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // this overlay controller.
   tabs::TabInterface* GetTabInterface();
 
-  // Called when the associated tab enters the foreground.
-  void TabForegrounded(tabs::TabInterface* tab);
-
   // Called when the associated tab will enter the background.
   void TabWillEnterBackground(tabs::TabInterface* tab);
 
@@ -280,6 +277,9 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Show preselection toast bubble. Creates a preselection bubble if it does
   // not exist.
   virtual void ShowPreselectionBubble();
+
+  // Called when the associated tab enters the foreground.
+  virtual void TabForegrounded(tabs::TabInterface* tab);
 
   // This is callwed when the webUI acknowledges the intent to reshow the
   // overlay. Since it already is showing an old screenshot the opacity is set

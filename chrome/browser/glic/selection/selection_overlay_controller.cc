@@ -165,6 +165,7 @@ void SelectionOverlayController::TabDeactivated(tabs::TabInterface* tab) {
   if (state() == State::kBackground) {
     return;
   }
+  ClosePreselectionBubbleImpl();
   TabWillEnterBackground(tab);
 }
 
@@ -445,7 +446,7 @@ bool SelectionOverlayController::ShouldCloseSidePanel() {
 }
 
 bool SelectionOverlayController::ShouldShowPreselectionBubble() {
-  return true;
+  return IsOverlayActive() && selected_regions_.empty();
 }
 
 bool SelectionOverlayController::UseOverlayBlur() {
@@ -479,6 +480,26 @@ bool SelectionOverlayController::IsOverlayViewShared() const {
   // which cannot be shared across multiple tabs. It also means glic's selection
   // overlay respects the split view.
   return false;
+}
+
+void SelectionOverlayController::ShowPreselectionBubble() {
+  if (!ShouldShowPreselectionBubble()) {
+    return;
+  }
+  OverlayBaseController::ShowPreselectionBubble();
+}
+
+void SelectionOverlayController::TabForegrounded(tabs::TabInterface* tab) {
+  OverlayBaseController::TabForegrounded(tab);
+  // Layout can be happening as a result of
+  // `OverlayBaseController::TabForegrounded()`, which means
+  // `preselection_widget_anchor_` (from the base class) might not return the
+  // correct coord in the screen. Post a task to let the layout finish then
+  // reshow the bubble.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SelectionOverlayController::ShowPreselectionBubble,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SelectionOverlayController::DismissOverlay(

@@ -189,7 +189,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
                         "el => el.screenshot_ !== null"),
       // glic-selection-overlay is expected to be displayed.
       WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
-                                                    "glic-selection-overlay"}));
+                                                    "glic-selection-overlay"}),
+      WaitForShow(kLensPreselectionBubbleElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
@@ -617,6 +618,71 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
             return instance && instance->HasFocus();
           },
           false));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       BubbleHidesAfterSelection) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      WaitForShow(kLensPreselectionBubbleElementId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(50, 50)),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(150, 150)),
+      WaitForHide(kLensPreselectionBubbleElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       BubbleReshowOnTabSwitches) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      Do([this]() { chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true); }),
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      WaitForShow(kLensPreselectionBubbleElementId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      // 1. Switch to Tab B (index 1) and verify bubble is hidden
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      WaitForHide(kLensPreselectionBubbleElementId),
+      // 2. Switch back to Tab A (index 0) and verify bubble is reshown
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
+      WaitForShow(kLensPreselectionBubbleElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       BubbleHiddenOnTabSwitchesAfterSelection) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      Do([this]() { chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true); }),
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      WaitForShow(kLensPreselectionBubbleElementId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(50, 50)),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(150, 150)),
+      WaitForHide(kLensPreselectionBubbleElementId),
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
+      EnsureNotPresent(kLensPreselectionBubbleElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, BubbleUIColor) {
