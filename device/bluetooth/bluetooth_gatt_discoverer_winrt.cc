@@ -302,6 +302,7 @@ void BluetoothGattDiscovererWinrt::OnGetGattServices(
       BLUETOOTH_LOG(DEBUG) << "GattDeviceService::OpenAsync() failed: "
                            << logging::SystemErrorCodeToString(hr);
       std::move(callback_).Run(false);
+      return;
     }
 
     hr = base::win::PostAsyncResults(
@@ -423,6 +424,7 @@ void BluetoothGattDiscovererWinrt::OnGetCharacteristics(
       BLUETOOTH_LOG(DEBUG) << "PostAsyncResults failed: "
                            << logging::SystemErrorCodeToString(hr);
       std::move(callback_).Run(false);
+      return;
     }
   }
 
