@@ -2858,24 +2858,6 @@
     "expires": "Nov 29, 2025"
   },
   {
-    "prefix": "snapshot-scroll-timelines-post-layout",
-    "owners": [
-      "futhark@chromium.org",
-      "flackr@chromium.org"
-    ],
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/scroll-animations/",
-      "fast/animation/scroll-animations/"
-    ],
-    "args": [
-      "--enable-blink-features=SnapshotScrollTimelinesPostLayout"
-    ],
-    "expires": "Jun 1, 2026"
-  },
-  {
     "prefix": "scalefactor150",
     "platforms": [
       "Linux",
