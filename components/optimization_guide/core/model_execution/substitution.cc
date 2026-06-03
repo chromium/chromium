@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/debug/dump_without_crashing.h"
-#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -25,6 +24,7 @@
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace optimization_guide {
@@ -33,7 +33,6 @@ namespace {
 
 using google::protobuf::RepeatedPtrField;
 using on_device_model::mojom::Input;
-using on_device_model::mojom::InputPiece;
 using on_device_model::mojom::InputPtr;
 
 // A context for resolving substitution expressions.
@@ -155,13 +154,11 @@ class InputBuilder final {
   Error ResolveMediaField(const ResolutionContext& ctx,
                           proto::MediaField token);
 
-  void AddToken(ml::Token token) {
-    out_->pieces.push_back(InputPiece::NewToken(token));
-  }
+  void AddToken(ml::Token token) { out_->pieces.emplace_back(token); }
 
   void AddString(std::string_view str) {
     if (!str.empty()) {
-      out_->pieces.push_back(InputPiece::NewText(std::string(str)));
+      out_->pieces.emplace_back(std::string(str));
     }
   }
 
@@ -248,16 +245,10 @@ InputBuilder::Error InputBuilder::ResolveMediaField(
   MultimodalType mtype = ctx.view.GetMultimodalType(field.proto_field());
   switch (mtype) {
     case MultimodalType::kAudio:
-      out_->pieces.push_back(
-          InputPiece::NewAudio(on_device_model::mojom::AudioData::New(
-              ctx.view.GetAudio(field.proto_field())->sample_rate_hz,
-              ctx.view.GetAudio(field.proto_field())->num_channels,
-              ctx.view.GetAudio(field.proto_field())->num_frames,
-              ctx.view.GetAudio(field.proto_field())->data)));
+      out_->pieces.emplace_back(*ctx.view.GetAudio(field.proto_field()));
       return Error::kOk;
     case MultimodalType::kImage:
-      out_->pieces.push_back(
-          InputPiece::NewBitmap(*ctx.view.GetImage(field.proto_field())));
+      out_->pieces.emplace_back(*ctx.view.GetImage(field.proto_field()));
       return Error::kOk;
     case MultimodalType::kNone:
       return Error::kOk;
@@ -370,52 +361,40 @@ std::string PlaceholderForToken(ml::Token token) {
   }
 }
 
-std::string WriteJsonForDisplay(base::ValueView value) {
-  std::string json;
-  if (!base::JSONWriter::Write(value, &json)) {
-    return std::string();
-  }
-  return json;
-}
-
-std::string OnDeviceInputPieceToString(
-    const on_device_model::mojom::InputPiecePtr& piece) {
-  using Tag = on_device_model::mojom::InputPiece::Tag;
-  switch (piece->which()) {
-    case Tag::kText:
-      return piece->get_text();
-    case Tag::kToken:
-      return PlaceholderForToken(piece->get_token());
-    case Tag::kBitmap:
-      return std::string("<image>");
-    case Tag::kAudio:
-      return std::string("<audio>");
-    case Tag::kToolResponse: {
-      const auto& response = piece->get_tool_response();
-      // Tool responses include result or error for safety checking.
-      std::string result = base::StrCat(
-          {"<tool-response id=", response->call_id, " name=", response->name});
-      if (response->result) {
-        base::StrAppend(&result,
-                        {" result=", WriteJsonForDisplay(*response->result)});
-      }
-      if (response->error_message) {
-        base::StrAppend(&result, {" error=\"", *response->error_message, "\""});
-      }
-      result += ">";
-      return result;
-    }
-    case Tag::kToolDeclaration: {
-      const auto& decl = piece->get_tool_declaration();
-      // Tool declarations include description and schema for safety checking.
-      return base::StrCat(
-          {"<tool name=", decl->name, " description=\"", decl->description,
-           "\" schema=", WriteJsonForDisplay(decl->input_schema), ">"});
-    }
-    case Tag::kUnknownType:
-      NOTREACHED();
-  }
-  NOTREACHED();
+template <typename Piece>
+std::string OnDeviceInputPieceToString(const Piece& piece) {
+  return std::visit(
+      absl::Overload{
+          [](const std::string& text) { return text; },
+          [](ml::Token token) { return PlaceholderForToken(token); },
+          [](const SkBitmap&) { return std::string("<image>"); },
+          [](const ml::AudioBuffer&) { return std::string("<audio>"); },
+          [](const ml::ToolResponse& response) {
+            // Tool responses include result or error for safety checking.
+            std::string result =
+                base::StrCat({"<tool-response id=", response.call_id,
+                              " name=", response.name});
+            if (!response.result_json.empty()) {
+              base::StrAppend(&result, {" result=", response.result_json});
+            }
+            if (!response.error_message.empty()) {
+              base::StrAppend(&result,
+                              {" error=\"", response.error_message, "\""});
+            }
+            result += ">";
+            return result;
+          },
+          [](const ml::ToolDeclaration& decl) {
+            // Tool declarations include description and schema for safety
+            // checking.
+            return base::StrCat({"<tool name=", decl.name, " description=\"",
+                                 decl.description,
+                                 "\" schema=", decl.input_schema_json, ">"});
+          },
+          [](bool) -> std::string {
+            NOTREACHED();
+          }},
+      piece);
 }
 
 }  // namespace

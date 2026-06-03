@@ -5,7 +5,6 @@
 #include "services/on_device_model/android/backend_session_impl_android.h"
 
 #include <algorithm>
-#include <iterator>
 #include <memory>
 #include <string>
 #include <variant>
@@ -34,49 +33,13 @@
 
 namespace on_device_model {
 
-namespace {
-
-// Converts mojom input pieces to Java InputPiece objects. Only token and text
-// pieces are supported on Android.
-std::vector<base::android::ScopedJavaLocalRef<jobject>>
-ConvertInputPiecesToJava(
-    JNIEnv* env,
-    const std::vector<on_device_model::mojom::InputPiecePtr>& pieces) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_inputs;
-  using Tag = on_device_model::mojom::InputPiece::Tag;
-  for (const auto& piece : pieces) {
-    switch (piece->which()) {
-      case Tag::kToken:
-        java_inputs.push_back(Java_InputPieceHelper_fromToken(
-            env, static_cast<int>(piece->get_token())));
-        break;
-      case Tag::kText:
-        java_inputs.push_back(Java_InputPieceHelper_fromText(
-            env,
-            base::android::ConvertUTF8ToJavaString(env, piece->get_text())));
-        break;
-      case Tag::kBitmap:
-      case Tag::kAudio:
-      case Tag::kToolDeclaration:
-      case Tag::kToolResponse:
-      case Tag::kUnknownType:
-        // TODO(crbug.com/425408635): Support image, audio, and other input
-        // types.
-        NOTREACHED();
-    }
-  }
-  return java_inputs;
-}
-
-}  // namespace
-
 BackendSessionImplAndroid::BackendSessionImplAndroid(
     optimization_guide::proto::ModelExecutionFeature feature,
     on_device_model::mojom::SessionParamsPtr params,
-    std::vector<on_device_model::mojom::InputPiecePtr> context_input_pieces)
+    const std::vector<ml::InputPiece>& context_input_pieces)
     : java_session_(
           OnDeviceModelBridge::CreateSession(feature, params.Clone())),
-      context_input_pieces_(std::move(context_input_pieces)),
+      context_input_pieces_(context_input_pieces),
       feature_(feature),
       params_(std::move(params)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -100,10 +63,9 @@ void BackendSessionImplAndroid::Append(
     on_device_model::mojom::AppendOptionsPtr options,
     mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
     base::OnceClosure on_complete) {
-  context_input_pieces_.insert(
-      context_input_pieces_.end(),
-      std::make_move_iterator(options->input->pieces.begin()),
-      std::make_move_iterator(options->input->pieces.end()));
+  context_input_pieces_.insert(context_input_pieces_.end(),
+                               options->input->pieces.begin(),
+                               options->input->pieces.end());
   if (client) {
     // Bind the context client and signal completion to prevent the caller's
     // mojo pipe disconnect handler which invokes OnError from firing.
@@ -136,8 +98,20 @@ void BackendSessionImplAndroid::Generate(
   base::android::ScopedJavaLocalRef<jobject> java_generate_options =
       Java_GenerateOptionsHelper_create(env, input->max_output_tokens);
 
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_inputs =
-      ConvertInputPiecesToJava(env, context_input_pieces_);
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_inputs;
+  for (const auto& piece : context_input_pieces_) {
+    if (std::holds_alternative<ml::Token>(piece)) {
+      java_inputs.push_back(Java_InputPieceHelper_fromToken(
+          env, static_cast<int>(std::get<ml::Token>(piece))));
+    } else if (std::holds_alternative<std::string>(piece)) {
+      java_inputs.push_back(Java_InputPieceHelper_fromText(
+          env, base::android::ConvertUTF8ToJavaString(
+                   env, std::get<std::string>(piece))));
+    } else {
+      // TODO(crbug.com/425408635): Support image and audio input.
+      NOTREACHED();
+    }
+  }
 
   Java_AiCoreSessionWrapper_generate(
       env, java_session_, reinterpret_cast<intptr_t>(this),
@@ -159,8 +133,21 @@ void BackendSessionImplAndroid::SizeInTokens(
   JNIEnv* env = base::android::AttachCurrentThread();
 
   // Convert input pieces to Java objects.
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_inputs =
-      ConvertInputPiecesToJava(env, input->pieces);
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_inputs;
+  for (const auto& piece : input->pieces) {
+    if (std::holds_alternative<ml::Token>(piece)) {
+      java_inputs.push_back(Java_InputPieceHelper_fromToken(
+          env, static_cast<int>(std::get<ml::Token>(piece))));
+    } else if (std::holds_alternative<std::string>(piece)) {
+      java_inputs.push_back(Java_InputPieceHelper_fromText(
+          env, base::android::ConvertUTF8ToJavaString(
+                   env, std::get<std::string>(piece))));
+    } else {
+      // TODO(crbug.com/425408635): Support image and audio input for token
+      // counting.
+      NOTREACHED();
+    }
+  }
 
   // Call Java method to count tokens. The result will be returned via
   // OnSizeInTokensResult callback.
@@ -190,7 +177,7 @@ std::unique_ptr<BackendSession> BackendSessionImplAndroid::Clone() {
   // Use `base::WrapUnique` because the constructor is private and
   // `std::make_unique` cannot access it.
   return base::WrapUnique(new BackendSessionImplAndroid(
-      feature_, params_.Clone(), mojo::Clone(context_input_pieces_)));
+      feature_, params_.Clone(), context_input_pieces_));
 }
 
 void BackendSessionImplAndroid::AsrStream(

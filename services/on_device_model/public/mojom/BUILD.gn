@@ -52,6 +52,10 @@ mojom("mojom") {
           cpp = "::ml::Token"
         },
         {
+          mojom = "on_device_model.mojom.InputPiece"
+          cpp = "::ml::InputPiece"
+        },
+        {
           mojom = "on_device_model.mojom.ModelBackendType"
           cpp = "::ml::ModelBackendType"
         },

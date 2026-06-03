@@ -36,29 +36,27 @@ bool Match(const SkBitmap& l, const SkBitmap& r) {
   return false;
 }
 
-bool Match(const on_device_model::mojom::AudioData& l,
-           const on_device_model::mojom::AudioData& r) {
-  return l.channel_count == r.channel_count && l.frame_count == r.frame_count &&
-         l.sample_rate == r.sample_rate && l.data == r.data;
+bool Match(const ml::AudioBuffer& l, const ml::AudioBuffer& r) {
+  return l.num_channels == r.num_channels && l.num_frames == r.num_frames &&
+         l.sample_rate_hz == r.sample_rate_hz && l.data == r.data;
 }
 
 // Check if two pieces seem to be the same input.
-bool Match(const on_device_model::mojom::InputPiecePtr& l,
-           const on_device_model::mojom::InputPiecePtr& r) {
-  if (l->which() != r->which()) {
+bool Match(const ::ml::InputPiece& l, const ::ml::InputPiece& r) {
+  if (l.index() != r.index()) {
     return false;
   }
-  if (l->is_token()) {
-    return l->get_token() == r->get_token();
+  if (std::holds_alternative<ml::Token>(l)) {
+    return std::get<ml::Token>(l) == std::get<ml::Token>(r);
   }
-  if (l->is_text()) {
-    return l->get_text() == r->get_text();
+  if (std::holds_alternative<std::string>(l)) {
+    return std::get<std::string>(l) == std::get<std::string>(r);
   }
-  if (l->is_bitmap()) {
-    return Match(l->get_bitmap(), r->get_bitmap());
+  if (std::holds_alternative<SkBitmap>(l)) {
+    return Match(std::get<SkBitmap>(l), std::get<SkBitmap>(r));
   }
-  if (l->is_audio()) {
-    return Match(*l->get_audio(), *r->get_audio());
+  if (std::holds_alternative<ml::AudioBuffer>(l)) {
+    return Match(std::get<ml::AudioBuffer>(l), std::get<ml::AudioBuffer>(r));
   }
   return false;
 }
@@ -82,10 +80,9 @@ on_device_model::mojom::InputPtr GetSuffix(
     const on_device_model::mojom::Input& original,
     size_t begin_pos) {
   auto result = on_device_model::mojom::Input::New();
-  for (auto it = original.pieces.begin() + begin_pos;
-       it != original.pieces.end(); ++it) {
-    result->pieces.push_back((*it)->Clone());
-  }
+  result->pieces.insert(result->pieces.end(),
+                        original.pieces.begin() + begin_pos,
+                        original.pieces.end());
   return result;
 }
 

@@ -93,7 +93,7 @@ class BackendSessionImplAndroid : public BackendSession {
   BackendSessionImplAndroid(
       optimization_guide::proto::ModelExecutionFeature feature,
       on_device_model::mojom::SessionParamsPtr params,
-      std::vector<on_device_model::mojom::InputPiecePtr> context_input_pieces);
+      const std::vector<ml::InputPiece>& context_input_pieces);
 
   void OnResponseOnSequence(const std::string& response);
   void OnCompleteOnSequence(GenerateResult generate_result);
@@ -111,7 +111,7 @@ class BackendSessionImplAndroid : public BackendSession {
   base::OnceCallback<void(uint32_t)> size_in_tokens_callback_;
 
   // The accumulated context of the current session.
-  std::vector<on_device_model::mojom::InputPiecePtr> context_input_pieces_;
+  std::vector<ml::InputPiece> context_input_pieces_;
 
   // The feature for which this session was created.
   const optimization_guide::proto::ModelExecutionFeature feature_;

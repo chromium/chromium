@@ -113,18 +113,17 @@ int CalculateTokensPerSecond(int num_tokens, base::TimeDelta duration) {
 // If `pieces` ends with ml::Token::kModel and then a text piece, returns the
 // final text piece.
 std::optional<std::string> GetModelResponsePrefix(
-    const std::vector<odmm::InputPiecePtr>& pieces) {
+    const std::vector<InputPiece>& pieces) {
   if (pieces.size() < 2) {
     return std::nullopt;
   }
-  const auto& token_piece = pieces[pieces.size() - 2];
-  if (!token_piece->is_token() ||
-      token_piece->get_token() != ml::Token::kModel) {
+  if (const ml::Token* token =
+          std::get_if<ml::Token>(&pieces[pieces.size() - 2]);
+      !token || *token != ml::Token::kModel) {
     return std::nullopt;
   }
-  const auto& text_piece = pieces.back();
-  if (text_piece->is_text()) {
-    return text_piece->get_text();
+  if (const std::string* text = std::get_if<std::string>(&pieces.back())) {
+    return *text;
   }
   return std::nullopt;
 }
@@ -543,10 +542,10 @@ void SessionImpl::Append(
     if (has_tool_declarations_ && !awaiting_tool_responses_) {
       break;
     }
-    if (piece->is_tool_declaration()) {
+    if (std::holds_alternative<ml::ToolDeclaration>(piece)) {
       has_tool_declarations_ = true;
     }
-    if (piece->is_tool_response()) {
+    if (std::holds_alternative<ml::ToolResponse>(piece)) {
       // TODO(crbug.com/422803232): Tally expected tool responses and validate
       // call_ids instead of clearing on any tool response.
       awaiting_tool_responses_ = false;
