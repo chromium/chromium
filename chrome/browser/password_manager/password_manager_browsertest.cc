@@ -3873,6 +3873,70 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   client->SetTestObserver(nullptr);
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
+                       NoSavePasswordPromptFromBFCachedFrame) {
+  // Navigate to a page with a password form.
+  NavigateToFile("/password/password_form.html");
+  content::RenderFrameHostWrapper rfh(WebContents()->GetPrimaryMainFrame());
+
+  // Navigate away so that the password form page is stored in the cache.
+  ASSERT_TRUE(NavigateToURL(
+      WebContents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  ASSERT_EQ(rfh->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  BubbleObserver prompt_observer(WebContents());
+
+  // Get the driver for the cached frame.
+  password_manager::ContentPasswordManagerDriver* driver =
+      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
+          rfh.get());
+  ASSERT_TRUE(driver);
+
+  // Construct form data matching the cached page form.
+  autofill::FormData form_data;
+  form_data.set_url(
+      embedded_test_server()->GetURL("/password/password_form.html"));
+  form_data.set_action(embedded_test_server()->GetURL("/password/done.html"));
+  form_data.set_name(u"testform");
+  form_data.set_id_attribute(u"testform");
+
+  autofill::FormFieldData username_field;
+  username_field.set_name(u"username_field");
+  username_field.set_id_attribute(u"username_field");
+  username_field.set_value(u"temp");
+
+  autofill::FormFieldData password_field;
+  password_field.set_name(u"password_field");
+  password_field.set_id_attribute(u"password_field");
+  password_field.set_value(u"random");
+  password_field.set_form_control_type(
+      autofill::FormControlType::kInputPassword);
+
+  form_data.set_fields({username_field, password_field});
+
+  // Simulate a form submission message from the cached frame.
+  static_cast<autofill::mojom::PasswordManagerDriver*>(driver)
+      ->PasswordFormSubmitted(form_data);
+
+  // For regression testing: if the validation check is disabled and a form
+  // manager is created, we wait for the password store fetch to complete so
+  // that the test fails immediately due to a prompt showing, rather than timing
+  // out.
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(WebContents());
+  if (client->GetPasswordManager()->IsPasswordFieldDetectedOnPage()) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return client->GetPasswordManager()->HaveFormManagersReceivedData(driver);
+    }));
+  }
+
+  static_cast<autofill::mojom::PasswordManagerDriver*>(driver)
+      ->DynamicFormSubmission(
+          autofill::mojom::SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
+  EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
                        DetectFormSubmissionOnIframe) {
   // Start from a page without a password form.

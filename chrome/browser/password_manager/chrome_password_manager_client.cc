@@ -73,6 +73,7 @@
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
+#include "components/password_manager/content/browser/content_password_manager_util.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/content/browser/password_requirements_service_factory.h"
@@ -201,6 +202,7 @@ using password_manager::PasswordCredentialFillerImpl;
 using autofill::mojom::FocusedFieldType;
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::BadMessageReason;
+using password_manager::CheckFrameActiveAndNotPrerendering;
 using password_manager::ContentPasswordManagerDriverFactory;
 using password_manager::FieldInfoManager;
 using password_manager::PasswordForm;
@@ -229,16 +231,6 @@ url::Origin URLToOrigin(GURL url) {
   return url::Origin::Create(url.DeprecatedGetOriginAsURL());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-// Returns true if the frame is active and not prerendering.
-// WARNING: This method will terminate the renderer process if the frame is
-// prerendering.
-bool CheckFrameActiveAndNotPrerendering(content::RenderFrameHost* rfh) {
-  if (!password_manager::bad_message::CheckFrameNotPrerendering(rfh)) {
-    return false;
-  }
-  return rfh->IsActive();
-}
 
 }  // namespace
 
