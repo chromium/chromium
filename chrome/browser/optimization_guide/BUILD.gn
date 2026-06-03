@@ -21,6 +21,7 @@ source_set("optimization_guide") {
     "optimization_guide_web_contents_observer.h",
     "prediction/chrome_profile_download_service_tracker.h",
     "prediction/prediction_model_download_client.h",
+    "private_ai_model_execution_fetcher.h",
   ]
   public_deps = [
     "//base",
@@ -33,6 +34,7 @@ source_set("optimization_guide") {
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/optimization_guide_internals/webui",
     "//components/optimization_guide/public/mojom",
+    "//components/private_ai",
     "//components/services/unzip/content",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
@@ -46,9 +48,6 @@ source_set("optimization_guide") {
       "//chrome/browser/bookmarks/android",
       "//chrome/browser/optimization_guide/android:jni_headers",
     ]
-  } else {
-    sources += [ "private_ai_model_execution_fetcher.h" ]
-    public_deps += [ "//components/private_ai" ]
   }
 }
 
@@ -69,6 +68,7 @@ source_set("impl") {
     "optimization_guide_web_contents_observer.cc",
     "prediction/chrome_profile_download_service_tracker.cc",
     "prediction/prediction_model_download_client.cc",
+    "private_ai_model_execution_fetcher.cc",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
@@ -78,13 +78,18 @@ source_set("impl") {
     "//chrome/browser/download",
     "//chrome/browser/metrics",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/private_ai",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//components/metrics_services_manager",
     "//components/no_state_prefetch/browser",
+    "//components/private_ai",
+    "//components/private_ai:proto",
+    "//components/private_ai/phosphor",
     "//components/user_prefs",
+    "//components/variations",
     "//components/variations/service",
     "//components/version_info",
     "//ui/webui",
@@ -96,15 +101,9 @@ source_set("impl") {
       "//chrome/browser/optimization_guide/android:native",
     ]
   } else {
-    sources += [ "private_ai_model_execution_fetcher.cc" ]
     deps += [
-      "//chrome/browser/private_ai",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//components/private_ai",
-      "//components/private_ai:proto",
-      "//components/private_ai/phosphor",
-      "//components/variations",
     ]
   }
 }
@@ -196,6 +195,7 @@ source_set("unit_tests") {
     "chrome_model_quality_logs_uploader_service_unittest.cc",
     "model_execution/optimization_guide_global_state_unittest.cc",
     "prediction/chrome_profile_download_service_tracker_unittest.cc",
+    "private_ai_model_execution_fetcher_unittest.cc",
   ]
   deps = [
     ":optimization_guide",
@@ -204,15 +204,10 @@ source_set("unit_tests") {
     "//components/component_updater:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/prefs:test_support",
+    "//components/private_ai",
+    "//components/private_ai:proto",
+    "//components/private_ai:testing",
     "//components/unified_consent",
     "//components/variations:test_support",
   ]
-  if (!is_android) {
-    sources += [ "private_ai_model_execution_fetcher_unittest.cc" ]
-    deps += [
-      "//components/private_ai",
-      "//components/private_ai:proto",
-      "//components/private_ai:testing",
-    ]
-  }
 }

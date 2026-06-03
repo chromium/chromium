@@ -9,8 +9,8 @@
 #include "chrome/browser/private_ai/private_ai_service.h"
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/proto/private_ai.pb.h"
@@ -28,7 +28,7 @@ const base::FeatureParam<std::string> kTestQueryText{
     &kPrivateAi, "test-query-text", "Hello PrivateAI!"};
 
 // This class allows manual testing of the PrivateAI Service.
-class PrivateAiWebSocketClientBrowserTest : public InProcessBrowserTest {
+class PrivateAiWebSocketClientBrowserTest : public PlatformBrowserTest {
  public:
   PrivateAiWebSocketClientBrowserTest() {
     SetAllowNetworkAccessToHostResolutions();
@@ -56,8 +56,8 @@ IN_PROC_BROWSER_TEST_F(PrivateAiWebSocketClientBrowserTest, MANUAL_Client) {
          "Please provide a query text."
       << "--enable-features=PrivateAi:test-query-text/'Hello "
          "PrivateAI!'";
-  auto* private_ai_service =
-      PrivateAiServiceFactory::GetForProfile(browser()->profile());
+  auto* private_ai_service = PrivateAiServiceFactory::GetForProfile(
+      chrome_test_utils::GetProfile(this));
   ASSERT_TRUE(private_ai_service);
   auto* client = private_ai_service->GetClient();
   ASSERT_TRUE(client);

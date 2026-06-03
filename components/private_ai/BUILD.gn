@@ -38,8 +38,6 @@ source_set("features") {
 }
 
 source_set("private_ai") {
-  assert(!is_android,
-         "The target //components/private_ai is not supported on Android.")
   sources = [
     "client.cc",
     "client.h",

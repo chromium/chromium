@@ -97,12 +97,13 @@
 #include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
 #else
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
+#endif
+
 #include "chrome/browser/optimization_guide/private_ai_model_execution_fetcher.h"
 #include "chrome/browser/private_ai/private_ai_service.h"
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "components/private_ai/client.h"    // nogncheck
 #include "components/private_ai/features.h"  // nogncheck
-#endif
 
 namespace {
 
@@ -138,7 +139,6 @@ Profile* GetProfileForOTROptimizationGuide(Profile* profile) {
   return profile->GetOriginalProfile();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 class FetcherDelegate : public ModelExecutionManager::Delegate {
  public:
   ~FetcherDelegate() override = default;
@@ -171,7 +171,6 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
  private:
   raw_ptr<content::BrowserContext> browser_context_;
 };
-#endif
 
 ModelExecutionFeaturesController::SettingsVisibilityResult
 ShouldHideHistorySearch(PrefService* local_state) {
@@ -401,11 +400,9 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
 
   std::unique_ptr<ModelExecutionManager::Delegate> delegate;
 
-#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(private_ai::kPrivateAi)) {
     delegate = std::make_unique<FetcherDelegate>(browser_context_);
   }
-#endif
 
   model_execution_manager_ = std::make_unique<ModelExecutionManager>(
       url_loader_factory, IdentityManagerFactory::GetForProfile(profile),

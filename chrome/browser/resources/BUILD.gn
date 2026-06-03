@@ -22,6 +22,7 @@ group("resources") {
   public_deps = [
     "contextual_tasks:resources",
     "glic:resources",
+    "private_ai_internals:resources",
     "saved_tab_groups_unsupported:resources",
     "segmentation_internals:resources",
     "//components/enterprise/connectors/resources",
@@ -71,7 +72,6 @@ group("resources") {
       "omnibox_popup:resources",
       "password_manager:resources",
       "privacy_sandbox/internals:resources",
-      "private_ai_internals:resources",
       "profile_internals:resources",
       "search_engine_choice:resources",
       "settings:resources",

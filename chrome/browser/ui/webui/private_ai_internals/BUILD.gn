@@ -4,8 +4,6 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(!is_android)
-
 source_set("private_ai_internals") {
   sources = [
     "private_ai_internals_page_handler.cc",

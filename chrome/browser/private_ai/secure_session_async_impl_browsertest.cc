@@ -11,7 +11,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/test/test_future.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/private_ai/content/private_ai_oak_session_driver_content.h"
 #include "components/private_ai/crypto/constants.h"
 #include "components/private_ai/crypto/test_server_secure_session.h"
@@ -69,7 +69,7 @@ std::vector<uint8_t> ConvertToBytes(
                               encrypted_msg.ciphertext().end());
 }
 
-class SecureSessionAsyncImplBrowserTest : public InProcessBrowserTest {
+class SecureSessionAsyncImplBrowserTest : public PlatformBrowserTest {
  public:
   // content::BrowserTestBase override:
   void SetUpOnMainThread() override {

@@ -14,6 +14,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_impl.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
+#include "components/private_ai/oak_session_service/oak_session_service.h"  // nogncheck
 #include "components/safe_browsing/buildflags.h"
 #include "components/services/patch/file_patcher_impl.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
@@ -59,7 +60,6 @@
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/utility/importer/profile_import_impl.h"
 #include "components/mirroring/service/mirroring_service.h"
-#include "components/private_ai/oak_session_service/oak_session_service.h"  // nogncheck
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "services/screen_ai/public/mojom/screen_ai_factory.mojom.h"  // nogncheck
@@ -225,12 +225,12 @@ auto RunSystemSignalsService(
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if !BUILDFLAG(IS_ANDROID)
 auto RunOakSessionService(
     mojo::PendingReceiver<private_ai::mojom::OakSession> receiver) {
   return std::make_unique<private_ai::OakSessionService>(std::move(receiver));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 auto RunProxyResolver(
     mojo::PendingReceiver<proxy_resolver::mojom::ProxyResolverFactory>
         receiver) {
@@ -446,9 +446,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunCSVPasswordParser);
   services.Add(ContentBookmarkParser);
   services.Add(RunPassageEmbeddingsService);
+  services.Add(RunOakSessionService);
 
 #if !BUILDFLAG(IS_ANDROID)
-  services.Add(RunOakSessionService);
   services.Add(RunProfileImporter);
   services.Add(RunMirroringService);
   services.Add(RunScreenAIServiceFactory);
