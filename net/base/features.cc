@@ -130,6 +130,9 @@ const base::FeatureParam<base::TimeDelta>
         &kNetworkQualityEstimator,
         "EffectiveConnectionTypeRecomputationInterval", base::Seconds(10)};
 
+BASE_FEATURE(kOnlyParseFirstContentDisposition,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSplitCacheByIncludeCredentials,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -12,6 +12,8 @@
 
 namespace net {
 
+class HttpResponseHeaders;
+
 class NET_EXPORT HttpContentDisposition {
  public:
   enum Type {
@@ -52,7 +54,35 @@ class NET_EXPORT HttpContentDisposition {
     HAS_SINGLE_QUOTED_FILENAME = 1 << 7,
   };
 
-  HttpContentDisposition(const std::string& header,
+  // NOTE: Until features::kOnlyParseFirstContentDisposition is removed, new
+  // consumers should use EnumerateHeader() to get the first Content-Disposition
+  // header and then pass it to the constructor that takes a std::string_view.
+  // Once that's removed, however, this constructor should be used. This comment
+  // should be removed when that happens.
+  // TODO(crbug.com/519218483): Remove this comment in late Q3/Q4 2026, when
+  // the feature is removed.
+  //
+  // Preferred constructor. Uses the first Content-Disposition header in the
+  // response (retrieved using `HttpResponseHeaders::EnumerateHeader`). Only
+  // looks at the first Content-Disposition header. The HTTP code guarantees
+  // that if there are multiple Content-Disposition fields, they're all
+  // identical, but that might not be the case if they come from other sources
+  // (e.g., data URLs, extensions).
+  //
+  // Note that no Content-Disposition header or an empty header results in an
+  // inline type with no filename.
+  HttpContentDisposition(const HttpResponseHeaders& headers,
+                         const std::string& referrer_charset);
+
+  // Overload for the case when an HttpResponseHeaders is not available. While
+  // both overloads behave the same, please use the first constructor if
+  // possible, to avoid having to pull out the right header from
+  // HttpResponseHeaders, and for somewhat improved performance. Can be called
+  // either on the first header only, or all headers merged together and
+  // separated by commas (and will return the same result). Should not be called
+  // directly on Content-Disposition headers after the first one, even if the
+  // first one is invalid.
+  HttpContentDisposition(std::string_view header,
                          const std::string& referrer_charset);
 
   HttpContentDisposition(const HttpContentDisposition&) = delete;
@@ -69,7 +99,7 @@ class NET_EXPORT HttpContentDisposition {
   int parse_result_flags() const { return parse_result_flags_; }
 
  private:
-  void Parse(const std::string& header, const std::string& referrer_charset);
+  void Parse(std::string_view header, const std::string& referrer_charset);
 
   // Parses the content disposition type, if present, and sets `type_`. Returns
   // `header` with the content disposition type removed.

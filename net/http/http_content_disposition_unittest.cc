@@ -6,7 +6,11 @@
 
 #include <array>
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -19,9 +23,43 @@ struct FileNameCDCase {
   const wchar_t* expected;
 };
 
-}  // anonymous namespace
+}  // namespace
 
-TEST(HttpContentDispositionTest, Filename) {
+// The parameter indicates whether CreateContentDispositionFromHeaders() should
+// use the constructor that takes a full HttpResponseHeaders or the one that
+// takes the header as a string_view.
+class HttpContentDispositionTest : public testing::TestWithParam<bool> {
+ protected:
+  // Creates an HttpContentDisposition from a single header value.
+  HttpContentDisposition CreateContentDisposition(std::string_view header_value,
+                                                  const std::string& charset) {
+    std::string raw_headers =
+        base::StrCat({"HTTP/1.1 200 OK\r\n",
+                      "Content-Disposition: ", header_value, "\r\n\r\n"});
+    return CreateContentDispositionFromHeaders(raw_headers, charset);
+  }
+
+  // Creates an HttpContentDisposition from a full set of HTTP headers. Allows
+  // there to be no Content-Disposition value, or multiple values, unlike
+  // CreateContentDisposition().
+  HttpContentDisposition CreateContentDispositionFromHeaders(
+      std::string_view raw_headers,
+      const std::string& charset) {
+    auto headers = base::MakeRefCounted<HttpResponseHeaders>(
+        HttpUtil::AssembleRawHeaders(raw_headers));
+    if (GetParam()) {
+      return HttpContentDisposition(*headers, charset);
+    } else {
+      std::optional<std::string> normalized =
+          headers->GetNormalizedHeader("Content-Disposition");
+      return HttpContentDisposition(normalized.value_or(""), charset);
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(, HttpContentDispositionTest, testing::Bool());
+
+TEST_P(HttpContentDispositionTest, Filename) {
   const FileNameCDCase tests[] = {
       // Test various forms of C-D header fields emitted by web servers.
       {"inline; filename=\"abcde.pdf\"", "", L"abcde.pdf"},
@@ -29,7 +67,7 @@ TEST(HttpContentDispositionTest, Filename) {
       {"  inline   ; filename=\"abcde.pdf\"", "", L"abcde.pdf"},
       {"\t\tinline\t\t; filename=\"abcde.pdf\"", "", L"abcde.pdf"},
       {"attachment; filename=abcde.pdf", "", L"abcde.pdf"},
-      {"attachment; filename=abc,de.pdf", "", L"abc,de.pdf"},
+      {"attachment; filename=abc,de.pdf", "", L"abc"},
       {"filename=abcde.pdf", "", L"abcde.pdf"},
       {"filename= abcde.pdf", "", L"abcde.pdf"},
       {"filename =abcde.pdf", "", L"abcde.pdf"},
@@ -44,7 +82,7 @@ TEST(HttpContentDispositionTest, Filename) {
       // Unbalanced quotation mark
       {"filename=\"abcdef.pdf", "", L"abcdef.pdf"},
       // Whitespaces are converted to a space.
-      {"inline; filename=\"abc  \t\nde.pdf\"", "", L"abc    de.pdf"},
+      {"inline; filename=\"abc  \tde.pdf\"", "", L"abc   de.pdf"},
       // %-escaped UTF-8
       {"attachment; filename=\"%EC%98%88%EC%88%A0%20"
        "%EC%98%88%EC%88%A0.jpg\"",
@@ -52,7 +90,7 @@ TEST(HttpContentDispositionTest, Filename) {
       {"attachment; filename=\"%F0%90%8C%B0%F0%90%8C%B1"
        "abc.jpg\"",
        "", L"\U00010330\U00010331abc.jpg"},
-      {"attachment; filename=\"%EC%98%88%EC%88%A0 \n"
+      {"attachment; filename=\"%EC%98%88%EC%88%A0 \t"
        "%EC%98%88%EC%88%A0.jpg\"",
        "", L"\xc608\xc220  \xc608\xc220.jpg"},
       // Characters that are not supposed to be displayed should still be
@@ -200,14 +238,15 @@ TEST(HttpContentDispositionTest, Filename) {
       {"attachment; foobar=x; filename=\"foo.html\"", "", L"foo.html"},
   };
   for (const auto& test : tests) {
-    HttpContentDisposition header(test.header, test.referrer_charset);
+    HttpContentDisposition header =
+        CreateContentDisposition(test.header, test.referrer_charset);
     EXPECT_EQ(test.expected, base::UTF8ToWide(header.filename()))
         << "Failed on input: " << test.header;
   }
 }
 
 // Test cases from http://greenbytes.de/tech/tc2231/
-TEST(HttpContentDispositionTest, tc2231) {
+TEST_P(HttpContentDispositionTest, tc2231) {
   const struct FileNameCDCase {
     const char* header;
     HttpContentDisposition::Type expected_type;
@@ -354,7 +393,7 @@ TEST(HttpContentDispositionTest, tc2231) {
       // http://greenbytes.de/tech/tc2231/#attmissingdisposition4
       // Note: tc2231 says we should fail to parse this header.
       {"filename=foo.html, filename=bar.html", HttpContentDisposition::INLINE,
-       L"foo.html, filename=bar.html"},
+       L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#emptydisposition
       // Note: tc2231 says we should fail to parse this header.
       {"; filename=foo.html", HttpContentDisposition::INLINE, L"foo.html"},
@@ -381,7 +420,7 @@ TEST(HttpContentDispositionTest, tc2231) {
       // http://greenbytes.de/tech/tc2231/#attmultinstances
       // Note: tc2231 says we should fail to parse this header.
       {"attachment; filename=foo.html, attachment; filename=bar.html",
-       HttpContentDisposition::ATTACHMENT, L"foo.html, attachment"},
+       HttpContentDisposition::ATTACHMENT, L"foo.html"},
       // http://greenbytes.de/tech/tc2231/#attmissingdelim
       {"attachment; foo=foo filename=bar", HttpContentDisposition::ATTACHMENT,
        L""},
@@ -412,7 +451,8 @@ TEST(HttpContentDispositionTest, tc2231) {
       // TODO(abarth): http://greenbytes.de/tech/tc2231/#attrfc2047quoted
   };
   for (const auto& test : tests) {
-    HttpContentDisposition header(test.header, std::string());
+    HttpContentDisposition header =
+        CreateContentDisposition(test.header, std::string());
     EXPECT_EQ(test.expected_type, header.type())
         << "Failed on input: " << test.header;
     EXPECT_EQ(test.expected_filename, base::UTF8ToWide(header.filename()))
@@ -420,7 +460,7 @@ TEST(HttpContentDispositionTest, tc2231) {
   }
 }
 
-TEST(HttpContentDispositionTest, ParseResult) {
+TEST_P(HttpContentDispositionTest, ParseResult) {
   struct ParseResultTestCase {
     const char* header;
     int expected_flags;
@@ -487,7 +527,8 @@ TEST(HttpContentDispositionTest, ParseResult) {
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     const ParseResultTestCase& test_case = kTestCases[i];
-    HttpContentDisposition content_disposition(test_case.header, "utf-8");
+    HttpContentDisposition content_disposition =
+        CreateContentDisposition(test_case.header, "utf-8");
     int result = content_disposition.parse_result_flags();
 
     SCOPED_TRACE(testing::Message() << "Test case " << i
@@ -496,7 +537,15 @@ TEST(HttpContentDispositionTest, ParseResult) {
   }
 }
 
-TEST(HttpContentDispositionTest, ContainsNul) {
+// Unclear if this test is still useful, as nulls are not generally allowed in
+// headers, though one constructor can take arbitrary strings.
+TEST_P(HttpContentDispositionTest, ContainsNul) {
+  // Can only pass nulls to the constructor that takes a string, since they're
+  // not allowed in HTTP headers.
+  if (GetParam()) {
+    GTEST_SKIP();
+  }
+
   const char kHeader[] = "filename=ab\0c";
   const char kExpectedFilename[] = "ab\0c";
   // Note: both header and expected_filename include the trailing NUL.
@@ -505,6 +554,64 @@ TEST(HttpContentDispositionTest, ContainsNul) {
 
   HttpContentDisposition content_disposition(header, "utf-8");
   EXPECT_EQ(expected_filename, content_disposition.filename());
+}
+
+TEST_P(HttpContentDispositionTest, NoContentDisposition) {
+  HttpContentDisposition content_disposition =
+      CreateContentDispositionFromHeaders("HTTP/1.1 200 OK\r\n\r\n", "utf-8");
+  EXPECT_EQ(content_disposition.parse_result_flags(),
+            HttpContentDisposition::INVALID);
+  EXPECT_FALSE(content_disposition.is_attachment());
+  EXPECT_EQ(content_disposition.filename(), "");
+}
+
+TEST_P(HttpContentDispositionTest, MultipleContentDisposition) {
+  // Test multiple Content-Disposition headers, only the first should be used.
+  {
+    std::string headers =
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Disposition: inline; filename=abc.pdf\r\n"
+        "Content-Disposition: attachment; filename=def.pdf\r\n\r\n";
+    HttpContentDisposition content_disposition =
+        CreateContentDispositionFromHeaders(headers, "utf-8");
+    EXPECT_FALSE(content_disposition.is_attachment());
+    EXPECT_EQ(HttpContentDisposition::INLINE, content_disposition.type());
+    EXPECT_EQ("abc.pdf", content_disposition.filename());
+  }
+
+  // Test single Content-Disposition header with multiple values separated by a
+  // comma, which should be treated just as if there were multiple
+  // content-disposition headers.
+  {
+    std::string headers =
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Disposition: inline; filename=abc.pdf, "
+        "attachment; filename=def.pdf\r\n\r\n";
+    HttpContentDisposition content_disposition =
+        CreateContentDispositionFromHeaders(headers, "utf-8");
+    EXPECT_FALSE(content_disposition.is_attachment());
+    EXPECT_EQ(HttpContentDisposition::INLINE, content_disposition.type());
+    EXPECT_EQ("abc.pdf", content_disposition.filename());
+  }
+}
+
+// Tests that disabling `kOnlyParseFirstContentDisposition` correctly
+// reintroduces a bug, in case we have to shut it off temporarily due to
+// breakage.
+TEST_P(HttpContentDispositionTest, OnlyParseFirstContentDispositionDisabled) {
+  std::string content_disposition_string = "attachment, attachment";
+  HttpContentDisposition content_disposition =
+      CreateContentDisposition(content_disposition_string, "utf-8");
+  EXPECT_TRUE(content_disposition.is_attachment());
+  EXPECT_EQ("", content_disposition.filename());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kOnlyParseFirstContentDisposition);
+  HttpContentDisposition content_disposition2 =
+      CreateContentDisposition(content_disposition_string, "utf-8");
+  EXPECT_FALSE(content_disposition2.is_attachment());
+  EXPECT_EQ("", content_disposition2.filename());
 }
 
 }  // namespace net

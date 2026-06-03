@@ -193,6 +193,15 @@ NET_EXPORT extern const base::FeatureParam<int> kObservationBufferSize;
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kEffectiveConnectionTypeRecomputationInterval;
 
+// When disabled, HttpContentDisposition incorrectly handles multiple
+// comma-delimited Content-Disposition lines, treating them all as a single
+// Content-Disposition string.
+//
+// This is a temporary escape valve in case the fix for
+// https://crbug.com/517466133 causes issues.
+// TODO(crbug.com/519218483): Remove this in late Q3/Q4 2026.
+NET_EXPORT BASE_DECLARE_FEATURE(kOnlyParseFirstContentDisposition);
+
 // Splits cache entries by the request's includeCredentials.
 NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByIncludeCredentials);
 

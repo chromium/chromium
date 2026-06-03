@@ -44,11 +44,8 @@ bool MustDownload(BrowserContext* browser_context,
                   const net::HttpResponseHeaders* headers,
                   const std::string& mime_type) {
   if (headers) {
-    std::string disposition =
-        headers->GetNormalizedHeader("content-disposition")
-            .value_or(std::string());
-    if (!disposition.empty() &&
-        net::HttpContentDisposition(disposition, std::string())
+    if (net::HttpContentDisposition(*headers,
+                                    /*referrer_charset=*/std::string())
             .is_attachment()) {
       return true;
     }

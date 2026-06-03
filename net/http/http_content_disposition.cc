@@ -9,12 +9,15 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "net/base/features.h"
 #include "net/base/net_string_util.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 
 namespace net {
@@ -335,9 +338,36 @@ bool DecodeExtValue(std::string_view param_value, std::string* decoded) {
 } // namespace
 
 HttpContentDisposition::HttpContentDisposition(
-    const std::string& header,
+    const HttpResponseHeaders& headers,
     const std::string& referrer_charset) {
-  Parse(header, referrer_charset);
+  if (!base::FeatureList::IsEnabled(
+          features::kOnlyParseFirstContentDisposition)) {
+    std::optional<std::string> header =
+        headers.GetNormalizedHeader("Content-Disposition");
+    if (header) {
+      Parse(*header, referrer_charset);
+    }
+    return;
+  }
+  std::optional<std::string_view> header =
+      headers.EnumerateHeader(/*iter=*/nullptr, "Content-Disposition");
+  if (header) {
+    Parse(*header, referrer_charset);
+  }
+}
+
+HttpContentDisposition::HttpContentDisposition(
+    std::string_view header,
+    const std::string& referrer_charset) {
+  if (!base::FeatureList::IsEnabled(
+          features::kOnlyParseFirstContentDisposition)) {
+    Parse(header, referrer_charset);
+    return;
+  }
+  HttpUtil::ValuesIterator it(header, ',', /*ignore_empty_values=*/false);
+  if (it.GetNext()) {
+    Parse(it.value(), referrer_charset);
+  }
 }
 
 HttpContentDisposition::~HttpContentDisposition() = default;
@@ -393,7 +423,7 @@ std::string_view HttpContentDisposition::ConsumeDispositionType(
 //                      | ext-token "=" ext-value
 //  ext-token           = <the characters in token, followed by "*">
 //
-void HttpContentDisposition::Parse(const std::string& header,
+void HttpContentDisposition::Parse(std::string_view header,
                                    const std::string& referrer_charset) {
   DCHECK(type_ == INLINE);
   DCHECK(filename_.empty());
