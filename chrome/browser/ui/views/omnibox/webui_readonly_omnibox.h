@@ -132,6 +132,9 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
   // Inline completion suggested by auto-complete.
   std::u16string inline_autocompletion_;
 
+  // An additional description for what's being displayed.
+  std::u16string additional_text_;
+
   // Rich text formatting for `text`.
   gfx::BreakList<bool> text_strike_through_;
   gfx::BreakList<toolbar_ui_api::mojom::OmniboxTextColor> text_colors_;

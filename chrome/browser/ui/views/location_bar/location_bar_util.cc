@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/user_education_class_properties.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
@@ -56,4 +59,16 @@ void ConfigureInkDropForRefresh2023(views::View* const view,
         return ink_drop_highlight;
       },
       view, hover_color_id));
+}
+
+std::u16string FormatOmniboxAdditionalText(std::u16string_view text) {
+  std::u16string adjusted_text;
+  if (!text.empty()) {
+    adjusted_text = std::u16string(text);
+    base::i18n::AdjustStringForLocaleDirection(&adjusted_text);
+    adjusted_text =
+        l10n_util::GetStringFUTF16(IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE,
+                                   std::u16string(), adjusted_text);
+  }
+  return adjusted_text;
 }

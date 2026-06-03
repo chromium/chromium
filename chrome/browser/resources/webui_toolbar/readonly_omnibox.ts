@@ -18,6 +18,8 @@ import {OmniboxTextColor} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export interface ReadonlyOmniboxElement {
   $: {
+    additionalText: HTMLElement,
+    inlineAutocomplete: HTMLElement,
     textContainer: HTMLElement,
     textContainerWrap: HTMLElement,
     textInput: HTMLInputElement,
@@ -53,6 +55,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     uiVersion: 0,
     textPieces: [],
     inlineAutocompletion: '',
+    additionalText: '',
     selection: null,
     textIsUrl: false,
   };

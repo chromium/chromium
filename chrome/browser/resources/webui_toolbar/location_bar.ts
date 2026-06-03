@@ -48,6 +48,7 @@ export class LocationBarElement extends CrLitElement {
       uiVersion: 0,
       textPieces: [],
       inlineAutocompletion: '',
+      additionalText: '',
       selection: null,
       textIsUrl: false,
     },

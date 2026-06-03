@@ -75,6 +75,7 @@
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
@@ -669,15 +670,9 @@ std::u16string_view LocationBarView::GetImeInlineAutocompletion() const {
 
 void LocationBarView::SetOmniboxAdditionalText(std::u16string_view text) {
   DCHECK(OmniboxFieldTrial::IsRichAutocompletionEnabled() || text.empty());
-  std::u16string adjusted_text;
-  if (!text.empty()) {
-    adjusted_text = std::u16string(text);
-    base::i18n::AdjustStringForLocaleDirection(&adjusted_text);
-    adjusted_text =
-        l10n_util::GetStringFUTF16(IDS_OMNIBOX_ADDITIONAL_TEXT_DASH_TEMPLATE,
-                                   std::u16string(), adjusted_text);
-  }
-  SetOmniboxAdjacentText(omnibox_additional_text_view_, adjusted_text);
+  std::u16string adjusted_text = FormatOmniboxAdditionalText(text);
+  SetOmniboxAdjacentText(omnibox_additional_text_view_,
+                         std::move(adjusted_text));
 }
 
 std::u16string_view LocationBarView::GetOmniboxAdditionalText() const {

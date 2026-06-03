@@ -61,6 +61,7 @@ suite('ReadOnlyOmniboxFocus', function() {
         },
       ],
       inlineAutocompletion: '',
+      additionalText: '',
       selection: {start: 1, end: 5},
       textIsUrl: false,
     };
@@ -89,6 +90,7 @@ suite('ReadOnlyOmniboxFocus', function() {
         },
       ],
       inlineAutocompletion: '',
+      additionalText: '',
       selection: {start: 1, end: 5},
       textIsUrl: false,
     };
@@ -114,6 +116,7 @@ suite('ReadOnlyOmniboxFocus', function() {
         },
       ],
       inlineAutocompletion: '',
+      additionalText: '',
       selection: {start: 1, end: 5},
       textIsUrl: false,
     };
@@ -145,6 +148,7 @@ suite('ReadOnlyOmniboxFocus', function() {
         },
       ],
       inlineAutocompletion: '',
+      additionalText: '',
       selection: {start: 1, end: 5},
       textIsUrl: false,
     };

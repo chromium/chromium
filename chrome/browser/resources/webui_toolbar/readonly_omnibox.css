@@ -53,7 +53,7 @@
   overflow: hidden;
   pointer-events: none;
   text-overflow: ellipsis;
-  text-wrap: nowrap;
+  white-space: pre;
   z-index: 1;
 }
 
@@ -110,4 +110,23 @@
   position: absolute;
   top: 0;
   width: 100%;
+}
+
+#inlineAutocomplete {
+  /* This is only for sizing */
+  visibility: hidden;
+  white-space: pre;
+}
+
+#additionalText {
+  color: var(--color-omnibox-results-url);
+  /* fonts are the same as for the omnibox proper */
+  height: var(--omnibox-height);
+  line-height: var(--omnibox-height);
+  pointer-events: none;
+  position: relative;
+  white-space: pre;
+
+  /* Since the <input> is full-width, we want to be on top */
+  z-index: 2;
 }

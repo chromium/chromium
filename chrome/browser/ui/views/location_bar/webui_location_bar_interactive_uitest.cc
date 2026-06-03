@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -26,6 +28,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/omnibox/browser/shortcuts_backend.h"
+#include "components/omnibox/browser/shortcuts_provider_test_util.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -42,6 +46,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarId);
 
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxInputDeepQuery = {
     "toolbar-app", "location-bar", "readonly-omnibox", "#textInput"};
+const WebContentsInteractionTestUtil::DeepQuery kOmniboxAdditionalText = {
+    "toolbar-app", "location-bar", "readonly-omnibox", "#additionalText"};
 const WebContentsInteractionTestUtil::DeepQuery kSearchKeywordText = {
     "toolbar-app", "location-bar", "selected-keyword", "span"};
 
@@ -80,6 +86,18 @@ class ViewWidthObserver
 };
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewWidthObserver, kViewWidth);
+
+class NotifyWhenShortcutsLoadedObserver
+    : public ShortcutsBackend::ShortcutsBackendObserver {
+ public:
+  explicit NotifyWhenShortcutsLoadedObserver(base::OnceClosure on_loaded)
+      : on_loaded_(std::move(on_loaded)) {}
+
+  void OnShortcutsLoaded() override { std::move(on_loaded_).Run(); }
+
+ private:
+  base::OnceClosure on_loaded_;
+};
 
 }  // namespace
 
@@ -213,6 +231,21 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
     WebContentsInteractionTestUtil::StateChange text_matches;
     text_matches.event = kKeywordTextOK;
     text_matches.where = kSearchKeywordText;
+    text_matches.test_function = content::JsReplace(kTemplate, expected_text);
+    return WaitForStateChange(kWebUIToolbarId, text_matches);
+  }
+
+  auto WaitTillAdditionalText(std::string_view expected_text) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAdditionalTextOK);
+    const char kTemplate[] = R"(
+      (el) => {
+        return el.textContent === $1;
+      }
+    )";
+
+    WebContentsInteractionTestUtil::StateChange text_matches;
+    text_matches.event = kAdditionalTextOK;
+    text_matches.where = kOmniboxAdditionalText;
     text_matches.test_function = content::JsReplace(kTemplate, expected_text);
     return WaitForStateChange(kWebUIToolbarId, text_matches);
   }
@@ -439,6 +472,39 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
 
       // Removing the focus should hide the popup.
       RemoveFocusFromPopup());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, AdditionalText) {
+  auto shortcuts_backend =
+      ShortcutsBackendFactory::GetForProfile(browser()->profile());
+  if (!shortcuts_backend->initialized()) {
+    base::RunLoop run_loop;
+    NotifyWhenShortcutsLoadedObserver notify_init(run_loop.QuitClosure());
+    shortcuts_backend->AddObserver(&notify_init);
+    run_loop.Run();
+    shortcuts_backend->RemoveObserver(&notify_init);
+  }
+
+  std::array<TestShortcutData, 1> test_shortcut = {
+      // Thanks, shortcuts_provider_unittest.cc
+      {{"BD85DBA2-8C29-49F9-84AE-48E1E12345E0", "news weather",
+        "www.cnn.com/index.html", "http://www.cnn.com/index.html",
+        AutocompleteMatch::DocumentType::NONE, "www.cnn.com/index.html", "0,1",
+        "CNN.com - Breaking News, U.S., World, Weather, Entertainment & Video",
+        "0,0,19,2,23,0,38,2,45,0", ui::PAGE_TRANSITION_TYPED,
+        AutocompleteMatchType::HISTORY_TITLE, "", 1, 10}}};
+  PopulateShortcutsBackendWithTestData(shortcuts_backend, test_shortcut);
+
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      FocusWebContents(kWebUIToolbarId),
+      ExecuteJsAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "el => el.focus()"),
+      WaitTillOmniboxViewFocus(), EnterText(kOmniboxElementId, u"ne"),
+      WaitForClassicPopupReady(), WaitTillOmniboxViewText("ne"),
+      SendKeyPress(kWebUIToolbarId, ui::VKEY_W),
+      WaitTillInlineComplete("new", "s weather"),
+      WaitTillAdditionalText(" - www.cnn.com/index.html"));
 }
 
 // Use Ctrl-Alt-Enter to append www. and .com to URL and open it in new tab.

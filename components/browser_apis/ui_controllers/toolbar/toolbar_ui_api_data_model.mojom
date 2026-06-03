@@ -355,6 +355,9 @@ struct OmniboxViewState {
   // `selection`.
   mojo_base.mojom.String16 inline_autocompletion;
 
+  // Additional text to paint to the right of the URL.
+  mojo_base.mojom.String16 additional_text;
+
   // Selection or caret (if start == end) to set on the omnibox view, if any.
   gfx.mojom.Range? selection;
 
