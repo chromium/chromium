@@ -44,6 +44,20 @@
     "expires": "Mar 1, 2027"
   },
   {
+    "prefix": "ai_classifier",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/ai/classifier"
+    ],
+    "args": ["--enable-features=AIClassifierAPI"],
+    "exclusive_tests": "ALL",
+    "owners": [
+      "msw@chromium.org",
+      "jingyun@google.com"
+    ],
+    "expires": "Jun 1, 2027"
+  },
+  {
     "prefix": "ai-prompt-api-legacy-params-disabled",
     "platforms": [
       "Linux",
