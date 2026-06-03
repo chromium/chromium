@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Animated font-style serializes italic/oblique/oblique &lt;angle&gt; distinctly</title>
+<link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-style-prop">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8291">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<div id="target">x</div>
+<script>
+// Samples the computed font-style of a paused keyframe animation at a given
+// fraction of its duration. font-style is not a compositable property, so the
+// interpolated value is reflected synchronously in getComputedStyle.
+function computedFontStyleAt(keyframes, fraction) {
+  const target = document.getElementById('target');
+  const duration = 1000;
+  const anim = target.animate(keyframes, {duration, easing: 'linear', fill: 'both'});
+  anim.pause();
+  anim.currentTime = fraction * duration;
+  const value = getComputedStyle(target).fontStyle;
+  anim.cancel();
+  return value;
+}
+
+test(() => {
+  // Both endpoints carry an explicit angle, so the interpolated slope keeps an
+  // explicit angle even where it lands exactly on the 14deg default.
+  assert_equals(
+      computedFontStyleAt(
+          [{fontStyle: 'oblique 10deg'}, {fontStyle: 'oblique 18deg'}], 0.5),
+      'oblique 14deg');
+}, 'oblique <angle> interpolation landing on 14deg serializes "oblique 14deg"');
+
+test(() => {
+  // Same slope (14deg) on both sides but different syntax: animate discretely so
+  // each endpoint keeps its own serialization instead of pinning the whole range
+  // to the explicit form.
+  const kf = [{fontStyle: 'oblique 14deg'}, {fontStyle: 'oblique'}];
+  assert_equals(computedFontStyleAt(kf, 0), 'oblique 14deg', 'start');
+  assert_equals(computedFontStyleAt(kf, 1), 'oblique', 'end');
+}, '"oblique 14deg" -> "oblique" reaches bare oblique at the end');
+
+test(() => {
+  const kf = [{fontStyle: 'oblique'}, {fontStyle: 'oblique 14deg'}];
+  assert_equals(computedFontStyleAt(kf, 0), 'oblique', 'start');
+  assert_equals(computedFontStyleAt(kf, 1), 'oblique 14deg', 'end');
+}, '"oblique" -> "oblique 14deg" starts at bare oblique');
+
+test(() => {
+  // italic is not on the slope axis, so it animates discretely against oblique.
+  const kf = [{fontStyle: 'italic'}, {fontStyle: 'oblique 30deg'}];
+  assert_equals(computedFontStyleAt(kf, 0), 'italic', 'start');
+  assert_equals(computedFontStyleAt(kf, 1), 'oblique 30deg', 'end');
+}, 'italic <-> oblique <angle> animates discretely');
+
+test(() => {
+  // normal animates as oblique 0deg, which collapses back to normal.
+  const kf = [{fontStyle: 'normal'}, {fontStyle: 'oblique 20deg'}];
+  assert_equals(computedFontStyleAt(kf, 0), 'normal', 'start');
+}, 'normal -> oblique <angle> starts at normal');
+</script>

@@ -477,8 +477,33 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.FontSizeAdjust() == b.FontSizeAdjust();
     case CSSPropertyID::kFontStretch:
       return a.GetFontStretch() == b.GetFontStretch();
-    case CSSPropertyID::kFontStyle:
-      return a.GetFontStyle() == b.GetFontStyle();
+    case CSSPropertyID::kFontStyle: {
+      // Mirror the buckets in ComputedStyleUtils::ValueForFontStyle so a
+      // transition fires iff the serialized computed value changes. `italic`
+      // and any non-italic value never match; a slope of 0 always serializes
+      // as `normal` regardless of source; the source only distinguishes the
+      // serialization at slope == kItalicSlopeValue (bare `oblique` vs
+      // `oblique 14deg`).
+      using StyleSyntax = FontDescription::StyleSyntax;
+      const FontDescription& fa = a.GetFontDescription();
+      const FontDescription& fb = b.GetFontDescription();
+      const bool a_italic = fa.GetStyleSyntax() == StyleSyntax::kItalicKeyword;
+      const bool b_italic = fb.GetStyleSyntax() == StyleSyntax::kItalicKeyword;
+      if (a_italic != b_italic) {
+        return false;
+      }
+      if (a_italic) {
+        return true;
+      }
+      if (a.GetFontStyle() != b.GetFontStyle()) {
+        return false;
+      }
+      if (a.GetFontStyle() == kItalicSlopeValue) {
+        return (fa.GetStyleSyntax() == StyleSyntax::kExplicitAngle) ==
+               (fb.GetStyleSyntax() == StyleSyntax::kExplicitAngle);
+      }
+      return true;
+    }
     case CSSPropertyID::kFontSynthesisSmallCaps:
       return a.GetFontDescription().GetFontSynthesisSmallCaps() ==
              b.GetFontDescription().GetFontSynthesisSmallCaps();

@@ -7,18 +7,19 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_type.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
 
 namespace blink {
 
-// This class performs validation and constructs InterpolationValues for
-// font-style animation. Font-style property should be animated by computed
-// value, i.e. if there is an 'oblique x deg' value, it should be interpolated
-// by the angle value x. 'normal' animates as 'oblique 0deg', animating from/to
-// 'italic' keyword should be discrete, see:
-// https://www.w3.org/TR/css-fonts-4/#font-weight-absolute-values
-// TODO(https://crbug.com/1404731): 'CSS transition' for 'italic' keyword
-// currently works as 'oblique 14deg' since there is no way to distinguish
-// 'italic' and 'oblique' keywords in ComputedStyle.
+// Animates font-style by computed value: slope in degrees for oblique/normal,
+// discrete across the italic/oblique boundary since italic is not on the slope
+// axis. `italic`, `oblique`, and `oblique 14deg` all alias at
+// FontSelectionValue(14) but must serialize distinctly, so the authored
+// `FontDescription::StyleSyntax` is carried alongside the slope as a
+// non-interpolable value. Interpolating between `oblique` and
+// `oblique <angle>` stays continuous on the slope axis; the result keeps an
+// explicit angle whenever either input had one.
+// https://www.w3.org/TR/css-fonts-4/#font-style-prop
 class CSSFontStyleInterpolationType : public CSSInterpolationType {
  public:
   explicit CSSFontStyleInterpolationType(PropertyHandle property)
@@ -28,12 +29,20 @@ class CSSFontStyleInterpolationType : public CSSInterpolationType {
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const final;
+  PairwiseInterpolationValue MaybeMergeSingles(
+      InterpolationValue&& start,
+      InterpolationValue&& end) const final;
+  void Composite(UnderlyingValueOwner&,
+                 double underlying_fraction,
+                 const InterpolationValue&,
+                 double interpolation_fraction) const final;
   void ApplyStandardPropertyValue(const InterpolableValue&,
                                   const NonInterpolableValue*,
                                   StyleResolverState&) const final;
 
  private:
-  InterpolationValue CreateFontStyleValue(FontSelectionValue) const;
+  InterpolationValue CreateFontStyleValue(FontSelectionValue,
+                                          FontDescription::StyleSyntax) const;
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertInitial(const StyleResolverState&,
