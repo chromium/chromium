@@ -131,6 +131,7 @@ public class PaymentRequestRetryTest {
     @Test
     @MediumTest
     @Feature({"Payments", "RenderTest"})
+    @DisabledTest(message = "https://crbug.com/519619313")
     public void testRetryWithShippingAddressErrors() throws Throwable {
         mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyForInput());
@@ -179,6 +180,7 @@ public class PaymentRequestRetryTest {
     @Test
     @MediumTest
     @Feature({"Payments", "RenderTest"})
+    @DisabledTest(message = "https://crbug.com/519625746")
     public void testRetryWithPayerErrors() throws Throwable {
         mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethod", mPaymentRequestTestRule.getReadyForInput());
