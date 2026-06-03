@@ -66,8 +66,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
       Delegate*,
       ViewTransition* previously_active);
 
-  // Creates a skipped transition that still runs the specified callbacks.
-  static ViewTransition* CreateSkipped(Element*, V8ViewTransitionCallback*);
+  static ViewTransition* CreateSkipped(
+      Element*,
+      V8ViewTransitionCallback*,
+      const std::optional<Vector<String>>& types = std::nullopt);
 
   // Creates a ViewTransition to cache the state of a Document before a
   // navigation. The cached state is provided to the caller using the
@@ -101,8 +103,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
                  const std::optional<Vector<String>>& types,
                  Delegate*,
                  ViewTransition* previously_active);
-  // Skipped transition constructor.
-  ViewTransition(PassKey, Element*, V8ViewTransitionCallback*);
+  ViewTransition(PassKey,
+                 Element*,
+                 V8ViewTransitionCallback*,
+                 const std::optional<Vector<String>>& types);
   // Navigation-initiated for-snapshot constructor.
   ViewTransition(PassKey,
                  Document*,
