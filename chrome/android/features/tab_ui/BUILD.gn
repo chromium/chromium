@@ -81,6 +81,7 @@ android_resources("java_resources") {
     "java/res/drawable/ungroup_bar_background.xml",
     "java/res/drawable/vertical_tab_item_background.xml",
     "java/res/drawable/vertical_tab_pinned_item_background.xml",
+    "java/res/drawable/vertical_tabs_new_tab_button_background.xml",
     "java/res/drawable/xr_empty_state_backplate.xml",
     "java/res/layout/archived_tabs_auto_delete_promo.xml",
     "java/res/layout/archived_tabs_dialog.xml",

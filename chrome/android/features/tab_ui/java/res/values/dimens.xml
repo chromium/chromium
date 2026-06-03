@@ -219,4 +219,10 @@ found in the LICENSE file.
     <!-- TODO(crbug.com/509226293): A11y requires touch target to be a minimum of 48dp. -->
     <dimen name="vertical_tab_pinned_item_width">42dp</dimen>
     <dimen name="vertical_tab_pinned_item_height">32dp</dimen>
+
+    <!-- New Tab button dimens.-->
+    <dimen name="vertical_tabs_new_tab_button_height">40dp</dimen>
+    <dimen name="vertical_tabs_new_tab_button_margin_top">8dp</dimen>
+    <dimen name="vertical_tabs_new_tab_button_margin_bottom">12dp</dimen>
+    <dimen name="vertical_tabs_new_tab_button_corner_radius">8dp</dimen>
 </resources>

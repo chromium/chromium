@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -41,7 +42,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.function.Supplier;
 
@@ -201,7 +201,7 @@ public class VerticalTabListCoordinator {
                     }
                 };
 
-        ButtonCompat newTabButton = mContainerView.findViewById(R.id.new_tab_button);
+        ImageButton newTabButton = mContainerView.findViewById(R.id.new_tab_button);
         newTabButton.setOnClickListener(v -> handleNewTabButtonClick());
 
         mMediator =

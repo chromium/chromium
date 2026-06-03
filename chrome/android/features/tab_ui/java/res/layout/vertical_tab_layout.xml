@@ -31,19 +31,15 @@ found in the LICENSE file.
         android:clipToPadding="false"
         android:scrollbars="vertical" />
 
-    <!-- Footer Container: Socket for future action buttons -->
-    <FrameLayout
-        android:id="@+id/vertical_tab_footer_container"
+    <!-- New Tab Button -->
+    <ImageButton
+        android:id="@+id/new_tab_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
-
-    <!-- TODO(crbug.com/518001737): Add background drawable and implement onHover. -->
-        <org.chromium.ui.widget.ButtonCompat
-            android:id="@+id/new_tab_button"
-            android:contentDescription="@string/accessibility_toolbar_btn_new_tab"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
+        android:layout_height="@dimen/vertical_tabs_new_tab_button_height"
+        android:src="@drawable/ic_add_24dp"
+        android:background="@drawable/vertical_tabs_new_tab_button_background"
+        android:contentDescription="@string/accessibility_toolbar_btn_new_tab"
+        android:layout_marginTop="@dimen/vertical_tabs_new_tab_button_margin_top"
+        android:layout_marginBottom="@dimen/vertical_tabs_new_tab_button_margin_bottom"/>
 
 </LinearLayout>
