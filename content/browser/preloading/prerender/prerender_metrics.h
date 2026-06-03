@@ -14,29 +14,11 @@
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/preloading_trigger_type.h"
+#include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/headers_matcher.h"
 
 namespace content {
-
-struct CONTENT_EXPORT PrerenderMismatchedHeaders {
- public:
-  PrerenderMismatchedHeaders(const std::string& header_name,
-                             std::optional<std::string> initial_value,
-                             std::optional<std::string> activation_value);
-
-  ~PrerenderMismatchedHeaders();
-
-  PrerenderMismatchedHeaders(const PrerenderMismatchedHeaders& other);
-  PrerenderMismatchedHeaders(PrerenderMismatchedHeaders&& other);
-
-  PrerenderMismatchedHeaders& operator=(
-      const PrerenderMismatchedHeaders& other);
-  PrerenderMismatchedHeaders& operator=(PrerenderMismatchedHeaders&& other);
-
-  std::string header_name;
-  std::optional<std::string> initial_value;
-  std::optional<std::string> activation_value;
-};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -79,7 +61,7 @@ class CONTENT_EXPORT PrerenderCancellationReason {
                    int32_t,
                    uint64_t,
                    std::string,
-                   std::vector<PrerenderMismatchedHeaders>>;
+                   std::vector<network::MismatchedHttpRequestHeader>>;
 
   explicit PrerenderCancellationReason(PrerenderFinalStatus final_status);
   ~PrerenderCancellationReason();
@@ -106,13 +88,17 @@ class CONTENT_EXPORT PrerenderCancellationReason {
   // `kMojoBinderPolicy`.
   std::optional<std::string> DisallowedMojoInterface() const;
 
-  // Returns the pointer of the vector of PrerenderMismatchedHeaders iff
-  // header mismatch occurred.
-  const std::vector<PrerenderMismatchedHeaders>* GetPrerenderMismatchedHeaders()
-      const;
+  // Returns the pointer of the vector of `network::MismatchedHttpRequestHeader`
+  // iff header mismatch occurred. In this context,
+  // - `network::MismatchedHttpRequestHeader::expected_value` is for initial
+  // request and
+  // - `network::MismatchedHttpRequestHeader::actual_value` is for activation
+  // request.
+  const std::vector<network::MismatchedHttpRequestHeader>*
+  GetPrerenderMismatchedHeaders() const;
 
   void SetPrerenderMismatchedHeaders(
-      std::unique_ptr<std::vector<PrerenderMismatchedHeaders>>
+      std::unique_ptr<std::vector<network::MismatchedHttpRequestHeader>>
           mismatched_headers);
 
  private:

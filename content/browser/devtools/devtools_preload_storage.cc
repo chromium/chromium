@@ -11,6 +11,8 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/render_frame_host.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/headers_matcher.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 namespace content {
@@ -48,7 +50,8 @@ void DevToolsPreloadStorage::UpdatePrerenderStatus(
     PreloadingTriggeringOutcome outcome,
     std::optional<PrerenderFinalStatus> status,
     const std::optional<std::string>& disallowed_mojo_interface,
-    const std::vector<PrerenderMismatchedHeaders>* mismatched_headers) {
+    const std::vector<network::MismatchedHttpRequestHeader>*
+        mismatched_headers) {
   PrerenderKey key = {.prerender_url = prerender_url,
                       .form_submission = form_submission,
                       .target_hint = target_hint};

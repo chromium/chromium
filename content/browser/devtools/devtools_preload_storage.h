@@ -10,6 +10,8 @@
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/preloading.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/headers_matcher.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
 
 namespace content {
@@ -37,7 +39,8 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
       PreloadingTriggeringOutcome outcome,
       std::optional<PrerenderFinalStatus> status,
       const std::optional<std::string>& disallowed_mojo_interface,
-      const std::vector<PrerenderMismatchedHeaders>* mismatched_headers);
+      const std::vector<network::MismatchedHttpRequestHeader>*
+          mismatched_headers);
 
   void SpeculationCandidatesUpdated(
       const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
@@ -68,7 +71,7 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
     PreloadingTriggeringOutcome outcome;
     std::optional<PrerenderFinalStatus> status;
     std::optional<std::string> disallowed_mojo_interface;
-    std::vector<PrerenderMismatchedHeaders> mismatched_headers;
+    std::vector<network::MismatchedHttpRequestHeader> mismatched_headers;
   };
   using PrerenderDataMap = std::map<PrerenderKey, PrerenderData>;
   const PrerenderDataMap& prerender_data_map() { return prerender_data_map_; }

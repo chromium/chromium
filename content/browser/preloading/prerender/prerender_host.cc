@@ -50,6 +50,7 @@
 #include "content/public/common/referrer.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/headers_matcher.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
@@ -545,8 +546,8 @@ bool PrerenderHost::IsActivationHeaderMatch(
   std::sort(potential_header_list.begin(), potential_header_list.end(), cmp);
   std::sort(prerender_header_list.begin(), prerender_header_list.end(), cmp);
 
-  std::unique_ptr<std::vector<PrerenderMismatchedHeaders>> mismatched_headers =
-      std::make_unique<std::vector<PrerenderMismatchedHeaders>>();
+  auto mismatched_headers =
+      std::make_unique<std::vector<network::MismatchedHttpRequestHeader>>();
 
   auto prerender_header_list_it = prerender_header_list.begin();
   auto potential_header_list_it = potential_header_list.begin();

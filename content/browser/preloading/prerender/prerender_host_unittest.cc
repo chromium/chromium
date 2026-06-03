@@ -34,6 +34,7 @@
 #include "content/test/test_web_contents.h"
 #include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/headers_matcher.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
@@ -88,11 +89,9 @@ TEST(IsActivationHeaderMatchTest, ValueCaseInsensitive) {
 }
 
 TEST(IsActivationHeaderMatchTest, CalculateMismatchedHeaders) {
-  auto same_key_value = [](const PrerenderMismatchedHeaders& a,
-                           const PrerenderMismatchedHeaders& b) {
-    return a.header_name == b.header_name &&
-           a.initial_value == b.initial_value &&
-           a.activation_value == b.activation_value;
+  auto same_key_value = [](const network::MismatchedHttpRequestHeader& a,
+                           const network::MismatchedHttpRequestHeader& b) {
+    return a.EqualsForTesting(b);
   };
   {
     PrerenderCancellationReason reason = PrerenderCancellationReason(
@@ -133,7 +132,8 @@ TEST(IsActivationHeaderMatchTest, CalculateMismatchedHeaders) {
     potential_headers.SetHeader("name5", "value3");
     EXPECT_FALSE(PrerenderHost::IsActivationHeaderMatch(
         potential_headers, prerender_headers, reason));
-    std::vector<PrerenderMismatchedHeaders> mismatched_headers_expected;
+    std::vector<network::MismatchedHttpRequestHeader>
+        mismatched_headers_expected;
     mismatched_headers_expected.emplace_back("name2", "value2", std::nullopt);
     mismatched_headers_expected.emplace_back("name3", "value3", "value2");
     mismatched_headers_expected.emplace_back("name4", std::nullopt, "value4");
@@ -154,7 +154,8 @@ TEST(IsActivationHeaderMatchTest, CalculateMismatchedHeaders) {
     potential_headers.SetHeader("name2", "value1");
     EXPECT_FALSE(PrerenderHost::IsActivationHeaderMatch(
         potential_headers, prerender_headers, reason));
-    std::vector<PrerenderMismatchedHeaders> mismatched_headers_expected;
+    std::vector<network::MismatchedHttpRequestHeader>
+        mismatched_headers_expected;
     mismatched_headers_expected.emplace_back("name2", std::nullopt, "value1");
     mismatched_headers_expected.emplace_back("name5", "value1", std::nullopt);
     mismatched_headers_expected.emplace_back("name6", "value2", std::nullopt);
@@ -178,7 +179,8 @@ TEST(IsActivationHeaderMatchTest, CalculateMismatchedHeaders) {
     potential_headers.SetHeader("name8", "value3");
     EXPECT_FALSE(PrerenderHost::IsActivationHeaderMatch(
         potential_headers, prerender_headers, reason));
-    std::vector<PrerenderMismatchedHeaders> mismatched_headers_expected;
+    std::vector<network::MismatchedHttpRequestHeader>
+        mismatched_headers_expected;
     mismatched_headers_expected.emplace_back("name2", std::nullopt, "value1");
     mismatched_headers_expected.emplace_back("name5", "value1", std::nullopt);
     mismatched_headers_expected.emplace_back("name7", std::nullopt, "value3");
@@ -199,7 +201,8 @@ TEST(IsActivationHeaderMatchTest, CalculateMismatchedHeaders) {
     potential_headers.SetHeader("name3", "value3");
     EXPECT_FALSE(PrerenderHost::IsActivationHeaderMatch(
         potential_headers, prerender_headers, reason));
-    std::vector<PrerenderMismatchedHeaders> mismatched_headers_expected;
+    std::vector<network::MismatchedHttpRequestHeader>
+        mismatched_headers_expected;
     mismatched_headers_expected.emplace_back("name1", std::nullopt, "value1");
     mismatched_headers_expected.emplace_back("name2", std::nullopt, "value2");
     mismatched_headers_expected.emplace_back("name3", std::nullopt, "value3");
@@ -219,7 +222,8 @@ TEST(IsActivationHeaderMatchTest, CalculateMismatchedHeaders) {
     net::HttpRequestHeaders potential_headers;
     EXPECT_FALSE(PrerenderHost::IsActivationHeaderMatch(
         potential_headers, prerender_headers, reason));
-    std::vector<PrerenderMismatchedHeaders> mismatched_headers_expected;
+    std::vector<network::MismatchedHttpRequestHeader>
+        mismatched_headers_expected;
     mismatched_headers_expected.emplace_back("name1", "value1", std::nullopt);
     mismatched_headers_expected.emplace_back("name2", "value2", std::nullopt);
     mismatched_headers_expected.emplace_back("name3", "value3", std::nullopt);

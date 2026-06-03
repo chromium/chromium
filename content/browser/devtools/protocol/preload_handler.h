@@ -15,6 +15,8 @@
 #include "content/browser/devtools/protocol/preload.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/headers_matcher.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -22,7 +24,6 @@ namespace content {
 
 class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
-struct PrerenderMismatchedHeaders;
 
 namespace protocol {
 
@@ -54,7 +55,8 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
       PreloadingTriggeringOutcome status,
       std::optional<PrerenderFinalStatus> prerender_status,
       std::optional<std::string> disallowed_mojo_interface,
-      const std::vector<PrerenderMismatchedHeaders>* mismatched_headers);
+      const std::vector<network::MismatchedHttpRequestHeader>*
+          mismatched_headers);
 
  private:
   Response Enable() override;

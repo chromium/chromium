@@ -19,8 +19,10 @@
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/preloading_trigger_type.h"
+#include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/cpp/headers_matcher.h"
 
 namespace content {
 
@@ -80,20 +82,20 @@ void ReportHeaderMismatch(const std::string& key,
 }
 
 void ReportAllPrerenderMismatchedHeaders(
-    const std::vector<PrerenderMismatchedHeaders>& mismatched_headers,
+    const std::vector<network::MismatchedHttpRequestHeader>& mismatched_headers,
     const std::string& histogram_suffix) {
   for (const auto& mismatched_header : mismatched_headers) {
-    if (mismatched_header.initial_value.has_value() &&
-        mismatched_header.activation_value.has_value()) {
-      ReportHeaderMismatch(mismatched_header.header_name,
+    if (mismatched_header.expected_value.has_value() &&
+        mismatched_header.actual_value.has_value()) {
+      ReportHeaderMismatch(mismatched_header.lowered_key,
                            HeaderMismatchType::kValueMismatch,
                            histogram_suffix);
-    } else if (mismatched_header.initial_value.has_value()) {
-      ReportHeaderMismatch(mismatched_header.header_name,
+    } else if (mismatched_header.expected_value.has_value()) {
+      ReportHeaderMismatch(mismatched_header.lowered_key,
                            HeaderMismatchType::kMissingInActivation,
                            histogram_suffix);
     } else {
-      ReportHeaderMismatch(mismatched_header.header_name,
+      ReportHeaderMismatch(mismatched_header.lowered_key,
                            HeaderMismatchType::kMissingInPrerendering,
                            histogram_suffix);
     }
@@ -155,9 +157,10 @@ PrerenderCancellationReason::BuildForMojoBinderPolicy(
                                      interface_name);
 }
 
-const std::vector<PrerenderMismatchedHeaders>*
+const std::vector<network::MismatchedHttpRequestHeader>*
 PrerenderCancellationReason::GetPrerenderMismatchedHeaders() const {
-  return std::get_if<std::vector<PrerenderMismatchedHeaders>>(&explanation_);
+  return std::get_if<std::vector<network::MismatchedHttpRequestHeader>>(
+      &explanation_);
 }
 
 // static
@@ -168,7 +171,7 @@ PrerenderCancellationReason PrerenderCancellationReason::
 }
 
 void PrerenderCancellationReason::SetPrerenderMismatchedHeaders(
-    std::unique_ptr<std::vector<PrerenderMismatchedHeaders>>
+    std::unique_ptr<std::vector<network::MismatchedHttpRequestHeader>>
         mismatched_headers) {
   explanation_ = std::move(*mismatched_headers);
 }
@@ -216,11 +219,12 @@ void PrerenderCancellationReason::ReportMetrics(
                                  histogram_suffix);
       break;
     case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
-      CHECK(std::holds_alternative<std::vector<PrerenderMismatchedHeaders>>(
+      CHECK(std::holds_alternative<
+                std::vector<network::MismatchedHttpRequestHeader>>(
                 explanation_) ||
             std::holds_alternative<std::monostate>(explanation_));
       if (auto* mismatched_headers =
-              std::get_if<std::vector<PrerenderMismatchedHeaders>>(
+              std::get_if<std::vector<network::MismatchedHttpRequestHeader>>(
                   &explanation_)) {
         ReportAllPrerenderMismatchedHeaders(*mismatched_headers,
                                             histogram_suffix);
@@ -242,28 +246,6 @@ PrerenderCancellationReason::DisallowedMojoInterface() const {
       return std::nullopt;
   }
 }
-
-PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
-    const std::string& header_name,
-    std::optional<std::string> initial_value,
-    std::optional<std::string> activation_value)
-    : header_name(header_name),
-      initial_value(std::move(initial_value)),
-      activation_value(std::move(activation_value)) {}
-
-PrerenderMismatchedHeaders::~PrerenderMismatchedHeaders() = default;
-
-PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
-    const PrerenderMismatchedHeaders& other) = default;
-
-PrerenderMismatchedHeaders::PrerenderMismatchedHeaders(
-    PrerenderMismatchedHeaders&& other) = default;
-
-PrerenderMismatchedHeaders& PrerenderMismatchedHeaders::operator=(
-    const PrerenderMismatchedHeaders& other) = default;
-
-PrerenderMismatchedHeaders& PrerenderMismatchedHeaders::operator=(
-    PrerenderMismatchedHeaders&& other) = default;
 
 std::string GeneratePrerenderHistogramSuffix(
     PreloadingTriggerType trigger_type,

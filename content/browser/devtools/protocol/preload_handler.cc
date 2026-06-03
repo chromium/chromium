@@ -19,6 +19,8 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/prefetch_service_delegate.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/headers_matcher.h"
 
 namespace content::protocol {
 
@@ -425,7 +427,8 @@ void PreloadHandler::DidUpdatePrerenderStatus(
     PreloadingTriggeringOutcome status,
     std::optional<PrerenderFinalStatus> prerender_status,
     std::optional<std::string> disallowed_mojo_interface,
-    const std::vector<PrerenderMismatchedHeaders>* mismatched_headers) {
+    const std::vector<network::MismatchedHttpRequestHeader>*
+        mismatched_headers) {
   if (!enabled_) {
     return;
   }
@@ -462,15 +465,15 @@ void PreloadHandler::DidUpdatePrerenderStatus(
     for (const auto& mismatched_headers_it : *mismatched_headers) {
       auto protocol_mismatched_headers =
           protocol::Preload::PrerenderMismatchedHeaders::Create()
-              .SetHeaderName(mismatched_headers_it.header_name)
+              .SetHeaderName(mismatched_headers_it.lowered_key)
               .Build();
-      if (mismatched_headers_it.initial_value) {
+      if (mismatched_headers_it.expected_value) {
         protocol_mismatched_headers->SetInitialValue(
-            mismatched_headers_it.initial_value.value());
+            mismatched_headers_it.expected_value.value());
       }
-      if (mismatched_headers_it.activation_value) {
+      if (mismatched_headers_it.actual_value) {
         protocol_mismatched_headers->SetActivationValue(
-            mismatched_headers_it.activation_value.value());
+            mismatched_headers_it.actual_value.value());
       }
       mismatched_headers_internal->push_back(
           std::move(protocol_mismatched_headers));
