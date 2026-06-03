@@ -161,6 +161,9 @@ crbug.com/887140 virtual/hdr/color-jpeg-with-color-profile.html [ Failure ]
 crbug.com/887140 virtual/hdr/color-profile-video.html [ Failure ]
 crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Failure ]
 
+# Temporary, to land a devtools CL
+crbug.com/407752191 http/tests/devtools/sources/debugger-ui/watch-expressions-panel-switch.js [ Failure Pass Timeout ]
+
 # ====== Synchronous, budgeted HTML parser tests from here ========================
 # See crbug.com/1254921 for details.
 # These tests either started failing outright, or became flaky, when the new HTML
