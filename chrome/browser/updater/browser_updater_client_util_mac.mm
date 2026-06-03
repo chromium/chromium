@@ -341,10 +341,15 @@ void SetUpSystemUpdater() {
   }
 
   base::apple::ScopedCFTypeRef<CFErrorRef> error;
-  Boolean result =
-      SMJobBless(kSMDomainSystemLaunchd,
-                 base::SysUTF8ToCFStringRef(kPrivilegedHelperName).get(),
-                 authorization, error.InitializeInto());
+  Boolean result = false;
+  // TODO(crbug.com/519500401): Migrate away from SMJobBless, which was
+  // deprecated in macOS 13.0, and use SMAppService instead.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  result = SMJobBless(kSMDomainSystemLaunchd,
+                      base::SysUTF8ToCFStringRef(kPrivilegedHelperName).get(),
+                      authorization, error.InitializeInto());
+#pragma clang diagnostic pop
   if (!result) {
     base::apple::ScopedCFTypeRef<CFStringRef> desc(
         CFErrorCopyDescription(error.get()));
