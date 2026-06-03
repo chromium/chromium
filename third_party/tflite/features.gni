@@ -10,7 +10,8 @@ if (build_with_chromium) {
 }
 
 declare_args() {
-  # Controls whether Chromium uses the legacy TFLite checkout or the new LiteRT code.
+  # Controls whether Chromium uses the legacy TFLite checkout or the new LiteRT
+  # code.
   use_litert_tflite = false
 
   # This enables building TFLite with XNNPACK.
