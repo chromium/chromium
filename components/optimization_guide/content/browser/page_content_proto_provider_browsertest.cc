@@ -2914,6 +2914,31 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                    gfx::Rect(100, 100, 200, 300));
 }
 
+// Popups may be rendered as native OS-level widgets on Android and Apple OSs.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       HiddenPopupsIgnored) {
+  LoadPage(https_server()->GetURL("/open_popup.html"));
+
+  content::ShowPopupWidgetWaiter new_popup_waiter(
+      web_contents(), web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('select_input').showPicker();"));
+  new_popup_waiter.Wait();
+
+  // Verify initially that the popup is detected since it's showing.
+  LoadData(GetActionableAIPageContentOptions());
+  ASSERT_TRUE(page_content().has_popup_window());
+
+  // Hide the web contents to simulate hiding the popup and verify it is no
+  // longer verified/allowed as a popup.
+  web_contents()->WasHidden();
+
+  LoadData(GetActionableAIPageContentOptions());
+  EXPECT_FALSE(page_content().has_popup_window());
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
+
 }  // namespace
 
 }  // namespace optimization_guide
