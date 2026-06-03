@@ -2352,9 +2352,9 @@ ClipboardExtractedData ClientSideDetectionHost::ExtractClipboardData(
     has_runner = true;
   }
 
-  // Replace shell delimiters with space to simplify tokenization.
-  std::vector<std::u16string> delimiters = {u"&&", u"||", u"$(", u"|",
-                                            u";",  u")",  u"`"};
+  // Replace shell and scripting delimiters with space to simplify tokenization.
+  std::vector<std::u16string> delimiters = {
+      u"&&", u"||", u"$(", u"|", u";", u")", u"`", u"(", u"{", u"}", u"::"};
   for (const auto& delimiter : delimiters) {
     base::ReplaceSubstringsAfterOffset(&processed_payload, 0, delimiter, u" ");
   }

@@ -5391,10 +5391,10 @@ TEST_F(ClientSideDetectionHostClipboardDataTest, MixedCaseAndPaths) {
 }
 
 TEST_F(ClientSideDetectionHostClipboardDataTest, MixedDelimiters) {
-  ClipboardExtractedData data =
-      ExtractFromPayload(u"curl\thttps://e.com\rwget\nhttp://b.com|bash;cmd");
+  ClipboardExtractedData data = ExtractFromPayload(
+      u"curl\thttps://e.com\rwget\nhttp://b.com|{bash};(cmd::iex)");
   EXPECT_THAT(data.suspicious_tokens(),
-              ::testing::ElementsAre("curl", "wget", "bash", "cmd"));
+              ::testing::ElementsAre("curl", "wget", "bash", "cmd", "iex"));
   EXPECT_TRUE(data.is_first_token_suspicious());
   EXPECT_TRUE(data.is_last_token_suspicious());
   EXPECT_TRUE(data.is_overall_suspicious());
