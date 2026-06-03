@@ -159,7 +159,8 @@ class BASE_EXPORT ThreadController {
   // Sets the SingleThreadTaskRunner that will be returned by
   // SingleThreadTaskRunner::GetCurrentDefault on the thread controlled by this
   // ThreadController.
-  virtual void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>) = 0;
+  virtual void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>,
+                                    ThreadType thread_type) = 0;
 
   // TODO(altimin): Get rid of the methods below.
   // These methods exist due to current integration of SequenceManager

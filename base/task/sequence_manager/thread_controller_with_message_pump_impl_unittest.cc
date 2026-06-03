@@ -147,11 +147,12 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
     }
     task_execution_stack_.push_back(std::move(tasks_.front()));
     tasks_.pop();
+
     return SelectedTask(task_execution_stack_.back(),
                         TaskExecutionTraceLogger(),
                         static_cast<TaskQueue::QueuePriority>(
                             TaskQueue::DefaultQueuePriority::kNormalPriority),
-                        ThreadType::kDefault, QueueName::TEST_TQ);
+                        thread_type_, QueueName::TEST_TQ);
   }
 
   void DidRunTask(LazyNow& lazy_now) override {
@@ -183,7 +184,7 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
     DCHECK(tasks_.empty() || delayed_run_time.is_null() ||
            tasks_.back().delayed_run_time < delayed_run_time);
     tasks_.emplace(
-        PostedTask(nullptr, std::move(task), posted_from, delayed_run_time,
+        PostedTask(task_runner_, std::move(task), posted_from, delayed_run_time,
                    base::subtle::DelayPolicy::kFlexibleNoSooner),
         EnqueueOrder::FromIntForTesting(13), EnqueueOrder(), queue_time);
   }
@@ -203,6 +204,12 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
   void MaybeEmitTaskDetails(perfetto::EventContext& ctx,
                             const SelectedTask& selected_task) const override {}
 
+  void set_thread_type(ThreadType thread_type) { thread_type_ = thread_type; }
+
+  void set_task_runner(scoped_refptr<SingleThreadTaskRunner> task_runner) {
+    task_runner_ = std::move(task_runner);
+  }
+
  private:
   raw_ptr<TickClock> clock_;
   std::queue<Task> tasks_;
@@ -215,6 +222,8 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
   // See also `SequenceManagerImpl::MainThreadOnly::task_execution_stack`.
   std::deque<Task> task_execution_stack_;
   bool next_wakeup_needs_high_res = false;
+  ThreadType thread_type_ = ThreadType::kDefault;
+  scoped_refptr<SingleThreadTaskRunner> task_runner_;
 };
 
 }  // namespace
@@ -499,14 +508,43 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 TEST_F(ThreadControllerWithMessagePumpTest, SetDefaultTaskRunner) {
   scoped_refptr<SingleThreadTaskRunner> task_runner1 =
       MakeRefCounted<FakeTaskRunner>();
-  thread_controller_.SetDefaultTaskRunner(task_runner1);
+  thread_controller_.SetDefaultTaskRunner(task_runner1, ThreadType::kDefault);
   EXPECT_EQ(task_runner1, SingleThreadTaskRunner::GetCurrentDefault());
 
   // Check that we are correctly supporting overriding.
   scoped_refptr<SingleThreadTaskRunner> task_runner2 =
       MakeRefCounted<FakeTaskRunner>();
-  thread_controller_.SetDefaultTaskRunner(task_runner2);
+  thread_controller_.SetDefaultTaskRunner(task_runner2, ThreadType::kDefault);
   EXPECT_EQ(task_runner2, SingleThreadTaskRunner::GetCurrentDefault());
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest,
+       CurrentTaskRunnerInheritsThreadType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine("CurrentTaskRunnerInheritsThreadType", "");
+  thread_controller_.InitializeFeatures();
+
+  scoped_refptr<SingleThreadTaskRunner> default_task_runner =
+      MakeRefCounted<FakeTaskRunner>();
+  thread_controller_.SetDefaultTaskRunner(default_task_runner,
+                                          ThreadType::kDefault);
+
+  scoped_refptr<SingleThreadTaskRunner> low_priority_task_runner =
+      MakeRefCounted<FakeTaskRunner>();
+  task_source_.set_thread_type(ThreadType::kBackground);
+  task_source_.set_task_runner(low_priority_task_runner);
+
+  bool task_ran = false;
+  task_source_.AddTask(FROM_HERE, BindLambdaForTesting([&] {
+                         EXPECT_EQ(low_priority_task_runner,
+                                   SingleThreadTaskRunner::GetCurrentDefault());
+                         task_ran = true;
+                       }));
+
+  EXPECT_CALL(*message_pump_, Run(_))
+      .WillOnce([](MessagePump::Delegate* delegate) { delegate->DoWork(); });
+  RunLoop().Run();
+  EXPECT_TRUE(task_ran);
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, EnsureWorkScheduled) {

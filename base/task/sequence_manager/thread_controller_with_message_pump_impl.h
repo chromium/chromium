@@ -64,8 +64,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void SetNextDelayedDoWork(LazyNow* lazy_now,
                             std::optional<WakeUp> wake_up) override;
   bool RunsTasksInCurrentSequence() override;
-  void SetDefaultTaskRunner(
-      scoped_refptr<SingleThreadTaskRunner> task_runner) override;
+  void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner> task_runner,
+                            ThreadType thread_type) override;
   scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() override;
   void AddNestingObserver(RunLoop::NestingObserver* observer) override;
   void RemoveNestingObserver(RunLoop::NestingObserver* observer) override;
@@ -116,6 +116,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     // Only used if this thread represents the main thread of the process.
     std::optional<SingleThreadTaskRunner::MainThreadDefaultHandle>
         main_thread_default_task_runner_handle;
+
+    ThreadType thread_type_;
 
     // Indicates that we should yield DoWork between each task to let a possibly
     // nested RunLoop exit.

@@ -20,6 +20,7 @@ class MainThreadSchedulerImpl;
 
 namespace base::sequence_manager::internal {
 class CurrentDefaultHandleOverrideForRunOrPostTask;
+class ThreadControllerWithMessagePumpImpl;
 }
 
 namespace base {
@@ -114,6 +115,8 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
     friend class CurrentHandleOverrideForTesting;
     friend class sequence_manager::internal::
         CurrentDefaultHandleOverrideForRunOrPostTask;
+    friend class sequence_manager::internal::
+        ThreadControllerWithMessagePumpImpl;
     friend class ScopedMockTimeMessageLoopTaskRunner;
     friend class ScopedMockTimeMessageLoopTaskRunnerTest;
     FRIEND_TEST_ALL_PREFIXES(SingleThreadTaskRunnerCurrentDefaultHandleTest,

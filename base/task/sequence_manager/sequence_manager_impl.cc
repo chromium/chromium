@@ -989,7 +989,9 @@ void SequenceManagerImpl::SetDefaultTaskQueue(TaskQueue* task_queue) {
 void SequenceManagerImpl::SetDefaultTaskRunner(
     scoped_refptr<SingleThreadTaskRunner> task_runner,
     TaskQueue::QueuePriority priority) {
-  controller_->SetDefaultTaskRunner(std::move(task_runner));
+  controller_->SetDefaultTaskRunner(
+      std::move(task_runner),
+      settings().priority_settings.TaskPriorityToThreadType(priority));
 }
 
 const TickClock* SequenceManagerImpl::GetTickClock() const {
