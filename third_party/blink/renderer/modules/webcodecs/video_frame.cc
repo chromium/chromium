@@ -379,6 +379,7 @@ class CanvasNon2DResourceProviderCache
             required_provider_info.size, required_provider_info.format,
             required_provider_info.alpha_type,
             required_provider_info.color_space,
+            required_provider_info.hdr_metadata,
             SharedGpuContext::ContextProviderWrapper(),
             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 

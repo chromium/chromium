@@ -120,7 +120,7 @@ class VideoFrameImageUtilTest
     if (ShouldCreateAcceleratedImages(raster_context_provider())) {
       auto snapshot_provider = CanvasNon2DResourceProviderSharedImage::Create(
           info.size, info.format, info.alpha_type, info.color_space,
-          SharedGpuContext::ContextProviderWrapper(),
+          info.hdr_metadata, SharedGpuContext::ContextProviderWrapper(),
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
       if (!snapshot_provider) {
         DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
