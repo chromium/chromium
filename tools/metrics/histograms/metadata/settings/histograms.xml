@@ -1430,9 +1430,9 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.StartupPageEngineTypes2"
-    enum="OmniboxSearchEngineType" expires_after="2026-05-10">
+    enum="OmniboxSearchEngineType" expires_after="2027-06-02">
   <owner>mpearson@chromium.org</owner>
-  <owner>csharp@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
   <summary>
     Tries to pretend the startup page URLs are search URLs, and records the
     search engine types of those URLs by comparing the TLD+1s of the URLs with
