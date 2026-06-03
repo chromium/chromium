@@ -149,6 +149,7 @@ source_set("unit_tests") {
     "//components/custom_handlers:test_support",
     "//components/infobars/content",
     "//components/no_state_prefetch/browser",
+    "//components/tabs:test_support",
     "//services/data_decoder/public/cpp:test_support",
   ]
 }
