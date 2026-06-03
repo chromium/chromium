@@ -810,6 +810,13 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      */
     void setUrlFocusAnimationsDisabled(boolean disable) {
         if (disable == mDisableUrlFocusChangeAnimations) return;
+        if (disable) {
+            // Force reset layout translation Y to prevent elements from staying stuck off-screen.
+            mModel.set(NewTabPageLayoutProperties.TRANSITION_Y, 0f);
+            // Force restore fake search box and logo alphas to fully visible (1.f).
+            setSearchBoxAlpha(1.f);
+            setSearchProviderLogoAlpha(1.f);
+        }
         mDisableUrlFocusChangeAnimations = disable;
         if (!disable) onUrlFocusAnimationChanged();
     }
@@ -876,6 +883,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * @param alpha opacity (alpha) value to use.
      */
     public void setSearchBoxAlpha(float alpha) {
+        if (mDisableUrlFocusChangeAnimations) return;
+
         if (mNtpSearchBox != null) {
             mNtpSearchBox.setAlpha(alpha);
         }
@@ -887,6 +896,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * @param alpha opacity (alpha) value to use.
      */
     public void setSearchProviderLogoAlpha(float alpha) {
+        if (mDisableUrlFocusChangeAnimations) return;
+
         if (mLogoCoordinator != null) mLogoCoordinator.setAlpha(alpha);
     }
 
