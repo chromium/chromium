@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_WAYLAND_WAYLAND_POINTER_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/exo/pointer_delegate.h"
 #include "components/exo/wayland/wayland_input_delegate.h"
 
@@ -27,6 +28,8 @@ class WaylandPointerDelegate : public WaylandInputDelegate,
   WaylandPointerDelegate(const WaylandPointerDelegate&) = delete;
   WaylandPointerDelegate& operator=(const WaylandPointerDelegate&) = delete;
 
+  ~WaylandPointerDelegate() override;
+
   // Overridden from PointerDelegate:
   void OnPointerDestroying(Pointer* pointer) override;
   bool CanAcceptPointerEventsForSurface(Surface* surface) const override;
@@ -44,6 +47,7 @@ class WaylandPointerDelegate : public WaylandInputDelegate,
                        bool discrete) override;
   void OnFingerScrollStop(base::TimeTicks time_stamp) override;
   void OnPointerFrame() override;
+  base::WeakPtr<PointerDelegate> GetWeakPtr() override;
 
  private:
   // The client who own this pointer instance.
@@ -54,6 +58,8 @@ class WaylandPointerDelegate : public WaylandInputDelegate,
 
   // Owned by Server, which always outlives this delegate.
   const raw_ptr<SerialTracker> serial_tracker_;
+
+  base::WeakPtrFactory<WaylandPointerDelegate> weak_factory_{this};
 };
 
 }  // namespace wayland

@@ -11,6 +11,7 @@
 #include "ash/drag_drop/toplevel_window_drag_delegate.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/exo/data_source_observer.h"
 #include "ui/aura/scoped_window_event_targeting_blocker.h"
@@ -44,6 +45,7 @@ class ExtendedDragSource : public DataSourceObserver,
     virtual bool ShouldAllowDropAnywhere() const = 0;
     virtual bool ShouldLockCursor() const = 0;
     virtual void OnDataSourceDestroying() = 0;
+    virtual base::WeakPtr<Delegate> GetWeakPtr() = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -105,7 +107,7 @@ class ExtendedDragSource : public DataSourceObserver,
 
   // Created and destroyed at wayland/zcr_extended_drag.cc and its lifetime is
   // tied to the zcr_extended_drag_source_v1 object it's attached to.
-  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
+  base::WeakPtr<Delegate> delegate_;
 
   // The pointer location in screen coordinates.
   gfx::PointF pointer_location_;

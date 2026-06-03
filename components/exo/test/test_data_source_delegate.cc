@@ -44,4 +44,8 @@ void TestDataSourceDelegate::SetData(const std::string& mime_type,
   data_map_.insert_or_assign(mime_type, std::move(data));
 }
 
+base::WeakPtr<DataSourceDelegate> TestDataSourceDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace exo::test

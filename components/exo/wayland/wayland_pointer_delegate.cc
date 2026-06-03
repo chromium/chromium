@@ -21,6 +21,8 @@ WaylandPointerDelegate::WaylandPointerDelegate(wl_resource* pointer_resource,
                                                SerialTracker* serial_tracker)
     : pointer_resource_(pointer_resource), serial_tracker_(serial_tracker) {}
 
+WaylandPointerDelegate::~WaylandPointerDelegate() = default;
+
 void WaylandPointerDelegate::OnPointerDestroying(Pointer* pointer) {
   delete this;
 }
@@ -183,6 +185,10 @@ void WaylandPointerDelegate::OnPointerFrame() {
     wl_pointer_send_frame(pointer_resource_);
   }
   wl_client_flush(client());
+}
+
+base::WeakPtr<PointerDelegate> WaylandPointerDelegate::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 wl_client* WaylandPointerDelegate::client() const {

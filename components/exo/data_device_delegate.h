@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_DATA_DEVICE_DELEGATE_H_
 #define COMPONENTS_EXO_DATA_DEVICE_DELEGATE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/exo/data_offer.h"
 
 namespace base {
@@ -27,6 +28,8 @@ class DataDeviceDelegate {
   // Called at the top of the data device's destructor, to give observers a
   // chance to remove themselves.
   virtual void OnDataDeviceDestroying(DataDevice* data_device) = 0;
+
+  virtual base::WeakPtr<DataDeviceDelegate> GetWeakPtr() = 0;
 
   // Called when DataOffer object is delivered from a client. DataDeviceDelegate
   // has responsibility to release the returned DataOffer object.

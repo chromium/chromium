@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/class_property.h"
 #include "url/gurl.h"
@@ -109,7 +110,7 @@ class DataOffer final : public ui::PropertyHandler {
   void OnPickledUrlsResolved(SendDataCallback callback,
                              const std::vector<GURL>& urls);
 
-  const raw_ptr<DataOfferDelegate, DanglingUntriaged> delegate_;
+  base::WeakPtr<DataOfferDelegate> delegate_;
 
   // Data for a given mime type may not ever be requested, or may be requested
   // more than once. Using callbacks and a cache allows us to delay any

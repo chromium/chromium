@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/exo/data_device_delegate.h"
 
 namespace exo::test {
@@ -51,6 +52,7 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
   void OnDrop() override;
   void OnSelection(const DataOffer& data_offer) override;
   bool CanAcceptDataEventsForSurface(Surface* surface) const override;
+  base::WeakPtr<DataDeviceDelegate> GetWeakPtr() override;
 
  private:
   std::vector<DataEvent> events_;
@@ -58,6 +60,8 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
   std::unique_ptr<DataOffer> data_offer_;
   raw_ptr<Surface, DanglingUntriaged> entered_surface_ = nullptr;
   bool can_accept_data_events_for_surface_ = true;
+
+  base::WeakPtrFactory<TestDataDeviceDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace exo::test

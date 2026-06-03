@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+
 namespace exo {
 
 class DataOffer;
@@ -19,6 +21,8 @@ class DataOfferDelegate {
   // Called at the top of the data device's destructor, to give observers a
   // chance to remove themselves.
   virtual void OnDataOfferDestroying(DataOffer* offer) = 0;
+
+  virtual base::WeakPtr<DataOfferDelegate> GetWeakPtr() = 0;
 
   // Called when |mime_type| is offered by the client.
   virtual void OnOffer(const std::string& mime_type) = 0;

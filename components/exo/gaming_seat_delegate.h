@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_GAMING_SEAT_DELEGATE_H_
 #define COMPONENTS_EXO_GAMING_SEAT_DELEGATE_H_
 
+#include "base/memory/weak_ptr.h"
+
 namespace exo {
 class Surface;
 class GamepadDelegate;
@@ -25,6 +27,7 @@ class GamingSeatDelegate {
   // When a new gamepad is connected, gaming seat call this to assign a
   // gamepad delegate to the gamepad.
   virtual void GamepadAdded(Gamepad& gamepad) = 0;
+  virtual base::WeakPtr<GamingSeatDelegate> GetWeakPtr() = 0;
 
  protected:
   virtual ~GamingSeatDelegate() = default;

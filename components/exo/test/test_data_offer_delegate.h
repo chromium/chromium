@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "components/exo/data_device.h"
 #include "components/exo/data_offer_delegate.h"
 #include "components/exo/test/test_security_delegate.h"
@@ -36,6 +37,7 @@ class TestDataOfferDelegate : public DataOfferDelegate {
   }
   DndAction dnd_action() const { return dnd_action_; }
   TestSecurityDelegate* GetSecurityDelegate() const override;
+  base::WeakPtr<DataOfferDelegate> GetWeakPtr() override;
 
  private:
   base::flat_set<std::string> mime_types_;
@@ -43,6 +45,8 @@ class TestDataOfferDelegate : public DataOfferDelegate {
   DndAction dnd_action_ = DndAction::kNone;
   std::unique_ptr<TestSecurityDelegate> security_delegate_ =
       std::make_unique<TestSecurityDelegate>();
+
+  base::WeakPtrFactory<TestDataOfferDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace exo::test

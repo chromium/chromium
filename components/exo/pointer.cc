@@ -124,7 +124,7 @@ Pointer::Pointer(PointerDelegate* delegate,
                  Seat* seat,
                  std::unique_ptr<aura::Window> host_window)
     : SurfaceTreeHost("ExoPointer", std::move(host_window)),
-      delegate_(delegate),
+      delegate_(delegate->GetWeakPtr()),
       seat_(seat),
       cursor_(ui::mojom::CursorType::kNull),
       cursor_capture_source_id_(base::UnguessableToken::Create()) {
@@ -164,7 +164,9 @@ Pointer::~Pointer() {
     env_pre_target_handler_added_ = false;
   }
 
-  delegate_->OnPointerDestroying(this);
+  if (delegate_) {
+    delegate_->OnPointerDestroying(this);
+  }
   if (focus_surface_)
     focus_surface_->RemoveSurfaceObserver(this);
   if (pinch_delegate_)
@@ -526,9 +528,11 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
     // drop operation.
     int released_button_flags =
         button_flags_on_drag_drop_start_ & ~event->button_flags();
-    delegate_->OnPointerButton(event->time_stamp(), released_button_flags,
-                               false);
-    delegate_->OnPointerFrame();
+    if (delegate_) {
+      delegate_->OnPointerButton(event->time_stamp(), released_button_flags,
+                                 false);
+      delegate_->OnPointerFrame();
+    }
     button_flags_on_drag_drop_start_ = 0;
   }
 
@@ -635,8 +639,10 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
         location_in_surface_ = location_in_target;
       } else if (event->type() != ui::EventType::kMouseExited &&
                  !ignore_motion) {
-        delegate_->OnPointerMotion(event->time_stamp(), location_in_target);
-        needs_frame |= true;
+        if (delegate_) {
+          delegate_->OnPointerMotion(event->time_stamp(), location_in_target);
+          needs_frame |= true;
+        }
         location_in_root_ = location_in_root;
         location_in_surface_ = location_in_target;
       }
@@ -654,10 +660,12 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
           ConstrainPointer(it->second);
         }
       }
-      delegate_->OnPointerButton(event->time_stamp(),
-                                 event->changed_button_flags(),
-                                 event->type() == ui::EventType::kMousePressed);
-      needs_frame |= true;
+      if (delegate_) {
+        delegate_->OnPointerButton(
+            event->time_stamp(), event->changed_button_flags(),
+            event->type() == ui::EventType::kMousePressed);
+        needs_frame |= true;
+      }
       break;
     }
     case ui::EventType::kScroll: {
@@ -667,34 +675,43 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
       // to trigger overview mode.
       if (scroll_event->finger_count() >= 3)
         break;
-      delegate_->OnPointerScroll(
-          event->time_stamp(),
-          gfx::Vector2dF(scroll_event->x_offset(), scroll_event->y_offset()),
-          false);
-      needs_frame |= true;
+      if (delegate_) {
+        delegate_->OnPointerScroll(
+            event->time_stamp(),
+            gfx::Vector2dF(scroll_event->x_offset(), scroll_event->y_offset()),
+            false);
+        needs_frame |= true;
+      }
       break;
     }
     case ui::EventType::kMousewheel: {
-      delegate_->OnPointerScroll(
-          event->time_stamp(),
-          static_cast<ui::MouseWheelEvent*>(event)->offset(), true);
-      needs_frame |= true;
+      if (delegate_) {
+        delegate_->OnPointerScroll(
+            event->time_stamp(),
+            static_cast<ui::MouseWheelEvent*>(event)->offset(), true);
+        needs_frame |= true;
+      }
       break;
     }
     case ui::EventType::kScrollFlingStart: {
       // Fling start in chrome signals the lifting of fingers after scrolling.
       // In wayland terms this signals the end of a scroll sequence.
-      delegate_->OnFingerScrollStop(event->time_stamp());
-      needs_frame |= true;
+      if (delegate_) {
+        delegate_->OnFingerScrollStop(event->time_stamp());
+        needs_frame |= true;
+      }
       break;
     }
     case ui::EventType::kScrollFlingCancel: {
       // We emulate fling cancel by starting a new scroll sequence that
       // scrolls by 0 pixels, effectively stopping any kinetic scroll motion.
-      delegate_->OnPointerScroll(event->time_stamp(), gfx::Vector2dF(), false);
-      delegate_->OnPointerFrame();
-      delegate_->OnFingerScrollStop(event->time_stamp());
-      delegate_->OnPointerFrame();
+      if (delegate_) {
+        delegate_->OnPointerScroll(event->time_stamp(), gfx::Vector2dF(),
+                                   false);
+        delegate_->OnPointerFrame();
+        delegate_->OnFingerScrollStop(event->time_stamp());
+        delegate_->OnPointerFrame();
+      }
       break;
     }
     case ui::EventType::kMouseMoved:
@@ -736,8 +753,9 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
     event->StopPropagation();
   }
 
-  if (needs_frame)
+  if (needs_frame && delegate_) {
     delegate_->OnPointerFrame();
+  }
 }
 
 void Pointer::OnScrollEvent(ui::ScrollEvent* event) {
@@ -759,17 +777,23 @@ void Pointer::OnGestureEvent(ui::GestureEvent* event) {
     case ui::EventType::kGesturePinchBegin:
       pinch_delegate_->OnPointerPinchBegin(event->unique_touch_event_id(),
                                            event->time_stamp(), focus_surface_);
-      delegate_->OnPointerFrame();
+      if (delegate_) {
+        delegate_->OnPointerFrame();
+      }
       break;
     case ui::EventType::kGesturePinchUpdate:
       pinch_delegate_->OnPointerPinchUpdate(event->time_stamp(),
                                             event->details().scale());
-      delegate_->OnPointerFrame();
+      if (delegate_) {
+        delegate_->OnPointerFrame();
+      }
       break;
     case ui::EventType::kGesturePinchEnd:
       pinch_delegate_->OnPointerPinchEnd(event->unique_touch_event_id(),
                                          event->time_stamp());
-      delegate_->OnPointerFrame();
+      if (delegate_) {
+        delegate_->OnPointerFrame();
+      }
       break;
     default:
       break;
@@ -885,8 +909,10 @@ Surface* Pointer::GetEffectiveTargetForEvent(
   } else {
     target = GetTargetSurfaceForLocatedEvent(event);
 
-    if (!target || !delegate_->CanAcceptPointerEventsForSurface(target))
+    if (!target || !delegate_ ||
+        !delegate_->CanAcceptPointerEventsForSurface(target)) {
       return nullptr;
+    }
   }
 
   if (target) {
@@ -902,11 +928,14 @@ void Pointer::SetFocus(Surface* surface,
                        const gfx::PointF& root_location,
                        const gfx::PointF& surface_location,
                        int button_flags) {
-  DCHECK(!surface || delegate_->CanAcceptPointerEventsForSurface(surface));
+  DCHECK(!surface || !delegate_ ||
+         delegate_->CanAcceptPointerEventsForSurface(surface));
   // First generate a leave event if we currently have a target in focus.
   if (focus_surface_) {
-    delegate_->OnPointerLeave(focus_surface_);
-    delegate_->OnPointerFrame();
+    if (delegate_) {
+      delegate_->OnPointerLeave(focus_surface_);
+      delegate_->OnPointerFrame();
+    }
     // Require SetCursor() to be called and cursor to be re-defined in
     // response to each OnPointerEnter() call.
     Surface* old_surface = focus_surface_;
@@ -922,8 +951,10 @@ void Pointer::SetFocus(Surface* surface,
         aura::client::GetDragDropClient(surface->window()->GetRootWindow()));
     DCHECK(!drag_drop_controller->IsDragDropInProgress());
 #endif
-    delegate_->OnPointerEnter(surface, surface_location, button_flags);
-    delegate_->OnPointerFrame();
+    if (delegate_) {
+      delegate_->OnPointerEnter(surface, surface_location, button_flags);
+      delegate_->OnPointerFrame();
+    }
     location_in_root_ = root_location;
     location_in_surface_ = surface_location;
     focus_surface_ = surface;

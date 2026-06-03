@@ -11,6 +11,7 @@
 #include <cstdint>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
@@ -51,9 +52,15 @@ class ZcrExtendedDragSourceDelegate : public ExtendedDragSource::Delegate {
 
   void OnDataSourceDestroying() override { delete this; }
 
+  base::WeakPtr<ExtendedDragSource::Delegate> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   const raw_ptr<wl_resource> resource_;
   const uint32_t settings_;
+
+  base::WeakPtrFactory<ZcrExtendedDragSourceDelegate> weak_factory_{this};
 };
 
 void extended_drag_source_destroy(wl_client* client, wl_resource* resource) {

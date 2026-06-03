@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/exo/gamepad.h"
 #include "components/exo/gamepad_delegate.h"
 #include "components/exo/gamepad_observer.h"
@@ -279,9 +280,15 @@ class WaylandGamingSeatDelegate : public GamingSeatDelegate {
     wl_client_flush(wl_resource_get_client(gaming_seat_resource_));
   }
 
+  base::WeakPtr<GamingSeatDelegate> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // The gaming seat resource associated with the gaming seat.
   const raw_ptr<wl_resource> gaming_seat_resource_;
+
+  base::WeakPtrFactory<WaylandGamingSeatDelegate> weak_factory_{this};
 };
 
 void gaming_seat_destroy(wl_client* client, wl_resource* resource) {

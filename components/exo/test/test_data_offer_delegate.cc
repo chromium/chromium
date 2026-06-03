@@ -27,4 +27,8 @@ TestSecurityDelegate* TestDataOfferDelegate::GetSecurityDelegate() const {
   return security_delegate_.get();
 }
 
+base::WeakPtr<DataOfferDelegate> TestDataOfferDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace exo::test

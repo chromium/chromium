@@ -133,25 +133,29 @@ void ReadRTFFromClipboard(const ui::DataTransferEndpoint data_dst,
 }
 
 void OnReceiveFilenamesFromClipboard(ui::EndpointType endpoint_type,
-                                     SecurityDelegate* security_delegate,
+                                     base::WeakPtr<DataOfferDelegate> delegate,
                                      DataOffer::SendDataCallback callback,
                                      std::vector<ui::FileInfo> filenames) {
   if (filenames.empty()) {
     std::move(callback).Run(nullptr);
     return;
   }
-  security_delegate->SendFileInfo(endpoint_type, std::move(filenames),
-                                  std::move(callback));
+  if (!delegate) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  delegate->GetSecurityDelegate()->SendFileInfo(
+      endpoint_type, std::move(filenames), std::move(callback));
 }
 
 void ReadFilenamesFromClipboard(ui::EndpointType endpoint_type,
-                                SecurityDelegate* security_delegate,
+                                base::WeakPtr<DataOfferDelegate> delegate,
                                 const ui::DataTransferEndpoint data_dst,
                                 DataOffer::SendDataCallback callback) {
   ui::Clipboard::GetForCurrentThread()->ReadFilenames(
       ui::ClipboardBuffer::kCopyPaste, data_dst,
-      base::BindOnce(&OnReceiveFilenamesFromClipboard, endpoint_type,
-                     security_delegate, std::move(callback)));
+      base::BindOnce(&OnReceiveFilenamesFromClipboard, endpoint_type, delegate,
+                     std::move(callback)));
 }
 
 void OnReceivePNGFromClipboard(DataOffer::SendDataCallback callback,
@@ -181,10 +185,14 @@ ScopedDataOffer::~ScopedDataOffer() {
 }
 
 DataOffer::DataOffer(DataOfferDelegate* delegate)
-    : delegate_(delegate), dnd_action_(DndAction::kNone), finished_(false) {}
+    : delegate_(delegate->GetWeakPtr()),
+      dnd_action_(DndAction::kNone),
+      finished_(false) {}
 
 DataOffer::~DataOffer() {
-  delegate_->OnDataOfferDestroying(this);
+  if (delegate_) {
+    delegate_->OnDataOfferDestroying(this);
+  }
   for (DataOfferObserver& observer : observers_) {
     observer.OnDataOfferDestroying(this);
   }
@@ -236,18 +244,25 @@ void DataOffer::Finish() {
 void DataOffer::SetActions(const base::flat_set<DndAction>& dnd_actions,
                            DndAction preferred_action) {
   dnd_action_ = preferred_action;
-  delegate_->OnAction(preferred_action);
+  if (delegate_) {
+    delegate_->OnAction(preferred_action);
+  }
 }
 
 void DataOffer::SetSourceActions(
     const base::flat_set<DndAction>& source_actions) {
   source_actions_ = source_actions;
-  delegate_->OnSourceActions(source_actions);
+  if (delegate_) {
+    delegate_->OnSourceActions(source_actions);
+  }
 }
 
 void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
                             aura::Window* target,
                             const ui::OSExchangeData& data) {
+  if (!delegate_) {
+    return;
+  }
   DCHECK_EQ(0u, data_callbacks_.size());
 
   ui::EndpointType endpoint_type =
@@ -274,11 +289,19 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
   }
 
   if (!filenames.empty()) {
-    data_callbacks_.emplace(
-        uri_list_mime_type,
-        base::BindOnce(&SecurityDelegate::SendFileInfo,
-                       base::Unretained(delegate_->GetSecurityDelegate()),
-                       endpoint_type, std::move(filenames)));
+    auto callback = base::BindOnce(
+        [](base::WeakPtr<DataOfferDelegate> delegate,
+           ui::EndpointType endpoint_type, std::vector<ui::FileInfo> filenames,
+           DataOffer::SendDataCallback callback) {
+          if (!delegate) {
+            std::move(callback).Run(nullptr);
+            return;
+          }
+          delegate->GetSecurityDelegate()->SendFileInfo(
+              endpoint_type, std::move(filenames), std::move(callback));
+        },
+        delegate_, endpoint_type, std::move(filenames));
+    data_callbacks_.emplace(uri_list_mime_type, std::move(callback));
     delegate_->OnOffer(uri_list_mime_type);
     return;
   }
@@ -287,11 +310,19 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
           data.GetPickledData(GetClipboardFormatType());
       pickle.has_value() &&
       data_exchange_delegate->HasUrlsInPickle(pickle.value())) {
-    data_callbacks_.emplace(
-        uri_list_mime_type,
-        base::BindOnce(&SecurityDelegate::SendPickle,
-                       base::Unretained(delegate_->GetSecurityDelegate()),
-                       endpoint_type, pickle.value()));
+    auto callback = base::BindOnce(
+        [](base::WeakPtr<DataOfferDelegate> delegate,
+           ui::EndpointType endpoint_type, base::Pickle pickle,
+           DataOffer::SendDataCallback callback) {
+          if (!delegate) {
+            std::move(callback).Run(nullptr);
+            return;
+          }
+          delegate->GetSecurityDelegate()->SendPickle(endpoint_type, pickle,
+                                                      std::move(callback));
+        },
+        delegate_, endpoint_type, pickle.value());
+    data_callbacks_.emplace(uri_list_mime_type, std::move(callback));
     delegate_->OnOffer(uri_list_mime_type);
     return;
   }
@@ -368,7 +399,7 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
              const ui::DataTransferEndpoint& data_dst,
              ui::EndpointType endpoint_type,
              base::flat_set<ui::ClipboardFormatType> formats) {
-            if (!data_offer) {
+            if (!data_offer || !data_offer->delegate_) {
               return;
             }
             if (formats.contains(ui::ClipboardFormatType::PlainTextType())) {
@@ -425,8 +456,7 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
               data_offer->data_callbacks_.emplace(
                   std::string(ui::kMimeTypeUriList),
                   base::BindOnce(&ReadFilenamesFromClipboard, endpoint_type,
-                                 data_offer->delegate_->GetSecurityDelegate(),
-                                 data_dst));
+                                 data_offer->delegate_, data_dst));
             }
           },
           weak_ptr_factory_.GetWeakPtr(), data_exchange_delegate, data_dst,

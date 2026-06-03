@@ -153,7 +153,7 @@ ExtendedDragSource* ExtendedDragSource::Get() {
 }
 
 ExtendedDragSource::ExtendedDragSource(DataSource* source, Delegate* delegate)
-    : source_(source), delegate_(delegate) {
+    : source_(source), delegate_(delegate->GetWeakPtr()) {
   DCHECK(source_);
   DCHECK(delegate_);
 
@@ -164,7 +164,9 @@ ExtendedDragSource::ExtendedDragSource(DataSource* source, Delegate* delegate)
 }
 
 ExtendedDragSource::~ExtendedDragSource() {
-  delegate_->OnDataSourceDestroying();
+  if (delegate_) {
+    delegate_->OnDataSourceDestroying();
+  }
   for (auto& observer : observers_)
     observer.OnExtendedDragSourceDestroying(this);
 
@@ -247,8 +249,9 @@ void ExtendedDragSource::OnToplevelWindowDragStarted(
 DragOperation ExtendedDragSource::OnToplevelWindowDragDropped() {
   DVLOG(1) << "OnDragDropped()";
   Cleanup();
-  return delegate_->ShouldAllowDropAnywhere() ? DragOperation::kMove
-                                              : DragOperation::kNone;
+  return delegate_ && delegate_->ShouldAllowDropAnywhere()
+             ? DragOperation::kMove
+             : DragOperation::kNone;
 }
 
 void ExtendedDragSource::OnToplevelWindowDragCancelled() {
@@ -295,7 +298,7 @@ void ExtendedDragSource::OnWindowDestroyed(aura::Window* window) {
 }
 
 void ExtendedDragSource::MaybeLockCursor() {
-  if (delegate_->ShouldLockCursor()) {
+  if (delegate_ && delegate_->ShouldLockCursor()) {
     ash::Shell::Get()->cursor_manager()->LockCursor();
     cursor_locked_ = true;
   }

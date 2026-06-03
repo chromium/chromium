@@ -67,7 +67,7 @@ class Pointer : public SurfaceTreeHost,
 
   ~Pointer() override;
 
-  PointerDelegate* delegate() const { return delegate_; }
+  PointerDelegate* delegate() const { return delegate_.get(); }
 
   // Set the pointer surface, i.e., the surface that contains the pointer image
   // (cursor). The |hotspot| argument defines the position of the pointer
@@ -236,7 +236,7 @@ class Pointer : public SurfaceTreeHost,
                            const gfx::PointF& location_in_target);
 
   // The delegate instance that all events are dispatched to.
-  const raw_ptr<PointerDelegate, DanglingUntriaged> delegate_;
+  base::WeakPtr<PointerDelegate> delegate_;
 
   const raw_ptr<Seat> seat_;
 

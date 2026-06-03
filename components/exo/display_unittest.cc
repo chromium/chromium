@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/exo/display.h"
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
@@ -306,6 +308,9 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
   // Overriden from DataDeviceDelegate:
   void OnDataDeviceDestroying(DataDevice* data_device) override {}
   DataOffer* OnDataOffer() override { return nullptr; }
+  base::WeakPtr<DataDeviceDelegate> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
   void OnEnter(Surface* surface,
                const gfx::PointF& location,
                const DataOffer& data_offer) override {}
@@ -317,6 +322,9 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
   bool CanAcceptDataEventsForSurface(Surface* surface) const override {
     return false;
   }
+
+ private:
+  base::WeakPtrFactory<TestDataDeviceDelegate> weak_ptr_factory_{this};
 };
 
 TEST_F(DisplayTest, CreateDataDevice) {

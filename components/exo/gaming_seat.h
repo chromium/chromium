@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/exo/gamepad.h"
@@ -44,7 +45,7 @@ class GamingSeat : public aura::client::FocusChangeObserver,
 
  private:
   // The delegate that handles gamepad_added.
-  const raw_ptr<GamingSeatDelegate, DanglingUntriaged> delegate_;
+  base::WeakPtr<GamingSeatDelegate> delegate_;
 
   // Contains the delegate for each gamepad device.
   base::flat_map<int, std::unique_ptr<Gamepad>> gamepads_;

@@ -169,10 +169,12 @@ ScopedDataSource::~ScopedDataSource() {
 }
 
 DataSource::DataSource(DataSourceDelegate* delegate)
-    : delegate_(delegate), finished_(false) {}
+    : delegate_(delegate->GetWeakPtr()), finished_(false) {}
 
 DataSource::~DataSource() {
-  delegate_->OnDataSourceDestroying(this);
+  if (delegate_) {
+    delegate_->OnDataSourceDestroying(this);
+  }
   for (DataSourceObserver& observer : observers_) {
     observer.OnDataSourceDestroying(this);
   }
@@ -195,32 +197,45 @@ void DataSource::SetActions(const base::flat_set<DndAction>& dnd_actions) {
 }
 
 void DataSource::Target(const std::optional<std::string>& mime_type) {
-  delegate_->OnTarget(mime_type);
+  if (delegate_) {
+    delegate_->OnTarget(mime_type);
+  }
 }
 
 void DataSource::Action(DndAction action) {
-  delegate_->OnAction(action);
+  if (delegate_) {
+    delegate_->OnAction(action);
+  }
 }
 
 void DataSource::DndDropPerformed() {
-  delegate_->OnDndDropPerformed();
+  if (delegate_) {
+    delegate_->OnDndDropPerformed();
+  }
 }
 
 void DataSource::Cancelled() {
   finished_ = true;
   read_data_weak_ptr_factory_.InvalidateWeakPtrs();
-  delegate_->OnCancelled();
+  if (delegate_) {
+    delegate_->OnCancelled();
+  }
 }
 
 void DataSource::DndFinished() {
   finished_ = true;
   read_data_weak_ptr_factory_.InvalidateWeakPtrs();
-  delegate_->OnDndFinished();
+  if (delegate_) {
+    delegate_->OnDndFinished();
+  }
 }
 
 std::vector<ui::FileInfo> DataSource::GetFilenames(
     ui::EndpointType source,
     const std::vector<uint8_t>& data) const {
+  if (!delegate_) {
+    return {};
+  }
   return delegate_->GetSecurityDelegate()->GetFilenames(source, data);
 }
 
@@ -235,6 +250,11 @@ void DataSource::ReadData(const std::string& mime_type,
                           base::OnceClosure failure_callback) {
   // This DataSource does not contain the requested MIME type.
   if (mime_type.empty() || !mime_types_.count(mime_type) || finished_) {
+    std::move(failure_callback).Run();
+    return;
+  }
+
+  if (!delegate_) {
     std::move(failure_callback).Run();
     return;
   }
@@ -376,7 +396,7 @@ void DataSource::OnFileContentsRead(ReadFileContentsDataCallback callback,
 }
 
 bool DataSource::CanBeDataSourceForCopy(Surface* surface) const {
-  return delegate_->CanAcceptDataEventsForSurface(surface);
+  return delegate_ && delegate_->CanAcceptDataEventsForSurface(surface);
 }
 
 }  // namespace exo

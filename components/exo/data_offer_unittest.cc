@@ -658,5 +658,30 @@ TEST_F(DataOfferTest, SetClipboardDataWithTransferPolicy) {
   EXPECT_EQ(ui::EndpointType::kCrostini, policy_controller.last_dst_type());
 }
 
+TEST_F(DataOfferTest, TestDelegateDestroyed) {
+  auto delegate = std::make_unique<TestDataOfferDelegate>();
+  DataOffer data_offer(delegate.get());
+
+  // Destroy the delegate. S now has a dead delegate.
+  delegate.reset();
+
+  // Call methods on data_offer. They should not crash.
+  base::flat_set<DndAction> source_actions;
+  source_actions.insert(DndAction::kCopy);
+  data_offer.SetSourceActions(source_actions);
+  data_offer.SetActions(base::flat_set<DndAction>(), DndAction::kMove);
+
+  TestDataExchangeDelegate data_exchange_delegate;
+  ui::OSExchangeData data;
+  data.SetString(std::u16string(u"Test data"));
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
+
+  // Testing SetClipboardData is harder because it's async and uses clipboard,
+  // but we can at least call it and it shouldn't crash immediately.
+  data_offer.SetClipboardData(&data_exchange_delegate,
+                              *ui::Clipboard::GetForCurrentThread(),
+                              ui::EndpointType::kCrostini);
+}
+
 }  // namespace
 }  // namespace exo

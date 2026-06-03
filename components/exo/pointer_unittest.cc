@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -128,6 +129,13 @@ class MockPointerDelegate : public PointerDelegate {
                void(base::TimeTicks, const gfx::Vector2dF&, bool));
   MOCK_METHOD1(OnFingerScrollStop, void(base::TimeTicks));
   MOCK_METHOD0(OnPointerFrame, void());
+
+  base::WeakPtr<PointerDelegate> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockPointerDelegate> weak_factory_{this};
 };
 
 class MockRelativePointerDelegate : public RelativePointerDelegate {

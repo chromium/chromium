@@ -29,6 +29,10 @@ void TestDataDeviceDelegate::OnDataDeviceDestroying(DataDevice* data_device) {
   events_.push_back(DataEvent::kDestroy);
 }
 
+base::WeakPtr<DataDeviceDelegate> TestDataDeviceDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 DataOffer* TestDataDeviceDelegate::OnDataOffer() {
   events_.push_back(DataEvent::kOffer);
   // Reset data_offer_ while delegate is still valid.

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/weak_ptr.h"
 #include "components/exo/data_device.h"
 
 namespace exo {
@@ -22,6 +23,8 @@ class DataSourceDelegate {
   // Called at the top of the data device's destructor, to give observers a
   // chance to remove themselves.
   virtual void OnDataSourceDestroying(DataSource* source) = 0;
+
+  virtual base::WeakPtr<DataSourceDelegate> GetWeakPtr() = 0;
 
   // Called when a client accepts a |mime_type|.
   virtual void OnTarget(const std::optional<std::string>& mime_type) = 0;

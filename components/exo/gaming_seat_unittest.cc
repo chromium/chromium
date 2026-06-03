@@ -9,6 +9,7 @@
 
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "components/exo/buffer.h"
@@ -55,6 +56,13 @@ class MockGamingSeatDelegate : public GamingSeatDelegate {
   MOCK_METHOD(void, Die, (), ());
   void OnGamingSeatDestroying(GamingSeat*) override { delete this; }
   ~MockGamingSeatDelegate() override { Die(); }
+
+  base::WeakPtr<GamingSeatDelegate> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockGamingSeatDelegate> weak_factory_{this};
 };
 
 class GamingSeatTest : public test::ExoTestBase {

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "components/exo/data_source_delegate.h"
 #include "components/exo/test/test_security_delegate.h"
 
@@ -34,6 +35,7 @@ class TestDataSourceDelegate : public DataSourceDelegate {
   void OnAction(DndAction dnd_action) override {}
   bool CanAcceptDataEventsForSurface(Surface* surface) const override;
   SecurityDelegate* GetSecurityDelegate() const override;
+  base::WeakPtr<DataSourceDelegate> GetWeakPtr() override;
 
   bool cancelled() const { return cancelled_; }
   void set_can_accept(bool can_accept) { can_accept_ = can_accept; }
@@ -45,6 +47,8 @@ class TestDataSourceDelegate : public DataSourceDelegate {
   base::flat_map<std::string, std::string> data_map_;
   std::unique_ptr<SecurityDelegate> security_delegate_ =
       std::make_unique<TestSecurityDelegate>();
+
+  base::WeakPtrFactory<TestDataSourceDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace exo::test

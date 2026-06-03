@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_POINTER_DELEGATE_H_
 #define COMPONENTS_EXO_POINTER_DELEGATE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/events/event_constants.h"
 
@@ -64,6 +65,7 @@ class PointerDelegate {
   // client should evaluate the updated state. No events are being sent before
   // this method is called.
   virtual void OnPointerFrame() = 0;
+  virtual base::WeakPtr<PointerDelegate> GetWeakPtr() = 0;
 
  protected:
   virtual ~PointerDelegate() = default;

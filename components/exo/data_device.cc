@@ -51,7 +51,7 @@ DragOperation DndActionToDragOperation(DndAction dnd_action) {
 }  // namespace
 
 DataDevice::DataDevice(DataDeviceDelegate* delegate, Seat* seat)
-    : delegate_(delegate), seat_(seat), drop_succeeded_(false) {
+    : delegate_(delegate->GetWeakPtr()), seat_(seat), drop_succeeded_(false) {
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
 
   seat_->AddObserver(this, kDataDeviceSeatObserverPriority);
@@ -68,7 +68,9 @@ DataDevice::~DataDevice() {
     }
   }
 
-  delegate_->OnDataDeviceDestroying(this);
+  if (delegate_) {
+    delegate_->OnDataDeviceDestroying(this);
+  }
 
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
 
@@ -104,6 +106,10 @@ void DataDevice::OnDragEntered(const ui::DropTargetEvent& event) {
     dnd_actions.insert(DndAction::kAsk);
   }
 
+  if (!delegate_) {
+    return;
+  }
+
   data_offer_ =
       std::make_unique<ScopedDataOffer>(delegate_->OnDataOffer(), this);
   data_offer_->get()->SetDropData(seat_->data_exchange_delegate(),
@@ -128,7 +134,9 @@ aura::client::DragUpdateInfo DataDevice::OnDragUpdated(
   aura::client::DragUpdateInfo drag_info(
       ui::DragDropTypes::DRAG_NONE, ui::DataTransferEndpoint(endpoint_type));
 
-  delegate_->OnMotion(event.time_stamp(), event.location_f());
+  if (delegate_) {
+    delegate_->OnMotion(event.time_stamp(), event.location_f());
+  }
 
   // TODO(hirono): dnd_action() here may not be updated. Chrome needs to provide
   // a way to update DND action asynchronously.
@@ -141,7 +149,9 @@ void DataDevice::OnDragExited() {
   if (!data_offer_)
     return;
 
-  delegate_->OnLeave();
+  if (delegate_) {
+    delegate_->OnLeave();
+  }
   data_offer_.reset();
 }
 
@@ -160,7 +170,7 @@ void DataDevice::OnClipboardDataChanged() {
 }
 
 void DataDevice::OnSurfaceCreated(Surface* surface) {
-  if (delegate_->CanAcceptDataEventsForSurface(surface)) {
+  if (delegate_ && delegate_->CanAcceptDataEventsForSurface(surface)) {
     aura::client::SetDragDropDelegate(surface->window(), this);
     window_tracker_.Add(surface->window());
   }
@@ -170,7 +180,8 @@ void DataDevice::OnSurfaceFocused(Surface* gained_surface,
                                   Surface* lost_focused,
                                   bool has_focused_surface) {
   Surface* next_focused_surface =
-      gained_surface && delegate_->CanAcceptDataEventsForSurface(gained_surface)
+      gained_surface && delegate_ &&
+              delegate_->CanAcceptDataEventsForSurface(gained_surface)
           ? gained_surface
           : nullptr;
   // Check if focused surface is not changed.
@@ -219,11 +230,16 @@ Surface* DataDevice::GetEffectiveTargetForEvent(
   if (!target)
     return nullptr;
 
-  return delegate_->CanAcceptDataEventsForSurface(target) ? target : nullptr;
+  return delegate_ && delegate_->CanAcceptDataEventsForSurface(target)
+             ? target
+             : nullptr;
 }
 
 void DataDevice::SetSelectionToCurrentClipboardData() {
   DCHECK(focused_surface_);
+  if (!delegate_) {
+    return;
+  }
   DataOffer* data_offer = delegate_->OnDataOffer();
   data_offer->SetClipboardData(
       seat_->data_exchange_delegate(), *ui::Clipboard::GetForCurrentThread(),
@@ -246,7 +262,9 @@ void DataDevice::PerformDropOrExitDrag(
 
   DndAction dnd_action = data_offer_->get()->dnd_action();
 
-  delegate_->OnDrop();
+  if (delegate_) {
+    delegate_->OnDrop();
+  }
 
   // TODO(crbug.com/40162278): Avoid using nested loop by adding asynchronous
   // callback to aura::client::DragDropDelegate.

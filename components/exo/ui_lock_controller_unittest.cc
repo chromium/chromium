@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
@@ -79,6 +80,13 @@ class MockPointerDelegate : public PointerDelegate {
                void(base::TimeTicks, const gfx::Vector2dF&, bool));
   MOCK_METHOD1(OnFingerScrollStop, void(base::TimeTicks));
   MOCK_METHOD0(OnPointerFrame, void());
+
+  base::WeakPtr<PointerDelegate> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockPointerDelegate> weak_factory_{this};
 };
 
 class MockPointerConstraintDelegate : public PointerConstraintDelegate {
