@@ -975,8 +975,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   //    IPCZ_RESULT_INVALID_ARGUMENT if `handle` is invalid.
   IpczResult(IPCZ_API* Close)(IpczHandle handle,     // in
-                              uint32_t flags,        // in
-                              const void* options);  // in
+                              uint32_t flags,        // ignored
+                              const void* options);  // ignored
 
   // CreateNode()
   // ============
@@ -1118,8 +1118,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //    IPCZ_RESULT_INVALID_ARGUMENT if `node` is invalid, or if either
   //        `portal0` or `portal1` is null.
   IpczResult(IPCZ_API* OpenPortals)(IpczHandle node,       // in
-                                    uint32_t flags,        // in
-                                    const void* options,   // in
+                                    uint32_t flags,        // ignored
+                                    const void* options,   // ignored
                                     IpczHandle* portal0,   // out
                                     IpczHandle* portal1);  // out
 
@@ -1163,8 +1163,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        already had one or more parcels put into or gotten out of them.
   IpczResult(IPCZ_API* MergePortals)(IpczHandle first,      // in
                                      IpczHandle second,     // in
-                                     uint32_t flags,        // in
-                                     const void* options);  // out
+                                     uint32_t flags,        // ignored
+                                     const void* options);  // ignored
 
   // QueryPortalStatus()
   // ===================
@@ -1191,8 +1191,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        invalid.
   IpczResult(IPCZ_API* QueryPortalStatus)(
       IpczHandle portal,                 // in
-      uint32_t flags,                    // in
-      const void* options,               // in
+      uint32_t flags,                    // ignored
+      const void* options,               // ignored
       struct IpczPortalStatus* status);  // out
 
   // Put()
@@ -1205,7 +1205,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // portals, the data and handles may be delivered and retrievable immediately
   // by the remote portal, or they may be delivered asynchronously.
   //
-  // `flags` is unused and must be IPCZ_NO_FLAGS.
+  // `flags` is ignored and must be 0.
   //
   // If this call fails (returning anything other than IPCZ_RESULT_OK), any
   // provided handles remain property of the caller. If it succeeds, their
@@ -1239,8 +1239,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
                             size_t num_bytes,           // in
                             const IpczHandle* handles,  // in
                             size_t num_handles,         // in
-                            uint32_t flags,             // in
-                            const void* options);       // in
+                            uint32_t flags,             // ignored
+                            const void* options);       // ignored
 
   // BeginPut()
   // ==========
@@ -1284,7 +1284,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        been closed and anything put into this portal would be lost.
   IpczResult(IPCZ_API* BeginPut)(IpczHandle portal,              // in
                                  IpczBeginPutFlags flags,        // in
-                                 const void* options,            // in
+                                 const void* options,            // ignored
                                  volatile void** data,           // out
                                  size_t* num_bytes,              // in/out
                                  IpczTransaction* transaction);  // out
@@ -1310,7 +1310,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // other arguments are ignored; the corresponding transaction is aborted and
   // any associated resources are released.
   //
-  // `options` is unused and must be null.
+  // `options` is ignored and must be null.
   //
   // Returns:
   //
@@ -1336,7 +1336,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
                                const IpczHandle* handles,    // in
                                size_t num_handles,           // in
                                IpczEndPutFlags flags,        // in
-                               const void* options);         // in
+                               const void* options);         // ignored
 
   // Get()
   // =====
@@ -1425,7 +1425,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        get-transaction in progress on `source`.
   IpczResult(IPCZ_API* Get)(IpczHandle source,    // in
                             IpczGetFlags flags,   // in
-                            const void* options,  // in
+                            const void* options,  // ignored
                             void* data,           // out
                             size_t* num_bytes,    // in/out
                             IpczHandle* handles,  // out
@@ -1529,7 +1529,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        IPCZ_BEGIN_GET_OVERLAPPED.
   IpczResult(IPCZ_API* BeginGet)(IpczHandle source,              // in
                                  IpczBeginGetFlags flags,        // in
-                                 const void* options,            // in
+                                 const void* options,            // ignored
                                  const volatile void** data,     // out
                                  size_t* num_bytes,              // out
                                  IpczHandle* handles,            // out
@@ -1553,7 +1553,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // use to refer to the transaction's underlying parcel in future operations,
   // e.g. to Reject() it or to begin another get-transaction on it later.
   //
-  // `options` is unused and must be null.
+  // `options` is ignored and must be null.
   //
   // Returns:
   //
@@ -1566,8 +1566,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
   IpczResult(IPCZ_API* EndGet)(IpczHandle source,
                                IpczTransaction transaction,  // in
                                IpczEndGetFlags flags,        // in
-                               const void* options,          // in
-                               IpczHandle* parcel);          // in
+                               const void* options,          // ignored
+                               IpczHandle* parcel);          // out
 
   // Trap()
   // ======
@@ -1623,8 +1623,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
       const struct IpczTrapConditions* conditions,        // in
       IpczTrapEventHandler handler,                       // in
       uintptr_t context,                                  // in
-      uint32_t flags,                                     // in
-      const void* options,                                // in
+      uint32_t flags,                                     // ignored
+      const void* options,                                // ignored
       IpczTrapConditionFlags* satisfied_condition_flags,  // out
       struct IpczPortalStatus* status);                   // out
 
@@ -1655,10 +1655,10 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   //    IPCZ_RESULT_FAILED_PRECONDITION if `parcel` is associated with a parcel
   //        that did not come from another node.
-  IpczResult(IPCZ_API* Reject)(IpczHandle parcel,
-                               uintptr_t context,
-                               uint32_t flags,
-                               const void* options);
+  IpczResult(IPCZ_API* Reject)(IpczHandle parcel,     // in
+                               uintptr_t context,     // in
+                               uint32_t flags,        // ignored
+                               const void* options);  // ignored
 
   // Box()
   // =====
@@ -1685,8 +1685,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        `handle` is null.
   IpczResult(IPCZ_API* Box)(IpczHandle node,                         // in
                             const struct IpczBoxContents* contents,  // in
-                            uint32_t flags,                          // in
-                            const void* options,                     // in
+                            uint32_t flags,                          // ignored
+                            const void* options,                     // ignored
                             IpczHandle* handle);                     // out
 
   // Unbox()
@@ -1709,8 +1709,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //    IPCZ_RESULT_INVALID_ARGUMENT if `handle` is invalid or does not
   //        reference a box, or if `contents` is null or malformed.
   IpczResult(IPCZ_API* Unbox)(IpczHandle handle,                  // in
-                              IpczUnboxFlags flags,               // in
-                              const void* options,                // in
+                              IpczUnboxFlags flags,               // ignored
+                              const void* options,                // ignored
                               struct IpczBoxContents* contents);  // out
 };
 
