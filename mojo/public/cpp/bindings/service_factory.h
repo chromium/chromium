@@ -7,6 +7,8 @@
 
 #include <map>
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
@@ -14,6 +16,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/thread_type.h"
+#include "base/threading/platform_thread.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -83,11 +87,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
   // if Interface is RuntimeFeature disabled. CanRunService() will return false
   // for these ignored Interfaces.
   template <typename Func>
-  void Add(Func func) {
+  void Add(Func func,
+           base::ThreadType thread_type = base::ThreadType::kDefault) {
     using Interface = typename internal::ServiceFactoryTraits<Func>::Interface;
     if (internal::GetRuntimeFeature_IsEnabled<Interface>()) {
       constructors_[Interface::Name_] =
-          base::BindRepeating(&RunConstructor<Func>, func);
+          base::BindRepeating(&RunConstructor<Func>, func, thread_type);
     }
   }
 
@@ -111,7 +116,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
  private:
   class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InstanceHolderBase {
    public:
-    InstanceHolderBase();
+    explicit InstanceHolderBase(base::ThreadType thread_type);
 
     InstanceHolderBase(const InstanceHolderBase&) = delete;
     InstanceHolderBase& operator=(const InstanceHolderBase&) = delete;
@@ -126,13 +131,15 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
 
     SimpleWatcher watcher_;
     base::OnceClosure disconnect_callback_;
+    std::optional<base::PlatformThread::RaiseThreadTypeLease>
+        thread_type_lease_;
   };
 
   template <typename Impl>
   class InstanceHolder : public InstanceHolderBase {
    public:
-    explicit InstanceHolder(std::unique_ptr<Impl> instance)
-        : instance_(std::move(instance)) {}
+    InstanceHolder(std::unique_ptr<Impl> instance, base::ThreadType thread_type)
+        : InstanceHolderBase(thread_type), instance_(std::move(instance)) {}
 
     InstanceHolder(const InstanceHolder&) = delete;
     InstanceHolder& operator=(const InstanceHolder&) = delete;
@@ -146,6 +153,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
   template <typename Func>
   static std::unique_ptr<InstanceHolderBase> RunConstructor(
       Func fn,
+      base::ThreadType thread_type,
       GenericPendingReceiver receiver) {
     using Interface = typename internal::ServiceFactoryTraits<Func>::Interface;
     using Impl = typename internal::ServiceFactoryTraits<Func>::Impl;
@@ -154,7 +162,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
       return nullptr;
     }
 
-    return std::make_unique<InstanceHolder<Impl>>(std::move(impl));
+    return std::make_unique<InstanceHolder<Impl>>(std::move(impl), thread_type);
   }
 
   void OnInstanceDisconnected(InstanceHolderBase* instance);

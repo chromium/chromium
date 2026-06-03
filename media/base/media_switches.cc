@@ -482,25 +482,23 @@ BASE_FEATURE(kPlatformAudioEncoder,
 // Has no effect if ENABLE_CDM_HOST_VERIFICATION buildflag is false.
 BASE_FEATURE(kCdmHostVerification, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, the browser process will launch the CDM service process
-// with higher priority to improve playback performance.
-BASE_FEATURE(kCdmProcessPriorityElevation,
-             "CdmProcessPriorityElevation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Elevates the CDM service process' priority to improve media playback
+// performance.
+BASE_FEATURE(kCdmProcessPriorityElevation, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Elevates the CDM service process' main thread priority to improve media
+// playback performance.
+BASE_FEATURE(kCdmThreadPriorityElevation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Reorders video context menu items if enabled.
 BASE_FEATURE(kContextMenu2026, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the "Copy Video Frame" context menu item.
-BASE_FEATURE(kContextMenuCopyVideoFrame,
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
+BASE_FEATURE(kContextMenuCopyVideoFrame, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the "Save Video Frame As" context menu item.
 // On Android, this is "Download Video Frame" context menu item.
-BASE_FEATURE(kContextMenuSaveVideoFrameAs,
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
+BASE_FEATURE(kContextMenuSaveVideoFrameAs, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the "Search Video Frame with <Search Provider>" context menu item.
 BASE_FEATURE(kContextMenuSearchForVideoFrame, base::FEATURE_ENABLED_BY_DEFAULT);

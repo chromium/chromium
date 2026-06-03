@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_type.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -414,7 +415,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  services.Add(RunCdmServiceBroker);
+  services.Add(RunCdmServiceBroker,
+               base::FeatureList::IsEnabled(media::kCdmThreadPriorityElevation)
+                   ? base::ThreadType::kPresentation
+                   : base::ThreadType::kDefault);
 #endif
 
 #if BUILDFLAG(IS_WIN)
