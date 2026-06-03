@@ -756,7 +756,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
         increment_index, IDS_ACCNAME_ZOOM_PLUS2, /*add_accelerator_text=*/false,
         /*use_accessible_name_as_tooltip_text=*/true,
         /*vector_icon=*/
-        features::IsRoundedIconsEnabled() ? kAdd2Icon
+        features::IsRoundedIconsEnabled() ? kAddIcon
                                           : kZoomPlusMenuRefreshOldIcon);
 
     auto fullscreen_button = std::make_unique<FullscreenButton>(

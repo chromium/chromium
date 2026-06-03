@@ -21,6 +21,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "account_circle_filled.icon",
     "account_circle_old.icon",
     "account_manage_chrome_refresh_old.icon",
+    "add.icon",
     "add_2.icon",
     "add_chrome_refresh_old.icon",
     "add_circle.icon",
