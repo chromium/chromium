@@ -1763,7 +1763,25 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       output_.push_back(std::move(selector));
       return true;
     }
-    case CSSSelector::kPseudoPicker:
+    case CSSSelector::kPseudoPicker: {
+      const CSSParserToken& ident = stream.Peek();
+      if (ident.GetType() != kIdentToken) {
+        return false;
+      }
+      // If we add more valid arguments to ::picker() in the future, then we
+      // would probably have to turn this into a list instead of just checking
+      // for "select".
+      if (!EqualIgnoringAsciiCase(ident.Value(), "select")) {
+        return false;
+      }
+      selector.SetArgument(AtomicString("select"));
+      stream.ConsumeIncludingWhitespace();
+      if (!stream.AtEnd()) {
+        return false;
+      }
+      output_.push_back(std::move(selector));
+      return true;
+    }
     case CSSSelector::kPseudoDir:
     case CSSSelector::kPseudoState: {
       const CSSParserToken& ident = stream.Peek();

@@ -1401,13 +1401,13 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
         builder.Append(')');
         break;
       }
+      case kPseudoPicker:
       case kPseudoHighlight: {
         builder.Append('(');
         SerializeIdentifier(Argument(), builder);
         builder.Append(')');
         break;
       }
-      case kPseudoPicker:
       case kPseudoOverscrollAreaParent:
       case kPseudoScrollButton: {
         builder.Append('(');
