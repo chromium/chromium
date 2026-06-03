@@ -8,6 +8,7 @@
 #include <optional>
 #include <ostream>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
 #include "build/buildflag.h"
@@ -19,6 +20,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -319,6 +321,14 @@ TEST_F(SupervisedUserLogRecordTest, RegularUserWithDisabledSupervision) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(SupervisedUserLogRecordTest, RegularUserWithSearchFilterEnabled) {
+  // TODO(crbug.com/519491295): check ::EmitHistograms effects.
+  // With kSupervisedUserEmitLogRecordSeparately enabled; the log record is no
+  // longer emitted in the context of family link user, but instead recorded
+  // separately.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      supervised_user::kSupervisedUserEmitLogRecordSeparately);
+
   CreateRegularUser();
   EnableSearchContentFilters();
 
@@ -330,6 +340,14 @@ TEST_F(SupervisedUserLogRecordTest, RegularUserWithSearchFilterEnabled) {
 }
 
 TEST_F(SupervisedUserLogRecordTest, RegularUserWithContentFiltersEnabled) {
+  // TODO(crbug.com/519491295): check ::EmitHistograms effects.
+  // With kSupervisedUserEmitLogRecordSeparately enabled; the log record is no
+  // longer emitted in the context of family link user, but instead recorded
+  // separately.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      supervised_user::kSupervisedUserEmitLogRecordSeparately);
+
   CreateRegularUser();
   EnableBrowserContentFilters();
 
@@ -341,6 +359,14 @@ TEST_F(SupervisedUserLogRecordTest, RegularUserWithContentFiltersEnabled) {
 }
 
 TEST_F(SupervisedUserLogRecordTest, RegularUserWithAllLocalFiltersEnabled) {
+  // TODO(crbug.com/519491295): check ::EmitHistograms effects.
+  // With kSupervisedUserEmitLogRecordSeparately enabled; the log record is no
+  // longer emitted in the context of family link user, but instead recorded
+  // separately.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      supervised_user::kSupervisedUserEmitLogRecordSeparately);
+
   CreateRegularUser();
   EnableSearchContentFilters();
   EnableBrowserContentFilters();
