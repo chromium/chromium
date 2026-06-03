@@ -577,6 +577,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_tasks::ShouldEnableLockAndUnlockInputCapability());
   source->AddBoolean("enableFileHint", contextual_tasks::GetEnableFileHint());
   source->AddBoolean("supportsLensButtonInComposebox", !BUILDFLAG(IS_ANDROID));
+  source->AddBoolean("isSystemVoiceSearchEnabled", BUILDFLAG(IS_ANDROID));
   source->AddBoolean("enableComposeboxJumpFix",
                      contextual_tasks::GetEnableComposeboxJumpFix());
   source->AddBoolean("roundedClipPathEnabled",
@@ -1245,6 +1246,22 @@ void ContextualTasksUI::OnLensOverlayStateChanged(
 
 bool ContextualTasksUI::IsLensOverlayShowing() const {
   return is_lens_overlay_showing_;
+}
+
+void ContextualTasksUI::StartPlatformVoiceRecognition() {
+  ui_service_->StartPlatformVoiceRecognition(GetBrowser(),
+                                             GetWebUIWebContents());
+}
+
+void ContextualTasksUI::OnVoiceTranscribed(const std::string& query) {
+  auto& page = GetPageRemote();
+  if (!page.is_bound()) {
+    return;
+  }
+  auto input = contextual_tasks::mojom::InjectedInput::New();
+  input->query_text = query;
+  input->submit_after_injection = true;
+  page->InjectInput(std::move(input));
 }
 
 bool ContextualTasksUI::CanUpdateSuggestedTabContext(

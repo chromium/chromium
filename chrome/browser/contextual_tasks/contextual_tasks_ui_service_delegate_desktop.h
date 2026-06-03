@@ -36,6 +36,8 @@ class ContextualTasksUiServiceDelegateDesktop
   void OnTaskChanged(BrowserWindowInterface* browser_window_interface,
                      const std::optional<base::Uuid>& old_task_id,
                      const std::optional<base::Uuid>& new_task_id) override;
+  void StartPlatformVoiceRecognition(
+      BrowserWindowInterface* browser_window_interface) override;
 
  protected:
   Profile* profile() const { return profile_; }

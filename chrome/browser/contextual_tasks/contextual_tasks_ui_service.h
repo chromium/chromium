@@ -381,6 +381,14 @@ class ContextualTasksUiService : public KeyedService {
   virtual void ShowUndoSnackbar(
       BrowserWindowInterface* browser_window_interface);
 
+  // Invokes the platform's native voice recognition system.
+  virtual void StartPlatformVoiceRecognition(
+      BrowserWindowInterface* browser,
+      content::WebContents* requesting_contents);
+
+  // Called when the platform voice recognition completes with a result.
+  virtual void OnVoiceTranscribed(const std::string& query);
+
   // Returns whether the provided URL is for the primary account in Chrome.
   virtual bool IsUrlForPrimaryAccount(const GURL& url);
 
@@ -572,6 +580,11 @@ class ContextualTasksUiService : public KeyedService {
   // Manager for window trackers. Class responsible for creating and destroying
   // trackers and matching them to URLs and WebContents.
   std::unique_ptr<ContextualTasksWindowTrackerManager> tracker_manager_;
+
+  // The WebContents that initiated the platform voice recognition. Used to
+  // safely inject the transcribed query back into the correct WebUI panel.
+  base::WeakPtr<content::WebContents>
+      web_contents_for_outstanding_voice_request_;
 
   base::WeakPtrFactory<ContextualTasksUiService> weak_ptr_factory_{this};
 };

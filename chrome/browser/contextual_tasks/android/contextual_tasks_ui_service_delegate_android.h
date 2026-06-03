@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_ANDROID_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_ANDROID_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_
 
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
 #include "url/gurl.h"
 
@@ -37,6 +39,8 @@ class ContextualTasksUiServiceDelegateAndroid
   void OnTaskChanged(BrowserWindowInterface* browser_window_interface,
                      const std::optional<base::Uuid>& old_task_id,
                      const std::optional<base::Uuid>& new_task_id) override;
+  void StartPlatformVoiceRecognition(
+      BrowserWindowInterface* browser_window_interface) override;
 
  protected:
   Profile* profile() const { return profile_; }

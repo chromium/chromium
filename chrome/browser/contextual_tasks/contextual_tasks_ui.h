@@ -195,6 +195,8 @@ class ContextualTasksUI
       std::optional<lens::LensOverlayInvocationSource> invocation_source)
       override;
   bool IsLensOverlayShowing() const override;
+  void StartPlatformVoiceRecognition() override;
+  void OnVoiceTranscribed(const std::string& query) override;
   void OnPageContextEligibilityChecked(bool is_page_context_eligible) override;
   bool IsActiveTabContextSuggestionShowing() const override;
   void MoveTaskUiToNewTab() override;

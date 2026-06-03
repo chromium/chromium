@@ -1745,6 +1745,46 @@ void ContextualTasksUiService::ShowUndoSnackbar(
   delegate_->ShowUndoSnackbar(browser_window_interface);
 }
 
+void ContextualTasksUiService::StartPlatformVoiceRecognition(
+    BrowserWindowInterface* browser,
+    content::WebContents* requesting_contents) {
+  web_contents_for_outstanding_voice_request_ =
+      requesting_contents->GetWeakPtr();
+
+  if (delegate_) {
+    delegate_->StartPlatformVoiceRecognition(browser);
+  }
+}
+
+void ContextualTasksUiService::OnVoiceTranscribed(const std::string& query) {
+  // Take ownership and reset the pending tab tracker
+  base::WeakPtr<content::WebContents> web_contents =
+      std::move(web_contents_for_outstanding_voice_request_);
+  if (!web_contents) {
+    LOG(WARNING) << "WebContents was destroyed before voice results returned.";
+    return;
+  }
+
+  content::WebUI* web_ui = web_contents->GetWebUI();
+  if (!web_ui) {
+    LOG(WARNING) << "WebUI is null.";
+    return;
+  }
+
+  auto* controller = web_ui->GetController();
+  if (!controller) {
+    LOG(WARNING) << "WebUI controller is null.";
+    return;
+  }
+
+  auto* contextual_tasks_ui = static_cast<ContextualTasksUI*>(controller);
+  if (!contextual_tasks_ui) {
+    LOG(WARNING) << "ContextualTasksUi is null.";
+    return;
+  }
+  contextual_tasks_ui->OnVoiceTranscribed(query);
+}
+
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
     const base::Uuid& task_id) {
   GURL url(chrome::kChromeUIContextualTasksURL);

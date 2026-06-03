@@ -21,6 +21,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceInteractionSource;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
@@ -33,6 +36,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+
+import java.util.List;
 
 /**
  * Java bridge for Contextual Tasks. Owned by the activity's TabbedRootUiCoordinator. Owns its
@@ -138,6 +143,31 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
     }
 
     @CalledByNative
+    void startVoiceRecognition() {
+        if (mWindowAndroid == null) return;
+
+        VoiceRecognitionIntentHandler handler = new VoiceRecognitionIntentHandler(mWindowAndroid);
+        handler.startVoiceRecognition(
+                VoiceInteractionSource.COMPOSEBOX,
+                new VoiceRecognitionIntentHandler.RecognitionCallback() {
+                    @Override
+                    public void onCompleted(List<VoiceResult> results) {
+                        if (results.isEmpty()) return;
+                        String query = results.get(0).getMatch();
+                        if (mNativeContextualTasksBridge == 0) return;
+                        ContextualTasksBridgeJni.get()
+                                .onVoiceTranscribed(mNativeContextualTasksBridge, query);
+                    }
+
+                    @Override
+                    public void onCanceled() {}
+
+                    @Override
+                    public void onAvailabilityImpacted() {}
+                });
+    }
+
+    @CalledByNative
     void showUndoSnackbar() {
         mSnackbarManager = SnackbarManagerProvider.from(mWindowAndroid);
         if (mSnackbarManager == null) return;
@@ -184,6 +214,9 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
         void destroy(long nativeContextualTasksBridge);
 
         void undoClose(long nativeContextualTasksBridge);
+
+        void onVoiceTranscribed(
+                long nativeContextualTasksBridge, @JniType("std::string") String query);
 
         @JniType("std::string")
         String getTaskIdForTab(@JniType("content::WebContents*") WebContents webContents);

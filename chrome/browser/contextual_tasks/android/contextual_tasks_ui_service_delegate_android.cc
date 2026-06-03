@@ -5,9 +5,12 @@
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_ui_service_delegate_android.h"
 
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_bridge.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -72,6 +75,15 @@ void ContextualTasksUiServiceDelegateAndroid::ShowUndoSnackbar(
     return;
   }
   bridge->NotifyShowUndoSnackbar();
+}
+
+void ContextualTasksUiServiceDelegateAndroid::StartPlatformVoiceRecognition(
+    BrowserWindowInterface* browser_window_interface) {
+  auto* bridge = ContextualTasksBridge::From(browser_window_interface);
+  if (!bridge) {
+    return;
+  }
+  bridge->StartPlatformVoiceRecognition();
 }
 
 }  // namespace contextual_tasks

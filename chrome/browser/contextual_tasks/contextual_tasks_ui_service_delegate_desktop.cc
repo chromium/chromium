@@ -49,4 +49,7 @@ void ContextualTasksUiServiceDelegateDesktop::OnTaskChanged(
     const std::optional<base::Uuid>& old_task_id,
     const std::optional<base::Uuid>& new_task_id) {}
 
+void ContextualTasksUiServiceDelegateDesktop::StartPlatformVoiceRecognition(
+    BrowserWindowInterface* browser_window_interface) {}
+
 }  // namespace contextual_tasks

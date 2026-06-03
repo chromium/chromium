@@ -25,6 +25,9 @@ interface PageHandler {
   // Called when the user enters/loses focus into the composebox.
   FocusChanged(bool focused);
 
+  // Starts the host platform's native voice recognition system.
+  StartPlatformVoiceRecognition();
+
   // Called when the Lens button is clicked in the composebox.
   HandleLensButtonClick();
 

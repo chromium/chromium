@@ -81,6 +81,7 @@ class ContextualTasksComposeboxHandler
   void AddTabContext(int32_t tab_id,
                      bool delay_upload,
                      AddTabContextCallback callback) override;
+  void StartPlatformVoiceRecognition() override;
 
   // We override this method to inject an existing `InputStateModel` if one is
   // provided by the ContextualTasksUI via the `take_input_model_callback_`.

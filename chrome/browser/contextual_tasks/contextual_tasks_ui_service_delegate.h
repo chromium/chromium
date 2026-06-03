@@ -45,6 +45,10 @@ class ContextualTasksUiServiceDelegate {
   virtual void OnTaskChanged(BrowserWindowInterface* browser_window_interface,
                              const std::optional<base::Uuid>& old_task_id,
                              const std::optional<base::Uuid>& new_task_id) = 0;
+
+  // Called to invoke the platform's native voice recognition system.
+  virtual void StartPlatformVoiceRecognition(
+      BrowserWindowInterface* browser_window_interface) = 0;
 };
 
 }  // namespace contextual_tasks
