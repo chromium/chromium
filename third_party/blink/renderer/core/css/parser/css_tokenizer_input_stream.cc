@@ -20,15 +20,12 @@ double CSSTokenizerInputStream::GetDouble(unsigned start, unsigned end) const {
   DCHECK_LE(start, end);
   DCHECK_LE(end, rest_.length());
 
-  bool is_result_ok = false;
-  double result = 0.0;
+  std::optional<double> result;
   if (start < end) {
-    result = VisitCharacters(
-        StringView(rest_, start, end - start),
-        [&](auto chars) { return CharactersToDouble(chars, &is_result_ok); });
+    result = StringToDouble(StringView(rest_, start, end - start));
   }
   // FIXME: It looks like callers ensure we have a valid number
-  return is_result_ok ? result : 0.0;
+  return result.value_or(0);
 }
 
 double CSSTokenizerInputStream::GetNaturalNumberAsDouble(unsigned start,
