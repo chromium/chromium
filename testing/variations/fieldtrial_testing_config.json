@@ -15918,12 +15918,18 @@
                     "name": "Treatment",
                     "enable_features": [
                         "IOSMiniMapUniversalLink"
+                    ],
+                    "disable_features": [
+                        "IOSMiniMapUniversalLinkCounterfactual"
                     ]
                 },
                 {
                     "name": "Counterfactual",
                     "enable_features": [
                         "IOSMiniMapUniversalLinkCounterfactual"
+                    ],
+                    "disable_features": [
+                        "IOSMiniMapUniversalLink"
                     ]
                 }
             ]
