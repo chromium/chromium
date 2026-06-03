@@ -523,7 +523,7 @@ TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelMaxErrors) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("additional-set-value-view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
       bubble_view()));
 }
 

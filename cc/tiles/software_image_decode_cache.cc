@@ -503,11 +503,14 @@ SoftwareImageDecodeCache::FindCachedCandidate(const CacheKey& key) {
   CHECK(image_keys_it != frame_key_to_image_keys_.end());
 
   auto& available_keys = image_keys_it->second;
+
+  // Sort by width first, then height to maintain strict weak ordering.
   std::sort(available_keys.begin(), available_keys.end(),
             [](const CacheKey& one, const CacheKey& two) {
-              // Return true if |one| scale is less than |two| scale.
-              return one.target_size().width() < two.target_size().width() &&
-                     one.target_size().height() < two.target_size().height();
+              if (one.target_size().width() != two.target_size().width()) {
+                return one.target_size().width() < two.target_size().width();
+              }
+              return one.target_size().height() < two.target_size().height();
             });
 
   for (auto& available_key : available_keys) {
