@@ -8026,7 +8026,7 @@
   {
     "name": "pwm-show-suggestions-on-autofocus",
     "owners": [ "kenrb@chromium.org", "derinel@google.com" ],
-    "expiry_milestone": 151
+    "expiry_milestone": 155
   },
   {
     "name": "quick-answers-material-next-ui",
