@@ -97,6 +97,7 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   LoginShelfView* GetLoginShelfView();
 
   // views::Widget:
+  void OnNativeWidgetDestroyed() override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
@@ -208,7 +209,7 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
 
   // |delegate_view_| is the contents view of this widget and is cleaned up
   // during CloseChildWindows of the associated RootWindowController.
-  raw_ptr<ShelfWidgetDelegateView, DanglingUntriaged> delegate_view_;
+  raw_ptr<ShelfWidgetDelegateView> delegate_view_;
 
   // Animates the shelf background to/from the hotseat background during hotseat
   // transitions.

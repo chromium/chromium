@@ -997,6 +997,11 @@ ui::Layer* ShelfWidget::GetDelegateViewOpaqueBackgroundLayerForTesting() {
   return delegate_view_->opaque_background_layer();
 }
 
+void ShelfWidget::OnNativeWidgetDestroyed() {
+  delegate_view_ = nullptr;
+  views::Widget::OnNativeWidgetDestroyed();
+}
+
 void ShelfWidget::OnMouseEvent(ui::MouseEvent* event) {
   if (event->IsMouseWheelEvent()) {
     ui::MouseWheelEvent* mouse_wheel_event = event->AsMouseWheelEvent();
