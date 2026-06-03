@@ -1107,8 +1107,9 @@ void WebFrameWidgetImpl::HandleMouseDown(LocalFrame& local_root,
         html_element->IsPluginElement()) {
       mouse_capture_element_ = To<HTMLPlugInElement>(hit_node);
       SetMouseCapture(true);
-      TRACE_EVENT_BEGIN("input", "capturing mouse",
-                        perfetto::Track::FromPointer(this));
+      TRACE_EVENT_BEGIN(
+          "input", "capturing mouse",
+          perfetto::NamedTrack::FromPointer("blink::WebFrameWidgetImpl", this));
     }
   }
 
@@ -3294,7 +3295,8 @@ void WebFrameWidgetImpl::RequestMouseLock(
 }
 
 void WebFrameWidgetImpl::MouseCaptureLost() {
-  TRACE_EVENT_END("input", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("input", perfetto::NamedTrack::FromPointer(
+                               "blink::WebFrameWidgetImpl", this));
   mouse_capture_element_ = nullptr;
 }
 

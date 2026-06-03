@@ -1180,8 +1180,9 @@ void ViewTransition::PauseRendering() {
   }
   style_tracker_->PauseRendering();
 
-  TRACE_EVENT_BEGIN("blink", "ViewTransition::PauseRendering",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "blink", "ViewTransition::PauseRendering",
+      perfetto::NamedTrack::FromPointer("blink::ViewTransition", this));
   static const base::TimeDelta timeout_delay =
       RuntimeEnabledFeatures::
               ViewTransitionLongCallbackTimeoutForTestingEnabled()
@@ -1261,7 +1262,8 @@ void ViewTransition::ResumeRendering() {
     return;
   }
 
-  TRACE_EVENT_END("blink", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("blink", perfetto::NamedTrack::FromPointer(
+                               "blink::ViewTransition", this));
   if (rendering_paused_scope_->ShouldThrottleRendering() && document_->View()) {
     document_->View()->SetThrottledForViewTransition(false);
   }
