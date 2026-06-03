@@ -15,7 +15,6 @@
 #include "components/invalidation/impl/status.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "net/http/http_request_headers.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
@@ -97,7 +96,6 @@ class PerUserTopicSubscriptionRequest {
   void OnURLFetchCompleteInternal(int net_error,
                                   int response_code,
                                   std::optional<std::string> response_body);
-  void OnJsonParse(data_decoder::DataDecoder::ValueOrError result);
 
   // Invokes |request_completed_callback_| with (|status|, |topic_name|). Per
   // the contract of this class, it is allowed for clients to delete this

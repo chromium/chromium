@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,16 +29,6 @@ namespace {
 
 const char kPublicTopicNameKey[] = "publicTopicName";
 const char kPrivateTopicNameKey[] = "privateTopicName";
-
-const std::string* GetTopicName(const base::Value& value) {
-  if (!value.is_dict())
-    return nullptr;
-  const base::DictValue& dict = value.GetDict();
-  if (dict.FindBool("isPublic").value_or(false)) {
-    return dict.FindString(kPublicTopicNameKey);
-  }
-  return dict.FindString(kPrivateTopicNameKey);
-}
 
 bool IsNetworkError(int net_error) {
   // Note: ERR_HTTP_RESPONSE_CODE_FAILURE isn't a real network error - it
@@ -172,27 +163,32 @@ void PerUserTopicSubscriptionRequest::OnURLFetchCompleteInternal(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body,
-      base::BindOnce(&PerUserTopicSubscriptionRequest::OnJsonParse,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PerUserTopicSubscriptionRequest::OnJsonParse(
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (const auto topic_name = result.transform(GetTopicName);
-      topic_name.has_value() && *topic_name) {
-    RecordRequestStatus(SubscriptionStatus::kSuccess, type_, topic_);
-    RunCompletedCallbackAndMaybeDie(Status(StatusCode::SUCCESS, std::string()),
-                                    **topic_name);
+  std::optional<base::DictValue> response_dict =
+      base::JSONReader::ReadDict(*response_body, base::JSON_PARSE_RFC);
+  if (!response_dict) {
+    RecordRequestStatus(SubscriptionStatus::kParsingFailure, type_, topic_);
+    RunCompletedCallbackAndMaybeDie(
+        Status(StatusCode::FAILED, "Body parse error"), std::string());
     // Potentially dead after the above invocation; nothing to do except return.
     return;
   }
-  RecordRequestStatus(SubscriptionStatus::kParsingFailure, type_, topic_);
-  RunCompletedCallbackAndMaybeDie(
-      Status(StatusCode::FAILED,
-             result.has_value() ? "Missing topic name" : "Body parse error"),
-      std::string());
+
+  const std::string* topic_name =
+      response_dict->FindBool("isPublic").value_or(false)
+          ? response_dict->FindString(kPublicTopicNameKey)
+          : response_dict->FindString(kPrivateTopicNameKey);
+
+  if (!topic_name) {
+    RecordRequestStatus(SubscriptionStatus::kParsingFailure, type_, topic_);
+    RunCompletedCallbackAndMaybeDie(
+        Status(StatusCode::FAILED, "Missing topic name"), std::string());
+    // Potentially dead after the above invocation; nothing to do except return.
+    return;
+  }
+
+  RecordRequestStatus(SubscriptionStatus::kSuccess, type_, topic_);
+  RunCompletedCallbackAndMaybeDie(Status(StatusCode::SUCCESS, std::string()),
+                                  *topic_name);
   // Potentially dead after the above invocation; nothing to do except return.
 }
 
