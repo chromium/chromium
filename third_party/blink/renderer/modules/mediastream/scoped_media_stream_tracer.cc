@@ -15,11 +15,12 @@ constexpr char kMediaStreamTraceCategory[] = "mediastream";
 }
 
 // Uses `this` as a default id as most of them can be unique.
-ScopedMediaStreamTracer::ScopedMediaStreamTracer(const String& event_name)
+ScopedMediaStreamTracer::ScopedMediaStreamTracer(
+    perfetto::StaticString event_name)
     : event_name_(event_name) {
-  TRACE_EVENT_BEGIN(kMediaStreamTraceCategory,
-                    perfetto::DynamicString(event_name_.Utf8()),
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(kMediaStreamTraceCategory, event_name,
+                    perfetto::NamedTrack::FromPointer(
+                        "blink::ScopedMediaStreamTracer", this));
 }
 
 ScopedMediaStreamTracer::~ScopedMediaStreamTracer() {
@@ -32,7 +33,8 @@ void ScopedMediaStreamTracer::End() {
   }
 
   TRACE_EVENT_END(kMediaStreamTraceCategory,
-                  perfetto::Track::FromPointer(this));
+                  perfetto::NamedTrack::FromPointer(
+                      "blink::ScopedMediaStreamTracer", this));
   finished_ = true;
 }
 

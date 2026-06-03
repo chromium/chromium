@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_SCOPED_MEDIA_STREAM_TRACER_H_
 
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 
 namespace blink {
 // The class traces with "mediastream" category with passed event name.
@@ -17,14 +18,14 @@ class ScopedMediaStreamTracer {
  public:
   // It uses `this` object as a trace id as each ScopedMediaStreamTracer
   // represent the unique event.
-  explicit ScopedMediaStreamTracer(const String& event_name);
+  explicit ScopedMediaStreamTracer(perfetto::StaticString event_name);
   ~ScopedMediaStreamTracer();
 
   // Finish the trace. This method should be called only once.
   void End();
 
  private:
-  const String event_name_;
+  const perfetto::StaticString event_name_;
   bool finished_ = false;
 };
 

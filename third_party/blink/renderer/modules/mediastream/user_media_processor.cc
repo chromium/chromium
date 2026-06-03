@@ -494,12 +494,12 @@ class UserMediaProcessor::RequestInfo final
     }
   }
 
-  void StartTrace(const String& event_name) {
-    traces_.insert(event_name,
-                   std::make_unique<ScopedMediaStreamTracer>(event_name));
+  void StartTrace(const char* event_name) {
+    traces_.insert(event_name, std::make_unique<ScopedMediaStreamTracer>(
+                                   perfetto::StaticString(event_name)));
   }
 
-  void EndTrace(const String& event_name) { traces_.erase(event_name); }
+  void EndTrace(const char* event_name) { traces_.erase(event_name); }
 
   bool CanStartTracks() const {
     return video_formats_map_.size() == count_video_devices();
@@ -572,7 +572,7 @@ class UserMediaProcessor::RequestInfo final
   String request_result_name_;
   // Sources used in this request.
   HeapVector<Member<MediaStreamSource>> sources_;
-  HashMap<String, std::unique_ptr<ScopedMediaStreamTracer>> traces_;
+  HashMap<const char*, std::unique_ptr<ScopedMediaStreamTracer>> traces_;
   Vector<blink::WebPlatformMediaStreamSource*> sources_waiting_for_callback_;
   HashMap<String, Vector<media::VideoCaptureFormat>> video_formats_map_;
   mojom::blink::StreamDevicesSet stream_devices_set_;
