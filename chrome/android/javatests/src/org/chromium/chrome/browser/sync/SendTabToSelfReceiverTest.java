@@ -10,12 +10,11 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.chrome.browser.layouts.LayoutTestUtils.waitForLayout;
 
 import androidx.test.filters.LargeTest;
-
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,6 +40,8 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SendTabToSelfSpecifics;
 import org.chromium.ui.test.util.RenderTestRule.Component;
+
+import java.util.concurrent.TimeUnit;
 
 /** Test suite for the Send Tab To Self sync data type. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -193,5 +194,37 @@ public class SendTabToSelfReceiverTest {
 
         // Verify that the message banner is not displayed.
         onView(withId(R.id.message_primary_button)).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    public void testSendTabToSelfReceivedTabCardLabel() throws Exception {
+        long now = getCurrentTimeSinceWindowsEpochMicros();
+        injectSendTabToSelfEntity(
+                "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+
+        // Verify that the tab is opened in the background
+        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 2, 0);
+
+        TabModel tabModel = mSyncTestRule.getActivity().getTabModelSelector().getModel(false);
+        // Verify the active tab is STILL the initial tab (index 0), proving the new tab opened in
+        // the background
+        Assert.assertEquals(
+                0, ThreadUtils.runOnUiThreadBlocking(() -> tabModel.index()).intValue());
+        Tab bgTab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(1));
+        Assert.assertEquals(
+                "https://www.example.com/",
+                ThreadUtils.runOnUiThreadBlocking(() -> bgTab.getUrl().getSpec()));
+
+        // Open the Tab Switcher
+        TabUiTestHelper.enterTabSwitcher(mSyncTestRule.getActivity());
+
+        // Verify the tab card label is displayed and compare golden screenshot
+        onView(withText("From Example Phone")).check(matches(isDisplayed()));
+        mRenderTestRule.render(
+                mSyncTestRule.getActivity().findViewById(R.id.tab_list_recycler_view),
+                "stts_tab_card_label");
     }
 }

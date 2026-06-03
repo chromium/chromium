@@ -278,11 +278,18 @@ void AndroidNotificationHandler::OnNavigationStarted(
     const PageContext& page_context,
     std::unique_ptr<NavigateParams> nav_params,
     base::WeakPtr<content::NavigationHandle> navigation_handle) {
+  CHECK(base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen));
   if (content::WebContents* new_contents =
-          nav_params->navigated_or_inserted_contents;
-      new_contents &&
-      base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
-    FillWebContents(new_contents, url::Origin::Create(url), page_context);
+          nav_params->navigated_or_inserted_contents) {
+    if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
+      FillWebContents(new_contents, url::Origin::Create(url), page_context);
+    }
+
+    // Attach a visual label indicating the sender device name to the newly
+    // opened background tab.
+    if (TabAndroid* tab = TabAndroid::FromWebContents(new_contents)) {
+      send_tab_to_self::AttachTabLabel(tab, device_name);
+    }
   }
 
   send_tab_to_self_model_->MarkEntryOpened(guid);
