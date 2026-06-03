@@ -1780,6 +1780,9 @@ gfx::Rect ToolbarView::GetFindBarBoundingBox(int contents_bottom) {
 
 void ToolbarView::FocusToolbar() {
   SetPaneFocus(nullptr);
+  if (toolbar_webview_) {
+    toolbar_webview_->AdjustForToolbarFocus();
+  }
 }
 
 views::AccessiblePaneView* ToolbarView::GetAsAccessiblePaneView() {

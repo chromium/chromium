@@ -235,6 +235,10 @@ class WebUIToolbarWebView
   // returned value must not outlive `this`, since it includes a bound callback.
   views::FlexSpecification GetFlexSpecification();
 
+  // If we have the focus, adjust the JS focus to be appropriate for focus
+  // toolbar operation.
+  void AdjustForToolbarFocus();
+
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
   void SetTickClockForTesting(const base::TickClock* clock);
   views::WebView* GetWebViewForTesting();

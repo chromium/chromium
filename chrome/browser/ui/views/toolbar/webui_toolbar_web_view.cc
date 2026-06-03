@@ -150,23 +150,6 @@ class WebUIToolbarInternalWebView : public views::WebView {
                                          std::move(hang_monitor_restarter));
   }
 
-  void OnFocus() override {
-    // The default OnFocus() implementation calls WebContents::Focus(), which
-    // restores focus to the last focused element. If the focus was
-    // never established, WebContents::Focus() will focus the <body>, which
-    // doesn't show a focus ring.
-    views::WebView::OnFocus();
-
-    // For a programmatic focus (kDirectFocusChange), focuses the first
-    // focusable element in the HTML document by calling
-    // WebContents::FocusThroughTabTraversal().
-    if (GetFocusManager()->focus_change_reason() ==
-            views::FocusManager::FocusChangeReason::kDirectFocusChange &&
-        IsWebContentsAlive()) {
-      web_contents()->FocusThroughTabTraversal(/*reverse=*/false);
-    }
-  }
-
   bool HandleKeyboardEvent(
       content::WebContents* source,
       const input::NativeWebKeyboardEvent& event) override {
@@ -817,6 +800,12 @@ float WebUIToolbarWebView::GetScaleFactor() const {
 views::FlexSpecification WebUIToolbarWebView::GetFlexSpecification() {
   return views::FlexSpecification(base::BindRepeating(
       &WebUIToolbarWebView::FlexLayoutRule, base::Unretained(this)));
+}
+
+void WebUIToolbarWebView::AdjustForToolbarFocus() {
+  if (GetFocusManager()->GetFocusedView() == web_view_) {
+    web_view_->web_contents()->FocusThroughTabTraversal(/*reverse=*/false);
+  }
 }
 
 void WebUIToolbarWebView::RecoverFromRendererCrashOrUnresponsiveness() {
