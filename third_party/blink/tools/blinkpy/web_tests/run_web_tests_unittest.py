@@ -30,6 +30,7 @@
 
 import io
 import json
+import platform
 import re
 import unittest
 from unittest import mock
@@ -2992,6 +2993,9 @@ class RebaselineTest(unittest.TestCase, StreamTestingMixin):
 
 
 class MainTest(unittest.TestCase):
+
+    @unittest.skipIf(platform.mac_ver()[0].startswith('12'),
+                     "Failing on macOS 12; see crbug.com/474036848")
     def test_exception_handling(self):
         orig_run_fn = run_web_tests.run
 

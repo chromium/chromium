@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import platform
 import sys
 import time
 import unittest
@@ -90,6 +91,9 @@ class FakeServerProcess(server_process.ServerProcess):
 
 
 class TestServerProcess(unittest.TestCase):
+
+    @unittest.skipIf(platform.mac_ver()[0].startswith('12'),
+                     "Failing on macOS 12; see crbug.com/474036848")
     def test_basic(self):
         cmd = [
             sys.executable, '-c',

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import platform
 import unittest
 
 from blinkpy.common.host import Host
@@ -38,6 +39,8 @@ class TestRepaintOverlay(unittest.TestCase):
         self.assertEquals(LAYER_TREE,
                           repaint_overlay.extract_layer_tree(LAYER_TREE))
 
+    @unittest.skipIf(platform.mac_ver()[0].startswith('12'),
+                     "Failing on macOS 12; see crbug.com/474036848")
     def test_generate_repaint_overlay_html(self):
         test_name = 'paint/invalidation/repaint-overlay/layers.html'
         host = Host()

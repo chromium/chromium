@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import platform
 import unittest
 
 from blinkpy.web_tests.servers import cli_wrapper
@@ -29,6 +30,8 @@ class CliWrapperTest(unittest.TestCase):
     def setUp(self):
         self.server = None
 
+    @unittest.skipIf(platform.mac_ver()[0].startswith('12'),
+                     "Failing on macOS 12; see crbug.com/474036848")
     def test_main_success(self):
         def mock_server_constructor(*args, **kwargs):
             self.server = MockServer(args, kwargs)
@@ -41,6 +44,8 @@ class CliWrapperTest(unittest.TestCase):
         self.assertTrue(self.server.start_called)
         self.assertTrue(self.server.stop_called)
 
+    @unittest.skipIf(platform.mac_ver()[0].startswith('12'),
+                     "Failing on macOS 12; see crbug.com/474036848")
     def test_main_server_error_after_start(self):
         def mock_server_constructor(*args, **kwargs):
             self.server = MockServer(args, kwargs)
