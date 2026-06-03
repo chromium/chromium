@@ -15,11 +15,10 @@ import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/br
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertStyle, MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
-
-import {assertStyle, MockInputState} from './searchbox_test_utils.js';
-import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 enum Attributes {
   SELECTED = 'selected',
@@ -2115,7 +2114,7 @@ suite('SearchboxTest', () => {
       async () => {
         function getIcon(element: NtpSearchboxElement|SearchboxMatchElement):
             SearchboxIconElement {
-          if ('input' in (element.$ as any)) {
+          if (element.tagName === 'NTP-SEARCHBOX') {
             return (element as NtpSearchboxElement).$.input.$.icon;
           }
           return (element as SearchboxMatchElement).$.icon;

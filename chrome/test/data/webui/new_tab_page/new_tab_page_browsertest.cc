@@ -60,6 +60,15 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNextTest, Realbox) {
   RunTest("new_tab_page/realbox_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, RealboxLens) {
+  RunTest("new_tab_page/searchbox_lens_button_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, RealboxSearchbox) {
+  RunTest("new_tab_page/searchbox_ntp_test.js",
+          "runMochaSuite('SearchboxTest');");
+}
+
 // TODO(crbug.com/40933410):  Re-enable once no longer fails.
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_LensForm) {
   RunTest("new_tab_page/lens_form_test.js", "mocha.run()");

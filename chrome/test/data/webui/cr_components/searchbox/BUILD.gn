@@ -15,12 +15,9 @@ build_webui_tests("build") {
 
   files = [
     "searchbox_dropdown_test.ts",
-    "searchbox_focus_test.ts",
     "searchbox_icon_test.ts",
     "searchbox_input_test.ts",
-    "searchbox_lens_button_test.ts",
     "searchbox_match_test.ts",
-    "searchbox_ntp_test.ts",
     "searchbox_test_utils.ts",
     "test_searchbox_browser_proxy.ts",
     "placeholder_text_cycler_test.ts",
