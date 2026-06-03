@@ -77,7 +77,7 @@ MediaRouteStarter::MediaRouteStarter(MediaRouterUIParameters params)
               : nullptr),
       query_result_manager_(
           std::make_unique<QueryResultManager>(GetMediaRouter())) {
-  if (presentation_manager_) {
+  if (presentation_manager_ && !start_presentation_context_) {
     presentation_manager_->AddObserver(this);
   }
   InitPresentationSources(params.initial_modes);

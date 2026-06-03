@@ -29,6 +29,13 @@ void MockWebContentsPresentationManager::SetDefaultPresentationRequest(
   default_presentation_request_ = request;
 }
 
+void MockWebContentsPresentationManager::NotifyDefaultPresentationChanged(
+    const content::PresentationRequest* request) {
+  for (auto& observer : observers_) {
+    observer.OnDefaultPresentationChanged(request);
+  }
+}
+
 void MockWebContentsPresentationManager::NotifyMediaRoutesChanged(
     const std::vector<media_router::MediaRoute>& routes) {
   for (auto& observer : observers_) {

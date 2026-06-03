@@ -923,4 +923,32 @@ TEST_F(MediaRouteStarterTest, GetScreenCapturePermission) {
                 MediaCastMode::DESKTOP_MIRROR));
 }
 
+TEST_F(MediaRouteStarterTest,
+       StartPresentationContextDoesNotObserveDefaultPresentationChanges) {
+  const std::string kVictimUrl = "https://victim.example/recv";
+  const std::string kVictimOrigin = "https://victim.example";
+  content::PresentationRequest victim_request =
+      CreatePresentationRequest(kVictimUrl, kVictimOrigin);
+  auto start_presentation_context =
+      CreateStartPresentationContext(victim_request);
+
+  CreateStarter(MediaRouterUIParameters(kDefaultModes, web_contents(),
+                                        std::move(start_presentation_context)));
+
+  EXPECT_EQ(u"victim.example",
+            media_route_starter()->GetPresentationRequestSourceName());
+
+  const std::string kAttackerUrl = "https://attacker.example/recv";
+  const std::string kAttackerOrigin = "https://attacker.example";
+  content::PresentationRequest attacker_request =
+      CreatePresentationRequest(kAttackerUrl, kAttackerOrigin);
+  presentation_manager()->NotifyDefaultPresentationChanged(&attacker_request);
+
+  // The source name should remain unchanged because MediaRouteStarter does not
+  // observe default presentation request changes.
+  EXPECT_EQ(u"victim.example",
+            media_route_starter()->GetPresentationRequestSourceName());
+  EXPECT_CALL(*this, RequestError(_));
+}
+
 }  // namespace media_router

@@ -22,6 +22,8 @@ class MockWebContentsPresentationManager
       const std::vector<media_router::MediaRoute>& routes);
   void SetDefaultPresentationRequest(
       const content::PresentationRequest& request);
+  void NotifyDefaultPresentationChanged(
+      const content::PresentationRequest* request);
 
   // WebContentsPresentationManager implementation.
   bool HasDefaultPresentationRequest() const override;
