@@ -174,14 +174,17 @@ void AddMetadataToTextObject(FPDF_DOCUMENT doc,
   CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "Version",
                                     kInkTextAnnotationVersion));
 
+  gfx::RectF bounds = attributes.rect;
+  bounds.Scale(kUnitConversionFactorPixelsToPoints);
+
   CHECK(FPDFPageObjMark_SetFloatParam(doc, text_object, mark, "BoundsX",
-                                      attributes.rect.x()));
+                                      bounds.x()));
   CHECK(FPDFPageObjMark_SetFloatParam(doc, text_object, mark, "BoundsY",
-                                      attributes.rect.y()));
+                                      bounds.y()));
   CHECK(FPDFPageObjMark_SetFloatParam(doc, text_object, mark, "BoundsWidth",
-                                      attributes.rect.width()));
+                                      bounds.width()));
   CHECK(FPDFPageObjMark_SetFloatParam(doc, text_object, mark, "BoundsHeight",
-                                      attributes.rect.height()));
+                                      bounds.height()));
 
   CHECK(FPDFPageObjMark_SetIntParam(doc, text_object, mark, "Typeface",
                                     static_cast<int>(attributes.typeface)));
