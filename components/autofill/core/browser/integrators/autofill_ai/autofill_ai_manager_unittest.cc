@@ -28,8 +28,15 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager_test_api.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -188,13 +195,18 @@ class MockAutofillClient : public TestAutofillClient {
                const FieldTypeSet& triggering_field_types),
               (override));
 };
-class AutofillAiManagerTest : public testing::Test {
+class AutofillAiManagerTest
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<NiceMock<MockAutofillClient>,
+                                                 TestAutofillDriver> {
  public:
   AutofillAiManagerTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAiWithDataSchema,
                               features::kAutofillAiServerModel},
         /*disabled_features=*/{});
+    InitAutofillClient();
+    CreateAutofillDriver();
     autofill_client().set_entity_data_manager(
         std::make_unique<EntityDataManager>(
             autofill_client().GetPrefs(),
@@ -208,7 +220,10 @@ class AutofillAiManagerTest : public testing::Test {
     autofill_client().set_sync_service(&sync_service_);
     autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kPayments, true);
+    autofill_client().set_personal_context_access_manager(
+        &personal_context_access_manager_);
   }
+  void TearDown() override { DestroyAutofillClient(); }
 
   std::u16string GetValueFromEntity(const EntityInstance entity,
                                     AttributeType attribute,
@@ -273,15 +288,19 @@ class AutofillAiManagerTest : public testing::Test {
   EntityDataManager& edm() { return *autofill_client().GetEntityDataManager(); }
   AutofillAiManager& manager() { return manager_; }
   TestStrikeDatabase& strike_database() { return strike_database_; }
+  MockPersonalContextAccessManager& personal_context_access_manager() {
+    return personal_context_access_manager_;
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_env_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   syncer::TestSyncService sync_service_;
   NiceMock<MockAutofillClient> autofill_client_;
+  NiceMock<MockPersonalContextAccessManager> personal_context_access_manager_;
   TestStrikeDatabase strike_database_;
   AutofillAiManager manager_{&autofill_client(), &strike_database_};
 };
@@ -300,6 +319,23 @@ TEST_F(AutofillAiManagerTest,
   EXPECT_THAT(manager().GetSuggestions(form_structure, form.fields().front()),
               ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
                           HasType(kManageAutofillAi)));
+}
+
+TEST_F(AutofillAiManagerTest, OnAfterLoadedServerPredictions_TriggersFetch) {
+  test::FormDescription form_description = {
+      .fields = {{.role = PASSPORT_NUMBER}}};
+  FormData form = test::GetFormData(form_description);
+  auto form_structure = std::make_unique<FormStructure>(form);
+  AddPredictionsToFormStructure(*form_structure, {{PASSPORT_NUMBER}});
+  test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
+
+  std::vector<EntityType> expected_types = {
+      EntityType(EntityTypeName::kPassport)};
+  EXPECT_CALL(personal_context_access_manager(),
+              PrefetchAmbientAutofillContext(
+                  testing::ElementsAreArray(expected_types), _));
+
+  manager().OnAfterLoadedServerPredictions(autofill_manager());
 }
 
 // Tests that IPH should be displayed if the user is opted out of the feature,

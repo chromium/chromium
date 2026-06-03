@@ -160,6 +160,11 @@ AutofillAiManager* AutofillClient::GetAutofillAiManager() {
   return nullptr;
 }
 
+PersonalContextAccessManager*
+AutofillClient::GetPersonalContextAccessManager() {
+  return nullptr;
+}
+
 AutofillAiModelCache* AutofillClient::GetAutofillAiModelCache() {
   return nullptr;
 }

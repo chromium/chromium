@@ -50,6 +50,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
+#include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
@@ -220,6 +221,11 @@ AutofillAiManager::AutofillAiManager(
     update_strike_db_ =
         std::make_unique<AutofillAiUpdateStrikeDatabase>(strike_database);
   }
+  if (base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill)) {
+    autofill_managers_observation_.Observe(
+        client, ScopedAutofillManagersObservation::InitializationPolicy::
+                    kObservePreexistingManagers);
+  }
 }
 
 AutofillAiManager::~AutofillAiManager() = default;
@@ -316,6 +322,26 @@ void AutofillAiManager::OnEditedAutofilledField(const FormStructure& form,
                                                 const AutofillField& field,
                                                 ukm::SourceId ukm_source_id) {
   logger_.OnEditedAutofilledField(form, field, ukm_source_id);
+}
+
+void AutofillAiManager::OnAfterLoadedServerPredictions(
+    AutofillManager& manager) {
+  DenseSet<EntityType> relevant_types;
+  manager.ForEachCachedForm([&](const FormStructure& form) {
+    relevant_types.insert_all(GetRelevantEntityTypesForFields(form.fields()));
+  });
+  if (relevant_types.empty()) {
+    return;
+  }
+
+  if (PersonalContextAccessManager* access_manager =
+          client_->GetPersonalContextAccessManager()) {
+    base::flat_set<EntityType> requested_types(std::from_range, relevant_types);
+    // TODO(crbug.com/516721244): Ensure that types are not requested multiple
+    // times if OnAfterLoadedServerPredictions is called multiple times.
+    access_manager->PrefetchAmbientAutofillContext(requested_types,
+                                                   base::DoNothing());
+  }
 }
 
 void AutofillAiManager::UpdateLoggerReadinessData(const FormStructure& form) {

@@ -150,6 +150,7 @@ enum class SuggestionHidingReason;
 enum class SuggestionType;
 class SingleFieldFillRouter;
 class ValuablesDataManager;
+class PersonalContextAccessManager;
 class VotesUploader;
 class PasswordManagerAutofillHelperDelegate;
 class WalletPassAccessManager;
@@ -432,6 +433,10 @@ class AutofillClient {
   // Returns `nullptr` if, at the time of the AutofillClient's construction, the
   // Autofill AI feature is unsupported.
   virtual AutofillAiManager* GetAutofillAiManager();
+
+  // Returns the `PersonalContextAccessManager` instance associated with the
+  // client. Returns `nullptr` if `kAutofillAmbientAutofill` is not enabled.
+  virtual PersonalContextAccessManager* GetPersonalContextAccessManager();
 
   // Returns the per-profile `AutofillAiModelCache`. Returns `nullptr` if the
   // `kAutofillAiServerModel` is not enabled.

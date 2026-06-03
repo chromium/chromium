@@ -66,6 +66,7 @@ void PersonalContextAccessManagerImpl::PrefetchAmbientAutofillContext(
     PrefetchAmbientAutofillContextCallback callback) {
   personal_context::proto::ContextMemoryAmbientAutofillRequest request;
   for (const EntityType& type : requested_types) {
+    // TODO(crbug.com/516721244): Only request types with !IsTypeCached.
     request.add_requested_types(
         AutofillEntityTypeToPersonalContextEntityType(type));
   }

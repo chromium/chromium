@@ -39,6 +39,7 @@
 #include "chrome/browser/autofill/autofill_field_classification_model_service_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
+#include "chrome/browser/autofill/personal_context_access_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
@@ -515,6 +516,14 @@ void ChromeAutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
 
 AutofillAiManager* ChromeAutofillClient::GetAutofillAiManager() {
   return autofill_ai_manager_.get();
+}
+
+PersonalContextAccessManager*
+ChromeAutofillClient::GetPersonalContextAccessManager() {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill)) {
+    return nullptr;
+  }
+  return PersonalContextAccessManagerFactory::GetForProfile(GetProfile());
 }
 
 AutofillAiModelCache* ChromeAutofillClient::GetAutofillAiModelCache() {

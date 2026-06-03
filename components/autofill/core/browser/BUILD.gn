@@ -1309,6 +1309,8 @@ static_library("test_support") {
     "ml_model/field_classification_model_encoder_test_api.h",
     "mock_form_predictions_tracker.cc",
     "mock_form_predictions_tracker.h",
+    "network/autofill_ai/mock_personal_context_access_manager.cc",
+    "network/autofill_ai/mock_personal_context_access_manager.h",
     "network/autofill_ai/mock_wallet_pass_access_manager.cc",
     "network/autofill_ai/mock_wallet_pass_access_manager.h",
     "network/autofill_ai/personal_context_access_manager_impl_test_api.h",

@@ -18,6 +18,8 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
@@ -38,14 +40,14 @@ class FormStructure;
 struct Suggestion;
 
 // The class for embedder-independent, tab-specific Autofill AI logic. This
-// class is an interface.
-class AutofillAiManager {
+// class is owned by the AutofillClient.
+class AutofillAiManager : public AutofillManager::Observer {
  public:
   AutofillAiManager(AutofillClient* client,
                     strike_database::StrikeDatabaseBase* strike_database);
   AutofillAiManager(const AutofillAiManager&) = delete;
   AutofillAiManager& operator=(const AutofillAiManager&) = delete;
-  virtual ~AutofillAiManager();
+  ~AutofillAiManager() override;
 
   // Generates AutofillAi suggestions.
   virtual std::vector<Suggestion> GetSuggestions(
@@ -88,6 +90,9 @@ class AutofillAiManager {
   virtual void OnEditedAutofilledField(const FormStructure& form,
                                        const AutofillField& field,
                                        ukm::SourceId ukm_source_id);
+
+  // AutofillManager::Observer:
+  void OnAfterLoadedServerPredictions(AutofillManager& manager) override;
 
   // Updates `logger_`'s information about data stored for AutofillAi for
   // `form`.
@@ -247,6 +252,8 @@ class AutofillAiManager {
   // last logged, ensuring it is logged at most once per page.
   ukm::SourceId last_logged_ukm_source_id_for_interaction_ =
       ukm::kInvalidSourceId;
+
+  ScopedAutofillManagersObservation autofill_managers_observation_{this};
 
   base::WeakPtrFactory<AutofillAiManager> weak_ptr_factory_{this};
 };
