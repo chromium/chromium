@@ -2671,6 +2671,9 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
 
       // Added 2026-05.
       "web_request.filtered_lazy_listeners",
+
+      // Added 2026-06.
+      "mv2_deprecation_disabled_dialog_ack",
   };
 
   for (auto key_value : extensions_dictionary) {

@@ -940,9 +940,6 @@ Google Chrome is unable to recover your settings.
         </message>
 
         <!-- Manifest V2 Deprecation dialog -->
-        <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_DESCRIPTION" desc="The description of the dialog asking the user if they want to keep the extension installed, which is affected by the Manifest V2 deprecation">
-          This extension is no longer supported. Chrome recommends that you remove it instead.
-        </message>
         <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_DESCRIPTION"  desc="The description of the dialog that appears when extensions were disabled due to the Manifest V2 deprecation">
           {NUM_EXTENSIONS, plural,
           =1 {This extension is no longer supported. Chrome recommends that you remove it.}

@@ -26,7 +26,6 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Browser;
-class BrowserWindowInterface;
 class ControlledHomeDialogControllerInterface;
 class SettingsOverriddenDialogController;
 class Profile;
@@ -138,21 +137,6 @@ void ShowMv2DeprecationDisabledDialog(
     base::OnceClosure remove_callback,
     base::OnceClosure manage_callback,
     base::OnceClosure close_callback);
-
-// Shows a dialog when the user triggers the warning dismissal for an extension
-// affected by the MV2 deprecation.
-void ShowMv2DeprecationKeepDialog(BrowserWindowInterface* browser,
-                                  const Extension& extension,
-                                  base::OnceClosure accept_callback,
-                                  base::OnceClosure cancel_callback);
-
-// Shows a dialog when the user re-enables an extension affected by the MV2
-// deprecation.
-void ShowMv2DeprecationReEnableDialog(
-    gfx::NativeWindow parent,
-    const ExtensionId& extension_id,
-    const std::string& extension_name,
-    base::OnceCallback<void(bool)> done_callback);
 
 // Shows a dialog with a warning to the user that their settings have been
 // overridden by an extension.

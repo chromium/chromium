@@ -35,6 +35,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/browser/manifest_v2_experiment_manager.h"
 #include "extensions/browser/requirements_checker.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -603,45 +604,12 @@ void ManagementSetEnabledFunction::CheckManifestV2Deprecation() {
     return;
   }
 
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
-  if (prefs->HasDisableReason(
-          extension_id_,
-          disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION)) {
-    if (!user_gesture()) {
-      FinishEnable(Error(keys::kGestureNeededForMV2DeprecationReEnableError));
-      return;
-    }
-
-    // Show re-enable dialog.
-    const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
-                                                ->Get(browser_context())
-                                                ->GetDelegate();
-    delegate->ShowMv2DeprecationReEnableDialog(
-        browser_context(), GetSenderWebContents(), *extension,
-        base::BindOnce(
-            &ManagementSetEnabledFunction::OnManifestV2DeprecationChecked,
-            this));
-    return;
-  }
-
-  // Call OnManifestV2DeprecationChecked with enable allowed set to true,
-  // since the MV2 deprecation doesn't affect this extension.
-  OnManifestV2DeprecationChecked(/*enable_allowed=*/true);
-}
-
-void ManagementSetEnabledFunction::OnManifestV2DeprecationChecked(
-    bool enable_allowed) {
-  if (!enable_allowed) {
-    FinishEnable(Error(keys::kUserDidNotReEnableError));
-    return;
-  }
-
-  // Extension could have been uninstalled externally while previous check was
-  // happening.
-  const Extension* extension = GetExtension();
-  if (!extension) {
-    FinishEnable(Error(keys::kNoExtensionError));
-    return;
+  auto* mv2_experiment_manager =
+      ManifestV2ExperimentManager::Get(browser_context());
+  if (mv2_experiment_manager) {
+    // This should have been caught earlier as part of the policy-related
+    // checks.
+    CHECK(!mv2_experiment_manager->ShouldBlockExtensionEnable(*extension));
   }
 
   // This was the last check in the enable flow. We can now finish enabling

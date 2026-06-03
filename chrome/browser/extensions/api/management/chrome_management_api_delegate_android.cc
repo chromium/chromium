@@ -50,13 +50,4 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
   NOTREACHED();
 }
 
-void ChromeManagementAPIDelegate::ShowMv2DeprecationReEnableDialog(
-    content::BrowserContext* context,
-    content::WebContents* web_contents,
-    const Extension& extension,
-    base::OnceCallback<void(bool)> done_callback) const {
-  NOTIMPLEMENTED();
-  std::move(done_callback).Run(/*enable_allowed=*/false);
-}
-
 }  // namespace extensions
