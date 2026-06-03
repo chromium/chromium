@@ -171,9 +171,9 @@ void SecurePaymentConfirmationAppFactory::Create(
       }
 
       // PaymentRequest::Init should have already validated the request.
-      std::string unused_error_message;
-      CHECK(IsValidSecurePaymentConfirmationRequest(
-          method_data->secure_payment_confirmation, &unused_error_message));
+      CHECK_EQ(IsValidSecurePaymentConfirmationRequest(
+                   method_data->secure_payment_confirmation),
+               SecurePaymentConfirmationRequestValidationError::kOk);
 
       mojom::SecurePaymentConfirmationRequestPtr spc_request =
           method_data->secure_payment_confirmation.Clone();

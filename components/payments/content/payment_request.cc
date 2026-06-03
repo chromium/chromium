@@ -66,16 +66,17 @@ mojom::PaymentAddressPtr RedactShippingAddress(
   return address;
 }
 
-// Returns true if the requested method data and payment options represent a
-// valid SecurePaymentConfirmation (SPC) request, or returns false and sets
-// `error_message` if any structural or parameters constraints are violated.
+// Returns an error code indicating if the requested method data and payment
+// options represent a valid SecurePaymentConfirmation (SPC) request. Returns
+// `SecurePaymentConfirmationRequestValidationError::kOk` if the request is
+// valid, or a specific error code if any structural or parameters constraints
+// are violated.
 //
 // Should only be called if `method_data` contains at least one SPC method.
-bool ValidateSecurePaymentConfirmationRequest(
+SecurePaymentConfirmationRequestValidationError
+ValidateSecurePaymentConfirmationRequest(
     const std::vector<mojom::PaymentMethodDataPtr>& method_data,
-    const mojom::PaymentOptionsPtr& options,
-    std::string* error_message) {
-  CHECK(error_message);
+    const mojom::PaymentOptionsPtr& options) {
   CHECK_GT(method_data.size(), 0u);
 
   if (!base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation)) {
@@ -86,23 +87,22 @@ bool ValidateSecurePaymentConfirmationRequest(
       if (method_data_entry->supported_method ==
               methods::kSecurePaymentConfirmation &&
           method_data_entry->secure_payment_confirmation.get() != nullptr) {
-        *error_message = errors::kSpcDisabledMustBeNull;
-        return false;
+        return SecurePaymentConfirmationRequestValidationError::
+            kSPCMethodMustBeNull;
       }
     }
 
-    return true;
+    return SecurePaymentConfirmationRequestValidationError::kOk;
   }
 
   if (method_data.size() > 1) {
-    *error_message = errors::kSpcMustBeOnlyPaymentMethod;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::
+        kMultiplePaymentMethodsNotAllowed;
   }
 
   if (options->request_payer_name || options->request_payer_email ||
       options->request_payer_phone || options->request_shipping) {
-    *error_message = errors::kSpcUnsupportedOptions;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::kUnsupportedOptions;
   }
 
   const auto& method_data_entry = method_data.at(0);
@@ -110,12 +110,12 @@ bool ValidateSecurePaymentConfirmationRequest(
            payments::methods::kSecurePaymentConfirmation);
 
   if (method_data_entry->secure_payment_confirmation.get() == nullptr) {
-    *error_message = errors::kSpcEnabledMustNotBeNull;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::
+        kSPCMethodMustNotBeNull;
   }
 
   return IsValidSecurePaymentConfirmationRequest(
-      method_data_entry->secure_payment_confirmation, error_message);
+      method_data_entry->secure_payment_confirmation);
 }
 }  // namespace
 
@@ -236,9 +236,13 @@ void PaymentRequest::Init(
         return datum &&
                datum->supported_method == methods::kSecurePaymentConfirmation;
       })) {
-    std::string error_message;
-    if (!ValidateSecurePaymentConfirmationRequest(method_data, options,
-                                                  &error_message)) {
+    SecurePaymentConfirmationRequestValidationError validation_result =
+        ValidateSecurePaymentConfirmationRequest(method_data, options);
+    if (validation_result !=
+        SecurePaymentConfirmationRequestValidationError::kOk) {
+      std::string error_message =
+          SecurePaymentConfirmationRequestValidationErrorToString(
+              validation_result);
       log_.Error(error_message);
       mojo::ReportBadMessage(error_message);
       ResetAndDeleteThis();

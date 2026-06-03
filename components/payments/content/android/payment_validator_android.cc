@@ -50,7 +50,7 @@ static bool JNI_PaymentValidator_ValidatePaymentValidationErrorsAndroid(
       errors, &unused_error_message);
 }
 
-static bool
+static jint
 JNI_PaymentValidator_ValidateSecurePaymentConfirmationRequestAndroid(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& buffer) {
@@ -58,11 +58,10 @@ JNI_PaymentValidator_ValidateSecurePaymentConfirmationRequestAndroid(
   auto span = base::android::JavaByteBufferToSpan(env, buffer);
   if (!mojom::SecurePaymentConfirmationRequest::Deserialize(
           span.data(), span.size(), &request)) {
-    return false;
+    return static_cast<jint>(
+        SecurePaymentConfirmationRequestValidationError::kInternalError);
   }
-  std::string unused_error_message;
-  return IsValidSecurePaymentConfirmationRequest(request,
-                                                 &unused_error_message);
+  return static_cast<jint>(IsValidSecurePaymentConfirmationRequest(request));
 }
 
 }  // namespace payments

@@ -15,6 +15,7 @@ import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
 import org.chromium.components.payments.PaymentRequestSpec;
+import org.chromium.components.payments.SecurePaymentConfirmationRequestValidationError;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
@@ -168,9 +169,11 @@ public class PaymentRequestServiceBuilder implements Delegate {
     }
 
     @Override
-    public boolean validateSecurePaymentConfirmationRequest(
-            SecurePaymentConfirmationRequest request) {
-        return mIsSecurePaymentConfirmationRequestValid;
+    public @SecurePaymentConfirmationRequestValidationError int
+            validateSecurePaymentConfirmationRequest(SecurePaymentConfirmationRequest request) {
+        return mIsSecurePaymentConfirmationRequestValid
+                ? SecurePaymentConfirmationRequestValidationError.OK
+                : SecurePaymentConfirmationRequestValidationError.CREDENTIAL_IDS_REQUIRED;
     }
 
     @Override

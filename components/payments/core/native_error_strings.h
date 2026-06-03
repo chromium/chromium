@@ -327,6 +327,9 @@ extern const char kSpcUnsupportedOptions[];
 // Used when SPC is enabled but the renderer passes a null SPC object.
 extern const char kSpcEnabledMustNotBeNull[];
 
+// Used when an internal validation error occurs.
+extern const char kInternalError[];
+
 }  // namespace errors
 }  // namespace payments
 

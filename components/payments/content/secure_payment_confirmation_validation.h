@@ -11,12 +11,45 @@
 
 namespace payments {
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: (
+//   SecurePaymentConfirmationRequestValidationError)
+enum class SecurePaymentConfirmationRequestValidationError {
+  kOk,
+  kSPCMethodMustBeNull,
+  kSPCMethodMustNotBeNull,
+  kMultiplePaymentMethodsNotAllowed,
+  kUnsupportedOptions,
+  kCredentialIdsRequired,
+  kTimeoutTooLong,
+  kChallengeRequired,
+  kInstrumentRequired,
+  kInstrumentDisplayNameRequired,
+  kValidInstrumentIconRequired,
+  kNonUtf8InstrumentDetailsString,
+  kEmptyInstrumentDetailsString,
+  kTooLongInstrumentDetailsString,
+  kRpIdRequired,
+  kPayeeOriginOrPayeeNameRequired,
+  kPayeeOriginMustBeHttps,
+  kNonNullPaymentEntityLogoRequired,
+  kValidLogoUrlRequired,
+  kValidLogoUrlSchemeRequired,
+  kLogoLabelRequired,
+  kInternalError,
+};
+
+// Converts a SecurePaymentConfirmationRequestValidationError to a
+// developer-facing string representation.
+std::string SecurePaymentConfirmationRequestValidationErrorToString(
+    SecurePaymentConfirmationRequestValidationError error);
+
 // Validates the renderer-supplied `request` for a secure payment confirmation.
-// Returns true if valid. If invalid, returns false and populates
-// `error_message` with the validation error details.
-bool IsValidSecurePaymentConfirmationRequest(
-    const mojom::SecurePaymentConfirmationRequestPtr& request,
-    std::string* error_message);
+// Returns SecurePaymentConfirmationRequestValidationError::kOk if valid, or the
+// specific validation error.
+SecurePaymentConfirmationRequestValidationError
+IsValidSecurePaymentConfirmationRequest(
+    const mojom::SecurePaymentConfirmationRequestPtr& request);
 
 }  // namespace payments
 

@@ -43,109 +43,167 @@ bool IsValidDomain(const std::string& rp_id) {
 
 }  // namespace
 
-bool IsValidSecurePaymentConfirmationRequest(
-    const mojom::SecurePaymentConfirmationRequestPtr& request,
-    std::string* error_message) {
+std::string SecurePaymentConfirmationRequestValidationErrorToString(
+    SecurePaymentConfirmationRequestValidationError error) {
+  switch (error) {
+    case SecurePaymentConfirmationRequestValidationError::kOk:
+      return "";
+    case SecurePaymentConfirmationRequestValidationError::kSPCMethodMustBeNull:
+      return errors::kSpcDisabledMustBeNull;
+    case SecurePaymentConfirmationRequestValidationError::
+        kSPCMethodMustNotBeNull:
+      return errors::kSpcEnabledMustNotBeNull;
+    case SecurePaymentConfirmationRequestValidationError::
+        kMultiplePaymentMethodsNotAllowed:
+      return errors::kSpcMustBeOnlyPaymentMethod;
+    case SecurePaymentConfirmationRequestValidationError::kUnsupportedOptions:
+      return errors::kSpcUnsupportedOptions;
+    case SecurePaymentConfirmationRequestValidationError::
+        kCredentialIdsRequired:
+      return errors::kCredentialIdsRequired;
+    case SecurePaymentConfirmationRequestValidationError::kTimeoutTooLong:
+      return errors::kTimeoutTooLong;
+    case SecurePaymentConfirmationRequestValidationError::kChallengeRequired:
+      return errors::kChallengeRequired;
+    case SecurePaymentConfirmationRequestValidationError::kInstrumentRequired:
+      return errors::kInstrumentRequired;
+    case SecurePaymentConfirmationRequestValidationError::
+        kInstrumentDisplayNameRequired:
+      return errors::kInstrumentDisplayNameRequired;
+    case SecurePaymentConfirmationRequestValidationError::
+        kValidInstrumentIconRequired:
+      return errors::kValidInstrumentIconRequired;
+    case SecurePaymentConfirmationRequestValidationError::
+        kNonUtf8InstrumentDetailsString:
+      return errors::kNonUtf8InstrumentDetailsString;
+    case SecurePaymentConfirmationRequestValidationError::
+        kEmptyInstrumentDetailsString:
+      return errors::kEmptyInstrumentDetailsString;
+    case SecurePaymentConfirmationRequestValidationError::
+        kTooLongInstrumentDetailsString:
+      return errors::kTooLongInstrumentDetailsString;
+    case SecurePaymentConfirmationRequestValidationError::kRpIdRequired:
+      return errors::kRpIdRequired;
+    case SecurePaymentConfirmationRequestValidationError::
+        kPayeeOriginOrPayeeNameRequired:
+      return errors::kPayeeOriginOrPayeeNameRequired;
+    case SecurePaymentConfirmationRequestValidationError::
+        kPayeeOriginMustBeHttps:
+      return errors::kPayeeOriginMustBeHttps;
+    case SecurePaymentConfirmationRequestValidationError::
+        kNonNullPaymentEntityLogoRequired:
+      return errors::kNonNullPaymentEntityLogoRequired;
+    case SecurePaymentConfirmationRequestValidationError::kValidLogoUrlRequired:
+      return errors::kValidLogoUrlRequired;
+    case SecurePaymentConfirmationRequestValidationError::
+        kValidLogoUrlSchemeRequired:
+      return errors::kValidLogoUrlSchemeRequired;
+    case SecurePaymentConfirmationRequestValidationError::kLogoLabelRequired:
+      return errors::kLogoLabelRequired;
+    case SecurePaymentConfirmationRequestValidationError::kInternalError:
+      return errors::kInternalError;
+  }
+}
+
+SecurePaymentConfirmationRequestValidationError
+IsValidSecurePaymentConfirmationRequest(
+    const mojom::SecurePaymentConfirmationRequestPtr& request) {
   CHECK(request);
 
   if (request->credential_ids.empty()) {
-    *error_message = errors::kCredentialIdsRequired;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::
+        kCredentialIdsRequired;
   }
 
   for (const auto& credential_id : request->credential_ids) {
     if (credential_id.empty()) {
-      *error_message = errors::kCredentialIdsRequired;
-      return false;
+      return SecurePaymentConfirmationRequestValidationError::
+          kCredentialIdsRequired;
     }
   }
 
   if (request->timeout.has_value() &&
       request->timeout.value().InMilliseconds() > kMaxTimeoutInMilliseconds) {
-    *error_message = errors::kTimeoutTooLong;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::kTimeoutTooLong;
   }
 
   if (request->challenge.empty()) {
-    *error_message = errors::kChallengeRequired;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::kChallengeRequired;
   }
 
   if (!request->instrument) {
-    *error_message = errors::kInstrumentRequired;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::kInstrumentRequired;
   }
 
   if (request->instrument->display_name.empty()) {
-    *error_message = errors::kInstrumentDisplayNameRequired;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::
+        kInstrumentDisplayNameRequired;
   }
 
   if (!request->instrument->icon.is_valid()) {
-    *error_message = errors::kValidInstrumentIconRequired;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::
+        kValidInstrumentIconRequired;
   }
 
   if (request->instrument->details.has_value()) {
     if (!base::IsStringUTF8(*request->instrument->details)) {
-      *error_message = errors::kNonUtf8InstrumentDetailsString;
-      return false;
+      return SecurePaymentConfirmationRequestValidationError::
+          kNonUtf8InstrumentDetailsString;
     }
 
     if (request->instrument->details->empty()) {
-      *error_message = errors::kEmptyInstrumentDetailsString;
-      return false;
+      return SecurePaymentConfirmationRequestValidationError::
+          kEmptyInstrumentDetailsString;
     }
 
     if (request->instrument->details->size() > kMaxInstrumentDetailsSize) {
-      *error_message = errors::kTooLongInstrumentDetailsString;
-      return false;
+      return SecurePaymentConfirmationRequestValidationError::
+          kTooLongInstrumentDetailsString;
     }
   }
 
   if (!IsValidDomain(request->rp_id)) {
-    *error_message = errors::kRpIdRequired;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::kRpIdRequired;
   }
 
   if ((!request->payee_origin.has_value() &&
        !request->payee_name.has_value()) ||
       (request->payee_name.has_value() && request->payee_name->empty())) {
-    *error_message = errors::kPayeeOriginOrPayeeNameRequired;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::
+        kPayeeOriginOrPayeeNameRequired;
   }
 
   if (request->payee_origin.has_value() &&
       request->payee_origin->scheme() != url::kHttpsScheme) {
-    *error_message = errors::kPayeeOriginMustBeHttps;
-    return false;
+    return SecurePaymentConfirmationRequestValidationError::
+        kPayeeOriginMustBeHttps;
   }
 
   if (!request->payment_entities_logos.empty()) {
     for (const mojom::PaymentEntityLogoPtr& logo :
          request->payment_entities_logos) {
       if (logo.is_null()) {
-        *error_message = errors::kNonNullPaymentEntityLogoRequired;
-        return false;
+        return SecurePaymentConfirmationRequestValidationError::
+            kNonNullPaymentEntityLogoRequired;
       }
 
       if (!logo->url.is_valid()) {
-        *error_message = errors::kValidLogoUrlRequired;
-        return false;
+        return SecurePaymentConfirmationRequestValidationError::
+            kValidLogoUrlRequired;
       }
       if (!logo->url.SchemeIsHTTPOrHTTPS() &&
           !logo->url.SchemeIs(url::kDataScheme)) {
-        *error_message = errors::kValidLogoUrlSchemeRequired;
-        return false;
+        return SecurePaymentConfirmationRequestValidationError::
+            kValidLogoUrlSchemeRequired;
       }
       if (logo->label.empty()) {
-        *error_message = errors::kLogoLabelRequired;
-        return false;
+        return SecurePaymentConfirmationRequestValidationError::
+            kLogoLabelRequired;
       }
     }
   }
 
-  return true;
+  return SecurePaymentConfirmationRequestValidationError::kOk;
 }
 
 }  // namespace payments

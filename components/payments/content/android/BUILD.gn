@@ -157,6 +157,7 @@ android_library("service_impl_java") {
     ":error_strings_generated_srcjar",
     ":payment_details_update_service_aidl",
     ":service_jni",
+    ":spc_validation_error_generated_enum",
   ]
 }
 
@@ -348,6 +349,12 @@ java_cpp_enum("payments_journey_logger_enum_javagen") {
 
 java_cpp_enum("spc_transaction_mode_generated_enum") {
   sources = [ "//components/payments/content/secure_payment_confirmation_transaction_mode.h" ]
+}
+
+java_cpp_enum("spc_validation_error_generated_enum") {
+  sources = [
+    "//components/payments/content/secure_payment_confirmation_validation.h",
+  ]
 }
 
 robolectric_library("junit_test_support") {

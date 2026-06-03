@@ -32,10 +32,10 @@ public class PaymentValidator {
         return PaymentValidatorJni.get().validatePaymentValidationErrorsAndroid(errors.serialize());
     }
 
-    public static boolean validateSecurePaymentConfirmationRequest(
-            SecurePaymentConfirmationRequest request) {
+    public static @SecurePaymentConfirmationRequestValidationError int
+            validateSecurePaymentConfirmationRequest(SecurePaymentConfirmationRequest request) {
         if (request == null) {
-            return false;
+            return SecurePaymentConfirmationRequestValidationError.INTERNAL_ERROR;
         }
         return PaymentValidatorJni.get()
                 .validateSecurePaymentConfirmationRequestAndroid(request.serialize());
@@ -47,6 +47,7 @@ public class PaymentValidator {
 
         boolean validatePaymentValidationErrorsAndroid(ByteBuffer buffer);
 
-        boolean validateSecurePaymentConfirmationRequestAndroid(ByteBuffer buffer);
+        @SecurePaymentConfirmationRequestValidationError
+        int validateSecurePaymentConfirmationRequestAndroid(ByteBuffer buffer);
     }
 }

@@ -295,10 +295,10 @@ public class PaymentRequestService
 
         /**
          * @param request The SecurePaymentConfirmationRequest to verify.
-         * @return Whether the request is valid.
+         * @return The validation error result.
          */
-        default boolean validateSecurePaymentConfirmationRequest(
-                SecurePaymentConfirmationRequest request) {
+        default @SecurePaymentConfirmationRequestValidationError int
+                validateSecurePaymentConfirmationRequest(SecurePaymentConfirmationRequest request) {
             return PaymentValidator.validateSecurePaymentConfirmationRequest(request);
         }
 
@@ -542,7 +542,8 @@ public class PaymentRequestService
             return false;
         }
         if (methodData.containsKey(MethodStrings.SECURE_PAYMENT_CONFIRMATION)
-                && !isValidSecurePaymentConfirmationRequest(methodData, options)) {
+                && validateSecurePaymentConfirmationRequest(methodData, options)
+                        != SecurePaymentConfirmationRequestValidationError.OK) {
             mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
             disconnectFromClientWithDebugMessage(
                     ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
@@ -589,31 +590,40 @@ public class PaymentRequestService
      *
      * @param methodData The map of requested payment methods.
      * @param options The payment options requested by the merchant.
-     * @return True if the request parameters are valid and acceptable to proceed; false if the
-     *     request is malformed or violates API constraints.
+     * @return An error code indicating if the request parameters are valid and acceptable to
+     *     proceed. Returns SecurePaymentConfirmationRequestValidationError.OK if valid.
      */
-    private boolean isValidSecurePaymentConfirmationRequest(
-            Map<String, PaymentMethodData> methodData, PaymentOptions options) {
+    private @SecurePaymentConfirmationRequestValidationError int
+            validateSecurePaymentConfirmationRequest(
+                    Map<String, PaymentMethodData> methodData, PaymentOptions options) {
         PaymentMethodData spcMethodData = methodData.get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
         assumeNonNull(spcMethodData);
 
         // If the SPC feature is not enabled and a website specifies "secure-payment-confirmation",
         // the renderer should pass the browser a null SPC object.
         if (!PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
-            return spcMethodData.securePaymentConfirmation == null;
+            return spcMethodData.securePaymentConfirmation == null
+                    ? SecurePaymentConfirmationRequestValidationError.OK
+                    : SecurePaymentConfirmationRequestValidationError.SPC_METHOD_MUST_BE_NULL;
         }
 
         // SPC cannot be combined with other payment methods or shipping/payer requests.
-        if (methodData.size() > 1
-                || options.requestPayerEmail
+        if (methodData.size() > 1) {
+            return SecurePaymentConfirmationRequestValidationError
+                    .MULTIPLE_PAYMENT_METHODS_NOT_ALLOWED;
+        }
+
+        if (options.requestPayerEmail
                 || options.requestPayerPhone
                 || options.requestShipping
                 || options.requestPayerName) {
-            return false;
+            return SecurePaymentConfirmationRequestValidationError.UNSUPPORTED_OPTIONS;
         }
 
         // The SPC data from the renderer must not be null if the feature is enabled.
-        if (spcMethodData.securePaymentConfirmation == null) return false;
+        if (spcMethodData.securePaymentConfirmation == null) {
+            return SecurePaymentConfirmationRequestValidationError.SPC_METHOD_MUST_NOT_BE_NULL;
+        }
 
         // Delegate to the native implementation for final validation.
         return mDelegate.validateSecurePaymentConfirmationRequest(
