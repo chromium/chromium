@@ -433,10 +433,11 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
             base::FilePath(), install_source_, *expected_manifest_,
             creation_flags_, extension->id(), &error);
         if (error.empty()) {
-          valid = !(PermissionMessageProvider::Get()->IsPrivilegeIncrease(
-              dummy_extension->permissions_data()->active_permissions(),
-              extension->permissions_data()->active_permissions(),
-              extension->GetType()));
+          valid = dummy_extension->GetType() == extension->GetType() &&
+                  !(PermissionMessageProvider::Get()->IsPrivilegeIncrease(
+                      dummy_extension->permissions_data()->active_permissions(),
+                      extension->permissions_data()->active_permissions(),
+                      extension->GetType()));
         }
       }
     }

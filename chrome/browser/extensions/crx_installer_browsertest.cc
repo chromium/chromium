@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_crx_util.h"
+#include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
@@ -820,6 +821,55 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
       test_data_dir_.AppendASCII("crx_installer/v1.crx"));
 
   EXPECT_TRUE(mock_prompt->did_succeed());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
+                       NonStrictManifestCheck_MismatchingExtensionType) {
+  base::ScopedAllowBlockingForTesting allow_io;
+  std::unique_ptr<MockPromptProxy> mock_prompt =
+      CreateMockPromptProxyForBrowser(browser());
+
+  // Create and pack an extension that doesn't have any install time warnings,
+  // so it will pass the privilege increase check.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+         "name": "Test extension",
+         "version": "1.0",
+         "manifest_version": 3
+       })");
+  base::FilePath crx_path = test_dir.Pack();
+  // The TestExtensionDir writes the pem file to "ext.pem" by default. We use it
+  // to derive the extension ID for the packed extension.
+  base::FilePath pem_path = crx_path.DirName().AppendASCII("ext.pem");
+  {
+    base::ScopedAllowBlockingForTesting allow_file_io_in_scope;
+    ASSERT_TRUE(base::PathExists(pem_path));
+  }
+  const ExtensionId id =
+      browser_test_util::GetExtensionIdFromPrivateKeyFile(pem_path);
+
+  // Create an approval for a theme with the same ID and version.
+  ExtensionBuilder theme_builder("Theme");
+  theme_builder.SetVersion("1.0").SetManifestKey("theme", base::DictValue());
+
+  std::unique_ptr<InstallApproval> approval =
+      InstallApproval::CreateWithNoInstallPrompt(
+          profile(), id, theme_builder.BuildManifest().TakeDict(), false);
+
+  // Install the extension CRX using theme approval.
+  // This should fail because the types (Extension vs Theme) don't match,
+  // even though there is no privilege increase.
+  RunCrxInstaller(
+      approval.get(), mock_prompt->CreatePrompt(),
+      base::BindOnce([](const std::optional<CrxInstallError>& error) {
+        ASSERT_NE(std::nullopt, error);
+        EXPECT_EQ(CrxInstallErrorType::OTHER, error->type());
+        EXPECT_EQ(CrxInstallErrorDetail::MANIFEST_INVALID, error->detail());
+      }),
+      crx_path);
+
+  EXPECT_FALSE(mock_prompt->did_succeed());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,

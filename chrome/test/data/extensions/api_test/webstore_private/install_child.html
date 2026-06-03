@@ -10,12 +10,12 @@ runTests([
   function installChild() {
     var manifest = getManifest();
     chrome.webstorePrivate.beginInstallWithManifest3(
-        {id: appId, manifest: manifest},
+        {id: extensionId, manifest: manifest},
         callbackPass(function(result) {
       assertEq("", result);
 
       // Complete the installation
-      chrome.webstorePrivate.completeInstall(appId, callbackPass());
+      chrome.webstorePrivate.completeInstall(extensionId, callbackPass());
     }));
   },
 ]);

@@ -16,8 +16,8 @@ enum class ManifestCheckLevel {
   // Do not check for any manifest equality.
   kNone,
 
-  // Only check that the expected and actual permissions have the same
-  // effective permissions.
+  // Only check that the expected and actual type of the extension is still the
+  // same and the permissions have the same effective permissions.
   kLoose,
 
   // All data in the expected and actual manifests must match.
