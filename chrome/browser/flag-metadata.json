@@ -9531,6 +9531,11 @@
     "expiry_milestone": 154
   },
   {
+    "name": "user-feedback-allowed-policy",
+    "owners": [ "spdonghao@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "user-media-element",
     "owners": [ "ravjit@chromium.org", "tungnh@chromium.org" ],
     "expiry_milestone": 160

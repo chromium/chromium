@@ -4944,6 +4944,12 @@ inline constexpr char kUsePrimaryAndTonalButtonsForPromosDescription[] =
     "Use consistent primary and tonal buttons for sign-in promos and "
     "intercepts.";
 
+inline constexpr char kUserFeedbackAllowedPolicyName[] =
+    "User Feedback Allowed Policy";
+inline constexpr char kUserFeedbackAllowedPolicyDescription[] =
+    "When enabled, the UserFeedbackAllowed policy is respected. "
+    "Otherwise, user feedback is always allowed.";
+
 inline constexpr char kUserValueDefaultBrowserStringsName[] =
     "Default Browser settings page - updated strings";
 inline constexpr char kUserValueDefaultBrowserStringsDescription[] =

@@ -7471,6 +7471,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(safe_browsing::kAutoRevokeSuspiciousNotification)},
 
+    {"user-feedback-allowed-policy",
+     flag_descriptions::kUserFeedbackAllowedPolicyName,
+     flag_descriptions::kUserFeedbackAllowedPolicyDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kUserFeedbackAllowedPolicy)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"gemini-antiscam-protections-metrics-only",
