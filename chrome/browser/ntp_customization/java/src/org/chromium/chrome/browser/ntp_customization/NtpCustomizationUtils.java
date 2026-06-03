@@ -1655,4 +1655,10 @@ public class NtpCustomizationUtils {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS);
     }
+
+    /** Returns whether NTP theme customization sync is enabled. */
+    public static boolean isNTPCustomizationSyncEnabled() {
+        return ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
+                && ChromeFeatureList.sNewTabPageCustomizationThemeSync.isEnabled();
+    }
 }

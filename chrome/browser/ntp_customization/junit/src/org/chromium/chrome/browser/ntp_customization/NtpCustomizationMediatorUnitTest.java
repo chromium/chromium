@@ -440,6 +440,19 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
+    })
+    public void testBuildListContent_SyncEnabled_ExcludesTheme() {
+        List<Integer> listContent = mMediator.buildListContent(mContext);
+
+        assertFalse(
+                "List should NOT contain THEME when sync is enabled", listContent.contains(THEME));
+        assertEquals(List.of(MVT, NTP_CARDS), listContent);
+    }
+
+    @Test
     @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testBuildListContent_ExcludesThemeWhenE2EDisabled() {
         // Release the token so E2E returns false

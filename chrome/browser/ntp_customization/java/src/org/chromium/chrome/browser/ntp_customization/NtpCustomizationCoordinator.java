@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromo
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager.SnackBarState;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.tip.NtpThemeTipCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.NtpThemeSyncHistoryCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -62,12 +63,14 @@ public class NtpCustomizationCoordinator {
     private final Supplier<@Nullable Profile> mProfileSupplier;
     private final @Nullable ModuleRegistry mModuleRegistry;
     private final int mBottomSheetType;
+    private final boolean mIsNtpCustomizationSyncEnabled;
     private NtpCustomizationMediator mMediator;
     private @Nullable MvtSettingsCoordinator mMvtSettingCoordinator;
     private @MonotonicNonNull NtpCardsCoordinator mNtpCardsCoordinator;
     private @Nullable FeedSettingsCoordinator mFeedSettingsCoordinator;
     private @Nullable NtpThemeCoordinator mNtpThemeCoordinator;
     private @Nullable NtpThemeTipCoordinator mNtpThemeTipCoordinator;
+    private @Nullable NtpThemeSyncHistoryCoordinator mNtpThemeSyncHistoryCoordinator;
     private ViewFlipper mViewFlipperView;
     private boolean mIsDestroyed;
 
@@ -155,6 +158,7 @@ public class NtpCustomizationCoordinator {
         // This empty OnClickListener is added to the ViewFlipper to prevent TalkBack from
         // unexpectedly triggering the click listeners of its child list items.
         mViewFlipperView.setOnClickListener(v -> {});
+        mIsNtpCustomizationSyncEnabled = NtpCustomizationUtils.isNTPCustomizationSyncEnabled();
 
         NtpCustomizationBottomSheetContent bottomSheetContent = initBottomSheetContent(contentView);
 
@@ -228,9 +232,7 @@ public class NtpCustomizationCoordinator {
      */
     public void showBottomSheet() {
         switch (mBottomSheetType) {
-            case MAIN -> {
-                mMediator.showBottomSheet(MAIN);
-            }
+            case MAIN -> showMainBottomSheet();
             case NTP_CARDS -> showNtpCardsBottomSheet();
             case FEED -> showFeedBottomSheet();
             case THEME -> showThemeBottomSheet();
@@ -239,6 +241,21 @@ public class NtpCustomizationCoordinator {
                 assert false : "Bottom sheet type not supported!";
             }
         }
+    }
+
+    private void showMainBottomSheet() {
+        if (mIsNtpCustomizationSyncEnabled) {
+            if (mNtpThemeSyncHistoryCoordinator == null) {
+                mNtpThemeSyncHistoryCoordinator =
+                        new NtpThemeSyncHistoryCoordinator(
+                                mContext,
+                                mViewFlipperView,
+                                mDelegate,
+                                (view) -> showThemeBottomSheet());
+                mNtpThemeSyncHistoryCoordinator.prepareToShow();
+            }
+        }
+        mMediator.showBottomSheet(MAIN);
     }
 
     private void showNtpCardsBottomSheet() {
@@ -418,6 +435,10 @@ public class NtpCustomizationCoordinator {
         if (mNtpThemeTipCoordinator != null) {
             mNtpThemeTipCoordinator.destroy();
         }
+
+        if (mNtpThemeSyncHistoryCoordinator != null) {
+            mNtpThemeSyncHistoryCoordinator.destroy();
+        }
     }
 
     BottomSheetDelegate getBottomSheetDelegateForTesting() {
@@ -446,5 +467,13 @@ public class NtpCustomizationCoordinator {
 
     void setNtpThemeTipCoordinatorForTesting(NtpThemeTipCoordinator coordinator) {
         mNtpThemeTipCoordinator = coordinator;
+    }
+
+    @Nullable NtpThemeSyncHistoryCoordinator getNtpThemeSyncHistoryCoordinatorForTesting() {
+        return mNtpThemeSyncHistoryCoordinator;
+    }
+
+    void setNtpThemeSyncHistoryCoordinatorForTesting(NtpThemeSyncHistoryCoordinator coordinator) {
+        mNtpThemeSyncHistoryCoordinator = coordinator;
     }
 }

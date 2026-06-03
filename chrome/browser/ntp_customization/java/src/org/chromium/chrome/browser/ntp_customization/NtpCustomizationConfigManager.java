@@ -24,7 +24,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
@@ -136,9 +135,7 @@ public class NtpCustomizationConfigManager {
         mHomepageStateListeners = new ObserverList<>();
 
         mBackgroundType = NtpCustomizationUtils.getNtpBackgroundType();
-        mIsNtpCustomizationSyncEnabled =
-                ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
-                        && ChromeFeatureList.sNewTabPageCustomizationThemeSync.isEnabled();
+        mIsNtpCustomizationSyncEnabled = NtpCustomizationUtils.isNTPCustomizationSyncEnabled();
         if (mBackgroundType == NtpBackgroundType.IMAGE_FROM_DISK) {
             mIsInitialized = true;
             BackgroundImageInfo imageInfo = NtpCustomizationUtils.readNtpBackgroundImageInfo();

@@ -85,6 +85,7 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
     private final @Nullable PropertyModel mContainerPropertyModel;
     private final WindowAndroid mWindowAndroid;
     private final Context mContext;
+    private final boolean mIsNtpCustomizationSyncEnabled;
     private @Nullable Profile mProfile;
     private @Nullable Integer mCurrentBottomSheet;
     private boolean mShouldRecreate;
@@ -111,6 +112,8 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
         mViewFlipperMap = new HashMap<>();
         mTypeToListenersMap = new HashMap<>();
         mContext = context;
+
+        mIsNtpCustomizationSyncEnabled = NtpCustomizationUtils.isNTPCustomizationSyncEnabled();
         mListContent = buildListContent(context);
 
         // Initializes the back navigation map.
@@ -339,8 +342,10 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
             content.add(FEED);
         }
 
-        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
-                mWindowAndroid, DeviceFormFactor.isNonMultiDisplayContextOnTablet(context))) {
+        if (!mIsNtpCustomizationSyncEnabled
+                && NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
+                        mWindowAndroid,
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(context))) {
             content.add(THEME);
         }
         return content;

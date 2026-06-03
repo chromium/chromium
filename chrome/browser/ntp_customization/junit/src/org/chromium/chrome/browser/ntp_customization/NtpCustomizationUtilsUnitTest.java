@@ -219,6 +219,38 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
+    })
+    public void testIsNTPCustomizationSyncEnabled_BothEnabled() {
+        assertTrue(NtpCustomizationUtils.isNTPCustomizationSyncEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testIsNTPCustomizationSyncEnabled_OnlyV2Enabled() {
+        assertFalse(NtpCustomizationUtils.isNTPCustomizationSyncEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testIsNTPCustomizationSyncEnabled_OnlyThemeSyncEnabled() {
+        assertFalse(NtpCustomizationUtils.isNTPCustomizationSyncEnabled());
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
+    })
+    public void testIsNTPCustomizationSyncEnabled_BothDisabled() {
+        assertFalse(NtpCustomizationUtils.isNTPCustomizationSyncEnabled());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testIsNtpThemeCustomizationEnabledWithWindowAndroid() {
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
