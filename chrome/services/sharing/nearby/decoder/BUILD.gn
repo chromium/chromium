@@ -47,6 +47,7 @@ fuzzer_test("nearby_decoder_decode_advertisement_fuzzer") {
     ":decoder",
     "//base",
     "//mojo/core/embedder",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 }
 
@@ -56,5 +57,6 @@ fuzzer_test("nearby_decoder_decode_frame_fuzzer") {
     ":decoder",
     "//base",
     "//mojo/core/embedder",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 }

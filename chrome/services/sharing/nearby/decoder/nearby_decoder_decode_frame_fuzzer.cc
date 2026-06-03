@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -19,6 +19,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 struct Environment {
   Environment() {
@@ -38,10 +39,10 @@ struct Environment {
   std::unique_ptr<sharing::NearbySharingDecoder> decoder;
 };
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
   static base::NoDestructor<Environment> environment;
 
-  std::vector<uint8_t> buffer(data, UNSAFE_TODO(data + size));
+  std::vector<uint8_t> buffer(data.begin(), data.end());
   base::RunLoop run_loop;
   environment->decoder->DecodeFrame(
       buffer,
