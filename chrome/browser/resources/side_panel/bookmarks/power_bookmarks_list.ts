@@ -41,11 +41,6 @@ import type {Label} from './power_bookmarks_service.js';
 import {editingDisabledByPolicy, PowerBookmarksService} from './power_bookmarks_service.js';
 import {getFolderLabel} from './power_bookmarks_utils.js';
 
-export interface DisplayItem {
-  bookmark: BookmarksTreeNode;
-  depth: number;
-}
-
 function getBookmarkName(bookmark: BookmarksTreeNode): string {
   return bookmark.title || bookmark.url || '';
 }
@@ -195,7 +190,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   static get observers() {
     return [
       'onSearchChanged_(searchQuery)',
-      'updateDisplayListObserver_(activeFolderPath.*, labels.*, sortOrder, searchQuery, sectionVisibility_.filterHeadings)',
+      'updateDisplayList_(activeFolderPath.*, labels.*, sortOrder, searchQuery, sectionVisibility_.filterHeadings)',
     ];
   }
 
@@ -224,7 +219,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   declare searchQuery: string|undefined;
 
   declare private compact_: boolean;
-  declare private displayList_: DisplayItem[];
+  declare private displayList_: BookmarksTreeNode[];
   declare private imageUrls_: {[key: string]: string};
   declare private selectedBookmarks: {[key: string]: boolean};
   declare private hasLoadedData_: boolean;
@@ -235,8 +230,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
   declare private shoppingCollectionFolderId_: string;
   declare private updatedElementIds_: string[];
   declare private firstSecondaryIndex_: number;
-
-  private expandedFolderIds_: Set<string> = new Set();
 
   constructor() {
     super();
@@ -309,8 +302,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
         getAnnouncerInstance().announce(loadTimeData.getStringF(
             'bookmarkFolderCreated', getBookmarkName(bookmark)));
       }
-      const indexInList =
-          this.displayList_.findIndex(item => item.bookmark === bookmark);
+      const indexInList = this.displayList_.indexOf(bookmark);
       if (indexInList > -1) {
         const listElement = this.$.list;
         if (indexInList < listElement.firstVisibleIndex ||
@@ -332,15 +324,14 @@ export class PowerBookmarksListElement extends PolymerElement implements
       newParent: BookmarksTreeNode) {
     const shouldShow = this.bookmarkShouldShow_(bookmark);
     const isShowing = this.bookmarkIsShowing_(bookmark);
-    let noMetrics = false;
     if (oldParent === newParent && shouldShow) {
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkReordered', getBookmarkName(bookmark)));
-      noMetrics = true;
     } else if (
         (shouldShow !== isShowing) ||
         (shouldShow && this.hasSomeActiveFilter)) {
       const scrollTop = this.$.scroller.scrollTop;
+      this.updateDisplayList_();
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkMoved', getBookmarkName(bookmark),
           getBookmarkName(newParent)));
@@ -348,7 +339,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
         this.$.scroller.scrollTop = scrollTop;
       });
     }
-    this.updateDisplayList_(noMetrics);
     this.updatedElementIds_ = [newParent.id, oldParent.id];
     // If the new parent folder is visible, notify to ensure its displayed
     // child count is updated.
@@ -365,7 +355,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
         loadTimeData.getStringF('bookmarkDeleted', getBookmarkName(bookmark)));
 
     const scrollTop = this.$.scroller.scrollTop;
-    this.updateDisplayList_(/* noMetrics = */ true);
     afterNextRender(this, () => {
       this.$.scroller.scrollTop = scrollTop;
     });
@@ -446,10 +435,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private notifyPathIfVisible_(id: string, key: string) {
-    const listIndex =
-        this.displayList_.findIndex(item => item.bookmark.id === id);
+    const listIndex = this.displayList_.findIndex(item => item.id === id);
     if (listIndex > -1) {
-      this.notifyPath(`displayList_.${listIndex}.bookmark.${key}`);
+      this.notifyPath(`displayList_.${listIndex}.${key}`);
     }
   }
 
@@ -457,7 +445,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     if (!this.displayList_ || this.displayList_.length === 0) {
       return false;
     }
-    return this.displayList_.some(item => !item.bookmark.url);
+    return this.displayList_.some(item => !!item.children);
   }
 
   private computeCanDrag_(): boolean {
@@ -473,12 +461,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private bookmarkIsShowing_(bookmark: BookmarksTreeNode): boolean {
-    return this.displayList_.some(item => item.bookmark.id === bookmark.id);
+    return this.displayList_.some(item => item.id === bookmark.id);
   }
 
   private removeNodeFromDisplayLists_(nodeId: string) {
-    const itemIndex =
-        this.displayList_.findIndex(item => item.bookmark.id === nodeId);
+    const itemIndex = this.displayList_.findIndex(item => item.id === nodeId);
     if (itemIndex > -1) {
       this.splice('displayList_', itemIndex, 1);
     }
@@ -528,33 +515,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   /**
-   * Recursively flattens the child bookmarks and sub-folders of an expanded
-   * folder into the flat display list array, calculating appropriate
-   * indentation depth.
-   */
-  private flattenFolder_(
-      folder: BookmarksTreeNode, depth: number, list: DisplayItem[]) {
-    if (!this.expandedFolderIds_.has(folder.id) || !folder.children) {
-      return;
-    }
-    const sortedChildren = folder.children.slice();
-    this.bookmarksService_.sortBookmarks(sortedChildren, this.activeSortIndex);
-    for (const child of sortedChildren) {
-      list.push({bookmark: child, depth: depth + 1});
-      if (!child.url) {
-        this.flattenFolder_(child, depth + 1, list);
-      }
-    }
-  }
-
-  private updateDisplayListObserver_() {
-    this.updateDisplayList_();
-  }
-
-  /**
    * Update the lists of bookmarks and folders displayed to the user.
    */
-  private updateDisplayList_(noMetrics: boolean = false) {
+  private updateDisplayList_() {
     const activeFolder = this.getActiveFolder();
     const primaryList = this.bookmarksService_.filterBookmarks(
         activeFolder, this.sortOrder, this.searchQuery, this.labels);
@@ -568,25 +531,12 @@ export class PowerBookmarksListElement extends PolymerElement implements
       this.bookmarksService_.refreshDataForBookmarks(secondaryList);
     }
 
-    const displayList: DisplayItem[] = [];
-    for (const node of primaryList) {
-      displayList.push({bookmark: node, depth: 0});
-      if (!node.url) {
-        this.flattenFolder_(node, 0, displayList);
-      }
-    }
-
-    const firstSecondaryIndex = displayList.length;
-
-    for (const node of secondaryList) {
-      displayList.push({bookmark: node, depth: 0});
-      if (!node.url) {
-        this.flattenFolder_(node, 0, displayList);
-      }
-    }
+    const displayList: BookmarksTreeNode[] = [];
+    displayList.push(...primaryList);
+    displayList.push(...secondaryList);
 
     this.firstSecondaryIndex_ =
-        secondaryList.length > 0 ? firstSecondaryIndex : -1;
+        secondaryList.length > 0 ? primaryList.length : -1;
 
     this.displayList_ = displayList;
     this.updateListScrollOffset_();
@@ -602,8 +552,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
       // iron-list is updated.
       this.rebuildNavigationElements_();
 
-      if (this.recordCountMetricsOnNextUpdate_ && this.hasLoadedData_ &&
-          !noMetrics) {
+      if (this.recordCountMetricsOnNextUpdate_ && this.hasLoadedData_) {
         this.recordBookmarkCountMetrics_();
       }
     });
@@ -660,49 +609,13 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.dispatchEvent(new CustomEvent('bookmark-count-recorded'));
   }
 
-  /**
-   * Recursively removes all descendant folder IDs of a collapsed folder from
-   * the expandedFolderIds_ Set, so they are initialized collapsed when
-   * re-opened.
-   */
-  private collapseDescendants_(folder: BookmarksTreeNode) {
-    if (!folder.children) {
-      return;
-    }
-    for (const child of folder.children) {
-      if (!child.url) {
-        this.expandedFolderIds_.delete(child.id);
-        this.collapseDescendants_(child);
-      }
-    }
-  }
-
-  private onRowToggled_(event: CustomEvent<{
+  private onRowToggled_(_event: CustomEvent<{
     bookmark: BookmarksTreeNode,
     expanded: boolean,
+    event: MouseEvent,
   }>) {
-    const {bookmark, expanded} = event.detail;
-    if (expanded) {
-      this.expandedFolderIds_.add(bookmark.id);
-    } else {
-      this.expandedFolderIds_.delete(bookmark.id);
-      this.collapseDescendants_(bookmark);
-    }
-    this.updateDisplayList_(/* noMetrics =*/ true);
     this.notifyBookmarksListResize_();
     this.recordBookmarkCountMetrics_();
-  }
-
-  /**
-   * Focuses the parent row of a child row, delegating focus backward traversal.
-   */
-  private onRowFocusParent_(e: CustomEvent<{parentId: string}>) {
-    const parentElement = this.shadowRoot!.querySelector<HTMLElement>(
-        `#bookmark-${e.detail.parentId}`);
-    if (parentElement) {
-      parentElement.focus();
-      this.keyArrowNavigationService_.setCurrentFocusIndex(parentElement);
-    }
   }
   /**
    * Invoked when the user clicks a power bookmarks row. This will either
