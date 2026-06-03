@@ -1982,7 +1982,6 @@ void WebFormControlElementToFormField(
   }
 
   field->set_placeholder(GetAttribute<kPlaceholder>(element).Utf16());
-
   // With `AutofillBetterLocalHeuristicPlaceholderSupport` enabled, field
   // placeholder (and "poor man's placeholder") gets promoted to become
   // a first class citizen for local heuristics. Since "poor man's placeholder"
@@ -1999,6 +1998,7 @@ void WebFormControlElementToFormField(
       field->set_placeholder(inferred_placeholder->label);
     }
   }
+  field->set_placeholder_attribute(GetAttribute<kPlaceholder>(element).Utf16());
 
   if (HasAttribute<kClass>(element)) {
     field->set_css_classes(GetAttribute<kClass>(element).Utf16());

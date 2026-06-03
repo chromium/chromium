@@ -319,9 +319,9 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
       return std::tie(f.renderer_id_, f.host_frame_, f.label_, f.name_,
                       f.name_attribute_, f.id_attribute_, f.nonce_,
                       f.form_control_type_, f.autocomplete_attribute_,
-                      f.placeholder_, f.max_length_, f.css_classes_,
-                      f.is_focusable_, f.should_autocomplete_, f.role_,
-                      f.text_direction_, f.options_);
+                      f.placeholder_, f.placeholder_attribute_, f.max_length_,
+                      f.css_classes_, f.is_focusable_, f.should_autocomplete_,
+                      f.role_, f.text_direction_, f.options_);
     };
     return equality_tuple(a) == equality_tuple(b);
   }
@@ -356,6 +356,7 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
         !e.contains(kNotRefillRelated) ? f.parsed_autocomplete_ : kNoParsingResult,
         !e.contains(kNotRefillRelated) ? f.pattern_ : base::EmptyString16(),
         f.placeholder_,
+        f.placeholder_attribute_,
         !e.contains(kNotRefillRelated) ? f.css_classes_ : base::EmptyString16(),
         !e.contains(kNotRefillRelated) ? f.aria_label_ : base::EmptyString16(),
         !e.contains(kNotRefillRelated) ? f.aria_description_ : base::EmptyString16(),

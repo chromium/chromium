@@ -197,6 +197,14 @@ bool StructTraits<
   }
 
   {
+    std::u16string placeholder_attribute;
+    if (!data.ReadPlaceholderAttribute(&placeholder_attribute)) {
+      return false;
+    }
+    out->set_placeholder_attribute(std::move(placeholder_attribute));
+  }
+
+  {
     std::u16string css_classes;
     if (!data.ReadCssClasses(&css_classes)) {
       return false;

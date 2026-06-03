@@ -726,7 +726,7 @@ INSTANTIATE_TEST_SUITE_P(
 struct AutofillFieldPlaceholderCase {
   std::string_view description;
   std::string_view html;
-  std::u16string_view expected_placeholder;
+  std::u16string_view placeholder_attribute_value;
   std::u16string_view better_placeholder_support_expected_placeholder;
 };
 
@@ -742,6 +742,10 @@ static const AutofillFieldPlaceholderCase kInferPlaceholderTestCases[] = {
      u"poor man's placeholder"},
 };
 
+// Tests that the `placeholder` is inferred correctly based on
+// the enablement of `AutofillBetterLocalHeuristicPlaceholderSupport`.
+// `placeholder_attribute` is expected to keep the value of HTML
+// attribute without modification.
 TEST_P(InferPlaceholderParameterizedTest, InferPlaceholderForElementTest) {
   const AutofillFieldPlaceholderCase& test_case = TestCase();
 
@@ -750,7 +754,7 @@ TEST_P(InferPlaceholderParameterizedTest, InferPlaceholderForElementTest) {
     expected_placeholder =
         test_case.better_placeholder_support_expected_placeholder;
   } else {
-    expected_placeholder = test_case.expected_placeholder;
+    expected_placeholder = test_case.placeholder_attribute_value;
   }
 
   LoadHTML(test_case.html);
@@ -762,6 +766,8 @@ TEST_P(InferPlaceholderParameterizedTest, InferPlaceholderForElementTest) {
                                              form_target, nullptr, &field);
 
   EXPECT_EQ(field.placeholder(), expected_placeholder);
+  EXPECT_EQ(field.placeholder_attribute(),
+            test_case.placeholder_attribute_value);
 }
 
 INSTANTIATE_TEST_SUITE_P(

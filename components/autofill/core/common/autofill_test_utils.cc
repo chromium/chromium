@@ -406,6 +406,7 @@ testing::Matcher<FormFieldData> FormFieldDataEq(const FormFieldData& expected) {
       FFD_PROPERTY_EQ(parsed_autocomplete),
       FFD_PROPERTY_EQ(pattern),
       FFD_PROPERTY_EQ(placeholder),
+      FFD_PROPERTY_EQ(placeholder_attribute),
       FFD_PROPERTY_EQ(css_classes),
       FFD_PROPERTY_EQ(aria_label),
       FFD_PROPERTY_EQ(aria_description),

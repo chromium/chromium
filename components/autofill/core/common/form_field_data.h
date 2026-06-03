@@ -295,15 +295,28 @@ class FormFieldData {
     parsed_autocomplete_ = std::move(parsed_autocomplete);
   }
 
-  // The value of the form control element's "pattern" attribute. The string
+  // The value of the form control element's `pattern` attribute. The string
   // comes from the renderer without any further validation. There are no
   // guarantees about the format of the string.
   const std::u16string& pattern() const { return pattern_; }
   void set_pattern(std::u16string pattern) { pattern_ = std::move(pattern); }
 
+  // The value of the form control element's `placeholder` attribute. The value
+  // might be inferred from other elements if the value of the placeholder is
+  // missing or is of low quality. Do not take a dependency on the value
+  // matching the placeholder HTML attribute.
+  // If that's needed, use `placeholder_attribute` instead.
   const std::u16string& placeholder() const { return placeholder_; }
   void set_placeholder(std::u16string placeholder) {
     placeholder_ = std::move(placeholder);
+  }
+
+  // The value of the form control element's `placeholder` attribute.
+  const std::u16string& placeholder_attribute() const {
+    return placeholder_attribute_;
+  }
+  void set_placeholder_attribute(std::u16string placeholder_attribute) {
+    placeholder_attribute_ = std::move(placeholder_attribute);
   }
   const std::u16string& css_classes() const { return css_classes_; }
   void set_css_classes(std::u16string css_classes) {
@@ -498,6 +511,7 @@ class FormFieldData {
   std::optional<AutocompleteParsingResult> parsed_autocomplete_;
   std::u16string pattern_;
   std::u16string placeholder_;
+  std::u16string placeholder_attribute_;
   std::u16string css_classes_;
   std::u16string aria_label_;
   std::u16string aria_description_;
