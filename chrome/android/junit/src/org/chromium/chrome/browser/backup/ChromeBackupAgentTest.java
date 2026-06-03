@@ -180,7 +180,7 @@ public class ChromeBackupAgentTest {
         editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE, false);
         editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
         editor.putBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY, false);
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY_LEGACY, false);
         editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY, false);
         editor.putBoolean(
                 ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE, false);
@@ -1133,7 +1133,7 @@ public class ChromeBackupAgentTest {
                         permittedByUser));
         keysAndValues.add(
                 booleanPrefPair(
-                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
+                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY_LEGACY,
                         permittedByPolicy));
         keysAndValues.add(intPrefPair(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, level));
         keysAndValues.add(

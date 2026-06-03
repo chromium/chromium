@@ -316,10 +316,12 @@ public class PrivacyPreferencesManagerImplTest {
 
         writeBoolean(ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE, false);
 
-        writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY, true);
+        writeBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY_LEGACY, true);
         assertTrue(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
 
-        writeBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY, false);
+        writeBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY_LEGACY, false);
         assertFalse(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
     }
 

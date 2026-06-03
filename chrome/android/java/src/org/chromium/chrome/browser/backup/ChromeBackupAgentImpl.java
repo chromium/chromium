@@ -162,7 +162,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
                                     ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
                                     ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
                                     ChromePreferenceKeys
-                                            .PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
+                                            .PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY_LEGACY,
                                     ChromePreferenceKeys
                                             .PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY,
                                     ChromePreferenceKeys
@@ -659,7 +659,7 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         }
 
         return booleanPrefGetter.test(
-                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY)
+                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY_LEGACY)
                 && booleanPrefGetter.test(
                         ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER);
     }

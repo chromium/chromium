@@ -781,7 +781,7 @@ public final class ChromePreferenceKeys {
             "Chrome.Privacy.UsageAndCrashReportingPermittedByUser";
 
     // TODO(b/483043192): Remove this preference once metrics reporting migration is complete.
-    public static final String PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY =
+    public static final String PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY_LEGACY =
             "Chrome.Privacy.UsageAndCrashReportingPermittedByPolicy";
 
     /**
@@ -1294,7 +1294,7 @@ public final class ChromePreferenceKeys {
                 PRICE_TRACKING_USER_MANAGED_NOTIFICATIONS_TIMESTAMPS,
                 PRIVACY_IN_SAMPLE_FOR_CRASHES,
                 PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
-                PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
+                PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY_LEGACY,
                 PRIVACY_METRICS_REPORTING_LEVEL,
                 PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY,
                 PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE,

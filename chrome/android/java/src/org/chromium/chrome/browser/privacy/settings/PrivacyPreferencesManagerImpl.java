@@ -147,7 +147,7 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         assert mNativeInitialized;
 
         mPrefs.writeBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY_LEGACY,
                 !PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy());
     }
 
@@ -222,7 +222,7 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
                     ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY, false);
         }
         return mPrefs.readBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY, true);
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY_LEGACY, true);
     }
 
     @Override
