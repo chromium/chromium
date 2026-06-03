@@ -41,17 +41,42 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         int MAX = 3;
     }
 
+    /**
+     * Represents the different lifecycle phases of the asynchronous Link-to-Text remote request.
+     *
+     * <p>The flow typically progresses through the following phases: 1. Initialization (NONE) 2.
+     * Renderer Selector Generation (REQUESTED) -> Subject to a 100ms timeout. 3. Canonical URL
+     * Retrieval (SELECTOR_RECEIVED) -> Timeout is ignored here. 4. Finalization (COMPLETED /
+     * CANCELLED) -> Share sheet shown or aborted.
+     */
     @IntDef({
         RemoteRequestStatus.NONE,
         RemoteRequestStatus.REQUESTED,
+        RemoteRequestStatus.SELECTOR_RECEIVED,
         RemoteRequestStatus.COMPLETED,
         RemoteRequestStatus.CANCELLED
     })
     public @interface RemoteRequestStatus {
+        /** No remote request has been initiated yet. */
         int NONE = 0;
+
+        /** The request has been sent to the renderer process to generate the text selector. */
         int REQUESTED = 1;
+
+        /**
+         * The text selector request and canonical URL generation have successfully finished (share
+         * sheet is ready to open).
+         */
         int COMPLETED = 2;
+
+        /** The request was cancelled (e.g. due to user navigation, tab hiding, or timeout). */
         int CANCELLED = 3;
+
+        /**
+         * The text selector was successfully generated, and the browser is now fetching the
+         * canonical URL.
+         */
+        int SELECTOR_RECEIVED = 4;
     }
 
     private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n";
@@ -225,9 +250,11 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             return;
         }
 
+        mRemoteRequestStatus = RemoteRequestStatus.SELECTOR_RECEIVED;
         LinkToTextHelper.requestCanonicalUrl(
                 mTab,
                 (canonicalUrl) -> {
+                    if (mRemoteRequestStatus == RemoteRequestStatus.CANCELLED) return;
                     if (canonicalUrl != null && !canonicalUrl.isEmpty()) {
                         mShareUrl = canonicalUrl.getSpec();
                     }
@@ -284,6 +311,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         if (success) {
             assert error == LinkGenerationError.NONE;
 
+            mRemoteRequestStatus = RemoteRequestStatus.SELECTOR_RECEIVED;
             // Request canonical url when we have a successful generation.
             LinkToTextHelper.requestCanonicalUrl(
                     mTab,
@@ -342,13 +370,21 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     private void cancel() {
-        // Cancel can be called before remote task was requested requested, for example, blocklist
-        // case. Cancel only if remote request was requested.
-        if (mRemoteRequestStatus == RemoteRequestStatus.REQUESTED) {
+        // Cancel can be called before remote task was requested, for example, blocklist
+        // case. Cancel only if remote request was requested or selector was received.
+        if (mRemoteRequestStatus == RemoteRequestStatus.REQUESTED
+                || mRemoteRequestStatus == RemoteRequestStatus.SELECTOR_RECEIVED) {
+            // Only cancel the renderer producer if we were still actively generating the
+            // selector (REQUESTED). If we are in SELECTOR_RECEIVED, the renderer has already
+            // completed its work, only mark the request as cancelled. This prevents requests
+            // which outlive the webpage from completing.
+            boolean wasRequested = mRemoteRequestStatus == RemoteRequestStatus.REQUESTED;
             mRemoteRequestStatus = RemoteRequestStatus.CANCELLED;
             // Cancelling remote request for reshare is not implemented. Cancelling only for
             // generated selector request.
-            if (!mChromeShareExtras.isReshareHighlightedText() && mProducer != null) {
+            if (wasRequested
+                    && !mChromeShareExtras.isReshareHighlightedText()
+                    && mProducer != null) {
                 mProducer.cancel();
             }
         }
@@ -364,9 +400,10 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     @VisibleForTesting
     void timeout() {
         assert (mRemoteRequestStatus == RemoteRequestStatus.REQUESTED
+                || mRemoteRequestStatus == RemoteRequestStatus.SELECTOR_RECEIVED
                 || mRemoteRequestStatus == RemoteRequestStatus.COMPLETED);
 
-        // If the request is already completed, then ignore the timeout.
+        // If the request is already completed or selector was received, then ignore the timeout.
         if (mRemoteRequestStatus == RemoteRequestStatus.REQUESTED) {
             if (mChromeShareExtras.isReshareHighlightedText()) {
                 completeReshareWithFailure(LinkToTextReshareStatus.TIMEOUT);

@@ -580,9 +580,10 @@ public class LinkToTextCoordinatorTest {
         // Verify that getCanonicalUrlForSharing was called and callback was captured.
         verify(renderFrameHost, times(1)).getCanonicalUrlForSharing(any());
 
-        // Status should still be REQUESTED because we haven't called the callback yet.
+        // Status should be SELECTOR_RECEIVED because we have received the selector but haven't
+        // called the callback yet.
         Assert.assertEquals(
-                LinkToTextCoordinator.RemoteRequestStatus.REQUESTED,
+                LinkToTextCoordinator.RemoteRequestStatus.SELECTOR_RECEIVED,
                 mLinkToTextCoordinator.mRemoteRequestStatus);
 
         // Simulate a cross-document navigation starting during the URL request.
