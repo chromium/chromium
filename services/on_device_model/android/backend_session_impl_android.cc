@@ -99,6 +99,7 @@ BackendSessionImplAndroid::~BackendSessionImplAndroid() {
 void BackendSessionImplAndroid::Append(
     on_device_model::mojom::AppendOptionsPtr options,
     mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
+    mojo::ReportBadMessageCallback bad_message_callback,
     base::OnceClosure on_complete) {
   context_input_pieces_.insert(
       context_input_pieces_.end(),
@@ -148,6 +149,7 @@ void BackendSessionImplAndroid::Generate(
 
 void BackendSessionImplAndroid::SizeInTokens(
     on_device_model::mojom::InputPtr input,
+    mojo::ReportBadMessageCallback bad_message_callback,
     base::OnceCallback<void(uint32_t)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!size_in_tokens_callback_)

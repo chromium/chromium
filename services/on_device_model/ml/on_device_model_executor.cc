@@ -535,6 +535,7 @@ SessionImpl::~SessionImpl() = default;
 void SessionImpl::Append(
     on_device_model::mojom::AppendOptionsPtr options,
     mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
+    mojo::ReportBadMessageCallback bad_message_callback,
     base::OnceClosure on_complete) {
   TRACE_EVENT("optimization_guide", "SessionImpl::Append");
   model_response_prefix_ = GetModelResponsePrefix(options->input->pieces);
@@ -565,8 +566,9 @@ void SessionImpl::Append(
 
   TRACE_EVENT_BEGIN("optimization_guide", "Prefill",
                     context_holder->perfetto_id());
-  *context_holder->GetCancelFn() = session_->Append(
-      context_holder->perfetto_id(), std::move(options), context_saved_fn);
+  *context_holder->GetCancelFn() =
+      session_->Append(context_holder->perfetto_id(), std::move(options),
+                       std::move(bad_message_callback), context_saved_fn);
 
   context_holders_.insert(std::move(context_holder));
 }
@@ -607,10 +609,12 @@ void SessionImpl::Generate(
       executor_->GetConstraintFactory(), model_response_prefix_, output_fn);
 }
 
-void SessionImpl::SizeInTokens(on_device_model::mojom::InputPtr input,
-                               base::OnceCallback<void(uint32_t)> callback) {
+void SessionImpl::SizeInTokens(
+    on_device_model::mojom::InputPtr input,
+    mojo::ReportBadMessageCallback bad_message_callback,
+    base::OnceCallback<void(uint32_t)> callback) {
   TRACE_EVENT("optimization_guide", "SessionImpl::SizeInTokens");
-  session_->SizeInTokens(std::move(input),
+  session_->SizeInTokens(std::move(input), std::move(bad_message_callback),
                          ConvertCallbackToFn(std::move(callback)));
 }
 

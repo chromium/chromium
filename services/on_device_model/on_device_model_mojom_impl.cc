@@ -77,9 +77,10 @@ class SessionWrapper final : public mojom::Session {
  private:
   void AppendInternal(mojom::AppendOptionsPtr options,
                       mojo::PendingRemote<mojom::ContextClient> client,
+                      mojo::ReportBadMessageCallback bad_message_callback,
                       base::OnceClosure on_complete) {
     session_->Append(std::move(options), std::move(client),
-                     std::move(on_complete));
+                     std::move(bad_message_callback), std::move(on_complete));
   }
 
   void GenerateInternal(mojom::GenerateOptionsPtr input,
@@ -89,10 +90,12 @@ class SessionWrapper final : public mojom::Session {
                        std::move(on_complete));
   }
 
-  void GetSizeInTokensInternal(mojom::InputPtr input,
-                               GetSizeInTokensCallback callback,
-                               base::OnceClosure on_complete) {
-    session_->SizeInTokens(std::move(input),
+  void GetSizeInTokensInternal(
+      mojom::InputPtr input,
+      mojo::ReportBadMessageCallback bad_message_callback,
+      GetSizeInTokensCallback callback,
+      base::OnceClosure on_complete) {
+    session_->SizeInTokens(std::move(input), std::move(bad_message_callback),
                            std::move(callback).Then(std::move(on_complete)));
   }
 
@@ -170,9 +173,12 @@ void SessionWrapper::Append(mojom::AppendOptionsPtr options,
   if (!model_) {
     return;
   }
-  auto append_internal = base::BindOnce(&SessionWrapper::AppendInternal,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        std::move(options), std::move(client));
+
+  mojo::ReportBadMessageCallback bad_message_callback =
+      base::BindPostTaskToCurrentDefault(receiver_.GetBadMessageCallback());
+  auto append_internal = base::BindOnce(
+      &SessionWrapper::AppendInternal, weak_ptr_factory_.GetWeakPtr(),
+      std::move(options), std::move(client), std::move(bad_message_callback));
 
   model_->AddAndRunPendingTask(std::move(append_internal),
                                weak_ptr_factory_.GetWeakPtr());
@@ -199,9 +205,11 @@ void SessionWrapper::GetSizeInTokens(mojom::InputPtr input,
     return;
   }
 
+  mojo::ReportBadMessageCallback bad_message_callback =
+      base::BindPostTaskToCurrentDefault(receiver_.GetBadMessageCallback());
   auto size_in_tokens_internal = base::BindOnce(
       &SessionWrapper::GetSizeInTokensInternal, weak_ptr_factory_.GetWeakPtr(),
-      std::move(input), std::move(callback));
+      std::move(input), std::move(bad_message_callback), std::move(callback));
 
   model_->AddAndRunPendingTask(std::move(size_in_tokens_internal),
                                weak_ptr_factory_.GetWeakPtr());

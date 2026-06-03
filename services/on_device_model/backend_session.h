@@ -5,6 +5,7 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_BACKEND_SESSION_H_
 #define SERVICES_ON_DEVICE_MODEL_BACKEND_SESSION_H_
 
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace on_device_model {
@@ -19,6 +20,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) BackendSession {
   virtual void Append(
       on_device_model::mojom::AppendOptionsPtr options,
       mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
+      mojo::ReportBadMessageCallback bad_message_callback,
       base::OnceClosure on_complete) = 0;
 
   // Generates output for this session. Calls `on_complete` when all output has
@@ -30,6 +32,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) BackendSession {
 
   // Calls `callback` for the size of `input` in tokens.
   virtual void SizeInTokens(on_device_model::mojom::InputPtr input,
+                            mojo::ReportBadMessageCallback bad_message_callback,
                             base::OnceCallback<void(uint32_t)> callback) = 0;
 
   // Gets the probability score of the first token in `text` on top of the

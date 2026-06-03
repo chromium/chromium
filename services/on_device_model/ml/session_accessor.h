@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/constraint_factory.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -40,6 +41,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
   Ptr Clone();
   ChromeMLCancelFn Append(const perfetto::Track& perfetto_id,
                           on_device_model::mojom::AppendOptionsPtr options,
+                          mojo::ReportBadMessageCallback bad_message_callback,
                           ChromeMLContextSavedFn context_saved_fn);
   ChromeMLCancelFn Generate(
       const perfetto::Track& perfetto_id,
@@ -51,6 +53,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
   void GetProbabilitiesBlocking(const std::string& input,
                                 ChromeMLGetProbabilitiesBlockingFn get_prob_fn);
   void SizeInTokens(on_device_model::mojom::InputPtr input,
+                    mojo::ReportBadMessageCallback bad_message_callback,
                     ChromeMLSizeInTokensFn size_in_tokens_fn);
   void CreateAsrStream(
       on_device_model::mojom::AsrStreamOptionsPtr options,
@@ -75,6 +78,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
       std::optional<uint32_t> adaptation_id);
   void AppendInternal(perfetto::Track perfetto_id,
                       on_device_model::mojom::AppendOptionsPtr append_options,
+                      mojo::ReportBadMessageCallback bad_message_callback,
                       ChromeMLContextSavedFn context_saved_fn,
                       scoped_refptr<Canceler> canceler);
   void GenerateInternal(
@@ -89,6 +93,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
       const std::string& input,
       ChromeMLGetProbabilitiesBlockingFn get_prob_fn);
   void SizeInTokensInternal(on_device_model::mojom::InputPtr input,
+                            mojo::ReportBadMessageCallback bad_message_callback,
                             ChromeMLSizeInTokensFn size_in_tokens_fn);
   std::optional<on_device_model::mojom::AsrError> CreateAsrStreamInternal(
       on_device_model::mojom::AsrStreamOptionsPtr asr_options,

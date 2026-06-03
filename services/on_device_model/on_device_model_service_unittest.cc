@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/on_device_model/fake/fake_chrome_ml_api.h"
 #include "services/on_device_model/fake/on_device_model_fake.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
@@ -96,6 +97,28 @@ mojom::InputPtr MakeMojomInput(std::vector<ml::InputPiece> input) {
     mojom_input->pieces.push_back(MakeMojomInputPiece(std::move(piece)));
   }
   return mojom_input;
+}
+
+mojom::InputPtr MakeMojomInput(mojom::InputPiecePtr piece) {
+  auto mojom_input = mojom::Input::New();
+  mojom_input->pieces.push_back(std::move(piece));
+  return mojom_input;
+}
+
+mojom::AppendOptionsPtr MakeAppendOptions(mojom::InputPiecePtr piece) {
+  auto options = mojom::AppendOptions::New();
+  options->input = MakeMojomInput(std::move(piece));
+  return options;
+}
+
+mojom::InputPiecePtr MakeInvalidToolResponseInputPiece() {
+  base::DictValue result_dict;
+  result_dict.Set("output", "42");
+  std::optional<base::Value> result;
+  result.emplace(std::move(result_dict));
+  return mojom::InputPiece::NewToolResponse(mojom::ToolResponse::New(
+      fake_ml::kFakeToolCallId, fake_ml::kFakeToolName, std::move(result),
+      std::make_optional<std::string>("tool failed")));
 }
 
 class ContextClientWaiter : public mojom::ContextClient {
@@ -1078,6 +1101,34 @@ TEST_F(OnDeviceModelServiceTest, ToolResponseProcessing) {
   EXPECT_THAT(response2.responses(),
               testing::Contains(testing::HasSubstr(base::StrCat(
                   {fake_ml::kToolRespPrefix, fake_ml::kFakeToolName, "="}))));
+}
+
+TEST_F(OnDeviceModelServiceTest, InvalidToolResponseReportsBadMessageOnAppend) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  mojo::test::BadMessageObserver observer;
+  session->Append(MakeAppendOptions(MakeInvalidToolResponseInputPiece()), {});
+
+  EXPECT_EQ(observer.WaitForBadMessage(),
+            "SessionAccessor::AppendInternal: failed to convert input");
+}
+
+TEST_F(OnDeviceModelServiceTest,
+       InvalidToolResponseReportsBadMessageOnSizeInTokens) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  mojo::test::BadMessageObserver observer;
+  session->GetSizeInTokens(MakeMojomInput(MakeInvalidToolResponseInputPiece()),
+                           base::DoNothing());
+
+  EXPECT_EQ(observer.WaitForBadMessage(),
+            "SessionAccessor::SizeInTokensInternal: failed to convert input");
 }
 
 TEST_F(OnDeviceModelServiceTest, ToolDeclarationsIgnoredOutsideSystemPrompt) {

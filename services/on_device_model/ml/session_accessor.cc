@@ -214,6 +214,7 @@ SessionAccessor::Ptr SessionAccessor::Clone() {
 ChromeMLCancelFn SessionAccessor::Append(
     const perfetto::Track& perfetto_id,
     on_device_model::mojom::AppendOptionsPtr options,
+    mojo::ReportBadMessageCallback bad_message_callback,
     ChromeMLContextSavedFn context_saved_fn) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::Append");
   DCHECK(context_saved_fn);
@@ -225,6 +226,7 @@ ChromeMLCancelFn SessionAccessor::Append(
       FROM_HERE,
       base::BindOnce(&SessionAccessor::AppendInternal, base::Unretained(this),
                      perfetto_id, std::move(options),
+                     std::move(bad_message_callback),
                      std::move(context_saved_fn), canceler));
   return [canceler] { canceler->Cancel(); };
 }
@@ -280,12 +282,15 @@ void SessionAccessor::Hint(on_device_model::mojom::HintOptionsPtr options,
                      std::move(options), base::Unretained(constraint_factory)));
 }
 
-void SessionAccessor::SizeInTokens(on_device_model::mojom::InputPtr input,
-                                   ChromeMLSizeInTokensFn size_in_tokens_fn) {
+void SessionAccessor::SizeInTokens(
+    on_device_model::mojom::InputPtr input,
+    mojo::ReportBadMessageCallback bad_message_callback,
+    ChromeMLSizeInTokensFn size_in_tokens_fn) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::SizeInTokens");
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SessionAccessor::SizeInTokensInternal,
                                 base::Unretained(this), std::move(input),
+                                std::move(bad_message_callback),
                                 std::move(size_in_tokens_fn)));
 }
 
@@ -364,6 +369,7 @@ void SessionAccessor::CreateInternal(
 void SessionAccessor::AppendInternal(
     perfetto::Track perfetto_id,
     on_device_model::mojom::AppendOptionsPtr append_options,
+    mojo::ReportBadMessageCallback bad_message_callback,
     ChromeMLContextSavedFn context_saved_fn,
     scoped_refptr<Canceler> canceler) {
   // Ends the `Queued` trace.
@@ -388,10 +394,10 @@ void SessionAccessor::AppendInternal(
   std::optional<std::vector<ml::InputPiece>> input =
       ConvertMojomInputToMlInputPieces(std::move(append_options->input));
   if (!input) {
-    // TODO(crbug.com/422803232): Report invalid input with
-    // mojo::ReportBadMessage().
-    // Complete local request bookkeeping with 0 tokens so the caller's
-    // ContextHolder can clean up.
+    std::move(bad_message_callback)
+        .Run("SessionAccessor::AppendInternal: failed to convert input");
+    // Complete local request bookkeeping so the pending request queue is not
+    // blocked after reporting the bad message.
     LOG(WARNING) << "AppendInternal: failed to convert input pieces; "
                     "completing with 0 tokens appended.";
     context_saved_fn(0);
@@ -465,16 +471,17 @@ void SessionAccessor::GetProbabilitiesBlockingInternal(
 
 void SessionAccessor::SizeInTokensInternal(
     on_device_model::mojom::InputPtr input,
+    mojo::ReportBadMessageCallback bad_message_callback,
     ChromeMLSizeInTokensFn size_in_tokens_fn) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::SizeInTokensInternal");
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   std::optional<std::vector<ml::InputPiece>> converted_input =
       ConvertMojomInputToMlInputPieces(std::move(input));
   if (!converted_input) {
-    // TODO(crbug.com/422803232): Report invalid input with
-    // mojo::ReportBadMessage().
-    // Complete local request bookkeeping with size 0 so the caller's reply
-    // callback fires.
+    std::move(bad_message_callback)
+        .Run("SessionAccessor::SizeInTokensInternal: failed to convert input");
+    // Complete local request bookkeeping so the pending request queue is not
+    // blocked after reporting the bad message.
     LOG(WARNING) << "SizeInTokensInternal: failed to convert input pieces; "
                     "reporting size 0.";
     size_in_tokens_fn(0);

@@ -143,6 +143,7 @@ TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
     pieces.push_back("mock system input");
     pieces.push_back(ml::Token::kEnd);
     session->Append(MakeInput(std::move(pieces)), /*client=*/{},
+                    /*bad_message_callback=*/base::DoNothing(),
                     /*on_complete=*/base::DoNothing());
   }
   {
@@ -151,12 +152,14 @@ TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
     pieces.push_back("mock user input");
     pieces.push_back(ml::Token::kEnd);
     session->Append(MakeInput(std::move(pieces)), /*client=*/{},
+                    /*bad_message_callback=*/base::DoNothing(),
                     /*on_complete=*/base::DoNothing());
   }
   {
     std::vector<ml::InputPiece> pieces;
     pieces.push_back(ml::Token::kModel);
     session->Append(MakeInput(std::move(pieces)), /*client=*/{},
+                    /*bad_message_callback=*/base::DoNothing(),
                     /*on_complete=*/base::DoNothing());
   }
 
@@ -212,6 +215,7 @@ TEST_F(BackendModelImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
     std::vector<ml::InputPiece> pieces;
     pieces.push_back("mock input");
     session->Append(MakeInput(std::move(pieces)), /*client=*/{},
+                    /*bad_message_callback=*/base::DoNothing(),
                     /*on_complete=*/base::DoNothing());
   }
 
@@ -251,6 +255,7 @@ TEST_F(BackendModelImplAndroidTest, GenerateCallbacksOnDifferentThread) {
     std::vector<ml::InputPiece> pieces;
     pieces.push_back("mock input");
     session->Append(MakeInput(std::move(pieces)), /*client=*/{},
+                    /*bad_message_callback=*/base::DoNothing(),
                     /*on_complete=*/base::DoNothing());
   }
 
@@ -300,6 +305,7 @@ TEST_F(BackendModelImplAndroidTest, CloneSession) {
     std::vector<ml::InputPiece> pieces;
     pieces.push_back("mock input");
     session->Append(MakeInput(std::move(pieces)), /*client=*/{},
+                    /*bad_message_callback=*/base::DoNothing(),
                     /*on_complete=*/base::DoNothing());
   }
 
@@ -324,6 +330,7 @@ TEST_F(BackendModelImplAndroidTest, CloneSession) {
     std::vector<ml::InputPiece> pieces;
     pieces.push_back(" more context");
     session->Append(MakeInput(std::move(pieces)), /*client=*/{},
+                    /*bad_message_callback=*/base::DoNothing(),
                     /*on_complete=*/base::DoNothing());
   }
   {
@@ -359,6 +366,7 @@ TEST_F(BackendModelImplAndroidTest, SizeInTokensWithTextInput) {
 
   base::test::TestFuture<uint32_t> future;
   session->SizeInTokens(MakeMojomInput(std::move(pieces)),
+                        /*bad_message_callback=*/base::DoNothing(),
                         future.GetCallback());
 
   // The mock counts characters in text, so "test input string" = 17 chars.
@@ -379,6 +387,7 @@ TEST_F(BackendModelImplAndroidTest, SizeInTokensWithTokenInput) {
 
   base::test::TestFuture<uint32_t> future;
   session->SizeInTokens(MakeMojomInput(std::move(pieces)),
+                        /*bad_message_callback=*/base::DoNothing(),
                         future.GetCallback());
 
   // The output is "<system>system message<end>" total characters is 27.
@@ -399,6 +408,7 @@ TEST_F(BackendModelImplAndroidTest, SizeInTokensCallbackOnDifferentThread) {
 
   base::test::TestFuture<uint32_t> future;
   session->SizeInTokens(MakeMojomInput(std::move(pieces)),
+                        /*bad_message_callback=*/base::DoNothing(),
                         future.GetCallback());
 
   // The mock counts characters in text,
@@ -417,6 +427,7 @@ TEST_F(BackendModelImplAndroidTest, AppendBindsContextClient) {
   std::vector<ml::InputPiece> pieces;
   pieces.push_back("mock input");
   session->Append(MakeInput(std::move(pieces)), context_client.BindRemote(),
+                  /*bad_message_callback=*/base::DoNothing(),
                   /*on_complete=*/base::DoNothing());
   // The context client should receive the OnComplete callback with count 0 for
   // tokens processed.

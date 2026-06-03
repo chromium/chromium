@@ -61,12 +61,14 @@ class BackendSessionImplAndroid : public BackendSession {
   // BackendSession:
   void Append(on_device_model::mojom::AppendOptionsPtr options,
               mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
+              mojo::ReportBadMessageCallback bad_message_callback,
               base::OnceClosure on_complete) override;
   void Generate(
       on_device_model::mojom::GenerateOptionsPtr input,
       mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
       base::OnceClosure on_complete) override;
   void SizeInTokens(on_device_model::mojom::InputPtr input,
+                    mojo::ReportBadMessageCallback bad_message_callback,
                     base::OnceCallback<void(uint32_t)> callback) override;
   void Score(const std::string& text,
              base::OnceCallback<void(float)> callback) override;
