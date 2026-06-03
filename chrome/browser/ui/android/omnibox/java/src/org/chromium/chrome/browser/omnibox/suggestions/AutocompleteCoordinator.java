@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCall
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
@@ -77,6 +78,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     private final SuggestionListViewHolderProvider mViewProvider;
     private final LocationBarEmbedder mLocationBarEmbedder;
     private boolean mNativeInitialized;
+    private boolean mDropdownAvailableRecorded;
 
     /** An observer watching for changes to the visual state of the omnibox suggestions. */
     public interface OmniboxSuggestionsVisualStateObserver {
@@ -282,6 +284,11 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
      *     through the endInput() (valid -> valid). This is the case for tab switching.
      */
     public void beginInput(FuseboxSessionState session) {
+        if (!mDropdownAvailableRecorded && OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+            mDropdownAvailableRecorded = true;
+            OmniboxMetrics.recordAsyncInflationDropdownAvailable(mContainer != null);
+        }
+
         mMediator.beginInput(session);
     }
 

@@ -186,6 +186,16 @@ public class OmniboxMetrics {
     }
 
     /**
+     * Record whether the background suggestion dropdown inflation completed before the UI thread
+     * required it.
+     */
+    public static void recordAsyncInflationDropdownAvailable(boolean dropdownAvailable) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.Omnibox.SuggestionsDropdown.AsyncInflationDropdownAvailable",
+                dropdownAvailable);
+    }
+
+    /**
      * Record whether suggestion view was successfully reused.
      *
      * @param viewsCreated Number of views created during the input session. This should not be

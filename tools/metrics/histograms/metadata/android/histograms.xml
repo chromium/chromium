@@ -4375,6 +4375,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.Omnibox.SuggestionsDropdown.AsyncInflationDropdownAvailable"
+    enum="Boolean" expires_after="2026-11-01">
+  <owner>peterkang@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whether the Omnibox suggestions dropdown view was successfully
+    created in the background before the UI thread required it. True indicates
+    the background inflation finished on time. False indicates the background
+    inflation did not finish on time and the dropdown had to be inflated on the
+    UI thread.
+
+    Recorded at most once per activity start upon the first time the Omnibox is
+    focused and the suggestions container is requested.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SuggestionsDropdown.AsyncInflationTime2"
     units="ms" expires_after="2026-11-01">
   <owner>peterkang@google.com</owner>
