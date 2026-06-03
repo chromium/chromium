@@ -3172,22 +3172,22 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_FEED_SWIPE_IPH" desc="Text for the in-product help bubble highlighting scrolling on the Feed.">
         You can swipe up to see more content tailored to you.
       </message>
-      <message name="IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL" desc="Title for a multiple files chooser button used in HTML forms. [iOS only]">
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILES_ACTION_LABEL" desc="Title for a multiple files chooser button used in HTML forms. [iOS only]" meaning="Select multiple files from the Files app to upload to a website. This option is presented in a context menu.">
         Choose Files
       </message>
-      <message name="IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL" desc="Title for a single file chooser button used in HTML forms. [iOS only]">
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_CHOOSE_FILE_ACTION_LABEL" desc="Title for a single file chooser button used in HTML forms. [iOS only]" meaning="Select a single file from the Files app to upload to a website. This option is presented in a context menu.">
         Choose File
       </message>
-      <message name="IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL" desc="Title for a button for choosing an existing media item from the Photo Library, used in HTML forms. [iOS only]">
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_PHOTO_LIBRARY_ACTION_LABEL" desc="Title for a button for choosing an existing media item from the Photo Library, used in HTML forms. [iOS only]" meaning="Select an existing media item from the Photo Library to upload to a website. This option is presented in a context menu.">
         Photo Library
       </message>
-      <message name="IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_ACTION_LABEL" desc="Title for a button for taking a photo, used in HTML forms. [iOS only]">
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_ACTION_LABEL" desc="Title for a button for taking a photo, used in HTML forms. [iOS only]" meaning="Take a photo with the device camera to upload to a website. This option is presented in a context menu.">
         Take Photo
       </message>
-      <message name="IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_OR_VIDEO_ACTION_LABEL" desc="Title for a button for taking a photo or video, used in HTML forms. [iOS only]">
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_TAKE_PHOTO_OR_VIDEO_ACTION_LABEL" desc="Title for a button for taking a photo or video, used in HTML forms. [iOS only]" meaning="Take a photo or video with the device camera to upload to a website. This option is presented in a context menu.">
         Take Photo or Video
       </message>
-      <message name="IDS_IOS_FILE_UPLOAD_PANEL_TAKE_VIDEO_ACTION_LABEL" desc="Title for a button for taking a video, used in HTML forms. [iOS only]">
+      <message name="IDS_IOS_FILE_UPLOAD_PANEL_TAKE_VIDEO_ACTION_LABEL" desc="Title for a button for taking a video, used in HTML forms. [iOS only]" meaning="Take a video with the device camera to upload to a website. This option is presented in a context menu.">
         Take Video
       </message>
       <message name="IDS_IOS_FIRSTRUN_TERMS_TITLE" desc="Title for the Terms of Service page shown to user on First Run. [Length: 20em] [iOS only]">
