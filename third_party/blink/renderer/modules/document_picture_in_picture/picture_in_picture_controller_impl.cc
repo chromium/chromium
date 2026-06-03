@@ -138,19 +138,13 @@ PictureInPictureControllerImpl::IsElementAllowedInternal(
 void PictureInPictureControllerImpl::EnterPictureInPicture(
     HTMLVideoElement* video_element,
     ScriptPromiseResolver<PictureInPictureWindow>* resolver) {
-  EnterPictureInPictureInternal(video_element, /*request_immersive=*/false,
+  EnterPictureInPictureInternal(video_element, /*immersive_options*/ nullptr,
                                 resolver);
-}
-
-void PictureInPictureControllerImpl::EnterPictureInPictureImmersive(
-    HTMLVideoElement& video_element) {
-  EnterPictureInPictureInternal(&video_element, /*request_immersive=*/true,
-                                /*resolver=*/nullptr);
 }
 
 void PictureInPictureControllerImpl::EnterPictureInPictureInternal(
     HTMLVideoElement* video_element,
-    bool request_immersive,
+    mojom::blink::ImmersiveOptionsPtr immersive_options,
     ScriptPromiseResolver<PictureInPictureWindow>* resolver) {
   if (!video_element->GetWebMediaPlayer()) {
     if (resolver) {
@@ -172,10 +166,8 @@ void PictureInPictureControllerImpl::EnterPictureInPictureInternal(
   if (!EnsureService())
     return;
 
-  // Immersive playback confirmation flow must remain in native fullscreen
-  // in order to display the user confirmation dialog and start the session.
-  if (!request_immersive && video_element->GetDisplayType() ==
-                                WebMediaPlayer::DisplayType::kFullscreen) {
+  if (video_element->GetDisplayType() ==
+      WebMediaPlayer::DisplayType::kFullscreen) {
     Fullscreen::ExitFullscreen(*GetSupplementable());
   }
 
@@ -206,16 +198,18 @@ void PictureInPictureControllerImpl::EnterPictureInPictureInternal(
     video_bounds = video_element->BoundsInWidget();
   }
 
+  // Determines whether the current Picture-in-Picture session is immersive.
+  bool is_immersive = !immersive_options.is_null();
   picture_in_picture_service_->StartSession(
       video_element->GetWebMediaPlayer()->GetPlayerId(),
       std::move(media_player_remote),
       video_element->GetWebMediaPlayer()->GetSurfaceId().value(),
       video_element->GetWebMediaPlayer()->NaturalSize(),
       ShouldShowPlayPauseButton(*video_element), std::move(session_observer),
-      video_bounds, request_immersive,
+      video_bounds, std::move(immersive_options),
       BindOnce(&PictureInPictureControllerImpl::OnEnteredPictureInPicture,
                WrapPersistent(this), WrapPersistent(video_element),
-               request_immersive, WrapPersistent(resolver)));
+               is_immersive, WrapPersistent(resolver)));
 }
 
 void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
@@ -667,6 +661,34 @@ bool PictureInPictureControllerImpl::EnsureService() {
   GetSupplementable()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       picture_in_picture_service_.BindNewPipeAndPassReceiver(task_runner));
   return true;
+}
+
+void PictureInPictureControllerImpl::RequestImmersivePlaybackConfirmation(
+    HTMLVideoElement& video_element) {
+  if (!EnsureService()) {
+    return;
+  }
+
+  picture_in_picture_service_->RequestImmersivePlaybackConfirmation(BindOnce(
+      &PictureInPictureControllerImpl::OnImmersivePlaybackConfirmationResult,
+      WrapWeakPersistent(this), WrapWeakPersistent(&video_element)));
+}
+
+void PictureInPictureControllerImpl::OnImmersivePlaybackConfirmationResult(
+    HTMLVideoElement* video_element,
+    mojom::blink::ImmersivePlaybackConfirmationResultPtr result) {
+  if (!result ||
+      result->status !=
+          mojom::blink::ImmersivePlaybackConfirmationStatus::kConfirmed) {
+    return;
+  }
+
+  if (video_element &&
+      IsElementAllowedInternal(*video_element, /*is_immersive=*/true,
+                               /*report_failure=*/false) == Status::kEnabled) {
+    EnterPictureInPictureInternal(video_element, std::move(result->options),
+                                  /*resolver=*/nullptr);
+  }
 }
 
 }  // namespace blink

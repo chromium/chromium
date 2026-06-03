@@ -182,8 +182,12 @@ class MockPictureInPictureService
        bool,
        mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
        const gfx::Rect&,
-       bool,
+       mojom::blink::ImmersiveOptionsPtr,
        StartSessionCallback));
+
+  MOCK_METHOD(void,
+              RequestImmersivePlaybackConfirmation,
+              (RequestImmersivePlaybackConfirmationCallback));
 
   MockPictureInPictureSession& Session() { return *session_.get(); }
 
@@ -195,7 +199,7 @@ class MockPictureInPictureService
       bool,
       mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
       const gfx::Rect& source_bounds,
-      bool,
+      mojom::blink::ImmersiveOptionsPtr,
       StartSessionCallback callback) {
     source_bounds_ = source_bounds;
     std::move(callback).Run(std::move(session_remote_), gfx::Size());

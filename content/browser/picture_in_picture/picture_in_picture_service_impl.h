@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SERVICE_IMPL_H_
 
-#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "media/mojo/mojom/media_player.mojom.h"
@@ -50,34 +49,13 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
       bool show_play_pause_button,
       mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>,
       const gfx::Rect& source_bounds,
-      bool request_immersive,
+      blink::mojom::ImmersiveOptionsPtr immersive_options,
       StartSessionCallback) final;
+  void RequestImmersivePlaybackConfirmation(
+      RequestImmersivePlaybackConfirmationCallback) final;
 
  private:
   friend class PictureInPictureSession;
-
-  struct PendingSession {
-    PendingSession(
-        uint32_t player_id,
-        mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
-        const viz::SurfaceId& surface_id,
-        const gfx::Size& natural_size,
-        bool show_play_pause_button,
-        mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>
-            observer,
-        const gfx::Rect& source_bounds,
-        StartSessionCallback callback);
-    ~PendingSession();
-
-    uint32_t player_id;
-    mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote;
-    viz::SurfaceId surface_id;
-    gfx::Size natural_size;
-    bool show_play_pause_button;
-    mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver> observer;
-    gfx::Rect source_bounds;
-    StartSessionCallback callback;
-  };
 
   PictureInPictureServiceImpl(
       RenderFrameHost&,
@@ -85,19 +63,6 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
   ~PictureInPictureServiceImpl() override;
 
   VideoPictureInPictureWindowControllerImpl& GetController();
-
-  void StartSessionInternal(
-      std::unique_ptr<PendingSession> pending_session,
-      blink::mojom::ImmersiveOptionsPtr immersive_options);
-
-  void StartSessionImmersive(std::unique_ptr<PendingSession> pending_session);
-
-  void OnImmersivePlaybackConfirmation(
-      std::unique_ptr<PendingSession> pending_session,
-      blink::mojom::ImmersivePlaybackConfirmationResultPtr result);
-
-  base::WeakPtrFactory<PictureInPictureServiceImpl>
-      immersive_confirmation_weak_factory_{this};
 };
 
 }  // namespace content
