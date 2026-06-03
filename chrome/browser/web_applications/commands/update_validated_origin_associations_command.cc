@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/commands/add_validated_origin_associations_command.h"
+#include "chrome/browser/web_applications/commands/update_validated_origin_associations_command.h"
 
 #include <algorithm>
 #include <ranges>
@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/model/migration_source.h"
-#include "chrome/browser/web_applications/scheduler/add_validated_origin_associations_result.h"
+#include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -30,31 +30,40 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/sync/base/time.h"
+#include "net/base/network_change_notifier.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace web_app {
 
-AddValidatedOriginAssociationsCommand::AddValidatedOriginAssociationsCommand(
-    const webapps::AppId& app_id,
-    base::OnceCallback<void(AddValidatedOriginAssociationsResult)> callback)
-    : WebAppCommand<AppLock, AddValidatedOriginAssociationsResult>(
-          "WebApp.AddValidatedOriginAssociations",
+UpdateValidatedOriginAssociationsCommand::
+    UpdateValidatedOriginAssociationsCommand(
+        const webapps::AppId& app_id,
+        base::OnceCallback<void(UpdateValidatedOriginAssociationsResult)>
+            callback)
+    : WebAppCommand<AppLock, UpdateValidatedOriginAssociationsResult>(
+          "UpdateValidatedOriginAssociationsResult",
           AppLockDescription(app_id),
-          base::BindOnce([](AddValidatedOriginAssociationsResult result) {
+          base::BindOnce([](UpdateValidatedOriginAssociationsResult result) {
             base::UmaHistogramEnumeration(
-                "WebApp.AddValidatedOriginAssociations", result);
+                "WebApp.ValidatedOriginAssociations.Updated", result);
             return result;
           }).Then(std::move(callback)),
           /*args_for_shutdown=*/
-          AddValidatedOriginAssociationsResult::kShutdown),
+          UpdateValidatedOriginAssociationsResult::kShutdown),
       app_id_(app_id) {}
 
-AddValidatedOriginAssociationsCommand::
-    ~AddValidatedOriginAssociationsCommand() = default;
+UpdateValidatedOriginAssociationsCommand::
+    ~UpdateValidatedOriginAssociationsCommand() = default;
 
-void AddValidatedOriginAssociationsCommand::StartWithLock(
+void UpdateValidatedOriginAssociationsCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
+
+  if (net::NetworkChangeNotifier::IsOffline()) {
+    CompleteAndSelfDestruct(CommandResult::kSuccess,
+                            UpdateValidatedOriginAssociationsResult::kOffline);
+    return;
+  }
 
   const WebAppRegistrar& registrar = lock_->registrar();
   const WebApp* app =
@@ -63,7 +72,7 @@ void AddValidatedOriginAssociationsCommand::StartWithLock(
   if (!app) {
     CompleteAndSelfDestruct(
         CommandResult::kSuccess,
-        AddValidatedOriginAssociationsResult::kWebAppNotInstalled);
+        UpdateValidatedOriginAssociationsResult::kWebAppNotInstalled);
     return;
   }
 
@@ -76,15 +85,17 @@ void AddValidatedOriginAssociationsCommand::StartWithLock(
         base::Seconds(base::RandIntInclusive(0, base::Days(1).InSeconds()));
     app_to_update.SetOriginAssociationLastValidationCheckTime(
         lock_->clock().Now() + delta + base::Days(1));
-    CompleteAndSelfDestruct(CommandResult::kSuccess,
-                            AddValidatedOriginAssociationsResult::kThrottled);
+    CompleteAndSelfDestruct(
+        CommandResult::kSuccess,
+        UpdateValidatedOriginAssociationsResult::kThrottled);
     return;
   }
 
   if (*app->origin_association_last_validation_check_time() + base::Days(1) >
       lock_->clock().Now()) {
-    CompleteAndSelfDestruct(CommandResult::kSuccess,
-                            AddValidatedOriginAssociationsResult::kThrottled);
+    CompleteAndSelfDestruct(
+        CommandResult::kSuccess,
+        UpdateValidatedOriginAssociationsResult::kThrottled);
     return;
   }
 
@@ -94,12 +105,12 @@ void AddValidatedOriginAssociationsCommand::StartWithLock(
 
   lock_->origin_association_manager().GetWebAppOriginAssociations(
       app->manifest_id().value(), std::move(origin_associations),
-      base::BindOnce(
-          &AddValidatedOriginAssociationsCommand::OnOriginAssociationValidated,
-          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&UpdateValidatedOriginAssociationsCommand::
+                         OnOriginAssociationValidated,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void AddValidatedOriginAssociationsCommand::OnOriginAssociationValidated(
+void UpdateValidatedOriginAssociationsCommand::OnOriginAssociationValidated(
     OriginAssociations validated_origin_associations) {
   const base::Time now_time =
       syncer::ProtoTimeToTime(syncer::TimeToProtoTime(lock_->clock().Now()));
@@ -161,10 +172,10 @@ void AddValidatedOriginAssociationsCommand::OnOriginAssociationValidated(
   if (unvalidated_items_remain) {
     CompleteAndSelfDestruct(
         CommandResult::kSuccess,
-        AddValidatedOriginAssociationsResult::kUnvalidatedItemsRemain);
+        UpdateValidatedOriginAssociationsResult::kUnvalidatedItemsRemain);
   } else {
     CompleteAndSelfDestruct(CommandResult::kSuccess,
-                            AddValidatedOriginAssociationsResult::kSuccess);
+                            UpdateValidatedOriginAssociationsResult::kSuccess);
   }
 }
 

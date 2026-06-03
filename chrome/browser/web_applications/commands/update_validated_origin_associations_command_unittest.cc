@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/commands/add_validated_origin_associations_command.h"
+#include "chrome/browser/web_applications/commands/update_validated_origin_associations_command.h"
 
 #include <memory>
 
@@ -13,7 +13,7 @@
 #include "base/test/test_future.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/web_applications/scheduler/add_validated_origin_associations_result.h"
+#include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -27,6 +27,10 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/storage_location.h"
+#include "content/public/browser/network_service_instance.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -57,10 +61,10 @@ class MockWebAppRegistrarObserver : public WebAppRegistrarObserver {
 
 }  // namespace
 
-class AddValidatedOriginAssociationsCommandTest : public WebAppTest {
+class UpdateValidatedOriginAssociationsCommandTest : public WebAppTest {
  public:
-  AddValidatedOriginAssociationsCommandTest() = default;
-  ~AddValidatedOriginAssociationsCommandTest() override = default;
+  UpdateValidatedOriginAssociationsCommandTest() = default;
+  ~UpdateValidatedOriginAssociationsCommandTest() override = default;
 
   void SetUp() override {
     WebAppTest::SetUp();
@@ -83,6 +87,7 @@ class AddValidatedOriginAssociationsCommandTest : public WebAppTest {
     fake_provider().SetClockForTesting(clock_.get());
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
+    content::GetNetworkService();
   }
 
   void TearDown() override {
@@ -114,7 +119,7 @@ class AddValidatedOriginAssociationsCommandTest : public WebAppTest {
   std::unique_ptr<base::SimpleTestClock> clock_;
 };
 
-TEST_F(AddValidatedOriginAssociationsCommandTest, Success) {
+TEST_F(UpdateValidatedOriginAssociationsCommandTest, Success) {
   GURL start_url("https://example.com/");
   ScopeExtensionInfo extension = ScopeExtensionInfo::CreateForScope(
       GURL("https://example.org/scope"), /*has_origin_wildcard=*/false);
@@ -122,7 +127,7 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, Success) {
   // Install will not validate scope extensions.
   fake_origin_association_manager()->set_pass_through(false);
   webapps::AppId app_id = InstallApp(start_url, {extension});
-  clock().Advance(base::Days(1));
+  clock().Advance(base::Days(10) + base::Seconds(1));
 
   base::HistogramTester tester;
   fake_origin_association_manager()->set_pass_through(true);
@@ -134,14 +139,15 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, Success) {
 
   EXPECT_CALL(observer, OnWebAppEffectiveScopeChanged(app_id, _));
 
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
 
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future.GetCallback());
-  ASSERT_EQ(AddValidatedOriginAssociationsResult::kSuccess, future.Get());
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kSuccess, future.Get());
 
-  tester.ExpectUniqueSample("WebApp.AddValidatedOriginAssociations",
-                            AddValidatedOriginAssociationsResult::kSuccess, 1);
+  tester.ExpectUniqueSample("WebApp.ValidatedOriginAssociations.Updated",
+                            UpdateValidatedOriginAssociationsResult::kSuccess,
+                            1);
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
   EXPECT_FALSE(app->validated_scope_extensions().empty());
@@ -149,7 +155,7 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, Success) {
   EXPECT_TRUE(app->origin_association_last_validation_check_time().has_value());
 }
 
-TEST_F(AddValidatedOriginAssociationsCommandTest, UnvalidatedItemsRemain) {
+TEST_F(UpdateValidatedOriginAssociationsCommandTest, UnvalidatedItemsRemain) {
   GURL start_url("https://example.com/");
 
   // Fake manager defaults to returning empty associations, which means failure
@@ -168,23 +174,23 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, UnvalidatedItemsRemain) {
   }
 
   base::HistogramTester tester;
-  clock().Advance(base::Days(1));
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  clock().Advance(base::Days(10) + base::Seconds(1));
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future.GetCallback());
-  ASSERT_EQ(AddValidatedOriginAssociationsResult::kUnvalidatedItemsRemain,
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kUnvalidatedItemsRemain,
             future.Get());
 
   tester.ExpectUniqueSample(
-      "WebApp.AddValidatedOriginAssociations",
-      AddValidatedOriginAssociationsResult::kUnvalidatedItemsRemain, 1);
+      "WebApp.ValidatedOriginAssociations.Updated",
+      UpdateValidatedOriginAssociationsResult::kUnvalidatedItemsRemain, 1);
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
   EXPECT_TRUE(app->validated_scope_extensions().empty());
   EXPECT_TRUE(app->origin_association_last_validation_check_time().has_value());
 }
 
-TEST_F(AddValidatedOriginAssociationsCommandTest, ThrottledAfterInstall) {
+TEST_F(UpdateValidatedOriginAssociationsCommandTest, ThrottledAfterInstall) {
   GURL start_url("https://example.com/");
   ScopeExtensionInfo extension = ScopeExtensionInfo::CreateForScope(
       GURL("https://example.org/scope"), /*has_origin_wildcard=*/false);
@@ -196,13 +202,13 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, ThrottledAfterInstall) {
   fake_origin_association_manager()->set_pass_through(false);
 
   base::HistogramTester tester;
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future.GetCallback());
-  ASSERT_EQ(AddValidatedOriginAssociationsResult::kThrottled, future.Get());
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kThrottled, future.Get());
 
-  tester.ExpectUniqueSample("WebApp.AddValidatedOriginAssociations",
-                            AddValidatedOriginAssociationsResult::kThrottled,
+  tester.ExpectUniqueSample("WebApp.ValidatedOriginAssociations.Updated",
+                            UpdateValidatedOriginAssociationsResult::kThrottled,
                             1);
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
@@ -210,7 +216,7 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, ThrottledAfterInstall) {
   EXPECT_TRUE(app->origin_association_last_validation_check_time().has_value());
 }
 
-TEST_F(AddValidatedOriginAssociationsCommandTest, ThrottledAfterRevalidate) {
+TEST_F(UpdateValidatedOriginAssociationsCommandTest, ThrottledAfterRevalidate) {
   GURL start_url("https://example.com/");
   ScopeExtensionInfo extension = ScopeExtensionInfo::CreateForScope(
       GURL("https://example.org/scope"), /*has_origin_wildcard=*/false);
@@ -218,33 +224,33 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, ThrottledAfterRevalidate) {
   fake_origin_association_manager()->set_pass_through(false);
 
   webapps::AppId app_id = InstallApp(start_url, {extension});
-  clock().Advance(base::Days(1));
+  clock().Advance(base::Days(10) + base::Seconds(1));
 
   base::HistogramTester tester;
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future.GetCallback());
-  ASSERT_EQ(AddValidatedOriginAssociationsResult::kUnvalidatedItemsRemain,
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kUnvalidatedItemsRemain,
             future.Get());
   tester.ExpectUniqueSample(
-      "WebApp.AddValidatedOriginAssociations",
-      AddValidatedOriginAssociationsResult::kUnvalidatedItemsRemain, 1);
+      "WebApp.ValidatedOriginAssociations.Updated",
+      UpdateValidatedOriginAssociationsResult::kUnvalidatedItemsRemain, 1);
 
   base::HistogramTester tester2;
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future2;
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future2;
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future2.GetCallback());
-  EXPECT_EQ(AddValidatedOriginAssociationsResult::kThrottled, future2.Get());
-  tester2.ExpectUniqueSample("WebApp.AddValidatedOriginAssociations",
-                             AddValidatedOriginAssociationsResult::kThrottled,
-                             1);
+  EXPECT_EQ(UpdateValidatedOriginAssociationsResult::kThrottled, future2.Get());
+  tester2.ExpectUniqueSample(
+      "WebApp.ValidatedOriginAssociations.Updated",
+      UpdateValidatedOriginAssociationsResult::kThrottled, 1);
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
   EXPECT_TRUE(app->validated_scope_extensions().empty());
   EXPECT_TRUE(app->origin_association_last_validation_check_time().has_value());
 }
 
-TEST_F(AddValidatedOriginAssociationsCommandTest, ThrottledWhenNoTimeValue) {
+TEST_F(UpdateValidatedOriginAssociationsCommandTest, ThrottledWhenNoTimeValue) {
   GURL start_url("https://example.com/");
   ScopeExtensionInfo extension = ScopeExtensionInfo::CreateForScope(
       GURL("https://example.org/scope"), /*has_origin_wildcard=*/false);
@@ -265,76 +271,78 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, ThrottledWhenNoTimeValue) {
   }
 
   base::HistogramTester tester;
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future.GetCallback());
-  ASSERT_EQ(AddValidatedOriginAssociationsResult::kThrottled, future.Get());
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kThrottled, future.Get());
 
-  tester.ExpectUniqueSample("WebApp.AddValidatedOriginAssociations",
-                            AddValidatedOriginAssociationsResult::kThrottled,
+  tester.ExpectUniqueSample("WebApp.ValidatedOriginAssociations.Updated",
+                            UpdateValidatedOriginAssociationsResult::kThrottled,
                             1);
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
   EXPECT_TRUE(app->origin_association_last_validation_check_time().has_value());
-  // The time should be within the last 24 hours.
+  // The time should be within the last 10 days.
   EXPECT_GE(*app->origin_association_last_validation_check_time(),
             clock().Now());
 }
 
-TEST_F(AddValidatedOriginAssociationsCommandTest, NotThrottleAfterDay) {
+TEST_F(UpdateValidatedOriginAssociationsCommandTest, NotThrottleAfterTenDays) {
   GURL start_url("https://example.com/");
   ScopeExtensionInfo extension = ScopeExtensionInfo::CreateForScope(
       GURL("https://example.org/scope"), /*has_origin_wildcard=*/false);
 
   fake_origin_association_manager()->set_pass_through(false);
   webapps::AppId app_id = InstallApp(start_url, {extension});
-  clock().Advance(base::Days(1));
+  clock().Advance(base::Days(10) + base::Seconds(1));
 
   base::HistogramTester tester;
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future.GetCallback());
-  ASSERT_EQ(AddValidatedOriginAssociationsResult::kUnvalidatedItemsRemain,
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kUnvalidatedItemsRemain,
             future.Get());
   tester.ExpectUniqueSample(
-      "WebApp.AddValidatedOriginAssociations",
-      AddValidatedOriginAssociationsResult::kUnvalidatedItemsRemain, 1);
+      "WebApp.ValidatedOriginAssociations.Updated",
+      UpdateValidatedOriginAssociationsResult::kUnvalidatedItemsRemain, 1);
 
   fake_origin_association_manager()->set_pass_through(true);
-  clock().Advance(base::Days(1) + base::Seconds(1));
+  clock().Advance(base::Days(10) + base::Seconds(1));
 
   base::HistogramTester tester2;
 
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future2;
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future2;
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future2.GetCallback());
-  EXPECT_EQ(AddValidatedOriginAssociationsResult::kSuccess, future2.Get());
+  EXPECT_EQ(UpdateValidatedOriginAssociationsResult::kSuccess, future2.Get());
 
-  tester2.ExpectUniqueSample("WebApp.AddValidatedOriginAssociations",
-                             AddValidatedOriginAssociationsResult::kSuccess, 1);
+  tester2.ExpectUniqueSample("WebApp.ValidatedOriginAssociations.Updated",
+                             UpdateValidatedOriginAssociationsResult::kSuccess,
+                             1);
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
   EXPECT_FALSE(app->validated_scope_extensions().empty());
   EXPECT_TRUE(app->origin_association_last_validation_check_time().has_value());
 }
 
-TEST_F(AddValidatedOriginAssociationsCommandTest, EmptyReturnsSuccess) {
+TEST_F(UpdateValidatedOriginAssociationsCommandTest, EmptyReturnsSuccess) {
   GURL start_url("https://example.com/");
   // No scope extensions.
   webapps::AppId app_id = InstallApp(start_url, {});
-  clock().Advance(base::Days(1));
+  clock().Advance(base::Days(10) + base::Seconds(1));
 
   base::HistogramTester tester;
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future.GetCallback());
 
-  ASSERT_EQ(AddValidatedOriginAssociationsResult::kSuccess, future.Get());
-  tester.ExpectUniqueSample("WebApp.AddValidatedOriginAssociations",
-                            AddValidatedOriginAssociationsResult::kSuccess, 1);
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kSuccess, future.Get());
+  tester.ExpectUniqueSample("WebApp.ValidatedOriginAssociations.Updated",
+                            UpdateValidatedOriginAssociationsResult::kSuccess,
+                            1);
 }
 
-TEST_F(AddValidatedOriginAssociationsCommandTest,
+TEST_F(UpdateValidatedOriginAssociationsCommandTest,
        ValidateTwoTimesStillSuccess) {
   fake_origin_association_manager()->set_pass_through(true);
 
@@ -343,7 +351,7 @@ TEST_F(AddValidatedOriginAssociationsCommandTest,
       GURL("https://example.org/scope"), /*has_origin_wildcard=*/false);
 
   webapps::AppId app_id = InstallApp(start_url, {extension});
-  clock().Advance(base::Days(1));
+  clock().Advance(base::Days(10) + base::Seconds(1));
 
   {
     const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
@@ -352,28 +360,29 @@ TEST_F(AddValidatedOriginAssociationsCommandTest,
   }
 
   base::HistogramTester tester;
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
 
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future.GetCallback());
-  ASSERT_EQ(AddValidatedOriginAssociationsResult::kSuccess, future.Get());
-  tester.ExpectUniqueSample("WebApp.AddValidatedOriginAssociations",
-                            AddValidatedOriginAssociationsResult::kSuccess, 1);
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kSuccess, future.Get());
+  tester.ExpectUniqueSample("WebApp.ValidatedOriginAssociations.Updated",
+                            UpdateValidatedOriginAssociationsResult::kSuccess,
+                            1);
 }
 
-TEST_F(AddValidatedOriginAssociationsCommandTest, AppDisabled) {
+TEST_F(UpdateValidatedOriginAssociationsCommandTest, AppDisabled) {
   base::HistogramTester tester;
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+  provider().scheduler().UpdateValidatedOriginAssociations(
       "non-existent-app-id", future.GetCallback());
-  ASSERT_EQ(AddValidatedOriginAssociationsResult::kWebAppNotInstalled,
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kWebAppNotInstalled,
             future.Get());
   tester.ExpectUniqueSample(
-      "WebApp.AddValidatedOriginAssociations",
-      AddValidatedOriginAssociationsResult::kWebAppNotInstalled, 1);
+      "WebApp.ValidatedOriginAssociations.Updated",
+      UpdateValidatedOriginAssociationsResult::kWebAppNotInstalled, 1);
 }
 
-TEST_F(AddValidatedOriginAssociationsCommandTest, MigrationSourcesSuccess) {
+TEST_F(UpdateValidatedOriginAssociationsCommandTest, MigrationSourcesSuccess) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       blink::features::kWebAppMigrationApi);
@@ -395,17 +404,18 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, MigrationSourcesSuccess) {
 
   base::HistogramTester tester;
   fake_origin_association_manager()->set_pass_through(true);
-  clock().Advance(base::Days(1) + base::Seconds(1));
+  clock().Advance(base::Days(10) + base::Seconds(1));
 
   EXPECT_CALL(mock_scheduler(), ScheduleResolveWebAppPendingMigrationInfo(_, _))
       .Times(1);
 
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future.GetCallback());
-  ASSERT_EQ(AddValidatedOriginAssociationsResult::kSuccess, future.Get());
-  tester.ExpectUniqueSample("WebApp.AddValidatedOriginAssociations",
-                            AddValidatedOriginAssociationsResult::kSuccess, 1);
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kSuccess, future.Get());
+  tester.ExpectUniqueSample("WebApp.ValidatedOriginAssociations.Updated",
+                            UpdateValidatedOriginAssociationsResult::kSuccess,
+                            1);
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
   EXPECT_FALSE(app->validated_migration_sources().empty());
@@ -413,16 +423,18 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, MigrationSourcesSuccess) {
 
   // Still success on repeatable validation.
   base::HistogramTester tester2;
-  clock().Advance(base::Days(1) + base::Seconds(1));
-  base::test::TestFuture<AddValidatedOriginAssociationsResult> future2;
-  provider().scheduler().ScheduleAddValidatedOriginAssociations(
+  clock().Advance(base::Days(10) + base::Seconds(1));
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future2;
+  provider().scheduler().UpdateValidatedOriginAssociations(
       app_id, future2.GetCallback());
-  EXPECT_EQ(AddValidatedOriginAssociationsResult::kSuccess, future2.Get());
-  tester2.ExpectUniqueSample("WebApp.AddValidatedOriginAssociations",
-                             AddValidatedOriginAssociationsResult::kSuccess, 1);
+  EXPECT_EQ(UpdateValidatedOriginAssociationsResult::kSuccess, future2.Get());
+  tester2.ExpectUniqueSample("WebApp.ValidatedOriginAssociations.Updated",
+                             UpdateValidatedOriginAssociationsResult::kSuccess,
+                             1);
 }
 
-TEST_F(AddValidatedOriginAssociationsCommandTest, RemoveStaleScopeExtension) {
+TEST_F(UpdateValidatedOriginAssociationsCommandTest,
+       RemoveStaleScopeExtension) {
   GURL start_url("https://example.com/");
   ScopeExtensionInfo extension1 = ScopeExtensionInfo::CreateForScope(
       GURL("https://example.org/scope"), /*has_origin_wildcard=*/false);
@@ -432,34 +444,34 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, RemoveStaleScopeExtension) {
   // Install will not validate scope extensions.
   fake_origin_association_manager()->set_pass_through(false);
   webapps::AppId app_id = InstallApp(start_url, {extension1, extension2});
-  clock().Advance(base::Days(1));
+  clock().Advance(base::Days(10) + base::Seconds(1));
 
   // First validation: both extensions are valid.
   fake_origin_association_manager()->SetData(
       {{extension1, extension1}, {extension2, extension2}});
 
   {
-    base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-    provider().scheduler().ScheduleAddValidatedOriginAssociations(
+    base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+    provider().scheduler().UpdateValidatedOriginAssociations(
         app_id, future.GetCallback());
-    ASSERT_EQ(AddValidatedOriginAssociationsResult::kSuccess, future.Get());
+    ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kSuccess, future.Get());
 
     const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
     EXPECT_EQ(app->validated_scope_extensions().size(), 2u);
   }
 
   // Advance clock to bypass throttling.
-  clock().Advance(base::Days(1) + base::Seconds(1));
+  clock().Advance(base::Days(10) + base::Seconds(1));
 
   // Second validation: extension1 is no longer valid (removed from association
   // file).
   fake_origin_association_manager()->SetData({{extension2, extension2}});
 
   {
-    base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-    provider().scheduler().ScheduleAddValidatedOriginAssociations(
+    base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+    provider().scheduler().UpdateValidatedOriginAssociations(
         app_id, future.GetCallback());
-    ASSERT_EQ(AddValidatedOriginAssociationsResult::kUnvalidatedItemsRemain,
+    ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kUnvalidatedItemsRemain,
               future.Get());
 
     const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
@@ -468,7 +480,8 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, RemoveStaleScopeExtension) {
   }
 }
 
-TEST_F(AddValidatedOriginAssociationsCommandTest, RemoveStaleMigrationSource) {
+TEST_F(UpdateValidatedOriginAssociationsCommandTest,
+       RemoveStaleMigrationSource) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       blink::features::kWebAppMigrationApi);
@@ -493,7 +506,7 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, RemoveStaleMigrationSource) {
   }
 
   fake_origin_association_manager()->set_pass_through(false);
-  clock().Advance(base::Days(1) + base::Seconds(1));
+  clock().Advance(base::Days(10) + base::Seconds(1));
 
   // First validation: both migration sources are valid.
   fake_origin_association_manager()->SetMigrationSourcesData(
@@ -503,33 +516,109 @@ TEST_F(AddValidatedOriginAssociationsCommandTest, RemoveStaleMigrationSource) {
       .Times(2);
 
   {
-    base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-    provider().scheduler().ScheduleAddValidatedOriginAssociations(
+    base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+    provider().scheduler().UpdateValidatedOriginAssociations(
         app_id, future.GetCallback());
-    ASSERT_EQ(AddValidatedOriginAssociationsResult::kSuccess, future.Get());
+    ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kSuccess, future.Get());
 
     const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
     EXPECT_EQ(app->validated_migration_sources().size(), 2u);
   }
 
   // Advance clock to bypass throttling.
-  clock().Advance(base::Days(1) + base::Seconds(1));
+  clock().Advance(base::Days(10) + base::Seconds(1));
 
   // Second validation: migration_source1 is no longer valid.
   fake_origin_association_manager()->SetMigrationSourcesData(
       {migration_source2.manifest_id()});
 
   {
-    base::test::TestFuture<AddValidatedOriginAssociationsResult> future;
-    provider().scheduler().ScheduleAddValidatedOriginAssociations(
+    base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+    provider().scheduler().UpdateValidatedOriginAssociations(
         app_id, future.GetCallback());
-    ASSERT_EQ(AddValidatedOriginAssociationsResult::kUnvalidatedItemsRemain,
+    ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kUnvalidatedItemsRemain,
               future.Get());
 
     const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
     EXPECT_EQ(app->validated_migration_sources().size(), 1u);
     EXPECT_EQ(migration_source2, *app->validated_migration_sources().begin());
   }
+}
+
+TEST_F(UpdateValidatedOriginAssociationsCommandTest, Offline) {
+  auto mock_network_change_notifier =
+      std::make_unique<net::test::ScopedMockNetworkChangeNotifier>();
+  mock_network_change_notifier->mock_network_change_notifier()
+      ->SetConnectionType(net::NetworkChangeNotifier::CONNECTION_NONE);
+
+  GURL start_url("https://example.com/");
+  ScopeExtensionInfo extension = ScopeExtensionInfo::CreateForScope(
+      GURL("https://example.org/scope"), /*has_origin_wildcard=*/false);
+
+  webapps::AppId app_id = InstallApp(start_url, {extension});
+
+  base::HistogramTester tester;
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+  provider().scheduler().UpdateValidatedOriginAssociations(
+      app_id, future.GetCallback());
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kOffline, future.Get());
+
+  tester.ExpectUniqueSample("WebApp.ValidatedOriginAssociations.Updated",
+                            UpdateValidatedOriginAssociationsResult::kOffline,
+                            1);
+
+  const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
+  EXPECT_TRUE(app->validated_scope_extensions().empty());
+}
+
+TEST_F(UpdateValidatedOriginAssociationsCommandTest, IWARateLimiting) {
+  GURL start_url(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/");
+  ScopeExtensionInfo extension = ScopeExtensionInfo::CreateForScope(
+      GURL("https://example.org/scope"), /*has_origin_wildcard=*/false);
+
+  fake_origin_association_manager()->set_pass_through(false);
+
+  auto app = test::CreateWebApp(start_url);
+  app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          *IwaVersion::Create("1.0.0"))
+          .Build());
+  app->SetScopeExtensions({extension});
+  app->SetOriginAssociationLastValidationCheckTime(clock().Now());
+
+  webapps::AppId app_id = app->app_id();
+  {
+    ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
+    update->CreateApp(std::move(app));
+  }
+
+  // Throttled if checked within 1 day.
+  clock().Advance(base::Hours(12));
+
+  base::HistogramTester tester;
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+  provider().scheduler().UpdateValidatedOriginAssociations(
+      app_id, future.GetCallback());
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kThrottled, future.Get());
+  tester.ExpectUniqueSample("WebApp.ValidatedOriginAssociations.Updated",
+                            UpdateValidatedOriginAssociationsResult::kThrottled,
+                            1);
+
+  // Allowed after 1 day.
+  fake_origin_association_manager()->set_pass_through(true);
+  clock().Advance(base::Days(1) + base::Seconds(1));
+
+  base::HistogramTester tester2;
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future2;
+  provider().scheduler().UpdateValidatedOriginAssociations(
+      app_id, future2.GetCallback());
+  EXPECT_EQ(UpdateValidatedOriginAssociationsResult::kSuccess, future2.Get());
+  tester2.ExpectUniqueSample("WebApp.ValidatedOriginAssociations.Updated",
+                             UpdateValidatedOriginAssociationsResult::kSuccess,
+                             1);
 }
 
 }  // namespace web_app

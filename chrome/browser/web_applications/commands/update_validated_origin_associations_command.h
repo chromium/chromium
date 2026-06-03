@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_ADD_VALIDATED_ORIGIN_ASSOCIATIONS_COMMAND_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_ADD_VALIDATED_ORIGIN_ASSOCIATIONS_COMMAND_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_UPDATE_VALIDATED_ORIGIN_ASSOCIATIONS_COMMAND_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_UPDATE_VALIDATED_ORIGIN_ASSOCIATIONS_COMMAND_H_
 
 #include <memory>
 
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/scheduler/add_validated_origin_associations_result.h"
+#include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 
 namespace web_app {
@@ -21,13 +21,16 @@ namespace web_app {
 // effectively treating server side values as source of truth,
 // meaning previously validated items might be removed, if server
 // is no longer returning them.
-class AddValidatedOriginAssociationsCommand
-    : public WebAppCommand<AppLock, AddValidatedOriginAssociationsResult> {
+// The revalidation logic runs once every 24 hours for a single
+// app, and does not run if the user is offline.
+class UpdateValidatedOriginAssociationsCommand
+    : public WebAppCommand<AppLock, UpdateValidatedOriginAssociationsResult> {
  public:
-  AddValidatedOriginAssociationsCommand(
+  UpdateValidatedOriginAssociationsCommand(
       const webapps::AppId& app_id,
-      base::OnceCallback<void(AddValidatedOriginAssociationsResult)> callback);
-  ~AddValidatedOriginAssociationsCommand() override;
+      base::OnceCallback<void(UpdateValidatedOriginAssociationsResult)>
+          callback);
+  ~UpdateValidatedOriginAssociationsCommand() override;
 
  protected:
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
@@ -38,9 +41,9 @@ class AddValidatedOriginAssociationsCommand
 
   webapps::AppId app_id_;
   std::unique_ptr<AppLock> lock_;
-  base::WeakPtrFactory<AddValidatedOriginAssociationsCommand> weak_factory_{
+  base::WeakPtrFactory<UpdateValidatedOriginAssociationsCommand> weak_factory_{
       this};
 };
 
 }  //  namespace web_app
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_ADD_VALIDATED_ORIGIN_ASSOCIATIONS_COMMAND_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_UPDATE_VALIDATED_ORIGIN_ASSOCIATIONS_COMMAND_H_

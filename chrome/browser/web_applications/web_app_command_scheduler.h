@@ -16,7 +16,6 @@
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
-#include "chrome/browser/web_applications/scheduler/add_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/scheduler/apply_manifest_migration_result.h"
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/web_applications/scheduler/isolated_web_app_apply_update_result.h"
 #include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
 #include "chrome/browser/web_applications/scheduler/navigate_and_trigger_install_dialog_result.h"
+#include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/scheduler/web_app_install_from_migrate_from_field_result.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -727,9 +727,10 @@ class WebAppCommandScheduler {
       base::OnceClosure callback,
       const base::Location& location = FROM_HERE);
 
-  void ScheduleAddValidatedOriginAssociations(
+  void UpdateValidatedOriginAssociations(
       const webapps::AppId& app_id,
-      base::OnceCallback<void(AddValidatedOriginAssociationsResult)> callback,
+      base::OnceCallback<void(UpdateValidatedOriginAssociationsResult)>
+          callback,
       const base::Location& location = FROM_HERE);
 
   // Schedules a command to install a web app from a "migrate_from" field in

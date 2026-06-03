@@ -16,7 +16,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
-#include "chrome/browser/web_applications/scheduler/add_validated_origin_associations_result.h"
+#include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -146,14 +146,33 @@ void LaunchWebAppCommand::OnAppLaunched(
     base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer container,
     base::Value debug_value) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableScopeExtensionsForIsolatedWebApps) &&
-      container == apps::LaunchContainer::kLaunchContainerWindow &&
-      lock_->registrar().AppMatches(
-          app_id_,
-          WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp())) {
-    provider_->scheduler().ScheduleAddValidatedOriginAssociations(
-        app_id_, base::DoNothing());
+  const WebApp* app = lock_->registrar().GetAppById(app_id_);
+  bool is_iwa = lock_->registrar().AppMatches(
+      app_id_,
+      WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp());
+  bool has_scope_extensions = app && !app->scope_extensions().empty();
+  bool has_migration_sources_for_revalidation =
+      base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi) &&
+      app && !app->unvalidated_migration_sources().empty();
+
+  bool should_validate = false;
+  if (is_iwa) {
+    // Retrigger validation for IWAs if scope extensions are enabled for IWAs,
+    // and it is set to open in a new container window.
+    should_validate =
+        base::FeatureList::IsEnabled(
+            blink::features::kWebAppEnableScopeExtensionsForIsolatedWebApps) &&
+        container == apps::LaunchContainer::kLaunchContainerWindow;
+  } else {
+    // PWAs should retrigger validation regardless of launch container, if they
+    // have scope extensions and/or migration sources.
+    should_validate =
+        (has_scope_extensions || has_migration_sources_for_revalidation);
+  }
+
+  if (should_validate) {
+    provider_->scheduler().UpdateValidatedOriginAssociations(app_id_,
+                                                             base::DoNothing());
   }
 
   GetMutableDebugValue().Set("launch_web_app_debug_value",

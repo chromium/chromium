@@ -27,7 +27,6 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/commands/add_validated_origin_associations_command.h"
 #include "chrome/browser/web_applications/commands/app_migration_data_read_command.h"
 #include "chrome/browser/web_applications/commands/app_update_data_read_command.h"
 #include "chrome/browser/web_applications/commands/apply_manifest_migration_command.h"
@@ -57,6 +56,7 @@
 #include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
 #include "chrome/browser/web_applications/commands/update_protocol_handler_approval_command.h"
+#include "chrome/browser/web_applications/commands/update_validated_origin_associations_command.h"
 #include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
 #include "chrome/browser/web_applications/commands/web_app_install_from_migrate_from_field_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
@@ -81,10 +81,10 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
-#include "chrome/browser/web_applications/scheduler/add_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
 #include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
+#include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -880,12 +880,12 @@ void WebAppCommandScheduler::ScheduleResolveWebAppPendingMigrationInfo(
       location);
 }
 
-void WebAppCommandScheduler::ScheduleAddValidatedOriginAssociations(
+void WebAppCommandScheduler::UpdateValidatedOriginAssociations(
     const webapps::AppId& app_id,
-    base::OnceCallback<void(AddValidatedOriginAssociationsResult)> callback,
+    base::OnceCallback<void(UpdateValidatedOriginAssociationsResult)> callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<AddValidatedOriginAssociationsCommand>(
+      std::make_unique<UpdateValidatedOriginAssociationsCommand>(
           app_id, std::move(callback)),
       location);
 }

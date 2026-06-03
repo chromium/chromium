@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SCHEDULER_ADD_VALIDATED_ORIGIN_ASSOCIATIONS_RESULT_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_SCHEDULER_ADD_VALIDATED_ORIGIN_ASSOCIATIONS_RESULT_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SCHEDULER_UPDATE_VALIDATED_ORIGIN_ASSOCIATIONS_RESULT_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_SCHEDULER_UPDATE_VALIDATED_ORIGIN_ASSOCIATIONS_RESULT_H_
 
 namespace web_app {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// LINT.IfChange(AddValidatedOriginAssociationsResult)
-enum class AddValidatedOriginAssociationsResult {
+// LINT.IfChange(UpdateValidatedOriginAssociationsResult)
+enum class UpdateValidatedOriginAssociationsResult {
   // Origin associations were fetched succcesfully, validated and stored in
   // web_app.
   kSuccess = 0,
@@ -30,10 +30,12 @@ enum class AddValidatedOriginAssociationsResult {
   kUnvalidatedItemsRemain = 4,
   // The command was shutdown and the execution did not finish.
   kShutdown = 5,
-  kMaxValue = kShutdown
+  // Revalidation was skipped because the user is offline.
+  kOffline = 6,
+  kMaxValue = kOffline
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AddValidatedOriginAssociationsResult)
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:UpdateValidatedOriginAssociationsResult)
 
 }  //  namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SCHEDULER_ADD_VALIDATED_ORIGIN_ASSOCIATIONS_RESULT_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SCHEDULER_UPDATE_VALIDATED_ORIGIN_ASSOCIATIONS_RESULT_H_

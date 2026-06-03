@@ -233,19 +233,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="9" label="Rejected Due to Decoder Shutdown"/>
 </enum>
 
-<!-- LINT.IfChange(AddValidatedOriginAssociationsResult) -->
-
-<enum name="AddValidatedOriginAssociationsResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="(Obsolete) NotNeeded"/>
-  <int value="2" label="Throttled"/>
-  <int value="3" label="WebAppNotInstalled"/>
-  <int value="4" label="UnvalidatedItemsRemain"/>
-  <int value="5" label="Shutdown"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/web_applications/scheduler/add_validated_origin_associations_result.h:AddValidatedOriginAssociationsResult) -->
-
 <enum name="AdsInterventionStatus">
   <int value="0" label="Expired"/>
   <int value="1" label="Would Block"/>
@@ -26941,6 +26928,20 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Delta"/>
   <int value="2" label="Forced Full"/>
 </enum>
+
+<!-- LINT.IfChange(UpdateValidatedOriginAssociationsResult) -->
+
+<enum name="UpdateValidatedOriginAssociationsResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="(Obsolete) NotNeeded"/>
+  <int value="2" label="Throttled"/>
+  <int value="3" label="WebAppNotInstalled"/>
+  <int value="4" label="UnvalidatedItemsRemain"/>
+  <int value="5" label="Shutdown"/>
+  <int value="6" label="Skipped due to offline"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h:UpdateValidatedOriginAssociationsResult) -->
 
 <enum name="UpgradeDetectorRollbackReason">
   <int value="0" label="Channel switch to more stable channel"/>
