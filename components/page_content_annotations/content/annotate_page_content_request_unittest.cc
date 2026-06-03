@@ -121,6 +121,12 @@ class TestPDFDocumentHelperClient : public pdf::PDFDocumentHelperClient {
 };
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+class ExampleObserver : public PageContentExtractionService::Observer {
+ public:
+  void OnPageContentExtracted(content::Page& page,
+                              PageContent page_content) override {}
+};
+
 class AnnotatePageContentRequestTest
     : public content::RenderViewHostTestHarness,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
@@ -936,6 +942,164 @@ TEST_P(AnnotatePageContentRequestTest,
   EXPECT_FALSE(eligibility_future.Get().has_value());
 }
 
+TEST_P(AnnotatePageContentRequestTest, GetContent_OnHiddenMode) {
+  SetTriggeringMode("on_hidden");
+
+  int fetch_count = 0;
+  // Override request to count successful fetches.
+  request_ = nullptr;
+  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
+  AnnotatedPageContentRequest::CreateForWebContents(
+      web_contents(), extraction_service(),
+      base::BindRepeating(
+          [](int* count, content::WebContents&,
+             const FetchPageContextOptions& options,
+             std::unique_ptr<FetchPageProgressListener>,
+             FetchPageContextResultCallback callback) {
+            (*count)++;
+            auto result = std::make_unique<FetchPageContextResult>();
+            auto page_content =
+                std::make_unique<optimization_guide::AIPageContentResult>();
+            result->annotated_page_content_result =
+                PageContentResultWithEndTime(std::move(*page_content));
+            std::move(callback).Run(std::move(result));
+          },
+          &fetch_count),
+      base::BindRepeating([](content::WebContents* web_contents) {
+        return std::make_optional(reinterpret_cast<int64_t>(web_contents));
+      }));
+  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
+
+  SimulatePageLoad();
+
+  // No extraction should have happened yet (visible in on_hidden mode).
+  EXPECT_EQ(fetch_count, 0);
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future;
+  // Call GetContentAndEligibilityAsync. It should trigger extraction.
+  request_->GetContentAndEligibilityAsync(content_future.GetCallback());
+
+  // It should wait and then resolve with success.
+  EXPECT_TRUE(content_future.Get().has_value());
+  EXPECT_EQ(fetch_count, 1);
+
+  // Now it is cached. Call again, should be ready immediately and not fetch
+  // again.
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future2;
+  request_->GetContentAndEligibilityAsync(content_future2.GetCallback());
+
+  EXPECT_TRUE(content_future2.IsReady());
+  EXPECT_TRUE(content_future2.Get().has_value());
+  EXPECT_EQ(fetch_count, 1);
+}
+
+TEST_P(AnnotatePageContentRequestTest, GetContent_NoRetryOnFailure) {
+  // Ensures extraction is enabled.
+  SetTriggeringMode("on_load");
+
+  int fetch_count = 0;
+  // Override the request with a failing fetcher that counts calls.
+  request_ = nullptr;
+  web_contents()->RemoveUserData(AnnotatedPageContentRequest::UserDataKey());
+  AnnotatedPageContentRequest::CreateForWebContents(
+      web_contents(), extraction_service(),
+      base::BindRepeating(
+          [](int* count, content::WebContents&, const FetchPageContextOptions&,
+             std::unique_ptr<FetchPageProgressListener>,
+             FetchPageContextResultCallback callback) {
+            (*count)++;
+            FetchPageContextErrorDetails error;
+            error.error_code = FetchPageContextError::kUnknown;
+            std::move(callback).Run(base::unexpected(error));
+          },
+          &fetch_count),
+      base::BindRepeating([](content::WebContents* web_contents) {
+        return std::make_optional(reinterpret_cast<int64_t>(web_contents));
+      }));
+  request_ = AnnotatedPageContentRequest::FromWebContents(web_contents());
+
+  SimulatePageLoad();
+
+  // First call: extraction is pending (scheduled).
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future;
+  request_->GetContentAndEligibilityAsync(content_future.GetCallback());
+
+  // It should wait and then resolve with nullopt.
+  EXPECT_FALSE(content_future.Get().has_value());
+  EXPECT_EQ(fetch_count, 1);
+
+  // Second call: it failed before. It should not retry.
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future2;
+  request_->GetContentAndEligibilityAsync(content_future2.GetCallback());
+
+  // It should resolve immediately.
+  EXPECT_TRUE(content_future2.IsReady());
+  EXPECT_FALSE(content_future2.Get().has_value());
+  EXPECT_EQ(fetch_count, 1);
+}
+
+TEST_P(AnnotatePageContentRequestTest, GetContent_BeforeExtraction) {
+  SetTriggeringMode("on_load");
+
+  SimulateNavigation(GURL("https://example.com/"));
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future;
+  request_->GetContentAndEligibilityAsync(content_future.GetCallback());
+
+  EXPECT_FALSE(content_future.IsReady());
+
+  SimulatePageStablization();
+  WaitForExtraction();
+
+  EXPECT_TRUE(content_future.Get().has_value());
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+}
+
+TEST_P(AnnotatePageContentRequestTest, GetContent_AlreadyExtracted) {
+  SetTriggeringMode("on_load");
+
+  // Load the page and let the automatic run finish extraction.
+  SimulatePageLoad();
+  WaitForExtraction();
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future;
+  request_->GetContentAndEligibilityAsync(content_future.GetCallback());
+
+  // Since it's already extracted, it should resolve immediately.
+  EXPECT_TRUE(content_future.IsReady());
+  EXPECT_TRUE(content_future.Get().has_value());
+}
+
+TEST_P(AnnotatePageContentRequestTest,
+       GetContent_WaitsForOnDemandEvenWhenAutomaticExtractionDisabled) {
+  // Explicitly disable the automatic extraction feature flag, and ensure there
+  // are zero observers.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAnnotatedPageContentExtraction);
+
+  SimulateNavigation(GURL("https://example.com/"));
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future;
+  request_->GetContentAndEligibilityAsync(content_future.GetCallback());
+  EXPECT_FALSE(content_future.IsReady());
+
+  // The pending call ensures an extraction is run after the page settles.
+  SimulatePageStablization();
+  WaitForExtraction();
+
+  // Verify that the request completed successfully.
+  EXPECT_TRUE(content_future.Get().has_value());
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+}
+
 // Async page content getter methods do not support PDF pages.
 // TODO(b/487632737): Support on-demand PDF text extraction.
 TEST_P(AnnotatePageContentRequestTest, GetAsyncOnPdfPages) {
@@ -1629,11 +1793,6 @@ TEST_P(AnnotatePageContentRequestTest, AboutBlankNavigation_NoExtraction) {
   EXPECT_EQ(extraction_service().extraction_count(), 0);
 }
 
-class ExampleObserver : public PageContentExtractionService::Observer {
- public:
-  void OnPageContentExtracted(content::Page& page,
-                              PageContent page_content) override {}
-};
 
 TEST_P(AnnotatePageContentRequestTest, OnHideFix_FeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;

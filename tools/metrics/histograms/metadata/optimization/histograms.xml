@@ -2399,7 +2399,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the on-demand page content extraction request was allowed,
     and the reason if it was. Recorded once per on-demand page content
-    extraction request.
+    extraction request, including calls using `trigger_if_not_cached` when an
+    initial extraction has not yet been scheduled.
   </summary>
 </histogram>
 
@@ -2410,7 +2411,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether an on-demand page content extraction request was requested
     on a PDF page. Content extraction is not performed for PDFs. Recorded once
-    per on-demand request.
+    per on-demand request, including calls using `trigger_if_not_cached` when an
+    initial extraction has not yet been scheduled.
   </summary>
 </histogram>
 
@@ -2421,7 +2423,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the duration from when an on-demand page content extraction is
     requested until the callback is executed with the result. Recorded once per
-    on-demand request.
+    on-demand request, including calls using `trigger_if_not_cached` when an
+    initial extraction has not yet been scheduled.
   </summary>
 </histogram>
 
@@ -2446,7 +2449,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the state of the AnnotatedPageContentRequest at the moment an
     on-demand extraction is requested. Recorded once per on-demand page content
-    extraction request, excluding PDFs.
+    extraction request (including calls using `trigger_if_not_cached` when an
+    initial extraction has not yet been scheduled), excluding PDFs.
   </summary>
 </histogram>
 
@@ -2457,7 +2461,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether an on-demand page content extraction request successfully
     returned a valid ExtractedPageContentResult. Recorded once per on-demand
-    request, excluding PDFs.
+    request (including calls using `trigger_if_not_cached` when an initial
+    extraction has not yet been scheduled), excluding PDFs.
   </summary>
 </histogram>
 

@@ -929,6 +929,21 @@ void AnnotatedPageContentRequest::GetServerUploadEligibilityAsync(
   std::move(callback).Run(GetServerUploadEligibility());
 }
 
+void AnnotatedPageContentRequest::GetContentAndEligibilityAsync(
+    GetExtractedPageContentAndEligibilityCallback callback) {
+  // Attempt on-demand extraction if the page has navigated, but the initial
+  // extraction hasn't been triggered yet.
+  if (lifecycle_ == Lifecycle::kNavigated) {
+    base::UmaHistogramBoolean(
+        "OptimizationGuide.PageContentExtraction.IsCacheHit", false);
+    RefreshExtractedPageContentAndEligibilityForPage(std::move(callback));
+    return;
+  }
+
+  // Otherwise, the previous or scheduled extraction is sufficient.
+  GetCachedContentAndEligibilityAsync(std::move(callback));
+}
+
 void AnnotatedPageContentRequest::
     RefreshExtractedPageContentAndEligibilityForPage(
         GetExtractedPageContentAndEligibilityCallback callback) {

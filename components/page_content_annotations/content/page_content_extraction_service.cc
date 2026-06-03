@@ -259,13 +259,19 @@ void PageContentExtractionService::
 void PageContentExtractionService::
     GetExtractedPageContentAndEligibilityForPageAsync(
         content::Page& page,
-        GetExtractedPageContentAndEligibilityCallback callback) {
+        GetExtractedPageContentAndEligibilityCallback callback,
+        bool trigger_if_not_cached) {
   AnnotatedPageContentRequest* request =
       GetAnnotatedPageContentRequestFromPage(page);
-  if (request) {
-    request->GetCachedContentAndEligibilityAsync(std::move(callback));
-  } else {
+  if (!request) {
     std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  if (trigger_if_not_cached) {
+    request->GetContentAndEligibilityAsync(std::move(callback));
+  } else {
+    request->GetCachedContentAndEligibilityAsync(std::move(callback));
   }
 }
 

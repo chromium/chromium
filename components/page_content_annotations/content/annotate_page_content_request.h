@@ -117,11 +117,17 @@ class AnnotatedPageContentRequest
   // These methods will resolve synchronously if the extraction is already
   // complete, or wait for the initial extraction to finish if there is one
   // pending. If the extraction request is cleared or reset (e.g. from a
-  // navigation or destruction), the callbacks will resolve with std::nullopt.
+  // navigation or destruction), or if the initial extraction wasn't triggered,
+  // the callbacks will resolve with std::nullopt.
   void GetCachedContentAndEligibilityAsync(
       GetExtractedPageContentAndEligibilityCallback callback);
   void GetServerUploadEligibilityAsync(
       GetServerUploadEligibilityCallback callback);
+
+  // Equivalent to GetCachedContentAndEligibilityAsync, except that if the
+  // initial extraction has not yet been triggered, it will be.
+  void GetContentAndEligibilityAsync(
+      GetExtractedPageContentAndEligibilityCallback callback);
 
   // Extracts a new APC for `page` and computes its eligibility for server
   // upload, and caches the new result. It will wait for the initial

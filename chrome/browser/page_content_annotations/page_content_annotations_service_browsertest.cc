@@ -49,6 +49,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
+#include "components/page_content_annotations/content/annotate_page_content_request.h"
 #include "components/page_content_annotations/content/annotate_page_content_request_metrics.h"
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
@@ -2110,11 +2111,63 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTestHidden,
   base::test::TestFuture<std::optional<ExtractedPageContentResult>>
       content_future;
   service->GetExtractedPageContentAndEligibilityForPageAsync(
-      web_contents->GetPrimaryPage(), content_future.GetCallback());
+      web_contents->GetPrimaryPage(), content_future.GetCallback(),
+      /*trigger_if_not_cached=*/false);
 
   // Return nullopt as no extraction is scheduled (so the wait is indefinite)
   EXPECT_TRUE(content_future.IsReady());
   EXPECT_FALSE(content_future.Get().has_value());
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTestHidden,
+                       AsyncGetterTriggersExtractionWhenNotCached) {
+  FakeExtractionServiceObserver observer;
+  auto* service =
+      PageContentExtractionServiceFactory::GetForProfile(browser()->profile());
+  observer.Observe(service);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url(embedded_test_server()->GetURL("a.test",
+                                          "/optimization_guide/hello.html"));
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+
+  // Verify it is not cached initially (since triggering mode is on_hidden and
+  // tab is visible).
+  ASSERT_FALSE(service->GetExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage()));
+
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future;
+  // Call the public async getter without arguments. It should trigger
+  // extraction (trigger_if_not_cached defaults to true).
+  service->GetExtractedPageContentAndEligibilityForPageAsync(
+      web_contents->GetPrimaryPage(), content_future.GetCallback());
+
+  // Extraction is async.
+  EXPECT_FALSE(content_future.IsReady());
+
+  // Wait for it.
+  std::optional<ExtractedPageContentResult> result = content_future.Get();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result->page_content->data.has_main_frame_data());
+  EXPECT_EQ("Test Page", result->page_content->data.main_frame_data().title());
+
+  // Now it should be cached.
+  EXPECT_TRUE(service->GetExtractedPageContentAndEligibilityForPage(
+      web_contents->GetPrimaryPage()));
+
+  // Call again, should be ready immediately (cached).
+  base::test::TestFuture<std::optional<ExtractedPageContentResult>>
+      content_future2;
+  service->GetExtractedPageContentAndEligibilityForPageAsync(
+      web_contents->GetPrimaryPage(), content_future2.GetCallback());
+
+  EXPECT_TRUE(content_future2.IsReady());
+  EXPECT_TRUE(content_future2.Get().has_value());
+  EXPECT_EQ(
+      "Test Page",
+      content_future2.Get()->page_content->data.main_frame_data().title());
 }
 
 INSTANTIATE_TEST_SUITE_P(

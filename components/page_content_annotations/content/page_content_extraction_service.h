@@ -158,13 +158,16 @@ class PageContentExtractionService : public KeyedService,
   // Asynchronous versions of the getter methods above.
   // These methods will resolve immediately if the extraction is already
   // complete, or wait for the initial extraction to finish if there is one
-  // pending, or is not scheduled to occur. If the extraction request is
-  // cleared or reset (e.g. from a navigation or destruction), the callbacks
-  // will resolve with std::nullopt.
+  // pending. If the extraction request is cleared or reset (e.g. from a
+  // navigation or destruction), the callbacks will resolve with std::nullopt.
+  // If the initial extraction has not been triggered, it will be iff
+  // `trigger_if_not_cached` is true. (This is not available for
+  // GetServerUploadEligibilityForPageAsync.)
   // Virtual for testing.
   virtual void GetExtractedPageContentAndEligibilityForPageAsync(
       content::Page& page,
-      GetExtractedPageContentAndEligibilityCallback callback);
+      GetExtractedPageContentAndEligibilityCallback callback,
+      bool trigger_if_not_cached = true);
   virtual void GetServerUploadEligibilityForPageAsync(
       content::Page& page,
       GetServerUploadEligibilityCallback callback);
