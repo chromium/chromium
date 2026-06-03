@@ -30,6 +30,7 @@
 #include "content/browser/renderer_host/navigation_metrics_utils.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -37,6 +38,7 @@
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -497,6 +499,16 @@ void RenderFrameProxyHost::RouteMessageEvent(
     const std::optional<url::Origin>& target_origin,
     blink::TransferableMessage message) {
   RenderFrameHostImpl* target_rfh = frame_tree_node()->current_frame_host();
+
+  // Give the embedder a chance to override the target for this postMessage.
+  RenderFrameHost* override_target =
+      GetContentClient()->browser()->GetPostMessageTargetOverride(
+          target_rfh, source_frame_token, source_origin, target_origin);
+  bool was_overridden = (override_target != nullptr);
+  if (override_target) {
+    target_rfh = RenderFrameHostImpl::From(override_target);
+  }
+
   if (!target_rfh->IsRenderFrameLive()) {
     // Check if there is an inner delegate involved; if so target its main
     // frame or otherwise return since there is no point in forwarding the
@@ -569,9 +581,11 @@ void RenderFrameProxyHost::RouteMessageEvent(
   // Only deliver the message if the request came from a RenderFrameHost in the
   // same BrowsingInstance or if this is a message between a guest and its
   // embedder.
+  // If the target was overridden, assume that it can be in a different
+  // BrowsingInstance, so allow this check to pass.
   if (!target_group->IsRelatedSiteInstanceGroup(site_instance_group()) &&
       !is_embedder_to_guest_communication &&
-      !is_guest_to_embedder_communication) {
+      !is_guest_to_embedder_communication && !was_overridden) {
     return;
   }
 
@@ -605,7 +619,11 @@ void RenderFrameProxyHost::RouteMessageEvent(
             ->SynchronizeVisualPropertiesIgnoringPendingAck();
       }
 
-      if (is_embedder_to_guest_communication) {
+      if (was_overridden) {
+        // If the target_rfh was overridden, skip creating a
+        // RenderFrameProxyHost because a persistent communication channel
+        // shouldn't be persisted after the message is sent.
+      } else if (is_embedder_to_guest_communication) {
         // We create a RenderFrameProxyHost for the embedder in the guest's
         // render process but we intentionally do not expose the embedder's
         // opener chain to it.

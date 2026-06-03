@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
   // Fake a thread link click without necessarily having to open the side panel
   // and negotiate all those moving pieces.
   ui_service->OnThreadLinkClicked(citation_url, task.GetTaskId(), nullptr,
-                                  browser()->GetWeakPtr());
+                                  browser()->GetWeakPtr(), url::Origin());
 
   // Wait for the TextHighlighterManager to be created.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceBrowserTest,
   // Fake a thread link click without necessarily having to open the side panel
   // and negotiate all those moving pieces.
   ui_service->OnThreadLinkClicked(citation_url, task.GetTaskId(), nullptr,
-                                  browser()->GetWeakPtr());
+                                  browser()->GetWeakPtr(), url::Origin());
 
   // Wait for the new tab to be created.
   EXPECT_TRUE(base::test::RunUntil(
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksVideoCitationsBrowserTest,
   GURL youtube_url("https://www.youtube.com/watch?v=123");
   // Fake a thread link click.
   test_ui_service->OnThreadLinkClicked(youtube_url, task.GetTaskId(), nullptr,
-                                       browser()->GetWeakPtr());
+                                       browser()->GetWeakPtr(), url::Origin());
 
   // Ensure the tab count hasn't changed.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);

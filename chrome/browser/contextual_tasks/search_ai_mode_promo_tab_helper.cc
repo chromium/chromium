@@ -37,6 +37,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "url/origin.h"
 
 namespace contextual_tasks {
 namespace {
@@ -134,7 +135,8 @@ class ContextualTaskNavigationObserver
 
     if (contextual_tasks_ui_service_) {
       contextual_tasks_ui_service_->OnThreadLinkClicked(
-          target_url_, task_id, tab->GetWeakPtr(), browser->GetWeakPtr());
+          target_url_, task_id, tab->GetWeakPtr(), browser->GetWeakPtr(),
+          url::Origin());
     }
     NotifyComplete();
   }

@@ -11,11 +11,9 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
+#include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
-
-namespace content {
-class WebContents;
-}
 
 namespace contextual_tasks {
 
@@ -70,10 +68,16 @@ class ContextualTasksWindowTrackerManager : public TabListInterfaceObserver {
       content::WebContents* source_contents) const;
 
   // Matches a pending tracker for the given URL and associates it with the
-  // source_contents. Returns the matched tracker, or nullptr if no match.
+  // `source_contents` and the `message_proxy_web_contents`. Returns the matched
+  // tracker, or nullptr if no match.
   ContextualTasksWindowTracker* MatchAndAssociatePendingTracker(
       const GURL& url,
-      content::WebContents* source_contents);
+      content::WebContents* source_contents,
+      std::unique_ptr<content::WebContents> message_proxy_web_contents);
+
+  // Finds the tracker that corresponds to the given message proxy WebContents.
+  ContextualTasksWindowTracker* FindTrackerByMessageProxy(
+      content::WebContents* proxy_contents);
 
   // For testing.
   const std::vector<std::unique_ptr<ContextualTasksWindowTracker>>&

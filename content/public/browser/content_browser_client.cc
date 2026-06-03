@@ -1800,6 +1800,14 @@ RenderFrameHost* ContentBrowserClient::GetEffectiveTopFrameForPartitioning(
   return nullptr;
 }
 
+RenderFrameHost* ContentBrowserClient::GetPostMessageTargetOverride(
+    RenderFrameHost* target_rfh,
+    const std::optional<blink::LocalFrameToken>& source_frame_token,
+    const url::Origin& source_origin,
+    const std::optional<url::Origin>& target_origin) {
+  return nullptr;
+}
+
 bool ContentBrowserClient::IsCrossOriginSubframeAllowedToShowFilePicker(
     RenderFrameHost* render_frame_host,
     const url::Origin& requesting_origin) {

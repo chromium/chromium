@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -57,8 +58,7 @@ TEST_F(ContextualTasksWindowTrackerTest, TimeoutCallsCallback) {
   base::WeakPtr<ContextualTasksWindowTracker> callback_tracker_arg;
 
   auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-      task_id_, expected_url_, nullptr,
-
+      task_id_, expected_url_, content::GlobalRenderFrameHostToken(), nullptr,
       base::BindOnce(
           [](bool* called, base::WeakPtr<ContextualTasksWindowTracker>* arg,
              base::WeakPtr<ContextualTasksWindowTracker> t) {
@@ -80,8 +80,7 @@ TEST_F(ContextualTasksWindowTrackerTest, GuestWindowDestroyedCallsCallback) {
   bool callback_called = false;
 
   auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-      task_id_, expected_url_, nullptr,
-
+      task_id_, expected_url_, content::GlobalRenderFrameHostToken(), nullptr,
       base::BindOnce(
           [](bool* called, base::WeakPtr<ContextualTasksWindowTracker>) {
             *called = true;

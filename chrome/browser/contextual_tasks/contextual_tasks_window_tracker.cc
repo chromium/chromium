@@ -8,6 +8,7 @@
 #include "components/omnibox/common/logger.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace contextual_tasks {
@@ -15,13 +16,14 @@ namespace contextual_tasks {
 ContextualTasksWindowTracker::ContextualTasksWindowTracker(
     const ContextualTaskId& task_id,
     const GURL& expected_url,
-    base::WeakPtr<content::WebContents> initiator_contents,
+    content::GlobalRenderFrameHostToken initiator_rfh_token,
+    base::WeakPtr<content::WebContents> webui_contents,
     base::OnceCallback<void(base::WeakPtr<ContextualTasksWindowTracker>)>
         on_closed_callback)
     : task_id_(task_id),
       expected_url_(expected_url),
-      initiator_contents_(initiator_contents),
-
+      initiator_rfh_token_(initiator_rfh_token),
+      webui_contents_(webui_contents),
       on_closed_callback_(std::move(on_closed_callback)) {
   timeout_timer_.Start(
       FROM_HERE, base::Seconds(10),
@@ -33,6 +35,18 @@ ContextualTasksWindowTracker::ContextualTasksWindowTracker(
 }
 
 ContextualTasksWindowTracker::~ContextualTasksWindowTracker() = default;
+
+base::WeakPtr<content::WebContents>
+ContextualTasksWindowTracker::initiator_contents() const {
+  auto* rfh = GetInitiatorFrame();
+  return rfh ? content::WebContents::FromRenderFrameHost(rfh)->GetWeakPtr()
+             : nullptr;
+}
+
+content::RenderFrameHost* ContextualTasksWindowTracker::GetInitiatorFrame()
+    const {
+  return content::RenderFrameHost::FromFrameToken(initiator_rfh_token_);
+}
 
 void ContextualTasksWindowTracker::SetTabWebContents(
     content::WebContents* web_contents) {
@@ -81,6 +95,11 @@ void ContextualTasksWindowTracker::OnWindowClosed() {
 void ContextualTasksWindowTracker::SetOpenURLParams(
     const content::OpenURLParams& params) {
   open_url_params_ = std::make_unique<content::OpenURLParams>(params);
+}
+
+void ContextualTasksWindowTracker::SetMessageProxyWebContents(
+    std::unique_ptr<content::WebContents> contents) {
+  message_proxy_web_contents_ = std::move(contents);
 }
 
 const content::OpenURLParams* ContextualTasksWindowTracker::open_url_params()
