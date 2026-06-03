@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/base/logging.h"
