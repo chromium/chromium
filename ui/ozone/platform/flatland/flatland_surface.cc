@@ -241,9 +241,10 @@ void FlatlandSurface::Present(
       CreateOrGetFlatlandIds(primary_plane_pixmap.get(),
                              /*is_primary_plane=*/true)
           .image_id;
-  TRACE_EVENT_BEGIN("viz", "FlatlandSurface::Present",
-                    perfetto::Track::FromPointer(this),
-                    "primary_plane_image_id", primary_plane_image_id.value);
+  TRACE_EVENT_BEGIN(
+      "viz", "FlatlandSurface::Present",
+      perfetto::NamedTrack::FromPointer("ui::FlatlandSurface", this),
+      "primary_plane_image_id", primary_plane_image_id.value);
   child_transforms_[0] = primary_plane_transform_id_;
   flatland_.flatland()->SetContent(primary_plane_transform_id_,
                                    primary_plane_image_id);
@@ -345,9 +346,10 @@ void FlatlandSurface::OnPresentComplete(
     base::TimeTicks actual_presentation_time,
     base::TimeDelta presentation_interval) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  TRACE_EVENT_END("viz", /* FlatlandSurface::Present */
-                  perfetto::Track::FromPointer(this), "image_id",
-                  pending_frames_.front().image_id.value);
+  TRACE_EVENT_END(
+      "viz", /* FlatlandSurface::Present */
+      perfetto::NamedTrack::FromPointer("ui::FlatlandSurface", this),
+      "image_id", pending_frames_.front().image_id.value);
 
   auto& frame = pending_frames_.front();
 

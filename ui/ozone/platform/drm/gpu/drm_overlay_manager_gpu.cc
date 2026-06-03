@@ -26,9 +26,9 @@ DrmOverlayManagerGpu::~DrmOverlayManagerGpu() = default;
 void DrmOverlayManagerGpu::SendOverlayValidationRequest(
     const std::vector<OverlaySurfaceCandidate>& candidates,
     gfx::AcceleratedWidget widget) {
-  TRACE_EVENT_BEGIN("hwoverlays",
-                    "DrmOverlayManagerGpu::SendOverlayValidationRequest",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "hwoverlays", "DrmOverlayManagerGpu::SendOverlayValidationRequest",
+      perfetto::NamedTrack::FromPointer("ui::DrmOverlayManagerGpu", this));
   SetDisplaysConfiguredCallbackIfNecessary();
   drm_thread_proxy_->CheckOverlayCapabilities(
       widget, candidates,
@@ -73,9 +73,10 @@ void DrmOverlayManagerGpu::ReceiveOverlayValidationResponse(
     gfx::AcceleratedWidget widget,
     const std::vector<OverlaySurfaceCandidate>& candidates,
     const std::vector<OverlayStatus>& status) {
-  TRACE_EVENT_END("hwoverlays",
-                  /*"DrmOverlayManagerGpu::SendOverlayValidationRequest"*/
-                  perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END(
+      "hwoverlays",
+      /*"DrmOverlayManagerGpu::SendOverlayValidationRequest"*/ perfetto::
+          NamedTrack::FromPointer("ui::DrmOverlayManagerGpu", this));
 
   UpdateCacheForOverlayCandidates(candidates, widget, status);
 }
