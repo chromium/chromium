@@ -42,8 +42,9 @@ TabSearchButton::TabSearchButton(
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
 
-  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
-  SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
+  SetForegroundFrameActiveColorId(kColorTabSearchButtonCRForegroundFrameActive);
+  SetForegroundFrameInactiveColorId(
+      kColorTabSearchButtonCRForegroundFrameInactive);
   SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
   SetBackgroundFrameInactiveColorId(
       kColorNewTabButtonCRBackgroundFrameInactive);

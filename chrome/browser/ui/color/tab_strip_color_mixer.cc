@@ -195,15 +195,18 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
 
   // TODO (crbug.com/40883407): consolidate the new tab button color ids once
   // the refresh flag is enabled by default.
-  mixer[kColorNewTabButtonCRForegroundFrameActive] = {kColorToolbarButtonIcon};
+  mixer[kColorNewTabButtonCRForegroundFrameActive] = {
+      kColorTabForegroundInactiveFrameActive};
   mixer[kColorNewTabButtonCRForegroundFrameInactive] = {
       kColorToolbarButtonIconInactive};
-  mixer[kColorNewTabButtonCRBackgroundFrameActive] = {kColorToolbar};
-  mixer[kColorNewTabButtonCRBackgroundFrameInactive] = {kColorToolbar};
+  mixer[kColorNewTabButtonCRBackgroundFrameActive] = {
+      kColorTabBackgroundInactiveFrameActive};
+  mixer[kColorNewTabButtonCRBackgroundFrameInactive] = {
+      kColorTabBackgroundInactiveFrameInactive};
   mixer[kColorTabSearchButtonCRForegroundFrameActive] = {
-      kColorToolbarButtonIcon};
+      kColorNewTabButtonCRForegroundFrameActive};
   mixer[kColorTabSearchButtonCRForegroundFrameInactive] = {
-      kColorToolbarButtonIconInactive};
+      kColorNewTabButtonCRForegroundFrameInactive};
   mixer[kColorTabStripComboButtonSeparator] = {ui::kColorSeparator};
   mixer[kColorTabStripControlButtonInkDrop] = ui::SetAlpha(
       kColorNewTabButtonInkDropFrameActive, std::ceil(0.16f * 255.0f));
