@@ -1200,13 +1200,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExtensionAPICannotNavigateDevtools) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
 }
 
-#if BUILDFLAG(IS_MAC)
-// https://crbug.com/41385204
-#define MAYBE_AcceptState DISABLED_AcceptState
-#else
-#define MAYBE_AcceptState AcceptState
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
+// TODO(crbug.com/519444124): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, DISABLED_AcceptState) {
 #if BUILDFLAG(IS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
