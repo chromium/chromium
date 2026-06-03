@@ -1402,3 +1402,105 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ(model->GetIconAt(index.value()), check_icon);
   }
 }
+
+class OmniboxContextMenuControllerContextManagementBrowserTest
+    : public OmniboxContextMenuControllerBrowserTest {
+ public:
+  OmniboxContextMenuControllerContextManagementBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        omnibox::kContextManagementInComposebox);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerContextManagementBrowserTest,
+                       SharedTabsSubmenuDynamicLabel) {
+  // Navigate the initial tab to the popup URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+  auto* web_contents = GetWebContents();
+
+  // Set the popup state to composebox (AIM) so that session handle and
+  // composebox handler are active.
+  auto* omnibox_controller =
+      OmniboxPopupWebContentsHelper::FromWebContents(web_contents)
+          ->get_omnibox_controller();
+  ASSERT_TRUE(omnibox_controller);
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  // Set up an override to construct `MockTabContextualizationController`
+  // for all tabs in this test.
+  ui::UserDataFactory::ScopedOverride controller_override =
+      tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+          base::BindRepeating(
+              [](tabs::TabInterface& tab)
+                  -> std::unique_ptr<lens::TabContextualizationController> {
+                auto mock =
+                    std::make_unique<MockTabContextualizationController>(&tab);
+                EXPECT_CALL(*mock, GetPageContext)
+                    .WillRepeatedly([&tab](
+                                        lens::TabContextualizationController::
+                                            GetPageContextCallback callback) {
+                      auto data = std::make_unique<lens::ContextualInputData>();
+                      data->is_page_context_eligible = true;
+                      data->page_url = tab.GetContents()->GetLastCommittedURL();
+                      data->page_title = "Title";
+                      data->primary_content_type =
+                          lens::MimeType::kAnnotatedPageContent;
+                      std::move(callback).Run(std::move(data));
+                    });
+                return mock;
+              }));
+
+  // Add two tabs.
+  GURL url1(embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url1,
+                                     ui::PAGE_TRANSITION_TYPED,
+                                     /*check_navigation_success=*/false));
+
+  GURL url2(embedded_test_server()->GetURL("/title3.html"));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 2, url2,
+                                     ui::PAGE_TRANSITION_TYPED,
+                                     /*check_navigation_success=*/false));
+
+  tabs::TabInterface* tab1 = browser()->tab_strip_model()->GetTabAtIndex(1);
+  int32_t tab1_id = tab1->GetHandle().raw_value();
+  tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(2);
+  int32_t tab2_id = tab2->GetHandle().raw_value();
+
+  auto owning_window = browser()->window()->GetNativeWindow();
+  auto omnibox_popup_file_selector =
+      std::make_unique<OmniboxPopupFileSelector>(owning_window);
+
+  auto* web_ui = web_contents->GetWebUI();
+  auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  auto* handler = popup_ui->composebox_handler();
+  ASSERT_TRUE(handler);
+
+  // Helper lambda to get the submenu parent item's label.
+  auto get_submenu_label = [&]() {
+    OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
+                                            web_contents);
+    std::optional<size_t> index = controller.menu_model()->GetIndexOfCommandId(
+        IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU);
+    if (index.has_value()) {
+      return controller.menu_model()->GetLabelAt(index.value());
+    }
+    return std::u16string();
+  };
+
+  // 0 tabs selected/checked. Title should be "Add tabs".
+  EXPECT_EQ(get_submenu_label(),
+            l10n_util::GetStringUTF16(IDS_COMPOSE_ADD_TABS));
+
+  // 1 tab selected/checked. Title should be "Sharing 1 tab".
+  handler->AddTabContext(tab1_id, /*delay_upload=*/false, base::DoNothing());
+  EXPECT_EQ(get_submenu_label(), u"Sharing 1 tab");
+
+  // 2 tabs selected/checked. Title should be "Sharing 2 tabs".
+  handler->AddTabContext(tab2_id, /*delay_upload=*/false, base::DoNothing());
+  EXPECT_EQ(get_submenu_label(), u"Sharing 2 tabs");
+}

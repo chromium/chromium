@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/i18n/message_formatter.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -383,8 +384,16 @@ void OmniboxContextMenuController::AddRecentTabItems() {
 
   // Add submenu name and icon.
   if (include_tabs_submenu) {
-    menu_model_->AddSubMenuWithStringIdAndIcon(
-        IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU, IDS_COMPOSE_ADD_TABS,
+    int checked_count = std::ranges::count_if(tabs, &TabInfo::is_checked);
+    std::u16string label;
+    if (checked_count > 0) {
+      label = l10n_util::GetPluralStringFUTF16(IDS_COMPOSE_SHARING_TABS,
+                                               checked_count);
+    } else {
+      label = l10n_util::GetStringUTF16(IDS_COMPOSE_ADD_TABS);
+    }
+    menu_model_->AddSubMenuWithIcon(
+        IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU, label,
         shared_tabs_menu_model_.get(),
         ui::ImageModel::FromVectorIcon(kTabOldIcon, ui::kColorMenuIcon,
                                        ui::SimpleMenuModel::kDefaultIconSize));
@@ -587,14 +596,22 @@ OmniboxContextMenuController::GetRecentTabs() {
     tab_data.url = last_committed_url;
     tab_data.is_active_tab = (tab == tab_strip_model->GetActiveTab());
 
-    auto* composebox_handler = GetOmniboxPopupUI()
-                                   ? GetOmniboxPopupUI()->composebox_handler()
-                                   : nullptr;
-    if (composebox_handler) {
-      tab_data.is_checked = std::ranges::any_of(
-          composebox_handler->selected_tabs,
-          [&](const auto& pair) { return tab_data.tab_id == pair.second; });
+    bool is_checked = false;
+    if (auto omnibox_popup_ui = GetOmniboxPopupUI()) {
+      auto* composebox_handler = omnibox_popup_ui->composebox_handler();
+      if (composebox_handler) {
+        is_checked = std::ranges::any_of(
+            composebox_handler->selected_tabs,
+            [&](const auto& pair) { return tab_data.tab_id == pair.second; });
+      }
+      auto* omnibox_handler = omnibox_popup_ui->omnibox_handler();
+      if (!is_checked && omnibox_handler) {
+        is_checked = std::ranges::any_of(
+            omnibox_handler->selected_tabs,
+            [&](const auto& pair) { return tab_data.tab_id == pair.second; });
+      }
     }
+    tab_data.is_checked = is_checked;
 
     tab_data.last_active =
         std::max(web_contents->GetLastActiveTimeTicks(),
@@ -1106,27 +1123,38 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
     if (static_cast<size_t>(tab_index_in_menu) < tabs.size()) {
       // Get the tab ID based on the command ID in the simple menu.
       const auto& tab_info = tabs[tab_index_in_menu];
-      auto* composebox_handler = GetOmniboxPopupUI()
-                                     ? GetOmniboxPopupUI()->composebox_handler()
-                                     : nullptr;
       bool was_uploaded = false;
       base::UnguessableToken file_token_to_delete;
-      if (composebox_handler) {
-        for (const auto& pair : composebox_handler->selected_tabs) {
-          if (tab_info.tab_id == pair.second) {
-            was_uploaded = true;
-            file_token_to_delete = pair.first;
-            break;
+      ContextualSearchboxHandler* active_handler = nullptr;
+      if (auto omnibox_popup_ui = GetOmniboxPopupUI()) {
+        auto* composebox_handler = omnibox_popup_ui->composebox_handler();
+        if (composebox_handler) {
+          for (const auto& pair : composebox_handler->selected_tabs) {
+            if (tab_info.tab_id == pair.second) {
+              was_uploaded = true;
+              file_token_to_delete = pair.first;
+              active_handler = composebox_handler;
+              break;
+            }
+          }
+        }
+        auto* omnibox_handler = omnibox_popup_ui->omnibox_handler();
+        if (!was_uploaded && omnibox_handler) {
+          for (const auto& pair : omnibox_handler->selected_tabs) {
+            if (tab_info.tab_id == pair.second) {
+              was_uploaded = true;
+              file_token_to_delete = pair.first;
+              active_handler = omnibox_handler;
+              break;
+            }
           }
         }
       }
       // If was already staged for upload, delete it, as this function was
       // called because user clicked on tab again.:
-      if (was_uploaded) {
-        // `composebox_handler` is guaranteed to be non-null since it was
-        // checked to set `was_uploaded` to true.
-        composebox_handler->DeleteContextFromBrowser(
-            file_token_to_delete, /*from_automatic_chip=*/false);
+      if (was_uploaded && active_handler) {
+        active_handler->DeleteContextFromBrowser(file_token_to_delete,
+                                                 /*from_automatic_chip=*/false);
         // Refresh omnibox popup UI.
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
