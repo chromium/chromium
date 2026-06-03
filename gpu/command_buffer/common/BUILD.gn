@@ -108,6 +108,18 @@ source_set("common_sources") {
   ]
 
   deps = [ "//base" ]
+
+  if (is_apple) {
+    sources += [
+      "iosurface_validation.cc",
+      "iosurface_validation.h",
+    ]
+
+    frameworks = [
+      "CoreVideo.framework",
+      "IOSurface.framework",
+    ]
+  }
 }
 
 source_set("mailbox_sources") {

@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/iosurface_validation.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -412,79 +413,10 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
   }
 
   auto io_surface = std::move(handle).io_surface();
-
-  // Ensure that the IOSurface has the same size and pixel format as those
-  // specified by `size` and `format`. A malicious client could lie about
-  // this, which, if subsequently used to determine parameters for bounds
-  // checking, could result in an out-of-bounds memory access.
-  {
-    // Validate top-level IOSurface format.
-    uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface.get());
-    const bool override_rgba_to_bgra =
-#if BUILDFLAG(IS_IOS)
-        false;
-#else
-        gr_context_type_ == GrContextType::kGL;
-#endif
-    if (io_surface_format != SharedImageFormatToIOSurfacePixelFormat(
-                                 format, override_rgba_to_bgra)) {
-      LOG(ERROR) << "IOSurface pixel format does not match specified shared "
-                    "image format.";
-      return nullptr;
-    }
-
-    // Validate top-level IOSurface dimensions.
-    if (IOSurfaceGetWidth(io_surface.get()) !=
-            static_cast<size_t>(size.width()) ||
-        IOSurfaceGetHeight(io_surface.get()) !=
-            static_cast<size_t>(size.height())) {
-      LOG(ERROR) << "IOSurface size does not match specified size.";
-      return nullptr;
-    }
-
-    // Ensure the IOSurface has at least as many planes as the requested format.
-    // For single-planar IOSurfaces, IOSurfaceGetPlaneCount returns 0.
-    size_t io_surface_plane_count =
-        std::max<size_t>(1, IOSurfaceGetPlaneCount(io_surface.get()));
-    if (io_surface_plane_count < static_cast<size_t>(format.NumberOfPlanes())) {
-      LOG(ERROR) << "IOSurface plane count is too small.";
-      return nullptr;
-    }
-
-    // Validate per-plane dimensions and stride. A malformed IOSurface could
-    // have planes with dimensions inconsistent with its top-level size and
-    // format, leading to out-of-bounds access during buffer operations.
-    for (int plane_index = 0; plane_index < format.NumberOfPlanes();
-         ++plane_index) {
-      gfx::Size plane_size = format.GetPlaneSize(plane_index, size);
-      if (IOSurfaceGetWidthOfPlane(io_surface.get(), plane_index) !=
-              static_cast<size_t>(plane_size.width()) ||
-          IOSurfaceGetHeightOfPlane(io_surface.get(), plane_index) !=
-              static_cast<size_t>(plane_size.height())) {
-        LOG(ERROR) << "IOSurface plane size does not match specified size.";
-        return nullptr;
-      }
-
-      // Ensure the IOSurface has enough bytes per row for the plane to prevent
-      // potential out-of-bounds access when copying or accessing the buffer.
-      size_t io_surface_bytes_per_row =
-          IOSurfaceGetBytesPerRowOfPlane(io_surface.get(), plane_index);
-      size_t min_bytes_per_row;
-      if (format.is_single_plane()) {
-        CHECK(!format.IsCompressed());
-        min_bytes_per_row = static_cast<size_t>(format.BytesPerPixel()) *
-                            static_cast<size_t>(plane_size.width());
-      } else {
-        min_bytes_per_row =
-            static_cast<size_t>(format.MultiplanarStorageBytesPerChannel()) *
-            static_cast<size_t>(format.NumChannelsInPlane(plane_index)) *
-            static_cast<size_t>(plane_size.width());
-      }
-      if (io_surface_bytes_per_row < min_bytes_per_row) {
-        LOG(ERROR) << "IOSurface bytes per row is too small.";
-        return nullptr;
-      }
-    }
+  std::string validation_error;
+  if (!ValidateIOSurface(io_surface, format, size, &validation_error)) {
+    LOG(ERROR) << validation_error;
+    return nullptr;
   }
 
   const bool for_framebuffer_attachment =
