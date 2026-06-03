@@ -548,6 +548,21 @@ class WebContentsViewAura::WindowObserver
     ProcessWindowBoundsChange(old_bounds.origin() != new_bounds.origin());
   }
 
+  void OnWindowTransformed(aura::Window* window,
+                           ui::PropertyChangeReason reason) override {
+    DCHECK(window == host_window_ || window == view_->window_.get());
+    if (!ShouldNotifyOfBoundsChanges()) {
+      return;
+    }
+
+    if (pending_window_changes_) {
+      pending_window_changes_->window_bounds_changed = true;
+      pending_window_changes_->window_origin_changed = true;
+      return;
+    }
+    ProcessWindowBoundsChange(/*did_origin_change=*/true);
+  }
+
   void OnWindowDestroying(aura::Window* window) override {
     if (window == host_window_) {
       host_window_->RemoveObserver(this);

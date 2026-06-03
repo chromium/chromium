@@ -16,6 +16,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
@@ -55,6 +57,7 @@
 #include "ui/events/event_sink.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace content {
@@ -1209,6 +1212,58 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
                                            .root()
                                            ->current_frame_host()
                                            ->GetRenderWidgetHost()));
+}
+
+class WebContentsViewAuraTransformTest : public WebContentsViewAuraTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    WebContentsViewAuraTest::SetUpCommandLine(cmd);
+#if BUILDFLAG(IS_WIN)
+    cmd->AppendSwitch(switches::kDisableLegacyIntermediateWindow);
+#endif
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTransformTest,
+                       WindowTransformUpdatesScreenRects) {
+  StartTestWithPage("/simple_page.html");
+  WebContentsImpl* contents = GetWebContentsImpl();
+
+  aura::Window* top_level = contents->GetNativeView()->GetToplevelWindow();
+  ASSERT_TRUE(top_level);
+  auto wait_for_coordinate = [this](const std::string& prop, int expected) {
+    static constexpr char script[] =
+        R"(new Promise((resolve) => {
+             function check() {
+               if (window.$1 === $2) {
+                 resolve(window.$1);
+               } else {
+                 requestAnimationFrame(check);
+               }
+             }
+             check();
+           });)";
+    std::string js = base::ReplaceStringPlaceholders(
+        script, {prop, base::NumberToString(expected)}, nullptr);
+    return EvalJs(shell(), js).ExtractInt();
+  };
+
+  int initial_x = EvalJs(shell(), "window.screenX").ExtractInt();
+  int initial_y = EvalJs(shell(), "window.screenY").ExtractInt();
+
+  gfx::Transform transform;
+  transform.Translate(100, 50);
+  top_level->SetTransform(transform);
+  int transformed_x = wait_for_coordinate("screenX", initial_x + 100);
+  int transformed_y = wait_for_coordinate("screenY", initial_y + 50);
+  EXPECT_EQ(transformed_x, initial_x + 100);
+  EXPECT_EQ(transformed_y, initial_y + 50);
+
+  top_level->SetTransform(gfx::Transform());
+  int restored_x = wait_for_coordinate("screenX", initial_x);
+  int restored_y = wait_for_coordinate("screenY", initial_y);
+  EXPECT_EQ(restored_x, initial_x);
+  EXPECT_EQ(restored_y, initial_y);
 }
 
 }  // namespace content
