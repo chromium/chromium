@@ -11,7 +11,8 @@
 namespace enterprise_custom_headers {
 
 // Policy handler for the HttpHeaderInjection policy.
-// Validates that URL patterns are correct and header names are not forbidden.
+// Validates that URL patterns follow blocklist format and that headers are
+// valid.
 class HttpHeaderInjectionPolicyHandler
     : public policy::SimpleSchemaValidatingPolicyHandler {
  public:

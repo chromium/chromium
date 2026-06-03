@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "components/enterprise/network_header_injection/core/http_header_injection_matcher.h"
 #include "components/enterprise/network_header_injection/core/network_header_injection_prefs.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -22,11 +23,6 @@
 namespace enterprise_custom_headers {
 
 namespace {
-
-constexpr char kKeyPatterns[] = "patterns";
-constexpr char kKeyHeaders[] = "headers";
-constexpr char kKeyHeaderName[] = "name";
-constexpr char kKeyHeaderValue[] = "value";
 
 constexpr size_t kMaxUrlPatterns = 500;
 constexpr size_t kMaxHeadersPerRule = 20;

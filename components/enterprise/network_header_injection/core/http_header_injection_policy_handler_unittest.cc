@@ -9,6 +9,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/enterprise/network_header_injection/core/http_header_injection_matcher.h"
 #include "components/enterprise/network_header_injection/core/network_header_injection_prefs.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -20,14 +21,6 @@
 
 namespace enterprise_custom_headers {
 
-namespace {
-
-constexpr char kKeyPatterns[] = "patterns";
-constexpr char kKeyHeaders[] = "headers";
-constexpr char kKeyHeaderName[] = "name";
-constexpr char kKeyHeaderValue[] = "value";
-
-}  // namespace
 
 class HttpHeaderInjectionPolicyHandlerTest : public testing::Test {
  public:
@@ -266,7 +259,6 @@ TEST_F(HttpHeaderInjectionPolicyHandlerTest,
 TEST_F(HttpHeaderInjectionPolicyHandlerTest,
        ApplyPolicySettings_FiltersViolatingValues) {
   std::vector<std::pair<std::string, std::string>> headers;
-  headers.emplace_back("Cookie", "Value");  // Forbidden
   std::string large_value(8192, 'a');
   headers.emplace_back("X-Large-Header", large_value);      // Oversized
   headers.emplace_back("Invalid Name", "Value");            // Invalid name
