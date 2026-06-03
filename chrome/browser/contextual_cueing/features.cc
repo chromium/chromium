@@ -105,7 +105,7 @@ constexpr base::FeatureParam<TabListVisibility>::Option
 const base::FeatureParam<TabListVisibility> kTabListVisibility(
     &kContextualCueingV2,
     "ContextualCueingV2TabListVisibility",
-    TabListVisibility::kNever,
+    TabListVisibility::kOnlyIfMultiple,
     &kTabListVisibilityOptions);
 
 }  // namespace contextual_cueing
