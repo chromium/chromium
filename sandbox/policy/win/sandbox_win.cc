@@ -17,7 +17,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -1111,13 +1111,13 @@ std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
   // Returns a memory limit scaled to the available physical memory, up to
   // 64 GB. Used by GPU and ODML process sandboxes.
   auto get_scaled_physical_memory_based_limit = []() -> size_t {
-    const base::ByteCount physical_memory =
-        base::SysInfo::AmountOfPhysicalMemory();
-    if (physical_memory > base::GiB(64)) {
+    const base::ByteSize physical_memory =
+        base::SysInfo::AmountOfTotalPhysicalMemory();
+    if (physical_memory > base::GiBU(64)) {
       return 64 * GB;
-    } else if (physical_memory > base::GiB(32)) {
+    } else if (physical_memory > base::GiBU(32)) {
       return 32 * GB;
-    } else if (physical_memory > base::GiB(16)) {
+    } else if (physical_memory > base::GiBU(16)) {
       return 16 * GB;
     }
     return 8 * GB;
