@@ -145,6 +145,29 @@ p {
   aspect-ratio: 600 / 215;
 }
 
+/* For RTL languages, flip the direction */
+:host-context([dir=rtl]) #left-animation {
+  left: auto;
+  right: 0;
+  transform: scaleX(-1) translate(
+    min(0px, calc(50vw - var(--content-width) / 2 - 100%)),
+    -50%);
+}
+
+:host-context([dir=rtl]) #right-animation {
+  left: 0;
+  right: auto;
+  transform: scaleX(-1) translate(
+    max(0px, calc(70% - (50vw - var(--content-width) / 2) / 2)),
+    -50%);
+}
+
+:host-context([dir=rtl]) #bottom-animation {
+  left: auto;
+  right: 20%;
+  transform: scaleX(-1) translate(-50%, max(0px, calc(50% - (50vh - 300px) / 2)));
+}
+
 .title {
   font-size: 2.5rem;
   font-weight: 700;
