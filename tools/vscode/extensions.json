@@ -5,7 +5,7 @@
     "ms-vscode.cpptools",
     "llvm-vs-code-extensions.vscode-clangd",
     "bbenoist.togglehs",
-    "zxh404.vscode-proto3",
+    "DrBlury.protobuf-vsc",
     "Google.vscode-mojom",
     "msedge-dev.gnls",
     "stkb.rewrap",

@@ -123,7 +123,7 @@ Note: All the extension settings mentioned below are already set in
     Toggles between .cc and .h with `F4`. The C/C++ extension supports this as
     well through `Alt+O` but sometimes chooses the wrong file when there are
     multiple files in the workspace that have the same name.
-*   [**vscode-proto3**](https://marketplace.visualstudio.com/items?itemName=zxh404.vscode-proto3) -
+*   [**Protobuf VSC**](https://marketplace.visualstudio.com/items?itemName=DrBlury.protobuf-vsc) -
     Syntax highlighting for .proto files.
 *   [**Mojom IDL support**](https://marketplace.visualstudio.com/items?itemName=Google.vscode-mojom) -
     Syntax highlighting and a [language server][lang-server] for .mojom files.
