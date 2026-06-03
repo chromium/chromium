@@ -67,8 +67,8 @@ NSString* const kReadingListActivityType =
 }
 
 - (void)performActivity {
-  [self activityDidFinish:YES];
   if (!_readingListBrowserAgent) {
+    [self activityDidFinish:NO];
     return;
   }
   // Reading list does not support not having title, so add host instead.
@@ -77,6 +77,7 @@ NSString* const kReadingListActivityType =
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURL:_activityURL title:title];
   _readingListBrowserAgent->AddURLsToReadingList(command.URLs);
+  [self activityDidFinish:YES];
 }
 
 #pragma mark - ChromeActivity
