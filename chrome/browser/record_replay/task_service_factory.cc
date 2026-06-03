@@ -49,7 +49,7 @@ TaskServiceFactory::BuildServiceInstanceForBrowserContext(
 
   auto execution_callback = base::BindRepeating(
       [](Profile* profile, const TaskDefinition& definition,
-         const TaskParameterValues& parameter_values) {
+         const std::vector<TaskParameter>& parameter_values) {
         BrowserWindowInterface* browser =
             ProfileBrowserCollection::GetForProfile(profile)
                 ->GetLastActiveBrowser();

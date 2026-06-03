@@ -137,7 +137,7 @@ ChromeRecordReplayClient::GetWeakPtr() {
 
 void ChromeRecordReplayClient::OfferExecuting(
     const record_replay::TaskDefinition& definition,
-    const record_replay::TaskParameterValues& values) {
+    const std::vector<record_replay::TaskParameter>& values) {
   offered_task_definition_ = definition;
   offered_task_parameter_values_ = values;
 
@@ -164,8 +164,9 @@ void ChromeRecordReplayClient::OnExecutionAccepted() {
   if (auto* task_service =
           record_replay::TaskServiceFactory::GetForProfile(profile)) {
     task_service->OnExecutionAccepted(
-        *offered_task_definition_, offered_task_parameter_values_.value_or(
-                                       record_replay::TaskParameterValues()));
+        *offered_task_definition_,
+        offered_task_parameter_values_.value_or(
+            std::vector<record_replay::TaskParameter>()));
   }
   offered_task_definition_.reset();
   offered_task_parameter_values_.reset();

@@ -32,6 +32,7 @@ class WebContents;
 
 namespace record_replay {
 class TaskStore;
+class TaskParameter;
 }
 
 // The Chrome-specific concrete implementation of `RecordReplayClient`.
@@ -65,7 +66,7 @@ class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
   base::WeakPtr<record_replay::RecordReplayClient> GetWeakPtr() override;
   void OfferExecuting(
       const record_replay::TaskDefinition& definition,
-      const record_replay::TaskParameterValues& values) override;
+      const std::vector<record_replay::TaskParameter>& values) override;
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -88,7 +89,7 @@ class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
 
   // Offered task metadata stored while toast is shown to the user.
   std::optional<record_replay::TaskDefinition> offered_task_definition_;
-  std::optional<record_replay::TaskParameterValues>
+  std::optional<std::vector<record_replay::TaskParameter>>
       offered_task_parameter_values_;
 
   base::WeakPtrFactory<ChromeRecordReplayClient> weak_ptr_factory_{this};

@@ -10,6 +10,7 @@
 #include "base/types/optional_ref.h"
 #include "components/record_replay/core/browser/record_replay_client.h"
 #include "components/record_replay/core/browser/record_replay_driver_factory.h"
+#include "components/record_replay/core/browser/task_definition.pb.h"
 #include "components/record_replay/core/common/record_replay_features.h"
 #include "components/record_replay/core/common/test_support/mock_task_store.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -74,7 +75,7 @@ class MockRecordReplayClient : public RecordReplayClient {
   MOCK_METHOD(void,
               OfferExecuting,
               (const TaskDefinition& definition,
-               const TaskParameterValues& values),
+               const std::vector<TaskParameter>& values),
               (override));
 
  private:

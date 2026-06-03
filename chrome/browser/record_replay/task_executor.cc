@@ -4,6 +4,7 @@
 
 #include "chrome/browser/record_replay/task_executor.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/strings/stringprintf.h"
@@ -15,10 +16,11 @@
 
 namespace record_replay {
 
-void TaskExecutor::ExecuteTask(Profile* profile,
-                               BrowserWindowInterface* browser_window,
-                               const TaskDefinition& definition,
-                               const TaskParameterValues& parameter_values) {
+void TaskExecutor::ExecuteTask(
+    Profile* profile,
+    BrowserWindowInterface* browser_window,
+    const TaskDefinition& definition,
+    const std::vector<TaskParameter>& parameter_values) {
   if (!profile || !browser_window) {
     return;
   }
@@ -30,7 +32,7 @@ void TaskExecutor::ExecuteTask(Profile* profile,
 
   // 1. Create the prompt string from TaskDefinition and TaskParameterValues.
   std::string prompt = base::StringPrintf(
-      "I need help completing this task: \"%s\".\n"
+      "Perform this task for me: \"%s\".\n"
       "Instructions: %s\n\n",
       definition.title().c_str(), definition.description().c_str());
 
@@ -42,15 +44,15 @@ void TaskExecutor::ExecuteTask(Profile* profile,
                              step.description().c_str(), step.url().c_str());
 
       // Get parameter values for this step.
-      auto step_data_it = parameter_values.find(step.step_index());
-      if (step_data_it != parameter_values.end()) {
-        const auto& values_map = step_data_it->second;
-        for (const auto& param : step.parameters()) {
-          auto val_it = values_map.find(param.key());
-          if (val_it != values_map.end()) {
-            prompt += base::StringPrintf("  * %s: %s\n", param.name().c_str(),
-                                         val_it->second.c_str());
-          }
+      for (const auto& param : step.parameters()) {
+        auto pred_it = std::find_if(
+            parameter_values.begin(), parameter_values.end(),
+            [&param](const TaskParameter& p) {
+              return p.has_id() && param.has_id() && p.id() == param.id();
+            });
+        if (pred_it != parameter_values.end() && pred_it->has_value()) {
+          prompt += base::StringPrintf("  * %s: %s\n", param.name().c_str(),
+                                       pred_it->value().c_str());
         }
       }
     }

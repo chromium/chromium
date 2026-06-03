@@ -6,8 +6,7 @@
 #define CHROME_BROWSER_RECORD_REPLAY_TASK_EXECUTOR_H_
 
 #include <string>
-
-#include "base/containers/flat_map.h"
+#include <vector>
 
 class Profile;
 class BrowserWindowInterface;
@@ -15,9 +14,7 @@ class BrowserWindowInterface;
 namespace record_replay {
 
 class TaskDefinition;
-
-using TaskParameterValues =
-    base::flat_map<int, base::flat_map<std::string, std::string>>;
+class TaskParameter;
 
 class TaskExecutor {
  public:
@@ -28,7 +25,7 @@ class TaskExecutor {
   static void ExecuteTask(Profile* profile,
                           BrowserWindowInterface* browser_window,
                           const TaskDefinition& definition,
-                          const TaskParameterValues& parameter_values);
+                          const std::vector<TaskParameter>& parameter_values);
 };
 
 }  // namespace record_replay

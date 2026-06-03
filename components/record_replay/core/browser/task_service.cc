@@ -20,6 +20,7 @@ TaskService::TaskService(TaskStore* task_store,
                          ExecutionCallback execution_callback)
     : task_store_(task_store),
       task_parameters_extractor_(task_parameters_extractor),
+      predictor_(task_store),
       execution_callback_(std::move(execution_callback)) {}
 
 TaskService::~TaskService() = default;
@@ -52,7 +53,7 @@ void TaskService::OnTaskDefinitionsRetrieved(
     if (definition.url() == visited_url.spec()) {
       StartObserving(visited_url, definition);
       if (client) {
-        OfferExecuting(client.get(), visited_url, definition);
+        OfferExecuting(client, visited_url, definition);
       }
     }
   }
@@ -69,11 +70,25 @@ void TaskService::StartObserving(const GURL& visited_url,
   observer_->OnURLVisited(visited_url);
 }
 
-void TaskService::OfferExecuting(RecordReplayClient* client,
+void TaskService::OfferExecuting(base::WeakPtr<RecordReplayClient> client,
                                  const GURL& visited_url,
                                  TaskDefinition definition) {
-  TaskParameterValues values;
-  client->OfferExecuting(std::move(definition), std::move(values));
+  predictor_.Predict(
+      definition,
+      base::BindOnce(&TaskService::OnParametersPredicted,
+                     weak_ptr_factory_.GetWeakPtr(), client, definition));
+}
+
+void TaskService::OnParametersPredicted(
+    base::WeakPtr<RecordReplayClient> client,
+    TaskDefinition definition,
+    std::optional<std::vector<TaskParameter>> predicted_parameters) {
+  if (!client || !predicted_parameters.has_value()) {
+    return;
+  }
+  client->OfferExecuting(
+      std::move(definition),
+      predicted_parameters.value_or(std::vector<TaskParameter>()));
 }
 
 void TaskService::OnTaskCompleted(const TaskObservation& observation) {
@@ -81,8 +96,9 @@ void TaskService::OnTaskCompleted(const TaskObservation& observation) {
   observer_.reset();
 }
 
-void TaskService::OnExecutionAccepted(const TaskDefinition& definition,
-                                      const TaskParameterValues& values) {
+void TaskService::OnExecutionAccepted(
+    const TaskDefinition& definition,
+    const std::vector<TaskParameter>& values) {
   if (execution_callback_) {
     execution_callback_.Run(definition, values);
   }

@@ -28,8 +28,7 @@ class RecordReplayDriverFactory;
 class RecordReplayManager;
 class TaskDefinition;
 class TaskData;
-using TaskParameterValues =
-    base::flat_map<int, base::flat_map<std::string, std::string>>;
+class TaskParameter;
 
 // The abstract base interface for the tab-level owner of most record & replay
 // classes in the browser process.
@@ -64,7 +63,7 @@ class RecordReplayClient {
 
   // Offers to execute a saved automation task.
   virtual void OfferExecuting(const TaskDefinition& definition,
-                              const TaskParameterValues& values) = 0;
+                              const std::vector<TaskParameter>& parameters) = 0;
 
  protected:
   RecordReplayClient();

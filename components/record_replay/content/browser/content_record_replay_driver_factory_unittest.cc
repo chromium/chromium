@@ -15,6 +15,7 @@
 #include "components/record_replay/core/browser/record_replay_driver.h"
 #include "components/record_replay/core/browser/record_replay_driver_factory.h"
 #include "components/record_replay/core/browser/record_replay_manager.h"
+#include "components/record_replay/core/browser/task_definition.pb.h"
 #include "components/record_replay/core/browser/task_store.h"
 #include "components/record_replay/core/common/aliases.h"
 #include "components/record_replay/core/common/element_id.h"
@@ -69,7 +70,7 @@ class MockRecordReplayClient : public RecordReplayClient {
   MOCK_METHOD(void,
               OfferExecuting,
               (const TaskDefinition& definition,
-               const TaskParameterValues& values),
+               const std::vector<TaskParameter>& values),
               (override));
 
  private:
