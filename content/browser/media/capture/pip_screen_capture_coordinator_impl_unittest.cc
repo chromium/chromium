@@ -55,7 +55,8 @@ class MockProxyObserver : public PipScreenCaptureCoordinatorProxy::Observer {
       (override));
 };
 
-class MockPipExcludedObserver : public PipScreenCaptureExclusionObserver {
+class MockPipExcludedObserver
+    : public desktop_capture::PipScreenCaptureExclusionObserver {
  public:
   MOCK_METHOD(void, OnExcludeFromScreenCaptureChanged, (bool), (override));
 };

@@ -34,11 +34,11 @@ class MockPipScreenCaptureCoordinator : public PipScreenCaptureCoordinator {
               (override));
   MOCK_METHOD(void,
               AddExclusionObserver,
-              (PipScreenCaptureExclusionObserver*),
+              (desktop_capture::PipScreenCaptureExclusionObserver*),
               (override));
   MOCK_METHOD(void,
               RemoveExclusionObserver,
-              (PipScreenCaptureExclusionObserver*),
+              (desktop_capture::PipScreenCaptureExclusionObserver*),
               (override));
   MOCK_METHOD(bool, IsExcludedFromScreenCapture, (), (const, override));
 };

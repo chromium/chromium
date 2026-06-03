@@ -44,6 +44,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "content/public/browser/desktop_capture_pip_utils.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
@@ -834,8 +835,6 @@ class BrowserView : public BrowserWindow,
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
   FRIEND_TEST_ALL_PREFIXES(PermissionChipUnitTest, AccessibleName);
 
-  class AccessibilityModeObserver;
-
   // Modes that require reparenting of views. For example, tab strip and web app
   // views must be reparented to top_container in certain modes. This state is
   // track which combination of states the browser is in so we only reparent in
@@ -1368,6 +1367,10 @@ class BrowserView : public BrowserWindow,
   bool should_show_window_controls_overlay_toggle_ = false;
   bool unframed_mode_enabled_ = false;
   bool window_management_permission_granted_ = false;
+#if BUILDFLAG(IS_WIN)
+  class PipExclusionObserverImpl;
+  std::unique_ptr<PipExclusionObserverImpl> pip_exclusion_observer_;
+#endif
   std::optional<content::PermissionController::SubscriptionId>
       window_management_subscription_id_;
 

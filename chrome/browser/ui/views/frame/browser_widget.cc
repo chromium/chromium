@@ -34,6 +34,8 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "content/public/browser/desktop_capture_pip_utils.h"
+#include "media/capture/capture_switches.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/themes.mojom.h"
@@ -43,6 +45,7 @@
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/native_widget.h"
+#include "ui/wm/core/window_properties.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -164,6 +167,17 @@ void BrowserWidget::InitBrowserWidget() {
     // https://crbug.com/40273014 for more details.
     params.remove_standard_frame = true;
 #endif  // !BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN)
+    // Apply screen capture exclusion at initialization. Note that while this
+    // uses Aura window properties, the underlying behavior is currently
+    // Windows-only.
+    if (base::FeatureList::IsEnabled(features::kExcludePipFromScreenCapture) &&
+        content::desktop_capture::IsPipExcludedFromScreenCapture()) {
+      params.init_properties_container.SetProperty(
+          wm::kExcludeFromScreenCaptureKey, true);
+    }
+#endif
   }
 
 #if BUILDFLAG(IS_OZONE)

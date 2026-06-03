@@ -52,9 +52,9 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl
       DesktopMediaID::Id desktop_id) override;
 
   void AddExclusionObserver(
-      PipScreenCaptureExclusionObserver* observer) override;
+      desktop_capture::PipScreenCaptureExclusionObserver* observer) override;
   void RemoveExclusionObserver(
-      PipScreenCaptureExclusionObserver* observer) override;
+      desktop_capture::PipScreenCaptureExclusionObserver* observer) override;
   bool IsExcludedFromScreenCapture() const override;
 
   void OnPipShown(
@@ -82,7 +82,8 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl
   std::optional<DesktopMediaID::Id> pip_window_id_;
   GlobalRenderFrameHostId pip_owner_render_frame_host_id_;
   base::ObserverList<Observer> observers_;
-  base::ObserverList<PipScreenCaptureExclusionObserver> exclusion_observers_;
+  base::ObserverList<desktop_capture::PipScreenCaptureExclusionObserver>
+      exclusion_observers_;
   std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo> captures_;
   base::WeakPtrFactory<PipScreenCaptureCoordinatorImpl> weak_factory_{this};
 };

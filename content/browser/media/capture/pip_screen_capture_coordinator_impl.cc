@@ -189,7 +189,8 @@ void PipScreenCaptureCoordinatorImpl::NotifyExclusionChanged(
     bool was_excluded) {
   bool is_excluded = IsExcludedFromScreenCapture();
   if (was_excluded != is_excluded) {
-    for (PipScreenCaptureExclusionObserver& obs : exclusion_observers_) {
+    for (desktop_capture::PipScreenCaptureExclusionObserver& obs :
+         exclusion_observers_) {
       obs.OnExcludeFromScreenCaptureChanged(is_excluded);
     }
   }
@@ -211,12 +212,12 @@ void PipScreenCaptureCoordinatorImpl::RemoveObserver(Observer* observer) {
 }
 
 void PipScreenCaptureCoordinatorImpl::AddExclusionObserver(
-    PipScreenCaptureExclusionObserver* observer) {
+    desktop_capture::PipScreenCaptureExclusionObserver* observer) {
   exclusion_observers_.AddObserver(observer);
 }
 
 void PipScreenCaptureCoordinatorImpl::RemoveExclusionObserver(
-    PipScreenCaptureExclusionObserver* observer) {
+    desktop_capture::PipScreenCaptureExclusionObserver* observer) {
   exclusion_observers_.RemoveObserver(observer);
 }
 

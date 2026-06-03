@@ -285,6 +285,7 @@
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/desktop_capture_pip_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_handle.h"
@@ -298,6 +299,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
 #include "extensions/common/command.h"
+#include "media/capture/capture_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -840,6 +842,32 @@ class BrowserView::ExclusiveAccessContextImpl
       exclusive_access_bubble_destruction_task_id_;
   base::WeakPtrFactory<ExclusiveAccessContextImpl> weak_ptr_factory_{this};
 };
+
+#if BUILDFLAG(IS_WIN)
+class BrowserView::PipExclusionObserverImpl
+    : public content::desktop_capture::PipScreenCaptureExclusionObserver {
+ public:
+  explicit PipExclusionObserverImpl(views::Widget* widget) : widget_(widget) {
+    CHECK(widget_);
+    content::desktop_capture::AddPipExclusionObserver(this);
+  }
+
+  PipExclusionObserverImpl(const PipExclusionObserverImpl&) = delete;
+  PipExclusionObserverImpl& operator=(const PipExclusionObserverImpl&) = delete;
+
+  ~PipExclusionObserverImpl() override {
+    content::desktop_capture::RemovePipExclusionObserver(this);
+  }
+
+  // content::desktop_capture::PipScreenCaptureExclusionObserver:
+  void OnExcludeFromScreenCaptureChanged(bool is_excluded) override {
+    widget_->SetExcludeFromScreenCapture(is_excluded);
+  }
+
+ private:
+  const raw_ptr<views::Widget> widget_;
+};
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, public:
@@ -4839,6 +4867,19 @@ void BrowserView::AddedToWidget() {
 
   views::ClientView::AddedToWidget();
 
+#if BUILDFLAG(IS_WIN)
+  // Register for screen capture exclusion updates. This is specific to
+  // Document PiP windows, which are fully-fledged BrowserViews.
+  if (GetIsPictureInPictureType() &&
+      base::FeatureList::IsEnabled(features::kExcludePipFromScreenCapture)) {
+    pip_exclusion_observer_ =
+        std::make_unique<PipExclusionObserverImpl>(GetWidget());
+    bool is_excluded =
+        content::desktop_capture::IsPipExcludedFromScreenCapture();
+    GetWidget()->SetExcludeFromScreenCapture(is_excluded);
+  }
+#endif
+
   widget_observation_.Observe(GetWidget());
 
   auto* browser_elements =
@@ -5021,6 +5062,10 @@ void BrowserView::AddedToWidget() {
 
 void BrowserView::RemovedFromWidget() {
   CHECK(GetFocusManager());
+#if BUILDFLAG(IS_WIN)
+  pip_exclusion_observer_.reset();
+#endif
+
   focus_manager_observation_.Reset();
 }
 

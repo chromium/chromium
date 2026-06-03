@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/feature_list.h"
@@ -65,6 +66,7 @@
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/split_tab_collection.h"
+#include "content/public/browser/desktop_capture_pip_utils.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -72,9 +74,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
+#include "content/public/test/scoped_pip_exclusion_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
+#include "media/capture/capture_switches.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_test_helper.h"
 #include "ui/base/buildflags.h"
@@ -88,6 +93,7 @@
 #if defined(USE_AURA)
 #include "ui/aura/client/focus_client.h"
 #include "ui/views/widget/native_widget_aura.h"
+#include "ui/wm/core/window_properties.h"
 #endif  // USE_AURA
 
 #if BUILDFLAG(IS_OZONE)
@@ -98,6 +104,127 @@
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/ash/test_util.h"
 #endif
+
+#if BUILDFLAG(IS_WIN)
+
+class BrowserViewPipTest : public InProcessBrowserTest {
+ public:
+  BrowserViewPipTest() {
+    feature_list_.InitAndEnableFeature(features::kExcludePipFromScreenCapture);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, DynamicStatePropagation) {
+  content::ScopedPipExclusionOverride exclusion_override(false);
+
+  // Create a PIP browser.
+  Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
+                               browser()->profile(), true);
+  Browser* pip_browser = Browser::Create(params);
+  pip_browser->window()->Show();
+  BrowserView* pip_browser_view =
+      BrowserView::GetBrowserViewForBrowser(pip_browser);
+
+  // Use the override to flip the global state.
+  exclusion_override.SetExcluded(true);
+  EXPECT_TRUE(pip_browser_view->GetWidget()->GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+
+  exclusion_override.SetExcluded(false);
+  EXPECT_FALSE(pip_browser_view->GetWidget()->GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+
+  CloseBrowserSynchronously(pip_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, InitialStateVerification) {
+  // Mock coordinator to return true for exclusion.
+  content::ScopedPipExclusionOverride exclusion_override(true);
+
+  // Create a PIP browser.
+  Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
+                               browser()->profile(), true);
+  Browser* pip_browser = Browser::Create(params);
+  pip_browser->window()->Show();
+  BrowserView* pip_browser_view =
+      BrowserView::GetBrowserViewForBrowser(pip_browser);
+
+  // Verify it's excluded immediately.
+  EXPECT_TRUE(pip_browser_view->GetWidget()->GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+
+  CloseBrowserSynchronously(pip_browser);
+}
+
+class BrowserViewPipDisabledTest : public InProcessBrowserTest {
+ public:
+  BrowserViewPipDisabledTest() {
+    feature_list_.InitAndDisableFeature(features::kExcludePipFromScreenCapture);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserViewPipDisabledTest, FeatureFlagEnforcement) {
+  content::ScopedPipExclusionOverride exclusion_override(false);
+
+  // Create a PIP browser.
+  Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE,
+                               browser()->profile(), true);
+  Browser* pip_browser = Browser::Create(params);
+  pip_browser->window()->Show();
+  BrowserView* pip_browser_view =
+      BrowserView::GetBrowserViewForBrowser(pip_browser);
+
+  // Flip the global state.
+  exclusion_override.SetExcluded(true);
+
+  // Property should still be false because of the gate.
+  EXPECT_FALSE(pip_browser_view->GetWidget()->GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+
+  CloseBrowserSynchronously(pip_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, WindowTypeIsolation) {
+  content::ScopedPipExclusionOverride exclusion_override(false);
+
+  // Normal browser (already exists as browser()).
+  BrowserView* normal_view = BrowserView::GetBrowserViewForBrowser(browser());
+
+  // Flip the global state.
+  exclusion_override.SetExcluded(true);
+
+  // Property should remain false.
+  EXPECT_FALSE(normal_view->GetWidget()->GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewPipTest, NewWindowInitializationIsolation) {
+  // Mock coordinator to return true for exclusion.
+  content::ScopedPipExclusionOverride exclusion_override(true);
+
+  // Create a normal browser.
+  Browser::CreateParams params(Browser::TYPE_NORMAL, browser()->profile(),
+                               true);
+  Browser* new_normal_browser = Browser::Create(params);
+  new_normal_browser->window()->Show();
+
+  BrowserView* new_normal_view =
+      BrowserView::GetBrowserViewForBrowser(new_normal_browser);
+
+  // Property should remain false because normal windows are not excluded.
+  EXPECT_FALSE(new_normal_view->GetWidget()->GetNativeView()->GetProperty(
+      wm::kExcludeFromScreenCaptureKey));
+
+  CloseBrowserSynchronously(new_normal_browser);
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 class BrowserViewTest : public InProcessBrowserTest {
  public:
