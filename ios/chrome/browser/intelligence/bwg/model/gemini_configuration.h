@@ -20,7 +20,6 @@ enum class EntryPoint;
 
 namespace ios::provider {
 enum class GeminiLocationPermissionState;
-enum class BWGPageContextState;
 enum class GeminiPageContextComputationState;
 enum class GeminiPageContextAttachmentState;
 }  // namespace ios::provider
