@@ -5,14 +5,19 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
+namespace {
+
+using GoogleDocsOfflineUkmTest = ExtensionBrowserTest;
 
 // Loads a page that imports a script from Google Docs Offline extension and
 // checks for UKM collection.
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
-                       TestGoogleDocsOfflineExtensionResourceImport) {
+IN_PROC_BROWSER_TEST_F(GoogleDocsOfflineUkmTest, ResourceImport) {
   ASSERT_TRUE(embedded_test_server()->Start());
   using UkmEntry = ukm::builders::GoogleDocsOfflineExtension;
   const GURL url(embedded_test_server()->GetURL(
@@ -29,8 +34,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 
 // Loads a page that fetches a script from Google Docs Offline extension and
 // checks for UKM collection.
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
-                       TestGoogleDocsOfflineExtensionResourceFetch) {
+IN_PROC_BROWSER_TEST_F(GoogleDocsOfflineUkmTest, ResourceFetch) {
   ASSERT_TRUE(embedded_test_server()->Start());
   using UkmEntry = ukm::builders::GoogleDocsOfflineExtension;
   const GURL url(embedded_test_server()->GetURL(
@@ -45,8 +49,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 
 // Loads a page that imports a script from an extension other than Google Docs
 // Offline and checks for UKM collection.
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
-                       TestNoneGoogleDocsOfflineExtensionResourceUse) {
+IN_PROC_BROWSER_TEST_F(GoogleDocsOfflineUkmTest, OtherExtensionResourceUse) {
   ASSERT_TRUE(embedded_test_server()->Start());
   using UkmEntry = ukm::builders::GoogleDocsOfflineExtension;
   const GURL url(embedded_test_server()->GetURL(
@@ -59,4 +62,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   EXPECT_TRUE(entries.empty());
 }
 
+}  // namespace
 }  // namespace extensions
