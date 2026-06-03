@@ -106,7 +106,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f16-vsqrt_f16c-no-avx2-no-fma",
       ":f16-vsqrt_x64",
       ":f16-vtanh_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16",
-      ":f16-vtanh_f16c-fma-no-avx2",
       ":f16-vtanh_f16c-no-avx2-no-fma",
       ":f16-vtanh_x64",
       ":f16-vunary_f16c-no-avx2-no-fma",
@@ -649,7 +648,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f16-vsqrt_f16c-no-avx2-no-fma_standalone",
       ":f16-vsqrt_x64_standalone",
       ":f16-vtanh_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-avx512fp16_standalone",
-      ":f16-vtanh_f16c-fma-no-avx2_standalone",
       ":f16-vtanh_f16c-no-avx2-no-fma_standalone",
       ":f16-vtanh_x64_standalone",
       ":f16-vunary_f16c-no-avx2-no-fma_standalone",
@@ -1652,6 +1650,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f16-vgelu_arch=rv64gc_zvfh-abi=lp64d",
       ":f16-vgelu_riscv64",
       ":f16-vhswish_arch=rv64gc_zvfh-abi=lp64d",
+      ":f16-vlog_arch=rv64gc_zvfh-abi=lp64d",
       ":f16-vlog_riscv64",
       ":f16-vlrelu_arch=rv64gc_zvfh-abi=lp64d",
       ":f16-vmulcaddc_arch=rv64gc_zvfh-abi=lp64d",
@@ -1902,6 +1901,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f16-vgelu_arch=rv64gc_zvfh-abi=lp64d_standalone",
       ":f16-vgelu_riscv64_standalone",
       ":f16-vhswish_arch=rv64gc_zvfh-abi=lp64d_standalone",
+      ":f16-vlog_arch=rv64gc_zvfh-abi=lp64d_standalone",
       ":f16-vlog_riscv64_standalone",
       ":f16-vlrelu_arch=rv64gc_zvfh-abi=lp64d_standalone",
       ":f16-vmulcaddc_arch=rv64gc_zvfh-abi=lp64d_standalone",
@@ -5777,7 +5777,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-avx512fp16-expm1minus-rr1-p3h2ts-div.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-avx512fp16-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5815,70 +5815,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-avx512fp16-expm1minus-rr1-p3h2ts-div.c",
-      ]
-
-      configs -= [ "//build/config/compiler:chromium_code" ]
-      configs += [ "//build/config/compiler:no_chromium_code" ]
-      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-      configs += [ ":xnnpack_private_config" ]
-
-      deps = [
-        "//third_party/cpuinfo",
-        "//third_party/fp16",
-        "//third_party/fxdiv",
-        "//third_party/pthreadpool:pthreadpool_standalone",
-      ]
-
-      public_configs = [ ":xnnpack_public_config" ]
-
-      if (!(is_android && use_order_profiling)) {
-        assert_no_deps = [ "//base" ]
-      }
-    }
-  }
-
-  if (build_with_chromium) {
-    source_set("f16-vtanh_f16c-fma-no-avx2") {
-      cflags = [
-        "-mf16c",
-        "-mfma",
-        "-mno-avx2",
-      ]
-
-      sources = [
-        "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-fma3-polynomial-p19h9t2-u32.c",
-      ]
-
-      configs -= [ "//build/config/compiler:chromium_code" ]
-      configs += [ "//build/config/compiler:no_chromium_code" ]
-      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-      configs += [ ":xnnpack_private_config" ]
-
-      deps = [
-        "//third_party/cpuinfo",
-        "//third_party/fp16",
-        "//third_party/fxdiv",
-        "//third_party/pthreadpool",
-      ]
-
-      public_configs = [ ":xnnpack_public_config" ]
-    }
-  }
-
-  # This is a target that cannot depend on //base.
-  if (build_with_internal_optimization_guide) {
-    source_set("f16-vtanh_f16c-fma-no-avx2_standalone") {
-      cflags = [
-        "-mf16c",
-        "-mfma",
-        "-mno-avx2",
-      ]
-
-      sources = [
-        "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-fma3-polynomial-p19h9t2-u32.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-avx512fp16-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5911,7 +5848,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-f16c-expm1minus-rr1-p3h2ts-rcp-u24.c",
+        "src/src/f16-vtanh/gen/f16-f32acc-vtanh-f16c-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5941,7 +5878,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-f16c-expm1minus-rr1-p3h2ts-rcp-u24.c",
+        "src/src/f16-vtanh/gen/f16-f32acc-vtanh-f16c-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5970,7 +5907,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-scalar-expm1minus-rr1-p3h2ts-div.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-scalar-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -5996,7 +5933,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-scalar-expm1minus-rr1-p3h2ts-div.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-scalar-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -39760,8 +39697,7 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-aarch64-neonfp16arith-expm1minus-rr1-p3h2ts-div-u32.c",
-        "src/src/f16-vtanh/gen/f16-vtanh-neonfp16arith-expm1minus-rr1-p3h2ts-nr1fma-u32.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-neonfp16arith-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -39787,8 +39723,7 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-aarch64-neonfp16arith-expm1minus-rr1-p3h2ts-div-u32.c",
-        "src/src/f16-vtanh/gen/f16-vtanh-neonfp16arith-expm1minus-rr1-p3h2ts-nr1fma-u32.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-neonfp16arith-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -39817,7 +39752,8 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-scalar-expm1minus-rr1-p3h2ts-div.c",
+        "src/src/f16-vtanh/gen/f16-f32acc-vtanh-neonfp16-rational-5-4-div.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-scalar-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -39843,7 +39779,8 @@ if (current_cpu == "arm64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-scalar-expm1minus-rr1-p3h2ts-div.c",
+        "src/src/f16-vtanh/gen/f16-f32acc-vtanh-neonfp16-rational-5-4-div.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-scalar-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53097,6 +53034,67 @@ if (current_cpu == "riscv64") {
   }
 
   if (build_with_chromium) {
+    source_set("f16-vlog_arch=rv64gc_zvfh-abi=lp64d") {
+      cflags = [
+        "-mabi=lp64d",
+        "-march=rv64gc_zvfh",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-vlog/gen/f16-vlog-rvvfp16arith-rational-3-3-div-u8v.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+    }
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("f16-vlog_arch=rv64gc_zvfh-abi=lp64d_standalone") {
+      cflags = [
+        "-mabi=lp64d",
+        "-march=rv64gc_zvfh",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/f16-vlog/gen/f16-vlog-rvvfp16arith-rational-3-3-div-u8v.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  if (build_with_chromium) {
     source_set("f16-vlog_riscv64") {
       cflags = []
 
@@ -53703,7 +53701,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-rvvfp16arith-expm1minus-rr1-p3h2ts-div-u2v.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-rvvfp16arith-rational-5-4-div-u8v.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53732,7 +53730,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-rvvfp16arith-expm1minus-rr1-p3h2ts-div-u2v.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-rvvfp16arith-rational-5-4-div-u8v.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53761,7 +53759,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-scalar-expm1minus-rr1-p3h2ts-div.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-scalar-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -53787,7 +53785,7 @@ if (current_cpu == "riscv64") {
 
       sources = [
         "src/include/xnnpack.h",
-        "src/src/f16-vtanh/gen/f16-vtanh-scalar-expm1minus-rr1-p3h2ts-div.c",
+        "src/src/f16-vtanh/gen/f16-vtanh-scalar-rational-5-4-div.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]

@@ -122,10 +122,9 @@
 // - external/xnnpack+/src/f16-vsin/gen/f16-vsin-scalar-rational-3-2-div.c
 // - external/xnnpack+/src/f16-vsqrt/gen/f16-vsqrt-f16c-rsqrt-u32.c
 // - external/xnnpack+/src/f16-vsqrt/gen/f16-vsqrt-scalar-sqrt.c
-// - external/xnnpack+/src/f16-vtanh/gen/f16-vtanh-avx512fp16-expm1minus-rr1-p3h2ts-div.c
-// - external/xnnpack+/src/f16-vtanh/gen/f16-vtanh-f16c-expm1minus-rr1-p3h2ts-rcp-u24.c
-// - external/xnnpack+/src/f16-vtanh/gen/f16-vtanh-fma3-polynomial-p19h9t2-u32.c
-// - external/xnnpack+/src/f16-vtanh/gen/f16-vtanh-scalar-expm1minus-rr1-p3h2ts-div.c
+// - external/xnnpack+/src/f16-vtanh/gen/f16-f32acc-vtanh-f16c-rational-5-4-div.c
+// - external/xnnpack+/src/f16-vtanh/gen/f16-vtanh-avx512fp16-rational-5-4-div.c
+// - external/xnnpack+/src/f16-vtanh/gen/f16-vtanh-scalar-rational-5-4-div.c
 // - external/xnnpack+/src/f16-vunary/gen/f16-vabs-sse2-u16.c
 // - external/xnnpack+/src/f16-vunary/gen/f16-vneg-sse2-u16.c
 // - external/xnnpack+/src/f16-vunary/gen/f16-vsqr-f16c-u16.c
@@ -1037,10 +1036,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-   86, 219, 205,  90, 137,  71, 237, 167,
-  109,  80, 123, 170, 164,  25, 139,  97,
-  183, 183,  87, 222, 196,   0,  53,  54,
-  235, 210,  32,  46,  35, 187,  71, 176
+   79,  73, 193,   4, 206, 203, 113,  78,
+  175, 243, 202,  42, 229,  46, 219, 192,
+  170,  92, 157,  10,  59, 188, 113, 238,
+  158,  68, 200,  58, 206, 122,  95, 174
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
