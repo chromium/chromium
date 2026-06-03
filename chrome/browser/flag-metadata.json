@@ -2698,7 +2698,7 @@
   {
     "name": "elastic-overscroll",
     "owners": [ "gastonr@microsoft.com", "flackr@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 200
   },
   {
     "name": "element-capture-cross-tab",
@@ -6723,7 +6723,7 @@
       "gastonr@microsoft.com",
       "gerchiko@microsoft.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 200
   },
   {
     "name": "new-etc1-encoder",
@@ -8330,7 +8330,7 @@
       "gastonr@microsoft.com",
       "gerchiko@microsoft.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 200
   },
   {
     "name": "rounded-icons",
