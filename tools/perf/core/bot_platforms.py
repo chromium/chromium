@@ -705,6 +705,17 @@ def _devtools_frontend_crossbench(estimated_runtime: int = 60,
                           flags=flags)
 
 
+@_register('blink-ai.crossbench')
+def _crossbench_blink_ai(estimated_runtime: int = 300,
+                         flags: tuple[str, ...] = ()):
+  return CrossbenchConfig('blink-ai.crossbench',
+                          'blink-ai',
+                          estimated_runtime=estimated_runtime,
+                          stories=('language_model', ),
+                          flags=flags,
+                          auto_enable_field_trials=False)
+
+
 PLATFORM_INFO = {
     'linux-perf': {
         'description': ('Ubuntu-22.04, Precision 3930 Rack, '
