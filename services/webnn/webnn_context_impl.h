@@ -293,6 +293,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   void CreateWeightsFile(base::OnceCallback<void(base::File)> callback);
 
+  // True when this context is owned by a WebNNContextProviderImpl (GPU
+  // process). This flag is thread-safe to read since it is set at construction
+  // and never modified.
+  const bool has_context_provider_ = false;
+
   // This weak pointer can only be dereferenced on the sequence where
   // `context_provider_->main_thread_task_runner()` runs tasks.
   base::WeakPtr<WebNNContextProviderImpl> context_provider_;

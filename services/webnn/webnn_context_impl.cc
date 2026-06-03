@@ -111,6 +111,7 @@ WebNNContextImpl::WebNNContextImpl(
                       mojo::Receiver<mojom::WebNNContext>>(
           std::move(receiver),
           gpu_task_scheduler->scheduler_task_runner()),
+      has_context_provider_(true),
       context_provider_(std::move(context_provider)),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)),
@@ -200,7 +201,7 @@ WebNNContextImpl::~WebNNContextImpl() {
 
   // Sequence destruction must happen on the provider main sequence, and only
   // after this context has fully torn down (including scheduler shutdown).
-  if (context_provider_) {
+  if (has_context_provider_) {
     main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WebNNContextProviderImpl::DestroyAndRemoveGpuSequence,
