@@ -1477,7 +1477,11 @@ ReadAnythingAppModel::FindGloballyUniqueBlocks(
   CHECK_EQ(blocks.size(), text_to_ax_map_.size());
 
   std::vector<AlignmentAnchor> candidates;
-  for (size_t i = 0; i < blocks.size(); ++i) {
+
+  // Skip block 0 (title). Defer its mapping to subsequent steps once the search
+  // space has been restricted. This avoids false body matches if the title is
+  // synthesized metadata.
+  for (size_t i = 1; i < blocks.size(); ++i) {
     const std::u16string& block = blocks[i];
 
     if (block.empty()) {
