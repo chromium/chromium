@@ -920,7 +920,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough"
-    enum="Boolean" expires_after="2026-02-07">
+    enum="Boolean" expires_after="2026-12-12">
   <owner>sygiet@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -932,6 +932,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     This metric serves as a sanity check for the guarding logic (the number of
     `false`s is expected to be extremly low) and will be removed with the
     `kAutofillPopupDontAcceptNonVisibleEnoughSuggestion` feature.
+
+    Warning: this histogram was expired from 2026-02-07 to 2026-06-03; data may
+    be missing.
   </summary>
 </histogram>
 
