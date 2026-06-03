@@ -83,6 +83,11 @@ bool ModifyExtensionIfNeeded(const LoadOptions& options,
                              const base::FilePath& input_path,
                              base::FilePath* out_path);
 
+// Reads a private key from `private_key_path` and generates an extension id
+// using it.
+std::string GetExtensionIdFromPrivateKeyFile(
+    const base::FilePath& private_key_path);
+
 }  // namespace extensions::browser_test_util
 
 #endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSER_TEST_UTIL_H_

@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
@@ -34,23 +35,6 @@ class ExternalExtensionInstallBrowserTest : public ExtensionBrowserTest {
  public:
   ExternalExtensionInstallBrowserTest() = default;
   ~ExternalExtensionInstallBrowserTest() override = default;
-
-  // Reads private key from `private_key_path` and generates extension id using
-  // it.
-  std::string GetExtensionIdFromPrivateKeyFile(
-      const base::FilePath& private_key_path) {
-    base::ScopedAllowBlockingForTesting allow_file_io_in_scope;
-    std::string private_key_contents;
-    EXPECT_TRUE(
-        base::ReadFileToString(private_key_path, &private_key_contents));
-    std::string private_key_bytes;
-    EXPECT_TRUE(
-        Extension::ParsePEMKeyBytes(private_key_contents, &private_key_bytes));
-    auto signing_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
-        base::as_byte_span(private_key_bytes));
-    std::vector<uint8_t> public_key = signing_key->ToSubjectPublicKeyInfo();
-    return crx_file::id_util::GenerateId(public_key);
-  }
 };
 
 // Verify that an externally installed extension is disabled on update if the
@@ -81,7 +65,8 @@ IN_PROC_BROWSER_TEST_F(ExternalExtensionInstallBrowserTest,
   }
 
   // Read the actual RSA key content, ensuring a perfect match.
-  const std::string extension_id = GetExtensionIdFromPrivateKeyFile(pem_path);
+  const std::string extension_id =
+      browser_test_util::GetExtensionIdFromPrivateKeyFile(pem_path);
 
   // Instantiate the necessary providers for an external extension installation.
   ExternalProviderManager* external_provider_manager =

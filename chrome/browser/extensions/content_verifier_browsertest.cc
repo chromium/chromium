@@ -28,6 +28,7 @@
 #include "chrome/browser/extensions/content_verifier_test_utils.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/devtools_util.h"
+#include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
@@ -262,22 +263,6 @@ class ContentVerifierTest : public ExtensionBrowserTest {
     EXPECT_THAT(
         prefs->GetDisableReasons(extension_id),
         testing::UnorderedElementsAre(disable_reason::DISABLE_CORRUPTED));
-  }
-
-  // Reads private key from |private_key_path| and generates extension id using
-  // it.
-  std::string GetExtensionIdFromPrivateKeyFile(
-      const base::FilePath& private_key_path) {
-    std::string private_key_contents;
-    EXPECT_TRUE(
-        base::ReadFileToString(private_key_path, &private_key_contents));
-    std::string private_key_bytes;
-    EXPECT_TRUE(
-        Extension::ParsePEMKeyBytes(private_key_contents, &private_key_bytes));
-    auto signing_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
-        base::as_byte_span(private_key_bytes));
-    std::vector<uint8_t> public_key = signing_key->ToSubjectPublicKeyInfo();
-    return crx_file::id_util::GenerateId(public_key);
   }
 
   // Creates a random signing key and sets |extension_id| according to it.
@@ -1046,8 +1031,9 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
       test_data_dir_.AppendASCII("content_verifier/storage_permission");
   base::FilePath crx_path = PackExtension(unpacked_path);
   ASSERT_TRUE(base::PathExists(crx_path.DirName().AppendASCII("temp.pem")));
-  const std::string extension_id = GetExtensionIdFromPrivateKeyFile(
-      crx_path.DirName().AppendASCII("temp.pem"));
+  const std::string extension_id =
+      browser_test_util::GetExtensionIdFromPrivateKeyFile(
+          crx_path.DirName().AppendASCII("temp.pem"));
 
   TestContentVerifySingleJobObserver observer(
       extension_id, base::FilePath().AppendASCII("background.js"));
