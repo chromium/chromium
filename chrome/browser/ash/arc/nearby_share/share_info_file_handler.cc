@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -58,10 +58,10 @@ int64_t GetTimeoutInSecondsFromBytes(uint64_t transfer_bytes) {
 
 // Returns scoped_refptr to FileSystemContext for an url.
 scoped_refptr<storage::FileSystemContext> GetScopedFileSystemContext(
-    Profile* const profile,
+    content::BrowserContext* const browser_context,
     const GURL& url) {
   content::StoragePartition* const storage =
-      profile->content::BrowserContext::GetStoragePartitionForUrl(url);
+      browser_context->GetStoragePartitionForUrl(url);
   DCHECK(storage);
   return storage->GetFileSystemContext();
 }
@@ -127,13 +127,13 @@ ShareInfoFileHandler::FileShareConfig::FileShareConfig() = default;
 ShareInfoFileHandler::FileShareConfig::~FileShareConfig() = default;
 
 ShareInfoFileHandler::ShareInfoFileHandler(
-    Profile* profile,
+    content::BrowserContext* browser_context,
     mojom::ShareIntentInfo* share_info,
     base::FilePath directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : profile_(profile), task_runner_(task_runner) {
+    : browser_context_(browser_context), task_runner_(task_runner) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile_);
+  DCHECK(browser_context_);
   DCHECK(task_runner_);
   DCHECK(share_info);
 
@@ -262,7 +262,7 @@ void ShareInfoFileHandler::OnFileDescriptorCreated(
 
   contexts_.emplace_front();
   auto it_context = contexts_.begin();
-  *it_context = GetScopedFileSystemContext(profile_, url);
+  *it_context = GetScopedFileSystemContext(browser_context_, url);
   DCHECK(it_context->get());
 
   const file_manager::util::FileSystemURLAndHandle isolated_file_system =

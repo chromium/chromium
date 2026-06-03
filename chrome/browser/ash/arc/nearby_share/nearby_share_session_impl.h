@@ -22,6 +22,8 @@
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 
+class Profile;
+
 namespace webshare {
 class PrepareDirectoryTask;
 }  // namespace webshare
