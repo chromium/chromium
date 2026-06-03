@@ -300,6 +300,12 @@ void ScreenAIServiceHandlerBase::OnServiceLaunched(
 void ScreenAIServiceHandlerBase::CreateResourceMonitor(
     const std::string& process_name) {
   CHECK(!resource_monitor_);
+
+  // Resource monitor is created with a delay after service is launched. Do not
+  // create it if the service is disconnected during this delay.
+  if (!screen_ai_service_factory_.is_bound()) {
+    return;
+  }
   // Resource monitor creation may [rarely] fail if the process name is not
   // found in process registry. It is only used for metrics and does not affect
   // user experience.

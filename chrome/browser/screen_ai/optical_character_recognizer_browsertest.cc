@@ -187,6 +187,10 @@ double StringMatch(std::string_view expected, std::string_view extracted) {
 
 namespace screen_ai {
 
+// This test fixture tests different running configurations of the OCR service,
+// the availability of the ScreenAI library, and usage pattern of the OCR
+// service API. It is NOT focused on the OCR results.
+// Params: (OCR service enabled, ScreenAI library available)
 class OpticalCharacterRecognizerTest
     : public InProcessBrowserTest,
       public ScreenAIInstallState::Observer,
@@ -331,6 +335,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   EXPECT_TRUE(future.Wait());
 }
 
+// Test OCR on an blank white image with no text.
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
   ASSERT_EQ(CreateAndInitOCR(mojom::OcrClientType::kTest), IsOcrAvailable());
 
@@ -655,6 +660,8 @@ TEST(OpticalCharacterRecognizer, StringMatchTest) {
   ASSERT_LE(StringMatch("ABCD", "ABXD"), 0.75);
 }
 
+// This test fixture is used for testing the OCR results on different
+// languages and image conditions and covers OCR accuracy.
 // Param: Test name.
 class OpticalCharacterRecognizerResultsTest
     : public InProcessBrowserTest,
