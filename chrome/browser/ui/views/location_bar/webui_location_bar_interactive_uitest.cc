@@ -399,7 +399,9 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, NavigateSuggestions) {
 // Use an inline suggestion. Since we can't actually fake keyboard input, this
 // is limited to things which the JS impl directly does in response to events
 // and not things done as normal <input> interactions.
-IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, InlineSuggestion) {
+// TODO(crbug.com/519455538): Fix the data race and re-enable the test.
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
+                       DISABLED_InlineSuggestion) {
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(this->browser()->profile(),
                                            ServiceAccessType::EXPLICIT_ACCESS);
