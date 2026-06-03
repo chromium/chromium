@@ -22,6 +22,11 @@ class ScreenshotMetricsRecorderTest : public PlatformTest {
   ScreenshotMetricsRecorderTest() {}
   ~ScreenshotMetricsRecorderTest() override {}
 
+  void TearDown() override {
+    [application_partial_mock_ stopMocking];
+    PlatformTest::TearDown();
+  }
+
   void SetUp() override {
     application_partial_mock_ =
         OCMPartialMock([UIApplication sharedApplication]);
