@@ -673,4 +673,85 @@ TEST_F(DesktopWindowTreeHostPlatformTest, ContentWindowShownOnce) {
   host_platform->GetContentWindow()->RemoveObserver(&observer);
 }
 
+#if !BUILDFLAG(IS_FUCHSIA)
+namespace {
+
+class CloseOnBoundsChangedWidgetObserver : public WidgetObserver {
+ public:
+  explicit CloseOnBoundsChangedWidgetObserver(Widget* widget) {
+    observation_.Observe(widget);
+  }
+  ~CloseOnBoundsChangedWidgetObserver() override = default;
+
+  void OnWidgetBoundsChanged(Widget* widget,
+                             const gfx::Rect& new_bounds) override {
+    observation_.Reset();
+    widget->CloseNow();
+  }
+
+ private:
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
+};
+
+}  // namespace
+
+class RestoreBoundsChangeStubWindow : public ui::StubWindow {
+ public:
+  RestoreBoundsChangeStubWindow(ui::PlatformWindowDelegate* delegate,
+                                gfx::AcceleratedWidget widget,
+                                const gfx::Rect& bounds)
+      : StubWindow(delegate, false, bounds) {
+    InitDelegateWithWidget(delegate, widget);
+  }
+
+  void Restore() override {
+    delegate()->OnBoundsChanged({/*origin_changed=*/true});
+  }
+};
+
+class RestoreBoundsChangePlatformWindowFactoryDelegate
+    : public aura::WindowTreeHostPlatform::
+          PlatformWindowFactoryDelegateForTesting {
+ public:
+  RestoreBoundsChangePlatformWindowFactoryDelegate() {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        this);
+  }
+  RestoreBoundsChangePlatformWindowFactoryDelegate(
+      const RestoreBoundsChangePlatformWindowFactoryDelegate&) = delete;
+  RestoreBoundsChangePlatformWindowFactoryDelegate& operator=(
+      const RestoreBoundsChangePlatformWindowFactoryDelegate&) = delete;
+  ~RestoreBoundsChangePlatformWindowFactoryDelegate() override {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        nullptr);
+  }
+
+  std::unique_ptr<ui::PlatformWindow> Create(
+      aura::WindowTreeHostPlatform* host) override {
+    return std::make_unique<RestoreBoundsChangeStubWindow>(
+        host, ++last_accelerated_widget_, gfx::Rect(100, 100, 100, 100));
+  }
+
+  gfx::AcceleratedWidget last_accelerated_widget_ = gfx::kNullAcceleratedWidget;
+};
+
+TEST_F(DesktopWindowTreeHostPlatformTest,
+       RestoreSurvivesSynchronousCloseDuringBoundsChange) {
+  RestoreBoundsChangePlatformWindowFactoryDelegate
+      scoped_platform_window_factory_delegate;
+
+  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
+  widget->Show();
+
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  ASSERT_TRUE(host_platform);
+
+  CloseOnBoundsChangedWidgetObserver observer(widget.get());
+
+  // This should not crash or trigger UAF.
+  host_platform->Restore();
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
 }  // namespace views

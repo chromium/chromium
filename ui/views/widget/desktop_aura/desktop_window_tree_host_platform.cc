@@ -656,7 +656,11 @@ void DesktopWindowTreeHostPlatform::Minimize() {
 }
 
 void DesktopWindowTreeHostPlatform::Restore() {
+  auto weak_ptr = weak_factory_.GetWeakPtr();
   platform_window()->Restore();
+  if (!weak_ptr) {
+    return;
+  }
   Show(ui::mojom::WindowShowState::kNormal, gfx::Rect());
 }
 
