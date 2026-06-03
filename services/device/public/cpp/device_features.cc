@@ -31,6 +31,10 @@ BASE_FEATURE(kSerialPortConnected,
 #endif  // !BUILDFLAG(IS_ANDROID)
 );
 
+// Restricts the sharing of C++ SerialPort and WritableStream instances across
+// different DOMWrapperWorld contexts to prevent cross-world leaks.
+BASE_FEATURE(kWebSerialWorldIsolatedCache, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Avoid triggering the macOS Bluetooth permission prompt when
 // navigator.serial.getPorts() is called and permission is undetermined.
 BASE_FEATURE(kAvoidBluetoothPromptInGetPorts, base::FEATURE_ENABLED_BY_DEFAULT);

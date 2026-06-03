@@ -12,8 +12,10 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_port_filter.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_port_request_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -25,10 +27,13 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_uuid.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -123,19 +128,84 @@ const AtomicString& Serial::InterfaceName() const {
 }
 
 void Serial::ContextDestroyed() {
-  for (auto& entry : port_cache_)
+  for (auto& cache_entry : port_caches_) {
+    for (auto& entry : cache_entry.value->port_cache()) {
+      entry.value->ContextDestroyed();
+    }
+  }
+  for (auto& entry : port_cache_) {
     entry.value->ContextDestroyed();
+  }
 }
 
 void Serial::OnPortConnectedStateChanged(
     mojom::blink::SerialPortInfoPtr port_info) {
   bool connected = port_info->connected;
-  SerialPort* port = GetOrCreatePort(std::move(port_info));
-  port->set_connected(connected);
-  if (connected) {
-    port->DispatchEvent(*Event::CreateBubble(event_type_names::kConnect));
+  const AtomicString& event_type =
+      connected ? event_type_names::kConnect : event_type_names::kDisconnect;
+
+  if (RuntimeEnabledFeatures::WebSerialWorldIsolatedCacheEnabled()) {
+    ExecutionContext* context = GetExecutionContext();
+    if (!context) {
+      return;
+    }
+
+    if (context->IsWindow()) {
+      LocalDOMWindow* window = To<LocalDOMWindow>(context);
+      LocalFrame* frame = window->GetFrame();
+      if (!frame) {
+        return;
+      }
+
+      // Handle scope is required to manage temporary V8 handles allocated
+      // during world iteration, preventing V8 memory leaks.
+      v8::Isolate* isolate = context->GetIsolate();
+      v8::HandleScope handle_scope(isolate);
+      HeapVector<Member<DOMWrapperWorld>> worlds;
+      DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
+
+      for (DOMWrapperWorld* world : worlds) {
+        // A world is only active in this frame if it has an initialized window
+        // proxy context. This prevents dispatching events or creating port
+        // objects for worlds (like extensions) that exist in the isolate but
+        // are not actively running on this specific page.
+        LocalWindowProxy* window_proxy =
+            frame->WindowProxyMaybeUninitialized(*world);
+        if (window_proxy && !window_proxy->ContextIfInitialized().IsEmpty()) {
+          SerialPort* port = GetOrCreatePort(*world, port_info->Clone());
+          port->set_connected(connected);
+          port->DispatchEvent(*Event::CreateBubble(event_type));
+        }
+      }
+    } else if (context->IsWorkerGlobalScope()) {
+      auto* worker_global_scope = To<WorkerOrWorkletGlobalScope>(context);
+      // Workers run in a single-world environment (no isolated
+      // worlds/extensions). Thus, we don't need to loop over worlds and can
+      // retrieve the single active worker world directly from the script
+      // controller.
+      WorkerOrWorkletScriptController* script_controller =
+          worker_global_scope->ScriptController();
+      // Only proceed if the JS execution context is initialized. If the worker
+      // is terminating or not fully started, we should not dispatch events.
+      if (script_controller && script_controller->IsContextInitialized()) {
+        v8::Isolate* isolate = context->GetIsolate();
+        v8::HandleScope handle_scope(isolate);
+        ScriptState* script_state = script_controller->GetScriptState();
+        if (script_state) {
+          DOMWrapperWorld& world = script_state->World();
+          SerialPort* port = GetOrCreatePort(world, std::move(port_info));
+          port->set_connected(connected);
+          port->DispatchEvent(*Event::CreateBubble(event_type));
+        }
+      }
+    }
   } else {
-    port->DispatchEvent(*Event::CreateBubble(event_type_names::kDisconnect));
+    // Legacy fallback path when WebSerialWorldIsolatedCache is disabled.
+    // Uses the shared port_cache_ instead of the world-isolated port_caches_.
+    // This block can be safely removed when the feature flag is cleaned up.
+    SerialPort* port = GetOrCreatePort(std::move(port_info));
+    port->set_connected(connected);
+    port->DispatchEvent(*Event::CreateBubble(event_type));
   }
 }
 
@@ -277,11 +347,16 @@ void Serial::ForgetPort(
   service_->ForgetPort(token, std::move(callback));
 }
 
+void Serial::SerialPortCache::Trace(Visitor* visitor) const {
+  visitor->Trace(port_cache_);
+}
+
 void Serial::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   visitor->Trace(receiver_);
   visitor->Trace(get_ports_promises_);
   visitor->Trace(request_port_promises_);
+  visitor->Trace(port_caches_);
   visitor->Trace(port_cache_);
   EventTarget::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
@@ -348,6 +423,30 @@ void Serial::OnServiceConnectionError() {
   }
 }
 
+HeapHashMap<String, WeakMember<SerialPort>>& Serial::GetOrCreateWorldPortCache(
+    DOMWrapperWorld& world) {
+  auto it = port_caches_.find(&world);
+  if (it != port_caches_.end()) {
+    return it->value->port_cache();
+  }
+  auto* cache = MakeGarbageCollected<SerialPortCache>();
+  port_caches_.insert(&world, cache);
+  return cache->port_cache();
+}
+
+SerialPort* Serial::GetOrCreatePort(DOMWrapperWorld& world,
+                                    mojom::blink::SerialPortInfoPtr info) {
+  auto& port_cache = GetOrCreateWorldPortCache(world);
+  auto it = port_cache.find(TokenToString(info->token));
+  if (it != port_cache.end()) {
+    return it->value.Get();
+  }
+
+  SerialPort* port = MakeGarbageCollected<SerialPort>(this, std::move(info));
+  port_cache.insert(TokenToString(port->token()), port);
+  return port;
+}
+
 SerialPort* Serial::GetOrCreatePort(mojom::blink::SerialPortInfoPtr info) {
   auto it = port_cache_.find(TokenToString(info->token));
   if (it != port_cache_.end()) {
@@ -359,15 +458,29 @@ SerialPort* Serial::GetOrCreatePort(mojom::blink::SerialPortInfoPtr info) {
   return port;
 }
 
+SerialPort* Serial::GetOrCreatePort(ScriptState* script_state,
+                                    mojom::blink::SerialPortInfoPtr info) {
+  if (RuntimeEnabledFeatures::WebSerialWorldIsolatedCacheEnabled()) {
+    return GetOrCreatePort(script_state->World(), std::move(info));
+  }
+  return GetOrCreatePort(std::move(info));
+}
+
 void Serial::OnGetPorts(
     ScriptPromiseResolver<IDLSequence<SerialPort>>* resolver,
     Vector<mojom::blink::SerialPortInfoPtr> port_infos) {
   DCHECK(get_ports_promises_.Contains(resolver));
   get_ports_promises_.erase(resolver);
 
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     script_state)) {
+    return;
+  }
+
   HeapVector<Member<SerialPort>> ports;
   for (auto& port_info : port_infos)
-    ports.push_back(GetOrCreatePort(std::move(port_info)));
+    ports.push_back(GetOrCreatePort(script_state, std::move(port_info)));
 
   resolver->Resolve(ports);
 }
@@ -377,13 +490,19 @@ void Serial::OnRequestPort(ScriptPromiseResolver<SerialPort>* resolver,
   DCHECK(request_port_promises_.Contains(resolver));
   request_port_promises_.erase(resolver);
 
+  ScriptState* script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     script_state)) {
+    return;
+  }
+
   if (!port_info) {
     resolver->RejectWithDOMException(DOMExceptionCode::kNotFoundError,
                                      kNoPortSelected);
     return;
   }
 
-  resolver->Resolve(GetOrCreatePort(std::move(port_info)));
+  resolver->Resolve(GetOrCreatePort(script_state, std::move(port_info)));
 }
 
 }  // namespace blink

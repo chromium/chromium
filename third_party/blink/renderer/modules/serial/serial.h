@@ -25,6 +25,7 @@ namespace blink {
 
 class ExecutionContext;
 class NavigatorBase;
+class DOMWrapperWorld;
 class ScriptState;
 class SerialPort;
 class SerialPortRequestOptions;
@@ -86,8 +87,34 @@ class MODULES_EXPORT Serial final : public EventTarget,
                           RegisteredEventListener&) override;
 
  private:
+  friend class SerialTestHelper;
   void EnsureServiceConnection();
   void OnServiceConnectionError();
+  // A garbage-collected wrapper around a map of token to SerialPort objects for
+  // a single V8 world. This allows Oilpan to manage the lifecycle of
+  // world-isolated caches cleanly.
+  class SerialPortCache final : public GarbageCollected<SerialPortCache> {
+   public:
+    void Trace(Visitor* visitor) const;
+    HeapHashMap<String, WeakMember<SerialPort>>& port_cache() {
+      return port_cache_;
+    }
+
+   private:
+    HeapHashMap<String, WeakMember<SerialPort>> port_cache_;
+  };
+
+  HeapHashMap<String, WeakMember<SerialPort>>& GetOrCreateWorldPortCache(
+      DOMWrapperWorld& world);
+  // Gets or creates a port inside a specific world's cache (used for direct
+  // lookups, e.g. during async Mojo events).
+  SerialPort* GetOrCreatePort(DOMWrapperWorld& world,
+                              mojom::blink::SerialPortInfoPtr);
+  // Gets or creates a port using the world extracted from the active V8 context
+  // (used in Mojo callbacks resolving getPorts/requestPort promises).
+  SerialPort* GetOrCreatePort(ScriptState*, mojom::blink::SerialPortInfoPtr);
+  // Legacy fallback: gets or creates a port using the shared, non-isolated
+  // cache (used when WebSerialWorldIsolatedCache is disabled).
   SerialPort* GetOrCreatePort(mojom::blink::SerialPortInfoPtr);
   void OnGetPorts(ScriptPromiseResolver<IDLSequence<SerialPort>>*,
                   Vector<mojom::blink::SerialPortInfoPtr>);
@@ -99,6 +126,8 @@ class MODULES_EXPORT Serial final : public EventTarget,
   HeapHashSet<Member<ScriptPromiseResolver<IDLSequence<SerialPort>>>>
       get_ports_promises_;
   HeapHashSet<Member<ScriptPromiseResolverBase>> request_port_promises_;
+  HeapHashMap<WeakMember<DOMWrapperWorld>, Member<SerialPortCache>>
+      port_caches_;
   HeapHashMap<String, WeakMember<SerialPort>> port_cache_;
 };
 

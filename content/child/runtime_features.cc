@@ -366,6 +366,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"RelatedWebsitePartitionAPI",
            raw_ref(net::features::kRelatedWebsitePartitionAPI)},
           {"SerialPortConnected", raw_ref(features::kSerialPortConnected)},
+          {"WebSerialWorldIsolatedCache",
+           raw_ref(features::kWebSerialWorldIsolatedCache)},
           {"SplitViewLinkOpen", raw_ref(features::kSplitViewLinkOpen)},
 #if BUILDFLAG(IS_MAC)
           {"SystemDefaultAccentColors",
