@@ -603,7 +603,7 @@ declare_args() {
   # be enabled after switching to native zygote.
   enable_user_space_zero_segment =
       has_64_bit_pointers && use_partition_alloc_as_malloc &&
-      (is_mac || (is_linux && !is_chromeos && !is_android))
+      (is_mac || is_win || (is_linux && !is_chromeos && !is_android))
 
   # Size of the zero segment in MB. The total size will be at least this value.
   # This is 4GB + 1MB. The 1MB protects from using certain kinds of objects

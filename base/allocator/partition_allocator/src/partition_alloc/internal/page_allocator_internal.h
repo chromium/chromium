@@ -5,6 +5,7 @@
 #ifndef PARTITION_ALLOC_INTERNAL_PAGE_ALLOCATOR_INTERNAL_H_
 #define PARTITION_ALLOC_INTERNAL_PAGE_ALLOCATOR_INTERNAL_H_
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 
@@ -18,11 +19,29 @@ uintptr_t SystemAllocPages(uintptr_t hint,
                            PageTag page_tag,
                            int file_descriptor_for_shared_alloc = -1);
 
-// Returns the size of the OS-based zero segment which is a red zone
-// region that cannot be reserved starting at address 0x0. The segments
-// permissions may be a mix of read-only and no access.
+// Represents a generic range of memory defined by a starting address and size.
+struct AddressRange {
+  uintptr_t address;
+  size_t size;
+};
+
+struct WellKnownReadOnlyRegions {
+  // Represents a safe, well-known region of memory that is already occupied,
+  // reserved, or otherwise handled by the OS, and is guaranteed to be
+  // read-only or inaccessible.
+  using WellKnownReadOnlyRegion = AddressRange;
+
+  // Maximum number of well known regions.
+  static inline constexpr size_t kMaxRegions = 8;
+
+  std::array<WellKnownReadOnlyRegion, kMaxRegions> regions;
+  size_t count = 0;
+};
+
+// Returns the list of well-known read-only regions for the current platform.
+// The regions are sorted by address and non-overlapping.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-size_t GetZeroSegmentSizeFromOS();
+WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions();
 
 }  // namespace partition_alloc::internal
 

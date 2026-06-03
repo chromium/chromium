@@ -7,6 +7,7 @@
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/internal/page_allocator_internal.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
 
@@ -209,6 +210,8 @@ bool UseMapJit() {
 }
 #endif  // PA_BUILDFLAG(IS_IOS)
 
+namespace {
+
 #if PA_BUILDFLAG(IS_MAC)
 
 size_t GetZeroSegmentSizeFromOS() {
@@ -242,5 +245,16 @@ size_t GetZeroSegmentSizeFromOS() {
 }
 
 #endif
+
+}  // namespace
+
+WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions() {
+  return WellKnownReadOnlyRegions{
+      .regions = {{
+          {0, GetZeroSegmentSizeFromOS()},
+      }},
+      .count = 1,
+  };
+}
 
 }  // namespace partition_alloc::internal

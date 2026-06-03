@@ -248,8 +248,23 @@ bool SealSystemPagesInternal(uintptr_t address, size_t length) {
   return false;
 }
 
-size_t GetZeroSegmentSizeFromOS() {
-  return 0;
+WellKnownReadOnlyRegions GetWellKnownReadOnlyRegions() {
+  WellKnownReadOnlyRegions result;
+  result.regions[0] = {0, 0x10000};  // [0, 64KB] NULL-pointer region
+  result.count = 1;
+
+  // [0x7FFE0000, 64KB] KUSER_SHARED_DATA & Hypervisor block
+  // Verify that this block is actually mapped/occupied.
+  MEMORY_BASIC_INFORMATION mbi;
+  if (VirtualQuery(reinterpret_cast<LPCVOID>(0x7FFE0000), &mbi, sizeof(mbi)) ==
+      sizeof(mbi)) {
+    if (mbi.State != MEM_FREE &&
+        (mbi.Protect == PAGE_READONLY || mbi.Protect == PAGE_NOACCESS)) {
+      result.regions[result.count] = {0x7FFE0000, 0x10000};
+      result.count++;
+    }
+  }
+  return result;
 }
 
 }  // namespace partition_alloc::internal
