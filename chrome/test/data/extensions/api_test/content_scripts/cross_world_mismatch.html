@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  // Register the service worker `cross_world_mismatch_sw.js` that will
+  // intercept the extension resource request.
+  navigator.serviceWorker.register('cross_world_mismatch_sw.js').then(async () => {
+    await navigator.serviceWorker.ready;
+    if (navigator.serviceWorker.controller) {
+      startInject();
+    } else {
+      // Wait for the service worker to take control of the page before proceeding.
+      navigator.serviceWorker.addEventListener('controllerchange', startInject, {once: true});
+    }
+  });
+
+  // Triggers a preload of the extension resource `injected.js` from the main
+  // world. This caches the injected.js for future fetches. We then then signals
+  // the extension content script to perform its own fetch for the same
+  // resource.
+  function startInject() {
+    let ext_id = new URLSearchParams(window.location.search).get('id');
+    let link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'script';
+    link.crossOrigin = 'anonymous';
+    link.href = 'chrome-extension://' + ext_id + '/injected.js';
+
+    // After the preload/caching has occurred, then we trigger the content
+    // script to request `injected.js`. This ensures the resource is in the
+    // cache before the content script attempts its fetch.
+    link.onload = link.onerror = () => {
+      window.postMessage('INJECT_NOW', '*');
+    };
+
+    document.head.appendChild(link);
+  }
+
+  // Listen for messages from the extension reporting which script contents were
+  // fetched and loaded (`ORIGINAL_SCRIPT` from the extension content script or
+  // `REPLACEMENT_SCRIPT` from `cross_world_mismatch_sw.js`), and relay the
+  // result back to the browser test.
+  window.addEventListener('message', function(e) {
+    if (e.data === 'ORIGINAL_SCRIPT' || e.data === 'REPLACEMENT_SCRIPT') {
+      window.domAutomationController.send(e.data);
+    }
+  });
+</script>
+</body>
+</html>

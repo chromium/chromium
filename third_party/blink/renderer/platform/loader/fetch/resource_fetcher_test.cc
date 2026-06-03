@@ -47,11 +47,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -2386,6 +2388,59 @@ TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorNotAttached) {
   std::optional<PartialResourceRequest> last_request =
       observer->GetLastRequest();
   EXPECT_FALSE(last_request.has_value());
+}
+
+// Tests that extension resources loaded in one isolated world (or the main
+// world) are not reused by requests originating from a different isolated
+// world. Regression test for crbug.com/461167648.
+TEST_P(ResourceFetcherTest, CrossWorldExtensionResourceMismatch) {
+  // Register the scheme to ensure it's recognized as an extension.
+  CommonSchemeRegistry::RegisterURLSchemeAsExtension("chrome-extension");
+
+  // Set up the `fetcher` and a mock URL that returns a valid response.
+  auto* fetcher = CreateFetcher();
+  KURL url("chrome-extension://1234/foo.png");
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(http_names::kCacheControl,
+                              AtomicString("max-age=3600"));
+  platform_->GetURLLoaderMockFactory()->RegisterURL(
+      url, WrappedResourceResponse(response),
+      test::PlatformTestDataPath(kTestResourceFilename));
+
+  // Simulate a request from the main world. This request should succeed and
+  // populate `MemoryCache` for future fetches.
+  ResourceRequest main_world_request(url);
+  main_world_request.SetRequestContext(
+      mojom::blink::RequestContextType::INTERNAL);
+  FetchParameters main_world_fetch_params =
+      FetchParameters::CreateForTest(std::move(main_world_request));
+  Resource* main_world_resource = MockResource::Fetch(
+      main_world_fetch_params, fetcher, /*ResourceClient=*/nullptr);
+  ASSERT_TRUE(main_world_resource);
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(main_world_resource->IsLoaded());
+  EXPECT_TRUE(MemoryCache::Get()->Contains(main_world_resource));
+
+  // Simulate a request from a different isolated world (extension).
+  ResourceRequest isolated_world_request(url);
+  isolated_world_request.SetRequestContext(
+      mojom::blink::RequestContextType::INTERNAL);
+  FetchParameters isolated_world_fetch_params =
+      FetchParameters::CreateForTest(std::move(isolated_world_request));
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+  isolated_world_fetch_params.MutableOptions().world_for_csp = isolated_world;
+
+  // Verify that the cached resource is not reused in the extension isolated
+  // world. Because the initiating worlds differ, this should force a mismatch
+  // and cause a fresh fetch, yielding a different `Resource` instance.
+  Resource* isolated_world_resource = MockResource::Fetch(
+      isolated_world_fetch_params, fetcher, /*ResourceClient=*/nullptr);
+  EXPECT_NE(main_world_resource, isolated_world_resource);
+
+  // Clean up the registered scheme.
+  CommonSchemeRegistry::RemoveURLSchemeAsExtensionForTest("chrome-extension");
 }
 
 }  // namespace blink

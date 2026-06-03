@@ -39,6 +39,7 @@
 #include "build/build_config.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -68,6 +69,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+
+// Feature that prevents an extension resource from being fetched across
+// isolated worlds.
+BASE_FEATURE(kPreventExtensionResourceFetchAcrossIsolatedWorlds,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace blink {
 
@@ -844,7 +850,16 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
   // Use GetResourceRequest to get the const resource_request_.
   const ResourceRequestHead& current_request = GetResourceRequest();
 
-  // If credentials mode is defferent from the the previous request, re-fetch
+  // Extensions resources should not fetch across isolated worlds.
+  if (base::FeatureList::IsEnabled(
+          kPreventExtensionResourceFetchAcrossIsolatedWorlds) &&
+      CommonSchemeRegistry::IsExtensionScheme(
+          current_request.Url().Protocol().Ascii()) &&
+      options_.world_for_csp != new_options.world_for_csp) {
+    return MatchStatus::kCrossWorldExtensionResourceMismatch;
+  }
+
+  // If credentials mode is different from the the previous request, re-fetch
   // the resource.
   //
   // This helps with the case where the server sends back

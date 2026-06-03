@@ -2716,4 +2716,71 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithBackgroundCompilation,
   WaitForBackgroundCompilationTimeHistograms();
 }
 
+// Tests that extension resources requested by content scripts are correctly
+// attributed and not blocked or mismatched by the browser. Regression test for
+// crbug.com/461167648.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
+                       CrossWorldExtensionResourceMismatch) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Created an extension with a content script that will fetch `injected.js`
+  // and report back the contents of that fetch.
+  static constexpr char kCrossWorldManifest[] =
+      R"({
+        "name": "Cross World Mismatch test",
+        "version": "1.0",
+        "manifest_version": 2,
+        "content_scripts": [
+          {
+            "matches": ["*://*/*"],
+            "js": ["content_script.js"],
+            "run_at": "document_start"
+          }
+        ],
+        "web_accessible_resources": ["injected.js"]
+      })";
+
+  static constexpr char kContentScript[] = R"(
+    window.addEventListener('message', function(e) {
+      if (e.data === 'INJECT_NOW') {
+        fetch(chrome.runtime.getURL('injected.js'))
+          .then(r => r.text())
+          .then(text => {
+            if (text.includes('REPLACEMENT')) {
+              chrome.test.sendMessage('REPLACEMENT_SCRIPT');
+            } else {
+              chrome.test.sendMessage('ORIGINAL_SCRIPT');
+            }
+          });
+      }
+    });
+  )";
+
+  static constexpr char kInjectedScript[] = R"(
+    window.postMessage('ORIGINAL_SCRIPT', '*');
+  )";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kCrossWorldManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
+  test_dir.WriteFile(FILE_PATH_LITERAL("injected.js"), kInjectedScript);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ExtensionTestMessageListener listener("ORIGINAL_SCRIPT");
+
+  // Navigate to `cross_world_mismatch.html`'s which will initiate the resource
+  // fetch.
+  GURL url = embedded_test_server()->GetURL(
+      "127.0.0.1",
+      "/extensions/api_test/content_scripts/cross_world_mismatch.html?id=" +
+          extension->id());
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
+
+  // Confirms the original extension content script was injected, and not the
+  // replacement script provided by `cross_world_mismatch.html`'s service
+  // worker. This ensures that the resource from a different world is not
+  // reused.
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+}
 }  // namespace extensions
