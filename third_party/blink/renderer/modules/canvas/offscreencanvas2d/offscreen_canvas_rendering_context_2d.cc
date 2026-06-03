@@ -220,9 +220,10 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
   const bool use_shared_image =
       use_gpu_raster || (host->HasPlaceholderCanvas() &&
                          SharedGpuContext::IsGpuCompositingEnabled());
-  const SkAlphaType alpha_type = GetAlphaType();
-  const viz::SharedImageFormat format = GetSharedImageFormat();
-  const gfx::ColorSpace color_space = GetColorSpace();
+  const SkAlphaType alpha_type = color_params_.GetAlphaType();
+  const viz::SharedImageFormat format = color_params_.GetSharedImageFormat();
+  const gfx::ColorSpace color_space = color_params_.GetGfxColorSpace();
+  const gfx::HDRMetadata hdr_metadata = color_params_.GetGfxHdrMetadata();
   if (use_shared_image) {
     gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
@@ -231,7 +232,7 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
     }
 
     provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
-        host->Size(), format, alpha_type, color_space,
+        host->Size(), format, alpha_type, color_space, hdr_metadata,
         SharedGpuContext::ContextProviderWrapper(),
         use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU,
         shared_image_usage_flags, host);
@@ -241,7 +242,7 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
         host->GetOrCreateResourceDispatcher()->GetWeakPtr();
     provider = Canvas2DResourceProviderSharedImage::
         CreateWithClearForSoftwareCompositor(
-            host->Size(), format, alpha_type, color_space,
+            host->Size(), format, alpha_type, color_space, hdr_metadata,
             SharedGpuContext::SharedImageInterfaceProvider(), host);
   }
 
@@ -253,7 +254,7 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
     // another type of resource prover above is a sign that the graphics
     // pipeline is in a bad state (e.g. gpu process crashed, out of memory)
     provider = Canvas2DResourceProviderBitmap::CreateWithClear(
-        host->Size(), format, alpha_type, color_space, host);
+        host->Size(), format, alpha_type, color_space, hdr_metadata, host);
   }
 
   resource_provider_ = std::move(provider);

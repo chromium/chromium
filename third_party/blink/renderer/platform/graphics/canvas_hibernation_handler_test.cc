@@ -61,7 +61,7 @@ class TestHibernationHandlerDelegate
     CHECK(!GetResourceProvider());
     resource_provider_ = Canvas2DResourceProviderSharedImage::CreateWithClear(
         size_, GetN32FormatForCanvas(), kPremul_SkAlphaType,
-        gfx::ColorSpace::CreateSRGB(),
+        gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT);
   }

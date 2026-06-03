@@ -258,7 +258,7 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
       auto resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
           dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
-          gfx::ColorSpace::CreateSRGB(), wrapper,
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(), wrapper,
           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | usage);
 
       return resource_provider->DoExternalOverdrawAndSnapshot(

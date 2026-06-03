@@ -255,6 +255,9 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   SkIRect source_rect;
   SkIRect source_rect_valid;
   SkISize dest_size;
+  gfx::HDRMetadata dest_hdr_metadata = options.reinterpret_as_srgb
+                                           ? gfx::HDRMetadata()
+                                           : source->GetHdrMetadata();
   ComputeSubsetParameters(source, options, source_rect, source_rect_valid,
                           dest_size);
 
@@ -266,7 +269,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
       source->ContextProviderWrapper()) {
     auto resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
         gfx::Size(dest_size.width(), dest_size.height()), dest_format,
-        dest_alpha_type, dest_color_space,
+        dest_alpha_type, dest_color_space, dest_hdr_metadata,
         source->ContextProviderWrapper(), source->GetSharedImage()->usage());
 
     if (resource_provider) {

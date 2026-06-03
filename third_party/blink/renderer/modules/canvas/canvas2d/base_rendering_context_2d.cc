@@ -589,7 +589,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   // WritePixels (called by PutByteArray) requires that the source and
   // destination pixel formats have the same bytes per pixel.
   SkColorType dest_color_type =
-      viz::ToClosestSkColorType(GetSharedImageFormat());
+      viz::ToClosestSkColorType(color_params_.GetSharedImageFormat());
   if (SkColorTypeBytesPerPixel(dest_color_type) !=
       SkColorTypeBytesPerPixel(data_pixmap.colorType())) {
     SkImageInfo converted_info =

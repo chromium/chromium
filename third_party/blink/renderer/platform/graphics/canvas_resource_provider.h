@@ -321,8 +321,17 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
       CanvasResourceProvider::Delegate* delegate = nullptr);
-
+  static std::unique_ptr<Canvas2DResourceProviderBitmap> CreateWithClear(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      CanvasResourceProvider::Delegate* delegate = nullptr) {
+    return CreateWithClear(size, format, alpha_type, color_space,
+                           gfx::HDRMetadata(), delegate);
+  }
   Canvas2DResourceProviderBitmap(gfx::Size size,
                                  viz::SharedImageFormat format,
                                  SkAlphaType alpha_type,
@@ -355,10 +364,25 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       RasterMode raster_mode,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceProvider::Delegate* delegate = nullptr);
+  static std::unique_ptr<Canvas2DResourceProviderSharedImage> CreateWithClear(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+          context_provider_wrapper,
+      RasterMode raster_mode,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
+      CanvasResourceProvider::Delegate* delegate = nullptr) {
+    return CreateWithClear(size, format, alpha_type, color_space,
+                           gfx::HDRMetadata(), context_provider_wrapper,
+                           raster_mode, shared_image_usage_flags, delegate);
+  }
   static std::unique_ptr<Canvas2DResourceProviderSharedImage> CreateWithClear(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
@@ -373,8 +397,21 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceProvider::Delegate* delegate = nullptr);
+  static std::unique_ptr<Canvas2DResourceProviderSharedImage>
+  CreateWithClearForSoftwareCompositor(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+      CanvasResourceProvider::Delegate* delegate = nullptr) {
+    return CreateWithClearForSoftwareCompositor(
+        size, format, alpha_type, color_space, gfx::HDRMetadata(),
+        shared_image_interface_provider, delegate);
+  }
 
   Canvas2DResourceProviderSharedImage(
       gfx::Size,
@@ -558,9 +595,22 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceProvider::Delegate* delegate = nullptr);
+  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage> Create(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+          context_provider_wrapper,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
+      CanvasResourceProvider::Delegate* delegate = nullptr) {
+    return Create(size, format, alpha_type, color_space, gfx::HDRMetadata(),
+                  context_provider_wrapper, shared_image_usage_flags, delegate);
+  }
 
   static std::unique_ptr<CanvasNon2DResourceProviderSharedImage> Create(
       gfx::Size size,
@@ -573,8 +623,20 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
                   viz::SharedImageFormat format,
                   SkAlphaType alpha_type,
                   const gfx::ColorSpace& color_space,
+                  const gfx::HDRMetadata& hdr_metadata,
                   gpu::SharedImageUsageSet shared_image_usage_flags = {},
                   CanvasResourceProvider::Delegate* delegate = nullptr);
+  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
+  CreateForWebGPU(gfx::Size size,
+                  viz::SharedImageFormat format,
+                  SkAlphaType alpha_type,
+                  const gfx::ColorSpace& color_space,
+                  gpu::SharedImageUsageSet shared_image_usage_flags = {},
+                  CanvasResourceProvider::Delegate* delegate = nullptr) {
+    return CreateForWebGPU(size, format, alpha_type, color_space,
+                           gfx::HDRMetadata(), shared_image_usage_flags,
+                           delegate);
+  }
 
   static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
   CreateForSoftwareCompositor(
@@ -582,8 +644,21 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       CanvasResourceProvider::Delegate* delegate = nullptr);
+  static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
+  CreateForSoftwareCompositor(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
+      CanvasResourceProvider::Delegate* delegate = nullptr) {
+    return CreateForSoftwareCompositor(
+        size, format, alpha_type, color_space, gfx::HDRMetadata(),
+        shared_image_interface_provider, delegate);
+  }
 
   static std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
   CreateForSoftwareCompositor(

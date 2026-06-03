@@ -1224,10 +1224,11 @@ Canvas2DResourceProviderBitmap::CreateWithClear(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     CanvasResourceProvider::Delegate* delegate) {
   auto provider = base::WrapUnique<Canvas2DResourceProviderBitmap>(
       new Canvas2DResourceProviderBitmap(size, format, alpha_type, color_space,
-                                         gfx::HDRMetadata(), delegate));
+                                         hdr_metadata, delegate));
   if (provider->IsValid()) {
     provider->ClearAtCreation();
     // The ClearAtCreation() call cannot turn a CRPBitmap invalid.
@@ -1243,6 +1244,7 @@ Canvas2DResourceProviderSharedImage::CreateWithClear(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     RasterMode raster_mode,
     gpu::SharedImageUsageSet shared_image_usage_flags,
@@ -1341,7 +1343,7 @@ Canvas2DResourceProviderSharedImage::CreateWithClear(
 #endif
 
   auto provider = std::make_unique<Canvas2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, gfx::HDRMetadata(),
+      size, format, alpha_type, color_space, hdr_metadata,
       context_provider_wrapper, is_accelerated, shared_image_usage_flags,
       delegate);
   if (!provider->IsValid()) {
@@ -1363,8 +1365,9 @@ Canvas2DResourceProviderSharedImage::CreateWithClear(
     gpu::SharedImageUsageSet shared_image_usage_flags) {
   return CreateWithClear(
       size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace(), std::move(context_provider_wrapper),
-      raster_mode, shared_image_usage_flags);
+      color_params.GetGfxColorSpace(), color_params.GetGfxHdrMetadata(),
+      std::move(context_provider_wrapper), raster_mode,
+      shared_image_usage_flags);
 }
 
 std::unique_ptr<Canvas2DResourceProviderSharedImage>
@@ -1373,6 +1376,7 @@ Canvas2DResourceProviderSharedImage::CreateWithClearForSoftwareCompositor(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     CanvasResourceProvider::Delegate* delegate) {
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
@@ -1383,7 +1387,7 @@ Canvas2DResourceProviderSharedImage::CreateWithClearForSoftwareCompositor(
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
   auto provider = std::make_unique<Canvas2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, gfx::HDRMetadata(),
+      size, format, alpha_type, color_space, hdr_metadata,
       shared_image_interface_provider, delegate);
   if (provider->IsValid()) {
     provider->ClearAtCreation();
@@ -1401,6 +1405,7 @@ CanvasNon2DResourceProviderSharedImage::Create(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     CanvasResourceProvider::Delegate* delegate) {
@@ -1491,7 +1496,7 @@ CanvasNon2DResourceProviderSharedImage::Create(
 #endif
 
   auto provider = std::make_unique<CanvasNon2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, gfx::HDRMetadata(),
+      size, format, alpha_type, color_space, hdr_metadata,
       context_provider_wrapper,
       /*is_accelerated=*/true, shared_image_usage_flags, delegate);
 
@@ -1506,6 +1511,7 @@ CanvasNon2DResourceProviderSharedImage::Create(
     gpu::SharedImageUsageSet shared_image_usage_flags) {
   return Create(size, color_params.GetSharedImageFormat(),
                 color_params.GetAlphaType(), color_params.GetGfxColorSpace(),
+                color_params.GetGfxHdrMetadata(),
                 std::move(context_provider_wrapper), shared_image_usage_flags);
 }
 
@@ -1515,6 +1521,7 @@ CanvasNon2DResourceProviderSharedImage::CreateForWebGPU(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     CanvasResourceProvider::Delegate* delegate) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
@@ -1527,7 +1534,7 @@ CanvasNon2DResourceProviderSharedImage::CreateForWebGPU(
   //   export happens via the WebGPU interface)
   // Hence, both WEBGPU_READ and WEBGPU_WRITE usage are needed here.
   return CanvasNon2DResourceProviderSharedImage::Create(
-      size, format, alpha_type, color_space,
+      size, format, alpha_type, color_space, hdr_metadata,
       std::move(context_provider_wrapper),
       shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
           gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
@@ -1540,6 +1547,7 @@ CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     CanvasResourceProvider::Delegate* delegate) {
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
@@ -1550,7 +1558,7 @@ CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
   auto provider = std::make_unique<CanvasNon2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, gfx::HDRMetadata(),
+      size, format, alpha_type, color_space, hdr_metadata,
       shared_image_interface_provider, delegate);
   return provider->IsValid() ? std::move(provider) : nullptr;
 }
@@ -1562,7 +1570,8 @@ CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider) {
   return CreateForSoftwareCompositor(
       size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace(), shared_image_interface_provider);
+      color_params.GetGfxColorSpace(), color_params.GetGfxHdrMetadata(),
+      shared_image_interface_provider);
 }
 
 CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
@@ -2606,7 +2615,7 @@ Canvas2DResourceProviderBitmap::CreateForTesting(
     const Canvas2DColorParams& color_params) {
   return Canvas2DResourceProviderBitmap::CreateWithClear(
       size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace());
+      color_params.GetGfxColorSpace(), color_params.GetGfxHdrMetadata());
 }
 
 }  // namespace blink

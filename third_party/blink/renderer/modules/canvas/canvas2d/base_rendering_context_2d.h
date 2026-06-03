@@ -48,10 +48,6 @@ class Rect;
 class Vector2d;
 }  // namespace gfx
 
-namespace viz {
-class SharedImageFormat;
-}
-
 namespace blink {
 
 class CanvasContextCreationAttributesCore;
@@ -241,7 +237,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   void Trace(Visitor*) const override;
 
   // Implementing methods from CanvasRenderingContext
-  bool IsOpaque() const final { return GetAlphaType() == kOpaque_SkAlphaType; }
+  bool IsOpaque() const final {
+    return color_params_.GetAlphaType() == kOpaque_SkAlphaType;
+  }
   void DisableAccelerationForCanvas2D() final { DisableAcceleration(); }
   bool Is2DCanvasAccelerated() const final;
   void PageVisibilityChanged() override {}
@@ -307,14 +305,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   }
 
   bool context_restorable_{true};
-
-  viz::SharedImageFormat GetSharedImageFormat() const {
-    return color_params_.GetSharedImageFormat();
-  }
-  gfx::ColorSpace GetColorSpace() const {
-    return color_params_.GetGfxColorSpace();
-  }
-  SkAlphaType GetAlphaType() const { return color_params_.GetAlphaType(); }
+  Canvas2DColorParams color_params_;
 
  private:
   virtual bool IsHibernating() const { return false; }
@@ -339,7 +330,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
 
   int num_readbacks_performed_ = 0;
   unsigned read_count_ = 0;
-  Canvas2DColorParams color_params_;
   base::RepeatingClosure on_restore_failed_callback_for_testing_;
 };
 

@@ -131,6 +131,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/hdr_metadata.h"
 
 // UMA Histogram macros trigger a bug in IWYU.
 // https://github.com/include-what-you-use/include-what-you-use/issues/1546
@@ -1094,9 +1095,10 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   canvas()->GetOrCreateResourceDispatcher();
 
   std::unique_ptr<CanvasResourceProvider> provider;
-  const SkAlphaType alpha_type = GetAlphaType();
-  const viz::SharedImageFormat format = GetSharedImageFormat();
-  const gfx::ColorSpace color_space = GetColorSpace();
+  const SkAlphaType alpha_type = color_params_.GetAlphaType();
+  const viz::SharedImageFormat format = color_params_.GetSharedImageFormat();
+  const gfx::ColorSpace color_space = color_params_.GetGfxColorSpace();
+  const gfx::HDRMetadata hdr_metadata = color_params_.GetGfxHdrMetadata();
 
   const bool is_gpu_compositing_enabled =
       SharedGpuContext::IsGpuCompositingEnabled();
@@ -1130,7 +1132,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     }
 
     provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
-        canvas()->Size(), format, alpha_type, color_space,
+        canvas()->Size(), format, alpha_type, color_space, hdr_metadata,
         SharedGpuContext::ContextProviderWrapper(), raster_mode,
         shared_image_usage_flags, canvas());
   } else if (!is_gpu_compositing_enabled) {
@@ -1139,7 +1141,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     // the SW compositor.
     provider = Canvas2DResourceProviderSharedImage::
         CreateWithClearForSoftwareCompositor(
-            canvas()->Size(), format, alpha_type, color_space,
+            canvas()->Size(), format, alpha_type, color_space, hdr_metadata,
             SharedGpuContext::SharedImageInterfaceProvider(), canvas());
   }
   if (!provider) {
@@ -1147,7 +1149,8 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     // uploaded into GPU memory (for GPU compositing) or copied into the Viz
     // process (for software compositing).
     provider = Canvas2DResourceProviderBitmap::CreateWithClear(
-        canvas()->Size(), format, alpha_type, color_space, canvas());
+        canvas()->Size(), format, alpha_type, color_space, hdr_metadata,
+        canvas());
   }
 
   return provider;

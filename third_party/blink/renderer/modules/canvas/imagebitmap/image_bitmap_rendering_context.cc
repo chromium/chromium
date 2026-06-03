@@ -201,16 +201,17 @@ ImageBitmapRenderingContext::GetResourceForPushFrame(
     const SkAlphaType alpha_type = kPremul_SkAlphaType;
     const viz::SharedImageFormat format = GetN32FormatForCanvas();
     const gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+    const gfx::HDRMetadata hdr_metadata;
     if (SharedGpuContext::IsGpuCompositingEnabled()) {
       resource_provider_for_offscreen_canvas_ =
           CanvasNon2DResourceProviderSharedImage::Create(
-              image->Size(), format, alpha_type, color_space,
+              image->Size(), format, alpha_type, color_space, hdr_metadata,
               SharedGpuContext::ContextProviderWrapper(),
               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, Host());
     } else if (static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas()) {
       resource_provider_for_offscreen_canvas_ =
           CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
-              image->Size(), format, alpha_type, color_space,
+              image->Size(), format, alpha_type, color_space, hdr_metadata,
               SharedGpuContext::SharedImageInterfaceProvider(), Host());
     }
 
