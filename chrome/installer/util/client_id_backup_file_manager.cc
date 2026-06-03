@@ -7,10 +7,12 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 
@@ -48,6 +50,30 @@ void SetClientIdBackupFilePermissionIfNeeded(
 #endif
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ClientIdBackupValidationResult {
+  kValidatedLowerCase = 0,
+  kValidatedWithUpperCaseLetters = 1,
+  kValidatedEmpty = 2,
+  kInvalid = 3,
+  kMaxValue = kInvalid,
+};
+
+ClientIdBackupValidationResult ValidateClientId(const std::string& client_id) {
+  // A valid client ID must be either empty (indicating consent but no ID yet)
+  // or a valid UUID string (either lowercase or with uppercase letters).
+  if (client_id.empty()) {
+    return ClientIdBackupValidationResult::kValidatedEmpty;
+  } else if (base::Uuid::ParseLowercase(client_id).is_valid()) {
+    return ClientIdBackupValidationResult::kValidatedLowerCase;
+  } else if (base::Uuid::ParseCaseInsensitive(client_id).is_valid()) {
+    return ClientIdBackupValidationResult::kValidatedWithUpperCaseLetters;
+  }
+
+  return ClientIdBackupValidationResult::kInvalid;
+}
+
 }  // namespace
 
 // static
@@ -78,16 +104,16 @@ ClientIdBackupFileManager::ClientIdFromCacheOrDisk() {
   const base::FilePath backup_file_path = GetBackupFilePath();
   std::string client_id;
 
-  // TODO(crbug.com/497679558): Use ReadFileToStringWithMaxSize() based on the
-  // client ID format.
   if (!base::ReadFileToString(backup_file_path, &client_id)) {
     // The file doesn't exist or can't be read. Treat both cases as if UMA was
     // never activated.
     return std::nullopt;
   }
+  const ClientIdBackupValidationResult validation_result =
+      ValidateClientId(client_id);
+  base::UmaHistogramEnumeration("UMA.ClientIdBackupValidation",
+                                validation_result);
 
-  // TODO(crbug.com/497679558): Validate the contents of the file before
-  // assigning and returning it.
   base::AutoLock lock(client_id_lock_);
   client_id_ = std::move(client_id);
 

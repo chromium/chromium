@@ -74,6 +74,13 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="p3+r3+"/>
 </enum>
 
+<enum name="ClientIdBackupValidation">
+  <int value="0" label="ValidatedLowerCase"/>
+  <int value="1" label="ValidatedWithUpperCaseLetters"/>
+  <int value="2" label="ValidatedEmpty"/>
+  <int value="3" label="Invalid"/>
+</enum>
+
 <enum name="ClientIdSource">
   <int value="0" label="Cached id matches local state"/>
   <int value="1" label="From local state"/>
