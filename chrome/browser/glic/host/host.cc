@@ -46,6 +46,16 @@
 namespace glic {
 BASE_FEATURE(kGlicReloadUsesFreshWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
 
+void Host::EmbedderDelegate::Resize(const gfx::Size& size,
+                                    base::TimeDelta duration,
+                                    base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
+void Host::EmbedderDelegate::EnableDragResize(bool enabled) {}
+
+void Host::EmbedderDelegate::SetMinimumWidgetSize(const gfx::Size& size) {}
+
 bool EmptyEmbedderDelegate::IsShowing() const {
   return true;
 }

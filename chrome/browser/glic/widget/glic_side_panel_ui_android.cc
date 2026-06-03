@@ -135,17 +135,6 @@ std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
   return GlicInactiveSidePanelUi::CreateForVisibleTab(tab_, *delegate_);
 }
 
-void GlicSidePanelUi::Resize(const gfx::Size& size,
-                             base::TimeDelta duration,
-                             base::OnceClosure callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run();
-}
-
-void GlicSidePanelUi::EnableDragResize(bool enabled) {
-  NOTIMPLEMENTED();
-}
-
 void GlicSidePanelUi::Attach() {
   // The Side Panel Ui is already attached, do nothing.
 }
@@ -156,10 +145,6 @@ void GlicSidePanelUi::Detach() {
   }
   // NOTE: `this` will be destroyed after this call.
   delegate_->Detach(*tab_);
-}
-
-void GlicSidePanelUi::SetMinimumWidgetSize(const gfx::Size& size) {
-  NOTIMPLEMENTED();
 }
 
 void GlicSidePanelUi::SwitchConversation(
