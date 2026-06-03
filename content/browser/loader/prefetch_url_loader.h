@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -39,9 +40,9 @@ class SignedExchangePrefetchHandler;
 
 // A URLLoader for loading a prefetch request, including <link rel="prefetch">.
 // It basically just keeps draining the data.
-class PrefetchURLLoader : public network::mojom::URLLoader,
-                          public network::mojom::URLLoaderClient,
-                          public mojo::DataPipeDrainer::Client {
+class CONTENT_EXPORT PrefetchURLLoader : public network::mojom::URLLoader,
+                                         public network::mojom::URLLoaderClient,
+                                         public mojo::DataPipeDrainer::Client {
  public:
   using URLLoaderThrottlesGetter = base::RepeatingCallback<
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>()>;
@@ -86,6 +87,14 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
   void SendOnComplete(
       const network::URLLoaderCompletionStatus& completion_status);
 
+  const network::ResourceRequest& resource_request_for_testing() const {
+    return resource_request_;
+  }
+  const net::NetworkAnonymizationKey& network_anonymization_key_for_testing()
+      const {
+    return network_anonymization_key_;
+  }
+
  private:
   // network::mojom::URLLoader overrides:
   void FollowRedirect(
@@ -122,7 +131,7 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
 
   network::mojom::URLResponseHeadPtr response_;
 
-  const net::NetworkAnonymizationKey network_anonymization_key_;
+  net::NetworkAnonymizationKey network_anonymization_key_;
 
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
 

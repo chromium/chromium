@@ -212,10 +212,12 @@ void PrefetchURLLoader::OnReceiveRedirect(
             ->TakePrefetchedSignedExchangeCacheEntry());
   }
 
-  resource_request_.url = redirect_info.new_url;
-  resource_request_.site_for_cookies = redirect_info.new_site_for_cookies;
-  resource_request_.referrer = GURL(redirect_info.new_referrer);
-  resource_request_.referrer_policy = redirect_info.new_referrer_policy;
+  resource_request_.UpdateOnRedirect(redirect_info);
+  if (resource_request_.trusted_params) {
+    network_anonymization_key_ =
+        resource_request_.trusted_params->isolation_info
+            .network_anonymization_key();
+  }
   forwarding_client_->OnReceiveRedirect(redirect_info, std::move(head));
 }
 
