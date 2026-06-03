@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -14,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
@@ -80,8 +82,13 @@ public class NtpBackgroundDataColor extends NtpBackgroundDataBase {
 
     // NtpBackgroundDataBase implementations.
     @Override
-    protected @NtpBackgroundType int getBackgroundType() {
+    public @NtpBackgroundType int getBackgroundType() {
         return NtpBackgroundType.CHROME_COLOR;
+    }
+
+    @Override
+    public @Nullable Drawable getImageDrawable() {
+        return mNtpThemeColorInfo.iconDrawable;
     }
 
     @Override
