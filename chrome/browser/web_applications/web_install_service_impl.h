@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -52,9 +51,8 @@ enum class WebInstallServiceResult {
   kInstallCommandFailed = 6,
   kNoCustomManifestId = 7,
   kManifestIdMismatch = 8,
-  kInstallInProgress = 9,
   // Insert new values above this line.
-  kMaxValue = kInstallInProgress,
+  kMaxValue = kManifestIdMismatch,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebInstallServiceResult)
 
@@ -115,16 +113,10 @@ class WebInstallServiceImpl
   void InstallInternal(blink::mojom::InstallOptionsPtr options,
                        InstallCallback callback,
                        bool triggered_from_element);
-
   WebInstallServiceImpl(
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebInstallService> receiver);
   ~WebInstallServiceImpl() override;
-
-  // Manages `install_in_progress_`.
-  bool IsInstallInProgress() const;
-  base::ScopedClosureRunner ReserveInstallInProgress();
-  void ReleaseInstallInProgress();
 
   void OnInstallNotSupportedDialogClosed(
       InstallCallbackWithMetrics callback_with_metrics);
@@ -194,9 +186,6 @@ class WebInstallServiceImpl
   void RunIsInstalledLookup(GURL install_target,
                             std::optional<GURL> manifest_id,
                             IsInstalledCallback callback);
-
-  // Only one install can be in progress at a time.
-  bool install_in_progress_ = false;
 
   const content::GlobalRenderFrameHostId frame_routing_id_;
   GURL last_committed_url_;

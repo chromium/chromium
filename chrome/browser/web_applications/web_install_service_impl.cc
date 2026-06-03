@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -136,29 +135,6 @@ void CheckInstalledByAndMaybeUpdate(const base::Time& api_call_time,
   }
   app_to_update->AddInstalledByInfo(
       web_app::AppInstalledBy(api_call_time, requesting_page));
-}
-
-void EmitInstallResultUma(bool triggered_from_element,
-                          web_app::WebInstallServiceResult result) {
-  base::UmaHistogramEnumeration(
-      triggered_from_element ? kInstallElementResultUma : kInstallApiResultUma,
-      result);
-  base::UmaHistogramEnumeration(
-      base::StrCat({"WebApp.WebInstallService.",
-                    triggered_from_element ? "Element" : "Api", ".Result"}),
-      result);
-}
-
-void EmitInstallTypeUma(bool triggered_from_element,
-                        web_app::WebInstallServiceType install_type) {
-  base::UmaHistogramEnumeration(
-      triggered_from_element ? kInstallElementTypeUma : kInstallApiTypeUma,
-      install_type);
-  base::UmaHistogramEnumeration(
-      base::StrCat({"WebApp.WebInstallService.",
-                    triggered_from_element ? "Element" : "Api",
-                    ".InstallType"}),
-      install_type);
 }
 
 }  // namespace
@@ -316,20 +292,6 @@ void WebInstallServiceImpl::InstallInternal(
     blink::mojom::InstallOptionsPtr options,
     InstallCallback callback,
     bool triggered_from_element) {
-  web_app::WebInstallServiceType install_type =
-      options ? web_app::WebInstallServiceType::kBackgroundDocument
-              : web_app::WebInstallServiceType::kCurrentDocument;
-  EmitInstallTypeUma(triggered_from_element, install_type);
-
-  if (IsInstallInProgress()) {
-    EmitInstallResultUma(triggered_from_element,
-                         web_app::WebInstallServiceResult::kInstallInProgress);
-    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
-                            GURL());
-    return;
-  }
-  base::ScopedClosureRunner install_guard = ReserveInstallInProgress();
-
   // Create source ids for UKM logging.
   ukm::SourceId requesting_page_source_id =
       options ? render_frame_host().GetPageUkmSourceId()
@@ -340,19 +302,26 @@ void WebInstallServiceImpl::InstallInternal(
               : ukm::kInvalidSourceId;
 
   // Wrap the blink callback in another that accepts all the information needed
-  // to log our UMAs and UKMs, reset `install_guard`, then run the blink
-  // callback.
+  // to log our UMAs and UKMs, then run the blink callback.
   auto callback_with_metrics = base::BindOnce(
-      [](InstallCallback callback, base::ScopedClosureRunner install_guard,
-         bool triggered_from_element, ukm::SourceId requesting_page_source_id,
+      [](InstallCallback callback, bool triggered_from_element,
+         ukm::SourceId requesting_page_source_id,
          ukm::SourceId installed_app_source_id,
          web_app::WebInstallServiceResult metrics_result,
          blink::mojom::WebInstallServiceResult install_result,
          std::optional<webapps::ManifestId> manifest_id_result) {
         // TODO(crbug.com/477993292): Reevaluate/clean up web install telemetry
         // after Origin Trials.
-        EmitInstallResultUma(triggered_from_element, metrics_result);
 
+        base::UmaHistogramEnumeration(triggered_from_element
+                                          ? kInstallElementResultUma
+                                          : kInstallApiResultUma,
+                                      metrics_result);
+        base::UmaHistogramEnumeration(
+            base::StrCat({"WebApp.WebInstallService.",
+                          triggered_from_element ? "Element" : "Api",
+                          ".Result"}),
+            metrics_result);
         // Record UKMs for background document installs.
         if (requesting_page_source_id != ukm::kInvalidSourceId &&
             installed_app_source_id != ukm::kInvalidSourceId) {
@@ -386,8 +355,20 @@ void WebInstallServiceImpl::InstallInternal(
                                     ? manifest_id_result->value()
                                     : GURL());
       },
-      std::move(callback), std::move(install_guard), triggered_from_element,
-      requesting_page_source_id, installed_app_source_id);
+      std::move(callback), triggered_from_element, requesting_page_source_id,
+      installed_app_source_id);
+
+  web_app::WebInstallServiceType install_type =
+      options ? web_app::WebInstallServiceType::kBackgroundDocument
+              : web_app::WebInstallServiceType::kCurrentDocument;
+  base::UmaHistogramEnumeration(
+      triggered_from_element ? kInstallElementTypeUma : kInstallApiTypeUma,
+      install_type);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"WebApp.WebInstallService.",
+                    triggered_from_element ? "Element" : "Api",
+                    ".InstallType"}),
+      install_type);
 
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
   if (!rfh) {
@@ -456,21 +437,6 @@ void WebInstallServiceImpl::InstallInternal(
       base::BindOnce(&WebInstallServiceImpl::OnPermissionDecided,
                      weak_ptr_factory_.GetWeakPtr(), std::move(options),
                      std::move(callback_with_metrics)));
-}
-
-bool WebInstallServiceImpl::IsInstallInProgress() const {
-  return install_in_progress_;
-}
-
-base::ScopedClosureRunner WebInstallServiceImpl::ReserveInstallInProgress() {
-  install_in_progress_ = true;
-  return base::ScopedClosureRunner(
-      base::BindOnce(&WebInstallServiceImpl::ReleaseInstallInProgress,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void WebInstallServiceImpl::ReleaseInstallInProgress() {
-  install_in_progress_ = false;
 }
 
 void WebInstallServiceImpl::OnInstallNotSupportedDialogClosed(
@@ -708,7 +674,6 @@ void WebInstallServiceImpl::OnPermissionDecided(
     const std::vector<content::PermissionResult>& permission_result) {
   CHECK(install_options);
   CHECK_EQ(permission_result.size(), 1u);
-
   if (permission_result[0].status != PermissionStatus::GRANTED) {
     std::move(callback_with_metrics)
         .Run(web_app::WebInstallServiceResult::kPermissionDenied,
