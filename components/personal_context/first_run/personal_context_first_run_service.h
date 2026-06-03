@@ -37,11 +37,6 @@ class PersonalContextFirstRunService : public KeyedService {
                                     FirstRunInvocationSource invocation_source,
                                     FirstRunTriggerCallback callback) = 0;
 
-  // Called when the user has been shown the Personal Context notice in
-  // Autofill.
-  // TODO(b:517579158): Wire the notice UIs into this function.
-  virtual void MarkPersonalContextInAutofillNoticeAsShown() = 0;
-
   // Called when the user has acknowledged the Personal Context notice in
   // Autofill.
   // TODO(b:517579158): Wire the notice UIs into this function.

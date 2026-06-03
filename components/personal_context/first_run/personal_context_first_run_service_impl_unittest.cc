@@ -170,31 +170,12 @@ TEST_F(PersonalContextFirstRunServiceImplTest, TriggersWhenShouldShowNotice) {
 }
 
 TEST_F(PersonalContextFirstRunServiceImplTest,
-       MarkPersonalContextInAutofillNoticeAsShownSetsPrefs) {
-  pref_service()->SetBoolean(
-      prefs::kPersonalContextInAutofillSettingsToggleStatus, false);
-  pref_service()->SetBoolean(
-      prefs::kPersonalContextInAutofillNoticeHasBeenShown, false);
-
-  service()->MarkPersonalContextInAutofillNoticeAsShown();
-
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kPersonalContextInAutofillSettingsToggleStatus));
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kPersonalContextInAutofillNoticeHasBeenShown));
-}
-
-TEST_F(PersonalContextFirstRunServiceImplTest,
        MarkPersonalContextInAutofillNoticeAsAcknowledgedSetsPrefs) {
-  pref_service()->SetBoolean(
-      prefs::kPersonalContextInAutofillSettingsToggleStatus, false);
   pref_service()->SetBoolean(
       prefs::kPersonalContextInAutofillNoticeShouldBeShown, true);
 
   service()->MarkPersonalContextInAutofillNoticeAsAcknowledged();
 
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kPersonalContextInAutofillSettingsToggleStatus));
   EXPECT_FALSE(pref_service()->GetBoolean(
       prefs::kPersonalContextInAutofillNoticeShouldBeShown));
 }
