@@ -1218,6 +1218,64 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
           "Manifest protocol_handlers must be same-origin with the document."));
 }
 
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       BadMessage_NoteTakingNewNoteUrlCrossOrigin) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  // Test that a cross-site note_taking new_note_url triggers a bad message.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  blink::mojom::ManifestNoteTakingPtr note_taking =
+      blink::mojom::ManifestNoteTaking::New();
+  note_taking->new_note_url = GURL("https://evil.com");
+  bad_manifest->note_taking = std::move(note_taking);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::StartsWith("Manifest note_taking new_note_url must be "
+                                    "same-origin with the document."));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       BadMessage_LockScreenStartUrlCrossOrigin) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  // Test that a cross-site lock_screen start_url triggers a bad message.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  blink::mojom::ManifestLockScreenPtr lock_screen =
+      blink::mojom::ManifestLockScreen::New();
+  lock_screen->start_url = GURL("https://evil.com");
+  bad_manifest->lock_screen = std::move(lock_screen);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::StartsWith("Manifest lock_screen start_url must be "
+                                    "same-origin with the document."));
+}
+
 // Tests that if a compromised renderer bypasses the manifest parser and sends
 // cross-site migration data directly, the browser correctly rejects it and
 // kills the renderer with a bad message.
