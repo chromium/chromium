@@ -721,8 +721,14 @@ group("gn_all") {
         "//components/sessions:unit_tests",
         "//storage/browser:dump_file_system",
         "//third_party/angle:libANGLE",
-        "//third_party/angle:libEGL",
-        "//third_party/angle:libGLESv2",
+      ]
+      if (!use_static_angle) {
+        deps += [
+          "//third_party/angle:libEGL",
+          "//third_party/angle:libGLESv2",
+        ]
+      }
+      deps += [
         "//third_party/leveldatabase:leveldb_test_targets",
         "//third_party/libjpeg_turbo:simd",
         "//third_party/opus:opus_compare",

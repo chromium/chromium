@@ -189,6 +189,14 @@ def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir,
         if option.endswith('dir'):
             continue
 
+        if options.use_static_angle == 'True' and option.lower() in [
+                'libegl.dll', 'libglesv2.dll'
+        ]:
+            if verbose:
+                print('Skipping ANGLE library in static build: {}'.format(
+                    option))
+            continue
+
         src_subdir = option.replace('\\', os.sep)
         dst_dir = os.path.join(staging_dir, config.get(section, option))
         dst_dir = dst_dir.replace('\\', os.sep)
@@ -727,6 +735,9 @@ def _ParseOptions():
     parser.add_option('--enable_hidpi',
                       default='0',
                       help='Whether to include HiDPI resource files.')
+    parser.add_option('--use_static_angle',
+                      default="False",
+                      help='Whether ANGLE is statically linked.')
     parser.add_option('--include_snapshotblob',
                       default='0',
                       help='Whether to include the V8 snapshot blob.')

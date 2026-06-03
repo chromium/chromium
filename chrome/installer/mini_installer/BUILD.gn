@@ -12,6 +12,7 @@ import("//third_party/ffmpeg/ffmpeg_options.gni")
 import("//third_party/icu/config.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//ui/base/ui_features.gni")
+import("//ui/gl/features.gni")
 import("//v8/gni/v8.gni")
 
 declare_args() {
@@ -205,6 +206,10 @@ action("mini_installer_archive") {
 
   if (is_component_ffmpeg) {
     args += [ "--component_ffmpeg_build=1" ]
+  }
+
+  if (use_static_angle) {
+    args += [ "--use_static_angle=True" ]
   }
 
   if (fast_archive_compression) {

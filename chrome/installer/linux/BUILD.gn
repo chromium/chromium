@@ -217,14 +217,16 @@ strip_binary("strip_chrome_sandbox") {
   deps = [ "//sandbox/linux:chrome_sandbox" ]
 }
 
-strip_binary("strip_libEGL_shlib") {
-  binary_input = "$root_out_dir/libEGL.so"
-  deps = [ "//third_party/angle:libEGL" ]
-}
+if (!use_static_angle) {
+  strip_binary("strip_libEGL_shlib") {
+    binary_input = "$root_out_dir/libEGL.so"
+    deps = [ "//third_party/angle:libEGL" ]
+  }
 
-strip_binary("strip_libGLESv2_shlib") {
-  binary_input = "$root_out_dir/libGLESv2.so"
-  deps = [ "//third_party/angle:libGLESv2" ]
+  strip_binary("strip_libGLESv2_shlib") {
+    binary_input = "$root_out_dir/libGLESv2.so"
+    deps = [ "//third_party/angle:libGLESv2" ]
+  }
 }
 
 if (angle_shared_libvulkan && !is_chromeos) {
@@ -536,6 +538,7 @@ template("linux_package") {
       target_os,
       "--xz-nthreads",
       "$linux_debian_pkg_xz_nthreads",
+      "--use-static-angle=$use_static_angle",
     ]
     if (is_official_build) {
       args += [ "-f" ]
@@ -568,6 +571,7 @@ template("linux_package") {
         rebase_path(root_out_dir, root_build_dir),
         "-t",
         target_os,
+        "--use-static-angle=$use_static_angle",
       ]
       if (is_official_build) {
         args += [ "-f" ]

@@ -57,6 +57,48 @@ source_set("gl_headers") {
   public_deps = [ "//third_party/angle:includes" ]
 }
 
+use_angle_stubs =
+    use_static_angle && (is_linux || is_chromeos || is_win || is_mac)
+
+# Generate stubs for EGL and GLESv2 libraries when linking ANGLE statically.
+# Some bot infrastructure expects these files to exist even in static builds.
+# TODO(crbug.com/514229803): Remove this stub generation once static linking
+# has definitively stuck (at which point the use_static_angle flag itself will
+# also be removed) and the bots no longer expect these files.
+if (use_angle_stubs) {
+  action("generate_angle_stubs") {
+    script = "write_angle_stubs.py"
+    outputs = [ "$target_gen_dir/angle_stubs.stamp" ]
+
+    # We list these stubs as formal outputs so that Siso/Ninja can track them
+    # cleanly and record their command hashes, preventing "command line not
+    # found in log" errors during no-op builds.
+    _stubs = [
+      "$root_out_dir/libEGL$shlib_extension",
+      "$root_out_dir/libGLESv2$shlib_extension",
+    ]
+    if (is_linux || is_chromeos) {
+      _stubs += [
+        "$root_out_dir/libEGL.so.TOC",
+        "$root_out_dir/libGLESv2.so.TOC",
+        "$root_out_dir/libEGL.so.stripped",
+        "$root_out_dir/libEGL.so.debug",
+        "$root_out_dir/libGLESv2.so.stripped",
+        "$root_out_dir/libGLESv2.so.debug",
+      ]
+    }
+    if (is_win) {
+      _stubs += [
+        "$root_out_dir/libEGL.dll.pdb",
+        "$root_out_dir/libGLESv2.dll.pdb",
+      ]
+    }
+
+    outputs += _stubs
+    args = rebase_path(outputs, root_build_dir)
+  }
+}
+
 component("gl") {
   output_name = "gl_wrapper"  # Avoid colliding with OS X"s libGL.dylib.
 
@@ -178,6 +220,9 @@ component("gl") {
     "//ui/base:ozone_buildflags",
     "//ui/gfx/mojom",
   ]
+  if (use_angle_stubs) {
+    deps += [ ":generate_angle_stubs" ]
+  }
   public_deps = [
     ":gl_enums",
     ":gl_headers",
@@ -188,6 +233,7 @@ component("gl") {
   ]
 
   data_deps = []
+
   if (enable_swiftshader) {
     data_deps += [
       "//third_party/swiftshader/src/Vulkan:icd_file",

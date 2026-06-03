@@ -83,6 +83,12 @@ def parse_common_args(
     parser.add_argument(
         "-o", "--output-dir", required=True, help="output directory")
     parser.add_argument("-t", "--target-os", required=True, help="target os")
+    parser.add_argument(
+        "--use-static-angle",
+        choices=["true", "false"],
+        default="false",
+        help="whether ANGLE is statically linked",
+    )
     return parser
 
 
@@ -280,6 +286,7 @@ class InstallerConfig:
     target_os: str
     is_official_build: bool
     shlib_perms: int
+    use_static_angle: bool = False
 
     # From chromium-browser.info or google-chrome.info
     info_vars: dict[str, str] = dataclasses.field(default_factory=dict)
@@ -342,6 +349,7 @@ class InstallerConfig:
             "is_official_build": args.official,
             "output_dir": output_dir,
             "shlib_perms": StandardPermissions.EXECUTABLE,
+            "use_static_angle": args.use_static_angle == "true",
             # Placeholder for build specific paths, set by caller if needed
             "script_dir": pathlib.Path("."),
             "staging_dir": pathlib.Path("."),
@@ -479,20 +487,6 @@ class InstallerConfig:
                 is_optional=True,
             ),
             Artifact(
-                "libEGL.so.stripped",
-                "libEGL.so",
-                ArtifactType.BINARY,
-                self.shlib_perms,
-                is_optional=True,
-            ),
-            Artifact(
-                "libGLESv2.so.stripped",
-                "libGLESv2.so",
-                ArtifactType.BINARY,
-                self.shlib_perms,
-                is_optional=True,
-            ),
-            Artifact(
                 "liboptimization_guide_internal.so.stripped",
                 "liboptimization_guide_internal.so",
                 ArtifactType.BINARY,
@@ -545,6 +539,24 @@ class InstallerConfig:
                     ArtifactType.DIRECTORY,
                     StandardPermissions.EXECUTABLE,
                 ))
+
+        if not self.use_static_angle:
+            artifacts.extend([
+                Artifact(
+                    "libEGL.so.stripped",
+                    "libEGL.so",
+                    ArtifactType.BINARY,
+                    self.shlib_perms,
+                    is_optional=True,
+                ),
+                Artifact(
+                    "libGLESv2.so.stripped",
+                    "libGLESv2.so",
+                    ArtifactType.BINARY,
+                    self.shlib_perms,
+                    is_optional=True,
+                ),
+            ])
 
         return artifacts
 
