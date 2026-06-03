@@ -217,7 +217,10 @@ AILanguageModel::Context::ContextItem SimpleContextItem(std::string text,
   auto item = AILanguageModel::Context::ContextItem();
   item.tokens = size;
   item.input = on_device_model::mojom::Input::New();
-  item.input->pieces = {ml::Token::kSystem, text};
+  item.input->pieces.push_back(
+      on_device_model::mojom::InputPiece::NewToken(ml::Token::kSystem));
+  item.input->pieces.push_back(
+      on_device_model::mojom::InputPiece::NewText(std::move(text)));
   return item;
 }
 
@@ -237,16 +240,27 @@ const char* FormatToken(ml::Token token) {
 
 // Convert an Input to a string for expectation matching.
 std::string FormatInput(const on_device_model::mojom::Input& input) {
+  using Tag = on_device_model::mojom::InputPiece::Tag;
   std::string str;
   for (const auto& piece : input.pieces) {
-    if (std::holds_alternative<ml::Token>(piece)) {
-      str += FormatToken(std::get<ml::Token>(piece));
-    } else if (std::holds_alternative<std::string>(piece)) {
-      str += std::get<std::string>(piece);
-    } else if (std::holds_alternative<SkBitmap>(piece)) {
-      str += "<image>";
-    } else if (std::holds_alternative<ml::AudioBuffer>(piece)) {
-      str += "<audio>";
+    switch (piece->which()) {
+      case Tag::kToken:
+        str += FormatToken(piece->get_token());
+        break;
+      case Tag::kText:
+        str += piece->get_text();
+        break;
+      case Tag::kBitmap:
+        str += "<image>";
+        break;
+      case Tag::kAudio:
+        str += "<audio>";
+        break;
+      case Tag::kToolDeclaration:
+      case Tag::kToolResponse:
+      case Tag::kUnknownType:
+        // Not exercised by tests that format input for expectation matching.
+        break;
     }
   }
   return str;

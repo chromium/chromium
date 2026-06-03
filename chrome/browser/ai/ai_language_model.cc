@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <sstream>
@@ -15,7 +16,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -50,10 +50,14 @@
 
 namespace {
 
+using ::on_device_model::mojom::InputPiece;
+using ::on_device_model::mojom::InputPiecePtr;
+using ::on_device_model::mojom::ToolDeclaration;
+using ::on_device_model::mojom::ToolResponse;
+using ::on_device_model::mojom::ToolResponsePtr;
 using ::optimization_guide::proto::PromptApiMetadata;
 
-std::optional<ml::ToolResponse> GetToolResponseFromDict(
-    const base::DictValue& dict) {
+ToolResponsePtr GetToolResponseFromDict(const base::DictValue& dict) {
   const std::string* call_id = dict.FindString("callID");
   const std::string* name = dict.FindString("name");
   const base::Value* result = dict.Find("result");
@@ -62,22 +66,13 @@ std::optional<ml::ToolResponse> GetToolResponseFromDict(
   // Validate: callID and name required; exactly one of result or errorMessage.
   if (!call_id || !name || (result && error_message) ||
       (!result && !error_message)) {
-    return std::nullopt;
+    return nullptr;
   }
 
-  ml::ToolResponse response;
-  response.call_id = *call_id;
-  response.name = *name;
-
-  if (result) {
-    if (!base::JSONWriter::Write(*result, &response.result_json)) {
-      return std::nullopt;
-    }
-  } else {
-    response.error_message = *error_message;
-  }
-
-  return response;
+  return ToolResponse::New(
+      *call_id, *name,
+      result ? std::make_optional(result->Clone()) : std::nullopt,
+      error_message ? std::make_optional(*error_message) : std::nullopt);
 }
 
 ml::Token ConvertToToken(blink::mojom::AILanguageModelPromptRole role) {
@@ -91,21 +86,13 @@ ml::Token ConvertToToken(blink::mojom::AILanguageModelPromptRole role) {
   }
 }
 
-// Serializes blink tool declarations into ml::ToolDeclaration input pieces.
-bool AppendToolDeclarations(
+void AppendToolDeclarations(
     const std::vector<blink::mojom::AILanguageModelToolDeclarationPtr>& tools,
-    std::vector<ml::InputPiece>& pieces) {
+    std::vector<InputPiecePtr>& pieces) {
   for (const auto& tool : tools) {
-    ml::ToolDeclaration tool_decl;
-    tool_decl.name = tool->name;
-    tool_decl.description = tool->description;
-    if (!base::JSONWriter::Write(tool->input_schema,
-                                 &tool_decl.input_schema_json)) {
-      return false;
-    }
-    pieces.push_back(std::move(tool_decl));
+    pieces.push_back(InputPiece::NewToolDeclaration(ToolDeclaration::New(
+        tool->name, tool->description, tool->input_schema.Clone())));
   }
-  return true;
 }
 
 on_device_model::mojom::InputPtr ConvertToInput(
@@ -115,44 +102,35 @@ on_device_model::mojom::InputPtr ConvertToInput(
   auto input = on_device_model::mojom::Input::New();
   bool tools_embedded = false;
   for (const auto& prompt : prompts) {
-    input->pieces.push_back(ConvertToToken(prompt->role));
+    input->pieces.push_back(InputPiece::NewToken(ConvertToToken(prompt->role)));
 
     // Embed tool declarations in the first system prompt.
     if (!tools_embedded &&
         prompt->role == blink::mojom::AILanguageModelPromptRole::kSystem &&
         !tools.empty()) {
       tools_embedded = true;
-      if (!AppendToolDeclarations(tools, input->pieces)) {
-        return nullptr;
-      }
+      AppendToolDeclarations(tools, input->pieces);
     }
 
     for (const auto& content : prompt->content) {
       switch (content->which()) {
         case blink::mojom::AILanguageModelPromptContent::Tag::kText:
-          input->pieces.push_back(content->get_text());
+          input->pieces.push_back(InputPiece::NewText(content->get_text()));
           break;
         case blink::mojom::AILanguageModelPromptContent::Tag::kBitmap:
           if (!capabilities.Has(
                   on_device_model::CapabilityFlags::kImageInput)) {
             return nullptr;
           }
-          input->pieces.push_back(content->get_bitmap());
+          input->pieces.push_back(InputPiece::NewBitmap(content->get_bitmap()));
           break;
         case blink::mojom::AILanguageModelPromptContent::Tag::kAudio: {
           if (!capabilities.Has(
                   on_device_model::CapabilityFlags::kAudioInput)) {
             return nullptr;
           }
-          // TODO: Export services/on_device_model/ml/chrome_ml_types_traits.cc.
-          const on_device_model::mojom::AudioDataPtr& audio_data =
-              content->get_audio();
-          ml::AudioBuffer audio_buffer;
-          audio_buffer.sample_rate_hz = audio_data->sample_rate;
-          audio_buffer.num_channels = audio_data->channel_count;
-          audio_buffer.num_frames = audio_data->frame_count;
-          audio_buffer.data = audio_data->data;
-          input->pieces.push_back(std::move(audio_buffer));
+          input->pieces.push_back(
+              InputPiece::NewAudio(content->get_audio().Clone()));
           break;
         }
         case blink::mojom::AILanguageModelPromptContent::Tag::kToolCall:
@@ -167,13 +145,14 @@ on_device_model::mojom::InputPtr ConvertToInput(
           if (!response) {
             return nullptr;
           }
-          input->pieces.push_back(std::move(*response));
+          input->pieces.push_back(
+              InputPiece::NewToolResponse(std::move(response)));
           break;
         }
       }
     }
     if (!prompt->is_prefix) {
-      input->pieces.push_back(ml::Token::kEnd);
+      input->pieces.push_back(InputPiece::NewToken(ml::Token::kEnd));
     }
   }
   return input;
@@ -187,7 +166,7 @@ on_device_model::mojom::InputPtr ConvertToInputForExecute(
     return nullptr;
   }
   if (prompts.empty() || !prompts.back()->is_prefix) {
-    input->pieces.push_back(ml::Token::kModel);
+    input->pieces.push_back(InputPiece::NewToken(ml::Token::kModel));
   }
   return input;
 }
@@ -630,8 +609,9 @@ on_device_model::mojom::InputPtr
 AILanguageModel::Context::GetNonInitialPrompts() {
   auto input = on_device_model::mojom::Input::New();
   for (const auto& item : context_items_) {
-    input->pieces.insert(input->pieces.end(), item.input->pieces.begin(),
-                         item.input->pieces.end());
+    for (const auto& piece : item.input->pieces) {
+      input->pieces.push_back(piece->Clone());
+    }
   }
   return input;
 }
@@ -1123,10 +1103,13 @@ void AILanguageModel::OnPromptOutputComplete() {
   on_device_model::mojom::InputPtr model_output;
   if (prompt_state_->mode() == PromptState::Mode::kAppendAndGenerate) {
     model_output = on_device_model::mojom::Input::New();
-    model_output->pieces = {prompt_state_->response(), ml::Token::kEnd};
-    item.input->pieces.insert(item.input->pieces.end(),
-                              model_output->pieces.begin(),
-                              model_output->pieces.end());
+    model_output->pieces.push_back(
+        InputPiece::NewText(prompt_state_->response()));
+    model_output->pieces.push_back(InputPiece::NewToken(ml::Token::kEnd));
+    item.input->pieces.insert(
+        item.input->pieces.end(),
+        std::make_move_iterator(model_output->pieces.begin()),
+        std::make_move_iterator(model_output->pieces.end()));
     // One extra token for the end token on the model output.
     item.tokens++;
   }
