@@ -185,8 +185,7 @@
           "--upload-results",
           "--test-shard-map-filename=linux-perf-fyi_map.json",
           "--ignore-benchmark-exit-code",
-          "--output-format=histograms",
-          "--experimental-tbmv3-metrics"
+          "--output-format=histograms"
         ],
         "merge": {
           "args": [
@@ -235,7 +234,6 @@
           "--test-shard-map-filename=win-10_laptop_low_end-perf_hp-candidate_map.json",
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
-          "--experimental-tbmv3-metrics",
           "--extra-browser-args=--disable-features=SessionRestoreInfobar"
         ],
         "merge": {

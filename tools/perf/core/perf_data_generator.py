@@ -273,7 +273,6 @@ FYI_BUILDERS = {
             'performance_test_suite',
             'extra_args': [
                 '--output-format=histograms',
-                '--experimental-tbmv3-metrics',
             ],
         }],
         'platform':
@@ -321,7 +320,6 @@ FYI_BUILDERS = {
                 'performance_test_suite',
                 'extra_args': [
                     '--output-format=histograms',
-                    '--experimental-tbmv3-metrics',
                     # crbug.com/457520120#comment3 Disabling the feature on waterfall.
                     '--extra-browser-args=--disable-features=SessionRestoreInfobar',
                 ],
