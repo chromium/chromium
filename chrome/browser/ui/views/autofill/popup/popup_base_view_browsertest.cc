@@ -29,7 +29,6 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -71,9 +70,7 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
 
 class PopupBaseViewBrowsertest : public InProcessBrowserTest {
  public:
-  PopupBaseViewBrowsertest() {
-    feature_list_.InitAndDisableFeature(features::kAutofillMoreProminentPopup);
-  }
+  PopupBaseViewBrowsertest() = default;
 
   PopupBaseViewBrowsertest(const PopupBaseViewBrowsertest&) = delete;
   PopupBaseViewBrowsertest& operator=(const PopupBaseViewBrowsertest&) = delete;
@@ -105,7 +102,6 @@ class PopupBaseViewBrowsertest : public InProcessBrowserTest {
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PopupBaseViewBrowsertest, CorrectBoundsTest) {
@@ -140,56 +136,5 @@ IN_PROC_BROWSER_TEST_F(PopupBaseViewBrowsertest, AccessibleProperties) {
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA),
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
-
-struct ProminentPopupTestParams {
-  bool is_feature_enabled;
-  int expected_left_offset;
-};
-
-class PopupBaseViewProminentStyleFeatureTest
-    : public PopupBaseViewBrowsertest,
-      public testing::WithParamInterface<ProminentPopupTestParams> {
- public:
-  PopupBaseViewProminentStyleFeatureTest() {
-    feature_list_.InitWithFeatureState(features::kAutofillMoreProminentPopup,
-                                       GetParam().is_feature_enabled);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(PopupBaseViewProminentStyleFeatureTest, LeftMaxOffset) {
-  gfx::Rect web_bounds = mock_delegate_.GetWebContents()->GetViewBounds();
-  gfx::RectF bounds(web_bounds.x() + 100, web_bounds.y() + 150, 1000, 20);
-  EXPECT_CALL(mock_delegate_, element_bounds())
-      .WillRepeatedly(ReturnRef(bounds));
-
-  ShowView();
-
-  gfx::Point display_point = static_cast<views::View*>(view_)
-                                 ->GetWidget()
-                                 ->GetClientAreaBoundsInScreen()
-                                 .origin();
-
-  // Shows the popup on a long (1000px) element and returns the offset
-  // of the poopup's top left point to the bottom left point of the target:
-  //     │      element     │
-  //     └──────────────────┘
-  //      |- offset -|┌──^───────────────┐
-  //                  │       popup      │
-  gfx::Vector2d offset =
-      display_point - gfx::ToRoundedPoint(bounds.bottom_left());
-
-  EXPECT_EQ(offset.x(), GetParam().expected_left_offset);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PopupBaseViewProminentStyleFeatureTest,
-    testing::Values(ProminentPopupTestParams{.is_feature_enabled = false,
-                                             .expected_left_offset = 95},
-                    ProminentPopupTestParams{.is_feature_enabled = true,
-                                             .expected_left_offset = 55}));
 
 }  // namespace autofill

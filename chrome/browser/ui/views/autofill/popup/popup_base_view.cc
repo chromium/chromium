@@ -86,9 +86,7 @@ std::unique_ptr<views::Border> CreateBorder() {
       gfx::RoundedCornersF(PopupBaseView::GetCornerRadius()));
   border->set_md_shadow_elevation(
       ChromeLayoutProvider::Get()->GetShadowElevationMetric(
-          base::FeatureList::IsEnabled(features::kAutofillMoreProminentPopup)
-              ? views::Emphasis::kMaximum
-              : views::Emphasis::kMedium));
+          views::Emphasis::kMedium));
   return border;
 }
 
@@ -508,11 +506,6 @@ gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
 
   gfx::Rect popup_bounds;
 
-  int maximum_pixel_offset_to_center =
-      base::FeatureList::IsEnabled(features::kAutofillMoreProminentPopup)
-          ? features::kAutofillMoreProminentPopupMaxOffsetToCenterParam.Get()
-          : kMaximumPixelsToMoveSuggestionToCenter;
-
   // Deduce the arrow and the position.
   views::BubbleBorder::Arrow arrow = GetOptimalPopupPlacement(
       /*visible_content_area_bounds=*/visible_content_area_bounds,
@@ -522,7 +515,7 @@ gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
           base::i18n::TextDirection::RIGHT_TO_LEFT,
       /*scrollbar_width=*/gfx::scrollbar_size(),
       /*maximum_pixel_offset_to_center=*/
-      maximum_pixel_offset_to_center,
+      kMaximumPixelsToMoveSuggestionToCenter,
       /*maximum_width_percentage_to_center=*/
       kMaximumWidthPercentageToMoveTheSuggestionToCenter,
       /*popup_bounds=*/popup_bounds, preferred_popup_sides,

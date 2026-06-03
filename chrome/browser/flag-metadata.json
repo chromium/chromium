@@ -1068,14 +1068,6 @@
     "expiry_milestone": 146
   },
   {
-    "name": "autofill-more-prominent-popup",
-    "owners": [
-      "vykochko@google.com",
-      "autofill-squad-muc@google.com"
-    ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "autofill-payments-field-swapping",
     "owners": ["vidhanj@google.com"],
     "expiry_milestone": 143

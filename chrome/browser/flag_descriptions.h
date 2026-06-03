@@ -1119,12 +1119,6 @@ inline constexpr char kAutofillManualTestingDataDescription[] =
     "If at least one address/card is specified, all other existing "
     "addresses/cards are overwritten.";
 
-inline constexpr char kAutofillMoreProminentPopupName[] =
-    "More prominent Autofill popup";
-inline constexpr char kAutofillMoreProminentPopupDescription[] =
-    "If enabled Autofill's popup becomes more prominent, i.e. its shadow "
-    "becomes more emphasized, position is also updated";
-
 inline constexpr char kAutofillPaymentsFieldSwappingName[] =
     "Swap credit card suggestions";
 inline constexpr char kAutofillPaymentsFieldSwappingDescription[] =
