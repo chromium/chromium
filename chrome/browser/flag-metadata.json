@@ -6843,7 +6843,7 @@
   {
     "name": "ntp-composebox",
     "owners": [ "ananyaseelam@google.com", "chrome-desktop-ntp@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "ntp-customize-chrome-auto-open",
@@ -6933,7 +6933,7 @@
       "rtatum@google.com",
       "shomizoe@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "ntp-ogb-async-bar-parts",
@@ -6958,7 +6958,7 @@
   {
     "name": "ntp-realbox-next",
     "owners": [ "romanarora@chromium.com", "chrome-desktop-ntp@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 160
   },
   {
     "name": "ntp-searchbox-voice-search-coherence",
