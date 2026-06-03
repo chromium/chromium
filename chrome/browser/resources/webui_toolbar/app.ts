@@ -244,6 +244,8 @@ export class ToolbarAppElement extends AppElementBase {
   private dropListener_ = (e: DragEvent) => this.onDrop_(e);
   private keyDownListener_ = (e: KeyboardEvent) => this.onKeyDown_(e);
 
+  private isRtl_: boolean = loadTimeData.getString('textdirection') === 'rtl';
+
   constructor() {
     super();
     this.addEventListener('contextmenu', e => {
@@ -446,12 +448,17 @@ export class ToolbarAppElement extends AppElementBase {
     assert(currentIndex !== -1);
     let nextIndex: number = 0;
 
+    const shouldAdvance =
+        event.key === (this.isRtl_ ? 'ArrowLeft' : 'ArrowRight');
+    const shouldReverse =
+        event.key === (this.isRtl_ ? 'ArrowRight' : 'ArrowLeft');
+
     if (event.key === 'Home') {
       nextIndex = 0;
       // TODO(crbug.com/510825650): When app menu button enabled:
       // } else if (event.key === 'End') {
       //   nextIndex = focusableElements.length - 1;
-    } else if (event.key === 'ArrowRight') {
+    } else if (shouldAdvance) {
       nextIndex = currentIndex + 1;
       // Let parent handle this for now.
       // TODO(crbug.com/510825650): Handle wrap around when app menu button is
@@ -459,7 +466,7 @@ export class ToolbarAppElement extends AppElementBase {
       if (nextIndex >= focusableElements.length) {
         return;
       }
-    } else if (event.key === 'ArrowLeft') {
+    } else if (shouldReverse) {
       nextIndex = currentIndex - 1;
       // Let parent handle this for now.
       // TODO(crbug.com/510825650): Handle wrap around when app menu button is
