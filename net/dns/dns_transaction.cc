@@ -69,6 +69,7 @@
 #include "net/dns/dns_udp_tracker.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
@@ -436,6 +437,12 @@ class DnsTransactionImpl final : public DnsTransaction {
 
     callback_ = std::move(callback);
 
+    // Configure the timer to run on the prioritized task runner corresponding
+    // to this transaction's request priority. All subsequent fallback and
+    // timeout delay tasks scheduled by `timer_` will inherit this priority.
+    CHECK(!timer_.IsRunning());
+    timer_.SetTaskRunner(HostResolver::GetTaskRunner(request_priority_));
+
     net_log_.BeginEvent(NetLogEventType::DNS_TRANSACTION,
                         [&] { return NetLogStartParams(hostname_, qtype_); });
     time_from_start_ = std::make_unique<base::ElapsedTimer>();
@@ -450,8 +457,9 @@ class DnsTransactionImpl final : public DnsTransaction {
       // Clear all other non-completed attempts. They are no longer needed and
       // they may interfere with this posted result.
       ClearAttempts(result.attempt);
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&DnsTransactionImpl::DoCallback,
+      HostResolver::GetTaskRunner(request_priority_)
+          ->PostTask(FROM_HERE,
+                     base::BindOnce(&DnsTransactionImpl::DoCallback,
                                     weak_ptr_factory_.GetWeakPtr(), result));
     }
   }

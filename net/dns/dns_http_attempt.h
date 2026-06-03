@@ -40,7 +40,6 @@ class ResolveContext;
 class NET_EXPORT_PRIVATE DnsHTTPAttempt : public DnsAttempt,
                                           public URLRequest::Delegate {
  public:
-
   DnsHTTPAttempt(base::WeakPtr<ResolveContext> resolve_context,
                  DnsSession* session,
                  size_t doh_server_index,
@@ -49,7 +48,7 @@ class NET_EXPORT_PRIVATE DnsHTTPAttempt : public DnsAttempt,
                  const GURL& gurl_without_parameters,
                  bool use_post,
                  URLRequestContext* url_request_context,
-                 RequestPriority request_priority_,
+                 RequestPriority request_priority,
                  bool is_probe);
   ~DnsHTTPAttempt() override;
 
@@ -99,6 +98,7 @@ class NET_EXPORT_PRIVATE DnsHTTPAttempt : public DnsAttempt,
   scoped_refptr<DnsSession> session_;
 
   const bool is_probe_;
+  const RequestPriority request_priority_;
 
   scoped_refptr<GrowableIOBuffer> buffer_;
   std::unique_ptr<DnsQuery> query_;

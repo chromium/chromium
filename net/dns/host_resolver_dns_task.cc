@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/types/optional_util.h"
 #include "net/base/features.h"
@@ -1150,6 +1151,11 @@ void HostResolverDnsTask::MaybeStartTimeoutTimer() {
   }
 
   if (!timeout.is_zero()) {
+    // Configure the timeout timer to run on the prioritized task runner
+    // corresponding to this task's priority.
+    CHECK(!timeout_timer_.IsRunning());
+    timeout_timer_.SetTaskRunner(
+        HostResolver::GetTaskRunner(delegate_->priority()));
     timeout_timer_.Start(FROM_HERE, timeout,
                          base::BindOnce(&HostResolverDnsTask::OnTimeout,
                                         base::Unretained(this)));
