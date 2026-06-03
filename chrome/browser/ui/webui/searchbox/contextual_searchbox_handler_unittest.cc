@@ -1098,7 +1098,10 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
     feature_list_.InitWithFeaturesAndParameters(
         {{contextual_tasks::kContextualTasks, {}},
          {contextual_tasks::kContextualTasksContext,
-          {{"ContextualTasksContextSmartTabSharing", "true"}}}},
+          {{"ContextualTasksContextSmartTabSharing", "true"}}},
+         {contextual_tasks::
+              kContextualTasksContextSmartTabSharingDefaultOnAvailability,
+          {}}},
         {});
 
     auto query_controller_config_params = std::make_unique<
@@ -1224,6 +1227,17 @@ TEST_F(SmartTabSharingTest, IsSmartTabSharingActive_ReadsPref) {
 
   profile()->GetPrefs()->SetBoolean(
       contextual_tasks::kContextualTasksShareOpenTabsEveryThread, false);
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
+}
+
+TEST_F(SmartTabSharingTest, IsSmartTabSharingActive_AvailabilityDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      contextual_tasks::
+          kContextualTasksContextSmartTabSharingDefaultOnAvailability);
+
+  profile()->GetPrefs()->SetBoolean(
+      contextual_tasks::kContextualTasksShareOpenTabsEveryThread, true);
   EXPECT_FALSE(handler().IsSmartTabSharingActive());
 }
 
