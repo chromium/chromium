@@ -64,6 +64,9 @@ data/http_server_files/sample.ics
 data/http_server_files/sample.mobileconfig
 data/http_server_files/sample.order
 data/http_server_files/semi_bundle.pkpasses
+data/http_server_files/send_tab_to_self/send_tab_to_self_active_page.html
+data/http_server_files/send_tab_to_self/send_tab_to_self_form_propagation.html
+data/http_server_files/send_tab_to_self/send_tab_to_self_scroll_restoration.html
 data/http_server_files/simple_login_form.html
 data/http_server_files/simple_login_form_empty.html
 data/http_server_files/simple_login_form_empty_autofocus.html

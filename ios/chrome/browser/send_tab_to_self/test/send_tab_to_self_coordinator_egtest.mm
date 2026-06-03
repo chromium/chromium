@@ -30,63 +30,19 @@
 
 namespace {
 
-const char kPageText[] =
-    "This is a long and unique text that should be easy to generate a text "
-    "fragment for without any ambiguity.";
-const char kPageHtml[] =
-    "<html><body>"
-    "<div style='height: 100px; width: 100px; position: absolute; top: 50%; "
-    "left: 50%; transform: translate(-50%, -50%);'>"
-    "  <p id='target'>"
-    "    This is a long and unique text that should be easy to generate a text "
-    "fragment for without any ambiguity."
-    "  </p>"
-    "</div>"
-    "</body></html>";
-
-const char kScrollPageHtml[] =
-    "<html><body>"
-    "<div style='height: 2000px;'></div>"
-    "  <p id='target'>"
-    "    This is a long and unique text that should be easy to generate a text "
-    "fragment for without any ambiguity."
-    "  </p>"
-    "</body></html>";
-
-const char kFormPageHtml[] =
-    "<html><body>"
-    "  <form>"
-    "    <input type='text' id='username' name='username'>"
-    "    <input type='text' id='address' name='address'>"
-    "    <input type='text' id='city' name='city'>"
-    "  </form>"
-    "</body></html>";
-
-// TODO(crbug.com/485145029): Consider moving the test pages in a dedicated data
-// folder and clean up the logic.
 NSString* const kTargetDeviceName = @"My other device";
 NSString* const kSendTabToSelfModalCancelButtonId =
     @"kSendTabToSelfModalCancelButton";
 
-std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
-    const net::test_server::HttpRequest& request) {
-  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_OK);
-  http_response->set_content_type("text/html");
-  // Disable caching so that multiple navigations to the same URL in the tests
-  // are always fetched fresh and state transitions (e.g. filling form fields)
-  // behave predictably without interference from cached content.
-  http_response->AddCustomHeader("Cache-Control",
-                                 "no-cache, no-store, must-revalidate");
-  if (request.relative_url == "/scroll") {
-    http_response->set_content(kScrollPageHtml);
-  } else if (request.relative_url == "/form") {
-    http_response->set_content(kFormPageHtml);
-  } else {
-    http_response->set_content(kPageHtml);
-  }
-  return http_response;
+// Helpers for web element selectors.
+ElementSelector* TargetElement() {
+  return [ElementSelector selectorWithElementID:"target"];
 }
+
+ElementSelector* UsernameElement() {
+  return [ElementSelector selectorWithElementID:"username"];
+}
+
 }  // namespace
 
 @interface SendTabToSelfCoordinatorTestCase : ChromeTestCase
@@ -111,16 +67,16 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 - (void)setUp {
   [super setUp];
 
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&RespondWithConstantPage));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
 // Tests that the entry point button is shown to a signed out user, even if
 // there are no device-level accounts.
 - (void)testShowButtonIfSignedOutAndNoDeviceAccount {
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
 
@@ -133,8 +89,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
 
@@ -163,8 +121,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
 - (void)testShowMessageIfSignedInAndNoTargetDevice {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf =
@@ -189,8 +149,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf =
@@ -208,11 +170,17 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 }
 
 - (void)testSendTabToSelfAndVerifySnackbar {
+  const char kPageText[] =
+      "This is a long and unique text that should be easy to generate a text "
+      "fragment for without any ambiguity.";
+
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf =
@@ -243,8 +211,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
   // Verify that the text fragment was successfully captured and attached to the
   // STTS entry in the model.
-  NSString* urlString =
-      base::SysUTF8ToNSString(self.testServer->GetURL("/scroll").spec());
+  NSString* urlString = base::SysUTF8ToNSString(
+      self.testServer
+          ->GetURL("/send_tab_to_self/send_tab_to_self_active_page.html")
+          .spec());
   NSString* textFragment =
       [ChromeEarlGrey textFragmentForSendTabToSelfEntryWithURL:urlString];
   GREYAssertTrue(
@@ -259,8 +229,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL(
+                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
   NSString* sendTabToSelf =
@@ -293,8 +265,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 // Tests that a text fragment is correctly consumed and scrolls the page
 // when passed internally during an OpenNewTabCommand, without highlighting.
 - (void)testRestoreScrollPosition {
-  NSString* urlString =
-      base::SysUTF8ToNSString(self.testServer->GetURL("/scroll").spec());
+  NSString* urlString = base::SysUTF8ToNSString(
+      self.testServer
+          ->GetURL("/send_tab_to_self/send_tab_to_self_scroll_restoration.html")
+          .spec());
 
   // Use the known text fragment for the page content.
   NSString* textFragment = @"This%20is%20a%20long,without%20any%20ambiguity.";
@@ -320,9 +294,12 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey openSendTabToSelfNewTabWithURL:urlString
                                     textFragment:textFragment
                                        entryGUID:guid];
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Wait for the new tab to load and the fragment to be applied.
-  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   // Verify that the page has scrolled down to the fragment.
   NSString* checkScrollJS = @"window.scrollY > 0;";
@@ -342,8 +319,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 // Tests that an invalid text fragment is safely ignored and doesn't crash or
 // highlight.
 - (void)testRestoreScrollPositionInvalidFragment {
-  NSString* urlString =
-      base::SysUTF8ToNSString(self.testServer->GetURL("/scroll").spec());
+  NSString* urlString = base::SysUTF8ToNSString(
+      self.testServer
+          ->GetURL("/send_tab_to_self/send_tab_to_self_scroll_restoration.html")
+          .spec());
 
   // Use an invalid text fragment.
   NSString* textFragment = @"InvalidFragmentThatDoesNotMatchAnything";
@@ -369,9 +348,12 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey openSendTabToSelfNewTabWithURL:urlString
                                     textFragment:textFragment
                                        entryGUID:guid];
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Wait for the new tab to load.
-  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   // Verify that the page has NOT scrolled down. We wait for a short duration
   // to ensure any pending async scrolls do not occur.
@@ -394,8 +376,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 
 // Tests that an empty text fragment is safely ignored.
 - (void)testRestoreScrollPositionEmptyFragment {
-  NSString* urlString =
-      base::SysUTF8ToNSString(self.testServer->GetURL("/scroll").spec());
+  NSString* urlString = base::SysUTF8ToNSString(
+      self.testServer
+          ->GetURL("/send_tab_to_self/send_tab_to_self_scroll_restoration.html")
+          .spec());
 
   // Use an empty text fragment.
   NSString* textFragment = @"";
@@ -421,9 +405,12 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey openSendTabToSelfNewTabWithURL:urlString
                                     textFragment:textFragment
                                        entryGUID:guid];
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
+  [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Wait for the new tab to load.
-  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+  [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   // Verify that the page has NOT scrolled down. We wait for a short duration
   // to ensure any pending async scrolls do not occur.
@@ -441,8 +428,10 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 // Tests that form fields are successfully restored when a page is opened
 // via Send Tab To Self with form field propagation enabled.
 - (void)testRestoreFormFields {
-  NSString* urlString =
-      base::SysUTF8ToNSString(self.testServer->GetURL("/form").spec());
+  NSString* urlString = base::SysUTF8ToNSString(
+      self.testServer
+          ->GetURL("/send_tab_to_self/send_tab_to_self_form_propagation.html")
+          .spec());
 
   // 1. Sign in first. This ensures the keystore encryption keys (Nigori) are
   // generated and the local device cache GUID is registered.
@@ -470,9 +459,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey
       waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
   [ChromeEarlGrey waitForPageToFinishLoading];
-  [ChromeEarlGrey
-      waitForWebStateContainingElement:[ElementSelector
-                                           selectorWithElementID:"username"]];
+  [ChromeEarlGrey waitForWebStateContainingElement:UsernameElement()];
 
   // Verify that the input field was populated with the expected value.
   NSString* checkFilledJS = @"(function() {"
@@ -488,9 +475,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   [ChromeEarlGrey
       waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
   [ChromeEarlGrey waitForPageToFinishLoading];
-  [ChromeEarlGrey
-      waitForWebStateContainingElement:[ElementSelector
-                                           selectorWithElementID:"username"]];
+  [ChromeEarlGrey waitForWebStateContainingElement:UsernameElement()];
 
   // Verify that the input field remains empty for normal navigations.
   NSString* checkEmptyJS = @"(function() {"
