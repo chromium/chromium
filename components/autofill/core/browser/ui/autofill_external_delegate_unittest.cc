@@ -496,18 +496,11 @@ class AutofillExternalDelegateTest : public testing::Test,
   // for a specific query.
   void SetupMockAccessibilityQueryService(
       const std::u16string& query,
-      accessibility_annotator::MemorySearchResults results,
-      std::optional<bool> full_search) {
+      accessibility_annotator::MemorySearchResults results) {
     auto mock_service = std::make_unique<testing::NiceMock<
         accessibility_annotator::MockAccessibilityQueryService>>();
-    // Configure the matcher based on whether full or incremental search is
-    // required.
-    Matcher<bool> full_search_matcher = _;
-    if (full_search.has_value()) {
-      full_search_matcher = Eq(*full_search);
-    }
-    EXPECT_CALL(*mock_service, Query(Eq(query), full_search_matcher, _))
-        .WillOnce(base::test::RunOnceCallback<2>(std::move(results)));
+    EXPECT_CALL(*mock_service, Query(Eq(query), _))
+        .WillOnce(base::test::RunOnceCallback<1>(std::move(results)));
     // Inject the mock service into the client.
     autofill_client().set_accessibility_query_service(std::move(mock_service));
   }
@@ -858,8 +851,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenFirstPartySources) {
       accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
       std::move(entries));
 
-  SetupMockAccessibilityQueryService(u"shoe size", std::move(search_results),
-                                     /*full_search=*/true);
+  SetupMockAccessibilityQueryService(u"shoe size", std::move(search_results));
 
   std::u16string expected_label = l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_DESCRIPTION,
@@ -908,8 +900,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenAutofillSource) {
       accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
       std::move(entries));
 
-  SetupMockAccessibilityQueryService(u"addr", std::move(search_results),
-                                     /*full_search=*/std::nullopt);
+  SetupMockAccessibilityQueryService(u"addr", std::move(search_results));
 
   auto matcher = testing::ElementsAre(testing::AllOf(
       HasMainText(u"1600 Amphitheatre Pkwy"),
@@ -960,8 +951,8 @@ TEST_F(AutofillExternalDelegateTest,
       mock_service.get();
   autofill_client().set_accessibility_query_service(std::move(mock_service));
 
-  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _, _))
-      .WillOnce(base::test::RunOnceCallback<2>(std::move(search_results1)));
+  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _))
+      .WillOnce(base::test::RunOnceCallback<1>(std::move(search_results1)));
 
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
@@ -979,8 +970,8 @@ TEST_F(AutofillExternalDelegateTest,
   // running immediately.
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
       received_callback;
-  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr2"), _, _))
-      .WillOnce(testing::SaveArg<2>(&received_callback));
+  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr2"), _))
+      .WillOnce(testing::SaveArg<1>(&received_callback));
 
   // We expect that UpdateAutofillSuggestions IS called when the second search
   // starts, which clears the suggestions list.
@@ -1022,8 +1013,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPartialResponseKeepsSearching) {
 
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
       received_callback;
-  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _, _))
-      .WillOnce(testing::SaveArg<2>(&received_callback));
+  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _))
+      .WillOnce(testing::SaveArg<1>(&received_callback));
 
   // Trigger the search, which clears suggestions.
   EXPECT_CALL(autofill_client(),
@@ -1080,8 +1071,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFinalResponseStopsSearching) {
 
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
       received_callback;
-  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _, _))
-      .WillOnce(testing::SaveArg<2>(&received_callback));
+  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _))
+      .WillOnce(testing::SaveArg<1>(&received_callback));
 
   // Trigger the search, which clears suggestions.
   EXPECT_CALL(autofill_client(),
@@ -1138,8 +1129,8 @@ TEST_F(AutofillExternalDelegateTest,
 
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
       received_callback;
-  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _, _))
-      .WillOnce(testing::SaveArg<2>(&received_callback));
+  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr"), _))
+      .WillOnce(testing::SaveArg<1>(&received_callback));
 
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
@@ -1181,8 +1172,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryStaleResponseIgnored) {
 
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
       received_callback1;
-  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr1"), _, _))
-      .WillOnce(testing::SaveArg<2>(&received_callback1));
+  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr1"), _))
+      .WillOnce(testing::SaveArg<1>(&received_callback1));
 
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
@@ -1191,8 +1182,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryStaleResponseIgnored) {
   // Trigger second search before first one completes.
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
       received_callback2;
-  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr2"), _, _))
-      .WillOnce(testing::SaveArg<2>(&received_callback2));
+  EXPECT_CALL(*mock_service_ptr, Query(std::u16string_view(u"addr2"), _))
+      .WillOnce(testing::SaveArg<1>(&received_callback2));
 
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(testing::IsEmpty(), _, _, _));
@@ -1267,8 +1258,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryRemoteQuery_UnsupportedQuery) {
 
   SetupMockAccessibilityQueryService(
       u"shoe size",
-      {accessibility_annotator::MemorySearchStatus::kUnsupportedQuery, {}},
-      /*full_search=*/true);
+      {accessibility_annotator::MemorySearchStatus::kUnsupportedQuery, {}});
 
   EXPECT_CALL(autofill_client(), UpdateAutofillSuggestions)
       .WillOnce(testing::Return())
@@ -1298,8 +1288,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryRemoteQuery_NoData) {
 
   SetupMockAccessibilityQueryService(
       u"shoe size",
-      {accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess, {}},
-      /*full_search=*/true);
+      {accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess, {}});
 
   EXPECT_CALL(autofill_client(), UpdateAutofillSuggestions)
       .WillOnce(testing::Return())
@@ -1338,10 +1327,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(AutofillExternalDelegateAtMemoryErrorTest, AtMemoryRemoteQuery_NoConnection) {
   StartAtMemorySession();
 
-  SetupMockAccessibilityQueryService(
-      u"shoe size",
-      {GetParam(), {}},
-      /*full_search=*/true);
+  SetupMockAccessibilityQueryService(u"shoe size", {GetParam(), {}});
 
   EXPECT_CALL(autofill_client(), UpdateAutofillSuggestions)
       .WillOnce(testing::Return())

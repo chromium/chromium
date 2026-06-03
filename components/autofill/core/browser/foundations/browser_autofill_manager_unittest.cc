@@ -5971,9 +5971,8 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_FormNonSecureAction) {
   // Submit search query. This should invoke Query on mock query service.
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
       search_callback;
-  EXPECT_CALL(*mock_query_service_ptr,
-              Query(std::u16string_view(u"query"), _, _))
-      .WillOnce(testing::SaveArg<2>(&search_callback));
+  EXPECT_CALL(*mock_query_service_ptr, Query(std::u16string_view(u"query"), _))
+      .WillOnce(testing::SaveArg<1>(&search_callback));
   autofill_manager().GetAtMemoryManager().OnSearchSubmitted(u"query");
   ASSERT_FALSE(search_callback.is_null());
 

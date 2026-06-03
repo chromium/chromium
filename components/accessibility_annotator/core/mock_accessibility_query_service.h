@@ -23,7 +23,6 @@ class MockAccessibilityQueryService
       void,
       Query,
       (std::u16string_view query,
-       bool full_search,
        base::RepeatingCallback<
            void(accessibility_annotator::MemorySearchResults)> update_callback),
       (override));

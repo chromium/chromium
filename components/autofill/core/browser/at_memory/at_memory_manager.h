@@ -80,17 +80,13 @@ class AtMemoryManager {
       std::vector<Suggestion>& suggestions) const;
 
  private:
-  // Executes the search query. `full_search` is true if the search was
-  // explicitly submitted by the user, and false for incremental search.
-  void ExecuteQuery(const std::u16string& filter, bool full_search);
+  // Executes the search query.
+  void ExecuteQuery(const std::u16string& filter);
 
   // Callback handler for the search query. `query` is the original search
-  // string. `full_search` is true if the search was explicitly submitted by
-  // the user (e.g. pressing Enter), and false if it was an incremental search
-  // as the user types. `result` contains the search results.
+  // string. `result` contains the search results.
   void OnSearchResultsReceived(
       const std::u16string& query,
-      bool full_search,
       accessibility_annotator::MemorySearchResults result);
 
   // Creates a suggestion to display when the query is not supported.
@@ -155,9 +151,6 @@ class AtMemoryManager {
   bool is_context_secure_ = false;
   // Flag indicating that a search query is in progress.
   bool is_searching_ = false;
-  // Flag to distinguish if the ongoing query is a full search (explicit submit)
-  // or an incremental one (as-you-type).
-  bool is_full_search_running_ = false;
 
   // Factory for search queries, used to identify currently active query and
   // discard the old ones.

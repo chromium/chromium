@@ -113,7 +113,6 @@ void AccessibilityQueryService::Shutdown() {
 
 void AccessibilityQueryService::Query(
     std::u16string_view query,
-    bool full_search,
     base::RepeatingCallback<void(MemorySearchResults)> update_callback) {
   // Invalidate any in-flight queries.
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -128,28 +127,22 @@ void AccessibilityQueryService::Query(
   // Run the query classifier to understand the user's intent, extracting
   // intent type and filter words.
   classifier_.Run(
-      std::u16string(query), full_search,
+      std::u16string(query),
       base::BindOnce(&AccessibilityQueryService::OnClassificationComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::u16string(query),
-                     full_search, std::move(update_callback)));
+                     std::move(update_callback)));
 }
 
 void AccessibilityQueryService::OnClassificationComplete(
     std::u16string query,
-    bool full_search,
     base::RepeatingCallback<void(MemorySearchResults)> update_callback,
     ClassifiedQuery classified_query) {
   // If the classifier couldn't figure out what the user is asking for, we try
-  // the 1P resolver as a fallback if full search is enabled.
+  // the 1P resolver as a fallback.
   if (classified_query.intent == EntryType::kUnknown) {
-    if (full_search) {
-      QueryOnePResolver(std::move(query), update_callback,
-                        /*fallback_entries=*/{},
-                        MemorySearchStatus::kUnsupportedQuery);
-      return;
-    }
-    update_callback.Run(
-        MemorySearchResults(MemorySearchStatus::kUnsupportedQuery));
+    QueryOnePResolver(std::move(query), update_callback,
+                      /*fallback_entries=*/{},
+                      MemorySearchStatus::kUnsupportedQuery);
     return;
   }
 
@@ -163,8 +156,7 @@ void AccessibilityQueryService::OnClassificationComplete(
           data_providers_.size(),
           base::BindOnce(&AccessibilityQueryService::OnDataRetrieved,
                          weak_ptr_factory_.GetWeakPtr(), std::move(query),
-                         full_search, std::move(classified_query),
-                         update_callback));
+                         std::move(classified_query), update_callback));
 
   // Request all data providers to fetch entries matching the classified intent.
   for (const std::unique_ptr<MemoryDataProvider>& provider : data_providers_) {
@@ -187,7 +179,6 @@ void AccessibilityQueryService::OnClassificationComplete(
 
 void AccessibilityQueryService::OnDataRetrieved(
     std::u16string query,
-    bool full_search,
     ClassifiedQuery classified_query,
     base::RepeatingCallback<void(MemorySearchResults)> update_callback,
     std::vector<std::vector<MemorySearchResult>> entries_list) {
@@ -199,17 +190,11 @@ void AccessibilityQueryService::OnDataRetrieved(
 
   DeduplicateResults(entries);
 
-  // If we couldn't find any local results, try the 1P resolver if full search
-  // is enabled.
+  // If we couldn't find any local results, try the 1P resolver.
   if (entries.empty()) {
-    if (full_search) {
-      QueryOnePResolver(std::move(query), update_callback,
-                        /*fallback_entries=*/{},
-                        MemorySearchStatus::kFinalResponseSuccess);
-      return;
-    }
-    update_callback.Run(MemorySearchResults(
-        MemorySearchStatus::kFinalResponseSuccess, std::move(entries)));
+    QueryOnePResolver(std::move(query), update_callback,
+                      /*fallback_entries=*/{},
+                      MemorySearchStatus::kFinalResponseSuccess);
     return;
   }
 
@@ -235,17 +220,12 @@ void AccessibilityQueryService::OnDataRetrieved(
                        any_filter_words_present);
 
   // If the strict filtering removes all items, it falls back to querying
-  // the 1P resolver if one is available and full search is enabled.
+  // the 1P resolver if one is available.
   // The 1P resolver might be able to find relevant results that the strict
   // local filtering missed.
   if (filtered_entries.empty()) {
-    if (full_search) {
-      QueryOnePResolver(std::move(query), update_callback, std::move(entries),
-                        MemorySearchStatus::kFinalResponseSuccess);
-      return;
-    }
-    update_callback.Run(MemorySearchResults(
-        MemorySearchStatus::kFinalResponseSuccess, std::move(entries)));
+    QueryOnePResolver(std::move(query), update_callback, std::move(entries),
+                      MemorySearchStatus::kFinalResponseSuccess);
     return;
   }
 

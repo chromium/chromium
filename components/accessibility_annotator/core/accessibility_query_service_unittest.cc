@@ -118,8 +118,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_AfterShutdown) {
   service->Shutdown();
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/false,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -137,8 +136,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_NoProviders) {
       /*remote_model_executor=*/nullptr);
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/false,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -167,8 +165,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_MultipleProviders) {
   fake_data_provider2->SetResults({result2});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/false,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -196,8 +193,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_Success) {
   fake_data_provider->SetResults({result});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/false,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& search_results = future.Get();
@@ -218,8 +214,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_UnknownIntent_NoOnePResolver) {
       /*remote_model_executor=*/nullptr);
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"random query", /*full_search=*/false,
-                 future.GetRepeatingCallback());
+  service->Query(u"random query", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -245,8 +240,7 @@ TEST_F(AccessibilityQueryServiceTest,
   fake_one_p_resolver->set_results({});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"random query", /*full_search=*/true,
-                 future.GetRepeatingCallback());
+  service->Query(u"random query", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -274,8 +268,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_UnknownIntent_QueriesOnePResolver) {
   fake_one_p_resolver->set_results({one_p_entry});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"random query", /*full_search=*/true,
-                 future.GetRepeatingCallback());
+  service->Query(u"random query", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -298,8 +291,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_NoLocalData_NoOnePResolver) {
       /*remote_model_executor=*/nullptr);
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/false,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -325,8 +317,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_NoLocalData_QueriesOnePResolver) {
   fake_one_p_resolver->set_results({one_p_entry});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/true,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -334,32 +325,6 @@ TEST_F(AccessibilityQueryServiceTest, Query_NoLocalData_QueriesOnePResolver) {
   EXPECT_THAT(result.entries, testing::ElementsAre(testing::Field(
                                   &MemorySearchResult::value, u"Jane Doe")));
   EXPECT_EQ(fake_one_p_resolver->last_query(), u"what is my name");
-}
-
-// Tests that the query service does NOT query the 1P resolver when no local
-// data is found if full search is disabled.
-TEST_F(AccessibilityQueryServiceTest,
-       Query_NoLocalData_FullSearchFalse_NoOnePQuery) {
-  std::vector<std::unique_ptr<MemoryDataProvider>> providers;
-  providers.push_back(std::make_unique<FakeMemoryDataProvider>());
-
-  auto one_p_resolver = std::make_unique<FakeOnePResolver>();
-  auto* fake_one_p_resolver = one_p_resolver.get();
-
-  auto service = std::make_unique<AccessibilityQueryService>(
-      std::make_unique<MockAccessibilityQueryServiceDelegate>(),
-      std::move(providers), std::move(one_p_resolver),
-      /*remote_model_executor=*/nullptr);
-
-  base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/false,
-                 future.GetRepeatingCallback());
-
-  ASSERT_TRUE(future.Wait());
-  const auto& result = future.Get();
-  EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  EXPECT_TRUE(result.entries.empty());
-  EXPECT_TRUE(fake_one_p_resolver->last_query().empty());
 }
 
 // Tests that the query service returns success with an empty list when no local
@@ -380,8 +345,7 @@ TEST_F(AccessibilityQueryServiceTest,
   fake_one_p_resolver->set_results({});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/true,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -410,7 +374,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_WithFilterWords) {
   fake_data_provider->SetResults({entry1, entry2});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"What's my home address in San Diego", /*full_search=*/false,
+  service->Query(u"What's my home address in San Diego",
                  future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -441,7 +405,7 @@ TEST_F(AccessibilityQueryServiceTest,
   // "New York" won't match "San Diego", so it should fallback to returning all
   // results for that intent.
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"What's my home address in New York", /*full_search=*/false,
+  service->Query(u"What's my home address in New York",
                  future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -469,8 +433,7 @@ TEST_F(AccessibilityQueryServiceTest, RecordsProviderResultCountMetric) {
   fake_data_provider->SetResults({result1, result2});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/false,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
 
@@ -508,7 +471,7 @@ TEST_F(AccessibilityQueryServiceTest,
   // "New York" won't match the local "San Diego" address, so it should
   // fallback to querying the 1P resolver.
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"What's my home address in New York", /*full_search=*/true,
+  service->Query(u"What's my home address in New York",
                  future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -545,7 +508,7 @@ TEST_F(AccessibilityQueryServiceTest,
   fake_one_p_resolver->set_results({});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"What's my home address in New York", /*full_search=*/true,
+  service->Query(u"What's my home address in New York",
                  future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -557,9 +520,9 @@ TEST_F(AccessibilityQueryServiceTest,
             u"What's my home address in New York");
 }
 
-// Tests that the query service does NOT query the 1P resolver when full search
-// is enabled if local data is found.
-TEST_F(AccessibilityQueryServiceTest, Query_FullSearch_NoOnePIfLocalDataFound) {
+// Tests that the query service does NOT query the 1P resolver if local data is
+// found.
+TEST_F(AccessibilityQueryServiceTest, Query_NoOnePIfLocalDataFound) {
   auto data_provider = std::make_unique<FakeMemoryDataProvider>();
   auto* fake_data_provider = data_provider.get();
   std::vector<std::unique_ptr<MemoryDataProvider>> providers;
@@ -580,8 +543,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_FullSearch_NoOnePIfLocalDataFound) {
   fake_one_p_resolver->set_results({one_p_entry});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/true,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -605,13 +567,11 @@ TEST_F(AccessibilityQueryServiceTest, StaleResultsAreNotSent) {
       /*remote_model_executor=*/nullptr);
 
   base::test::TestFuture<MemorySearchResults> future1;
-  service->Query(u"what is my name", /*full_search=*/false,
-                 future1.GetRepeatingCallback());
+  service->Query(u"what is my name", future1.GetRepeatingCallback());
 
   // Start a second query before the first one completes.
   base::test::TestFuture<MemorySearchResults> future2;
-  service->Query(u"what is my address", /*full_search=*/false,
-                 future2.GetRepeatingCallback());
+  service->Query(u"what is my address", future2.GetRepeatingCallback());
 
   // Complete the first query's data retrieval.
   fake_data_provider->CompleteNext();
@@ -648,8 +608,7 @@ TEST_F(AccessibilityQueryServiceTest,
   fake_data_provider1->SetResults({result1, result2, result3, result4});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/false,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const MemorySearchResults& result = future.Get();
@@ -693,8 +652,7 @@ TEST_F(AccessibilityQueryServiceTest,
   fake_data_provider1->SetResults({result1, result2});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/false,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
@@ -741,8 +699,7 @@ TEST_F(AccessibilityQueryServiceTest,
   fake_data_provider1->SetResults({result1, result2, result3, result4});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", /*full_search=*/false,
-                 future.GetRepeatingCallback());
+  service->Query(u"what is my name", future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();

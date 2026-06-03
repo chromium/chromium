@@ -511,7 +511,7 @@ bool AtMemoryManager::OnSearchSubmitted(const std::u16string& filter) {
   if (at_memory_funnel_metrics_) {
     at_memory_funnel_metrics_->OnQuerySubmitted();
   }
-  ExecuteQuery(filter, /*full_search=*/true);
+  ExecuteQuery(filter);
   return true;
 }
 
@@ -623,17 +623,11 @@ void AtMemoryManager::MaybeAppendPersonalContextNotice(
   }
 }
 
-void AtMemoryManager::ExecuteQuery(const std::u16string& filter,
-                                   bool full_search) {
+void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {
   accessibility_annotator::AccessibilityQueryService* query_service =
       owner_->client().GetAccessibilityQueryService();
   if (!query_service || !IsAtMemoryTriggerSource(trigger_source_) ||
       !update_callback_) {
-    return;
-  }
-
-  // If a full search is already running, block new incremental queries.
-  if (is_full_search_running_ && !full_search) {
     return;
   }
 
@@ -647,20 +641,12 @@ void AtMemoryManager::ExecuteQuery(const std::u16string& filter,
   }
 
   is_searching_ = true;
-  is_full_search_running_ = full_search;
   // Notify the UI that search has started.
-  if (full_search) {
-    ClearSuggestions();
-  } else {
-    base::span<const Suggestion> current_suggestions =
-        owner_->client().GetAutofillSuggestions();
-    SendSuggestions(base::ToVector(current_suggestions));
-  }
+  ClearSuggestions();
   query_service->Query(
-      filter, full_search,
+      filter,
       base::BindRepeating(&AtMemoryManager::OnSearchResultsReceived,
-                          query_weak_ptr_factory_.GetWeakPtr(), filter,
-                          full_search));
+                          query_weak_ptr_factory_.GetWeakPtr(), filter));
 }
 
 // Creates a suggestion to offer to open Gemini in the sidebar when the query is
@@ -691,7 +677,6 @@ Suggestion AtMemoryManager::CreateSearchAffordanceSuggestion(
 void AtMemoryManager::CancelPendingQueries() {
   query_weak_ptr_factory_.InvalidateWeakPtrs();
   is_searching_ = false;
-  is_full_search_running_ = false;
 }
 
 void AtMemoryManager::SendSuggestions(std::vector<Suggestion> suggestions) {
@@ -707,7 +692,6 @@ void AtMemoryManager::ClearSuggestions() {
 
 void AtMemoryManager::OnSearchResultsReceived(
     const std::u16string& query,
-    bool full_search,
     accessibility_annotator::MemorySearchResults result) {
   if (!IsAtMemoryTriggerSource(trigger_source_) || !update_callback_ ||
       !is_searching_) {
@@ -736,15 +720,14 @@ void AtMemoryManager::OnSearchResultsReceived(
     CancelPendingQueries();
   }
 
-  // For incremental search or if there are results, just return the results
-  // as-is.
-  if (!full_search || !result.entries.empty()) {
+  // If there are results, just return the results as-is.
+  if (!result.entries.empty()) {
     SendSuggestions(
         base::ToVector(result.entries, TransformResultIntoSuggestion));
     return;
   }
 
-  // When full search returns no entries, show the appropriate special
+  // When search returns no entries, show the appropriate special
   // suggestion based on the status.
   std::vector<Suggestion> suggestions;
   switch (result.status) {

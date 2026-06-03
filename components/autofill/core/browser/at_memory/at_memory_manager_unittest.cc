@@ -228,9 +228,8 @@ TEST_F(AtMemoryManagerTest,
 
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
       search_callback;
-  EXPECT_CALL(mock_query_service(),
-              Query(std::u16string_view(u"query"), /*full_search=*/true, _))
-      .WillOnce(SaveArg<2>(&search_callback));
+  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _))
+      .WillOnce(SaveArg<1>(&search_callback));
 
   // Expect that executing the query immediately clears suggestions.
   EXPECT_CALL(update_callback, Run(testing::IsEmpty(),
@@ -455,8 +454,8 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
 
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
       search_callback;
-  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _, _))
-      .WillOnce(SaveArg<2>(&search_callback));
+  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _))
+      .WillOnce(SaveArg<1>(&search_callback));
 
   std::vector<Suggestion> resulting_suggestions;
   EXPECT_CALL(update_callback,
@@ -509,8 +508,8 @@ TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
 
   base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
       search_callback;
-  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _, _))
-      .WillOnce(SaveArg<2>(&search_callback));
+  EXPECT_CALL(mock_query_service(), Query(std::u16string_view(u"query"), _))
+      .WillOnce(SaveArg<1>(&search_callback));
 
   std::vector<Suggestion> resulting_suggestions;
   EXPECT_CALL(update_callback,

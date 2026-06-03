@@ -43,7 +43,6 @@ struct ClassifiedQuery {
 // A callback that classifies the intent of a given query asynchronously.
 using QueryClassifier =
     base::RepeatingCallback<void(std::u16string,
-                                 bool full_search,
                                  base::OnceCallback<void(ClassifiedQuery)>)>;
 
 // Creates a default instance of the query classifier, which orchestrates
