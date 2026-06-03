@@ -19,8 +19,10 @@ enum class ComposeboxAttachmentOption {
   kGallery = 3,
   // Attaching a photo from the camera.
   kCamera = 4,
+  // Attaching a file from Drive.
+  kDrive = 5,
   // The maximum value for iteration.
-  kMaxValue = kCamera,
+  kMaxValue = kDrive,
 };
 
 // A set of ComposeboxAttachmentOption values used for iteration.

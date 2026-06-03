@@ -1074,6 +1074,10 @@ ComposeboxStrings* ServerStringsFromInputState(
     case kCamera:
       return std::ranges::contains(_inputState->allowed_input_types,
                                    omnibox::INPUT_TYPE_LENS_IMAGE);
+    case kDrive:
+      return IsComposeboxDriveOptionEnabled() &&
+             std::ranges::contains(_inputState->allowed_input_types,
+                                   omnibox::INPUT_TYPE_DRIVE);
   }
 }
 
@@ -1090,6 +1094,8 @@ ComposeboxStrings* ServerStringsFromInputState(
     case kGallery:
     case kCamera:
       return YES;
+    case kDrive:
+      return IsComposeboxDriveOptionEnabled() && [self isEligibleToUploadPdf];
   }
 }
 
@@ -1112,6 +1118,10 @@ ComposeboxStrings* ServerStringsFromInputState(
     case kCamera:
       return std::ranges::contains(_inputState->disabled_input_types,
                                    omnibox::INPUT_TYPE_LENS_IMAGE);
+    case kDrive:
+      return IsComposeboxDriveOptionEnabled() &&
+             std::ranges::contains(_inputState->disabled_input_types,
+                                   omnibox::INPUT_TYPE_DRIVE);
   }
 }
 
@@ -1129,6 +1139,8 @@ ComposeboxStrings* ServerStringsFromInputState(
     case kGallery:
     case kCamera:
       return NO;
+    case kDrive:
+      return IsComposeboxDriveOptionEnabled() && isImageCreationMode;
   }
 }
 
