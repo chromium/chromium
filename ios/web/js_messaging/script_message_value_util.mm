@@ -18,12 +18,11 @@ std::unique_ptr<ScriptMessageValue> CreateScriptMessageValue(id element) {
         base::SysNSStringToUTF16(element));
   }
   if (type_id == CFNumberGetTypeID()) {
-    if (CFNumberGetType((CFNumberRef)element) == kCFNumberIntType) {
-      return std::make_unique<ScriptMessageValue>(
-          base::Value([element intValue]));
+    if (CFNumberIsFloatType((CFNumberRef)element)) {
+      return std::make_unique<ScriptMessageValue>([element doubleValue]);
     }
-
-    return std::make_unique<ScriptMessageValue>([element doubleValue]);
+    return std::make_unique<ScriptMessageValue>(
+        base::Value([element intValue]));
   }
   if (type_id == CFBooleanGetTypeID()) {
     return std::make_unique<ScriptMessageValue>([element boolValue]);
