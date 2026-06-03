@@ -1857,30 +1857,42 @@ void ServiceWorkerContextWrapper::SetLoaderFactoryForUpdateCheckForTest(
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerContextWrapper::GetLoaderFactoryForUpdateCheck(
     const GURL& scope,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    const std::optional<base::UnguessableToken>&
+        creator_network_restrictions_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(crbug.com/40767578): Do we want to instrument this with
   // devtools? It is currently not recorded at all.
   return GetLoaderFactoryForBrowserInitiatedRequest(
       scope,
-      /*version_id=*/std::nullopt, std::move(client_security_state));
+      /*version_id=*/std::nullopt, std::move(client_security_state),
+      // The network restrictions of the creator (e.g., frame) must be
+      // enforced for service worker script fetches.
+      creator_network_restrictions_id);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerContextWrapper::GetLoaderFactoryForMainScriptFetch(
     const GURL& scope,
     int64_t version_id,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    const std::optional<base::UnguessableToken>&
+        creator_network_restrictions_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetLoaderFactoryForBrowserInitiatedRequest(
-      scope, version_id, std::move(client_security_state));
+      scope, version_id, std::move(client_security_state),
+      // The network restrictions of the creator (e.g., frame) must be
+      // enforced for service worker script fetches.
+      creator_network_restrictions_id);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
     const GURL& scope,
     std::optional<int64_t> version_id,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    const std::optional<base::UnguessableToken>&
+        creator_network_restrictions_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(falken): Replace this with URLLoaderInterceptor.
@@ -1931,7 +1943,10 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
         // TODO(crbug.com/390003764): Apply devtools cookies setting overrides
         // for a service worker
         /*devtools_cookie_overrides=*/std::nullopt,
-        /*cookie_overrides=*/std::nullopt);
+        /*cookie_overrides=*/std::nullopt,
+        // The network restrictions of the creator (e.g., frame) must be
+        // enforced for service worker script fetches.
+        creator_network_restrictions_id);
   } else {
     DCHECK(storage_partition());
     if (url_loader_factory::GetTestingInterceptor()) {
@@ -1942,6 +1957,9 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
     network::mojom::URLLoaderFactoryParamsPtr params =
         storage_partition_->CreateURLLoaderFactoryParams();
     params->client_security_state = std::move(client_security_state);
+    // The network restrictions of the creator (e.g., frame) must be enforced
+    // for service worker script fetches.
+    params->network_restrictions_id = creator_network_restrictions_id;
     remote =
         std::move(factory_builder)
             .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(

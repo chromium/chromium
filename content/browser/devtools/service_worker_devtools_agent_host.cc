@@ -444,13 +444,13 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
       rph, worker_route_id_, version->key(), client_security_state_.Clone(),
       std::move(coep_reporter_for_script_loader),
       /*dip_reporter=*/mojo::NullRemote(),
-      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
-      GetId());
+      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript, GetId(),
+      version->network_restrictions_id());
   auto subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
       rph, worker_route_id_, version->key(), client_security_state_.Clone(),
       std::move(coep_reporter_for_subresource_loader), std::move(dip_reporter),
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
-      GetId());
+      GetId(), version->network_restrictions_id());
 
   version->embedded_worker()->UpdateLoaderFactories(
       std::move(script_bundle), std::move(subresource_bundle));

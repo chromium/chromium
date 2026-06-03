@@ -15,6 +15,7 @@
 #include "content/browser/service_worker/service_worker_register_job_base.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_update_checker.h"
+#include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -165,9 +166,8 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
       scoped_refptr<ServiceWorkerVersion> version);
   void StartScriptFetchForNewWorker(
       scoped_refptr<ServiceWorkerVersion> version);
-  void OnScriptFetchCompleted(
-      scoped_refptr<ServiceWorkerVersion> version,
-      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params);
+  void OnScriptFetchCompleted(scoped_refptr<ServiceWorkerVersion> version,
+                              std::optional<WorkerScriptFetcherResult> result);
 
   // Starts a service worker for [[Update]]. The script comparison has finished
   // at this point. It starts install phase.
@@ -232,6 +232,9 @@ class ServiceWorkerRegisterJob : public ServiceWorkerRegisterJobBase {
   const GlobalRenderFrameHostId requesting_frame_id_;
   const blink::mojom::AncestorFrameType ancestor_frame_type_;
   PolicyContainerPolicies creator_policy_container_policies_;
+
+  const std::optional<base::UnguessableToken> creator_network_restrictions_id_;
+  const base::UnguessableToken network_restrictions_id_;
 
   base::WeakPtrFactory<ServiceWorkerRegisterJob> weak_factory_{this};
 };

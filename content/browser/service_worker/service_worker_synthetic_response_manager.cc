@@ -243,10 +243,14 @@ void ServiceWorkerSyntheticResponseManager::InitiateRequest(
     OnReceiveResponseCallback receive_response_callback,
     OnReceiveRedirectCallback receive_redirect_callback,
     OnCompleteCallback complete_callback) {
+  // A synthetic response request is initiated by the browser to fetch the
+  // webpage's main resource. Just like a standard frame navigation, it does not
+  // carry a factory-level network restrictions ID, as it is subjected to
+  // Connection Allowlists via NavigationRequest instead.
   url_loader_factory_ = service_worker_client->CreateNetworkURLLoaderFactory(
       ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::
           kSyntheticNetworkRequest,
-      storage_partition, request);
+      storage_partition, request, std::nullopt);
   is_initiated_by_prefetch_ = service_worker_client->is_initiated_by_prefetch();
   factory_interceptor_count_ =
       service_worker_client->factory_interceptor_count();

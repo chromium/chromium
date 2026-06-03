@@ -107,7 +107,8 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       network::URLLoaderFactoryBuilder factory_builder,
       StoragePartitionImpl* partition,
       std::optional<net::CookieSettingOverrides> devtools_cookie_overrides,
-      std::optional<net::CookieSettingOverrides> cookie_overrides);
+      std::optional<net::CookieSettingOverrides> cookie_overrides,
+      const std::optional<base::UnguessableToken>& network_restrictions_id);
 
   // NavigationURLLoader implementation:
   // Starts the loader by finalizing loader factories initialization and

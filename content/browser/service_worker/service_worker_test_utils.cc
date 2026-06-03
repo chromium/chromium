@@ -507,6 +507,8 @@ scoped_refptr<ServiceWorkerVersion> CreateNewServiceWorkerVersion(
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   registry.CreateNewVersion(
       std::move(registration), script_url, script_type,
+      /*creator_network_restrictions_id=*/std::nullopt,
+      /*network_restrictions_id=*/std::nullopt, PolicyContainerPolicies(),
       base::BindLambdaForTesting(
           [&](scoped_refptr<ServiceWorkerVersion> new_version) {
             version = std::move(new_version);

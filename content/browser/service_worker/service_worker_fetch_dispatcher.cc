@@ -740,7 +740,8 @@ bool ServiceWorkerFetchDispatcher::MaybeStartNavigationPreload(
       service_worker_client->CreateNetworkURLLoaderFactory(
           ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::
               kNavigationPreload,
-          context_wrapper->storage_partition(), resource_request);
+          context_wrapper->storage_partition(), resource_request,
+          version_->network_restrictions_id());
 
   // Create the DelegatingURLLoaderClient, which becomes the
   // URLLoaderClient for the navigation preload network request.

@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
-#include "content/browser/connection_allowlist_gating.h"
+#include "content/browser/connection_allowlist_utils.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -176,26 +176,10 @@ void DidCreateScriptLoader(
     // be built from the
     // `main_script_load_params.response_head->parsed_headers`.
     PolicyContainerPolicies policies;
-    if (base::FeatureList::IsEnabled(
-            network::features::kConnectionAllowlists)) {
-      if (final_response_url.SchemeIsLocal() && creator_policies) {
-        policies.connection_allowlists =
-            std::move(creator_policies->connection_allowlists);
-      } else if (ResponseContainsConnectionAllowlist(
-                     main_script_load_params->response_head.get()) &&
-                 ResponseEnablesConnectionAllowlistsOriginTrial(
-                     final_response_url,
-                     main_script_load_params->response_head->headers.get())) {
-        // Connection allowlist needs to be enforced for workers once the
-        // allowlist response header is received. The origin trial token for
-        // this feature is received within the same response. The token is
-        // parsed here to query the trial status. See
-        // https://wicg.github.io/connection-allowlists/.
-        policies.connection_allowlists =
-            main_script_load_params->response_head->parsed_headers
-                ->connection_allowlists;
-      }
-    }
+    policies.connection_allowlists = GetConnectionAllowlistsForWorker(
+        final_response_url, main_script_load_params->response_head.get(),
+        base::OptionalToPtr(creator_policies),
+        final_response_url.SchemeIsLocal());
 
     std::move(callback).Run(std::make_optional<WorkerScriptFetcherResult>(
         std::move(subresource_loader_factories),
@@ -587,7 +571,8 @@ void WorkerScriptFetcher::CreateScriptLoader(
                 factory_process->GetStoragePartition())
                 ->GetWeakPtr(),
             *worker_network_restrictions_id, creator_policies->Clone(),
-            ancestor_render_frame_host.GetWeakPtr())) {
+            ancestor_render_frame_host.GetWeakPtr(),
+            /*is_service_worker=*/false)) {
       throttles.push_back(std::move(throttle));
     }
   }

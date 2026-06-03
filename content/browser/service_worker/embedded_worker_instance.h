@@ -262,6 +262,9 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   //
   // `client_security_state` may be nullptr, in which case a default value is
   // set in the bundle.
+  // `network_restrictions_id`: The unique token identifying this worker's
+  // network restrictions in the network service. Used to restrict subresource
+  // fetches by this worker.
   static std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
   CreateFactoryBundle(
       RenderProcessHost* rph,
@@ -273,7 +276,8 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
       mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
           dip_reporter,
       ContentBrowserClient::URLLoaderFactoryType factory_type,
-      const std::string& devtools_worker_token);
+      const std::string& devtools_worker_token,
+      const base::UnguessableToken& network_restrictions_id);
 
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
   GetCoepReporter();

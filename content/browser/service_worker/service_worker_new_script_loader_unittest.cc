@@ -245,7 +245,8 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
         helper_->GetNetworkFactory(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         resource_id, /*is_throttle_needed=*/false,
-        /*requesting_frame_id=*/GlobalRenderFrameHostId());
+        /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+        version_->network_restrictions_id());
   }
 
   // Returns false if the entry for |url| doesn't exist in the storage.
@@ -450,7 +451,8 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Success_ClientConsumeBodyLater) {
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       /*cache_resource_id=*/5,
       /*is_throttle_needed=*/false,
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      version_->network_restrictions_id());
 
   client.RunUntilResponseReceived();
   ASSERT_TRUE(client.has_received_response());
@@ -855,7 +857,8 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, PolicyDowngrade_FlagDisabled) {
                 TRAFFIC_ANNOTATION_FOR_TESTS),
             GetNewResourceIdSync(context()->GetStorageControl()),
             /*is_throttle_needed=*/false,
-            /*requesting_frame_id=*/GlobalRenderFrameHostId());
+            /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+            version_->network_restrictions_id());
     client->RunUntilComplete();
     EXPECT_EQ(net::OK, client->completion_status().error_code);
   }
@@ -935,7 +938,8 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, PolicyDowngrade_FlagEnabled) {
                 TRAFFIC_ANNOTATION_FOR_TESTS),
             GetNewResourceIdSync(context()->GetStorageControl()),
             /*is_throttle_needed=*/false,
-            /*requesting_frame_id=*/GlobalRenderFrameHostId());
+            /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+            version_->network_restrictions_id());
     client->RunUntilComplete();
     EXPECT_EQ(net::OK, client->completion_status().error_code);
   }

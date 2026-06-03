@@ -478,7 +478,8 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
       registration.get(), script_url, blink::mojom::ScriptType::kClassic,
       2l /* dummy version id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      context()->AsWeakPtr());
+      context()->AsWeakPtr(), std::nullopt, std::nullopt,
+      PolicyContainerPolicies());
   version->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version->SetStatus(ServiceWorkerVersion::ACTIVATED);
@@ -540,7 +541,8 @@ TEST_F(ServiceWorkerContextTest, VersionActivatedObserver) {
       registration.get(), script_url, blink::mojom::ScriptType::kClassic,
       2l /* dummy version id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      context()->AsWeakPtr());
+      context()->AsWeakPtr(), std::nullopt, std::nullopt,
+      PolicyContainerPolicies());
 
   TestServiceWorkerContextObserver observer(context_wrapper());
 
@@ -572,7 +574,8 @@ TEST_F(ServiceWorkerContextTest, VersionRedundantObserver) {
       registration.get(), script_url, blink::mojom::ScriptType::kClassic,
       2l /* dummy version id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      context()->AsWeakPtr());
+      context()->AsWeakPtr(), std::nullopt, std::nullopt,
+      PolicyContainerPolicies());
 
   TestServiceWorkerContextObserver observer(context_wrapper());
 
@@ -1154,7 +1157,8 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
           GURL("https://another-origin.example.net/test/script_url"),
           blink::mojom::ScriptType::kClassic, 1L /* version_id */,
           mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-          helper_->context()->AsWeakPtr());
+          helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+          PolicyContainerPolicies());
   // ServiceWorkerHost creates ServiceWorkerClient for a service worker
   // execution context.
   std::unique_ptr<ServiceWorkerHost> worker_host4 = CreateServiceWorkerHost(

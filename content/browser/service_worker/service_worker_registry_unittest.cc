@@ -799,7 +799,9 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
           live_registration.get(), kResource1,
           blink::mojom::ScriptType::kClassic, kVersionId,
           mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-          context()->AsWeakPtr());
+          context()->AsWeakPtr(),
+          /*creator_network_restrictions_id=*/std::nullopt,
+          /*network_restrictions_id=*/std::nullopt, PolicyContainerPolicies());
   live_version->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   live_version->SetStatus(ServiceWorkerVersion::INSTALLED);
@@ -995,7 +997,9 @@ TEST_F(ServiceWorkerRegistryTest, InstallingRegistrationsAreFindable) {
       live_registration.get(), kScript, blink::mojom::ScriptType::kClassic,
       kVersionId,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      context()->AsWeakPtr());
+      context()->AsWeakPtr(),
+      /*creator_network_restrictions_id=*/std::nullopt,
+      /*network_restrictions_id=*/std::nullopt, PolicyContainerPolicies());
   live_version->SetStatus(ServiceWorkerVersion::INSTALLING);
   live_registration->SetWaitingVersion(live_version);
 
@@ -2366,6 +2370,8 @@ TEST_F(ServiceWorkerRegistryTest,
     base::RunLoop loop;
     registry().CreateNewVersion(
         registration, kScriptUrl, blink::mojom::ScriptType::kClassic,
+        /*creator_network_restrictions_id=*/std::nullopt,
+        /*network_restrictions_id=*/std::nullopt, PolicyContainerPolicies(),
         base::BindLambdaForTesting(
             [&](scoped_refptr<ServiceWorkerVersion> new_version) {
               EXPECT_EQ(new_version->script_url(), kScriptUrl);
@@ -2848,7 +2854,9 @@ TEST_F(ServiceWorkerRegistryOriginTrialsTest, FromMainScript) {
       registration.get(), kScript, blink::mojom::ScriptType::kClassic,
       kVersionId,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      context()->AsWeakPtr());
+      context()->AsWeakPtr(),
+      /*creator_network_restrictions_id=*/std::nullopt,
+      /*network_restrictions_id=*/std::nullopt, PolicyContainerPolicies());
 
   network::mojom::URLResponseHead response_head;
   response_head.ssl_info = net::SSLInfo();

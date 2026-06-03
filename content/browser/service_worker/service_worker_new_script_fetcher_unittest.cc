@@ -94,18 +94,19 @@ TEST_F(ServiceWorkerNewScriptFetcherTest, Basic) {
   // Start a fetcher and wait to get the result. The script loaded from
   // `loader_factory` is set to the `main_script_load_params` through
   // ServiceWorkerNewScriptLoader and ServiceWorkerNewScriptFetcher.
-  blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params;
+  std::optional<WorkerScriptFetcherResult> fetcher_result;
   base::RunLoop loop;
   fetcher->Start(base::BindLambdaForTesting(
-      [&](blink::mojom::WorkerMainScriptLoadParamsPtr params) {
-        main_script_load_params = std::move(params);
+      [&](std::optional<WorkerScriptFetcherResult> result) {
+        fetcher_result = std::move(result);
         loop.Quit();
       }));
   loop.Run();
 
   // The `main_script_load_params` contains the response header provided by
   // `loader_factory`.
-  EXPECT_TRUE(main_script_load_params);
+  EXPECT_TRUE(fetcher_result);
+  auto& main_script_load_params = fetcher_result->main_script_load_params;
   EXPECT_EQ("text/javascript",
             main_script_load_params->response_head->mime_type);
   // Also some parameters are set to `version` before the callback of Start() is
@@ -113,6 +114,8 @@ TEST_F(ServiceWorkerNewScriptFetcherTest, Basic) {
   EXPECT_NE(
       blink::mojom::kInvalidServiceWorkerResourceId,
       version->script_cache_map()->LookupResourceId(version->script_url()));
+  version->SetPolicyContainerHost(base::MakeRefCounted<PolicyContainerHost>(
+      std::move(fetcher_result->policy_container_policies)));
   EXPECT_TRUE(version->policy_container_host());
 
   // Wait until the network request for the main script completes.

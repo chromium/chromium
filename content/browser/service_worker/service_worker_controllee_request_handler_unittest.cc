@@ -194,7 +194,9 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
     version_ = new ServiceWorkerVersion(
         registration_.get(), script_url_, blink::mojom::ScriptType::kClassic,
         1L, mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-        context()->AsWeakPtr());
+        context()->AsWeakPtr(),
+        /*creator_network_restrictions_id=*/std::nullopt,
+        /*network_restrictions_id=*/std::nullopt, PolicyContainerPolicies());
     version_->SetPolicyContainerHost(
         base::MakeRefCounted<PolicyContainerHost>(PolicyContainerPolicies()));
 

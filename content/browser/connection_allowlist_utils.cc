@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/connection_allowlist_gating.h"
+#include "content/browser/connection_allowlist_utils.h"
 
 #include <optional>
 
@@ -70,6 +70,35 @@ bool IsRedirectAllowedByConnectionAllowlist(
   }
 
   return true;
+}
+
+network::ConnectionAllowlists GetConnectionAllowlistsForWorker(
+    const GURL& response_url,
+    const network::mojom::URLResponseHead* response_head,
+    const PolicyContainerPolicies* creator_policies,
+    bool inherit_from_creator) {
+  if (!response_head ||
+      !base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
+    return network::ConnectionAllowlists();
+  }
+
+  // Local schemes inherit connection allowlists from their creator (e.g., the
+  // frame that registered the worker).
+  if (inherit_from_creator) {
+    return creator_policies ? creator_policies->connection_allowlists
+                            : network::ConnectionAllowlists();
+  }
+
+  // For non-local schemes, the connection allowlist must be provided in the
+  // response headers and the origin trial must be enabled for the request
+  // URL.
+  if (ResponseContainsConnectionAllowlist(response_head) &&
+      ResponseEnablesConnectionAllowlistsOriginTrial(
+          response_url, response_head->headers.get())) {
+    return response_head->parsed_headers->connection_allowlists;
+  }
+
+  return network::ConnectionAllowlists();
 }
 
 }  // namespace content

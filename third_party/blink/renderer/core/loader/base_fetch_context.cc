@@ -5,14 +5,18 @@
 #include "third_party/blink/renderer/core/loader/base_fetch_context.h"
 
 #include "base/command_line.h"
+#include "services/network/public/cpp/connection_allowlist.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/integrity_policy.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -342,6 +346,28 @@ BaseFetchContext::CanRequestInternal(
   if (url.PotentiallyDanglingMarkup() && url.ProtocolIsInHttpFamily()) {
     CountDeprecation(WebFeature::kCanRequestURLHTTPContainingNewline);
     return ResourceRequestBlockedReason::kOther;
+  }
+
+  // Enforce Connection-Allowlist when the document is controlled by a service
+  // worker.
+  if (base::FeatureList::IsEnabled(network::features::kConnectionAllowlists) &&
+      GetResourceFetcherProperties().GetControllerServiceWorkerMode() !=
+          mojom::blink::ControllerServiceWorkerMode::kNoController) {
+    if (GetExecutionContext() && GetExecutionContext()->GetPolicyContainer()) {
+      const auto& policies =
+          GetExecutionContext()->GetPolicyContainer()->GetPolicies();
+      if (policies.connection_allowlists.enforced.has_value()) {
+        if (!network::ConnectionAllowlistMatchesUrl(
+                policies.connection_allowlists.enforced.value(), GURL(url))) {
+          if (reporting_disposition == ReportingDisposition::kReport) {
+            PrintAccessDeniedMessage(url);
+            // TODO(crbug.com/492456052): Support sending violation reports when
+            // blocked.
+          }
+          return ResourceRequestBlockedReason::kOther;
+        }
+      }
+    }
   }
 
   // Let the client have the final say into whether or not the load should

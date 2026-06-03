@@ -573,7 +573,8 @@ TEST_F(ServiceWorkerContainerHostTest, Controller) {
       registration1_.get(), GURL("https://www.example.com/sw.js"),
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      helper_->context()->AsWeakPtr());
+      helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+      PolicyContainerPolicies());
   version->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version->SetStatus(ServiceWorkerVersion::ACTIVATED);
@@ -606,7 +607,8 @@ TEST_F(ServiceWorkerContainerHostTest, UncontrolledWithMatchingRegistration) {
       registration1_.get(), GURL("https://www.example.com/sw.js"),
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      helper_->context()->AsWeakPtr());
+      helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+      PolicyContainerPolicies());
   registration1_->SetInstallingVersion(version);
 
   // Finish the navigation.
@@ -687,7 +689,8 @@ TEST_F(ServiceWorkerContainerHostTest, AllowServiceWorker) {
           registration1_.get(), GURL("https://www.example.com/sw.js"),
           blink::mojom::ScriptType::kClassic, 1 /* version_id */,
           mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-          helper_->context()->AsWeakPtr());
+          helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+          PolicyContainerPolicies());
   registration1_->SetActiveVersion(version);
 
   std::unique_ptr<ServiceWorkerHost> worker_host = CreateServiceWorkerHost(
@@ -1298,7 +1301,8 @@ void ServiceWorkerContainerHostTest::TestBackForwardCachedClientsAreNotExposed(
             registration1_.get(), url, blink::mojom::ScriptType::kClassic,
             1 /* version_id */,
             mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-            helper_->context()->AsWeakPtr());
+            helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+            PolicyContainerPolicies());
     registration1_->SetActiveVersion(version);
 
     worker_host = CreateServiceWorkerHost(
@@ -1384,7 +1388,8 @@ TEST_F(ServiceWorkerContainerHostTestWithBackForwardCache, ControlleeEvents) {
       registration1_.get(), GURL("https://www.example.com/sw.js"),
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      helper_->context()->AsWeakPtr());
+      helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+      PolicyContainerPolicies());
   version->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version->SetStatus(ServiceWorkerVersion::ACTIVATED);
@@ -1448,7 +1453,8 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateServiceWorkerOnDestruction) {
         registration1_.get(), GURL("https://www.example.com/sw.js"),
         blink::mojom::ScriptType::kClassic, 1 /* version_id */,
         mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-        helper_->context()->AsWeakPtr());
+        helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+        PolicyContainerPolicies());
     version1->set_fetch_handler_type(
         ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
     version1->SetStatus(ServiceWorkerVersion::ACTIVATED);
@@ -1458,7 +1464,8 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateServiceWorkerOnDestruction) {
         registration2_.get(), GURL("https://www.example.com/sw.js"),
         blink::mojom::ScriptType::kClassic, 2 /* version_id */,
         mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-        helper_->context()->AsWeakPtr());
+        helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+        PolicyContainerPolicies());
     version2->set_fetch_handler_type(
         ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
     version2->SetStatus(ServiceWorkerVersion::ACTIVATED);
@@ -1486,7 +1493,8 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorker) {
       registration1_.get(), GURL("https://www.example.com/sw.js"),
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      helper_->context()->AsWeakPtr());
+      helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+      PolicyContainerPolicies());
   version1->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version1->SetStatus(ServiceWorkerVersion::ACTIVATED);
@@ -1525,7 +1533,8 @@ TEST_F(ServiceWorkerContainerHostTest,
       registration1_.get(), GURL("https://www.example.com/sw.js"),
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      helper_->context()->AsWeakPtr());
+      helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+      PolicyContainerPolicies());
   version1->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version1->SetStatus(ServiceWorkerVersion::ACTIVATED);
@@ -1551,7 +1560,8 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorkerMultiple) {
       registration1_.get(), GURL("https://www.example.com/sw.js"),
       blink::mojom::ScriptType::kClassic, 1 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      helper_->context()->AsWeakPtr());
+      helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+      PolicyContainerPolicies());
   version1->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version1->SetStatus(ServiceWorkerVersion::ACTIVATED);
@@ -1561,7 +1571,8 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorkerMultiple) {
       registration2_.get(), GURL("https://www.example.com/sw.js"),
       blink::mojom::ScriptType::kClassic, 2 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      helper_->context()->AsWeakPtr());
+      helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+      PolicyContainerPolicies());
   version2->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version2->SetStatus(ServiceWorkerVersion::ACTIVATED);
@@ -1571,7 +1582,8 @@ TEST_F(ServiceWorkerContainerHostTest, HintToUpdateServiceWorkerMultiple) {
       registration3_.get(), GURL("https://other.example.com/sw.js"),
       blink::mojom::ScriptType::kClassic, 3 /* version_id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      helper_->context()->AsWeakPtr());
+      helper_->context()->AsWeakPtr(), std::nullopt, std::nullopt,
+      PolicyContainerPolicies());
   version3->set_fetch_handler_type(
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version3->SetStatus(ServiceWorkerVersion::ACTIVATED);

@@ -302,6 +302,10 @@ void ServiceWorkerRegistry::CreateNewVersion(
     scoped_refptr<ServiceWorkerRegistration> registration,
     const GURL& script_url,
     blink::mojom::ScriptType script_type,
+    const std::optional<base::UnguessableToken>&
+        creator_network_restrictions_id,
+    const std::optional<base::UnguessableToken>& network_restrictions_id,
+    const PolicyContainerPolicies& creator_policies,
     NewVersionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(registration);
@@ -309,7 +313,9 @@ void ServiceWorkerRegistry::CreateNewVersion(
       &storage::mojom::ServiceWorkerStorageControl::GetNewVersionId,
       base::BindOnce(&ServiceWorkerRegistry::DidGetNewVersionId,
                      weak_factory_.GetWeakPtr(), registration, script_url,
-                     script_type, std::move(callback)));
+                     script_type, creator_network_restrictions_id,
+                     network_restrictions_id, creator_policies.Clone(),
+                     std::move(callback)));
 }
 
 void ServiceWorkerRegistry::FindRegistrationForClientUrl(
@@ -1225,7 +1231,18 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
   } else {
     version = base::MakeRefCounted<ServiceWorkerVersion>(
         registration.get(), data.script, data.script_type, data.version_id,
-        std::move(version_reference), context_->AsWeakPtr());
+        std::move(version_reference), context_->AsWeakPtr(),
+        // Creator network restrictions are not inherited for restored
+        // registrations, as the connection allowlist origin trial is only
+        // valid for network responses.
+        /*creator_network_restrictions_id=*/std::nullopt,
+        // Restored versions will generate a new network restrictions ID when
+        // they are next started.
+        /*network_restrictions_id=*/std::nullopt,
+        data.policy_container_policies
+            ? PolicyContainerPolicies(*data.policy_container_policies,
+                                      /*is_web_secure_context=*/true)
+            : PolicyContainerPolicies());
     version->set_fetch_handler_type(data.fetch_handler_type);
     // `has_hid_event_handlers_` in ServiceWorkerVersion should be set before
     // changing the status to ACTIVATED.
@@ -1890,6 +1907,10 @@ void ServiceWorkerRegistry::DidGetNewVersionId(
     scoped_refptr<ServiceWorkerRegistration> registration,
     const GURL& script_url,
     blink::mojom::ScriptType script_type,
+    const std::optional<base::UnguessableToken>&
+        creator_network_restrictions_id,
+    const std::optional<base::UnguessableToken>& network_restrictions_id,
+    const PolicyContainerPolicies& creator_policies,
     NewVersionCallback callback,
     int64_t version_id,
     mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
@@ -1901,7 +1922,14 @@ void ServiceWorkerRegistry::DidGetNewVersionId(
   }
   auto version = base::MakeRefCounted<ServiceWorkerVersion>(
       registration.get(), script_url, script_type, version_id,
-      std::move(version_reference), context_->AsWeakPtr());
+      std::move(version_reference), context_->AsWeakPtr(),
+      // Passed through from the registration job to subject the script fetch
+      // itself to the creator's connection allowlists (via
+      // creator_network_restrictions_id) and to establish the worker's own
+      // restrictions for subsequent subresource requests (via
+      // network_restrictions_id).
+      creator_network_restrictions_id, network_restrictions_id,
+      creator_policies.Clone());
   std::move(callback).Run(std::move(version));
 }
 

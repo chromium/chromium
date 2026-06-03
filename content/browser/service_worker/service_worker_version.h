@@ -222,7 +222,11 @@ class CONTENT_EXPORT ServiceWorkerVersion
       int64_t version_id,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
           remote_reference,
-      base::WeakPtr<ServiceWorkerContextCore> context);
+      base::WeakPtr<ServiceWorkerContextCore> context,
+      const std::optional<base::UnguessableToken>&
+          creator_network_restrictions_id,
+      const std::optional<base::UnguessableToken>& network_restrictions_id,
+      const PolicyContainerPolicies& creator_policies);
 
   ServiceWorkerVersion(const ServiceWorkerVersion&) = delete;
   ServiceWorkerVersion& operator=(const ServiceWorkerVersion&) = delete;
@@ -241,6 +245,19 @@ class CONTENT_EXPORT ServiceWorkerVersion
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
   const base::UnguessableToken& reporting_source() const {
     return reporting_source_;
+  }
+
+  const base::UnguessableToken& network_restrictions_id() const {
+    return network_restrictions_id_;
+  }
+
+  const std::optional<base::UnguessableToken>& creator_network_restrictions_id()
+      const {
+    return creator_network_restrictions_id_;
+  }
+
+  const PolicyContainerPolicies& creator_policies() const {
+    return creator_policies_;
   }
 
   // This status is set to EXISTS or DOES_NOT_EXIST when the install event has
@@ -554,6 +571,13 @@ class CONTENT_EXPORT ServiceWorkerVersion
     outside_fetch_client_settings_object_ =
         std::move(outside_fetch_client_settings_object);
   }
+
+  void set_network_restrictions_id(
+      const base::UnguessableToken& network_restrictions_id) {
+    network_restrictions_id_ = network_restrictions_id;
+  }
+
+  void MaybeRegisterNetworkRestrictions(base::OnceClosure callback);
 
   // Returns the reason the embedded worker failed to start, using internal
   // information that may not be available to the caller. Returns
@@ -1415,6 +1439,20 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // browser initiated network response for SyntheticResponse. In subsequent
   // navigations, this will be used as the locally returned response header.
   network::mojom::URLResponseHeadPtr synthetic_response_head_;
+
+  // The network restriction ID of the creator (e.g., frame) from which this
+  // worker may inherit restrictions.
+  const std::optional<base::UnguessableToken> creator_network_restrictions_id_;
+  // The policy container policies (including connection allowlists) inherited
+  // from the creator.
+  const PolicyContainerPolicies creator_policies_;
+
+  // A unique token identifying this worker's network restrictions in the
+  // network service.
+  base::UnguessableToken network_restrictions_id_;
+  // Whether the network restrictions for this worker have been registered with
+  // the network service.
+  bool network_restrictions_registered_ = false;
 
   base::WeakPtrFactory<ServiceWorkerVersion> weak_factory_{this};
 };

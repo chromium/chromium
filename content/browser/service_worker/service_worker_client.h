@@ -314,7 +314,8 @@ class CONTENT_EXPORT ServiceWorkerClient final
   scoped_refptr<network::SharedURLLoaderFactory> CreateNetworkURLLoaderFactory(
       CreateNetworkURLLoaderFactoryType type,
       StoragePartitionImpl* storage_partition,
-      const network::ResourceRequest& resource_request);
+      const network::ResourceRequest& resource_request,
+      const std::optional<base::UnguessableToken>& network_restrictions_id);
 
   // Returns a URLLoaderRequestHandler if an embedder interceptor (e.g. Search
   // Prefetch) can handle the request and returns its handler.

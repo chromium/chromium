@@ -2295,11 +2295,16 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
   }
 
   if (header_client) {
+    // A standard frame navigation request does not need network
+    // restrictions id to be passed, so we pass std::nullopt.
+    // Navigations are subjected to Connection Allowlists via the
+    // `NavigationRequest::IsAllowedByConnectionAllowlist` check instead.
     return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
         CreateURLLoaderFactoryWithHeaderClient(
             std::move(header_client), std::move(factory_builder),
             storage_partition, std::move(devtools_cookie_overrides),
-            std::move(cookie_overrides)));
+            std::move(cookie_overrides),
+            /*network_restrictions_id=*/std::nullopt));
   } else {
     if (!devtools_cookie_overrides.empty() || !cookie_overrides.empty()) {
       network::mojom::URLLoaderFactoryParamsPtr params =
@@ -2488,7 +2493,8 @@ NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
     network::URLLoaderFactoryBuilder factory_builder,
     StoragePartitionImpl* partition,
     std::optional<net::CookieSettingOverrides> devtools_cookie_overrides,
-    std::optional<net::CookieSettingOverrides> cookie_overrides) {
+    std::optional<net::CookieSettingOverrides> cookie_overrides,
+    const std::optional<base::UnguessableToken>& network_restrictions_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (url_loader_factory::GetTestingInterceptor()) {
@@ -2502,6 +2508,7 @@ NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(
   params->process_id = network::OriginatingProcessId::browser();
   params->is_trusted = true;
   params->is_orb_enabled = false;
+  params->network_restrictions_id = network_restrictions_id;
   params->disable_web_security =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity);

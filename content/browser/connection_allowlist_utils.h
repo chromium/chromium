@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_CONNECTION_ALLOWLIST_GATING_H_
-#define CONTENT_BROWSER_CONNECTION_ALLOWLIST_GATING_H_
+#ifndef CONTENT_BROWSER_CONNECTION_ALLOWLIST_UTILS_H_
+#define CONTENT_BROWSER_CONNECTION_ALLOWLIST_UTILS_H_
 
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 class GURL;
@@ -34,6 +35,15 @@ bool EnforcesConnectionAllowlist(
 bool IsRedirectAllowedByConnectionAllowlist(
     const PolicyContainerPolicies& initiator_policies);
 
+// Evaluates the response and returns the ConnectionAllowlists that should apply
+// to the worker. Handles local scheme inheritance from creator_policies and
+// validates the Connection-Allowlist Origin Trial for network responses.
+network::ConnectionAllowlists GetConnectionAllowlistsForWorker(
+    const GURL& response_url,
+    const network::mojom::URLResponseHead* response_head,
+    const PolicyContainerPolicies* creator_policies,
+    bool inherit_from_creator);
+
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_CONNECTION_ALLOWLIST_GATING_H_
+#endif  // CONTENT_BROWSER_CONNECTION_ALLOWLIST_UTILS_H_

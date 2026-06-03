@@ -326,12 +326,14 @@ void ServiceWorkerScriptLoaderFactory::OnResourceIdAssignedForNewScriptLoader(
 
   // Note: We do not need to run throttles because they have been already by
   // the ResourceFetcher on the renderer-side.
+  scoped_refptr<ServiceWorkerVersion> version = worker_host_->version();
   mojo::MakeSelfOwnedReceiver(
       ServiceWorkerNewScriptLoader::CreateAndStart(
-          request_id, options, resource_request, std::move(client),
-          worker_host_->version(), loader_factory_for_new_scripts_,
-          traffic_annotation, resource_id, /*is_throttle_needed=*/false,
-          /*requesting_frame_id=*/GlobalRenderFrameHostId()),
+          request_id, options, resource_request, std::move(client), version,
+          loader_factory_for_new_scripts_, traffic_annotation, resource_id,
+          /*is_throttle_needed=*/false,
+          /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+          version->network_restrictions_id()),
       std::move(receiver));
 }
 

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_NEW_SCRIPT_LOADER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_NEW_SCRIPT_LOADER_H_
 
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/url_loader_client_checker.h"
 #include "content/common/content_export.h"
@@ -93,7 +94,8 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       int64_t cache_resource_id,
       bool is_throttle_needed,
-      const GlobalRenderFrameHostId& requesting_frame_id);
+      const GlobalRenderFrameHostId& requesting_frame_id,
+      const base::UnguessableToken& worker_network_restrictions_id);
 
   ServiceWorkerNewScriptLoader(const ServiceWorkerNewScriptLoader&) = delete;
   ServiceWorkerNewScriptLoader& operator=(const ServiceWorkerNewScriptLoader&) =
@@ -129,6 +131,8 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
  private:
   class WrappedIOBuffer;
 
+  // `worker_network_restrictions_id`: the unique token identifying this
+  // worker's network restrictions in the network service.
   ServiceWorkerNewScriptLoader(
       int32_t request_id,
       uint32_t options,
@@ -139,7 +143,8 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       int64_t cache_resource_id,
       bool is_throttle_needed,
-      const GlobalRenderFrameHostId& requesting_frame_id);
+      const GlobalRenderFrameHostId& requesting_frame_id,
+      const base::UnguessableToken& worker_network_restrictions_id);
 
   // Writes the given headers into the service worker script storage.
   void WriteHeaders(network::mojom::URLResponseHeadPtr response_head);
@@ -250,6 +255,13 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
   // the fetch and never get one. If that happens, we need to have a frame id
   // to log the failure into devtools.
   const GlobalRenderFrameHostId requesting_frame_id_;
+
+  // The unique token identifying this worker's network restrictions in the
+  // network service. Used to throttle the main script fetch.
+  const base::UnguessableToken worker_network_restrictions_id_;
+  // The policy container policies (including connection allowlists) inherited
+  // from the creator. Used to throttle the main script fetch.
+  const PolicyContainerPolicies creator_policies_;
 
   base::WeakPtrFactory<ServiceWorkerNewScriptLoader> weak_factory_{this};
 };

@@ -564,12 +564,16 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
   // Create URLLoader related assets to handle the request triggered by
   // RaceNetworkRequset.
   mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
+  // A race network request is initiated by the browser to race against the
+  // service worker's fetch handler. Just like a standard frame navigation, it
+  // does not carry a factory-level network restrictions ID, as it is subjected
+  // to Connection Allowlists via NavigationRequest instead.
   forwarded_race_network_request_url_loader_factory_.emplace(
       forwarding_client.InitWithNewPipeAndPassReceiver(),
       service_worker_client_->CreateNetworkURLLoaderFactory(
           ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::
               kRaceNetworkRequest,
-          context->storage_partition(), resource_request_),
+          context->storage_partition(), resource_request_, std::nullopt),
       /*is_main_resource=*/true);
   CHECK(!race_network_request_url_loader_client_);
   race_network_request_url_loader_client_.emplace(
@@ -598,11 +602,12 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_to_pass;
   race_network_request_url_loader_client_->Bind(&client_to_pass);
   CHECK(!race_network_request_url_loader_factory_);
+  // This is also for the race network request, so we pass std::nullopt.
   race_network_request_url_loader_factory_ =
       service_worker_client_->CreateNetworkURLLoaderFactory(
           ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::
               kRaceNetworkRequest,
-          context->storage_partition(), resource_request_);
+          context->storage_partition(), resource_request_, std::nullopt);
 
   // Perform fetch
   CHECK_EQ(commit_responsibility(), FetchResponseFrom::kNoResponseYet);

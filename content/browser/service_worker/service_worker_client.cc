@@ -1266,7 +1266,8 @@ scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerClient::CreateNetworkURLLoaderFactory(
     CreateNetworkURLLoaderFactoryType type,
     StoragePartitionImpl* storage_partition,
-    const network::ResourceRequest& resource_request) {
+    const network::ResourceRequest& resource_request,
+    const std::optional<base::UnguessableToken>& network_restrictions_id) {
   CHECK(!is_response_committed());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -1294,6 +1295,16 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
       // may wish to support asynchronous decisions using
       // |URLLoaderRequestInterceptor| in the same fashion that they are used
       // for navigation requests.
+      //
+      // Note: Currently we skip passing `network_restrictions_id` here because
+      // intercepted requests (such as Search Prefetch) are normally served
+      // locally by the embedder but we do need to consider if they fallback to
+      // using the network.
+      // TODO(crbug.com/515272371): If the request cannot be handled locally
+      // by the embedder and falls back to the network, the Connection Allowlist
+      // is currently bypassed because the browser's global URLLoaderFactory
+      // is used. Consider applying a browser-side Connection Allowlist check
+      // here (similar to WindowClient.navigate() checks).
       if (ContentBrowserClient::URLLoaderRequestHandler embedder_url_loader_handler =
               GetContentClient()
                   ->browser()
@@ -1362,7 +1373,7 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
           // TODO(crbug.com/390003764): Consider whether/how to apply devtools
           // cookies setting overrides for a service worker.
           /*devtools_cookie_overrides=*/std::nullopt,
-          /*cookie_overrides=*/std::nullopt));
+          /*cookie_overrides=*/std::nullopt, network_restrictions_id));
 }
 
 // If a blob URL is used for a SharedWorker script's URL, a controller will be

@@ -950,7 +950,9 @@ TEST_P(ServiceWorkerJobTest, UnregisterWaitingSetsRedundant) {
   scoped_refptr<ServiceWorkerVersion> version = new ServiceWorkerVersion(
       registration.get(), script_url, blink::mojom::ScriptType::kClassic, 1L,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      helper_->context()->AsWeakPtr());
+      helper_->context()->AsWeakPtr(),
+      /*creator_network_restrictions_id=*/std::nullopt,
+      /*network_restrictions_id=*/std::nullopt, PolicyContainerPolicies());
   version->SetPolicyContainerHost(
       base::MakeRefCounted<PolicyContainerHost>(PolicyContainerPolicies()));
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
@@ -2120,7 +2122,9 @@ TEST_P(ServiceWorkerUpdateJobTest, Update_ScriptUrlChanged) {
       registration.get(), new_script, blink::mojom::ScriptType::kClassic,
       2L /* dummy version id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
-      helper_->context()->AsWeakPtr());
+      helper_->context()->AsWeakPtr(),
+      /*creator_network_restrictions_id=*/std::nullopt,
+      /*network_restrictions_id=*/std::nullopt, PolicyContainerPolicies());
   registration->SetWaitingVersion(version);
 
   // Setup the new script response.

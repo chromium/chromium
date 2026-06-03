@@ -24,13 +24,15 @@ class NetworkRestrictionsWorkerThrottle : public blink::URLLoaderThrottle {
       base::WeakPtr<StoragePartitionImpl> storage_partition,
       const base::UnguessableToken& network_restrictions_id,
       PolicyContainerPolicies creator_policies,
-      base::WeakPtr<RenderFrameHost> ancestor_render_frame_host);
+      base::WeakPtr<RenderFrameHost> ancestor_render_frame_host,
+      bool is_service_worker);
 
   NetworkRestrictionsWorkerThrottle(
       base::WeakPtr<StoragePartitionImpl> storage_partition,
       const base::UnguessableToken& network_restrictions_id,
       PolicyContainerPolicies creator_policies,
-      base::WeakPtr<RenderFrameHost> ancestor_render_frame_host);
+      base::WeakPtr<RenderFrameHost> ancestor_render_frame_host,
+      bool is_service_worker);
   ~NetworkRestrictionsWorkerThrottle() override;
 
   // blink::URLLoaderThrottle:
@@ -46,6 +48,7 @@ class NetworkRestrictionsWorkerThrottle : public blink::URLLoaderThrottle {
   const base::UnguessableToken network_restrictions_id_;
   const PolicyContainerPolicies creator_policies_;
   base::WeakPtr<RenderFrameHost> ancestor_render_frame_host_;
+  const bool is_service_worker_;
 
   base::WeakPtrFactory<NetworkRestrictionsWorkerThrottle> weak_factory_{this};
 };

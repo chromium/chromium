@@ -18,6 +18,9 @@
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/browser/worker_host/network_restrictions_worker_throttle.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -127,6 +130,8 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
     int64_t writer_resource_id,
     ScriptChecksumUpdateOption script_checksum_update_option,
     const blink::StorageKey& storage_key,
+    const std::optional<base::UnguessableToken>& network_restrictions_id,
+    PolicyContainerPolicies creator_policies,
     ResultCallback callback)
     : script_url_(script_url),
       is_main_script_(is_main_script),
@@ -138,6 +143,8 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
       network_watcher_(FROM_HERE,
                        mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                        base::SequencedTaskRunner::GetCurrentDefault()),
+      network_restrictions_id_(network_restrictions_id),
+      creator_policies_(std::move(creator_policies)),
       callback_(std::move(callback)) {
   DCHECK(browser_context);
 
@@ -198,6 +205,20 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
           resource_request, browser_context, std::move(web_contents_getter),
           /*navigation_ui_data=*/nullptr, FrameTreeNodeId(),
           /*navigation_id=*/std::nullopt);
+
+  if (network_restrictions_id_) {
+    auto* storage_partition = static_cast<StoragePartitionImpl*>(
+        browser_context->GetStoragePartitionForUrl(scope_));
+    // Use a throttle to enforce network restrictions (like connection
+    // allowlists) inherited from the creator for this script update check.
+    if (auto throttle = NetworkRestrictionsWorkerThrottle::Create(
+            storage_partition->GetWeakPtr(), *network_restrictions_id_,
+            creator_policies_.Clone(),
+            /*ancestor_render_frame_host=*/nullptr,
+            /*is_service_worker=*/true)) {
+      throttles.push_back(std::move(throttle));
+    }
+  }
 
   network_client_remote_.Bind(
       network_client_receiver_.BindNewPipeAndPassRemote());

@@ -302,7 +302,17 @@ ServiceWorkerVersion::ServiceWorkerVersion(
     int64_t version_id,
     mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
         remote_reference,
-    base::WeakPtr<ServiceWorkerContextCore> context)
+    base::WeakPtr<ServiceWorkerContextCore> context,
+    // The network restriction ID of the creator (e.g., frame) from which this
+    // worker may inherit restrictions.
+    const std::optional<base::UnguessableToken>&
+        creator_network_restrictions_id,
+    // A unique token identifying this worker's network restrictions in the
+    // network service. If not provided, a new one will be generated.
+    const std::optional<base::UnguessableToken>& network_restrictions_id,
+    // The policy container policies (including connection allowlists)
+    // inherited from the creator.
+    const PolicyContainerPolicies& creator_policies)
     : version_id_(version_id),
       registration_id_(registration->id()),
       script_url_(script_url),
@@ -319,7 +329,11 @@ ServiceWorkerVersion::ServiceWorkerVersion(
       remote_reference_(std::move(remote_reference)),
       ukm_source_id_(ukm::ConvertToSourceId(ukm::AssignNewSourceId(),
                                             ukm::SourceIdType::WORKER_ID)),
-      reporting_source_(base::UnguessableToken::Create()) {
+      reporting_source_(base::UnguessableToken::Create()),
+      creator_network_restrictions_id_(creator_network_restrictions_id),
+      creator_policies_(creator_policies.Clone()),
+      network_restrictions_id_(
+          network_restrictions_id.value_or(base::UnguessableToken::Create())) {
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId, version_id);
   DCHECK(context_);
   DCHECK(registration);
@@ -2574,7 +2588,13 @@ void ServiceWorkerVersion::DidEnsureLiveRegistrationForStartWorker(
   }
 
   if (running_status() == blink::EmbeddedWorkerStatus::kStopped) {
-    StartWorkerInternal();
+    // Ensure that network restrictions (like connection allowlists) are
+    // registered with the network service before the worker is started. This
+    // ensures that even the initial script evaluation is subject to these
+    // restrictions.
+    MaybeRegisterNetworkRestrictions(
+        base::BindOnce(&ServiceWorkerVersion::StartWorkerInternal,
+                       weak_factory_.GetWeakPtr()));
   }
   // Warning: StartWorkerInternal() might have deleted `this` on failure.
 }
@@ -3527,6 +3547,29 @@ ServiceWorkerVersion::GetControllerMode() const {
       // have a controller that hasn't finished installing.
       NOTREACHED();
   }
+}
+
+// Registers the network restrictions (e.g., connection allowlists) for this
+// service worker with the network service. This registration allows the
+// network service to enforce these restrictions for all network requests made
+// by this worker.
+void ServiceWorkerVersion::MaybeRegisterNetworkRestrictions(
+    base::OnceClosure callback) {
+  if (status() == Status::REDUNDANT || network_restrictions_registered_ ||
+      !context_ || !context_->wrapper() || !policy_container_host_ ||
+      (!policy_container_host_->policies().connection_allowlists.enforced &&
+       !policy_container_host_->policies().connection_allowlists.report_only)) {
+    std::move(callback).Run();
+    return;
+  }
+
+  network_restrictions_registered_ = true;
+  context_->wrapper()
+      ->storage_partition()
+      ->RestrictNetworkForIdsInNetworkContext(
+          {{network_restrictions_id_,
+            policy_container_host_->policies().connection_allowlists}},
+          std::move(callback));
 }
 
 }  // namespace content

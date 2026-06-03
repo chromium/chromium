@@ -19,8 +19,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/connection_allowlist_utils.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/policy_container_host.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -28,6 +30,8 @@
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/browser/worker_host/network_restrictions_worker_throttle.h"
 #include "content/common/features.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/common/content_client.h"
@@ -77,11 +81,12 @@ ServiceWorkerNewScriptLoader::CreateAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     int64_t cache_resource_id,
     bool is_throttle_needed,
-    const GlobalRenderFrameHostId& requesting_frame_id) {
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    const base::UnguessableToken& worker_network_restrictions_id) {
   return base::WrapUnique(new ServiceWorkerNewScriptLoader(
       request_id, options, original_request, std::move(client), version,
       loader_factory, traffic_annotation, cache_resource_id, is_throttle_needed,
-      requesting_frame_id));
+      requesting_frame_id, worker_network_restrictions_id));
 }
 
 // TODO(nhiroki): We're doing multiple things in the ctor. Consider factors out
@@ -96,7 +101,8 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     int64_t cache_resource_id,
     bool is_throttle_needed,
-    const GlobalRenderFrameHostId& requesting_frame_id)
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    const base::UnguessableToken& worker_network_restrictions_id)
     : request_id_(request_id),
       request_url_(original_request.url),
       is_main_script_(original_request.destination ==
@@ -118,7 +124,9 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
       client_producer_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                base::SequencedTaskRunner::GetCurrentDefault()),
-      requesting_frame_id_(requesting_frame_id) {
+      requesting_frame_id_(requesting_frame_id),
+      worker_network_restrictions_id_(worker_network_restrictions_id),
+      creator_policies_(version_->creator_policies().Clone()) {
   ServiceWorkerMetrics::RecordMainScriptRequestValidationResult(
       service_worker_loader_helpers::ValidateMainScriptRequest(original_request,
                                                                *version));
@@ -136,8 +144,10 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
       version_->status(), is_main_script_, version_->script_type());
 #endif  // DCHECK_IS_ON()
 
+  ServiceWorkerContextCore* context = version_->context().get();
+  CHECK(context);
   scoped_refptr<ServiceWorkerRegistration> registration =
-      version_->context()->GetLiveRegistration(version_->registration_id());
+      context->GetLiveRegistration(version_->registration_id());
   // ServiceWorkerVersion keeps the registration alive while the service
   // worker is starting up, and it must be starting up here.
   CHECK(registration);
@@ -167,11 +177,8 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   resource_request.client_side_content_decoding_enabled = false;
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer;
-  version_->context()
-      ->registry()
-      .GetRemoteStorageControl()
-      ->CreateResourceWriter(cache_resource_id,
-                             writer.BindNewPipeAndPassReceiver());
+  context->registry().GetRemoteStorageControl()->CreateResourceWriter(
+      cache_resource_id, writer.BindNewPipeAndPassReceiver());
 
   cache_writer_ = ServiceWorkerCacheWriter::CreateForWriteBack(
       std::move(writer), cache_resource_id);
@@ -184,16 +191,35 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   options &= ~network::mojom::kURLLoadOptionSniffMimeType;
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-  if (is_throttle_needed) {
+  if (is_throttle_needed && context && context->wrapper() &&
+      context->wrapper()->storage_partition()) {
     // A service worker is independent from WebContents and FrameTreeNode.
     // Return null or empty values when queried for either.
     base::RepeatingCallback<WebContents*()> web_contents_getter =
         base::BindRepeating([]() -> WebContents* { return nullptr; });
     throttles = CreateContentBrowserURLLoaderThrottles(
-        resource_request, version_->context()->wrapper()->browser_context(),
+        resource_request, context->wrapper()->browser_context(),
         std::move(web_contents_getter),
         /*navigation_ui_data=*/nullptr, FrameTreeNodeId(),
         /*navigation_id=*/std::nullopt);
+
+    // `rfh` may be null if the worker is being installed without a creator
+    // frame (e.g., browser-initiated update). In this case, we cannot log
+    // WebFeatures on the frame, and the script fetch itself is not restricted
+    // based on a creator frame's active restrictions.
+    // However, we still create the throttle to enforce connection allowlists
+    // for the service worker's future subresource requests. These are
+    // determined either from the script's response headers or from the
+    // persisted `creator_policies_` (restored from the database) if the worker
+    // inherits them.
+    auto* rfh = RenderFrameHostImpl::FromID(requesting_frame_id_);
+    if (auto throttle = NetworkRestrictionsWorkerThrottle::Create(
+            context->wrapper()->storage_partition()->GetWeakPtr(),
+            worker_network_restrictions_id_, creator_policies_.Clone(),
+            rfh ? rfh->GetWeakPtr() : nullptr,
+            /*is_service_worker=*/true)) {
+      throttles.push_back(std::move(throttle));
+    }
   }
 
   network_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
@@ -300,15 +326,18 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
              ->browser()
              ->ShouldServiceWorkerInheritPolicyContainerFromCreator(
                  request_url_)) {
+      PolicyContainerPolicies policies =
+          response_head->parsed_headers
+              // This does not parse the referrer policy, which will be
+              // updated in ServiceWorkerGlobalScope::Initialize
+              ? PolicyContainerPolicies(request_url_, response_head.get(),
+                                        /*client=*/nullptr)
+              : PolicyContainerPolicies();
+      policies.connection_allowlists = GetConnectionAllowlistsForWorker(
+          request_url_, response_head.get(), &creator_policies_,
+          /*inherit_from_creator=*/false);
       version_->SetPolicyContainerHost(
-          base::MakeRefCounted<PolicyContainerHost>(
-              // TODO(crbug.com/40235036): Add DCHECK to parsed_headers
-              response_head->parsed_headers
-                  // This does not parse the referrer policy, which will be
-                  // updated in ServiceWorkerGlobalScope::Initialize
-                  ? PolicyContainerPolicies(request_url_, response_head.get(),
-                                            /*client=*/nullptr)
-                  : PolicyContainerPolicies()));
+          base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
     }
 
     if (response_head->network_accessed)

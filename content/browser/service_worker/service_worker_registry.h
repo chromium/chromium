@@ -19,6 +19,7 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "components/services/storage/service_worker/service_worker_storage.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -38,6 +39,7 @@ namespace content {
 
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
+struct PolicyContainerPolicies;
 
 class ServiceWorkerRegistryTest;
 FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, StoragePolicyChange);
@@ -122,12 +124,24 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // Create a new instance of ServiceWorkerVersion which is associated with the
   // given |registration|. Can be null when storage is disabled. This method
   // must be called after storage is initialized.
+  //
+  // |creator_network_restrictions_id| is the network restrictions ID of the
+  // creator (e.g., frame), which is used to subject the Service Worker script
+  // fetch itself to the creator's connection allowlists.
+  // |network_restrictions_id| is a unique token identifying this worker's own
+  // network restrictions in the network service, which is used for the worker's
+  // subsequent subresource requests.
   using NewVersionCallback =
       base::OnceCallback<void(scoped_refptr<ServiceWorkerVersion> version)>;
-  void CreateNewVersion(scoped_refptr<ServiceWorkerRegistration> registration,
-                        const GURL& script_url,
-                        blink::mojom::ScriptType script_type,
-                        NewVersionCallback callback);
+  void CreateNewVersion(
+      scoped_refptr<ServiceWorkerRegistration> registration,
+      const GURL& script_url,
+      blink::mojom::ScriptType script_type,
+      const std::optional<base::UnguessableToken>&
+          creator_network_restrictions_id,
+      const std::optional<base::UnguessableToken>& network_restrictions_id,
+      const PolicyContainerPolicies& creator_policies,
+      NewVersionCallback callback);
 
   // Finds registration for `client_url`, `scope`, or `registration_id` with the
   // associated `key`. The Find methods will find stored and initially
@@ -453,6 +467,10 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       scoped_refptr<ServiceWorkerRegistration> registration,
       const GURL& script_url,
       blink::mojom::ScriptType script_type,
+      const std::optional<base::UnguessableToken>&
+          creator_network_restrictions_id,
+      const std::optional<base::UnguessableToken>& network_restrictions_id,
+      const PolicyContainerPolicies& creator_policies,
       NewVersionCallback callback,
       int64_t version_id,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>

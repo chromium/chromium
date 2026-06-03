@@ -21,7 +21,7 @@
 #include "components/variations/net/omnibox_autofocus_http_headers.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/browser_context_impl.h"
-#include "content/browser/connection_allowlist_gating.h"
+#include "content/browser/connection_allowlist_utils.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_handle_impl.h"
