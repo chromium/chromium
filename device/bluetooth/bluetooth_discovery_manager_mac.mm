@@ -26,6 +26,8 @@ class BluetoothDiscoveryManagerMacClassic;
 - (instancetype)initWithManager:
     (device::BluetoothDiscoveryManagerMacClassic*)manager;
 
+- (void)resetOwner;
+
 @end
 
 namespace device {
@@ -48,10 +50,21 @@ class BluetoothDiscoveryManagerMacClassic
       const BluetoothDiscoveryManagerMacClassic&) = delete;
 
   ~BluetoothDiscoveryManagerMacClassic() override {
+    [inquiry_ stop];
+    [inquiry_delegate_ resetOwner];
     // IOBluetoothDeviceInquiry's delegate property is configured as "assign"
     // rather than "weak". If it is not manually reset then our delegate could be
     // accessed after we drop our strong reference and the object is freed.
     inquiry_.delegate = nil;
+
+    // Keep the delegate alive for one more turn of the main run loop to allow
+    // any already-enqueued callbacks to fire safely (and become no-ops since
+    // the owner has been reset to nullptr) rather than hitting a deallocated
+    // object. See FB13705522.
+    BluetoothDeviceInquiryDelegate* __strong delegate = inquiry_delegate_;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      (void)delegate;
+    });
   }
 
   // BluetoothDiscoveryManagerMac override.
@@ -213,18 +226,31 @@ BluetoothDiscoveryManagerMac* BluetoothDiscoveryManagerMac::CreateClassic(
   return self;
 }
 
+- (void)resetOwner {
+  _manager = nullptr;
+}
+
 - (void)deviceInquiryStarted:(IOBluetoothDeviceInquiry*)sender {
+  if (!_manager) {
+    return;
+  }
   _manager->DeviceInquiryStarted(sender);
 }
 
 - (void)deviceInquiryDeviceFound:(IOBluetoothDeviceInquiry*)sender
                           device:(IOBluetoothDevice*)device {
+  if (!_manager) {
+    return;
+  }
   _manager->DeviceFound(sender, device);
 }
 
 - (void)deviceInquiryComplete:(IOBluetoothDeviceInquiry*)sender
                         error:(IOReturn)error
                       aborted:(BOOL)aborted {
+  if (!_manager) {
+    return;
+  }
   _manager->DeviceInquiryComplete(sender, error, aborted);
 }
 
