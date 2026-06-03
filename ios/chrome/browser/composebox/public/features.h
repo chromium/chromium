@@ -102,4 +102,7 @@ GetComposeboxConditionalPlusButtonVariant();
 // Whether the composebox + button should be conditionally hidden.
 bool IsComposeboxConditionalPlusButtonEnabled();
 
+// Returns whether to enable Google Drive option in the composebox.
+bool IsComposeboxDriveOptionEnabled();
+
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_FEATURES_H_

@@ -25,7 +25,10 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/omnibox/common",
+  ]
 }
 
 source_set("theme") {

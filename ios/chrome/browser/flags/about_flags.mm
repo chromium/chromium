@@ -2887,6 +2887,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSMiniMapLinkifiedAddressName,
      flag_descriptions::kIOSMiniMapLinkifiedAddressDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSMiniMapLinkifiedAddress)},
+    {"composebox-drive-context-menu-option",
+     flag_descriptions::kComposeboxDriveContextMenuOptionName,
+     flag_descriptions::kComposeboxDriveContextMenuOptionDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kComposeboxDriveContextMenuOption)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

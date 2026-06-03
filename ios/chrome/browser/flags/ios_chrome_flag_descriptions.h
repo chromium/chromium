@@ -429,6 +429,11 @@ inline constexpr char kComposeboxDevToolsDescription[] =
     "Enables development tools for the composebox, allowing simulation of "
     "delays and failures.";
 
+inline constexpr char kComposeboxDriveContextMenuOptionName[] =
+    "Enable Composebox Drive option";
+inline constexpr char kComposeboxDriveContextMenuOptionDescription[] =
+    "Enables Google Drive option in the Composebox menu.";
+
 inline constexpr char
     kComposeboxFetchContextualSuggestionsForMultipleAttachmentsName[] =
         "Enable Composebox Fetch Contextual Suggestions For multiple "

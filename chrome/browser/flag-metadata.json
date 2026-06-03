@@ -1819,7 +1819,12 @@
   },
   {
     "name": "composebox-drive-context-menu-option",
-    "owners": [ "julietlevesque@google.com", "chrome-desktop-ntp@google.com" ],
+    "owners": [
+      "julietlevesque@google.com",
+      "chrome-desktop-ntp@google.com",
+      "erahmaoui@google.com",
+      "bling-search@google.com"
+    ],
     "expiry_milestone": 160
   },
   {

@@ -6,6 +6,7 @@
 
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
+#import "components/omnibox/common/omnibox_features.h"
 
 BASE_FEATURE(kComposeboxDevTools, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -112,4 +113,9 @@ GetComposeboxConditionalPlusButtonVariant() {
 
 bool IsComposeboxConditionalPlusButtonEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxConditionalPlusButton);
+}
+
+bool IsComposeboxDriveOptionEnabled() {
+  return base::FeatureList::IsEnabled(
+      omnibox::kComposeboxDriveContextMenuOption);
 }
