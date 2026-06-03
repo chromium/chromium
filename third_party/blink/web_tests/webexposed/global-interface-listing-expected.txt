@@ -5491,6 +5491,7 @@ interface HTMLUserMediaElement : HTMLElement
     getter initialPermissionStatus
     getter invalidReason
     getter isValid
+    getter onerror
     getter onpromptaction
     getter onpromptdismiss
     getter onstream
@@ -5500,6 +5501,7 @@ interface HTMLUserMediaElement : HTMLElement
     getter type
     method constructor
     method setConstraints
+    setter onerror
     setter onpromptaction
     setter onpromptdismiss
     setter onstream

@@ -33,15 +33,9 @@ MediaStream* HTMLUserMediaElementMediaStream::stream(
 }
 
 // static
-ScriptValue HTMLUserMediaElementMediaStream::error(
-    ScriptState* script_state,
+DOMException* HTMLUserMediaElementMediaStream::error(
     HTMLUserMediaElement& element) {
-  const auto& error_ref = From(element).error_;
-  if (error_ref.IsEmpty()) {
-    return ScriptValue::CreateNull(script_state->GetIsolate());
-  }
-  return ScriptValue(script_state->GetIsolate(),
-                     error_ref.GetAcrossWorld(script_state));
+  return From(element).error_.Get();
 }
 
 HTMLUserMediaElementMediaStream::HTMLUserMediaElementMediaStream(

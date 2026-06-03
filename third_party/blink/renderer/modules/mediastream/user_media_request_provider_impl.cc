@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/user_media_request_provider_impl.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_html_media_stream_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
@@ -17,11 +18,10 @@
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/modules/mediastream/html_user_media_element_media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_element_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_request.h"
-#include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
-#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 
 namespace blink {
@@ -52,16 +52,19 @@ void UserMediaRequestProviderCallbacks::OnError(
     CaptureController* capture_controller,
     UserMediaRequestResult result) {
   if (element_ && element_->GetExecutionContext()) {
-    ScriptState* script_state =
-        ToScriptStateForMainWorld(element_->GetDocument().GetFrame());
-    if (script_state) {
-      ScriptState::Scope scope(script_state);
-      HTMLUserMediaElementMediaStream::From(*element_).SetError(
-          WorldSafeV8Reference<v8::Value>(script_state->GetIsolate(),
-                                          error->ToV8(script_state)));
+    base::UmaHistogramBoolean(
+        "Blink.CapabilityElement.UserMedia.GumApi.OverconstrainedError",
+        error->IsOverconstrainedError());
+
+    DOMException* dom_exception = nullptr;
+    if (error->IsDOMException()) {
+      dom_exception = error->GetAsDOMException();
+    } else if (error->IsOverconstrainedError()) {
+      dom_exception = error->GetAsOverconstrainedError();
     }
+    HTMLUserMediaElementMediaStream::From(*element_).SetError(dom_exception);
     element_->ResetMediaStreamRequestTime();
-    element_->DispatchEvent(*Event::Create(event_type_names::kStream));
+    element_->DispatchEvent(*Event::Create(event_type_names::kError));
   }
 }
 
@@ -123,11 +126,9 @@ void UserMediaRequestProviderImpl::StartRequest(
     // Camera and Microphone element.
     if (!constraints->hasAudio() && !constraints->hasVideo()) {
       HTMLUserMediaElementMediaStream::From(*element).SetError(
-          WorldSafeV8Reference<v8::Value>(
-              window->GetIsolate(),
-              V8ThrowException::CreateTypeError(window->GetIsolate(),
-                                                "No constraints set")));
-      element->DispatchEvent(*Event::Create(event_type_names::kStream));
+          MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kNotSupportedError, "No constraints set"));
+      element->DispatchEvent(*Event::Create(event_type_names::kError));
       return;
     }
     request_constraints = MediaStreamConstraints::Create();
@@ -146,11 +147,10 @@ void UserMediaRequestProviderImpl::StartRequest(
     // Audio only element.
     if (!constraints->hasAudio()) {
       HTMLUserMediaElementMediaStream::From(*element).SetError(
-          WorldSafeV8Reference<v8::Value>(
-              window->GetIsolate(),
-              V8ThrowException::CreateTypeError(window->GetIsolate(),
-                                                "No audio constraints set")));
-      element->DispatchEvent(*Event::Create(event_type_names::kStream));
+          MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kNotSupportedError,
+              "No audio constraints set"));
+      element->DispatchEvent(*Event::Create(event_type_names::kError));
       return;
     }
     request_constraints = MediaStreamConstraints::Create();
@@ -163,11 +163,10 @@ void UserMediaRequestProviderImpl::StartRequest(
              mojom::blink::PermissionName::VIDEO_CAPTURE);
     if (!constraints->hasVideo()) {
       HTMLUserMediaElementMediaStream::From(*element).SetError(
-          WorldSafeV8Reference<v8::Value>(
-              window->GetIsolate(),
-              V8ThrowException::CreateTypeError(window->GetIsolate(),
-                                                "No video constraints set")));
-      element->DispatchEvent(*Event::Create(event_type_names::kStream));
+          MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kNotSupportedError,
+              "No video constraints set"));
+      element->DispatchEvent(*Event::Create(event_type_names::kError));
       return;
     }
     request_constraints = MediaStreamConstraints::Create();
@@ -184,11 +183,9 @@ void UserMediaRequestProviderImpl::StartRequest(
 
   if (exception_state.HadException()) {
     HTMLUserMediaElementMediaStream::From(*element).SetError(
-        WorldSafeV8Reference<v8::Value>(
-            window->GetIsolate(),
-            V8ThrowException::CreateTypeError(
-                window->GetIsolate(), "Stream creation failed")));
-    element->DispatchEvent(*Event::Create(event_type_names::kStream));
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kOperationError,
+                                          "Stream creation failed"));
+    element->DispatchEvent(*Event::Create(event_type_names::kError));
     return;
   }
 

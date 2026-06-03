@@ -701,6 +701,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Blink.CapabilityElement.{CapabilityType}.GumApi.OverconstrainedError"
+    enum="Boolean" expires_after="2027-06-02">
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the getUserMedia (gUM) API call by the {CapabilityType}
+    element failed specifically due to an OverconstrainedError (true) or some
+    other error (false). Recorded when the gUM request callback returns with an
+    error.
+  </summary>
+</histogram>
+
 <histogram name="Blink.CapabilityElement.{CapabilityType}.InvalidStyle.Reason"
     enum="PermissionElementInvalidStyleReason" expires_after="2026-08-11">
   <owner>ravjit@chromium.org</owner>
