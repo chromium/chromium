@@ -1334,8 +1334,12 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "liveRelevant";
     case ax::mojom::StringAttribute::kLiveStatus:
       return "liveStatus";
+    case ax::mojom::StringAttribute::kMathArg:
+      return "mathArg";
     case ax::mojom::StringAttribute::kMathContent:
       return "mathContent";
+    case ax::mojom::StringAttribute::kMathIntent:
+      return "mathIntent";
     case ax::mojom::StringAttribute::kName:
       return "name";
     case ax::mojom::StringAttribute::kPlaceholder:
@@ -1425,8 +1429,12 @@ ax::mojom::StringAttribute StringToStringAttribute(
     return ax::mojom::StringAttribute::kLiveRelevant;
   } else if (string_attribute == "kLiveStatus") {
     return ax::mojom::StringAttribute::kLiveStatus;
+  } else if (string_attribute == "kMathArg") {
+    return ax::mojom::StringAttribute::kMathArg;
   } else if (string_attribute == "kMathContent") {
     return ax::mojom::StringAttribute::kMathContent;
+  } else if (string_attribute == "kMathIntent") {
+    return ax::mojom::StringAttribute::kMathIntent;
   } else if (string_attribute == "kName") {
     return ax::mojom::StringAttribute::kName;
   } else if (string_attribute == "kPlaceholder") {

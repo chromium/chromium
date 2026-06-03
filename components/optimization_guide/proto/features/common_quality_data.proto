@@ -1844,7 +1844,7 @@ enum AXRole {
 }
 
 // AX String attribute enum.
-// Next ID: 43
+// Next ID: 45
 enum AXStringAttribute {
   AX_SA_NONE = 0;
 
@@ -1931,6 +1931,10 @@ enum AXStringAttribute {
   AX_SA_DATETIME = 41;
 
   AX_SA_HTMLINPUTNAME = 42;
+
+  AX_SA_MATHARG = 43;
+
+  AX_SA_MATHINTENT = 44;
 }
 
 // AX Int attribute enum.

@@ -6517,6 +6517,8 @@ data/accessibility/mathml/annotation-xml-node-expected-auralinux.txt
 data/accessibility/mathml/annotation-xml-node-expected-mac.txt
 data/accessibility/mathml/annotation-xml.html
 data/accessibility/mathml/annotation.html
+data/accessibility/mathml/intent-expected-blink.txt
+data/accessibility/mathml/intent.html
 data/accessibility/mathml/maction-expected-blink.txt
 data/accessibility/mathml/maction-expected-uia-win.txt
 data/accessibility/mathml/maction-node-expected-auralinux.txt

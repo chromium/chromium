@@ -100,8 +100,12 @@ optimization_guide::proto::AXStringAttribute StringAttributeToProto(
           AX_SA_IMAGEANNOTATION;
     case ax::mojom::StringAttribute::kImageDataUrl:
       return optimization_guide::proto::AXStringAttribute::AX_SA_IMAGEDATAURL;
+    case ax::mojom::StringAttribute::kMathArg:
+      return optimization_guide::proto::AXStringAttribute::AX_SA_MATHARG;
     case ax::mojom::StringAttribute::kMathContent:
       return optimization_guide::proto::AXStringAttribute::AX_SA_MATHCONTENT;
+    case ax::mojom::StringAttribute::kMathIntent:
+      return optimization_guide::proto::AXStringAttribute::AX_SA_MATHINTENT;
     case ax::mojom::StringAttribute::kInputType:
       return optimization_guide::proto::AXStringAttribute::AX_SA_INPUTTYPE;
     case ax::mojom::StringAttribute::kKeyShortcuts:

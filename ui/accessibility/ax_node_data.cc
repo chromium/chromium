@@ -1480,8 +1480,14 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::StringAttribute::kContainerLiveStatus:
         base::StrAppend(&result, {" container_live=", value});
         break;
+      case ax::mojom::StringAttribute::kMathArg:
+        base::StrAppend(&result, {" math_arg=", value});
+        break;
       case ax::mojom::StringAttribute::kMathContent:
         base::StrAppend(&result, {" math_content=", value});
+        break;
+      case ax::mojom::StringAttribute::kMathIntent:
+        base::StrAppend(&result, {" math_intent=", value});
         break;
       case ax::mojom::StringAttribute::kPlaceholder:
         base::StrAppend(&result, {" placeholder=", value});

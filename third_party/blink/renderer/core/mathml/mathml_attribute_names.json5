@@ -9,6 +9,7 @@
   data: [
     "accent",
     "accentunder",
+    "arg",
     "columnspan",
     "definitionURL",
     "depth",
@@ -18,6 +19,7 @@
     "fence",
     "form",
     "height",
+    "intent",
     "largeop",
     "linethickness",
     "lspace",

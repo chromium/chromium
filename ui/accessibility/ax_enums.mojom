@@ -596,8 +596,8 @@ enum Mutation {
   kSubtreeUpdateEnd,
 };
 
-// Next version: 9
-// Next value: 43
+// Next version: 10
+// Next value: 45
 [Extensible, Stable, Uuid="e5a4cd0c-3152-4427-93d5-35ff7d0f1ae8"]
 enum StringAttribute {
   [Default]kNone = 0,
@@ -644,7 +644,9 @@ enum StringAttribute {
   [MinVersion=1] kLongClickLabel = 32, // Only for ARC
   kLiveRelevant = 22,
   kLiveStatus = 23,
+  [MinVersion=9]kMathArg = 43,
   kMathContent = 17,
+  [MinVersion=9]kMathIntent = 44,
   kName = 21,
   // Only if not already exposed in kName (NameFrom::kPlaceholder)
   kPlaceholder = 24,
