@@ -45,7 +45,6 @@ import java.util.function.Supplier;
 public class EdgeToEdgeUtils {
     private static final String TAG = "E2E_Utils";
     private static @Nullable Boolean sIsTargetSdkEnforceEdgeToEdge;
-    private static boolean sObservedTappableNavigationBar;
     private static boolean sAlwaysDrawWebEdgeToEdgeForTesting;
     private static @Nullable Boolean sHas3ButtonNavBarForTesting;
 
@@ -385,17 +384,10 @@ public class EdgeToEdgeUtils {
             return sHas3ButtonNavBarForTesting;
         }
 
-        if (sObservedTappableNavigationBar
-                && ChromeFeatureList.sEdgeToEdgeMonitorConfigurations.isEnabled()) {
-            return true;
-        }
-
         var rootInsets = insetsSupplier.get();
         assert rootInsets != null;
 
-        boolean hasTappableNavBar = hasTappableNavigationBarFromInsets(rootInsets);
-        sObservedTappableNavigationBar |= hasTappableNavBar;
-        return hasTappableNavBar;
+        return hasTappableNavigationBarFromInsets(rootInsets);
     }
 
     /** Returns whether the given window's insets contains a tappable navigation bar. */
@@ -449,11 +441,6 @@ public class EdgeToEdgeUtils {
     public static void setAlwaysDrawWebEdgeToEdgeForTesting(boolean drawWebEdgeToEdge) {
         sAlwaysDrawWebEdgeToEdgeForTesting = drawWebEdgeToEdge;
         ResettersForTesting.register(() -> sAlwaysDrawWebEdgeToEdgeForTesting = false);
-    }
-
-    public static void setObservedTappableNavigationBarForTesting(boolean observed) {
-        sObservedTappableNavigationBar = observed;
-        ResettersForTesting.register(() -> sObservedTappableNavigationBar = false);
     }
 
     public static void setHas3ButtonNavBarForTesting(Boolean has3ButtonNavBar) {

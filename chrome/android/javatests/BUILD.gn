@@ -542,7 +542,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.app") {
     "src/org/chromium/chrome/browser/app/bookmarks/ReadingListTest.java",
     "src/org/chromium/chrome/browser/app/edge_to_edge/EdgeToEdgeInstrumentationTest.java",
     "src/org/chromium/chrome/browser/app/edge_to_edge/EdgeToEdgePTTest.java",
-    "src/org/chromium/chrome/browser/app/edge_to_edge/EdgeToEdgeStartupTest.java",
     "src/org/chromium/chrome/browser/app/flags/ChromeCachedFlagsTest.java",
     "src/org/chromium/chrome/browser/app/metrics/TabbedActivityLaunchCauseMetricsTest.java",
     "src/org/chromium/chrome/browser/app/tab_activity_glue/TabletPhoneLayoutChangeTest.java",
