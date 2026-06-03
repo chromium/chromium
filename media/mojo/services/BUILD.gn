@@ -262,6 +262,7 @@ source_set("unit_tests") {
     "deferred_destroy_unique_receiver_set_unittest.cc",
     "media_metrics_provider_unittest.cc",
     "media_service_unittest.cc",
+    "mojo_audio_decoder_service_unittest.cc",
     "mojo_demuxer_stream_adapter_unittest.cc",
     "mojo_video_encode_accelerator_service_unittest.cc",
     "mojo_video_encoder_metrics_provider_service_unittest.cc",

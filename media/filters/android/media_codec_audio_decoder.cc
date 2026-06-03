@@ -71,6 +71,7 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
   // decode.
   DCHECK(input_queue_.empty());
   ClearInputQueue(DecoderStatus::Codes::kAborted);
+  codec_loop_.reset();
 
   if (state_ == STATE_ERROR) {
     DVLOG(1) << "Decoder is in error state.";
@@ -197,6 +198,8 @@ bool MediaCodecAudioDecoder::CreateMediaCodecLoop() {
 
 void MediaCodecAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                     DecodeCB decode_cb) {
+  CHECK(codec_loop_);
+
   DecodeCB bound_decode_cb =
       base::BindPostTaskToCurrentDefault(std::move(decode_cb));
 
@@ -222,8 +225,6 @@ void MediaCodecAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  DCHECK(codec_loop_);
-
   DVLOG(3) << __func__ << " " << buffer->AsHumanReadableString();
 
   DCHECK_EQ(state_, STATE_READY) << " unexpected state " << AsString(state_);
@@ -240,6 +241,7 @@ void MediaCodecAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
 void MediaCodecAudioDecoder::Reset(base::OnceClosure closure) {
   DVLOG(2) << __func__;
+  CHECK(codec_loop_);
 
   ClearInputQueue(DecoderStatus::Codes::kAborted);
 

@@ -198,8 +198,10 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
   config_ = config;
   output_cb_ = output_cb;
 
+  decoder_.Reset();
   HRESULT hr = CreateDecoder();
   if (FAILED(hr)) {
+    decoder_.Reset();
     base::BindPostTaskToCurrentDefault(std::move(init_cb))
         .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec));
     return;
@@ -210,6 +212,7 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
 void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                          DecodeCB decode_cb) {
+  CHECK(decoder_);
   DecodeCB decode_cb_bound =
       base::BindPostTaskToCurrentDefault(std::move(decode_cb));
 
@@ -314,6 +317,7 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 }
 
 void MediaFoundationAudioDecoder::Reset(base::OnceClosure reset_cb) {
+  CHECK(decoder_);
   has_reset_ = true;
   auto hr = decoder_->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, 0);
   if (hr != S_OK) {
