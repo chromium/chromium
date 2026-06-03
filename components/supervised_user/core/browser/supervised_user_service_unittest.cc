@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -20,6 +21,7 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
@@ -417,6 +419,10 @@ class SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest
     return AreAndroidParentalControlsEffectiveForTesting(
         *supervised_user_test_environment_->pref_service());
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      kSupervisedUserUseUrlFilteringService};
 };
 
 // All enabled -> only browser filter enabled -> all disabled -> only search
@@ -446,13 +452,14 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
       "SupervisedUsers.WebFilterType.LocallySupervised", 1);
 
   // Supervision is back on, but the browser filter is still disabled. This time
-  // WebFilterType metric is emitted to indicate disabled filter setting.
+  // WebFilterType metric is emitted to indicate that parental controls are
+  // on without web filtering: all sites are allowed.
   SetSearchFilterEnabled(true);
   EXPECT_TRUE(IsDeviceSupervisionEffective());
-  EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
+  EXPECT_EQ(GetWebFilterType(), WebFilterType::kAllowAllSites);
   histogram_tester_.ExpectBucketCount(
       "SupervisedUsers.WebFilterType.LocallySupervised",
-      WebFilterType::kDisabled, 1);
+      WebFilterType::kAllowAllSites, 1);
 
   // Back to where we started: both filters enabled.
   SetBrowserFilterEnabled(true);
@@ -487,13 +494,13 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
   histogram_tester_.ExpectTotalCount(
       "SupervisedUsers.WebFilterType.LocallySupervised", 1);
 
-  // Leaves only the search filter enabled - disables browser filter.
+  // Leaves only the search filter enabled - disables the web filtering.
   SetBrowserFilterEnabled(false);
   EXPECT_TRUE(IsDeviceSupervisionEffective());
-  EXPECT_EQ(GetWebFilterType(), WebFilterType::kDisabled);
+  EXPECT_EQ(GetWebFilterType(), WebFilterType::kAllowAllSites);
   histogram_tester_.ExpectBucketCount(
       "SupervisedUsers.WebFilterType.LocallySupervised",
-      WebFilterType::kDisabled, 1);
+      WebFilterType::kAllowAllSites, 1);
 
   // Back to where we started: unsupervised. Disabling supervision won't yield
   // WebFilterType metric.
