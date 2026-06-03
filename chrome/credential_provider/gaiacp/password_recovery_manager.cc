@@ -24,6 +24,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/ntsecapi_shim.h"
@@ -167,10 +168,9 @@ std::optional<std::vector<uint8_t>> PublicKeyEncrypt(
   std::vector<uint8_t> ciphertext = crypto::encrypt::Encrypt(
       crypto::encrypt::RSA_OAEP_SHA1, *public_key, session_key_with_nonce);
 
-  crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  aead.Init(session_key);
-  std::vector<uint8_t> sealed_secret =
-      aead.Seal(base::as_byte_span(secret), nonce, /*ad=*/{});
+  std::vector<uint8_t> sealed_secret = crypto::aead::Seal(
+      crypto::aead::AES_256_GCM, session_key, base::as_byte_span(secret), nonce,
+      /*associated_data=*/{});
 
   ciphertext.insert(ciphertext.end(), sealed_secret.begin(),
                     sealed_secret.end());
@@ -214,14 +214,14 @@ std::optional<std::string> PrivateKeyDecrypt(
       base::span(*session_key_with_nonce).split_at(kSessionKeyLength);
 
   std::string plaintext;
-  crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  aead.Init(session_key);
-  aead.Open(
-      std::string_view(reinterpret_cast<const char*>(&ciphertext[rsa_size]),
-                       ciphertext.size() - rsa_size),
-      std::string_view(reinterpret_cast<const char*>(nonce.data()),
-                       nonce.size()),
-      /*ad=*/"", &plaintext);
+  std::optional<std::vector<uint8_t>> decrypted_data = crypto::aead::Open(
+      crypto::aead::AES_256_GCM, session_key, ciphertext.subspan(rsa_size),
+      nonce, /*associated_data=*/{});
+  if (!decrypted_data) {
+    LOGFN(ERROR) << "Failed to decrypt ciphertext";
+    return std::nullopt;
+  }
+  plaintext = base::as_string_view(*decrypted_data);
 
   return plaintext;
 }
