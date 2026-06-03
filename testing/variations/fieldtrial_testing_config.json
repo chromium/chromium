@@ -7141,7 +7141,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ContextManagementInComposebox"
+                        "ContextManagementInComposebox",
+                        "ContextManagementInOmnibox"
                     ]
                 }
             ]
