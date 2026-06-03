@@ -8895,6 +8895,7 @@ from previous Chrome versions.
   <int value="-1777922746" label="TabSwitcherFullNewTabButton:enabled"/>
   <int value="-1777903087" label="PartitionAllocWithAdvancedChecks:enabled"/>
   <int value="-1777820415" label="WebAssemblyStringref:disabled"/>
+  <int value="-1777813750" label="EverywhereOmnibox:enabled"/>
   <int value="-1777768706"
       label="AutofillPreferBuyNowPayLaterBlocklists:disabled"/>
   <int value="-1777540083" label="LocationBarModelOptimizations:disabled"/>
@@ -18447,6 +18448,7 @@ from previous Chrome versions.
       label="SuppressClipboardSuggestionAfterFirstUsed:enabled"/>
   <int value="1333354155" label="FluentScrollbar:disabled"/>
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
+  <int value="1334258341" label="EverywhereOmnibox:disabled"/>
   <int value="1334953166" label="AllowNonFamilyLinkUrlFilterMode:enabled"/>
   <int value="1335052342" label="AccessibilityDeprecateTypeAnnounce:disabled"/>
   <int value="1335072054"

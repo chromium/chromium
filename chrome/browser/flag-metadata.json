@@ -7174,6 +7174,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "omnibox-loom",
+    "owners": [ "avivkiss@google.com", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-max-zero-suggest-matches",
     "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

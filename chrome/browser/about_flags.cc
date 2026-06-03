@@ -9355,6 +9355,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDynamicAimSubmit,
                                     kOmniboxDynamicSubmitVariations,
                                     "OmniboxDynamicSubmitVariations")},
+    {"omnibox-loom", flag_descriptions::kOmniboxLoomName,
+     flag_descriptions::kOmniboxLoomDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kEverywhereOmnibox)},
 
     {"webui-omnibox-aim-popup", flag_descriptions::kWebUIOmniboxAimPopupName,
      flag_descriptions::kWebUIOmniboxAimPopupDescription, kOsDesktop,

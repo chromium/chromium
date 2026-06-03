@@ -70,6 +70,11 @@ inline constexpr char kOmniboxAimServerEligibilityName[] =
     "AIM Server Eligibility";
 inline constexpr char kOmniboxAimServerEligibilityDescription[] =
     "Enable AIM server eligibility checks.";
+
+inline constexpr char kOmniboxLoomName[] = "Enable Loom";
+inline constexpr char kOmniboxLoomDescription[] =
+    "Enables experimental Loom features.";
+
 inline constexpr char kZeroSuggestPrefetchingForComposeboxName[] =
     "Zero suggest prefetching for composebox";
 inline constexpr char kZeroSuggestPrefetchingForComposeboxDescription[] =
