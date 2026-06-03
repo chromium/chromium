@@ -5226,6 +5226,10 @@ enum WebFeature {
   kWebSpeechTtsSynthesize = 5909,
   kWebSpeechTtsSuccess = 5910,
   kWebSpeechTtsError = 5911,
+  kSemanticEmbedder_Availability = 5912,
+  kSemanticEmbedder_Create = 5913,
+  kSemanticEmbedder_Embed = 5914,
+  kSemanticEmbedder_Destroy = 5915,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

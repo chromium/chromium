@@ -55,6 +55,8 @@ blink_modules_sources("ai") {
     "proofreader.h",
     "rewriter.cc",
     "rewriter.h",
+    "semantic_embedder.cc",
+    "semantic_embedder.h",
     "summarizer.cc",
     "summarizer.h",
     "writer.cc",

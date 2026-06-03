@@ -6633,6 +6633,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5909" label="WebSpeechTtsSynthesize"/>
   <int value="5910" label="WebSpeechTtsSuccess"/>
   <int value="5911" label="WebSpeechTtsError"/>
+  <int value="5912" label="SemanticEmbedder_Availability"/>
+  <int value="5913" label="SemanticEmbedder_Create"/>
+  <int value="5914" label="SemanticEmbedder_Embed"/>
+  <int value="5915" label="SemanticEmbedder_Destroy"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

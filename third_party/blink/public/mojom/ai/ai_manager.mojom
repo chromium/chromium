@@ -12,6 +12,7 @@ import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
 import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
 import "third_party/blink/public/mojom/ai/ai_writer.mojom";
 import "third_party/blink/public/mojom/ai/ai_classifier.mojom";
+import "third_party/blink/public/mojom/ai/ai_semantic_embedder.mojom";
 
 // LINT.IfChange(ModelAvailabilityCheckResult)
 enum ModelAvailabilityCheckResult {
@@ -132,6 +133,17 @@ interface AIManagerCreateClassifierClient {
   // Called when the manager cannot create an AIClassifier.
   // `quota_error_info` may provide additional info for kInitialInputTooLarge.
   OnError(AIManagerCreateClientError error, QuotaErrorInfo? quota_error_info);
+};
+
+
+// The client interface that receives an AISemanticEmbedder from an AIManager.
+interface AIManagerCreateSemanticEmbedderClient {
+  // Called with a created embedder's mojo interface as a result for the
+  // CreateSemanticEmbedder() method of the AIManager.
+  OnResult(pending_remote<blink.mojom.AISemanticEmbedder> embedder);
+
+  // Called when the manager cannot create an AISemanticEmbedder.
+  OnError(AIManagerCreateClientError error);
 };
 
 // The manager that could create a new session for the model.

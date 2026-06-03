@@ -1,0 +1,71 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum SemanticEmbedderTaskType {
+  "semantic-similarity",
+  "clustering",
+  "classification",
+  "retrieval-query",
+  "retrieval-document"
+};
+
+dictionary SemanticEmbedderCreateOptions {
+  AbortSignal signal;
+  CreateMonitorCallback monitor;
+};
+
+dictionary SemanticEmbedderEmbedOptions {
+  AbortSignal signal;
+  SemanticEmbedderTaskType taskType;
+};
+
+dictionary SemanticEmbedderResult {
+  sequence<ContentEmbedding> embeddings;
+};
+
+dictionary ContentEmbedding {
+  Float32Array values;
+};
+
+[
+  Exposed(Window AIEmbeddingsAPI, Worker AIEmbeddingsAPIForWorkers),
+  RuntimeEnabled=AIEmbeddingsAPI,
+  SecureContext
+]
+interface SemanticEmbedder {
+  [
+    MeasureAs=SemanticEmbedder_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Availability> availability(
+    optional SemanticEmbedderCreateOptions options = {}
+  );
+
+  [
+    MeasureAs=SemanticEmbedder_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<SemanticEmbedder> create(
+    optional SemanticEmbedderCreateOptions options = {}
+  );
+
+  [
+    MeasureAs=SemanticEmbedder_Embed,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<SemanticEmbedderResult> embed(
+    (DOMString or sequence<DOMString>) input,
+    optional SemanticEmbedderEmbedOptions options = {}
+  );
+
+  [
+    MeasureAs=SemanticEmbedder_Destroy,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  void destroy();
+};

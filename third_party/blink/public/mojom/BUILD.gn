@@ -33,6 +33,7 @@ mojom("mojom_platform") {
     "ai/ai_manager.mojom",
     "ai/ai_proofreader.mojom",
     "ai/ai_rewriter.mojom",
+    "ai/ai_semantic_embedder.mojom",
     "ai/ai_summarizer.mojom",
     "ai/ai_writer.mojom",
     "ai/model_streaming_responder.mojom",
