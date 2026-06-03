@@ -141,12 +141,6 @@ config("runtime_library") {
   asmflags = common_flags
   cflags = common_flags
   ldflags = common_flags
-
-  if (target_environment == "catalyst" && xcode_version_int >= 2650) {
-    # Xcode 26.5+ Catalyst builds require shims because the SDK macOS stubs are
-    # missing the arm64 slice, which is an error under ld64.lld.
-    lib_dirs = [ "//build/config/ios/shims" ]
-  }
 }
 
 config("ios_executable_flags") {
