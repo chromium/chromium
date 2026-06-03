@@ -665,7 +665,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     _assistantHighlightView = [[UIView alloc] init];
     _assistantHighlightView.translatesAutoresizingMaskIntoConstraints = NO;
     _assistantHighlightView.backgroundColor = [UIColor colorWithWhite:1.0
-                                                                alpha:0.2];
+                                                                alpha:0.15];
     _assistantHighlightView.layer.cornerRadius =
         kAssistantHighlightHeight / 2.0;
     _assistantHighlightView.layer.masksToBounds = YES;
