@@ -254,11 +254,12 @@ MY_CPU_64BIT means that processor can work with 64-bit registers.
 #endif
 
 
+// _LITTLE_ENDIAN macro can be defined for big-endian platform with some compilers
+ 
 #if defined(MY_CPU_X86_OR_AMD64) \
     || defined(MY_CPU_ARM_LE) \
     || defined(MY_CPU_ARM64_LE) \
     || defined(MY_CPU_IA64_LE) \
-    || defined(_LITTLE_ENDIAN) \
     || defined(__LITTLE_ENDIAN__) \
     || defined(__ARMEL__) \
     || defined(__THUMBEL__) \

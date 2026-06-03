@@ -1,5 +1,5 @@
 /* Alloc.h -- Memory allocation functions
-2024-01-22 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #ifndef ZIP7_INC_ALLOC_H
 #define ZIP7_INC_ALLOC_H
@@ -25,39 +25,39 @@ void *MyRealloc(void *address, size_t size);
 void *z7_AlignedAlloc(size_t size);
 void  z7_AlignedFree(void *p);
 
+extern const ISzAlloc g_Alloc;
+extern const ISzAlloc g_AlignedAlloc;
+
 #ifdef _WIN32
+  void *MidAlloc(size_t size);
+  void MidFree(void *address);
+  extern const ISzAlloc g_MidAlloc;
+#else
+  #define MidAlloc(size)    z7_AlignedAlloc(size)
+  #define MidFree(address)  z7_AlignedFree(address)
+  #define g_MidAlloc g_AlignedAlloc
+#endif
 
 #ifdef Z7_LARGE_PAGES
-void SetLargePageSize(void);
-#endif
 
-void *MidAlloc(size_t size);
-void MidFree(void *address);
-void *BigAlloc(size_t size);
-void BigFree(void *address);
+#define Z7_LARGE_PAGES_FLAG_USE_HUGEPAGE  (1 << 0)  //    PAGE_ALIGNED / MADV_HUGEPAGE
+#define Z7_LARGE_PAGES_FLAG_NO_PAGECODE   (1 << 1)  // no PAGE_ALIGNED / no madvise
+#define Z7_LARGE_PAGES_FLAG_NO_MADVISE    (1 << 2)  //    PAGE_ALIGNED / no madvise : for THP=always
+#define Z7_LARGE_PAGES_FLAG_NO_HUGEPAGE   (1 << 3)  //    PAGE_ALIGNED / MADV_NOHUGEPAGE
+#define Z7_LARGE_PAGES_FLAG_FAIL_STOP     (1 << 15) // for benchmarks
+#define Z7_LARGE_PAGES_FLAG_DIRECT_PAGE_SIZE  (1 << 16)
+#define Z7_LARGE_PAGES_FLAG_DIRECT_THRESHOLD  (1 << 17)
 
-/* #define Z7_BIG_ALLOC_IS_ZERO_FILLED */
-
+void z7_LargePage_Set(UInt32 flags, size_t pageSize, size_t threshold);
+  
+  void *BigAlloc(size_t size);
+  void BigFree(void *address);
+  extern const ISzAlloc g_BigAlloc;
 #else
-
-#define MidAlloc(size)    z7_AlignedAlloc(size)
-#define MidFree(address)  z7_AlignedFree(address)
-#define BigAlloc(size)    z7_AlignedAlloc(size)
-#define BigFree(address)  z7_AlignedFree(address)
-
+  #define BigAlloc(size)    MidAlloc(size)
+  #define BigFree(address)  MidFree(address)
+  #define g_BigAlloc g_MidAlloc
 #endif
-
-extern const ISzAlloc g_Alloc;
-
-#ifdef _WIN32
-extern const ISzAlloc g_BigAlloc;
-extern const ISzAlloc g_MidAlloc;
-#else
-#define g_BigAlloc g_AlignedAlloc
-#define g_MidAlloc g_AlignedAlloc
-#endif
-
-extern const ISzAlloc g_AlignedAlloc;
 
 
 typedef struct

@@ -1,12 +1,11 @@
 /* 7zFile.h -- File IO
-2023-03-05 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #ifndef ZIP7_INC_FILE_H
 #define ZIP7_INC_FILE_H
 
 #ifdef _WIN32
 #define USE_WINDOWS_FILE
-// #include <windows.h>
 #endif
 
 #ifdef USE_WINDOWS_FILE

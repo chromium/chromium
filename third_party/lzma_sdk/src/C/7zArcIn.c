@@ -1,5 +1,5 @@
 /* 7zArcIn.c -- 7z Input functions
-2023-09-07 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -289,9 +289,9 @@ static SRes WaitId(CSzData *sd, UInt32 id)
   }
 }
 
-static SRes RememberBitVector(CSzData *sd, UInt32 numItems, const Byte **v)
+static SRes RememberBitVector(CSzData *sd, size_t numItems, const Byte **v)
 {
-  const UInt32 numBytes = (numItems + 7) >> 3;
+  const size_t numBytes = (numItems + 7) >> 3;
   if (numBytes > sd->Size)
     return SZ_ERROR_ARCHIVE;
   *v = sd->Data;
@@ -317,11 +317,11 @@ static UInt32 CountDefinedBits(const Byte *bits, UInt32 numItems)
   return sum;
 }
 
-static Z7_NO_INLINE SRes ReadBitVector(CSzData *sd, UInt32 numItems, Byte **v, ISzAllocPtr alloc)
+static Z7_NO_INLINE SRes ReadBitVector(CSzData *sd, size_t numItems, Byte **v, ISzAllocPtr alloc)
 {
   Byte allAreDefined;
   Byte *v2;
-  const UInt32 numBytes = (numItems + 7) >> 3;
+  const size_t numBytes = (numItems + 7) >> 3;
   *v = NULL;
   SZ_READ_BYTE(allAreDefined)
   if (numBytes == 0)
@@ -345,9 +345,9 @@ static Z7_NO_INLINE SRes ReadBitVector(CSzData *sd, UInt32 numItems, Byte **v, I
   return SZ_OK;
 }
 
-static Z7_NO_INLINE SRes ReadUi32s(CSzData *sd2, UInt32 numItems, CSzBitUi32s *crcs, ISzAllocPtr alloc)
+static Z7_NO_INLINE SRes ReadUi32s(CSzData *sd2, size_t numItems, CSzBitUi32s *crcs, ISzAllocPtr alloc)
 {
-  UInt32 i;
+  size_t i;
   CSzData sd;
   UInt32 *vals;
   const Byte *defs;
@@ -366,7 +366,7 @@ static Z7_NO_INLINE SRes ReadUi32s(CSzData *sd2, UInt32 numItems, CSzBitUi32s *c
   return SZ_OK;
 }
 
-static SRes ReadBitUi32s(CSzData *sd, UInt32 numItems, CSzBitUi32s *crcs, ISzAllocPtr alloc)
+static SRes ReadBitUi32s(CSzData *sd, size_t numItems, CSzBitUi32s *crcs, ISzAllocPtr alloc)
 {
   SzBitUi32s_Free(crcs, alloc);
   RINOK(ReadBitVector(sd, numItems, &crcs->Defs, alloc))
@@ -1027,42 +1027,39 @@ static SRes SzReadAndDecodePackedStreams(
   return SZ_OK;
 }
 
+// (size & 1) == 0
+// (data) is aligned for 2-bytes
 static SRes SzReadFileNames(const Byte *data, size_t size, UInt32 numFiles, size_t *offsets)
 {
-  size_t pos = 0;
+  const Byte *p, *lim;
   *offsets++ = 0;
   if (numFiles == 0)
     return (size == 0) ? SZ_OK : SZ_ERROR_ARCHIVE;
   if (size < 2)
     return SZ_ERROR_ARCHIVE;
-  if (data[size - 2] != 0 || data[size - 1] != 0)
+  lim = data + size;
+  if (*(const UInt16 *)(const void *)(lim - 2))
     return SZ_ERROR_ARCHIVE;
+  p = data;
   do
   {
-    const Byte *p;
-    if (pos == size)
+    if (p >= lim)
       return SZ_ERROR_ARCHIVE;
-    for (p = data + pos;
-      #ifdef _WIN32
-      *(const UInt16 *)(const void *)p != 0
-      #else
-      p[0] != 0 || p[1] != 0
-      #endif
-      ; p += 2);
-    pos = (size_t)(p - data) + 2;
-    *offsets++ = (pos >> 1);
+    for (; *(const UInt16 *)(const void *)p; p += 2);
+    p += 2;
+    *offsets++ = (size_t)(p - data) >> 1;
   }
   while (--numFiles);
-  return (pos == size) ? SZ_OK : SZ_ERROR_ARCHIVE;
+  return (p == lim) ? SZ_OK : SZ_ERROR_ARCHIVE;
 }
 
-static Z7_NO_INLINE SRes ReadTime(CSzBitUi64s *p, UInt32 num,
+static Z7_NO_INLINE SRes ReadTime(CSzBitUi64s *p, size_t num,
     CSzData *sd2,
     const CBuf *tempBufs, UInt32 numTempBufs,
     ISzAllocPtr alloc)
 {
   CSzData sd;
-  UInt32 i;
+  size_t i;
   CNtfsFileTime *vals;
   Byte *defs;
   Byte external;
@@ -1215,6 +1212,7 @@ static SRes SzReadHeader2(
         {
           namesSize = (size_t)size - 1;
           namesData = sd->Data;
+          SKIP_DATA(sd, namesSize)
         }
         else
         {
@@ -1226,15 +1224,11 @@ static SRes SzReadHeader2(
           namesSize = (tempBufs)[index].size;
         }
 
-        if ((namesSize & 1) != 0)
+        if (namesSize & 1)
           return SZ_ERROR_ARCHIVE;
         MY_ALLOC(size_t, p->FileNameOffsets, numFiles + 1, allocMain)
         MY_ALLOC_ZE_AND_CPY(p->FileNames, namesSize, namesData, allocMain)
         RINOK(SzReadFileNames(p->FileNames, namesSize, numFiles, p->FileNameOffsets))
-        if (external == 0)
-        {
-          SKIP_DATA(sd, namesSize)
-        }
         break;
       }
       case k7zIdEmptyStream:

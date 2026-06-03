@@ -2538,7 +2538,7 @@ deps = {
       'packages': [
           {
               'package': 'infra/3pp/tools/7z/${{platform}}',
-              'version': 'version:3@26.00',
+              'version': 'version:3@26.01',
           },
       ],
       'condition': 'checkout_win',
@@ -2549,7 +2549,7 @@ deps = {
       'packages': [
           {
               'package': 'infra/3pp/tools/7z/windows-amd64',
-              'version': 'version:3@26.00',
+              'version': 'version:3@26.01',
           },
       ],
       'condition': 'checkout_win',

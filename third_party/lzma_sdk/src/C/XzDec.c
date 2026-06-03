@@ -279,7 +279,7 @@ SRes Xz_StateCoder_Bc_SetFromMethod_Func(IStateCoder *p, UInt64 id,
     decoder = (CXzBcFilterState *)ISzAlloc_Alloc(alloc, sizeof(CXzBcFilterState));
     if (!decoder)
       return SZ_ERROR_MEM;
-    decoder->buf = ISzAlloc_Alloc(alloc, BRA_BUF_SIZE);
+    decoder->buf = (Byte *)ISzAlloc_Alloc(alloc, BRA_BUF_SIZE);
     if (!decoder->buf)
     {
       ISzAlloc_Free(alloc, decoder);
@@ -1243,7 +1243,7 @@ SRes XzUnpacker_Code(CXzUnpacker *p, Byte *dest, SizeT *destLen,
             UInt32 digest32[XZ_CHECK_SIZE_MAX / 4];
             p->state = XZ_STATE_BLOCK_HEADER;
             p->pos = 0;
-            if (XzCheck_Final(&p->check, (void *)digest32) && memcmp(digest32, p->buf, checkSize) != 0)
+            if (XzCheck_Final(&p->check, (Byte *)(void *)digest32) && memcmp(digest32, p->buf, checkSize) != 0)
               return SZ_ERROR_CRC;
             if (p->decodeOnlyOneBlock)
             {
@@ -1292,7 +1292,7 @@ SRes XzUnpacker_Code(CXzUnpacker *p, Byte *dest, SizeT *destLen,
             p->state = XZ_STATE_STREAM_INDEX_CRC;
             p->indexSize += 4;
             p->pos = 0;
-            Sha256_Final(&p->sha, (void *)digest32);
+            Sha256_Final(&p->sha, (Byte *)(void *)digest32);
             if (memcmp(digest32, p->shaDigest32, SHA256_DIGEST_SIZE) != 0)
               return SZ_ERROR_CRC;
           }

@@ -54,6 +54,12 @@
 #pragma GCC diagnostic ignored "-Wexcess-padding"
 #endif
 
+#if defined(Z7_APPLE_CLANG_VERSION) && __clang_major__ >= 21
+// warning: function MyAlloc might be an allocator wrapper
+// clang in xcode: clang 21.0.0
+#pragma GCC diagnostic ignored "-Wallocator-wrappers"
+#endif
+
 #if __clang_major__ >= 16
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
@@ -72,7 +78,7 @@
 
 #endif // __clang__
 
-#if defined(_WIN32) && defined(__clang__) && __clang_major__ >= 16
+#if defined(__clang__) && __clang_major__ >= 16
 // #pragma GCC diagnostic ignored "-Wcast-function-type-strict"
 #define Z7_DIAGNOSTIC_IGNORE_CAST_FUNCTION \
   _Pragma("GCC diagnostic ignored \"-Wcast-function-type-strict\"")

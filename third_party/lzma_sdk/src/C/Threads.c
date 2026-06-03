@@ -153,6 +153,17 @@ static void PrintProcess_Info()
 #endif
 #endif
 
+/* if we send (stackSize=0) to CreateThread(), it will
+   use default value PE::SizeOfStackReserve from exe file.
+   PE::SizeOfStackReserve == 1 MiB in exe file with default linker options.
+   Windows aligns specified value to the next 64 KB range. */
+static const unsigned k_StackSize_ReserveSize =
+  #ifdef UNDER_CE
+    1 << 17;
+  #else
+    1 << 20;
+  #endif
+
 WRes Thread_Create(CThread *p, THREAD_FUNC_TYPE func, LPVOID param)
 {
   /* Windows Me/98/95: threadId parameter may not be NULL in _beginthreadex/CreateThread functions */
@@ -160,12 +171,15 @@ WRes Thread_Create(CThread *p, THREAD_FUNC_TYPE func, LPVOID param)
   #ifdef USE_THREADS_CreateThread
 
   DWORD threadId;
-  *p = CreateThread(NULL, 0, func, param, 0, &threadId);
+  *p = CreateThread(NULL, k_StackSize_ReserveSize, func, param, STACK_SIZE_PARAM_IS_A_RESERVATION, &threadId);
   
   #else
+
+#define CALL_beginthreadex(func2, param2, flags, threadIdPtr) \
+    ((HANDLE)(_beginthreadex(NULL, k_StackSize_ReserveSize, func2, param2, (flags) | STACK_SIZE_PARAM_IS_A_RESERVATION, threadIdPtr)))
   
   unsigned threadId;
-  *p = (HANDLE)(_beginthreadex(NULL, 0, func, param, 0, &threadId));
+  *p = CALL_beginthreadex(func, param, 0, &threadId);
 
 #if 0 // 1 : for debug
   {
@@ -223,7 +237,7 @@ WRes Thread_Create_With_Affinity(CThread *p, THREAD_FUNC_TYPE func, LPVOID param
   HANDLE h;
   WRes wres;
   unsigned threadId;
-  h = (HANDLE)(_beginthreadex(NULL, 0, func, param, CREATE_SUSPENDED, &threadId));
+  h = CALL_beginthreadex(func, param, CREATE_SUSPENDED, &threadId);
   *p = h;
   wres = HandleToWRes(h);
   if (h)
@@ -272,7 +286,7 @@ WRes Thread_Create_With_Group(CThread *p, THREAD_FUNC_TYPE func, LPVOID param, u
   HANDLE h;
   WRes wres;
   unsigned threadId;
-  h = (HANDLE)(_beginthreadex(NULL, 0, func, param, CREATE_SUSPENDED, &threadId));
+  h = CALL_beginthreadex(func, param, CREATE_SUSPENDED, &threadId);
   *p = h;
   wres = HandleToWRes(h);
   if (h)

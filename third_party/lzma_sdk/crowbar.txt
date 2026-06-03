@@ -5,8 +5,8 @@ How to update lzma_sdk:
    https://github.com/ip7z/7zip/releases/latest).
 
 2. Find the download link for the "7zNNNN-src.tar.xz" asset, where "NNNN" is the
-   version number without a period (e.g., "7z2600-src.tar.xz" for version
-   26.00).
+   version number without a period (e.g., "7z2601-src.tar.xz" for version
+   26.01).
 
 3. Create a CL for the file 3pp/7z/3pp.pb that updates the "download_url" field
    to the link discovered above and the "version" to the version chosen above,
@@ -15,7 +15,7 @@ How to update lzma_sdk:
 
 4. After the 3pp system has generated new binaries from those sources, browse
    https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/7z/windows-amd64
-   to find the version tag for the new binaries; for example, "version:3@26.00".
+   to find the version tag for the new binaries; for example, "version:3@26.01".
 
 5. Create a new git branch on which to work:
    git new-branch lzma
@@ -25,14 +25,14 @@ How to update lzma_sdk:
 
 7. From the GitHub release chosen above, download the asset file matching the
    pattern "lzmaNNNN.7z" where "NNNN" is the version number without a period
-   (e.g., "lzma2600.7z" for version 26.00).
+   (e.g., "lzma2601.7z" for version 26.01).
 
 8. Expand the archive into a subdirectory of third_party/lzma_sdk:
-   ( mkdir third_party/lzma_sdk/lzma2600 && cd third_party/lzma_sdk/lzma2600 \
-       && ../bin/host_platform/7za x ~/Downloads/lzma2600.7z )
+   ( mkdir third_party/lzma_sdk/lzma2601 && cd third_party/lzma_sdk/lzma2601 \
+       && ../bin/host_platform/7za x ~/Downloads/lzma2601.7z )
 
 9. Convert line endings of the extracted text files:
-   find third_party/lzma_sdk/lzma2600 -name bin -prune -o -type f \
+   find third_party/lzma_sdk/lzma2601 -name bin -prune -o -type f \
        ! -name \*.ico -print0 | xargs -0 dos2unix
 
 10. Delete the src/ directory:
@@ -43,14 +43,14 @@ How to update lzma_sdk:
 
 12. Copy Asm/, C/, and DOC/lzma-sdk.txt from the extracted archive into src/.
     For example:
-    (cd third_party/lzma_sdk/lzma2600 && tar -cf - Asm DOC/lzma-sdk.txt C) | \
+    (cd third_party/lzma_sdk/lzma2601 && tar -cf - Asm DOC/lzma-sdk.txt C) | \
         (cd third_party/lzma_sdk/src && tar -xf -)
 
 13. Delete the expanded archive.
-    rm -fr third_party/lzma_sdk/lzma2600
+    rm -fr third_party/lzma_sdk/lzma2601
 
 14. Create a git commit for the upstream files:
-    git add third_party/lzma_sdk/src && git ci -m "LZMA SDK 26.00"
+    git add third_party/lzma_sdk/src && git ci -m "LZMA SDK 26.01"
 
 15. Create a new branch for patch application:
     git co -b patch_chain

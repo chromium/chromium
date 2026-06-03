@@ -2351,10 +2351,9 @@ static void LzmaEnc_Construct(CLzmaEnc *p)
 
 CLzmaEncHandle LzmaEnc_Create(ISzAllocPtr alloc)
 {
-  void *p;
-  p = ISzAlloc_Alloc(alloc, sizeof(CLzmaEnc));
+  CLzmaEncHandle p = (CLzmaEncHandle)ISzAlloc_Alloc(alloc, sizeof(CLzmaEnc));
   if (p)
-    LzmaEnc_Construct((CLzmaEnc *)p);
+    LzmaEnc_Construct(p);
   return p;
 }
 

@@ -1,5 +1,5 @@
 /* Alloc.c -- Memory allocation functions
-2024-02-18 : Igor Pavlov : Public domain */
+: Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -24,8 +24,6 @@
 #endif
 
 // #define SZ_ALLOC_DEBUG
-/* #define SZ_ALLOC_DEBUG */
-
 /* use SZ_ALLOC_DEBUG to debug alloc/free operations */
 #ifdef SZ_ALLOC_DEBUG
 
@@ -34,9 +32,10 @@
 static int g_allocCount = 0;
 #ifdef _WIN32
 static int g_allocCountMid = 0;
+#ifdef Z7_LARGE_PAGES
 static int g_allocCountBig = 0;
 #endif
-
+#endif
 
 #define CONVERT_INT_TO_STR(charType, tempSize) \
   char temp[tempSize]; unsigned i = 0; \
@@ -140,7 +139,9 @@ static void PrintAddr(void *p)
 #else
 
 #ifdef _WIN32
+#ifdef Z7_LARGE_PAGES
 #define PRINT_ALLOC(name, cnt, size, ptr)
+#endif
 #endif
 #define PRINT_FREE(name, cnt, ptr)
 #define Print(s)
@@ -245,6 +246,7 @@ void MidFree(void *address)
 }
 
 #ifdef Z7_LARGE_PAGES
+// #pragma message("Z7_LARGE_PAGES")
 
 #ifdef MEM_LARGE_PAGES
   #define MY_MEM_LARGE_PAGES  MEM_LARGE_PAGES
@@ -253,32 +255,14 @@ void MidFree(void *address)
 #endif
 
 extern
-SIZE_T g_LargePageSize;
-SIZE_T g_LargePageSize = 0;
-typedef SIZE_T (WINAPI *Func_GetLargePageMinimum)(VOID);
-
-void SetLargePageSize(void)
-{
-  SIZE_T size;
-#ifdef Z7_USE_DYN_GetLargePageMinimum
-Z7_DIAGNOSTIC_IGNORE_CAST_FUNCTION
-
-  const
-   Func_GetLargePageMinimum fn =
-  (Func_GetLargePageMinimum) Z7_CAST_FUNC_C GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")),
-       "GetLargePageMinimum");
-  if (!fn)
-    return;
-  size = fn();
-#else
-  size = GetLargePageMinimum();
-#endif
-  if (size == 0 || (size & (size - 1)) != 0)
-    return;
-  g_LargePageSize = size;
-}
-
-#endif // Z7_LARGE_PAGES
+size_t g_LargePageSize;
+size_t g_LargePageSize = 0;
+extern
+size_t g_LargePageThresholdMin;
+size_t g_LargePageThresholdMin = 0;
+extern
+UInt32 g_LargePageFlags;
+UInt32 g_LargePageFlags = 0;
 
 void *BigAlloc(size_t size)
 {
@@ -289,12 +273,10 @@ void *BigAlloc(size_t size)
 
   #ifdef Z7_LARGE_PAGES
   {
-    SIZE_T ps = g_LargePageSize;
-    if (ps != 0 && ps <= (1 << 30) && size > (ps / 2))
+    const size_t ps = g_LargePageSize - 1;
+    if (ps < (1u << 30) && size > g_LargePageThresholdMin)
     {
-      size_t size2;
-      ps--;
-      size2 = (size + ps) & ~ps;
+      const size_t size2 = (size + ps) & ~ps;
       if (size2 >= size)
       {
         void *p = VirtualAlloc(NULL, size2, MEM_COMMIT | MY_MEM_LARGE_PAGES, PAGE_READWRITE);
@@ -303,6 +285,8 @@ void *BigAlloc(size_t size)
           PRINT_ALLOC("Alloc-BM ", g_allocCountMid, size2, p)
           return p;
         }
+        if (g_LargePageFlags & Z7_LARGE_PAGES_FLAG_FAIL_STOP)
+          return p;
       }
     }
   }
@@ -317,6 +301,7 @@ void BigFree(void *address)
   MidFree(address);
 }
 
+#endif // Z7_LARGE_PAGES
 #endif // _WIN32
 
 
@@ -327,9 +312,12 @@ const ISzAlloc g_Alloc = { SzAlloc, SzFree };
 #ifdef _WIN32
 static void *SzMidAlloc(ISzAllocPtr p, size_t size) { UNUSED_VAR(p)  return MidAlloc(size); }
 static void SzMidFree(ISzAllocPtr p, void *address) { UNUSED_VAR(p)  MidFree(address); }
+const ISzAlloc g_MidAlloc = { SzMidAlloc, SzMidFree };
+#endif
+
+#if defined(Z7_LARGE_PAGES)
 static void *SzBigAlloc(ISzAllocPtr p, size_t size) { UNUSED_VAR(p)  return BigAlloc(size); }
 static void SzBigFree(ISzAllocPtr p, void *address) { UNUSED_VAR(p)  BigFree(address); }
-const ISzAlloc g_MidAlloc = { SzMidAlloc, SzMidFree };
 const ISzAlloc g_BigAlloc = { SzBigAlloc, SzBigFree };
 #endif
 
@@ -371,10 +359,16 @@ typedef
 
 #endif
 
-#if !defined(_WIN32) \
-    && (defined(Z7_ALLOC_NO_OFFSET_ALLOCATOR) \
-        || defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200112L))
+#ifndef _WIN32
+#include <unistd.h> // for _POSIX_ADVISORY_INFO : for some linux
+#if (defined(Z7_ALLOC_NO_OFFSET_ALLOCATOR) \
+        || defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200112L) \
+        || defined(_POSIX_ADVISORY_INFO) && (_POSIX_ADVISORY_INFO >= 200112L) \
+        || defined(__APPLE__) \
+        /* || defined(__linux__) */)
   #define USE_posix_memalign
+  // #pragma message("USE_posix_memalign")
+#endif
 #endif
 
 #ifndef USE_posix_memalign
@@ -488,6 +482,181 @@ static void SzAlignedFree(ISzAllocPtr pp, void *address)
 #endif
 }
 
+#ifndef _WIN32
+
+#ifdef Z7_LARGE_PAGES
+
+#if 0 // 1 for debug
+  #include <stdio.h>
+  #include <string.h>  // for strerror()
+  #define PRF(x) x
+#else
+  #define PRF(x)
+#endif
+
+#ifdef USE_posix_memalign
+  /* madvise():
+     glibc <= 2.19 : _BSD_SOURCE
+     glibc  > 2.19 : _DEFAULT_SOURCE
+  */
+  /* && (defined(_DEFAULT_SOURCE) || defined(_BSD_SOURCE)) */
+#if 1 && !defined(Z7_NO_MADVISE) && \
+  (defined(__linux__) || defined(__unix__) || defined(__APPLE__))
+#include <sys/mman.h> // for madvise
+// #pragma message("sys/mman.h")
+#if (defined(MADV_HUGEPAGE) && defined(MADV_NOHUGEPAGE))
+  #define Z7_USE_BIG_ALLOC_MADVISE
+  // #pragma message("Z7_USE_BIG_ALLOC_MADVISE")
+#endif
+#endif
+#endif // USE_posix_memalign
+
+#ifdef Z7_USE_BIG_ALLOC_MADVISE
+#define LARGE_PAGE_SIZE_DEFAULT (1 << 21)
+#else
+#define LARGE_PAGE_SIZE_DEFAULT 0
+#endif
+
+extern
+size_t g_LargePageSize;
+size_t g_LargePageSize = LARGE_PAGE_SIZE_DEFAULT;
+extern
+size_t g_LargePageThresholdMin;
+size_t g_LargePageThresholdMin = LARGE_PAGE_SIZE_DEFAULT / 2;
+extern
+UInt32 g_LargePageFlags;
+UInt32 g_LargePageFlags = 0;
+
+void *BigAlloc(size_t size)
+{
+  if (size == 0)
+    return NULL;
+#ifdef USE_posix_memalign
+  {
+    const size_t pageSize = g_LargePageSize;
+    void *buf = NULL; // on Linux (and other systems), posix_memalign() does not modify memptr on failure (POSIX.1-2008 TC2).
+    PRF(printf("\nBigAlloc 0x%08x=%5uMB", (unsigned)(size), (unsigned)(size >> 20));)
+    if (pageSize && size > g_LargePageThresholdMin)
+    {
+      int res;
+      const size_t mask = pageSize - 1;
+      /* we can allocate aligned size, so data at the end of buffer also will use huge page
+         if (size2 for madvise() is not aligned for huge page size)
+           { Last data block will use small pages. It reduces memory allocation,
+             but last data block with small pages can work slower.
+             It's useful, if we have very large HUGE_PAGE: 32MB or 512MB. }
+      */
+      size_t size2 = (size + mask) & ~mask;
+      if (size2 < size || (size & mask) <= g_LargePageThresholdMin)
+        size2 = size;
+      res = posix_memalign(&buf, pageSize, size2);
+      PRF(printf(" posix_memalign size=0x%08x=%5uMB align=%u",
+          (unsigned)(size2), (unsigned)(size2 >> 20), (unsigned)pageSize);)
+      PRF(printf(" buf=%p", (void *)buf);)
+      if (res == 0)
+      {
+#ifdef Z7_USE_BIG_ALLOC_MADVISE
+        if ((g_LargePageFlags & Z7_LARGE_PAGES_FLAG_NO_MADVISE) == 0)
+        {
+          // Advise the kernel to use huge pages for this memory range
+          // MADV_HUGEPAGE / MADV_NOHUGEPAGE : since Linux 2.6.38
+          // madvise() only operates on whole pages, therefore addr must be page-aligned (4KB/8KB/16KB/64KB).
+          // The value of size is rounded up to a multiple of page size.
+          PRF(printf(" madvise g_LargePageFlags=%x", (unsigned)g_LargePageFlags);)
+          res = madvise(buf, size2, (g_LargePageFlags & Z7_LARGE_PAGES_FLAG_NO_HUGEPAGE) ? MADV_NOHUGEPAGE : MADV_HUGEPAGE);
+          if (res)
+          {
+            PRF(printf("\nERROR res=%d, errno=%d=%s\n", res, (int)errno, strerror(errno));)
+            if (g_LargePageFlags & Z7_LARGE_PAGES_FLAG_FAIL_STOP)
+            {
+              free(buf);
+              return NULL;
+            }
+          }
+        }
+#endif // Z7_USE_BIG_ALLOC_MADVISE
+        PRF(printf("\n");)
+        return buf;
+      }
+      PRF(printf("\nERROR res=%d=%s\n", res, strerror(res));)
+      if (g_LargePageFlags & Z7_LARGE_PAGES_FLAG_FAIL_STOP)
+        return NULL;
+      // (res == ENOMEM) "Out of memory" is possible, if pageSize is too big.
+      // so we do second attempt with smaller alignment
+    }
+  }
+#endif // !USE_posix_memalign
+  PRF(printf(" z7_AlignedAlloc size=0x%08x=%5uMB\n", (unsigned)(size), (unsigned)(size >> 20));)
+  return z7_AlignedAlloc(size);
+}
+
+
+void BigFree(void *address)
+{
+  z7_AlignedFree(address);
+}
+#endif // Z7_LARGE_PAGES
+#endif // !_WIN32
+
+
+#ifdef Z7_LARGE_PAGES
+void z7_LargePage_Set(UInt32 flags, size_t pageSize, size_t threshold)
+{
+  g_LargePageFlags = flags;
+
+#ifdef _WIN32
+  if ((flags & Z7_LARGE_PAGES_FLAG_USE_HUGEPAGE) == 0)
+  {
+    g_LargePageSize = 0;
+    g_LargePageThresholdMin = 0;
+  }
+  else
+  {
+    if ((flags & Z7_LARGE_PAGES_FLAG_DIRECT_PAGE_SIZE) == 0)
+    {
+#ifdef Z7_USE_DYN_GetLargePageMinimum
+      Z7_DIAGNOSTIC_IGNORE_CAST_FUNCTION
+typedef SIZE_T (WINAPI *Func_GetLargePageMinimum)(VOID);
+      const
+        Func_GetLargePageMinimum fn =
+       (Func_GetLargePageMinimum) Z7_CAST_FUNC_C GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")),
+            "GetLargePageMinimum");
+      if (fn)
+        pageSize = fn();
+      else
+        pageSize = 0;
+#else
+      pageSize = GetLargePageMinimum();
+#endif
+      if (pageSize & (pageSize - 1))
+        pageSize = 0;
+    }
+    g_LargePageSize = pageSize;
+    if ((flags & Z7_LARGE_PAGES_FLAG_DIRECT_THRESHOLD) == 0)
+      threshold = pageSize / 2;
+    g_LargePageThresholdMin = threshold;
+  }
+
+#else // !_WIN32
+
+  if (flags & Z7_LARGE_PAGES_FLAG_NO_PAGECODE)
+  {
+    g_LargePageSize = 0;
+    g_LargePageThresholdMin = 0;
+  }
+  else
+  {
+    if ((flags & Z7_LARGE_PAGES_FLAG_DIRECT_PAGE_SIZE) == 0)
+      pageSize = LARGE_PAGE_SIZE_DEFAULT;
+    g_LargePageSize = pageSize;
+    if ((flags & Z7_LARGE_PAGES_FLAG_DIRECT_THRESHOLD) == 0)
+      threshold = pageSize / 2;
+    g_LargePageThresholdMin = threshold;
+  }
+  // PRF(printf("\ng_LargePageSize=%x g_LargePageThresholdMin = %x g_LargePageFlags = %x", (unsigned)g_LargePageSize, (unsigned)g_LargePageThresholdMin, (unsigned)g_LargePageFlags);)
+#endif // !_WIN32
+}
+#endif // Z7_LARGE_PAGES
 
 const ISzAlloc g_AlignedAlloc = { SzAlignedAlloc, SzAlignedFree };
 
