@@ -59,7 +59,7 @@ public class TabBottomSheetCoordinator {
     // bottom sheet.
     interface SheetEventsCallback {
         /** Called when the bottom sheet is closed or suppressed. */
-        void onBottomSheetClosed();
+        void onBottomSheetClosed(boolean isUserDismiss);
 
         /** Called when the bottom sheet is opened or when the bottom sheet state changes. */
         void onBottomSheetOpened(boolean isExpanded);
@@ -150,6 +150,7 @@ public class TabBottomSheetCoordinator {
     private @Nullable ComponentCallbacks mComponentsCallbacks;
     private @Nullable PropertyModelChangeProcessor mViewBinder;
     private @Nullable View mContentView;
+    private @StateChangeReason int mLastStateChangeReason = StateChangeReason.NONE;
 
     private boolean mIsShowingTabBottomSheet;
     private boolean mExpectingLayoutChange;
@@ -207,6 +208,7 @@ public class TabBottomSheetCoordinator {
         if (mIsShowingTabBottomSheet || mSheetEventsCallback == null) {
             return false;
         }
+        mLastStateChangeReason = StateChangeReason.NONE;
         if (mCoBrowseViews.hasPeekView()) {
             mMediator.onSheetStateChanged(startsExpanded ? SheetState.FULL : SheetState.PEEK);
         }
@@ -413,10 +415,18 @@ public class TabBottomSheetCoordinator {
             private @SheetState int mLastStableState = SheetState.HIDDEN;
 
             @Override
+            public void onSheetClosed(@StateChangeReason int reason) {
+                mLastStateChangeReason = reason;
+            }
+
+            @Override
             public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
                 if (mSheetContent == null
                         || mSheetEventsCallback == null
                         || !mIsShowingTabBottomSheet) return;
+                if (state != SheetState.HIDDEN) {
+                    mLastStateChangeReason = reason;
+                }
                 mMediator.onSheetStateChanged(state);
                 // We only send the opened notification when the sheet is not hidden and not in the
                 // middle of a closing/hiding flow.
@@ -498,7 +508,10 @@ public class TabBottomSheetCoordinator {
                         // handleStableStateEntered prevents double-logging.
                         handleStableStateEntered(SheetState.HIDDEN, StateChangeReason.NONE);
                         mMediator.onSheetStateChanged(BottomSheetController.SheetState.HIDDEN);
-                        mSheetEventsCallback.onBottomSheetClosed();
+                        boolean isUserDismiss =
+                                mLastStateChangeReason == StateChangeReason.BACK_PRESS;
+                        mSheetEventsCallback.onBottomSheetClosed(isUserDismiss);
+                        mLastStateChangeReason = StateChangeReason.NONE;
                         stopObservingCompositorViewInteractions();
                     }
                     mIsShowingTabBottomSheet = false;

@@ -38,11 +38,11 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
     private final TabBottomSheetCoordinator.SheetEventsCallback mSheetEventsCallback =
             new TabBottomSheetCoordinator.SheetEventsCallback() {
                 @Override
-                public void onBottomSheetClosed() {
+                public void onBottomSheetClosed(boolean isUserDismissed) {
                     if (mNativeInterfaceDelegate == null) {
                         return;
                     }
-                    if (mIsCloseFromNative) {
+                    if (mIsCloseFromNative || isUserDismissed) {
                         notifyOnClose();
                     } else {
                         mNativeInterfaceDelegate.onBottomSheetSuppressed();
