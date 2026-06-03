@@ -66,7 +66,7 @@ class BookmarkNode;
 - (BOOL)canDismiss;
 // The value of `movedNodes` during init, minus the nodes that have been
 // deleted in the meantime.
-- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)movedNodes;
+- (std::set<raw_ptr<const bookmarks::BookmarkNode>>)movedNodes;
 // Puts a blue check mark beside a folder it in the UI.
 // If unset no blue check mark is shown.
 - (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder;

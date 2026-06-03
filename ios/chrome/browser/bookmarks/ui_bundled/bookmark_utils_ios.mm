@@ -85,6 +85,43 @@ const BookmarkNode* FindFolderById(const bookmarks::BookmarkModel* model,
   return (node && node->is_folder()) ? node : nullptr;
 }
 
+std::set<raw_ptr<const BookmarkNode>> GetBookmarkNodesByIds(
+    const bookmarks::BookmarkModel* model,
+    const std::set<int64_t>& ids) {
+  CHECK(model);
+  std::set<raw_ptr<const BookmarkNode>> nodes;
+  for (int64_t id : ids) {
+    const BookmarkNode* node = bookmarks::GetBookmarkNodeByID(model, id);
+    if (node) {
+      nodes.insert(node);
+    }
+  }
+  return nodes;
+}
+
+std::vector<raw_ptr<const BookmarkNode>> GetBookmarkNodesByIds(
+    const bookmarks::BookmarkModel* model,
+    const std::vector<int64_t>& ids) {
+  CHECK(model);
+  std::vector<raw_ptr<const BookmarkNode>> nodes;
+  for (int64_t id : ids) {
+    const BookmarkNode* node = bookmarks::GetBookmarkNodeByID(model, id);
+    if (node) {
+      nodes.push_back(node);
+    }
+  }
+  return nodes;
+}
+
+std::vector<int64_t> GetBookmarkNodeIds(
+    const std::vector<raw_ptr<const BookmarkNode>>& nodes) {
+  std::vector<int64_t> ids;
+  for (const BookmarkNode* node : nodes) {
+    ids.push_back(node->id());
+  }
+  return ids;
+}
+
 NSString* TitleForBookmarkNode(const BookmarkNode* node) {
   NSString* title;
 

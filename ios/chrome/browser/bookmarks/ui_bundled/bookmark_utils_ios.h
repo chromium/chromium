@@ -44,6 +44,23 @@ const bookmarks::BookmarkNode* FindFolderById(
     const bookmarks::BookmarkModel* model,
     int64_t id);
 
+// Finds bookmark nodes corresponding to `ids` in the `model`. Returns a set
+// containing the nodes that are found and not null.
+std::set<raw_ptr<const bookmarks::BookmarkNode>> GetBookmarkNodesByIds(
+    const bookmarks::BookmarkModel* model,
+    const std::set<int64_t>& ids);
+
+// Finds bookmark nodes corresponding to `ids` in the `model`. Returns a vector
+// containing the nodes that are found and not null.
+std::vector<raw_ptr<const bookmarks::BookmarkNode>> GetBookmarkNodesByIds(
+    const bookmarks::BookmarkModel* model,
+    const std::vector<int64_t>& ids);
+
+// Returns a vector containing the IDs of `nodes`. Pointers are assumed to be
+// non-null.
+std::vector<int64_t> GetBookmarkNodeIds(
+    const std::vector<raw_ptr<const bookmarks::BookmarkNode>>& nodes);
+
 // The iOS code is doing some munging of the bookmark folder names in order
 // to display a slighly different wording for the default folders.
 NSString* TitleForBookmarkNode(const bookmarks::BookmarkNode* node);

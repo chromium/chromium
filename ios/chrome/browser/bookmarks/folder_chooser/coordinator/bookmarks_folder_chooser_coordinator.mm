@@ -47,9 +47,9 @@
   BookmarksFolderChooserViewController* _viewController;
   // Coordinator to show the folder editor UI.
   BookmarksFolderEditorCoordinator* _folderEditorCoordinator;
-  // List of nodes to hide when displaying folders. This is to avoid to move a
-  // folder inside a child folder.
-  std::set<raw_ptr<const bookmarks::BookmarkNode>> _movedNodes;
+  // List of id of moved nodes. This is to avoid to move a
+  // folder inside a child folder. Only set between init and start.
+  std::set<int64_t> _movedNodeIds;
   // The folder that has a blue check mark beside it in the UI.
   // This is only used for clients of this coordinator to update the UI. This
   // does not reflect the folder users chose by clicking. For that information
@@ -84,7 +84,9 @@
                                    movedNodes {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _movedNodes = movedNodes;
+    for (const raw_ptr<const bookmarks::BookmarkNode>& node : movedNodes) {
+      _movedNodeIds.insert(node->id());
+    }
     _allowsNewFolders = YES;
   }
   return self;
@@ -97,7 +99,7 @@
   return YES;
 }
 
-- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)movedNodes {
+- (std::set<raw_ptr<const bookmarks::BookmarkNode>>)movedNodes {
   return [_mediator movedNodes];
 }
 
@@ -127,10 +129,10 @@
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   _mediator = [[BookmarksFolderChooserMediator alloc]
       initWithBookmarkModel:model
-                 movedNodes:std::move(_movedNodes)
+               movedNodeIds:std::move(_movedNodeIds)
       authenticationService:authenticationService
                 syncService:syncService];
-  _movedNodes.clear();
+  _movedNodeIds.clear();
   _mediator.delegate = self;
   _mediator.selectedFolderNode = _selectedFolder;
   _viewController = [[BookmarksFolderChooserViewController alloc]

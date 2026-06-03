@@ -45,7 +45,7 @@ class BookmarksFolderChooserMediatorUnitTest
 
     mediator_ = [[BookmarksFolderChooserMediator alloc]
         initWithBookmarkModel:bookmark_model_
-                   movedNodes:{}
+                 movedNodeIds:{}
         authenticationService:authentication_service_
                   syncService:&sync_service_];
   }

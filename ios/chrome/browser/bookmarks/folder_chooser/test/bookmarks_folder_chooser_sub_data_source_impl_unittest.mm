@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
+#import "components/bookmarks/browser/bookmark_utils.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/bookmarks/folder_chooser/ui/bookmarks_folder_chooser_consumer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
@@ -55,7 +56,7 @@ using bookmarks::BookmarkNode;
   _movedNodes.clear();
 }
 
-- (const std::set<const BookmarkNode*>&)movedNodes {
+- (const std::set<const BookmarkNode*>)movedNodes {
   return _movedNodes;
 }
 
@@ -135,6 +136,13 @@ class BookmarksFolderChooserSubDataSourceImplTest
     bookmark_model_->Move(node, new_parent, new_parent->children().size());
   }
 
+  const BookmarkNode* GetNodeByID(int64_t nodeId) {
+    const BookmarkNode* node =
+        bookmarks::GetBookmarkNodeByID(bookmark_model_, nodeId);
+    EXPECT_NE(node, nullptr);
+    return node;
+  }
+
   BookmarksFolderChooserSubDataSourceImpl* sub_data_source_;
   id mock_consumer_;
   FakeBookmarksFolderChooserParentDataSource* fake_parent_data_source_;
@@ -144,7 +152,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
 };
 
 // Tests that the sub data source correctly fetches visible folders.
-TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestVisibleFolderNodes) {
+TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestvisibleFolderNodeIds) {
   const BookmarkNode* test_folder_node_1 =
       AddFolder(mobile_node(), test_folder_title_1);
   const BookmarkNode* test_folder_node_2 =
@@ -152,11 +160,13 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestVisibleFolderNodes) {
   moved_nodes_.insert(test_folder_node_2);
   CreateSubDataSource();
 
-  auto visible_folder_nodes = [sub_data_source_ visibleFolderNodes];
-  ASSERT_EQ(2u, visible_folder_nodes.size());
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
+  auto visible_folder_node_ids = [sub_data_source_ visibleFolderNodeIds];
+  ASSERT_EQ(2u, visible_folder_node_ids.size());
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[0])->GetTitle()),
               @"Mobile bookmarks");
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[1])->GetTitle()),
               test_folder_title_1);
 }
 
@@ -170,11 +180,13 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderTitleChange) {
   ChangeTitle(test_folder_node, test_folder_title_2);
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
-  auto visible_folder_nodes = [sub_data_source_ visibleFolderNodes];
-  ASSERT_EQ(2u, visible_folder_nodes.size());
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
+  auto visible_folder_node_ids = [sub_data_source_ visibleFolderNodeIds];
+  ASSERT_EQ(2u, visible_folder_node_ids.size());
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[0])->GetTitle()),
               @"Mobile bookmarks");
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[1])->GetTitle()),
               test_folder_title_2);
 }
 
@@ -188,13 +200,16 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderAdded) {
   AddFolder(test_folder_node_1, test_folder_title_2);
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
-  auto visible_folder_nodes = [sub_data_source_ visibleFolderNodes];
-  ASSERT_EQ(3u, visible_folder_nodes.size());
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
+  auto visible_folder_node_ids = [sub_data_source_ visibleFolderNodeIds];
+  ASSERT_EQ(3u, visible_folder_node_ids.size());
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[0])->GetTitle()),
               @"Mobile bookmarks");
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[1])->GetTitle()),
               test_folder_title_1);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[2]->GetTitle()),
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[2])->GetTitle()),
               test_folder_title_2);
 }
 
@@ -216,11 +231,13 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderRemoved) {
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
   ASSERT_EQ(test_folder_node_2,
             fake_parent_data_source_.bookmarkNodeDeletedArg);
-  auto visible_folder_nodes = [sub_data_source_ visibleFolderNodes];
-  ASSERT_EQ(2u, visible_folder_nodes.size());
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
+  auto visible_folder_node_ids = [sub_data_source_ visibleFolderNodeIds];
+  ASSERT_EQ(2u, visible_folder_node_ids.size());
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[0])->GetTitle()),
               @"Mobile bookmarks");
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[1])->GetTitle()),
               test_folder_title_1);
 }
 
@@ -236,10 +253,11 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestAllFoldersRemoved) {
   RemoveAllNodes();
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
-  auto visible_folder_nodes = [sub_data_source_ visibleFolderNodes];
-  ASSERT_EQ(1u, visible_folder_nodes.size());
+  auto visible_folder_node_ids = [sub_data_source_ visibleFolderNodeIds];
+  ASSERT_EQ(1u, visible_folder_node_ids.size());
   // "Mobile Bookmarks" is a permanent node and thus always exists.
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[0])->GetTitle()),
               @"Mobile bookmarks");
 }
 
@@ -255,13 +273,16 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderMoved) {
   MoveNode(test_folder_node_2, mobile_node());
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
-  auto visible_folder_nodes = [sub_data_source_ visibleFolderNodes];
-  ASSERT_EQ(3u, visible_folder_nodes.size());
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
+  auto visible_folder_node_ids = [sub_data_source_ visibleFolderNodeIds];
+  ASSERT_EQ(3u, visible_folder_node_ids.size());
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[0])->GetTitle()),
               @"Mobile bookmarks");
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[1])->GetTitle()),
               test_folder_title_1);
-  EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[2]->GetTitle()),
+  EXPECT_NSEQ(base::SysUTF16ToNSString(
+                  GetNodeByID(visible_folder_node_ids[2])->GetTitle()),
               test_folder_title_2);
 }
 

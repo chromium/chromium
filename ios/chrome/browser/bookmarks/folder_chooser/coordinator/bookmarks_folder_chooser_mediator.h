@@ -36,22 +36,23 @@ class SyncService;
 
 // Initialize the mediator with a bookmark model.
 // `model` must not be `nullptr` and must be loaded.
-// `movedNodes` are the list of nodes to hide when displaying folders. This is
-// to avoid to move a folder inside a child folder. These are also the list of
-// nodes that are being moved to a folder.
-- (instancetype)
-    initWithBookmarkModel:(bookmarks::BookmarkModel*)model
-               movedNodes:
-                   (std::set<raw_ptr<const bookmarks::BookmarkNode>>)movedNodes
-    authenticationService:(AuthenticationService*)authenticationService
-              syncService:(syncer::SyncService*)syncService
+// `movedNodeIds` are the list of nodes to hide when displaying folders. This
+// is to avoid to move a folder inside a child folder. These are also the list
+// of nodes that are being moved to a folder.
+- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)model
+                         movedNodeIds:(std::set<int64_t>)movedNodeIds
+                authenticationService:
+                    (AuthenticationService*)authenticationService
+                          syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)disconnect;
 
-- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)movedNodes;
+// Returns the set of nodes that were selected when the view was opened and has
+// not been deleted in the meantime.
+- (std::set<raw_ptr<const bookmarks::BookmarkNode>>)movedNodes;
 
 @end
 

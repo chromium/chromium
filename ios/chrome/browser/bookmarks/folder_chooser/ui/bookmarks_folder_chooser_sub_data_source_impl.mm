@@ -71,16 +71,25 @@ using bookmarks::BookmarkNode;
   NOTREACHED(base::NotFatalUntil::M152);
 }
 
-- (std::vector<raw_ptr<const bookmarks::BookmarkNode>>)visibleFolderNodes {
-  return bookmark_utils_ios::VisibleNonDescendantNodes(
-      [_parentDataSource movedNodes], _bookmarkModel, _type);
+- (std::vector<int64_t>)visibleFolderNodeIds {
+  return bookmark_utils_ios::GetBookmarkNodeIds(
+      bookmark_utils_ios::VisibleNonDescendantNodes(
+          [_parentDataSource movedNodes], _bookmarkModel, _type));
 }
 
-- (std::vector<raw_ptr<const bookmarks::BookmarkNode>>)
-    visibleFolderNodesForQuery:(const bookmarks::QueryFields&)query {
+- (std::vector<int64_t>)visibleFolderNodeIdsForQuery:
+    (const bookmarks::QueryFields&)query {
   std::vector<std::u16string> words = bookmarks::ParseBookmarkQuery(query);
-  return bookmark_utils_ios::VisibleNonDescendantNodes(
-      [_parentDataSource movedNodes], _bookmarkModel, _type, words);
+  return bookmark_utils_ios::GetBookmarkNodeIds(
+      bookmark_utils_ios::VisibleNonDescendantNodes(
+          [_parentDataSource movedNodes], _bookmarkModel, _type, words));
+}
+
+- (const bookmarks::BookmarkNode*)bookmarkNodeForId:(int64_t)nodeId {
+  if (!_bookmarkModel) {
+    return nullptr;
+  }
+  return bookmarks::GetBookmarkNodeByID(_bookmarkModel, nodeId);
 }
 
 #pragma mark - BookmarkModelBridgeObserver
