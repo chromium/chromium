@@ -64,17 +64,17 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
 
     @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.tab_bottom_sheet_half_height;
+        return R.string.glic_bottom_sheet_half_height_a11y_label;
     }
 
     @Override
     public @StringRes int getSheetFullHeightAccessibilityStringId() {
-        return R.string.tab_bottom_sheet_full_height;
+        return R.string.glic_bottom_sheet_full_height_a11y_label;
     }
 
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
-        return R.string.tab_bottom_sheet_closed;
+        return R.string.glic_bottom_sheet_closed_a11y_label;
     }
 
     @Override

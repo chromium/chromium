@@ -520,4 +520,13 @@
   <message name="IDS_GLIC_TASK_PAUSED_DESCRIPTION" desc="Subtitle description of the snackbar message shown when a Glic task is paused due to window resizing.">
     Increase window size to resume task
   </message>
+  <message name="IDS_GLIC_BOTTOM_SHEET_CLOSED_A11Y_LABEL" desc="Accessibility announcement when the Gemini Bottom Sheet is closed." formatter_data="android_java" is_accessibility_with_no_ui="true">
+    Gemini Bottom Sheet closed.
+  </message>
+  <message name="IDS_GLIC_BOTTOM_SHEET_HALF_HEIGHT_A11Y_LABEL" desc="Accessibility announcement when the Gemini Bottom Sheet is opened to half height." formatter_data="android_java" is_accessibility_with_no_ui="true">
+    Gemini Bottom Sheet at half height.
+  </message>
+  <message name="IDS_GLIC_BOTTOM_SHEET_FULL_HEIGHT_A11Y_LABEL" desc="Accessibility announcement when the Gemini Bottom Sheet is opened to full height." formatter_data="android_java" is_accessibility_with_no_ui="true">
+    Gemini Bottom Sheet at full height
+  </message>
 </grit-part>
