@@ -20155,6 +20155,22 @@
             ]
         }
     ],
+    "QuicIgnoreRedundantOnNetworkMadeDefault": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260603",
+                    "enable_features": [
+                        "QuicIgnoreRedundantOnNetworkMadeDefault"
+                    ]
+                }
+            ]
+        }
+    ],
     "QuicLongerIdleConnectionTimeout": [
         {
             "platforms": [
