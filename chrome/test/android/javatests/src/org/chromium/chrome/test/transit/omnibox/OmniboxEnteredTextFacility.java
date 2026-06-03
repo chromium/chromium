@@ -26,23 +26,28 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
     public OmniboxEnteredTextFacility(OmniboxFacility omniboxFacility, String text) {
         mOmniboxFacility = omniboxFacility;
         mText = text;
+        boolean hasDesktopExperience =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                OmniboxCapabilities.hasDesktopExperience(
+                                        ContextUtils.getApplicationContext()));
 
         declareEnterCondition(omniboxFacility.urlBarElement.matches(withText(mText)));
         if (mText.isEmpty()) {
             declareEnterCondition(omniboxFacility.deleteButtonElement.absent());
 
-            boolean hasDesktopExperience =
-                    ThreadUtils.runOnUiThreadBlocking(
-                            () ->
-                                    OmniboxCapabilities.hasDesktopExperience(
-                                            ContextUtils.getApplicationContext()));
             if (omniboxFacility.getHostStation().isIncognito() || hasDesktopExperience) {
                 declareEnterCondition(omniboxFacility.micButtonElement.absent());
             } else {
                 declareEnterCondition(omniboxFacility.micButtonElement.present());
             }
         } else {
-            declareEnterCondition(omniboxFacility.deleteButtonElement.present());
+            // Desktop does not show a delete button.
+            if (hasDesktopExperience) {
+                declareEnterCondition(omniboxFacility.deleteButtonElement.absent());
+            } else {
+                declareEnterCondition(omniboxFacility.deleteButtonElement.present());
+            }
             declareEnterCondition(omniboxFacility.micButtonElement.absent());
         }
     }
@@ -69,6 +74,11 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
                 .exitFacilityAnd()
                 .enterFacility(
                         new OmniboxEnteredTextFacility(mOmniboxFacility, mText + autocompleted));
+    }
+
+    /** Clear text in the omnibox. */
+    public OmniboxEnteredTextFacility clearText() {
+        return mOmniboxFacility.setText("");
     }
 
     /** Click the delete button to erase the text entered. */

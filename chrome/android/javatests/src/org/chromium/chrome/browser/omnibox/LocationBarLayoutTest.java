@@ -37,6 +37,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -129,8 +130,9 @@ public class LocationBarLayoutTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/517514794")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testDeleteButton() {
+        // Desktop does not show a delete button.
         OmniboxFacility omnibox = mPage.openOmnibox();
         omnibox.setText("testing").clickDelete();
 
