@@ -7193,12 +7193,12 @@
   {
     "name": "omnibox-ml-url-scoring",
     "owners": ["yoangela@chromium.org", "junzou@chromium.org", "manukh@chromium.org", "chrome-desktop-search@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "omnibox-ml-url-scoring-model",
     "owners": [ "junzou@chromium.org", "yoangela@chromium.org", "manukh@chromium.org", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "omnibox-ml-url-search-blending",
