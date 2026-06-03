@@ -612,9 +612,9 @@ void BrowsingHistoryService::MergeDuplicateResults(
 
   // Maps a URL to the most recent entry on a particular day for
   // non-actor-initiated visits.
-  std::map<GURL, HistoryEntry*> non_actor_current_day_entries;
+  std::map<GroupingKey, HistoryEntry*> non_actor_current_day_entries;
   // Same as above, but for actor-initiated visits.
-  std::map<GURL, HistoryEntry*> actor_current_day_entries;
+  std::map<GroupingKey, HistoryEntry*> actor_current_day_entries;
 
   // Keeps track of the day that `*_current_day_entries` is holding
   // entries for in order to handle removing per-day duplicates.
@@ -635,15 +635,15 @@ void BrowsingHistoryService::MergeDuplicateResults(
 #else
     auto& current_day_entries = non_actor_current_day_entries;
 #endif
+    GroupingKey key{.url = entry.url, .app_id = entry.app_id};
 
     // Keep this visit if it's the first visit to this URL on the current day.
-    if (current_day_entries.count(entry.url) == 0) {
-      const auto entry_url = entry.url;
+    if (current_day_entries.count(key) == 0) {
       deduped.push_back(std::move(entry));
-      current_day_entries[entry_url] = &deduped.back();
+      current_day_entries[key] = &deduped.back();
     } else {
       // Keep track of the timestamps of all visits to the URL on the same day.
-      HistoryEntry* matching_entry = current_day_entries[entry.url];
+      HistoryEntry* matching_entry = current_day_entries[key];
       // Since this de-duplication logic will only be performed if the grouping
       // is disabled, the entries will only have timestamps for the same URL.
       CHECK_EQ(1u, entry.all_timestamps.size());
@@ -699,8 +699,6 @@ BrowsingHistoryService::GroupSimilarVisits(QueryHistoryState* state) {
   // pointers to invalid locations.
   std::vector<HistoryEntry> grouped;
   grouped.reserve(sorted.size());
-  // The GroupingKey consists of a pair of hostname and title.
-  using GroupingKey = std::pair<std::string, std::u16string>;
 
   // Maps the GroupingKey to the most recent entry on a particular day for
   // non-actor-initiated visits.
@@ -731,7 +729,10 @@ BrowsingHistoryService::GroupSimilarVisits(QueryHistoryState* state) {
 
     // TODO(b/481272035): Use the domain name that matches the displayed domain
     // name in the UI.
-    GroupingKey key(entry.url.GetHost(), entry.title);
+    GroupingKey key{.host = entry.url.GetHost(),
+                    .title = entry.title,
+                    .app_id = entry.app_id};
+
     // Keep this visit if it's the first visit of it's kind on the current day.
     if (current_day_entries.find(key) == current_day_entries.end()) {
       grouped.push_back(std::move(entry));
