@@ -20,7 +20,6 @@ source_set("unit_tests") {
     "../metrics/perf/cpu_identity_unittest.cc",
     "../metrics/perf/random_selector_unittest.cc",
     "../policy/default_geolocation_policy_handler_unittest.cc",
-    "../ui/browser_finder_chromeos_unittest.cc",
     "../ui/webui/settings/about_handler_unittest.cc",
   ]
 

@@ -55,14 +55,11 @@ specific_include_rules = {
     "+ash/shell.h",
   ],
   r"browser_finder_chromeos_browsertest\.cc": [
+    "+ash/multi_user/multi_user_window_manager.h",
     "+ash/shell.h",
     "+ash/wm/desks/desk.h",
     "+ash/wm/desks/desks_controller.h",
     "+ash/wm/desks/desks_test_util.h",
-  ],
-  r"browser_finder_chromeos_unittest\.cc": [
-    "+ash/shell.h",
-    "+ash/multi_user/multi_user_window_manager.h",
   ],
   r"browser_navigator\.cc": [
     "+ash/shell.h",
