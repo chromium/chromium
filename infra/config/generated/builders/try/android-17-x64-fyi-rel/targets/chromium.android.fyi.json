@@ -2680,7 +2680,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_37_google_apis_ps16k_x64",
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",

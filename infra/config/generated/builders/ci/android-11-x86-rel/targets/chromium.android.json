@@ -2425,7 +2425,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_30_google_apis_x86",
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",

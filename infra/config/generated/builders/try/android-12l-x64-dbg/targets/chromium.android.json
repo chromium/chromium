@@ -2494,7 +2494,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_32_google_apis_x64_foldable",
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",

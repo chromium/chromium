@@ -976,9 +976,7 @@
         },
       },
       'perfetto_unittests': {},
-      'puffin_unittests': {
-        'experiment_percentage': 100,
-      },
+      'puffin_unittests': {},
       'services_unittests': {},
       'shell_dialogs_unittests': {},
       'skia_unittests': {},

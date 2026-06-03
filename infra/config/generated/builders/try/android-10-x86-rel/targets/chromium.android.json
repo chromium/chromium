@@ -2599,7 +2599,6 @@
           "--recover-devices"
         ],
         "description": "Run with android_29_google_apis_x86",
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [

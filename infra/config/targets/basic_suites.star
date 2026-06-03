@@ -634,9 +634,7 @@ targets.legacy_basic_suite(
             ),
         ),
         "perfetto_unittests": targets.legacy_test_config(),
-        "puffin_unittests": targets.legacy_test_config(
-            experiment_percentage = 100,
-        ),
+        "puffin_unittests": targets.legacy_test_config(),
         # TODO(crbug.com/40274401): Enable this.
         # "rust_gtest_interop_unittests": None,
         "services_unittests": targets.legacy_test_config(),

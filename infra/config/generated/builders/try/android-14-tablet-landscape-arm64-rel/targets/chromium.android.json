@@ -1725,7 +1725,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
