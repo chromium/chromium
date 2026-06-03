@@ -1020,28 +1020,28 @@ class SaveToFileBodyHandler : public BodyHandler {
       DCHECK(!file_.IsValid());
       DCHECK(!body_reader_);
 
-      bool have_path = !create_temp_file_;
-      if (!have_path) {
-        DCHECK(create_temp_file_);
-        have_path = base::CreateTemporaryFile(&path_);
-        // CreateTemporaryFile() creates an empty file.
-        if (have_path)
-          owns_file_ = true;
-      }
-
-      if (have_path) {
-        // Try to initialize |file_|, creating the file if needed.
+      if (create_temp_file_) {
+        base::FilePath temp_dir;
+        if (base::GetTempDir(&temp_dir)) {
+          file_ = base::CreateAndOpenTemporaryFileInDir(temp_dir, &path_);
+        }
+      } else {
         file_.Initialize(
             path_, base::File::FLAG_WRITE | base::File::FLAG_CREATE_ALWAYS);
       }
 
       // If CreateTemporaryFile() or File::Initialize() failed, report failure.
       if (!file_.IsValid()) {
+        net::Error net_error = net::FileErrorToNetError(file_.error_details());
+        if (net_error == net::OK) {
+          net_error = net::MapSystemError(logging::GetLastSystemErrorCode());
+          if (net_error == net::OK) {
+            net_error = net::ERR_FILE_NOT_FOUND;
+          }
+        }
         body_handler_task_runner_->PostTask(
-            FROM_HERE, base::BindOnce(std::move(on_done_callback),
-                                      net::MapSystemError(
-                                          logging::GetLastSystemErrorCode()),
-                                      0, base::FilePath()));
+            FROM_HERE, base::BindOnce(std::move(on_done_callback), net_error, 0,
+                                      base::FilePath()));
         return;
       }
 
