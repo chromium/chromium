@@ -14,7 +14,8 @@ import java.util.concurrent.Executor;
 
 /**
  * Utilities for Java-based UrlRequest implementations.
- * {@hide}
+ *
+ * @hide
  */
 public final class JavaUrlRequestUtils {
     /**

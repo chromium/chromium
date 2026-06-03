@@ -136,7 +136,11 @@ public abstract class CronetEngine {
         private final List<ExperimentalOptionsTranslator.JsonPatch> mExperimentalOptionsPatches =
                 new ArrayList<>();
 
-        /** Reference to the actual builder implementation. {@hide exclude from JavaDoc}. */
+        /**
+         * Reference to the actual builder implementation.
+         *
+         * @hide
+         */
         protected final ICronetEngineBuilder mBuilderDelegate;
 
         /**
@@ -157,7 +161,7 @@ public abstract class CronetEngine {
          * implementation.
          *
          * @param builderDelegate delegate that provides the actual implementation.
-         *     <p>{@hide}
+         * @hide
          */
         public Builder(ICronetEngineBuilder builderDelegate) {
             mBuilderDelegate = builderDelegate;
@@ -239,8 +243,8 @@ public abstract class CronetEngine {
         }
 
         /**
-         * @deprecated SDCH is deprecated in Cronet M63. This method is a no-op. {@hide exclude from
-         * JavaDoc}.
+         * @deprecated SDCH is deprecated in Cronet M63. This method is a no-op.
+         * @hide
          */
         @Deprecated
         public Builder enableSdch(boolean value) {
@@ -892,11 +896,10 @@ public abstract class CronetEngine {
      *
      * @param url URL for the generated streams.
      * @param callback the {@link BidirectionalStream.Callback} object that gets invoked upon
-     * different events occurring.
+     *     different events occurring.
      * @param executor the {@link Executor} on which {@code callback} methods will be invoked.
      * @return the created builder.
-     *
-     * {@hide}
+     * @hide
      */
     public BidirectionalStream.Builder newBidirectionalStreamBuilder(
             String url, BidirectionalStream.Callback callback, Executor executor) {
