@@ -3728,12 +3728,6 @@ static_library("ui") {
       "views/device_chooser_content_view.h",
       "views/dictation/dictation_bubble_ui.cc",
       "views/dictation/dictation_bubble_ui.h",
-      "views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.cc",
-      "views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.h",
-      "views/digital_credentials/digital_identity_multi_step_dialog.cc",
-      "views/digital_credentials/digital_identity_multi_step_dialog.h",
-      "views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.cc",
-      "views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.h",
       "views/dotted_icon.cc",
       "views/dotted_icon.h",
       "views/elevation_icon_setter.cc",
@@ -4719,6 +4713,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/apps/app_info_dialog",
       "//chrome/browser/ui/views/apps/app_info_dialog:impl",
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/views/digital_credentials",
+      "//chrome/browser/ui/views/digital_credentials:impl",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/frame:immersive_mode_controller",
@@ -4916,6 +4912,12 @@ static_library("ui") {
       # - c/b/ui/views/frame/browser_view.h,
       # - c/b/ui/views/chrome_layout_provider.h
       "//chrome/browser/ui/views/accessibility:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # the following headers get modularized:
+      # - c/b/ui/views/extensions/security_dialog_tracker.h
+      # - c/b/ui/views/chrome_layout_provider.h
+      "//chrome/browser/ui/views/digital_credentials:impl",
     ]
 
     if (is_linux) {
