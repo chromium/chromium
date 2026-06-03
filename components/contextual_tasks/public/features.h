@@ -23,6 +23,9 @@ BASE_DECLARE_FEATURE(kContextualTasksContextLibrary);
 BASE_DECLARE_FEATURE(kContextualTasksContextLogging);
 BASE_DECLARE_FEATURE(kContextualTasksShowOnboardingTooltip);
 
+// Enables prefetching of cookies for contextual tasks.
+BASE_DECLARE_FEATURE(kContextualTasksCookiePrefetch);
+
 // Overrides the value of EntryPointEligibilitymanager::IsEligible to true.
 BASE_DECLARE_FEATURE(kContextualTasksForceEntryPointEligibility);
 
@@ -378,6 +381,8 @@ extern const char kContextualTasksBackButtonExpandsSidePanelDescription[];
 extern const char kContextualTasksOverrideShowBottomSheetOnLargeScreenName[];
 extern const char
     kContextualTasksOverrideShowBottomSheetOnLargeScreenDescription[];
+extern const char kContextualTasksCookiePrefetchName[];
+extern const char kContextualTasksCookiePrefetchDescription[];
 
 }  // namespace flag_descriptions
 
