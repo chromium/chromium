@@ -257,7 +257,7 @@ public class HiddenTabHolder {
             if (urlsMatch && TextUtils.equals(speculationReferrer, referrer)) {
                 return hiddenTab;
             } else {
-                hiddenTab.tab.destroy();
+                destroyHiddenTabAndObservers(hiddenTab);
                 return null;
             }
         }
@@ -269,8 +269,13 @@ public class HiddenTabHolder {
         if (session != null && !session.equals(mSpeculation.session)) return;
         if (mSpeculation.isEarlyNav) return;
 
-        mSpeculation.hiddenTab.tab.destroy();
+        destroyHiddenTabAndObservers(mSpeculation.hiddenTab);
         mSpeculation = null;
+    }
+
+    private static void destroyHiddenTabAndObservers(HiddenTab hiddenTab) {
+        hiddenTab.tabObserverRegistrar.onDestroy();
+        hiddenTab.tab.destroy();
     }
 
     /** Returns whether there currently is a hidden tab. */
