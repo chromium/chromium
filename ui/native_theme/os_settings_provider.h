@@ -144,6 +144,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProvider {
   // not blink.
   virtual base::TimeDelta CaretBlinkInterval() const;
 
+#if BUILDFLAG(IS_ANDROID)
+  virtual bool IsAndroidProvider() const;
+#endif
+
  protected:
   // Invokes all registered callbacks.
   void NotifyOnSettingsChanged(bool force_notify = false);

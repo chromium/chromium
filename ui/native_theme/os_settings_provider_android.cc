@@ -27,6 +27,10 @@ OsSettingsProviderAndroid::PreferredColorScheme() const {
   return preferred_color_scheme_;
 }
 
+bool OsSettingsProviderAndroid::IsAndroidProvider() const {
+  return true;
+}
+
 void OsSettingsProviderAndroid::SetPreferredColorScheme(
     NativeTheme::PreferredColorScheme scheme) {
   if (preferred_color_scheme_ == scheme) {
@@ -40,9 +44,13 @@ void OsSettingsProviderAndroid::SetPreferredColorScheme(
 static void JNI_OsSettingsProviderAndroidBridge_SetPreferredColorScheme(
     JNIEnv* env,
     bool is_dark) {
-  auto& provider =
-      static_cast<OsSettingsProviderAndroid&>(OsSettingsProvider::Get());
-  provider.SetPreferredColorScheme(
+  auto& provider = OsSettingsProvider::Get();
+  if (!provider.IsAndroidProvider()) {
+    // This can happen in browser tests, because browser tests may use a
+    // different OssettingsProvider class.
+    return;
+  }
+  static_cast<OsSettingsProviderAndroid&>(provider).SetPreferredColorScheme(
       is_dark ? NativeTheme::PreferredColorScheme::kDark
               : NativeTheme::PreferredColorScheme::kLight);
 }

@@ -21,7 +21,7 @@ class OsSettingsProviderAndroidTest : public testing::Test {
 TEST_F(OsSettingsProviderAndroidTest,
        SetPreferredColorSchemeNotifiesObservers) {
   // Ensure the production provider is instantiated.
-  OsSettingsProvider::Get();
+  EXPECT_TRUE(OsSettingsProvider::Get().IsAndroidProvider());
   auto& provider =
       static_cast<OsSettingsProviderAndroid&>(OsSettingsProvider::Get());
 

@@ -29,6 +29,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OsSettingsProviderAndroid
   bool PrefersReducedTransparency() const override;
   bool PrefersInvertedColors() const override;
   base::TimeDelta CaretBlinkInterval() const override;
+  bool IsAndroidProvider() const override;
 
   // AccessibilityState::AccessibilityStateObserver:
   void OnDisplayInversionEnabledChanged(bool enabled) override;
