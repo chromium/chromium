@@ -679,6 +679,7 @@ ios_builder(
     ],
     gn_args = "ci/ios-asan",
     cpu = cpu.ARM64,
+    xcode = xcode.x17a400,
 )
 
 ios_builder(
@@ -704,6 +705,7 @@ ios_builder(
     builderless = True,
     cpu = cpu.ARM64,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    xcode = xcode.x17a400,
 )
 
 ios_builder(

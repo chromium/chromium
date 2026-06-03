@@ -1200,6 +1200,7 @@ ios_builder(
             short_name = "ctl",
         ),
     ],
+    xcode = xcode.x17a400,
 )
 
 ios_builder(

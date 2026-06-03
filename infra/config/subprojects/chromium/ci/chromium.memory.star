@@ -1508,7 +1508,7 @@ ci.builder(
             "mac_beta_arm64",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_26_main",
+            "xcode_17a400",
             "xctest",
         ],
     ),
@@ -1520,7 +1520,7 @@ ci.builder(
         category = "iOS",
         short_name = "asn",
     ),
-    xcode = xcode.xcode_default,
+    xcode = xcode.x17a400,
 )
 
 ci.builder(
