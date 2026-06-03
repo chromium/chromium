@@ -576,8 +576,9 @@ class
       public testing::WithParamInterface<ContentFiltersTestCase> {
  protected:
   void SetUpFeatureList() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        kSupervisedUserEmitLogRecordSeparately);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{kSupervisedUserUseUrlFilteringService, true},
+         {kSupervisedUserEmitLogRecordSeparately, false}});
   }
 
   void CreateProfiles(std::size_t count) {
@@ -639,7 +640,8 @@ TEST_P(
       SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally,
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      kFamilyLinkUserLogSegmentWebFilterHistogramName, WebFilterType::kDisabled,
+      kFamilyLinkUserLogSegmentWebFilterHistogramName,
+      WebFilterType::kAllowAllSites,
       /*expected_count=*/1);
 }
 
