@@ -1785,7 +1785,8 @@ public class StripLayoutHelperManager
 
         // Set updated visibilities (of all buttons for simplicity).
         mTrailingButtonsCoordinator.setGlicButtonVisible(newGlicVisibility);
-        mTrailingButtonsCoordinator.setGlicActorButtonVisible(newGlicActorVisibility);
+        mTrailingButtonsCoordinator.setGlicActorButtonVisible(
+                newGlicActorVisibility, /* animate= */ false);
         if (mModelSelectorButton != null) mModelSelectorButton.setVisible(newMsbVisibility);
 
         // The Glic button position depends on the MSB's visibility.

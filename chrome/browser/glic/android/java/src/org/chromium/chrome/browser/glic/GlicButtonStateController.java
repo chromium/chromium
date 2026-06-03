@@ -53,7 +53,7 @@ public class GlicButtonStateController
     private final Activity mActivity;
     private final Listener mListener;
     private final Supplier<@Nullable ChromeAndroidTask> mTaskSupplier;
-    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private final @Nullable BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 
     private @Nullable Profile mCurrentProfile;
     private @Nullable ActorKeyedService mCurrentActorService;
@@ -76,7 +76,7 @@ public class GlicButtonStateController
             Activity activity,
             Listener listener,
             Supplier<@Nullable ChromeAndroidTask> taskSupplier,
-            BrowserControlsVisibilityManager browserControlsVisibilityManager) {
+            @Nullable BrowserControlsVisibilityManager browserControlsVisibilityManager) {
         mActivity = activity;
         mListener = listener;
         mTaskSupplier = taskSupplier;
@@ -150,7 +150,8 @@ public class GlicButtonStateController
     }
 
     private void acquireBrowserControls() {
-        if (mBrowserControlsShowingToken == TokenHolder.INVALID_TOKEN) {
+        if (mBrowserControlsVisibilityManager != null
+                && mBrowserControlsShowingToken == TokenHolder.INVALID_TOKEN) {
             mBrowserControlsShowingToken =
                     mBrowserControlsVisibilityManager
                             .getBrowserVisibilityDelegate()
@@ -159,7 +160,8 @@ public class GlicButtonStateController
     }
 
     private void releaseBrowserControls() {
-        if (mBrowserControlsShowingToken != TokenHolder.INVALID_TOKEN) {
+        if (mBrowserControlsVisibilityManager != null
+                && mBrowserControlsShowingToken != TokenHolder.INVALID_TOKEN) {
             mBrowserControlsVisibilityManager
                     .getBrowserVisibilityDelegate()
                     .releasePersistentShowingToken(mBrowserControlsShowingToken);
@@ -238,7 +240,9 @@ public class GlicButtonStateController
      * @param persist True to persist, false otherwise.
      */
     public void setPersistDoneState(boolean persist) {
+        if (mPersistDoneState == persist) return;
         mPersistDoneState = persist;
+        updateButtonState();
     }
 
     /** Returns the list of active tasks. */

@@ -61,6 +61,8 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -80,6 +82,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -126,6 +129,7 @@ import org.chromium.ui.resources.ResourceManager;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Tests for {@link StripLayoutHelperManager}. */
@@ -177,6 +181,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private ActivityResultTracker mActivityResultTracker;
+    @Mock private ActorKeyedService mActorKeyedService;
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
@@ -204,6 +209,9 @@ public class StripLayoutHelperManagerTest {
     @Before
     public void beforeTest() {
         GlicEnabling.setEnabledForTesting(ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC));
+        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.emptyList());
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         TabStripSceneLayerJni.setInstanceForTesting(mTabStripSceneMock);
         StripTabUnderlineManagerJni.setInstanceForTesting(mStripTabUnderlineManagerNatives);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
