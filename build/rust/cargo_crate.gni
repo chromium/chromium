@@ -293,8 +293,8 @@ template("cargo_crate") {
       # Disable generating `..._clippy` targets for third-party code.
       no_clippy = true
 
-      # Depend by default on the `//build/rust/allocator` library, but avoid this
-      # dependency in `no_std` mode.  This is desirable for two reasons:
+      # Depend by default on the `//build/rust/allocator` library, but avoid
+      # this dependency in `no_std` mode. This is desirable for two reasons:
       # 1. It gives users of `cargo_crate` an indirect way to control presence of
       #    this dependency.
       # 2. More importantly, it avoid cyclic dependencies like the one below:
@@ -366,7 +366,8 @@ template("cargo_crate") {
       if ((!defined(output_dir) || output_dir == "") && _crate_type == "rlib") {
         # Cargo crate rlibs can be compiled differently for tests, and must not
         # collide with the production outputs. This does *not* override the
-        # unit_test_output_dir, which is set above, as that target is not an rlib.
+        # unit_test_output_dir, which is set above, as that target is not an
+        # rlib.
         output_dir = "$target_out_dir/$_orig_target_name"
       }
 
@@ -387,8 +388,8 @@ template("cargo_crate") {
         }
 
         # This... is a bit weird. We generate a file called cargo_flags.rs which
-        # does not actually contain Rust code, but instead some flags to add
-        # to the rustc command line. We need it to end in a .rs extension so that
+        # does not actually contain Rust code, but instead some flags to add to
+        # the rustc command line. We need it to end in a .rs extension so that
         # we can include it in the 'sources' line and thus have dependency
         # calculation done correctly. data_deps won't work because targets don't
         # require them to be present until runtime.
@@ -396,10 +397,10 @@ template("cargo_crate") {
         rustflags += [ "@" + rebase_path(flags_file, root_build_dir) ]
         sources += [ flags_file ]
         if (defined(invoker.build_script_outputs)) {
-          # Build scripts may output arbitrary files. They are usually included in
-          # the main Rust target using include! or include_str! and therefore the
-          # filename may be .rs or may be arbitrary. We want to educate ninja
-          # about the dependency either way.
+          # Build scripts may output arbitrary files. They are usually included
+          # in the main Rust target using include! or include_str! and therefore
+          # the filename may be .rs or may be arbitrary. We want to educate
+          # ninja about the dependency either way.
           foreach(extra_source,
                   filter_include(invoker.build_script_outputs, [ "*.rs" ])) {
             sources += [ "$_build_script_env_out_dir/$extra_source" ]
@@ -434,6 +435,10 @@ template("cargo_crate") {
       _rustflags_txt = "$_build_script_env_out_dir/rustflags.txt"
       outputs = [ _rustflags_txt ]
       script = rebase_path("//build/rust/gni_impl/write_rustflags.py")
+      inputs = [
+        "//build/action_helpers.py",
+        "//build/gn_helpers.py",
+      ]
       args = [
         "--output",
         rebase_path(_rustflags_txt, root_build_dir),
