@@ -11,6 +11,8 @@ export function getHtml(this: PermissionChipElement) {
   return (!this.chipState || !this.chipState.isVisible) ? nothing :
       html`<!--_html_template_start_-->
 <div id="chip"
+    role="button"
+    tabindex="0"
     ?collapsed="${this.chipState.isFullyCollapsed}"
     aria-label="${this.chipState.accessibilityName}"
     title="${this.chipState.tooltip}"
