@@ -10,19 +10,22 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -80,35 +83,55 @@ class AutofillFieldPromoControllerWrapper
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillFieldPromoControllerWrapper);
 
-class AutofillFieldPromoControllerImplTest : public BrowserWithTestWindowTest {
+class AutofillFieldPromoControllerImplTest
+    : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    user_ed_override_ =
-        BrowserWindowFeatures::GetUserDataFactoryForTesting()
-            .AddOverrideForTesting(
-                base::BindRepeating([](BrowserWindowInterface& window) {
-                  return std::make_unique<MockBrowserUserEducationInterface>(
-                      &window);
-                }));
+    ChromeRenderViewHostTestHarness::SetUp();
 
-    BrowserWithTestWindowTest::SetUp();
-
-    // Create the first tab so that `web_contents()` exists.
-    AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
-
-    FocusMainFrameOfActiveWebContents();
+    NavigateAndCommit(GURL("chrome://newtab"));
+    content::FocusWebContentsOnFrame(web_contents(),
+                                     web_contents()->GetPrimaryMainFrame());
     ASSERT_TRUE(web_contents()->GetFocusedFrame());
 
+    // Instantiate mocks.
+    tab_interface_ = std::make_unique<tabs::MockTabInterface>();
+    browser_window_interface_ =
+        std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
+
+    // Set up expectations on mock browser window.
+    EXPECT_CALL(testing::Const(*browser_window_interface_),
+                GetUnownedUserDataHost())
+        .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
+
+    user_education_ =
+        std::make_unique<testing::NiceMock<MockBrowserUserEducationInterface>>(
+            browser_window_interface_.get());
+
+    // Set up expectations on the mock tab.
+    EXPECT_CALL(*tab_interface_, GetBrowserWindowInterface())
+        .WillRepeatedly(testing::Return(browser_window_interface_.get()));
+    EXPECT_CALL(*tab_interface_, GetContents())
+        .WillRepeatedly(testing::Return(web_contents()));
+
+    // Link the mock tab interface to the web contents.
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                         tab_interface_.get());
+
+    // Create the controller wrapper.
     AutofillFieldPromoControllerWrapper::CreateForWebContents(web_contents());
   }
 
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+  void TearDown() override {
+    DeleteContents();
+    user_education_.reset();
+    browser_window_interface_.reset();
+    tab_interface_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   MockBrowserUserEducationInterface* user_education() {
-    return static_cast<MockBrowserUserEducationInterface*>(
-        BrowserUserEducationInterface::From(browser()));
+    return user_education_.get();
   }
 
   AutofillFieldPromoControllerImpl* autofill_field_promo_controller() {
@@ -122,7 +145,12 @@ class AutofillFieldPromoControllerImplTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  ui::UserDataFactory::ScopedOverride user_ed_override_;
+  std::unique_ptr<tabs::MockTabInterface> tab_interface_;
+  std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>>
+      browser_window_interface_;
+  std::unique_ptr<testing::NiceMock<MockBrowserUserEducationInterface>>
+      user_education_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
 };
 
 TEST_F(AutofillFieldPromoControllerImplTest, CloseViewOnFailingMaybeShowPromo) {
@@ -191,7 +219,7 @@ TEST_F(AutofillFieldPromoControllerImplTestWithView,
 // Tests that the hide helper can hide the view.
 TEST_F(AutofillFieldPromoControllerImplTestWithView, CloseViewOnFrameDeleted) {
   EXPECT_CALL(*promo_view(), MakeInvisible());
-  browser()->tab_strip_model()->CloseAllTabs();
+  DeleteContents();
 }
 
 }  // namespace
