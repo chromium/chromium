@@ -30,7 +30,6 @@ public interface AppMenuHandler {
         AppMenuItemType.DIVIDER,
         AppMenuItemType.BOOKMARK,
         AppMenuItemType.TAB,
-        AppMenuItemType.RECENT_ENTRY,
         AppMenuItemType.EMPTY
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -65,17 +64,14 @@ public interface AppMenuHandler {
         /** A tab item for tab groups. */
         int TAB = 7;
 
-        /** A recent entry item. */
-        int RECENT_ENTRY = 8;
-
         /** An item indicating that a submenu is empty. */
-        int EMPTY = 9;
+        int EMPTY = 8;
 
         /**
          * The number of menu item types specified above. If you add a menu item type you MUST
          * increment this.
          */
-        int NUM_ENTRIES = 10;
+        int NUM_ENTRIES = 9;
     }
 
     /**

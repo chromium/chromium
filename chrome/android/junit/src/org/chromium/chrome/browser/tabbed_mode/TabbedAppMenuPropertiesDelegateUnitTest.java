@@ -70,7 +70,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
@@ -101,8 +100,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
-import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -277,7 +274,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
-    @Mock private RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -413,9 +409,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
 
-        when(mRecentlyClosedEntriesManager.getRecentlyClosedEntries())
-                .thenReturn(new ArrayList<>());
-
         TabbedAppMenuPropertiesDelegate delegate =
                 new TabbedAppMenuPropertiesDelegate(
                         context,
@@ -433,9 +426,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         mPageZoomManagerMock,
                         mHubManagerSupplier,
-                        /* openInAppMenuItemProvider= */ null,
-                        /* recentlyClosedEntriesManagerSupplier= */ () ->
-                                mRecentlyClosedEntriesManager);
+                        /* openInAppMenuItemProvider= */ null);
         RobolectricUtil.runAllBackgroundAndUi();
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(delegate);
 
@@ -4288,58 +4279,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         ListItem homepageItem = findItemById(modelList, R.id.homepage_menu_id);
         assertNull("Homepage menu item should not be visible", homepageItem);
-    }
-
-    @Test
-    public void testHistorySubmenu_WithRecentEntries() {
-        setUpMocksForPageMenu();
-
-        List<RecentlyClosedEntry> entries = new ArrayList<>();
-        RecentlyClosedTab tab1 =
-                new RecentlyClosedTab(
-                        /* sessionId= */ 1,
-                        /* timestamp= */ 0,
-                        "Title 1",
-                        JUnitTestGURLs.URL_1,
-                        /* tabGroupId= */ null);
-        RecentlyClosedTab tab2 =
-                new RecentlyClosedTab(
-                        /* sessionId= */ 2,
-                        /* timestamp= */ 0,
-                        "Title 2",
-                        JUnitTestGURLs.URL_2,
-                        /* tabGroupId= */ null);
-        entries.add(tab1);
-        entries.add(tab2);
-        when(mRecentlyClosedEntriesManager.getRecentlyClosedEntries()).thenReturn(entries);
-
-        List<MenuItem> expectedSubmenu =
-                new ArrayList<>(
-                        Arrays.asList(
-                                item(R.id.open_history_menu_id),
-                                item(R.id.recent_tabs_menu_id),
-                                item(R.id.quick_delete_menu_id),
-                                item(R.id.divider_line_id),
-                                item(R.id.recent_entry_menu_item),
-                                item(R.id.recent_entry_menu_item)));
-
-        List<ListItem> items =
-                findItemById(
-                                mTabbedAppMenuPropertiesDelegate.getMenuItems(),
-                                R.id.history_parent_menu_id)
-                        .model
-                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
-                        .get();
-
-        assertMenuTreesAreEqual(
-                items,
-                expectedSubmenu,
-                (item, expectedId) -> {
-                    assertEquals(
-                            "Mismatched item id",
-                            expectedId,
-                            item.model.get(AppMenuItemProperties.MENU_ITEM_ID));
-                });
     }
 
     private static MenuItem item(Object id, MenuItem... subItems) {
