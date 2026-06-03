@@ -117,22 +117,6 @@ class InteractiveMouseTestApi : virtual public ui::test::InteractiveTestApi {
       ui_controls::MouseButton button = ui_controls::LEFT,
       int modifier_keys = ui_controls::kNoAccelerator);
 
-  // On some platforms, context menu operations run in an OS message pump that
-  // ignores non-input events, so async Kombucha does not work, as the posted
-  // tasks won't be run.
-  //
-  // Wrap any context menu operation (including the triggering event, if it is a
-  // `ClickMouse(ui_controls::RIGHT)`) up to and including the step that closes
-  // the context menu in this modifier. If your test fails to close the context
-  // menu, it may hang, as there is no single automated way to clean up context
-  // menus in Views.
-  //
-  // TODO(crbug.com/40249472): No longer needed. Remove this and all callsites.
-  template <typename... Args>
-  [[nodiscard]] static MultiStep MayInvolveNativeContextMenu(Args&&... args) {
-    return Steps(std::forward<Args>(args)...);
-  }
-
  private:
   // Converts a *PositionSpecifier to an appropriate *PositionCallback.
   static RelativePositionCallback GetPositionCallback(

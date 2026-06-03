@@ -112,11 +112,9 @@ IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonInteractiveUiTest,
       // Unpinning Tab Search Button
       WaitForShow(kTabSearchButtonElementId),
       CheckElementCount(kTabSearchButtonElementId, 1),
-      MoveMouseTo(kTabSearchButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          WaitForShow(kPinnedActionToolbarUnpinElementId),
-          SelectMenuItem(kPinnedActionToolbarUnpinElementId)),
+      MoveMouseTo(kTabSearchButtonElementId), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(kPinnedActionToolbarUnpinElementId),
+      SelectMenuItem(kPinnedActionToolbarUnpinElementId),
       // Verifying that it is no longer present.
       WaitForHide(kTabSearchButtonElementId),
       // Clicking the Tab Search Button.

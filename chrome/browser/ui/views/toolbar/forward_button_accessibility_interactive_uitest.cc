@@ -127,12 +127,11 @@ IN_PROC_BROWSER_TEST_P(ForwardButtonAccessibilityTest, MAYBE_ContextMenu) {
       // Right-click to open history menu
       Log("Opening context menu..."),
       MoveMouseToElement(kToolbarForwardButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          // Wait for history menu and close it.
-          Steps(Log("Waiting for context menu to show..."),
-                DismissContextMenu(kToolbarForwardButtonElementId,
-                                   kToolbarForwardButtonMenuElementId))));
+      ClickMouse(ui_controls::RIGHT),
+      // Wait for history menu and close it.
+      Steps(Log("Waiting for context menu to show..."),
+            DismissContextMenu(kToolbarForwardButtonElementId,
+                               kToolbarForwardButtonMenuElementId)));
 }
 
 IN_PROC_BROWSER_TEST_P(ForwardButtonAccessibilityTest, AccessibilityNode) {

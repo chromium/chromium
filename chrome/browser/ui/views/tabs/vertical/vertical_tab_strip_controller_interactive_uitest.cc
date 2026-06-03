@@ -383,11 +383,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
                                                 kFirstTabName, 0),
       // Open Tab Context Menu.
-      MoveMouseTo(kFirstTabName),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          WaitForShow(TabMenuModel::kAddNewTabAdjacentMenuItem),
-          SelectMenuItem(TabMenuModel::kAddNewTabAdjacentMenuItem)),
+      MoveMouseTo(kFirstTabName), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(TabMenuModel::kAddNewTabAdjacentMenuItem),
+      SelectMenuItem(TabMenuModel::kAddNewTabAdjacentMenuItem),
       // Verify functionality of command in the Tab Context Menu.
       CheckResult([this]() { return browser()->tab_strip_model()->count(); },
                   2));
@@ -413,8 +411,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       AddInstrumentedTab(kSecondTabId, GURL("https://www.example.com/")),
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
                                                 kSecondTabName, 1),
-      MoveMouseTo(kSecondTabName),
-      MayInvolveNativeContextMenu(ClickMouse(ui_controls::RIGHT)),
+      MoveMouseTo(kSecondTabName), ClickMouse(ui_controls::RIGHT),
       // Wait for the menu to show before opening a third tab, otherwise the
       // context menu could be opened on that third tab.
       WaitForShow(TabMenuModel::kDuplicateMenuItem),
@@ -422,9 +419,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       // is still open.
       AddInstrumentedTab(kThirdTabId, chrome::ChromeUINewTabPageURLAsGURL(), 1),
       // Select the duplicate tab menu item.
-      MayInvolveNativeContextMenu(
-          WaitForShow(TabMenuModel::kDuplicateMenuItem),
-          SelectMenuItem(TabMenuModel::kDuplicateMenuItem)),
+      WaitForShow(TabMenuModel::kDuplicateMenuItem),
+      SelectMenuItem(TabMenuModel::kDuplicateMenuItem),
       // Verify that the original tab that the context menu was opened on is the
       // one that was duplicated, not the tab inserted after the context menu
       // was opened.

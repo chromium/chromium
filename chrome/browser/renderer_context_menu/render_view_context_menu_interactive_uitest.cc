@@ -658,10 +658,8 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, GlicShareImage) {
       InstrumentTab(kActiveTab, std::nullopt, browser(), true),
       NavigateWebContents(kActiveTab, url),
       WaitForWebContentsPainted(kActiveTab),
-      MoveMouseTo(kActiveTab, kPathToImg),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      MoveMouseTo(kActiveTab, kPathToImg), ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
       PollForAndCompleteOnboarding(), PollForAndInstrumentGlic(),
       WaitForAdditionalContext(),
       WaitForShareResult(glic::ShareImageResult::kSentImageToClient),
@@ -682,10 +680,8 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, CreateNewInstance) {
       ToggleGlicWindow(GlicWindowMode::kAttached),
       PollForAndCompleteOnboarding(),
       WaitForAndInstrumentGlic(kHostAndContents), CacheCurrentInstance(),
-      MoveMouseTo(kActiveTab, kPathToImg),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      MoveMouseTo(kActiveTab, kPathToImg), ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
       PollForNewGlicInstance(), PollForAndInstrumentGlic(),
       WaitForAdditionalContext(),
       WaitForShareResult(glic::ShareImageResult::kSentImageToClient),
@@ -710,12 +706,11 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest,
       ToggleGlicWindow(GlicWindowMode::kAttached),
       PollForAndCompleteOnboarding(),
       // In this case, we will close the detached panel and then open again in
-      // the side panel. This should still result in a new instance.
+      // side panel. This should still result in a new instance.
       WaitForAndInstrumentGlic(kHostAndContents), Detach(),
       CacheCurrentInstance(), MoveMouseTo(kActiveTab, kPathToImg),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
       PollForNewGlicInstance(), PollForAndInstrumentGlic(),
       WaitForAdditionalContext(),
       WaitForShareResult(glic::ShareImageResult::kSentImageToClient),
@@ -731,9 +726,8 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest,
   RunTestSequence(
       InstrumentTab(kActiveTab, std::nullopt, browser(), true),
       NavigateWebContents(kActiveTab, url), MoveMouseTo(kActiveTab, kPathToImg),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
       CheckToastIsShowing(ToastId::kGlicShareImageFailed),
       WaitForShareResult(glic::ShareImageResult::kFailedNoImage));
 }
@@ -777,10 +771,8 @@ IN_PROC_BROWSER_TEST_P(GlicTrustFirstOnboardingContextMenuTest,
       InstrumentTab(kActiveTab, std::nullopt, browser(), true),
       NavigateWebContents(kActiveTab, url),
       WaitForElementVisible(kActiveTab, kPathToImg),
-      MoveMouseTo(kActiveTab, kPathToImg),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      MoveMouseTo(kActiveTab, kPathToImg), ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
       PollForAndInstrumentGlic(),
       // Wait for 100ms to ensure that the image context is not sent while
       // the FRE is showing.
@@ -958,9 +950,8 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
   RunTestSequence(
       InstrumentTab(kActiveTab, std::nullopt, browser(), true),
       NavigateWebContents(kActiveTab, url), MoveMouseTo(kActiveTab, kPathToImg),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
       WaitForShareResult(glic::ShareImageResult::kFailedClipboardCopyPolicy));
 }
 
@@ -973,9 +964,8 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
   RunTestSequence(
       InstrumentTab(kActiveTab, std::nullopt, browser(), true),
       NavigateWebContents(kActiveTab, url), MoveMouseTo(kActiveTab, kPathToImg),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
       PollForAndCompleteOnboarding(),
       WaitForShareResult(glic::ShareImageResult::kFailedClipboardPastePolicy),
       WaitForContentAnalysisDialog());
@@ -990,9 +980,8 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
   RunTestSequence(
       InstrumentTab(kActiveTab, std::nullopt, browser(), true),
       NavigateWebContents(kActiveTab, url), MoveMouseTo(kActiveTab, kPathToImg),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
       PollForAndCompleteOnboarding(),
       WaitForShareResult(glic::ShareImageResult::kSentImageToClient));
 }
@@ -1014,9 +1003,8 @@ IN_PROC_BROWSER_TEST_P(
   RunTestSequence(
       InstrumentTab(kActiveTab, std::nullopt, browser(), true),
       NavigateWebContents(kActiveTab, url), MoveMouseTo(kActiveTab, kPathToImg),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
       PollUntil([]() { return reached; }, "waiting for hook"),
       NavigateWebContents(kActiveTab, new_url), PollForAndCompleteOnboarding(),
       WaitForShareResult(glic::ShareImageResult::kSentImageToClient));
@@ -1042,9 +1030,8 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuPolicyTest,
   RunTestSequence(
       InstrumentTab(kActiveTab, std::nullopt, browser(), true),
       NavigateWebContents(kActiveTab, url), MoveMouseTo(kActiveTab, kPathToImg),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem)),
+      ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(RenderViewContextMenu::kGlicShareImageMenuItem),
       PollForAndCompleteOnboarding(),
       WaitForShareResult(glic::ShareImageResult::kFailedClipboardPastePolicy));
 }

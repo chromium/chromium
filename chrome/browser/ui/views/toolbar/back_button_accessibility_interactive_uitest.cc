@@ -100,11 +100,10 @@ IN_PROC_BROWSER_TEST_P(BackButtonAccessibilityTest, ContextMenu) {
                   NavigateWebContents(kWebContentsElementId, url2),
                   // Right-click to open history menu
                   MoveMouseToElement(kToolbarBackButtonElementId),
-                  MayInvolveNativeContextMenu(
-                      ClickMouse(ui_controls::RIGHT),
-                      // Wait for history menu and close it.
-                      DismissContextMenu(kToolbarBackButtonElementId,
-                                         kToolbarBackButtonMenuElementId)));
+                  ClickMouse(ui_controls::RIGHT),
+                  // Wait for history menu and close it.
+                  DismissContextMenu(kToolbarBackButtonElementId,
+                                     kToolbarBackButtonMenuElementId));
 }
 
 IN_PROC_BROWSER_TEST_P(BackButtonAccessibilityTest, AccessibilityNode) {

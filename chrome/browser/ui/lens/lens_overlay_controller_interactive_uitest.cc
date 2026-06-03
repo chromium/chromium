@@ -285,15 +285,13 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
         "img",
     };
 
-    return Steps(InstrumentTab(kActiveTab),
-                 NavigateWebContents(kActiveTab, url),
-                 WaitForWebContentsPainted(kActiveTab),
+    return Steps(
+        InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
+        WaitForWebContentsPainted(kActiveTab),
 
-                 MoveMouseTo(kActiveTab, kPathToImg),
-                 MayInvolveNativeContextMenu(
-                     ClickMouse(ui_controls::RIGHT),
-                     SelectMenuItem(RenderViewContextMenu::kSearchForImageItem,
-                                    InputType::kMouse)));
+        MoveMouseTo(kActiveTab, kPathToImg), ClickMouse(ui_controls::RIGHT),
+        SelectMenuItem(RenderViewContextMenu::kSearchForImageItem,
+                       InputType::kMouse));
   }
 
   InteractiveTestApi::MultiStep OpenLensOverlayFromVideo() {
@@ -317,11 +315,9 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
         EnsurePresent(kActiveTab, kPathToVideo),
         ExecuteJsAt(kActiveTab, kPathToVideo, kPlayVideo),
         WaitForStateChange(kActiveTab, video_is_playing),
-        MoveMouseTo(kActiveTab, kPathToVideo),
-        MayInvolveNativeContextMenu(
-            ClickMouse(ui_controls::RIGHT),
-            SelectMenuItem(RenderViewContextMenu::kSearchForVideoFrameItem,
-                           InputType::kMouse)));
+        MoveMouseTo(kActiveTab, kPathToVideo), ClickMouse(ui_controls::RIGHT),
+        SelectMenuItem(RenderViewContextMenu::kSearchForVideoFrameItem,
+                       InputType::kMouse));
   }
 
   InteractiveTestApi::MultiStep WaitForScreenshotRendered(

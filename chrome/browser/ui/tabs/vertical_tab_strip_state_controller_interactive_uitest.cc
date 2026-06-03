@@ -73,10 +73,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
       WaitForShow(kTabStripFrameGrabHandleElementId),
       EnsurePresent(kTabStripFrameGrabHandleElementId),
       MoveMouseTo(kTabStripFrameGrabHandleElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          WaitForShow(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
-          SelectMenuItem(SystemMenuModelBuilder::kToggleVerticalTabsElementId)),
+      ClickMouse(ui_controls::RIGHT),
+      WaitForShow(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
+      SelectMenuItem(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
       WaitForShow(kVerticalTabStripCollapseButtonElementId));
 
   EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_HORIZONTAL_TAB));
@@ -102,10 +101,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
       WaitForShow(kVerticalTabStripTopContainerElementId),
       EnsurePresent(kVerticalTabStripTopContainerElementId),
       MoveMouseTo(kVerticalTabStripTopContainerElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          WaitForShow(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
-          SelectMenuItem(SystemMenuModelBuilder::kToggleVerticalTabsElementId)),
+      ClickMouse(ui_controls::RIGHT),
+      WaitForShow(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
+      SelectMenuItem(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
       WaitForShow(kTabStripFrameGrabHandleElementId));
 
   EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_VERTICAL_TAB));
@@ -137,12 +135,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
       WaitForShow(kVerticalTabStripTopContainerElementId),
       EnsurePresent(kVerticalTabStripTopContainerElementId),
       MoveMouseTo(kVerticalTabStripTopContainerElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          WaitForShow(SystemMenuModelBuilder::
-                          kToggleVerticalTabsExpandOnHoverElementId),
-          SelectMenuItem(SystemMenuModelBuilder::
-                             kToggleVerticalTabsExpandOnHoverElementId)));
+      ClickMouse(ui_controls::RIGHT),
+      WaitForShow(
+          SystemMenuModelBuilder::kToggleVerticalTabsExpandOnHoverElementId),
+      SelectMenuItem(
+          SystemMenuModelBuilder::kToggleVerticalTabsExpandOnHoverElementId));
 
   EXPECT_TRUE(
       SystemMenuContainsStringId(IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER));
@@ -172,12 +169,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
       WaitForShow(kVerticalTabStripTopContainerElementId),
       EnsurePresent(kVerticalTabStripTopContainerElementId),
       MoveMouseTo(kVerticalTabStripTopContainerElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          WaitForShow(SystemMenuModelBuilder::
-                          kToggleVerticalTabsExpandOnHoverElementId),
-          SelectMenuItem(SystemMenuModelBuilder::
-                             kToggleVerticalTabsExpandOnHoverElementId)));
+      ClickMouse(ui_controls::RIGHT),
+      WaitForShow(
+          SystemMenuModelBuilder::kToggleVerticalTabsExpandOnHoverElementId),
+      SelectMenuItem(
+          SystemMenuModelBuilder::kToggleVerticalTabsExpandOnHoverElementId));
 
   EXPECT_TRUE(
       SystemMenuContainsStringId(IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER));

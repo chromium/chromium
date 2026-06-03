@@ -528,17 +528,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       // Wait for the context menu button to render in the popup.
       InAnyContext(
           WaitForElementToRender(kClassicPopupWebView, kClassicContextMenu)),
-      MayInvolveNativeContextMenu(
-          // Open the context menu and click "Deep Search".
-          InSameContext(
-              ClickElement(kClassicPopupWebView, kClassicContextMenu)),
-          InAnyContext(WaitForShow(
-              OmniboxContextMenuController::kDeepResearchIdForTesting)),
-          InSameContext(SelectMenuItem(
-              OmniboxContextMenuController::kDeepResearchIdForTesting)),
-          // Wait for classic popup to hide and AIM popup to show.
-          InAnyContext(WaitForHide(kClassicPopupWebView))),
-      WaitForAimPopupReady(),
+      // Open the context menu and click "Deep Search".
+      InSameContext(ClickElement(kClassicPopupWebView, kClassicContextMenu)),
+      InAnyContext(
+          WaitForShow(OmniboxContextMenuController::kDeepResearchIdForTesting)),
+      InSameContext(SelectMenuItem(
+          OmniboxContextMenuController::kDeepResearchIdForTesting)),
+      // Wait for classic popup to hide and AIM popup to show.
+      InAnyContext(WaitForHide(kClassicPopupWebView)), WaitForAimPopupReady(),
       // Wait for deep search chip to render in AIM popup.
       InAnyContext(WaitForElementToRender(kAimPopupWebView, kDeepSearchChip)));
 }
@@ -612,23 +609,21 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
           WaitForStateChange(kClassicPopupWebView, visible_in_viewport)),
 
       // 4. Click the context menu and select the first tab.
-      MayInvolveNativeContextMenu(
 #if BUILDFLAG(IS_WIN)
-          // On Windows with pixel tests enabled, physical clicks fail because
-          // the element is outside the omnibox frame bounds. We call the Mojo
-          // method directly via JS to bypass bounds checks.
-          InSameContext(ExecuteJsAt(
-              kClassicPopupWebView, {"omnibox-popup-app"},
-              "el => el.popupPageHandler_.showContextMenu({x: 0, y: 0})")),
+      // On Windows with pixel tests enabled, physical clicks fail because
+      // the element is outside the omnibox frame bounds. We call the Mojo
+      // method directly via JS to bypass bounds checks.
+      InSameContext(ExecuteJsAt(
+          kClassicPopupWebView, {"omnibox-popup-app"},
+          "el => el.popupPageHandler_.showContextMenu({x: 0, y: 0})")),
 #else
-          InSameContext(
-              ClickElement(kClassicPopupWebView, kClassicContextMenu)),
+      InSameContext(ClickElement(kClassicPopupWebView, kClassicContextMenu)),
 #endif
-          InAnyContext(WaitForShow(
-              OmniboxContextMenuController::kFirstTabMenuItemIdForTesting)),
-          InSameContext(SelectMenuItem(
-              OmniboxContextMenuController::kFirstTabMenuItemIdForTesting)),
-          InAnyContext(WaitForHide(kClassicPopupWebView))),
+      InAnyContext(WaitForShow(
+          OmniboxContextMenuController::kFirstTabMenuItemIdForTesting)),
+      InSameContext(SelectMenuItem(
+          OmniboxContextMenuController::kFirstTabMenuItemIdForTesting)),
+      InAnyContext(WaitForHide(kClassicPopupWebView)),
 
       // 5. Verify that it transitions to AIM popup.
       WaitForAimPopupReady(),
@@ -878,14 +873,12 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimUploadInteractiveTest,
       InAnyContext(
           WaitForElementToRender(kClassicPopupWebView, kClassicContextMenu)),
       InAnyContext(ScrollIntoView(kClassicPopupWebView, kClassicContextMenu)),
-      MayInvolveNativeContextMenu(
-          // Open the context menu and click upload.
-          InSameContext(
-              ClickElement(kClassicPopupWebView, kClassicContextMenu)),
-          InAnyContext(WaitForShow(GetParam().upload_context_menu_item_id)),
-          InAnyContext(SelectMenuItem(GetParam().upload_context_menu_item_id)),
-          // Wait for classic popup to hide.
-          InAnyContext(WaitForHide(kClassicPopupWebView))),
+      // Open the context menu and click upload.
+      InSameContext(ClickElement(kClassicPopupWebView, kClassicContextMenu)),
+      InAnyContext(WaitForShow(GetParam().upload_context_menu_item_id)),
+      InAnyContext(SelectMenuItem(GetParam().upload_context_menu_item_id)),
+      // Wait for classic popup to hide.
+      InAnyContext(WaitForHide(kClassicPopupWebView)),
       // Wait for AIM popup to open.
       WaitForAimPopupReady(),
       // Wait for thumbnail to render in AIM popup.

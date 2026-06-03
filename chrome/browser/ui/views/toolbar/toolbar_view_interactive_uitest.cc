@@ -168,10 +168,8 @@ class ToolbarViewTest : public ToolbarAccessibilityTest {
 
     return Steps(NameDescendantViewByType<Tab>(kTabStripElementId, kTabToHover,
                                                tab_index),
-                 MoveMouseTo(kTabToHover),
-                 MayInvolveNativeContextMenu(
-                     ClickMouse(ui_controls::RIGHT),
-                     SelectMenuItem(TabMenuModel::kSplitTabsMenuItem)));
+                 MoveMouseTo(kTabToHover), ClickMouse(ui_controls::RIGHT),
+                 SelectMenuItem(TabMenuModel::kSplitTabsMenuItem));
   }
 
  private:

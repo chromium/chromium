@@ -196,12 +196,11 @@ IN_PROC_BROWSER_TEST_F(NewTabButtonContextMenuInteractiveUITest,
                        VerifyNewTabButtonContextMenu) {
   RunTestSequence(
       WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          WaitForShow(NewTabButtonMenuModel::kNewTab),
-          SelectMenuItem(NewTabButtonMenuModel::kNewTab),
-          CheckResult(
-              [this]() { return browser()->tab_strip_model()->count(); }, 2)));
+      ClickMouse(ui_controls::RIGHT),
+      WaitForShow(NewTabButtonMenuModel::kNewTab),
+      SelectMenuItem(NewTabButtonMenuModel::kNewTab),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2));
 }
 
 }  // namespace base::test

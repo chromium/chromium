@@ -116,15 +116,13 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
                        MAYBE_VerifyNewTabButtonContextMenu) {
   RunTestSequence(
       FinishTabstripAnimations(), EnsurePresent(kNewTabButtonElementId),
-      MoveMouseTo(kNewTabButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          EnsurePresent(NewTabButtonMenuModel::kNewTab),
-          EnsurePresent(NewTabButtonMenuModel::kNewTabInGroup),
-          EnsurePresent(NewTabButtonMenuModel::kNewSplitView),
-          EnsurePresent(NewTabButtonMenuModel::kCreateNewTabGroup),
-          SendAccelerator(NewTabButtonMenuModel::kNewTab,
-                          ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE))));
+      MoveMouseTo(kNewTabButtonElementId), ClickMouse(ui_controls::RIGHT),
+      EnsurePresent(NewTabButtonMenuModel::kNewTab),
+      EnsurePresent(NewTabButtonMenuModel::kNewTabInGroup),
+      EnsurePresent(NewTabButtonMenuModel::kNewSplitView),
+      EnsurePresent(NewTabButtonMenuModel::kCreateNewTabGroup),
+      SendAccelerator(NewTabButtonMenuModel::kNewTab,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)));
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -135,14 +133,12 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
 #endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
                        MAYBE_NewTabButtonContextMenuSplitView) {
-  RunTestSequence(FinishTabstripAnimations(),
-                  EnsurePresent(kNewTabButtonElementId),
-                  MoveMouseTo(kNewTabButtonElementId),
-                  MayInvolveNativeContextMenu(
-                      ClickMouse(ui_controls::RIGHT),
-                      EnsurePresent(NewTabButtonMenuModel::kNewTab),
-                      EnsurePresent(NewTabButtonMenuModel::kNewSplitView),
-                      SelectMenuItem(NewTabButtonMenuModel::kNewSplitView)));
+  RunTestSequence(
+      FinishTabstripAnimations(), EnsurePresent(kNewTabButtonElementId),
+      MoveMouseTo(kNewTabButtonElementId), ClickMouse(ui_controls::RIGHT),
+      EnsurePresent(NewTabButtonMenuModel::kNewTab),
+      EnsurePresent(NewTabButtonMenuModel::kNewSplitView),
+      SelectMenuItem(NewTabButtonMenuModel::kNewSplitView));
 
   BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
 
@@ -163,15 +159,13 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
                       split_tabs::SplitTabCreatedSource::kNewTabButton);
   RunTestSequence(
       FinishTabstripAnimations(), EnsurePresent(kNewTabButtonElementId),
-      MoveMouseTo(kNewTabButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          EnsurePresent(NewTabButtonMenuModel::kNewTab),
-          EnsurePresent(NewTabButtonMenuModel::kNewSplitView),
-          WaitForViewProperty(NewTabButtonMenuModel::kNewSplitView, views::View,
-                              Enabled, false),
-          SendAccelerator(NewTabButtonMenuModel::kNewTab,
-                          ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE))));
+      MoveMouseTo(kNewTabButtonElementId), ClickMouse(ui_controls::RIGHT),
+      EnsurePresent(NewTabButtonMenuModel::kNewTab),
+      EnsurePresent(NewTabButtonMenuModel::kNewSplitView),
+      WaitForViewProperty(NewTabButtonMenuModel::kNewSplitView, views::View,
+                          Enabled, false),
+      SendAccelerator(NewTabButtonMenuModel::kNewTab,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)));
 
   BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
 
@@ -191,14 +185,12 @@ IN_PROC_BROWSER_TEST_F(
     MAYBE_NewTabButtonNewTabInGroupDisabledWhenNoOpenGroups) {
   RunTestSequence(
       EnsurePresent(kNewTabButtonElementId),
-      MoveMouseTo(kNewTabButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          WaitForShow(NewTabButtonMenuModel::kNewTabInGroup),
-          WaitForViewProperty(NewTabButtonMenuModel::kNewTabInGroup,
-                              views::View, Enabled, false),
-          SendAccelerator(NewTabButtonMenuModel::kNewTab,
-                          ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE))));
+      MoveMouseTo(kNewTabButtonElementId), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(NewTabButtonMenuModel::kNewTabInGroup),
+      WaitForViewProperty(NewTabButtonMenuModel::kNewTabInGroup, views::View,
+                          Enabled, false),
+      SendAccelerator(NewTabButtonMenuModel::kNewTab,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)));
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -226,10 +218,8 @@ IN_PROC_BROWSER_TEST_F(TestNewTabButtonContextMenu,
       FinishTabstripAnimations(), SelectTab(kTabStripElementId, 1),
       SelectTab(kTabStripElementId, 2), SelectTab(kTabStripElementId, 3),
       SelectTab(kTabStripElementId, 2), SelectTab(kTabStripElementId, 0),
-      MoveMouseTo(kNewTabButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          SelectMenuItem(NewTabButtonMenuModel::kNewTabInGroup)),
+      MoveMouseTo(kNewTabButtonElementId), ClickMouse(ui_controls::RIGHT),
+      SelectMenuItem(NewTabButtonMenuModel::kNewTabInGroup),
       WaitForTabCount(browser(), 5),
       CheckResult(
           [&]() {

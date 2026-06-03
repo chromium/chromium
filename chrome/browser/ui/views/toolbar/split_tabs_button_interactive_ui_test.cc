@@ -420,28 +420,26 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, PinButtonWithMenu) {
       WaitForAXNode(), DoWaitForLayout(),
       // The split tab button should be unpinned and the menu should reflect
       // that.
-      MayInvolveNativeContextMenu(
-          RightClickSplitTabsButton(),
-          WaitForShow(kPinnedActionToolbarCustomizeElementId),
-          CheckSplitTabButtonPinState(false),
-          CheckMenuString(kPinnedActionToolbarPinElementId,
-                          IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN),
-          CheckMenuIcon(
-              kPinnedActionToolbarPinElementId,
-              features::IsRoundedIconsEnabled() ? kKeepIcon : kKeepOldIcon),
-          SelectMenuItem(kPinnedActionToolbarPinElementId)),
+      RightClickSplitTabsButton(),
+      WaitForShow(kPinnedActionToolbarCustomizeElementId),
+      CheckSplitTabButtonPinState(false),
+      CheckMenuString(kPinnedActionToolbarPinElementId,
+                      IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN),
+      CheckMenuIcon(
+          kPinnedActionToolbarPinElementId,
+          features::IsRoundedIconsEnabled() ? kKeepIcon : kKeepOldIcon),
+      SelectMenuItem(kPinnedActionToolbarPinElementId),
       WaitForHide(kPinnedActionToolbarPinElementId),
       // Verify that the split tab button is pinned.
-      MayInvolveNativeContextMenu(
-          RightClickSplitTabsButton(),
-          WaitForShow(kPinnedActionToolbarCustomizeElementId),
-          CheckSplitTabButtonPinState(true),
-          CheckMenuString(kPinnedActionToolbarUnpinElementId,
-                          IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN),
-          CheckMenuIcon(kPinnedActionToolbarUnpinElementId,
-                        features::IsRoundedIconsEnabled() ? kKeepOffIcon
-                                                          : kKeepOffOldIcon),
-          SelectMenuItem(kPinnedActionToolbarUnpinElementId)));
+      RightClickSplitTabsButton(),
+      WaitForShow(kPinnedActionToolbarCustomizeElementId),
+      CheckSplitTabButtonPinState(true),
+      CheckMenuString(kPinnedActionToolbarUnpinElementId,
+                      IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN),
+      CheckMenuIcon(
+          kPinnedActionToolbarUnpinElementId,
+          features::IsRoundedIconsEnabled() ? kKeepOffIcon : kKeepOffOldIcon),
+      SelectMenuItem(kPinnedActionToolbarUnpinElementId));
 }
 
 IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, UnpinButtonWithMenu) {
@@ -454,22 +452,20 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, UnpinButtonWithMenu) {
       WaitForAXNode(), DoWaitForLayout(), SelectTab(kTabStripElementId, 0),
       EnterSplitView(0, 1),
       // Unpin the split tab button with the menu item
-      MayInvolveNativeContextMenu(
-          RightClickSplitTabsButton(),
-          WaitForShow(kPinnedActionToolbarUnpinElementId),
-          SelectMenuItem(kPinnedActionToolbarUnpinElementId)),
+      RightClickSplitTabsButton(),
+      WaitForShow(kPinnedActionToolbarUnpinElementId),
+      SelectMenuItem(kPinnedActionToolbarUnpinElementId),
       WaitForHide(kPinnedActionToolbarUnpinElementId),
       // Verify the button is now unpinned and the menu should have
       // the pin option
-      MayInvolveNativeContextMenu(
-          RightClickSplitTabsButton(),
-          WaitForShow(kPinnedActionToolbarPinElementId),
-          CheckSplitTabButtonPinState(false),
-          CheckMenuString(kPinnedActionToolbarPinElementId,
-                          IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN),
-          CheckMenuIcon(
-              kPinnedActionToolbarPinElementId,
-              features::IsRoundedIconsEnabled() ? kKeepIcon : kKeepOldIcon)));
+      RightClickSplitTabsButton(),
+      WaitForShow(kPinnedActionToolbarPinElementId),
+      CheckSplitTabButtonPinState(false),
+      CheckMenuString(kPinnedActionToolbarPinElementId,
+                      IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN),
+      CheckMenuIcon(
+          kPinnedActionToolbarPinElementId,
+          features::IsRoundedIconsEnabled() ? kKeepIcon : kKeepOldIcon));
 }
 
 IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest,
@@ -480,12 +476,10 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest,
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
       WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
       WaitForElementNonzeroSize(kToolbarSplitTabsToolbarButtonElementId),
-      WaitForAXNode(), DoWaitForLayout(),
-      MayInvolveNativeContextMenu(
-          RightClickSplitTabsButton(),
-          WaitForShow(kPinnedActionToolbarCustomizeElementId),
-          EnsureNotPresent(kCustomizeChromeSidePanelWebViewElementId),
-          SelectMenuItem(kPinnedActionToolbarCustomizeElementId)),
+      WaitForAXNode(), DoWaitForLayout(), RightClickSplitTabsButton(),
+      WaitForShow(kPinnedActionToolbarCustomizeElementId),
+      EnsureNotPresent(kCustomizeChromeSidePanelWebViewElementId),
+      SelectMenuItem(kPinnedActionToolbarCustomizeElementId),
       WaitForHide(kPinnedActionToolbarCustomizeElementId),
       WaitForShow(kCustomizeChromeSidePanelWebViewElementId));
 }
@@ -545,13 +539,12 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest, ToggleMenu) {
       // Pressing the button while we are in a split should open the
       // menu instead.
       ClickSplitTabButton(),
-      MayInvolveNativeContextMenu(
-          WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
-          WaitForTabCount(2),
-          // Click on the button again while the menu for the split
-          // button is open and confirm it hides the menu.
-          ClickSplitTabButton(),
-          WaitForHide(SplitTabMenuModel::kReversePositionMenuItem)),
+      WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
+      WaitForTabCount(2),
+      // Click on the button again while the menu for the split
+      // button is open and confirm it hides the menu.
+      ClickSplitTabButton(),
+      WaitForHide(SplitTabMenuModel::kReversePositionMenuItem),
       WaitForTabCount(2));
 }
 
@@ -563,17 +556,16 @@ IN_PROC_BROWSER_TEST_P(SplitTabButtonInteractiveTest,
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
       WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
       WaitForElementNonzeroSize(kToolbarSplitTabsToolbarButtonElementId),
-      WaitForAXNode(), DoWaitForLayout(), ClickSplitTabButton(),
-      MayInvolveNativeContextMenu(
-          WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
-          CheckMenuString(SplitTabMenuModel::kReversePositionMenuItem,
-                          IDS_SPLIT_TAB_REVERSE_VIEWS),
-          CheckMenuIcon(SplitTabMenuModel::kReversePositionMenuItem,
-                        features::IsRoundedIconsEnabled()
-                            ? kSplitSceneRightIcon
-                            : kSplitSceneRightOldIcon),
-          DismissContextMenu(kToolbarSplitTabsToolbarButtonElementId,
-                             SplitTabMenuModel::kReversePositionMenuItem)),
+      ClickSplitTabButton(),
+      WaitForShow(SplitTabMenuModel::kReversePositionMenuItem),
+      CheckMenuString(SplitTabMenuModel::kReversePositionMenuItem,
+                      IDS_SPLIT_TAB_REVERSE_VIEWS),
+      CheckMenuIcon(SplitTabMenuModel::kReversePositionMenuItem,
+                    features::IsRoundedIconsEnabled()
+                        ? kSplitSceneRightIcon
+                        : kSplitSceneRightOldIcon),
+      DismissContextMenu(kToolbarSplitTabsToolbarButtonElementId,
+                         SplitTabMenuModel::kReversePositionMenuItem),
       WaitForHide(SplitTabMenuModel::kReversePositionMenuItem),
       // Change the focus and reopen the menu
       ObserveState(kActiveTabChanged, browser()->tab_strip_model()),

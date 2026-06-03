@@ -173,18 +173,17 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
             vertical_tab_strip_state_controller()->IsExpandOnHoverEnabled();
       }),
       MoveMouseTo(kVerticalTabStripCollapseButtonElementId),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          WaitForShow(VerticalTabStripTopContainer::
-                          kToggleVerticalTabsExpandOnHoverElementId),
-          SelectMenuItem(VerticalTabStripTopContainer::
-                             kToggleVerticalTabsExpandOnHoverElementId),
-          CheckResult(
-              [this, &initial_state]() {
-                return vertical_tab_strip_state_controller()
-                           ->IsExpandOnHoverEnabled() != initial_state;
-              },
-              true)));
+      ClickMouse(ui_controls::RIGHT),
+      WaitForShow(VerticalTabStripTopContainer::
+                      kToggleVerticalTabsExpandOnHoverElementId),
+      SelectMenuItem(VerticalTabStripTopContainer::
+                         kToggleVerticalTabsExpandOnHoverElementId),
+      CheckResult(
+          [this, &initial_state]() {
+            return vertical_tab_strip_state_controller()
+                       ->IsExpandOnHoverEnabled() != initial_state;
+          },
+          true));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
