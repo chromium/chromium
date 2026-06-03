@@ -27,6 +27,10 @@ class IdentityCredentialSource;
 
 namespace actor_login {
 
+// Fetcher for federated credentials.
+//
+// Note: For any critical implementation changes, update its test double
+// `FakeActorLoginFederatedCredentialFetcher`.
 class ActorLoginFederatedCredentialsFetcher
     : public ActorLoginCredentialsFetcher {
  public:

@@ -16,10 +16,6 @@
 
 class Profile;
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace actor_login {
 class ActorLoginWebContentInterface;
 }  // namespace actor_login
@@ -30,12 +26,13 @@ class PasswordManagerDriver;
 
 namespace actor_login {
 
+class FakeActorLoginSiwgController;
+
 // A test double of `ActorLoginDelegateClient` used in unit tests to inspect
 // delegate state and trigger test events.
 class FakeActorLoginDelegateClient : public ActorLoginDelegateClient {
  public:
   FakeActorLoginDelegateClient(Profile* profile,
-                               content::WebContents* web_contents,
                                const url::Origin& origin,
                                password_manager::PasswordManagerDriver* driver);
   ~FakeActorLoginDelegateClient() override;
@@ -73,8 +70,8 @@ class FakeActorLoginDelegateClient : public ActorLoginDelegateClient {
   // Convenience methods for testing purposes:
 
   // Returns true if `RemoveFederatedEmbedderLoginRequest` was called.
-  bool remove_federated_embedder_login_request_called() const {
-    return remove_federated_embedder_login_request_called_;
+  bool is_remove_federated_embedder_login_request_called() const {
+    return is_remove_federated_embedder_login_request_called_;
   }
 
   // Returns true if `ObserveControlStateForCurrentTask` was called with a valid
@@ -83,11 +80,23 @@ class FakeActorLoginDelegateClient : public ActorLoginDelegateClient {
     return !on_released_callback_.is_null();
   }
 
+  // Overwrites `ActorLoginSiwgController` behavior so it requires button click
+  // for all federated credentials. If not called, federated button click would
+  // never be required.
+  //
+  // Needs to be set before invoking `delegate->AttemptLogin`.
+  void set_test_requires_federated_button_click(bool value) {
+    test_requires_federated_button_click_ = value;
+  }
+
   // Returns the expected federated credentials that this client serves.
   std::vector<Credential> GetExpectedFederatedCredentials() const;
 
   // Triggers the control state released callback registered by the observer.
   void TriggerControlStateReleasedCallback();
+
+  // Simulates a click on the Sign-in with Google button.
+  void ClickSiwgButton(bool will_succeed);
 
   // Simulates primary page changes.
   void PrimaryPageChanged();
@@ -97,11 +106,12 @@ class FakeActorLoginDelegateClient : public ActorLoginDelegateClient {
 
  private:
   raw_ptr<Profile> profile_ = nullptr;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  bool test_requires_federated_button_click_;
   url::Origin origin_;
   raw_ptr<password_manager::PasswordManagerDriver> driver_;
   raw_ptr<ActorLoginWebContentInterface> web_interface_ = nullptr;
-  bool remove_federated_embedder_login_request_called_ = false;
+  raw_ptr<FakeActorLoginSiwgController> siwg_controller_ = nullptr;
+  bool is_remove_federated_embedder_login_request_called_ = false;
   base::OnceClosure on_released_callback_;
   base::WeakPtrFactory<FakeActorLoginDelegateClient> weak_ptr_factory_{this};
 };

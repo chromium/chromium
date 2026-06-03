@@ -36,6 +36,9 @@ namespace actor_login {
 // Controller for Sign-in with Google interaction.
 // This class manages the federated login flow when user selects a federated
 // credential.
+//
+// Note: For any critical implementation changes, update its test double
+// `FakeActorLoginSiwgController`.
 class ActorLoginSiwgController : public ActorLoginSiwgControllerInterface,
                                  public content::WebContentsObserver {
  public:

@@ -7,14 +7,15 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_cleaning_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
+#include "chrome/browser/password_manager/actor_login/internal/fake_actor_login_siwg_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics_helper.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_siwg_controller_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_web_content_interface.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_contents.h"
-#include "testing/gmock/include/gmock/gmock.h"
 
 namespace actor_login {
 
@@ -45,11 +46,9 @@ class FakeActorLoginFederatedCredentialFetcher
 
 FakeActorLoginDelegateClient::FakeActorLoginDelegateClient(
     Profile* profile,
-    content::WebContents* web_contents,
     const url::Origin& origin,
     password_manager::PasswordManagerDriver* driver)
     : profile_(profile),
-      web_contents_(web_contents),
       origin_(origin),
       driver_(driver) {}
 
@@ -104,13 +103,14 @@ FakeActorLoginDelegateClient::CreateSiwgController(
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
     base::OnceCallback<void(bool)> post_button_click_login_result_callback) {
-  auto* permission_service =
-      ActorLoginPermissionServiceFactory::GetForProfile(profile_);
-  return std::make_unique<ActorLoginSiwgController>(
-      web_contents_, credential, should_store_permission, *permission_service,
-      std::move(on_finished_callback), action_sequence_delegate, mqls_logger,
-      attempt_login_tool_start_time,
+  auto siwg_controller = std::make_unique<FakeActorLoginSiwgController>(
+      test_requires_federated_button_click_, should_store_permission,
+      std::move(on_finished_callback),
       std::move(post_button_click_login_result_callback));
+  if (test_requires_federated_button_click_) {
+    siwg_controller_ = siwg_controller.get();
+  }
+  return siwg_controller;
 }
 
 bool FakeActorLoginDelegateClient::IsTaskInFocus() {
@@ -127,7 +127,7 @@ FakeActorLoginDelegateClient::AsWeakPtr() {
 }
 
 void FakeActorLoginDelegateClient::RemoveFederatedEmbedderLoginRequest() {
-  remove_federated_embedder_login_request_called_ = true;
+  is_remove_federated_embedder_login_request_called_ = true;
 }
 
 void FakeActorLoginDelegateClient::ObserveControlStateForCurrentTask(
@@ -153,6 +153,12 @@ void FakeActorLoginDelegateClient::TriggerControlStateReleasedCallback() {
   if (on_released_callback_) {
     std::move(on_released_callback_).Run();
   }
+}
+
+void FakeActorLoginDelegateClient::ClickSiwgButton(bool will_succeed) {
+  CHECK(siwg_controller_);
+  siwg_controller_->OnSiwgButtonClicked(will_succeed);
+  siwg_controller_ = nullptr;
 }
 
 void FakeActorLoginDelegateClient::PrimaryPageChanged() {

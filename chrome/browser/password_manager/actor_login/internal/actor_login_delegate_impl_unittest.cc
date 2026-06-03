@@ -20,9 +20,7 @@
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_cleaning_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "chrome/browser/password_manager/actor_login/internal/fake_actor_login_delegate_client.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,9 +28,6 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
-#include "components/password_manager/core/browser/actor_login/internal/actor_login_credentials_fetcher.h"
-#include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate_client.h"
-#include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics_helper.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_cleaning_service.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
@@ -41,7 +36,6 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
-#include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -52,21 +46,19 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/webid/federated_embedder_login_request.h"
-#include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/common/content_features.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
-#include "content/public/test/test_renderer_host.h"
-#include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
+// TODO(crbug.com/519172533): Write integration tests to check the interaction
+// between the delegate, the `ActorLoginSiwgController`, the
+// `ActorLoginFederatedCredentialsFetcher`, and the
+// `ActorLoginCredentialFiller`.
 namespace actor_login {
 
 using autofill::FormData;
@@ -181,17 +173,6 @@ class MockPasswordManagerDriver
               (override));
 };
 
-class MockActionSequenceDelegate : public ActionSequenceDelegate {
- public:
-  MockActionSequenceDelegate() = default;
-  ~MockActionSequenceDelegate() override = default;
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterActionSequenceEnded,
-              (base::OnceCallback<void(bool)>),
-              (override));
-  MOCK_METHOD(void, OnFederatedLoginOutcome, (LoginStatusResult), (override));
-};
-
 }  // namespace
 
 class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
@@ -231,7 +212,7 @@ class ActorLoginDelegateImplTest : public ChromeRenderViewHostTestHarness {
         web_contents_.get(), GURL(kTestUrl));
 
     delegate_client_ = std::make_unique<FakeActorLoginDelegateClient>(
-        profile(), web_contents_.get(), test_origin_, &mock_driver_);
+        profile(), test_origin_, &mock_driver_);
 
     mock_tab_interface_ = std::make_unique<tabs::MockTabInterface>();
     tabs::TabLookupFromWebContents::CreateForWebContents(
@@ -866,14 +847,6 @@ TEST_F(ActorLoginDelegateImplTest,
   delegate_->AttemptLogin(credential, false, mqls_logger(),
                           base::TimeTicks::Now(), future.GetCallback(),
                           /*action_sequence_delegate=*/nullptr);
-
-  // Trigger completion for federated login.
-  auto* request =
-      content::webid::FederatedEmbedderLoginRequest::Get(test_contents);
-  ASSERT_TRUE(request);
-  request->OnFederatedResultReceived(
-      content::webid::FederatedLoginResult::kSuccess);
-
   ASSERT_TRUE(future.Get().has_value());
 
   histogram_tester.ExpectUniqueSample(
@@ -1451,7 +1424,7 @@ TEST_F(ActorLoginDelegateImplTest, RemovedOnUserTakeover) {
 
   EXPECT_FALSE(delegate_client_->has_on_released_callback());
   EXPECT_FALSE(
-      delegate_client_->remove_federated_embedder_login_request_called());
+      delegate_client_->is_remove_federated_embedder_login_request_called());
 
   base::test::TestFuture<LoginStatusResultOrError> attempt_login_future;
   delegate_->AttemptLogin(credential, /*should_store_permission=*/false,
@@ -1463,7 +1436,7 @@ TEST_F(ActorLoginDelegateImplTest, RemovedOnUserTakeover) {
   // not been called yet.
   ASSERT_TRUE(delegate_client_->has_on_released_callback());
   EXPECT_FALSE(
-      delegate_client_->remove_federated_embedder_login_request_called());
+      delegate_client_->is_remove_federated_embedder_login_request_called());
 
   // Simulate control state change to trigger the callback.
   delegate_client_->TriggerControlStateReleasedCallback();
@@ -1476,8 +1449,7 @@ TEST_F(ActorLoginDelegateImplTest, RemovedOnUserTakeover) {
   // Verify that the delegate client's `RemoveFederatedEmbedderLoginRequest` has
   // been called.
   EXPECT_TRUE(
-      delegate_client_->remove_federated_embedder_login_request_called());
-  testing::Mock::VerifyAndClearExpectations(delegate_client_.get());
+      delegate_client_->is_remove_federated_embedder_login_request_called());
 }
 
 TEST_F(ActorLoginDelegateImplTest,
@@ -1563,37 +1535,20 @@ TEST_F(ActorLoginDelegateImplTest,
   federation_detail.account_id = "12345";
   credential.federation_detail = federation_detail;
 
-  MockActionSequenceDelegate mock_action_delegate;
-  base::WeakPtrFactory<ActionSequenceDelegate> factory(&mock_action_delegate);
-
-  EXPECT_CALL(mock_action_delegate, RegisterActionSequenceEnded)
-      .WillOnce([&](base::OnceCallback<void(bool)> callback) {
-        return base::CallbackListSubscription();
-      });
-
   base::test::TestFuture<LoginStatusResultOrError> attempt_login_future;
+  delegate_client_->set_test_requires_federated_button_click(true);
   delegate_->AttemptLogin(credential, /*should_store_permission=*/true,
                           mqls_logger(), base::TimeTicks::Now(),
-                          attempt_login_future.GetCallback(),
-                          factory.GetWeakPtr());
+                          attempt_login_future.GetCallback(), {});
 
   ASSERT_TRUE(attempt_login_future.Wait());
   ASSERT_TRUE(attempt_login_future.Get().has_value());
   EXPECT_EQ(attempt_login_future.Get().value(),
             LoginStatusResult::kRequiresButtonClick);
 
-  auto* request =
-      content::webid::FederatedEmbedderLoginRequest::Get(web_contents_.get());
-  ASSERT_TRUE(request);
-  request->OnFederatedResultReceived(
-      content::webid::FederatedLoginResult::kContinuation);
-
   EXPECT_CALL(*mock_cleaning_service,
               ClearConflictingPermissions(Eq(credential), _, _));
-
-  static_cast<content::WebContentsObserver*>(
-      static_cast<ActorLoginSiwgController*>(delegate_->siwg_controller()))
-      ->OnFedCmFederatedLogin(true);
+  delegate_client_->ClickSiwgButton(true);
 }
 
 TEST_F(ActorLoginDelegateImplTest, FailedFederatedLoginDoesntClearPermissions) {
@@ -1679,34 +1634,19 @@ TEST_F(ActorLoginDelegateImplTest, FailedFederatedLoginDoesntClearPermissions) {
   federation_detail.account_id = "12345";
   credential.federation_detail = federation_detail;
 
-  MockActionSequenceDelegate mock_action_delegate;
-  base::WeakPtrFactory<ActionSequenceDelegate> factory(&mock_action_delegate);
-  base::OnceCallback<void(bool)> captured_callback;
-
-  EXPECT_CALL(mock_action_delegate, RegisterActionSequenceEnded)
-      .WillOnce([&](base::OnceCallback<void(bool)> callback) {
-        captured_callback = std::move(callback);
-        return base::CallbackListSubscription();
-      });
-
   base::test::TestFuture<LoginStatusResultOrError> attempt_login_future;
+  delegate_client_->set_test_requires_federated_button_click(true);
   delegate_->AttemptLogin(credential, /*should_store_permission=*/true,
                           mqls_logger(), base::TimeTicks::Now(),
-                          attempt_login_future.GetCallback(),
-                          factory.GetWeakPtr());
+                          attempt_login_future.GetCallback(), {});
 
   ASSERT_TRUE(attempt_login_future.Wait());
   ASSERT_TRUE(attempt_login_future.Get().has_value());
   EXPECT_EQ(attempt_login_future.Get().value(),
             LoginStatusResult::kRequiresButtonClick);
 
-  auto* request =
-      content::webid::FederatedEmbedderLoginRequest::Get(web_contents_.get());
-  ASSERT_TRUE(request);
-  request->OnFederatedResultReceived(
-      content::webid::FederatedLoginResult::kAccountIsSignUp);
-
   EXPECT_CALL(*mock_cleaning_service, ClearConflictingPermissions).Times(0);
+  delegate_client_->ClickSiwgButton(false);
 }
 
 TEST_F(ActorLoginDelegateImplTest,

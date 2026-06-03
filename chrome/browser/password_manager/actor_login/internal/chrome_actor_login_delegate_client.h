@@ -29,6 +29,9 @@ class TranslateManager;
 namespace actor_login {
 
 // Chrome-specific implementation of `ActorLoginDelegateClient`.
+//
+// Note: For any critical implementation changes, update its test double
+// `FakeActorLoginDelegateClient`.
 class ChromeActorLoginDelegateClient
     : public ActorLoginDelegateClient,
       public content::WebContentsObserver,
