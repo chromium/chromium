@@ -34,6 +34,8 @@ LockWindowState::~LockWindowState() = default;
 
 void LockWindowState::OnWMEvent(WindowState* window_state,
                                 const WMEvent* event) {
+  aura::Window::ScopedDeleteBlocker blocker(window_state->window());
+
   switch (event->type()) {
     case WM_EVENT_TOGGLE_FULLSCREEN:
       ToggleFullScreen(window_state, window_state->delegate());
