@@ -2690,6 +2690,7 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_PartialNodeMapping) {
 
   // Node 2 ("Hello") contains "llo"
   EXPECT_EQ(mapping[0].id, 2);
+  EXPECT_EQ(mapping[0].ax_node_offset, 2);
   EXPECT_EQ(mapping[0].start, 0);  // "llo" is at the start of our 7-char block
   EXPECT_EQ(mapping[0].end, 3);
 
@@ -2697,11 +2698,13 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_PartialNodeMapping) {
   EXPECT_EQ(mapping[1].id, 3);
   EXPECT_EQ(mapping[1].start, 3);
   EXPECT_EQ(mapping[1].end, 4);
+  EXPECT_EQ(mapping[1].ax_node_offset, 0);
 
   // Node 4 ("World!") contains "Wor"
   EXPECT_EQ(mapping[2].id, 4);
   EXPECT_EQ(mapping[2].start, 4);
   EXPECT_EQ(mapping[2].end, 7);  // End of our 7-char block
+  EXPECT_EQ(mapping[2].ax_node_offset, 0);
 }
 
 TEST_F(ReadAnythingAppModelTest, FlattenAXTree_BuildsContiguousString) {

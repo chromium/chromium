@@ -3122,7 +3122,7 @@ v8::Local<v8::Value> ReadAnythingAppController::GetAXMapping(int index) {
     segment_dict.Set("axNodeId", segment.id);
     segment_dict.Set("start", segment.start);
     segment_dict.Set("end", segment.end);
-
+    segment_dict.Set("axNodeOffset", segment.ax_node_offset);
     v8_segments->Set(context, static_cast<uint32_t>(i), segment_obj).Check();
   }
 

@@ -1893,6 +1893,8 @@ ReadAnythingAppModel::CreateSegmentsForMatch(size_t ax_start,
                                 block_internal_offset);
     ms.end = static_cast<int>(std::min(ax_end, seg_end) - ax_start +
                               block_internal_offset);
+    ms.ax_node_offset =
+        static_cast<int>(std::max(ax_start, seg_start) - seg_start);
     segments.push_back(ms);
   }
   return segments;
