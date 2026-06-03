@@ -1,0 +1,3 @@
+Tests that Page.addScriptToEvaluateOnLoad is executed on the initial about:blank document of a new target.
+Result: 123
+
