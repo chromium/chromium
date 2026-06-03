@@ -5946,6 +5946,15 @@ public class TabListMediatorUnitTest {
                 instanceOf(TabActionListener.class));
     }
 
+    private void mockTabIndexes(Tab... tabs) {
+        for (int i = 0; i < tabs.length; i++) {
+            Tab tab = tabs[i];
+            doReturn(tab).when(mTabModel).getTabAt(i);
+            doReturn(i).when(mTabModel).indexOf(tab);
+        }
+        doReturn(tabs.length).when(mTabModel).getCount();
+    }
+
     private Tab prepareTab(int id, String title, GURL url) {
         Tab tab = TabUiUnitTestUtils.prepareTab(id, title, url);
         when(tab.getView()).thenReturn(mock(View.class));
@@ -6473,5 +6482,175 @@ public class TabListMediatorUnitTest {
                 UiType.PRICE_MESSAGE,
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build());
         assertEquals(initialSize, mModelList.size());
+    }
+
+    @Test
+    public void testVerticalTabs_onTabPinnedStateChanged_ToPinnedSection() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+        mMediator.resetWithListOfTabs(null, null, false);
+
+        // Setup mTab2 as pinned, mTab1 as regular.
+        when(mTab2.getIsPinned()).thenReturn(true);
+        when(mTab1.getIsPinned()).thenReturn(false);
+
+        mockTabIndexes(mTab2, mTab1);
+
+        // Reset list with mTab2 (pinned) and mTab1 (regular).
+        mMediator.resetWithListOfTabs(Arrays.asList(mTab2, mTab1), null, false);
+
+        // List contains: [0] Pinned Tab 2, [1] Regular Tab 1.
+        assertEquals(2, mModelList.size());
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+
+        // Pin mTab1.
+        when(mTab1.getIsPinned()).thenReturn(true);
+
+        // Mock observer callback.
+        mTabObserverCaptor.getValue().onTabPinnedStateChanged(mTab1, true);
+
+        // Verifies that both are now marked as pinned, mTab1 stays at index 1 (after mTab2).
+        assertTrue(mModelList.get(0).model.get(TabProperties.IS_PINNED));
+        assertTrue(mModelList.get(1).model.get(TabProperties.IS_PINNED));
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
+    public void testVerticalTabs_onTabPinnedStateChanged_ToRegularSection() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+        mMediator.resetWithListOfTabs(null, null, false);
+
+        // Initially, both mTab1 and mTab2 are pinned.
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTab2.getIsPinned()).thenReturn(true);
+
+        mockTabIndexes(mTab1, mTab2);
+
+        // Reset list with both pinned.
+        mMediator.resetWithListOfTabs(Arrays.asList(mTab1, mTab2), null, false);
+
+        // List contains: [0] Pinned Tab 1, [1] Pinned Tab 2.
+        assertEquals(2, mModelList.size());
+        assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB2_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+
+        // Unpin mTab1.
+        when(mTab1.getIsPinned()).thenReturn(false);
+
+        mockTabIndexes(mTab2, mTab1);
+
+        // Trigger observer.
+        mTabObserverCaptor.getValue().onTabPinnedStateChanged(mTab1, false);
+
+        // Verifies that unpinned mTab1 moved to the regular section (index 1).
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertFalse(mModelList.get(1).model.get(TabProperties.IS_PINNED));
+    }
+
+    @Test
+    public void testVerticalTabs_tabAddition_ToPinnedRegularBoundary() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+        mMediator.resetWithListOfTabs(null, null, false);
+
+        // Setup mTab1 as pinned, mTab2 as regular.
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTab2.getIsPinned()).thenReturn(false);
+
+        // Prepare new tab: tab4 (pinned).
+        Tab tab4 = prepareTab(TAB4_ID, TAB4_TITLE, TAB4_URL);
+        when(tab4.getIsPinned()).thenReturn(true);
+
+        mockTabIndexes(mTab1, mTab2);
+
+        // Reset list with mTab1 (pinned) and mTab2 (regular).
+        mMediator.resetWithListOfTabs(Arrays.asList(mTab1, mTab2), null, false);
+
+        // List contains: [0] Pinned Tab 1, [1] Regular Tab 2.
+        assertEquals(2, mModelList.size());
+
+        mockTabIndexes(mTab1, tab4, mTab2);
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        tab4,
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND,
+                        false);
+
+        // List should contain: [0] Pinned Tab 1, [1] Pinned Tab 4, [2] Regular Tab 2.
+        assertEquals(3, mModelList.size());
+        assertEquals(TAB4_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertTrue(mModelList.get(1).model.get(TabProperties.IS_PINNED));
+        assertEquals(TAB2_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
+    public void testVerticalTabs_tabAddition_ToAfterRegularTab() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+        mMediator.resetWithListOfTabs(null, null, false);
+
+        // Setup mTab1 as pinned, mTab2 as regular.
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTab2.getIsPinned()).thenReturn(false);
+
+        // Prepare new tab: tab3 (regular).
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        when(tab3.getIsPinned()).thenReturn(false);
+
+        mockTabIndexes(mTab1, mTab2, tab3);
+
+        // Reset list with mTab1 (pinned) and mTab2 (regular).
+        mMediator.resetWithListOfTabs(Arrays.asList(mTab1, mTab2), null, false);
+
+        // List contains: [0] Pinned Tab 1, [1] Regular Tab 2.
+        assertEquals(2, mModelList.size());
+
+        // Add regular tab3 (index 2). It should go after all regular tabs.
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        tab3,
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND,
+                        false);
+
+        // List should contain: [0] Pinned Tab 1, [1] Regular Tab 2, [2] Regular Tab 3.
+        assertEquals(3, mModelList.size());
+        assertEquals(TAB3_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
+    public void testVerticalTabs_onTabUnpinned_IntoCollapsedGroup_RemovedFromUI() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+        mMediator.resetWithListOfTabs(null, null, false);
+
+        // Both mTab1 and mTab2 are pinned, and belong to a collapsed group.
+        when(mTab1.getIsPinned()).thenReturn(true);
+        when(mTab2.getIsPinned()).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        doReturn(true).when(mTabModel).getTabGroupCollapsed(TAB_GROUP_ID);
+
+        mockTabIndexes(mTab1, mTab2);
+
+        // Reset list with both pinned tabs visible.
+        mMediator.resetWithListOfTabs(Arrays.asList(mTab1, mTab2), null, false);
+        assertEquals(2, mModelList.size());
+
+        // Unpin mTab1.
+        when(mTab1.getIsPinned()).thenReturn(false);
+
+        // Trigger observer callback.
+        mTabObserverCaptor.getValue().onTabPinnedStateChanged(mTab1, false);
+
+        // Verifies that since mTab1 is unpinned into a collapsed group, it is removed from the UI
+        // list.
+        assertEquals(1, mModelList.size());
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
     }
 }

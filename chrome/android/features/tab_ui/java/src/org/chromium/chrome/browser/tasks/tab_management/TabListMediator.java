@@ -696,6 +696,8 @@ public class TabListMediator implements TabListNotificationHandler {
                 @Override
                 public void onTabPinnedStateChanged(Tab tab, boolean isPinned) {
                     int index = mModelList.indexFromTabId(tab.getId());
+                    if (index == TabModel.INVALID_TAB_INDEX) return;
+
                     updateTab(index, tab, /* isUpdatingId= */ false, /* quickMode= */ false);
 
                     // When pinning a tab in a group it will be removed from the group so the index
@@ -703,16 +705,22 @@ public class TabListMediator implements TabListNotificationHandler {
                     if (!mActionsOnAllRelatedTabs) return;
 
                     int finalIndex =
-                            mModelList.indexOfNthTabCard(getCurrentTabModelChecked().indexOf(tab));
+                            mSupportsNestedTabGroups
+                                    ? getInsertionIndexOfTabForNestedGroups(tab)
+                                    : mModelList.indexOfNthTabCard(
+                                            getCurrentTabModelChecked().indexOf(tab));
                     // indexOfNthTabCard returns n + 1 if the index is higher than the number of
                     // tabs in the model list. Moving is implemented as removal then addition.
                     // The last valid index to add to is the size of the model list after the
                     // removal so we need to clamp to mModelList.size() - 1.
-                    finalIndex = Math.min(finalIndex, mModelList.size() - 1);
-                    if (index != finalIndex
-                            && index != TabModel.INVALID_TAB_INDEX
-                            && finalIndex != TabModel.INVALID_TAB_INDEX) {
-                        mModelList.move(index, finalIndex);
+                    if (finalIndex == TabModel.INVALID_TAB_INDEX) {
+                        mModelList.removeAt(index);
+                    } else {
+                        finalIndex = Math.min(finalIndex, mModelList.size() - 1);
+                        if (index != finalIndex) {
+                            mModelList.move(index, finalIndex);
+                        }
+                        mModelList.update(finalIndex, mModelList.get(finalIndex));
                     }
                 }
             };
@@ -1678,6 +1686,12 @@ public class TabListMediator implements TabListNotificationHandler {
     private int getInsertionIndexOfTab(Tab tab, boolean onlyShowRelatedTabs) {
         if (tab == null) return TabList.INVALID_TAB_INDEX;
 
+        return mSupportsNestedTabGroups
+                ? getInsertionIndexOfTabForNestedGroups(tab)
+                : getInsertionIndexOfTabForFlatGroups(tab, onlyShowRelatedTabs);
+    }
+
+    private int getInsertionIndexOfTabForFlatGroups(Tab tab, boolean onlyShowRelatedTabs) {
         int tabIndex = TabList.INVALID_TAB_INDEX;
         if (onlyShowRelatedTabs) {
             // Compute the index of the tab within the tab's group.
@@ -1708,6 +1722,138 @@ public class TabListMediator implements TabListNotificationHandler {
         // Get the position of the nth tab card ignoring any other CARD_TYPE entries present in the
         // model list outside of TAB and TAB_GROUP.
         return mModelList.indexOfNthTabCard(tabIndex);
+    }
+
+    /**
+     * Spatial indexing helper for nested layouts. Maps a backend Tab's absolute index to its
+     * corresponding UI list position.
+     */
+    private int getInsertionIndexOfTabForNestedGroups(Tab tab) {
+        if (tab == null) return TabList.INVALID_TAB_INDEX;
+
+        TabModel tabModel = getCurrentTabModelChecked();
+
+        // Pre-compute the backend index lookup map to avoid nested lookups.
+        Map<Integer, Integer> tabIdToBackendIndexMap = new HashMap<>();
+        for (int i = 0; i < tabModel.getCount(); i++) {
+            Tab t = tabModel.getTabAt(i);
+            if (t != null) {
+                tabIdToBackendIndexMap.put(t.getId(), i);
+            }
+        }
+
+        Integer targetTabModelIndex = tabIdToBackendIndexMap.get(tab.getId());
+        if (targetTabModelIndex == null) {
+            return TabList.INVALID_TAB_INDEX;
+        }
+
+        boolean isTargetTabPinned = tab.getIsPinned();
+        Token targetTabGroupId = tab.getTabGroupId();
+        if (targetTabGroupId != null && tabModel.getTabGroupCollapsed(targetTabGroupId)) {
+            return TabList.INVALID_TAB_INDEX; // Hidden if the group is collapsed.
+        }
+
+        int targetTabCurrentIndex = mModelList.indexFromTabId(tab.getId());
+        int targetInsertionUiIndex = TabModel.INVALID_TAB_INDEX;
+        boolean isScanningTargetGroup = false;
+
+        for (int currentIndex = 0; currentIndex < mModelList.size(); currentIndex++) {
+            if (currentIndex == targetTabCurrentIndex) {
+                continue;
+            }
+
+            PropertyModel currentModel = mModelList.get(currentIndex).model;
+            if (currentModel.get(CARD_TYPE) != TAB) {
+                continue;
+            }
+            int currentTabId = currentModel.get(TabProperties.TAB_ID);
+            Tab currentTab = tabModel.getTabById(currentTabId);
+            if (currentTab == null) {
+                continue;
+            }
+            Integer currentTabModelIndex = tabIdToBackendIndexMap.get(currentTabId);
+            if (currentTabModelIndex == null) {
+                continue;
+            }
+
+            // If the current card is pinned:
+            // - If target tab is regular, skip it (regular tabs go after pinned tabs).
+            // - If target tab is pinned, insert it here if its backend index is smaller than the
+            // current pinned card's backend index (to preserve relative order). Otherwise, skip it.
+            if (isPinnedCard(currentModel)) {
+                if (isTargetTabPinned) {
+                    if (hasHigherBackendIndex(currentTabModelIndex, targetTabModelIndex)) {
+                        return adjustIndexForTabMovement(currentIndex, targetTabCurrentIndex);
+                    }
+                }
+                continue;
+            }
+
+            // If we reach the first regular card and the target tab is pinned, it belongs at the
+            // end of the pinned tab section.
+            if (isTargetTabPinned) {
+                return adjustIndexForTabMovement(currentIndex, targetTabCurrentIndex);
+            }
+
+            // For tabs belonging to a group, find the group header, scan its children, and insert
+            // the tab in relative backend order.
+            if (targetTabGroupId != null) {
+                // Match the target group's header card.
+                if (isTabGroupHeader(currentModel)) {
+                    if (targetTabGroupId.equals(currentTab.getTabGroupId())) {
+                        isScanningTargetGroup = true;
+                        targetInsertionUiIndex =
+                                adjustIndexForTabMovement(currentIndex + 1, targetTabCurrentIndex);
+                        continue;
+                    }
+                }
+
+                // Scan consecutive children of this group.
+                if (isScanningTargetGroup) {
+                    if (targetTabGroupId.equals(currentModel.get(TabProperties.TAB_GROUP_ID))) {
+                        // Insert before the first sibling with a higher index.
+                        if (hasHigherBackendIndex(currentTabModelIndex, targetTabModelIndex)) {
+                            return adjustIndexForTabMovement(currentIndex, targetTabCurrentIndex);
+                        }
+                        targetInsertionUiIndex =
+                                adjustIndexForTabMovement(currentIndex + 1, targetTabCurrentIndex);
+                    } else {
+                        // Insert at the end of the group after exiting its children bounds.
+                        return targetInsertionUiIndex;
+                    }
+                }
+            }
+            // For standalone tabs or group headers, compare with top-level items.
+            else {
+                // Only compare top-level items, skip nested child rows.
+                if (currentModel.get(TabProperties.TAB_GROUP_ID) != null) {
+                    continue;
+                }
+
+                // Resolve the maximum backend index: for group headers, it is the highest index
+                // among all tabs in that group; for standalone tabs, it is the tab's own index.
+                int maxIndex = TabModel.INVALID_TAB_INDEX;
+                if (isTabGroupHeader(currentModel)) {
+                    List<Tab> groupTabs = tabModel.getRelatedTabList(currentTabId);
+                    for (Tab t : groupTabs) {
+                        Integer idx = tabIdToBackendIndexMap.get(t.getId());
+                        if (idx != null) {
+                            maxIndex = Math.max(maxIndex, idx);
+                        }
+                    }
+                } else {
+                    maxIndex = currentTabModelIndex;
+                }
+
+                if (hasHigherBackendIndex(maxIndex, targetTabModelIndex)) {
+                    return adjustIndexForTabMovement(currentIndex, targetTabCurrentIndex);
+                }
+            }
+        }
+
+        return targetInsertionUiIndex != TabModel.INVALID_TAB_INDEX
+                ? targetInsertionUiIndex
+                : adjustIndexForTabMovement(mModelList.size(), targetTabCurrentIndex);
     }
 
     private int onTabAdded(Tab tab, boolean onlyShowRelatedTabs) {
@@ -2767,10 +2913,41 @@ public class TabListMediator implements TabListNotificationHandler {
         return selectionDelegate == null ? 0 : selectionDelegate.getSelectedItems().size();
     }
 
+    private boolean hasHigherBackendIndex(int modelIndex, int targetModelIndex) {
+        return modelIndex != TabModel.INVALID_TAB_INDEX && modelIndex > targetModelIndex;
+    }
+
+    /**
+     * Adjusts the proposed insertion UI index if the tab is being moved from an earlier position.
+     *
+     * <p>If a tab is already present in the UI list (meaning it is being moved rather than newly
+     * inserted) and its current UI index is less than the proposed insertion index, removing the
+     * tab from its old position will shift all subsequent UI indices down by one. We must decrement
+     * the insertion index by one to account for this shift.
+     *
+     * @param currentIndex The proposed insertion UI index.
+     * @param targetTabCurrentIndex The current UI index of the tab being moved, or
+     *     TabModel.INVALID_TAB_INDEX if the tab is not currently in the UI list.
+     * @return The adjusted insertion UI index.
+     */
+    private int adjustIndexForTabMovement(int currentIndex, int targetTabCurrentIndex) {
+        if (targetTabCurrentIndex != TabModel.INVALID_TAB_INDEX
+                && currentIndex > targetTabCurrentIndex) {
+            return currentIndex - 1;
+        }
+        return currentIndex;
+    }
+
+    private boolean isPinnedCard(PropertyModel model) {
+        return model.get(CARD_TYPE) == TAB && model.get(TabProperties.IS_PINNED);
+    }
+
     private boolean isTabGroupHeader(PropertyModel model) {
+        if (model.get(CARD_TYPE) != TAB) {
+            return false;
+        }
         return model.get(TabProperties.TAB_GROUP_HEADER_ID) != null
-                || (model.get(CARD_TYPE) == TAB
-                        && model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null
+                || (model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null
                         && model.get(TabProperties.TAB_GROUP_ID) == null);
     }
 
