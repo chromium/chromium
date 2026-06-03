@@ -8831,12 +8831,12 @@
             ],
             "experiments": [
                 {
-                    "name": "PedalRowWithPlusButtonOnly_20260512",
+                    "name": "PedalRowWithSuggestionLikeButton",
                     "params": {
                         "Omnibox_AddContextButtonVariant": "below_results",
                         "Omnibox_ContextButtonHasBackground": "false",
                         "Omnibox_ContextButtonShapeIsOblong": "true",
-                        "Omnibox_ContextButtonShowSuggestionLabel": "false",
+                        "Omnibox_ContextButtonShowSuggestionLabel": "true",
                         "Omnibox_HideClassicContextButton": "false",
                         "Omnibox_ShowLensSearchChip": "false"
                     },
