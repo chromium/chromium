@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
@@ -30,8 +29,7 @@ inline constexpr base::TimeDelta kSmsRefetchInterval = base::Seconds(5);
 inline constexpr base::TimeDelta kCacheDurationForOldTokens = base::Minutes(3);
 
 // Service to subscribe to one time tokens. One instance per profile.
-class OneTimeTokenServiceImpl : public OneTimeTokenService,
-                                public KeyedService {
+class OneTimeTokenServiceImpl : public OneTimeTokenService {
  public:
   // If `sms_otp_backend` is null, this class does not do any SMS-based
   // subscriptions. If `gmail_otp_backend` is null, this class does not do any

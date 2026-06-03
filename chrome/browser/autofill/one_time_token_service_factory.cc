@@ -42,7 +42,7 @@ OneTimeTokenServiceFactory* OneTimeTokenServiceFactory::GetInstance() {
 
 OneTimeTokenService* OneTimeTokenServiceFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<OneTimeTokenServiceImpl*>(
+  return static_cast<OneTimeTokenService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
