@@ -36,6 +36,8 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -54,6 +56,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures({ChromeFeatureList.DISABLE_SCROLLBAR_OF_FADING_EDGE_SCROLLVIEW})
 public class ChoiceScreenRenderTest {
     public @ClassParameter static List<ParameterSet> params = new NightModeParams().getParameters();
 
