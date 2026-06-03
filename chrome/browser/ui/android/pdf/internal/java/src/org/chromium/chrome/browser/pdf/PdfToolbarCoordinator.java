@@ -101,6 +101,8 @@ public class PdfToolbarCoordinator implements View.OnClickListener, View.OnKeyLi
             mDelegate.rotate();
         } else if (actionId == R.id.more_menu_button) {
             showMenu(view);
+        } else if (actionId == R.id.print_button) {
+            mDelegate.print();
         }
     }
 

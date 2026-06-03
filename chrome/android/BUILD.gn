@@ -925,8 +925,10 @@ if (_is_default_toolchain) {
     sources += unmodularized_bookmarks_java_files
 
     if (enable_printing) {
-      sources +=
-          [ "java/src/org/chromium/chrome/browser/printing/TabPrinter.java" ]
+      sources += [
+        "java/src/org/chromium/chrome/browser/printing/PrintHelper.java",
+        "java/src/org/chromium/chrome/browser/printing/TabPrinter.java",
+      ]
       deps += [
         "//base:supplier_java",
         "//printing:printing_java",

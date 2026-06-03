@@ -167,9 +167,8 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
-import org.chromium.chrome.browser.printing.TabPrinter;
+import org.chromium.chrome.browser.printing.PrintHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
@@ -230,7 +229,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.signin.StartupSigninStateCheckController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.webapps.AppInstallMenuHandler;
@@ -264,9 +262,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.printing.PrintManagerDelegateImpl;
-import org.chromium.printing.PrintingController;
-import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ApplicationViewportInsetTracker;
@@ -281,12 +276,10 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.theme.ThemeResourceWrapper;
 import org.chromium.ui.theme.ThemeResourceWrapperProvider;
-import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * A {@link AsyncInitializationActivity} that builds and manages a {@link CompositorViewHolder} and
@@ -3020,7 +3013,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         if (id == R.id.print_id) {
             RecordUserAction.record("MobileMenuPrint");
-            return doPrintShare(this, mActivityTabProvider);
+            return PrintHelper.printTab(mActivityTabProvider.get());
         }
 
         if (id == R.id.universal_install) {
@@ -3363,32 +3356,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     public SettableMonotonicObservableSupplier<EdgeToEdgeController>
             getEdgeToEdgeControllerSupplierForTesting() {
         return mEdgeToEdgeControllerSupplier;
-    }
-
-    /** Returns whether the print action was successfully started. */
-    private boolean doPrintShare(Activity activity, Supplier<Tab> currentTabSupplier) {
-        var windowAndroid = getWindowAndroid();
-        assert windowAndroid != null;
-        PrintingController printingController = PrintingControllerImpl.getInstance(windowAndroid);
-
-        Tab currentTab = currentTabSupplier.get();
-        if (currentTab == null) return false;
-        if (printingController == null || printingController.isBusy()) return false;
-        if (!UserPrefs.get(currentTab.getProfile()).getBoolean(Pref.PRINTING_ENABLED)) {
-            return false;
-        }
-
-        if (currentTab.isNativePage()) {
-            NativePage nativePage = currentTab.getNativePage();
-            if (nativePage != null && !nativePage.isPdf()) {
-                Toast.makeText(activity, R.string.toast_disallow_print, Toast.LENGTH_LONG).show();
-                return false;
-            }
-        }
-
-        printingController.startPrint(
-                new TabPrinter(currentTab), new PrintManagerDelegateImpl(activity));
-        return true;
     }
 
     /** Returns a {@link CompositorViewHolder} instance for testing. */

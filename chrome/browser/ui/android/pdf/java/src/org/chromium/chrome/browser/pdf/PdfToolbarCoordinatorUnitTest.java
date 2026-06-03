@@ -400,4 +400,12 @@ public class PdfToolbarCoordinatorUnitTest {
         assertFalse(mPdfToolbarCoordinator.onKey(mPdfPageView, KeyEvent.KEYCODE_EQUALS, event));
         verify(mDelegate, org.mockito.Mockito.never()).changeZoomLevel(anyFloat());
     }
+
+    @Test
+    public void testPrintButtonClick() {
+        View printButton = mPdfPageView.findViewById(R.id.print_button);
+        org.junit.Assert.assertNotNull("Print button should not be null", printButton);
+        printButton.performClick();
+        verify(mDelegate).print();
+    }
 }

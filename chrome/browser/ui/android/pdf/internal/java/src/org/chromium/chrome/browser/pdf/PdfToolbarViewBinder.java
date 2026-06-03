@@ -51,6 +51,7 @@ class PdfToolbarViewBinder {
             view.findViewById(R.id.more_menu_button).setOnClickListener(listener);
             view.findViewById(R.id.download_button).setOnClickListener(listener);
             view.findViewById(R.id.rotate_button).setOnClickListener(listener);
+            view.findViewById(R.id.print_button).setOnClickListener(listener);
         } else if (PdfToolbarProperties.TITLE == key) {
             TextView title = view.findViewById(R.id.pdf_title);
             title.setText(model.get(PdfToolbarProperties.TITLE));

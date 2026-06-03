@@ -469,6 +469,14 @@ public class PdfCoordinatorUnitTest {
         assertEquals(android.view.View.VISIBLE, container.getVisibility());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testPrint() {
+        createPdfCoordinator();
+        mPdfCoordinator.print();
+        verify(mNativePageHost).print();
+    }
+
     @Implements(PdfView.class)
     public static class ShadowPdfView extends ShadowView {
         public PdfPoint mPdfPoint;

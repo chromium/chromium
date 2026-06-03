@@ -45,6 +45,9 @@ public interface PdfToolbarActionsDelegate {
     /** Downloads the PDF document. */
     void download();
 
+    /** Triggers printing for the PDF document. */
+    void print();
+
     /** Rotates the PDF document. */
     void rotate();
 }

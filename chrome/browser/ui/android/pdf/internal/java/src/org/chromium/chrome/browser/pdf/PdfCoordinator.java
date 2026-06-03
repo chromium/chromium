@@ -742,6 +742,30 @@ public class PdfCoordinator
         mChromePdfViewerFragment.fitToPage(fitToPageHeight, pageIndex);
     }
 
+    @Override
+    public void toggleTwoPagesPerRow(
+            boolean twoPagesPerRowEnabled, float zoomLevel, int currentPageIndex) {
+        assert mToolbarCoordinator != null;
+        mChromePdfViewerFragment.setPagesPerRow(twoPagesPerRowEnabled);
+        mChromePdfViewerFragment.zoomTo(zoomLevel);
+        mChromePdfViewerFragment.scrollToPage(currentPageIndex);
+    }
+
+    @Override
+    public void download() {
+        // TODO(crbug.com/501138999): Implement download action
+    }
+
+    @Override
+    public void print() {
+        mNativePageHost.print();
+    }
+
+    @Override
+    public void rotate() {
+        // TODO(crbug.com/501138999): Implement rotate action
+    }
+
     // Implementation of PdfActionsDelegate
 
     @Override
@@ -815,22 +839,4 @@ public class PdfCoordinator
         mToolbarCoordinator.onViewportChanged(pageIndex, zoomLevel);
     }
 
-    @Override
-    public void toggleTwoPagesPerRow(
-            boolean twoPagesPerRowEnabled, float zoomLevel, int currentPageIndex) {
-        assert mToolbarCoordinator != null;
-        mChromePdfViewerFragment.setPagesPerRow(twoPagesPerRowEnabled);
-        mChromePdfViewerFragment.zoomTo(zoomLevel);
-        mChromePdfViewerFragment.scrollToPage(currentPageIndex);
-    }
-
-    @Override
-    public void download() {
-        // TODO(crbug.com/501138999): Implement download action
-    }
-
-    @Override
-    public void rotate() {
-        // TODO(crbug.com/501138999): Implement rotate action
-    }
 }

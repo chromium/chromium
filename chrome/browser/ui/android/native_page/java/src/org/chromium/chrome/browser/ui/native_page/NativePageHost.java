@@ -58,4 +58,7 @@ public interface NativePageHost {
      * @return A {@link EdgeToEdgePadAdjuster} to update the edge-to-edge pad.
      */
     EdgeToEdgePadAdjuster createEdgeToEdgePadAdjuster(View view);
+
+    /** Triggers printing for the hosted page. */
+    default void print() {}
 }

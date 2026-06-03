@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ntp.RecentTabsPage;
 import org.chromium.chrome.browser.pdf.PdfFragmentViewTrackerImpl;
 import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.pdf.PdfPage;
+import org.chromium.chrome.browser.printing.PrintHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -669,6 +670,11 @@ public class NativePageFactory {
         public EdgeToEdgePadAdjuster createEdgeToEdgePadAdjuster(View view) {
             return EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                     view, mEdgeToEdgeControllerSupplier);
+        }
+
+        @Override
+        public void print() {
+            PrintHelper.printTab(mTab);
         }
     }
 
