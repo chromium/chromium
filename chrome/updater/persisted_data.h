@@ -223,7 +223,6 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
 };
 
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry);
-void MigrateObsoletePersistedDataPrefs(PrefService* pref_service);
 
 }  // namespace updater
 

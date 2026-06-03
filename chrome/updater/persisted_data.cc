@@ -59,7 +59,6 @@ constexpr char kAPKey[] = "ap_key";
 constexpr char kLang[] = "lang";
 
 constexpr char kHadApps[] = "had_apps";
-constexpr char kUsageStatsEnabledKey[] = "usage_stats_enabled";
 constexpr char kRemoteLoggingCookie[] = "remote_logging_cookie";
 constexpr char kNextAllowedLoggingAttemptTime[] = "next_logging_attempt_time";
 constexpr char kEulaRequired[] = "eula_required";
@@ -867,14 +866,6 @@ void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry) {
   registry->RegisterTimePref(kLastStarted, {});
   registry->RegisterStringPref(kLastOSVersion, {});
   registry->RegisterDictionaryPref(kRemoteLoggingCookie, {});
-
-  // TODO(crbug.com/422187975): Remove obsolete pref no earlier than 6/3/2026.
-  registry->RegisterBooleanPref(kUsageStatsEnabledKey, false);
-}
-
-void MigrateObsoletePersistedDataPrefs(PrefService* pref_service) {
-  // TODO(crbug.com/422187975): Remove obsolete pref no earlier than 6/3/2026.
-  pref_service->ClearPref(kUsageStatsEnabledKey);
 }
 
 }  // namespace updater

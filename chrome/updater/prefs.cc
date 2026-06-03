@@ -146,8 +146,6 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefsInternal(
     return nullptr;
   }
 
-  MigrateObsoletePersistedDataPrefs(pref_service.get());
-
   return base::MakeRefCounted<UpdaterPrefsImpl>(
       *global_prefs_dir, std::move(lock), std::move(pref_service));
 }
