@@ -147,6 +147,18 @@ void MojoVideoEncodeAcceleratorService::Initialize(
           .Run({EncoderStatus::Codes::kEncoderInitializationError});
       return;
     }
+    if (spatial_layer.width > config.input_visible_size.width() ||
+        spatial_layer.height > config.input_visible_size.height()) {
+      MEDIA_LOG(ERROR, media_log_.get())
+          << __func__
+          << " spatial layer size is larger than input_visible_size: "
+          << spatial_layer.width << "x" << spatial_layer.height << " vs "
+          << config.input_visible_size.ToString();
+
+      std::move(success_callback)
+          .Run({EncoderStatus::Codes::kEncoderInitializationError});
+      return;
+    }
   }
 
   encoder_.reset();
