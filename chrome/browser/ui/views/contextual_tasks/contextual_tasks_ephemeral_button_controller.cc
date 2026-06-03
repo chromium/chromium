@@ -148,7 +148,7 @@ void ContextualTasksEphemeralButtonController::OnEntryWillHide(
 
 void ContextualTasksEphemeralButtonController::OnEntryHideCancelled(
     SidePanelEntry* entry) {
-  if (contextual_tasks::kShowEntryPoint.Get() !=
+  if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     is_hiding_contextual_tasks_panel_ = false;
     is_contextual_tasks_panel_open_ = true;
@@ -158,7 +158,7 @@ void ContextualTasksEphemeralButtonController::OnEntryHideCancelled(
 
 void ContextualTasksEphemeralButtonController::OnEntryHidden(
     SidePanelEntry* entry) {
-  if (contextual_tasks::kShowEntryPoint.Get() !=
+  if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     is_hiding_contextual_tasks_panel_ = false;
     is_contextual_tasks_panel_open_ = false;
