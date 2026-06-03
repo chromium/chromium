@@ -4477,7 +4477,7 @@
       "--enable-features=WebMachineLearningNeuralNetwork",
       "--disable-features=WebNNOnnxRuntime"
     ],
-    "expires": "Jun 1, 2026",
+    "expires": "Jun 1, 2027",
     "owners": [
       "rafael.cintron@microsoft.com",
       "ningxin.hu@intel.com",
@@ -4747,7 +4747,7 @@
       "--enable-features=WebMachineLearningNeuralNetwork",
       "--disable-features=WebNNOnnxRuntime"
     ],
-    "expires": "Jun 1, 2026",
+    "expires": "Jun 1, 2027",
     "owners": [
       "rafael.cintron@microsoft.com",
       "ningxin.hu@intel.com",
@@ -5019,7 +5019,7 @@
       "--enable-features=WebMachineLearningNeuralNetwork",
       "--disable-features=WebNNOnnxRuntime"
     ],
-    "expires": "Jun 1, 2026",
+    "expires": "Jun 1, 2027",
     "owners": [
       "rafael.cintron@microsoft.com",
       "ningxin.hu@intel.com",
