@@ -32,14 +32,9 @@ DisplayLinkMacMojo::DisplayLinkMacMojo(
   StartWithOptions(base::Thread::Options(std::move(thread_options)));
 
   // To ensure VSyncThread task_runner() is valid, StartWithOptions() must be
-  // called before ConnectVSyncIpc().
+  // called before connecting the VSync IPC and adding the display observer,
+  // which are done on the browser main thread.
   ConnectVSyncIpcAndAddDisplayObserver(host_frame_sink_manager);
-
-  // Now |external_begin_frame_controller_| is valid after ConnectVSyncIpc(). We
-  // can start getting DisplayLinks for all displays.
-  task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DisplayLinkMacMojo::InitDisplaysOnVSyncThread,
-                                base::Unretained(this)));
 }
 
 DisplayLinkMacMojo::~DisplayLinkMacMojo() {
@@ -49,14 +44,20 @@ DisplayLinkMacMojo::~DisplayLinkMacMojo() {
   Stop();
 }
 
-void DisplayLinkMacMojo::InitDisplaysOnVSyncThread() {
+void DisplayLinkMacMojo::InitDisplaysOnVSyncThread(
+    std::vector<int64_t> display_ids,
+    mojo::Remote<viz::mojom::ExternalBeginFrameController>
+        external_begin_frame_controller,
+    std::unique_ptr<
+        mojo::Receiver<viz::mojom::ExternalBeginFrameControllerClient>>
+        client_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_thread_sequence_checker_);
+  external_begin_frame_controller_ = std::move(external_begin_frame_controller);
+  client_receiver_ = std::move(client_receiver);
 
   // Create CADisplayLink for all displays.
-  const std::vector<display::Display>& displays =
-      display::Screen::Get()->GetAllDisplays();
-  for (const auto& display : displays) {
-    DisplayAddedOnVSyncThread(display.id());
+  for (int64_t display_id : display_ids) {
+    DisplayAddedOnVSyncThread(display_id);
   }
 }
 
@@ -80,8 +81,9 @@ void DisplayLinkMacMojo::ResetStateOnVSyncThread() {
 }
 
 // Called on the browser main thread.
-// OnGpuProcessLost can handle multiple GPU process losses occurring in rapid
-// succession.
+// Handles GPU process loss, even if multiple losses occur in rapid succession.
+// Resource destruction and recreation are serialized across both threads to
+// avoid races.
 void DisplayLinkMacMojo::OnGpuProcessLost(
     viz::HostFrameSinkManager* host_frame_sink_manager) {
   pending_gpu_lost_count_++;
@@ -110,10 +112,6 @@ void DisplayLinkMacMojo::ContinueGpuProcessLostOnMainThread(
   }
 
   ConnectVSyncIpcAndAddDisplayObserver(host_frame_sink_manager);
-
-  task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DisplayLinkMacMojo::InitDisplaysOnVSyncThread,
-                                base::Unretained(this)));
 }
 
 void DisplayLinkMacMojo::OnGpuProcessLostOnVSyncThread(
@@ -148,7 +146,6 @@ void DisplayLinkMacMojo::ConnectVSyncIpcAndAddDisplayObserver(
   // Move pending receiver to params.
   params->external_begin_frame_controller =
       external_begin_frame_controller.BindNewPipeAndPassReceiver(task_runner());
-  external_begin_frame_controller_ = std::move(external_begin_frame_controller);
 
   // Set up ExternalBeginFrameControllerClient for Viz to call
   // NeedsBeginFrameWithId() via IPC to request DisplayLinkMacMojo for VSync
@@ -161,7 +158,7 @@ void DisplayLinkMacMojo::ConnectVSyncIpcAndAddDisplayObserver(
   auto client_receiver = std::make_unique<
       mojo::Receiver<viz::mojom::ExternalBeginFrameControllerClient>>(this);
   client_receiver->Bind(std::move(pending_client_receiver), task_runner());
-  client_receiver_ = std::move(client_receiver);
+
   // Move pending remote to params.
   params->external_begin_frame_controller_client = std::move(remote_client);
 
@@ -170,6 +167,24 @@ void DisplayLinkMacMojo::ConnectVSyncIpcAndAddDisplayObserver(
   // Display AddObserver can only be called on the browser main thread.
   // Only add a observer after IPC is connected.
   display_observer_.emplace(this);
+
+  std::vector<int64_t> display_ids;
+  // Screen GetAllDisplays() should be called on the main thread.
+  const std::vector<display::Display>& displays =
+      display::Screen::Get()->GetAllDisplays();
+  for (const display::Display& display : displays) {
+    display_ids.push_back(display.id());
+  }
+
+  // Since |external_begin_frame_controller_| and |client_receiver_| must be
+  // accessed exclusively on the VSync thread sequence, move the remote to the
+  // VSync thread and assign it there to maintain sequence safety. Now start
+  // getting DisplayLinks for all displays on the VSync thread.
+  task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&DisplayLinkMacMojo::InitDisplaysOnVSyncThread,
+                                base::Unretained(this), std::move(display_ids),
+                                std::move(external_begin_frame_controller),
+                                std::move(client_receiver)));
 }
 
 // Called on the VSync thread directly from IPC.
@@ -282,7 +297,7 @@ void DisplayLinkMacMojo::DisplayAddedOnVSyncThread(int64_t vsync_display_id) {
 void DisplayLinkMacMojo::OnDisplaysRemoved(
     const display::Displays& removed_displays) {
   std::vector<int64_t> display_ids;
-  for (auto& removed_display : removed_displays) {
+  for (const display::Display& removed_display : removed_displays) {
     display_ids.push_back(removed_display.id());
   }
 
