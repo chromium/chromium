@@ -49,7 +49,7 @@ void PersonalContextFirstRunServiceImpl::MaybeTriggerFirstRun(
       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   switch (state) {
-    case PersonalContextEnablementState::kDisabledShouldShowNotice:
+    case PersonalContextEnablementState::kEnabledShouldShowNotice:
       client_->ShowNotice(web_contents, invocation_source,
                           std::move(wrapped_callback));
       break;
@@ -75,10 +75,8 @@ bool PersonalContextFirstRunServiceImpl::
     return false;
   }
 
-  PersonalContextEnablementState state =
-      enablement_service_->GetEnablementState();
-  return state == PersonalContextEnablementState::kDisabledShouldShowNotice ||
-         state == PersonalContextEnablementState::kEnabledShouldShowNotice;
+  return enablement_service_->GetEnablementState() ==
+         PersonalContextEnablementState::kEnabledShouldShowNotice;
 }
 
 void PersonalContextFirstRunServiceImpl::OnNoticeDialogCompleted(

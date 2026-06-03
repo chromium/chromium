@@ -23,7 +23,6 @@ bool ShouldShowPersonalContextAutofillSetting(
     case kDisabledNotEligible:
     case kDisabledNeedsOptIn:
       return false;
-    case kDisabledShouldShowNotice:
     case kEnabledShouldShowNotice:
     case kDisabledViaPersonalIntelligenceInAutofillToggle:
     case kEnabled:

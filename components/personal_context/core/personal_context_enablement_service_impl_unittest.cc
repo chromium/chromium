@@ -85,9 +85,6 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
   void SetPrefs() {
     personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.SetBoolean(
-        personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown,
-        true);
-    pref_service_.SetBoolean(
         personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
         false);
     pref_service_.SetBoolean(
@@ -137,15 +134,6 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
         features::debug::kPersonalContextForceEnablementState,
         {{"state", "1"}});
     EXPECT_EQ(service().GetEnablementState(),
-              PersonalContextEnablementState::kDisabledShouldShowNotice);
-  }
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        features::debug::kPersonalContextForceEnablementState,
-        {{"state", "2"}});
-    EXPECT_EQ(service().GetEnablementState(),
               PersonalContextEnablementState::kDisabledNeedsOptIn);
   }
 
@@ -153,7 +141,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         features::debug::kPersonalContextForceEnablementState,
-        {{"state", "3"}});
+        {{"state", "2"}});
     EXPECT_EQ(service().GetEnablementState(),
               PersonalContextEnablementState::
                   kDisabledViaPersonalIntelligenceInAutofillToggle);
@@ -163,7 +151,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         features::debug::kPersonalContextForceEnablementState,
-        {{"state", "4"}});
+        {{"state", "3"}});
     EXPECT_EQ(service().GetEnablementState(),
               PersonalContextEnablementState::kEnabledShouldShowNotice);
   }
@@ -172,7 +160,7 @@ TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         features::debug::kPersonalContextForceEnablementState,
-        {{"state", "5"}});
+        {{"state", "4"}});
     EXPECT_EQ(service().GetEnablementState(),
               PersonalContextEnablementState::kEnabled);
   }
@@ -276,16 +264,11 @@ TEST_F(PersonalContextEnablementServiceImplTest, ClearsPrefOnSignout) {
       personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
       false);
   pref_service_.SetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown,
-      true);
-  pref_service_.SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       false);
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_TRUE(pref_service_.GetBoolean(
       personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown));
-  EXPECT_FALSE(pref_service_.GetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown));
   EXPECT_TRUE(pref_service_.GetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus));
 }
