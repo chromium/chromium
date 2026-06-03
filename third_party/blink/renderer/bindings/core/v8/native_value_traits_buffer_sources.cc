@@ -268,7 +268,10 @@ struct RecipeTrait<T> {
 template <typename T>
 struct RecipeTrait<NotShared<T>> : public RecipeTrait<T> {
   static NotShared<T> NullValue() { return NotShared<T>(); }
-  static NotShared<T> ToReturnType(T* buffer) { return NotShared<T>(buffer); }
+  static NotShared<T> ToReturnType(T* buffer) {
+    CHECK(!buffer->IsShared());
+    return NotShared<T>(buffer);
+  }
 };
 
 template <typename T>
@@ -350,6 +353,11 @@ DOMViewType* ToDOMViewType(v8::Isolate* isolate, v8::Local<v8::Value> value) {
   v8::Local<typename Trait::V8ViewType> v8_view =
       value.As<typename Trait::V8ViewType>();
   if (auto* blink_view = ToScriptWrappable<DOMViewType>(isolate, v8_view)) {
+    if constexpr (!allow_shared) {
+      if (blink_view->IsShared()) [[unlikely]] {
+        return nullptr;
+      }
+    }
     return blink_view;
   }
 
@@ -385,6 +393,11 @@ DOMArrayBufferView* ToDOMArrayBufferView(v8::Isolate* isolate,
   v8::Local<v8::ArrayBufferView> v8_view = value.As<v8::ArrayBufferView>();
   if (auto* blink_view =
           ToScriptWrappable<DOMArrayBufferView>(isolate, v8_view)) {
+    if constexpr (!allow_shared) {
+      if (blink_view->IsShared()) [[unlikely]] {
+        return nullptr;
+      }
+    }
     return blink_view;
   }
 
