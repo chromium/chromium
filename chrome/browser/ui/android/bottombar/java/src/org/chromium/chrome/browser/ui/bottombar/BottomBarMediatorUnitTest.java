@@ -35,19 +35,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicEnablingJni;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
-import org.chromium.components.sync.SyncService;
-import org.chromium.google_apis.gaia.GoogleServiceAuthError;
-import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -65,12 +60,13 @@ public class BottomBarMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private BottomBarButtonManager mButtonManager;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
-    @Mock private IdentityManager mIdentityManager;
-    @Mock private SyncService mSyncService;
+    @Mock private GlicKeyedService mGlicKeyedService;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<BottomBarButtonManager.Listener> mButtonManagerListenerCaptor;
-    @Captor private ArgumentCaptor<IdentityManager.Observer> mIdentityObserverCaptor;
+
+    @Captor
+    private ArgumentCaptor<GlicKeyedService.AllowedChangedObserver> mAllowedChangedObserverCaptor;
 
     private SettableNullableObservableSupplier<Profile> mProfileSupplier;
 
@@ -93,12 +89,7 @@ public class BottomBarMediatorUnitTest {
                 .thenReturn(BrandedColorScheme.APP_DEFAULT);
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
-        GlicEnabling.setEnabledForTesting(false);
-        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.getAuthError())
-                .thenReturn(new GoogleServiceAuthError(GoogleServiceAuthErrorState.NONE));
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
     }
 
     @After
@@ -314,7 +305,6 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testGlicButtonVisibility_Disabled() {
-        GlicEnabling.setEnabledForTesting(false);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
@@ -325,10 +315,8 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
-    public void testGlicButtonVisibility_NotSignedIn() {
-        GlicEnabling.setEnabledForTesting(true);
-        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+    public void testGlicButtonVisibility_ProfileDisabled() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
@@ -340,15 +328,8 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
-    public void testGlicButtonVisibility_AuthError() {
-        GlicEnabling.setEnabledForTesting(true);
-        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
-
-        when(mSyncService.getAuthError())
-                .thenReturn(
-                        new GoogleServiceAuthError(
-                                GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS));
+    public void testGlicButtonVisibility_AllowedChanged() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
@@ -356,37 +337,19 @@ public class BottomBarMediatorUnitTest {
 
         createMediator(/* shouldIncludeHomeButton= */ true);
 
+        verify(mGlicKeyedService)
+                .addAllowedChangedObserver(mAllowedChangedObserverCaptor.capture());
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
-    }
 
-    @Test
-    public void testGlicButtonVisibility_SignInChange() {
-        GlicEnabling.setEnabledForTesting(true);
+        // Simulate allowed state change
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
-
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        when(mTab.isOffTheRecord()).thenReturn(false);
-        mTabSupplier.set(mTab);
-
-        createMediator(/* shouldIncludeHomeButton= */ true);
-
-        verify(mIdentityManager).addObserver(mIdentityObserverCaptor.capture());
-        verify(mButtonManager).setButtonVisibility(ActionId.GLIC, false);
-
-        // Simulate sign in
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
-        mIdentityObserverCaptor
-                .getValue()
-                .onPrimaryAccountChanged(
-                        new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.SET));
+        mAllowedChangedObserverCaptor.getValue().onAllowedStateChanged();
 
         verify(mButtonManager).setButtonVisibility(ActionId.GLIC, true);
     }
 
     @Test
     public void testGlicButtonVisibility_Ntp() {
-        GlicEnabling.setEnabledForTesting(true);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
@@ -399,7 +362,6 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testGlicButtonVisibility_Incognito() {
-        GlicEnabling.setEnabledForTesting(true);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(true);
@@ -448,7 +410,6 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testUpdateGlicVisibility_RecordsDecisionTime() {
-        GlicEnabling.setEnabledForTesting(true);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
 
         HistogramWatcher watcher =
@@ -463,49 +424,37 @@ public class BottomBarMediatorUnitTest {
 
     @Test
     public void testUpdateGlicVisibility_RecordsTimeToAppear() {
-        GlicEnabling.setEnabledForTesting(true);
-        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
-
-        // Initially hide GLIC by making user not signed in.
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
 
         createMediator(/* shouldIncludeHomeButton= */ true);
 
         // Bottom bar is visible by default in constructor.
-        // Now make GLIC appear by signing in.
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        // Now make GLIC appear by enabling it for profile.
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord("Android.BottomBar.GlicTimeToAppearSinceBottomBarShown")
                         .build();
 
-        // Trigger update by notifying identity observer.
-        verify(mIdentityManager).addObserver(mIdentityObserverCaptor.capture());
-        mIdentityObserverCaptor
-                .getValue()
-                .onPrimaryAccountChanged(
-                        new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.SET));
+        // Trigger update by notifying allowed observer.
+        verify(mGlicKeyedService)
+                .addAllowedChangedObserver(mAllowedChangedObserverCaptor.capture());
+        mAllowedChangedObserverCaptor.getValue().onAllowedStateChanged();
 
         watcher.assertExpected();
 
         // Now simulate a disappear and appear again. It should not record again.
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
-        mIdentityObserverCaptor
-                .getValue()
-                .onPrimaryAccountChanged(
-                        new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.CLEARED));
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+        mAllowedChangedObserverCaptor.getValue().onAllowedStateChanged();
 
-        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         HistogramWatcher noRecordWatcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Android.BottomBar.GlicTimeToAppearSinceBottomBarShown")
                         .build();
 
-        mIdentityObserverCaptor
-                .getValue()
-                .onPrimaryAccountChanged(
-                        new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.SET));
+        mAllowedChangedObserverCaptor.getValue().onAllowedStateChanged();
 
         noRecordWatcher.assertExpected();
     }
