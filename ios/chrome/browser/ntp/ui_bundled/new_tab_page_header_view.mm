@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
+#import "ios/chrome/browser/ntp/ui_bundled/fake_location_bar_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h"
@@ -42,7 +43,6 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
-#import "ios/chrome/browser/shared/ui/elements/gradient/gradient_view.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -75,11 +75,6 @@ namespace {
 // Element ID for Fakebox scribble.
 NSString* const kScribbleFakeboxElementId = @"kScribbleFakeboxElementId";
 
-// Fakebox highlight animation duration.
-constexpr CGFloat kFakeboxHighlightDuration = 0.4;
-
-// Fakebox highlight background alpha.
-constexpr CGFloat kFakeboxHighlightAlpha = 0.06;
 
 // The percentage the fakebox's height that should be allowed to overlap the top
 // toolbar area in split toolbar mode before the fakebox begins to resize and
@@ -149,19 +144,6 @@ const CGFloat kMarginMultiplier = 2;
 // The maximum point size of the font for the Identity Disc button.
 const CGFloat kIdentityDiscMaxFontSize = 24;
 
-// Returns the top color of the Fakebox's gradient background.
-UIColor* FakeboxTopColor() {
-  return UIAccessibilityIsReduceTransparencyEnabled()
-             ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-             : [UIColor colorNamed:@"fake_omnibox_top_gradient_color"];
-}
-
-// Returns the bottom color of the Fakebox's gradient background.
-UIColor* FakeboxBottomColor() {
-  return UIAccessibilityIsReduceTransparencyEnabled()
-             ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-             : [UIColor colorNamed:@"fake_omnibox_bottom_gradient_color"];
-}
 
 // Returns the background color for the NTP Header view. This is the color
 // that shows when the fakebox is scrolled up.
@@ -249,8 +231,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelLeadingConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelTrailingConstraint;
 
-// View used to add on-touch highlight to the fake omnibox.
-@property(nonatomic, strong) UIView* fakeLocationBarHighlightView;
 // View used to simulate the top toolbar when the header is stuck to the top of
 // the NTP.
 @property(nonatomic, strong) UIView* fakeToolbar;
@@ -270,6 +250,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 @property(nonatomic, assign) BOOL voiceSearchIsEnabled;
 @property(nonatomic, copy) NSString* defaultSearchEngineName;
+@property(nonatomic, strong) FakeLocationBarView* fakeLocationBar;
 
 @end
 
@@ -312,11 +293,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Whether the omnibox is pinned to the bottom position.
   BOOL _isBottomOmnibox;
 
-  // Location bar view for when it has a colored gradient.
-  GradientView* _fakeLocationBarGradientView;
-  // Location bar view to use for when it should have a blur effect.
-  UIVisualEffectView* _fakeLocationBarBlurEffectView;
-
   // YES if there is an identity account error to show.
   BOOL _hasAccountError;
 
@@ -337,6 +313,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                      (BOOL)useNewBadgeForCustomizationMenu {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    _fakeLocationBar = [[FakeLocationBarView alloc] init];
     self.clipsToBounds = YES;
     _useNewBadgeForLensButton = useNewBadgeForLensButton;
     _useNewBadgeForCustomizationMenu = useNewBadgeForCustomizationMenu;
@@ -414,7 +391,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   }
   [self.omnibox.textInput setDefaultPlaceholderText:placeholderText];
   self.searchHintLabel.text = placeholderText;
-  self.accessibilityButton.accessibilityLabel = placeholderText;
+  self.fakeLocationBar.accessibilityLabel = placeholderText;
 }
 
 - (void)updatePlaceholderText {
@@ -485,26 +462,19 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       ntp_home::FakeOmniboxAccessibilityID();
   [self addSubview:self.fakeOmniboxContainer];
 
-  self.accessibilityButton = [[UIButton alloc] init];
-  [self.accessibilityButton addTarget:self.commandHandler
-                               action:@selector(fakeboxTapped)
-                     forControlEvents:UIControlEventTouchUpInside];
-  [self.accessibilityButton addObserver:self
-                             forKeyPath:@"highlighted"
-                                options:NSKeyValueObservingOptionNew
-                                context:NULL];
+  [self.fakeOmniboxContainer
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
 
-  CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
-  self.accessibilityButton.layer.cornerRadius =
-      (fakeOmniboxHeight - kFakeLocationBarHeightMargin) / 2;
-  self.accessibilityButton.clipsToBounds = YES;
-  self.accessibilityButton.isAccessibilityElement = YES;
-  self.accessibilityButton.accessibilityLabel = self.placeholderText;
-  self.accessibilityButton.accessibilityIdentifier =
+  [self addViewsToFakeOmnibox];
+
+  // Configure accessibility and targets on fakeLocationBar.
+  [self.fakeLocationBar addTarget:self.commandHandler
+                           action:@selector(fakeboxTapped)
+                 forControlEvents:UIControlEventTouchUpInside];
+  self.fakeLocationBar.isAccessibilityElement = YES;
+  self.fakeLocationBar.accessibilityLabel = self.placeholderText;
+  self.fakeLocationBar.accessibilityIdentifier =
       kNTPFakeOmniboxAccessibilityButton;
-  [self.fakeOmniboxContainer addSubview:self.accessibilityButton];
-  self.accessibilityButton.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(self.fakeOmniboxContainer, self.accessibilityButton);
 
   NSMutableArray<UIAccessibilityCustomAction*>* accessibilityCustomActions =
       [[NSMutableArray alloc] init];
@@ -541,13 +511,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                     selector:@selector(openMultimodalActionsMenu)]];
   }
 
-  self.accessibilityButton.accessibilityCustomActions =
-      accessibilityCustomActions;
-
-  [self.fakeOmniboxContainer
-      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-
-  [self addViewsToFakeOmnibox];
+  self.fakeLocationBar.accessibilityCustomActions = accessibilityCustomActions;
 
   UIIndirectScribbleInteraction* scribbleInteraction =
       [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
@@ -1104,18 +1068,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _lastAnimationPercent = percent;
 }
 
-- (void)setFakeboxHighlighted:(BOOL)highlighted {
-  [UIView animateWithDuration:kFakeboxHighlightDuration
-                        delay:0
-                      options:UIViewAnimationOptionCurveEaseOut
-                   animations:^{
-                     CGFloat alpha = highlighted ? kFakeboxHighlightAlpha : 0;
-                     self.fakeLocationBarHighlightView.backgroundColor =
-                         [UIColor colorWithWhite:0 alpha:alpha];
-                   }
-                   completion:nil];
-}
-
 - (void)setIdentityDiscErrorBadge {
   if (!_identityDiscButton) {
     return;
@@ -1335,54 +1287,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _lastAnimationPercent = 0.0;
   [self updateFakeboxMask];
   self.fakeOmniboxContainer.transform = CGAffineTransformIdentity;
-}
-
-#pragma mark - Property accessors
-
-- (UIView*)fakeLocationBar {
-  if (!_fakeLocationBar) {
-    _fakeLocationBar = [[UIView alloc] init];
-    _fakeLocationBar.userInteractionEnabled = NO;
-    _fakeLocationBar.clipsToBounds = YES;
-    _fakeLocationBar.translatesAutoresizingMaskIntoConstraints = NO;
-
-    _fakeLocationBarGradientView =
-        [[GradientView alloc] initWithTopColor:FakeboxTopColor()
-                                   bottomColor:FakeboxBottomColor()];
-    _fakeLocationBarGradientView.userInteractionEnabled = NO;
-    _fakeLocationBarGradientView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_fakeLocationBar addSubview:_fakeLocationBarGradientView];
-    AddSameConstraints(_fakeLocationBar, _fakeLocationBarGradientView);
-
-    if (IsNTPBackgroundCustomizationEnabled()) {
-      UIVisualEffect* blurEffect =
-          [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
-      _fakeLocationBarBlurEffectView =
-          [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-      _fakeLocationBarBlurEffectView.userInteractionEnabled = NO;
-      _fakeLocationBarBlurEffectView.translatesAutoresizingMaskIntoConstraints =
-          NO;
-      [_fakeLocationBar addSubview:_fakeLocationBarBlurEffectView];
-      AddSameConstraints(_fakeLocationBar, _fakeLocationBarBlurEffectView);
-    }
-
-    _fakeLocationBarHighlightView = [[UIView alloc] init];
-    _fakeLocationBarHighlightView.userInteractionEnabled = NO;
-    _fakeLocationBarHighlightView.backgroundColor = UIColor.clearColor;
-    _fakeLocationBarHighlightView.translatesAutoresizingMaskIntoConstraints =
-        NO;
-    [_fakeLocationBar addSubview:_fakeLocationBarHighlightView];
-    AddSameConstraints(_fakeLocationBar, _fakeLocationBarHighlightView);
-
-    // Make sure the correct background is visible.
-    if (IsNTPBackgroundCustomizationEnabled()) {
-      [self applyBackgroundTheme];
-    } else {
-      _fakeLocationBarGradientView.hidden = NO;
-      _fakeLocationBarBlurEffectView.hidden = YES;
-    }
-  }
-  return _fakeLocationBar;
 }
 
 #pragma mark - NewTabPageHeaderConsumer
@@ -1638,13 +1542,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     self.searchEngineLogoMediator.view.tintColor = nil;
   }
 
-  if (hasBlurredBackground) {
-    _fakeLocationBarGradientView.hidden = YES;
-    _fakeLocationBarBlurEffectView.hidden = NO;
-  } else {
-    _fakeLocationBarGradientView.hidden = NO;
-    _fakeLocationBarBlurEffectView.hidden = YES;
-  }
+  [self.fakeLocationBar applyBackgroundTheme];
 }
 
 // Empties the fakebox buttons stack.
@@ -1853,19 +1751,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // Sets the fakebox's colors, based on the current customization settings and
 // the progress towards being pinned at the top.
 - (void)setFakeboxColorsWithProgress:(CGFloat)progress {
-  UIColor* pinnedColor = [UIColor colorNamed:kTextfieldBackgroundColor];
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
 
-  // Use a quadratic curve interpolation.
-  progress = progress * progress;
-  [_fakeLocationBarGradientView
-      setStartColor:BlendColors(colorPalette ? colorPalette.omniboxColor
-                                             : FakeboxTopColor(),
-                                pinnedColor, progress)
-           endColor:BlendColors(colorPalette ? colorPalette.omniboxColor
-                                             : FakeboxBottomColor(),
-                                pinnedColor, progress)];
+  [self.fakeLocationBar updateColorsWithProgress:progress
+                                    colorPalette:colorPalette];
 
   UIColor* defaultTintColor =
       content_suggestions::DefaultIconTintColorWithAIMAllowed(_isAIMAllowed);
@@ -1972,9 +1862,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   }
 }
 
-- (void)dealloc {
-  [self.accessibilityButton removeObserver:self forKeyPath:@"highlighted"];
-}
 
 #pragma mark - helpers
 
@@ -2201,19 +2088,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   return [UIPointerStyle styleWithEffect:effect shape:shape];
 }
 
-- (void)observeValueForKeyPath:(NSString*)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary*)change
-                       context:(void*)context {
-  if ([@"highlighted" isEqualToString:keyPath]) {
-    [self setFakeboxHighlighted:[object isHighlighted]];
-  } else {
-    [super observeValueForKeyPath:keyPath
-                         ofObject:object
-                           change:change
-                          context:context];
-  }
-}
 
 #pragma mark - UserAccountImageUpdateDelegate
 

@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_delegate.h"
 
-@class GradientView;
+@class FakeLocationBarView;
 @class LayoutGuideCenter;
 @class NewTabPageColorPalette;
 @protocol NewTabPageShortcutsHandler;
@@ -66,8 +66,6 @@ enum class SearchEngineLogoState;
 // The container for the fake omnibox.
 @property(nonatomic, strong) UIView* fakeOmniboxContainer;
 
-// The accessibility button for the fake omnibox.
-@property(nonatomic, strong) UIButton* accessibilityButton;
 
 // The fake tap button used in split toolbar mode.
 @property(nonatomic, strong) UIButton* fakeTapButton;
@@ -76,7 +74,6 @@ enum class SearchEngineLogoState;
     NSLayoutConstraint* fakeLocationBarLeadingConstraint;
 @property(nonatomic, strong)
     NSLayoutConstraint* fakeLocationBarTrailingConstraint;
-@property(nonatomic, strong) UIView* fakeLocationBar;
 @property(nonatomic, strong) UILabel* searchHintLabel;
 
 // View that contains tab group information.
@@ -161,8 +158,6 @@ enum class SearchEngineLogoState;
                    screenWidth:(CGFloat)screenWidth
                 safeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 
-// Highlights the fake omnibox.
-- (void)setFakeboxHighlighted:(BOOL)highlighted;
 
 // Shows account disc particle error badge.
 - (void)setIdentityDiscErrorBadge;
