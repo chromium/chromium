@@ -97,6 +97,7 @@
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -2630,8 +2631,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Dismisses the menu and opens the sign-in bottom sheet.
 - (void)showSignin {
-  // TODO(crbug.com/517130807): Needs to open the sign-in bottom sheet.
-  NOTIMPLEMENTED();
+  RecordAction(UserMetricsAction("MobileMenuSignin"));
+  [self dismissMenu];
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
+            accessPoint:signin_metrics::AccessPoint::kOverflowMenu];
+  [self.sceneHandler showSignin:command
+             baseViewController:self.baseViewController];
 }
 
 // Dismisses the menu and opens the account menu.
