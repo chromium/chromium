@@ -258,7 +258,8 @@ TEST(MediaSourceTest, IsDialAppName) {
   EXPECT_FALSE(IsDialAppName(""));
   EXPECT_FALSE(IsDialAppName("App Name"));
   EXPECT_FALSE(IsDialAppName("App/Name"));
-  EXPECT_FALSE(IsDialAppName("../Name"));
+  EXPECT_FALSE(IsDialAppName("."));
+  EXPECT_FALSE(IsDialAppName(".."));
   EXPECT_FALSE(IsDialAppName("App\nName"));
 }
 

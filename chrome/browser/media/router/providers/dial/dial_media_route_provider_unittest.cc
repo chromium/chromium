@@ -472,6 +472,33 @@ TEST_F(DialMediaRouteProviderTest, AddRemoveSinkQuery) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(DialMediaRouteProviderTest, AddSinkQueryCaseInsensitive) {
+  std::string youtube_source_lower("cast-dial:youtube");
+  std::vector<url::Origin> youtube_origins = {
+      url::Origin::Create(GURL("https://music.youtube.com/")),
+      url::Origin::Create(GURL("https://music-green-qa.youtube.com/")),
+      url::Origin::Create(GURL("https://music-release-qa.youtube.com/")),
+      url::Origin::Create(GURL("https://tv.youtube.com")),
+      url::Origin::Create(GURL("https://tv-green-qa.youtube.com")),
+      url::Origin::Create(GURL("https://tv-release-qa.youtube.com")),
+      url::Origin::Create(GURL("https://web-green-qa.youtube.com")),
+      url::Origin::Create(GURL("https://web-release-qa.youtube.com")),
+      url::Origin::Create(GURL("https://www.youtube.com"))};
+
+  EXPECT_CALL(mock_sink_service_,
+              DoStartMonitoringAvailableSinksForApp("youtube"));
+  base::RunLoop run_loop;
+  // Lowercase "youtube" should return the YouTube origin list.
+  EXPECT_CALL(mock_router_,
+              OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
+                              youtube_source_lower, IsEmpty(), youtube_origins))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  provider_->StartObservingMediaSinks(youtube_source_lower);
+  run_loop.Run();
+
+  provider_->StopObservingMediaSinks(youtube_source_lower);
+}
+
 TEST_F(DialMediaRouteProviderTest, AddSinkQuerySameMediaSource) {
   std::string youtube_source("cast-dial:YouTube");
   EXPECT_CALL(mock_sink_service_,

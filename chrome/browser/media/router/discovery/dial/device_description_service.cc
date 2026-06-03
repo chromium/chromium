@@ -185,6 +185,13 @@ DeviceDescriptionService::CheckAndUpdateCache(
     return nullptr;
   }
 
+  // The device's IP address may have changed; re-validate the cached app_url
+  // against the current ip_address and remove it if there is a mismatch.
+  if (!device_data.IsValidUrl(it->second.description_data.app_url)) {
+    description_cache_.erase(it);
+    return nullptr;
+  }
+
   // Entry is valid.
   return &it->second;
 }

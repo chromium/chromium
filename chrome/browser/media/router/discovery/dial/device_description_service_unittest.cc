@@ -143,6 +143,50 @@ class DeviceDescriptionServiceTest : public ::testing::Test {
       description_cache_;
 };
 
+TEST_F(DeviceDescriptionServiceTest, CacheHitSkipsIsValidUrlAfterIpChange) {
+  // First discovery cycle: device advertises from IP_A = 192.168.1.10.
+  net::IPAddress ip_a;
+  ASSERT_TRUE(ip_a.AssignFromIPLiteral("192.168.1.10"));
+  const int kConfigId = 7;
+
+  // After the first cycle, the description (validated against IP_A) is cached
+  // under the device's label with config_id=7. Simulate that cached state.
+  ParsedDialDeviceDescription cached_desc;
+  cached_desc.app_url = GURL("http://192.168.1.10/apps");  // host == IP_A
+  cached_desc.friendly_name = "My TV";
+  cached_desc.model_name = "TV";
+  cached_desc.unique_id = "uuid:random";
+
+  DeviceDescriptionService::CacheEntry entry;
+  entry.expire_time = base::Time::Now() + base::Hours(12);
+  entry.config_id = kConfigId;
+  entry.description_data = cached_desc;
+  (*description_cache_)["label-1"] = entry;
+
+  // ---- Second discovery cycle: same USN, same CONFIGID, NEW source IP_B. ----
+  // DialRegistry::OnDeviceDiscovered -> UpdateFrom() preserves the label and
+  // overwrites ip_address_ with IP_B = 192.168.1.20.
+  net::IPAddress ip_b;
+  ASSERT_TRUE(ip_b.AssignFromIPLiteral("192.168.1.20"));
+
+  DialDeviceData updated("uuid:random", GURL("http://192.168.1.20/dd.xml"),
+                         base::Time::Now());
+  updated.set_label("label-1");      // preserved by UpdateFrom()
+  updated.set_config_id(kConfigId);  // unchanged -> cache hit
+  updated.set_ip_address(ip_b);      // NEW IP
+
+  // Capture what the success callback receives.
+  EXPECT_CALL(mock_success_cb_, Run(_, _)).Times(0);
+  EXPECT_CALL(*device_description_service(), ParseDeviceDescription(_, _))
+      .Times(0);
+
+  device_description_service()->GetDeviceDescriptions({updated});
+
+  // Verify that cache was invalidated, so it falls back to starting a fresh
+  // fetch.
+  EXPECT_FALSE(fetcher_map_->empty());
+}
+
 TEST_F(DeviceDescriptionServiceTest, TestGetDeviceDescriptionFromCache) {
   auto device_data = CreateDialDeviceData(1);
   auto description_data = CreateParsedDialDeviceDescription(1);

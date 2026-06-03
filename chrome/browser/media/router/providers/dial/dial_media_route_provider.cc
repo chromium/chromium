@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
@@ -651,7 +652,7 @@ std::vector<url::Origin> DialMediaRouteProvider::GetOrigins(
   static const base::NoDestructor<
       base::flat_map<std::string, std::vector<url::Origin>>>
       origin_allowlist(
-          {{"YouTube",
+          {{"youtube",
             {CreateOrigin("https://music.youtube.com/"),
              CreateOrigin("https://music-green-qa.youtube.com/"),
              CreateOrigin("https://music-release-qa.youtube.com/"),
@@ -661,20 +662,22 @@ std::vector<url::Origin> DialMediaRouteProvider::GetOrigins(
              CreateOrigin("https://web-green-qa.youtube.com"),
              CreateOrigin("https://web-release-qa.youtube.com"),
              CreateOrigin("https://www.youtube.com")}},
-           {"Netflix", {CreateOrigin("https://www.netflix.com")}},
-           {"Pandora", {CreateOrigin("https://www.pandora.com")}},
-           {"Radio", {CreateOrigin("https://www.pandora.com")}},
-           {"Hulu", {CreateOrigin("https://www.hulu.com")}},
-           {"Vimeo", {CreateOrigin("https://www.vimeo.com")}},
-           {"Dailymotion", {CreateOrigin("https://www.dailymotion.com")}},
+           {"netflix", {CreateOrigin("https://www.netflix.com")}},
+           {"pandora", {CreateOrigin("https://www.pandora.com")}},
+           {"radio", {CreateOrigin("https://www.pandora.com")}},
+           {"hulu", {CreateOrigin("https://www.hulu.com")}},
+           {"vimeo", {CreateOrigin("https://www.vimeo.com")}},
+           {"dailymotion", {CreateOrigin("https://www.dailymotion.com")}},
            {"com.dailymotion", {CreateOrigin("https://www.dailymotion.com")}}});
 
-  auto origins_it = origin_allowlist->find(app_name);
-  if (origins_it == origin_allowlist->end()) {
-    return std::vector<url::Origin>();
+  // DIAL devices commonly treat app names case-insensitively.
+  for (const auto& [name, origins] : *origin_allowlist) {
+    if (base::EqualsCaseInsensitiveASCII(name, app_name)) {
+      return origins;
+    }
   }
 
-  return origins_it->second;
+  return std::vector<url::Origin>();
 }
 
 DialMediaRouteProvider::MediaSinkQuery::MediaSinkQuery() = default;
