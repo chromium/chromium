@@ -136,7 +136,15 @@ bool InvokeShellExecute(const std::wstring& path,
     // APIs to "disable all string parsing and to send the string that follows
     // it directly to the file system.". See
     // https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#win32-file-namespace.
-    resolved_path = base::StrCat({L"\\\\?\\", path_buffer});
+    std::wstring path_str = path_buffer;
+    if (base::StartsWith(path_str, L"\\\\?\\", base::CompareCase::SENSITIVE)) {
+      resolved_path = path_str;
+    } else if (base::StartsWith(path_str, L"\\\\",
+                                base::CompareCase::SENSITIVE)) {
+      resolved_path = base::StrCat({L"\\\\?\\UNC\\", path_str.substr(2)});
+    } else {
+      resolved_path = base::StrCat({L"\\\\?\\", path_str});
+    }
   }
 
   // Mitigate the issues caused by loading DLLs on a background thread
