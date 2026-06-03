@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
-#include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
 
@@ -29,17 +28,6 @@ bool ShouldShowPersonalContextAutofillSetting(
     case kDisabledViaPersonalIntelligenceInAutofillToggle:
     case kEnabled:
       return true;
-  }
-}
-
-void PersonalContextInAutofillSettingFlippedOn(PrefService* pref_service) {
-  if (pref_service) {
-    pref_service->SetBoolean(
-        personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
-        false);
-    pref_service->SetBoolean(
-        personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown,
-        true);
   }
 }
 

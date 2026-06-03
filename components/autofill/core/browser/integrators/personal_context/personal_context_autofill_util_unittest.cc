@@ -7,7 +7,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
-#include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,26 +50,6 @@ TEST(PersonalContextAutofillUtilTest,
   EXPECT_TRUE(check_state(kEnabled));
 
   EXPECT_FALSE(ShouldShowPersonalContextAutofillSetting(nullptr));
-}
-
-TEST(PersonalContextAutofillUtilTest,
-     PersonalContextInAutofillSettingFlippedOn) {
-  TestingPrefServiceSimple pref_service;
-  personal_context::prefs::RegisterProfilePrefs(pref_service.registry());
-
-  pref_service.SetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown,
-      true);
-  pref_service.SetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown,
-      false);
-
-  PersonalContextInAutofillSettingFlippedOn(&pref_service);
-
-  EXPECT_FALSE(pref_service.GetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillNoticeShouldBeShown));
-  EXPECT_TRUE(pref_service.GetBoolean(
-      personal_context::prefs::kPersonalContextInAutofillNoticeHasBeenShown));
 }
 
 TEST(PersonalContextAutofillUtilTest,
