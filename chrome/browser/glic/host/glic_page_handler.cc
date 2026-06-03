@@ -1905,6 +1905,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     const auto& first_party_skills_list = skills_service_->Get1PSkills();
     std::vector<mojom::SkillPreviewPtr> first_party_skills;
     for (const auto& skill : first_party_skills_list) {
+      if (skill.category() == "Internal") {
+        continue;
+      }
       first_party_skills.push_back(ToMojomSkillPreview(skill));
     }
 

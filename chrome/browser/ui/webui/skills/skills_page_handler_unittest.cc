@@ -227,5 +227,41 @@ TEST_F(SkillsPageHandlerTest, OnSkillsEnabledPrefChanged) {
   run_loop.Run();
 }
 
+TEST_F(SkillsPageHandlerTest, HidesInternalSkillsFromBrowser) {
+  auto first_party_skill_data = std::make_unique<FirstPartySkillData>();
+
+  // Standard visible skill
+  skills::proto::Skill visible_skill;
+  visible_skill.set_id("visible_id");
+  visible_skill.set_name("Visible Skill");
+  visible_skill.set_category("Category");
+  first_party_skill_data->skills_list.push_back(visible_skill);
+
+  // Internal hidden skill
+  skills::proto::Skill internal_skill;
+  internal_skill.set_id("internal_id");
+  internal_skill.set_name("Internal Skill");
+  internal_skill.set_category("Internal");
+  first_party_skill_data->skills_list.push_back(internal_skill);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_page_, Update1PSkills(_))
+      .WillOnce([&run_loop](mojom::BrowseSkillsInitialStatePtr state) {
+        // Should only contain the "Category" skill map entry, NOT "internal"
+        EXPECT_EQ(1u, state->skill_map.size());
+        EXPECT_TRUE(state->skill_map.contains("Category"));
+        EXPECT_FALSE(state->skill_map.contains("internal"));
+
+        const auto& skills = state->skill_map.at("Category");
+        ASSERT_EQ(1u, skills.size());
+        EXPECT_EQ("visible_id", skills[0].id);
+
+        run_loop.Quit();
+      });
+
+  handler_->OnDiscoverySkillsUpdated(first_party_skill_data.get());
+  run_loop.Run();
+}
+
 }  // namespace
 }  // namespace skills
