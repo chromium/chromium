@@ -134,6 +134,12 @@ bool IsChangeUnfocusedPriorityEnabled() {
              chrome::android::kChangeUnfocusedPriority);
 }
 
+bool IsProtectRecentlyVisibleTabEnabled() {
+  return base::android::device_info::is_desktop() ||
+         base::FeatureList::IsEnabled(
+             chrome::android::kProtectRecentlyVisibleTab);
+}
+
 }  // namespace
 
 ProcessRankPolicyAndroid::ProcessRankPolicyAndroid()
@@ -163,8 +169,7 @@ void ProcessRankPolicyAndroid::OnPassedToGraph(Graph* graph) {
 
 void ProcessRankPolicyAndroid::OnTakenFromGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kProtectRecentlyVisibleTab)) {
+  if (IsProtectRecentlyVisibleTabEnabled()) {
     visibility_timers_.clear();
   }
 }
@@ -185,8 +190,7 @@ void ProcessRankPolicyAndroid::OnBeforePageNodeRemoved(
     const PageNode* page_node) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
       ->RemoveObserver(this);
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kProtectRecentlyVisibleTab)) {
+  if (IsProtectRecentlyVisibleTabEnabled()) {
     visibility_timers_.erase(page_node);
   }
 }
@@ -201,8 +205,7 @@ void ProcessRankPolicyAndroid::OnIsFocusedChanged(const PageNode* page_node) {
 }
 
 void ProcessRankPolicyAndroid::OnIsVisibleChanged(const PageNode* page_node) {
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kProtectRecentlyVisibleTab)) {
+  if (IsProtectRecentlyVisibleTabEnabled()) {
     if (page_node->IsVisible()) {
       visibility_timers_.erase(page_node);
     } else {
@@ -399,8 +402,7 @@ content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
         DiscardEligibilityPolicy::GetFromGraph(GetOwningGraph());
     CHECK(eligibility_policy);
     base::TimeDelta minimum_time_in_background;
-    if (base::FeatureList::IsEnabled(
-            chrome::android::kProtectRecentlyVisibleTab)) {
+    if (IsProtectRecentlyVisibleTabEnabled()) {
       minimum_time_in_background = base::Seconds(
           chrome::android::kProtectRecentlyVisibleTabDuration.Get());
     }
