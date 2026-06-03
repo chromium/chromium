@@ -965,4 +965,61 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlFencedFrameBrowserTest,
   EXPECT_EQ(1, num_documents);
 }
 
+// Helper test fixture to enable `kMHTML_Improvements`. Enabling this feature
+// allows script execution in MHTML documents, which is necessary for the tests
+// to execute the JavaScript payload that triggers the Mojo IPC request.
+class NavigationMhtmlImprovementsBrowserTest
+    : public NavigationMhtmlBrowserTest {
+ public:
+  NavigationMhtmlImprovementsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kMHTML_Improvements);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlImprovementsBrowserTest,
+                       MhtmlBlocksWebSocket) {
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(GURL("http://example.com"), "MHTML content");
+  GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+
+  RenderFrameHostImpl* main_document = main_frame_host();
+  EXPECT_TRUE(main_document->is_mhtml_document());
+
+  RenderProcessHostBadMojoMessageWaiter kill_waiter(
+      main_document->GetProcess());
+
+  ExecuteScriptAsync(main_document, "new WebSocket('ws://127.0.0.1');");
+
+  EXPECT_EQ(
+      "Received bad user message: WebSockets are not allowed in MHTML "
+      "documents.",
+      kill_waiter.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationMhtmlImprovementsBrowserTest,
+                       MhtmlBlocksWebTransport) {
+  MhtmlArchive mhtml_archive;
+  mhtml_archive.AddHtmlDocument(GURL("http://example.com"), "MHTML content");
+  GURL mhtml_url = mhtml_archive.Write("index.mhtml");
+  EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
+
+  RenderFrameHostImpl* main_document = main_frame_host();
+  EXPECT_TRUE(main_document->is_mhtml_document());
+
+  RenderProcessHostBadMojoMessageWaiter kill_waiter(
+      main_document->GetProcess());
+
+  ExecuteScriptAsync(main_document, "new WebTransport('https://127.0.0.1');");
+
+  EXPECT_EQ(
+      "Received bad user message: WebTransport is not allowed in MHTML "
+      "documents.",
+      kill_waiter.Wait());
+}
+
 }  // namespace content
