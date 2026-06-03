@@ -124,28 +124,9 @@ TEST_F(PersonalContextAccessManagerImplTest,
           RunOnceCallback<3>(personal_context::FetchContextResult(
               base::ok(std::move(any_response))))));
 
-  base::test::TestFuture<base::expected<std::vector<EntityInstance>,
-                                        personal_context::ContextMemoryError>>
-      future;
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
 
-  access_manager().PrefetchAmbientAutofillContext(requested_types,
-                                                  future.GetCallback());
-
-  auto result = future.Take();
-  ASSERT_TRUE(result.has_value());
-  ASSERT_EQ(result->size(), 1u);
-  EXPECT_EQ(result->at(0).type().name(), EntityTypeName::kOrder);
-
-  base::optional_ref<const AttributeInstance> order_id_attr =
-      result->at(0).attribute(AttributeType(AttributeTypeName::kOrderId));
-  ASSERT_TRUE(order_id_attr.has_value());
-  EXPECT_EQ(order_id_attr->GetCompleteRawInfo(), u"12345");
-
-  base::optional_ref<const AttributeInstance> merchant_attr =
-      result->at(0).attribute(
-          AttributeType(AttributeTypeName::kOrderMerchantName));
-  ASSERT_TRUE(merchant_attr.has_value());
-  EXPECT_EQ(merchant_attr->GetCompleteRawInfo(), u"Amazon");
+  // TODO(crbug.com/516721244): Check the cache for prefetched entities.
 }
 
 TEST_F(PersonalContextAccessManagerImplTest,
@@ -166,16 +147,10 @@ TEST_F(PersonalContextAccessManagerImplTest,
       .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
           base::unexpected(expected_error))));
 
-  base::test::TestFuture<base::expected<std::vector<EntityInstance>,
-                                        personal_context::ContextMemoryError>>
-      future;
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
 
-  access_manager().PrefetchAmbientAutofillContext(requested_types,
-                                                  future.GetCallback());
-
-  auto result = future.Take();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().error(), expected_error.error());
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kOrder));
+  EXPECT_TRUE(access_manager().GetCachedEntities().empty());
 }
 
 // Tests that prefetched entities are cached with a 30-minute TTL, and that the

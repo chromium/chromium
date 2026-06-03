@@ -62,8 +62,7 @@ PersonalContextAccessManagerImpl::PersonalContextAccessManagerImpl(
 PersonalContextAccessManagerImpl::~PersonalContextAccessManagerImpl() = default;
 
 void PersonalContextAccessManagerImpl::PrefetchAmbientAutofillContext(
-    base::span<const EntityType> requested_types,
-    PrefetchAmbientAutofillContextCallback callback) {
+    base::span<const EntityType> requested_types) {
   personal_context::proto::ContextMemoryAmbientAutofillRequest request;
   for (const EntityType& type : requested_types) {
     // TODO(crbug.com/516721244): Only request types with !IsTypeCached.
@@ -76,14 +75,12 @@ void PersonalContextAccessManagerImpl::PrefetchAmbientAutofillContext(
       /*options=*/{},
       base::BindOnce(&PersonalContextAccessManagerImpl::
                          OnPrefetchAmbientAutofillContextComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void PersonalContextAccessManagerImpl::OnPrefetchAmbientAutofillContextComplete(
-    PrefetchAmbientAutofillContextCallback callback,
     personal_context::FetchContextResult result) {
   if (!result.response.has_value()) {
-    std::move(callback).Run(base::unexpected(result.response.error()));
     return;
   }
 
@@ -91,7 +88,7 @@ void PersonalContextAccessManagerImpl::OnPrefetchAmbientAutofillContextComplete(
                  personal_context::ContextMemoryError>
       entities = ExtractEntitiesFromResponse(result.response.value().value());
 
-  std::move(callback).Run(std::move(entities));
+  // TODO(crbug.com/516721244): Cache the prefetched entities.
 }
 
 std::optional<EntityInstance> PersonalContextAccessManagerImpl::GetCachedEntity(

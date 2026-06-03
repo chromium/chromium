@@ -24,8 +24,7 @@ class MockPersonalContextAccessManager : public PersonalContextAccessManager {
 
   MOCK_METHOD(void,
               PrefetchAmbientAutofillContext,
-              (base::span<const EntityType> requested_types,
-               PrefetchAmbientAutofillContextCallback callback),
+              (base::span<const EntityType> requested_types),
               (override));
   MOCK_METHOD(std::optional<EntityInstance>,
               GetCachedEntity,

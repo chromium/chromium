@@ -45,8 +45,7 @@ class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
 
   // PersonalContextAccessManager:
   void PrefetchAmbientAutofillContext(
-      base::span<const EntityType> requested_types,
-      PrefetchAmbientAutofillContextCallback callback) override;
+      base::span<const EntityType> requested_types) override;
   std::optional<EntityInstance> GetCachedEntity(
       const EntityInstance::EntityId& id) const override;
   void GetUnmaskedSpiiEntity(const EntityInstance::EntityId& id,
@@ -65,7 +64,6 @@ class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
 
   // Handles the asynchronous result of the ambient autofill context fetch.
   void OnPrefetchAmbientAutofillContextComplete(
-      PrefetchAmbientAutofillContextCallback callback,
       personal_context::FetchContextResult result);
 
   // Caches a batch of prefetched `entities`.

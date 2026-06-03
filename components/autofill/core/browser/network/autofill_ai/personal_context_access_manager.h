@@ -21,11 +21,6 @@ class EntityType;
 // Instantiated once per profile/context.
 class PersonalContextAccessManager : public KeyedService {
  public:
-  // Callback invoked when the ambient autofill context fetch is complete.
-  using PrefetchAmbientAutofillContextCallback = base::OnceCallback<void(
-      base::expected<std::vector<EntityInstance>,
-                     personal_context::ContextMemoryError>)>;
-
   // Callback for `GetUnmaskedSpiiEntity` requests. On success, it returns
   // the unmasked `EntityInstance` corresponding to the requested `id`.
   // Returns `std::nullopt` on failure (e.g., if the entity is not found or
@@ -37,8 +32,7 @@ class PersonalContextAccessManager : public KeyedService {
 
   // Fetches ambient autofill context from the personal context service.
   virtual void PrefetchAmbientAutofillContext(
-      base::span<const EntityType> requested_types,
-      PrefetchAmbientAutofillContextCallback callback) = 0;
+      base::span<const EntityType> requested_types) = 0;
 
   // Returns the cached `EntityInstance` with the given `id` if it is
   // currently cached.

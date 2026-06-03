@@ -333,7 +333,7 @@ TEST_F(AutofillAiManagerTest, OnAfterLoadedServerPredictions_TriggersFetch) {
       EntityType(EntityTypeName::kPassport)};
   EXPECT_CALL(personal_context_access_manager(),
               PrefetchAmbientAutofillContext(
-                  testing::ElementsAreArray(expected_types), _));
+                  testing::ElementsAreArray(expected_types)));
 
   manager().OnAfterLoadedServerPredictions(autofill_manager());
 }
