@@ -3658,48 +3658,29 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
     EXPECT_THAT(GetPageObjectMarkIntParam(mark, "TextboxId"),
                 testing::Optional(1));
 
-    if (i == 0) {
-      // Verify the first text object contains the full textbox metadata.
-      EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Version"),
-                  testing::Optional(kInkTextAnnotationVersion));
-      // Bounds are converted from CSS pixels to PDF points.
-      EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsX"),
-                  testing::Optional(15.0f));
-      EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsY"),
-                  testing::Optional(15.0f));
-      EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsWidth"),
-                  testing::Optional(75.0f));
-      EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsHeight"),
-                  testing::Optional(75.0f));
-      EXPECT_THAT(
-          GetPageObjectMarkIntParam(mark, "Typeface"),
-          testing::Optional(static_cast<int>(TextTypeface::kSansSerif)));
-      EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Alignment"),
-                  testing::Optional(static_cast<int>(TextAlignment::kLeft)));
-      EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Orientation"),
-                  testing::Optional(0));
-      EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsBold"),
-                  testing::Optional(1));
-      EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsItalic"),
-                  testing::Optional(0));
-      EXPECT_THAT(GetPageObjectMarkStringParam(mark, "Text"),
-                  testing::Optional(std::u16string(kExpectedText16)));
-    } else {
-      // Verify the remaining text objects do not have the full metadata.
-      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "Version").has_value());
-      EXPECT_FALSE(GetPageObjectMarkFloatParam(mark, "BoundsX").has_value());
-      EXPECT_FALSE(GetPageObjectMarkFloatParam(mark, "BoundsY").has_value());
-      EXPECT_FALSE(
-          GetPageObjectMarkFloatParam(mark, "BoundsWidth").has_value());
-      EXPECT_FALSE(
-          GetPageObjectMarkFloatParam(mark, "BoundsHeight").has_value());
-      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "Typeface").has_value());
-      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "Alignment").has_value());
-      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "Orientation").has_value());
-      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "IsBold").has_value());
-      EXPECT_FALSE(GetPageObjectMarkIntParam(mark, "IsItalic").has_value());
-      EXPECT_FALSE(GetPageObjectMarkStringParam(mark, "Text").has_value());
-    }
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Version"),
+                testing::Optional(kInkTextAnnotationVersion));
+    // Bounds are converted from CSS pixels to PDF points.
+    EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsX"),
+                testing::Optional(15.0f));
+    EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsY"),
+                testing::Optional(15.0f));
+    EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsWidth"),
+                testing::Optional(75.0f));
+    EXPECT_THAT(GetPageObjectMarkFloatParam(mark, "BoundsHeight"),
+                testing::Optional(75.0f));
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Typeface"),
+                testing::Optional(static_cast<int>(TextTypeface::kSansSerif)));
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Alignment"),
+                testing::Optional(static_cast<int>(TextAlignment::kLeft)));
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "Orientation"),
+                testing::Optional(0));
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsBold"),
+                testing::Optional(1));
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "IsItalic"),
+                testing::Optional(0));
+    EXPECT_THAT(GetPageObjectMarkStringParam(mark, "Text"),
+                testing::Optional(std::u16string(kExpectedText16)));
   }
 }
 
