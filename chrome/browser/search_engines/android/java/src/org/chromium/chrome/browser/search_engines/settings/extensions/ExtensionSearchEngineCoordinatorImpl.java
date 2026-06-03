@@ -54,11 +54,13 @@ public class ExtensionSearchEngineCoordinatorImpl implements ExtensionSearchEngi
 
     @Override
     public void destroy() {
+        if (mPropertyModel != null) {
+            // Clear the adapter first so the change processor can notify the preference to unbind
+            // it before being destroyed.
+            mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
+        }
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();
-        }
-        if (mPropertyModel != null) {
-            mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
         }
         if (mMediator != null) {
             mMediator.destroy();

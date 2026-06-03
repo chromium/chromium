@@ -82,8 +82,10 @@ public class CustomSiteSearchCoordinator {
 
     public void destroy() {
         mSiteSearchDialogCoordinator.dismiss();
-        mPropertyModelChangeProcessor.destroy();
+        // Clear the adapter first so the change processor can notify the preference to unbind it
+        // before being destroyed.
         mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
+        mPropertyModelChangeProcessor.destroy();
         mModelList.removeObserver(mListObserver);
         mMediator.destroy();
         mAdapter.destroy();
