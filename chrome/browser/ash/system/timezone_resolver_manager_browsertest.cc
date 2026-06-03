@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -375,36 +376,43 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerEnrolledDeviceTest,
   LoginUser(regular_primary_user_id_);
   base::RunLoop().RunUntilIdle();
 
+  const PrefService& local_state =
+      CHECK_DEREF(g_browser_process->local_state());
+
   // Without any policy applied, the timezone pref should be not managed by
   // default.
-  EXPECT_FALSE(system::IsTimezonePrefsManaged(kSystemTimezone));
-  EXPECT_FALSE(system::IsTimezonePrefsManaged(ash::prefs::kUserTimezone));
+  EXPECT_FALSE(system::IsTimezonePrefsManaged(local_state, kSystemTimezone));
+  EXPECT_FALSE(
+      system::IsTimezonePrefsManaged(local_state, ash::prefs::kUserTimezone));
   EXPECT_FALSE(system::IsTimezonePrefsManaged(
-      ash::prefs::kResolveTimezoneByGeolocationMethod));
+      local_state, ash::prefs::kResolveTimezoneByGeolocationMethod));
 
   // Apply device timezone automatic detection policy. kSystemTimezone is only
   // managed if kSystemTimezonePolicy is applied. Since kSystemTimezonePolicy is
   // not applied yet, kSystemTimezone should not be managed.
   for (auto tz_policy : kTimeZoneAutomaticDetectionCloudPolicies) {
     SetDeviceTimeZoneAutomaticDetectionPolicy(tz_policy);
-    EXPECT_FALSE(system::IsTimezonePrefsManaged(kSystemTimezone));
+    EXPECT_FALSE(system::IsTimezonePrefsManaged(local_state, kSystemTimezone));
     if (tz_policy ==
         enterprise_management::
             SystemTimezoneProto_AutomaticTimezoneDetectionType_USERS_DECIDE) {
-      EXPECT_FALSE(system::IsTimezonePrefsManaged(ash::prefs::kUserTimezone));
+      EXPECT_FALSE(system::IsTimezonePrefsManaged(local_state,
+                                                  ash::prefs::kUserTimezone));
       EXPECT_FALSE(system::IsTimezonePrefsManaged(
-          ash::prefs::kResolveTimezoneByGeolocationMethod));
+          local_state, ash::prefs::kResolveTimezoneByGeolocationMethod));
     } else if (
         tz_policy ==
         enterprise_management::
             SystemTimezoneProto_AutomaticTimezoneDetectionType_DISABLED) {
-      EXPECT_FALSE(system::IsTimezonePrefsManaged(ash::prefs::kUserTimezone));
+      EXPECT_FALSE(system::IsTimezonePrefsManaged(local_state,
+                                                  ash::prefs::kUserTimezone));
       EXPECT_TRUE(system::IsTimezonePrefsManaged(
-          ash::prefs::kResolveTimezoneByGeolocationMethod));
+          local_state, ash::prefs::kResolveTimezoneByGeolocationMethod));
     } else {
-      EXPECT_TRUE(system::IsTimezonePrefsManaged(ash::prefs::kUserTimezone));
+      EXPECT_TRUE(system::IsTimezonePrefsManaged(local_state,
+                                                 ash::prefs::kUserTimezone));
       EXPECT_TRUE(system::IsTimezonePrefsManaged(
-          ash::prefs::kResolveTimezoneByGeolocationMethod));
+          local_state, ash::prefs::kResolveTimezoneByGeolocationMethod));
     }
   }
 
@@ -413,17 +421,19 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerEnrolledDeviceTest,
   SetDeviceTimeZoneAutomaticDetectionPolicy(
       enterprise_management::
           SystemTimezoneProto_AutomaticTimezoneDetectionType_USERS_DECIDE);
-  EXPECT_FALSE(system::IsTimezonePrefsManaged(kSystemTimezone));
-  EXPECT_FALSE(system::IsTimezonePrefsManaged(ash::prefs::kUserTimezone));
+  EXPECT_FALSE(system::IsTimezonePrefsManaged(local_state, kSystemTimezone));
+  EXPECT_FALSE(
+      system::IsTimezonePrefsManaged(local_state, ash::prefs::kUserTimezone));
   EXPECT_FALSE(system::IsTimezonePrefsManaged(
-      ash::prefs::kResolveTimezoneByGeolocationMethod));
+      local_state, ash::prefs::kResolveTimezoneByGeolocationMethod));
 
   // Apply device timezone static policy, all timezone prefs should be managed.
   SetDeviceTimeZoneStaticPolicy("Europe/Berlin");
-  EXPECT_TRUE(system::IsTimezonePrefsManaged(kSystemTimezone));
-  EXPECT_TRUE(system::IsTimezonePrefsManaged(ash::prefs::kUserTimezone));
+  EXPECT_TRUE(system::IsTimezonePrefsManaged(local_state, kSystemTimezone));
+  EXPECT_TRUE(
+      system::IsTimezonePrefsManaged(local_state, ash::prefs::kUserTimezone));
   EXPECT_TRUE(system::IsTimezonePrefsManaged(
-      ash::prefs::kResolveTimezoneByGeolocationMethod));
+      local_state, ash::prefs::kResolveTimezoneByGeolocationMethod));
 }
 
 IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerEnrolledDeviceTest,

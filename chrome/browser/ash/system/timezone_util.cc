@@ -203,7 +203,8 @@ bool HasSystemTimezonePolicy() {
   return false;
 }
 
-bool IsTimezonePrefsManaged(const std::string& pref_name) {
+bool IsTimezonePrefsManaged(const PrefService& local_state,
+                            const std::string& pref_name) {
   DCHECK(pref_name == kSystemTimezone ||
          pref_name == ash::prefs::kUserTimezone ||
          pref_name == ash::prefs::kResolveTimezoneByGeolocationMethod);
@@ -222,13 +223,12 @@ bool IsTimezonePrefsManaged(const std::string& pref_name) {
   if (pref_name == kSystemTimezone)
     return false;
 
-  const PrefService* local_state = g_browser_process->local_state();
-  if (!local_state->IsManagedPreference(
+  if (!local_state.IsManagedPreference(
           ash::prefs::kSystemTimezoneAutomaticDetectionPolicy)) {
     return false;
   }
 
-  int resolve_policy_value = local_state->GetInteger(
+  int resolve_policy_value = local_state.GetInteger(
       ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
 
   switch (resolve_policy_value) {
@@ -250,7 +250,7 @@ void UpdateSystemTimezone(Profile* profile) {
   const PrefService& local_state =
       CHECK_DEREF(g_browser_process->local_state());
 
-  if (IsTimezonePrefsManaged(ash::prefs::kUserTimezone)) {
+  if (IsTimezonePrefsManaged(local_state, ash::prefs::kUserTimezone)) {
     VLOG(1) << "Ignoring user timezone change, because timezone is enterprise "
                "managed.";
     return;

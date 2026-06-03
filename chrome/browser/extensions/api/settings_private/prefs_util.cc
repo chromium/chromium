@@ -1710,7 +1710,8 @@ bool PrefsUtil::IsPrefEnterpriseManaged(const std::string& pref_name) {
   // (kSystemTimezonePolicy and kSystemTimezoneAutomaticDetectionPolicy).
   if (pref_name == ash::kSystemTimezone ||
       pref_name == ash::prefs::kUserTimezone) {
-    return ash::system::IsTimezonePrefsManaged(pref_name);
+    return ash::system::IsTimezonePrefsManaged(
+        CHECK_DEREF(g_browser_process->local_state()), pref_name);
   }
 
   return IsPrivilegedCrosSetting(pref_name);
