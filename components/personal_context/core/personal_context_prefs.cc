@@ -16,7 +16,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 false);
 
   registry->RegisterBooleanPref(kPersonalContextInAutofillSettingsToggleStatus,
-                                false);
+                                true);
 }
 
 }  // namespace personal_context::prefs

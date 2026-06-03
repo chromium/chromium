@@ -184,35 +184,24 @@ const base::flat_set<int32_t>& GetPersonalContextEligibleTiers() {
     return kDisabledNotEligible;
   }
 
-  const bool notice_has_been_shown = pref_service->GetBoolean(
-      prefs::kPersonalContextInAutofillNoticeHasBeenShown);
   const bool notice_should_be_shown = pref_service->GetBoolean(
       prefs::kPersonalContextInAutofillNoticeShouldBeShown);
   const bool toggle_is_on = pref_service->GetBoolean(
       prefs::kPersonalContextInAutofillSettingsToggleStatus);
 
-  if (toggle_is_on) {
-    // The toggle can only be on from the notice having been shown or the user
-    // manually enabling the toggle from settings. If the notice should still
-    // be shown is the only remaining decision maker here.
-    if (notice_should_be_shown) {
-      MaybeOutputReason(debug_message, "Notice not yet acknowledged.");
-      return kEnabledShouldShowNotice;
-    }
-    return kEnabled;
-  }
-
-  if (notice_has_been_shown) {
-    // The toggle being off after the notice has been shown means the feature
-    // was enabled at some point, and the user manually disabled it afterwards.
+  if (!toggle_is_on) {
+    // The toggle is on-by-default. If it's off then it must have been disabled
+    // by the user.
     MaybeOutputReason(debug_message, "User disabled via toggle.");
     return kDisabledViaPersonalIntelligenceInAutofillToggle;
   }
 
-  // The toggle being off and the notice not having been shown yet means the
-  // feature was never enabled, and the notice should still be shown.
-  MaybeOutputReason(debug_message, "Notice not yet shown.");
-  return kDisabledShouldShowNotice;
+  if (notice_should_be_shown) {
+    MaybeOutputReason(debug_message, "Notice not yet shown.");
+    return kEnabledShouldShowNotice;
+  }
+
+  return kEnabled;
 }
 }  // namespace
 
@@ -244,11 +233,6 @@ PersonalContextEnablementServiceImpl::PersonalContextEnablementServiceImpl(
     pref_registrar_.Init(pref_service_);
     pref_registrar_.Add(
         prefs::kPersonalContextInAutofillNoticeShouldBeShown,
-        base::BindRepeating(
-            &PersonalContextEnablementServiceImpl::UpdateEnablementState,
-            base::Unretained(this)));
-    pref_registrar_.Add(
-        prefs::kPersonalContextInAutofillNoticeHasBeenShown,
         base::BindRepeating(
             &PersonalContextEnablementServiceImpl::UpdateEnablementState,
             base::Unretained(this)));
