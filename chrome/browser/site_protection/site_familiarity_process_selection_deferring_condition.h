@@ -54,6 +54,9 @@ class SiteFamiliarityProcessSelectionDeferringCondition
   // results page.
   bool IsDefaultSearchEngineNavigation();
 
+  // Returns true if the navigation is in a cross-site subframe.
+  bool IsCrossSiteSubframe() const;
+
   SiteFamiliarityFetcher fetcher_;
   std::optional<SiteFamiliarityFetcher::Verdict> verdict_;
 

@@ -14,7 +14,10 @@
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/schemeful_site.h"
+#include "url/origin.h"
 
 namespace site_protection {
 
@@ -90,11 +93,57 @@ void SiteFamiliarityProcessSelectionDeferringCondition::OnComputedVerdict(
 }
 
 void SiteFamiliarityProcessSelectionDeferringCondition::SetVerdictOnHandle() {
+  SiteFamiliarityFetcher::Verdict verdict = verdict_.value();
+  bool is_familiar = verdict == SiteFamiliarityFetcher::Verdict::kFamiliar;
+
   navigation_handle().GetProcessSelectionUserData().SetUserData(
       &SiteFamiliarityProcessSelectionUserData::kUserDataKey,
       std::make_unique<SiteFamiliarityProcessSelectionUserData>(
-          /*is_site_familiar=*/(verdict_.value() ==
-                                SiteFamiliarityFetcher::Verdict::kFamiliar)));
+          /*is_site_familiar=*/is_familiar));
+
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle().GetWebContents()->GetBrowserContext());
+  if (profile && !profile->IsOffTheRecord()) {
+    bool is_top_frame = navigation_handle().IsInPrimaryMainFrame();
+    bool is_cross_site_subframe = IsCrossSiteSubframe();
+
+    if (is_top_frame) {
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.SiteFamiliarity.Verdict.TopFrame", verdict);
+    } else if (is_cross_site_subframe) {
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.SiteFamiliarity.Verdict.Subframe", verdict);
+    }
+
+    if (is_top_frame || is_cross_site_subframe) {
+      base::UmaHistogramEnumeration("SafeBrowsing.SiteFamiliarity.Verdict",
+                                    verdict);
+    }
+  }
+}
+
+bool SiteFamiliarityProcessSelectionDeferringCondition::IsCrossSiteSubframe()
+    const {
+  if (navigation_handle().IsInPrimaryMainFrame()) {
+    return false;
+  }
+  content::RenderFrameHost* parent_frame = navigation_handle().GetParentFrame();
+  if (!parent_frame) {
+    return false;
+  }
+  content::RenderFrameHost* topmost_frame =
+      parent_frame->GetOutermostMainFrame();
+  if (!topmost_frame->IsInPrimaryMainFrame()) {
+    return false;
+  }
+  std::optional<url::Origin> subframe_origin =
+      navigation_handle().GetOriginToCommit();
+  if (!subframe_origin) {
+    return false;
+  }
+  url::Origin topmost_origin = topmost_frame->GetLastCommittedOrigin();
+  return !net::SchemefulSite::IsSameSite(subframe_origin.value(),
+                                         topmost_origin);
 }
 
 }  //  namespace site_protection

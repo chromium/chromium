@@ -36,10 +36,16 @@ inline constexpr int kMinSiteEngagementScoreForFamiliarity = 10;
 // returning early and cancelling any pending asynchronous lookups.
 class SiteFamiliarityFetcher {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(SiteFamiliarity)
   enum class Verdict {
-    kFamiliar,
-    kUnfamiliar,
+    kFamiliar = 0,
+    kUnfamiliar = 1,
+    kMaxValue = kUnfamiliar,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:SiteFamiliarity)
 
   typedef base::OnceCallback<void(Verdict)> Callback;
 
