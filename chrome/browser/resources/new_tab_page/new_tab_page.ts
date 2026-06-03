@@ -12,7 +12,6 @@
 export {GlifAnimationState} from '//resources/cr_components/composebox/common.js';
 export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 export {PlaceholderTextCycler} from 'chrome://resources/cr_components/searchbox/placeholder_text_cycler.js';
-export {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 export {SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 export {SearchboxIconElement} from 'chrome://resources/cr_components/searchbox/searchbox_icon.js';
 export {SearchboxMatchElement} from 'chrome://resources/cr_components/searchbox/searchbox_match.js';
