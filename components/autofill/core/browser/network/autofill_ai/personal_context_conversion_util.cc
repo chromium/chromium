@@ -49,21 +49,28 @@ std::u16string FormatTimestamp(
 
 void AddAttribute(AttributeTypeName type,
                   const std::u16string& value,
-                  std::vector<AttributeInstance>& attributes) {
+                  std::vector<AttributeInstance>& attributes,
+                  std::optional<AttributeInstance::MarkAsMaskedPasskey>
+                      passkey = std::nullopt) {
   if (value.empty()) {
     return;
   }
   AttributeInstance attribute{AttributeType(type)};
   attribute.SetRawInfo(attribute.type().field_type(), value,
                        VerificationStatus::kNoStatus);
+  if (passkey) {
+    attribute.mark_as_masked(*passkey);
+  }
   attribute.FinalizeInfo();
   attributes.push_back(std::move(attribute));
 }
 
 void AddStringAttribute(AttributeTypeName type,
                         std::string_view value,
-                        std::vector<AttributeInstance>& attributes) {
-  AddAttribute(type, base::UTF8ToUTF16(value), attributes);
+                        std::vector<AttributeInstance>& attributes,
+                        std::optional<AttributeInstance::MarkAsMaskedPasskey>
+                            passkey = std::nullopt) {
+  AddAttribute(type, base::UTF8ToUTF16(value), attributes, passkey);
 }
 
 EntityInstance CreateEntityInstance(EntityTypeName type_name,
@@ -84,11 +91,11 @@ EntityInstance CreateEntityInstance(EntityTypeName type_name,
 }
 
 EntityInstance PersonalContextPassportToEntityInstance(
-    const personal_context::proto::Passport& passport) {
+    const personal_context::proto::Passport& passport,
+    std::optional<AttributeInstance::MarkAsMaskedPasskey> passkey) {
   std::vector<AttributeInstance> attributes;
   AddStringAttribute(kPassportName, passport.name(), attributes);
-  // TODO(crbug.com/516721244): Set this as a masked attribute.
-  AddStringAttribute(kPassportNumber, passport.number(), attributes);
+  AddStringAttribute(kPassportNumber, passport.number(), attributes, passkey);
   AddStringAttribute(kPassportCountry, passport.issuing_country(), attributes);
   if (passport.has_expiration_date()) {
     AddAttribute(kPassportExpirationDate,
@@ -103,11 +110,11 @@ EntityInstance PersonalContextPassportToEntityInstance(
 }
 
 EntityInstance PersonalContextDriversLicenseToEntityInstance(
-    const personal_context::proto::DriversLicense& dl) {
+    const personal_context::proto::DriversLicense& dl,
+    std::optional<AttributeInstance::MarkAsMaskedPasskey> passkey) {
   std::vector<AttributeInstance> attributes;
   AddStringAttribute(kDriversLicenseName, dl.name(), attributes);
-  // TODO(crbug.com/516721244): Set this as a masked attribute.
-  AddStringAttribute(kDriversLicenseNumber, dl.number(), attributes);
+  AddStringAttribute(kDriversLicenseNumber, dl.number(), attributes, passkey);
   AddStringAttribute(kDriversLicenseState, dl.state(), attributes);
   if (dl.has_expiration_date()) {
     AddAttribute(kDriversLicenseExpirationDate,
@@ -123,11 +130,11 @@ EntityInstance PersonalContextDriversLicenseToEntityInstance(
 }
 
 EntityInstance PersonalContextNationalIdToEntityInstance(
-    const personal_context::proto::NationalId& nid) {
+    const personal_context::proto::NationalId& nid,
+    std::optional<AttributeInstance::MarkAsMaskedPasskey> passkey) {
   std::vector<AttributeInstance> attributes;
   AddStringAttribute(kNationalIdCardName, nid.name(), attributes);
-  // TODO(crbug.com/516721244): Set this as a masked attribute.
-  AddStringAttribute(kNationalIdCardNumber, nid.number(), attributes);
+  AddStringAttribute(kNationalIdCardNumber, nid.number(), attributes, passkey);
   AddStringAttribute(kNationalIdCardCountry, nid.issuing_country(), attributes);
   if (nid.has_expiration_date()) {
     AddAttribute(kNationalIdCardExpirationDate,
@@ -235,15 +242,22 @@ EntityInstance PersonalContextShipmentToEntityInstance(
 }  // namespace
 
 std::optional<EntityInstance> PersonalContextEntityToEntityInstance(
-    const personal_context::proto::Entity& entity) {
+    const personal_context::proto::Entity& entity,
+    bool is_masked) {
+  std::optional<AttributeInstance::MarkAsMaskedPasskey> passkey;
+  if (is_masked) {
+    passkey.emplace(AttributeInstance::MarkAsMaskedPasskey());
+  }
   switch (entity.entity_case()) {
     case personal_context::proto::Entity::kPassport:
-      return PersonalContextPassportToEntityInstance(entity.passport());
+      return PersonalContextPassportToEntityInstance(entity.passport(),
+                                                     passkey);
     case personal_context::proto::Entity::kDriversLicense:
       return PersonalContextDriversLicenseToEntityInstance(
-          entity.drivers_license());
+          entity.drivers_license(), passkey);
     case personal_context::proto::Entity::kNationalId:
-      return PersonalContextNationalIdToEntityInstance(entity.national_id());
+      return PersonalContextNationalIdToEntityInstance(entity.national_id(),
+                                                       passkey);
     case personal_context::proto::Entity::kFlightReservation:
       return PersonalContextFlightReservationToEntityInstance(
           entity.flight_reservation());

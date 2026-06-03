@@ -32,6 +32,18 @@ void ExpectAttributeValue(const EntityInstance& entity,
   ASSERT_TRUE(attr.has_value())
       << "Missing attribute " << static_cast<int>(attribute_name);
   EXPECT_EQ(attr->GetCompleteRawInfo(), expected_value);
+  EXPECT_FALSE(attr->masked());
+}
+
+void ExpectMaskedAttributeValue(const EntityInstance& entity,
+                                AttributeTypeName attribute_name,
+                                const std::u16string& expected_value) {
+  base::optional_ref<const AttributeInstance> attr =
+      entity.attribute(AttributeType(attribute_name));
+  ASSERT_TRUE(attr.has_value())
+      << "Missing attribute " << static_cast<int>(attribute_name);
+  EXPECT_EQ(attr->GetCompleteRawInfo(), expected_value);
+  EXPECT_TRUE(attr->masked());
 }
 
 TEST(AutofillAiPersonalContextConverters, ConvertPassport) {
@@ -60,10 +72,31 @@ TEST(AutofillAiPersonalContextConverters, ConvertPassport) {
   EXPECT_TRUE(result.are_attributes_read_only().value());
 
   ExpectAttributeValue(result, kPassportName, u"Jane Doe");
-  ExpectAttributeValue(result, kPassportNumber, u"P12345");
+  ExpectMaskedAttributeValue(result, kPassportNumber, u"P12345");
   ExpectAttributeValue(result, kPassportCountry, u"US");
   ExpectAttributeValue(result, kPassportExpirationDate, u"2030-05-20");
   ExpectAttributeValue(result, kPassportIssueDate, u"2020-05-20");
+}
+
+TEST(AutofillAiPersonalContextConverters, ConvertPassport_Unmasked) {
+  personal_context::proto::Passport passport;
+  passport.set_name("Jane Doe");
+  passport.set_number("P12345");
+  passport.set_issuing_country("US");
+
+  personal_context::proto::Entity entity;
+  *entity.mutable_passport() = passport;
+
+  std::optional<EntityInstance> opt_result =
+      PersonalContextEntityToEntityInstance(entity, /*is_masked=*/false);
+
+  ASSERT_TRUE(opt_result.has_value());
+  const EntityInstance& result = opt_result.value();
+
+  EXPECT_EQ(result.type().name(), EntityTypeName::kPassport);
+  ExpectAttributeValue(result, kPassportName, u"Jane Doe");
+  ExpectAttributeValue(result, kPassportNumber, u"P12345");
+  ExpectAttributeValue(result, kPassportCountry, u"US");
 }
 
 TEST(AutofillAiPersonalContextConverters, ConvertDriversLicense) {
@@ -90,10 +123,31 @@ TEST(AutofillAiPersonalContextConverters, ConvertDriversLicense) {
   EXPECT_EQ(result.type().name(), EntityTypeName::kDriversLicense);
 
   ExpectAttributeValue(result, kDriversLicenseName, u"John Smith");
-  ExpectAttributeValue(result, kDriversLicenseNumber, u"DL9876");
+  ExpectMaskedAttributeValue(result, kDriversLicenseNumber, u"DL9876");
   ExpectAttributeValue(result, kDriversLicenseState, u"CA");
   ExpectAttributeValue(result, kDriversLicenseExpirationDate, u"2028-12-31");
   ExpectAttributeValue(result, kDriversLicenseIssueDate, u"2018-01-01");
+}
+
+TEST(AutofillAiPersonalContextConverters, ConvertDriversLicense_Unmasked) {
+  personal_context::proto::DriversLicense dl;
+  dl.set_name("John Smith");
+  dl.set_number("DL9876");
+  dl.set_state("CA");
+
+  personal_context::proto::Entity entity;
+  *entity.mutable_drivers_license() = dl;
+
+  std::optional<EntityInstance> opt_result =
+      PersonalContextEntityToEntityInstance(entity, /*is_masked=*/false);
+
+  ASSERT_TRUE(opt_result.has_value());
+  const EntityInstance& result = opt_result.value();
+
+  EXPECT_EQ(result.type().name(), EntityTypeName::kDriversLicense);
+  ExpectAttributeValue(result, kDriversLicenseName, u"John Smith");
+  ExpectAttributeValue(result, kDriversLicenseNumber, u"DL9876");
+  ExpectAttributeValue(result, kDriversLicenseState, u"CA");
 }
 
 TEST(AutofillAiPersonalContextConverters, ConvertNationalIdCard) {
@@ -120,10 +174,31 @@ TEST(AutofillAiPersonalContextConverters, ConvertNationalIdCard) {
   EXPECT_EQ(result.type().name(), EntityTypeName::kNationalIdCard);
 
   ExpectAttributeValue(result, kNationalIdCardName, u"Alice Green");
-  ExpectAttributeValue(result, kNationalIdCardNumber, u"NID5432");
+  ExpectMaskedAttributeValue(result, kNationalIdCardNumber, u"NID5432");
   ExpectAttributeValue(result, kNationalIdCardCountry, u"DE");
   ExpectAttributeValue(result, kNationalIdCardExpirationDate, u"2029-06-15");
   ExpectAttributeValue(result, kNationalIdCardIssueDate, u"2019-06-15");
+}
+
+TEST(AutofillAiPersonalContextConverters, ConvertNationalIdCard_Unmasked) {
+  personal_context::proto::NationalId nid;
+  nid.set_name("Alice Green");
+  nid.set_number("NID5432");
+  nid.set_issuing_country("DE");
+
+  personal_context::proto::Entity entity;
+  *entity.mutable_national_id() = nid;
+
+  std::optional<EntityInstance> opt_result =
+      PersonalContextEntityToEntityInstance(entity, /*is_masked=*/false);
+
+  ASSERT_TRUE(opt_result.has_value());
+  const EntityInstance& result = opt_result.value();
+
+  EXPECT_EQ(result.type().name(), EntityTypeName::kNationalIdCard);
+  ExpectAttributeValue(result, kNationalIdCardName, u"Alice Green");
+  ExpectAttributeValue(result, kNationalIdCardNumber, u"NID5432");
+  ExpectAttributeValue(result, kNationalIdCardCountry, u"DE");
 }
 
 TEST(AutofillAiPersonalContextConverters, ConvertFlightReservation) {

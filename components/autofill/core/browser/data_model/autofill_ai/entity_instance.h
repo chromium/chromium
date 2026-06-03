@@ -37,6 +37,10 @@ namespace sync_pb {
 class AutofillValuableSpecifics;
 }
 
+namespace personal_context::proto {
+class Entity;
+}
+
 namespace autofill {
 
 // Entity and attribute types are blueprints for entity and attribute instances.
@@ -188,6 +192,9 @@ class AttributeInstance final {
     friend class FakeWalletPassAccessManager;
     friend std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
         const sync_pb::AutofillValuableSpecifics&);
+    friend std::optional<EntityInstance> PersonalContextEntityToEntityInstance(
+        const personal_context::proto::Entity&,
+        bool);
   };
   void mark_as_masked(MarkAsMaskedPasskey) { masked_ = true; }
 
