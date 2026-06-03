@@ -1,6 +1,6 @@
 # Please see owners expectations for this set of owners at
-# /docs/webapps/owners_expectations.md, and general owners expectations at
-# /docs/code_reviews.md#expectations-of-owners
+# //chrome/browser/web_applications/docs/owners_expectations.md, and general
+# owners expectations at //docs/code_reviews.md#expectations-of-owners
 
 # Note: Unless you want a specific reviewer's expertise, please send CLs to
 # chromium-webapps-reviews@google.com rather than to specific
