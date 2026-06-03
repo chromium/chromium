@@ -1105,14 +1105,15 @@ chrome.test.runTests([
     manager.redo();
     assertStackState(true, true, false);  // Clean again
 
-    chrome.test.succeed();
-  },
-
-  async function testUndoRedoTextAnnotationContent() {
+    // Reset state for next test.
     manager.resetStackForTesting();
     manager.clearAnnotationsForTesting();
     mockPlugin.clearMessages();
 
+    chrome.test.succeed();
+  },
+
+  async function testUndoRedoTextAnnotationContent() {
     // Helper to check if annotation exists in manager
     function assertAnnotationExists(
         id: number, exists: boolean, expectedText?: string) {
@@ -1240,6 +1241,58 @@ chrome.test.runTests([
     expectedMessage.source = TextAnnotationSource.REDO;
     verifyFinishTextAnnotationMessage(expectedMessage);
     mockPlugin.clearMessages();
+
+    // Reset state for next test.
+    manager.resetStackForTesting();
+    manager.clearAnnotationsForTesting();
+
+    chrome.test.succeed();
+  },
+
+  async function testUndoRedoWithZoomChange() {
+    // Draw a text box (id 0) at zoom 1.0
+    const whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    chrome.test.assertTrue(manager.initializeTextAnnotation({x: 100, y: 100}));
+    const initEvent = await whenInitEvent;
+    const annot = initEvent.detail.annotation;
+    annot.text = 'Zoom';
+
+    // Set up expectation with values shared by all checks.
+    const expectedMessage = getTestAnnotationMessageData(0);
+    expectedMessage.textBoxRect.width = 222;
+    expectedMessage.textBoxRect.height = 24;
+    expectedMessage.textBoxRect.locationX = 45;
+    expectedMessage.textBoxRect.locationY = 91;
+    expectedMessage.isEdited = true;
+
+    // Commit creation
+    manager.commitTextAnnotation(annot, true, []);
+    expectedMessage.text = 'Zoom';
+    expectedMessage.source = TextAnnotationSource.USER;
+    verifyFinishTextAnnotationMessage(expectedMessage);
+    mockPlugin.clearMessages();
+
+    // Undo
+    manager.undo();
+    expectedMessage.text = '';
+    expectedMessage.source = TextAnnotationSource.UNDO;
+    verifyFinishTextAnnotationMessage(expectedMessage);
+    mockPlugin.clearMessages();
+
+    // Zoom to 2.0 and redo.
+    viewport.setZoom(2.0);
+    manager.redo();
+    // TODO(crbug.com/514308934): Should be 1, like the first message.
+    expectedMessage.pdfZoom = 2;
+    expectedMessage.text = 'Zoom';
+    expectedMessage.source = TextAnnotationSource.REDO;
+    verifyFinishTextAnnotationMessage(expectedMessage);
+    mockPlugin.clearMessages();
+
+    // Reset state for next test.
+    manager.resetStackForTesting();
+    manager.clearAnnotationsForTesting();
 
     chrome.test.succeed();
   },
