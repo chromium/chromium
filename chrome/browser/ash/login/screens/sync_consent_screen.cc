@@ -175,11 +175,15 @@ void SyncConsentScreen::Finish(Result result) {
   profile_->GetPrefs()->SetBoolean(prefs::kSyncOobeCompleted, true);
   // Record whether the dialog was shown, skipped, etc.
   base::UmaHistogramEnumeration("OOBE.SyncConsentScreen.Behavior", behavior_);
-  // Record the final state of the sync service.
-  syncer::SyncService* service = GetSyncService(profile_);
-  bool sync_enabled = service && service->IsSyncFeatureEnabled() &&
-                      service->GetUserSettings()->IsSyncEverythingEnabled();
-  base::UmaHistogramBoolean("OOBE.SyncConsentScreen.SyncEnabled", sync_enabled);
+  if (!base::FeatureList::IsEnabled(
+          ::switches::kChromeOsUseConsentLevelSigninForNewUsers)) {
+    // Record the final state of the sync service.
+    syncer::SyncService* service = GetSyncService(profile_);
+    bool sync_enabled = service && service->IsSyncFeatureEnabled() &&
+                        service->GetUserSettings()->IsSyncEverythingEnabled();
+    base::UmaHistogramBoolean("OOBE.SyncConsentScreen.SyncEnabled",
+                              sync_enabled);
+  }
   exit_callback_.Run(result);
 }
 

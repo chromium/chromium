@@ -24175,6 +24175,21 @@
             ]
         }
     ],
+    "UnoPhase2ChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeOsUseConsentLevelSigninForNewUsers"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoPhase2ChromeOSInfra": [
         {
             "platforms": [
