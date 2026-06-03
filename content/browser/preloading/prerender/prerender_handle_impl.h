@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HANDLE_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/common/content_export.h"
@@ -37,13 +38,10 @@ class CONTENT_EXPORT PrerenderHandleImpl final
   base::WeakPtr<PrerenderHandle> GetWeakPtr() override;
   void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) override;
-  void AddActivationCallback(base::OnceClosure activation_callback) override;
-  void AddErrorCallback(base::OnceClosure error_callback) override;
+  void AddObserver(PrerenderHandle::Observer* observer) override;
+  void RemoveObserver(PrerenderHandle::Observer* observer) override;
   bool IsValid() const override;
   bool IsWaitingForResponseHeaders() const override;
-  void AddOnResponseHeadersReceivedCallback(
-      base::OnceCallback<void(PrerenderLifecycleStatus result)> callback)
-      override;
 
   // PrerenderHost::Observer:
   void OnActivated() override;
@@ -66,10 +64,7 @@ class CONTENT_EXPORT PrerenderHandleImpl final
   enum class State { kLoading, kReady, kActivated, kCanceled };
   State state_ = State::kLoading;
 
-  std::vector<base::OnceClosure> activation_callbacks_;
-  std::vector<base::OnceClosure> error_callbacks_;
-  std::vector<base::OnceCallback<void(PrerenderLifecycleStatus result)>>
-      on_headers_received_callbacks_;
+  base::ObserverList<PrerenderHandle::Observer> observers_;
 
   base::ScopedObservation<PrerenderHost, PrerenderHandleImpl> obs_{this};
 

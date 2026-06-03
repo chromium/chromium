@@ -24,6 +24,44 @@ namespace {
 
 // TODO(crbug.com/485415143): Add test cases for other public methods in
 // PrerenderHandleImpl.
+class TestPrerenderObserver : public PrerenderHandle::Observer {
+ public:
+  explicit TestPrerenderObserver(PrerenderHandle* handle) : handle_(handle) {
+    handle_->AddObserver(this);
+  }
+  ~TestPrerenderObserver() override {
+    if (handle_) {
+      handle_->RemoveObserver(this);
+    }
+  }
+
+  void OnLifecycleStateChanged(PrerenderLifecycleStatus status) override {
+    last_status_ = status;
+    statuses_.push_back(status);
+  }
+
+  std::optional<PrerenderLifecycleStatus> last_status() const {
+    return last_status_;
+  }
+  const std::vector<PrerenderLifecycleStatus>& statuses() const {
+    return statuses_;
+  }
+
+  bool HasSeenStatus(PrerenderLifecycleStatus status) const {
+    for (auto s : statuses_) {
+      if (s == status) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+ private:
+  raw_ptr<PrerenderHandle> handle_;
+  std::optional<PrerenderLifecycleStatus> last_status_;
+  std::vector<PrerenderLifecycleStatus> statuses_;
+};
+
 class PrerenderHandleImplTest : public RenderViewHostImplTestHarness {
  public:
   PrerenderHandleImplTest() = default;
@@ -81,9 +119,7 @@ TEST_F(PrerenderHandleImplTest, OnResponseHeadersReceived) {
 
   EXPECT_TRUE(handle->IsWaitingForResponseHeaders());
 
-  bool callback_triggered = false;
-  handle->AddOnResponseHeadersReceivedCallback(base::BindLambdaForTesting(
-      [&](PrerenderLifecycleStatus result) { callback_triggered = true; }));
+  TestPrerenderObserver observer(handle.get());
 
   PrerenderHost* host = registry().FindNonReservedHostById(prerender_host_id);
   ASSERT_TRUE(host);
@@ -94,7 +130,8 @@ TEST_F(PrerenderHandleImplTest, OnResponseHeadersReceived) {
   sim->ReadyToCommit();
 
   EXPECT_FALSE(handle->IsWaitingForResponseHeaders());
-  EXPECT_TRUE(callback_triggered);
+  EXPECT_TRUE(
+      observer.HasSeenStatus(PrerenderLifecycleStatus::kHTTPSuccessResponse));
 }
 
 TEST_F(PrerenderHandleImplTest, CallbackCalledOnFailure) {
@@ -108,19 +145,12 @@ TEST_F(PrerenderHandleImplTest, CallbackCalledOnFailure) {
       std::nullopt);
 
   EXPECT_TRUE(handle->IsWaitingForResponseHeaders());
-  bool callback_triggered = false;
-  handle->AddOnResponseHeadersReceivedCallback(base::BindLambdaForTesting(
-      [&](PrerenderLifecycleStatus result) { callback_triggered = true; }));
-
-  bool error_called = false;
-  handle->AddErrorCallback(
-      base::BindLambdaForTesting([&]() { error_called = true; }));
+  TestPrerenderObserver observer(handle.get());
 
   registry().CancelHost(prerender_host_id,
                         PrerenderFinalStatus::kRendererProcessCrashed);
 
-  EXPECT_TRUE(callback_triggered);
-  EXPECT_TRUE(error_called);
+  EXPECT_TRUE(observer.HasSeenStatus(PrerenderLifecycleStatus::kOtherFailure));
 }
 
 TEST_F(PrerenderHandleImplTest, GetPrerenderHostId) {

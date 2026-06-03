@@ -52,6 +52,7 @@ enum class PrerenderPredictionStatus {
 // Chrome manages running prerenders separately, as it prioritizes the latest
 // prerender requests, while the //content prioritizes the earliest requests.
 class PrerenderManager : public content::WebContentsObserver,
+                         public content::PrerenderHandle::Observer,
                          public content::WebContentsUserData<PrerenderManager> {
  public:
   PrerenderManager(const PrerenderManager&) = delete;
@@ -148,6 +149,10 @@ class PrerenderManager : public content::WebContentsObserver,
       content::NavigationHandle& navigation_handle);
 
   void NotifySearchPrewarmFinished(content::PrerenderLifecycleStatus result);
+
+  // content::PrerenderHandle::Observer:
+  void OnLifecycleStateChanged(
+      content::PrerenderLifecycleStatus status) override;
 
   std::unique_ptr<content::PrerenderHandle> search_prewarm_handle_;
   bool is_search_prewarm_ongoing_ = false;

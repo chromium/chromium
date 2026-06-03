@@ -32,13 +32,13 @@
 #include "components/content_relationship_verification/digital_asset_links_handler.h"
 #include "components/js_injection/browser/js_communication_host.h"
 #include "components/js_injection/common/enum.mojom-forward.h"
+#include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/child_process_id.h"
 
 class SkBitmap;
 
 namespace content {
-class PrerenderHandle;
 class WebContents;
 }  // namespace content
 
@@ -377,8 +377,20 @@ class AwContents : public FindHelper::Listener,
   std::unique_ptr<PermissionRequestHandler> permission_request_handler_;
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 
-  base::circular_deque<std::unique_ptr<content::PrerenderHandle>>
-      prerender_handles_;
+  struct PrerenderInfo : public content::PrerenderHandle::Observer {
+    PrerenderInfo(std::unique_ptr<content::PrerenderHandle> prerender_handle,
+                  base::OnceClosure activation_callback,
+                  base::OnceClosure error_callback);
+    ~PrerenderInfo() override;
+
+    void OnLifecycleStateChanged(
+        content::PrerenderLifecycleStatus status) override;
+
+    std::unique_ptr<content::PrerenderHandle> handle;
+    std::vector<base::OnceClosure> activation_callbacks;
+    std::vector<base::OnceClosure> error_callbacks;
+  };
+  base::circular_deque<std::unique_ptr<PrerenderInfo>> prerender_infos_;
 
   bool view_tree_force_dark_state_ = false;
   std::string scheme_;

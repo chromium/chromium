@@ -149,11 +149,13 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
 
 PrerenderLifecycleStatus ToPrerenderLifecycleStatus(
     PrerenderFinalStatus status) {
+  if (!ShouldFireErrorCallback(status)) {
+    return PrerenderLifecycleStatus::kCancelled;
+  }
+
   switch (status) {
     case PrerenderFinalStatus::kNavigationBadHttpStatus:
       return PrerenderLifecycleStatus::kHttpBadResponse;
-    case PrerenderFinalStatus::kDestroyed:
-      return PrerenderLifecycleStatus::kDestroyed;
     case PrerenderFinalStatus::kStop:
       return PrerenderLifecycleStatus::kStop;
     default:
@@ -215,17 +217,12 @@ void PrerenderHandleImpl::SetPreloadingAttemptFailureReason(
   prerender_host->preloading_attempt()->SetFailureReason(reason);
 }
 
-void PrerenderHandleImpl::AddActivationCallback(
-    base::OnceClosure activation_callback) {
-  CHECK(IsValid());
-  CHECK(activation_callback);
-  activation_callbacks_.push_back(std::move(activation_callback));
+void PrerenderHandleImpl::AddObserver(PrerenderHandle::Observer* observer) {
+  observers_.AddObserver(observer);
 }
 
-void PrerenderHandleImpl::AddErrorCallback(base::OnceClosure error_callback) {
-  CHECK(IsValid());
-  CHECK(error_callback);
-  error_callbacks_.push_back(std::move(error_callback));
+void PrerenderHandleImpl::RemoveObserver(PrerenderHandle::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 bool PrerenderHandleImpl::IsValid() const {
@@ -244,59 +241,24 @@ bool PrerenderHandleImpl::IsWaitingForResponseHeaders() const {
   return state_ == State::kLoading;
 }
 
-void PrerenderHandleImpl::AddOnResponseHeadersReceivedCallback(
-    base::OnceCallback<void(PrerenderLifecycleStatus result)> callback) {
-  CHECK(IsWaitingForResponseHeaders());
-  on_headers_received_callbacks_.push_back(std::move(callback));
-}
-
 void PrerenderHandleImpl::OnActivated() {
   CHECK_EQ(State::kReady, state_);
   state_ = State::kActivated;
 
-  // An error should not be reported after activation.
-  error_callbacks_.clear();
-
-  std::vector<base::OnceClosure> callbacks;
-  callbacks.swap(activation_callbacks_);
-  // Don't touch `this` after this line, as a callback could destroy `this`.
-  for (auto& callback : callbacks) {
-    std::move(callback).Run();
+  for (auto& observer : observers_) {
+    observer.OnLifecycleStateChanged(PrerenderLifecycleStatus::kActivated);
   }
 }
 
 void PrerenderHandleImpl::OnFailed(PrerenderFinalStatus status) {
-  // The prerender page can either be activated or fail.
-  // However an activated page will never receive this callback.
   CHECK(IsValid());
   state_ = State::kCanceled;
 
-  // An activation never happen after cancellation.
-  activation_callbacks_.clear();
-
-  // Call the header callbacks to unthrottle other requests anyway.
-  // If the header has already been received, on_headers_received_callbacks_
-  // will be empty.
   PrerenderLifecycleStatus result = ToPrerenderLifecycleStatus(status);
-  for (auto& callback : on_headers_received_callbacks_) {
-    std::move(callback).Run(result);
-  }
-  on_headers_received_callbacks_.clear();
 
-  if (!ShouldFireErrorCallback(status)) {
-    error_callbacks_.clear();
-    return;
-  }
-
-  // TODO(crbug.com/41490450): Pass a cancellation reason to the callback.
-  // Note that we should not expose detailed reasons to prevent embedders from
-  // depending on them. Such an implicit contract with embedders would impair
-  // flexibility of internal implementation.
-  std::vector<base::OnceClosure> callbacks;
-  callbacks.swap(error_callbacks_);
-  // Don't touch `this` after this line, as a callback could destroy `this`.
-  for (auto& callback : callbacks) {
-    std::move(callback).Run();
+  // Notify observers to unthrottle other requests anyway.
+  for (auto& observer : observers_) {
+    observer.OnLifecycleStateChanged(result);
   }
 }
 
@@ -315,10 +277,10 @@ void PrerenderHandleImpl::OnHeadersReceived(
   CHECK_EQ(state_, State::kLoading);
   state_ = State::kReady;
 
-  for (auto& callback : on_headers_received_callbacks_) {
-    std::move(callback).Run(PrerenderLifecycleStatus::kHTTPSuccessResponse);
+  for (auto& observer : observers_) {
+    observer.OnLifecycleStateChanged(
+        PrerenderLifecycleStatus::kHTTPSuccessResponse);
   }
-  on_headers_received_callbacks_.clear();
 }
 
 }  // namespace content

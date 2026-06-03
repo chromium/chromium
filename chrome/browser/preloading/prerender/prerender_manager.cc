@@ -177,7 +177,8 @@ class PrerenderManager::SearchPrerenderTask {
 
 PrerenderManager::~PrerenderManager() {
   if (is_search_prewarm_ongoing_) {
-    NotifySearchPrewarmFinished(content::PrerenderLifecycleStatus::kDestroyed);
+    // NotifySearchPrewarmFinished will remove the observer.
+    NotifySearchPrewarmFinished(content::PrerenderLifecycleStatus::kCancelled);
   }
 }
 
@@ -297,9 +298,7 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
       service->OnSearchPrewarmStarted(
           search_prewarm_handle_->GetPrerenderHostId());
       is_search_prewarm_ongoing_ = true;
-      search_prewarm_handle_->AddOnResponseHeadersReceivedCallback(
-          base::BindOnce(&PrerenderManager::NotifySearchPrewarmFinished,
-                         weak_factory_.GetWeakPtr()));
+      search_prewarm_handle_->AddObserver(this);
     }
   }
 
@@ -310,12 +309,33 @@ void PrerenderManager::NotifySearchPrewarmFinished(
     content::PrerenderLifecycleStatus result) {
   CHECK(is_search_prewarm_ongoing_);
   is_search_prewarm_ongoing_ = false;
+  if (search_prewarm_handle_) {
+    search_prewarm_handle_->RemoveObserver(this);
+  }
   auto* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
   if (service) {
     service->OnSearchPrewarmFinished(
         search_prewarm_handle_->GetPrerenderHostId(), result);
+  }
+}
+
+void PrerenderManager::OnLifecycleStateChanged(
+    content::PrerenderLifecycleStatus status) {
+  switch (status) {
+    case content::PrerenderLifecycleStatus::kHTTPSuccessResponse:
+    case content::PrerenderLifecycleStatus::kHttpBadResponse:
+    case content::PrerenderLifecycleStatus::kStop:
+    case content::PrerenderLifecycleStatus::kCancelled:
+    case content::PrerenderLifecycleStatus::kOtherFailure:
+      // Any terminal state (or headers received) for the prewarm phase
+      // should notify to unthrottle.
+      NotifySearchPrewarmFinished(status);
+      break;
+    case content::PrerenderLifecycleStatus::kActivated:
+      // PrerenderManager doesn't care about activation for prewarm.
+      break;
   }
 }
 
