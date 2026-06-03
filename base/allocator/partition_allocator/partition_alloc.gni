@@ -599,11 +599,11 @@ declare_args() {
   # We can only enable this on 64-bit builds and when PA is used as malloc to
   # get hooks early enough to reserve the segment.
   #
-  # TODO(40925855): Enable this on all supported platforms. Android can only
-  # be enabled after switching to native zygote.
+  # TODO(40925855): Android can only be enabled after switching to native
+  # zygote.
   enable_user_space_zero_segment =
       has_64_bit_pointers && use_partition_alloc_as_malloc &&
-      (is_mac || is_win || (is_linux && !is_chromeos && !is_android))
+      (is_mac || is_win || is_chromeos || is_linux)
 
   # Size of the zero segment in MB. The total size will be at least this value.
   # This is 4GB + 1MB. The 1MB protects from using certain kinds of objects
