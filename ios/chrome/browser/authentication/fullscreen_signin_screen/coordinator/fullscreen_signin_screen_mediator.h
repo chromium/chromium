@@ -68,6 +68,7 @@ class SyncService;
                      localPrefService:(PrefService*)localPrefService
                           prefService:(PrefService*)prefService
                           syncService:(syncer::SyncService*)syncService
+                     selectedIdentity:(id<SystemIdentity>)selectedIdentity
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
                           promoAction:(signin_metrics::PromoAction)promoAction
                 profileMetricsService:

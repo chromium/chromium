@@ -16,6 +16,8 @@ enum class SigninContextStyle {
   kCollaborationJoinTabGroup,
   // Shown when sharing a collaboration group while signed out or not synced.
   kCollaborationShareTabGroup,
+  // Shown when following sign-in after scanning a QR code on another device.
+  kDeeplinkSignin,
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_CONTEXT_STYLE_H_

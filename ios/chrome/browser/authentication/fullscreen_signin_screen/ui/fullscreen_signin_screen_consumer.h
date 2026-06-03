@@ -44,6 +44,12 @@ typedef NS_ENUM(NSUInteger, SigninScreenConsumerScreenIntent) {
 // In case the general sync-related UI is disabled: Shows a subtitle with
 // benefits related to sync if the value is YES, a generic one otherwise.
 @property(nonatomic, assign) BOOL syncEnabled;
+// If there is a signed-in account (in deeplink signin flow) we show the
+// signed-in identity email along with the target account email in the subtitle.
+@property(nonatomic, copy) NSString* currentPrimaryIdentityEmail;
+// If there is a signed-in account (in deeplink signin flow) we show the
+// signed-in identity email along with the target account email in the subtitle.
+@property(nonatomic, copy) NSString* targetIdentityEmail;
 
 // Sets the `userName`, `email`, `givenName` and `avatar` of the selected
 // identity. The `userName` and `givenName` can be nil. Notifies the UI that an

@@ -47,8 +47,10 @@ enum class SigninScreenState {
   kFirstRunAsFirstScreen,
   // The screen is in the FRE sequence, but is not the first screen.
   kFirstRunAsOtherScreen,
-  // The screen is not in the FRE.
-  kNotFirstRun,
+  // The screen is part of deeplink flow.
+  kDeeplink,
+  // The screen is not part of any of the previous flow.
+  kOther,
 };
 }  // namespace
 
@@ -104,6 +106,7 @@ enum class SigninScreenState {
                      localPrefService:(PrefService*)localPrefService
                           prefService:(PrefService*)prefService
                           syncService:(syncer::SyncService*)syncService
+                     selectedIdentity:(id<SystemIdentity>)selectedIdentity
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
                           promoAction:(signin_metrics::PromoAction)promoAction
                 profileMetricsService:
@@ -134,6 +137,7 @@ enum class SigninScreenState {
     _localPrefService = localPrefService;
     _prefService = prefService;
     _syncService = syncService;
+    _selectedIdentity = selectedIdentity;
 
     _hadIdentitiesAtStartup = !_identityManager->GetAccountsOnDevice().empty();
 
@@ -143,12 +147,15 @@ enum class SigninScreenState {
       } else {
         _screenState = SigninScreenState::kFirstRunAsOtherScreen;
       }
+    } else if (accessPoint == signin_metrics::AccessPoint::kDeepLinkDefault) {
+      _screenState = SigninScreenState::kDeeplink;
     } else {
-      _screenState = SigninScreenState::kNotFirstRun;
+      _screenState = SigninScreenState::kOther;
     }
 
     switch (_screenState) {
-      case SigninScreenState::kNotFirstRun:
+      case SigninScreenState::kDeeplink:
+      case SigninScreenState::kOther:
         _logger = [[UserSigninLogger alloc]
               initWithAccessPoint:accessPoint
                       promoAction:promoAction
@@ -234,7 +241,9 @@ enum class SigninScreenState {
   if (self.UMALinkWasTapped) {
     base::RecordAction(base::UserMetricsAction("MobileFreUMALinkTapped"));
   }
-  if (_screenState != SigninScreenState::kNotFirstRun) {
+  BOOL isFirstRun = _screenState == SigninScreenState::kFirstRunAsFirstScreen ||
+                    _screenState == SigninScreenState::kFirstRunAsOtherScreen;
+  if (isFirstRun) {
     first_run::FirstRunStage firstRunStage =
         signIn ? first_run::kWelcomeAndSigninScreenCompletionWithSignIn
                : first_run::kWelcomeAndSigninScreenCompletionWithoutSignIn;
@@ -296,7 +305,8 @@ enum class SigninScreenState {
   self.consumer.hasPlatformPolicies = HasPlatformPolicies();
 
   switch (_screenState) {
-    case SigninScreenState::kNotFirstRun:
+    case SigninScreenState::kDeeplink:
+    case SigninScreenState::kOther:
     case SigninScreenState::kFirstRunAsOtherScreen:
       self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
       break;
@@ -310,7 +320,14 @@ enum class SigninScreenState {
       break;
   }
 
-  if (signinForcedOrAvailable) {
+  if (_screenState == SigninScreenState::kDeeplink) {
+    DCHECK(_selectedIdentity);
+    _consumer.targetIdentityEmail = _selectedIdentity.userEmail;
+    id<SystemIdentity> signedInIdentity =
+        _authenticationService->GetPrimaryIdentity();
+    _consumer.currentPrimaryIdentityEmail = signedInIdentity.userEmail;
+    [self updateConsumerIdentity];
+  } else if (signinForcedOrAvailable) {
     self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
         _identityManager, _accountManagerService);
   }

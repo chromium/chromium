@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -25,12 +26,9 @@
 
 @implementation DeeplinkSigninCoordinator {
   NSString* _selectedAccountEmail;
-  SigninContextStyle _contextStyle;
-  signin_metrics::AccessPoint _accessPoint;
   ChangeProfileContinuationProvider _changeProfileContinuationProvider;
   id<SystemIdentity> _selectedIdentity;
   ChromeCoordinator* _childCoordinator;
-  ScreenProvider* _screenProvider;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
 }
 
@@ -38,25 +36,21 @@
            initWithBaseViewController:(UIViewController*)viewController
                               browser:(Browser*)browser
                  selectedAccountEmail:(NSString*)selectedAccountEmail
-                       screenProvider:(ScreenProvider*)screenProvider
-                         contextStyle:(SigninContextStyle)contextStyle
-                          accessPoint:(signin_metrics::AccessPoint)accessPoint
     changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
                                           changeProfileContinuationProvider {
-  CHECK(selectedAccountEmail && selectedAccountEmail.length != 0);
+  CHECK(selectedAccountEmail.length);
   DCHECK_EQ(browser->type(), Browser::Type::kRegular);
-  self = [super initWithBaseViewController:viewController
-                                   browser:browser
-                              contextStyle:contextStyle
-                               accessPoint:accessPoint];
+
+  self = [super
+      initWithBaseViewController:viewController
+                         browser:browser
+                    contextStyle:SigninContextStyle::kDeeplinkSignin
+                     accessPoint:signin_metrics::AccessPoint::kDeepLinkDefault];
 
   if (self) {
     CHECK_EQ(browser->type(), Browser::Type::kRegular);
     CHECK(changeProfileContinuationProvider);
     _selectedAccountEmail = selectedAccountEmail;
-    _screenProvider = screenProvider;
-    _contextStyle = contextStyle;
-    _accessPoint = accessPoint;
     _changeProfileContinuationProvider = changeProfileContinuationProvider;
   }
   return self;
@@ -70,9 +64,9 @@
 
 - (void)start {
   [super start];
+
   _accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
-
   _selectedIdentity = _accountManagerService->GetIdentityOnDeviceWithEmail(
       _selectedAccountEmail);
   if (!_selectedIdentity) {
@@ -85,7 +79,6 @@
 
 - (void)stop {
   [self stopChildCoordinator];
-  _screenProvider = nil;
   _changeProfileContinuationProvider.Reset();
   _accountManagerService = nullptr;
   [super stop];
@@ -99,8 +92,8 @@
   SigninCoordinator* addAccountCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.baseViewController
                                           browser:self.browser
-                                     contextStyle:_contextStyle
-                                      accessPoint:_accessPoint
+                                     contextStyle:self.contextStyle
+                                      accessPoint:self.accessPoint
                                    prefilledEmail:_selectedAccountEmail
                              continuationProvider:
                                  _changeProfileContinuationProvider];
@@ -124,9 +117,9 @@
       [[FullscreenSigninCoordinator alloc]
                  initWithBaseViewController:self.baseViewController
                                     browser:self.browser
-                             screenProvider:_screenProvider
-                               contextStyle:_contextStyle
-                                accessPoint:_accessPoint
+                             screenProvider:[[SigninScreenProvider alloc] init]
+                               contextStyle:self.contextStyle
+                                accessPoint:self.accessPoint
           changeProfileContinuationProvider:_changeProfileContinuationProvider];
   coordinator.delegate = self;
   coordinator.identity = _selectedIdentity;
@@ -171,10 +164,9 @@
 #pragma mark - NSObject
 
 - (NSString*)description {
-  return [NSString
-      stringWithFormat:@"<%@: %p, screenProvider: %p, childCoordinator: %p>",
-                       self.class.description, self, _screenProvider,
-                       _childCoordinator];
+  return [NSString stringWithFormat:@"<%@: %p, childCoordinator: %p>",
+                                    self.class.description, self,
+                                    _childCoordinator];
 }
 
 @end
