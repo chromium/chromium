@@ -326,6 +326,36 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function testInitializeTextSingleLoadedAnnotation() {
+    manager.clearAnnotationsForTesting();
+    manager.resetTextResolverForTesting();
+
+    // Set the reply to getAllTextAnnotations to return a single loaded
+    // annotation with ID 0.
+    const testAnnotation = getTestAnnotation(0);
+    mockPlugin.clearMessages();
+    mockPlugin.setMessageReply('getAllTextAnnotations', {
+      annotations: [testAnnotation],
+    });
+
+    chrome.test.assertFalse(manager.isTextInitializationComplete());
+    await manager.initializeTextAnnotations();
+    chrome.test.assertTrue(manager.isTextInitializationComplete());
+
+    // Check that initializing a new annotation gets ID 1 (not 0, to avoid
+    // collision).
+    mockPlugin.clearMessages();
+    const whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
+        'initialize-text-box', manager);
+    chrome.test.assertTrue(manager.initializeTextAnnotation({x: 200, y: 200}));
+    const initEvent = await whenInitEvent;
+    chrome.test.assertEq(1, initEvent.detail.annotation.id);
+    verifyEditTextAnnotationMessage(false);
+
+    mockPlugin.clearMessages();
+    chrome.test.succeed();
+  },
+
   function testSetFontProperties() {
     const fontUpdates: TextAttributes[] = [];
     manager.addEventListener('attributes-changed', e => {

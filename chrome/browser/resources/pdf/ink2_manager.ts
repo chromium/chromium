@@ -381,9 +381,8 @@ export class Ink2Manager extends EventTarget {
           this.annotations_.set(annotation.pageIndex, pageMap);
         }
         pageMap.set(annotation.id, annotation);
-        if (annotation.id > this.nextAnnotationId_) {
-          this.nextAnnotationId_ = annotation.id + 1;
-        }
+        this.nextAnnotationId_ =
+            Math.max(this.nextAnnotationId_, annotation.id + 1);
       });
       this.textResolver_!.resolve();
     });
