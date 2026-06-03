@@ -38,6 +38,7 @@ source_set("impl") {
     "//chrome/browser/page_info",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/page_info",
+    "//chrome/browser/ui/views/controls",
     "//components/dom_distiller/core",
     "//components/page_info/core",
     "//components/privacy_sandbox:features",

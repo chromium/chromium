@@ -10288,6 +10288,7 @@ test("unit_tests") {
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/apps/app_info_dialog:unit_tests",
+      "//chrome/browser/ui/views/controls",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/frame:immersive_mode_controller",
       "//chrome/browser/ui/views/frame:test_support",
