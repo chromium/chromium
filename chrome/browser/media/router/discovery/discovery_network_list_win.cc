@@ -30,6 +30,7 @@
 #include "base/win/scoped_hstring.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "chrome/browser/media/router/discovery/discovery_network_info.h"
 #include "chrome/browser/media/router/discovery/discovery_network_list.h"
 
 namespace WinrtConnectivity = ABI::Windows::Networking::Connectivity;
