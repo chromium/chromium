@@ -271,6 +271,7 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "enableKeyboardSelection",
       lens::features::IsLensOverlayKeyboardSelectionEnabled());
   html_source->AddBoolean("enableMultiRegionSelection", false);
+  html_source->AddBoolean("lineSelection", false);
 
   LensOverlayController& controller = GetLensOverlayController();
   html_source->AddDouble("invocationTime",
