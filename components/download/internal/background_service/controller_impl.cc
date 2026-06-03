@@ -157,7 +157,7 @@ void ControllerImpl::Initialize(base::OnceClosure callback) {
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
   TRACE_EVENT_BEGIN("download_service", "DownloadServiceInitialize",
-                    perfetto::Track::FromPointer(this));
+                    perfetto::NamedTrack::FromPointer("DownloadService", this));
 
   driver_->Initialize(this);
   model_->Initialize(this);
@@ -1143,7 +1143,8 @@ void ControllerImpl::NotifyClientsOfStartup(bool state_lost) {
 void ControllerImpl::NotifyServiceOfStartup() {
   TRACE_EVENT_END(
       "download_service",
-      /* DownloadServiceInitialize */ perfetto::Track::FromPointer(this));
+      /* DownloadServiceInitialize */ perfetto::NamedTrack::FromPointer(
+          "DownloadService", this));
 
   if (init_callback_.is_null())
     return;
