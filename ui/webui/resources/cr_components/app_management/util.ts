@@ -6,8 +6,8 @@ import {assert, assertNotReached} from '//resources/js/assert.js';
 
 import type {App, Permission} from './app_management.mojom-webui.js';
 import {AppType, PermissionType, TriState} from './app_management.mojom-webui.js';
-import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction} from './constants.js';
+import {MetricsBrowserProxy} from './metrics_browser_proxy.js';
 import type {PermissionTypeIndex} from './permission_constants.js';
 import {isBoolValue, isPermissionEnabled, isTriStateValue} from './permission_util.js';
 
@@ -143,7 +143,7 @@ export function recordAppManagementUserAction(
     appType: AppType, userAction: AppManagementUserAction) {
   const histogram = getUserActionHistogramNameForAppType(appType);
   const enumLength = Object.keys(AppManagementUserAction).length;
-  BrowserProxy.getInstance().recordEnumerationValue(
+  MetricsBrowserProxy.getInstance().recordEnumerationValue(
       histogram, userAction, enumLength);
 }
 

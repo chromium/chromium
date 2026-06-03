@@ -20,10 +20,6 @@ export class BrowserProxy {
         (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
   }
 
-  recordEnumerationValue(metricName: string, value: number, enumSize: number) {
-    chrome.metricsPrivate.recordEnumerationValue(metricName, value, enumSize);
-  }
-
   static getInstance(): BrowserProxy {
     return instance || (instance = new BrowserProxy());
   }

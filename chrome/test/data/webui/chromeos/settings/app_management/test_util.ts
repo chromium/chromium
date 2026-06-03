@@ -6,6 +6,7 @@ import type {AppManagementToggleRowElement, CrToggleElement} from 'chrome://os-s
 import {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from 'chrome://os-settings/os_settings.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PageCallbackRouter, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {MetricsBrowserProxy} from 'chrome://resources/cr_components/app_management/metrics_browser_proxy.js';
 import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -20,15 +21,21 @@ import {TestAppManagementStore} from './test_store.js';
 
 type AppConfig = Partial<App>;
 
-export class TestAppManagementBrowserProxy extends TestBrowserProxy implements
+export class TestAppManagementBrowserProxy implements
     AppManagementComponentBrowserProxy {
   callbackRouter: PageCallbackRouter;
   handler: FakePageHandler;
 
   constructor(handler: FakePageHandler) {
-    super(['recordEnumerationValue']);
     this.handler = handler;
     this.callbackRouter = new PageCallbackRouter();
+  }
+}
+
+export class TestMetricsBrowserProxy extends TestBrowserProxy implements
+    MetricsBrowserProxy {
+  constructor() {
+    super(['recordEnumerationValue']);
   }
 
   recordEnumerationValue(metricName: string, value: number, enumSize: number) {
