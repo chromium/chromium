@@ -9016,8 +9016,8 @@
   },
   {
     "name": "tab-group-more-entry-points",
-    "owners": ["top-chrome-desktop-ui@google.com"],
-    "expiry_milestone": 150
+    "owners": ["dominicaustria@google.com", "top-chrome-desktop-ui@google.com"],
+    "expiry_milestone": 155
   },
   {
     "name": "tab-groups-focusing",
