@@ -30,7 +30,6 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
     private long mStartTime;
     private boolean mIsForeground;
     private boolean mStopReasonRecorded;
-    private boolean mTaskRemoved;
 
     /**
      * Start the foreground service with this given context.
@@ -84,9 +83,7 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
             mIsForeground = false;
         }
         recordStopReason(StopReason.STOPPED);
-        if (!mTaskRemoved) {
-            stopForegroundInternal(flags);
-        }
+        stopForegroundInternal(flags);
         getService().stopSelf();
     }
 
@@ -104,16 +101,6 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         recordStopReason(StopReason.TASK_REMOVED);
-        mTaskRemoved = true;
-        // Stop the foreground state while detaching the notification. This ensures the
-        // notification persists in the tray as a regular notification after the service is killed.
-        stopForegroundInternal(ServiceCompat.STOP_FOREGROUND_DETACH);
-
-        ActorForegroundServiceManager manager = ActorForegroundServiceManager.getInstance();
-        if (manager != null) {
-            manager.onAndroidTaskRemoved();
-        }
-        getService().stopSelf();
         super.onTaskRemoved(rootIntent);
     }
 

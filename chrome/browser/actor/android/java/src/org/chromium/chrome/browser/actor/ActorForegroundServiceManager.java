@@ -68,11 +68,6 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
 
     private final ProfileManager.Observer mProfileObserver;
 
-    /** Returns the singleton instance. */
-    public static @Nullable ActorForegroundServiceManager getInstance() {
-        return sInstance;
-    }
-
     /** Initializes the manager and starts observing profile changes. */
     public static void initialize() {
         if (sInstance != null) return;
@@ -165,26 +160,6 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         if (mNotificationService == null) return false;
         ActorTask task = mNotificationService.getTask(taskId);
         return task != null && mServiceController.isActivityVisibleForTabs(task.getTabs());
-    }
-
-    /** Called when the Android task is removed (e.g. user swipes away the app). */
-    public void onAndroidTaskRemoved() {
-        if (mNotificationService == null || mKeyedService == null) return;
-
-        // Clear active task IDs first to prevent processTaskUpdateQueue from attempting
-        // updates during the shutdown loop.
-        mActiveTaskIds.clear();
-
-        // Explicitly stop all active tasks with SHUTDOWN reason. This ensures the backend performs
-        // cleanup and records metrics before the process potentially shuts down.
-        for (ActorTask task : mKeyedService.getActiveTasks()) {
-            mKeyedService.stopTask(task.getId(), StoppedReason.SHUTDOWN);
-        }
-
-        // Standard stop and unbind logic. This ensures stopForeground(REMOVE) and unbind are
-        // called,
-        // and importantly, the notification is reposted to ensure it's dismissable.
-        stopAndUnbindService();
     }
 
     /** Process the current task state and initiate any needed service actions. */
