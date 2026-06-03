@@ -52,7 +52,7 @@ namespace blink {
 namespace {
 
 DOMUint8Array* ConvertUnsignedDataToUint8Array(
-    Vector<unsigned> unsigned_data,
+    const Vector<unsigned>& unsigned_data,
     ExceptionState& exception_state) {
   DOMUint8Array* array = DOMUint8Array::Create(unsigned_data.size());
   auto array_data = array->ByteSpan();
@@ -200,9 +200,9 @@ class MessageValidator {
     DCHECK(!IsReservedStatusByte());
     DCHECK(!IsRealTimeMessage());
     DCHECK(!IsEndOfSysex());
-    static const std::array<int, 7> kChannelMessageLength = {
+    static constexpr std::array<int, 7> kChannelMessageLength = {
         3, 3, 3, 3, 2, 2, 3};  // for 0x8*, 0x9*, ..., 0xe*
-    static const std::array<int, 7> kSystemMessageLength = {
+    static constexpr std::array<int, 7> kSystemMessageLength = {
         2, 3, 2, 0, 0, 1, 0};  // for 0xf1, 0xf2, ..., 0xf7
     size_t length = IsSystemMessage()
                         ? kSystemMessageLength[data_[offset_] - 0xf1]
@@ -273,14 +273,14 @@ void MIDIOutput::send(NotShared<DOMUint8Array> array,
   SendInternal(array.Get(), timestamp, exception_state);
 }
 
-void MIDIOutput::send(Vector<unsigned> unsigned_data,
+void MIDIOutput::send(const Vector<unsigned>& unsigned_data,
                       double timestamp_in_milliseconds,
                       ExceptionState& exception_state) {
   if (!GetExecutionContext())
     return;
 
-  DOMUint8Array* array = ConvertUnsignedDataToUint8Array(
-      std::move(unsigned_data), exception_state);
+  DOMUint8Array* array =
+      ConvertUnsignedDataToUint8Array(unsigned_data, exception_state);
   if (!array) {
     DCHECK(exception_state.HadException());
     return;
@@ -299,13 +299,13 @@ void MIDIOutput::send(NotShared<DOMUint8Array> data,
   SendInternal(data.Get(), base::TimeTicks::Now(), exception_state);
 }
 
-void MIDIOutput::send(Vector<unsigned> unsigned_data,
+void MIDIOutput::send(const Vector<unsigned>& unsigned_data,
                       ExceptionState& exception_state) {
   if (!GetExecutionContext())
     return;
 
-  DOMUint8Array* array = ConvertUnsignedDataToUint8Array(
-      std::move(unsigned_data), exception_state);
+  DOMUint8Array* array =
+      ConvertUnsignedDataToUint8Array(unsigned_data, exception_state);
   if (!array) {
     DCHECK(exception_state.HadException());
     return;

@@ -57,11 +57,11 @@ class MIDIOutput final : public MIDIPort {
   ~MIDIOutput() override;
 
   void send(NotShared<DOMUint8Array>, double timestamp, ExceptionState&);
-  void send(Vector<unsigned>, double timestamp, ExceptionState&);
+  void send(const Vector<unsigned>&, double timestamp, ExceptionState&);
 
   // send() without optional |timestamp|.
   void send(NotShared<DOMUint8Array>, ExceptionState&);
-  void send(Vector<unsigned>, ExceptionState&);
+  void send(const Vector<unsigned>&, ExceptionState&);
 
   void Trace(Visitor*) const override;
 
