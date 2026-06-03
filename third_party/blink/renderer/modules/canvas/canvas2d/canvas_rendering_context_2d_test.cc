@@ -586,6 +586,7 @@ class FakeCanvasResourceProvider : public Canvas2DResourceProviderSharedImage {
             GetN32FormatForCanvas(),
             kPremul_SkAlphaType,
             gfx::ColorSpace::CreateSRGB(),
+            gfx::HDRMetadata(),
             SharedGpuContext::ContextProviderWrapper(),
             /*is_accelerated=*/hint != RasterModeHint::kPreferCPU,
             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |

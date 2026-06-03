@@ -149,7 +149,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual bool IsGpuContextLost() const = 0;
   SkSurfaceProps GetSkSurfaceProps() const;
   virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
-  virtual gfx::ColorSpace GetColorSpace() const = 0;
+  virtual const gfx::ColorSpace& GetColorSpace() const = 0;
+  virtual const gfx::HDRMetadata& GetHdrMetadata() const = 0;
   virtual SkAlphaType GetAlphaType() const = 0;
   virtual gfx::Size Size() const = 0;
   virtual base::ByteSize EstimatedSizeInBytes() const {
@@ -303,7 +304,10 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return format_;
   }
-  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
+  const gfx::ColorSpace& GetColorSpace() const override { return color_space_; }
+  const gfx::HDRMetadata& GetHdrMetadata() const override {
+    return hdr_metadata_;
+  }
   SkAlphaType GetAlphaType() const override { return alpha_type_; }
   gfx::Size Size() const override { return size_; }
 
@@ -323,6 +327,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
                                  viz::SharedImageFormat format,
                                  SkAlphaType alpha_type,
                                  const gfx::ColorSpace& color_space,
+                                 const gfx::HDRMetadata& hdr_metadata,
                                  Delegate* delegate);
 
   sk_sp<SkSurface> CreateSkSurface() const override;
@@ -331,6 +336,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   viz::SharedImageFormat format_;
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
+  gfx::HDRMetadata hdr_metadata_;
 };
 
 // * Subclass of CanvasResourceProvider that is specialized for usage
@@ -375,6 +381,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       viz::SharedImageFormat,
       SkAlphaType,
       const gfx::ColorSpace&,
+      const gfx::HDRMetadata&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags,
@@ -383,6 +390,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
                                       viz::SharedImageFormat,
                                       SkAlphaType,
                                       const gfx::ColorSpace&,
+                                      const gfx::HDRMetadata&,
                                       WebGraphicsSharedImageInterfaceProvider*,
                                       Delegate*);
   ~Canvas2DResourceProviderSharedImage() override;
@@ -400,7 +408,10 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return format_;
   }
-  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
+  const gfx::ColorSpace& GetColorSpace() const override { return color_space_; }
+  const gfx::HDRMetadata& GetHdrMetadata() const override {
+    return hdr_metadata_;
+  }
   SkAlphaType GetAlphaType() const override { return alpha_type_; }
   gfx::Size Size() const override { return size_; }
 
@@ -524,6 +535,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   viz::SharedImageFormat format_;
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
+  gfx::HDRMetadata hdr_metadata_;
 
   base::WeakPtrFactory<Canvas2DResourceProviderSharedImage> weak_ptr_factory_{
       this};
@@ -584,6 +596,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       viz::SharedImageFormat,
       SkAlphaType,
       const gfx::ColorSpace&,
+      const gfx::HDRMetadata&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags,
@@ -593,6 +606,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       viz::SharedImageFormat,
       SkAlphaType,
       const gfx::ColorSpace&,
+      const gfx::HDRMetadata&,
       WebGraphicsSharedImageInterfaceProvider*,
       CanvasResourceProvider::Delegate*);
   ~CanvasNon2DResourceProviderSharedImage() override;
@@ -613,12 +627,14 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   gfx::Size Size() const { return size_; }
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
-  gfx::ColorSpace GetColorSpace() const { return color_space_; }
+  const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
+  const gfx::HDRMetadata& GetHdrMetadata() const { return hdr_metadata_; }
   SkAlphaType GetAlphaType() const { return alpha_type_; }
   CanvasSnapshotInfo GetInfo() const {
     return {
         .alpha_type = GetAlphaType(),
         .color_space = GetColorSpace(),
+        .hdr_metadata = GetHdrMetadata(),
         .format = GetSharedImageFormat(),
         .size = Size(),
     };
@@ -741,6 +757,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   const viz::SharedImageFormat format_;
   const SkAlphaType alpha_type_;
   const gfx::ColorSpace color_space_;
+  const gfx::HDRMetadata hdr_metadata_;
   const raw_ptr<CanvasResourceProvider::Delegate> delegate_;
   const bool is_accelerated_;
   const bool is_software_;

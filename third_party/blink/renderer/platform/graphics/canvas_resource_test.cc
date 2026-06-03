@@ -80,7 +80,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {
   auto premul_canvas_resource = image_pool->GetImage();
   premul_canvas_resource->Initialize(
       /*provider=*/nullptr, SharedGpuContext::ContextProviderWrapper(),
-      /*is_accelerated=*/false);
+      gfx::HDRMetadata(), /*is_accelerated=*/false);
 
   ASSERT_TRUE(premul_canvas_resource->PrepareTransferableResource(
       &resource, /*needs_verified_synctoken=*/false));
@@ -94,7 +94,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {
   auto unpremul_canvas_resource = image_pool->GetImage();
   unpremul_canvas_resource->Initialize(
       /*provider=*/nullptr, SharedGpuContext::ContextProviderWrapper(),
-      /*is_accelerated=*/false);
+      gfx::HDRMetadata(), /*is_accelerated=*/false);
 
   ASSERT_TRUE(unpremul_canvas_resource->PrepareTransferableResource(
       &resource, /*needs_verified_synctoken=*/false));

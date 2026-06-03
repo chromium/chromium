@@ -5881,6 +5881,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   auto snapshot = DrawAndSnapshotToImage(
       {kPremul_SkAlphaType,
        gfx::ColorSpace::CreateSRGB(),
+       gfx::HDRMetadata(),
        GetN32FormatForCanvas(),
        {width, height}},
       [&](cc::PaintCanvas& canvas) {

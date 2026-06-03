@@ -144,12 +144,14 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     CanvasResourceProvider::Delegate* delegate)
     : CanvasResourceProvider(kBitmap, delegate),
       size_(size),
       format_(format),
       alpha_type_(alpha_type),
-      color_space_(color_space) {
+      color_space_(color_space),
+      hdr_metadata_(hdr_metadata) {
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
 }
 
@@ -252,11 +254,11 @@ Canvas2DResourceProviderSharedImage::NewOrRecycledResource() {
 
   if (!resource->IsInitialized()) {
     if (image_pool_->GetImageInfo().is_software) {
-      resource->InitializeSoftware(CreateWeakPtr(),
-                                   shared_image_interface_provider_);
+      resource->InitializeSoftware(
+          CreateWeakPtr(), shared_image_interface_provider_, hdr_metadata_);
     } else {
       resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
-                           is_accelerated_);
+                           hdr_metadata_, is_accelerated_);
     }
     ++num_inflight_resources_;
     if (num_inflight_resources_ > max_inflight_resources_) {
@@ -295,11 +297,11 @@ CanvasNon2DResourceProviderSharedImage::NewOrRecycledResource() {
 
   if (!resource->IsInitialized()) {
     if (image_pool_->GetImageInfo().is_software) {
-      resource->InitializeSoftware(CreateWeakPtr(),
-                                   shared_image_interface_provider_);
+      resource->InitializeSoftware(
+          CreateWeakPtr(), shared_image_interface_provider_, hdr_metadata_);
     } else {
       resource->Initialize(CreateWeakPtr(), context_provider_wrapper_,
-                           is_accelerated_);
+                           hdr_metadata_, is_accelerated_);
     }
     ++num_inflight_resources_;
     if (num_inflight_resources_ > max_inflight_resources_) {
@@ -1038,6 +1040,7 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
           PaintImageBuilder::WithDefault()
               .set_id(snapshot_paint_image_id_)
               .set_image(std::move(sk_image), snapshot_paint_image_content_id_)
+              .set_hdr_metadata(hdr_metadata_)
               .TakePaintImage();
     }
 
@@ -1224,7 +1227,7 @@ Canvas2DResourceProviderBitmap::CreateWithClear(
     CanvasResourceProvider::Delegate* delegate) {
   auto provider = base::WrapUnique<Canvas2DResourceProviderBitmap>(
       new Canvas2DResourceProviderBitmap(size, format, alpha_type, color_space,
-                                         delegate));
+                                         gfx::HDRMetadata(), delegate));
   if (provider->IsValid()) {
     provider->ClearAtCreation();
     // The ClearAtCreation() call cannot turn a CRPBitmap invalid.
@@ -1338,8 +1341,9 @@ Canvas2DResourceProviderSharedImage::CreateWithClear(
 #endif
 
   auto provider = std::make_unique<Canvas2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, context_provider_wrapper,
-      is_accelerated, shared_image_usage_flags, delegate);
+      size, format, alpha_type, color_space, gfx::HDRMetadata(),
+      context_provider_wrapper, is_accelerated, shared_image_usage_flags,
+      delegate);
   if (!provider->IsValid()) {
     return nullptr;
   }
@@ -1379,8 +1383,8 @@ Canvas2DResourceProviderSharedImage::CreateWithClearForSoftwareCompositor(
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
   auto provider = std::make_unique<Canvas2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, shared_image_interface_provider,
-      delegate);
+      size, format, alpha_type, color_space, gfx::HDRMetadata(),
+      shared_image_interface_provider, delegate);
   if (provider->IsValid()) {
     provider->ClearAtCreation();
     // The ClearAtCreation() call cannot turn a SW CRPSI invalid.
@@ -1487,7 +1491,8 @@ CanvasNon2DResourceProviderSharedImage::Create(
 #endif
 
   auto provider = std::make_unique<CanvasNon2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, context_provider_wrapper,
+      size, format, alpha_type, color_space, gfx::HDRMetadata(),
+      context_provider_wrapper,
       /*is_accelerated=*/true, shared_image_usage_flags, delegate);
 
   return provider->IsValid() ? std::move(provider) : nullptr;
@@ -1545,8 +1550,8 @@ CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
         format == viz::SinglePlaneFormat::kRGBA_F16);
 
   auto provider = std::make_unique<CanvasNon2DResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, shared_image_interface_provider,
-      delegate);
+      size, format, alpha_type, color_space, gfx::HDRMetadata(),
+      shared_image_interface_provider, delegate);
   return provider->IsValid() ? std::move(provider) : nullptr;
 }
 
@@ -1798,6 +1803,7 @@ CanvasResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
         PaintImageBuilder::WithDefault()
             .set_id(snapshot_paint_image_id_)
             .set_image(std::move(sk_image), snapshot_paint_image_content_id_)
+            .set_hdr_metadata(GetHdrMetadata())
             .TakePaintImage();
   }
 
@@ -1979,6 +1985,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags,
@@ -1990,7 +1997,8 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
       size_(size),
       format_(format),
       alpha_type_(alpha_type),
-      color_space_(color_space) {
+      color_space_(color_space),
+      hdr_metadata_(hdr_metadata) {
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
@@ -2078,6 +2086,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     CanvasResourceProvider::Delegate* delegate)
     : CanvasResourceProvider(kSharedImage, delegate),
@@ -2090,7 +2099,8 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
       size_(size),
       format_(format),
       alpha_type_(alpha_type),
-      color_space_(color_space) {
+      color_space_(color_space),
+      hdr_metadata_(hdr_metadata) {
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);
@@ -2195,6 +2205,7 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags,
@@ -2203,6 +2214,7 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
       format_(format),
       alpha_type_(alpha_type),
       color_space_(color_space),
+      hdr_metadata_(hdr_metadata),
       delegate_(delegate),
       is_accelerated_(is_accelerated),
       is_software_(false),
@@ -2296,12 +2308,14 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     CanvasResourceProvider::Delegate* delegate)
     : size_(size),
       format_(format),
       alpha_type_(alpha_type),
       color_space_(color_space),
+      hdr_metadata_(hdr_metadata),
       delegate_(delegate),
       is_accelerated_(false),
       is_software_(true),

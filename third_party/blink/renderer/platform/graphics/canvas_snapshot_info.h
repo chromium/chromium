@@ -12,18 +12,21 @@
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
 struct PLATFORM_EXPORT CanvasSnapshotInfo {
   SkAlphaType alpha_type;
   gfx::ColorSpace color_space;
+  gfx::HDRMetadata hdr_metadata;
   viz::SharedImageFormat format;
   gfx::Size size;
 
   bool Matches(const CanvasSnapshotInfo& info) const {
     return info.size == size && info.alpha_type == alpha_type &&
            info.color_space == color_space &&
+           info.hdr_metadata == hdr_metadata &&
            // TODO(crbug.com/40767377): Restore strict format checks once the
            // CanvasResourceProvider no longer swaps BGRA/RGBA sometimes.
            (info.format == format ||
