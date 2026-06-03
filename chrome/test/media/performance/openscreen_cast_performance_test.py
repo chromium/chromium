@@ -44,10 +44,11 @@ CHROME_OPTIONS = [
     "--media-router-cast-allow-all-ips",
     # Sets the default verbose logging level to 1.
     "--v=1",
-    # Sets specific verbose logging levels for specific components relevant to
-    # media routing and casting.
-    "--vmodule=media_router*=3,discovery_mdns*=3,cast*=3,"
-    "webrtc_logging*=3",
+    # Verbose levels for routing, casting, mirroring, and openscreen.
+    "--vmodule=media_router*=3,discovery_mdns*=3,*cast*=3,"
+    "webrtc_logging*=3,*mirroring*=3,*openscreen*=3",
+    # Force-enable stats collection loop and RTCP reporting on startup.
+    "--enable-features=EnableRtcpReporting",
     # Skips the first-run experience modal.
     "--no-first-run",
     # Prevents the "Set as default browser" prompt from appearing.
@@ -452,6 +453,8 @@ def run_performance_test(video_file: str, driver: webdriver, args):
                                        {"sinkName": args.receiver})
                 logging.info("'Cast.stopCasting' command sent.")
                 casting = False
+                # Wait for the sink to disconnect for stable logging.
+                time.sleep(10)
             except Exception as e:
                 logging.error("Error stopping cast: %s", e)
 
