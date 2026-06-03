@@ -2149,7 +2149,6 @@ public class ToolbarPhone extends ToolbarLayout
             @BrandedColorScheme int brandedColorScheme) {
         if (mOptionalButtonCoordinator != null) {
             mOptionalButtonCoordinator.setBrandedColorScheme(brandedColorScheme);
-            mOptionalButtonCoordinator.setIconForegroundColor(tint);
         }
 
         // TODO(amaralp): Have the LocationBar listen to tint changes.
@@ -3021,6 +3020,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         if (!shouldAnimate) {
             updateToolbarBackground(finalColor);
+            updateModernLocationBarColor(finalLocationBarColor);
             return;
         }
 
@@ -3432,9 +3432,6 @@ public class ToolbarPhone extends ToolbarLayout
             // Set the button's background to the same color as the URL bar background. This color
             // is only used when showing dynamic actions.
             mOptionalButtonCoordinator.setBackgroundColorFilter(mCurrentLocationBarColor);
-            // Set the button's foreground color to the same color as other toolbar icons. This
-            // color is not used on icons that don't support tinting (e.g. user profile pic).
-            mOptionalButtonCoordinator.setIconForegroundColor(getTint());
             mOptionalButtonCoordinator.setOnBeforeHideTransitionCallback(
                     () -> {
                         mLayoutLocationBarWithoutExtraButton = true;

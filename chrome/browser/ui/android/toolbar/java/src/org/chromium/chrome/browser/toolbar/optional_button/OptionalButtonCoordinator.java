@@ -20,6 +20,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonProperties.OnBeforeWidthTransitionCallback;
@@ -53,6 +54,7 @@ public class OptionalButtonCoordinator {
     private @Nullable Callback<Integer> mTransitionFinishedCallback;
     private @Nullable IphCommandBuilder mIphCommandBuilder;
     private boolean mAlwaysShowActionChip;
+    private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
 
     @IntDef({
         TransitionType.SWAPPING,
@@ -110,6 +112,7 @@ public class OptionalButtonCoordinator {
 
         mMediator = new OptionalButtonMediator(model);
         mFeatureEngagementTrackerSupplier = featureEngagementTrackerSupplier;
+        updateIconTint();
     }
 
     /**
@@ -173,8 +176,16 @@ public class OptionalButtonCoordinator {
      *
      * @param brandedColorScheme The current {@link BrandedColorScheme}.
      */
-    public void setBrandedColorScheme(int brandedColorScheme) {
+    public void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
+        mBrandedColorScheme = brandedColorScheme;
         mMediator.setBrandedColorScheme(brandedColorScheme);
+        updateIconTint();
+    }
+
+    private void updateIconTint() {
+        ColorStateList tint =
+                ThemeUtils.getThemedToolbarIconTint(mView.getContext(), mBrandedColorScheme);
+        mMediator.setIconForegroundColor(tint);
     }
 
     /**
@@ -279,13 +290,6 @@ public class OptionalButtonCoordinator {
      */
     public void cancelTransition() {
         mMediator.cancelTransition();
-    }
-
-    /**
-     * Updates the foreground color on the icons and label to match the current theme/website color.
-     */
-    public void setIconForegroundColor(@Nullable ColorStateList colorStateList) {
-        mMediator.setIconForegroundColor(colorStateList);
     }
 
     /**

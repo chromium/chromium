@@ -150,7 +150,12 @@ public abstract class ThemeColorProvider {
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
-        if (tint == mTint && activityFocusTint == mActivityFocusTint) return;
+        if (tint == mTint
+                && activityFocusTint == mActivityFocusTint
+                && mBrandedColorScheme != null
+                && mBrandedColorScheme == brandedColorScheme) {
+            return;
+        }
         mTint = tint;
         mActivityFocusTint = activityFocusTint;
         mBrandedColorScheme = brandedColorScheme;
