@@ -28,6 +28,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:breakStrategy="balanced"
+            android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
         <TextView
@@ -35,6 +36,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:breakStrategy="balanced"
+            android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
             android:visibility="gone" />
 
