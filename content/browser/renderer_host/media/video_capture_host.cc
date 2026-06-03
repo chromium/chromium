@@ -288,6 +288,12 @@ void VideoCaptureHost::Start(
     return;
   }
 
+  if (!media_stream_manager_->ValidateVideoSession(
+          session_id, render_frame_host_delegate_->render_frame_host_id())) {
+    mojo::ReportBadMessage("Unauthorized video capture session.");
+    return;
+  }
+
   DCHECK(!device_id_to_observer_map_.contains(device_id));
   auto& observer_in_map = device_id_to_observer_map_[device_id];
   observer_in_map.Bind(std::move(observer));

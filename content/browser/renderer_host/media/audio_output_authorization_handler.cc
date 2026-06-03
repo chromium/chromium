@@ -179,6 +179,16 @@ void AudioOutputAuthorizationHandler::RequestDeviceAuthorization(
   // output device is found, reuse the input device permissions.
   if (media::AudioDeviceDescription::UseSessionIdToSelectDevice(session_id,
                                                                 device_id)) {
+    if (!media_stream_manager_->ValidateAudioSession(
+            session_id,
+            GlobalRenderFrameHostId(render_process_id_, render_frame_id))) {
+      trace_scope->SimpleEvent("Unauthorized session");
+      std::move(cb).Run(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED,
+                        media::AudioParameters::UnavailableDeviceParams(),
+                        std::string(), std::string());
+      return;
+    }
+
     const blink::MediaStreamDevice* device =
         media_stream_manager_->audio_input_device_manager()
             ->GetOpenedDeviceById(session_id);

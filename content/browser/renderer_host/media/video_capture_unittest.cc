@@ -116,8 +116,11 @@ class VideoCaptureTest : public testing::Test,
 
     // Create a Host and connect it to a simulated IPC channel.
     host_ = std::make_unique<VideoCaptureHost>(
-        GlobalRenderFrameHostId() /* render_frame_host_id */,
+        GlobalRenderFrameHostId(1, 1) /* render_frame_host_id */,
         media_stream_manager_.get());
+    host_receiver_ =
+        std::make_unique<mojo::Receiver<media::mojom::VideoCaptureHost>>(
+            host_.get(), host_remote_.BindNewPipeAndPassReceiver());
 
     OpenSession();
   }
@@ -128,6 +131,7 @@ class VideoCaptureTest : public testing::Test,
 
     CloseSession();
 
+    host_receiver_.reset();
     host_.reset();
   }
 
@@ -224,11 +228,12 @@ class VideoCaptureTest : public testing::Test,
         .Times(AnyNumber())
         .WillRepeatedly(ExitMessageLoop(task_runner_, run_loop.QuitClosure()));
 
-    host_->Start(DeviceId(), opened_session_id_, params,
-                 observer_receiver_.BindNewPipeAndPassRemote());
+    host_remote_->Start(DeviceId(), opened_session_id_, params,
+                        observer_receiver_.BindNewPipeAndPassRemote());
 
     // Ensure that the browser context has been retrevied and the observer is
     // connected.
+    host_remote_.FlushForTesting();
     observer_receiver_.FlushForTesting();
 
     run_loop.Run();
@@ -243,11 +248,12 @@ class VideoCaptureTest : public testing::Test,
                 DoOnVideoCaptureError(
                     media::VideoCaptureError::kVideoCaptureControllerInvalid))
         .Times(1);
-    host_->Start(DeviceId(), base::UnguessableToken(), params,
-                 observer_receiver_.BindNewPipeAndPassRemote());
+    host_remote_->Start(DeviceId(), base::UnguessableToken::Create(), params,
+                        observer_receiver_.BindNewPipeAndPassRemote());
 
     // Ensure that the browser context has been retrevied and the observer is
     // connected.
+    host_remote_.FlushForTesting();
     observer_receiver_.FlushForTesting();
   }
 
@@ -266,16 +272,18 @@ class VideoCaptureTest : public testing::Test,
     EXPECT_CALL(*this,
                 DoOnStateChanged(media::mojom::VideoCaptureState::STARTED))
         .Times(AtMost(1));
-    host_->Start(DeviceId(), opened_session_id_, params,
-                 observer_receiver_.BindNewPipeAndPassRemote());
+    host_remote_->Start(DeviceId(), opened_session_id_, params,
+                        observer_receiver_.BindNewPipeAndPassRemote());
 
     // Ensure that the browser context has been retrevied and the observer is
     // connected.
+    host_remote_.FlushForTesting();
     observer_receiver_.FlushForTesting();
 
     EXPECT_CALL(*this,
                 DoOnStateChanged(media::mojom::VideoCaptureState::STOPPED));
-    host_->Stop(DeviceId());
+    host_remote_->Stop(DeviceId());
+    host_remote_.FlushForTesting();
     run_loop.RunUntilIdle();
   }
 
@@ -285,7 +293,8 @@ class VideoCaptureTest : public testing::Test,
 
     EXPECT_CALL(*this,
                 DoOnStateChanged(media::mojom::VideoCaptureState::PAUSED));
-    host_->Pause(DeviceId());
+    host_remote_->Pause(DeviceId());
+    host_remote_.FlushForTesting();
 
     media::VideoCaptureParams params;
     params.requested_format = media::VideoCaptureFormat(
@@ -293,7 +302,8 @@ class VideoCaptureTest : public testing::Test,
 
     EXPECT_CALL(*this,
                 DoOnStateChanged(media::mojom::VideoCaptureState::RESUMED));
-    host_->Resume(DeviceId(), opened_session_id_, params);
+    host_remote_->Resume(DeviceId(), opened_session_id_, params);
+    host_remote_.FlushForTesting();
     run_loop.RunUntilIdle();
   }
 
@@ -303,7 +313,8 @@ class VideoCaptureTest : public testing::Test,
     EXPECT_CALL(*this,
                 DoOnStateChanged(media::mojom::VideoCaptureState::STOPPED))
         .WillOnce(ExitMessageLoop(task_runner_, run_loop.QuitClosure()));
-    host_->Stop(DeviceId());
+    host_remote_->Stop(DeviceId());
+    host_remote_.FlushForTesting();
 
     run_loop.Run();
 
@@ -365,6 +376,9 @@ class VideoCaptureTest : public testing::Test,
   std::string opened_device_label_;
 
   std::unique_ptr<VideoCaptureHost> host_;
+  mojo::Remote<media::mojom::VideoCaptureHost> host_remote_;
+  std::unique_ptr<mojo::Receiver<media::mojom::VideoCaptureHost>>
+      host_receiver_;
   mojo::Receiver<media::mojom::VideoCaptureObserver> observer_receiver_{this};
 };
 

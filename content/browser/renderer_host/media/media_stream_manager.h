@@ -487,6 +487,31 @@ class CONTENT_EXPORT MediaStreamManager
   std::optional<url::Origin> GetOriginByVideoSessionId(
       const base::UnguessableToken& session_id);
 
+  // Validates that the renderer-supplied `session_id` is authorized for use by
+  // the calling `render_frame_host_id`.
+  //
+  // Returns `true` if:
+  // - The session is active and owned by `render_frame_host_id` (valid usage).
+  // - The session is not active/not found in MediaStreamManager. This is
+  //   considered safe as a non-existent session cannot be hijacked; it will
+  //   fail gracefully downstream (e.g., returning null device). This allows
+  //   legitimate asynchronous races (such as teardown races) to fail gracefully
+  //   instead of causing false-positive renderer terminations.
+  //
+  // Returns `false` if:
+  // - The session is active but owned by a different `RenderFrameHost`/origin.
+  // - The session is active but is of the wrong type (e.g., passing a video
+  //   session ID to an audio endpoint).
+  // A return value of `false` indicates a security violation, and the caller
+  // should terminate the renderer (e.g., via `mojo::ReportBadMessage`).
+  bool ValidateAudioSession(
+      const base::UnguessableToken& session_id,
+      const GlobalRenderFrameHostId& render_frame_host_id) const;
+
+  bool ValidateVideoSession(
+      const base::UnguessableToken& session_id,
+      const GlobalRenderFrameHostId& render_frame_host_id) const;
+
  private:
   friend class MediaStreamManagerTest;
   FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest, DesktopCaptureDeviceStopped);
@@ -585,12 +610,15 @@ class CONTENT_EXPORT MediaStreamManager
       const std::string& label) const;
   DeviceRequest* FindRequest(const std::string& label) const;
 
-  // Find a request by the session-ID of its video device.
-  // (In case of multiple video devices - any of them would fit.)
-  // TOOD(crbug.com/1466247): Remove this after making the Captured Surface
-  // Control APIs pass the label instead.
-  DeviceRequest* FindRequestByVideoSessionId(
-      const base::UnguessableToken& session_id) const;
+  enum class SessionType { kAudio, kVideo };
+
+  DeviceRequest* FindRequestBySessionId(
+      const base::UnguessableToken& session_id,
+      SessionType* out_type) const;
+
+  bool ValidateSession(const base::UnguessableToken& session_id,
+                       const GlobalRenderFrameHostId& render_frame_host_id,
+                       SessionType expected_type) const;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   CapturedSurfaceController* GetCapturedSurfaceController(
