@@ -530,6 +530,7 @@ ContextualCueingHelper::AutoOpenGlicSidePanel(
     if (!decision_result.prompt_suggestion.empty()) {
       options.prompts.push_back(decision_result.prompt_suggestion);
     }
+    options.target.conversation = glic::NewConversation();
     glic_service->Invoke(std::move(options));
     return RecordAutoOpenResult(GlicAutoOpenResult::kSuccess);
   }
