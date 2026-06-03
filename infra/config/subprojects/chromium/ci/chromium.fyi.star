@@ -1898,7 +1898,7 @@ fyi_ios_builder(
             "expand-as-isolated-script",
             "has_native_resultdb_integration",
             "ios_beta_test_pool",
-            "mac_15_arm64",
+            "mac_15_beta_arm64",
             "mac_toolchain",
             "out_dir_arg",
             "xcode_26_beta",
