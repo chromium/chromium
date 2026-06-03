@@ -23,11 +23,15 @@ static_library("report_unsafe_site") {
 
   deps = [
     ":mojo_bindings",
-    "//chrome/browser/feedback:feedback_impl",
+    "//chrome/browser/feedback/report_unsafe_site",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
     "//components/safe_browsing/content/browser:client_side_detection",
+    "//components/url_formatter",
+    "//components/viz/common",
+    "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//ui/base",
     "//ui/views",
   ]
 }

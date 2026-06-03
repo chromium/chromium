@@ -3,10 +3,8 @@
 # found in the LICENSE file.
 
 source_set("history_clusters") {
-  sources = [
-    "history_clusters_internals_ui_config.cc",
-    "history_clusters_internals_ui_config.h",
-  ]
+  sources = [ "history_clusters_internals_ui_config.cc" ]
+  public = [ "history_clusters_internals_ui_config.h" ]
   public_deps = [ "//content/public/browser" ]
   deps = [
     "//chrome/browser/history",
@@ -15,6 +13,28 @@ source_set("history_clusters") {
     "//components/history_clusters/history_clusters_internals/webui",
     "//components/history_clusters/history_clusters_internals/webui:constants",
   ]
+  if (!is_android) {
+    sources += [ "history_clusters_handler.cc" ]
+    public += [ "history_clusters_handler.h" ]
+    public_deps += [ "//chrome/browser:browser_public_dependencies" ]
+    deps += [
+      "//base",
+      "//chrome/app:command_ids",
+      "//chrome/browser:primitives",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//components/history/core/browser",
+      "//components/history/core/common",
+      "//components/history_clusters/core",
+      "//components/page_image_service",
+      "//mojo/public/cpp/bindings",
+      "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
+    ]
+  }
 }
 
 if (!is_android) {
@@ -23,6 +43,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [ "history_clusters_handler_browsertest.cc" ]
     deps = [
+      ":history_clusters",
       "//base/test:test_support",
       "//chrome/browser/history",
       "//chrome/browser/history_clusters",

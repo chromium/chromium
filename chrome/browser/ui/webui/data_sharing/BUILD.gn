@@ -16,11 +16,62 @@ mojom("mojo_bindings") {
 }
 
 source_set("data_sharing") {
-  sources = [ "data_sharing_ui.h" ]
+  public = [
+    "data_sharing_page_handler.h",
+    "data_sharing_ui.h",
+  ]
   public_deps = [
     ":mojo_bindings",
     "//base",
     "//chrome/browser/ui/webui/top_chrome",
+    "//google_apis",
     "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "data_sharing_page_handler.cc",
+    "data_sharing_ui.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":data_sharing",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/metrics",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/data_sharing:resources",
+    "//chrome/browser/signin",
+    "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common",
+    "//components/data_sharing/public",
+    "//components/favicon_base",
+    "//components/saved_tab_groups/public",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//components/version_info",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "data_sharing_page_handler_unittest.cc" ]
+  deps = [
+    ":data_sharing",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
   ]
 }

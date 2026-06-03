@@ -1,0 +1,84 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("support_tool") {
+    sources = [
+      "support_tool_ui.cc",
+      "support_tool_ui_utils.cc",
+    ]
+    public = [
+      "support_tool_ui.h",
+      "support_tool_ui_utils.h",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/browser:primitives",
+      "//chrome/browser/download",
+      "//chrome/browser/enterprise",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/support_tool:resources",
+      "//chrome/browser/signin",
+      "//chrome/browser/support_tool",
+      "//chrome/browser/support_tool:support_tool_proto",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/select_file_policy",
+      "//chrome/common",
+      "//components/feedback/redaction_tool",
+      "//components/policy/core/common",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//content/public/browser",
+      "//net",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/shell_dialogs",
+      "//ui/webui",
+      "//url",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "support_tool_ui_browsertest.cc" ]
+    deps = [
+      ":support_tool",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//url",
+    ]
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "support_tool_ui_utils_unittest.cc" ]
+    deps = [
+      ":support_tool",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/support_tool",
+      "//chrome/browser/support_tool:support_tool_proto",
+      "//chrome/test:test_support",
+      "//components/feedback/redaction_tool",
+      "//content/test:test_support",
+      "//net",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//url",
+    ]
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+}

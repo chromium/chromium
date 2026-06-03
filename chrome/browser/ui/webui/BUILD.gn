@@ -64,6 +64,7 @@ source_set("configs") {
     "//chrome/browser/ui/webui/autofill_and_password_manager_internals",
     "//chrome/browser/ui/webui/browsing_topics",
     "//chrome/browser/ui/webui/chrome_urls",
+    "//chrome/browser/ui/webui/commerce:commerce_internals_ui_config",
     "//chrome/browser/ui/webui/components",
     "//chrome/browser/ui/webui/connectors_internals",
     "//chrome/browser/ui/webui/context_hub",
@@ -121,6 +122,7 @@ source_set("configs") {
       "//chrome/browser/ui/webui/color_pipeline_internals",
       "//chrome/browser/ui/webui/content_annotator_internals",
       "//chrome/browser/ui/webui/data_sharing",
+      "//chrome/browser/ui/webui/feedback",
       "//chrome/browser/ui/webui/infobar_internals",
       "//chrome/browser/ui/webui/inspect",
       "//chrome/browser/ui/webui/multistep_filter_internals",
@@ -128,6 +130,7 @@ source_set("configs") {
       "//chrome/browser/ui/webui/personal_context",
       "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
       "//chrome/browser/ui/webui/profile_internals",
+      "//chrome/browser/ui/webui/web_app_internals",
       "//chrome/browser/ui/webui/webui_js_error",
       "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/browser/ui/webui_browser",
@@ -247,9 +250,32 @@ source_set("configs") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui/webui/bookmarks",
+      "//chrome/browser/ui/webui/downloads",
+      "//chrome/browser/ui/webui/support_tool",
       "//chrome/browser/ui/webui/system",
+      "//chrome/browser/ui/webui/user_education_internals",
       "//chrome/browser/ui/webui/webui_gallery",
     ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
+    deps += [
+      "//chrome/browser/ui/webui/discards",
+      "//chrome/browser/ui/webui/management",
+    ]
+  }
+
+  if (enable_dice_support) {
+    deps += [ "//chrome/browser/ui/webui/signin:batch_upload" ]
+  }
+
+  if (!is_chromeos && !is_android) {
+    deps += [ "//chrome/browser/ui/webui/intro" ]
+  }
+
+  if (enable_webui_ntp) {
+    deps += [ "//chrome/browser/ui/webui/ntp_microsoft_auth" ]
   }
 }
 

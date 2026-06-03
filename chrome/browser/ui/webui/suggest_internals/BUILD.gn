@@ -12,3 +12,32 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
 }
+
+if (!is_android) {
+  source_set("suggest_internals") {
+    sources = [
+      "suggest_internals_handler.cc",
+      "suggest_internals_ui.cc",
+    ]
+    public = [
+      "suggest_internals_handler.h",
+      "suggest_internals_ui.h",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      ":mojo_bindings",
+      "//base",
+      "//chrome/browser/autocomplete",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/suggest_internals:resources",
+      "//chrome/common",
+      "//components/omnibox/browser",
+      "//components/search_engines",
+      "//components/variations/net",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//services/network/public/cpp",
+      "//ui/webui",
+    ]
+  }
+}

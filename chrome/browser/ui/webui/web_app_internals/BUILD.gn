@@ -14,3 +14,42 @@ mojom("mojo_bindings") {
 
   webui_module_path = "/"
 }
+
+if (!is_android) {
+  source_set("web_app_internals") {
+    sources = [
+      "iwa_internals_handler.cc",
+      "web_app_internals_handler.cc",
+      "web_app_internals_ui.cc",
+    ]
+    public = [
+      "iwa_internals_handler.h",
+      "web_app_internals_handler.h",
+      "web_app_internals_ui.h",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      ":mojo_bindings",
+      "//base",
+      "//chrome/browser:file_select_helper",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/web_app_internals:resources",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/isolated_web_apps/key_distribution",
+      "//chrome/common",
+      "//components/prefs",
+      "//components/tabs",
+      "//components/webapps/browser",
+      "//components/webapps/common",
+      "//components/webapps/isolated_web_apps",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//third_party/abseil-cpp:absl",
+      "//ui/base",
+      "//ui/webui",
+      "//url",
+    ]
+  }
+}

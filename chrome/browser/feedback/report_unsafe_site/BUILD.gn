@@ -1,0 +1,34 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("report_unsafe_site") {
+    sources = [ "screenshot_taker.cc" ]
+    public = [ "screenshot_taker.h" ]
+    public_deps = [
+      "//base",
+      "//content/public/browser",
+      "//skia",
+    ]
+    deps = [
+      "//components/safe_browsing/content/browser:client_side_detection",
+      "//components/viz/common",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "screenshot_taker_unittest.cc" ]
+    deps = [
+      ":report_unsafe_site",
+      "//base",
+      "//base/test:test_support",
+      "//components/viz/common",
+      "//skia",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/gfx/geometry",
+    ]
+  }
+}

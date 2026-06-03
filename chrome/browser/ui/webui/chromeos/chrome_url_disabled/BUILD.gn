@@ -1,0 +1,18 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_chromeos) {
+  source_set("chrome_url_disabled") {
+    sources = [ "chrome_url_disabled_ui.cc" ]
+    public = [ "chrome_url_disabled_ui.h" ]
+    deps = [
+      "//ash/constants",
+      "//base",
+      "//chrome/browser:resources",
+      "//chrome/browser/profiles:profile",
+      "//components/strings:components_strings",
+      "//content/public/browser",
+    ]
+  }
+}

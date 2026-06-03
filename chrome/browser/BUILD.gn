@@ -1166,6 +1166,7 @@ source_set("core") {
       "//chrome/browser/ui/webui/image",
       "//chrome/browser/ui/webui/indigo_internals",
       "//chrome/browser/ui/webui/indigo_internals:mojo_bindings",
+      "//chrome/browser/ui/webui/user_education_internals",
       "//chrome/browser/ui/webui/webnn_internals",
       "//chrome/browser/ui/webui_browser",
       "//chrome/browser/web_applications",
@@ -1237,6 +1238,14 @@ source_set("core") {
       "//components/webapps/isolated_web_apps:scheme",
       "//components/webapps/isolated_web_apps/url_loading",
     ]
+  }
+
+  if (!is_android || is_desktop_android) {
+    deps += [ "//chrome/browser/ui/webui/discards" ]
+  }
+
+  if (enable_dice_support) {
+    deps += [ "//chrome/browser/ui/webui/signin:batch_upload" ]
   }
 
   if (enterprise_watermark) {
@@ -1464,7 +1473,10 @@ source_set("core") {
   }
 
   if (enable_webui_ntp) {
-    deps += [ "//chrome/browser/new_tab_page" ]
+    deps += [
+      "//chrome/browser/new_tab_page",
+      "//chrome/browser/ui/webui/ntp_microsoft_auth",
+    ]
   }
 
   if ((!is_android && !is_ios) || enable_webui_ntp) {
@@ -2655,6 +2667,7 @@ static_library("browser") {
       "//chrome/browser/new_tab_page:impl",
       "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+      "//chrome/browser/ui/webui/ntp_microsoft_auth",
     ]
   }
   if ((!is_ios && !is_android) || enable_webui_ntp) {
@@ -2970,6 +2983,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/customize_buttons",
       "//chrome/browser/ui/webui/customize_buttons:impl",
       "//chrome/browser/ui/webui/data_sharing",
+      "//chrome/browser/ui/webui/downloads",
       "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
       "//chrome/browser/ui/webui/infobar_internals",
       "//chrome/browser/ui/webui/infobar_internals:impl",
@@ -2994,6 +3008,8 @@ static_library("browser") {
       "//chrome/browser/ui/webui/signin/batch_upload:mojo_bindings",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
+      "//chrome/browser/ui/webui/user_education_internals",
+      "//chrome/browser/ui/webui/web_app_internals",
       "//chrome/browser/ui/webui/webui_gallery",
       "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/browser/ui/webui/whats_new",
@@ -3313,6 +3329,10 @@ static_library("browser") {
       ]
       deps += [ ":chrome_browser_main_posix" ]
     }
+  }
+
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/ui/webui/intro" ]
   }
 
   if (is_chromeos) {

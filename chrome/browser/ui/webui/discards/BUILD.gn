@@ -18,3 +18,59 @@ mojom("mojo_bindings") {
 
   webui_module_path = "/"
 }
+
+if (!is_android || is_desktop_android) {
+  source_set("discards") {
+    sources = [
+      "discards_ui.cc",
+      "graph_dump_impl.cc",
+      "site_data_provider_impl.cc",
+    ]
+    public = [
+      "discards_ui.h",
+      "graph_dump_impl.h",
+      "site_data_provider_impl.h",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      ":mojo_bindings",
+      "//base",
+      "//chrome/browser/favicon",
+      "//chrome/browser/performance_manager",
+      "//chrome/browser/performance_manager:impl",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resource_coordinator",
+      "//chrome/browser/resources/discards:resources",
+      "//chrome/browser/ui/webui",
+      "//chrome/common",
+      "//components/favicon/core",
+      "//components/favicon_base",
+      "//components/performance_manager",
+      "//components/prefs",
+      "//components/site_engagement/content",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//services/network/public/mojom",
+      "//ui/resources:ui_resources_grd",
+      "//ui/resources:ui_resources_grd_grit",
+      "//ui/webui",
+      "//url",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "graph_dump_impl_unittest.cc" ]
+    deps = [
+      ":discards",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/test:test_support",
+      "//components/performance_manager",
+      "//components/performance_manager/test_support:test_support_common",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

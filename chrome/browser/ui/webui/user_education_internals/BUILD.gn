@@ -8,3 +8,49 @@ mojom("mojo_bindings") {
   sources = [ "user_education_internals.mojom" ]
   webui_module_path = "/"
 }
+
+if (!is_android) {
+  source_set("user_education_internals") {
+    sources = [
+      "user_education_internals_page_handler_impl.cc",
+      "user_education_internals_ui.cc",
+    ]
+    public = [
+      "user_education_internals_page_handler_impl.h",
+      "user_education_internals_ui.h",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      ":mojo_bindings",
+      "//base",
+      "//chrome/browser:global_features",
+      "//chrome/browser/feature_engagement",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/user_education_internals:resources",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/interaction",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/user_education",
+      "//chrome/common",
+      "//chrome/common:version_header",
+      "//components/feature_engagement/public",
+      "//components/user_education/common",
+      "//components/user_education/webui",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//third_party/abseil-cpp:absl",
+      "//ui/base",
+      "//ui/base/interaction",
+      "//ui/webui",
+      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+      "//ui/webui/tracked_element",
+    ]
+    if (!is_android) {
+      deps += [
+        "//chrome/browser/ui/navigator",
+        "//net",
+      ]
+    }
+  }
+}

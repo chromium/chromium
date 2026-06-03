@@ -64,6 +64,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/global_media_controls",
     "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/webui/media_router",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/media_message_center",

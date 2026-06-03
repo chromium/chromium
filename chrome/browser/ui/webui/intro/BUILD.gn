@@ -12,3 +12,72 @@ mojom("mojo_bindings") {
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
 }
+
+if (is_win || is_mac || is_linux) {
+  source_set("intro") {
+    sources = [
+      "intro_handler.cc",
+      "intro_ui.cc",
+      "policy_store_observer.cc",
+      "sign_in_celebration_handler.cc",
+    ]
+    public = [
+      "intro_handler.h",
+      "intro_ui.h",
+      "policy_store_observer.h",
+      "sign_in_celebration_handler.h",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      ":mojo_bindings",
+      "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/app/theme:chrome_unscaled_resources",
+      "//chrome/browser/enterprise/browser_management:management_identity",
+      "//chrome/browser/policy",
+      "//chrome/browser/profiles",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/regional_capabilities",
+      "//chrome/browser/resources/intro:resources",
+      "//chrome/browser/resources/signin:resources",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/common",
+      "//components/regional_capabilities",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/strings:components_branded_strings",
+      "//components/sync/base",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//services/network/public/mojom",
+      "//skia",
+      "//ui/base",
+      "//ui/webui",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "policy_store_observer_unittest.cc",
+      "sign_in_celebration_handler_unittest.cc",
+    ]
+    deps = [
+      ":intro",
+      ":mojo_bindings",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/enterprise/browser_management:management_identity",
+      "//chrome/browser/policy",
+      "//chrome/browser/profiles:profile",
+      "//chrome/test:test_support",
+      "//components/signin/public/identity_manager",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+    ]
+  }
+}

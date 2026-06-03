@@ -1,0 +1,46 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+if (!is_android) {
+  source_set("media_router") {
+    sources = [
+      "media_router_internals_ui.cc",
+      "media_router_internals_webui_message_handler.cc",
+    ]
+    public = [
+      "media_router_internals_ui.h",
+      "media_router_internals_webui_message_handler.h",
+      "web_contents_display_observer.h",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      "//base",
+      "//chrome/browser/media/router",
+      "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/media_router/internals:resources",
+      "//chrome/common",
+      "//components/media_router/browser",
+      "//components/media_router/common/mojom:media_router",
+      "//content/public/browser",
+      "//services/tracing/public/cpp",
+      "//third_party/perfetto:libperfetto",
+      "//ui/webui",
+    ]
+
+    if (is_chrome_branded) {
+      sources += [ "cast_feedback_ui.cc" ]
+      public += [ "cast_feedback_ui.h" ]
+      deps += [
+        "//chrome/browser/resources/media_router/cast_feedback:resources",
+        "//chrome/browser/signin",
+        "//chrome/browser/ui/webui/feedback",
+        "//components/signin/public/identity_manager",
+        "//components/version_info",
+      ]
+    }
+  }
+}

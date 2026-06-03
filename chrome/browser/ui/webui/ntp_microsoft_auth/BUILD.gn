@@ -23,3 +23,55 @@ mojom("untrusted") {
     "//mojo/public/mojom/base",
   ]
 }
+
+source_set("ntp_microsoft_auth") {
+  sources = [
+    "ntp_microsoft_auth_page_handler.cc",
+    "ntp_microsoft_auth_response_capture_navigation_throttle.cc",
+    "ntp_microsoft_auth_untrusted_ui.cc",
+  ]
+  public = [
+    "ntp_microsoft_auth_page_handler.h",
+    "ntp_microsoft_auth_response_capture_navigation_throttle.h",
+    "ntp_microsoft_auth_untrusted_ui.h",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":shared",
+    ":untrusted",
+    "//base",
+    "//chrome/browser/new_tab_page",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/new_tab_page/untrusted:resources",
+    "//chrome/browser/search",
+    "//chrome/common",
+    "//components/search",
+    "//components/url_matcher",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+    "//url",
+  ]
+}
+
+if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "ntp_microsoft_auth_page_handler_unittest.cc",
+      "ntp_microsoft_auth_response_capture_navigation_throttle_unittest.cc",
+    ]
+    deps = [
+      ":ntp_microsoft_auth",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/new_tab_page",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui/search:test_support_ui",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

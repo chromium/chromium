@@ -84,8 +84,6 @@ source_set("feedback_impl") {
   } else {
     sources += [
       "feedback_dialog_utils.cc",
-      "report_unsafe_site/screenshot_taker.cc",
-      "report_unsafe_site/screenshot_taker.h",
       "report_unsafe_site_dialog_views.cc",
       "report_unsafe_site_dialog_views.h",
       "show_feedback_page.cc",
@@ -122,6 +120,7 @@ source_set("feedback_impl") {
       "//chrome/browser/device_identity",
       "//chrome/browser/devtools",
       "//chrome/browser/extensions",
+      "//chrome/browser/feedback/report_unsafe_site",
       "//chrome/browser/first_party_sets",
       "//chrome/browser/google",
       "//chrome/browser/metrics",
@@ -133,6 +132,7 @@ source_set("feedback_impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/webui/feedback",
       "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/updater",
@@ -185,15 +185,6 @@ source_set("feedback_impl") {
 
 source_set("unit_tests") {
   testonly = true
-  if (is_android) {
-    sources = [ "report_unsafe_site_dialog_android_unittest.cc" ]
-  } else {
-    sources = [
-      "report_unsafe_site/screenshot_taker_unittest.cc",
-      "report_unsafe_site_dialog_views_unittest.cc",
-      "show_feedback_page_unittest.cc",
-    ]
-  }
   deps = [
     ":feedback_impl",
     "//base/test:test_support",
@@ -205,4 +196,12 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gtest",
   ]
+  if (is_android) {
+    sources = [ "report_unsafe_site_dialog_android_unittest.cc" ]
+  } else {
+    sources = [
+      "report_unsafe_site_dialog_views_unittest.cc",
+      "show_feedback_page_unittest.cc",
+    ]
+  }
 }

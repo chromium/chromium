@@ -1564,6 +1564,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_menu",
+      "//chrome/browser/ui/webui/bookmarks",
     ]
   }
 
@@ -3052,6 +3053,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/app_service_internals:browser_tests",
       "//chrome/browser/ui/webui/autofill_and_password_manager_internals:browser_tests",
       "//chrome/browser/ui/webui/autofill_ml_internals:browser_tests",
+      "//chrome/browser/ui/webui/bookmarks",
       "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/customize_buttons:browser_tests",
@@ -4025,9 +4027,6 @@ if (!is_android) {
       "../browser/ui/webui/commerce/shopping_ui_handler_delegate_browsertest.cc",
       "../browser/ui/webui/constrained_web_dialog_ui_browsertest.cc",
       "../browser/ui/webui/log_web_ui_url_browsertest.cc",
-      "../browser/ui/webui/management/management_ui_browsertest.cc",
-      "../browser/ui/webui/management/management_ui_managed_status_browsertest.cc",
-      "../browser/ui/webui/management/management_ui_pwa_browsertest.cc",
       "../browser/ui/webui/new_tab_page/new_tab_page_handler_browsertest.cc",
       "../browser/ui/webui/new_tab_page/webui_ntp_browsertest.cc",
       "../browser/ui/webui/ntp/new_tab_ui_browsertest.cc",
@@ -4044,7 +4043,6 @@ if (!is_android) {
       "../browser/ui/webui/side_panel/customize_chrome/customize_chrome_browsertest.cc",
       "../browser/ui/webui/side_panel/read_anything/read_anything_app_e2e_browsertest.cc",
       "../browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler_browsertest.cc",
-      "../browser/ui/webui/support_tool/support_tool_ui_browsertest.cc",
       "../browser/ui/webui/tab_search/tab_search_ui_browsertest.cc",
       "../browser/ui/webui/top_chrome/preload_context_browsertest.cc",
       "../browser/ui/webui/top_chrome/webui_contents_preload_manager_browsertest.cc",
@@ -4195,6 +4193,11 @@ if (!is_android) {
         "//chrome/browser/search_engine_choice:browser_tests",
       ]
     }
+
+    deps += [
+      "//chrome/browser/ui/webui/management:browser_tests",
+      "//chrome/browser/ui/webui/support_tool:browser_tests",
+    ]
 
     if (enable_compose) {
       deps += [ "//chrome/browser/compose:browser_tests" ]
@@ -4695,6 +4698,7 @@ if (!is_android) {
           "../browser/ui/views/profiles/first_run_intro_browsertest.cc",
           "../browser/ui/views/profiles/first_run_sign_in_celebration_ui_browsertest.cc",
         ]
+        deps += [ "//chrome/browser/ui/webui/intro" ]
       }
       if (!is_chromeos) {
         deps += [ "//chrome/browser/ui/webui/signin:profile" ]
@@ -4746,8 +4750,10 @@ if (!is_android) {
     }
 
     if (is_win || is_linux) {
-      sources += [ "../browser/ui/webui/search_engine_choice/search_engine_choice_ui_browsertest.cc" ]
-      deps += [ "//chrome/browser/ui/search_engine_choice" ]
+      deps += [
+        "//chrome/browser/ui/search_engine_choice",
+        "//chrome/browser/ui/webui/search_engine_choice:browser_tests",
+      ]
     }
 
     if (enable_extensions) {
@@ -6876,8 +6882,6 @@ test("unit_tests") {
       "../browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer_unittest.cc",
       "../browser/enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop_unittest.cc",
       "../browser/enterprise/reporting/saas_usage/saas_usage_report_uploader_desktop_unittest.cc",
-      "../browser/ui/webui/intro/policy_store_observer_unittest.cc",
-      "../browser/ui/webui/intro/sign_in_celebration_handler_unittest.cc",
     ]
   }
 
@@ -7693,6 +7697,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/background:unit_tests",
       "//chrome/browser/dictation:unit_tests",
+      "//chrome/browser/feedback/report_unsafe_site:unit_tests",
       "//chrome/browser/new_tab_page",
       "//chrome/browser/new_tab_page:unit_tests",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
@@ -7761,7 +7766,10 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux) {
-    deps += [ "//chrome/browser/ui/views/session_restore_infobar:unit_tests" ]
+    deps += [
+      "//chrome/browser/ui/views/session_restore_infobar:unit_tests",
+      "//chrome/browser/ui/webui/intro:unit_tests",
+    ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
@@ -8453,22 +8461,13 @@ test("unit_tests") {
       "../browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler_unittest.cc",
       "../browser/ui/webui/cr_components/most_visited/most_visited_handler_unittest.cc",
       "../browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler_unittest.cc",
-      "../browser/ui/webui/data_sharing/data_sharing_page_handler_unittest.cc",
-      "../browser/ui/webui/discards/graph_dump_impl_unittest.cc",
-      "../browser/ui/webui/downloads/downloads_dom_handler_unittest.cc",
-      "../browser/ui/webui/downloads/downloads_list_tracker_unittest.cc",
-      "../browser/ui/webui/downloads/mock_downloads_page.cc",
-      "../browser/ui/webui/downloads/mock_downloads_page.h",
       "../browser/ui/webui/favicon_source_unittest.cc",
-      "../browser/ui/webui/feedback/feedback_ui_unittest.cc",
       "../browser/ui/webui/history/browsing_history_handler_unittest.cc",
       "../browser/ui/webui/history/foreign_session_handler_unittest.cc",
       "../browser/ui/webui/history/history_identity_state_watcher_unittest.cc",
       "../browser/ui/webui/managed_ui_handler_unittest.cc",
       "../browser/ui/webui/new_tab_page/new_tab_page_handler_unittest.cc",
       "../browser/ui/webui/new_tab_page/new_tab_page_ui_unittest.cc",
-      "../browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_page_handler_unittest.cc",
-      "../browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_response_capture_navigation_throttle_unittest.cc",
       "../browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler_unittest.cc",
       "../browser/ui/webui/omnibox_popup/omnibox_popup_handler_unittest.cc",
       "../browser/ui/webui/omnibox_popup/omnibox_popup_ui_unittest.cc",
@@ -8501,7 +8500,6 @@ test("unit_tests") {
       "../browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler_unittest.cc",
       "../browser/ui/webui/side_panel/reading_list/reading_list_page_handler_unittest.cc",
       "../browser/ui/webui/side_panel/tabs_from_other_devices/synced_screenshot_data_source_unittest.cc",
-      "../browser/ui/webui/support_tool/support_tool_ui_utils_unittest.cc",
       "../browser/ui/webui/tab_search/tab_search_page_handler_unittest.cc",
       "../browser/ui/webui/theme_colors_source_manager_unittest.cc",
       "../browser/ui/webui/theme_source_unittest.cc",
@@ -8639,10 +8637,12 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/access_code_cast:unit_tests",
       "//chrome/browser/ui/webui/ai_overlay_dialog:unit_tests",
       "//chrome/browser/ui/webui/app_management:unit_tests",
+      "//chrome/browser/ui/webui/bookmarks",
       "//chrome/browser/ui/webui/browser_command:unit_tests",
       "//chrome/browser/ui/webui/content_annotator_internals:unit_tests",
       "//chrome/browser/ui/webui/cr_components/composebox",
-      "//chrome/browser/ui/webui/data_sharing",
+      "//chrome/browser/ui/webui/data_sharing:unit_tests",
+      "//chrome/browser/ui/webui/feedback:unit_tests",
       "//chrome/browser/ui/webui/flags:unit_tests",
       "//chrome/browser/ui/webui/image:unit_tests",
       "//chrome/browser/ui/webui/metrics_reporter:test_support",
@@ -8660,6 +8660,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/signin:unit_tests",
       "//chrome/browser/ui/webui/skills:unit_tests",
+      "//chrome/browser/ui/webui/support_tool:unit_tests",
       "//chrome/browser/ui/webui/version",
       "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/browser/ui/webui/webui_toolbar:unit_tests",
@@ -8903,8 +8904,8 @@ test("unit_tests") {
       "//chrome/browser/ui/views/picture_in_picture:unit_tests",
       "//chrome/browser/ui/views/tabs/projects:unit_tests",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
-      "//chrome/browser/ui/webui/discards:mojo_bindings",
-      "//chrome/browser/ui/webui/downloads:mojo_bindings",
+      "//chrome/browser/ui/webui/discards:unit_tests",
+      "//chrome/browser/ui/webui/downloads:unit_tests",
       "//chrome/browser/ui/webui/drive_picker_host",
       "//chrome/browser/ui/webui/drive_picker_host:unit_tests",
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
@@ -9010,6 +9011,9 @@ test("unit_tests") {
     sources +=
         [ "../browser/ui/webui/new_tab_page/untrusted_source_unittest.cc" ]
     deps += [ "//chrome/browser/new_tab_page" ]
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/webui/ntp_microsoft_auth:unit_tests" ]
+    }
   }
 
   if (!is_android && !is_chromeos) {
@@ -9954,11 +9958,7 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_desktop_android) {
-    sources += [
-      "../browser/ui/webui/management/management_ui_handler_unittest.cc",
-      "../browser/ui/webui/management/management_ui_unittest.cc",
-    ]
-    deps += [ "../browser/enterprise/connectors/test:test_support" ]
+    deps += [ "//chrome/browser/ui/webui/management:unit_tests" ]
   }
 
   if (enterprise_client_certificates) {
@@ -10877,6 +10877,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/app_management",
       "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/web_app_internals",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/user_education",
       "//chrome/browser/web_applications",
@@ -12186,6 +12187,7 @@ if (!is_android && !is_chromeos_device) {
 
       deps += [
         "//chrome/browser/ui/startup:test_support_ui",
+        "//chrome/browser/ui/webui/intro",
         "//components/enterprise/idle",
       ]
     }

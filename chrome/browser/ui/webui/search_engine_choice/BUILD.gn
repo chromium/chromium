@@ -8,3 +8,59 @@ mojom("mojo_bindings") {
   sources = [ "search_engine_choice.mojom" ]
   webui_module_path = "/"
 }
+
+if (!is_android) {
+  source_set("search_engine_choice") {
+    sources = [
+      "search_engine_choice_handler.cc",
+      "search_engine_choice_ui.cc",
+    ]
+    public = [
+      "search_engine_choice_handler.h",
+      "search_engine_choice_ui.h",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      ":mojo_bindings",
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/app/theme:chrome_unscaled_resources",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/regional_capabilities",
+      "//chrome/browser/resources/search_engine_choice:resources",
+      "//chrome/browser/resources/signin:resources",
+      "//chrome/browser/search_engine_choice",
+      "//chrome/common",
+      "//components/regional_capabilities",
+      "//components/search_engines",
+      "//components/signin/public/base",
+      "//components/strings:components_branded_strings",
+      "//components/strings:components_strings",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//ui/webui",
+    ]
+  }
+}
+
+if (is_win || is_linux) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    sources = [ "search_engine_choice_ui_browsertest.cc" ]
+    deps = [
+      ":search_engine_choice",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/search_engine_choice",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/search_engine_choice",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

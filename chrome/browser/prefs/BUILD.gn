@@ -206,6 +206,7 @@ source_set("impl") {
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/ui/webui/extensions",
+      "//chrome/browser/ui/webui/management",
       "//extensions/common",
     ]
   }
@@ -385,6 +386,7 @@ source_set("impl") {
       "//chrome/browser/ui/tabs/projects:impl",
       "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/webui/bookmarks",
       "//chrome/browser/user_education",
       "//components/headless/policy",
       "//components/live_caption",

@@ -1,0 +1,63 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("bookmarks") {
+    sources = [
+      "bookmark_prefs.cc",
+      "bookmarks_message_handler.cc",
+      "bookmarks_ui.cc",
+    ]
+    public = [
+      "bookmark_prefs.h",
+      "bookmarks_message_handler.h",
+      "bookmarks_ui.h",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/app/theme:theme_resources",
+      "//chrome/browser/bookmarks",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/batch_upload",
+      "//chrome/browser/profiles/batch_upload:impl",
+      "//chrome/browser/resources/bookmarks:resources",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/webui:plural_string_handler",
+      "//chrome/browser/ui/webui/page_not_available_for_guest",
+      "//chrome/common",
+      "//components/bookmarks/browser",
+      "//components/bookmarks/common",
+      "//components/bookmarks/managed",
+      "//components/favicon_base",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/strings:components_strings",
+      "//components/sync/base",
+      "//components/sync/service",
+      "//content/public/browser",
+      "//google_apis",
+      "//ui/base",
+      "//ui/webui",
+    ]
+  }
+}
+
+if (is_android) {
+  source_set("bookmarks_android") {
+    sources = [ "bookmarks_ui_android.cc" ]
+    public = [ "bookmarks_ui_android.h" ]
+    deps = [
+      "//base",
+      "//chrome/app/theme:theme_resources",
+      "//ui/base",
+    ]
+  }
+}

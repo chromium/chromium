@@ -1,0 +1,81 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("feedback") {
+    public = [
+      "feedback_dialog.h",
+      "feedback_handler.h",
+      "feedback_ui.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/ui/webui/feedback/report_unsafe_site",
+      "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//content/public/browser",
+      "//extensions/common/api",
+      "//ui/base",
+      "//ui/views",
+      "//ui/web_dialogs",
+    ]
+  }
+
+  source_set("impl") {
+    sources = [
+      "feedback_dialog.cc",
+      "feedback_handler.cc",
+      "feedback_ui.cc",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      ":feedback",
+      "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/feedback",
+      "//chrome/browser/feedback:feedback_impl",
+      "//chrome/browser/media/webrtc",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles/keep_alive",
+      "//chrome/browser/resources/feedback:resources",
+      "//chrome/browser/resources/key_value_pair_viewer_shared:resources",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/dialogs",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/common",
+      "//chrome/common:constants",
+      "//components/prefs",
+      "//components/strings:components_strings",
+      "//extensions/browser/api/feedback_private",
+      "//extensions/common/api",
+      "//ui/base",
+      "//ui/views",
+      "//ui/webui",
+      "//url",
+    ]
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ash/arc:arc_util",
+        "//chromeos/strings",
+      ]
+    }
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "feedback_ui_unittest.cc" ]
+    deps = [
+      ":feedback",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//components/prefs",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
