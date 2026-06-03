@@ -41,7 +41,6 @@ static_library("smart_dim") {
     "//components/assist_ranker",
     "//components/assist_ranker/proto",
     "//components/sessions",
-    "//services/data_decoder/public/cpp",
     "//ui/base",
   ]
 }
@@ -64,8 +63,6 @@ source_set("unit_tests") {
     "//chromeos/services/machine_learning/public/cpp:stub",
     "//components/assist_ranker/proto",
     "//content/test:test_support",
-    "//services/data_decoder/public/cpp",
-    "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
   ]
 }

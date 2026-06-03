@@ -8,7 +8,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/power/ml/smart_dim/smart_dim_worker.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace ash {
 namespace power {
@@ -61,8 +60,6 @@ class DownloadWorker : public SmartDimWorker {
   base::OnceClosure on_ready_for_test_;
 
   void LoadModelAndCreateGraphExecutor(const std::string& model_flatbuffer);
-  void OnJsonParsed(const std::string& model_flatbuffer,
-                    const data_decoder::DataDecoder::ValueOrError result);
 };
 
 }  // namespace ml

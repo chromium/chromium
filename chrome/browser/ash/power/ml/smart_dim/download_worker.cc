@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/task/task_traits.h"
 #include "chrome/browser/ash/power/ml/smart_dim/metrics.h"
 #include "chrome/browser/ash/power/ml/smart_dim/ml_agent_util.h"
@@ -78,20 +79,9 @@ void DownloadWorker::InitializeFromComponent(
 
   // Meta data contains necessary info to construct FlatBufferModelSpec, and
   // other optional info.
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      std::move(metadata_json),
-      base::BindOnce(&DownloadWorker::OnJsonParsed, base::Unretained(this),
-                     std::move(model_flatbuffer)));
-}
-
-void DownloadWorker::SetOnReadyForTest(base::OnceClosure on_ready) {
-  on_ready_for_test_ = std::move(on_ready);
-}
-
-void DownloadWorker::OnJsonParsed(
-    const std::string& model_flatbuffer,
-    const data_decoder::DataDecoder::ValueOrError result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // JSONReader is now safe for rule of 2.
+  std::optional<base::Value> result =
+      base::JSONReader::Read(metadata_json, base::JSON_PARSE_RFC);
   if (!result.has_value() || !result->is_dict() ||
       !ParseMetaInfoFromJsonObject(*result, &metrics_model_name_,
                                    &dim_threshold_, &expected_feature_size_,
@@ -105,6 +95,10 @@ void DownloadWorker::OnJsonParsed(
           FROM_HERE,
           base::BindOnce(&DownloadWorker::LoadModelAndCreateGraphExecutor,
                          base::Unretained(this), std::move(model_flatbuffer)));
+}
+
+void DownloadWorker::SetOnReadyForTest(base::OnceClosure on_ready) {
+  on_ready_for_test_ = std::move(on_ready);
 }
 
 void DownloadWorker::LoadModelAndCreateGraphExecutor(
