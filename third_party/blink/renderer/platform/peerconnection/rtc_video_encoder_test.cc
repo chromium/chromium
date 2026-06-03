@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -726,8 +727,9 @@ class RTCVideoEncoderTest {
     for (size_t sid = 0; sid < num_spatial_layers_; ++sid) {
       const bool end_of_picture = sid + 1 == num_spatial_layers_;
       client_->BitstreamBufferReady(
-          sid, media::BitstreamBufferMetadata::CreateForDropFrame(
-                   frame->timestamp(), sid, end_of_picture));
+          base::checked_cast<int32_t>(sid),
+          media::BitstreamBufferMetadata::CreateForDropFrame(
+              frame->timestamp(), sid, end_of_picture));
     }
   }
   void ReturnFrameWithTimeStamp(scoped_refptr<media::VideoFrame> frame,
@@ -803,7 +805,7 @@ class RTCVideoEncoderTest {
         vp9.end_active_spatial_layer_index = num_spatial_layers_;
       }
       metadata.vp9 = vp9;
-      client_->BitstreamBufferReady(sid, metadata);
+      client_->BitstreamBufferReady(base::checked_cast<int32_t>(sid), metadata);
     }
 
     return_svc_layer_frame_times_ += 1;
@@ -2787,14 +2789,15 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodedBufferLifetimeExceedsEncoderLifetime) {
             Invoke(this,
                    &RTCVideoEncoderTest::ReturnSVCLayerFrameWithVp9Metadata),
             [&event]() { event.Signal(); }));
-    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
-              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
-                                       .set_video_frame_buffer(buffer)
-                                       .set_rtp_timestamp(i)
-                                       .set_timestamp_us(i)
-                                       .set_rotation(webrtc::kVideoRotation_0)
-                                       .build(),
-                                   &frame_types));
+    EXPECT_EQ(
+        WEBRTC_VIDEO_CODEC_OK,
+        rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                 .set_video_frame_buffer(buffer)
+                                 .set_rtp_timestamp(static_cast<uint32_t>(i))
+                                 .set_timestamp_us(i)
+                                 .set_rotation(webrtc::kVideoRotation_0)
+                                 .build(),
+                             &frame_types));
     event.Wait();
   }
   lifetime_verifier.Wait();

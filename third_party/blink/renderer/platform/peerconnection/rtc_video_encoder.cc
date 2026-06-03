@@ -929,7 +929,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   Vector<InputBufferResource> input_buffers_;
   // The slot of |input_buffers_| that is available to use for input. As a LIFO
   // since we don't care about ordering.
-  Vector<size_t> input_buffers_free_;
+  Vector<wtf_size_t> input_buffers_free_;
 
   Vector<std::pair<base::UnsafeSharedMemoryRegion,
                    scoped_refptr<RefCountedWritableSharedMemoryMapping>>>
@@ -1428,7 +1428,8 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
     return;
 
   input_frame_coded_size_ = input_coded_size;
-  size_t input_buffers_requested_count = input_count + kInputBufferExtraCount;
+  wtf_size_t input_buffers_requested_count =
+      input_count + kInputBufferExtraCount;
 
   input_buffers_.resize(input_buffers_requested_count);
   input_buffers_free_.resize(input_buffers_requested_count);
@@ -2105,11 +2106,11 @@ RTCVideoEncoder::Impl::CreateI420SharedMemoryFrameByLibyuv(
           i420_buffer->StrideU(), i420_buffer->DataV(), i420_buffer->StrideV(),
           i420_buffer->width(), i420_buffer->height(),
           frame->GetWritableVisibleData(media::VideoFrame::Plane::kY),
-          frame->stride(media::VideoFrame::Plane::kY),
+          base::checked_cast<int>(frame->stride(media::VideoFrame::Plane::kY)),
           frame->GetWritableVisibleData(media::VideoFrame::Plane::kU),
-          frame->stride(media::VideoFrame::Plane::kU),
+          base::checked_cast<int>(frame->stride(media::VideoFrame::Plane::kU)),
           frame->GetWritableVisibleData(media::VideoFrame::Plane::kV),
-          frame->stride(media::VideoFrame::Plane::kV),
+          base::checked_cast<int>(frame->stride(media::VideoFrame::Plane::kV)),
           frame->visible_rect().width(), frame->visible_rect().height(),
           libyuv::kFilterBox)) {
     NotifyErrorStatus({media::EncoderStatus::Codes::kFormatConversionError,
@@ -2199,10 +2200,12 @@ RTCVideoEncoder::Impl::CreateNV12SharedImageFrame(
   const size_t dst_uv_stride = mapping->Stride(1);
   const size_t width = frame_size.width();
   const size_t height = frame_size.height();
-  if (libyuv::I420ToNV12(i420_buffer->DataY(), i420_buffer->StrideY(),
-                         i420_buffer->DataU(), i420_buffer->StrideU(),
-                         i420_buffer->DataV(), i420_buffer->StrideV(), dst_y,
-                         dst_y_stride, dst_uv, dst_uv_stride, width, height)) {
+  if (libyuv::I420ToNV12(
+          i420_buffer->DataY(), i420_buffer->StrideY(), i420_buffer->DataU(),
+          i420_buffer->StrideU(), i420_buffer->DataV(), i420_buffer->StrideV(),
+          dst_y, base::checked_cast<int>(dst_y_stride), dst_uv,
+          base::checked_cast<int>(dst_uv_stride),
+          base::checked_cast<int>(width), base::checked_cast<int>(height))) {
     NotifyErrorStatus({media::EncoderStatus::Codes::kFormatConversionError,
                        "Failed to convert I420 to NV12 SharedImage"});
     return nullptr;

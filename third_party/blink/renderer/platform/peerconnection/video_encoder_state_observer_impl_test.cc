@@ -188,12 +188,12 @@ std::tuple<size_t, size_t, size_t> GetActiveIndexInfo(
   size_t num_active_layers = 0;
   int bottom_sid = -1;
   int top_sid = -1;
-  for (size_t i = 0; i < active_layers.size(); i++) {
+  for (wtf_size_t i = 0; i < active_layers.size(); ++i) {
     if (active_layers[i]) {
       num_active_layers++;
-      top_sid = i;
+      top_sid = base::checked_cast<int>(i);
       if (bottom_sid == -1) {
-        bottom_sid = i;
+        bottom_sid = base::checked_cast<int>(i);
       }
     }
   }
@@ -317,7 +317,7 @@ TEST_F(
   CreateObserver(media::VP8PROFILE_ANY);
   const auto codec = VP8VideoCodec(kSimulcasts, kTemporalLayers);
   std::array<webrtc::VideoCodec, kSimulcasts> codec_params;
-  for (size_t stream_idx = 0; stream_idx < kSimulcasts; stream_idx++) {
+  for (int stream_idx = 0; stream_idx < kSimulcasts; ++stream_idx) {
     codec_params[stream_idx] =
         CreateStreamCodec(codec, stream_idx, stream_idx == kSimulcasts - 1);
     observer_->OnEncoderCreated(kBaseEncoderId + stream_idx,
@@ -419,7 +419,7 @@ TEST_F(VideoEncoderStateObserverImplTest,
 
   CreateObserver(media::VP8PROFILE_ANY);
 
-  for (size_t stream_idx = 0; stream_idx < kSimulcasts; stream_idx++) {
+  for (int stream_idx = 0; stream_idx < kSimulcasts; ++stream_idx) {
     codec_params[stream_idx] =
         CreateStreamCodec(codec, stream_idx, stream_idx == kSimulcasts - 1);
     observer_->OnEncoderCreated(kBaseEncoderId + stream_idx,
@@ -477,11 +477,11 @@ TEST_F(VideoEncoderStateObserverImplTest,
 
   constexpr int kEncodeTimes = StatsCollector::kMinSamplesThreshold * 1.1;
   constexpr int kKeyFrameInterval = 40;
-  for (size_t i = 0; i < kEncodeTimes; i++) {
+  for (uint32_t i = 0; i < kEncodeTimes; ++i) {
     const uint32_t rtp_timestamp = 100 + i;
     const bool keyframe = i % kKeyFrameInterval == 0;
     observer_->OnEncode(kEncoderId, rtp_timestamp);
-    for (size_t stream_idx = 0; stream_idx < kSimulcasts; stream_idx++) {
+    for (int stream_idx = 0; stream_idx < kSimulcasts; ++stream_idx) {
       observer_->OnEncodedImage(
           kEncoderId, EncodeResult{.width = vp8.width,
                                    .height = vp8.height,
@@ -519,7 +519,7 @@ TEST_F(VideoEncoderStateObserverImplTest,
   CreateObserver(media::VP8PROFILE_ANY);
 
   std::array<webrtc::VideoCodec, kSimulcasts> codec_params;
-  for (size_t stream_idx = 0; stream_idx < kSimulcasts; stream_idx++) {
+  for (int stream_idx = 0; stream_idx < kSimulcasts; ++stream_idx) {
     codec_params[stream_idx] =
         CreateStreamCodec(codec, stream_idx, stream_idx == kSimulcasts - 1);
     observer_->OnEncoderCreated(kBaseEncoderId + stream_idx,
@@ -528,10 +528,10 @@ TEST_F(VideoEncoderStateObserverImplTest,
 
   constexpr int kEncodeTimes = StatsCollector::kMinSamplesThreshold * 1.1;
   constexpr int kKeyFrameInterval = 40;
-  for (size_t i = 0; i < kEncodeTimes; i++) {
+  for (uint32_t i = 0; i < kEncodeTimes; ++i) {
     const uint32_t rtp_timestamp = 100 + i;
     const bool keyframe = i % kKeyFrameInterval == 0;
-    for (size_t stream_idx = 0; stream_idx < kSimulcasts; stream_idx++) {
+    for (int stream_idx = 0; stream_idx < kSimulcasts; ++stream_idx) {
       observer_->OnEncode(kBaseEncoderId + stream_idx, rtp_timestamp);
       observer_->OnEncodedImage(
           kBaseEncoderId + stream_idx,
@@ -549,7 +549,7 @@ TEST_F(VideoEncoderStateObserverImplTest,
   EXPECT_EQ(processing_stats_.size(), 0u);
 
   // Destroy the encoders that encode top two streams.
-  for (size_t stream_idx = 1; stream_idx < kSimulcasts; stream_idx++) {
+  for (int stream_idx = 1; stream_idx < kSimulcasts; ++stream_idx) {
     observer_->OnEncoderDestroyed(kBaseEncoderId + stream_idx);
   }
 
@@ -559,7 +559,7 @@ TEST_F(VideoEncoderStateObserverImplTest,
   task_environment_.AdvanceClock(base::Seconds(5) + base::Milliseconds(10));
 
   // Encode() on the encoder for the lowest resolution stream.
-  for (size_t i = kEncodeTimes; i < kEncodeTimes * 2; i++) {
+  for (uint32_t i = kEncodeTimes; i < kEncodeTimes * 2; ++i) {
     const bool keyframe = (i - kEncodeTimes) % kKeyFrameInterval == 0;
     const uint32_t rtp_timestamp = 100 + i;
     observer_->OnEncode(kBaseEncoderId, rtp_timestamp);
@@ -593,7 +593,7 @@ TEST_F(VideoEncoderStateObserverImplTest,
 TEST_F(VideoEncoderStateObserverImplTest,
        OnEncodedImage_VP9kSVC_SingleEncoder) {
   constexpr int kEncoderId = 8;
-  constexpr int kSpatialLayers = 3;
+  constexpr size_t kSpatialLayers = 3;
   constexpr int kTemporalLayers = 1;
   const auto vp9 = VP9kSVCVideoCodec(kSpatialLayers, kTemporalLayers);
 
@@ -602,17 +602,17 @@ TEST_F(VideoEncoderStateObserverImplTest,
 
   constexpr int kEncodeTimes = StatsCollector::kMinSamplesThreshold * 1.1;
   constexpr int kKeyFrameInterval = 40;
-  for (size_t i = 0; i < kEncodeTimes; i++) {
+  for (uint32_t i = 0; i < kEncodeTimes; ++i) {
     const uint32_t rtp_timestamp = 100 + i;
     observer_->OnEncode(kEncoderId, rtp_timestamp);
-    for (size_t sid = 0; sid < kSpatialLayers; sid++) {
+    for (size_t sid = 0; sid < kSpatialLayers; ++sid) {
       const bool keyframe = i % kKeyFrameInterval == 0 && sid == 0;
       observer_->OnEncodedImage(
           kEncoderId,
           EncodeResult{.width = UNSAFE_TODO(vp9.spatialLayers[sid]).width,
                        .height = UNSAFE_TODO(vp9.spatialLayers[sid]).height,
                        .keyframe = keyframe,
-                       .spatial_index = sid,
+                       .spatial_index = static_cast<int>(sid),
                        .rtp_timestamp = rtp_timestamp,
                        .encode_end_time = base::TimeTicks::Now(),
                        .is_hardware_accelerated = true});
@@ -635,7 +635,7 @@ TEST_F(VideoEncoderStateObserverImplTest,
 TEST_F(VideoEncoderStateObserverImplTest,
        DynamicLayerChange_OnEncodedImage_VP9kSVC_SingleEncoder) {
   constexpr int kEncoderId = 8;
-  constexpr int kSpatialLayers = 3;
+  constexpr wtf_size_t kSpatialLayers = 3;
   constexpr int kTemporalLayers = 1;
   const auto vp9 = VP9kSVCVideoCodec(kSpatialLayers, kTemporalLayers);
 
@@ -661,10 +661,10 @@ TEST_F(VideoEncoderStateObserverImplTest,
     // To invoke ReportStats() for a regular period.
     task_environment_.AdvanceClock(base::Seconds(15) + base::Milliseconds(10));
     constexpr int kEncodeTimes = StatsCollector::kMinSamplesThreshold * 1.1;
-    for (size_t i = 0; i < kEncodeTimes; i++) {
+    for (uint32_t i = 0; i < kEncodeTimes; ++i) {
       rtp_timestamp++;
       observer_->OnEncode(kEncoderId, rtp_timestamp);
-      for (size_t sid = 0; sid < kSpatialLayers; sid++) {
+      for (wtf_size_t sid = 0; sid < kSpatialLayers; ++sid) {
         if (!active_layers[sid]) {
           continue;
         }
@@ -674,7 +674,7 @@ TEST_F(VideoEncoderStateObserverImplTest,
             EncodeResult{.width = UNSAFE_TODO(vp9.spatialLayers[sid]).width,
                          .height = UNSAFE_TODO(vp9.spatialLayers[sid]).height,
                          .keyframe = keyframe,
-                         .spatial_index = sid,
+                         .spatial_index = static_cast<int>(sid),
                          .rtp_timestamp = rtp_timestamp,
                          .encode_end_time = base::TimeTicks::Now(),
                          .is_hardware_accelerated = true});
