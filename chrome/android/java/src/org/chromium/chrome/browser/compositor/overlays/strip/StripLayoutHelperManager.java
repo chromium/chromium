@@ -107,7 +107,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -607,7 +606,6 @@ public class StripLayoutHelperManager
                         mWindowAndroid,
                         glicClickHandler,
                         mDensity,
-                        mStripEndPadding,
                         toolbarContainerView,
                         glicKeyboardFocusHandler,
                         isAppInDesktopWindow(),
@@ -1159,20 +1157,24 @@ public class StripLayoutHelperManager
     @Override
     public int getFadeTransitionThresholdDp() {
         if (mTabModelSelector == null) return 0;
-        boolean shouldShowGlic = isGlicButtonEnabled() && !mIsIncognito;
         TabModel incognitoTabModel = mTabModelSelector.getModel(/* incognito= */ true);
         boolean hasIncognitoTabs = incognitoTabModel != null && incognitoTabModel.getCount() > 0;
         boolean shouldShowMsb = !IncognitoUtils.shouldOpenIncognitoAsWindow() && hasIncognitoTabs;
 
-        // Tablet: 332 = 2 * minTabWidth(108) - tabOverlap(28) + newTabButton (48) +
-        // [optional] glicButton(48) + [optional] modelSelectorButton(48)
-        // Desktop: 220 = 2 * minTabWidth(76) - tabOverlap(28) + newTabButton (32) +
-        // [optional] glicButton(32) + [optional] modelSelectorButton(32)
+        // The threshold is the minimum width required to start showing fade.
+        // Base = 2 * minTabWidth - tabOverlap + newTabButton:
+        //   Tablet Base: 2 * minTabWidth(108) - tabOverlap(28) + newTabButton (48) = 236dp
+        //   Desktop Base: 2 * minTabWidth(76) - tabOverlap(28) + newTabButton (32) = 156dp
+        // Optional Additions:
+        //   + Trailing Buttons (Glic, Glic actor): Dynamic (e.g. ~109dp in default state with only
+        //     Glic showing, ~96dp in collapsed state with both Glic and Glic actor showing)
+        //   + Model Selector Button (MSB): 48dp (Tablet) / 32dp (Desktop)
+
         float thresholdDp =
                 (2 * MIN_TAB_WIDTH_DP)
                         - TAB_OVERLAP_WIDTH_DP
                         + BUTTON_TOUCH_TARGET_SIZE_DP
-                        + (shouldShowGlic ? BUTTON_TOUCH_TARGET_SIZE_DP : 0f)
+                        + mTrailingButtonsCoordinator.getTrailingButtonsWidthWithPadding()
                         + (shouldShowMsb ? BUTTON_TOUCH_TARGET_SIZE_DP : 0f);
         return Math.round(thresholdDp);
     }
@@ -1758,10 +1760,6 @@ public class StripLayoutHelperManager
 
         mManagerHost.resetKeyboardFocus(); // Reset virtual views index & keyboard focus state.
         mUpdateHost.requestUpdate();
-    }
-
-    private boolean isGlicButtonEnabled() {
-        return ChromeFeatureList.sGlic.isEnabled() && AndroidSidePanelEnabledFn.isEnabled();
     }
 
     private void updateStripButtons() {

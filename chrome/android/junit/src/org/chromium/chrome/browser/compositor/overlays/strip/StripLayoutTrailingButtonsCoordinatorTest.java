@@ -136,7 +136,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         mWindowAndroid,
                         mGlicClickHandler,
                         /* density= */ 1.0f,
-                        /* stripEndPadding= */ 0.0f,
                         mToolbarContainerView,
                         /* keyboardFocusHandler= */ null,
                         /* isAppInDesktopWindow= */ false,
