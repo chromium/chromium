@@ -15,13 +15,14 @@ namespace cc {
 enum class BeginMainFrameReason {
   kOther = 0,
   kRAF = 1,
-  kIntersectionObserver = 2,
+  kServiceScriptedAnimations = 2,
   kCSSAnimation = 3,
   kStyleInvalidation = 4,
   kScroll = 5,
   kInput = 6,
-  kServiceScriptedAnimations = 7,
-  kMaxValue = kServiceScriptedAnimations,
+  kPaintInvalidation = 7,
+  kLayoutInvalidation = 8,
+  kMaxValue = kLayoutInvalidation,
 };
 
 inline constexpr size_t BeginMainFrameReasonSize =

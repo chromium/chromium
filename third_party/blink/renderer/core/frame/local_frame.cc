@@ -2051,10 +2051,11 @@ scoped_refptr<base::SingleThreadTaskRunner> LocalFrame::GetTaskRunner(
   return frame_scheduler_->GetTaskRunner(type);
 }
 
-void LocalFrame::ScheduleVisualUpdateUnlessThrottled() {
+void LocalFrame::ScheduleVisualUpdateUnlessThrottled(
+    cc::BeginMainFrameReason reason) {
   if (ShouldThrottleRendering())
     return;
-  GetPage()->Animator().ScheduleVisualUpdate(this);
+  GetPage()->Animator().ScheduleVisualUpdate(this, reason);
 }
 
 static bool CanAccessAncestor(const SecurityOrigin& active_security_origin,

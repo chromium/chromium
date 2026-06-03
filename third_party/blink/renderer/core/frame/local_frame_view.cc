@@ -1609,8 +1609,10 @@ void LocalFrameView::ScheduleRelayout() {
     return;
   has_pending_layout_ = true;
 
-  if (!ShouldThrottleRendering())
-    GetPage()->Animator().ScheduleVisualUpdate(frame_.Get());
+  if (!ShouldThrottleRendering()) {
+    GetPage()->Animator().ScheduleVisualUpdate(
+        frame_.Get(), cc::BeginMainFrameReason::kLayoutInvalidation);
+  }
 }
 
 void LocalFrameView::ScheduleRelayoutOfSubtree(LayoutObject* relayout_root) {
@@ -1641,8 +1643,10 @@ void LocalFrameView::ScheduleRelayoutOfSubtree(LayoutObject* relayout_root) {
   if (layout_scheduling_enabled_) {
     has_pending_layout_ = true;
 
-    if (!ShouldThrottleRendering())
-      GetPage()->Animator().ScheduleVisualUpdate(frame_.Get());
+    if (!ShouldThrottleRendering()) {
+      GetPage()->Animator().ScheduleVisualUpdate(
+          frame_.Get(), cc::BeginMainFrameReason::kLayoutInvalidation);
+    }
 
     if (GetPage()->Animator().IsServicingAnimations())
       Lifecycle().EnsureStateAtMost(DocumentLifecycle::kStyleClean);
@@ -2165,7 +2169,8 @@ void LocalFrameView::ScheduleVisualUpdateForVisualOverflowIfNeeded() {
       Lifecycle().GetState() >= DocumentLifecycle::kCompositingInputsClean) {
     // Schedule visual update to process the paint invalidation in the next
     // cycle.
-    local_frame_root.ScheduleVisualUpdateUnlessThrottled();
+    local_frame_root.ScheduleVisualUpdateUnlessThrottled(
+        cc::BeginMainFrameReason::kPaintInvalidation);
   }
   // Otherwise the visual overflow will be updated in the compositing inputs
   // phase of this lifecycle.
@@ -2178,7 +2183,8 @@ void LocalFrameView::ScheduleVisualUpdateForPaintInvalidationIfNeeded() {
       Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean) {
     // Schedule visual update to process the paint invalidation in the next
     // cycle.
-    local_frame_root.ScheduleVisualUpdateUnlessThrottled();
+    local_frame_root.ScheduleVisualUpdateUnlessThrottled(
+        cc::BeginMainFrameReason::kPaintInvalidation);
   }
   // Otherwise the paint invalidation will be handled in the pre-paint and paint
   // phase of this full lifecycle update.

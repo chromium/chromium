@@ -38,6 +38,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "cc/metrics/begin_main_frame_metrics.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -479,7 +480,8 @@ class CORE_EXPORT LocalFrame final
   // returned after it.
   FrameScheduler* GetFrameScheduler();
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType);
-  void ScheduleVisualUpdateUnlessThrottled();
+  void ScheduleVisualUpdateUnlessThrottled(
+      cc::BeginMainFrameReason reason = cc::BeginMainFrameReason::kOther);
 
   bool IsNavigationAllowed() const { return navigation_disable_count_ == 0; }
 
