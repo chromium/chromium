@@ -5,12 +5,12 @@
 import 'chrome://history/history.js';
 
 import type {HistoryEntry, HistoryItemElement, HistoryListElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl} from 'chrome://history/history.js';
+import {BrowserProxyImpl} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserService} from './test_browser_service.js';
+import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 import {createHistoryEntry, createSearchEntry} from './test_util.js';
 
 const TEST_HISTORY_RESULTS = [
@@ -33,7 +33,7 @@ suite('<history-item> unit test', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserServiceImpl.setInstance(new TestBrowserService());
+    BrowserProxyImpl.setInstance(new TestHistoryBrowserProxy());
 
     item = document.createElement('history-item');
     item.item = TEST_HISTORY_RESULTS[0]!;
@@ -78,15 +78,15 @@ suite('<history-item> integration test', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const testService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(testService);
+    const testProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(testProxy);
     // Force a super tall body so that cr-lazy-list renders all items.
     document.body.style.height = '1000px';
     const app = document.createElement('history-app');
     document.body.appendChild(app);
     element = app.$.history;
     return Promise.all([
-      testService.handler.whenCalled('queryHistory'),
+      testProxy.handler.whenCalled('queryHistory'),
       microtasksFinished(),
     ]);
   });

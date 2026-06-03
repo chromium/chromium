@@ -5,11 +5,11 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement, HistorySideBarElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl} from 'chrome://history/history.js';
+import {BrowserProxyImpl} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserService} from './test_browser_service.js';
+import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 import {navigateTo} from './test_util.js';
 
 suite('drawer-test', function() {
@@ -17,12 +17,12 @@ suite('drawer-test', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const testService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(testService);
+    const testProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(testProxy);
     app = document.createElement('history-app');
     document.body.appendChild(app);
     return Promise.all([
-      testService.handler.whenCalled('queryHistory'),
+      testProxy.handler.whenCalled('queryHistory'),
       microtasksFinished(),
     ]);
   });

@@ -6,7 +6,7 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, CrRouter, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
+import {BrowserProxyImpl, CrRouter, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -18,12 +18,12 @@ import {HistorySignInState, SyncState} from 'chrome://history/history.js';
 
 // </if>
 
-import {TestBrowserService} from './test_browser_service.js';
+import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 // clang-format on
 
 suite('HistoryAppTest', function() {
   let element: HistoryAppElement;
-  let browserService: TestBrowserService;
+  let browserProxy: TestHistoryBrowserProxy;
   let embeddingsHandler: TestMock<HistoryEmbeddingsPageHandlerRemote>&
       HistoryEmbeddingsPageHandlerRemote;
 
@@ -45,8 +45,8 @@ suite('HistoryAppTest', function() {
       maybeShowEmbeddingsIph: false,
     });
 
-    browserService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(browserService);
+    browserProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(browserProxy);
     embeddingsHandler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
         new HistoryEmbeddingsBrowserProxyImpl(embeddingsHandler));
@@ -175,7 +175,7 @@ suite('HistoryAppTest', function() {
       },
     }));
     const removeVisitsArg =
-        await browserService.handler.whenCalled('removeVisits');
+        await browserProxy.handler.whenCalled('removeVisits');
     assertEquals(1, removeVisitsArg.length);
     assertEquals('http://google.com', removeVisitsArg[0].url);
     assertEquals(1, removeVisitsArg[0].timestamps.length);
@@ -386,16 +386,16 @@ suite('HistoryAppTest', function() {
 // history sync promo is not shown for ChromeOS.
 suite('HistoryAppUnoPhase2FollowUpTest', () => {
   let element: HistoryAppElement;
-  let browserService: TestBrowserService;
+  let browserProxy: TestHistoryBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       unoPhase2FollowUp: true,
     });
-    browserService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(browserService);
-    browserService.handler.setResultFor(
+    browserProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(browserProxy);
+    browserProxy.handler.setResultFor(
         'shouldShowHistoryPageHistorySyncPromo', Promise.resolve({
           shouldShow: true,
         }));
@@ -418,7 +418,7 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
   });
 
   test('HidesHistorySyncPromoElementWhenDataIsFalse', async () => {
-    browserService.handler.setResultFor(
+    browserProxy.handler.setResultFor(
         'shouldShowHistoryPageHistorySyncPromo',
         Promise.resolve({shouldShow: false}));
     // Re-create the element to pick up the new loadTimeData.
@@ -572,8 +572,8 @@ suite('HistoryFilterChipsVisibility', function() {
   let element: HistoryAppElement;
 
   setup(() => {
-    const browserService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(browserService);
+    const browserProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(browserProxy);
 
     // Some of the tests below assume the query state is fully reset to empty
     // between tests.
@@ -581,8 +581,11 @@ suite('HistoryFilterChipsVisibility', function() {
     CrRouter.resetForTesting();
   });
 
-  function createPage() {
+  teardown(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
+  function createPage() {
     element = document.createElement('history-app');
     document.body.appendChild(element);
     return microtasksFinished();
@@ -676,7 +679,7 @@ suite('HistoryFilterChipsVisibility', function() {
 suite('WebuiRefresh2026', function() {
   const WEBUI_REFRESH_ATTR = 'webui-refresh-2026';
   let element: HistoryAppElement;
-  let browserService: TestBrowserService;
+  let browserProxy: TestHistoryBrowserProxy;
   let embeddingsHandler: TestMock<HistoryEmbeddingsPageHandlerRemote>&
       HistoryEmbeddingsPageHandlerRemote;
 
@@ -689,8 +692,8 @@ suite('WebuiRefresh2026', function() {
       maybeShowEmbeddingsIph: false,
     });
 
-    browserService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(browserService);
+    browserProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(browserProxy);
     embeddingsHandler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
         new HistoryEmbeddingsBrowserProxyImpl(embeddingsHandler));

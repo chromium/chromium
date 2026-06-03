@@ -5,29 +5,29 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
+import {BrowserProxyImpl, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserService} from './test_browser_service.js';
+import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 import {createHistoryInfo, navigateTo} from './test_util.js';
 
 suite('routing-with-query-param', function() {
   let app: HistoryAppElement;
   let expectedQuery: string;
-  let testService: TestBrowserService;
+  let testProxy: TestHistoryBrowserProxy;
   let embeddingsHandler: TestMock<HistoryEmbeddingsPageHandlerRemote>&
       HistoryEmbeddingsPageHandlerRemote;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     window.history.replaceState({}, '', '/?q=query');
-    testService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(testService);
+    testProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(testProxy);
 
-    testService.handler.setResultFor('queryHistory', Promise.resolve({
+    testProxy.handler.setResultFor('queryHistory', Promise.resolve({
       results: {
         info: createHistoryInfo('query'),
         value: [],
@@ -46,7 +46,7 @@ suite('routing-with-query-param', function() {
   });
 
   test('search initiated on load', async function() {
-    const query = await testService.handler.whenCalled('queryHistory');
+    const query = await testProxy.handler.whenCalled('queryHistory');
     assertEquals(expectedQuery, query[0]);
     await microtasksFinished();
     assertEquals(
@@ -55,8 +55,8 @@ suite('routing-with-query-param', function() {
 
   test('search with after date', async () => {
     // Wait for initial query to get called.
-    await testService.handler.whenCalled('queryHistory');
-    testService.handler.reset();
+    await testProxy.handler.whenCalled('queryHistory');
+    testProxy.handler.reset();
 
     loadTimeData.overrideValues({enableHistoryEmbeddings: true});
 
@@ -64,7 +64,7 @@ suite('routing-with-query-param', function() {
     expectedDate.setHours(0, 0, 0, 0);
     const expectedTimestamp = expectedDate.getTime();
 
-    testService.handler.setResultFor('queryHistory', Promise.resolve({
+    testProxy.handler.setResultFor('queryHistory', Promise.resolve({
       results: {
         info: createHistoryInfo(''),
         value: [],
@@ -73,7 +73,7 @@ suite('routing-with-query-param', function() {
 
     navigateTo('/?q=query&after=2011-04-05', app);
     const [query, numResults, timestamp] =
-        await testService.handler.whenCalled('queryHistory');
+        await testProxy.handler.whenCalled('queryHistory');
     assertEquals(expectedQuery, query);
     assertEquals(numResults, 150);
     assertEquals(expectedTimestamp, timestamp);
@@ -81,12 +81,12 @@ suite('routing-with-query-param', function() {
 
   test('invalidates wrongly formatted dates', async () => {
     // Wait for initial query to get called.
-    await testService.handler.whenCalled('queryHistory');
-    testService.handler.reset();
+    await testProxy.handler.whenCalled('queryHistory');
+    testProxy.handler.reset();
 
     loadTimeData.overrideValues({enableHistoryEmbeddings: true});
 
-    testService.handler.setResultFor('queryHistory', Promise.resolve({
+    testProxy.handler.setResultFor('queryHistory', Promise.resolve({
       results: {
         info: createHistoryInfo(''),
         value: [],
@@ -95,7 +95,7 @@ suite('routing-with-query-param', function() {
 
     navigateTo('/?q=query&after=some-bad-date', app);
     const [query, numResults, timestamp] =
-        await testService.handler.whenCalled('queryHistory');
+        await testProxy.handler.whenCalled('queryHistory');
     assertEquals('query', query);
     assertEquals(numResults, 150);
     assertEquals(null, timestamp);

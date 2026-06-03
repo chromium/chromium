@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
+import {BrowserProxyImpl, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
 import type {HistoryEntry, QueryResult} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -13,12 +13,12 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserService} from './test_browser_service.js';
+import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 import {createHistoryEntry, createHistoryInfo} from './test_util.js';
 
 suite('history-toolbar', function() {
   let app: HistoryAppElement;
-  let testService: TestBrowserService;
+  let testProxy: TestHistoryBrowserProxy;
   let embeddingsHandler: TestMock<HistoryEmbeddingsPageHandlerRemote>&
       HistoryEmbeddingsPageHandlerRemote;
   const TEST_HISTORY_RESULTS: [HistoryEntry] =
@@ -32,8 +32,8 @@ suite('history-toolbar', function() {
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(testService);
+    testProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(testProxy);
     embeddingsHandler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
         new HistoryEmbeddingsBrowserProxyImpl(embeddingsHandler));
@@ -42,18 +42,17 @@ suite('history-toolbar', function() {
 
     app = document.createElement('history-app');
     document.body.appendChild(app);
-    await testService.handler.whenCalled('queryHistory');
+    await testProxy.handler.whenCalled('queryHistory');
     return microtasksFinished();
   });
 
   test('selecting checkbox causes toolbar to change', async function() {
-    testService.handler.setResultFor(
-        'queryHistoryContinuation', Promise.resolve({
-          results: {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS},
-        }));
+    testProxy.handler.setResultFor('queryHistoryContinuation', Promise.resolve({
+      results: {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS},
+    }));
     app.$.history.dispatchEvent(new CustomEvent(
         'query-history', {bubbles: true, composed: true, detail: true}));
-    await testService.handler.whenCalled('queryHistoryContinuation');
+    await testProxy.handler.whenCalled('queryHistoryContinuation');
     await microtasksFinished();
     const item = app.$.history.shadowRoot.querySelector('history-item')!;
     item.$.checkbox.click();
@@ -77,28 +76,28 @@ suite('history-toolbar', function() {
   });
 
   test('search term gathered correctly from toolbar', async function() {
-    testService.handler.resetResolver('queryHistory');
+    testProxy.handler.resetResolver('queryHistory');
     const toolbar = app.$.toolbar;
-    testService.handler.setResultFor('queryHistory', Promise.resolve({
+    testProxy.handler.setResultFor('queryHistory', Promise.resolve({
       results: {info: createHistoryInfo('Test'), value: TEST_HISTORY_RESULTS},
     }));
     toolbar.$.mainToolbar.dispatchEvent(new CustomEvent(
         'search-changed', {bubbles: true, composed: true, detail: 'Test'}));
-    const queryArgs = await testService.handler.whenCalled('queryHistory');
+    const queryArgs = await testProxy.handler.whenCalled('queryHistory');
     assertEquals('Test', queryArgs[0]);
   });
 
   test('spinner is active on search', async function() {
-    testService.handler.resetResolver('queryHistory');
+    testProxy.handler.resetResolver('queryHistory');
 
     const delayedQuery = new PromiseResolver<{results: QueryResult}>();
 
-    testService.handler.setResultFor('queryHistory', delayedQuery.promise);
+    testProxy.handler.setResultFor('queryHistory', delayedQuery.promise);
 
     const toolbar = app.$.toolbar;
     toolbar.$.mainToolbar.dispatchEvent(new CustomEvent(
         'search-changed', {bubbles: true, composed: true, detail: 'Test2'}));
-    await testService.handler.whenCalled('queryHistory');
+    await testProxy.handler.whenCalled('queryHistory');
     await microtasksFinished();
 
     assertTrue(toolbar.spinnerActive);

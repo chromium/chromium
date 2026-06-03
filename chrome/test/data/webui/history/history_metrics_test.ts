@@ -5,16 +5,18 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement, HistoryEntry, HistoryItemElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, SyncState, VisitContextMenuAction} from 'chrome://history/history.js';
+import {BrowserProxyImpl, ForeignSessionBrowserProxyImpl, HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, SyncState, VisitContextMenuAction} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserService} from './test_browser_service.js';
+import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
+import {TestHistoryForeignSessionBrowserProxy} from './test_foreign_session_browser_proxy.js';
 import {createHistoryEntry, createHistoryInfo, createSession, createWindow, disableLinkClicks, navigateTo} from './test_util.js';
 
 suite('Metrics', function() {
-  let testService: TestBrowserService;
+  let testProxy: TestHistoryBrowserProxy;
+  let foreignSessionProxy: TestHistoryForeignSessionBrowserProxy;
   let app: HistoryAppElement;
   let histogramMap: {[key: string]: {[key: string]: number}};
   let actionMap: {[key: string]: number};
@@ -28,11 +30,13 @@ suite('Metrics', function() {
     // Make viewport tall enough to render all items.
     document.body.style.height = '1000px';
 
-    testService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(testService);
+    testProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(testProxy);
+    foreignSessionProxy = new TestHistoryForeignSessionBrowserProxy();
+    ForeignSessionBrowserProxyImpl.setInstance(foreignSessionProxy);
 
-    actionMap = testService.actionMap;
-    histogramMap = testService.histogramMap;
+    actionMap = testProxy.actionMap;
+    histogramMap = testProxy.histogramMap;
 
     app = document.createElement('history-app');
   });
@@ -44,11 +48,11 @@ suite('Metrics', function() {
    */
   async function finishSetup(
       queryResults: HistoryEntry[], query?: string): Promise<void> {
-    testService.handler.setResultFor('queryHistory', Promise.resolve({
+    testProxy.handler.setResultFor('queryHistory', Promise.resolve({
       results: {info: createHistoryInfo(query), value: queryResults},
     }));
     document.body.appendChild(app);
-    await testService.handler.whenCalled('queryHistory');
+    await testProxy.handler.whenCalled('queryHistory');
     return microtasksFinished();
   }
 
@@ -79,15 +83,15 @@ suite('Metrics', function() {
     navigateTo('/syncedTabs', app);
     await microtasksFinished();
     assertEquals(1, histogram[HistoryPageViewHistogram.SIGNIN_PROMO]);
-    await testService.whenCalled('otherDevicesInitialized');
+    await testProxy.whenCalled('otherDevicesInitialized');
 
-    testService.resetResolver('recordHistogram');
+    testProxy.resetResolver('recordHistogram');
     webUIListenerCallback('history-identity-state-changed', {
       signIn: HistorySignInState.SIGNED_IN,
       tabsSync: SyncState.TURNED_ON,
       historySync: SyncState.TURNED_OFF,
     });
-    await testService.whenCalled('recordHistogram');
+    await testProxy.whenCalled('recordHistogram');
 
     assertEquals(1, histogram[HistoryPageViewHistogram.SYNCED_TABS]);
     navigateTo('/history', app);
@@ -117,8 +121,8 @@ suite('Metrics', function() {
     items[1].$.link.click();
     assertEquals(1, actionMap['EntryLinkClick']);
 
-    testService.handler.resetResolver('queryHistory');
-    testService.handler.setResultFor('queryHistory', Promise.resolve({
+    testProxy.handler.resetResolver('queryHistory');
+    testProxy.handler.setResultFor('queryHistory', Promise.resolve({
       results: {
         info: createHistoryInfo('goog'),
         value: [
@@ -137,7 +141,7 @@ suite('Metrics', function() {
     assertTrue(!!queryManager);
     queryManager.queryState = {...queryManager.queryState, incremental: true};
     await microtasksFinished();
-    await testService.handler.whenCalled('queryHistory'),
+    await testProxy.handler.whenCalled('queryHistory'),
         await eventToPromise('viewport-filled', app.$.history);
     await microtasksFinished();
 
@@ -162,7 +166,7 @@ suite('Metrics', function() {
     // app.$.toolbar.deleteSelectedItems();
     // await microtasksFinished();
 
-    // testService.handler.setResultFor('removeVisits', Promise.resolve());
+    // testProxy.handler.setResultFor('removeVisits', Promise.resolve());
     // app.$.history.shadowRoot.querySelector<HTMLElement>(
     //                             '.action-button')!.click();
     // await microtasksFinished();
@@ -176,7 +180,7 @@ suite('Metrics', function() {
     // app.$.history.shadowRoot.querySelector<HTMLElement>(
     //                             '#menuRemoveButton')!.click();
     // await Promise.all([
-    //   testService.handler.whenCalled('removeVisits'),
+    //   testProxy.handler.whenCalled('removeVisits'),
     //   microtasksFinished(),
     // ]);
   });
@@ -193,7 +197,7 @@ suite('Metrics', function() {
             createWindow(['http://www.gmail.com', 'http://badssl.com']),
           ]),
     ];
-    testService.setForeignSessions(sessionList);
+    foreignSessionProxy.setForeignSessions(sessionList);
     await finishSetup([]);
     await microtasksFinished();
 
@@ -210,7 +214,7 @@ suite('Metrics', function() {
     assertTrue(!!histogram);
     assertEquals(1, histogram[SyncedTabsHistogram.INITIALIZED]);
 
-    await testService.whenCalled('getForeignSessions');
+    await foreignSessionProxy.handler.whenCalled('getForeignSessions');
     await microtasksFinished();
 
     assertEquals(1, histogram[SyncedTabsHistogram.HAS_FOREIGN_DATA]);
@@ -255,7 +259,7 @@ suite('Metrics', function() {
     navigateTo('/history', app);
     await microtasksFinished();
 
-    const args = await testService.whenCalled('recordLongTime');
+    const args = await testProxy.whenCalled('recordLongTime');
     assertEquals(args[0], 'History.Clusters.WebUISessionDuration');
   });
 
@@ -268,7 +272,7 @@ suite('Metrics', function() {
     await microtasksFinished();
 
     const recordedHistograms1 =
-        await testService.getArgs('recordBooleanHistogram');
+        await testProxy.getArgs('recordBooleanHistogram');
     assertEquals(1, recordedHistograms1.length);
     assertEquals('HistoryPage.ActorItemsShown', recordedHistograms1[0][0]);
     assertFalse(recordedHistograms1[0][1]);
@@ -278,24 +282,23 @@ suite('Metrics', function() {
     historyEntry.isActorVisit = true;
 
     // History page re-loaded with actor-annotated visits.
-    testService.handler.resetResolver('queryHistory');
-    testService.handler.setResultFor(
-        'queryHistoryContinuation', Promise.resolve({
-          results: {
-            info: createHistoryInfo(),
-            value: [
-              historyEntry,
-              historyEntry,
-              createHistoryEntry('2025-08-25 10:00', 'http://www.example.com'),
-            ],
-          },
-        }));
+    testProxy.handler.resetResolver('queryHistory');
+    testProxy.handler.setResultFor('queryHistoryContinuation', Promise.resolve({
+      results: {
+        info: createHistoryInfo(),
+        value: [
+          historyEntry,
+          historyEntry,
+          createHistoryEntry('2025-08-25 10:00', 'http://www.example.com'),
+        ],
+      },
+    }));
     app.dispatchEvent(new CustomEvent(
         'query-history', {detail: true, bubbles: true, composed: true}));
-    await testService.handler.whenCalled('queryHistoryContinuation');
+    await testProxy.handler.whenCalled('queryHistoryContinuation');
 
     const recordedHistogram2 =
-        await testService.getArgs('recordBooleanHistogram');
+        await testProxy.getArgs('recordBooleanHistogram');
     assertEquals(2, recordedHistogram2.length);
     assertEquals('HistoryPage.ActorItemsShown', recordedHistogram2[1][0]);
     assertTrue(recordedHistogram2[1][1]);
@@ -336,7 +339,7 @@ suite('Metrics', function() {
   test('remove-history-button-clicked-for-actor-visit', async () => {
     // Resolve `removeVisits` call so that the #menuRemoveButton click is
     // handled correctly.
-    testService.handler.setResultFor('removeVisits', Promise.resolve());
+    testProxy.handler.setResultFor('removeVisits', Promise.resolve());
     const historyEntry =
         createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
     historyEntry.isActorVisit = true;
@@ -356,7 +359,7 @@ suite('Metrics', function() {
   test('remove-history-button-clicked-for-non-actor-visit', async () => {
     // Resolve `removeVisits` call so that the #menuRemoveButton click is
     // handled correctly.
-    testService.handler.setResultFor('removeVisits', Promise.resolve());
+    testProxy.handler.setResultFor('removeVisits', Promise.resolve());
     await finishSetup(
         [createHistoryEntry('2025-08-26 10:00', 'http://www.google.com')]);
     await microtasksFinished();

@@ -1,39 +1,30 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {BrowserService, ForeignSession, HistoryIdentityState} from 'chrome://history/history.js';
+import type {BrowserProxy, HistoryIdentityState} from 'chrome://history/history.js';
 import {HistorySignInState, SyncState} from 'chrome://history/history.js';
-import {ForeignSessionPageCallbackRouter, ForeignSessionPageHandlerRemote} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {PageRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {createHistoryInfo} from './test_util.js';
 
-export class TestBrowserService extends TestBrowserProxy implements
-    BrowserService {
+export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
+    BrowserProxy {
   handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   callbackRouter: PageCallbackRouter;
-  foreignSessionHandler: TestMock<ForeignSessionPageHandlerRemote>&
-      ForeignSessionPageHandlerRemote;
-  foreignSessionCallbackRouter: ForeignSessionPageCallbackRouter;
   pageRemote: PageRemote;
   histogramMap: {[key: string]: {[key: string]: number}} = {};
   actionMap: {[key: string]: number} = {};
-  private foreignSessions_: ForeignSession[] = [];
   private initialIdentityState_: HistoryIdentityState;
 
   constructor() {
     super([
-      'deleteForeignSession',
-      'getForeignSessions',
       'getInitialIdentityState',
-      'historyLoaded',
       'navigateToUrl',
-      'openForeignSessionTab',
       'otherDevicesInitialized',
       'recordAction',
       'recordBooleanHistogram',
@@ -45,9 +36,6 @@ export class TestBrowserService extends TestBrowserProxy implements
 
     this.handler = TestMock.fromClass(PageHandlerRemote);
     this.callbackRouter = new PageCallbackRouter();
-    this.foreignSessionHandler =
-        TestMock.fromClass(ForeignSessionPageHandlerRemote);
-    this.foreignSessionCallbackRouter = new ForeignSessionPageCallbackRouter();
     this.pageRemote = this.callbackRouter.$.bindNewPipeAndPassRemote();
 
     this.initialIdentityState_ = {
@@ -79,16 +67,6 @@ export class TestBrowserService extends TestBrowserProxy implements
     // </if>
   }
 
-
-  deleteForeignSession(sessionTag: string) {
-    this.methodCalled('deleteForeignSession', sessionTag);
-  }
-
-  getForeignSessions() {
-    this.methodCalled('getForeignSessions');
-    return Promise.resolve(this.foreignSessions_);
-  }
-
   getInitialIdentityState(): Promise<HistoryIdentityState> {
     this.methodCalled('getInitialIdentityState');
     return Promise.resolve(this.initialIdentityState_);
@@ -98,31 +76,14 @@ export class TestBrowserService extends TestBrowserProxy implements
     this.initialIdentityState_ = identityState;
   }
 
-  setForeignSessions(sessions: ForeignSession[]) {
-    this.foreignSessions_ = sessions;
-  }
-
-  historyLoaded() {
-    this.methodCalled('historyLoaded');
-  }
-
   navigateToUrl(url: string, _target: string, _e: MouseEvent) {
     this.methodCalled('navigateToUrl', url);
-  }
-
-  openForeignSessionAllTabs() {}
-
-  openForeignSessionTab(sessionTag: string, tabId: number, e: MouseEvent) {
-    this.methodCalled('openForeignSessionTab', {
-      sessionTag: sessionTag,
-      tabId: tabId,
-      e: e,
-    });
   }
 
   otherDevicesInitialized() {
     this.methodCalled('otherDevicesInitialized');
   }
+
   recordAction(action: string) {
     if (!(action in this.actionMap)) {
       this.actionMap[action] = 0;
@@ -162,7 +123,7 @@ export class TestBrowserService extends TestBrowserProxy implements
     this.methodCalled('recordSigninPendingOffered');
   }
 
-  removeBookmark() {}
-
-  startTurnOnSyncFlow() {}
+  startTurnOnSyncFlow() {
+    this.methodCalled('startTurnOnSyncFlow');
+  }
 }

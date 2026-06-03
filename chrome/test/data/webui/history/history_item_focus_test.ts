@@ -5,11 +5,11 @@
 import 'chrome://history/history.js';
 
 import type {HistoryItemElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl} from 'chrome://history/history.js';
+import {BrowserProxyImpl} from 'chrome://history/history.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserService} from './test_browser_service.js';
+import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 import {createHistoryEntry} from './test_util.js';
 
 suite('<history-item> focus test', function() {
@@ -17,7 +17,7 @@ suite('<history-item> focus test', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserServiceImpl.setInstance(new TestBrowserService());
+    BrowserProxyImpl.setInstance(new TestHistoryBrowserProxy());
 
     item = document.createElement('history-item');
     item.item = createHistoryEntry('2016-03-16 10:00', 'http://www.google.com');

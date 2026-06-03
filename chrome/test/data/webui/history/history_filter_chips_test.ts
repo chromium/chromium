@@ -4,22 +4,22 @@
 
 import 'chrome://history/history.js';
 
-import {BrowserServiceImpl} from 'chrome://history/history.js';
+import {BrowserProxyImpl} from 'chrome://history/history.js';
 import type {HistoryFilterChipsElement} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserService} from './test_browser_service.js';
+import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 
 suite('HistoryFilterChipsTest', function() {
   let element: HistoryFilterChipsElement;
-  let browserService: TestBrowserService;
+  let browserService: TestHistoryBrowserProxy;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes?.emptyHTML || '';
 
-    browserService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(browserService);
+    browserService = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(browserService);
 
     element = document.createElement('history-filter-chips');
     document.body.appendChild(element);

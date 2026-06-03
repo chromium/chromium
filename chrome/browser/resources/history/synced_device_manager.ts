@@ -21,9 +21,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserServiceImpl} from './browser_service.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, SyncState} from './constants.js';
 import type {ForeignSession, ForeignSessionTab, HistoryIdentityState} from './externs.js';
+import {ForeignSessionBrowserProxyImpl} from './foreign_session_browser_proxy.js';
 import type {HistorySyncedDeviceCardElement} from './synced_device_card.js';
 import {getCss} from './synced_device_manager.css.js';
 import {getHtml} from './synced_device_manager.html.js';
@@ -127,12 +128,12 @@ export class HistorySyncedDeviceManagerElement extends
     this.focusGrid_ = new FocusGrid();
 
     // Update the sign in state.
-    BrowserServiceImpl.getInstance().otherDevicesInitialized();
-    BrowserServiceImpl.getInstance().recordHistogram(
+    BrowserProxyImpl.getInstance().otherDevicesInitialized();
+    BrowserProxyImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.INITIALIZED,
         SyncedTabsHistogram.LIMIT);
 
-    BrowserServiceImpl.getInstance().getInitialIdentityState().then(
+    BrowserProxyImpl.getInstance().getInitialIdentityState().then(
         (identityState: HistoryIdentityState) => {
           this.historyIdentityState_ = identityState;
         });
@@ -144,11 +145,11 @@ export class HistorySyncedDeviceManagerElement extends
 
     // <if expr="not is_chromeos">
     this.onAccountInfoDataReceivedListenerId_ =
-        BrowserServiceImpl.getInstance()
+        BrowserProxyImpl.getInstance()
             .callbackRouter.sendAccountInfo.addListener(
                 this.handleAccountInfoChanged_.bind(this));
 
-    BrowserServiceImpl.getInstance().handler.requestAccountInfo().then(
+    BrowserProxyImpl.getInstance().handler.requestAccountInfo().then(
         ({accountInfo}) => this.handleAccountInfoChanged_(accountInfo));
     // </if>
   }
@@ -158,10 +159,11 @@ export class HistorySyncedDeviceManagerElement extends
     this.focusGrid_!.destroy();
 
     // <if expr="not is_chromeos">
-    assert(this.onAccountInfoDataReceivedListenerId_);
-    BrowserServiceImpl.getInstance().callbackRouter.removeListener(
-        this.onAccountInfoDataReceivedListenerId_);
-    this.onAccountInfoDataReceivedListenerId_ = null;
+    if (this.onAccountInfoDataReceivedListenerId_ !== null) {
+      BrowserProxyImpl.getInstance().callbackRouter.removeListener(
+          this.onAccountInfoDataReceivedListenerId_);
+      this.onAccountInfoDataReceivedListenerId_ = null;
+    }
     // </if>
   }
 
@@ -244,12 +246,12 @@ export class HistorySyncedDeviceManagerElement extends
   }
 
   protected onTurnOnSyncClick_() {
-    BrowserServiceImpl.getInstance().startTurnOnSyncFlow();
+    BrowserProxyImpl.getInstance().startTurnOnSyncFlow();
   }
 
   // <if expr="not is_chromeos">
   protected onTurnOnHistorySyncClick_() {
-    BrowserServiceImpl.getInstance().handler.turnOnHistorySync();
+    BrowserProxyImpl.getInstance().handler.turnOnHistorySync();
   }
 
   private handleAccountInfoChanged_(accountInfo: AccountInfo) {
@@ -260,7 +262,7 @@ export class HistorySyncedDeviceManagerElement extends
   private onOpenMenu_(e: CustomEvent<{tag: string, target: HTMLElement}>) {
     this.actionMenuModel_ = e.detail.tag;
     this.$.menu.get().showAt(e.detail.target);
-    BrowserServiceImpl.getInstance().recordHistogram(
+    BrowserProxyImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.SHOW_SESSION_MENU,
         SyncedTabsHistogram.LIMIT);
   }
@@ -268,12 +270,12 @@ export class HistorySyncedDeviceManagerElement extends
   protected onOpenAllClick_() {
     const menu = this.$.menu.getIfExists();
     assert(menu);
-    const browserService = BrowserServiceImpl.getInstance();
-    browserService.recordHistogram(
+    BrowserProxyImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.OPEN_ALL,
         SyncedTabsHistogram.LIMIT);
     assert(this.actionMenuModel_);
-    browserService.openForeignSessionAllTabs(this.actionMenuModel_);
+    ForeignSessionBrowserProxyImpl.getInstance()
+        .handler.openForeignSessionAllTabs(this.actionMenuModel_);
     this.actionMenuModel_ = null;
     menu.close();
   }
@@ -307,12 +309,12 @@ export class HistorySyncedDeviceManagerElement extends
   protected onDeleteSessionClick_() {
     const menu = this.$.menu.getIfExists();
     assert(menu);
-    const browserService = BrowserServiceImpl.getInstance();
-    browserService.recordHistogram(
+    BrowserProxyImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.HIDE_FOR_NOW,
         SyncedTabsHistogram.LIMIT);
     assert(this.actionMenuModel_);
-    browserService.deleteForeignSession(this.actionMenuModel_);
+    ForeignSessionBrowserProxyImpl.getInstance().handler.deleteForeignSession(
+        this.actionMenuModel_);
     this.actionMenuModel_ = null;
     menu.close();
   }
@@ -365,7 +367,7 @@ export class HistorySyncedDeviceManagerElement extends
     const show = this.isSignInState_(HistorySignInState.SIGNED_OUT) &&
         !this.guestSession_ && this.signInAllowed_;
     if (show) {
-      BrowserServiceImpl.getInstance().recordAction(
+      BrowserProxyImpl.getInstance().recordAction(
           'Signin_Impression_FromRecentTabs');
     }
 
@@ -402,7 +404,7 @@ export class HistorySyncedDeviceManagerElement extends
 
     if (this.sessionList.length > 0 && !this.hasSeenForeignData_) {
       this.hasSeenForeignData_ = true;
-      BrowserServiceImpl.getInstance().recordHistogram(
+      BrowserProxyImpl.getInstance().recordHistogram(
           SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.HAS_FOREIGN_DATA,
           SyncedTabsHistogram.LIMIT);
     }
@@ -471,7 +473,7 @@ export class HistorySyncedDeviceManagerElement extends
       return;
     }
 
-    BrowserServiceImpl.getInstance().recordSigninPendingOffered();
+    BrowserProxyImpl.getInstance().recordSigninPendingOffered();
     this.signinPausedImpressionRecorded_ = true;
   }
 

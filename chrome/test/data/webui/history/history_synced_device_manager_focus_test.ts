@@ -5,24 +5,24 @@
 import 'chrome://history/history.js';
 
 import type {HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, HistorySignInState, SyncState} from 'chrome://history/history.js';
+import {BrowserProxyImpl, HistorySignInState, SyncState} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserService} from './test_browser_service.js';
+import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 import {createSession, createWindow} from './test_util.js';
 
 suite('<history-synced-device-manager>', function() {
   let element: HistorySyncedDeviceManagerElement;
-  let testService: TestBrowserService;
+  let testProxy: TestHistoryBrowserProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(testService);
-    testService.setInitialIdentityState({
+    testProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(testProxy);
+    testProxy.setInitialIdentityState({
       signIn: HistorySignInState.SIGNED_IN,
       tabsSync: SyncState.TURNED_ON,
       historySync: SyncState.TURNED_OFF,

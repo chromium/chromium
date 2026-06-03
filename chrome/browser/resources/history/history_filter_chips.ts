@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserServiceImpl} from './browser_service.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './history_filter_chips.css.js';
 import {getHtml} from './history_filter_chips.html.js';
 
@@ -76,7 +76,7 @@ export class HistoryFilterChipsElement extends CrLitElement {
     }
 
     if (action !== '') {
-      BrowserServiceImpl.getInstance().recordAction(action);
+      BrowserProxyImpl.getInstance().recordAction(action);
     }
   }
 

@@ -3,27 +3,27 @@
 // found in the LICENSE file.
 
 import type {HistoryAppElement, HistoryEntry, HistoryListElement, HistoryToolbarElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl} from 'chrome://history/history.js';
+import {BrowserProxyImpl} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserService} from './test_browser_service.js';
+import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 import {createHistoryEntry, createHistoryInfo} from './test_util.js';
 
 suite('history-list supervised-user', function() {
   let app: HistoryAppElement;
   let historyList: HistoryListElement;
   let toolbar: HistoryToolbarElement;
-  let testService: TestBrowserService;
+  let testProxy: TestHistoryBrowserProxy;
   const TEST_HISTORY_RESULTS: HistoryEntry[] =
       [createHistoryEntry('2016-03-15', 'https://www.google.com')];
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(testService);
+    testProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(testProxy);
 
-    testService.handler.setResultFor('queryHistory', Promise.resolve({
+    testProxy.handler.setResultFor('queryHistory', Promise.resolve({
       results: {
         info: createHistoryInfo(),
         value: TEST_HISTORY_RESULTS,
@@ -35,7 +35,7 @@ suite('history-list supervised-user', function() {
 
     historyList = app.$.history;
     toolbar = app.$.toolbar;
-    return testService.handler.whenCalled('queryHistory');
+    return testProxy.handler.whenCalled('queryHistory');
   });
 
   test('checkboxes disabled for supervised user', async function() {
@@ -61,7 +61,7 @@ suite('history-list supervised-user', function() {
     await whenChecked;
     toolbar.deleteSelectedItems();
     // Make sure that removeVisits is not being called.
-    assertEquals(0, testService.handler.getCallCount('removeVisits'));
+    assertEquals(0, testProxy.handler.getCallCount('removeVisits'));
   });
 
   test('remove history menu button disabled', function() {

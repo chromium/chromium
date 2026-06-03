@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import type {ActionMenuModel, CrActionMenuElement, HistoryListElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl} from 'chrome://history/history.js';
+import {BrowserProxyImpl} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestBrowserService} from './test_browser_service.js';
+import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
 import {createHistoryEntry} from './test_util.js';
 
 suite('#overflow-menu', function() {
@@ -19,12 +19,12 @@ suite('#overflow-menu', function() {
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const testService = new TestBrowserService();
-    BrowserServiceImpl.setInstance(testService);
+    const testProxy = new TestHistoryBrowserProxy();
+    BrowserProxyImpl.setInstance(testProxy);
 
     const app = document.createElement('history-app');
     document.body.appendChild(app);
-    await testService.handler.whenCalled('queryHistory');
+    await testProxy.handler.whenCalled('queryHistory');
     listContainer = app.$.history;
     target1 = document.createElement('div');
     target2 = document.createElement('div');

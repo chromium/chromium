@@ -16,7 +16,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserServiceImpl} from './browser_service.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {Page, TABBED_PAGES} from './router.js';
 import {getCss} from './side_bar.css.js';
 import {getHtml} from './side_bar.html.js';
@@ -169,17 +169,17 @@ export class HistorySideBarElement extends CrLitElement {
     // `js_code_coverage_browser_tests`. The tests fail because Chrome attempts
     // to open real URLs.
 
-    const browserService = BrowserServiceImpl.getInstance();
+    const browserProxy = BrowserProxyImpl.getInstance();
     switch ((e.target as HTMLElement).id) {
       case 'footerGoogleMyActivityLink':
-        browserService.recordAction('SideBarFooterGoogleMyActivityClick');
-        browserService.navigateToUrl(
+        browserProxy.recordAction('SideBarFooterGoogleMyActivityClick');
+        browserProxy.navigateToUrl(
             loadTimeData.getString('sidebarFooterGMALink'), '_blank',
             e as MouseEvent);
         break;
       case 'footerGeminiAppsActivityLink':
-        browserService.recordAction('SideBarFooterGeminiAppsActivityClick');
-        browserService.navigateToUrl(
+        browserProxy.recordAction('SideBarFooterGeminiAppsActivityClick');
+        browserProxy.navigateToUrl(
             loadTimeData.getString('sidebarFooterGAALink'), '_blank',
             e as MouseEvent);
         break;
@@ -206,9 +206,9 @@ export class HistorySideBarElement extends CrLitElement {
    * Relocates the user to the clear browsing data section of the settings page.
    */
   protected onClearBrowsingDataClick_(e: Event) {
-    const browserService = BrowserServiceImpl.getInstance();
-    browserService.recordAction('InitClearBrowsingData');
-    browserService.handler.openClearBrowsingDataDialog();
+    const browserProxy = BrowserProxyImpl.getInstance();
+    browserProxy.recordAction('InitClearBrowsingData');
+    browserProxy.handler.openClearBrowsingDataDialog();
     e.preventDefault();
   }
 

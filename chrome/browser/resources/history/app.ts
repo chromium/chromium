@@ -25,7 +25,8 @@ import '/strings.m.js';
 import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
-import type {PageCallbackRouter, PageHandlerRemote, QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {ForeignSessionPageCallbackRouter} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
+import type {PageCallbackRouter, QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 import type {Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import type {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
@@ -44,10 +45,10 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {BrowserService} from './browser_service.js';
-import {BrowserServiceImpl} from './browser_service.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 import {HistoryPageViewHistogram, HistorySignInState, SyncState} from './constants.js';
 import type {ForeignSession, HistoryIdentityState} from './externs.js';
+import {ForeignSessionBrowserProxyImpl} from './foreign_session_browser_proxy.js';
 import type {HistoryListElement} from './history_list.js';
 import type {HistoryToolbarElement} from './history_toolbar.js';
 import {convertDateToQueryValue} from './query_manager.js';
@@ -92,8 +93,7 @@ function onDocumentClick(evt: Event) {
 
   if ((anchor.protocol === 'file:' || anchor.protocol === 'about:') &&
       (e.button === 0 || e.button === 1)) {
-    BrowserServiceImpl.getInstance().navigateToUrl(
-        anchor.href, anchor.target, e);
+    BrowserProxyImpl.getInstance().navigateToUrl(anchor.href, anchor.target, e);
     e.preventDefault();
   }
 }
@@ -246,18 +246,23 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor isGlicWebActuationAvailable_: boolean =
       loadTimeData.getBoolean('isGlicWebActuationAvailable');
 
-  private browserService_: BrowserService = BrowserServiceImpl.getInstance();
-  private callbackRouter_: PageCallbackRouter =
-      BrowserServiceImpl.getInstance().callbackRouter;
+  private callbackRouter_: PageCallbackRouter;
+  private foreignSessionCallbackRouter_: ForeignSessionPageCallbackRouter;
   private dataFromNativeBeforeInput_: string|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   private historyClustersViewStartTime_: Date|null = null;
   private historyEmbeddingsResizeObserver_: ResizeObserver|null = null;
   private lastRecordedSelectedPageHistogramValue_: HistoryPageViewHistogram =
       HistoryPageViewHistogram.END;
+  private onForeignSessionsChangedListenerId_: number|null = null;
   private onHasOtherFormsChangedListenerId_: number|null = null;
-  private pageHandler_: PageHandlerRemote =
-      BrowserServiceImpl.getInstance().handler;
+
+  constructor() {
+    super();
+    this.callbackRouter_ = BrowserProxyImpl.getInstance().callbackRouter;
+    this.foreignSessionCallbackRouter_ =
+        ForeignSessionBrowserProxyImpl.getInstance().callbackRouter;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -282,14 +287,15 @@ export class HistoryAppElement extends HistoryAppElementBase {
         'history-identity-state-changed',
         (identityState: HistoryIdentityState) =>
             this.onIdentityStateChanged_(identityState));
-    this.browserService_.foreignSessionCallbackRouter.onForeignSessionsChanged
-        .addListener(
+    this.onForeignSessionsChangedListenerId_ =
+        this.foreignSessionCallbackRouter_.onForeignSessionsChanged.addListener(
             (sessionList: ForeignSession[]) =>
                 this.setForeignSessions_(sessionList));
     this.shadowRoot.querySelector('history-query-manager')!.initialize();
-    this.browserService_.getForeignSessions().then(
-        sessionList => this.setForeignSessions_(sessionList));
-    this.browserService_.getInitialIdentityState().then(
+    ForeignSessionBrowserProxyImpl.getInstance()
+        .handler.getForeignSessions()
+        .then(({sessions}) => this.setForeignSessions_(sessions));
+    BrowserProxyImpl.getInstance().getInitialIdentityState().then(
         (identityState: HistoryIdentityState) =>
             this.onIdentityStateChanged_(identityState));
 
@@ -304,7 +310,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
             (hasOtherForms: boolean) =>
                 this.onHasOtherFormsChanged_(hasOtherForms));
     // <if expr="not is_chromeos">
-    BrowserServiceImpl.getInstance()
+    BrowserProxyImpl.getInstance()
         .handler.shouldShowHistoryPageHistorySyncPromo()
         .then(
             ({shouldShow}) =>
@@ -320,9 +326,18 @@ export class HistoryAppElement extends HistoryAppElementBase {
       this.historyEmbeddingsResizeObserver_.disconnect();
       this.historyEmbeddingsResizeObserver_ = null;
     }
-    assert(this.onHasOtherFormsChangedListenerId_);
-    this.callbackRouter_.removeListener(this.onHasOtherFormsChangedListenerId_);
-    this.onHasOtherFormsChangedListenerId_ = null;
+
+    if (this.onHasOtherFormsChangedListenerId_ !== null) {
+      this.callbackRouter_.removeListener(
+          this.onHasOtherFormsChangedListenerId_);
+      this.onHasOtherFormsChangedListenerId_ = null;
+    }
+
+    if (this.onForeignSessionsChangedListenerId_ !== null) {
+      this.foreignSessionCallbackRouter_.removeListener(
+          this.onForeignSessionsChangedListenerId_);
+      this.onForeignSessionsChangedListenerId_ = null;
+    }
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -415,7 +430,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('selectedTab_')) {
-      this.pageHandler_.setLastSelectedTab(this.selectedTab_);
+      BrowserProxyImpl.getInstance().handler.setLastSelectedTab(
+          this.selectedTab_);
     }
 
     if (changedPrivateProperties.has('selectedPage_')) {
@@ -547,29 +563,30 @@ export class HistoryAppElement extends HistoryAppElementBase {
       this.nonEmbeddingsResultClicked_ = true;
     }
 
-    this.browserService_.recordHistogram(
+    const browserProxy = BrowserProxyImpl.getInstance();
+    browserProxy.recordHistogram(
         'History.SearchResultClicked.Type', e.detail.resultType,
         HistoryResultType.END);
 
     // MetricsHandler uses a 100 bucket limit, so the max index is 99.
     const maxIndex = 99;
     const clampedIndex = Math.min(e.detail.index, 99);
-    this.browserService_.recordHistogram(
+    browserProxy.recordHistogram(
         'History.SearchResultClicked.Index', clampedIndex, maxIndex);
 
     switch (e.detail.resultType) {
       case HistoryResultType.TRADITIONAL:
-        this.browserService_.recordHistogram(
+        browserProxy.recordHistogram(
             'History.SearchResultClicked.Index.Traditional', clampedIndex,
             maxIndex);
         break;
       case HistoryResultType.GROUPED:
-        this.browserService_.recordHistogram(
+        browserProxy.recordHistogram(
             'History.SearchResultClicked.Index.Grouped', clampedIndex,
             maxIndex);
         break;
       case HistoryResultType.EMBEDDINGS:
-        this.browserService_.recordHistogram(
+        browserProxy.recordHistogram(
             'History.SearchResultClicked.Index.Embeddings', clampedIndex,
             maxIndex);
         break;
@@ -708,7 +725,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
     const duration =
         new Date().getTime() - this.historyClustersViewStartTime_.getTime();
-    this.browserService_.recordLongTime(
+    BrowserProxyImpl.getInstance().recordLongTime(
         'History.Clusters.WebUISessionDuration', duration);
 
     this.historyClustersViewStartTime_ = null;
@@ -752,7 +769,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
     this.lastRecordedSelectedPageHistogramValue_ = histogramValue;
 
-    this.browserService_.recordHistogram(
+    BrowserProxyImpl.getInstance().recordHistogram(
         'History.HistoryPageView', histogramValue,
         HistoryPageViewHistogram.END);
   }
@@ -840,7 +857,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected onHistoryEmbeddingsItemRemoveItemClick_(
       e: HistoryEmbeddingsMoreActionsClickEvent) {
     const historyEmbeddingsItem = e.detail;
-    this.pageHandler_.removeVisits([{
+    BrowserProxyImpl.getInstance().handler.removeVisits([{
       url: historyEmbeddingsItem.url,
       timestamps: [historyEmbeddingsItem.lastUrlVisitTimestamp],
     }]);
