@@ -64,6 +64,7 @@ polymorphic.launcher(
         "ci/android-15-tablet-x64-rel",
         "ci/android-15-tablet-landscape-x64-rel",
         "ci/android-16-x64-rel",
+        "ci/android-14-automotive-landscape-x64-rel",
     ],
 )
 
