@@ -40,6 +40,7 @@ public class ScreenshotInvocationState {
 
     private @Nullable String mInvocationId;
     private @Nullable Uri mContentUri;
+    private long mCaptureStartTimestampMs;
 
     /**
      * Returns a new invocation state capturing the current tab metadata, or null if tab metadata
@@ -133,5 +134,23 @@ public class ScreenshotInvocationState {
         // Check if the user has scrolled significantly compared to the old state.
         return Math.abs(mScrollX - oldState.mScrollX) <= SCROLL_DIFF_THRESHOLD
                 && Math.abs(mScrollY - oldState.mScrollY) <= SCROLL_DIFF_THRESHOLD;
+    }
+
+    /** Returns the timestamp at which the state was created. This method is thread-safe. */
+    @AnyThread
+    public long getTimestamp() {
+        return mTimestamp;
+    }
+
+    /** Returns the timestamp when capture started. This method is thread-safe. */
+    @AnyThread
+    public long getCaptureStartTimestampMs() {
+        return mCaptureStartTimestampMs;
+    }
+
+    /** Sets the timestamp when capture started. This method is thread-safe. */
+    @AnyThread
+    public void setCaptureStartTimestampMs(long captureStartTimestampMs) {
+        mCaptureStartTimestampMs = captureStartTimestampMs;
     }
 }

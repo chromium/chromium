@@ -295,6 +295,7 @@ if (_is_default_toolchain) {
 
   android_library("screenshot_provider_java") {
     sources = [
+      "java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotContentProviderMetrics.java",
       "java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotInvocationState.java",
       "java/src/org/chromium/chrome/browser/screenshotprovider/ScreenshotUriProvider.java",
     ]

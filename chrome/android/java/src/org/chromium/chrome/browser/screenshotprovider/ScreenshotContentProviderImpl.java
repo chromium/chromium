@@ -4,6 +4,23 @@
 
 package org.chromium.chrome.browser.screenshotprovider;
 
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_CURRENT_TAB_CHANGED;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_CURRENT_TAB_NULL_URL;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_EMPTY_BITMAP;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_EXECUTION_EXCEPTION;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_INTERRUPTED;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_INVALID_ACTIVITY;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_INVALID_CONTEXT;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_INVALID_ID;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_INVALID_MODE;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_INVALID_URI;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_INVALID_WINDOW_ANDROID;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_IO_EXCEPTION_WHEN_CREATING_OUTPUT_FILE;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_TIMED_OUT;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_FAILED_TO_GET_CURRENT_TAB;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_STARTED;
+import static org.chromium.chrome.browser.screenshotprovider.ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent.REQUEST_SUCCEEDED_RETURNED_CAPTURED;
+
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,10 +29,12 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.os.ParcelFileDescriptor.AutoCloseOutputStream;
+import android.os.SystemClock;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -36,7 +55,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.chromium.base.TraceEvent;
 
 /** ContentProvider that serves screenshots. */
 @UsedByReflection("ScreenshotContentProvider.java")
@@ -84,48 +102,87 @@ public class ScreenshotContentProviderImpl extends SplitCompatContentProvider.Im
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         ThreadUtils.assertOnBackgroundThread();
 
+        ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(REQUEST_STARTED);
+
         validateReadMode(mode);
         String invocationId = extractInvocationId(uri);
         ScreenshotInvocationState state = getValidatedState(invocationId);
+        // Record CreateToCaptureStart latency
+        long createToCaptureStartDuration = SystemClock.elapsedRealtime() - state.getTimestamp();
+        ScreenshotContentProviderMetrics.recordCreateToCaptureStartLatency(
+                createToCaptureStartDuration);
+        state.setCaptureStartTimestampMs(SystemClock.elapsedRealtime());
 
         CompletableFuture<Bitmap> captureFuture = getViewportScreenshot(state);
+        ParcelFileDescriptor pfd = waitForCaptureAndCreatePfd(captureFuture, state);
 
-        return waitForCaptureAndCreatePfd(captureFuture);
+        ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                REQUEST_SUCCEEDED_RETURNED_CAPTURED);
+
+        return pfd;
     }
 
     protected ScreenshotSource createScreenshotSource(Activity activity) {
         return new ScreenshotTask(activity, ScreenshotMode.COMPOSITOR);
     }
 
-    private Bitmap blockOnCaptureFuture(CompletableFuture<Bitmap> captureFuture)
+    private Bitmap blockOnCaptureFuture(
+            CompletableFuture<Bitmap> captureFuture, ScreenshotInvocationState state)
             throws FileNotFoundException {
         try {
-            return captureFuture.get(CAPTURE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException e) {
+            Bitmap bitmap = captureFuture.get(CAPTURE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+            long captureStartTimestampMs = state.getCaptureStartTimestampMs();
+            if (captureStartTimestampMs != 0) {
+                long captureDuration = SystemClock.elapsedRealtime() - captureStartTimestampMs;
+                ScreenshotContentProviderMetrics.recordCaptureStartToEndLatency(captureDuration);
+                ScreenshotContentProviderMetrics.recordTotalLatency(
+                        SystemClock.elapsedRealtime() - state.getTimestamp());
+            }
+
+            return bitmap;
+        } catch (InterruptedException e) {
             Log.e(TAG, "Error capturing screenshot", e);
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_INTERRUPTED);
+            throw new FileNotFoundException("Error capturing screenshot: " + e.getMessage());
+        } catch (ExecutionException e) {
+            Log.e(TAG, "Error capturing screenshot", e);
+            String message = e.getCause() != null ? e.getCause().getMessage() : "";
+            if (!"Failed to get valid activity".equals(message)
+                    && !"Failed to capture screenshot".equals(message)) {
+                ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                        REQUEST_FAILED_EXECUTION_EXCEPTION);
+            }
             throw new FileNotFoundException("Error capturing screenshot: " + e.getMessage());
         } catch (TimeoutException e) {
             Log.e(TAG, "Timeout capturing screenshot", e);
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_TIMED_OUT);
             throw new FileNotFoundException("Timeout capturing screenshot");
         }
     }
 
-    private ParcelFileDescriptor waitForCaptureAndCreatePfd(CompletableFuture<Bitmap> captureFuture)
+    private ParcelFileDescriptor waitForCaptureAndCreatePfd(
+            CompletableFuture<Bitmap> captureFuture, ScreenshotInvocationState state)
             throws FileNotFoundException {
         try (var t =
                 TraceEvent.scoped("ScreenshotContentProviderImpl.waitForCaptureAndCreatePfd")) {
             ThreadUtils.assertOnBackgroundThread();
+            // Here we are blocking the background thread, and waiting for Ui thread to return the
+            // bitmap.
+            Bitmap bitmap = blockOnCaptureFuture(captureFuture, state);
+            if (bitmap == null) {
+                ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                        REQUEST_FAILED_EMPTY_BITMAP);
+                throw new FileNotFoundException("Failed to capture screenshot: no bitmap");
+            }
             try {
-                // Here we are blocking the background thread, and waiting for Ui thread to return
-                // the
-                // bitmap.
-                Bitmap bitmap = blockOnCaptureFuture(captureFuture);
-                if (bitmap == null) {
-                    throw new FileNotFoundException("Failed to capture screenshot: no bitmap");
-                }
                 return createOutputFileDescriptorForBitmap(bitmap);
             } catch (IOException e) {
                 Log.e(TAG, "Error creating file descriptor", e.getMessage());
+                ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                        REQUEST_FAILED_IO_EXCEPTION_WHEN_CREATING_OUTPUT_FILE);
                 throw new FileNotFoundException("IO error: " + e.getMessage());
             }
         }
@@ -133,6 +190,8 @@ public class ScreenshotContentProviderImpl extends SplitCompatContentProvider.Im
 
     private void validateReadMode(String mode) throws FileNotFoundException {
         if (!"r".equals(mode)) {
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_INVALID_MODE);
             Log.e(TAG, "Unsupported mode: %s. Only 'r' is supported.", mode);
             throw new FileNotFoundException("Only read mode is supported");
         }
@@ -141,6 +200,8 @@ public class ScreenshotContentProviderImpl extends SplitCompatContentProvider.Im
     private String extractInvocationId(Uri uri) throws FileNotFoundException {
         String invocationId = uri.getLastPathSegment();
         if (invocationId == null) {
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_INVALID_URI);
             Log.e(TAG, "No invocation ID found in URI: %s", uri);
             throw new FileNotFoundException("Invalid URI: no invocation ID");
         }
@@ -151,6 +212,8 @@ public class ScreenshotContentProviderImpl extends SplitCompatContentProvider.Im
             throws FileNotFoundException {
         ScreenshotInvocationState state = ScreenshotUriProvider.getInvocationState(invocationId);
         if (state == null) {
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_INVALID_ID);
             Log.e(TAG, "Invalid or expired invocation ID: %s", invocationId);
             throw new FileNotFoundException("Invalid or expired invocation ID");
         }
@@ -232,39 +295,53 @@ public class ScreenshotContentProviderImpl extends SplitCompatContentProvider.Im
         Tab tab = state.getTabSupplier().get();
         if (tab == null) {
             Log.e(TAG, "Tab is null");
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_TO_GET_CURRENT_TAB);
             return null;
         }
         if (tab.isDestroyed()) {
             Log.e(TAG, "Tab is destroyed");
-            return null;
-        }
-
-        WindowAndroid windowAndroid = tab.getWindowAndroid();
-        if (windowAndroid == null) {
-            Log.e(TAG, "WindowAndroid is null");
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_TO_GET_CURRENT_TAB);
             return null;
         }
 
         GURL url = tab.getUrl();
         if (url == null) {
             Log.e(TAG, "URL is null");
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_CURRENT_TAB_NULL_URL);
             return null;
         }
 
         if (!state.getInvokedUrl().equals(url.getSpec())) {
             Log.e(TAG, "URL mismatch: expected %s, got %s", state.getInvokedUrl(), url.getSpec());
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_CURRENT_TAB_CHANGED);
+            return null;
+        }
+
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null) {
+            Log.e(TAG, "WindowAndroid is null");
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_INVALID_WINDOW_ANDROID);
             return null;
         }
 
         Context context = tab.getContext();
         if (context == null) {
             Log.e(TAG, "Context is null");
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_INVALID_CONTEXT);
             return null;
         }
 
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null) {
             Log.e(TAG, "Activity is null");
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_INVALID_ACTIVITY);
         }
         return activity;
     }
@@ -272,6 +349,8 @@ public class ScreenshotContentProviderImpl extends SplitCompatContentProvider.Im
     private static void setBitmapFuture(@Nullable Bitmap bitmap, CompletableFuture<Bitmap> future) {
         if (bitmap == null) {
             Log.e(TAG, "Failed to capture screenshot");
+            ScreenshotContentProviderMetrics.recordScreenshotProviderEvent(
+                    REQUEST_FAILED_EMPTY_BITMAP);
             future.completeExceptionally(new Exception("Failed to capture screenshot"));
             return;
         }

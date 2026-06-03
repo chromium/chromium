@@ -5702,6 +5702,63 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ScreenshotContentProvider.Events"
+    enum="ScreenshotContentProviderEvent" expires_after="2027-05-25">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <owner>tivi@google.com</owner>
+  <summary>
+    Records events related to ScreenshotContentProvider as it generates a URI
+    for an external app and as it handles queries/openFile from said external
+    app.
+  </summary>
+</histogram>
+
+<histogram name="Android.ScreenshotContentProvider.Latency.CaptureStartToEnd"
+    units="ms" expires_after="2027-05-25">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <owner>tivi@google.com</owner>
+  <summary>
+    Records the amount of time passed while capturing a screenshot's contents.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.ScreenshotContentProvider.Latency.CreateToCaptureStart"
+    units="ms" expires_after="2027-05-25">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <owner>tivi@google.com</owner>
+  <summary>
+    Records the amount of time passed between sending a screenshot provider URI
+    to an external app and receiving an openFile request from an external app
+    with the same URI (this starts a screenshot capture task).
+  </summary>
+</histogram>
+
+<histogram name="Android.ScreenshotContentProvider.Latency.TotalLatency"
+    units="ms" expires_after="2027-05-25">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <owner>tivi@google.com</owner>
+  <summary>
+    Records the total amount of time passed between sending a screenshot content
+    provider URI to an external app and it receiving the screenshot's contents.
+  </summary>
+</histogram>
+
+<histogram name="Android.ScreenshotUriProvider.Events"
+    enum="ScreenshotUriProviderEvent" expires_after="2027-05-25">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <owner>tivi@google.com</owner>
+  <summary>
+    Records events related to ScreenshotUriProvider as it generates, caches, or
+    reuses content URIs for screenshots.
+  </summary>
+</histogram>
+
 <histogram name="Android.Scrim.MissingParent.Client" enum="ScrimClient"
     expires_after="2026-08-16">
   <owner>skym@chromium.org</owner>

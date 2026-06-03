@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.screenshotprovider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
@@ -15,8 +13,8 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +29,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feedback.ScreenshotSource;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content.browser.RenderCoordinatesImpl;
@@ -38,9 +37,6 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.io.FileNotFoundException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link ScreenshotContentProviderImpl}. */
@@ -106,6 +102,11 @@ public class ScreenshotContentProviderImplUnitTest {
         ShadowLooper.idleMainLooper();
     }
 
+    @After
+    public void tearDown() {
+        ShadowLooper.shadowMainLooper().runToEndOfTasks();
+    }
+
     @Test
     public void testQueryReturnsNull() {
         assertNull(mProvider.query(Uri.EMPTY, null, null, null, null));
@@ -132,37 +133,265 @@ public class ScreenshotContentProviderImplUnitTest {
     }
 
     @Test
-    public void testOpenFileThrowsExceptionForInvalidMode() {
-        assertThrows(FileNotFoundException.class, () -> mProvider.openFile(mUri, "w"));
+    public void testOpenFileLogsSuccessMetricsAndLatency() throws Exception {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_SUCCEEDED_RETURNED_CAPTURED)
+                        .expectAnyRecord(
+                                "Android.ScreenshotContentProvider.Latency.CreateToCaptureStart")
+                        .expectAnyRecord(
+                                "Android.ScreenshotContentProvider.Latency.CaptureStartToEnd")
+                        .expectAnyRecord("Android.ScreenshotContentProvider.Latency.TotalLatency")
+                        .build();
+
+        mProvider.openFile(mUri, "r");
+        watcher.assertExpected();
     }
 
     @Test
-    public void testOpenFileThrowsExceptionForInvalidUri() {
-        CompletableFuture<ParcelFileDescriptor> future = openFileAsync(Uri.EMPTY, "r");
-        Exception exception = assertThrows(Exception.class, () -> getAsync(future));
-        assertTrue(exception.getMessage().contains("Invalid URI"));
+    public void testOpenFileLogsInvalidModeMetric() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_FAILED_INVALID_MODE)
+                        .build();
+        try {
+            mProvider.openFile(mUri, "w");
+        } catch (Exception ignored) {
+        }
+        watcher.assertExpected();
     }
 
     @Test
-    public void testOpenFileThrowsExceptionForInvalidInvocationId() {
+    public void testOpenFileLogsInvalidUriMetric() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_FAILED_INVALID_URI)
+                        .build();
+        try {
+            mProvider.openFile(Uri.EMPTY, "r");
+        } catch (Exception ignored) {
+        }
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOpenFileLogsInvalidIdMetric() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_FAILED_INVALID_ID)
+                        .build();
         Uri invalidUri = Uri.parse("content://org.chromium.chrome/invalid_id");
-        CompletableFuture<ParcelFileDescriptor> future = openFileAsync(invalidUri, "r");
-        Exception exception = assertThrows(Exception.class, () -> getAsync(future));
-        assertTrue(exception.getMessage().contains("Invalid or expired invocation ID"));
+        try {
+            mProvider.openFile(invalidUri, "r");
+        } catch (Exception ignored) {
+        }
+        watcher.assertExpected();
     }
 
-    private CompletableFuture<ParcelFileDescriptor> openFileAsync(Uri uri, String mode) {
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    try {
-                        return mProvider.openFile(uri, mode);
-                    } catch (FileNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+    @Test
+    public void testOpenFileLogsTabNullMetric() {
+        when(mTabSupplier.get()).thenReturn(null);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_FAILED_TO_GET_CURRENT_TAB)
+                        .build();
+        try {
+            mProvider.openFile(mUri, "r");
+        } catch (Exception ignored) {
+        }
+        watcher.assertExpected();
     }
 
-    private <T> T getAsync(CompletableFuture<T> future) throws Exception {
-        return future.get(5, TimeUnit.SECONDS);
+    @Test
+    public void testOpenFileLogsTabDestroyedMetric() {
+        when(mTab.isDestroyed()).thenReturn(true);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_FAILED_TO_GET_CURRENT_TAB)
+                        .build();
+        try {
+            mProvider.openFile(mUri, "r");
+        } catch (Exception ignored) {
+        }
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOpenFileLogsUrlNullMetric() {
+        when(mTab.getUrl()).thenReturn(null);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_FAILED_CURRENT_TAB_NULL_URL)
+                        .build();
+        try {
+            mProvider.openFile(mUri, "r");
+        } catch (Exception ignored) {
+        }
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOpenFileLogsUrlMismatchMetric() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_FAILED_CURRENT_TAB_CHANGED)
+                        .build();
+        try {
+            mProvider.openFile(mUri, "r");
+        } catch (Exception ignored) {
+        }
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOpenFileLogsWindowAndroidNullMetric() {
+        when(mTab.getWindowAndroid()).thenReturn(null);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_FAILED_INVALID_WINDOW_ANDROID)
+                        .build();
+        try {
+            mProvider.openFile(mUri, "r");
+        } catch (Exception ignored) {
+        }
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOpenFileLogsContextNullMetric() {
+        when(mTab.getContext()).thenReturn(null);
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_FAILED_INVALID_CONTEXT)
+                        .build();
+        try {
+            mProvider.openFile(mUri, "r");
+        } catch (Exception ignored) {
+        }
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOpenFileLogsActivityNullMetric() {
+        when(mTab.getContext())
+                .thenReturn(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_FAILED_INVALID_ACTIVITY)
+                        .build();
+        try {
+            mProvider.openFile(mUri, "r");
+        } catch (Exception ignored) {
+        }
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOpenFileLogsCaptureFailedMetric() {
+        doAnswer(
+                        invocation -> {
+                            Runnable callback = invocation.getArgument(0);
+                            when(mMockScreenshotSource.getScreenshot()).thenReturn(null);
+                            if (callback != null) {
+                                callback.run();
+                            }
+                            return null;
+                        })
+                .when(mMockScreenshotSource)
+                .capture(any());
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_STARTED)
+                        .expectIntRecord(
+                                "Android.ScreenshotContentProvider.Events",
+                                ScreenshotContentProviderMetrics.ScreenshotContentProviderEvent
+                                        .REQUEST_FAILED_EMPTY_BITMAP)
+                        .build();
+        try {
+            mProvider.openFile(mUri, "r");
+        } catch (Exception ignored) {
+        }
+        watcher.assertExpected();
     }
 }

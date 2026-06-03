@@ -56,15 +56,31 @@ public class ScreenshotUriProvider {
 
         if (newInvocationState == null) {
             Log.w(TAG, "getScreenshotUriForCurrentTab - invalid invocation state.");
+            ScreenshotContentProviderMetrics.recordScreenshotUriProviderEvent(
+                    ScreenshotContentProviderMetrics.ScreenshotUriProviderEvent
+                            .GET_CONTENT_URI_FAILED);
             return null;
         }
 
         synchronized (sLock) {
             if (sInvocationState != null && newInvocationState.canReuse(sInvocationState)) {
+                ScreenshotContentProviderMetrics.recordScreenshotUriProviderEvent(
+                        ScreenshotContentProviderMetrics.ScreenshotUriProviderEvent
+                                .GET_CONTENT_URI_REUSED);
                 return sInvocationState.getContentUri();
             }
 
-            return createNewStateAndGrantAccess(newInvocationState, targetPackage);
+            Uri contentUri = createNewStateAndGrantAccess(newInvocationState, targetPackage);
+            if (contentUri == null) {
+                ScreenshotContentProviderMetrics.recordScreenshotUriProviderEvent(
+                        ScreenshotContentProviderMetrics.ScreenshotUriProviderEvent
+                                .GET_CONTENT_URI_FAILED);
+            } else {
+                ScreenshotContentProviderMetrics.recordScreenshotUriProviderEvent(
+                        ScreenshotContentProviderMetrics.ScreenshotUriProviderEvent
+                                .GET_CONTENT_URI_SUCCESS);
+            }
+            return contentUri;
         }
     }
 
