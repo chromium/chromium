@@ -37,7 +37,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/strings/grit/extensions_strings.h"
@@ -845,96 +844,5 @@ TEST_F(SupervisedUserExtensionInstallStatusTest,
       GetInstallStatusSynchronously(kExtensionId, profile(), base::Version(),
                                     Manifest::Type::kTheme, PermissionSet()));
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// A test suite to toggle the behavior of the MV2 deprecation experiment.
-class ExtensionInstallStatusTestWithMV2Deprecation
-    : public ExtensionInstallStatusTest {
- public:
-  ExtensionInstallStatusTestWithMV2Deprecation() {
-    feature_list_.InitAndDisableFeature(
-        extensions_features::kExtensionManifestV2Unsupported);
-  }
-  ~ExtensionInstallStatusTestWithMV2Deprecation() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests the webstore properly checks whether an extension can be installed
-// inline with the MV2 Deprecation experiments.
-TEST_F(ExtensionInstallStatusTestWithMV2Deprecation,
-       MV2ExtensionsAreBlockedWithExperiment) {
-  const ExtensionId kTestId(32, 'a');
-
-  // MV3 extensions are always installable.
-  EXPECT_EQ(
-      ExtensionInstallStatus::kInstallable,
-      GetInstallStatusSynchronously(kTestId, profile(), base::Version(),
-                                    Manifest::Type::kExtension, PermissionSet(),
-                                    /*manifest_version=*/3));
-
-  // MV2 extensions should be unavailable if and only if the experiment is
-  // enabled.
-  ExtensionInstallStatus expected_status =
-      ExtensionInstallStatus::kDeprecatedManifestVersion;
-  EXPECT_EQ(expected_status, GetInstallStatusSynchronously(
-                                 kTestId, profile(), base::Version(),
-                                 Manifest::Type::kExtension, PermissionSet(),
-                                 /*manifest_version=*/2));
-}
-
-// An extension explicitly blocked by the admin should be considered blocked
-// by policy, rather than a deprecated manifest version.
-TEST_F(ExtensionInstallStatusTestWithMV2Deprecation,
-       IdBlockedByPolicyTakesPriorityOverDeprecatedManifestVersion) {
-  SetExtensionSettings(kExtensionSettingsWithIdBlocked);
-  EXPECT_EQ(
-      ExtensionInstallStatus::kBlockedByPolicy,
-      GetInstallStatusSynchronously(kExtensionId, profile(), base::Version(),
-                                    Manifest::Type::kExtension, PermissionSet(),
-                                    /*manifest_version=*/2));
-}
-
-// If an admin blocks all MV2 extensions, they should be considered blocked by
-// policy, rather than a deprecated manifest version.
-TEST_F(ExtensionInstallStatusTestWithMV2Deprecation,
-       ManifestV2PolicyTakesPriorityOverDeprecatedManifestVersion) {
-  SetPolicy(pref_names::kManifestV2Availability,
-            std::make_unique<base::Value>(static_cast<int>(
-                internal::GlobalSettings::ManifestV2Setting::kDisabled)));
-  EXPECT_EQ(
-      ExtensionInstallStatus::kBlockedByPolicy,
-      GetInstallStatusSynchronously(kExtensionId, profile(), base::Version(),
-                                    Manifest::Type::kExtension, PermissionSet(),
-                                    /*manifest_version=*/2));
-}
-
-// Extensions that are installed and enabled should indicate such, even if they
-// are using a deprecated manifest version (since they are either re-enabled by
-// the user or are allowed by the admin).
-TEST_F(ExtensionInstallStatusTestWithMV2Deprecation,
-       EnabledTakesPriorityOverDeprecatedManifestVersion) {
-  ExtensionRegistry::Get(profile())->AddEnabled(CreateExtension(kExtensionId));
-  EXPECT_EQ(
-      ExtensionInstallStatus::kEnabled,
-      GetInstallStatusSynchronously(kExtensionId, profile(), base::Version(),
-                                    Manifest::Type::kExtension, PermissionSet(),
-                                    /*manifest_version=*/2));
-}
-
-// Extensions that are installed and disabled and have a deprecated manifest
-// version should indicate they are unsupported due to the manifest version.
-// Note, this applies even if they are disabled due to other reasons.
-TEST_F(ExtensionInstallStatusTestWithMV2Deprecation,
-       DeprecatedManifestVersionTakesPriorityOverDisabled) {
-  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
-  EXPECT_EQ(
-      ExtensionInstallStatus::kDeprecatedManifestVersion,
-      GetInstallStatusSynchronously(kExtensionId, profile(), base::Version(),
-                                    Manifest::Type::kExtension, PermissionSet(),
-                                    /*manifest_version=*/2));
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

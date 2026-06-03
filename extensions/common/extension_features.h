@@ -155,11 +155,6 @@ BASE_DECLARE_FEATURE(kExtensionLocalizationGuid);
 // A replacement key for declaring icons, in addition to supporting dark mode.
 BASE_DECLARE_FEATURE(kExtensionIconVariants);
 
-// Controls fully removing support for user-installed MV2 extensions.
-// Users may no longer re-enable these extensions. Enterprises may still
-// override this.
-BASE_DECLARE_FEATURE(kExtensionManifestV2Unsupported);
-
 // Allows server-side configuration of a temporary exception list.
 BASE_DECLARE_FEATURE(kExtensionManifestV2ExceptionList);
 extern const base::FeatureParam<std::string>

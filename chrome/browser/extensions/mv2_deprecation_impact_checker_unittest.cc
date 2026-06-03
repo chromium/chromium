@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/manifest_v2_experiment_manager.h"
-#include "extensions/browser/mv2_experiment_stage.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -40,12 +39,11 @@ enum class MV2PolicyLevel {
 
 // A test variant that allows parameterization of both the experiment stage and
 // the policy level.
-using TestVariant = std::tuple<MV2ExperimentStage, MV2PolicyLevel>;
+using TestVariant = MV2PolicyLevel;
 
 // Describes the current test variants; used in describing parameterized tests.
 std::string DescribeTestVariant(const TestVariant& test_variant) {
-  const MV2ExperimentStage experiment_stage = std::get<0>(test_variant);
-  const MV2PolicyLevel policy_level = std::get<1>(test_variant);
+  const MV2PolicyLevel policy_level = test_variant;
 
   std::string description;
 
@@ -61,17 +59,6 @@ std::string DescribeTestVariant(const TestVariant& test_variant) {
       break;
     case MV2PolicyLevel::kAllowedForAdminInstalledOnly:
       description += "MV2ForAdminInstalledOnly";
-      break;
-  }
-
-  description += "And";
-
-  switch (experiment_stage) {
-    case MV2ExperimentStage::kDisableWithReEnable:
-      description += "DisableExperiment";
-      break;
-    case MV2ExperimentStage::kUnsupported:
-      description += "UnsupportedExperiment";
       break;
   }
 
@@ -200,14 +187,12 @@ class MV2DeprecationImpactCheckerUnitTest
     return extension;
   }
 
-  const MV2ExperimentStage experiment_stage_;
   const MV2PolicyLevel mv2_policy_level_;
   std::unique_ptr<MV2DeprecationImpactChecker> impact_checker_;
 };
 
 MV2DeprecationImpactCheckerUnitTest::MV2DeprecationImpactCheckerUnitTest()
-    : experiment_stage_(std::get<0>(GetParam())),
-      mv2_policy_level_(std::get<1>(GetParam())) {}
+    : mv2_policy_level_(GetParam()) {}
 
 class MV2DeprecationImpactCheckerUnitTestWithAllowlist
     : public MV2DeprecationImpactCheckerUnitTest {
@@ -229,13 +214,10 @@ class MV2DeprecationImpactCheckerUnitTestWithAllowlist
 INSTANTIATE_TEST_SUITE_P(
     ,
     MV2DeprecationImpactCheckerUnitTest,
-    testing::Combine(
-        testing::Values(MV2ExperimentStage::kDisableWithReEnable,
-                        MV2ExperimentStage::kUnsupported),
-        testing::Values(MV2PolicyLevel::kUnset,
-                        MV2PolicyLevel::kAllowed,
-                        MV2PolicyLevel::kDisallowed,
-                        MV2PolicyLevel::kAllowedForAdminInstalledOnly)),
+    testing::Values(MV2PolicyLevel::kUnset,
+                    MV2PolicyLevel::kAllowed,
+                    MV2PolicyLevel::kDisallowed,
+                    MV2PolicyLevel::kAllowedForAdminInstalledOnly),
     [](const testing::TestParamInfo<TestVariant>& info) {
       return DescribeTestVariant(info.param);
     });
@@ -243,13 +225,10 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     ,
     MV2DeprecationImpactCheckerUnitTestWithAllowlist,
-    testing::Combine(
-        testing::Values(MV2ExperimentStage::kDisableWithReEnable,
-                        MV2ExperimentStage::kUnsupported),
-        testing::Values(MV2PolicyLevel::kUnset,
-                        MV2PolicyLevel::kAllowed,
-                        MV2PolicyLevel::kDisallowed,
-                        MV2PolicyLevel::kAllowedForAdminInstalledOnly)),
+    testing::Values(MV2PolicyLevel::kUnset,
+                    MV2PolicyLevel::kAllowed,
+                    MV2PolicyLevel::kDisallowed,
+                    MV2PolicyLevel::kAllowedForAdminInstalledOnly),
     [](const testing::TestParamInfo<TestVariant>& info) {
       return DescribeTestVariant(info.param);
     });

@@ -9271,29 +9271,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Extensions.MV2ExtensionHandledInSoftDisable">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>emiliapaz@chromium.org</owner>
-  <summary>
-    Recorded each time a user either re-enables or removes an extension affected
-    by the Manifest V2 deprecation during the &quot;soft disable&quot;
-    deprecation phase. Recorded when the user takes this action. This is only
-    recorded for extensions that update from the Chrome Web Store.
-  </summary>
-  <metric name="Action" enum="ExtensionMV2DeprecationAction">
-    <summary>
-      The action the user took on the extension.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
 <event name="Extensions.OnNavigation" singular="True">
   <owner>chikamune@chromium.org</owner>
   <owner>yyanagisawa@chromium.org</owner>

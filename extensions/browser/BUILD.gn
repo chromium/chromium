@@ -468,7 +468,6 @@ source_set("browser_sources") {
     "mojo/keep_alive_impl.h",
     "mv2_deprecation_impact_checker.cc",
     "mv2_deprecation_impact_checker.h",
-    "mv2_experiment_stage.h",
     "network_permissions_updater.cc",
     "network_permissions_updater.h",
     "null_app_sorting.cc",

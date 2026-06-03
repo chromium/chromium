@@ -2674,6 +2674,8 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
 
       // Added 2026-06.
       "mv2_deprecation_disabled_dialog_ack",
+      "mv2_deprecation_disabled_ack",
+      "mv2_deprecation_user_re_enabled",
   };
 
   for (auto key_value : extensions_dictionary) {

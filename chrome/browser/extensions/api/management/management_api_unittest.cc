@@ -32,7 +32,6 @@
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/browser_context.h"

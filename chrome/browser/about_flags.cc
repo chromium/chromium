@@ -8888,12 +8888,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHExtensionsRequestAccessButtonFeature)},
 
-    {"extension-manifest-v2-deprecation-unsupported",
-     flag_descriptions::kExtensionManifestV2DeprecationUnsupportedName,
-     flag_descriptions::kExtensionManifestV2DeprecationUnsupportedDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(extensions_features::kExtensionManifestV2Unsupported)},
-
     {"extension-tab-context-menu",
      flag_descriptions::kExtensionTabContextMenuName,
      flag_descriptions::kExtensionTabContextMenuDescription, kOsDesktop,

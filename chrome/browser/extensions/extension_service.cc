@@ -96,7 +96,6 @@
 #include "extensions/browser/install_verifier.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/manifest_v2_experiment_manager.h"
-#include "extensions/browser/mv2_experiment_stage.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/pref_names.h"
@@ -625,8 +624,6 @@ void ExtensionService::CheckManagementPolicy() {
     // fragmenting logic between the policy provider and here to ensure that
     // the extension gets properly re-enabled when appropriate.
     if (mv2_experiment_manager &&
-        mv2_experiment_manager->GetCurrentExperimentStage() ==
-            MV2ExperimentStage::kUnsupported &&
         !mv2_experiment_manager->ShouldBlockExtensionEnable(*extension)) {
       to_remove.insert(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
     }

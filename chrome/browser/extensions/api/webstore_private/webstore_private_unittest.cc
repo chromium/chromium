@@ -26,7 +26,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -43,13 +42,8 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/mv2_experiment_stage.h"
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/promotion_types.h"
@@ -870,51 +864,10 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // A test suite to be used with the MV2 deprecation experiments.
 // NOTE: Android does not support MV2 deprecation experiments.
-class WebstorePrivateManifestV2DeprecationUnitTest
-    : public WebstorePrivateApiTestBase,
-      public testing::WithParamInterface<MV2ExperimentStage> {
- public:
-  WebstorePrivateManifestV2DeprecationUnitTest();
-  ~WebstorePrivateManifestV2DeprecationUnitTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-WebstorePrivateManifestV2DeprecationUnitTest::
-    WebstorePrivateManifestV2DeprecationUnitTest() {
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-  switch (GetParam()) {
-    case MV2ExperimentStage::kDisableWithReEnable:
-      disabled_features.push_back(
-          extensions_features::kExtensionManifestV2Unsupported);
-      break;
-    case MV2ExperimentStage::kUnsupported:
-      enabled_features.push_back(
-          extensions_features::kExtensionManifestV2Unsupported);
-      break;
-  }
-
-  feature_list_.InitWithFeatures(enabled_features, disabled_features);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    WebstorePrivateManifestV2DeprecationUnitTest,
-    testing::Values(MV2ExperimentStage::kDisableWithReEnable,
-                    MV2ExperimentStage::kUnsupported),
-    [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
-      switch (info.param) {
-        case MV2ExperimentStage::kDisableWithReEnable:
-          return "DisableExperiment";
-        case MV2ExperimentStage::kUnsupported:
-          return "UnsupportedExperiment";
-      }
-    });
+using WebstorePrivateManifestV2DeprecationUnitTest = WebstorePrivateApiTestBase;
 
 // Tests the behavior of the webstorePrivate.getMV2DeprecationStatus() function.
-TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
+TEST_F(WebstorePrivateManifestV2DeprecationUnitTest,
        TestGetMV2DeprecationStatus) {
   auto function =
       base::MakeRefCounted<WebstorePrivateGetMV2DeprecationStatusFunction>();
@@ -922,18 +875,7 @@ TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
       api_test_utils::RunFunctionAndReturnSingleResult(
           function.get(), /*args*/ "[]", profile());
   ASSERT_TRUE(response);
-
-  std::string expected;
-  switch (GetParam()) {
-    case MV2ExperimentStage::kDisableWithReEnable:
-      expected = "soft_disable";
-      break;
-    case MV2ExperimentStage::kUnsupported:
-      expected = "hard_disable";
-      break;
-  }
-
-  EXPECT_EQ(expected, *response);
+  EXPECT_EQ("hard_disable", *response);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

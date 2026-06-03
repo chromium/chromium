@@ -196,7 +196,6 @@
 #include "components/search/search.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/browser/manifest_v2_experiment_manager.h"
-#include "extensions/browser/mv2_experiment_stage.h"
 #include "extensions/common/extension_features.h"
 #include "ui/views/interaction/element_highlighter_views.h"
 
@@ -756,14 +755,8 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     auto* experiment_manager =
         extensions::ManifestV2ExperimentManager::Get(profile);
     if (experiment_manager) {
-      extensions::MV2ExperimentStage experiment_stage =
-          experiment_manager->GetCurrentExperimentStage();
-      if (experiment_stage ==
-              extensions::MV2ExperimentStage::kDisableWithReEnable ||
-          experiment_stage == extensions::MV2ExperimentStage::kUnsupported) {
-        mv2_disabled_dialog_controller_ =
-            std::make_unique<extensions::Mv2DisabledDialogController>(browser);
-      }
+      mv2_disabled_dialog_controller_ =
+          std::make_unique<extensions::Mv2DisabledDialogController>(browser);
     }
 
     if (browser->GetTabStripModel()->SupportsTabGroups() &&

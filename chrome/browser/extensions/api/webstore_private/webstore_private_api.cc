@@ -65,8 +65,6 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install_approval.h"
 #include "extensions/browser/install_tracker.h"
-#include "extensions/browser/manifest_v2_experiment_manager.h"
-#include "extensions/browser/mv2_experiment_stage.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/scoped_active_install.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
@@ -1604,24 +1602,9 @@ WebstorePrivateGetMV2DeprecationStatusFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateGetMV2DeprecationStatusFunction::Run() {
-  ManifestV2ExperimentManager* experiment_manager =
-      ManifestV2ExperimentManager::Get(browser_context());
-  MV2ExperimentStage current_stage =
-      experiment_manager->GetCurrentExperimentStage();
-  api::webstore_private::MV2DeprecationStatus api_status =
-      api::webstore_private::MV2DeprecationStatus::kInactive;
-  switch (current_stage) {
-    case MV2ExperimentStage::kDisableWithReEnable:
-      api_status = api::webstore_private::MV2DeprecationStatus::kSoftDisable;
-      break;
-    case MV2ExperimentStage::kUnsupported:
-      api_status = api::webstore_private::MV2DeprecationStatus::kHardDisable;
-      break;
-  }
-
   return RespondNow(ArgumentList(
       api::webstore_private::GetMV2DeprecationStatus::Results::Create(
-          api_status)));
+          api::webstore_private::MV2DeprecationStatus::kHardDisable)));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

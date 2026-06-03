@@ -3009,11 +3009,6 @@ Called by update_extension_histograms.py.-->
   <int value="10" label="EXTERNAL_COMPONENT"/>
 </enum>
 
-<enum name="ExtensionMV2DeprecationAction">
-  <int value="0" label="Extension Removed"/>
-  <int value="1" label="Extension ReEnabled"/>
-</enum>
-
 <enum name="ExtensionNavigationScheme">
   <int value="0" label="HttpOrHttps"/>
   <int value="1" label="Chrome"/>

@@ -115,7 +115,6 @@
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
 #include "extensions/browser/error_map.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/mv2_experiment_stage.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
