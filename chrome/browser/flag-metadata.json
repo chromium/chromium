@@ -6541,11 +6541,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "media-indicators-android",
-    "owners": ["polardz@google.com", "ckitagawa@chromium.org", "clank-tab-dev@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "media-playback-while-not-visible-permission-policy",
     "owners": [ "gabrielbrito@microsoft.com", "stevebe@microsoft.com"],
     "expiry_milestone": 142

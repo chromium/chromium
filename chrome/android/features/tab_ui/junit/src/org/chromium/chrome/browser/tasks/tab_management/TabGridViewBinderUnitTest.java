@@ -555,7 +555,6 @@ public final class TabGridViewBinderUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.MEDIA_INDICATORS_ANDROID)
     public void testMediaIndicator() {
         mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.RECORDING);
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.MEDIA_INDICATOR);

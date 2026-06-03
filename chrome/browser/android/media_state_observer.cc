@@ -10,7 +10,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "media/base/media_switches.h"
 
 MediaStateObserver::MediaStateObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -31,7 +30,6 @@ void MediaStateObserver::DidUpdateAudioMutingState(bool muted) {
   is_audio_muted_ = muted;
   UpdateMediaState();
 }
-
 
 void MediaStateObserver::OnIsCapturingVideoChanged(
     content::WebContents* web_contents,

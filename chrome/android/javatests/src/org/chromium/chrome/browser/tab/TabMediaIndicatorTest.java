@@ -78,9 +78,7 @@ import java.util.concurrent.TimeoutException;
     MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
     ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM,
     "enable-experimental-web-platform-features",
-    "enable-features=UserMediaScreenCapturing,AndroidMediaPicker,"
-            + ChromeFeatureList.MEDIA_INDICATORS_ANDROID
-            + ":sharing/true",
+    "enable-features=UserMediaScreenCapturing,AndroidMediaPicker",
 })
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({ChromeFeatureList.ANDROID_NEW_MEDIA_PICKER})

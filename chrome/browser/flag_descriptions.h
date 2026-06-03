@@ -5851,10 +5851,6 @@ inline constexpr char kMediaCodecLowDelayModeDescription[] =
     "Allows selection of low latency MediaCodec instances for video "
     "decoding when low delay is requested by the underlying stream.";
 
-inline constexpr char kMediaIndicatorsAndroidName[] =
-    "Media Indicators Android";
-inline constexpr char kMediaIndicatorsAndroidDescription[] =
-    "Enables media indicators on Android.";
 
 inline constexpr char kMigrateAccountManagerDelegateName[] =
     "Migrate Account Manager Delegate";

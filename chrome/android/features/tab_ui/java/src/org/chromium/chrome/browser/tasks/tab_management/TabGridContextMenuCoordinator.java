@@ -315,9 +315,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
         itemList.add(buildTogglePinStateItem(tab));
 
-        if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
-            itemList.add(buildMuteUnmuteSiteItem(tab, isIncognito));
-        }
+        itemList.add(buildMuteUnmuteSiteItem(tab, isIncognito));
 
         itemList.add(
                 new ListItemBuilder()

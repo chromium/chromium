@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTabDelegate.VisualState;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.MediaState;
@@ -1043,8 +1042,6 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     public boolean shouldHideMediaIndicator() {
-        if (!ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) return true;
-
         final boolean closeButtonVisible = mCloseButton.getOpacity() > 0.f;
         return closeButtonVisible && getWidth() <= WIDTH_TO_HIDE_ICON;
     }

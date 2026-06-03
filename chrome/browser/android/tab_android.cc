@@ -32,7 +32,6 @@
 #include "chrome/browser/android/web_contents_theme_client.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
@@ -428,9 +427,7 @@ void TabAndroid::InitWebContents(
   // Shows a warning notification for dangerous flags in about:flags.
   ShowBadFlagsPrompt(web_contents());
 
-  if (base::FeatureList::IsEnabled(chrome::android::kMediaIndicatorsAndroid)) {
-    MediaStateObserver::CreateForWebContents(web_contents_.get());
-  }
+  MediaStateObserver::CreateForWebContents(web_contents_.get());
 
   for (Observer& observer : observers_) {
     observer.OnInitWebContents(this);
