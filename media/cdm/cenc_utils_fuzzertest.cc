@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
-
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "media/cdm/cenc_utils.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 struct Environment {
   Environment() {
@@ -22,8 +20,7 @@ struct Environment {
 Environment* env = new Environment();
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  std::vector<uint8_t> input(data, UNSAFE_TODO(data + size));
-  media::ValidatePsshInput(input);
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
+  media::ValidatePsshInput(data);
   return 0;
 }

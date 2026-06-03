@@ -326,7 +326,10 @@ if (media_use_ffmpeg && !is_android) {
 if (proprietary_codecs) {
   fuzzer_test("media_cenc_utils_fuzzer") {
     sources = [ "cdm/cenc_utils_fuzzertest.cc" ]
-    deps = [ ":media" ]
+    deps = [
+      ":media",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
+    ]
   }
 }
 
