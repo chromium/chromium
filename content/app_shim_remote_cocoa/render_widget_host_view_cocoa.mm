@@ -566,23 +566,30 @@ static NSWindow* __weak _deferredResignKeyWindow;
 
 - (void)requestTextSuggestions {
   auto* touchBarItem = _candidateListTouchBarItem;
-  if (!touchBarItem)
+  if (!touchBarItem) {
     return;
+  }
   [touchBarItem
       updateWithInsertionPointVisibility:_textSelectionRange.is_empty()];
-  if (_textInputType == ui::TEXT_INPUT_TYPE_PASSWORD)
+  if (_textInputType == ui::TEXT_INPUT_TYPE_PASSWORD ||
+      _textInputFlags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD ||
+      _textInputFlags & ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) {
     return;
-  if (!touchBarItem.candidateListVisible)
+  }
+  if (!touchBarItem.candidateListVisible) {
     return;
+  }
   if (!_textSelectionRange.IsValid() ||
-      _availableTextOffset > _textSelectionRange.GetMin())
+      _availableTextOffset > _textSelectionRange.GetMin()) {
     return;
+  }
 
   NSRange selectionRange = _textSelectionRange.ToNSRange();
   NSString* selectionText = base::SysUTF16ToNSString(_availableText);
   selectionRange.location -= _availableTextOffset;
-  if (NSMaxRange(selectionRange) > selectionText.length)
+  if (NSMaxRange(selectionRange) > selectionText.length) {
     return;
+  }
 
   // TODO: Fetch the spell document tag from the renderer (or equivalent).
   _textSuggestionsSequenceNumber = [self.spellChecker
@@ -625,12 +632,15 @@ static NSWindow* __weak _deferredResignKeyWindow;
 
 - (NSTextCheckingType)enabledTextCheckingTypes {
   NSTextCheckingType checkingTypes = 0;
-  if (self.automaticQuoteSubstitutionEnabled)
+  if (self.automaticQuoteSubstitutionEnabled) {
     checkingTypes |= NSTextCheckingTypeQuote;
-  if (self.automaticDashSubstitutionEnabled)
+  }
+  if (self.automaticDashSubstitutionEnabled) {
     checkingTypes |= NSTextCheckingTypeDash;
-  if (self.automaticTextReplacementEnabled)
+  }
+  if (self.automaticTextReplacementEnabled) {
     checkingTypes |= NSTextCheckingTypeReplacement;
+  }
   return checkingTypes;
 }
 
@@ -639,10 +649,14 @@ static NSWindow* __weak _deferredResignKeyWindow;
 }
 
 - (bool)canTransformText {
-  if (_textInputType == ui::TEXT_INPUT_TYPE_NONE)
+  if (_textInputType == ui::TEXT_INPUT_TYPE_NONE) {
     return NO;
-  if (_textInputType == ui::TEXT_INPUT_TYPE_PASSWORD)
+  }
+  if (_textInputType == ui::TEXT_INPUT_TYPE_PASSWORD ||
+      _textInputFlags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD ||
+      _textInputFlags & ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) {
     return NO;
+  }
 
   return YES;
 }
@@ -2383,19 +2397,24 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 // Each RenderWidgetHostViewCocoa has its own input context, but we return
 // nil when the caret is in non-editable content or password box to avoid
 // making input methods do their work.
-// We disable input method inside password field as it is normal for Mac OS X
+//
+// We disable input method inside password field as it is normal for macOS
 // password input fields to not allow dead keys or non ASCII input methods.
 // There is also a privacy risk if the composition candidate window shows your
 // password when the user is "composing" inside a password field. See
-// crbug.com/1196101 for more info.
+// https://crbug.com/40759416 for more info.
 - (NSTextInputContext*)inputContext {
-  switch (_textInputType) {
-    case ui::TEXT_INPUT_TYPE_NONE:
-    case ui::TEXT_INPUT_TYPE_PASSWORD:
-      return nil;
-    default:
-      return [super inputContext];
+  if (_textInputType == ui::TEXT_INPUT_TYPE_NONE ||
+      _textInputType == ui::TEXT_INPUT_TYPE_PASSWORD) {
+    return nil;
   }
+
+  if (_textInputFlags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD ||
+      _textInputFlags & ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) {
+    return nil;
+  }
+
+  return [super inputContext];
 }
 
 - (BOOL)hasMarkedText {

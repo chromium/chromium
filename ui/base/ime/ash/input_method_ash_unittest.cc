@@ -429,10 +429,23 @@ TEST_F(InputMethodAshTest, OnTextInputTypeChangedChangesInputType) {
   ime.SetFocusedTextInputClient(nullptr);
 }
 
-TEST_F(InputMethodAshTest, HasBeenPasswordShouldTriggerPassowrd) {
+TEST_F(InputMethodAshTest, HasBeenPasswordShouldTriggerPassword) {
   InputMethodAsh ime(this);
   FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
   fake_text_input_client.SetFlags(ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
+
+  ime.SetFocusedTextInputClient(&fake_text_input_client);
+
+  EXPECT_EQ(mock_ime_engine_handler_->last_text_input_context().type,
+            ui::TEXT_INPUT_TYPE_PASSWORD);
+
+  ime.SetFocusedTextInputClient(nullptr);
+}
+
+TEST_F(InputMethodAshTest, HasBeenCustomPasswordShouldTriggerPassword) {
+  InputMethodAsh ime(this);
+  FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
+  fake_text_input_client.SetFlags(ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD);
 
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 

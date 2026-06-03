@@ -951,11 +951,14 @@ TextInputMethod::InputContext InputMethodAsh::GetInputContext() const {
     return TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_NONE);
   }
 
+  ui::TextInputType input_type = client->GetTextInputType();
   const int flags = client->GetTextInputFlags();
-  TextInputMethod::InputContext input_context(
-      flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD
-          ? ui::TEXT_INPUT_TYPE_PASSWORD
-          : client->GetTextInputType());
+  if (flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD ||
+      flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) {
+    input_type = ui::TEXT_INPUT_TYPE_PASSWORD;
+  }
+
+  TextInputMethod::InputContext input_context(input_type);
   input_context.mode = client->GetTextInputMode();
   input_context.autocompletion_mode =
       ConvertTextInputFlagToEnum<AutocompletionMode>(

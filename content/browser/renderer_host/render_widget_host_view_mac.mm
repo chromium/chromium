@@ -72,6 +72,8 @@
 #import "ui/base/cocoa/secure_password_input.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
+#include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
@@ -1788,14 +1790,33 @@ RenderWidgetHostViewMac::AccessibilityGetNativeViewAccessibleForWindow() {
 }
 
 void RenderWidgetHostViewMac::SetTextInputActive(bool active) {
-  const bool should_enable_password_input =
-      active && GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD;
+  bool should_enable_password_input = [active, this] {
+    if (!active) {
+      return false;
+    }
+
+    if (!this->GetActiveWidget()) {
+      return false;
+    }
+
+    const ui::mojom::TextInputState* state =
+        this->text_input_manager_->GetTextInputState();
+    if (state->type == ui::TEXT_INPUT_TYPE_PASSWORD ||
+        state->flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD ||
+        state->flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) {
+      return true;
+    }
+
+    return false;
+  }();
+
   if (should_enable_password_input) {
     password_input_enabler_ =
         std::make_unique<ui::ScopedPasswordInputEnabler>();
   } else {
     password_input_enabler_.reset();
   }
+
   update_windows_timer_.Stop();
 }
 

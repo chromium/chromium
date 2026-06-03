@@ -35,6 +35,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -91,7 +92,6 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/base/ime/linux/text_edit_command_auralinux.h"
-#include "ui/base/ime/text_input_flags.h"
 #include "ui/linux/linux_ui.h"
 #endif
 
@@ -1210,7 +1210,9 @@ void Textfield::OnFocus() {
   }
 
 #if BUILDFLAG(IS_MAC)
-  if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
+  if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD ||
+      text_input_flags_ & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD ||
+      text_input_flags_ & ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) {
     password_input_enabler_ =
         std::make_unique<ui::ScopedPasswordInputEnabler>();
   }

@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/decorated_text.h"
@@ -113,9 +114,16 @@ bool ViewsTextServicesContextMenuMac::SupportsCommand(int command_id) const {
 }
 
 std::u16string_view ViewsTextServicesContextMenuMac::GetSelectedText() const {
-  return (client()->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD)
-             ? std::u16string_view()
-             : client()->GetSelectedText();
+  // Do not allow sensitive data (e.g. password fields) to escape via external
+  // services.
+  if (client()->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD ||
+      client()->GetTextInputFlags() & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD ||
+      client()->GetTextInputFlags() &
+          ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) {
+    return {};
+  }
+
+  return client()->GetSelectedText();
 }
 
 bool ViewsTextServicesContextMenuMac::IsTextDirectionEnabled(

@@ -38,6 +38,7 @@
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -5261,6 +5262,7 @@ TEST_F(TextfieldTest, EmojiItem_FieldWithText) {
 }
 
 #if BUILDFLAG(IS_MAC)
+
 // Tests to see if the BiDi submenu items are updated correctly when the
 // textfield's text direction is changed.
 TEST_F(TextfieldTest, TextServicesContextMenuTextDirectionTest) {
@@ -5327,6 +5329,45 @@ TEST_F(TextfieldTest, SecurePasswordInput) {
   textfield_->OnBlur();
   EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
 }
+
+TEST_F(TextfieldTest, SecureHasBeenAPasswordInput) {
+  InitTextfield();
+  ASSERT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  // Shouldn't enable secure input if it's not a password textfield.
+  textfield_->OnFocus();
+  EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  textfield_->SetTextInputFlags(textfield_->GetTextInputFlags() |
+                                ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD);
+
+  // Single matched calls immediately update IsPasswordInputEnabled().
+  textfield_->OnFocus();
+  EXPECT_TRUE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  textfield_->OnBlur();
+  EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+}
+
+TEST_F(TextfieldTest, SecureHasBeenACustomPasswordInput) {
+  InitTextfield();
+  ASSERT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  // Shouldn't enable secure input if it's not a password textfield.
+  textfield_->OnFocus();
+  EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  textfield_->SetTextInputFlags(textfield_->GetTextInputFlags() |
+                                ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD);
+
+  // Single matched calls immediately update IsPasswordInputEnabled().
+  textfield_->OnFocus();
+  EXPECT_TRUE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+
+  textfield_->OnBlur();
+  EXPECT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
+}
+
 #endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(TextfieldTest, AccessibilitySelectionEvents) {

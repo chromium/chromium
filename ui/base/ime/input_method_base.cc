@@ -79,7 +79,9 @@ TextInputType InputMethodBase::GetTextInputType() const {
     return TEXT_INPUT_TYPE_NONE;
   }
 
-  if (client->GetTextInputFlags() & TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD) {
+  int flags = client->GetTextInputFlags();
+  if (flags & TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD ||
+      flags & TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) {
     return TEXT_INPUT_TYPE_PASSWORD;
   }
 
