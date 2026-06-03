@@ -82,6 +82,12 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
          view_fitting_size.height <= guide_size.height;
 }
 
+// Max leeway for the bubble arrow to move on its axis.
+constexpr CGFloat kMaxLeeway = 20;
+// Additional margin between the bubble and the border of the screen, used to
+// slightly move what the arrow is pointing to.
+constexpr CGFloat kAdditionalBorderMargin = 4;
+
 }  // namespace
 
 @interface BubblePresenter () <GestureInProductHelpViewDelegate,
@@ -352,9 +358,19 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     return;
   }
 
-  BubbleArrowDirection arrowDirection =
-      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
-                                                  : BubbleArrowDirectionUp;
+  BubbleArrowDirection arrowDirection;
+  if (IsChromeNextIaEnabled()) {
+    BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
+                           GetApplicationContext()->GetLocalState()->GetBoolean(
+                               omnibox::kIsOmniboxInBottomPosition);
+    arrowDirection =
+        isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+
+  } else {
+    arrowDirection = IsSplitToolbarMode(self.rootViewController)
+                         ? BubbleArrowDirectionDown
+                         : BubbleArrowDirectionUp;
+  }
   NSString* text = l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_TIP);
   CGPoint toolsMenuAnchor = [self anchorPointToGuide:kToolsMenuGuide
                                            direction:arrowDirection];
@@ -476,22 +492,16 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   CGPoint lensOverlayEntrypointAnchor =
       [self anchorPointToGuide:kLensOverlayEntrypointGuide
                      direction:arrowDirection];
-  // To prevent the bubble from extending beyond the screen's edge, an offset is
-  // added, with the anchor point positioned at the top left corner.
-  // TODO(crbug.com/365049480): Remove this offset once the bubble view margins
-  // are fixed.
-  CGFloat anchorXOffset = UseRTLLayout() ? -2 : 2;
 
-  BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::
-                                  kIPHiOSLensOverlayEntrypointTipFeature
-                    direction:arrowDirection
-                    alignment:BubbleAlignmentTopOrLeading
-                         text:text
-        voiceOverAnnouncement:text
-                  anchorPoint:CGPoint(
-                                  lensOverlayEntrypointAnchor.x + anchorXOffset,
-                                  lensOverlayEntrypointAnchor.y)];
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:feature_engagement::
+                                        kIPHiOSLensOverlayEntrypointTipFeature
+                          direction:arrowDirection
+                          alignment:BubbleAlignmentTopOrLeading
+                               text:text
+              voiceOverAnnouncement:text
+                        anchorPoint:CGPoint(lensOverlayEntrypointAnchor.x,
+                                            lensOverlayEntrypointAnchor.y)];
 
   if (presenter) {
     _lensOverlayEntrypointBubblePresenter = presenter;
@@ -806,12 +816,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       [self anchorPointToGuide:kPageActionMenuEntrypointGuide
                      direction:arrowDirection];
 
-  // To prevent the bubble from extending beyond the screen's edge, an offset is
-  // added, with the anchor point positioned at the top left corner.
-  // TODO(crbug.com/365049480): Remove this offset once the bubble view margins
-  // are fixed.
-  CGFloat anchorXOffset = UseRTLLayout() ? -2 : 2;
-
   __weak __typeof(self) weakSelf = self;
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature
@@ -819,7 +823,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       alignment:BubbleAlignmentTopOrLeading
       text:text
       voiceOverAnnouncement:text
-      anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x + anchorXOffset,
+      anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x,
                           pageActionMenuEntrypointAnchor.y)
       presentAction:^{
         [weakSelf.pageActionMenuEntryPointHandler
@@ -891,11 +895,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   CGPoint pageActionMenuEntrypointAnchor =
       [self anchorPointToGuide:kPageActionMenuEntrypointGuide
                      direction:arrowDirection];
-  // To prevent the bubble from extending beyond the screen's edge, an offset is
-  // added, with the anchor point positioned at the top left corner.
-  // TODO(crbug.com/365049480): Remove this offset once the bubble view margins
-  // are fixed.
-  CGFloat anchorXOffset = UseRTLLayout() ? -2 : 2;
 
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHiOSGeminiImageRemixFeature
@@ -903,7 +902,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       alignment:BubbleAlignmentTopOrLeading
       text:text
       voiceOverAnnouncement:text
-      anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x + anchorXOffset,
+      anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x,
                           pageActionMenuEntrypointAnchor.y)
       anchorViewFrame:
           [self anchorViewFrameForGuide:kPageActionMenuEntrypointGuide]
@@ -1118,11 +1117,51 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   UILayoutGuide* guide = [_layoutGuideCenter makeLayoutGuideNamed:guideName];
   DCHECK(guide);
   [self.rootViewController.view addLayoutGuide:guide];
+
   CGPoint anchorPoint =
       bubble_util::AnchorPoint(guide.layoutFrame, arrowDirection);
-  CGPoint anchorPointInWindow =
-      [guide.owningView convertPoint:anchorPoint
-                              toView:guide.owningView.window];
+
+  UIView* rootView = self.rootViewController.view;
+  CGPoint anchorPointInRootView = [guide.owningView convertPoint:anchorPoint
+                                                          toView:rootView];
+
+  const CGFloat kEdgeThreshold =
+      bubble_util::BubbleDefaultAlignmentOffset() + kAdditionalBorderMargin;
+
+  if (arrowDirection == BubbleArrowDirectionUp ||
+      arrowDirection == BubbleArrowDirectionDown) {
+    CGFloat leeway = MIN(kMaxLeeway, guide.layoutFrame.size.width / 2.0f);
+
+    if (anchorPointInRootView.x < kEdgeThreshold) {
+      // Close to left edge.
+      CGFloat shift = kEdgeThreshold - anchorPointInRootView.x;
+      anchorPointInRootView.x += MIN(leeway, shift);
+    } else if (anchorPointInRootView.x >
+               CGRectGetMaxX(rootView.bounds) - kEdgeThreshold) {
+      // Close to right edge.
+      CGFloat shift = anchorPointInRootView.x -
+                      (CGRectGetMaxX(rootView.bounds) - kEdgeThreshold);
+      anchorPointInRootView.x -= MIN(leeway, shift);
+    }
+  } else {
+    CGFloat leeway = MIN(kMaxLeeway, guide.layoutFrame.size.height / 2.0f);
+
+    if (anchorPointInRootView.y < kEdgeThreshold) {
+      // Close to top edge.
+      CGFloat shift = kEdgeThreshold - anchorPointInRootView.y;
+      anchorPointInRootView.y += MIN(leeway, shift);
+    } else if (anchorPointInRootView.y >
+               CGRectGetMaxY(rootView.bounds) - kEdgeThreshold) {
+      // Close to bottom edge.
+      CGFloat shift = anchorPointInRootView.y -
+                      (CGRectGetMaxY(rootView.bounds) - kEdgeThreshold);
+      anchorPointInRootView.y -= MIN(leeway, shift);
+    }
+  }
+
+  CGPoint anchorPointInWindow = [rootView convertPoint:anchorPointInRootView
+                                                toView:rootView.window];
+
   [self.rootViewController.view removeLayoutGuide:guide];
   return anchorPointInWindow;
 }
