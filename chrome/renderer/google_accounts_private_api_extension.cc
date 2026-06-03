@@ -55,7 +55,6 @@ void GoogleAccountsPrivateApiExtension::InjectScript() {
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   v8::Context::Scope context_scope(context);
 
   v8::Local<v8::Object> window =
@@ -73,10 +72,8 @@ void GoogleAccountsPrivateApiExtension::InjectScript() {
               ->GetFunction(context)
               .ToLocalChecked())
       .Check();
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void GoogleAccountsPrivateApiExtension::SetConsentResult(gin::Arguments* args) {
   std::string consent_result;
   if (!args->GetNext(&consent_result)) {
@@ -91,4 +88,3 @@ void GoogleAccountsPrivateApiExtension::SetConsentResult(gin::Arguments* args) {
 
   remote_->SetConsentResult(consent_result);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)

@@ -29,14 +29,12 @@ void GoogleAccountsPrivateApiHost::BindReceiver(
 
 void GoogleAccountsPrivateApiHost::SetConsentResult(
     const std::string& consent_result) {
-#if !BUILDFLAG(IS_ANDROID)
   if (!render_frame_host().IsInPrimaryMainFrame() ||
       !on_consent_result_callback_) {
     return;
   }
 
   on_consent_result_callback_.Run(consent_result);
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // static

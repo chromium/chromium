@@ -39,9 +39,7 @@ class GoogleAccountsPrivateApiExtension : public content::RenderFrameObserver {
 
   void InjectScript();
 
-#if !BUILDFLAG(IS_ANDROID)
   void SetConsentResult(gin::Arguments* args);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   mojo::AssociatedRemote<chrome::mojom::GoogleAccountsPrivateApiExtension>
       remote_;
