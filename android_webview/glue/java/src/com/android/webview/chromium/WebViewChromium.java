@@ -1323,18 +1323,15 @@ class WebViewChromium
             } else {
                 mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_INIT);
             }
-            if (mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                // Check that the current thread is the UI thread, which will throw if it was
-                // already started using a different thread as the UI thread.
-                checkThread();
-            }
+            // Check that the current thread is the UI thread, which will throw if it was
+            // already started using a different thread as the UI thread.
+            checkThread();
             mContentsClientAdapter =
                     mFactory.createWebViewContentsClientAdapter(mWebView, mContext);
             mSharedWebViewChromium.init(mContentsClientAdapter);
 
-            // In the normal case where we are currently on the UI thread, this will run initForReal
-            // synchronously. For pre-JBMR2 apps we might not be on the UI thread, in which case it
-            // will be posted and we do not wait for it.
+            // This will run initForReal synchronously except when the experiment to defer running
+            // Chromium startup is enabled.
             mFactory.addTask(this::initForReal);
         }
 
