@@ -613,6 +613,11 @@ void ComposeboxQueryController::CreateSearchUrl(
   // If we are here, it is not multimodal URL, and all context is uploaded.
   bool is_aim_search =
       search_url_request_info->search_url_type == SearchUrlType::kAim;
+  bool send_upload_type =
+      base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksSendContextualInputUploadType) &&
+      contextual_tasks::kSendContextualInputUploadTypeInSearchUrl.Get() &&
+      is_aim_search;
   if (is_aim_search) {
     // For AIM queries, add the added inputs param to the request url params,
     // regardless of if any of the context was a Lens upload.
@@ -659,6 +664,11 @@ void ComposeboxQueryController::CreateSearchUrl(
         auto* contextual_input = contextual_inputs->add_inputs();
         contextual_input->mutable_request_id()->CopyFrom(
             file_info->request_id.value());
+        if (send_upload_type && file_info->input_data &&
+            file_info->input_data->upload_type.has_value()) {
+          contextual_input->set_upload_type(
+              *file_info->input_data->upload_type);
+        }
 
         has_image_upload |= RequestIdHasImage(*file_info->request_id);
 
@@ -667,6 +677,11 @@ void ComposeboxQueryController::CreateSearchUrl(
           auto* viewport_contextual_input = contextual_inputs->add_inputs();
           viewport_contextual_input->mutable_request_id()->CopyFrom(
               *file_info->viewport_request_id_);
+          if (send_upload_type && file_info->input_data &&
+              file_info->input_data->upload_type.has_value()) {
+            viewport_contextual_input->set_upload_type(
+                *file_info->input_data->upload_type);
+          }
           has_image_upload = true;
         }
         // Find the last file, preferring non-unresolved url uploads so that
@@ -728,7 +743,7 @@ void ComposeboxQueryController::CreateSearchUrl(
           (!suppress_lns_surface_param_if_no_image_ || has_image_upload);
       std::string lns_surface =
           should_send_lns_surface ? kLnsSurfaceParameterValue : std::string();
-      if (contextual_inputs->inputs_size() == 1) {
+      if (contextual_inputs->inputs_size() == 1 && !send_upload_type) {
         auto context_media_type =
             search_url_request_info->image_crop.has_value()
                 ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
@@ -894,6 +909,17 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
       if (visual_input_type !=
           lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_UNKNOWN) {
         lens_image_query_data->set_visual_input_type(visual_input_type);
+      }
+
+      if (base::FeatureList::IsEnabled(
+              contextual_tasks::
+                  kContextualTasksSendContextualInputUploadType) &&
+          contextual_tasks::kSendContextualInputUploadTypeInAimRequest.Get()) {
+        if (file_info->input_data &&
+            file_info->input_data->upload_type.has_value()) {
+          lens_image_query_data->set_contextual_input_upload_type(
+              *file_info->input_data->upload_type);
+        }
       }
 
       // Only force interaction data for region searches when the overlay is

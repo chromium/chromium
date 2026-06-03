@@ -12,6 +12,7 @@
 #include "base/memory/raw_span.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/sessions/core/session_id.h"
+#include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/modality_chip_props.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
@@ -95,6 +96,8 @@ struct ContextualInputData {
   // Whether or not the tab was added exclusively by the smart tab selection
   // mechanism.
   bool was_smart_tab_selection = false;
+  // The upload type associated with the contextual input.
+  std::optional<lens::LensOverlayContextualInputUploadType> upload_type;
 };
 
 }  // namespace lens

@@ -97,7 +97,8 @@ MATCHER_P(ContextualInputDataMatches,
          arg->primary_content_type == expected.primary_content_type &&
          arg->pdf_current_page == expected.pdf_current_page &&
          arg->is_page_context_eligible == expected.is_page_context_eligible &&
-         are_bitmaps_equal && context_inputs_match;
+         arg->upload_type == expected.upload_type && are_bitmaps_equal &&
+         context_inputs_match;
 }
 
 using CreateSearchUrlRequestInfo = contextual_search::
@@ -1011,6 +1012,8 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   expected_input_data.viewport_screenshot = router.GetViewportScreenshot();
   expected_input_data.pdf_current_page = std::nullopt;
   expected_input_data.is_page_context_eligible = true;
+  expected_input_data.upload_type = lens::LensOverlayContextualInputUploadType::
+      CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
   expected_input_data.context_input = std::vector<lens::ContextualInput>();
 
   // TODO(crbug.com/463400248): Use contextual tasks image upload config params
@@ -1079,6 +1082,8 @@ TEST_F(
   expected_input_data.viewport_screenshot = router.GetViewportScreenshot();
   expected_input_data.pdf_current_page = std::nullopt;
   expected_input_data.is_page_context_eligible = true;
+  expected_input_data.upload_type = lens::LensOverlayContextualInputUploadType::
+      CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
   // Expect empty context input.
   expected_input_data.context_input = std::vector<lens::ContextualInput>();
   expected_input_data.context_input = std::vector<lens::ContextualInput>();

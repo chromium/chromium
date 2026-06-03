@@ -457,6 +457,22 @@ void QueryContextualizer::OnTabContextualizationFetched(
       is_recontextualization || is_auto_suggested;
   page_content_data->was_smart_tab_selection = is_smart_selection;
 
+  // TODO(crbug.com/519341961): Support sending the contextual_searchbox
+  // upload type for the omnibox contextual suggest entrypoint.
+  if (is_auto_suggested) {
+    page_content_data->upload_type =
+        lens::LensOverlayContextualInputUploadType::
+            CONTEXTUAL_INPUT_UPLOAD_TYPE_AUTO_TAB_CHIP;
+  } else if (is_smart_selection) {
+    page_content_data->upload_type =
+        lens::LensOverlayContextualInputUploadType::
+            CONTEXTUAL_INPUT_UPLOAD_TYPE_SMART_TAB_SELECTION;
+  } else if (is_recontextualization) {
+    page_content_data->upload_type =
+        lens::LensOverlayContextualInputUploadType::
+            CONTEXTUAL_INPUT_UPLOAD_TYPE_RECONTEXTUALIZATION;
+  }
+
   if (GetIsProtectedPageErrorEnabled() &&
       !page_content_data->is_page_context_eligible.value_or(false)) {
     on_ineligible_callback.Run();

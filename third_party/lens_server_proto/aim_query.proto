@@ -12,6 +12,7 @@ import "added_inputs.proto";
 import "lens_overlay_request_id.proto";
 import "lens_overlay_visual_input_type.proto";
 import "lens_overlay_visual_search_interaction_data.proto";
+import "lens_overlay_contextual_inputs.proto";
 
 message ContextMetadata {
   string pdf_title = 1;
@@ -35,6 +36,9 @@ message LensImageQueryData {
 
   // Metadata for the context.
   ContextMetadata context_metadata = 8;
+
+  // The upload type of the contextual input.
+  LensOverlayContextualInputUploadType contextual_input_upload_type = 9;
 
   // Deprecated fields to match the Silk LensImageQueryData.
   reserved 3, 5;
