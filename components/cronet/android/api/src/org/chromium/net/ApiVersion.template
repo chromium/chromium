@@ -19,7 +19,7 @@ package org.chromium.net;
  * as this code.
  *
  * @see org.chromium.net.impl.ImplVersion
- * {@hide as it's only used internally}
+ * @hide
  */
 public class ApiVersion {
     private static final String CRONET_VERSION = "@MAJOR@.@MINOR@.@BUILD@.@PATCH@";

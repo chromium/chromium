@@ -33,7 +33,7 @@ import java.util.Set;
  * implementation. Most users should simply use {@code new} {@link
  * CronetEngine.Builder#CronetEngine.Builder(android.content.Context)}.
  *
- * <p>{@hide}
+ * @hide
  */
 public abstract class CronetProvider {
     @VisibleForTesting

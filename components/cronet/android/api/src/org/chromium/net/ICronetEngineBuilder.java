@@ -16,7 +16,7 @@ import java.util.Set;
  * org.chromium.net.CronetEngine.Builder} and {@link
  * org.chromium.net.ExperimentalCronetEngine.Builder}.
  *
- * <p>{@hide internal class}
+ * @hide
  */
 public abstract class ICronetEngineBuilder {
     // The fields below list values which are known to getSupportedConfigOptions().

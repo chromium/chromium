@@ -15,9 +15,10 @@ import org.chromium.net.impl.ImplVersion;
 import java.util.Arrays;
 
 /**
- * Implementation of {@link CronetProvider} that creates {@link CronetEngine.Builder}
- * for building the Fake implementation of {@link CronetEngine}.
- * {@hide}
+ * Implementation of {@link CronetProvider} that creates {@link CronetEngine.Builder} for building
+ * the Fake implementation of {@link CronetEngine}.
+ *
+ * @hide
  */
 public class FakeCronetProvider extends CronetProvider {
     /**
