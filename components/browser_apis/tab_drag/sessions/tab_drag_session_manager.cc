@@ -38,7 +38,8 @@ TabDragSessionManager::StartDrag(
   }
 
   auto session = std::make_unique<TabDragSession>(
-      source_tab_ids, platform_provider_->tab_drag_session_input_adapter(),
+      source_tab_ids, start_point,
+      platform_provider_->tab_drag_session_input_adapter(),
       base::BindOnce(&TabDragSessionManager::OnSessionEnded,
                      weak_factory_.GetWeakPtr()));
   auto start_result = session->Start();

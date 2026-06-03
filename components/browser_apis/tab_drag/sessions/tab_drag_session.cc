@@ -10,11 +10,14 @@ namespace tabs_api {
 
 TabDragSession::TabDragSession(
     const std::vector<tabs_api::NodeId>& source_tab_ids,
+    const gfx::Point& start_point,
     TabDragSessionInputAdapter& input_adapter,
     base::OnceClosure end_callback)
     : dragged_tabs_(source_tab_ids),
       input_adapter_(input_adapter),
-      end_callback_(std::move(end_callback)) {}
+      end_callback_(std::move(end_callback)),
+      start_point_in_screen_(start_point),
+      last_mouse_screen_point_(start_point) {}
 
 base::expected<void, mojo_base::mojom::ErrorPtr> TabDragSession::Start() {
   return input_adapter_->StartInputCapture(
@@ -42,9 +45,13 @@ void TabDragSession::OnInputEvent(const TabDragInputEvent& event) {
       Cancel();
       break;
     case TabDragInputEvent::Type::kDropped:
+      last_mouse_screen_point_ = event.screen_point;
+      delta_ = event.screen_point - start_point_in_screen_;
       EndSession();
       break;
     case TabDragInputEvent::Type::kMoved:
+      last_mouse_screen_point_ = event.screen_point;
+      delta_ = event.screen_point - start_point_in_screen_;
       break;
   }
 }

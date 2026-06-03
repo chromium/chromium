@@ -26,9 +26,11 @@ void ToyTabDragSessionInputAdapter::ReleaseInputCapture() {
   callback_.Reset();
 }
 
-void ToyTabDragSessionInputAdapter::SendToyEvent(TabDragInputEvent::Type type) {
+void ToyTabDragSessionInputAdapter::SendToyEvent(
+    TabDragInputEvent::Type type,
+    const gfx::Point& screen_point) {
   if (callback_) {
-    callback_.Run({type});
+    callback_.Run({type, screen_point});
   }
 }
 

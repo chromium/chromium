@@ -26,7 +26,8 @@ class ToyTabDragSessionInputAdapter : public TabDragSessionInputAdapter {
 
   void ReleaseInputCapture() override;
 
-  void SendToyEvent(TabDragInputEvent::Type type);
+  void SendToyEvent(TabDragInputEvent::Type type,
+                    const gfx::Point& screen_point = {});
 
   bool capture_started() const { return capture_started_; }
   bool capture_released() const { return capture_released_; }

@@ -12,6 +12,8 @@
 #include "base/memory/raw_ref.h"
 #include "components/browser_apis/tab_drag/adapters/tab_drag_session_input_adapter.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace tabs_api {
 
@@ -20,6 +22,7 @@ namespace tabs_api {
 class TabDragSession {
  public:
   TabDragSession(const std::vector<tabs_api::NodeId>& source_tab_ids,
+                 const gfx::Point& start_point,
                  TabDragSessionInputAdapter& input_adapter,
                  base::OnceClosure end_callback);
   TabDragSession(const TabDragSession&) = delete;
@@ -32,6 +35,14 @@ class TabDragSession {
   // Starts the session by initiating input capture.
   base::expected<void, mojo_base::mojom::ErrorPtr> Start();
 
+  const gfx::Point& start_point_in_screen() const {
+    return start_point_in_screen_;
+  }
+  const gfx::Point& last_mouse_screen_point() const {
+    return last_mouse_screen_point_;
+  }
+  const gfx::Vector2d& delta() const { return delta_; }
+
  private:
   void EndSession();
   void OnInputEvent(const TabDragInputEvent& event);
@@ -40,6 +51,10 @@ class TabDragSession {
   const raw_ref<TabDragSessionInputAdapter> input_adapter_;
 
   base::OnceClosure end_callback_;
+
+  const gfx::Point start_point_in_screen_;
+  gfx::Point last_mouse_screen_point_;
+  gfx::Vector2d delta_;
 };
 
 }  // namespace tabs_api

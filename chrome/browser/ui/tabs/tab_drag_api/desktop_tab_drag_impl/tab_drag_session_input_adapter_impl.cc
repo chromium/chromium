@@ -53,7 +53,8 @@ TabDragSessionInputAdapterImpl::StartInputCapture(
   callback_ = std::move(callback);
   event_monitor_ = views::EventMonitor::CreateApplicationMonitor(
       this, context,
-      {ui::EventType::kMouseReleased, ui::EventType::kKeyPressed});
+      {ui::EventType::kMouseMoved, ui::EventType::kMouseDragged,
+       ui::EventType::kMouseReleased, ui::EventType::kKeyPressed});
   return base::ok();
 }
 
@@ -68,12 +69,16 @@ void TabDragSessionInputAdapterImpl::OnEvent(const ui::Event& event) {
   }
 
   if (event.type() == ui::EventType::kKeyPressed) {
-    const ui::KeyEvent* key_event = event.AsKeyEvent();
-    if (key_event && key_event->key_code() == ui::VKEY_ESCAPE) {
+    if (event.AsKeyEvent()->key_code() == ui::VKEY_ESCAPE) {
       callback_.Run({TabDragInputEvent::Type::kCancelled});
     }
   } else if (event.type() == ui::EventType::kMouseReleased) {
-    callback_.Run({TabDragInputEvent::Type::kDropped});
+    callback_.Run({TabDragInputEvent::Type::kDropped,
+                   event.AsMouseEvent()->root_location()});
+  } else if (event.type() == ui::EventType::kMouseMoved ||
+             event.type() == ui::EventType::kMouseDragged) {
+    callback_.Run({TabDragInputEvent::Type::kMoved,
+                   event.AsMouseEvent()->root_location()});
   }
 }
 
