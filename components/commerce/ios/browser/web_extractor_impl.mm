@@ -4,6 +4,7 @@
 
 #import "components/commerce/ios/browser/web_extractor_impl.h"
 
+#import "base/json/json_reader.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/grit/components_resources.h"
 #import "ui/base/resource/resource_bundle.h"
@@ -29,26 +30,19 @@ void WebExtractorImpl::ExtractMetaInfo(
 void WebExtractorImpl::OnExtractionMetaInfo(
     base::OnceCallback<void(base::Value)> callback,
     base::Value result) {
-  if (!result.is_string()) {
+  const std::string* json = result.GetIfString();
+  if (!json) {
     std::move(callback).Run(base::Value());
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      result.GetString(),
-      base::BindOnce(&WebExtractorImpl::OnProductInfoJsonSanitizationCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebExtractorImpl::OnProductInfoJsonSanitizationCompleted(
-    base::OnceCallback<void(base::Value)> callback,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result.value().is_dict()) {
+  std::optional<base::Value> val =
+      base::JSONReader::Read(*json, base::JSON_PARSE_RFC);
+  if (val && val->is_dict()) {
+    std::move(callback).Run(std::move(*val));
+  } else {
     std::move(callback).Run(base::Value());
-    return;
   }
-
-  std::move(callback).Run(std::move(result.value()));
 }
 
 }  // namespace commerce

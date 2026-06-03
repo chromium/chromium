@@ -11,7 +11,6 @@
 #import "components/commerce/ios/browser/web_state_wrapper.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_state.h"
-#import "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -24,12 +23,6 @@ class WebExtractorImplTest : public web::WebTestWithWebState {
 
   WebExtractorImplTest(const WebExtractorImplTest&) = delete;
   WebExtractorImplTest& operator=(const WebExtractorImplTest&) = delete;
-
- private:
-  // This is required to make sure that all DataDecoders constructed during its
-  // lifetime will connect to this instance rather than launching a separate
-  // process.
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 #if BUILDFLAG(USE_BLINK)

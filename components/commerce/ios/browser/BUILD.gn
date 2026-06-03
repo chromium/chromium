@@ -24,7 +24,6 @@ static_library("browser") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/webui",
     "//net",
-    "//services/data_decoder/public/cpp",
   ]
 
   public_deps = [ "//components/commerce/core/internals" ]
@@ -39,6 +38,5 @@ source_set("unit_tests") {
     "//components/commerce/core:commerce_constants",
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
-    "//services/data_decoder/public/cpp:test_support",
   ]
 }
