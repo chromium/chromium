@@ -27,6 +27,8 @@ import type {ContextualEntrypointButtonElement} from '//resources/cr_components/
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
+import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import type {FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -43,7 +45,7 @@ export interface OmniboxComposeboxElement {
 }
 
 export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
-(CrLitElement) {
+(CrLitElement) implements DragAndDropHost {
   static get is() {
     return 'cr-omnibox-composebox';
   }
@@ -81,6 +83,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   override accessor animationState: GlowAnimationState =
       GlowAnimationState.NONE;
   protected accessor expanding_: boolean = true;
+  protected dragAndDropHandler_: DragAndDropHandler;
   private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxHandler_: SearchboxPageHandlerRemote;
@@ -91,6 +94,8 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
+    this.dragAndDropHandler_ =
+        new DragAndDropHandler(this, this.dragAndDropEnabled);
   }
 
   override connectedCallback() {
@@ -154,6 +159,14 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     return this.shadowRoot?.querySelector<ContextualEntrypointButtonElement>(
                '#contextEntrypoint') ||
         null;
+  }
+
+  /*
+   * Used by drag/drop host interface so the drag and drop handler can access
+   * `addDroppedFiles`.
+   */
+  getDropTarget() {
+    return this;
   }
 
   override shouldShowDivider(): boolean {
