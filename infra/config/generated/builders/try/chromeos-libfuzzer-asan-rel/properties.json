@@ -46,12 +46,14 @@
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
     "experiments": [],
     "keep_going": 3,
+    "output_local_strategy": "minimum",
     "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 150

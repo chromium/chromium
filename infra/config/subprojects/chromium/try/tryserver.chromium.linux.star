@@ -32,7 +32,7 @@ try_.defaults.set(
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     siso_keep_going = siso.KEEP_GOING,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
-    siso_remote_linking = False,
+    siso_remote_linking = True,
 )
 
 targets.builder_defaults.set(
@@ -494,7 +494,6 @@ try_.orchestrator_builder(
         experiment_percentage = 10,
         on_default_cq = True,
     ),
-    siso_remote_linking = True,
     use_clang_coverage = True,
 )
 
@@ -696,9 +695,6 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    # TODO: crbug.com/509602362 - Speculatively disable remote linking as we
-    # observe performance issues on RBE-CAS upload/download.
-    siso_remote_linking = False,
 )
 
 try_.compilator_builder(
