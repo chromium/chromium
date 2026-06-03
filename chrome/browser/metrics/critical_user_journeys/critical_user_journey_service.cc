@@ -7,7 +7,9 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
@@ -130,10 +132,19 @@ void CriticalUserJourneyService::OnJourneyEnded(
     const auto& params = *session->journey()->hats_params();
     if (auto* hats_service = HatsServiceFactory::GetForProfile(
             profile_, /*create_if_necessary=*/true)) {
-      base::OnceClosure success_callback =
-          params.success_callback ? params.success_callback : base::DoNothing();
-      base::OnceClosure failure_callback =
-          params.failure_callback ? params.failure_callback : base::DoNothing();
+      base::UmaHistogramEnumeration(
+          base::StrCat({"CriticalUserJourney.", session->journey()->name(),
+                        ".HaTSSurveyEvent"}),
+          CriticalUserJourneyHaTSEvent::kTriggered);
+
+      base::OnceClosure success_callback = base::BindOnce(
+          &CriticalUserJourneyService::LogHaTSEventAndRunCallback,
+          base::Unretained(this), session->journey()->name(),
+          CriticalUserJourneyHaTSEvent::kShown, params.success_callback);
+      base::OnceClosure failure_callback = base::BindOnce(
+          &CriticalUserJourneyService::LogHaTSEventAndRunCallback,
+          base::Unretained(this), session->journey()->name(),
+          CriticalUserJourneyHaTSEvent::kFailed, params.failure_callback);
 
       hats_service->LaunchSurvey(
           params.trigger, std::move(success_callback),
@@ -148,6 +159,18 @@ void CriticalUserJourneyService::OnJourneyEnded(
                    [session](const auto& s) { return s.get() == session; });
   if (it != active_sessions_.end()) {
     active_sessions_.erase(it);
+  }
+}
+
+void CriticalUserJourneyService::LogHaTSEventAndRunCallback(
+    const std::string& journey_name,
+    CriticalUserJourneyHaTSEvent event,
+    base::RepeatingClosure callback) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"CriticalUserJourney.", journey_name, ".HaTSSurveyEvent"}),
+      event);
+  if (callback) {
+    callback.Run();
   }
 }
 

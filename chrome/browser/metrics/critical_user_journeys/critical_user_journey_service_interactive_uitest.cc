@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -40,6 +41,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -164,7 +166,15 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
   EXPECT_CALL(*mock_hats_service,
               LaunchSurvey("TestHatsTrigger", testing::_, testing::_,
                            testing::_, testing::_, testing::_, testing::_))
-      .Times(1);
+      .WillOnce([](const std::string& trigger,
+                   base::OnceClosure success_callback,
+                   base::OnceClosure failure_callback,
+                   const SurveyBitsData& product_specific_bits_data,
+                   const SurveyStringData& product_specific_string_data,
+                   const std::optional<std::string>& supplied_trigger_id,
+                   const HatsService::SurveyOptions& survey_options) {
+        std::move(success_callback).Run();
+      });
 
   RunTestSequence(
       // Step 1: Click App Menu.
@@ -194,6 +204,25 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
       base::StrCat(
           {GetMetricJourneyPrefix(kAppMenuJourney), ".OverallDuration"}),
       1);
+
+  // Verify HaTS survey metrics are recorded.
+  const std::string hats_event_histogram = base::StrCat(
+      {GetMetricJourneyPrefix(kAppMenuJourney), ".HaTSSurveyEvent"});
+  histograms.ExpectBucketCount(
+      hats_event_histogram,
+      static_cast<int>(
+          CriticalUserJourneyService::CriticalUserJourneyHaTSEvent::kTriggered),
+      1);
+  histograms.ExpectBucketCount(
+      hats_event_histogram,
+      static_cast<int>(
+          CriticalUserJourneyService::CriticalUserJourneyHaTSEvent::kShown),
+      1);
+  histograms.ExpectBucketCount(
+      hats_event_histogram,
+      static_cast<int>(
+          CriticalUserJourneyService::CriticalUserJourneyHaTSEvent::kFailed),
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,

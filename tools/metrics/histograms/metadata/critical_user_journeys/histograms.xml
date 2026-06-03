@@ -78,6 +78,23 @@ chromium-metrics-reviews@google.com.
   <token key="StepAction" variants="CriticalUserJourneyStepAction"/>
 </histogram>
 
+<histogram name="CriticalUserJourney.{JourneyName}.HaTSSurveyEvent"
+    enum="CriticalUserJourneyHaTSEvent" expires_after="2027-01-01">
+  <owner>dljames@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Tracks the lifecycle of the HaTS survey triggered by the {JourneyName}
+    critical user journey.
+
+    Triggered: The request to show the survey was sent to the HaTS service (this
+    happens immediately upon journey completion). Shown: The survey was
+    successfully displayed to the user (confirmed via success callback). Failed:
+    The survey request failed or was rejected by the HaTS service (e.g. due to
+    rate limiting or cooldown).
+  </summary>
+  <token key="JourneyName" variants="JourneyNames"/>
+</histogram>
+
 <histogram name="CriticalUserJourney.{JourneyName}.OverallDuration" units="ms"
     expires_after="2027-01-01">
   <owner>dljames@chromium.org</owner>

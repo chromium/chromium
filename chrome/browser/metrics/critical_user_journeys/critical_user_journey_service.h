@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -29,6 +31,21 @@ class CriticalUserJourney;
 // sessions.
 class CriticalUserJourneyService : public KeyedService {
  public:
+  // LINT.IfChange(CriticalUserJourneyHaTSEvent)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CriticalUserJourneyHaTSEvent {
+    // The request to show the survey was sent to the HaTS service.
+    kTriggered = 0,
+    // The survey was successfully displayed to the user.
+    kShown = 1,
+    // The survey request was rejected or failed to show (e.g. due to rate
+    // limiting or cooldown).
+    kFailed = 2,
+    kMaxValue = kFailed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:CriticalUserJourneyHaTSEvent)
+
   explicit CriticalUserJourneyService(Profile* profile);
   ~CriticalUserJourneyService() override;
 
@@ -56,6 +73,10 @@ class CriticalUserJourneyService : public KeyedService {
                         ui::TrackedElement* element);
   void OnJourneyEnded(CriticalUserJourneySession* session,
                       CriticalUserJourneySession::JourneyResult result);
+
+  void LogHaTSEventAndRunCallback(const std::string& journey_name,
+                                  CriticalUserJourneyHaTSEvent event,
+                                  base::RepeatingClosure callback);
 
   const raw_ptr<Profile> profile_;
   CriticalUserJourneyRegistry registry_;

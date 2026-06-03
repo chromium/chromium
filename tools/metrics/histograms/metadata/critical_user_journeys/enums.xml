@@ -25,6 +25,18 @@ This file defines enums used in Critical User Journey histograms.
 
 <!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:ClearBrowsingHistoryJourneySteps) -->
 
+<!-- LINT.IfChange(CriticalUserJourneyHaTSEvent) -->
+
+<!-- Tracks HaTS survey events for Critical User Journeys -->
+
+<enum name="CriticalUserJourneyHaTSEvent">
+  <int value="0" label="Survey Triggered"/>
+  <int value="1" label="Survey Shown"/>
+  <int value="2" label="Survey Failed to Show"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_service.h:CriticalUserJourneyHaTSEvent) -->
+
 <!-- LINT.IfChange(CriticalUserJourneyResult) -->
 
 <enum name="CriticalUserJourneyResult">
