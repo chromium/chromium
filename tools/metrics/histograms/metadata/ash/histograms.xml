@@ -7992,7 +7992,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ShortcutCustomization.CustomizationAction"
-    enum="ShortcutCustomizationAction" expires_after="2026-06-29">
+    enum="ShortcutCustomizationAction" expires_after="2027-06-21">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -8066,7 +8066,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.ShortcutCustomization.RemoveDefaultAccelerator.{ActionName}"
-    units="Shortcuts" expires_after="2026-06-21">
+    units="Shortcuts" expires_after="2027-06-21">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
