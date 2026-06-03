@@ -10,17 +10,22 @@ import subprocess
 def _get_changed_files():
     """Returns the file to status for the current branch"""
     result = subprocess.run(
-        ['git', 'status', '--short'],
+        ['git', 'status', '--short', '--untracked-files'],
         check=True,
         capture_output=True,
         text=True,
     )
     lines = result.stdout.strip().splitlines()
-    lines = [line.strip() for line in lines]
-    file_statuses = {
-        line[line.index(' ') + 1:].strip(): line[:line.index(' ')]
-        for line in lines if line
-    }
+    file_statuses = {}
+    for line in lines:
+        if not line:
+            continue
+        # git status --short output format is "XY PATH"
+        # XY is 2 characters, followed by a space, then the path.
+        # We must not strip the line before this, as X might be a space.
+        status = line[:2].strip()
+        path = line[3:].strip()
+        file_statuses[path] = status
     return file_statuses
 
 
@@ -33,7 +38,7 @@ def _check_files_status(context, expected_statuses, verb):
     files_with_status = {
         file
         for file, status in file_statuses.items()
-        if status in expected_statuses
+        if any(expected in status for expected in expected_statuses)
     }
 
     files_without_status = [

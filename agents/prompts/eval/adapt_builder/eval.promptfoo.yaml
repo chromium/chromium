@@ -55,7 +55,10 @@ tests:
               - 'name: "win-blink-asan-rel"'
           - path: infra/config/generated/luci/luci-milo.cfg
             present:
-              - 'name: "win-blink-asan-rel"'
+              - 'name: "buildbucket/luci.chromium.ci/win-blink-asan-rel"'
           - path: infra/config/generated/luci/commit-queue.cfg
             present:
               - 'name: "chromium/try/win-blink-asan-rel"'
+    metadata:
+      tags:
+      - stable
