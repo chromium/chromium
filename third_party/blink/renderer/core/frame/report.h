@@ -28,6 +28,8 @@ struct CORE_EXPORT ReportType {
   static constexpr const char kPotentialPermissionsPolicyViolation[] =
       "potential-permissions-policy-violation";
   static constexpr const char kIntervention[] = "intervention";
+  static constexpr const char kConnectionAllowlistViolation[] =
+      "connection-allowlist";
 };
 
 class CORE_EXPORT Report : public ScriptWrappable {

@@ -108,4 +108,12 @@ interface ReportingServiceProxy {
                      string integrity_hash,
                      string type,
                      string destination);
+
+  // Attempts to queue a Connection Allowlist violation report using the Reporting API.
+  QueueConnectionAllowlistViolationReport(url.mojom.Url url,
+                                          string endpoint,
+                                          string url_string,
+                                          string connection,
+                                          array<string> allowlist,
+                                          string disposition);
 };

@@ -169,6 +169,19 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
     }
   }
 
+  void QueueConnectionAllowlistViolationReport(
+      const KURL& url,
+      const String& endpoint,
+      const String& url_string,
+      const String& connection,
+      const Vector<String>& allowlist,
+      const String& disposition) override {
+    last_message_ = "";
+    if (reached_callback_) {
+      std::move(reached_callback_).Run();
+    }
+  }
+
   const BrowserInterfaceBrokerProxy& broker_;
   mojo::ReceiverSet<ReportingServiceProxy> receivers_;
   base::OnceClosure reached_callback_;

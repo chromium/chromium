@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/connection_allowlist_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -675,15 +676,27 @@ RTCPeerConnection::RTCPeerConnection(
   // Connection-Allowlist header.
   const auto& policy_container_policies =
       context->GetPolicyContainer()->GetPolicies();
-  // TODO(crbug.com/492439214): If the Connection-Allowlist-Report-Only header
-  // is in use, send a report for WebRTC violations.
-  if (policy_container_policies.connection_allowlists.enforced.has_value() &&
+
+  bool blocked_by_connection_allowlist_report_only =
+      policy_container_policies.connection_allowlists.report_only.has_value() &&
+      policy_container_policies.connection_allowlists.report_only
+              ->webrtc_behavior ==
+          network::ConnectionAllowlist::WebRtcBehavior::kBlock;
+  if (blocked_by_connection_allowlist_report_only) {
+    ConnectionAllowlistViolationReportBody::QueueWebRTCReport(
+        V8ConnectionAllowlistDisposition::Enum::kReport, *context);
+  }
+
+  bool blocked_by_connection_allowlist =
+      policy_container_policies.connection_allowlists.enforced.has_value() &&
       policy_container_policies.connection_allowlists.enforced
               ->webrtc_behavior ==
-          network::ConnectionAllowlist::WebRtcBehavior::kBlock) {
+          network::ConnectionAllowlist::WebRtcBehavior::kBlock;
+  if (blocked_by_connection_allowlist) {
     base::UmaHistogramBoolean(
         "WebRTC.PeerConnection.BlockedByConnectionAllowlist", true);
-
+    ConnectionAllowlistViolationReportBody::QueueWebRTCReport(
+        V8ConnectionAllowlistDisposition::Enum::kEnforce, *context);
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "RTCPeerConnection construction is disallowed by the "

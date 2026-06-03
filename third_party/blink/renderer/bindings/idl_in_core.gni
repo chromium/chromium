@@ -299,6 +299,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/fragment_directive/text_directive.idl",
   "//third_party/blink/renderer/core/fragment_directive/text_directive_options.idl",
   "//third_party/blink/renderer/core/frame/bar_prop.idl",
+  "//third_party/blink/renderer/core/frame/connection_allowlist_violation_report_body.idl",
   "//third_party/blink/renderer/core/frame/coop_access_violation_report_body.idl",
   "//third_party/blink/renderer/core/frame/crash_report_context.idl",
   "//third_party/blink/renderer/core/frame/csp/csp_violation_report_body.idl",
