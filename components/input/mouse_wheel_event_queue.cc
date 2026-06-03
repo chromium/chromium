@@ -27,8 +27,9 @@ class QueuedWebMouseWheelEvent : public MouseWheelEventWithLatencyInfo {
                            DispatchToRendererCallback callback)
       : MouseWheelEventWithLatencyInfo(original_event),
         dispatch_callback(std::move(callback)) {
-    TRACE_EVENT_BEGIN("input", "MouseWheelEventQueue::QueueEvent",
-                      perfetto::Track::FromPointer(this));
+    TRACE_EVENT_BEGIN(
+        "input", "MouseWheelEventQueue::QueueEvent",
+        perfetto::NamedTrack::FromPointer("MouseWheelEventQueue", this));
   }
 
   QueuedWebMouseWheelEvent(const QueuedWebMouseWheelEvent&) = delete;
@@ -36,9 +37,8 @@ class QueuedWebMouseWheelEvent : public MouseWheelEventWithLatencyInfo {
 
   ~QueuedWebMouseWheelEvent() {
     TRACE_EVENT_END(
-        "input",
-        /* MouseWheelEventQueue::QueueEvent */ perfetto::Track::FromPointer(
-            this));
+        "input", /* MouseWheelEventQueue::QueueEvent */
+        perfetto::NamedTrack::FromPointer("MouseWheelEventQueue", this));
   }
 
   DispatchToRendererCallback dispatch_callback;

@@ -162,8 +162,9 @@ void FlingController::ProcessGestureFlingStart(
     return;
 
   TRACE_EVENT_BEGIN("input", perfetto::StaticString(kFlingTraceName),
-                    perfetto::Track::FromPointer(this), "vx",
-                    current_fling_parameters_.velocity.x(), "vy",
+                    perfetto::NamedTrack::FromPointer(
+                        perfetto::StaticString(kFlingTraceName), this),
+                    "vx", current_fling_parameters_.velocity.x(), "vy",
                     current_fling_parameters_.velocity.y());
 
   last_progress_time_ = base::TimeTicks();
@@ -200,7 +201,8 @@ void FlingController::ProgressFling(
     return;
 
   TRACE_EVENT_INSTANT("input", "ProgressFling",
-                      perfetto::Track::FromPointer(this));
+                      perfetto::NamedTrack::FromPointer(
+                          perfetto::StaticString(kFlingTraceName), this));
 
   if (!first_fling_update_sent()) {
     // Guard against invalid as there are no guarantees fling event and progress
@@ -382,7 +384,8 @@ void FlingController::EndCurrentFling(base::TimeTicks current_time) {
   if (fling_curve_) {
     scheduler_client_->DidStopFlingingOnBrowser(weak_ptr_factory_.GetWeakPtr());
     TRACE_EVENT_END("input",
-                    /* kFlingTraceName */ perfetto::Track::FromPointer(this));
+                    perfetto::NamedTrack::FromPointer(
+                        perfetto::StaticString(kFlingTraceName), this));
   }
 
   fling_curve_.reset();
