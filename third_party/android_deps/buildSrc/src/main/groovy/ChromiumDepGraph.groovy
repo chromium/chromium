@@ -50,11 +50,6 @@ class ChromiumDepGraph {
             com_google_auto_value_auto_value_annotations: new PropertyOverride(
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0'),
-            com_google_code_gson_gson: new PropertyOverride(
-                    cpePrefix: 'cpe:/a:google:gson',
-                    description: 'A Java serialization/deserialization library to convert Java Objects into JSON and back',
-                    licenseUrl: 'https://raw.githubusercontent.com/google/gson/master/LICENSE',
-                    licenseName: 'Apache 2.0'),
             com_google_errorprone_error_prone_annotation: new PropertyOverride(
                     // Robolectric has a (seemingly unnecessary) dep on this. It's meant to be needed
                     // only for writing custom Error Prone checks. Chrome's copy is within the
@@ -130,14 +125,6 @@ class ChromiumDepGraph {
                     cpePrefix: 'cpe:/a:google:protobuf-javalite',
                     licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
                     licenseName: 'BSD'),
-            io_grpc_grpc_android: new PropertyOverride(
-                    cpePrefix: 'cpe:/a:grpc:grpc',
-                    licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
-                    licenseName: 'Apache 2.0'),
-            io_grpc_grpc_binder: new PropertyOverride(
-                    cpePrefix: 'cpe:/a:grpc:grpc',
-                    licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
-                    licenseName: 'Apache 2.0'),
             io_grpc_grpc_api: new PropertyOverride(
                     cpePrefix: 'cpe:/a:grpc:grpc',
                     licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
@@ -150,23 +137,7 @@ class ChromiumDepGraph {
                     cpePrefix: 'cpe:/a:grpc:grpc',
                     licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
                     licenseName: 'Apache 2.0'),
-            io_grpc_grpc_protobuf_lite: new PropertyOverride(
-                    cpePrefix: 'cpe:/a:grpc:grpc',
-                    licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
-                    licenseName: 'Apache 2.0'),
             io_grpc_grpc_stub: new PropertyOverride(
-                    cpePrefix: 'cpe:/a:grpc:grpc',
-                    licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
-                    licenseName: 'Apache 2.0'),
-            io_grpc_grpc_testing: new PropertyOverride(
-                    cpePrefix: 'cpe:/a:grpc:grpc',
-                    licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
-                    licenseName: 'Apache 2.0'),
-            io_grpc_grpc_inprocess: new PropertyOverride(
-                    cpePrefix: 'cpe:/a:grpc:grpc',
-                    licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
-                    licenseName: 'Apache 2.0'),
-            io_grpc_grpc_util: new PropertyOverride(
                     cpePrefix: 'cpe:/a:grpc:grpc',
                     licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
                     licenseName: 'Apache 2.0'),
