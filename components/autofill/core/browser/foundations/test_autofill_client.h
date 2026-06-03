@@ -500,6 +500,13 @@ class TestAutofillClientTemplate : public T {
     return test_addresses_;
   }
 
+  bool ShouldShowPersonalContextAutofillNotice() const override {
+    return should_show_personal_context_autofill_notice_;
+  }
+  void set_should_show_personal_context_autofill_notice(bool should_show) {
+    should_show_personal_context_autofill_notice_ = should_show;
+  }
+
   void SetAutofillProfileEnabled(bool autofill_profile_enabled) {
     autofill_profile_enabled_ = autofill_profile_enabled;
     if (PrefService* prefs = GetPrefs()) {
@@ -796,6 +803,8 @@ class TestAutofillClientTemplate : public T {
   bool is_credit_card_upload_enabled_ = true;
 
   bool is_tab_in_actor_mode_ = false;
+
+  bool should_show_personal_context_autofill_notice_ = false;
 
   SuggestionHidingReason popup_hidden_reason_;
 

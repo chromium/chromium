@@ -55,6 +55,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/personal_context/core/personal_context_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -591,7 +592,7 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     base::span<const EntityInstance> entities_to_suggest,
     base::span<const EntityInstance> all_entities,
     const AttributeTypeAssignment& assignment,
-    std::string_view app_locale) {
+    const AutofillClient& client) {
   if (entities_to_suggest.empty()) {
     return {};
   }
@@ -610,7 +611,7 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
   for (const EntityInstance& entity : all_entities) {
     if (!entities_to_suggest_ids.contains(entity.guid()) &&
         CanFillSomeField(entity, assignment.Find(entity.type()),
-                         std::string(app_locale))) {
+                         std::string(client.GetAppLocale()))) {
       other_entities_that_can_fill_section.push_back(&entity);
     }
   }
@@ -618,13 +619,14 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
   std::vector<std::u16string> labels = GetLabelsForSuggestions(
       entities_to_suggest, other_entities_that_can_fill_section,
       FindAttributesForField(assignment, trigger_field.global_id()),
-      app_locale);
+      client.GetAppLocale());
 
   std::vector<Suggestion> suggestions;
   suggestions.reserve(entities_to_suggest.size());
   CHECK_EQ(entities_to_suggest.size(), labels.size());
   bool contains_travel_entity = false;
   bool contains_identity_docs_entity = false;
+  bool contains_personal_context_entity = false;
   for (auto [entity, label] : base::zip(entities_to_suggest, labels)) {
     base::span<const AutofillFieldWithAttributeType> fields_with_types =
         assignment.Find(entity.type());
@@ -633,9 +635,18 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
             FindField(fields_with_types, trigger_field.global_id());
     suggestions.push_back(GetSuggestionForEntity(
         form, entity, fields_with_types, *trigger_field_with_type,
-        std::move(label), app_locale));
+        std::move(label), client.GetAppLocale()));
     contains_travel_entity |= IsTravelType(entity.type());
     contains_identity_docs_entity |= IsIdentityDocsType(entity.type());
+    contains_personal_context_entity |=
+        entity.record_type() == EntityInstance::RecordType::kPersonalContext;
+  }
+
+  if (contains_personal_context_entity &&
+      client.ShouldShowPersonalContextAutofillNotice()) {
+    Suggestion& suggestion =
+        suggestions.emplace_back(SuggestionType::kPersonalContextNotice);
+    suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   }
 
   base::Extend(suggestions,
@@ -697,7 +708,7 @@ void AutofillAiSuggestionGenerator::GenerateSuggestions(
       entity_manager->GetEntityInstances(),
       AttributeTypeAssignment(form_structure->fields(),
                               trigger_autofill_field->section()),
-      client.GetAppLocale());
+      client);
 
   callback({SuggestionDataSource::kAutofillAi, std::move(suggestions)});
 }

@@ -411,6 +411,10 @@ class AutofillClient {
   // Autocomplete and merchant promo codes.
   virtual SingleFieldFillRouter& GetSingleFieldFillRouter() = 0;
 
+  // Returns true if Autofill suggestions should include the Personal Context
+  // notice.
+  virtual bool ShouldShowPersonalContextAutofillNotice() const;
+
   // Gets the AutocompleteHistoryManager instance associated with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;
 

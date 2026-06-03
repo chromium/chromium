@@ -782,6 +782,50 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                      HasMainText(GetPassportName(passport2))));
 }
 
+// Tests that a kPersonalContextNotice suggestion is appended if the trigger
+// field contains a personal context entity and the notice should be shown.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestions_PersonalContextNotice) {
+  SetEntities({GetFlightReservationEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext})});
+  SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER});
+
+  client().set_should_show_personal_context_autofill_notice(true);
+
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              Contains(HasType(SuggestionType::kPersonalContextNotice)));
+}
+
+// Tests that a kPersonalContextNotice suggestion is not appended if the
+// trigger field does not contain a personal context entity, even if the notice
+// should be shown.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestions_PersonalContextNotice_NoPersonalContextEntity) {
+  SetEntities({GetFlightReservationEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kLocal})});
+  SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER});
+
+  client().set_should_show_personal_context_autofill_notice(true);
+
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              Not(Contains(HasType(SuggestionType::kPersonalContextNotice))));
+}
+
+// Tests that a kPersonalContextNotice suggestion is not appended if the
+// notice should not be shown, even if the trigger field contains a personal
+// context entity.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestions_PersonalContextNotice_ShouldNotShowNotice) {
+  SetEntities({GetFlightReservationEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext})});
+  SetForm({FLIGHT_RESERVATION_FLIGHT_NUMBER});
+
+  client().set_should_show_personal_context_autofill_notice(false);
+
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              Not(Contains(HasType(SuggestionType::kPersonalContextNotice))));
+}
+
 // Tests that an "Undo Autofill" suggestion is appended if the trigger field
 // is autofilled.
 TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestions_Undo) {
