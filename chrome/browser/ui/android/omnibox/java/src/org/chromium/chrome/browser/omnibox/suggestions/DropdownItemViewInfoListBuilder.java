@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.PositionalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
@@ -265,9 +266,6 @@ class DropdownItemViewInfoListBuilder {
             }
         }
 
-        var roundingStartEdge = SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED;
-        var roundingEndEdge = SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED;
-
         for (int indexInList = 0; indexInList < numGroupMatches; indexInList++) {
             var indexOnList = firstVerticalPosition + indexInList;
             AutocompleteMatch match = groupMatches.get(indexInList);
@@ -275,8 +273,10 @@ class DropdownItemViewInfoListBuilder {
             var model = processor.createModel();
 
             boolean isFirstItem = indexInList == 0;
-            model.set(roundingStartEdge, isFirstItem);
-            model.set(roundingEndEdge, indexInList == numGroupMatches - 1);
+            boolean isLastItem = indexInList == numGroupMatches - 1;
+            model.set(
+                    SuggestionCommonProperties.BG_POSITIONAL_MODE,
+                    getPositionalMode(isFirstItem, isLastItem));
             model.set(SuggestionCommonProperties.SHOW_DIVIDER, indexInList < numGroupMatches - 1);
             model.set(
                     SuggestionCommonProperties.SHOW_GROUP_SEPARATOR,
@@ -440,6 +440,18 @@ class DropdownItemViewInfoListBuilder {
         }
 
         return viewInfoList;
+    }
+
+    private static @PositionalMode int getPositionalMode(boolean isFirstItem, boolean isLastItem) {
+        if (isFirstItem && isLastItem) {
+            return PositionalMode.SINGLE;
+        } else if (isFirstItem) {
+            return PositionalMode.TOP;
+        } else if (isLastItem) {
+            return PositionalMode.BOTTOM;
+        } else {
+            return PositionalMode.MIDDLE;
+        }
     }
 
     /**

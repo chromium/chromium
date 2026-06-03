@@ -88,8 +88,6 @@ class DropdownItemViewInfoListManager {
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                         ? SuggestionCommonProperties.FormFactor.TABLET
                         : SuggestionCommonProperties.FormFactor.PHONE;
-        DropdownItemViewInfo previousItem = null;
-
         for (int i = 0; i < mSourceViewInfoList.size(); i++) {
             final DropdownItemViewInfo item = mSourceViewInfoList.get(i);
             final PropertyModel model = item.model;
@@ -98,11 +96,6 @@ class DropdownItemViewInfoListManager {
             model.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, deviceType);
 
             suggestionsList.add(item);
-        }
-
-        // round the bottom corners of the last suggestion.
-        if (previousItem != null) {
-            previousItem.model.set(SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
         }
 
         mManagedModel.set(suggestionsList);

@@ -27,6 +27,24 @@ public @interface SuggestionCommonProperties {
         int TABLET = 2;
     }
 
+    /**
+     * The positional mode of a suggestion within its visual group. Used to determine which corners
+     * of the suggestion background should be rounded.
+     */
+    @IntDef({
+        PositionalMode.MIDDLE,
+        PositionalMode.TOP,
+        PositionalMode.BOTTOM,
+        PositionalMode.SINGLE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface PositionalMode {
+        int MIDDLE = 0;
+        int TOP = 1;
+        int BOTTOM = 2;
+        int SINGLE = 3;
+    }
+
     /** Whether dark colors should be applied to text, icons. */
     WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
 
@@ -36,11 +54,8 @@ public @interface SuggestionCommonProperties {
     /** The device type for calculating the tile margin in the suggestion view. */
     WritableIntPropertyKey DEVICE_FORM_FACTOR = new WritableIntPropertyKey();
 
-    /** Whether the suggestion background's top corners should be rounded. */
-    WritableBooleanPropertyKey BG_TOP_CORNER_ROUNDED = new WritableBooleanPropertyKey();
-
-    /** Whether the suggestion background's bottom corners should be rounded. */
-    WritableBooleanPropertyKey BG_BOTTOM_CORNER_ROUNDED = new WritableBooleanPropertyKey();
+    /** The positional mode of the suggestion in its group, used for corner rounding. */
+    WritableIntPropertyKey BG_POSITIONAL_MODE = new WritableIntPropertyKey();
 
     /** Whether a divider should be shown at the bottom of the suggestion. */
     WritableBooleanPropertyKey SHOW_DIVIDER = new WritableBooleanPropertyKey();
@@ -62,8 +77,7 @@ public @interface SuggestionCommonProperties {
                 COLOR_SCHEME,
                 LAYOUT_DIRECTION,
                 DEVICE_FORM_FACTOR,
-                BG_TOP_CORNER_ROUNDED,
-                BG_BOTTOM_CORNER_ROUNDED,
+                BG_POSITIONAL_MODE,
                 SHOW_DIVIDER,
                 SHOW_GROUP_SEPARATOR,
                 HEADER_TITLE,

@@ -42,6 +42,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.PositionalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -103,11 +104,17 @@ public class DropdownItemViewInfoListBuilderUnitTest {
             boolean wantTopCornersRounded,
             boolean wantBottomCornersRounded,
             boolean wantSeparator) {
-        assertEquals(
-                wantTopCornersRounded, model.get(SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED));
-        assertEquals(
-                wantBottomCornersRounded,
-                model.get(SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+        @PositionalMode int expectedMode;
+        if (wantTopCornersRounded && wantBottomCornersRounded) {
+            expectedMode = PositionalMode.SINGLE;
+        } else if (wantTopCornersRounded) {
+            expectedMode = PositionalMode.TOP;
+        } else if (wantBottomCornersRounded) {
+            expectedMode = PositionalMode.BOTTOM;
+        } else {
+            expectedMode = PositionalMode.MIDDLE;
+        }
+        assertEquals(expectedMode, model.get(SuggestionCommonProperties.BG_POSITIONAL_MODE));
         assertEquals(wantSeparator, model.get(SuggestionCommonProperties.SHOW_DIVIDER));
     }
 

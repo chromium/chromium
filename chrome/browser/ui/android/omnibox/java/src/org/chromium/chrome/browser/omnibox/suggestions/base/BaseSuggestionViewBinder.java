@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.PositionalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -103,11 +104,12 @@ public final class BaseSuggestionViewBinder<T extends View>
             updateMargin(model, view);
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             updateColorScheme(model, view);
-        } else if (SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED == propertyKey
-                || SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
-            view.setRoundingEdges(
-                    model.get(SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED),
-                    model.get(SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+        } else if (SuggestionCommonProperties.BG_POSITIONAL_MODE == propertyKey) {
+            @PositionalMode int mode = model.get(SuggestionCommonProperties.BG_POSITIONAL_MODE);
+            boolean roundTopEdge = mode == PositionalMode.TOP || mode == PositionalMode.SINGLE;
+            boolean roundBottomEdge =
+                    mode == PositionalMode.BOTTOM || mode == PositionalMode.SINGLE;
+            view.setRoundingEdges(roundTopEdge, roundBottomEdge);
         } else if (BaseSuggestionViewProperties.ACTION_BUTTONS == propertyKey) {
             bindActionButtons(model, view, model.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
         } else if (BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION == propertyKey) {
