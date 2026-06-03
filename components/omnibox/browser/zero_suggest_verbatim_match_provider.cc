@@ -8,6 +8,7 @@
 
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/android_buildflags.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -23,9 +24,11 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
+#include "ui/base/device_form_factor.h"
 
 namespace {
 constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
+constexpr bool is_desktop_android = !!BUILDFLAG(IS_DESKTOP_ANDROID);
 
 // Returns whether specific context is eligible for a verbatim match.
 // Offers verbatim match for:
@@ -34,13 +37,21 @@ constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 bool IsVerbatimMatchEligible(
     metrics::OmniboxEventProto::PageClassification context) {
   using OEP = metrics::OmniboxEventProto;
+
+  if (context == OEP::ANDROID_SEARCH_WIDGET ||
+      context == OEP::ANDROID_SHORTCUTS_WIDGET ||
+      omnibox::IsComposebox(context)) {
+    return true;
+  }
+
+  if (is_desktop_android) {
+    return false;
+  }
+
   return context == OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT ||
          context == OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ||
          context == OEP::SEARCH_RESULT_PAGE_ON_CCT ||
-         context == OEP::ANDROID_SEARCH_WIDGET ||
-         context == OEP::ANDROID_SHORTCUTS_WIDGET ||
-         context == OEP::OTHER_ON_CCT || context == OEP::OTHER ||
-         omnibox::IsComposebox(context);
+         context == OEP::OTHER_ON_CCT || context == OEP::OTHER;
 }
 }  // namespace
 

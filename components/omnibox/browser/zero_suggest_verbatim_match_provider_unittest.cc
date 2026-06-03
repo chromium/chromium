@@ -11,6 +11,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/android_buildflags.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/history/core/browser/history_service.h"
@@ -23,6 +24,7 @@
 #include "components/search_engines/search_engines_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/device_form_factor.h"
 
 namespace {
 #if BUILDFLAG(IS_ANDROID)
@@ -78,6 +80,9 @@ bool ZeroSuggestVerbatimMatchProviderTest::IsVerbatimMatchEligible() const {
 }
 
 void ZeroSuggestVerbatimMatchProviderTest::SetUp() {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  GTEST_SKIP() << "No zero-suggest verbatim match on Android Desktop.";
+#else   // IS_DESKTOP_ANDROID
   provider_ = new ZeroSuggestVerbatimMatchProvider(&mock_client_);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return false; });
   ON_CALL(mock_client_, Classify)
@@ -87,6 +92,7 @@ void ZeroSuggestVerbatimMatchProviderTest::SetUp() {
              metrics::OmniboxEventProto::PageClassification page_classification,
              AutocompleteMatch* match,
              GURL* alternate_nav_url) { match->destination_url = GURL(text); });
+#endif  // IS_DESKTOP_ANDROID
 }
 
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
