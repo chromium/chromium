@@ -39,11 +39,11 @@ ModelContext* InspectorWebMCPAgent::GetModelContext(LocalFrame* frame) {
   if (!frame) {
     return nullptr;
   }
-  auto* window = frame->DomWindow();
-  if (!window || !window->document()) {
+  auto* document = frame->GetDocument();
+  if (!document) {
     return nullptr;
   }
-  return ModelContextSupplement::GetIfExists(*window->document());
+  return ModelContextSupplement::GetIfExists(*document);
 }
 
 namespace {

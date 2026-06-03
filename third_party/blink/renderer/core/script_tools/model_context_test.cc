@@ -202,8 +202,7 @@ TEST_F(ModelContextTest, ExecuteTool) {
     </script>
   )");
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -277,8 +276,7 @@ TEST_F(ModelContextTest, ExecuteToolReturnsObject) {
     </script>
   )");
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -311,8 +309,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Navigation) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -340,8 +337,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidInput) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -375,8 +371,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidSelectValue) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -416,8 +411,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -461,8 +455,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_Reject) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -505,8 +498,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoRespondWith) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -546,8 +538,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_ValidationFailure) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -637,8 +628,7 @@ TEST_F(ModelContextValidationTest,
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -688,8 +678,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoPreventDefault) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -765,8 +754,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_LateRespondWithThrows) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -827,8 +815,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PseudoClasses) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -889,8 +876,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoAutoSubmit) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -959,8 +945,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_FormPopulatedAtEvent) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -999,8 +984,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PauseExecution) {
                            base::BindRepeating(&MockScriptToolHost::Bind,
                                                base::Unretained(&mock_host)));
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -1057,8 +1041,7 @@ TEST_F(ModelContextTest, CancelTool) {
   </script>
 )");
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -1105,8 +1088,7 @@ TEST_F(ModelContextTest, ToolEventsDispatched) {
   </script>
 )");
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -1146,8 +1128,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Reset_Cancels) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -1210,8 +1191,7 @@ TEST_F(ModelContextTest, ToolSignalAborted) {
   </body>
 )");
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -1261,8 +1241,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_FlexibleTypes) {
   )HTML");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -1360,8 +1339,7 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
   </script>
 )");
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   Window().addEventListener(
@@ -1411,8 +1389,7 @@ TEST_F(ModelContextTest, ForEachScriptToolGC) {
   LoadURL("https://example.com/");
   main_resource.Complete("<body></body>");
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   {
@@ -1471,8 +1448,7 @@ TEST_F(ModelContextTest, ListTools) {
     </script>
   )");
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   HeapVector<Member<const ToolData>> tools = model_context->ListTools();
@@ -1502,8 +1478,7 @@ TEST_F(ModelContextTest, SourceLocation) {
     </script>
   )");
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   HeapVector<Member<const ToolData>> tools = model_context->ListTools();
@@ -1536,8 +1511,7 @@ TEST_F(ModelContextTest, BackingFormElement) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   HeapVector<Member<const ToolData>> tools = model_context->ListTools();
@@ -1813,8 +1787,7 @@ TEST_F(ModelContextTest, ExecuteTool_RespondWith_And_RemoveForm) {
   )");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -1859,8 +1832,7 @@ TEST_F(ModelContextTest, ExecuteTool_RespondWith_And_Navigate) {
   )HTML");
   test::RunPendingTasks();
 
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
 
   base::RunLoop run_loop;
@@ -1910,8 +1882,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_UnrelatedSubmitAndRemove) {
     </script>
   )HTML");
   test::RunPendingTasks();
-  auto* model_context =
-      ModelContextSupplement::modelContext(*Window().navigator());
+  auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   ASSERT_TRUE(model_context);
   base::RunLoop run_loop;
   bool got_callback = false;
