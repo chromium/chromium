@@ -149,7 +149,8 @@ bool SetIconNatives::ConvertImageDataToBitmapValue(
   // Construct the Value object.
   std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
   blink::WebArrayBuffer buffer = blink::WebArrayBuffer::Create(s.size(), 1);
-  UNSAFE_TODO(memcpy(buffer.Data(), s.data(), s.size()));
+  buffer.ByteSpan().copy_from(s);
+
   *image_data_bitmap =
       blink::WebArrayBufferConverter::ToV8Value(&buffer, isolate);
 

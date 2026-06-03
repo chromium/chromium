@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ARRAY_BUFFER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ARRAY_BUFFER_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 
@@ -56,8 +57,7 @@ class BLINK_EXPORT WebArrayBuffer {
   void Assign(const WebArrayBuffer&);
 
   bool IsNull() const { return private_.IsNull(); }
-  void* Data() const;
-  size_t ByteLength() const;
+  base::span<uint8_t> ByteSpan() const;
 
 #if INSIDE_BLINK
   WebArrayBuffer(DOMArrayBuffer*);

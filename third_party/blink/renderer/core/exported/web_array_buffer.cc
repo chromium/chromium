@@ -48,16 +48,11 @@ void WebArrayBuffer::Assign(const WebArrayBuffer& other) {
   private_ = other.private_;
 }
 
-void* WebArrayBuffer::Data() const {
-  if (!IsNull())
-    return const_cast<void*>(private_->Data());
-  return nullptr;
-}
-
-size_t WebArrayBuffer::ByteLength() const {
-  if (!IsNull())
-    return private_->ByteLength();
-  return 0;
+base::span<uint8_t> WebArrayBuffer::ByteSpan() const {
+  if (!IsNull()) {
+    return private_->ByteSpan();
+  }
+  return {};
 }
 
 WebArrayBuffer::WebArrayBuffer(DOMArrayBuffer* buffer) : private_(buffer) {}

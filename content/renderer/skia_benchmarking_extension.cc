@@ -217,17 +217,18 @@ void SkiaBenchmarking::Rasterize(gin::Arguments* args) {
   PicturePlaybackController controller(benchmarking_canvas, playback_count);
   picture->picture->playback(&benchmarking_canvas, &controller);
 
-  blink::WebArrayBuffer buffer =
-      blink::WebArrayBuffer::Create(bitmap.computeByteSize(), 1);
+  const size_t bitmap_size_in_bytes = bitmap.computeByteSize();
+  auto buffer = blink::WebArrayBuffer::Create(bitmap_size_in_bytes, 1);
   uint32_t* packed_pixels = reinterpret_cast<uint32_t*>(bitmap.getPixels());
-  uint8_t* buffer_pixels = reinterpret_cast<uint8_t*>(buffer.Data());
+  base::span<uint8_t> buffer_pixels = buffer.ByteSpan();
   // Swizzle from native Skia format to RGBA as we copy out.
-  for (size_t i = 0; i < bitmap.computeByteSize(); i += 4) {
+  for (size_t i = 0; i < bitmap_size_in_bytes; i += 4) {
     uint32_t c = UNSAFE_TODO(packed_pixels[i >> 2]);
-    UNSAFE_TODO(buffer_pixels[i]) = SkPMColorGetR(c);
-    UNSAFE_TODO(buffer_pixels[i + 1]) = SkPMColorGetG(c);
-    UNSAFE_TODO(buffer_pixels[i + 2]) = SkPMColorGetB(c);
-    UNSAFE_TODO(buffer_pixels[i + 3]) = SkPMColorGetA(c);
+    auto rgba = buffer_pixels.take_first<4>();
+    rgba[0] = SkPMColorGetR(c);
+    rgba[1] = SkPMColorGetG(c);
+    rgba[2] = SkPMColorGetB(c);
+    rgba[3] = SkPMColorGetA(c);
   }
 
   args->Return(gin::DataObjectBuilder(isolate)
