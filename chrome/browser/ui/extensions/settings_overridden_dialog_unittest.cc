@@ -9,8 +9,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
+#include "chrome/test/views/chrome_views_test_base.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -53,7 +54,7 @@ class TestDialogController : public SettingsOverriddenDialogController {
 
 }  // namespace
 
-class SettingsOverriddenDialogUnitTest : public TestWithBrowserView {
+class SettingsOverriddenDialogUnitTest : public ChromeViewsTestBase {
   // TODO(crbug.com/424013924): Remove browser dependency and enable test for
   // Desktop Android
  public:
@@ -64,6 +65,22 @@ class SettingsOverriddenDialogUnitTest : public TestWithBrowserView {
       const SettingsOverriddenDialogUnitTest&) = delete;
   ~SettingsOverriddenDialogUnitTest() override = default;
 
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    constrained_window::SetConstrainedWindowViewsClient(
+        CreateChromeConstrainedWindowViewsClient());
+
+    parent_widget_ =
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    parent_widget_->Show();
+  }
+
+  void TearDown() override {
+    parent_widget_.reset();
+    constrained_window::SetConstrainedWindowViewsClient(nullptr);
+    ChromeViewsTestBase::TearDown();
+  }
+
   views::Widget* ShowDialog(DialogState* state) {
     auto controller = std::make_unique<TestDialogController>(state);
     EXPECT_FALSE(state->shown);
@@ -72,12 +89,15 @@ class SettingsOverriddenDialogUnitTest : public TestWithBrowserView {
         views::test::AnyWidgetTestPasskey{},
         kExtensionSettingsOverriddenDialogName);
     extensions::ShowSettingsOverriddenDialog(std::move(controller),
-                                             browser_view()->GetNativeWindow());
+                                             parent_widget_->GetNativeWindow());
     views::Widget* dialog = waiter.WaitIfNeededAndGet();
     EXPECT_TRUE(state->shown);
 
     return dialog;
   }
+
+ private:
+  std::unique_ptr<views::Widget> parent_widget_;
 };
 
 TEST_F(SettingsOverriddenDialogUnitTest, DialogResult_ChangeSettingsBack) {
