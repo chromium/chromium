@@ -475,6 +475,9 @@ void DragWindowFromShelfController::OnDragStarted(
   // Disable the backdrop on the dragged window during dragging.
   WindowBackdrop::Get(window_)->DisableBackdrop();
 
+  original_clip_rect_ = window_->layer()->clip_rect();
+  window_->layer()->SetClipRect(gfx::Rect(window_->bounds().size()));
+
   // Hide all visible windows behind the dragged window during dragging.
   windows_hider_ = std::make_unique<WindowsHider>(window_, other_window_);
 
@@ -500,6 +503,8 @@ void DragWindowFromShelfController::OnDragEnded(
     const gfx::PointF& location_in_screen,
     bool should_drop_window_in_overview,
     SnapPosition snap_position) {
+  window_->layer()->SetClipRect(original_clip_rect_);
+
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   if (overview_controller->InOverviewSession()) {
     // Make sure overview is visible after drag ends.

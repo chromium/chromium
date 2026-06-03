@@ -214,6 +214,8 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
 
   base::OnceClosure on_overview_shown_callback_for_testing_;
 
+  gfx::Rect original_clip_rect_;
+
   SnapPosition initial_snap_position_ = SnapPosition::kNone;
 
   SnapPosition end_snap_position_ = SnapPosition::kNone;

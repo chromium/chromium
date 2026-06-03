@@ -1051,6 +1051,53 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 }
 
+// Test that the original clip rect is restored in the drag window after drag
+// ends, no matter where the window ends.
+TEST_F(DragWindowFromShelfControllerTest, RestoreClipRectAfterDragEnds) {
+  UpdateDisplay("500x400");
+  const gfx::Rect shelf_bounds = GetShelfBounds();
+  auto window = CreateWindowWithAppType();
+  const gfx::Rect original_clip_rect = gfx::Rect(0, 0, 100, 100);
+  window->layer()->SetClipRect(original_clip_rect);
+  EXPECT_EQ(window->layer()->clip_rect(), original_clip_rect);
+
+  // For window that restores to its original bounds:
+  wm::ActivateWindow(window.get());
+  StartDrag(window.get(), shelf_bounds.CenterPoint());
+  EXPECT_EQ(window->layer()->clip_rect(), gfx::Rect(window->bounds().size()));
+  Drag(gfx::Point(200, 200), 0.f, 1.f);
+  EndDrag(shelf_bounds.CenterPoint(), std::nullopt);
+
+  EXPECT_EQ(window->layer()->clip_rect(), original_clip_rect);
+
+  // For window that ends in splitscreen:
+  wm::ActivateWindow(window.get());
+  StartDrag(window.get(), shelf_bounds.CenterPoint());
+  EXPECT_EQ(window->layer()->clip_rect(), gfx::Rect(window->bounds().size()));
+  Drag(gfx::Point(200, 200), 0.f, 1.f);
+  DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
+      window_drag_controller());
+  EndDrag(gfx::Point(0, 200), std::nullopt);
+  EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window.get()));
+  EXPECT_EQ(window->layer()->clip_rect(), original_clip_rect);
+
+  // For window that ends in overview:
+  wm::ActivateWindow(window.get());
+  StartDrag(window.get(), shelf_bounds.CenterPoint());
+  EXPECT_EQ(window->layer()->clip_rect(), gfx::Rect(window->bounds().size()));
+  Drag(gfx::Point(200, 200), 0.f, 1.f);
+  DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
+      window_drag_controller());
+  EndDrag(gfx::Point(200, 200), std::nullopt);
+  OverviewController* overview_controller = OverviewController::Get();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
+      window.get()));
+
+  overview_controller->EndOverview(OverviewEndAction::kTests);
+  EXPECT_EQ(window->layer()->clip_rect(), original_clip_rect);
+}
+
 // Test that the original backdrop is restored in the drag window after drag
 // ends, no matter where the window ends.
 TEST_F(DragWindowFromShelfControllerTest, RestoreBackdropAfterDragEnds) {
