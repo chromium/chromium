@@ -1940,19 +1940,9 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   return DatabaseCleanupResult::kSuccess;
 }
 
-bool LoginDatabase::BeginTransaction() {
-  TRACE_EVENT0("passwords", "LoginDatabase::BeginTransaction");
-  return db_.BeginTransactionDeprecated();
-}
-
-void LoginDatabase::RollbackTransaction() {
-  TRACE_EVENT0("passwords", "LoginDatabase::RollbackTransaction");
-  db_.RollbackTransactionDeprecated();
-}
-
-bool LoginDatabase::CommitTransaction() {
-  TRACE_EVENT0("passwords", "LoginDatabase::CommitTransaction");
-  return db_.CommitTransactionDeprecated();
+std::unique_ptr<sql::Transaction> LoginDatabase::CreateTransaction() {
+  TRACE_EVENT0("passwords", "LoginDatabase::CreateTransaction");
+  return std::make_unique<sql::Transaction>(&db_);
 }
 
 LoginDatabase::SyncMetadataStore::SyncMetadataStore(LoginDatabase* login_db)

@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -36,6 +37,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/data_type_state_helper.h"
+#include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
@@ -233,37 +235,6 @@ bool DoesPasswordStoreContainUndecryptablePasswords(
          read_result ==
              FormRetrievalResult::kEncryptionServiceFailureWithPartialData;
 }
-
-// A simple class for scoping a password store sync transaction. If the
-// transaction hasn't been committed, it will be rolled back when it goes out of
-// scope.
-class ScopedStoreTransaction {
- public:
-  explicit ScopedStoreTransaction(PasswordStoreSync* store) : store_(store) {
-    store_->BeginTransaction();
-    committed_ = false;
-  }
-
-  void Commit() {
-    if (!committed_) {
-      store_->CommitTransaction();
-      committed_ = true;
-    }
-  }
-
-  ScopedStoreTransaction(const ScopedStoreTransaction&) = delete;
-  ScopedStoreTransaction& operator=(const ScopedStoreTransaction&) = delete;
-
-  ~ScopedStoreTransaction() {
-    if (!committed_) {
-      store_->RollbackTransaction();
-    }
-  }
-
- private:
-  const raw_ptr<PasswordStoreSync> store_;
-  bool committed_;
-};
 
 }  // namespace
 
@@ -485,7 +456,12 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
   // store to notify other observers of the password store.
   PasswordStoreChangeList password_store_changes;
   {
-    ScopedStoreTransaction transaction(password_store_sync_);
+    std::unique_ptr<sql::Transaction> transaction =
+        password_store_sync_->CreateTransaction();
+    if (transaction) {
+      std::ignore = transaction->Begin();
+    }
+
     // For any local password that doesn't exist in the remote passwords, issue
     // a change_processor()->Put(). For any local password that exists in the
     // remote passwords, both should be merged by picking the most recently
@@ -661,7 +637,9 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
               kNotSyncingFailedMetadataPersistence);
       return error;
     }
-    transaction.Commit();
+    if (transaction) {
+      std::ignore = transaction->Commit();
+    }
   }  // End of scoped transaction.
 
   if (!password_store_changes.empty()) {
@@ -693,7 +671,11 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
   PasswordStoreChangeList password_store_changes;
   // Whether local state of insecure credentials changed.
   {
-    ScopedStoreTransaction transaction(password_store_sync_);
+    std::unique_ptr<sql::Transaction> transaction =
+        password_store_sync_->CreateTransaction();
+    if (transaction) {
+      std::ignore = transaction->Begin();
+    }
 
     for (const std::unique_ptr<syncer::EntityChange>& entity_change :
          entity_changes) {
@@ -827,7 +809,10 @@ PasswordSyncBridge::ApplyIncrementalSyncChanges(
           metrics_util::ApplySyncChangesState::kApplyMetadataChangesFailed);
       return error;
     }
-    transaction.Commit();
+
+    if (transaction) {
+      std::ignore = transaction->Commit();
+    }
   }  // End of scoped transaction.
 
   if (!password_store_changes.empty()) {

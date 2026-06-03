@@ -36,6 +36,10 @@ namespace affiliations {
 class SQLTableBuilder;
 }  // namespace affiliations
 
+namespace sql {
+class Transaction;
+}  // namespace sql
+
 namespace syncer {
 class MetadataBatch;
 }
@@ -188,9 +192,7 @@ class LoginDatabase : public EncryptDecryptInterface {
   // begin, rollback and commit transactions. They delegate to the transaction
   // support of the underlying database. Only one transaction may exist at a
   // time.
-  bool BeginTransaction();
-  void RollbackTransaction();
-  bool CommitTransaction();
+  std::unique_ptr<sql::Transaction> CreateTransaction();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void SetIsUserDataDirPolicySet(bool is_set) {

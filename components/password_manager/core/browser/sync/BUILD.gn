@@ -29,6 +29,7 @@ source_set("sync") {
     "//components/sync/model",
     "//components/sync/protocol:util",
     "//components/sync/service",
+    "//sql",
     "//url",
   ]
 }
@@ -55,6 +56,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/sync/protocol",
+    "//sql",
     "//testing/gmock",
     "//testing/gtest",
   ]

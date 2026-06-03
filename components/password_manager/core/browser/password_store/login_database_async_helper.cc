@@ -20,6 +20,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_controller_delegate.h"
+#include "sql/transaction.h"
 
 namespace password_manager {
 
@@ -159,7 +160,10 @@ StoredCredentialsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
 PasswordChangesOrError LoginDatabaseAsyncHelper::AddLogin(
     StoredCredential cred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BeginTransaction();
+  std::unique_ptr<sql::Transaction> transaction = CreateTransaction();
+  if (transaction) {
+    std::ignore = transaction->Begin();
+  }
   AddCredentialError error = AddCredentialError::kNone;
   PasswordStoreChangeList changes = AddLoginImpl(std::move(cred), &error);
   if (password_sync_bridge_ && !changes.empty()) {
@@ -169,7 +173,9 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::AddLogin(
   // CommitTransaction() must be called after ActOnPasswordStoreChanges(),
   // because sync codebase needs to update metadata atomically together with
   // the login data.
-  CommitTransaction();
+  if (transaction) {
+    std::ignore = transaction->Commit();
+  }
   return error == AddCredentialError::kNone
              ? changes
              : PasswordChangesOrError(PasswordStoreBackendError(
@@ -179,7 +185,10 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::AddLogin(
 PasswordChangesOrError LoginDatabaseAsyncHelper::UpdateLogin(
     const StoredCredential& cred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BeginTransaction();
+  std::unique_ptr<sql::Transaction> transaction = CreateTransaction();
+  if (transaction) {
+    std::ignore = transaction->Begin();
+  }
   UpdateCredentialError error = UpdateCredentialError::kNone;
   PasswordStoreChangeList changes = UpdateLoginImpl(cred, &error);
   if (password_sync_bridge_ && !changes.empty()) {
@@ -189,7 +198,9 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::UpdateLogin(
   // CommitTransaction() must be called after ActOnPasswordStoreChanges(),
   // because sync codebase needs to update metadata atomically together with
   // the login data.
-  CommitTransaction();
+  if (transaction) {
+    std::ignore = transaction->Commit();
+  }
   return error == UpdateCredentialError::kNone
              ? changes
              : PasswordChangesOrError(PasswordStoreBackendError(
@@ -200,7 +211,10 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLogin(
     const base::Location& location,
     const StoredCredential& cred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BeginTransaction();
+  std::unique_ptr<sql::Transaction> transaction = CreateTransaction();
+  if (transaction) {
+    std::ignore = transaction->Begin();
+  }
   PasswordStoreChangeList changes;
   if (login_db_ && login_db_->RemoveLogin(cred, &changes)) {
     if (password_sync_bridge_ && !changes.empty()) {
@@ -211,7 +225,9 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLogin(
   // CommitTransaction() must be called after ActOnPasswordStoreChanges(),
   // because sync codebase needs to update metadata atomically together with
   // the login data.
-  CommitTransaction();
+  if (transaction) {
+    std::ignore = transaction->Commit();
+  }
   return changes;
 }
 
@@ -220,7 +236,10 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
     base::Time delete_begin,
     base::Time delete_end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BeginTransaction();
+  std::unique_ptr<sql::Transaction> transaction = CreateTransaction();
+  if (transaction) {
+    std::ignore = transaction->Begin();
+  }
   PasswordStoreChangeList changes;
   bool success = login_db_ && login_db_->RemoveLoginsCreatedBetween(
                                   delete_begin, delete_end, &changes);
@@ -231,7 +250,9 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween(
   // CommitTransaction() must be called after ActOnPasswordStoreChanges(),
   // because sync codebase needs to update metadata atomically together with
   // the login data.
-  CommitTransaction();
+  if (transaction) {
+    std::ignore = transaction->Commit();
+  }
 
   return success ? changes
                  : PasswordChangesOrError(PasswordStoreBackendError(
@@ -335,27 +356,13 @@ void LoginDatabaseAsyncHelper::NotifyCredentialsChanged(
                                 changes, IsAccountStore()));
 }
 
-bool LoginDatabaseAsyncHelper::BeginTransaction() {
+std::unique_ptr<sql::Transaction>
+LoginDatabaseAsyncHelper::CreateTransaction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (login_db_) {
-    return login_db_->BeginTransaction();
+    return login_db_->CreateTransaction();
   }
-  return false;
-}
-
-void LoginDatabaseAsyncHelper::RollbackTransaction() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (login_db_) {
-    login_db_->RollbackTransaction();
-  }
-}
-
-bool LoginDatabaseAsyncHelper::CommitTransaction() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (login_db_) {
-    return login_db_->CommitTransaction();
-  }
-  return false;
+  return nullptr;
 }
 
 FormRetrievalResult LoginDatabaseAsyncHelper::ReadAllCredentials(

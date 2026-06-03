@@ -35,6 +35,7 @@
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
+#include "sql/transaction.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -354,9 +355,10 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               NotifyCredentialsChanged,
               (const PasswordStoreChangeList&),
               (override));
-  MOCK_METHOD(bool, BeginTransaction, (), (override));
-  MOCK_METHOD(bool, CommitTransaction, (), (override));
-  MOCK_METHOD(void, RollbackTransaction, (), (override));
+  MOCK_METHOD(std::unique_ptr<sql::Transaction>,
+              CreateTransaction,
+              (),
+              (override));
   MOCK_METHOD(PasswordStoreSync::MetadataStore*,
               GetMetadataStore,
               (),
@@ -573,11 +575,10 @@ TEST_F(PasswordSyncBridgeTest, ShouldApplyRemoteCreation) {
       CreateSpecificsWithSignonRealm(kSignonRealm1);
 
   testing::InSequence in_sequence;
-  EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
+  EXPECT_CALL(*mock_password_store_sync(), CreateTransaction());
   EXPECT_CALL(*mock_password_store_sync(),
               AddCredentialSync(CredHasSignonRealm(kSignonRealm1), _));
   EXPECT_CALL(mock_processor(), UpdateStorageKey(_, kStorageKey, _));
-  EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
   EXPECT_CALL(
       *mock_password_store_sync(),
       NotifyCredentialsChanged(UnorderedElementsAre(ChangeHasPrimaryKey(1))));
@@ -627,12 +628,11 @@ TEST_F(PasswordSyncBridgeTest, ShouldApplyRemoteUpdate) {
 
   testing::InSequence in_sequence;
   base::flat_map<InsecureType, InsecurityMetadata> no_issues;
-  EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
+  EXPECT_CALL(*mock_password_store_sync(), CreateTransaction());
   EXPECT_CALL(*mock_password_store_sync(),
               UpdateCredentialSync(AllOf(CredHasSignonRealm(kSignonRealm1),
                                          CredHasPasswordIssues(no_issues)),
                                    _));
-  EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
   EXPECT_CALL(*mock_password_store_sync(),
               NotifyCredentialsChanged(
                   UnorderedElementsAre(ChangeHasPrimaryKey(kPrimaryKey))));
@@ -658,10 +658,9 @@ TEST_F(PasswordSyncBridgeTest, ShouldApplyRemoteDeletion) {
       MakeStoredCredential(kSignonRealm1, kPrimaryKey));
 
   testing::InSequence in_sequence;
-  EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
+  EXPECT_CALL(*mock_password_store_sync(), CreateTransaction());
   EXPECT_CALL(*mock_password_store_sync(),
               RemoveCredentialByPrimaryKeySync(FormPrimaryKey(kPrimaryKey)));
-  EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
   EXPECT_CALL(*mock_password_store_sync(),
               NotifyCredentialsChanged(
                   UnorderedElementsAre(ChangeHasPrimaryKey(kPrimaryKey))));
@@ -756,7 +755,7 @@ TEST_F(PasswordSyncBridgeTest, ShouldMergeSyncRemoteAndLocalPasswords) {
   //           +--> AddCredentialSync (4) ---> UpdateStorageKey(4)-+
 
   testing::Sequence s1, s2, s3, s4;
-  EXPECT_CALL(*mock_password_store_sync(), BeginTransaction())
+  EXPECT_CALL(*mock_password_store_sync(), CreateTransaction())
       .InSequence(s1, s2, s3, s4);
   EXPECT_CALL(mock_processor(),
               Put(kPrimaryKeyStr1, EntityDataHasSignonRealm(kSignonRealm1), _))
@@ -774,9 +773,6 @@ TEST_F(PasswordSyncBridgeTest, ShouldMergeSyncRemoteAndLocalPasswords) {
       .InSequence(s4);
   EXPECT_CALL(mock_processor(), UpdateStorageKey(_, kExpectedPrimaryKeyStr3, _))
       .InSequence(s4);
-
-  EXPECT_CALL(*mock_password_store_sync(), CommitTransaction())
-      .InSequence(s1, s2, s3, s4);
 
   EXPECT_CALL(*mock_password_store_sync(),
               NotifyCredentialsChanged(UnorderedElementsAre(
@@ -1318,7 +1314,6 @@ TEST_F(PasswordSyncBridgeTest,
       /*storage_key=*/"",
       SpecificsToEntity(CreateSpecificsWithSignonRealm(kSignonRealm1))));
 
-  EXPECT_CALL(*mock_password_store_sync(), RollbackTransaction());
   std::optional<syncer::ModelError> error = bridge()->MergeFullSyncData(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_TRUE(error);
@@ -1341,7 +1336,6 @@ TEST_F(
       bridge()->CreateMetadataChangeList();
   metadata_changes->UpdateDataTypeState(data_type_state);
 
-  EXPECT_CALL(*mock_password_store_sync(), RollbackTransaction());
   std::optional<syncer::ModelError> error =
       bridge()->MergeFullSyncData(std::move(metadata_changes), {});
   EXPECT_TRUE(error);
@@ -1526,12 +1520,10 @@ TEST_F(PasswordSyncBridgeTest,
       CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
 
   testing::InSequence in_sequence;
-  EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
+  EXPECT_CALL(*mock_password_store_sync(), CreateTransaction());
   EXPECT_CALL(
       *mock_password_store_sync(),
       AddCredentialSync(CredHasPasswordIssues(kForm.password_issues), _));
-
-  EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
@@ -1557,12 +1549,11 @@ TEST_F(PasswordSyncBridgeTest,
   // insecure credentials.
 
   testing::Sequence in_sequence;
-  EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
+  EXPECT_CALL(*mock_password_store_sync(), CreateTransaction());
 
   EXPECT_CALL(
       *mock_password_store_sync(),
       AddCredentialSync(CredHasPasswordIssues(kForm.password_issues), _));
-  EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(

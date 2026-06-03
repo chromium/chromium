@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_LOGIN_DATABASE_ASYNC_HELPER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_LOGIN_DATABASE_ASYNC_HELPER_H_
 
+#include <memory>
 #include <variant>
 
 #include "base/cancelable_callback.h"
@@ -21,6 +22,10 @@
 namespace base {
 class Location;
 }  // namespace base
+
+namespace sql {
+class Transaction;
+}  // namespace sql
 
 namespace syncer {
 class DataTypeControllerDelegate;
@@ -112,9 +117,7 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
       UpdateCredentialError* error) override;
   void NotifyCredentialsChanged(
       const PasswordStoreChangeList& changes) override;
-  bool BeginTransaction() override;
-  void RollbackTransaction() override;
-  bool CommitTransaction() override;
+  std::unique_ptr<sql::Transaction> CreateTransaction() override;
   FormRetrievalResult ReadAllCredentials(
       PrimaryKeyToPasswordSpecificsDataMap* key_to_form_map) override;
   PasswordStoreChangeList RemoveCredentialByPrimaryKeySync(
