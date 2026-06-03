@@ -11,8 +11,6 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
-class BrowserWindowInterface;
-
 namespace content {
 class BrowserContext;
 class NavigationHandle;
@@ -67,8 +65,6 @@ class ContextualTasksWebView
   // Detach the modal dialog manager from the provided WebContents. This should
   // happen when the contents is detached from the side panel.
   void DetachWebContentsModalDialogManager(content::WebContents* web_contents);
-
-  BrowserWindowInterface* GetBrowser();
 
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
