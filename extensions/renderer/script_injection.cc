@@ -34,6 +34,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using perfetto::protos::pbzero::ChromeTrackEvent;
 
@@ -88,7 +89,8 @@ ScriptInjection::ScriptInjection(
       frame_watcher_(new FrameWatcher(render_frame, this)) {
   CHECK(injection_host_.get());
   TRACE_EVENT_BEGIN(
-      "extensions", "ScriptInjection", perfetto::Track::FromPointer(this),
+      "extensions", "ScriptInjection",
+      perfetto::NamedTrack::FromPointer("extensions::ScriptInjection", this),
       ChromeTrackEvent::kRenderProcessHost, content::RenderThread::Get(),
       ChromeTrackEvent::kChromeExtensionId,
       ExtensionIdForTracing(host_id().id));
@@ -98,11 +100,12 @@ ScriptInjection::~ScriptInjection() {
   if (!complete_)
     NotifyWillNotInject(ScriptInjector::InjectFailureReason::kWontInject);
 
-  TRACE_EVENT_END("extensions", perfetto::Track::FromPointer(this),
-                  ChromeTrackEvent::kRenderProcessHost,
-                  content::RenderThread::Get(),
-                  ChromeTrackEvent::kChromeExtensionId,
-                  ExtensionIdForTracing(injection_host_ ? host_id().id : ""));
+  TRACE_EVENT_END(
+      "extensions",
+      perfetto::NamedTrack::FromPointer("extensions::ScriptInjection", this),
+      ChromeTrackEvent::kRenderProcessHost, content::RenderThread::Get(),
+      ChromeTrackEvent::kChromeExtensionId,
+      ExtensionIdForTracing(injection_host_ ? host_id().id : ""));
 }
 
 ScriptInjection::InjectionResult ScriptInjection::TryToInject(
