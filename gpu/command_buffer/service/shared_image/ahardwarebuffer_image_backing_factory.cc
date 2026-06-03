@@ -21,6 +21,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
@@ -69,7 +70,7 @@
 namespace gpu {
 namespace {
 
-class OverlayImage final : public base::RefCounted<OverlayImage> {
+class OverlayImage final : public base::RefCountedThreadSafe<OverlayImage> {
  public:
   explicit OverlayImage(AHardwareBuffer* buffer)
       : handle_(base::android::ScopedHardwareBufferHandle::Create(buffer)) {}
@@ -88,7 +89,7 @@ class OverlayImage final : public base::RefCounted<OverlayImage> {
   }
 
  private:
-  friend class base::RefCounted<OverlayImage>;
+  friend class base::RefCountedThreadSafe<OverlayImage>;
 
   class ScopedHardwareBufferFenceSyncImpl
       : public base::android::ScopedHardwareBufferFenceSync {
