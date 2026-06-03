@@ -578,19 +578,13 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, WaitObserveTabFirstAction) {
         return last_execution_result()->tabs().at(0).id() == tab1.raw_value();
       }),
 
-      // Wait observing tab2. Because tab1 was permanently added to the task in the
-      // previous step, both tab1 and tab2 are now observed.
+      // Wait observing tab2. Ensure tab2 has a TabObservation in the result but
+      // tab1 does not.
       WaitAction(task_id_, kWaitTime, tab2),
       CheckResult([this]() { return last_execution_result()->tabs().size(); },
-                  2),
+                  1),
       Check([&, this]() {
-        std::set<int> tab_ids{
-          last_execution_result()->tabs().at(0).id(),
-          last_execution_result()->tabs().at(1).id()
-        };
-        return tab_ids.size() == 2ul &&
-            tab_ids.contains(tab1.raw_value()) &&
-            tab_ids.contains(tab2.raw_value());
+        return last_execution_result()->tabs().at(0).id() == tab2.raw_value();
       }),
 
       // Click on tab1 to add it to the acting set. Then wait observing tab2.
@@ -610,19 +604,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, WaitObserveTabFirstAction) {
             tab_ids.contains(tab2.raw_value());
       }),
 
-      // A non-observing wait should now return observations for both tab1 and tab2,
-      // as both are part of the acting set.
+      // A non-observing wait should now return an observation for tab1; since
+      // it was previously acted on by the click, it is now part of the acting
+      // set.
       WaitAction(),
       CheckResult([this]() { return last_execution_result()->tabs().size(); },
-                  2),
+                  1),
       Check([&, this]() {
-        std::set<int> tab_ids{
-          last_execution_result()->tabs().at(0).id(),
-          last_execution_result()->tabs().at(1).id()
-        };
-        return tab_ids.size() == 2ul &&
-            tab_ids.contains(tab1.raw_value()) &&
-            tab_ids.contains(tab2.raw_value());
+        return last_execution_result()->tabs().at(0).id() == tab1.raw_value();
       })
   );
   // clang-format on
