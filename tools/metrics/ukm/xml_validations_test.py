@@ -19,7 +19,7 @@ class UkmXmlValidationTest(unittest.TestCase):
   def test_events_have_owners(self):
     ukm_config = self.to_ukm_config("""
         <ukm-configuration>
-          <event name="Event1">
+          <event name='Event1'>
             <owner>dev@chromium.org</owner>
           </event>
         </ukm-configuration>
@@ -32,11 +32,11 @@ class UkmXmlValidationTest(unittest.TestCase):
   def test_events_missing_owners(self):
     ukm_config = self.to_ukm_config("""
         <ukm-configuration>
-          <event name="Event1"/>
-          <event name="Event2">
+          <event name='Event1'/>
+          <event name='Event2'>
             <owner></owner>
           </event>
-          <event name="Event3">
+          <event name='Event3'>
             <owner>johndoe</owner>
           </event>
         </ukm-configuration>
@@ -45,7 +45,7 @@ class UkmXmlValidationTest(unittest.TestCase):
         "<owner> tag is required for event 'Event1'.",
         "<owner> tag for event 'Event2' should not be empty.",
         "<owner> tag for event 'Event3' expects a Chromium or Google email "
-        "address.",
+        'address.',
     ]
 
     validator = xml_validations.UkmXmlValidation(ukm_config)
@@ -56,24 +56,24 @@ class UkmXmlValidationTest(unittest.TestCase):
   def test_metric_has_undefined_enum(self):
     ukm_config = self.to_ukm_config("""
         <ukm-configuration>
-          <event name="Event1">
-            <metric name="Metric2" enum="FeatureObserver"/>
+          <event name='Event1'>
+            <metric name='Metric2' enum='FeatureObserver'/>
           </event>
-          <event name="Event2">
-            <metric name="Metric1" enum="BadEnum"/>
-            <metric name="Metric2" enum="FeatureObserver"/>
-            <metric name="Metric3" unit="ms"/>
-            <metric name="Metric4"/>
+          <event name='Event2'>
+            <metric name='Metric1' enum='BadEnum'/>
+            <metric name='Metric2' enum='FeatureObserver'/>
+            <metric name='Metric3' unit='ms'/>
+            <metric name='Metric4'/>
           </event>
         </ukm-configuration>
         """.strip())
     expected_errors = [
-        "Unknown enum BadEnum in ukm metric Event2:Metric1.",
+        'Unknown enum BadEnum in UKM event-metric Event2:Metric1.',
     ]
 
     expected_warnings = [
-        "Warning: Neither 'enum' or 'unit' is specified for ukm metric "
-        "Event2:Metric4.",
+        "Warning: Neither 'enum' or 'unit' is specified for UKM event-metric "
+        'Event2:Metric4.',
     ]
 
     validator = xml_validations.UkmXmlValidation(ukm_config)
@@ -85,29 +85,29 @@ class UkmXmlValidationTest(unittest.TestCase):
   def test_check_local_metric_is_aggregated(self):
     bad_ukm_config = self.to_ukm_config("""
         <ukm-configuration>
-          <event name="Event">
-            <metric name="M1" enum="Enum1"/>
-            <metric name="M2" enum="Enum2">
+          <event name='Event'>
+            <metric name='M1' enum='Enum1'/>
+            <metric name='M2' enum='Enum2'>
               <aggregation>
                 <history>
-                  <index fields="metrics.M1,metrics.M4,profile.country"/>
+                  <index fields='metrics.M1,metrics.M4,profile.country'/>
                   <statistics>
                     <enumeration/>
                   </statistics>
                 </history>
               </aggregation>
             </metric>
-            <metric name="M3" unit="ms">
+            <metric name='M3' unit='ms'>
               <aggregation>
                 <history>
-                  <index fields="metrics.M1,metrics.M2,metrics.M4"/>
+                  <index fields='metrics.M1,metrics.M2,metrics.M4'/>
                   <statistics>
                     <enumeration/>
                   </statistics>
                 </history>
               </aggregation>
             </metric>
-            <metric name="M4"/>
+            <metric name='M4'/>
           </event>
         </ukm-configuration>
         """.strip())
@@ -125,44 +125,44 @@ class UkmXmlValidationTest(unittest.TestCase):
     self.assertListEqual(expected_errors, errors)
 
     # Add aggregation definitions to M1 and M4 to make it valid. Note the
-    # export="False" that prevents M1 and M4 from being aggregated, and only
+    # export='False' that prevents M1 and M4 from being aggregated, and only
     # useful as an index field.
     good_ukm_config = self.to_ukm_config("""
         <ukm-configuration>
-          <event name="Event">
-            <metric name="M1" enum="Enum1">
+          <event name='Event'>
+            <metric name='M1' enum='Enum1'>
               <aggregation>
                 <history>
-                  <statistics export="False">
+                  <statistics export='False'>
                     <enumeration/>
                   </statistics>
                 </history>
               </aggregation>
             </metric>
-            <metric name="M2" enum="Enum2">
+            <metric name='M2' enum='Enum2'>
               <aggregation>
                 <history>
-                  <index fields="metrics.M1,metrics.M4,profile.country"/>
+                  <index fields='metrics.M1,metrics.M4,profile.country'/>
                   <statistics>
                     <enumeration/>
                   </statistics>
                 </history>
               </aggregation>
             </metric>
-            <metric name="M3" unit="ms">
+            <metric name='M3' unit='ms'>
               <aggregation>
                 <history>
-                  <index fields="metrics.M1,metrics.M2,metrics.M4"/>
+                  <index fields='metrics.M1,metrics.M2,metrics.M4'/>
                   <statistics>
                     <enumeration/>
                   </statistics>
                 </history>
               </aggregation>
             </metric>
-            <metric name="M4">
+            <metric name='M4'>
               <aggregation>
                 <history>
-                  <statistics export="False">
+                  <statistics export='False'>
                     <enumeration/>
                   </statistics>
                 </history>
@@ -184,8 +184,8 @@ class UkmXmlValidationTest(unittest.TestCase):
           # config
           """
       <ukm-configuration>
-      <event name="Test.Event">
-        <metric name="Test.Metric">
+      <event name='Test.Event'>
+        <metric name='Test.Metric'>
           <aggregation>
             <history>
               <statistics>
@@ -205,8 +205,8 @@ class UkmXmlValidationTest(unittest.TestCase):
           # config
           """
       <ukm-configuration>
-        <event name="Test.Event">
-          <metric name="Test.Metric">
+        <event name='Test.Event'>
+          <metric name='Test.Metric'>
             <aggregation>
               <history>
                 <statistics/>
@@ -231,8 +231,8 @@ class UkmXmlValidationTest(unittest.TestCase):
           # config
           """
         <ukm-configuration>
-          <event name="Test.Event">
-            <metric name="Test.Metric">
+          <event name='Test.Event'>
+            <metric name='Test.Metric'>
               <aggregation>
                 <history>
                   <statistics>
@@ -259,12 +259,12 @@ class UkmXmlValidationTest(unittest.TestCase):
           # config
           """
       <ukm-configuration>
-        <event name="Test.Event">
-          <metric name="Test.Metric">
+        <event name='Test.Event'>
+          <metric name='Test.Metric'>
             <aggregation>
               <history>
                 <statistics>
-                  <quantiles type="wrong-type"/>
+                  <quantiles type='wrong-type'/>
                 </statistics>
               </history>
             </aggregation>
@@ -300,32 +300,103 @@ class UkmXmlValidationTest(unittest.TestCase):
     """Validates that metrics using forbidden names generate errors."""
     bad_ukm_config = self.to_ukm_config("""
         <ukm-configuration>
-          <event name="Event1">
-            <metric name="Event" enum="SomeEnumName"/>
-            <metric name="event" enum="SomeEnumName"/>
-            <metric name="EVENT" enum="SomeEnumName"/>
-            <metric name="Metadata" enum="SomeEnumName"/>
-            <metric name="metadata" enum="SomeEnumName"/>
-            <metric name="SomeGoodName" enum="SomeEnumName"/>
+          <event name='Event1'>
+            <metric name='Event' enum='SomeEnumName'/>
+            <metric name='event' enum='SomeEnumName'/>
+            <metric name='EVENT' enum='SomeEnumName'/>
+            <metric name='Metadata' enum='SomeEnumName'/>
+            <metric name='metadata' enum='SomeEnumName'/>
+            <metric name='SomeGoodName' enum='SomeEnumName'/>
           </event>
         </ukm-configuration>
         """.strip())
     expected_errors = [
         "Metric name 'Event' in event 'Event1' collides with a "
-        "UKM-internal keyword. Please pick a different name.",
+        'UKM-internal keyword. Please pick a different name.',
         "Metric name 'event' in event 'Event1' collides with a "
-        "UKM-internal keyword. Please pick a different name.",
+        'UKM-internal keyword. Please pick a different name.',
         "Metric name 'EVENT' in event 'Event1' collides with a "
-        "UKM-internal keyword. Please pick a different name.",
+        'UKM-internal keyword. Please pick a different name.',
         "Metric name 'Metadata' in event 'Event1' collides with a "
-        "UKM-internal keyword. Please pick a different name.",
+        'UKM-internal keyword. Please pick a different name.',
         "Metric name 'metadata' in event 'Event1' collides with a "
-        "UKM-internal keyword. Please pick a different name.",
+        'UKM-internal keyword. Please pick a different name.',
     ]
     validator = xml_validations.UkmXmlValidation(bad_ukm_config)
     is_success, errors = validator.check_metric_names()
     self.assertFalse(is_success)
     self.assertListEqual(expected_errors, errors)
+
+
+  def test_check_time_metric_unit(self):
+    bad_ukm_config = self.to_ukm_config("""
+        <ukm-configuration>
+          <event name='SomeEvent'>
+            <metric name='ProactiveCueShownDuration'/>
+            <metric name='Something.HTMLParseTimeV20'/>
+            <metric name='MeasurementInterval.V1'/>
+            <metric name='Boot.Time.Something'/>
+          </event>
+        </ukm-configuration>
+        """.strip())
+    expected_errors = [
+        xml_validations.MISSING_TIME_METRIC_UNIT_ERROR % {
+            'event': 'SomeEvent',
+            'metric': 'ProactiveCueShownDuration',
+            'time_keywords': ','.join(sorted(xml_validations.TIME_KEYWORDS)),
+            'time_units': ','.join(sorted(xml_validations.TIME_UNITS))
+        }, xml_validations.MISSING_TIME_METRIC_UNIT_ERROR % {
+            'event': 'SomeEvent',
+            'metric': 'Something.HTMLParseTimeV20',
+            'time_keywords': ','.join(sorted(xml_validations.TIME_KEYWORDS)),
+            'time_units': ','.join(sorted(xml_validations.TIME_UNITS))
+        }, xml_validations.MISSING_TIME_METRIC_UNIT_ERROR % {
+            'event': 'SomeEvent',
+            'metric': 'MeasurementInterval.V1',
+            'time_keywords': ','.join(sorted(xml_validations.TIME_KEYWORDS)),
+            'time_units': ','.join(sorted(xml_validations.TIME_UNITS))
+        }, xml_validations.MISSING_TIME_METRIC_UNIT_ERROR % {
+            'event': 'SomeEvent',
+            'metric': 'Boot.Time.Something',
+            'time_keywords': ','.join(sorted(xml_validations.TIME_KEYWORDS)),
+            'time_units': ','.join(sorted(xml_validations.TIME_UNITS))
+        }
+    ]
+    validator = xml_validations.UkmXmlValidation(bad_ukm_config)
+    success, errors = validator.check_time_metric_unit()
+    self.assertFalse(success)
+    self.assertListEqual(expected_errors, errors)
+
+    good_ukm_config = self.to_ukm_config("""
+        <ukm-configuration>
+          <event name='SomeEvent'>
+            <metric name='ProactiveCueShownDurationMs'/>
+            <metric name='ResponseTimeSeconds'/>
+            <metric name='MeasurementIntervalDays'/>
+            <metric name='ObservationTimeMicroseconds'/>
+            <metric name='CpuUsage'/>
+            <metric name='CookieHasNonAsciiCharacter'/>
+          </event>
+        </ukm-configuration>
+        """.strip())
+    validator = xml_validations.UkmXmlValidation(good_ukm_config)
+    success, errors = validator.check_time_metric_unit()
+    self.assertTrue(success)
+    self.assertListEqual([], errors)
+
+  def test_split_words_in_metric_name(self):
+    self.assertListEqual([
+        'proactive', 'cue', 'shown', 'duration'
+    ], xml_validations._split_words_in_metric_name('ProactiveCueShownDuration'))
+    self.assertListEqual(['something', 'html', 'parse', 'time', 'v', '20'],
+                         xml_validations._split_words_in_metric_name(
+                             'Something.HTMLParseTimeV20'))
+    self.assertListEqual(
+        ['measurement', 'interval', 'v', '1'],
+        xml_validations._split_words_in_metric_name('MeasurementInterval.V1'))
+    self.assertListEqual(
+        ['boot', 'time', 'something'],
+        xml_validations._split_words_in_metric_name('Boot.Time.Something'))
 
 
 if __name__ == '__main__':

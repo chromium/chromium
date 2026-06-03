@@ -33,15 +33,17 @@ def main():
         validator.check_statistics_non_empty_valid())
     metric_name_check_success, metric_name_check_errors = (
         validator.check_metric_names())
+    time_unit_check_success, time_unit_check_errors = (
+        validator.check_time_metric_unit())
 
     results = {}
 
-    if (not owner_check_success or not metric_check_success
-        or not aggregation_check_success or not statistic_check_success
-        or not metric_name_check_success):
+    if not all((owner_check_success, metric_check_success,
+                aggregation_check_success, statistic_check_success,
+                metric_name_check_success, time_unit_check_success)):
       results['Errors'] = (owner_check_errors + metric_check_errors +
                            aggregation_check_errors + statistic_check_errors +
-                           metric_name_check_errors)
+                           metric_name_check_errors + time_unit_check_errors)
     if metric_check_warnings and not IGNORE_METRIC_CHECK_WARNINGS:
       results['Warnings'] = metric_check_warnings
 
