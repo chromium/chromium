@@ -659,10 +659,10 @@ void ArcPolicyBridge::ReportCompliance(const std::string& request,
       is_dpc_first_compliance_reported_ = true;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      request,
-      base::BindOnce(&ArcPolicyBridge::OnReportComplianceParse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  // JSONReader is now safe for rule of 2.
+  OnReportComplianceParse(
+      std::move(callback),
+      base::JSONReader::Read(request, base::JSON_PARSE_RFC));
 }
 
 void ArcPolicyBridge::ReportDPCVersion(const std::string& version) {
@@ -767,7 +767,7 @@ std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
 
 void ArcPolicyBridge::OnReportComplianceParse(
     base::OnceCallback<void(const std::string&)> callback,
-    data_decoder::DataDecoder::ValueOrError result) {
+    std::optional<base::Value> result) {
   std::move(callback).Run(kPolicyCompliantJson);
   if (!result.has_value()) {
     DLOG(ERROR) << "Can't parse policy compliance report";

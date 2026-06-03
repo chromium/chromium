@@ -23,7 +23,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 class BrowserContextKeyedServiceFactory;
 
@@ -163,7 +162,7 @@ class ArcPolicyBridge : public KeyedService,
   // Called when the compliance report from ARC is parsed.
   void OnReportComplianceParse(
       base::OnceCallback<void(const std::string&)> callback,
-      data_decoder::DataDecoder::ValueOrError result);
+      std::optional<base::Value> result);
 
   // Check the policy to see if ARC needs to be activated to install any
   // applications

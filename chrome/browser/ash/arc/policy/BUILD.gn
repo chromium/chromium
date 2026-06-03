@@ -51,7 +51,6 @@ static_library("policy") {
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
     "//components/user_manager",
-    "//services/data_decoder/public/cpp",
     "//third_party/re2",
   ]
 
