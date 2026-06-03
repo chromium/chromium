@@ -1,17 +1,18 @@
 <!doctype html>
-<title>IDB Offline Google Docs Load</title>
+<title>IDB Offline Google Docs Load (cold open)</title>
 <script src="../resources/runner.js"></script>
 <script src="resources/shared.js"></script>
 <script src="resources/idb-load-docs-shared.js"></script>
 <script src="resources/idb-load-docs-setup.js"></script>
 <script>
+  // Same as `idb-load-docs.html` but with `databaseWarmOpen` set to false.
   deleteThenRunTest(databaseName, populateFakeDocsDatabase, {
-    description: 'Benchmark modeling the IndexedDB activity of a Google Docs offline page load.',
+    description: 'Benchmark modeling IndexedDB activity of a Google Docs offline page load on cold-open.',
     unit: 'ms',
     iterationCount: 20,
     tracingCategories: 'IndexedDB',
     traceEventsToMeasure: ['Transaction::lifetime', 'IDBObjectStore::delete', 'IDBObjectStore::get', 'IDBObjectStore::put', 'IDBObjectStore::openCursor', 'IDBFactory::open'],
     path: "resources/idb-load-docs-runner.html",
-    databaseWarmOpen: true,
+    databaseWarmOpen: false,
   });
 </script>

@@ -25,6 +25,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
@@ -105,6 +106,12 @@ BASE_FEATURE_ENUM_PARAM(SqliteRolloutStage,
 // Time after the last connection to a database is closed and when we destroy
 // the backing store.
 constexpr base::TimeDelta kBackingStoreGracePeriod = base::Seconds(2);
+
+// If this switch is present, the backing store is shut down near-synchronously
+// when the last `Database` closes. Used by blink perf tests to exercise
+// database cold-open.
+constexpr char kExpediteBackingStoreShutdownSwitch[] =
+    "idb-expedite-backing-store-shutdown";
 
 // Duration of inactivity after which idle tasks are run.
 constexpr base::TimeDelta kIdleTimeout = base::Seconds(15);
@@ -616,7 +623,11 @@ void BucketContext::RunTasks() {
       ++db_it;
     }
   }
-  if (CanClose() && closing_stage_ == ClosingState::kClosed) {
+  static const bool kExpediteShutdown =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kExpediteBackingStoreShutdownSwitch);
+  if (CanClose() &&
+      (closing_stage_ == ClosingState::kClosed || kExpediteShutdown)) {
     ResetBackingStore();
   } else {
     // Since a `Database` may have just been destroyed, there may no longer be

@@ -6,6 +6,12 @@ These benchmarks exercise storage apis in a real-life usage way (avoiding microb
 
 This models an offline load of a Google doc. See [this document](https://docs.google.com/document/d/1JC1RgMyxBAjUPSHjm2Bd1KPzcqpPPvxRomKevOkMPm0/edit) for a breakdown of the database and the transactions, along with the traces used to extract this information.
 
+The cold open variant of this test opens the database from disk in each iteration to more realistically model activity on a fresh user navigation.
+
+# Mail Client Scenarios
+
+Models different scenarios pertaining to a mail client that caches data in IndexedDB for offline use.
+
 # Blob Perf
 
 This benchmark models the creation and reading of blobs. It has two parts:

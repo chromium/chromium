@@ -5,18 +5,13 @@
 <script src="resources/mail-client-config.js"></script>
 <script src="resources/mail-client-write-setup.js"></script>
 <script>
-  deleteThenOpen(databaseName, populateFakeMailClientDatabase, () => {
-    window.dbConnection.onversionchange = () => {
-      window.dbConnection.close();
-    };
-    var test = {
-      description: 'Benchmark for database version upgrade by adding/removing indexes and object stores.',
-      unit: 'ms',
-      iterationCount: 20,
-      tracingCategories: 'IndexedDB',
-      traceEventsToMeasure: ['Transaction::lifetime', 'IDBObjectStore::createIndex'],
-      path: "resources/mail-client-version-upgrade-runner.html"
-    }
-    PerfTestRunner.measurePageLoadTimeAfterDoneMessage(test);
+  deleteThenRunTest(databaseName, populateFakeMailClientDatabase, {
+    description: 'Benchmark for database version upgrade by adding/removing indexes and object stores.',
+    unit: 'ms',
+    iterationCount: 20,
+    tracingCategories: 'IndexedDB',
+    traceEventsToMeasure: ['Transaction::lifetime', 'IDBObjectStore::createIndex'],
+    path: "resources/mail-client-version-upgrade-runner.html",
+    databaseWarmOpen: true,
   });
 </script>
