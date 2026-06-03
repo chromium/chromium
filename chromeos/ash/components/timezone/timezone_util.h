@@ -37,6 +37,14 @@ bool SetSystemTimezone(const PrefService& local_state,
 void SetSystemAndSigninScreenTimezone(PrefService& local_state,
                                       const std::string& timezone);
 
+// Returns true if given timezone preference is enterprise-managed.
+// Works for:
+// - kSystemTimezone
+// - ash::prefs::kUserTimezone
+// - ash::prefs::kResolveTimezoneByGeolocationMethod
+bool IsTimezonePrefsManaged(const PrefService& local_state,
+                            const std::string& pref_name);
+
 }  // namespace ash::system
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TIMEZONE_TIMEZONE_UTIL_H_
