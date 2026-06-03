@@ -80,6 +80,7 @@ android_library("java") {
     "//chrome/browser/contextual_tasks/fusebox/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/glic:metrics_java",
+    "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",

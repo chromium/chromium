@@ -72,6 +72,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -119,6 +121,8 @@ class ManualFillingMediator
     private NonNullObservableSupplier<ViewportInsets> mApplicationViewportInsetTracker;
     private final SettableNonNullObservableSupplier<Integer> mBottomInsetSupplier =
             ObservableSuppliers.createNonNull(0);
+    private final SettableNonNullObservableSupplier<Boolean> mIsAccessoryRequestedSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final ManualFillingStateCache mStateCache = new ManualFillingStateCache();
     private final HashSet<Tab> mObservedTabs = new HashSet<>();
     private KeyboardAccessoryCoordinator mKeyboardAccessory;
@@ -199,7 +203,19 @@ class ManualFillingMediator
             new EmptyBottomSheetObserver() {
                 @Override
                 public void onSheetStateChanged(@SheetState int newState, int reason) {
-                    mModel.set(SUPPRESSED_BY_BOTTOM_SHEET, newState != SheetState.HIDDEN);
+                    @Nullable BottomSheetContent currentContent =
+                            mBottomSheetController.getCurrentSheetContent();
+                    // TODO(crbug.com/505050661): Remove COBROWSE condition once modes is
+                    // implemented.
+                    boolean isCoBrowse =
+                            currentContent != null
+                                    && currentContent.getPriority() == ContentPriority.COBROWSE;
+
+                    // Only suppress the accessory if the sheet is open AND it is not a Co-Browse
+                    // sheet.
+                    mModel.set(
+                            SUPPRESSED_BY_BOTTOM_SHEET,
+                            newState != SheetState.HIDDEN && !isCoBrowse);
                 }
             };
 
@@ -280,6 +296,10 @@ class ManualFillingMediator
 
     NonNullObservableSupplier<Integer> getBottomInsetSupplier() {
         return mBottomInsetSupplier;
+    }
+
+    NonNullObservableSupplier<Boolean> getIsAccessoryRequestedSupplier() {
+        return mIsAccessoryRequestedSupplier;
     }
 
     @Override
@@ -526,6 +546,7 @@ class ManualFillingMediator
                     "ManualFillingMediator$KeyboardExtensionState",
                     getNameForState(mModel.get(KEYBOARD_EXTENSION_STATE)));
             transitionIntoState(mModel.get(KEYBOARD_EXTENSION_STATE));
+            mIsAccessoryRequestedSupplier.set(mModel.get(KEYBOARD_EXTENSION_STATE) != HIDDEN);
             return;
         } else if (property == SUPPRESSED_BY_BOTTOM_SHEET) {
             if (isInitialized() && mModel.get(SUPPRESSED_BY_BOTTOM_SHEET)) {

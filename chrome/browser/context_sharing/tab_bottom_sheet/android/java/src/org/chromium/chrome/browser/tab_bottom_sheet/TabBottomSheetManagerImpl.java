@@ -17,6 +17,8 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -125,8 +127,13 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                     }
                 }
             };
+    private boolean mIsSuppressedByAutofill;
 
     private @Nullable View mPeekView;
+    private @Nullable MonotonicObservableSupplier<ManualFillingComponent>
+            mManualFillingComponentSupplier;
+    private @Nullable ManualFillingComponent mCurrentManualFillingComponent;
+
     private @Nullable NullableObservableSupplier<Tab> mActivePlaybackTabSupplier;
     private final Callback<@Nullable Tab> mActivePlaybackTabObserver =
             this::onActivePlaybackTabChanged;
@@ -140,6 +147,12 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
 
     private @Nullable TabBottomSheetCoordinator mTabBottomSheetCoordinator;
     private @Nullable NativeInterfaceDelegate mNativeInterfaceDelegate;
+
+    private final Callback<ManualFillingComponent> mFillingComponentObserver =
+            this::connectToFillingComponent;
+
+    private final Callback<Boolean> mIsAccessoryRequestedObserver =
+            this::onAccessoryRequestedChanged;
 
     /**
      * Constructor.
@@ -179,6 +192,11 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                                 }
                             }));
         }
+        mManualFillingComponentSupplier = ManualFillingComponentSupplier.from(mWindowAndroid);
+        if (mManualFillingComponentSupplier != null) {
+            mManualFillingComponentSupplier.addSyncObserverAndPostIfNonNull(
+                    mFillingComponentObserver);
+        }
 
         TabBottomSheetUtils.attachManagerToWindow(windowAndroid, this);
     }
@@ -217,7 +235,8 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         if (mIsSuppressedOnTabSwitcher
                 || mIsSuppressedOnToolbarSwipe
                 || mIsSuppressedByReadAloud
-                || mIsSuppressedByIncognito) {
+                || mIsSuppressedByIncognito
+                || mIsSuppressedByAutofill) {
             // We are currently suppressed, save this sheet to be shown when suppression ends.
             mNativeInterfaceDelegate = nativeInterfaceDelegate;
             return true;
@@ -318,6 +337,17 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
             mActivePlaybackTabSupplier.removeObserver(mActivePlaybackTabObserver);
             mActivePlaybackTabSupplier = null;
         }
+        if (mCurrentManualFillingComponent != null) {
+            mCurrentManualFillingComponent
+                    .getIsAccessoryRequestedSupplier()
+                    .removeObserver(mIsAccessoryRequestedObserver);
+            mCurrentManualFillingComponent = null;
+        }
+        if (mManualFillingComponentSupplier != null) {
+            mManualFillingComponentSupplier.removeObserver(mFillingComponentObserver);
+            mManualFillingComponentSupplier = null;
+        }
+
         mIsCloseFromNative = true;
 
         mCallbackController.destroy();
@@ -378,7 +408,8 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         if (!mIsSuppressedOnTabSwitcher
                 && !mIsSuppressedOnToolbarSwipe
                 && !mIsSuppressedByReadAloud
-                && !mIsSuppressedByIncognito) {
+                && !mIsSuppressedByIncognito
+                && !mIsSuppressedByAutofill) {
 
             if (mTabBottomSheetCoordinator != null && mNativeInterfaceDelegate != null) {
                 if (!mTabBottomSheetCoordinator.tryToShowBottomSheet(
@@ -386,6 +417,30 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                     notifyOnClose();
                 }
             }
+        }
+    }
+
+    private void connectToFillingComponent(ManualFillingComponent component) {
+        if (mCurrentManualFillingComponent == component) return;
+        if (mCurrentManualFillingComponent != null) {
+            mCurrentManualFillingComponent
+                    .getIsAccessoryRequestedSupplier()
+                    .removeObserver(mIsAccessoryRequestedObserver);
+        }
+
+        mCurrentManualFillingComponent = component;
+        mCurrentManualFillingComponent
+                .getIsAccessoryRequestedSupplier()
+                .addSyncObserverAndCallIfNonNull(mIsAccessoryRequestedObserver);
+    }
+
+    private void onAccessoryRequestedChanged(boolean isRequested) {
+        if (isRequested && !mIsSuppressedByAutofill) {
+            mIsSuppressedByAutofill = true;
+            maybeCloseBottomSheet();
+        } else if (!isRequested && mIsSuppressedByAutofill) {
+            mIsSuppressedByAutofill = false;
+            maybeShowBottomSheet();
         }
     }
 
@@ -421,6 +476,38 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                     if (mActivePlaybackTabSupplier != null) {
                         mActivePlaybackTabSupplier.addSyncObserverAndCallIfNonNull(
                                 mActivePlaybackTabObserver);
+                    }
+                });
+    }
+
+    public void setManualFillingComponentSupplierForTesting(
+            @Nullable MonotonicObservableSupplier<ManualFillingComponent> supplier) {
+        var oldSupplier = mManualFillingComponentSupplier;
+        if (oldSupplier != null) {
+            oldSupplier.removeObserver(mFillingComponentObserver);
+        }
+        mManualFillingComponentSupplier = supplier;
+        if (mManualFillingComponentSupplier != null) {
+            mManualFillingComponentSupplier.addSyncObserverAndPostIfNonNull(
+                    mFillingComponentObserver);
+        }
+        ResettersForTesting.register(
+                () -> {
+                    if (mManualFillingComponentSupplier != null) {
+                        mManualFillingComponentSupplier.removeObserver(mFillingComponentObserver);
+                    }
+                    mManualFillingComponentSupplier = oldSupplier;
+                    if (mManualFillingComponentSupplier != null) {
+                        mManualFillingComponentSupplier.addSyncObserverAndPostIfNonNull(
+                                mFillingComponentObserver);
+                    } else {
+                        if (mCurrentManualFillingComponent != null) {
+                            mCurrentManualFillingComponent
+                                    .getIsAccessoryRequestedSupplier()
+                                    .removeObserver(mIsAccessoryRequestedObserver);
+                            mCurrentManualFillingComponent = null;
+                        }
+                        mIsSuppressedByAutofill = false;
                     }
                 });
     }
