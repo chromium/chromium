@@ -90,19 +90,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGlicLauncherEnabled, false);
-
-#if BUILDFLAG(IS_ANDROID)
-  registry->RegisterStringPref(
-      prefs::kGlicLauncherHotkey,
-      ui::Command::AcceleratorToString(
-          LocalHotkeyManager::GetDefaultAccelerator(
-              LocalHotkeyManager::Command::kOpenGlic)));
-#else
   registry->RegisterStringPref(
       prefs::kGlicLauncherHotkey,
       ui::Command::AcceleratorToString(
           GlicLauncherConfiguration::GetDefaultHotkey()));
-#endif
   registry->RegisterStringPref(
       prefs::kGlicSelectionHotkey,
       ui::Command::AcceleratorToString(
@@ -112,7 +103,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       ui::Command::AcceleratorToString(
           LocalHotkeyManager::GetDefaultAccelerator(
               LocalHotkeyManager::Command::kFocusToggle)));
-
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetAutopush, "");
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetStaging, "");
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetPreprod, "");

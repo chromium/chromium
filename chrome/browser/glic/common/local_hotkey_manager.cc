@@ -36,15 +36,11 @@ constexpr int kFocusToggleAcceleratorModifiers =
 #endif
 
 constexpr auto kCommandToPrefMap =
-    base::MakeFixedFlatMap<LocalHotkeyManager::Command, const char*>({
-        {LocalHotkeyManager::Command::kFocusToggle,
-         prefs::kGlicFocusToggleHotkey},
-        {LocalHotkeyManager::Command::kCaptureRegion,
-         prefs::kGlicSelectionHotkey},
-#if BUILDFLAG(IS_ANDROID)
-        {LocalHotkeyManager::Command::kOpenGlic, prefs::kGlicLauncherHotkey},
-#endif
-    });
+    base::MakeFixedFlatMap<LocalHotkeyManager::Command, const char*>(
+        {{LocalHotkeyManager::Command::kFocusToggle,
+          prefs::kGlicFocusToggleHotkey},
+         {LocalHotkeyManager::Command::kCaptureRegion,
+          prefs::kGlicSelectionHotkey}});
 
 constexpr std::array kCloseAccelerators = {
     ui::Accelerator{ui::VKEY_ESCAPE, ui::EF_NONE},
@@ -78,28 +74,18 @@ constexpr std::array kZoomResetAccelerators = {
     ui::Accelerator{ui::VKEY_0, kZoomModifier},
     ui::Accelerator{ui::VKEY_NUMPAD0, kZoomModifier}};
 
-#if BUILDFLAG(IS_ANDROID)
-constexpr ui::Accelerator kOpenGlicDefaultAccelerator = {ui::VKEY_G,
-                                                         ui::EF_ALT_DOWN};
-#else
-constexpr std::array<ui::Accelerator, 0> kOpenGlicAcceleratorsFallback = {};
-#endif
-
 constexpr auto kCommandToStaticAcceleratorsMap =
     base::MakeFixedFlatMap<LocalHotkeyManager::Command,
-                           base::span<const ui::Accelerator>>({
-        {LocalHotkeyManager::Command::kClose, kCloseAccelerators},
-        {LocalHotkeyManager::Command::kZoomIn, kZoomInAccelerators},
-        {LocalHotkeyManager::Command::kZoomOut, kZoomOutAccelerators},
-        {LocalHotkeyManager::Command::kZoomReset, kZoomResetAccelerators},
+                           base::span<const ui::Accelerator>>(
+        {{LocalHotkeyManager::Command::kClose, kCloseAccelerators},
+         {LocalHotkeyManager::Command::kZoomIn, kZoomInAccelerators},
+         {LocalHotkeyManager::Command::kZoomOut, kZoomOutAccelerators},
+         {LocalHotkeyManager::Command::kZoomReset, kZoomResetAccelerators},
 #if BUILDFLAG(IS_WIN)
-        {LocalHotkeyManager::Command::kTitleBarContextMenu,
-         kTitleBarContextMenuAccelerators},
+         {LocalHotkeyManager::Command::kTitleBarContextMenu,
+          kTitleBarContextMenuAccelerators}
 #endif
-#if !BUILDFLAG(IS_ANDROID)
-        {LocalHotkeyManager::Command::kOpenGlic, kOpenGlicAcceleratorsFallback},
-#endif
-    });
+        });
 
 // Compile-time helper to check if the keys in two maps are disjoint.
 // It checks if any key from map1 exists in map2.
@@ -164,10 +150,6 @@ ui::Accelerator LocalHotkeyManager::GetDefaultAccelerator(Command command) {
       return ui::Accelerator{ui::VKEY_G, kFocusToggleAcceleratorModifiers};
     case Command::kCaptureRegion:
       return GlicLauncherConfiguration::GetDefaultSelectionHotkey();
-#if BUILDFLAG(IS_ANDROID)
-    case Command::kOpenGlic:
-      return kOpenGlicDefaultAccelerator;
-#endif
     default:
       NOTREACHED();
   }
@@ -187,6 +169,7 @@ ui::Accelerator LocalHotkeyManager::GetConfigurableAccelerator(
   auto pref_name_iter = kCommandToPrefMap.find(command);
   CHECK(pref_name_iter != kCommandToPrefMap.end());
 
+  // NEEDS_ANDROID_IMPL: StringToAccelerator does not work on Android.
   const ui::Accelerator accelerator = ui::Command::StringToAccelerator(
       g_browser_process->local_state()->GetString(pref_name_iter->second));
 

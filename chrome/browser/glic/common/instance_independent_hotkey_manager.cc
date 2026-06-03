@@ -11,7 +11,6 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
-#include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -19,17 +18,12 @@
 
 namespace glic {
 
-namespace {
-constexpr LocalHotkeyManager::Command kSupportedCommands[] = {
-    LocalHotkeyManager::Command::kOpenGlic,
-    LocalHotkeyManager::Command::kCaptureRegion,
-};
-}  // namespace
-
 InstanceIndependentHotkeyManager::InstanceIndependentHotkeyManager(
     GlicInstanceCoordinator* coordinator,
     Profile* profile)
     : coordinator_(coordinator), profile_(profile) {
+  static constexpr std::array<LocalHotkeyManager::Command, 1>
+      kSupportedCommands = {LocalHotkeyManager::Command::kCaptureRegion};
   hotkey_manager_ = std::make_unique<LocalHotkeyManager>(
       std::make_unique<ApplicationScopedRegistrationDelegate>(profile), this,
       kSupportedCommands);
@@ -56,20 +50,13 @@ void InstanceIndependentHotkeyManager::RequestCaptureRegion() {
 
 bool InstanceIndependentHotkeyManager::AcceleratorPressed(
     LocalHotkeyManager::Command command) {
-  switch (command) {
-    case LocalHotkeyManager::Command::kOpenGlic:
-      coordinator_->Toggle(GetActiveGlicEligibleBrowser(profile_),
-                           /*prevent_close=*/true,
-                           mojom::InvocationSource::kOsHotkey);
-      return true;
 #if !BUILDFLAG(IS_ANDROID)
-    case LocalHotkeyManager::Command::kCaptureRegion:
-      RequestCaptureRegion();
-      return true;
-#endif
-    default:
-      return false;
+  if (command == LocalHotkeyManager::Command::kCaptureRegion) {
+    RequestCaptureRegion();
+    return true;
   }
+#endif
+  return false;
 }
 
 bool InstanceIndependentHotkeyManager::CanHandleAccelerators() const {

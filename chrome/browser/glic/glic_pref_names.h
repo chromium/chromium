@@ -21,11 +21,7 @@ namespace glic::prefs {
 inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
 
 // String pref that keeps track of the non-localized version of the registered
-// hotkey for Glic. Note that on Android, this hotkey is implemented in
-// local_hotkey_manager.cc, otherwise it is implemented in
-// chrome/browser/background/.
-// TODO(b/517917926): Migrate handling of the launcher to
-// local_hotkey_manager.cc.
+// hotkey for Glic.
 inline constexpr char kGlicLauncherHotkey[] = "glic.launcher_hotkey";
 
 // String pref that keeps track of the non-localized version of the registered
