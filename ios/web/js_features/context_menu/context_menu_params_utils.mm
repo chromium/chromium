@@ -13,9 +13,16 @@
 
 namespace web {
 
-ContextMenuParams ContextMenuParamsFromElementDictionary(
+std::optional<ContextMenuParams> ContextMenuParamsFromElementDictionary(
     const base::DictValue& element) {
+  const std::string* frame_id =
+      element.FindString(kContextMenuElementFrameIdName);
+  if (!frame_id || frame_id->empty()) {
+    return std::nullopt;
+  }
+
   ContextMenuParams params;
+  params.frame_id = *frame_id;
 
   const std::string* tag_name = element.FindString(kContextMenuElementTagName);
   if (tag_name) {

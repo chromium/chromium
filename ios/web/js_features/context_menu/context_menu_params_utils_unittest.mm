@@ -65,21 +65,35 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTest) {
           .Set(kContextMenuElementTitle, kTitle)
           .Set(kContextMenuElementReferrerPolicy, kReferrerPolicy)
           .Set(kContextMenuElementInnerText, kLinkText)
-          .Set(kContextMenuElementAlt, kAlt);
-  ContextMenuParams params =
+          .Set(kContextMenuElementAlt, kAlt)
+          .Set(kContextMenuElementFrameIdName, "fake_frame_id");
+  std::optional<ContextMenuParams> params =
       ContextMenuParamsFromElementDictionary(element_dict);
 
-  EXPECT_TRUE(params.is_main_frame);
-  EXPECT_EQ(params.link_url, GURL(kLinkUrl));
-  EXPECT_EQ(params.src_url, GURL(kSrcUrl));
-  EXPECT_NSEQ(params.text, @(kLinkText));
-  EXPECT_EQ(params.referrer_policy, ReferrerPolicyFromString(kReferrerPolicy));
+  ASSERT_TRUE(params.has_value());
+  EXPECT_TRUE(params->is_main_frame);
+  EXPECT_EQ(params->link_url, GURL(kLinkUrl));
+  EXPECT_EQ(params->src_url, GURL(kSrcUrl));
+  EXPECT_NSEQ(params->text, @(kLinkText));
+  EXPECT_EQ(params->referrer_policy, ReferrerPolicyFromString(kReferrerPolicy));
 
-  EXPECT_EQ(params.view, nil);
-  EXPECT_TRUE(CGPointEqualToPoint(params.location, CGPointZero));
+  EXPECT_EQ(params->view, nil);
+  EXPECT_TRUE(CGPointEqualToPoint(params->location, CGPointZero));
 
-  EXPECT_NSEQ(params.title_attribute, @(kTitle));
-  EXPECT_NSEQ(params.alt_text, @(kAlt));
+  EXPECT_NSEQ(params->title_attribute, @(kTitle));
+  EXPECT_NSEQ(params->alt_text, @(kAlt));
+  EXPECT_EQ(params->frame_id, "fake_frame_id");
+}
+
+// Tests that parsing returns std::nullopt if frame_id is missing.
+TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorMissingFrameIdTest) {
+  auto element_dict = base::DictValue()
+                          .Set(kContextMenuElementHyperlink, kLinkUrl)
+                          .Set(kContextMenuElementSource, kSrcUrl);
+  std::optional<ContextMenuParams> params =
+      ContextMenuParamsFromElementDictionary(element_dict);
+
+  EXPECT_FALSE(params.has_value());
 }
 
 // Tests that a context menu will not be shown for empty params.

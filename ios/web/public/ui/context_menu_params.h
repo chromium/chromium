@@ -6,8 +6,11 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/web/public/navigation/referrer.h"
-#include "url/gurl.h"
+#import <string>
+
+#import "ios/web/public/navigation/referrer.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 namespace web {
 
@@ -26,6 +29,14 @@ struct ContextMenuParams {
 
   // Whether or not the context menu was triggered from the main frame.
   bool is_main_frame;
+
+  // The frame ID of the frame where the context menu was triggered.
+  // This is declared by the page, so it cannot be fully trusted.
+  std::string frame_id;
+
+  // The security origin of the frame at the time the context menu was
+  // triggered.
+  url::Origin frame_security_origin;
 
   // The tagName of the element, is also defined when the element is not a link.
   NSString* tag_name;

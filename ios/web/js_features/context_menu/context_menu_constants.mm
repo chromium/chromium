@@ -7,6 +7,7 @@
 namespace web {
 
 const char kContextMenuElementRequestId[] = "requestId";
+const char kContextMenuElementFrameIdName[] = "frameId";
 const char kContextMenuElementTagName[] = "tagName";
 const char kContextMenuElementHyperlink[] = "href";
 const char kContextMenuElementSource[] = "src";

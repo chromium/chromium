@@ -16,6 +16,10 @@ namespace web {
 // findElementAtPoint.
 extern const char kContextMenuElementRequestId[];
 
+// Required key. Represents the unique frame ID of the frame where the context
+// menu was triggered.
+extern const char kContextMenuElementFrameIdName[];
+
 // Optional key. Represents element's tagName attribute.
 extern const char kContextMenuElementTagName[];
 

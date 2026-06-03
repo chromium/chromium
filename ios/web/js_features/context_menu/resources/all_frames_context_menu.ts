@@ -41,6 +41,8 @@ interface FindElementImgResult {
   title?: string;
   // The alternative text given with the image.
   alt?: string;
+  // The frame ID of the frame where the context menu was triggered.
+  frameId?: string;
 }
 
 /**
@@ -59,6 +61,8 @@ interface FindElementLinkResult {
   href: string;
   // The inner text of the link.
   innerText?: string;
+  // The frame ID of the frame where the context menu was triggered.
+  frameId?: string;
 }
 
 /**
@@ -80,6 +84,8 @@ interface FindElementTextResult {
   // Note that `innerText` is contained in `surroundingText`.
   surroundingText?: string;
   surroundingTextOffset?: number;
+  // The frame ID of the frame where the context menu was triggered.
+  frameId?: string;
 }
 
 /**
@@ -87,6 +93,8 @@ interface FindElementTextResult {
  */
 interface FindElementFailResult {
   requestId?: string;
+  // The frame ID of the frame where the context menu was triggered.
+  frameId?: string;
 }
 
 type FindElementResult = FindElementImgResult|FindElementLinkResult|
@@ -459,6 +467,7 @@ function isTextElement(node: Node) {
 function sendFindElementAtPointResponse(
     requestId: string, response: FindElementResult): void {
   response.requestId = requestId;
+  response.frameId = gCrWeb.getFrameId();
   sendWebKitMessage('FindElementResultHandler', response);
 }
 
