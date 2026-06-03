@@ -1913,11 +1913,11 @@ internal::ThreadCache* PartitionRoot::thread_cache_for_testing() const {
 // every few seconds.
 void PartitionRoot::AdjustSlotSpanRing(int16_t ring_size,
                                        int dirty_bytes_shift) {
-  max_empty_slot_spans_dirty_bytes_shift_ = dirty_bytes_shift;
   // ShrinkEmptySlotSpansRing() will iterate through
   // kMaxEmptySlotSpanRingSize, so no need to free empty pages now.
   ::partition_alloc::internal::ScopedGuard guard{
       internal::PartitionRootLock(this)};
+  max_empty_slot_spans_dirty_bytes_shift_ = dirty_bytes_shift;
   global_empty_slot_span_ring_size_ = ring_size;
   if (global_empty_slot_span_ring_index_ >= ring_size) {
     global_empty_slot_span_ring_index_ = 0;
