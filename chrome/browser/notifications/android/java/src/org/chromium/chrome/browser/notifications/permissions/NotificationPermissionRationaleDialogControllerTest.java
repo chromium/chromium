@@ -84,6 +84,7 @@ public class NotificationPermissionRationaleDialogControllerTest {
 
         // Check that the custom view contains the expected title and message.
         assertThat(dialogTitle, withText(R.string.notification_permission_rationale_dialog_title));
+        assertTrue(dialogTitle.isAccessibilityHeading());
         assertThat(
                 dialogMessage, withText(R.string.notification_permission_rationale_dialog_message));
     }
