@@ -62,7 +62,6 @@ import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetRoundedCorn
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 import androidx.browser.customtabs.CustomTabsIntent.OpenInBrowserState;
 import androidx.browser.customtabs.CustomTabsSessionToken;
-import androidx.browser.customtabs.ExperimentalCustomContentAction;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.browser.trusted.FileHandlingData;
 import androidx.browser.trusted.LaunchHandlerClientMode;
@@ -1872,7 +1871,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return mShareState;
     }
 
-    @ExperimentalCustomContentAction
     @Override
     public List<CustomContentAction> getCustomContentActions() {
         if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
