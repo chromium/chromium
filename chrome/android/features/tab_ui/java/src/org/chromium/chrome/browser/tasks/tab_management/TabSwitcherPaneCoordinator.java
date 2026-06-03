@@ -642,7 +642,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             tabListCoordinator.addDragObserver(mDragObserver);
 
             if (ChromeFeatureList.sTabSwitcherGroupSuggestionsAndroid.isEnabled()) {
-                assert ChromeFeatureList.isEnabled(GROUP_SUGGESTION_SERVICE);
                 if (ChromeFeatureList.isEnabled(GROUP_SUGGESTION_SERVICE)) {
                     mTabSwitcherGroupSuggestionService =
                             TabSwitcherGroupSuggestionServiceFactory.build(
