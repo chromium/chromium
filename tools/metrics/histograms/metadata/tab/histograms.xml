@@ -3718,6 +3718,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabStrip.SplitView.OrientationOnCreation"
+    enum="SplitTabLayout" expires_after="2026-09-27">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a split view is created, capturing the initial layout
+    orientation (stacked or side-by-side).
+  </summary>
+</histogram>
+
 <histogram name="TabStrip.Tab.ContextMenuReloadCount" units="tabs"
     expires_after="2026-07-26">
   <owner>agale@chromium.org</owner>

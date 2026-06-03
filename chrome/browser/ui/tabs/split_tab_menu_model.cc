@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -279,7 +280,18 @@ void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
           GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
               ? split_tabs::SplitTabLayout::kStacked
               : split_tabs::SplitTabLayout::kSideBySide;
-      tab_strip_model_->UpdateSplitLayout(split_id, new_layout);
+      split_tabs::SplitTabOrientationChangeSource source;
+      switch (menu_source_) {
+        case MenuSource::kToolbarButton:
+          source = split_tabs::SplitTabOrientationChangeSource::kToolbarButton;
+          break;
+        case MenuSource::kTabContextMenu:
+          source = split_tabs::SplitTabOrientationChangeSource::kTabContextMenu;
+          break;
+        default:
+          NOTREACHED() << "Unknown menu source";
+      }
+      tab_strip_model_->UpdateSplitLayout(split_id, new_layout, source);
       break;
     }
   }

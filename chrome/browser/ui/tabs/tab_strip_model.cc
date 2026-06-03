@@ -1881,8 +1881,10 @@ bool TabStripModel::IsActiveTabSplit() const {
   return active_tab && active_tab->IsSplit();
 }
 
-void TabStripModel::UpdateSplitLayout(split_tabs::SplitTabId split_id,
-                                      split_tabs::SplitTabLayout tab_layout) {
+void TabStripModel::UpdateSplitLayout(
+    split_tabs::SplitTabId split_id,
+    split_tabs::SplitTabLayout tab_layout,
+    std::optional<split_tabs::SplitTabOrientationChangeSource> source) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   split_tabs::SplitTabData* split_data = GetSplitData(split_id);
@@ -1895,6 +1897,10 @@ void TabStripModel::UpdateSplitLayout(split_tabs::SplitTabId split_id,
       *GetSplitData(split_id)->visual_data();
 
   split_data->visual_data()->set_split_layout(tab_layout);
+
+  if (source.has_value()) {
+    split_tabs::RecordSplitTabOrientationChanged(source.value());
+  }
 
   NotifySplitTabVisualsChanged(
       split_id, old_visual_data, *split_data->visual_data(),
@@ -1970,7 +1976,7 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
   CHECK(active_index() != kNoTab);
   CHECK(active_index() != indices[0]);
 
-  split_tabs::RecordSplitTabCreated(source);
+  split_tabs::RecordSplitTabCreated(source, visual_data.split_layout());
 
   split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
 

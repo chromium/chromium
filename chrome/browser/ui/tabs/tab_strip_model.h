@@ -61,6 +61,7 @@ class SplitTabData;
 class SplitTabVisualData;
 enum class SplitTabLayout;
 enum class SplitTabCreatedSource;
+enum class SplitTabOrientationChangeSource;
 }  // namespace split_tabs
 
 namespace tabs {
@@ -625,8 +626,11 @@ class TabStripModel {
                                    int destination_index);
 
   // Updates the layout for the tabs with `split_id` and notifies observers.
-  void UpdateSplitLayout(split_tabs::SplitTabId split_id,
-                         split_tabs::SplitTabLayout tab_layout);
+  void UpdateSplitLayout(
+      split_tabs::SplitTabId split_id,
+      split_tabs::SplitTabLayout tab_layout,
+      std::optional<split_tabs::SplitTabOrientationChangeSource> source =
+          std::nullopt);
 
   // Updates the ratio for the tabs with `split_id` and notifies observers.
   void UpdateSplitRatio(split_tabs::SplitTabId split_id,

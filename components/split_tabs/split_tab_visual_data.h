@@ -10,12 +10,15 @@ namespace split_tabs {
 // Orientation of a split view. Needs to be kept in sync with
 // tab_search::mojom::SplitTabLayout in
 // chrome/browser/ui/webui/tab_search/tab_search.mojom.
+// LINT.IfChange(SplitTabLayout)
 enum class SplitTabLayout {
   // Two tabs will display next to each other, side-by-side.
   kSideBySide,
   // Two tabs will appear stacked, one above the other.
-  kStacked
+  kStacked,
+  kMaxValue = kStacked
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SplitTabLayout)
 
 // Represents the visual state of a split tab, including its layout type and the
 // proportional size of the webcontents.

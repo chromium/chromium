@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -53,13 +54,34 @@ std::string_view GetMetricsSuffixForSource(SplitTabCreatedSource source) {
       return "LinkClick";
   }
 }
+
+std::string_view GetMetricsSuffixForSource(
+    SplitTabOrientationChangeSource source) {
+  // These strings are persisted to logs. Entries should not be changed.
+  switch (source) {
+    case SplitTabOrientationChangeSource::kToolbarButton:
+      return "ToolbarButton";
+    case SplitTabOrientationChangeSource::kTabContextMenu:
+      return "TabContextMenu";
+  }
+}
 }  // namespace
 
-void RecordSplitTabCreated(SplitTabCreatedSource source) {
+void RecordSplitTabCreated(SplitTabCreatedSource source,
+                           SplitTabLayout layout) {
   base::UmaHistogramEnumeration("TabStrip.SplitView.Created", source);
+  base::UmaHistogramEnumeration("TabStrip.SplitView.OrientationOnCreation",
+                                layout);
   base::RecordAction(base::UserMetricsAction(
       base::StrCat({"SplitViewCreated_", GetMetricsSuffixForSource(source)})
           .c_str()));
+}
+
+void RecordSplitTabOrientationChanged(SplitTabOrientationChangeSource source) {
+  base::RecordAction(
+      base::UserMetricsAction(base::StrCat({"SplitViewOrientationChanged.",
+                                            GetMetricsSuffixForSource(source)})
+                                  .c_str()));
 }
 
 void LogSplitViewCreatedUKM(const TabStripModel* tab_strip_model,

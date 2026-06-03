@@ -48685,6 +48685,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SplitViewOrientationChanged.TabContextMenu">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the orientation of a Split View within the browser was changed
+    by clicking the tab context menu item.
+  </description>
+</action>
+
+<action name="SplitViewOrientationChanged.ToolbarButton">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the orientation of a Split View within the browser was changed
+    by clicking the toolbar button.
+  </description>
+</action>
+
 <action name="SSL.DisplayedInsecureContent" not_user_triggered="true">
   <obsolete>Deprecated 02/2017</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

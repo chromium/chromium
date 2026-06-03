@@ -9,6 +9,7 @@ class TabStripModel;
 
 namespace split_tabs {
 class SplitTabId;
+enum class SplitTabLayout;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -32,7 +33,13 @@ enum class SplitTabCreatedSource {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SplitTabCreatedSource)
 
-void RecordSplitTabCreated(SplitTabCreatedSource source);
+enum class SplitTabOrientationChangeSource {
+  kToolbarButton = 0,
+  kTabContextMenu = 1,
+};
+
+void RecordSplitTabCreated(SplitTabCreatedSource source, SplitTabLayout layout);
+void RecordSplitTabOrientationChanged(SplitTabOrientationChangeSource source);
 void LogSplitViewCreatedUKM(const TabStripModel* tab_strip_model,
                             const SplitTabId split_id);
 void LogSplitViewUpdatedUKM(const TabStripModel* tab_strip_model,

@@ -25,6 +25,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -2751,6 +2753,9 @@ TEST_P(TabStripModelTest, RemoveFromGroupRemovesPartialSplits) {
 }
 
 TEST_P(TabStripModelTest, SplitLayoutTest) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
   // Create five tabs with two pinned, select the last.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {2}));
@@ -2770,11 +2775,22 @@ TEST_P(TabStripModelTest, SplitLayoutTest) {
       tabstrip()->GetSplitData(split_tab_id)->visual_data()->split_layout(),
       split_tabs::SplitTabLayout::kSideBySide);
 
-  tabstrip()->UpdateSplitLayout(split_tab_id,
-                                split_tabs::SplitTabLayout::kStacked);
+  histogram_tester.ExpectUniqueSample(
+      "TabStrip.SplitView.Created",
+      split_tabs::SplitTabCreatedSource::kToolbarButton, 1);
+  histogram_tester.ExpectUniqueSample(
+      "TabStrip.SplitView.OrientationOnCreation",
+      split_tabs::SplitTabLayout::kSideBySide, 1);
+
+  tabstrip()->UpdateSplitLayout(
+      split_tab_id, split_tabs::SplitTabLayout::kStacked,
+      split_tabs::SplitTabOrientationChangeSource::kToolbarButton);
   EXPECT_EQ(
       tabstrip()->GetSplitData(split_tab_id)->visual_data()->split_layout(),
       split_tabs::SplitTabLayout::kStacked);
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SplitViewOrientationChanged.ToolbarButton"));
 
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());

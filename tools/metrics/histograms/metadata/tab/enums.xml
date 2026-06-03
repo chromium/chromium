@@ -353,6 +353,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/split_tab_metrics.h:SplitTabCreatedSource) -->
 
+<!-- LINT.IfChange(SplitTabLayout) -->
+
+<enum name="SplitTabLayout">
+  <int value="0" label="Side by side"/>
+  <int value="1" label="Stacked"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/split_tabs/split_tab_visual_data.h:SplitTabLayout) -->
+
 <!-- LINT.IfChange(SplitViewMenuEntry) -->
 
 <enum name="SplitViewMenuEntry">
