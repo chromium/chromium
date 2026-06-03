@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -94,7 +95,7 @@ class DropdownItemViewInfoListManager {
             model.set(SuggestionCommonProperties.LAYOUT_DIRECTION, mLayoutDirection);
             model.set(SuggestionCommonProperties.COLOR_SCHEME, mBrandedColorScheme);
             model.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, deviceType);
-
+            model.set(SuggestionCommonProperties.BG_ROUND_SIDES, RoundSides.TOP_AND_BOTTOM);
             suggestionsList.add(item);
         }
 

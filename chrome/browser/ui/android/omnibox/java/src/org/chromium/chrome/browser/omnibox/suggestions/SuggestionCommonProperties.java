@@ -45,6 +45,15 @@ public @interface SuggestionCommonProperties {
         int SINGLE = 3;
     }
 
+    /** The sides of the suggestion background that are allowed to be rounded. */
+    @IntDef({RoundSides.NONE, RoundSides.BOTTOM_ONLY, RoundSides.TOP_AND_BOTTOM})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface RoundSides {
+        int NONE = 0;
+        int BOTTOM_ONLY = 1;
+        int TOP_AND_BOTTOM = 2;
+    }
+
     /** Whether dark colors should be applied to text, icons. */
     WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
 
@@ -56,6 +65,9 @@ public @interface SuggestionCommonProperties {
 
     /** The positional mode of the suggestion in its group, used for corner rounding. */
     WritableIntPropertyKey BG_POSITIONAL_MODE = new WritableIntPropertyKey();
+
+    /** The sides of the suggestion background that are allowed to be rounded. */
+    WritableIntPropertyKey BG_ROUND_SIDES = new WritableIntPropertyKey();
 
     /** Whether a divider should be shown at the bottom of the suggestion. */
     WritableBooleanPropertyKey SHOW_DIVIDER = new WritableBooleanPropertyKey();
@@ -78,6 +90,7 @@ public @interface SuggestionCommonProperties {
                 LAYOUT_DIRECTION,
                 DEVICE_FORM_FACTOR,
                 BG_POSITIONAL_MODE,
+                BG_ROUND_SIDES,
                 SHOW_DIVIDER,
                 SHOW_GROUP_SEPARATOR,
                 HEADER_TITLE,

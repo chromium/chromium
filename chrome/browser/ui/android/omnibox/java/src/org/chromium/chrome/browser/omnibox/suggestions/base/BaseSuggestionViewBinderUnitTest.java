@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.PositionalMode;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
@@ -250,6 +251,7 @@ public class BaseSuggestionViewBinderUnitTest {
 
     @Test
     public void partialSuggestionRounding() {
+        mModel.set(SuggestionCommonProperties.BG_ROUND_SIDES, RoundSides.TOP_AND_BOTTOM);
         mModel.set(SuggestionCommonProperties.BG_POSITIONAL_MODE, PositionalMode.TOP);
 
         assertTrue(mBaseView.getClipToOutline());
@@ -261,6 +263,7 @@ public class BaseSuggestionViewBinderUnitTest {
 
     @Test
     public void fullSuggestionRounding() {
+        mModel.set(SuggestionCommonProperties.BG_ROUND_SIDES, RoundSides.TOP_AND_BOTTOM);
         mModel.set(SuggestionCommonProperties.BG_POSITIONAL_MODE, PositionalMode.SINGLE);
 
         assertTrue(mBaseView.getClipToOutline());
@@ -272,9 +275,48 @@ public class BaseSuggestionViewBinderUnitTest {
 
     @Test
     public void noSuggestionRounding() {
+        mModel.set(SuggestionCommonProperties.BG_ROUND_SIDES, RoundSides.TOP_AND_BOTTOM);
         mModel.set(SuggestionCommonProperties.BG_POSITIONAL_MODE, PositionalMode.MIDDLE);
 
         assertFalse(mBaseView.getClipToOutline());
+    }
+
+    @Test
+    public void roundSidesNone_noRounding() {
+        mModel.set(SuggestionCommonProperties.BG_ROUND_SIDES, RoundSides.NONE);
+        mModel.set(SuggestionCommonProperties.BG_POSITIONAL_MODE, PositionalMode.SINGLE);
+
+        assertFalse(mBaseView.getClipToOutline());
+    }
+
+    @Test
+    public void roundSidesBottomOnly_singlePositionalMode() {
+        mModel.set(SuggestionCommonProperties.BG_ROUND_SIDES, RoundSides.BOTTOM_ONLY);
+        mModel.set(SuggestionCommonProperties.BG_POSITIONAL_MODE, PositionalMode.SINGLE);
+
+        assertTrue(mBaseView.getClipToOutline());
+        var provider = (RoundedCornerOutlineProvider) mBaseView.getOutlineProvider();
+        assertFalse(provider.isTopEdgeRounded());
+        assertTrue(provider.isBottomEdgeRounded());
+    }
+
+    @Test
+    public void roundSidesBottomOnly_topPositionalMode() {
+        mModel.set(SuggestionCommonProperties.BG_ROUND_SIDES, RoundSides.BOTTOM_ONLY);
+        mModel.set(SuggestionCommonProperties.BG_POSITIONAL_MODE, PositionalMode.TOP);
+
+        assertFalse(mBaseView.getClipToOutline());
+    }
+
+    @Test
+    public void roundSidesBottomOnly_bottomPositionalMode() {
+        mModel.set(SuggestionCommonProperties.BG_ROUND_SIDES, RoundSides.BOTTOM_ONLY);
+        mModel.set(SuggestionCommonProperties.BG_POSITIONAL_MODE, PositionalMode.BOTTOM);
+
+        assertTrue(mBaseView.getClipToOutline());
+        var provider = (RoundedCornerOutlineProvider) mBaseView.getOutlineProvider();
+        assertFalse(provider.isTopEdgeRounded());
+        assertTrue(provider.isBottomEdgeRounded());
     }
 
     @Test
