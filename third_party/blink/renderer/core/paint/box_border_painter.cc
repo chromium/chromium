@@ -1321,18 +1321,9 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
       border_rect_(border_rect),
       style_(style),
       bleed_avoidance_(bleed_avoidance),
-      sides_to_include_(sides_to_include),
-      visible_edge_count_(0),
-      first_visible_edge_(0),
-      visible_edge_set_(0),
-      is_uniform_style_(true),
-      is_uniform_width_(true),
-      is_uniform_color_(true),
-      is_rounded_(false),
-      has_transparency_(false) {
+      sides_to_include_(sides_to_include) {
   style.GetBorderEdgeInfo(edges_, sides_to_include);
   InitFromEdges(border_rect);
-  element_role_ = DarkModeFilter::ElementRole::kBorder;
 }
 
 void BoxBorderPainter::InitFromEdges(const PhysicalRect& border_rect) {
@@ -1369,15 +1360,7 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
       border_rect_(border_rect),
       style_(style),
       bleed_avoidance_(bleed_avoidance),
-      sides_to_include_(sides_to_include),
-      visible_edge_count_(0),
-      first_visible_edge_(0),
-      visible_edge_set_(0),
-      is_uniform_style_(true),
-      is_uniform_width_(true),
-      is_uniform_color_(true),
-      is_rounded_(false),
-      has_transparency_(false) {
+      sides_to_include_(sides_to_include) {
   // Get the border edges, then override all colors to opaque black for use
   // as a DstIn mask. This makes transparent borders visible in the mask and
   // ignores the original border-color values. Per spec, border-area clips to
@@ -1391,7 +1374,6 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
   InitFromEdges(border_rect);
   // Dark mode color inversion is harmless here because the result is used as
   // a DstIn mask where only the alpha channel matters, not the RGB values.
-  element_role_ = DarkModeFilter::ElementRole::kBorder;
 }
 
 BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
@@ -1405,14 +1387,7 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
       style_(style),
       bleed_avoidance_(kBackgroundBleedNone),
       sides_to_include_(PhysicalBoxSides()),
-      visible_edge_count_(0),
-      first_visible_edge_(0),
-      visible_edge_set_(0),
-      is_uniform_style_(true),
-      is_uniform_width_(true),
-      is_uniform_color_(true),
-      is_rounded_(false),
-      has_transparency_(false) {
+      element_role_(DarkModeFilter::ElementRole::kBackground) {
   DCHECK(style.HasOutline());
 
   BorderEdge edge(width,
@@ -1428,8 +1403,6 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
 
   inner_ = ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
       style, border_rect, inner_outsets);
-
-  element_role_ = DarkModeFilter::ElementRole::kBackground;
 }
 
 void BoxBorderPainter::ComputeBorderProperties() {
