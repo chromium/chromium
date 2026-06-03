@@ -116,14 +116,14 @@ template("single_apple_toolchain") {
       # Since GN arguments inside toolchain_args are static values and do not
       # dynamically propagate their global dependency formulas inside the
       # toolchain() definition block (which is processed in the default
-      # toolchain context), we must explicitly duplicate the evaluation logic
-      # here to force both contexts to stay in sync.
+      # toolchain context), we must explicitly check both the global opt-in
+      # flag and the platform support conditions here.
       # LINT.IfChange(use_apple_linker)
       use_apple_linker =
-          host_os == "mac" && current_os == "mac" && !use_thin_lto &&
-          host_cpu == "arm64" && current_cpu == "arm64" &&
+          use_apple_linker && host_os == "mac" && current_os == "mac" &&
+          !use_thin_lto && host_cpu == "arm64" && current_cpu == "arm64" &&
           !(use_remoteexec && use_system_xcode)
-      use_lld = !use_apple_linker
+      use_lld = use_lld && !use_apple_linker
 
       # LINT.ThenChange(//build/config/compiler/compiler.gni:use_apple_linker)
 

@@ -80,13 +80,14 @@ declare_args() {
 
 declare_args() {
   # Set to true to use the Apple linker (ld64 / ld-prime) instead of LLD.
-  # This is the default for non-official builds on macOS.
-  # TODO(crbug.com/502338406): Enable for iOS by removing is_mac from the
-  # condition.
+  # This is opt-in and currently defaults to false.
+  # TODO(crbug.com/502338406): Decide the rollout plan and scope.
   # See https://crbug.com/502338406 for benchmarking results.
   # LINT.IfChange(use_apple_linker)
-  use_apple_linker = host_os == "mac" && is_mac && !use_thin_lto &&
-                     host_cpu == "arm64" && current_cpu == "arm64"
+  # The original default (to be restored when rolling out):
+  # use_apple_linker = host_os == "mac" && is_mac && !use_thin_lto &&
+  #                    host_cpu == "arm64" && current_cpu == "arm64"
+  use_apple_linker = false
   # LINT.ThenChange(//build/toolchain/apple/toolchain.gni:use_apple_linker)
 }
 
