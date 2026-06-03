@@ -725,6 +725,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketPoolLimitRandomizationForProxy);
 // When enabled, Net Task Scheduler is enabled on the network thread.
 NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskScheduler);
 
+// When enabled, HostResolver and its subtasks use the Net Task Scheduler.
+NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskSchedulerHostResolver);
+
 // When enabled, Net Task Scheduler supports per-net::RequestPriority task
 // queues for each RequestPriority variant.
 //

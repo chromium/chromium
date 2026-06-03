@@ -14,11 +14,13 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time_delta_from_string.h"
 #include "base/values.h"
 #include "mapped_host_resolver.h"
@@ -27,6 +29,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/task/task_runner.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_util.h"
@@ -608,6 +611,15 @@ bool HostResolver::MayUseNAT64ForIPv4Literal(HostResolverFlags flags,
   return !(flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6) &&
          ip_address.IsValid() && ip_address.IsIPv4() &&
          (source != HostResolverSource::LOCAL_ONLY);
+}
+
+// static
+const scoped_refptr<base::SingleThreadTaskRunner>& HostResolver::GetTaskRunner(
+    RequestPriority priority) {
+  if (base::FeatureList::IsEnabled(features::kNetTaskSchedulerHostResolver)) {
+    return net::GetTaskRunner(priority);
+  }
+  return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 HostResolver::HostResolver() = default;

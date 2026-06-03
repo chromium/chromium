@@ -22,6 +22,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
+#include "net/base/request_priority.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/host_resolver_proc.h"
 #include "net/dns/public/dns_query_type.h"
@@ -117,6 +118,7 @@ class NET_EXPORT HostResolverSystemTask {
       std::string hostname,
       AddressFamily address_family,
       HostResolverFlags flags,
+      RequestPriority priority,
       const Params& params = Params(nullptr, 0),
       const NetLogWithSource& job_net_log = NetLogWithSource(),
       handles::NetworkHandle network = handles::kInvalidNetworkHandle,
@@ -129,7 +131,10 @@ class NET_EXPORT HostResolverSystemTask {
       HostResolverFlags flags,
       const Params& params = Params(nullptr, 0),
       const NetLogWithSource& job_net_log = NetLogWithSource(),
-      handles::NetworkHandle network = handles::kInvalidNetworkHandle);
+      handles::NetworkHandle network = handles::kInvalidNetworkHandle,
+      // TODO(crbug.com/450428442): Eliminate this default priority argument
+      // once all external callers are updated under a follow-up CL.
+      RequestPriority priority = RequestPriority::DEFAULT_PRIORITY);
 
   // Caching time used for entries cached by the task and for creation of
   // results in ConvertSystemResults().
@@ -151,7 +156,10 @@ class NET_EXPORT HostResolverSystemTask {
       const Params& params = Params(nullptr, 0),
       const NetLogWithSource& job_net_log = NetLogWithSource(),
       handles::NetworkHandle network = handles::kInvalidNetworkHandle,
-      std::optional<CacheParams> cache_params = std::nullopt);
+      std::optional<CacheParams> cache_params = std::nullopt,
+      // TODO(crbug.com/450428442): Eliminate this default priority argument
+      // once all external callers are updated under a follow-up CL.
+      RequestPriority priority = RequestPriority::DEFAULT_PRIORITY);
 
   HostResolverSystemTask(const HostResolverSystemTask&) = delete;
   HostResolverSystemTask& operator=(const HostResolverSystemTask&) = delete;
@@ -218,6 +226,9 @@ class NET_EXPORT HostResolverSystemTask {
   const handles::NetworkHandle network_;
 
   std::optional<CacheParams> cache_params_;
+
+  // The priority of the task.
+  const RequestPriority priority_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

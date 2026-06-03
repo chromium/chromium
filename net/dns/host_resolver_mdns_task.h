@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mdns_client.h"
 #include "net/dns/public/dns_query_type.h"
@@ -32,7 +33,8 @@ class HostResolverMdnsTask {
   // |mdns_client| must outlive |this|.
   HostResolverMdnsTask(MDnsClient* mdns_client,
                        std::string hostname,
-                       DnsQueryTypeSet query_types);
+                       DnsQueryTypeSet query_types,
+                       RequestPriority priority);
 
   HostResolverMdnsTask(const HostResolverMdnsTask&) = delete;
   HostResolverMdnsTask& operator=(const HostResolverMdnsTask&) = delete;
@@ -63,6 +65,8 @@ class HostResolverMdnsTask {
   const raw_ptr<MDnsClient> mdns_client_;
 
   const std::string hostname_;
+
+  const RequestPriority priority_;
 
   std::vector<Transaction> transactions_;
 

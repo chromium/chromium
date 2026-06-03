@@ -21,6 +21,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequence_checker_impl.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -39,6 +40,8 @@
 #include "net/base/trace_constants.h"
 #include "net/dns/address_info.h"
 #include "net/dns/dns_names_util.h"
+#include "net/dns/dns_util.h"
+#include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_cache.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/public/dns_query_type.h"
@@ -252,13 +255,14 @@ std::unique_ptr<HostResolverSystemTask> HostResolverSystemTask::Create(
     std::string hostname,
     AddressFamily address_family,
     HostResolverFlags flags,
+    RequestPriority priority,
     const Params& params,
     const NetLogWithSource& job_net_log,
     handles::NetworkHandle network,
     std::optional<CacheParams> cache_params) {
   return std::make_unique<HostResolverSystemTask>(
       std::move(hostname), address_family, flags, params, job_net_log, network,
-      std::move(cache_params));
+      std::move(cache_params), priority);
 }
 
 // static
@@ -268,10 +272,11 @@ HostResolverSystemTask::CreateForOwnHostname(
     HostResolverFlags flags,
     const Params& params,
     const NetLogWithSource& job_net_log,
-    handles::NetworkHandle network) {
+    handles::NetworkHandle network,
+    RequestPriority priority) {
   return std::make_unique<HostResolverSystemTask>(
       std::nullopt, address_family, flags, params, job_net_log, network,
-      /*cache_params=*/std::nullopt);
+      /*cache_params=*/std::nullopt, priority);
 }
 
 HostResolverSystemTask::HostResolverSystemTask(
@@ -281,14 +286,16 @@ HostResolverSystemTask::HostResolverSystemTask(
     const Params& params,
     const NetLogWithSource& job_net_log,
     handles::NetworkHandle network,
-    std::optional<CacheParams> cache_params)
+    std::optional<CacheParams> cache_params,
+    RequestPriority priority)
     : hostname_(std::move(hostname)),
       address_family_(address_family),
       flags_(flags),
       params_(params),
       net_log_(job_net_log),
       network_(network),
-      cache_params_(std::move(cache_params)) {
+      cache_params_(std::move(cache_params)),
+      priority_(priority) {
   // Must have hostname if results are to be cached.
   CHECK(!cache_params_.has_value() || hostname_.has_value());
 
@@ -398,7 +405,7 @@ void HostResolverSystemTask::StartLookupAttempt() {
   // Use a WeakPtr to avoid keeping the HostResolverSystemTask alive after
   // completion or cancellation.
   if (attempt_number_ <= params_.max_retry_attempts) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+    HostResolver::GetTaskRunner(priority_)->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&HostResolverSystemTask::StartLookupAttempt,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -421,6 +428,9 @@ void HostResolverSystemTask::StartLookupAttempt() {
     base::OnceCallback<int(AddressList * addrlist, int* os_error)> resolve_cb =
         base::BindOnce(&ResolveOnWorkerThread, params_.resolver_proc, hostname_,
                        address_family_, flags_, network_);
+
+    // TODO(crbug.com/450428442): Prioritize the reply callback on the network
+    // thread.
     PostSystemDnsResolutionTaskAndReply(std::move(resolve_cb),
                                         std::move(lookup_complete_cb));
   }

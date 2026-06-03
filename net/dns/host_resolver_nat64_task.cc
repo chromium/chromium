@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
@@ -38,13 +39,15 @@ HostResolverNat64Task::HostResolverNat64Task(
     handles::NetworkHandle target_network,
     NetLogWithSource net_log,
     ResolveContext* resolve_context,
-    base::WeakPtr<HostResolverManager> resolver)
+    base::WeakPtr<HostResolverManager> resolver,
+    RequestPriority priority)
     : hostname_(hostname),
       network_anonymization_key_(std::move(network_anonymization_key)),
       target_network_(target_network),
       net_log_(std::move(net_log)),
       resolve_context_(resolve_context),
-      resolver_(std::move(resolver)) {}
+      resolver_(std::move(resolver)),
+      priority_(priority) {}
 
 HostResolverNat64Task::~HostResolverNat64Task() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -62,7 +65,7 @@ void HostResolverNat64Task::Start(CallbackType completion_callback) {
   int rv = DoLoop(OK);
   if (rv != ERR_IO_PENDING) {
     CHECK(result_);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    HostResolver::GetTaskRunner(priority_)->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(completion_callback_), std::move(result_)));
   }

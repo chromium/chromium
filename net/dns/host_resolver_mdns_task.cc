@@ -17,9 +17,12 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/request_priority.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
@@ -153,8 +156,11 @@ class HostResolverMdnsTask::Transaction {
 
 HostResolverMdnsTask::HostResolverMdnsTask(MDnsClient* mdns_client,
                                            std::string hostname,
-                                           DnsQueryTypeSet query_types)
-    : mdns_client_(mdns_client), hostname_(std::move(hostname)) {
+                                           DnsQueryTypeSet query_types,
+                                           RequestPriority priority)
+    : mdns_client_(mdns_client),
+      hostname_(std::move(hostname)),
+      priority_(priority) {
   CHECK(!query_types.empty());
   DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
 
@@ -320,7 +326,7 @@ void HostResolverMdnsTask::Complete(bool post_needed) {
   }
 
   if (post_needed) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    HostResolver::GetTaskRunner(priority_)->PostTask(
         FROM_HERE, base::BindOnce(
                        [](base::WeakPtr<HostResolverMdnsTask> task) {
                          if (task)

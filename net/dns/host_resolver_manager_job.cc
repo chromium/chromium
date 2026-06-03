@@ -751,7 +751,7 @@ void HostResolverManager::Job::StartSystemTask() {
   system_task_ = HostResolverSystemTask::Create(
       std::string(key_.host.GetHostnameWithoutBrackets()),
       HostResolver::DnsQueryTypeSetToAddressFamily(key_.query_types),
-      key_.flags, resolver_->host_resolver_system_params_, net_log_,
+      key_.flags, priority(), resolver_->host_resolver_system_params_, net_log_,
       key_.GetTargetNetwork(), std::move(cache_params));
 
   // Start() could be called from within Resolve(), hence it must NOT directly
@@ -1036,7 +1036,7 @@ void HostResolverManager::Job::StartMdnsTask() {
   int rv = resolver_->GetOrCreateMdnsClient(&client);
   mdns_task_ = std::make_unique<HostResolverMdnsTask>(
       client, std::string(key_.host.GetHostnameWithoutBrackets()),
-      key_.query_types);
+      key_.query_types, priority());
 
   if (rv == OK) {
     mdns_task_->Start(base::BindOnce(&Job::OnMdnsTaskComplete,
@@ -1084,7 +1084,8 @@ void HostResolverManager::Job::StartNat64Task() {
   DCHECK(!nat64_task_);
   nat64_task_ = std::make_unique<HostResolverNat64Task>(
       key_.host.GetHostnameWithoutBrackets(), key_.network_anonymization_key,
-      key_.GetTargetNetwork(), net_log_, &*key_.resolve_context, resolver_);
+      key_.GetTargetNetwork(), net_log_, &*key_.resolve_context, resolver_,
+      priority());
   nat64_task_->Start(base::BindOnce(&Job::OnNat64TaskComplete,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     tick_clock_->NowTicks()));

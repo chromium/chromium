@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/base/network_handle.h"
+#include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/public/dns_query_type.h"
@@ -38,7 +39,8 @@ class HostResolverNat64Task {
                         handles::NetworkHandle target_network,
                         NetLogWithSource net_log,
                         ResolveContext* resolve_context,
-                        base::WeakPtr<HostResolverManager> resolver);
+                        base::WeakPtr<HostResolverManager> resolver,
+                        RequestPriority priority);
 
   HostResolverNat64Task(const HostResolverNat64Task&) = delete;
   HostResolverNat64Task& operator=(const HostResolverNat64Task&) = delete;
@@ -56,6 +58,7 @@ class HostResolverNat64Task {
   const raw_ptr<ResolveContext> resolve_context_;
   CallbackType completion_callback_;
   base::WeakPtr<HostResolverManager> resolver_;
+  const RequestPriority priority_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

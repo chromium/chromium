@@ -39,6 +39,10 @@
 #include "net/log/net_log_with_source.h"
 #include "url/scheme_host_port.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace net {
 
 class AddressList;
@@ -683,6 +687,13 @@ class NET_EXPORT HostResolver {
   static bool MayUseNAT64ForIPv4Literal(HostResolverFlags flags,
                                         HostResolverSource source,
                                         const IPAddress& ip_address);
+
+  // Returns the prioritized SingleThreadTaskRunner matching `priority` if the
+  // HostResolver task scheduler experiment is enabled. Falls back to the
+  // current default SingleThreadTaskRunner.
+  static const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner(
+      RequestPriority priority);
+
  protected:
   HostResolver();
 
