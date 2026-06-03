@@ -150,13 +150,10 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
           on_before_start = base::DoNothing()) {
     base::test::TestFuture<IsolatedWebAppApplyUpdateCommandResult> future;
     auto command = std::make_unique<IsolatedWebAppApplyUpdateCommand>(
-        url_info_,
-        IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
-            *profile()),
+        url_info_, *profile(),
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback(),
-        std::make_unique<IsolatedWebAppInstallCommandHelper>(
-            url_info_, fake_web_contents_manager().CreateDataRetriever()));
+        std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info_));
 
     std::move(on_before_start).Run(*command);
 
@@ -247,7 +244,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, Succeeds) {
 
   auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
       url_info_.origin().GetURL().Resolve(kIconPath));
-  icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
+  icon_state.bitmaps = {CreateSquareIcon(32, SK_ColorWHITE)};
 
   EXPECT_THAT(ApplyPendingUpdate(), HasValue());
 
@@ -405,7 +402,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
 
   auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
       url_info_.origin().GetURL().Resolve(kIconPath));
-  icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
+  icon_state.bitmaps = {CreateSquareIcon(32, SK_ColorWHITE)};
 
   auto result = ApplyPendingUpdate(base::BindOnce(
       [](const webapps::AppId& app_id,

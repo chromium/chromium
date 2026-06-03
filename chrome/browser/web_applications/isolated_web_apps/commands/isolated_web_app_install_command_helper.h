@@ -97,12 +97,7 @@ VersionChangeValidationResult ValidateVersionChangeFeasibility(
 // install and update commands.
 class IsolatedWebAppInstallCommandHelper {
  public:
-  static std::unique_ptr<content::WebContents> CreateIsolatedWebAppWebContents(
-      Profile& profile);
-
-  IsolatedWebAppInstallCommandHelper(
-      IsolatedWebAppUrlInfo url_info,
-      std::unique_ptr<WebAppDataRetriever> data_retriever);
+  explicit IsolatedWebAppInstallCommandHelper(IsolatedWebAppUrlInfo url_info);
   ~IsolatedWebAppInstallCommandHelper();
 
   IsolatedWebAppInstallCommandHelper(
@@ -131,51 +126,8 @@ class IsolatedWebAppInstallCommandHelper {
 
   void CreateStoragePartitionIfNotPresent(Profile& profile);
 
-  void LoadInstallUrl(
-      const IwaSourceWithMode& source,
-      const IwaOperation& operation,
-      content::WebContents& web_contents,
-      webapps::WebAppUrlLoader& url_loader,
-      base::OnceCallback<void(base::expected<void, std::string>)> callback);
-
-  void CheckInstallabilityAndRetrieveManifest(
-      content::WebContents& web_contents,
-      base::OnceCallback<void(
-          base::expected<blink::mojom::ManifestPtr, std::string>)> callback);
-
-  base::expected<IwaVersion, std::string> ValidateManifestAndGetVersion(
-      const std::optional<IwaVersion>& expected_version,
-      const blink::mojom::Manifest& manifest);
-
-  void RetrieveInstallInfoWithIconsFromManifest(
-      const blink::mojom::Manifest& manifest,
-      content::WebContents& web_contents,
-      IwaVersion parsed_version,
-      base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
-          callback);
-
  private:
-  void OnLoadInstallUrl(
-      base::OnceCallback<void(base::expected<void, std::string>)> callback,
-      webapps::WebAppUrlLoaderResult result);
-
-  void OnCheckInstallabilityAndRetrieveManifest(
-      base::OnceCallback<void(
-          base::expected<blink::mojom::ManifestPtr, std::string>)> callback,
-      blink::mojom::ManifestPtr opt_manifest,
-      bool valid_manifest_for_web_app,
-      webapps::InstallableStatusCode error_code);
-
-  void OnGettingInstallInfoFromManifest(
-      IwaVersion parsed_version,
-      base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
-          callback,
-      std::unique_ptr<WebAppInstallInfo> install_info);
-
   IsolatedWebAppUrlInfo url_info_;
-  std::unique_ptr<WebAppDataRetriever> data_retriever_;
-  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
-  base::DictValue manifest_to_info_debug_data_;
 
   base::WeakPtrFactory<IsolatedWebAppInstallCommandHelper> weak_factory_{this};
 };

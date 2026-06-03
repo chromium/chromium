@@ -81,7 +81,7 @@ IsolatedWebAppUpdatePrepareAndStoreCommand::
     IsolatedWebAppUpdatePrepareAndStoreCommand(
         UpdateInfo update_info,
         IsolatedWebAppUrlInfo url_info,
-        std::unique_ptr<content::WebContents> web_contents,
+        Profile& profile,
         std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
         std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
         base::OnceCallback<
@@ -98,12 +98,11 @@ IsolatedWebAppUpdatePrepareAndStoreCommand::
       expected_version_(update_info.expected_version()),
       allow_downgrades_(update_info.allow_downgrades()),
       update_source_(update_info.source()),
-      web_contents_(std::move(web_contents)),
+      profile_(profile),
       optional_keep_alive_(std::move(optional_keep_alive)),
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)) {
-  CHECK(web_contents_ != nullptr);
   CHECK(optional_profile_keep_alive_ == nullptr ||
-        &profile() == optional_profile_keep_alive_->profile());
+        &profile_.get() == optional_profile_keep_alive_->profile());
 
   GetMutableDebugValue().Set("app_id", url_info_.app_id());
   GetMutableDebugValue().Set("origin", url_info_.origin().Serialize());
@@ -284,7 +283,8 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::PrepareInstallInfo(
         next_step_callback) {
   prepare_install_info_job_ = PrepareInstallInfoJob::CreateAndStart(
       profile(), *destination_location_, IwaUpdateOperation{},
-      expected_version_, *web_contents_, *command_helper_,
+      expected_version_, url_info_,
+      lock_->web_contents_manager().CreateDataRetriever(),
       lock_->web_contents_manager().CreateUrlLoader(),
       std::move(next_step_callback));
 }
@@ -359,9 +359,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportSuccess(
 }
 
 Profile& IsolatedWebAppUpdatePrepareAndStoreCommand::profile() {
-  CHECK(web_contents_);
-  CHECK(web_contents_->GetBrowserContext());
-  return *Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  return *profile_;
 }
 
 IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo::

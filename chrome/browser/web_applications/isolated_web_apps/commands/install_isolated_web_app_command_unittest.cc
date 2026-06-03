@@ -190,7 +190,7 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
 
     auto& icon_state = web_contents_manager().GetOrCreateIconState(
         application_url.Resolve(kIconPath));
-    icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorRED)};
+    icon_state.bitmaps = {CreateSquareIcon(32, SK_ColorRED)};
 
     return {page_state, icon_state};
   }
@@ -388,14 +388,12 @@ TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppId) {
   base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
                                         InstallIsolatedWebAppCommandError>>
       test_future;
-  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
-      url_info, web_contents_manager().CreateDataRetriever());
+  auto command_helper =
+      std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info);
 
   auto command = std::make_unique<InstallIsolatedWebAppCommand>(
       url_info, IsolatedWebAppInstallSource::FromDevUi(CreateDevProxySource()),
-      /*expected_version=*/std::nullopt,
-      content::WebContents::Create(
-          content::WebContents::CreateParams(profile())),
+      /*expected_version=*/std::nullopt, *profile(),
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr, test_future.GetCallback(),
       std::move(command_helper));

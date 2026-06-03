@@ -27,7 +27,6 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "content/public/browser/web_contents.h"
 
 namespace web_app {
 namespace {
@@ -44,12 +43,9 @@ class WebAppInstallInfoFetcher {
       : profile_(*profile),
         provider_(*provider),
         source_(source),
-        helper_(std::make_unique<IsolatedWebAppInstallCommandHelper>(
-            url_info,
-            provider->web_contents_manager().CreateDataRetriever())),
-        web_contents_(
-            IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
-                *profile)) {}
+        url_info_(url_info),
+        helper_(
+            std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info)) {}
 
   void FetchAndReply(WebAppInstalInfoCallback callback) {
     callback_ = std::move(callback);
@@ -89,7 +85,8 @@ class WebAppInstallInfoFetcher {
           next_step_callback) {
     prepare_install_info_job_ = PrepareInstallInfoJob::CreateAndStart(
         *profile_, source_, IwaMetadataReadingOperation{},
-        /*expected_version=*/std::nullopt, *web_contents_, *helper_,
+        /*expected_version=*/std::nullopt, url_info_,
+        provider_->web_contents_manager().CreateDataRetriever(),
         provider_->web_contents_manager().CreateUrlLoader(),
         std::move(next_step_callback));
   }
@@ -110,10 +107,10 @@ class WebAppInstallInfoFetcher {
   const raw_ref<WebAppProvider> provider_;
 
   IwaSourceBundleWithMode source_;
+  IsolatedWebAppUrlInfo url_info_;
   WebAppInstalInfoCallback callback_;
 
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> helper_;
-  std::unique_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<PrepareInstallInfoJob> prepare_install_info_job_;
 
@@ -142,7 +139,7 @@ void SignedWebBundleMetadata::Create(
                 -> SignedWebBundleMetadata {
               const ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData*
                   user_install_data =
-                      web_app::ChromeIwaRuntimeDataProvider::GetInstance()
+                      ChromeIwaRuntimeDataProvider::GetInstance()
                           .GetUserInstallAllowlistData(
                               url_info.web_bundle_id().id());
               return SignedWebBundleMetadata(

@@ -298,14 +298,10 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
         optional_profile_keep_alive->profile() == &*profile_);
   provider_->command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedWebAppCommand>(
-          url_info, install_source, expected_version,
-          IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
-              *profile_),
+          url_info, install_source, expected_version, *profile_,
           std::move(optional_keep_alive),
           std::move(optional_profile_keep_alive), std::move(callback),
-          std::make_unique<IsolatedWebAppInstallCommandHelper>(
-              url_info,
-              provider_->web_contents_manager().CreateDataRetriever())),
+          std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info)),
       call_location);
 }
 
@@ -339,14 +335,9 @@ void WebAppCommandScheduler::PrepareAndStoreIsolatedWebAppUpdate(
     const base::Location& call_location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<IsolatedWebAppUpdatePrepareAndStoreCommand>(
-          update_info, url_info,
-          IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
-              *profile_),
-          std::move(optional_keep_alive),
+          update_info, url_info, *profile_, std::move(optional_keep_alive),
           std::move(optional_profile_keep_alive), std::move(callback),
-          std::make_unique<IsolatedWebAppInstallCommandHelper>(
-              url_info,
-              provider_->web_contents_manager().CreateDataRetriever())),
+          std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info)),
       call_location);
 }
 
@@ -358,14 +349,9 @@ void WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
     const base::Location& call_location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<IsolatedWebAppApplyUpdateCommand>(
-          url_info,
-          IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
-              *profile_),
-          std::move(optional_keep_alive),
+          url_info, *profile_, std::move(optional_keep_alive),
           std::move(optional_profile_keep_alive), std::move(callback),
-          std::make_unique<IsolatedWebAppInstallCommandHelper>(
-              url_info,
-              provider_->web_contents_manager().CreateDataRetriever())),
+          std::make_unique<IsolatedWebAppInstallCommandHelper>(url_info)),
       call_location);
 }
 

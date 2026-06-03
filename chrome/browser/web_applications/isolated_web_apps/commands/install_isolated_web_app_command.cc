@@ -55,7 +55,6 @@
 #include "components/webapps/isolated_web_apps/error/uma_logging.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/web_contents.h"
 
 namespace web_app {
 
@@ -92,7 +91,7 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     const IsolatedWebAppUrlInfo& url_info,
     const IsolatedWebAppInstallSource& install_source,
     const std::optional<IwaVersion>& expected_version,
-    std::unique_ptr<content::WebContents> web_contents,
+    Profile& profile,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -129,12 +128,11 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
       expected_version_(expected_version),
       install_surface_(install_source.install_surface()),
       install_source_(install_source.source()),
-      web_contents_(std::move(web_contents)),
+      profile_(profile),
       optional_keep_alive_(std::move(optional_keep_alive)),
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)) {
-  CHECK(web_contents_ != nullptr);
   CHECK(optional_profile_keep_alive_ == nullptr ||
-        &profile() == optional_profile_keep_alive_->profile());
+        &profile_.get() == optional_profile_keep_alive_->profile());
 
   GetMutableDebugValue().Set("app_id", url_info_.app_id());
   GetMutableDebugValue().Set("origin", url_info_.origin().Serialize());
@@ -277,7 +275,7 @@ void InstallIsolatedWebAppCommand::PrepareInstallInfo(
   prepare_install_info_job_ = PrepareInstallInfoJob::CreateAndStart(
       profile(), *destination_source_,
       IwaInstallOperation{.source = install_surface_}, expected_version_,
-      *web_contents_, *command_helper_,
+      url_info_, lock_->web_contents_manager().CreateDataRetriever(),
       lock_->web_contents_manager().CreateUrlLoader(),
       std::move(next_step_callback));
 }
@@ -324,7 +322,7 @@ void InstallIsolatedWebAppCommand::ProcessInstallInfoResultAndProceed(
   // before downgrading.
   if (iwa && install_info.isolated_web_app_version() <
                  iwa->isolation_data()->version()) {
-    web_app::RemoveIsolatedWebAppBrowsingData(
+    RemoveIsolatedWebAppBrowsingData(
         &profile(), url_info_.origin(),
         base::BindOnce(std::move(next_step_callback), std::move(install_info)));
     return;
@@ -375,8 +373,8 @@ void InstallIsolatedWebAppCommand::ReportFailure(
     std::string_view message) {
   GetMutableDebugValue().Set("result", base::StrCat({"error: ", message}));
 
-  web_app::UmaLogExpectedStatus<InstallIwaError>("WebApp.Isolated.Install",
-                                                 base::unexpected(error));
+  UmaLogExpectedStatus<InstallIwaError>("WebApp.Isolated.Install",
+                                        base::unexpected(error));
   RecordInstallMetrics(InstallCommand::kInstallIsolatedWebApp,
                        WebAppType::kIsolatedWebApp, web_app_failure_code,
                        install_surface_);
@@ -396,8 +394,7 @@ void InstallIsolatedWebAppCommand::ReportSuccess(
   IsolatedWebAppStorageLocation location =
       std::exchange(destination_storage_location_, std::nullopt).value();
 
-  web_app::UmaLogExpectedStatus<InstallIwaError>("WebApp.Isolated.Install",
-                                                 base::ok());
+  UmaLogExpectedStatus<InstallIwaError>("WebApp.Isolated.Install", base::ok());
 
   CompleteAndSelfDestruct(
       CommandResult::kSuccess,
@@ -406,9 +403,7 @@ void InstallIsolatedWebAppCommand::ReportSuccess(
 }
 
 Profile& InstallIsolatedWebAppCommand::profile() {
-  CHECK(web_contents_);
-  CHECK(web_contents_->GetBrowserContext());
-  return *Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  return *profile_;
 }
 
 }  // namespace web_app

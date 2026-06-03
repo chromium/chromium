@@ -39,10 +39,6 @@
 
 class Profile;
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace web_app {
 
 class FinalizeInstallJob;
@@ -102,7 +98,7 @@ class InstallIsolatedWebAppCommand
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppInstallSource& install_source,
       const std::optional<IwaVersion>& expected_version,
-      std::unique_ptr<content::WebContents> web_contents,
+      Profile& profile,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::OnceCallback<
@@ -197,7 +193,7 @@ class InstallIsolatedWebAppCommand
   std::optional<IwaSourceWithMode> destination_source_;
   std::optional<IsolatedWebAppStorageLocation> destination_storage_location_;
 
-  std::unique_ptr<content::WebContents> web_contents_;
+  const raw_ref<Profile> profile_;
 
   const std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   const std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;

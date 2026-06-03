@@ -118,7 +118,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   IsolatedWebAppUpdatePrepareAndStoreCommand(
       UpdateInfo update_info,
       IsolatedWebAppUrlInfo url_info,
-      std::unique_ptr<content::WebContents> web_contents,
+      Profile& profile,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::OnceCallback<void(IsolatedWebAppUpdatePrepareAndStoreCommandResult)>
@@ -196,7 +196,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   std::optional<IsolatedWebAppStorageLocation> destination_storage_location_;
   std::optional<IwaVersion> installed_version_;
 
-  std::unique_ptr<content::WebContents> web_contents_;
+  const raw_ref<Profile> profile_;
 
   const std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   const std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;

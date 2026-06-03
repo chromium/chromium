@@ -33,10 +33,6 @@
 
 class Profile;
 
-namespace content {
-class WebContents;
-}
-
 namespace webapps {
 enum class InstallResultCode;
 }
@@ -56,7 +52,7 @@ class IsolatedWebAppApplyUpdateCommand
   // updated, in which case it will gracefully fail.
   IsolatedWebAppApplyUpdateCommand(
       IsolatedWebAppUrlInfo url_info,
-      std::unique_ptr<content::WebContents> web_contents,
+      Profile& profile,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)> callback,
@@ -129,7 +125,7 @@ class IsolatedWebAppApplyUpdateCommand
 
   const IsolatedWebAppUrlInfo url_info_;
 
-  std::unique_ptr<content::WebContents> web_contents_;
+  const raw_ref<Profile> profile_;
 
   const std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   const std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;

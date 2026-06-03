@@ -13,9 +13,13 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
@@ -26,8 +30,6 @@
 class Profile;
 
 namespace web_app {
-
-class IsolatedWebAppInstallCommandHelper;
 
 // Loads the manifest from the bundle and assembles `WebAppInstallInfo`.
 class PrepareInstallInfoJob {
@@ -52,8 +54,8 @@ class PrepareInstallInfoJob {
       IwaSourceWithMode source,
       IwaOperation operation,
       std::optional<IwaVersion> expected_version,
-      content::WebContents& web_contents,
-      IsolatedWebAppInstallCommandHelper& command_helper,
+      IsolatedWebAppUrlInfo url_info,
+      std::unique_ptr<WebAppDataRetriever> data_retriever,
       std::unique_ptr<webapps::WebAppUrlLoader> loader,
       ResultCallback callback);
 
@@ -91,8 +93,8 @@ class PrepareInstallInfoJob {
                         IwaSourceWithMode source,
                         IwaOperation operation,
                         std::optional<IwaVersion> expected_version,
-                        content::WebContents& web_contents,
-                        IsolatedWebAppInstallCommandHelper& command_helper);
+                        IsolatedWebAppUrlInfo url_info,
+                        std::unique_ptr<WebAppDataRetriever> data_retriever);
 
   void Start(std::unique_ptr<webapps::WebAppUrlLoader> loader,
              ResultCallback callback);
@@ -102,9 +104,16 @@ class PrepareInstallInfoJob {
   Profile* profile() { return &*profile_; }
 
   void LoadInstallUrl(base::OnceClosure next_step_callback);
+  void OnLoadInstallUrl(base::OnceClosure next_step_callback,
+                        webapps::WebAppUrlLoaderResult result);
 
   void CheckInstallabilityAndRetrieveManifest(
       base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback);
+  void OnCheckInstallabilityAndRetrieveManifest(
+      base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback,
+      blink::mojom::ManifestPtr opt_manifest,
+      bool valid_manifest_for_web_app,
+      webapps::InstallableStatusCode error_code);
 
   void ValidateManifestAndGetVersion(
       base::OnceCallback<void(IwaVersion)> next_step_callback,
@@ -113,6 +122,10 @@ class PrepareInstallInfoJob {
   void ParseInstallInfoFromManifest(
       base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
       const IwaVersion parsed_version);
+  void OnGettingInstallInfoFromManifest(
+      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
+      const IwaVersion parsed_version,
+      std::unique_ptr<WebAppInstallInfo> install_info);
 
   void FinishJob(WebAppInstallInfo info);
 
@@ -121,9 +134,14 @@ class PrepareInstallInfoJob {
   const IwaSourceWithMode source_;
   const IwaOperation operation_;
   const std::optional<IwaVersion> expected_version_;
-  const raw_ref<content::WebContents> web_contents_;
+  IsolatedWebAppUrlInfo url_info_;
+
+  std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<WebAppDataRetriever> data_retriever_;
+  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
+  base::DictValue manifest_to_info_debug_data_;
+
   blink::mojom::ManifestPtr manifest_;
-  const raw_ref<IsolatedWebAppInstallCommandHelper> command_helper_;
 
   ResultCallback callback_;
 

@@ -53,13 +53,12 @@
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/web_contents.h"
 
 namespace web_app {
 
 IsolatedWebAppApplyUpdateCommand::IsolatedWebAppApplyUpdateCommand(
     IsolatedWebAppUrlInfo url_info,
-    std::unique_ptr<content::WebContents> web_contents,
+    Profile& profile,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)> callback,
@@ -71,13 +70,12 @@ IsolatedWebAppApplyUpdateCommand::IsolatedWebAppApplyUpdateCommand(
           base::unexpected(IsolatedWebAppApplyUpdateCommandError{
               .message = std::string("System is shutting down.")})),
       url_info_(std::move(url_info)),
-      web_contents_(std::move(web_contents)),
+      profile_(profile),
       optional_keep_alive_(std::move(optional_keep_alive)),
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)),
       command_helper_(std::move(command_helper)) {
-  CHECK(web_contents_ != nullptr);
   CHECK(optional_profile_keep_alive_ == nullptr ||
-        &profile() == optional_profile_keep_alive_->profile());
+        &profile_.get() == optional_profile_keep_alive_->profile());
 
   GetMutableDebugValue().Set("app_id", url_info_.app_id());
   GetMutableDebugValue().Set("origin", url_info_.origin().Serialize());
@@ -177,8 +175,8 @@ void IsolatedWebAppApplyUpdateCommand::HandleKeyRotationOrDowngradeIfNecessary(
     // Downgrade: The candidate version is older than the current one.
     // Proceed with the update, but remove user data first to avoid
     // incompatibility.
-    web_app::RemoveIsolatedWebAppBrowsingData(&profile(), url_info_.origin(),
-                                              std::move(next_step_callback));
+    RemoveIsolatedWebAppBrowsingData(&profile(), url_info_.origin(),
+                                     std::move(next_step_callback));
   } else {
     // Same-version update: This is only allowed if it fulfills a required
     // key rotation.
@@ -209,8 +207,9 @@ void IsolatedWebAppApplyUpdateCommand::PrepareInstallInfo(
       profile(),
       IwaSourceWithMode::FromStorageLocation(profile().GetPath(),
                                              pending_update_info().location),
-      IwaUpdateOperation{}, pending_update_info().version, *web_contents_,
-      *command_helper_, lock_->web_contents_manager().CreateUrlLoader(),
+      IwaUpdateOperation{}, pending_update_info().version, url_info_,
+      lock_->web_contents_manager().CreateDataRetriever(),
+      lock_->web_contents_manager().CreateUrlLoader(),
       std::move(next_step_callback));
 }
 
@@ -304,9 +303,7 @@ void IsolatedWebAppApplyUpdateCommand::ReportSuccess() {
 }
 
 Profile& IsolatedWebAppApplyUpdateCommand::profile() {
-  CHECK(web_contents_);
-  CHECK(web_contents_->GetBrowserContext());
-  return *Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  return *profile_;
 }
 
 }  // namespace web_app
