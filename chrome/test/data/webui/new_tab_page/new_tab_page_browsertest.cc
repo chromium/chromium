@@ -478,6 +478,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, AutoRemovalToast) {
           "runMochaSuite('NewTabPageAppTest AutoRemovalToast')");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ContextMenuAnimation) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppContextMenuAnimationTest')");
+}
+
 class NewTabPageModulesMostRelevantTabResumptionModuleTest
     : public NewTabPageBrowserTest {
  protected:

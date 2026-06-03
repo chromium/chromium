@@ -443,10 +443,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getInteger('maxEnterpriseShortcuts');
   protected accessor containerFocused_: boolean = false;
   protected accessor showScrim_: boolean = false;
+  protected realboxContextMenuAnimationAllowed_: boolean = false;
   protected accessor contextMenuGlifAnimationState_: GlifAnimationState =
-      this.ntpNextFeaturesEnabled_ &&
-          (!this.ntpNextDisablementEnabled_ || this.isActionChipsVisible_) ?
-      GlifAnimationState.SPINNER_ONLY :
       GlifAnimationState.INELIGIBLE;
   protected accessor undoToastCallback_: (() => void)|null = null;
   protected accessor undoToastMessage_: string|null = null;
@@ -460,6 +458,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('energyEffectEnabled');
   protected accessor energyEffectAnimationEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
+  protected realboxContextMenuAnimationCappingEnabled_: boolean =
+      loadTimeData.getBoolean('realboxContextMenuAnimationCappingEnabled');
   private accessor selectedCustomizeDialogPage_: string|null = null;
   private accessor middleSlotPromoLoaded_: boolean = false;
   private accessor modulesLoadedStatus_: ModuleLoadStatus =
@@ -648,6 +648,8 @@ export class AppElement extends AppElementBase {
       recordBoolean('NewTabPage.ComposeEntrypoint.Shown', true);
       this.pageHandler_.incrementComposeButtonShownCount();
     }
+
+    this.initializeContextMenuAnimationState_();
   }
 
   override disconnectedCallback() {
@@ -1462,8 +1464,46 @@ export class AppElement extends AppElementBase {
     this.modulesShownToUser = e.detail.value;
   }
 
+  private async initializeContextMenuAnimationState_() {
+    if (this.ntpRealboxNextEnabled_) {
+      let canShow = true;
+      if (this.realboxContextMenuAnimationCappingEnabled_) {
+        const {canShow: allowed} =
+            await this.pageHandler_.canShowRealboxContextMenuAnimation();
+        canShow = allowed;
+      }
+      this.realboxContextMenuAnimationAllowed_ = canShow;
+      if (canShow) {
+        if (this.energyEffectAnimationEnabled_) {
+          this.contextMenuGlifAnimationState_ = GlifAnimationState.STARTED;
+          if (this.realboxContextMenuAnimationCappingEnabled_) {
+            this.pageHandler_.recordRealboxContextMenuAnimationImpression();
+          }
+        } else {
+          const isSpinnerEligible = this.ntpNextFeaturesEnabled_ &&
+              (!this.ntpNextDisablementEnabled_ || this.isActionChipsVisible_);
+          this.contextMenuGlifAnimationState_ = isSpinnerEligible ?
+              GlifAnimationState.SPINNER_ONLY :
+              GlifAnimationState.INELIGIBLE;
+        }
+      } else {
+        this.contextMenuGlifAnimationState_ = GlifAnimationState.INELIGIBLE;
+      }
+    } else {
+      this.realboxContextMenuAnimationAllowed_ = false;
+      this.contextMenuGlifAnimationState_ = GlifAnimationState.INELIGIBLE;
+    }
+  }
+
   protected onActionChipsRetrievalStateChanged_(
       e: CustomEvent<{state: ActionChipsRetrievalState}>) {
+    if (!this.realboxContextMenuAnimationAllowed_) {
+      this.contextMenuGlifAnimationState_ = GlifAnimationState.INELIGIBLE;
+      return;
+    }
+    if (this.energyEffectAnimationEnabled_) {
+      return;
+    }
     const state = e.detail.state;
     // Mapping of ActionChipsRetrievalState => GlifAnimationState:
     // REQUESTED => SPINNER_ONLY
@@ -1485,6 +1525,9 @@ export class AppElement extends AppElementBase {
         this.contextMenuGlifAnimationState_ = GlifAnimationState.SPINNER_ONLY;
       } else if (state === ActionChipsRetrievalState.UPDATED) {
         this.contextMenuGlifAnimationState_ = GlifAnimationState.STARTED;
+        if (this.realboxContextMenuAnimationCappingEnabled_) {
+          this.pageHandler_.recordRealboxContextMenuAnimationImpression();
+        }
       }
     }
   }

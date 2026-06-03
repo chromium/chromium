@@ -70,6 +70,8 @@ suite('NewTabPageAppFocusTest', () => {
       doodle: null,
     });
     handler.setPromiseResolveFor('getModulesIdNames', {data: []});
+    handler.setPromiseResolveFor(
+        'canShowRealboxContextMenuAnimation', {canShow: false});
     installMock(
         CustomizeButtonsHandlerRemote,
         mock => CustomizeButtonsProxy.setInstance(

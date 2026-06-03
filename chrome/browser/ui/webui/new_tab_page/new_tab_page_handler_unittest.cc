@@ -13,6 +13,7 @@
 
 #include "base/hash/hash.h"
 #include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
@@ -22,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/token.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_pref_names.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
@@ -1932,4 +1934,119 @@ TEST_F(NewTabPageHandlerHaTSTest, InteractedModuleDoesNotTriggerIgnoredHaTS) {
       kSampleIgnoreCriteriaThreshold,
       GetDictPrefKeyCount(profile_.get(), prefs::kNtpModulesLoadedCountDict,
                           NewTabPageHandlerHaTSTest::kSampleModuleId));
+}
+
+TEST_F(NewTabPageHandlerTest, RealboxContextMenuAnimation) {
+  PrefService* prefs = profile_->GetPrefs();
+
+  // 1. Initially allowed, counts are 0.
+  {
+    base::test::TestFuture<bool> future;
+    handler_->CanShowRealboxContextMenuAnimation(future.GetCallback());
+    EXPECT_TRUE(future.Take());
+
+    const base::DictValue& dict =
+        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
+    EXPECT_EQ(std::nullopt, dict.FindInt("daily_count"));
+    EXPECT_EQ(std::nullopt, dict.FindInt("lifetime_count"));
+  }
+
+  // 2. Record 1st impression.
+  {
+    handler_->RecordRealboxContextMenuAnimationImpression();
+
+    const base::DictValue& dict =
+        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(1));
+    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(1));
+  }
+
+  // 3. Play 4 more times (total 5 daily impressions recorded).
+  for (int i = 0; i < 4; ++i) {
+    base::test::TestFuture<bool> future;
+    handler_->CanShowRealboxContextMenuAnimation(future.GetCallback());
+    EXPECT_TRUE(future.Take());
+    handler_->RecordRealboxContextMenuAnimationImpression();
+  }
+
+  // Verify counts are now 5 daily and 5 lifetime.
+  {
+    const base::DictValue& dict =
+        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(5));
+    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(5));
+  }
+
+  // 4. The 6th time, it should not be allowed and record should do nothing.
+  {
+    base::test::TestFuture<bool> future;
+    handler_->CanShowRealboxContextMenuAnimation(future.GetCallback());
+    EXPECT_FALSE(future.Take());
+
+    handler_->RecordRealboxContextMenuAnimationImpression();
+
+    const base::DictValue& dict =
+        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(5));
+    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(5));
+  }
+
+  // 5. Simulate a new day (change the date string in prefs).
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kRealboxContextMenuAnimationState);
+    update->Set("last_impression_time",
+                base::TimeToValue(base::Time::Now() - base::Days(1)));
+  }
+
+  // 6. Requesting now should reset daily count and allow more impressions.
+  {
+    base::test::TestFuture<bool> future;
+    handler_->CanShowRealboxContextMenuAnimation(future.GetCallback());
+    EXPECT_TRUE(future.Take());
+
+    handler_->RecordRealboxContextMenuAnimationImpression();
+
+    const base::DictValue& dict =
+        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(1));
+    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(6));
+  }
+
+  // 7. Bring lifetime count to 19 and verify it caps after 20.
+  {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kRealboxContextMenuAnimationState);
+    update->Set("lifetime_count", 19);
+    update->Set("daily_count",
+                0);  // Reset daily for today so we don't hit daily cap.
+  }
+
+  // 20th lifetime impression should still play.
+  {
+    base::test::TestFuture<bool> future;
+    handler_->CanShowRealboxContextMenuAnimation(future.GetCallback());
+    EXPECT_TRUE(future.Take());
+
+    handler_->RecordRealboxContextMenuAnimationImpression();
+
+    const base::DictValue& dict =
+        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(1));
+    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(20));
+  }
+
+  // 21st lifetime impression should be blocked.
+  {
+    base::test::TestFuture<bool> future;
+    handler_->CanShowRealboxContextMenuAnimation(future.GetCallback());
+    EXPECT_FALSE(future.Take());
+
+    handler_->RecordRealboxContextMenuAnimationImpression();
+
+    const base::DictValue& dict =
+        prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
+    EXPECT_THAT(dict.FindInt("daily_count"), testing::Optional(1));
+    EXPECT_THAT(dict.FindInt("lifetime_count"), testing::Optional(20));
+  }
 }

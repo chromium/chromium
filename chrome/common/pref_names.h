@@ -1694,6 +1694,12 @@ inline constexpr char kNtpCustomizeChromeButtonOpenCount[] =
     "NewTabPage.CustomizeChromeButtonOpenCount";
 // List keeping track of disabled NTP modules.
 inline constexpr char kNtpDisabledModules[] = "NewTabPage.DisabledModules";
+
+// Dictionary containing the state of the Realbox "+" context menu button
+// animation.
+inline constexpr char kRealboxContextMenuAnimationState[] =
+    "realbox.context_menu_animation_state";
+
 // List keeping track of modules hidden in Customize Chrome.
 inline constexpr char kNtpCustomizeChromeHiddenModules[] =
     "NewTabPage.CustomizeChromeHiddenModules";
