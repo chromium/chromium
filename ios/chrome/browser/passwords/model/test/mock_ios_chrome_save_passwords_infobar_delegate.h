@@ -7,13 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
-#include <optional>
+#import <memory>
+#import <optional>
 
-#include "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_form.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "url/gurl.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "url/gurl.h"
 
 // Mock queue observer.
 class MockIOSChromeSavePasswordInfoBarDelegate
@@ -32,12 +32,15 @@ class MockIOSChromeSavePasswordInfoBarDelegate
       const GURL& url = GURL(),
       std::optional<std::string> account_to_store_password = std::nullopt);
 
-  MOCK_METHOD0(InfoBarDismissed, void());
-  MOCK_METHOD2(UpdateCredentials, void(NSString* username, NSString* password));
-  MOCK_METHOD0(Accept, bool());
-  MOCK_METHOD0(Cancel, bool());
-  MOCK_METHOD1(InfobarPresenting, void(bool automatic));
-  MOCK_METHOD0(InfobarGone, void());
+  MOCK_METHOD(void, InfoBarDismissed, (), (override));
+  MOCK_METHOD(void,
+              UpdateCredentials,
+              (NSString * username, NSString* password),
+              (override));
+  MOCK_METHOD(bool, Accept, (), (override));
+  MOCK_METHOD(bool, Cancel, (), (override));
+  MOCK_METHOD(void, InfobarPresenting, (bool automatic), (override));
+  MOCK_METHOD(void, InfobarGone, (), (override));
 
  private:
   MockIOSChromeSavePasswordInfoBarDelegate(
