@@ -24,7 +24,7 @@ MojoWatcher* MojoWatcher::Create(mojo::Handle handle,
   MojoWatcher* watcher = MakeGarbageCollected<MojoWatcher>(context, callback);
   MojoResult result = watcher->Watch(handle, signals_dict);
   // TODO(alokp): Consider raising an exception.
-  // Current clients expect to recieve the initial error returned by MojoWatch
+  // Current clients expect to receive the initial error returned by MojoWatch
   // via watch callback.
   //
   // Note that the usage of WrapPersistent is intentional so that the initial
