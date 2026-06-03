@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
@@ -50,7 +51,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
 
 namespace indigo {
@@ -459,6 +462,12 @@ void IndigoPageActionController::UpdateEntryPointsState() {
       page_action_controller_->SetAnchoredMessageText(
           kActionIndigo, l10n_util::GetStringUTF16(
                              IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT));
+      gfx::ImageSkia* icon =
+          ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_GLIC_BUTTON_ALT_ICON);
+      page_action_controller_->SetAnchoredMessageIcon(
+          kActionIndigo,
+          icon ? ui::ImageModel::FromImageSkia(*icon) : ui::ImageModel());
       page_action_controller_->ShowAnchoredMessage(
           kActionIndigo,
           {.priority =
