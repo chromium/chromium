@@ -18,4 +18,10 @@ bool InclusionPolicy::ShouldRecordFileIoEvents(uint32_t thread_id) const {
          ActiveProcesses::Category::kClient;
 }
 
+bool InclusionPolicy::ShouldRecordDiskIoEvents(uint32_t thread_id) const {
+  // Include client and system process threads.
+  return active_processes_->GetThreadCategory(thread_id) !=
+         ActiveProcesses::Category::kOther;
+}
+
 }  // namespace tracing

@@ -97,6 +97,11 @@ class TRACING_EXPORT EtwConsumer
                          size_t pointer_size,
                          base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void HandleDiskIoEvent(const EVENT_HEADER& header,
+                         const ETW_BUFFER_CONTEXT& buffer_context,
+                         size_t pointer_size,
+                         base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
   void HandleLostEvent(const EVENT_HEADER& header,
                        const ETW_BUFFER_CONTEXT& buffer_context,
                        size_t pointer_size,
@@ -219,12 +224,45 @@ class TRACING_EXPORT EtwConsumer
                               base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Decodes a `DiskIo_TypeGroup1` event and emits a Perfetto trace event if
+  // the event comes from Chrome and `packet_data` is valid.
+  void DecodeDiskIoEventTypeGroup1(const EVENT_HEADER& header,
+                                   const ETW_BUFFER_CONTEXT& buffer_context,
+                                   size_t pointer_size,
+                                   base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `DiskIo_TypeGroup2` event and emits a Perfetto trace event if
+  // the event comes from Chrome and `packet_data` is valid.
+  void DecodeDiskIoEventTypeGroup2(const EVENT_HEADER& header,
+                                   const ETW_BUFFER_CONTEXT& buffer_context,
+                                   size_t pointer_size,
+                                   base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Decodes a `DiskIo_TypeGroup3` event and emits a Perfetto trace event if
+  // the event comes from Chrome and `packet_data` is valid.
+  void DecodeDiskIoEventTypeGroup3(const EVENT_HEADER& header,
+                                   const ETW_BUFFER_CONTEXT& buffer_context,
+                                   size_t pointer_size,
+                                   base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Returns a new perfetto trace event to be emitted for an ETW event with a
   // given event header. The timestamp and cpu fields of the returned event are
   // prepopulated.
   perfetto::protos::pbzero::EtwTraceEvent* MakeNextEvent(
       const EVENT_HEADER& header,
       const ETW_BUFFER_CONTEXT& buffer_context)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Determines whether either `header_thread id` or `issuing_thread_id`
+  // are Chrome threads and thus the disk io event should be included in the
+  // trace. If so, sets `event_thread_id` to the thread_id to set on the event,
+  // and returns true, false otherwise.
+  bool CalculateDiskIoEventInclusionAndThreadId(uint32_t header_thread_id,
+                                                uint32_t issuing_thread_id,
+                                                int32_t& event_thread_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   const ActiveProcesses& active_processes() const { return active_processes_; }

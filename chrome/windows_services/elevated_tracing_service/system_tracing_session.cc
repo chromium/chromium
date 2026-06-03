@@ -37,7 +37,6 @@ void OnTracedProcessReceiver(base::ProcessId client_pid,
     tracing::EtwSystemDataSource::Register(client_pid);
     return true;
   }();
-
   // Drop any previous connection before accepting the new one.
   tracing::TracedProcess::ResetTracedProcessReceiver();
   tracing::TracedProcess::OnTracedProcessRequest(

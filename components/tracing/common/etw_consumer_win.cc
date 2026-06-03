@@ -77,6 +77,21 @@ uint64_t CopyPointerHash(base::BufferIterator<const uint8_t>& iterator,
   return base::U64FromNativeEndian(base::span(hash).first<8u>());
 }
 
+// Returns the given QueryPerformanceCounter (QPC) timestamp in nanoseconds.
+uint64_t GetTimestampNanoseconds(uint64_t qpc_timestamp) {
+  static const double qpc_ticks_per_second = []() {
+    LARGE_INTEGER perf_counter_frequency = {};
+    ::QueryPerformanceFrequency(&perf_counter_frequency);
+    double frequency = static_cast<double>(perf_counter_frequency.QuadPart);
+    CHECK_GT(frequency, 0.0);
+    return frequency;
+  }();
+
+  return static_cast<uint64_t>(base::Time::kNanosecondsPerSecond *
+                               static_cast<double>(qpc_timestamp) /
+                               qpc_ticks_per_second);
+}
+
 }  // namespace
 
 EtwConsumer::EtwConsumer(
@@ -144,6 +159,13 @@ void EtwConsumer::ProcessEventRecord(EVENT_RECORD* event_record) {
       0x11d1,
       {0x84, 0xf4, 0x00, 0x00, 0xf8, 0x04, 0x64, 0xe3}};
 
+  // DiskIoGuid, 3d6fa8d4-fe05-11d0-9dda-00c04fd7ba7c
+  static constexpr GUID kDiskIoGuid = {
+      0x3d6fa8d4,
+      0xfe05,
+      0x11d0,
+      {0x9d, 0xda, 0x00, 0xc0, 0x4f, 0xd7, 0xba, 0x7c}};
+
   // A mapping of provider GUIDs to handler member functions.
   static constexpr auto kGuidToProvider =
       base::MakeFixedFlatMap<std::reference_wrapper<const GUID>,
@@ -152,7 +174,8 @@ void EtwConsumer::ProcessEventRecord(EVENT_RECORD* event_record) {
            {kThreadGuid, &EtwConsumer::HandleThreadEvent},
            {kLostEventGuid, &EtwConsumer::HandleLostEvent},
            {kMemInfoGuid, &EtwConsumer::HandleMemInfoEvent},
-           {kFileIoGuid, &EtwConsumer::HandleFileIoEvent}});
+           {kFileIoGuid, &EtwConsumer::HandleFileIoEvent},
+           {kDiskIoGuid, &EtwConsumer::HandleDiskIoEvent}});
 
   auto* const self = reinterpret_cast<EtwConsumer*>(event_record->UserContext);
   DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
@@ -335,6 +358,32 @@ void EtwConsumer::HandleFileIoEvent(const EVENT_HEADER& header,
 
     default:
       DLOG(ERROR) << "unhandled file op code " << header.EventDescriptor.Opcode;
+  }
+}
+
+void EtwConsumer::HandleDiskIoEvent(const EVENT_HEADER& header,
+                                    const ETW_BUFFER_CONTEXT& buffer_context,
+                                    size_t pointer_size,
+                                    base::span<const uint8_t> packet_data) {
+  switch (header.EventDescriptor.Opcode) {
+    case 10:  // Read
+    case 11:  // Write
+      DecodeDiskIoEventTypeGroup1(header, buffer_context, pointer_size,
+                                  packet_data);
+      break;
+    case 12:  // ReadInit
+    case 13:  // WriteInit
+    case 15:  // FlushInit
+      DecodeDiskIoEventTypeGroup2(header, buffer_context, pointer_size,
+                                  packet_data);
+      break;
+    case 14:  // Flush
+      DecodeDiskIoEventTypeGroup3(header, buffer_context, pointer_size,
+                                  packet_data);
+      break;
+    default:
+      DLOG(ERROR) << "Unhandled disk i/o opcode "
+                  << header.EventDescriptor.Opcode;
   }
 }
 
@@ -913,20 +962,127 @@ bool EtwConsumer::DecodeFileIoOpEndEvent(
   return true;
 }
 
+void EtwConsumer::DecodeDiskIoEventTypeGroup1(
+    const EVENT_HEADER& header,
+    const ETW_BUFFER_CONTEXT& buffer_context,
+    size_t pointer_size,
+    base::span<const uint8_t> packet_data) {
+  // See https://learn.microsoft.com/en-us/windows/win32/etw/diskio-typegroup1.
+  // Size of `DiskIo_TypeGroup1` event:  5 uint32 + 2 uint64 + 2 pointers.
+  const size_t kMinimumSize =
+      5 * sizeof(uint32_t) + 2 * sizeof(uint64_t) + 2 * pointer_size;
+  if (packet_data.size() < kMinimumSize) {
+    DLOG(ERROR) << "Error decoding DiskIo Group1 event";
+    return;
+  }
+  // Read the contents of `packet_data` and generate a `DiskIo` event.
+  base::BufferIterator<const uint8_t> iterator{packet_data};
+  uint32_t disk_number = *iterator.CopyObject<uint32_t>();
+  uint32_t irp_flags = *iterator.CopyObject<uint32_t>();
+  uint32_t transfer_size = *iterator.CopyObject<uint32_t>();
+  /* skip over reserved bytes*/ (void)*iterator.CopyObject<uint32_t>();
+  int64_t byte_offset = *iterator.CopyObject<int64_t>();
+  uint64_t file_object = CopyPointerHash(iterator, pointer_size);
+  uint64_t irp_ptr = CopyPointerHash(iterator, pointer_size);
+  uint64_t high_res_response_time = *iterator.CopyObject<uint64_t>();
+  uint32_t issuing_thread_id = *iterator.CopyObject<uint32_t>();
+  int32_t event_thread_id;
+  if (!CalculateDiskIoEventInclusionAndThreadId(
+          header.ThreadId, issuing_thread_id, event_thread_id)) {
+    return;
+  }
+
+  uint64_t response_time = GetTimestampNanoseconds(high_res_response_time);
+  // Make a Disk IO event.
+  auto* event = MakeNextEvent(header, buffer_context);
+  event->set_thread_id(event_thread_id);
+  auto* disk_io = event->set_disk_io();
+  disk_io->set_disk_number(disk_number);
+  disk_io->set_irp_flags(irp_flags);
+  disk_io->set_transfer_size(transfer_size);
+  disk_io->set_byte_offset(byte_offset);
+  disk_io->set_file_object(file_object);
+  disk_io->set_irp_ptr(irp_ptr);
+  disk_io->set_response_time(response_time);
+  disk_io->set_issuing_thread_id(issuing_thread_id);
+  disk_io->set_opcode(header.EventDescriptor.Opcode);
+}
+
+void EtwConsumer::DecodeDiskIoEventTypeGroup2(
+    const EVENT_HEADER& header,
+    const ETW_BUFFER_CONTEXT& buffer_context,
+    size_t pointer_size,
+    base::span<const uint8_t> packet_data) {
+  // See https://learn.microsoft.com/en-us/windows/win32/etw/diskio-typegroup2.
+
+  // Size of `DiskIo_TypeGroup2` event: 1 pointer + 1 uint32.
+  const size_t kMinimumSize = pointer_size + sizeof(uint32_t);
+  if (packet_data.size() < kMinimumSize) {
+    DLOG(ERROR) << "Error decoding DiskIo Group2 event";
+    return;
+  }
+
+  base::BufferIterator<const uint8_t> iterator{packet_data};
+  uint64_t irp_ptr = CopyPointerHash(iterator, pointer_size);
+  uint32_t issuing_thread_id = *iterator.CopyObject<uint32_t>();
+  int32_t event_thread_id;
+  if (!CalculateDiskIoEventInclusionAndThreadId(
+          header.ThreadId, issuing_thread_id, event_thread_id)) {
+    return;
+  }
+
+  auto* event = MakeNextEvent(header, buffer_context);
+  event->set_thread_id(event_thread_id);
+  auto* disk_io = event->set_disk_io();
+  disk_io->set_irp_ptr(irp_ptr);
+  disk_io->set_issuing_thread_id(issuing_thread_id);
+  disk_io->set_opcode(header.EventDescriptor.Opcode);
+}
+
+void EtwConsumer::DecodeDiskIoEventTypeGroup3(
+    const EVENT_HEADER& header,
+    const ETW_BUFFER_CONTEXT& buffer_context,
+    size_t pointer_size,
+    base::span<const uint8_t> packet_data) {
+  // See https://learn.microsoft.com/en-us/windows/win32/etw/diskio-typegroup3.
+  // Size of `DiskIo_TypeGroup3` event:  3 uint32 + 1 uint64 + 1 pointer
+  const size_t kMinimumSize =
+      3 * sizeof(uint32_t) + sizeof(uint64_t) + pointer_size;
+  if (packet_data.size() < kMinimumSize) {
+    DLOG(ERROR) << "Error decoding DiskIo Group3 event";
+    return;
+  }
+
+  // Read the contents of `packet_data` and generate a `DiskIo` event.
+  base::BufferIterator<const uint8_t> iterator{packet_data};
+  uint32_t disk_number = *iterator.CopyObject<uint32_t>();
+  uint32_t irp_flags = *iterator.CopyObject<uint32_t>();
+  uint64_t high_res_response_time = *iterator.CopyObject<uint64_t>();
+  uint64_t irp_ptr = CopyPointerHash(iterator, pointer_size);
+  uint32_t issuing_thread_id = *iterator.CopyObject<uint32_t>();
+  int32_t event_thread_id;
+  if (!CalculateDiskIoEventInclusionAndThreadId(
+          header.ThreadId, issuing_thread_id, event_thread_id)) {
+    return;
+  }
+  uint64_t response_time = GetTimestampNanoseconds(high_res_response_time);
+  // Make a Disk IO event.
+  auto* event = MakeNextEvent(header, buffer_context);
+  event->set_thread_id(event_thread_id);
+  auto* disk_io = event->set_disk_io();
+  disk_io->set_disk_number(disk_number);
+  disk_io->set_irp_flags(irp_flags);
+  disk_io->set_irp_ptr(irp_ptr);
+  disk_io->set_response_time(response_time);
+  disk_io->set_issuing_thread_id(issuing_thread_id);
+  disk_io->set_opcode(header.EventDescriptor.Opcode);
+}
+
 perfetto::protos::pbzero::EtwTraceEvent* EtwConsumer::MakeNextEvent(
     const EVENT_HEADER& header,
     const ETW_BUFFER_CONTEXT& buffer_context) {
-  static const double qpc_ticks_per_second = []() {
-    LARGE_INTEGER perf_counter_frequency = {};
-    ::QueryPerformanceFrequency(&perf_counter_frequency);
-    double frequency = static_cast<double>(perf_counter_frequency.QuadPart);
-    CHECK_GT(frequency, 0.0);
-    return frequency;
-  }();
-
-  uint64_t now = static_cast<uint64_t>(
-      base::Time::kNanosecondsPerSecond *
-      static_cast<double>(header.TimeStamp.QuadPart) / qpc_ticks_per_second);
+  uint64_t now =
+      GetTimestampNanoseconds(static_cast<double>(header.TimeStamp.QuadPart));
   if (!etw_events_) {
     // Resetting the `packet_handle_` finalizes previous data.
     packet_handle_ = trace_writer_->NewTracePacket();
@@ -938,6 +1094,21 @@ perfetto::protos::pbzero::EtwTraceEvent* EtwConsumer::MakeNextEvent(
   event->set_timestamp(now);
   event->set_cpu(buffer_context.ProcessorIndex);
   return event;
+}
+
+bool EtwConsumer::CalculateDiskIoEventInclusionAndThreadId(
+    uint32_t header_thread_id,
+    uint32_t issuing_thread_id,
+    int32_t& event_thread_id) {
+  if (inclusion_policy_.ShouldRecordDiskIoEvents(header_thread_id)) {
+    event_thread_id = header_thread_id;
+    return true;
+  }
+  if (inclusion_policy_.ShouldRecordDiskIoEvents(issuing_thread_id)) {
+    event_thread_id = issuing_thread_id;
+    return true;
+  }
+  return false;
 }
 
 }  // namespace tracing

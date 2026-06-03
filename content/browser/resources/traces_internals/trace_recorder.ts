@@ -41,7 +41,7 @@ export interface TraceRecorderElement {
 }
 
 // <if expr="is_win">
-type EtwProviderType = 'scheduler'|'memory'|'file';
+type EtwProviderType = 'scheduler'|'memory'|'system_io';
 // </if>
 
 export class TraceRecorderElement extends CrLitElement {
@@ -130,7 +130,7 @@ export class TraceRecorderElement extends CrLitElement {
       {[provider in EtwProviderType]: Set<string>} = {
         'memory': new Set(),
         'scheduler': new Set(),
-        'file': new Set(),
+        'system_io': new Set(),
       };
   protected accessor etwExpanded_: boolean = false;
   // </if>
@@ -386,7 +386,8 @@ export class TraceRecorderElement extends CrLitElement {
           [...this.enabledEtwEvents['scheduler']];
       this.etwConfig.memoryProviderEvents =
           [...this.enabledEtwEvents['memory']];
-      this.etwConfig.fileProviderEvents = [...this.enabledEtwEvents['file']];
+      this.etwConfig.systemIoProviderEvents =
+          [...this.enabledEtwEvents['system_io']];
     }
 
     this.updateUrlFromConfig_();
@@ -403,8 +404,7 @@ export class TraceRecorderElement extends CrLitElement {
     this.onTagsChange_(event, tagName, false);
   }
 
-  private onTagsChange_(event: Event, tagName: string, enabled: boolean):
-      void {
+  private onTagsChange_(event: Event, tagName: string, enabled: boolean): void {
     if (!this.trackEventConfig) {
       return;
     }
@@ -490,8 +490,14 @@ export class TraceRecorderElement extends CrLitElement {
       {
         name: 'File I/O',
         keyword: 'FILE_IO',
-        provider: 'file',
+        provider: 'system_io',
         description: 'Enables file I/O events',
+      },
+      {
+        name: 'Disk I/O',
+        keyword: 'DISK_IO',
+        provider: 'system_io',
+        description: 'Enables disk I/O events',
       },
     ];
     // </if>
@@ -706,8 +712,8 @@ export class TraceRecorderElement extends CrLitElement {
           new Set(this.etwConfig.schedulerProviderEvents);
       this.enabledEtwEvents['memory'] =
           new Set(this.etwConfig.memoryProviderEvents);
-      this.enabledEtwEvents['file'] =
-          new Set(this.etwConfig.fileProviderEvents);
+      this.enabledEtwEvents['system_io'] =
+          new Set(this.etwConfig.systemIoProviderEvents);
     }
     // </if>
   }
