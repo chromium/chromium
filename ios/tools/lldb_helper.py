@@ -134,16 +134,34 @@ def cleanup(session: str, app: Optional[str]) -> int:
     return 0
 
 
-def start(session: str, target: str, app: Optional[str],
-          breakpoints: Optional[str]) -> int:
+def start(session: str,
+          target: Optional[str],
+          app: Optional[str],
+          breakpoints: Optional[str],
+          pid: Optional[int] = None) -> int:
     cleanup(session, app)
-    print(
-        f"Starting tmux session '{session}' with lldb waiting for '{target}'..."
-    )
-    cmd = [
-        'tmux', 'new-session', '-d', '-s', session,
-        f'lldb -n {target} --wait-for -O "settings set auto-confirm true"'
-    ]
+    if pid:
+        print(
+            f"Starting tmux session '{session}' "
+            f"attaching to pid {pid}..."
+        )
+        cmd = [
+            'tmux', 'new-session', '-d', '-s', session,
+            f'lldb -p {pid} -O "settings set auto-confirm true"'
+        ]
+    elif target:
+        print(
+            f"Starting tmux session '{session}' "
+            f"waiting for '{target}'..."
+        )
+        cmd = [
+            'tmux', 'new-session', '-d', '-s', session,
+            f'lldb -n {target} --wait-for -O "settings set auto-confirm true"'
+        ]
+    else:
+        print("Error: Either --target or --pid must be specified.")
+        return 1
+
     res = subprocess.run(cmd, capture_output=True, text=True)
     if res.returncode != 0:
         print(f"Error starting tmux: {res.stderr}")
@@ -287,9 +305,13 @@ DETAILED SUBCOMMAND USAGE:
     parser_start.add_argument('--session',
                               required=True,
                               help="Name of tmux session.")
-    parser_start.add_argument('--target',
-                              required=True,
-                              help="Executable name for lldb to wait for.")
+    group = parser_start.add_mutually_exclusive_group(required=True)
+    group.add_argument('--target',
+                       help="Executable name for lldb to wait for.")
+    group.add_argument(
+        '--pid',
+        type=int,
+        help="PID of already running process to attach to.")
     parser_start.add_argument('--app', help="App bundle name for cleanup.")
     parser_start.add_argument(
         '--breakpoints',
@@ -359,7 +381,8 @@ DETAILED SUBCOMMAND USAGE:
     args = parser.parse_args()
 
     if args.command == 'start':
-        return start(args.session, args.target, args.app, args.breakpoints)
+        return start(args.session, args.target, args.app, args.breakpoints,
+                     args.pid)
     elif args.command == 'send':
         return send(args.session, args.cmd, args.clear)
     elif args.command == 'eval':
