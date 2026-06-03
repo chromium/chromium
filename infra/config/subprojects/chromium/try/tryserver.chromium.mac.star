@@ -679,7 +679,6 @@ ios_builder(
     ],
     gn_args = "ci/ios-asan",
     cpu = cpu.ARM64,
-    xcode = xcode.x17a400,
 )
 
 ios_builder(
