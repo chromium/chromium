@@ -1598,6 +1598,26 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void onTaskVisibilityChanged_differentTaskId_doesNotInvoke() {
+        // Arrange.
+        int taskId = 1;
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl)
+                        createChromeAndroidTaskWithMockDeps(taskId).mChromeAndroidTask;
+        var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
+
+        // Act: Invoke with a different taskId.
+        chromeAndroidTask.onTaskVisibilityChanged(/* taskId= */ 2, /* isVisible= */ false);
+
+        // Assert: Verify no visibility change was recorded for the feature.
+        assertTrue(testFeature.mTaskVisibilityChangeHistory.isEmpty());
+    }
+
+    @Test
     @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void canResize_noRestrictions() {
         // Arrange.
