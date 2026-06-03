@@ -17,7 +17,6 @@
 }
 
 .bookmark {
-  background-color: var(--color-tab-background-active-frame-active);
   height: 30px;
   display: flex;
   align-items: center;

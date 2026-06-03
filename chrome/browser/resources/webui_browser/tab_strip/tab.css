@@ -28,6 +28,11 @@
     transition: transform 300ms ease;
 }
 
+:host([inactive-frame]) .tab {
+    color: var(--color-tab-foreground-inactive-frame-inactive);
+    background-color: var(--color-tab-background-inactive-frame-inactive);
+}
+
 :host(:not([drag-in-progress]):not([active])) .tab:hover {
     background-color: var(--color-tab-background-highlighted);
     transition: background-color 100ms ease-in-out;
@@ -40,6 +45,11 @@
 :host([active]) .tab {
     color: var(--color-tab-foreground-active-frame-active);
     background-color: var(--color-tab-background-active-frame-active);
+}
+
+:host([inactive-frame][active]) .tab {
+    color: var(--color-tab-foreground-active-frame-inactive);
+    background-color: var(--color-tab-background-active-frame-inactive);
 }
 
 #favicon {
@@ -90,8 +100,18 @@ cr-icon {
         transparent 12px, var(--color-tab-background-active-frame-active) 13px);
 }
 
+:host([inactive-frame]) #leftCorner {
+    background-image: radial-gradient(circle at 0 0, transparent 0,
+        transparent 12px, var(--color-tab-background-active-frame-inactive) 13px);
+}
+
 #rightCorner {
     right: 0;
     background-image: radial-gradient(circle at 100% 0, transparent 0,
         transparent 12px, var(--color-tab-background-active-frame-active) 13px);
+}
+
+:host([inactive-frame]) #rightCorner {
+    background-image: radial-gradient(circle at 100% 0, transparent 0,
+        transparent 12px, var(--color-tab-background-active-frame-inactive) 13px);
 }

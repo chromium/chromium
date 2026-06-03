@@ -39,6 +39,11 @@ export class TabElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      inactiveFrame: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'inactive-frame',
+      },
     };
   }
 
@@ -56,6 +61,7 @@ export class TabElement extends CrLitElement {
 
   protected accessor dragInProgress = false;
   protected accessor active = false;
+  protected accessor inactiveFrame = false;
 
   private readonly tabStripUiController_: TabStripUIControllerRemote;
 

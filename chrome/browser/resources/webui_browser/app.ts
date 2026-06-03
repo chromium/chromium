@@ -69,6 +69,11 @@ export class WebuiBrowserAppElement extends CrLitElement {
       showLocationIconButton_: {type: Boolean, reflect: true},
       locationIcon_: {state: true, type: String},
       tabStripInset_: {state: true, type: Number},
+      inactive_: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'inactive',
+      },
     };
   }
 
@@ -82,6 +87,7 @@ export class WebuiBrowserAppElement extends CrLitElement {
   protected accessor showLocationIconButton_: boolean = false;
   protected accessor locationIcon_: string = 'NoEncryption';
   protected accessor tabStripInset_: number = 0;
+  protected accessor inactive_: boolean = false;
 
   constructor() {
     super();
@@ -94,6 +100,9 @@ export class WebuiBrowserAppElement extends CrLitElement {
     callbackRouter.closeSidePanel.addListener(this.closeSidePanel_.bind(this));
     callbackRouter.onFullscreenModeChanged.addListener(
         this.onFullscreenModeChanged_.bind(this));
+    callbackRouter.onPaintAsActiveChanged.addListener((active: boolean) => {
+      this.inactive_ = !active;
+    });
   }
 
   override async connectedCallback() {

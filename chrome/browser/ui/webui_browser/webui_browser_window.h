@@ -222,6 +222,8 @@ class WebUIBrowserWindow : public BrowserWindow,
   Browser* browser() { return browser_.get(); }
   views::Widget* widget() { return widget_.get(); }
 
+  void PaintAsActiveChangedForTesting() { PaintAsActiveChanged(); }
+
   gfx::Rect GetContentsBoundsInScreen() const;
 
  protected:

@@ -90,12 +90,18 @@ export class TabStripElement extends CrLitElement implements TabStripObserver,
         type: Boolean,
         state: true,
       },
+      inactiveFrame: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'inactive-frame',
+      },
     };
   }
 
   protected accessor items_: TabStripItem[] = [];
   protected accessor activeTab_: string = '';
   protected accessor dragInProgress_ = false;
+  protected accessor inactiveFrame = false;
 
   private readonly tabStripService_: TabStripServiceRemote;
   private tabStripObservation_: TabStripObservation|undefined;

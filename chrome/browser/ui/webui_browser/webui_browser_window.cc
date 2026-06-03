@@ -274,6 +274,9 @@ void WebUIBrowserWindow::PaintAsActiveChanged() {
   } else {
     browser_->DidBecomeInactive();
   }
+  if (webui_browser::mojom::Page* page = GetWebUIBrowserUI()->page()) {
+    page->OnPaintAsActiveChanged(widget_->ShouldPaintAsActive());
+  }
 }
 
 void WebUIBrowserWindow::ShowInactive() {

@@ -12,9 +12,10 @@ export function getHtml(this: TabStripElement) {
 <div id="tabstrip">
     ${this.items_.map(item => item.type === 'tab' ? html`
           <webui-browser-tab id="${this.tabIdToDomId(item.id)}"
-              .tabData="${item.tabData}"
-              .dragInProgress="${this.dragInProgress_}"
-              @tab-close-click="${this.onTabCloseClick}">
+               .tabData="${item.tabData}"
+               .dragInProgress="${this.dragInProgress_}"
+               ?inactive-frame="${this.inactiveFrame}"
+               @tab-close-click="${this.onTabCloseClick}">
           </webui-browser-tab>
         ` : html`
           <webui-browser-tab-group .collectionId="${item.id}"

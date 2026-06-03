@@ -9,11 +9,12 @@ import type {WebuiBrowserAppElement} from './app.js';
 export function getHtml(this: WebuiBrowserAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div class="activeFrame" id="rootContainer">
+<div id="rootContainer">
   <div id="topContainer">
     <div class="titlebarDiv" @mousedown="${this.onTabDragMousedown_}">
       <div class="tabstripDiv" style="margin-left:${this.tabStripInset_}px">
         <webui-browser-tab-strip id="tabstrip"
+            ?inactive-frame="${this.inactive_}"
             @tab-activated="${this.onTabActivated_}"
             @tab-added="${this.onTabAdded_}"
             @tab-closed="${this.onTabClosed_}"

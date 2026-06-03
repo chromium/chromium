@@ -22,6 +22,22 @@
   user-select: none;
 }
 
+:host([inactive]) {
+  background-color: var(--color-frame-inactive);
+}
+
+:host([inactive]) #rootContainer {
+  background-color: var(--color-tab-background-active-frame-inactive);
+}
+
+:host([inactive]) .titlebarDiv {
+  background-color: var(--color-tab-background-inactive-frame-inactive);
+}
+
+:host([inactive]) .caption-button {
+  --iron-icon-stroke-color: var(--color-tab-foreground-active-frame-inactive);
+}
+
 /* Hide browser frame in tab fullscreen mode */
 :host([fullscreen-mode='tab']) #topContainer {
   display: none;
@@ -88,11 +104,6 @@ webui-browser-searchbox[dropdown-is-visible] {
   --cr-searchbox-shadow: 0 3px 7px 0px #20212451;
 }
 
-.activeFrame {
-  /* Everything below the tab strip is the active frame, so give it the active
-   * background color. */
-  background-color: var(--color-tab-background-active-frame-active);
-}
 
 .titlebarDiv {
   app-region: drag;
@@ -163,6 +174,9 @@ webui-browser-searchbox[dropdown-is-visible] {
 }
 
 #rootContainer {
+  /* Everything below the tab strip is themed with the active frame color
+   * (the active tab's background color). */
+  background-color: var(--color-tab-background-active-frame-active);
   display: grid;
   height: 100%;
   /* *

@@ -249,6 +249,8 @@ void WebUIBrowserUI::CreatePageHandler(
   auto* render_frame_host = web_ui()->GetRenderFrameHost();
   WebUIBrowserPageHandler::CreateForRenderFrameHost(*render_frame_host,
                                                     std::move(receiver), this);
+  page_->OnPaintAsActiveChanged(
+      browser_window()->widget()->ShouldPaintAsActive());
 }
 
 void WebUIBrowserUI::CreatePageHandler(
