@@ -7,6 +7,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -58,23 +59,18 @@ class WebAppInstallFlowBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppInstallFlowBrowserTest()
       : progress_delay_override_(ProgressDelay::SetDurationOverrideForTesting(
-            base::Milliseconds(0))) {
-  }
+            base::Milliseconds(0))) {}
 
   ~WebAppInstallFlowBrowserTest() override = default;
 
   void AdvanceToDoneAndAccept(views::Widget* widget) {
     ASSERT_TRUE(widget);
-    // Step 1: Install Dialog. Accept to move to options.
-    AcceptWidgetAndMoveForward(widget);
+    AdvanceToProgressStep(widget);
+    AdvanceToSuccessfulStep(widget);
 
-#if !BUILDFLAG(IS_LINUX)
-    // Step 2: Installer Options, only shows up on non Linux install flows.
-    // Accept to move to progress.
+    views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
     AcceptWidgetAndMoveForward(widget);
-#endif  //! BUILDFLAG(IS_LINUX)
-
-    ForwardThroughProgressViewAndAcceptDialog(widget);
+    destroyed_waiter.Wait();
   }
 
   // Waiter for the new install flow dialog. Waits for the progress bar to be
@@ -85,15 +81,38 @@ class WebAppInstallFlowBrowserTest : public WebAppBrowserTestBase {
   // CHECK-fail if any other view is passed as an input here.
   void ForwardThroughProgressViewAndAcceptDialog(views::Widget* widget) {
     views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+    AdvanceToSuccessfulStep(widget);
+
+    // We should be in the "Successful" view step now. Accept it to finish
+    // installation.
+    AcceptWidgetAndMoveForward(widget);
+    destroyed_waiter.Wait();
+  }
+
+  // Helper that moves the installation forward from the initial IntroView step
+  // through the options view until it reaches kProgress.
+  void AdvanceToProgressStep(views::Widget* widget) {
+    // Accept step 1 (Intro).
     AcceptWidgetAndMoveForward(widget);
 
-    // At this point, we should be in the WebAppInstallProgressView. Wait for
-    // the progress view to complete, and go to the success view.
+    // If on platform with options view, accept OptionsView too.
+    if (ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+            WebAppInstallFlowDialogDelegate::kOptionsViewId)) {
+      AcceptWidgetAndMoveForward(widget);
+    }
+  }
+
+  // Helper that moves the installation forward from the progress view step
+  // (which starts in kProgress) until it reaches the final success view
+  // (kSuccessful).
+  void AdvanceToSuccessfulStep(views::Widget* widget) {
+    // Wait for the progress view to complete.
     views::View* progress_view =
         views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
             WebAppInstallProgressView::kProgressBarId,
             views::ElementTrackerViews::GetContextForWidget(widget));
     EXPECT_NE(progress_view, nullptr);
+
     views::ProgressBar* install_progress_bar =
         views::AsViewClass<views::ProgressBar>(progress_view);
     EXPECT_NE(install_progress_bar, nullptr);
@@ -106,11 +125,6 @@ class WebAppInstallFlowBrowserTest : public WebAppBrowserTestBase {
     WebAppProvider::GetForWebApps(browser()->profile())
         ->command_manager()
         .AwaitAllCommandsCompleteForTesting();
-
-    // We should be in the "Successful" view step now. Accept it to finish
-    // installation.
-    AcceptWidgetAndMoveForward(widget);
-    destroyed_waiter.Wait();
   }
 
   IconLabelBubbleView* GetPwaInstallIconView() {
@@ -243,25 +257,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
     dialog_delegate->AcceptDialog();
   }
 
-  // Wait for the progress view to complete and reach the success view.
-  views::View* progress_view =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          WebAppInstallProgressView::kProgressBarId,
-          views::ElementTrackerViews::GetContextForWidget(widget));
-  ASSERT_NE(progress_view, nullptr);
-
-  views::ProgressBar* install_progress_bar =
-      views::AsViewClass<views::ProgressBar>(progress_view);
-  ASSERT_NE(install_progress_bar, nullptr);
-
-  ASSERT_TRUE(base::test::RunUntil([install_progress_bar]() -> bool {
-    return (install_progress_bar->GetValue() >= 0.9);
-  }));
-
-  // Wait for all background install commands to complete.
-  WebAppProvider::GetForWebApps(browser()->profile())
-      ->command_manager()
-      .AwaitAllCommandsCompleteForTesting();
+  AdvanceToSuccessfulStep(widget);
 
   dialog_delegate->CancelDialog();
   ASSERT_TRUE(web_app::WaitForIntentPickerToShow(browser()));
@@ -269,6 +265,72 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
       web_app::GetIntentPickerButton(browser()->GetBrowserForMigrationOnly())
           ->GetVisible());
 }
+
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
+                       DropOffStepLoggedOnCancelAtIntro) {
+  base::HistogramTester histogram_tester;
+  const GURL app_url =
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
+  ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* icon = GetPwaInstallIconView();
+    return icon && icon->GetVisible();
+  }));
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppInstallFlowDialog");
+  chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
+
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+
+  // Cancel the dialog on the first step (Intro).
+  widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
+
+  destroyed_waiter.Wait();
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.InstallFlow.DropOffStep"),
+      base::BucketsAre(base::Bucket(InstallDialogStep::kInstallDialog, 1)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
+                       DropOffStepLoggedOnCancelAtSuccess) {
+  base::HistogramTester histogram_tester;
+  const GURL app_url =
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
+  ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* icon = GetPwaInstallIconView();
+    return icon && icon->GetVisible();
+  }));
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppInstallFlowDialog");
+  chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
+
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  AdvanceToProgressStep(widget);
+  AdvanceToSuccessfulStep(widget);
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+
+  // Cancel dialog on success step.
+  widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
+
+  destroyed_waiter.Wait();
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.InstallFlow.DropOffStep"),
+      base::BucketsAre(base::Bucket(InstallDialogStep::kSuccessful, 1)));
+}
+
 #if BUILDFLAG(IS_WIN)
 
 enum class CheckboxOptions { kNeither, kShortcutOnly, kTaskbarOnly, kBoth };
@@ -398,7 +460,7 @@ IN_PROC_BROWSER_TEST_P(WebAppInstallFlowOptionsViewTest, OptionsParameters) {
   auto* taskbar_checkbox = views::AsViewClass<views::Checkbox>(taskbar_view);
   ASSERT_NE(taskbar_checkbox, nullptr);
   taskbar_checkbox->SetChecked(pin_to_taskbar);
-
+  AcceptWidgetAndMoveForward(widget);
   ForwardThroughProgressViewAndAcceptDialog(widget);
 
   const webapps::AppId app_id = install_observer.Wait();
