@@ -72,6 +72,9 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
     kAndroidSpareRendererOnlyForNavigation;
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kAndroidSpareRendererOnlyWarmupAfterWebPageLoaded;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kArtificialUIDelay);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kInitialWebUIDelayDuration);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kViewsUIDelayDuration);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttachUnownedInnerWebContents);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceLaunchOnStartup);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAudioServiceOutOfProcess);

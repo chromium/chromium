@@ -296,6 +296,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
 #include "extensions/common/command.h"
@@ -1582,6 +1583,9 @@ void BrowserView::Show() {
     restore_focus_on_activation_ = true;
   }
 
+  if (base::FeatureList::IsEnabled(features::kArtificialUIDelay)) {
+    base::PlatformThread::Sleep(features::kViewsUIDelayDuration.Get());
+  }
   browser_widget_->Show();
 
   browser()->OnWindowDidShow();

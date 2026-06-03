@@ -306,21 +306,6 @@ using blink::WebView;
 using blink::mojom::SelectionMenuBehavior;
 using network::mojom::ReferrerPolicy;
 
-namespace features {
-
-// Used to add an artificial delay for UI rendering during testing and
-// debugging.
-BASE_FEATURE(kArtificialUIDelay, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The duration of the artificial delay injected into WebUI HTML UI rendering.
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kInitialWebUIDelayDuration,
-                   &features::kArtificialUIDelay,
-                   "initial_web_ui_delay_duration",
-                   base::Seconds(3));
-
-}  // namespace features
-
 namespace content {
 
 namespace {

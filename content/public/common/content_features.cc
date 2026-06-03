@@ -575,6 +575,24 @@ BASE_FEATURE_PARAM(bool,
                    "without_translate",
                    true);
 
+// Used to add an artificial delay for UI rendering during testing and
+// debugging.
+BASE_FEATURE(kArtificialUIDelay, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The duration of the artificial delay injected into WebUI HTML UI rendering.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kInitialWebUIDelayDuration,
+                   &features::kArtificialUIDelay,
+                   "initial_web_ui_delay_duration",
+                   base::Seconds(3));
+
+// The duration of the artificial delay injected into views UI rendering.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kViewsUIDelayDuration,
+                   &features::kArtificialUIDelay,
+                   "views_ui_delay_duration",
+                   base::Seconds(3));
+
 // Whether initial WebUI navigations should synchronously go from navigation
 // start to commit, by doing e.g. in-renderer body loading.
 BASE_FEATURE(kInitialWebUISyncNavStartToCommit,
