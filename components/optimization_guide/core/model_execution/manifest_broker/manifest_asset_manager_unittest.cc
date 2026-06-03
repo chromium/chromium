@@ -9,12 +9,14 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/function_ref.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
+#include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_broker_state.h"
@@ -22,7 +24,9 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
+#include "components/optimization_guide/core/model_execution/test/fake_component_update_service.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
+#include "components/optimization_guide/core/model_execution/test/mock_download_progress_observer.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
@@ -56,10 +60,12 @@ struct DummyAsset {
   }
 
   static DummyAsset For(std::string use_case) {
+    std::string key = "dummy_key_" + use_case;
+    key.resize(32, '0');
     return {
         .use_case = use_case,
         .asset_id = "asset_" + use_case,
-        .public_key = "dummy_key_" + use_case,
+        .public_key = base::HexEncode(base::as_byte_span(key)),
     };
   }
 
@@ -145,7 +151,7 @@ class ManifestAssetManagerTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {features::kOptimizationGuideModelExecution,
          features::kOptimizationGuideOnDeviceModel},
-        {});
+        {features::kAIModelUnloadableProgress});
   }
 
   void UpdateManifest(const DummyManifest& manifest) {
@@ -167,14 +173,55 @@ class ManifestAssetManagerTest : public testing::Test {
     UpdateManifest(dummy_manifest);
   }
 
+  void SetUp() override {
+    testing::Test::SetUp();
+    EXPECT_CALL(component_update_service_,
+                GetComponentDetails(testing::_, testing::_))
+        .WillRepeatedly([&](const std::string& id,
+                            update_client::CrxUpdateItem* item) {
+          auto iter = fake_components_.find(id);
+          if (iter == fake_components_.end()) {
+            return false;
+          }
+
+          if (iter->second.downloaded_bytes() == iter->second.total_bytes()) {
+            *item = iter->second.CreateUpdateItem(
+                update_client::ComponentState::kUpdated,
+                iter->second.total_bytes());
+          } else {
+            *item = iter->second.CreateUpdateItem(
+                update_client::ComponentState::kNew, 0);
+          }
+
+          return true;
+        });
+  }
+
   void Startup() {
     manifest_broker_state_ = std::make_unique<ManifestBrokerState>(
         local_state_.local_state(), component_state_.CreateDelegate(),
-        fake_launcher_.LaunchFn());
+        fake_launcher_.LaunchFn(), &component_update_service_);
     model_broker_client_ = std::make_unique<ModelBrokerClient>(
         manifest_broker_state_->BindAndPassRemoteBroker(), nullptr);
     // Bind a subscriber to trigger initialization.
     model_broker_client_->GetSubscriber(mojom::OnDeviceFeature::kTest);
+  }
+
+  std::string GetCrxId(const DummyAsset& asset) {
+    std::vector<uint8_t> public_key_hash;
+    CHECK(base::HexStringToBytes(asset.public_key, &public_key_hash));
+    return crx_file::id_util::GenerateIdFromHash(public_key_hash);
+  }
+
+  void RegisterFakeComponent(const std::string& id, uint64_t total_bytes) {
+    fake_components_.insert({id, FakeComponent(id, total_bytes)});
+  }
+
+  void SendUpdate(const std::string& id, uint64_t downloaded_bytes) {
+    auto iter = fake_components_.find(id);
+    ASSERT_NE(iter, fake_components_.end());
+    component_update_service_.SendUpdate(iter->second.CreateUpdateItem(
+        update_client::ComponentState::kDownloading, downloaded_bytes));
   }
 
   void SimulateShutdown() {
@@ -187,6 +234,8 @@ class ManifestAssetManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
+  testing::NiceMock<FakeComponentUpdateService> component_update_service_;
+  std::map<std::string, FakeComponent> fake_components_;
   ModelBrokerPrefService local_state_;
   TestManifestAssetManagerComponentState component_state_;
   on_device_model::FakeOnDeviceServiceSettings fake_settings_;
@@ -196,6 +245,66 @@ class ManifestAssetManagerTest : public testing::Test {
   std::unique_ptr<ManifestBrokerState> manifest_broker_state_;
   std::unique_ptr<ModelBrokerClient> model_broker_client_;
 };
+
+TEST_F(ManifestAssetManagerTest, DownloadProgressObserverReceivesUpdates) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  UpdateManifest(DummyManifest().Add(asset));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  MockDownloadProgressObserver observer;
+  model_broker_client_->AddModelDownloadProgressObserver(
+      asset.use_case, observer.BindNewPipeAndPassRemote());
+  task_environment_.RunUntilIdle();
+
+  RegisterFakeComponent(GetCrxId(asset), 100);
+
+  // Send the zero update.
+  SendUpdate(GetCrxId(asset), 0);
+  observer.ExpectReceivedNormalizedUpdate(0, 100);
+
+  // Send an update for 50 downloaded bytes.
+  task_environment_.FastForwardBy(base::Milliseconds(51));
+  SendUpdate(GetCrxId(asset), 50);
+  observer.ExpectReceivedNormalizedUpdate(50, 100);
+}
+
+TEST_F(ManifestAssetManagerTest, DownloadProgressObserverIsUseCaseSpecific) {
+  DummyAsset compose_asset = DummyAsset::For("compose");
+  DummyAsset test_asset = DummyAsset::For("test");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(compose_asset.use_case);
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(test_asset.use_case);
+  UpdateManifest(DummyManifest().Add(compose_asset).Add(test_asset));
+  Startup();
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(compose_asset.ToInstallTarget()));
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(test_asset.ToInstallTarget()));
+
+  MockDownloadProgressObserver compose_observer;
+  model_broker_client_->AddModelDownloadProgressObserver(
+      compose_asset.use_case, compose_observer.BindNewPipeAndPassRemote());
+
+  MockDownloadProgressObserver test_observer;
+  model_broker_client_->AddModelDownloadProgressObserver(
+      test_asset.use_case, test_observer.BindNewPipeAndPassRemote());
+  task_environment_.RunUntilIdle();
+
+  RegisterFakeComponent(GetCrxId(compose_asset), 100);
+  RegisterFakeComponent(GetCrxId(test_asset), 200);
+
+  // Send the zero update for compose component.
+  test_observer.ExpectNoUpdate();
+  SendUpdate(GetCrxId(compose_asset), 0);
+  compose_observer.ExpectReceivedNormalizedUpdate(0, 100);
+
+  // Send an update for compose component.
+  task_environment_.FastForwardBy(base::Milliseconds(51));
+  test_observer.ExpectNoUpdate();
+  SendUpdate(GetCrxId(compose_asset), 50);
+  compose_observer.ExpectReceivedNormalizedUpdate(50, 100);
+}
 
 TEST_F(ManifestAssetManagerTest, RegistersComponentsForActiveUseCases) {
   DummyAsset compose_asset = DummyAsset::For("compose");

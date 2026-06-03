@@ -10,6 +10,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_broker_state.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/model_execution/test/fake_component_update_service.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 
@@ -47,6 +48,7 @@ class FakeManifestBroker {
 
  private:
   ScopedModelBrokerFeatureList scoped_feature_list_;
+  testing::NiceMock<FakeComponentUpdateService> component_update_service_;
   ModelBrokerPrefService local_state_;
   TestManifestAssetManagerComponentState component_state_;
   on_device_model::FakeOnDeviceServiceSettings settings_;

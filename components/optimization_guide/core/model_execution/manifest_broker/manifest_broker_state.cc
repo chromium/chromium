@@ -51,16 +51,19 @@ base::flat_map<mojom::OnDeviceFeature, proto::Any> GetFeatureConfigs(
 ManifestBrokerState::ManifestBrokerState(
     PrefService& local_state,
     std::unique_ptr<ManifestAssetManager::Delegate> delegate,
-    on_device_model::ServiceClient::LaunchFn launch_fn)
+    on_device_model::ServiceClient::LaunchFn launch_fn,
+    component_updater::ComponentUpdateService* component_update_service)
     : local_state_(local_state),
       delegate_(std::move(delegate)),
       service_client_(std::move(launch_fn)),
+      component_update_service_(component_update_service),
       usage_tracker_(&local_state),
       model_broker_impl_(
           usage_tracker_,
           base::BindRepeating(&ManifestBrokerState::EnsureInitialization,
                               base::Unretained(this)),
-          base::DoNothing()),
+          base::BindRepeating(&ManifestBrokerState::AddDownloadProgressObserver,
+                              base::Unretained(this))),
       performance_classifier_(&local_state, service_client_.GetSafeRef()),
       manifest_monitor_(local_state, performance_classifier_, *delegate_),
       manifest_validator_(access_controller_, model_broker_impl_) {
@@ -74,6 +77,14 @@ ManifestBrokerState::ManifestBrokerState(
 }
 
 ManifestBrokerState::~ManifestBrokerState() = default;
+
+void ManifestBrokerState::AddDownloadProgressObserver(
+    const std::string& use_case,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
+  if (asset_manager_) {
+    asset_manager_->AddDownloadProgressObserver(use_case, std::move(observer));
+  }
+}
 
 void ManifestBrokerState::BindModelBroker(
     mojo::PendingReceiver<mojom::ModelBroker> receiver) {
@@ -194,7 +205,8 @@ void ManifestBrokerState::OnManifestUpdated() {
                      weak_ptr_factory_.GetWeakPtr()));
   if (!asset_manager_) {
     asset_manager_ = std::make_unique<ManifestAssetManager>(
-        *local_state_, usage_tracker_, *delegate_, std::move(factory));
+        *local_state_, usage_tracker_, *delegate_, component_update_service_,
+        std::move(factory));
   } else {
     asset_manager_->UpdateSolutionFactory(std::move(factory));
   }
