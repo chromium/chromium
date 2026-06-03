@@ -13,7 +13,8 @@ if (is_fuchsia) {
 
 if (is_ios) {
   declare_args() {
-    # iOS is bring-your-own-model. ios_on_device_llm_files should include 3 paths:
+    # iOS is bring-your-own-model. ios_on_device_llm_files should include 3
+    # paths:
     # - /path/to/weights.bin
     # - /path/to/manifest.json
     # - /path/to/config.pb
@@ -23,10 +24,11 @@ if (is_ios) {
 
 declare_args() {
   # You can set the variable 'build_with_internal_optimization_guide' to true
-  # even in a developer build in args.gn.  Setting this variable explicitly to true will
-  # cause your build to fail if the internal files are missing.
+  # even in a developer build in args.gn. Setting this variable explicitly to
+  # true will cause your build to fail if the internal files are missing.
   #
-  # If changing the value of this, you MUST also update the following files depending on the
+  # If changing the value of this, you MUST also update the following files
+  # depending on the
   # platform:
   # Android: Internal expectations files that verify the native libraries  are compiled into the Android binary.
   # ChromeOS: //lib/chrome_util.py in the Chromite repo (ex: https://crrev.com/c/3437291)
@@ -35,8 +37,8 @@ declare_args() {
   # Mac: //chrome/installer/mac/signing/parts.py
   # Windows: //chrome/installer/mini_installer/chrome.release and internal archive files
   if (is_fuchsia || is_android || is_ios) {
-    # Fuchsia, Android, and iOS should work but are not included in the set we release for,
-    # so we do not needlessly increase the binary size.
+    # Fuchsia, Android, and iOS should work but are not included in the set we
+    # release for, so we do not needlessly increase the binary size.
     build_with_internal_optimization_guide = false
   } else {
     # Use is_chrome_branded as a proxy for "does src-internal exist".
