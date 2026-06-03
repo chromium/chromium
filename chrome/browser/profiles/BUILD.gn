@@ -818,6 +818,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/global_media_controls",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/media_router",
+      "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/tabs/saved_tab_groups",
