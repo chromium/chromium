@@ -413,7 +413,9 @@ GURL RemoteSuggestionsService::EndpointUrl(
     case metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX:
     case metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX:
       if (search_terms_args.lens_overlay_suggest_inputs.has_value() &&
-          !search_terms_args.input_state.image_gen_upload_active) {
+          !search_terms_args.input_state.image_gen_upload_active &&
+          search_terms_args.input_state.active_tool !=
+              omnibox::ToolMode::TOOL_MODE_CANVAS) {
         url = net::AppendOrReplaceQueryParameter(url, "client",
                                                  "chrome-contextual");
       }
