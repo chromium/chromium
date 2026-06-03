@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.modules.on_demand;
 
+import android.content.Context;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.bricks.BricksCoordinatorInterface;
 import org.chromium.chrome.browser.pdf.PdfEntryPoint;
 import org.chromium.components.module_installer.builder.ModuleInterface;
 
@@ -23,4 +26,7 @@ public interface OnDemandModuleEntryPoints {
 
     /** Returns the PDF entry point. */
     PdfEntryPoint getPdfEntryPoint();
+
+    /** Creates the Bricks coordinator. */
+    BricksCoordinatorInterface createBricksCoordinator(Context context);
 }

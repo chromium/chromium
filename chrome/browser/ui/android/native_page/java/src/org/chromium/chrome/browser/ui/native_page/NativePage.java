@@ -179,6 +179,7 @@ public interface NativePage {
         NativePageType.EXPLORE,
         NativePageType.MANAGEMENT,
         NativePageType.PDF,
+        NativePageType.BRICKS,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface NativePageType {
@@ -192,6 +193,7 @@ public interface NativePage {
         int EXPLORE = 7;
         int MANAGEMENT = 8;
         int PDF = 9;
+        int BRICKS = 10;
     }
 
     /**
@@ -285,6 +287,9 @@ public interface NativePage {
                 return NativePageType.NONE;
             }
             return NativePageType.MANAGEMENT;
+        } else if (UrlConstants.BRICKS_HOST.equals(host)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_BRICKS_NATIVE_PAGE)) {
+            return NativePageType.BRICKS;
         } else {
             return NativePageType.NONE;
         }

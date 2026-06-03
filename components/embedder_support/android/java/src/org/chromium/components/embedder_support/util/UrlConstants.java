@@ -139,6 +139,9 @@ public class UrlConstants {
     public static final String MANAGEMENT_HOST = "management";
     public static final String MANAGEMENT_URL = "chrome://management/";
 
+    public static final String BRICKS_HOST = "bricks";
+    public static final String BRICKS_URL = "chrome://bricks/";
+
     /* Host and url used for PDF native pages. */
     public static final String PDF_HOST = "pdf";
     public static final String PDF_URL = "chrome-native://pdf/";

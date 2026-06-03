@@ -11,6 +11,7 @@ on_demand_module_desc = {
       "//chrome/android/modules/on_demand/java/AndroidManifest.xml"
   java_deps = [
     "//chrome/android/modules/on_demand:impl_java",
+    "//chrome/browser/ui/android/bricks/internal:java",
     "//chrome/browser/ui/android/pdf/internal:java",
   ]
 }

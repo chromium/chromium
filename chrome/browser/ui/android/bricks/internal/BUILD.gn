@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/bricks/BricksCoordinator.kt" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/ui/android/bricks:java",
+    "//third_party/androidx:androidx_activity_activity_compose_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_compose_foundation_foundation_java",
+    "//third_party/androidx:androidx_compose_foundation_foundation_layout_java",
+    "//third_party/androidx:androidx_compose_material3_material3_java",
+    "//third_party/androidx:androidx_compose_runtime_runtime_java",
+    "//third_party/androidx:androidx_compose_ui_ui_java",
+    "//third_party/androidx:androidx_compose_ui_ui_text_java",
+    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+  ]
+  enable_compose = true
+}

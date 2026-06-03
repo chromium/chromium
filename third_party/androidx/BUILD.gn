@@ -366,8 +366,23 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_compose_foundation_foundation_java") {
+    deps = [ ":androidx_compose_foundation_foundation_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_compose_foundation_foundation_layout_java") {
+    deps = [ ":androidx_compose_foundation_foundation_layout_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_compose_material3_material3_java") {
     deps = [ ":androidx_compose_material3_material3_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_compose_runtime_runtime_java") {
+    deps = [ ":androidx_compose_runtime_runtime_android_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -433,6 +448,11 @@ if (!limit_android_deps) {
       ":androidx_activity_activity_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_compose_ui_ui_text_java") {
+    deps = [ ":androidx_compose_ui_ui_text_android_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2071,17 +2091,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_java_group("androidx_compose_foundation_foundation_java") {
-    # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.template
-    visibility = [
-      ":*",
-      "//third_party/android_deps:*",
-    ]
-    deps = [ ":androidx_compose_foundation_foundation_android_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_compose_foundation_foundation_android_java") {
     aar_path = "../androidx/cipd/libs/androidx_compose_foundation_foundation_android/foundation-android.aar"
@@ -2108,17 +2117,6 @@ if (!limit_android_deps) {
       ":androidx_emoji2_emoji2_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_java_group("androidx_compose_foundation_foundation_layout_java") {
-    # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.template
-    visibility = [
-      ":*",
-      "//third_party/android_deps:*",
-    ]
-    deps = [ ":androidx_compose_foundation_foundation_layout_android_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2212,17 +2210,6 @@ if (!limit_android_deps) {
       ":androidx_compose_ui_ui_util_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_java_group("androidx_compose_runtime_runtime_java") {
-    # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.template
-    visibility = [
-      ":*",
-      "//third_party/android_deps:*",
-    ]
-    deps = [ ":androidx_compose_runtime_runtime_android_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2474,17 +2461,6 @@ if (!limit_android_deps) {
       "//third_party/junit",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  androidx_java_group("androidx_compose_ui_ui_text_java") {
-    # To remove visibility constraint, add this dependency to
-    # //third_party/androidx/build.gradle.template
-    visibility = [
-      ":*",
-      "//third_party/android_deps:*",
-    ]
-    deps = [ ":androidx_compose_ui_ui_text_android_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

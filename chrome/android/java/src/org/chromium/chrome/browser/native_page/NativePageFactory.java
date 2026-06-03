@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.app.download.home.DownloadPage;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
+import org.chromium.chrome.browser.bricks.BricksPage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginAdapter;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -413,6 +414,15 @@ public class NativePageFactory {
                     pdfFragmentViewTracker);
         }
 
+        protected NativePage buildBricksPage(Tab tab, String url) {
+            return new BricksPage(
+                    new TabShim(
+                            tab,
+                            mBrowserControlsManager,
+                            mTabModelSelector,
+                            mEdgeToEdgeControllerSupplier));
+        }
+
         private @Nullable IncognitoNtpMetrics createIncognitoNtpMetrics() {
             if (ChromeFeatureList.sRecordIncognitoNtpTimeToFirstNavigationMetric.isEnabled()) {
                 return new IncognitoNtpMetrics();
@@ -485,6 +495,9 @@ public class NativePageFactory {
                             new PdfFragmentViewTrackerImpl(mTabModelSelector, mActivity);
                 }
                 page = getBuilder().buildPdfPage(tab, url, pdfInfo, mPdfFragmentViewTracker);
+                break;
+            case NativePageType.BRICKS:
+                page = getBuilder().buildBricksPage(tab, url);
                 break;
             default:
                 assert false;

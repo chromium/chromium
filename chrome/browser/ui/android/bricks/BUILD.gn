@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/bricks/BricksCoordinatorInterface.java" ]
+  deps = [
+    "//components/module_installer/android:module_installer_java",
+    "//components/module_installer/android:module_interface_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  annotation_processor_deps =
+      [ "//components/module_installer/android:module_interface_processor" ]
+}
+
+android_library("bricks_page_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/bricks/BricksPage.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//chrome/android/modules/on_demand:provider_java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//components/embedder_support/android:util_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
