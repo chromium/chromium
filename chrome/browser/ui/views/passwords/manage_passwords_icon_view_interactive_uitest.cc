@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -48,9 +49,11 @@ class ManagePasswordsIconViewTest : public ManagePasswordsTest {
   }
 
   IconLabelBubbleView* GetIcon() {
-    auto* view = BrowserView::GetBrowserViewForBrowser(browser())
-                     ->toolbar_button_provider()
-                     ->GetPageActionView(kActionShowPasswordsBubbleOrPage);
+    auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
+                         ->toolbar_button_provider();
+    auto* view = page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionShowPasswordsBubbleOrPage),
+        kActionShowPasswordsBubbleOrPage);
     return view;
   }
 

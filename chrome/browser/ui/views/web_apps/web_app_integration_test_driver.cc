@@ -77,6 +77,7 @@
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
@@ -5034,9 +5035,11 @@ std::vector<Profile*> WebAppIntegrationTestDriver::GetAllProfiles() {
 
 IconLabelBubbleView* WebAppIntegrationTestDriver::pwa_install_view() {
   IconLabelBubbleView* pwa_install_view =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar_button_provider()
-          ->GetPageActionView(kActionInstallPwa);
+      page_actions::GetIconLabelBubbleViewForTesting(
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->toolbar_button_provider()
+              ->GetPageActionViewInterface(kActionInstallPwa),
+          kActionInstallPwa);
   CHECK(pwa_install_view);
   return pwa_install_view;
 }

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -205,9 +206,10 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
   IconLabelBubbleView* GetIconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    IconLabelBubbleView* icon =
-        browser_view->toolbar_button_provider()->GetPageActionView(
-            kActionFilledCardInformation);
+    auto* provider = browser_view->toolbar_button_provider();
+    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionFilledCardInformation),
+        kActionFilledCardInformation);
     DCHECK(icon);
     return icon;
   }

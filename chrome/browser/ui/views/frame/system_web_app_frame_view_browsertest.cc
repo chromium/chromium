@@ -28,7 +28,8 @@ class SystemWebAppFrameViewBrowserTest
     WebAppFrameToolbarView* toolbar =
         BrowserView::GetBrowserViewForBrowser(app_browser)
             ->web_app_frame_toolbar_for_testing();
-    EXPECT_FALSE(toolbar->GetPageActionView(kActionShowFileSystemAccess));
+    EXPECT_FALSE(
+        toolbar->GetPageActionViewInterface(kActionShowFileSystemAccess));
   }
 };
 

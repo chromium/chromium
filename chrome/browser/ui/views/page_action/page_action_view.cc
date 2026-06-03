@@ -210,6 +210,26 @@ void PageActionView::OnPageActionModelWillBeDeleted(
   SetVisible(false);
 }
 
+views::BubbleAnchor PageActionView::GetBubbleAnchor() {
+  return views::BubbleAnchor(this);
+}
+
+std::u16string PageActionView::GetTooltipText() const {
+  return IconLabelBubbleView::GetTooltipText();
+}
+
+std::u16string PageActionView::GetAccessibleName() const {
+  return IconLabelBubbleView::GetAccessibleName();
+}
+
+void PageActionView::SetVisible(bool visible) {
+  IconLabelBubbleView::SetVisible(visible);
+}
+
+IconLabelBubbleView* PageActionView::GetIconLabelBubbleViewNotMigrated() {
+  NOTREACHED();
+}
+
 actions::ActionId PageActionView::GetActionId() const {
   return action_item_->GetActionId().value();
 }

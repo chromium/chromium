@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -87,7 +88,7 @@ class IOSPromoBubbleBrowserTest
 
       PromoType promo_type = GetPromoType();
       views::BubbleAnchor anchor;
-      views::Button* highlighted_button = nullptr;
+      page_actions::PageActionViewInterface* highlighted_button = nullptr;
       std::optional<ui::ElementIdentifier> highlighted_element;
 
       // Explicitly set impression count to 0 before showing the promo.
@@ -100,22 +101,22 @@ class IOSPromoBubbleBrowserTest
         case PromoType::kPassword:
           anchor = button_provider->GetBubbleAnchor(
               kActionShowPasswordsBubbleOrPage);
-          highlighted_button = button_provider->GetPageActionView(
+          highlighted_button = button_provider->GetPageActionViewInterface(
               kActionShowPasswordsBubbleOrPage);
           highlighted_element = kPasswordsOmniboxKeyIconElementId;
           break;
         case PromoType::kAddress:
           anchor = button_provider->GetBubbleAnchor(
               kActionShowAddressesBubbleOrPage);
-          highlighted_button = button_provider->GetPageActionView(
+          highlighted_button = button_provider->GetPageActionViewInterface(
               kActionShowAddressesBubbleOrPage);
           highlighted_element = kAutofillAddressPageActionElementId;
           break;
         case PromoType::kPayment:
           anchor =
               button_provider->GetBubbleAnchor(kActionShowPaymentsBubbleOrPage);
-          highlighted_button =
-              button_provider->GetPageActionView(kActionShowPaymentsBubbleOrPage);
+          highlighted_button = button_provider->GetPageActionViewInterface(
+              kActionShowPaymentsBubbleOrPage);
           highlighted_element = kAutofillSavePaymentsPageActionElementId;
           break;
         case PromoType::kEnhancedBrowsing:

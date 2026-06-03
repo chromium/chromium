@@ -1079,7 +1079,7 @@ void TabGroupEditorBubbleView::RecentActivityPressed() {
   auto* bubble_coordinator = RecentActivityBubbleCoordinator::From(browser_);
   CHECK(bubble_coordinator);
 
-  bubble_coordinator->Show(tab_group_header,
+  bubble_coordinator->Show(views::BubbleAnchor(tab_group_header),
                            browser_->tab_strip_model()->GetActiveWebContents(),
                            tab_groups::SavedTabGroupUtils::GetRecentActivity(
                                browser_->profile(), group_),

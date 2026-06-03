@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 #include "chrome/browser/ui/views/commerce/shopping_collection_iph_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -410,19 +411,23 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
 };
 
 // static
-void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
-                                    content::WebContents* web_contents,
-                                    views::Button* highlighted_button,
-                                    Browser* browser,
-                                    const GURL& url,
-                                    bool already_bookmarked) {
+void BookmarkBubbleView::ShowBubble(
+    // TODO: crbug.com/501449122 - Switch View to BubbleAnchor.
+    views::View* anchor_view,
+    content::WebContents* web_contents,
+    page_actions::PageActionViewInterface* highlighted_button,
+    Browser* browser,
+    const GURL& url,
+    bool already_bookmarked) {
   // The only point where the star view can properly observe the bubble dialog
   // delegate's widget is in this function, that's why star view is observing
   // the widget from here after its creation.
   // This is only neceessary for the legacy page action framework.
   StarView* star_view = nullptr;
-  if (!IsPageActionMigrated(PageActionIconType::kBookmarkStar)) {
-    star_view = static_cast<StarView*>(highlighted_button);
+  if (highlighted_button &&
+      !IsPageActionMigrated(PageActionIconType::kBookmarkStar)) {
+    star_view = static_cast<StarView*>(
+        highlighted_button->GetIconLabelBubbleViewNotMigrated());
   }
   if (bookmark_bubble_) {
     if (star_view) {

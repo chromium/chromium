@@ -1351,15 +1351,24 @@ void MaybeRegisterChromeFeaturePromos(
                     // The browser_view may be null in tests.
                     return nullptr;
                   }
-                  IconLabelBubbleView* page_action_view =
+                  views::BubbleAnchor page_action_anchor =
                       browser_view->toolbar_button_provider()
-                          ->GetPageActionView(kActionSidePanelShowReadAnything);
-                  if (!page_action_view || !page_action_view->GetVisible()) {
+                          ->GetPageActionBubbleAnchor(
+                              kActionSidePanelShowReadAnything);
+                  views::View* const anchor_view =
+                      page_action_anchor.GetIfView();
+                  if (anchor_view && !anchor_view->GetVisible()) {
                     return nullptr;
-                  } else {
-                    return views::ElementTrackerViews::GetInstance()
-                        ->GetElementForView(page_action_view, true);
                   }
+                  if (ui::TrackedElement* element =
+                          page_action_anchor.GetIfElement()) {
+                    return element;
+                  }
+                  if (anchor_view) {
+                    return views::ElementTrackerViews::GetInstance()
+                        ->GetElementForView(anchor_view, true);
+                  }
+                  return nullptr;
                 }))));
   }
 

@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -74,9 +76,10 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsUIControllerBrowserTest,
   // 4. Verify Foreground Tab Icon Visibility
   // The foreground tab's page action icon should NOT be visible.
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  views::View* icon_view =
-      browser_view->toolbar_button_provider()->GetPageActionView(
-          kActionShowPasswordsBubbleOrPage);
+  auto* provider = browser_view->toolbar_button_provider();
+  views::View* icon_view = page_actions::GetIconLabelBubbleViewForTesting(
+      provider->GetPageActionViewInterface(kActionShowPasswordsBubbleOrPage),
+      kActionShowPasswordsBubbleOrPage);
   ASSERT_TRUE(icon_view);
   EXPECT_FALSE(icon_view->GetVisible())
       << "Foreground PageActionView was incorrectly shown by background tab "

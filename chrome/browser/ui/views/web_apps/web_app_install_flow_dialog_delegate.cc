@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/web_apps/progress_delay.h"
 #include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
@@ -212,7 +213,8 @@ NewPageActionHighlight(content::WebContents& web_contents) {
   }
 
   views::Button* install_icon =
-      toolbar_button_provider->GetPageActionView(kActionInstallPwa);
+      toolbar_button_provider->GetPageActionViewInterface(kActionInstallPwa)
+          ->GetIconLabelBubbleViewNotMigrated();
 
   if (install_icon) {
     // TODO(crbug.com/40841129): move this to dialog->SetHighlightedElement.

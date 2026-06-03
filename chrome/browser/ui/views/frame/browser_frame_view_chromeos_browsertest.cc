@@ -76,6 +76,7 @@
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -502,8 +503,10 @@ class WebAppFrameViewChromeOSTest
   IconLabelBubbleView* GetPageActionView(
       std::variant<actions::ActionId, PageActionIconType> action_type) {
     if (std::holds_alternative<actions::ActionId>(action_type)) {
-      return browser_view_->toolbar_button_provider()->GetPageActionView(
-          std::get<actions::ActionId>(action_type));
+      auto action_id = std::get<actions::ActionId>(action_type);
+      auto* provider = browser_view_->toolbar_button_provider();
+      return page_actions::GetIconLabelBubbleViewForTesting(
+          provider->GetPageActionViewInterface(action_id), action_id);
     } else {
       PageActionIconType type = std::get<PageActionIconType>(action_type);
       if (!IsPageActionMigrated(type)) {

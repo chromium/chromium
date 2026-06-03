@@ -44,10 +44,10 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kDiscountsBubbleTermsAndConditionPageId);
 
 // DiscountsBubbleDialogView
 DiscountsBubbleDialogView::DiscountsBubbleDialogView(
-    View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     const commerce::DiscountInfo& discount_info)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents, true),
+    : LocationBarBubbleDelegateView(anchor, web_contents, true),
       discount_info_(discount_info),
       ukm_source_id_(
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()) {
@@ -274,7 +274,7 @@ void DiscountsBubbleCoordinator::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void DiscountsBubbleCoordinator::Show(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     const commerce::DiscountInfo& discount_info,
     base::OnceClosure on_dialog_closing_callback) {
@@ -283,7 +283,7 @@ void DiscountsBubbleCoordinator::Show(
   on_dialog_closing_callback_ = std::move(on_dialog_closing_callback);
 
   auto bubble = std::make_unique<DiscountsBubbleDialogView>(
-      anchor_view, web_contents, discount_info);
+      anchor, web_contents, discount_info);
   tracker_.SetView(bubble.get());
   auto* widget = DiscountsBubbleDialogView::CreateBubble(std::move(bubble));
   bubble_widget_observation_.Observe(widget);

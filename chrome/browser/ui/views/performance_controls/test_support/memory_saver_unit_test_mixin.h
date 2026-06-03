@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -71,7 +72,9 @@ class MemorySaverUnitTestMixin : public T {
   }
 
   IconLabelBubbleView* GetPageActionIconView() {
-    return T::browser_view()->toolbar_button_provider()->GetPageActionView(
+    auto* provider = T::browser_view()->toolbar_button_provider();
+    return page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionShowMemorySaverChip),
         kActionShowMemorySaverChip);
   }
 

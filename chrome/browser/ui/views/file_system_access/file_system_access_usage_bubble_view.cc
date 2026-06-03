@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -551,9 +552,10 @@ std::u16string FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
     return {};
   }
 
-  auto* page_action_view = BrowserView::GetBrowserViewForBrowser(browser)
-                               ->toolbar_button_provider()
-                               ->GetPageActionView(kActionShowFileSystemAccess);
+  auto* page_action_view =
+      BrowserView::GetBrowserViewForBrowser(browser)
+          ->toolbar_button_provider()
+          ->GetPageActionViewInterface(kActionShowFileSystemAccess);
   if (!page_action_view) {
     return {};
   }

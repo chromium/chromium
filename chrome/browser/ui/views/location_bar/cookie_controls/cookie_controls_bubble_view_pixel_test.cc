@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -89,9 +90,11 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
     content::SetupCrossSiteRedirector(https_test_server());
     ASSERT_TRUE(https_test_server()->Start());
 
-    cookie_controls_icon_ = BrowserView::GetBrowserViewForBrowser(browser())
-                                ->toolbar_button_provider()
-                                ->GetPageActionView(kActionShowCookieControls);
+    auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
+                         ->toolbar_button_provider();
+    cookie_controls_icon_ = page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionShowCookieControls),
+        kActionShowCookieControls);
     ASSERT_TRUE(cookie_controls_icon_);
 
     controller_ = std::make_unique<content_settings::CookieControlsController>(

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/common/chrome_features.h"
 #include "ui/events/event.h"
@@ -35,9 +36,11 @@ IntentChipButton* GetIntentPickerIcon(BrowserWindowInterface* browser) {
 
 views::Button* GetIntentPickerButton(BrowserWindowInterface* browser) {
   if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
-    return BrowserView::GetBrowserViewForBrowser(browser)
-        ->toolbar_button_provider()
-        ->GetPageActionView(kActionShowIntentPicker);
+    return page_actions::GetIconLabelBubbleViewForTesting(
+        BrowserView::GetBrowserViewForBrowser(browser)
+            ->toolbar_button_provider()
+            ->GetPageActionViewInterface(kActionShowIntentPicker),
+        kActionShowIntentPicker);
   }
   return GetIntentPickerIcon(browser);
 }

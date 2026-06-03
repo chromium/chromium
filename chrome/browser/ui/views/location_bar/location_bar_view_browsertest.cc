@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -130,7 +131,9 @@ class LocationBarViewBrowserTest : public InProcessBrowserTest {
     auto* toolbar_button_provider =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider();
-    return toolbar_button_provider->GetPageActionView(kActionZoomNormal);
+    return page_actions::GetIconLabelBubbleViewForTesting(
+        toolbar_button_provider->GetPageActionViewInterface(kActionZoomNormal),
+        kActionZoomNormal);
   }
 
   ContentSettingImageView& GetContentSettingImageView(

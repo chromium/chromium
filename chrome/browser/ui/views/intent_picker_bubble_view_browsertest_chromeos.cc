@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -251,7 +252,10 @@ class IntentPickerBubbleViewBrowserTestChromeOSBase
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider();
     if (IsMigrationEnabled()) {
-      return toolbar_button_provider->GetPageActionView(kActionShowIntentPicker);
+      return page_actions::GetIconLabelBubbleViewForTesting(
+          toolbar_button_provider->GetPageActionViewInterface(
+              kActionShowIntentPicker),
+          kActionShowIntentPicker);
     }
     return toolbar_button_provider->GetIntentChipButton();
   }

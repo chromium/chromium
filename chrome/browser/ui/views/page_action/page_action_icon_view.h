@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
@@ -55,7 +56,8 @@ enum class PageActionPageEvent {
 // framework. Reach out to alsan@ for help.
 // Represents an inbuilt (as opposed to an extension) page action icon that
 // shows a bubble when clicked.
-class PageActionIconView : public IconLabelBubbleView {
+class PageActionIconView : public IconLabelBubbleView,
+                           public page_actions::PageActionViewInterface {
   METADATA_HEADER(PageActionIconView, IconLabelBubbleView)
 
  public:
@@ -83,6 +85,13 @@ class PageActionIconView : public IconLabelBubbleView {
   PageActionIconView(const PageActionIconView&) = delete;
   PageActionIconView& operator=(const PageActionIconView&) = delete;
   ~PageActionIconView() override;
+
+  // page_actions::PageActionViewInterface:
+  views::BubbleAnchor GetBubbleAnchor() override;
+  std::u16string GetTooltipText() const override;
+  std::u16string GetAccessibleName() const override;
+  // This class already overrides IconLabelBubbleView SetVisible() below.
+  IconLabelBubbleView* GetIconLabelBubbleViewNotMigrated() override;
 
   void AddPageIconViewObserver(PageActionIconViewObserver* observer);
   void RemovePageIconViewObserver(PageActionIconViewObserver* observer);

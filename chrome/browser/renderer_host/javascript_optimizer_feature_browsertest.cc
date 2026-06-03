@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/js_optimization/js_optimizations_page_action_controller.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "ui/actions/actions.h"
@@ -1311,9 +1312,11 @@ class JavascriptOptimizerOmnibarIconBrowserTest
  public:
   // Returns true iff the JS Optimizations omnibar icon is visible.
   bool IsOmnibarIconVisible() {
-    const auto* view = BrowserView::GetBrowserViewForBrowser(browser())
-                           ->toolbar_button_provider()
-                           ->GetPageActionView(kActionShowJsOptimizationsIcon);
+    auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
+                         ->toolbar_button_provider();
+    const auto* view = page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionShowJsOptimizationsIcon),
+        kActionShowJsOptimizationsIcon);
     return view && view->GetVisible();
   }
 
@@ -1521,9 +1524,11 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
   EXPECT_TRUE(IsBubbleVisible());
 
   // Check icon is highlighted.
-  auto* icon = BrowserView::GetBrowserViewForBrowser(browser())
-                   ->toolbar_button_provider()
-                   ->GetPageActionView(kActionShowJsOptimizationsIcon);
+  auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
+                       ->toolbar_button_provider();
+  auto* icon = page_actions::GetIconLabelBubbleViewForTesting(
+      provider->GetPageActionViewInterface(kActionShowJsOptimizationsIcon),
+      kActionShowJsOptimizationsIcon);
   EXPECT_TRUE(icon);
   views::test::InkDropHostTestApi ink_drop_test_api(views::InkDrop::Get(icon));
   ASSERT_EQ(ink_drop_test_api.GetInkDrop()->GetTargetInkDropState(),

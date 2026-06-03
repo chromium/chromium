@@ -50,8 +50,8 @@ class DiscountBubbleViewBrowserTest : public DialogBrowserTest {
     views::View* const anchor_view =
         BrowserView::GetBrowserViewForBrowser(browser())->top_container();
 
-    coordinator_.Show(anchor_view, web_contents(), discount_info,
-                      base::DoNothing());
+    coordinator_.Show(views::BubbleAnchor(anchor_view), web_contents(),
+                      discount_info, base::DoNothing());
   }
 
   void TearDownOnMainThread() override {

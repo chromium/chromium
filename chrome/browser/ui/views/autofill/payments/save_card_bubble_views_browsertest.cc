@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_loading_indicator_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -862,7 +863,9 @@ class SaveCardBubbleViewsFullFormBrowserTest
         BrowserView::GetBrowserViewForBrowser(GetBrowser(0));
     IconLabelBubbleView* icon;
     if (IsPageActionMigrationEnabled()) {
-      icon = browser_view->toolbar_button_provider()->GetPageActionView(
+      auto* provider = browser_view->toolbar_button_provider();
+      icon = page_actions::GetIconLabelBubbleViewForTesting(
+          provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage),
           kActionShowPaymentsBubbleOrPage);
     } else {
       icon = browser_view->toolbar_button_provider()->GetPageActionIconView(

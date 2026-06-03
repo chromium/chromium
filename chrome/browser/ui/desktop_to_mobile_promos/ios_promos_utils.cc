@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
@@ -66,7 +67,7 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
       IOSPromoBubble::ShowPromoBubble(
           {toolbar_button_provider->GetBubbleAnchor(
               kActionShowPasswordsBubbleOrPage)},
-          toolbar_button_provider->GetPageActionView(
+          toolbar_button_provider->GetPageActionViewInterface(
               kActionShowPasswordsBubbleOrPage),
           kPasswordsOmniboxKeyIconElementId, profile, PromoType::kPassword,
           bubble_type);
@@ -75,16 +76,16 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
       IOSPromoBubble::ShowPromoBubble(
           {toolbar_button_provider->GetBubbleAnchor(
               kActionShowAddressesBubbleOrPage)},
-          toolbar_button_provider->GetPageActionView(
+          toolbar_button_provider->GetPageActionViewInterface(
               kActionShowAddressesBubbleOrPage),
           kAutofillAddressPageActionElementId, profile, PromoType::kAddress,
           bubble_type);
       break;
     }
     case PromoType::kPayment:
-      IconLabelBubbleView* icon_view;
+      page_actions::PageActionViewInterface* icon_view;
       if (IsPageActionMigrated(PageActionIconType::kSaveCard)) {
-        icon_view = toolbar_button_provider->GetPageActionView(
+        icon_view = toolbar_button_provider->GetPageActionViewInterface(
             kActionShowPaymentsBubbleOrPage);
       } else {
         icon_view = toolbar_button_provider->GetPageActionIconView(

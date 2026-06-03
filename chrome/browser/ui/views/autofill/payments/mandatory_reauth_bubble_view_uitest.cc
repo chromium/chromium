@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -125,9 +126,10 @@ class MandatoryReauthBubbleViewUiTest
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
 
-    IconLabelBubbleView* icon =
-        browser_view->toolbar_button_provider()->GetPageActionView(
-            kActionAutofillMandatoryReauth);
+    auto* provider = browser_view->toolbar_button_provider();
+    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionAutofillMandatoryReauth),
+        kActionAutofillMandatoryReauth);
 
     DCHECK(icon);
     return icon;

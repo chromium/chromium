@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -56,5 +57,6 @@ void ZoomBubbleManagerViews::UpdateLegacyPageActionIcon() {
 
 std::u16string ZoomBubbleManagerViews::GetZoomActionAccessibleName() {
   ToolbarButtonProvider* provider = browser_view_->toolbar_button_provider();
-  return provider->GetPageActionView(kActionZoomNormal)->GetAccessibleName();
+  return provider->GetPageActionViewInterface(kActionZoomNormal)
+      ->GetAccessibleName();
 }

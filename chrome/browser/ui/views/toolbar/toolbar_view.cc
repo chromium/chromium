@@ -86,6 +86,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -1275,7 +1276,7 @@ void ToolbarView::ShowIntentPickerBubble(
   if (bubble_type != IntentPickerBubbleView::BubbleType::kClickToCall) {
     if (GetIntentChipButton()) {
       higlighted_element = kIntentChipElementId;
-    } else if (GetPageActionView(kActionShowIntentPicker)) {
+    } else if (GetPageActionViewInterface(kActionShowIntentPicker)) {
       higlighted_element = kIntentPickerPageActionElementId;
     } else {
       return;
@@ -1291,10 +1292,13 @@ void ToolbarView::ShowIntentPickerBubble(
 }
 
 void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
+  // TODO: crbug.com/501449027 - Convert to use FindBubbleAnchor(nullopt).
   views::View* const anchor_view = location_bar_view();
-  views::Button* const bookmark_star_icon =
-      GetPageActionView(kActionBookmarkThisTab);
-  CHECK(bookmark_star_icon);
+  page_actions::PageActionViewInterface* bookmark_star_icon = nullptr;
+  if (!features::IsWebUILocationBarEnabled()) {
+    bookmark_star_icon = GetPageActionViewInterface(kActionBookmarkThisTab);
+    CHECK(bookmark_star_icon);
+  }
   BookmarkBubbleView::ShowBubble(anchor_view, GetWebContents(),
                                  bookmark_star_icon, browser_, url,
                                  already_bookmarked);
@@ -1731,8 +1735,9 @@ PageActionIconView* ToolbarView::GetPageActionIconView(
   return location_bar_view()->page_action_icon_controller()->GetIconView(type);
 }
 
-IconLabelBubbleView* ToolbarView::GetPageActionView(
+page_actions::PageActionViewInterface* ToolbarView::GetPageActionViewInterface(
     actions::ActionId action_id) {
+  // TODO: crbug.com/501449027 -- implement for WebUI location bar.
   page_actions::PageActionPropertiesProvider provider;
   if (!provider.Contains(action_id)) {
     return nullptr;
@@ -1821,6 +1826,16 @@ views::BubbleAnchor ToolbarView::GetBubbleAnchor(
     return views::BubbleAnchor(top_container);
   }
   return anchor;
+}
+
+views::BubbleAnchor ToolbarView::GetPageActionBubbleAnchor(
+    actions::ActionId action_id) {
+  page_actions::PageActionViewInterface* view =
+      GetPageActionViewInterface(action_id);
+  if (view) {
+    return view->GetBubbleAnchor();
+  }
+  return views::BubbleAnchor();
 }
 
 void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {

@@ -15,9 +15,12 @@
 
 namespace views {
 class BubbleDialogDelegate;
-class Button;
 class View;
 }  // namespace views
+
+namespace page_actions {
+class PageActionViewInterface;
+}
 
 namespace IOSPromoConstants {
 struct IOSPromoTypeConfigs;
@@ -60,7 +63,7 @@ class IOSPromoBubble {
   //   bubble_type: The type of bubble to show (e.g., QR code or reminder).
   static void ShowPromoBubble(
       Anchor anchor,
-      views::Button* highlighted_button,
+      page_actions::PageActionViewInterface* highlighted_button,
       std::optional<ui::ElementIdentifier> highlighted_element,
       Profile* profile,
       desktop_to_mobile_promos::PromoType promo_type,

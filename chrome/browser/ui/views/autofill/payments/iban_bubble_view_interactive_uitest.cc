@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -393,7 +394,9 @@ class IbanBubbleViewFullFormBrowserTest
         BrowserView::GetBrowserViewForBrowser(GetBrowser(0));
     IconLabelBubbleView* icon;
     if (IsPageActionMigrationEnabled()) {
-      icon = browser_view->toolbar_button_provider()->GetPageActionView(
+      auto* provider = browser_view->toolbar_button_provider();
+      icon = page_actions::GetIconLabelBubbleViewForTesting(
+          provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage),
           kActionShowPaymentsBubbleOrPage);
     } else {
       icon = browser_view->toolbar_button_provider()->GetPageActionIconView(

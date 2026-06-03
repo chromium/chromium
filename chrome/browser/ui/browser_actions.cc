@@ -1399,10 +1399,10 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                         .toolbar_button_provider();
                 CHECK(toolbar_button_provider);
 
-                views::View* page_action_view =
-                    toolbar_button_provider->GetPageActionView(
+                views::BubbleAnchor page_action_anchor =
+                    toolbar_button_provider->GetPageActionBubbleAnchor(
                         kActionShowCollaborationRecentActivity);
-                CHECK(page_action_view);
+                CHECK(page_action_anchor);
 
                 tabs::TabInterface* tab = bwi->GetActiveTabInterface();
                 CHECK(tab);
@@ -1432,7 +1432,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                             profile, group_id);
 
                 bubble_coordinator->ShowForCurrentTab(
-                    page_action_view, web_contents, tab_activity_log,
+                    page_action_anchor, web_contents, tab_activity_log,
                     group_activity_log, profile);
               },
               bwi))

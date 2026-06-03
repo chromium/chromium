@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -215,9 +216,11 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
         ->page_action_controller()
         ->HideSuggestionChip(kActionInstallPwa);
   }
-  EXPECT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->toolbar_button_provider()
-                  ->GetPageActionView(kActionInstallPwa)
+  auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
+                       ->toolbar_button_provider();
+  EXPECT_TRUE(page_actions::GetIconLabelBubbleViewForTesting(
+                  provider->GetPageActionViewInterface(kActionInstallPwa),
+                  kActionInstallPwa)
                   ->GetVisible());
 
   browser()->window()->Activate();

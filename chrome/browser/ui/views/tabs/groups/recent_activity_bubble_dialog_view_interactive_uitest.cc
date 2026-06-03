@@ -192,8 +192,9 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
   auto TriggerDialog(std::vector<ActivityLogItem> activity_log) {
     return WithView(kTabStripElementId, [&, activity_log](TabStrip* tab_strip) {
       BubbleCoordinator()->Show(
-          tab_strip, browser()->tab_strip_model()->GetWebContentsAt(0),
-          activity_log, browser()->profile());
+          views::BubbleAnchor(tab_strip),
+          browser()->tab_strip_model()->GetWebContentsAt(0), activity_log,
+          browser()->profile());
     });
   }
 
@@ -201,8 +202,9 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
   auto TriggerCurrentTabDialog(std::vector<ActivityLogItem> activity_log) {
     return WithView(kTabStripElementId, [&, activity_log](TabStrip* tab_strip) {
       BubbleCoordinator()->ShowForCurrentTab(
-          tab_strip, browser()->tab_strip_model()->GetWebContentsAt(0), {},
-          activity_log, browser()->profile());
+          views::BubbleAnchor(tab_strip),
+          browser()->tab_strip_model()->GetWebContentsAt(0), {}, activity_log,
+          browser()->profile());
     });
   }
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/record_replay/save_recording_bubble_controller_impl.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -45,9 +46,8 @@ views::BubbleAnchor GetAnchorForBubble(tabs::TabInterface& tab) {
   if (!browser_view) {
     return views::BubbleAnchor();
   }
-  return views::BubbleAnchor(browser_view->GetLocationBarView()
-                                 ->page_action_container()
-                                 ->GetPageActionView(kActionRecordReplay));
+  return browser_view->toolbar_button_provider()->GetPageActionBubbleAnchor(
+      kActionRecordReplay);
 }
 
 }  // namespace

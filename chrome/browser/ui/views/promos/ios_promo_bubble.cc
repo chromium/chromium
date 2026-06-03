@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/promos/ios_promo_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -552,7 +553,7 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateImageAndBodyTextView(
 // static
 void IOSPromoBubble::ShowPromoBubble(
     Anchor anchor,
-    views::Button* highlighted_button,
+    page_actions::PageActionViewInterface* highlighted_button,
     std::optional<ui::ElementIdentifier> highlighted_element,
     Profile* profile,
     PromoType promo_type,

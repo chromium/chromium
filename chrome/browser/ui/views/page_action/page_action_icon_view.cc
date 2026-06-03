@@ -101,6 +101,21 @@ PageActionIconView::PageActionIconView(
 
 PageActionIconView::~PageActionIconView() = default;
 
+views::BubbleAnchor PageActionIconView::GetBubbleAnchor() {
+  return views::BubbleAnchor(this);
+}
+
+std::u16string PageActionIconView::GetTooltipText() const {
+  return IconLabelBubbleView::GetTooltipText();
+}
+
+std::u16string PageActionIconView::GetAccessibleName() const {
+  return IconLabelBubbleView::GetAccessibleName();
+}
+IconLabelBubbleView* PageActionIconView::GetIconLabelBubbleViewNotMigrated() {
+  return this;
+}
+
 void PageActionIconView::AddPageIconViewObserver(
     PageActionIconViewObserver* observer) {
   observer_list_.AddObserver(observer);

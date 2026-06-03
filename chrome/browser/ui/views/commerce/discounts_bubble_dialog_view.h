@@ -33,7 +33,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kDiscountsBubbleTermsAndConditionPageId);
 class DiscountsBubbleDialogView : public LocationBarBubbleDelegateView {
   METADATA_HEADER(DiscountsBubbleDialogView, LocationBarBubbleDelegateView)
  public:
-  DiscountsBubbleDialogView(View* anchor_view,
+  DiscountsBubbleDialogView(views::BubbleAnchor anchor,
                             content::WebContents* web_contents,
                             const commerce::DiscountInfo& discount_info);
   ~DiscountsBubbleDialogView() override;
@@ -73,7 +73,7 @@ class DiscountsBubbleCoordinator : public views::WidgetObserver {
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  void Show(views::View* anchor_view,
+  void Show(views::BubbleAnchor anchor,
             content::WebContents* web_contents,
             const commerce::DiscountInfo& discount_info,
             base::OnceClosure on_dialog_closing_callback);

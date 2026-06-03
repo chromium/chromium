@@ -123,6 +123,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         {
             .histogram_name = "ReadingMode",
             .type = PageActionIconType::kReadingMode,
+            .element_identifier = kReadAnythingPageActionElementId,
             .priority =
                 page_actions::PageActionPriorityCategory::kCoreSiteUtility,
         },

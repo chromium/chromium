@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -44,7 +45,9 @@ class TranslatePageActionInteractiveUiTest : public InProcessBrowserTest {
     ToolbarButtonProvider* provider =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider();
-    return provider->GetPageActionView(kActionShowTranslate);
+    return page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionShowTranslate),
+        kActionShowTranslate);
   }
 
   views::BubbleDialogDelegate* GetBubble() const {

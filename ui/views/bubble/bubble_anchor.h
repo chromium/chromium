@@ -53,6 +53,7 @@ class VIEWS_EXPORT BubbleAnchor {
   bool IsNull() const {
     return std::holds_alternative<std::nullptr_t>(anchor_);
   }
+  explicit operator bool() const { return !IsNull(); }
 
   View* GetIfView() {
     if (auto* contents_ptr = std::get_if<raw_ptr<View>>(&anchor_)) {

@@ -25,6 +25,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -203,9 +205,11 @@ class PasswordAutoSignInToastTest : public base::test::WithFeatureOverride,
   }
 
   IconLabelBubbleView* GetIconView() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar_button_provider()
-        ->GetPageActionView(kActionShowPasswordsBubbleOrPage);
+    auto* provider = BrowserView::GetBrowserViewForBrowser(browser())
+                         ->toolbar_button_provider();
+    return page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionShowPasswordsBubbleOrPage),
+        kActionShowPasswordsBubbleOrPage);
   }
 
   void WaitForIconVisibility(IconLabelBubbleView* icon, bool visible) {

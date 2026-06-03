@@ -160,9 +160,9 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
 
   void UpdateDiscountsIconView();
 
-  // Returns the discounts page action view. It's used by the discount bubble
-  // coordinator.
-  views::View* GetDiscountsIconView();
+  // Returns the discounts page action bubble anchor. It's used by the discount
+  // bubble coordinator.
+  views::BubbleAnchor GetDiscountsBubbleAnchor();
 
   void UpdatePriceInsightsIconView();
 

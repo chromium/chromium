@@ -223,7 +223,7 @@ class RecentActivityBubbleDialogViewBrowserTest : public DialogBrowserTest {
     EXPECT_NE(nullptr, BubbleCoordinator());
     EXPECT_EQ(nullptr, BubbleCoordinator()->GetBubble());
 
-    BubbleCoordinator()->Show(anchor_view,
+    BubbleCoordinator()->Show(views::BubbleAnchor(anchor_view),
                               browser()->tab_strip_model()->GetWebContentsAt(0),
                               activity_log, browser()->profile());
   }
@@ -237,8 +237,9 @@ class RecentActivityBubbleDialogViewBrowserTest : public DialogBrowserTest {
     EXPECT_EQ(nullptr, BubbleCoordinator()->GetBubble());
 
     BubbleCoordinator()->ShowForCurrentTab(
-        anchor_view, browser()->tab_strip_model()->GetWebContentsAt(0), {},
-        activity_log, browser()->profile());
+        views::BubbleAnchor(anchor_view),
+        browser()->tab_strip_model()->GetWebContentsAt(0), {}, activity_log,
+        browser()->profile());
   }
 
   bool VerifyUi() override {

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
@@ -289,7 +290,8 @@ PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(
   return right_container_->page_action_icon_controller()->GetIconView(type);
 }
 
-IconLabelBubbleView* WebAppFrameToolbarView::GetPageActionView(
+page_actions::PageActionViewInterface*
+WebAppFrameToolbarView::GetPageActionViewInterface(
     actions::ActionId action_id) {
   page_actions::PageActionPropertiesProvider provider;
   if (!provider.Contains(action_id)) {
@@ -350,6 +352,16 @@ views::BubbleAnchor WebAppFrameToolbarView::GetBubbleAnchor(
     return control->GetAnchor();
   }
   return views::BubbleAnchor(this);
+}
+
+views::BubbleAnchor WebAppFrameToolbarView::GetPageActionBubbleAnchor(
+    actions::ActionId action_id) {
+  page_actions::PageActionViewInterface* view =
+      GetPageActionViewInterface(action_id);
+  if (view) {
+    return view->GetBubbleAnchor();
+  }
+  return views::BubbleAnchor();
 }
 
 void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 bool IntentChipButtonTestBase::IsMigrationEnabled() const {
@@ -36,9 +37,11 @@ bool IntentChipButtonTestBase::IsIntentChipFullyCollapsed(Browser* browser) {
 
 views::Button* IntentChipButtonTestBase::GetIntentChip(Browser* browser) {
   if (IsMigrationEnabled()) {
-    return BrowserView::GetBrowserViewForBrowser(browser)
-        ->toolbar_button_provider()
-        ->GetPageActionView(kActionShowIntentPicker);
+    auto* provider = BrowserView::GetBrowserViewForBrowser(browser)
+                         ->toolbar_button_provider();
+    return page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionShowIntentPicker),
+        kActionShowIntentPicker);
   }
   return BrowserView::GetBrowserViewForBrowser(browser)
       ->toolbar_button_provider()
@@ -51,9 +54,11 @@ IntentChipButtonTestBase::WaitForPageActionButtonVisible(
   if (!IsMigrationEnabled()) {
     return testing::AssertionSuccess();
   }
-  auto* view = BrowserView::GetBrowserViewForBrowser(browser)
-                   ->toolbar_button_provider()
-                   ->GetPageActionView(kActionShowIntentPicker);
+  auto* provider =
+      BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
+  auto* view = page_actions::GetIconLabelBubbleViewForTesting(
+      provider->GetPageActionViewInterface(kActionShowIntentPicker),
+      kActionShowIntentPicker);
   if (!view) {
     return testing::AssertionFailure();
   }

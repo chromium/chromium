@@ -61,6 +61,7 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
@@ -92,7 +93,6 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
-#include "content/public/common/content_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -349,8 +349,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
       continue;
     }
 
-    auto* page_action_view =
-        helper()->web_app_frame_toolbar()->GetPageActionView(action_id);
+    auto* provider = helper()->web_app_frame_toolbar();
+    auto* page_action_view = page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(action_id), action_id);
     ASSERT_NE(nullptr, page_action_view);
     EXPECT_EQ(page_action_view->parent(),
               toolbar_right_container->page_action_container());

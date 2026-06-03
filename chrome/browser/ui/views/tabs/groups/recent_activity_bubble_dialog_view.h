@@ -43,7 +43,7 @@ class RecentActivityBubbleDialogView : public LocationBarBubbleDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSeeAllActivityId);
 
   RecentActivityBubbleDialogView(
-      View* anchor_view,
+      views::BubbleAnchor anchor,
       content::WebContents* web_contents,
       std::vector<ActivityLogItem> tab_activity_log,
       std::vector<ActivityLogItem> group_activity_log,
@@ -213,14 +213,14 @@ class RecentActivityBubbleCoordinator : public views::WidgetObserver {
   // the correct arrow will be used.
   //
   // Calls ShowCommon with the default arrow.
-  void Show(views::View* anchor_view,
+  void Show(views::BubbleAnchor anchor,
             content::WebContents* web_contents,
             std::vector<ActivityLogItem> activity_log,
             Profile* profile);
   // Same as above, but provides a default arrow for anchoring to the
   // page action. The default for location bar bubbles is to have a
   // TOP_RIGHT arrow.
-  void ShowForCurrentTab(views::View* anchor_view,
+  void ShowForCurrentTab(views::BubbleAnchor anchor,
                          content::WebContents* web_contents,
                          std::vector<ActivityLogItem> tab_activity_log,
                          std::vector<ActivityLogItem> group_activity_log,
