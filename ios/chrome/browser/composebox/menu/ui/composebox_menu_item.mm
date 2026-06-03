@@ -50,7 +50,8 @@
          self.type == ComposeboxMenuItemType::kAttachmentTabs ||
          self.type == ComposeboxMenuItemType::kAttachmentCamera ||
          self.type == ComposeboxMenuItemType::kAttachmentGallery ||
-         self.type == ComposeboxMenuItemType::kAttachmentFiles;
+         self.type == ComposeboxMenuItemType::kAttachmentFiles ||
+         self.type == ComposeboxMenuItemType::kAttachmentDrive;
 }
 
 - (BOOL)isEqual:(id)object {

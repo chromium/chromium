@@ -18,6 +18,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/composebox/coordinator:mode_holder",
     "//ios/chrome/browser/composebox/menu/ui",
     "//ios/chrome/browser/composebox/model",
+    "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/composebox/public:focus_params",
     "//ios/chrome/browser/composebox/shared/coordinator",
     "//ios/chrome/browser/composebox/shared/metrics",

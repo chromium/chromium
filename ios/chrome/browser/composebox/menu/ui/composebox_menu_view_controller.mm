@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_separator_footer.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/composebox/ui/composebox_strings.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
@@ -67,6 +68,9 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
       return ComposeboxAttachmentOption::kGallery;
     case ComposeboxMenuItemType::kAttachmentFiles:
       return ComposeboxAttachmentOption::kFile;
+    case ComposeboxMenuItemType::kAttachmentDrive:
+      CHECK(IsComposeboxDriveOptionEnabled());
+      return ComposeboxAttachmentOption::kDrive;
     default:
       return std::nullopt;
   }
@@ -478,6 +482,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
            disabled:[_inputState isAttachmentDisabled:
                                      ComposeboxAttachmentOption::kFile]];
 
+  // TODO(crbug.com/515377633): Add drive item.
   return @[ currentTabItem, tabsItem, cameraItem, galleryItem, filesItem ];
 }
 

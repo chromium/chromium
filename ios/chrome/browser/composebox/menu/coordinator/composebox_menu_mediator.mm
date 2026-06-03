@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_consumer.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -174,6 +175,10 @@
       break;
     case ComposeboxMenuItemType::kAttachmentFiles:
       [self.delegate composeboxMenuMediatorDidRequestFileSelection:self];
+      break;
+    case ComposeboxMenuItemType::kAttachmentDrive:
+      CHECK(IsComposeboxDriveOptionEnabled());
+      // TODO(crbug.com/515377633): Handle Drive files selection.
       break;
     case ComposeboxMenuItemType::kUnknown:
       break;

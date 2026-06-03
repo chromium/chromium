@@ -30,6 +30,7 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/composebox/public:attachment_options",
     "//ios/chrome/browser/composebox/public:composebox_mode",
+    "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/composebox/public:model_options",
     "//ios/chrome/browser/composebox/shared/ui:ui_constants",
     "//ios/chrome/browser/composebox/ui:state",
