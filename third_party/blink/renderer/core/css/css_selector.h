@@ -546,6 +546,15 @@ class CORE_EXPORT CSSSelector {
     }
     return data_.rare_data_->active_navigation_condition_.Get();
   }
+  unsigned NthAValue() const {
+    CHECK_EQ(GetPseudoType(), kPseudoNthChild);
+    return data_.rare_data_->NthAValue();
+  }
+  unsigned NthBValue() const {
+    CHECK_EQ(GetPseudoType(), kPseudoNthChild);
+    return data_.rare_data_->NthBValue();
+  }
+
   // Similar to SelectorList(), but also works for kPseudoParent
   // (i.e., nested selectors); on &, will give the parent's selector list.
   // Will return nullptr if no such list exists (e.g. if we are not a

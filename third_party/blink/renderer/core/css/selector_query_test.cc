@@ -30,8 +30,6 @@ struct QueryTest {
   const char* selector;
   bool query_all;
   unsigned matches;
-  // {totalCount, fastId, fastClass, fastTagName, fastScan, slowScan,
-  //  slowTraversingShadowTreeScan}
   SelectorQuery::QueryStats stats;
 };
 
@@ -52,15 +50,7 @@ void RunTests(ContainerNode& scope, const QueryTest (&test_cases)[length]) {
       EXPECT_EQ(test_case.matches, match ? 1u : 0u);
     }
 #if DCHECK_IS_ON() || defined(RELEASE_QUERY_STATS)
-    SelectorQuery::QueryStats stats = SelectorQuery::LastQueryStats();
-    EXPECT_EQ(test_case.stats.total_count, stats.total_count);
-    EXPECT_EQ(test_case.stats.fast_id, stats.fast_id);
-    EXPECT_EQ(test_case.stats.fast_class, stats.fast_class);
-    EXPECT_EQ(test_case.stats.fast_tag_name, stats.fast_tag_name);
-    EXPECT_EQ(test_case.stats.fast_scan, stats.fast_scan);
-    EXPECT_EQ(test_case.stats.slow_scan, stats.slow_scan);
-    EXPECT_EQ(test_case.stats.slow_traversing_shadow_tree_scan,
-              stats.slow_traversing_shadow_tree_scan);
+    EXPECT_EQ(test_case.stats, SelectorQuery::LastQueryStats());
 #endif
   }
 }
@@ -146,6 +136,7 @@ TEST(SelectorQueryTest, StandardsModeFastPaths) {
             <span id=A class=one></span>
             <span id=B class=two></span>
             <span id=C class=one></span>
+            <span id=D class=three></span>
             <span id=multiple class=two></span>
           </span>
         </div>
@@ -154,84 +145,91 @@ TEST(SelectorQueryTest, StandardsModeFastPaths) {
   )HTML");
 
   // NOTE: If StringHasher changes and we're unlucky,
-  // the values for .two and .B may need updating.
+  // the values for class and attribute selectors may need changing.
+  // clang-format off
   static const struct QueryTest kTestCases[] = {
-      // Id in right most selector fast path.
-      {"#A", false, 1, {1, 1, 0, 0, 0, 0, 0}},
-      {"#multiple", false, 1, {1, 1, 0, 0, 0, 0, 0}},
-      {"#multiple.two", false, 1, {1, 1, 0, 0, 0, 0, 0}},
-      {"#multiple", true, 2, {2, 2, 0, 0, 0, 0, 0}},
-      {"span#multiple", true, 1, {2, 2, 0, 0, 0, 0, 0}},
-      {"#multiple.two", true, 2, {2, 2, 0, 0, 0, 0, 0}},
-      {"body #multiple", false, 1, {1, 1, 0, 0, 0, 0, 0}},
-      {"body span#multiple", false, 1, {2, 2, 0, 0, 0, 0, 0}},
-      {"body #multiple", true, 2, {2, 2, 0, 0, 0, 0, 0}},
-      {"[id=multiple]", true, 2, {2, 2, 0, 0, 0, 0, 0}},
-      {"body [id=multiple]", true, 2, {2, 2, 0, 0, 0, 0, 0}},
+      // ID in rightmost selector.
+      // For these, we could in theory optimize away the .recheck_selector for
+      // all that have them, since there is only one level and it's not a child combinator.
+      {"#A",                 false,  1, {.elements_seen = 1, .fast_id_roots = 1, .check_id = 1}},
+      {"#multiple",          false,  1, {.elements_seen = 1, .fast_id_roots = 1, .check_id = 1}},
+      {"#multiple.two",      false,  1, {.elements_seen = 1, .fast_id_roots = 1, .check_id = 1, .check_class = 1}},
+      {"#multiple",           true,  2, {.elements_seen = 2, .fast_id_roots = 2, .check_id = 2}},
+      {"span#multiple",       true,  1, {.elements_seen = 2, .fast_id_roots = 2, .check_id = 2, .check_tag = 2}},
+      {"#multiple.two",       true,  2, {.elements_seen = 2, .fast_id_roots = 2, .check_id = 2, .check_class = 2}},
+      {"body #multiple",     false,  1, {.elements_seen = 1, .fast_id_roots = 1, .check_id = 1, .recheck_selector = 1}},
+      {"body span#multiple", false,  1, {.elements_seen = 2, .fast_id_roots = 2, .check_id = 2, .check_tag = 2, .recheck_selector = 1}},
+      {"body #multiple",      true,  2, {.elements_seen = 2, .fast_id_roots = 2, .check_id = 2, .recheck_selector = 2}},
+      {"[id=multiple]",       true,  2, {.elements_seen = 2, .fast_id_roots = 2, .check_attr = 2}},
+      {"body [id=multiple]",  true,  2, {.elements_seen = 2, .fast_id_roots = 2, .check_attr = 2, .recheck_selector = 2}},
 
-      // Single selector tag fast path.
-      {"span", false, 1, {4, 0, 0, 4, 0, 0, 0}},
-      {"span", true, 9, {14, 0, 0, 14, 0, 0, 0}},
+      // Single selector tag.
+      {"span",               false,  1, {.elements_seen = 4, .check_tag = 4}},
+      {"span",                true, 10, {.elements_seen = 15, .check_tag = 15}},
 
-      // Single selector class fast path.
-      {".two", false, 1, {5, 0, 5, 0, 0, 0, 0}},
-      {".two", true, 4, {13, 0, 13, 0, 0, 0, 0}},
+      // Single selector class. .two manages only to skip <head></head>, really.
+      {".two",               false, 1, {.elements_seen = 5, .check_class = 5, .skipped_subtree = 1}},
+      {".two",                true, 4, {.elements_seen = 13, .check_class = 13, .skipped_subtree = 2}},
+      {".three",             false, 1, {.elements_seen = 5, .check_class = 5, .skipped_subtree = 5}},
+      {".does-not-exist",    false, 0, {.skipped_subtree = 1}},
 
-      // Class in the right most selector fast path.
-      {"body .two", false, 1, {5, 0, 5, 0, 0, 0, 0}},
-      {"div .two", false, 1, {11, 0, 11, 0, 0, 0, 0}},
+      // Class in the rightmost selector.
+      // Note that body satisfies its tag quickly, and thus has
+      // fewer check_tag but more check_class.
+      {"body .two",          false, 1, {.elements_seen = 5, .check_tag = 2, .check_class = 3, .skipped_subtree = 1}},
+      {"div .two",           false, 1, {.elements_seen = 11, .check_tag = 8, .check_class = 3, .skipped_subtree = 1}},
+      {"body .two",           true, 4, {.elements_seen = 13, .check_tag = 2, .check_class = 11,
+                                        .skipped_subtree = 2}},
+      {"div .two",            true, 2, {.elements_seen = 13, .check_tag = 8, .check_class = 5,
+                                        .skipped_subtree = 2}},
 
-      // Classes in the right most selector for querySelectorAll use a fast
-      // path.
-      {"body .two", true, 4, {13, 0, 13, 0, 0, 0, 0}},
-      {"div .two", true, 2, {13, 0, 13, 0, 0, 0, 0}},
+      // We need to recheck if there is a child combinator, but traversal should otherwise be the same.
+      {"body > .two",         true, 0, {.elements_seen = 13, .check_tag = 2, .check_class = 11, .recheck_selector = 4,
+                                        .skipped_subtree = 2}},
+      {"div > .two",          true, 0, {.elements_seen = 13, .check_tag = 8, .check_class = 5, .recheck_selector = 2,
+                                        .skipped_subtree = 2}},
 
-      // TODO: We could use the fast class path to find the elements inside
-      // the id scope instead of the fast scan.
-      {"#second .two", false, 1, {3, 1, 0, 0, 2, 0, 0}},
-      {"#second .two", true, 2, {5, 1, 0, 0, 4, 0, 0}},
+      // ID in an ancestor.
+      {"#second .two",       false, 1, {.elements_seen = 3, .fast_id_roots = 1, .check_id = 1, .check_class = 2}},
+      {"#second .two",        true, 2, {.elements_seen = 5, .fast_id_roots = 1, .check_id = 1, .check_class = 4, .skipped_subtree = 1}},
 
-      // We combine the class fast path with the fast scan mode when possible.
-      {".B span", false, 1, {11, 0, 10, 0, 1, 0, 0}},
-      {".B span", true, 4, {14, 0, 10, 0, 4, 0, 0}},
+      // Class in ancestor.
+      {".B span",            false, 1, {.elements_seen = 5, .check_tag = 1, .check_class = 4, .skipped_subtree = 2}},
+      {".B span",             true, 5, {.elements_seen = 9, .check_tag = 5, .check_class = 4, .skipped_subtree = 2}},
 
-      // We expand the scope of id selectors when affected by an adjectent
-      // combinator.
-      {"#c + :last-child", false, 1, {5, 1, 0, 0, 4, 0, 0}},
-      {"#a ~ :last-child", false, 1, {5, 1, 0, 0, 4, 0, 0}},
-      {"#c + div", true, 1, {5, 1, 0, 0, 4, 0, 0}},
-      {"#a ~ span", true, 2, {5, 1, 0, 0, 4, 0, 0}},
+      // ID selector among siblings. :last-child and the + combinator require full selector checking.
+      {"#c + :last-child",   false, 1, {.elements_seen = 2, .fast_id_roots = 1, .check_id = 1, .recheck_selector = 1}},
+      {"#a ~ :last-child",   false, 1, {.elements_seen = 4, .fast_id_roots = 1, .check_id = 1, .recheck_selector = 3}},
+      {"#c + div",            true, 1, {.elements_seen = 2, .fast_id_roots = 1, .check_id = 1, .check_tag = 1, .recheck_selector = 1}},
+      {"#a ~ span",           true, 2, {.elements_seen = 4, .fast_id_roots = 1, .check_id = 1, .check_tag = 3}},
 
-      // We only expand the scope for id selectors if they're directly affected
-      // the adjacent combinator.
-      {"#first span + span", false, 1, {3, 1, 0, 0, 2, 0, 0}},
-      {"#first span ~ span", false, 1, {3, 1, 0, 0, 2, 0, 0}},
-      {"#second span + span", true, 3, {5, 1, 0, 0, 4, 0, 0}},
-      {"#second span ~ span", true, 3, {5, 1, 0, 0, 4, 0, 0}},
+      // With multiple ID selectors, we pick the latest.
+      {"#second #C ~ #D",     true, 1, {.elements_seen = 1, .fast_id_roots = 1, .check_id = 1, .recheck_selector = 1}},
+      {"#second #C ~ span",   true, 2, {.elements_seen = 3, .fast_id_roots = 1, .check_id = 1, .check_tag = 2, .recheck_selector = 2}},
 
-      // We disable the fast path for class selectors when affected by adjacent
-      // combinator.
-      {".one + :last-child", false, 1, {8, 0, 0, 0, 8, 0, 0}},
-      {".A ~ :last-child", false, 1, {9, 0, 0, 0, 9, 0, 0}},
-      {".A + div", true, 1, {14, 0, 0, 0, 14, 0, 0}},
-      {".one ~ span", true, 5, {14, 0, 0, 0, 14, 0, 0}},
+      // ID selector above siblings are just treated like a normal ancestor.
+      {"#first span + span", false, 1, {.elements_seen = 3, .fast_id_roots = 1, .check_id = 1, .check_tag = 2, .recheck_selector = 1}},
+      {"#first span ~ span", false, 1, {.elements_seen = 3, .fast_id_roots = 1, .check_id = 1, .check_tag = 2}},
+      {"#second span + span", true, 4, {.elements_seen = 6, .fast_id_roots = 1, .check_id = 1, .check_tag = 5, .recheck_selector = 4}},
+      {"#second span ~ span", true, 4, {.elements_seen = 6, .fast_id_roots = 1, .check_id = 1, .check_tag = 5}},
 
-      // We re-enable the fast path for classes once past the selector directly
-      // affected by the adjacent combinator.
-      {".B span + span", true, 3, {14, 0, 10, 0, 4, 0, 0}},
-      {".B span ~ span", true, 3, {14, 0, 10, 0, 4, 0, 0}},
+      // ID selector with an ancestor rechecks, but otherwise behaves the same
+      // (body is discarded).
+      {"body #second span ~ span", true, 4,
+                                       {.elements_seen = 6, .fast_id_roots = 1, .check_id = 1, .check_tag = 5, .recheck_selector = 4}},
 
-      // Selectors with no classes or ids use the fast scan.
-      {":scope", false, 1, {1, 0, 0, 0, 1, 0, 0}},
-      {":scope", true, 1, {14, 0, 0, 0, 14, 0, 0}},
-      {"foo bar", false, 0, {14, 0, 0, 0, 14, 0, 0}},
+      // TODO(sesse): This is a case we could probably do better, and discard
+      // immediately since there is no <doesnotexist> over #second.
+      {"doesnotexist #second span ~ span", true, 0,
+                                       {.elements_seen = 6, .fast_id_roots = 1, .check_id = 1, .check_tag = 5, .recheck_selector = 4}},
 
       // Multiple selectors always uses the slow path.
       // TODO(esprehn): We could make this fast if we sorted the output, not
       // sure it's worth it unless we're dealing with ids.
-      {"#a, #b", false, 1, {5, 0, 0, 0, 0, 5, 0}},
-      {"#a, #b", true, 2, {14, 0, 0, 0, 0, 14, 0}},
+      {"#a, #b",            false, 1, {.recheck_selector = 9, .slow_scan = 5}},
+      {"#a, #b",             true, 2, {.recheck_selector = 29, .slow_scan = 15}},
   };
+  // clang-format on
   RunTests(*document, kTestCases);
 }
 
@@ -267,30 +265,28 @@ TEST(SelectorQueryTest, FastPathScoped) {
 
   // NOTE: If StringHasher changes and we're unlucky,
   // the values for .c and .child may need updating.
+  // clang-format off
   static const struct QueryTest kTestCases[] = {
-      // Id in the right most selector.
-      {"#first", false, 0, {0, 0, 0, 0, 0, 0, 0}},
+      // ID in the rightmost selector.
+      {"#first",           false, 0, {.elements_seen = 1, .fast_id_roots = 1}},
 
-      {"#B", false, 1, {1, 1, 0, 0, 0, 0, 0}},
-      {"#multiple", false, 1, {1, 1, 0, 0, 0, 0, 0}},
-      {"#multiple.c", false, 1, {1, 1, 0, 0, 0, 0, 0}},
+      {"#B",               false, 1, {.elements_seen = 1, .fast_id_roots = 1, .check_id = 1}},
+      {"#multiple",        false, 1, {.elements_seen = 1, .fast_id_roots = 1, .check_id = 1}},
+      {"#multiple.c",      false, 1, {.elements_seen = 1, .fast_id_roots = 2, .check_id = 1, .check_class = 1, .skipped_subtree = 1}},
 
-      // Class in the right most selector.
-      {".child", false, 1, {1, 0, 1, 0, 0, 0, 0}},
-      {".child", true, 4, {4, 0, 4, 0, 0, 0, 0}},
+      // Class in the rightmost selector.
+      {".child",           false, 1, {.elements_seen = 2, .check_class = 1}},
+      {".child",            true, 4, {.elements_seen = 5, .check_class = 4, .skipped_subtree = 3}},
 
-      // If an ancestor has the class name we fast scan all the descendants of
-      // the scope.
-      {".root-class span", true, 4, {7, 0, 0, 0, 7, 0, 0}},
+      // If an ancestor has the class name, we scan all the descendants of the scope
+      // (we wouldn't need the recheck here; it could be optimized away in theory).
+      // The two .check_class come from scanning ancestors to find .root-class above #first.
+      {".root-class span",  true, 4, {.elements_seen = 8, .check_tag = 7, .check_class = 2, .recheck_selector = 4}},
 
-      // If an ancestor has the class name in the middle of the selector we fast
-      // scan all the descendants of the scope.
-      {".root-class span:nth-child(2)", false, 1, {2, 0, 0, 0, 2, 0, 0}},
-      {".root-class span:nth-child(2)", true, 1, {7, 0, 0, 0, 7, 0, 0}},
-
-      // If the id is an ancestor we scan all the descendants.
-      {"#root-id span", true, 4, {8, 1, 0, 0, 7, 0, 0}},
+      // If the id is an ancestor, we scan all the descendants.
+      {"#root-id span",     true, 4, {.elements_seen = 8, .check_id = 2, .check_tag = 7, .recheck_selector = 4}},
   };
+  // clang-format on
 
   {
     SCOPED_TRACE("Inside document");
@@ -326,26 +322,28 @@ TEST(SelectorQueryTest, QuirksModeSlowPath) {
 
   // NOTE: If StringHasher changes and we're unlucky,
   // the values for .two may need updating.
+  // clang-format off
   static const struct QueryTest kTestCases[] = {
-      // Quirks mode can't use the id fast path due to being case-insensitive.
-      {"#one", false, 1, {5, 0, 0, 0, 5, 0, 0}},
-      {"#One", false, 1, {5, 0, 0, 0, 5, 0, 0}},
-      {"#ONE", false, 1, {5, 0, 0, 0, 5, 0, 0}},
-      {"#ONE", true, 2, {6, 0, 0, 0, 6, 0, 0}},
-      {"[id=One]", false, 1, {5, 0, 0, 0, 5, 0, 0}},
-      {"[id=One]", true, 1, {6, 0, 0, 0, 6, 0, 0}},
-      {"body #first", false, 1, {4, 0, 0, 0, 4, 0, 0}},
-      {"body #one", true, 2, {6, 0, 0, 0, 6, 0, 0}},
-      // Quirks can use the class and tag name fast paths though.
-      {"span", false, 1, {4, 0, 0, 4, 0, 0, 0}},
-      {"span", true, 3, {6, 0, 0, 6, 0, 0, 0}},
-      {".two", false, 1, {4, 0, 4, 0, 0, 0, 0}},
-      {".two", true, 2, {5, 0, 5, 0, 0, 0, 0}},
-      {"body span", false, 1, {4, 0, 0, 0, 4, 0, 0}},
-      {"body span", true, 3, {6, 0, 0, 0, 6, 0, 0}},
-      {"body .two", false, 1, {4, 0, 4, 0, 0, 0, 0}},
-      {"body .two", true, 2, {5, 0, 5, 0, 0, 0, 0}},
+      // Quirks mode can't use the ID fast path due to being case-insensitive.
+      {"#one",        false, 1, {.elements_seen = 5, .check_id = 5}},
+      {"#One",        false, 1, {.elements_seen = 5, .check_id = 5}},
+      {"#ONE",        false, 1, {.elements_seen = 5, .check_id = 5}},
+      {"#ONE",         true, 2, {.elements_seen = 6, .check_id = 6}},
+      {"[id=One]",    false, 1, {.elements_seen = 5, .check_attr = 5}},
+      {"[id=One]",     true, 1, {.elements_seen = 6, .check_attr = 6}},
+      {"body #first", false, 1, {.elements_seen = 4, .check_id = 1, .check_tag = 3}},
+      {"body #one",    true, 2, {.elements_seen = 6, .check_id = 3, .check_tag = 3}},
+      // Quirks can use the class and tag name checks, though.
+      {"span",        false, 1, {.elements_seen = 4, .check_tag = 4}},
+      {"span",         true, 3, {.elements_seen = 6, .check_tag = 6}},
+      {".two",        false, 1, {.elements_seen = 4, .check_class = 4, .skipped_subtree = 1}},
+      {".two",         true, 2, {.elements_seen = 5, .check_class = 5, .skipped_subtree = 1}},
+      {"body span",   false, 1, {.elements_seen = 4, .check_tag = 4}},
+      {"body span",    true, 3, {.elements_seen = 6, .check_tag = 6}},
+      {"body .two",   false, 1, {.elements_seen = 4, .check_tag = 2, .check_class = 2, .skipped_subtree = 1}},
+      {"body .two",    true, 2, {.elements_seen = 5, .check_tag = 2, .check_class = 3, .skipped_subtree = 1}},
   };
+  // clang-format on
   RunTests(*document, kTestCases);
 }
 
@@ -368,16 +366,19 @@ TEST(SelectorQueryTest, DisconnectedSubtree) {
 
   // NOTE: If StringHasher changes and we're unlucky,
   // the values for .child may need updating.
+  // clang-format off
   static const struct QueryTest kTestCases[] = {
-      {"#A", false, 1, {3, 0, 0, 0, 3, 0, 0}},
-      {"#B", false, 1, {4, 0, 0, 0, 4, 0, 0}},
-      {"#B", true, 1, {6, 0, 0, 0, 6, 0, 0}},
-      {"#multiple", true, 2, {6, 0, 0, 0, 6, 0, 0}},
-      {".child", false, 1, {3, 0, 3, 0, 0, 0, 0}},
-      {".child", true, 2, {4, 0, 4, 0, 0, 0, 0}},
-      {"#first span", false, 1, {3, 0, 0, 0, 3, 0, 0}},
-      {"#first span", true, 4, {6, 0, 0, 0, 6, 0, 0}},
+      // None of these use the fast ID path, since we're disconnected.
+      {"#A",          false, 1, {.elements_seen = 4, .check_id = 3}},
+      {"#B",          false, 1, {.elements_seen = 5, .check_id = 4}},
+      {"#B",           true, 1, {.elements_seen = 7, .check_id = 6}},
+      {"#multiple",    true, 2, {.elements_seen = 7, .check_id = 6}},
+      {".child",      false, 1, {.elements_seen = 4, .check_class = 3, .skipped_subtree = 1}},
+      {".child",       true, 2, {.elements_seen = 5, .check_class = 4, .skipped_subtree = 2}},
+      {"#first span", false, 1, {.elements_seen = 4, .check_id = 3, .check_tag = 1}},
+      {"#first span",  true, 4, {.elements_seen = 7, .check_id = 3, .check_tag = 4}},
   };
+  // clang-format on
 
   RunTests(*scope, kTestCases);
 }
@@ -403,16 +404,19 @@ TEST(SelectorQueryTest, DisconnectedTreeScope) {
 
   // NOTE: If StringHasher changes and we're unlucky,
   // the values for .child may need updating.
+  // clang-format off
   static const struct QueryTest kTestCases[] = {
-      {"#A", false, 1, {1, 1, 0, 0, 0, 0, 0}},
-      {"#B", false, 1, {1, 1, 0, 0, 0, 0, 0}},
-      {"#B", true, 1, {1, 1, 0, 0, 0, 0, 0}},
-      {"#multiple", true, 2, {2, 2, 0, 0, 0, 0, 0}},
-      {".child", false, 1, {3, 0, 3, 0, 0, 0, 0}},
-      {".child", true, 2, {4, 0, 4, 0, 0, 0, 0}},
-      {"#first span", false, 1, {2, 1, 0, 0, 1, 0, 0}},
-      {"#first span", true, 4, {5, 1, 0, 0, 4, 0, 0}},
+      // These can use the fast ID path, since we're in within a tree scope.
+      {"#A",          false, 1, {.elements_seen = 1, .fast_id_roots = 1, .check_id = 1}},
+      {"#B",          false, 1, {.elements_seen = 1, .fast_id_roots = 1, .check_id = 1}},
+      {"#B",           true, 1, {.elements_seen = 1, .fast_id_roots = 1, .check_id = 1}},
+      {"#multiple",    true, 2, {.elements_seen = 2, .fast_id_roots = 2, .check_id = 2}},
+      {".child",      false, 1, {.elements_seen = 3, .check_class = 3, .skipped_subtree = 1}},
+      {".child",       true, 2, {.elements_seen = 4, .check_class = 4, .skipped_subtree = 2}},
+      {"#first span", false, 1, {.elements_seen = 2, .fast_id_roots = 1, .check_id = 1, .check_tag = 1}},
+      {"#first span",  true, 4, {.elements_seen = 5, .fast_id_roots = 1, .check_id = 1, .check_tag = 4}},
   };
+  // clang-format on
 
   RunTests(shadowRoot, kTestCases);
 }

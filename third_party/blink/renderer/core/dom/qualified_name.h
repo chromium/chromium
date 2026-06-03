@@ -209,6 +209,7 @@ class CORE_EXPORT QualifiedName {
   static void InitAndReserveCapacityForSize(wtf_size_t size);
 
   static const QualifiedName& Null() { return g_null_name; }
+  bool IsNull() const { return impl_ == g_null_name.impl_; }
 
   // The below methods are only for creating static global QNames that need no
   // ref counting.
