@@ -1,10 +1,10 @@
 Name: Sentencepiece
 Short Name: sentencepiece
 URL: https://github.com/google/sentencepiece
-Version: 0dfa26997af6d7dd0d22c0bbfaf6a806cd8e98c0
-Revision: 0dfa26997af6d7dd0d22c0bbfaf6a806cd8e98c0
+Version: ea83729ca83c4696a775d3d1e8a03e3bd4fa8d97
+Revision: ea83729ca83c4696a775d3d1e8a03e3bd4fa8d97
 Update Mechanism: Manual
-Date: 2026-04-23
+Date: 2026-06-02
 License: BSD-3-Clause, Apache-2.0, MIT
 License File: LICENSE
 Security Critical: Yes
@@ -34,6 +34,12 @@ needed for chromium.
 absl::Status.
 * 0005-Update-absl-logging.patch - Prefixes logging statements with ABSL_ to
 avoid conflict with Chrome logging.
+* 0006-Disable-exceptions-in-darts.patch - Disables standard exceptions in darts.h under DARTS_DISABLE_EXCEPTIONS.
 
 In addition the unused data, python, third_party/absl, and
 third_party/protobuf-lite directories were removed.
+
+Rolling:
+* Run roll.sh /tmp/sentencepiece to roll to head.
+* If patching fails, you may need to update the patch files.
+* Test changes by attempting to build it.

@@ -1,0 +1,90 @@
+From: Mike Wittman <wittman@chromium.org>
+Date: Tue, 12 May 2026 12:36:54 -0700
+Subject: [PATCH] Disable exceptions in darts
+
+---
+ third_party/sentencepiece/src/third_party/darts_clone/darts.h | 28 ++++++++++--
+ 1 file changed, 24 insertions(+), 4 deletions(-)
+
+diff --git a/third_party/sentencepiece/src/third_party/darts_clone/darts.h b/third_party/sentencepiece/src/third_party/darts_clone/darts.h
+index 5c31d8fb4d..69014ea97d 100644
+--- a/third_party/sentencepiece/src/third_party/darts_clone/darts.h
++++ b/third_party/sentencepiece/src/third_party/darts_clone/darts.h
+@@ -5,6 +5,10 @@
+ #include <exception>
+ #include <new>
+ 
++#if DARTS_DISABLE_EXCEPTIONS
++#include "absl/log/absl_check.h"
++#endif
++
+ #define DARTS_VERSION "0.32"
+ 
+ // DARTS_THROW() throws a <Darts::Exception> whose message starts with the
+@@ -15,8 +19,12 @@
+ #define DARTS_INT_TO_STR(value) #value
+ #define DARTS_LINE_TO_STR(line) DARTS_INT_TO_STR(line)
+ #define DARTS_LINE_STR DARTS_LINE_TO_STR(__LINE__)
++#if DARTS_DISABLE_EXCEPTIONS
++#define DARTS_THROW(msg) ABSL_CHECK(false) << (msg)
++#else
+ #define DARTS_THROW(msg) throw Darts::Details::Exception( \
+   __FILE__ ":" DARTS_LINE_STR ": exception: " msg)
++#endif
+ 
+ namespace Darts {
+ 
+@@ -376,15 +384,19 @@
+   }
+ 
+   unit_type *buf;
++#if !DARTS_DISABLE_EXCEPTIONS
+   try {
++#endif
+     buf = new unit_type[size];
+     for (id_type i = 0; i < 256; ++i) {
+       buf[i] = units[i];
+     }
++#if !DARTS_DISABLE_EXCEPTIONS
+   } catch (const std::bad_alloc &) {
+     std::fclose(file);
+     DARTS_THROW("failed to open double-array: std::bad_alloc");
+   }
++#endif
+ 
+   if (size > 256) {
+     if (std::fread(buf + 256, unit_size(), size - 256, file) != size - 256) {
+@@ -697,11 +709,15 @@
+   }
+ 
+   AutoArray<char> buf;
++#if !DARTS_DISABLE_EXCEPTIONS
+   try {
++#endif
+     buf.reset(new char[sizeof(T) * capacity]);
++#if !DARTS_DISABLE_EXCEPTIONS
+   } catch (const std::bad_alloc &) {
+     DARTS_THROW("failed to resize pool: std::bad_alloc");
+   }
++#endif
+ 
+   if (size_ > 0) {
+     T *src = reinterpret_cast<T *>(&buf_[0]);
+@@ -836,11 +852,15 @@
+ };
+ 
+ inline void BitVector::build() {
++#if !DARTS_DISABLE_EXCEPTIONS
+   try {
++#endif
+     ranks_.reset(new id_type[units_.size()]);
++#if !DARTS_DISABLE_EXCEPTIONS
+   } catch (const std::bad_alloc &) {
+     DARTS_THROW("failed to build rank index: std::bad_alloc");
+   }
++#endif
+ 
+   num_ones_ = 0;
+   for (std::size_t i = 0; i < units_.size(); ++i) {
+-- 
+2.54.0.545.g6539524ca2-goog
