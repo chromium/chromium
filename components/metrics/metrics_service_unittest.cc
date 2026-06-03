@@ -668,6 +668,9 @@ TEST_F(MetricsServiceTest, IndependentLogAtProviderRequest) {
   // have been put into the independent log).
   EXPECT_TRUE(DecodeLogDataToProto(test_log_store->staged_log(), &uma_log));
   EXPECT_EQ(GetHistogramSampleCount(uma_log, test_histogram), 1);
+
+  // Clean up histograms.
+  base::StatisticsRecorder::ForgetHistogramForTesting(test_histogram);
 }
 
 TEST_F(MetricsServiceTest, OnDidCreateMetricsLogAtShutdown) {
