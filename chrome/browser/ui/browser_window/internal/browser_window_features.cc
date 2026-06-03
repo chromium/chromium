@@ -170,6 +170,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/browser/ui/webui_browser/zoom_bubble_manager_webui_browser.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -598,6 +599,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   unload_controller_ = std::make_unique<UnloadController>(browser);
+
+  window_metadata_controller_ = std::make_unique<WindowMetadataController>(
+      *browser,
+      browser->GetBrowserForMigrationOnly()->create_params().user_title);
 
   // Initialize embedder features last.
   embedder_browser_window_features_ =

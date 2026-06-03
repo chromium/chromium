@@ -48,6 +48,7 @@ class BrowserWindowInterface;
 class BrowserWindowModalDialogDelegate;
 class BrowserWindowThemeObserver;
 class BrowserWindowZoomObserver;
+class WindowMetadataController;
 class CallToActionLock;
 class ChromeLabsCoordinator;
 class ColorProviderBrowserHelper;
@@ -849,6 +850,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<BrowserWindowModalDialogDelegate>
       browser_window_modal_dialog_delegate_;
+
+  std::unique_ptr<WindowMetadataController> window_metadata_controller_;
 
   // Keep this member last to ensure embedder features are torn down first, in
   // reverse order of initialization.

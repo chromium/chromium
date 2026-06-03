@@ -4752,6 +4752,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/autofill_ml_internals",
       "//chrome/browser/ui/webui/content_annotator_internals",
       "//chrome/browser/ui/webui/side_panel/customize_chrome",
+      "//chrome/browser/ui/window_metadata",
       "//chrome/browser/ui/window_name_prompt",
       "//components/browser_apis/tab_strip/aggregation",
       "//components/collaboration/public",
@@ -4833,6 +4834,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/permissions/chip:impl",
       "//chrome/browser/ui/views/page_info:impl",
       "//chrome/browser/ui/window_name_prompt",
+      "//chrome/browser/ui/window_metadata",
 
       # TODO(crbug.com/408801109): Remove this circular dependency when the
       # following headers get componentized:
