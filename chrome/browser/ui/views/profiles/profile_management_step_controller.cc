@@ -442,6 +442,8 @@ ProfileManagementStepController::~ProfileManagementStepController() = default;
 
 void ProfileManagementStepController::OnReloadRequested() {}
 
+void ProfileManagementStepController::ToggleMediaEffects(bool active) {}
+
 void ProfileManagementStepController::NavigateBackInternal(
     content::WebContents* contents) {
   if (contents && contents->GetController().CanGoBack()) {

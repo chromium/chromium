@@ -11,14 +11,17 @@ export function getHtml(this: SignInPromoRefreshElement) {
   // TODO(crbug.com/504301457): Enable animations once there is a mechanism to
   // pause/stop them.
   return html`<!--_html_template_start_-->
-<cr-lottie id="left-animation" class="animation"
-    animation-url="${this.getAnimationUrl_('left')}">
+<cr-lottie id="leftAnimation" class="animation"
+    animation-url="${this.getAnimationUrl_('left')}"
+    ?autoplay="${!this.shouldDisableAnimations_}">
 </cr-lottie>
-<cr-lottie id="right-animation" class="animation"
-    animation-url="${this.getAnimationUrl_('right')}">
+<cr-lottie id="rightAnimation" class="animation"
+    animation-url="${this.getAnimationUrl_('right')}"
+    ?autoplay="${!this.shouldDisableAnimations_}">
 </cr-lottie>
-<cr-lottie id="bottom-animation" class="animation"
-    animation-url="${this.getAnimationUrl_('bottom')}">
+<cr-lottie id="bottomAnimation" class="animation"
+    animation-url="${this.getAnimationUrl_('bottom')}"
+    ?autoplay="${!this.shouldDisableAnimations_}">
 </cr-lottie>
 
 <!-- TODO(crbug.com/515028732): Make sure the button doesn't clash with the

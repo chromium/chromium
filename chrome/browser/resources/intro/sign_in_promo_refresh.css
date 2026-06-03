@@ -98,7 +98,7 @@ p {
   pointer-events: none;
 }
 
-#left-animation {
+#leftAnimation {
   top: 35%;
   /* Check how much space is between 50% of screen width and 50% of content
    * width, then subtract 100% of the animation's size (arbitrary value) to push
@@ -112,7 +112,7 @@ p {
   aspect-ratio: 288 / 620; /* To prevent cr-lottie from adding white padding. */
 }
 
-#right-animation {
+#rightAnimation {
   top: 50%;
   /* First push the animation by 70%  (arbitrary value) of its size and check
    * how much space is between 50% of screen width and 50% of content width.
@@ -129,7 +129,7 @@ p {
   aspect-ratio: 311 / 657;
 }
 
-#bottom-animation {
+#bottomAnimation {
   bottom: -5px;
   left: 20%;
   /* First push the animation by 50% of its size and check how much space is

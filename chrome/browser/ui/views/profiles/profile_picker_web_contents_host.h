@@ -54,6 +54,9 @@ class ProfilePickerWebContentsHost {
   // Returns whether dark colors should be used (based on native theme).
   virtual bool ShouldUseDarkColors() const = 0;
 
+  // Returns whether effects (animations/audio) are enabled.
+  virtual bool AreEffectsEnabled() const = 0;
+
   // Returns the picker WebContents.
   virtual content::WebContents* GetPickerContents() const = 0;
 

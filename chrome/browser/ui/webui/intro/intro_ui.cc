@@ -161,6 +161,8 @@ IntroUI::IntroUI(content::WebUI* web_ui)
   source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
                      base::FeatureList::IsEnabled(
                          switches::kUsePrimaryAndTonalButtonsForPromos));
+  source->AddBoolean("isFirstRunDesktopRevampEnabled",
+                     is_first_run_desktop_revamp_enabled);
   if (base::FeatureList::IsEnabled(
           switches::kDisableFirstRunAnimationsForTesting)) {
     CHECK_IS_TEST();
@@ -304,6 +306,25 @@ void IntroUI::OnSignInCelebrationMojoHandlerReady(
       std::make_unique<SignInCelebrationHandler>(
           IdentityManagerFactory::GetForProfile(profile), std::move(page),
           std::move(receiver), std::move(celebration_finished_callback));
+}
+
+void IntroUI::BindInterface(
+    mojo::PendingReceiver<intro::mojom::IntroPageHandlerFactory> receiver) {
+  intro_factory_receiver_.reset();
+  intro_factory_receiver_.Bind(std::move(receiver));
+}
+
+void IntroUI::CreateIntroPageHandler(
+    mojo::PendingRemote<intro::mojom::IntroPage> page) {
+  CHECK(page);
+  intro_page_.reset();
+  intro_page_.Bind(std::move(page));
+}
+
+void IntroUI::ToggleAnimations(bool active) {
+  if (intro_page_.is_bound()) {
+    intro_page_->ToggleAnimations(active);
+  }
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(IntroUI)

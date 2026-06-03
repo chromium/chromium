@@ -46,7 +46,7 @@ class ProfilePickerToolbar : public views::View {
     // Adds the effects (audio/animations) control button to the toolbar.
     // Comparing to other buttons, this button is always visible.
     Builder& WithEffectsControlButton(
-        base::RepeatingClosure on_effects_control_callback);
+        base::RepeatingCallback<void(bool)> on_effects_control_callback);
 
     // Builds a new `ProfilePickerToolbar`.
     //
@@ -57,7 +57,7 @@ class ProfilePickerToolbar : public views::View {
    private:
     base::RepeatingClosure on_back_callback_;
     base::RepeatingClosure on_dont_sign_in_callback_;
-    base::RepeatingClosure on_effects_control_callback_;
+    base::RepeatingCallback<void(bool)> on_effects_control_callback_;
   };
 
   ~ProfilePickerToolbar() override;
@@ -76,6 +76,9 @@ class ProfilePickerToolbar : public views::View {
   // button is not created.
   void SetDontSignInButtonVisible(bool visible);
 
+  // Returns whether effects (animations/audio) are enabled.
+  bool AreEffectsEnabled() const;
+
  private:
   ProfilePickerToolbar();
 
@@ -86,7 +89,7 @@ class ProfilePickerToolbar : public views::View {
   void AddBackButton(base::RepeatingClosure on_back_callback);
   void AddDontSignInButton(base::RepeatingClosure on_dont_sign_in_callback);
   void AddEffectsControlButton(
-      base::RepeatingClosure on_effects_control_callback);
+      base::RepeatingCallback<void(bool)> on_effects_control_callback);
 
   raw_ptr<views::View> sign_in_back_button_ = nullptr;
   raw_ptr<views::View> dont_sign_in_button_ = nullptr;

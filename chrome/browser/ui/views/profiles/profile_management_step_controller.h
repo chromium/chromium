@@ -91,6 +91,10 @@ class ProfileManagementStepController {
   // Method to be called if the user is attempting to navigate back.
   virtual void OnNavigateBackRequested() = 0;
 
+  // Called when the user requests to toggle the media effects (e.g. audio or
+  // animations) for a given step.
+  virtual void ToggleMediaEffects(bool active);
+
   void set_pop_step_callback(base::OnceClosure callback) {
     pop_step_callback_ = std::move(callback);
   }

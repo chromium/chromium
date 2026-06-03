@@ -140,6 +140,7 @@ class MockProfilePickerWebContentsHost : public ProfilePickerWebContentsHost {
               ShowScreenInPickerContents,
               (const GURL& url, base::OnceClosure navigation_finished_closure));
   MOCK_METHOD(bool, ShouldUseDarkColors, (), (const));
+  MOCK_METHOD(bool, AreEffectsEnabled, (), (const));
   MOCK_METHOD(content::WebContents*, GetPickerContents, (), (const));
   MOCK_METHOD(void, SetNativeToolbarSigninButtonsVisible, (bool visible));
   MOCK_METHOD(void, SetNativeToolbarDontSignInButtonVisible, (bool visible));

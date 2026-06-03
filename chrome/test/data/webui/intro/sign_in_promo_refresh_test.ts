@@ -5,6 +5,7 @@
 import 'chrome://intro/sign_in_promo_refresh.js';
 
 import {IntroBrowserProxyImpl} from 'chrome://intro/browser_proxy.js';
+import {IntroBrowserProxyImpl as IntroMojoBrowserProxyImpl} from 'chrome://intro/intro_browser_proxy.js';
 import type {SignInPromoRefreshElement} from 'chrome://intro/sign_in_promo_refresh.js';
 import {Variation} from 'chrome://intro/sign_in_promo_refresh.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -13,6 +14,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestIntroBrowserProxy} from './test_intro_browser_proxy.js';
+import {TestIntroMojoBrowserProxy} from './test_intro_mojo_browser_proxy.js';
 
 function assertSignInButtonsDisabled(
     element: SignInPromoRefreshElement, assertDeclineButton: boolean = true) {
@@ -46,11 +48,17 @@ function variationToTestSuffix(variation: Variation): string {
 suite('SignInPromoRefreshTest', function() {
   let signInPromoElement: SignInPromoRefreshElement;
   let testBrowserProxy: TestIntroBrowserProxy;
+  let testMojoBrowserProxy: TestIntroMojoBrowserProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testBrowserProxy = new TestIntroBrowserProxy();
     IntroBrowserProxyImpl.setInstance(testBrowserProxy);
+    testMojoBrowserProxy = new TestIntroMojoBrowserProxy();
+    IntroMojoBrowserProxyImpl.setInstance(testMojoBrowserProxy);
+    loadTimeData.overrideValues({
+      isFirstRunDesktopRevampEnabled: true,
+    });
   });
 
   [Variation.DEFAULT, Variation.DONT_SIGN_IN_IN_TOP_RIGHT_CORNER,
@@ -243,29 +251,101 @@ suite('SignInPromoRefreshTest', function() {
     document.body.appendChild(signInPromoElement);
     await microtasksFinished();
 
-    const leftAnimation =
-        signInPromoElement.shadowRoot.querySelector<HTMLElement>(
-            '#left-animation');
-    const rightAnimation =
-        signInPromoElement.shadowRoot.querySelector<HTMLElement>(
-            '#right-animation');
-    const bottomAnimation =
-        signInPromoElement.shadowRoot.querySelector<HTMLElement>(
-            '#bottom-animation');
+    const leftAnimation = signInPromoElement.$.leftAnimation;
+    const rightAnimation = signInPromoElement.$.rightAnimation;
+    const bottomAnimation = signInPromoElement.$.bottomAnimation;
 
     assertTrue(!!leftAnimation);
-    assertTrue(leftAnimation.getAttribute('animation-url')!.includes('light'));
+    assertTrue(leftAnimation.animationUrl.includes('light'));
     assertTrue(!!rightAnimation);
-    assertTrue(rightAnimation.getAttribute('animation-url')!.includes('light'));
+    assertTrue(rightAnimation.animationUrl.includes('light'));
     assertTrue(!!bottomAnimation);
-    assertTrue(
-        bottomAnimation.getAttribute('animation-url')!.includes('light'));
+    assertTrue(bottomAnimation.animationUrl.includes('light'));
 
     testBrowserProxy.setMatchMediaMatches(true);
     await microtasksFinished();
 
-    assertTrue(leftAnimation.getAttribute('animation-url')!.includes('dark'));
-    assertTrue(rightAnimation.getAttribute('animation-url')!.includes('dark'));
-    assertTrue(bottomAnimation.getAttribute('animation-url')!.includes('dark'));
+    assertTrue(leftAnimation.animationUrl.includes('dark'));
+    assertTrue(rightAnimation.animationUrl.includes('dark'));
+    assertTrue(bottomAnimation.animationUrl.includes('dark'));
   });
+
+  test('toggles animations', async function() {
+    loadTimeData.overrideValues({
+      isDeviceManaged: false,
+      signInPromoVariation: Variation.DEFAULT,
+      disableAnimations: false,
+    });
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    signInPromoElement = document.createElement('sign-in-promo-refresh');
+    document.body.appendChild(signInPromoElement);
+    await microtasksFinished();
+
+    const leftAnimation = signInPromoElement.$.leftAnimation;
+    const rightAnimation = signInPromoElement.$.rightAnimation;
+    const bottomAnimation = signInPromoElement.$.bottomAnimation;
+
+    let leftPlay: boolean|null = null;
+    leftAnimation.setPlay = (play: boolean) => {
+      leftPlay = play;
+    };
+    let rightPlay: boolean|null = null;
+    rightAnimation.setPlay = (play: boolean) => {
+      rightPlay = play;
+    };
+    let bottomPlay: boolean|null = null;
+    bottomAnimation.setPlay = (play: boolean) => {
+      bottomPlay = play;
+    };
+
+    const pageRemote =
+        testMojoBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
+    pageRemote.toggleAnimations(false);
+    await pageRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertEquals(false, leftPlay);
+    assertEquals(false, rightPlay);
+    assertEquals(false, bottomPlay);
+
+    pageRemote.toggleAnimations(true);
+    await pageRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertEquals(true, leftPlay);
+    assertEquals(true, rightPlay);
+    assertEquals(true, bottomPlay);
+  });
+
+  test(
+      'does not toggle animations when `disableAnimations` is true',
+      async function() {
+        loadTimeData.overrideValues({
+          isDeviceManaged: false,
+          signInPromoVariation: Variation.DEFAULT,
+          disableAnimations: true,
+        });
+
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        signInPromoElement = document.createElement('sign-in-promo-refresh');
+        document.body.appendChild(signInPromoElement);
+        await microtasksFinished();
+
+        const leftAnimation = signInPromoElement.$.leftAnimation;
+
+        let leftPlay: boolean|null = null;
+        leftAnimation.setPlay = (play: boolean) => {
+          leftPlay = play;
+        };
+
+        const pageRemote =
+            testMojoBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
+        pageRemote.toggleAnimations(false);
+        await pageRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Verify that setPlay was NOT called because animations are disabled.
+        assertEquals(null, leftPlay);
+      });
 });

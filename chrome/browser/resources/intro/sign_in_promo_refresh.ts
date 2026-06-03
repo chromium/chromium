@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrLottieElement} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -16,6 +17,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {IntroBrowserProxy} from './browser_proxy.js';
 import {IntroBrowserProxyImpl} from './browser_proxy.js';
+import type {IntroBrowserProxy as IntroMojoBrowserProxy} from './intro_browser_proxy.js';
+import {IntroBrowserProxyImpl as IntroMojoBrowserProxyImpl} from './intro_browser_proxy.js';
 import {getCss} from './sign_in_promo_refresh.css.js';
 import {getHtml} from './sign_in_promo_refresh.html.js';
 
@@ -29,6 +32,9 @@ export enum Variation {
 
 export interface SignInPromoRefreshElement {
   $: {
+    leftAnimation: CrLottieElement,
+    rightAnimation: CrLottieElement,
+    bottomAnimation: CrLottieElement,
     acceptSignInButton: CrButtonElement,
     buttonRow: HTMLElement,
     declineSignInButton: CrButtonElement,
@@ -81,16 +87,22 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
       loadTimeData.getBoolean('isDeviceManaged');
   protected accessor usePrimaryAndTonalButtonsForPromos_: boolean =
       loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos');
+  // Animations are disabled if the feature is disabled (there is no mechanism
+  // to stop animations) or if we are using "disable animations" test flag.
   protected accessor shouldDisableAnimations_: boolean =
-      loadTimeData.getBoolean('disableAnimations');
+      loadTimeData.getBoolean('disableAnimations') ||
+      !loadTimeData.getBoolean('isFirstRunDesktopRevampEnabled');
   protected accessor isDarkMode_: boolean;
   private accessor anyButtonClicked_: boolean = false;
   private browserProxy_: IntroBrowserProxy =
       IntroBrowserProxyImpl.getInstance();
+  private introBrowserProxy_: IntroMojoBrowserProxy =
+      IntroMojoBrowserProxyImpl.getInstance();
   private variation_: Variation =
       loadTimeData.getInteger('signInPromoVariation') as Variation;
   private darkModeListener_: (e: MediaQueryListEvent) => void;
   private matchMedia_: MediaQueryList;
+  private listenerIds_: number[] = [];
 
   constructor() {
     super();
@@ -132,11 +144,19 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
 
     this.addWebUiListener('reset-intro-buttons', this.resetButtons_.bind(this));
     this.matchMedia_.addEventListener('change', this.darkModeListener_);
+
+    this.listenerIds_.push(
+        this.introBrowserProxy_.callbackRouter.toggleAnimations.addListener(
+            (active: boolean) => this.toggleAnimations_(active)));
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.matchMedia_.removeEventListener('change', this.darkModeListener_);
+
+    this.listenerIds_.forEach(
+        id => this.introBrowserProxy_.callbackRouter.removeListener(id));
+    this.listenerIds_ = [];
   }
 
   private resetButtons_() {
@@ -187,6 +207,16 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
   protected getAnimationUrl_(position: 'left'|'right'|'bottom'): string {
     return `chrome://intro/animations/signin_benefits_${
         this.isDarkMode_ ? 'dark' : 'light'}_${position}.json`;
+  }
+
+  private toggleAnimations_(active: boolean) {
+    if (this.shouldDisableAnimations_) {
+      return;
+    }
+
+    this.$.leftAnimation.setPlay(active);
+    this.$.rightAnimation.setPlay(active);
+    this.$.bottomAnimation.setPlay(active);
   }
 }
 

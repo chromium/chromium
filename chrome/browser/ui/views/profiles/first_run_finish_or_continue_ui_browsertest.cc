@@ -59,8 +59,12 @@ class FirstRunFinishOrContinuePixelTest
         ProfileManagementFlowController::Step::kIntro,
         /*step_controller_factory=*/
         base::BindRepeating([](ProfilePickerWebContentsHost* host) {
-          return CreateIntroStep(host, base::DoNothing(),
-                                 /*enable_animations=*/false);
+          return CreateIntroStep(
+              host, /*choice_callback=*/base::DoNothing(),
+              /*enable_animations=*/false,
+              /*query_effects_callback=*/base::BindRepeating([] {
+                return false;
+              }));
         }));
     profile_picker_view_tracker_.SetView(view);
     view->ShowAndWait();

@@ -114,6 +114,8 @@ void ProfileManagementFlowController::OnReloadRequested() {
   initialized_steps_.at(flow_tracker_.tracked_step())->OnReloadRequested();
 }
 
+void ProfileManagementFlowController::ToggleMediaEffects(bool active) {}
+
 std::u16string
 ProfileManagementFlowController::GetFallbackAccessibleWindowTitle() const {
   return std::u16string();
@@ -151,6 +153,16 @@ bool ProfileManagementFlowController::PreFinishWithBrowser() {
 ProfileManagementFlowController::Step
 ProfileManagementFlowController::current_step() const {
   return flow_tracker_.tracked_step();
+}
+
+ProfileManagementStepController*
+ProfileManagementFlowController::GetCurrentStepController() const {
+  if (current_step() == Step::kUnknown) {
+    return nullptr;
+  }
+  auto it = initialized_steps_.find(current_step());
+  CHECK(it != initialized_steps_.end());
+  return it->second.get();
 }
 
 void ProfileManagementFlowController::FinishFlowAndRunInBrowser(

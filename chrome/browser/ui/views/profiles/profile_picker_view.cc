@@ -455,6 +455,10 @@ bool ProfilePickerView::ShouldUseDarkColors() const {
          ui::NativeTheme::PreferredColorScheme::kDark;
 }
 
+bool ProfilePickerView::AreEffectsEnabled() const {
+  return toolbar_ ? toolbar_->AreEffectsEnabled() : true;
+}
+
 content::WebContents* ProfilePickerView::GetPickerContents() const {
   return contents_.get();
 }
@@ -679,8 +683,11 @@ void ProfilePickerView::Init(Profile* picker_profile) {
   }
   if (ShouldBuildToolbarWithEffectsControlButton(picker_profile,
                                                  params_.entry_point())) {
-    // TODO(crbug.com/515028732): Implement the effects control callback.
-    toolbar_builder.WithEffectsControlButton(base::DoNothing());
+    toolbar_builder.WithEffectsControlButton(base::BindRepeating(
+        &ProfileManagementFlowController::ToggleMediaEffects,
+        // Unretained safe because the `flow_controller_` is owned by `this`
+        // and `this` outlives the `toolbar_` (parent view).
+        base::Unretained(flow_controller_.get())));
   }
 
   toolbar_ = AddChildView(toolbar_builder.Build());

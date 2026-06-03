@@ -26,7 +26,8 @@ class Profile;
 std::unique_ptr<ProfileManagementStepController> CreateIntroStep(
     ProfilePickerWebContentsHost* host,
     base::RepeatingCallback<void(IntroChoice)> choice_callback,
-    bool enable_animations);
+    bool enable_animations,
+    base::RepeatingCallback<bool()> query_effects_callback);
 
 std::unique_ptr<ProfileManagementStepController> CreateDefaultBrowserStep(
     ProfilePickerWebContentsHost* host,
@@ -56,6 +57,8 @@ class FirstRunFlowController : public ProfileManagementFlowControllerImpl {
       ProfilePicker::ProfilePickingArgs args,
       base::OnceCallback<void(bool)> pick_profile_complete_callback) override;
   void ShowSigninError(Profile* profile, const SigninUIError& error) override;
+  void ToggleMediaEffects(bool active) override;
+  bool AreEffectsEnabled() const;
 
  protected:
   // ProfileManagementFlowControllerImpl

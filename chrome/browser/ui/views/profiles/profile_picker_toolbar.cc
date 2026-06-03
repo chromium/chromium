@@ -160,7 +160,7 @@ class EffectsControlButton : public ProfilePickerToolbarButton {
   METADATA_HEADER(EffectsControlButton, ProfilePickerToolbarButton)
 
  public:
-  explicit EffectsControlButton(PressedCallback callback)
+  explicit EffectsControlButton(base::RepeatingCallback<void(bool)> callback)
       : ProfilePickerToolbarButton(
             base::BindRepeating(&EffectsControlButton::OnButtonPressed,
                                 base::Unretained(this))),
@@ -174,6 +174,8 @@ class EffectsControlButton : public ProfilePickerToolbarButton {
   EffectsControlButton& operator=(const EffectsControlButton&) = delete;
 
   ~EffectsControlButton() override = default;
+
+  bool effects_enabled() const { return effects_enabled_; }
 
  private:
   void OnButtonPressed(const ui::Event& event) {
@@ -189,11 +191,11 @@ class EffectsControlButton : public ProfilePickerToolbarButton {
         effects_enabled_ ? IDS_PROFILE_PICKER_PAUSE_EFFECTS_BUTTON
                          : IDS_PROFILE_PICKER_PLAY_EFFECTS_BUTTON));
 
-    callback_.Run(event);
+    callback_.Run(effects_enabled_);
   }
 
   bool effects_enabled_ = true;
-  PressedCallback callback_;
+  base::RepeatingCallback<void(bool)> callback_;
 };
 
 BEGIN_METADATA(EffectsControlButton)
@@ -215,7 +217,7 @@ ProfilePickerToolbar::Builder::WithDontSignInButton(
 
 ProfilePickerToolbar::Builder&
 ProfilePickerToolbar::Builder::WithEffectsControlButton(
-    base::RepeatingClosure on_effects_control_callback) {
+    base::RepeatingCallback<void(bool)> on_effects_control_callback) {
   on_effects_control_callback_ = std::move(on_effects_control_callback);
   return *this;
 }
@@ -286,7 +288,7 @@ void ProfilePickerToolbar::AddDontSignInButton(
 }
 
 void ProfilePickerToolbar::AddEffectsControlButton(
-    base::RepeatingClosure on_effects_control_callback) {
+    base::RepeatingCallback<void(bool)> on_effects_control_callback) {
   CHECK(effects_control_button_ == nullptr);
   effects_control_button_ = AddChildView(std::make_unique<EffectsControlButton>(
       std::move(on_effects_control_callback)));
@@ -310,6 +312,14 @@ void ProfilePickerToolbar::SetDontSignInButtonVisible(bool visible) {
   if (dont_sign_in_button_) {
     dont_sign_in_button_->SetVisible(visible);
   }
+}
+
+bool ProfilePickerToolbar::AreEffectsEnabled() const {
+  if (!effects_control_button_) {
+    return true;
+  }
+  return static_cast<EffectsControlButton*>(effects_control_button_)
+      ->effects_enabled();
 }
 
 void ProfilePickerToolbar::SetBackButtonVisible(bool visible) {

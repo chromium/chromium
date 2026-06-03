@@ -102,6 +102,10 @@ class ProfileManagementFlowController
   // open the picker).
   virtual void CancelSigninFlow() = 0;
 
+  // Called when the media effects (e.g. audio or animations) control button is
+  // clicked to toggle their state.
+  virtual void ToggleMediaEffects(bool active);
+
   // Picks the profile with `profile_path`.
   // `pick_profile_complete_callback` will be called on profile load.
   virtual void PickProfile(
@@ -159,7 +163,9 @@ class ProfileManagementFlowController
 
   Step current_step() const;
 
-  ProfilePickerWebContentsHost* host() { return host_; }
+  ProfileManagementStepController* GetCurrentStepController() const;
+
+  ProfilePickerWebContentsHost* host() const { return host_; }
 
   // Creates the web contents associated with `profile` and stores them in
   // `signed_out_flow_web_contents_`.

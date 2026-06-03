@@ -156,10 +156,12 @@ class IntroStepController : public ProfileManagementStepController {
   explicit IntroStepController(
       ProfilePickerWebContentsHost* host,
       base::RepeatingCallback<void(IntroChoice)> choice_callback,
-      bool enable_animations)
+      bool enable_animations,
+      base::RepeatingCallback<bool()> query_effects_callback)
       : ProfileManagementStepController(host),
         intro_url_(BuildIntroURL(enable_animations)),
-        choice_callback_(std::move(choice_callback)) {}
+        choice_callback_(std::move(choice_callback)),
+        query_effects_callback_(std::move(query_effects_callback)) {}
 
   ~IntroStepController() override = default;
 
@@ -177,6 +179,7 @@ class IntroStepController : public ProfileManagementStepController {
       host()->ShowScreenInPickerContents(
           GURL(), base::BindOnce(std::move(step_shown_callback.value()), true));
       ExpectSigninChoiceOnce();
+      UpdateAnimationsState();
     }
   }
 
@@ -188,6 +191,11 @@ class IntroStepController : public ProfileManagementStepController {
     std::move(step_shown_callback.value()).Run(/*success=*/true);
 
     ExpectSigninChoiceOnce();
+    UpdateAnimationsState();
+  }
+
+  void ToggleMediaEffects(bool active) override {
+    UpdateAnimationsState(active);
   }
 
  private:
@@ -210,11 +218,28 @@ class IntroStepController : public ProfileManagementStepController {
         IntroSigninChoiceCallback(choice_callback_));
   }
 
+  void UpdateAnimationsState() {
+    UpdateAnimationsState(query_effects_callback_.Run());
+  }
+
+  void UpdateAnimationsState(bool active) {
+    auto* intro_ui = host()
+                         ->GetPickerContents()
+                         ->GetWebUI()
+                         ->GetController()
+                         ->GetAs<IntroUI>();
+    if (intro_ui) {
+      intro_ui->ToggleAnimations(active);
+    }
+  }
+
   const GURL intro_url_;
 
   // `choice_callback_` is a `Repeating` one to be able to advance the flow more
   // than once in case we navigate back to this step.
   const base::RepeatingCallback<void(IntroChoice)> choice_callback_;
+
+  const base::RepeatingCallback<bool()> query_effects_callback_;
 
   base::WeakPtrFactory<IntroStepController> weak_ptr_factory_{this};
 };
@@ -605,9 +630,11 @@ class FirstRunPostSignInAdapter : public ProfilePickerPostSignInAdapter {
 std::unique_ptr<ProfileManagementStepController> CreateIntroStep(
     ProfilePickerWebContentsHost* host,
     base::RepeatingCallback<void(IntroChoice)> choice_callback,
-    bool enable_animations) {
-  return std::make_unique<IntroStepController>(host, std::move(choice_callback),
-                                               enable_animations);
+    bool enable_animations,
+    base::RepeatingCallback<bool()> query_effects_callback) {
+  return std::make_unique<IntroStepController>(
+      host, std::move(choice_callback), enable_animations,
+      std::move(query_effects_callback));
 }
 
 std::unique_ptr<ProfileManagementStepController> CreateDefaultBrowserStep(
@@ -668,6 +695,18 @@ void FirstRunFlowController::ShowSigninError(Profile* profile,
   HandleSigninErrorInBrowser(profile, error);
 }
 
+void FirstRunFlowController::ToggleMediaEffects(bool active) {
+  if (ProfileManagementStepController* current_step_controller =
+          GetCurrentStepController()) {
+    current_step_controller->ToggleMediaEffects(active);
+  }
+  // TODO(crbug.com/485150597): Add resuming/pausing the audio.
+}
+
+bool FirstRunFlowController::AreEffectsEnabled() const {
+  return host()->AreEffectsEnabled();
+}
+
 void FirstRunFlowController::Init() {
   RegisterStep(
       Step::kIntro,
@@ -675,7 +714,9 @@ void FirstRunFlowController::Init() {
           host(),
           base::BindRepeating(&FirstRunFlowController::HandleIntroSigninChoice,
                               weak_ptr_factory_.GetWeakPtr()),
-          /*enable_animations=*/true));
+          /*enable_animations=*/true,
+          base::BindRepeating(&FirstRunFlowController::AreEffectsEnabled,
+                              base::Unretained(this))));
   SwitchToStep(Step::kIntro, /*reset_state=*/true);
 
   signin_metrics::LogSignInOffered(

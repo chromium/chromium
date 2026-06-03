@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "chrome/browser/ui/webui/intro/intro.mojom.h"
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
 #include "chrome/browser/ui/webui/intro/sign_in_celebration_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -68,7 +69,8 @@ class IntroUIConfig : public content::DefaultWebUIConfig<IntroUI> {
 // Drops user inputs until a callback to receive the next one is provided by
 // calling `SetSigninChoiceCallback()`.
 class IntroUI : public ui::MojoWebUIController,
-                public intro::mojom::SignInCelebrationPageHandlerFactory {
+                public intro::mojom::SignInCelebrationPageHandlerFactory,
+                public intro::mojom::IntroPageHandlerFactory {
  public:
   explicit IntroUI(content::WebUI* web_ui);
 
@@ -88,12 +90,21 @@ class IntroUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandlerFactory>
           receiver);
+  void BindInterface(
+      mojo::PendingReceiver<intro::mojom::IntroPageHandlerFactory> receiver);
+
+  // Called by the browser to toggle animations in the WebUI.
+  void ToggleAnimations(bool active);
 
   // intro::mojom::SignInCelebrationPageHandlerFactory:
   void CreateSignInCelebrationPageHandler(
       mojo::PendingRemote<intro::mojom::SignInCelebrationPage> page,
       mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandler>
           receiver) override;
+
+  // intro::mojom::IntroPageHandlerFactory:
+  void CreateIntroPageHandler(
+      mojo::PendingRemote<intro::mojom::IntroPage> page) override;
 
  private:
   void HandleSigninChoice(IntroChoice choice);
@@ -121,6 +132,10 @@ class IntroUI : public ui::MojoWebUIController,
 
   mojo::Receiver<intro::mojom::SignInCelebrationPageHandlerFactory>
       sign_in_celebration_factory_receiver_{this};
+
+  mojo::Receiver<intro::mojom::IntroPageHandlerFactory> intro_factory_receiver_{
+      this};
+  mojo::Remote<intro::mojom::IntroPage> intro_page_;
 
   base::WeakPtrFactory<IntroUI> weak_ptr_factory_{this};
 
