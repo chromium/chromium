@@ -1231,38 +1231,38 @@ inline TouchAction CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
-inline CSSIdentifierValue::CSSIdentifierValue(CSSBoxType css_box)
+inline CSSIdentifierValue::CSSIdentifierValue(ShapeBox css_box)
     : CSSValue(kIdentifierClass) {
   switch (css_box) {
-    case CSSBoxType::kMargin:
+    case ShapeBox::kMarginBox:
       value_id_ = CSSValueID::kMarginBox;
       break;
-    case CSSBoxType::kBorder:
+    case ShapeBox::kBorderBox:
       value_id_ = CSSValueID::kBorderBox;
       break;
-    case CSSBoxType::kPadding:
+    case ShapeBox::kPaddingBox:
       value_id_ = CSSValueID::kPaddingBox;
       break;
-    case CSSBoxType::kContent:
+    case ShapeBox::kContentBox:
       value_id_ = CSSValueID::kContentBox;
       break;
-    case CSSBoxType::kMissing:
+    case ShapeBox::kMissing:
       // The missing box should convert to a null value.
       NOTREACHED();
   }
 }
 
 template <>
-inline CSSBoxType CSSIdentifierValue::ConvertTo() const {
+inline ShapeBox CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kMarginBox:
-      return CSSBoxType::kMargin;
+      return ShapeBox::kMarginBox;
     case CSSValueID::kBorderBox:
-      return CSSBoxType::kBorder;
+      return ShapeBox::kBorderBox;
     case CSSValueID::kPaddingBox:
-      return CSSBoxType::kPadding;
+      return ShapeBox::kPaddingBox;
     case CSSValueID::kContentBox:
-      return CSSBoxType::kContent;
+      return ShapeBox::kContentBox;
     default:
       break;
   }

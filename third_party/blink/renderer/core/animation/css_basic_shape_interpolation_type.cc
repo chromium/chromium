@@ -35,6 +35,7 @@ struct BasicShapeInfo {
   const BasicShape* shape = nullptr;
   GeometryBox geometry_box = GeometryBox::kBorderBox;
   CoordBox coord_box = CoordBox::kBorderBox;
+  ShapeBox shape_box = ShapeBox::kMissing;
 };
 
 BasicShapeInfo GetBasicShapeInfo(const CSSProperty& property,
@@ -46,9 +47,8 @@ BasicShapeInfo GetBasicShapeInfo(const CSSProperty& property,
         return info;
       if (style.ShapeOutside()->GetType() != ShapeValue::kShape)
         return info;
-      if (style.ShapeOutside()->CssBox() != CSSBoxType::kMissing)
-        return info;
       info.shape = style.ShapeOutside()->Shape();
+      info.shape_box = style.ShapeOutside()->CssBox();
       return info;
     case CSSPropertyID::kOffsetPath: {
       auto* offset_path_operation =
@@ -168,7 +168,8 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInitial(
       state.GetDocument().GetStyleResolver().InitialStyle();
   auto info = GetBasicShapeInfo(CssProperty(), initial_style);
   return basic_shape_interpolation_functions::MaybeConvertBasicShape(
-      info.shape, CssProperty(), 1, info.geometry_box, info.coord_box);
+      info.shape, CssProperty(), 1, info.geometry_box, info.coord_box,
+      info.shape_box);
 }
 
 InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInherit(
@@ -179,7 +180,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInherit(
       MakeGarbageCollected<InheritedShapeChecker>(CssProperty(), info.shape));
   return basic_shape_interpolation_functions::MaybeConvertBasicShape(
       info.shape, CssProperty(), state.ParentStyle()->EffectiveZoom(),
-      info.geometry_box, info.coord_box);
+      info.geometry_box, info.coord_box, info.shape_box);
 }
 
 InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
@@ -188,7 +189,8 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
     ConversionCheckers&) const {
   if (!value.IsBaseValueList()) {
     return basic_shape_interpolation_functions::MaybeConvertCSSValue(
-        value, CssProperty(), GeometryBox::kBorderBox, CoordBox::kBorderBox);
+        value, CssProperty(), GeometryBox::kBorderBox, CoordBox::kBorderBox,
+        ShapeBox::kMissing);
   }
 
   const auto& list = To<CSSValueList>(value);
@@ -200,6 +202,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
   }
   GeometryBox geometry_box = GeometryBox::kBorderBox;
   CoordBox coord_box = CoordBox::kBorderBox;
+  ShapeBox shape_box = ShapeBox::kMissing;
   if (list.length() == 2) {
     const CSSValue& tail = list.Item(1);
     if (const auto* ident = DynamicTo<CSSIdentifierValue>(tail)) {
@@ -207,11 +210,13 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
         geometry_box = ident->ConvertTo<GeometryBox>();
       } else if (CssProperty().PropertyID() == CSSPropertyID::kOffsetPath) {
         coord_box = ident->ConvertTo<CoordBox>();
+      } else if (CssProperty().PropertyID() == CSSPropertyID::kShapeOutside) {
+        shape_box = ident->ConvertTo<ShapeBox>();
       }
     }
   }
   return basic_shape_interpolation_functions::MaybeConvertCSSValue(
-      first, CssProperty(), geometry_box, coord_box);
+      first, CssProperty(), geometry_box, coord_box, shape_box);
 }
 
 PairwiseInterpolationValue CSSBasicShapeInterpolationType::MaybeMergeSingles(
@@ -231,7 +236,7 @@ CSSBasicShapeInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
   auto info = GetBasicShapeInfo(CssProperty(), style);
   return basic_shape_interpolation_functions::MaybeConvertBasicShape(
       info.shape, CssProperty(), style.EffectiveZoom(), info.geometry_box,
-      info.coord_box);
+      info.coord_box, info.shape_box);
 }
 
 void CSSBasicShapeInterpolationType::Composite(
@@ -257,11 +262,16 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
   BasicShape* shape = basic_shape_interpolation_functions::CreateBasicShape(
       interpolable_value, *non_interpolable_value,
       state.CssToLengthConversionData());
+  CHECK(shape);
+  CHECK(non_interpolable_value);
   switch (CssProperty().PropertyID()) {
-    case CSSPropertyID::kShapeOutside:
+    case CSSPropertyID::kShapeOutside: {
+      ShapeBox shape_box = basic_shape_interpolation_functions::GetShapeBox(
+          *non_interpolable_value);
       state.StyleBuilder().SetShapeOutside(
-          MakeGarbageCollected<ShapeValue>(shape, CSSBoxType::kMissing));
+          MakeGarbageCollected<ShapeValue>(*shape, shape_box));
       break;
+    }
     case CSSPropertyID::kOffsetPath: {
       CoordBox coord_box = CoordBox::kBorderBox;
       if (non_interpolable_value) {

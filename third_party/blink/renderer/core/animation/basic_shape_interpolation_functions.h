@@ -21,13 +21,15 @@ namespace basic_shape_interpolation_functions {
 InterpolationValue MaybeConvertCSSValue(const CSSValue&,
                                         const CSSProperty& property,
                                         GeometryBox geometry_box,
-                                        CoordBox coord_box);
+                                        CoordBox coord_box,
+                                        ShapeBox shape_box);
 CORE_EXPORT InterpolationValue
 MaybeConvertBasicShape(const BasicShape*,
                        const CSSProperty& property,
                        double zoom,
                        GeometryBox geometry_box,
-                       CoordBox coord_box);
+                       CoordBox coord_box,
+                       ShapeBox shape_box);
 InterpolableValue* CreateNeutralValue(const NonInterpolableValue&);
 CORE_EXPORT bool ShapesAreCompatible(const NonInterpolableValue&,
                                      const NonInterpolableValue&);
@@ -38,6 +40,7 @@ CORE_EXPORT GeometryBox
 GetGeometryBox(const NonInterpolableValue&,
                GeometryBox default_box = GeometryBox::kBorderBox);
 CORE_EXPORT CoordBox GetCoordBox(const NonInterpolableValue&);
+CORE_EXPORT ShapeBox GetShapeBox(const NonInterpolableValue&);
 
 }  // namespace basic_shape_interpolation_functions
 
