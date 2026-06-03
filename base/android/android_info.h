@@ -45,6 +45,33 @@ enum SdkVersion {
   SDK_VERSION_BAKLAVA = 36,
 };
 
+// This enumeration maps to the values returned by AndroidInfo::sdk_int_full(),
+// indicating the minor Android release associated with a given SDK version.
+enum SdkVersionFull {
+  SDK_VERSION_FULL_JELLY_BEAN = 1600000,
+  SDK_VERSION_FULL_JELLY_BEAN_MR1 = 1700000,
+  SDK_VERSION_FULL_JELLY_BEAN_MR2 = 1800000,
+  SDK_VERSION_FULL_KITKAT = 1900000,
+  SDK_VERSION_FULL_KITKAT_WEAR = 2000000,
+  SDK_VERSION_FULL_LOLLIPOP = 2100000,
+  SDK_VERSION_FULL_LOLLIPOP_MR1 = 2200000,
+  SDK_VERSION_FULL_MARSHMALLOW = 2300000,
+  SDK_VERSION_FULL_NOUGAT = 2400000,
+  SDK_VERSION_FULL_NOUGAT_MR1 = 2500000,
+  SDK_VERSION_FULL_OREO = 2600000,
+  SDK_VERSION_FULL_O_MR1 = 2700000,
+  SDK_VERSION_FULL_P = 2800000,
+  SDK_VERSION_FULL_Q = 2900000,
+  SDK_VERSION_FULL_R = 3000000,
+  SDK_VERSION_FULL_S = 3100000,
+  SDK_VERSION_FULL_Sv2 = 3200000,
+  SDK_VERSION_FULL_T = 3300000,
+  SDK_VERSION_FULL_U = 3400000,
+  SDK_VERSION_FULL_V = 3500000,
+  SDK_VERSION_FULL_BAKLAVA = 3600000,
+  SDK_VERSION_FULL_BAKLAVA_1 = 3600001,
+};
+
 BASE_EXPORT const std::string& device();
 
 BASE_EXPORT const std::string& manufacturer();
@@ -62,6 +89,8 @@ BASE_EXPORT const std::string& board();
 BASE_EXPORT const std::string& android_build_fp();
 
 BASE_EXPORT int sdk_int();
+
+BASE_EXPORT int sdk_int_full();
 
 BASE_EXPORT bool is_debug_android();
 

@@ -44,6 +44,7 @@ struct IAndroidInfo {
   const std::string manufacturer;
   const std::string model;
   int sdkInt;
+  int sdkIntFull;
   const std::string securityPatch;
   // Available only on android S+. For S-, this method returns empty string.
   const std::string socManufacturer;
@@ -96,6 +97,7 @@ static void JNI_AndroidInfo_FillFields(
     const std::string& socManufacturer,
     const std::string& supportedAbis,
     int32_t sdkInt,
+    int32_t sdkIntFull,
     bool isDebugAndroid,
     const std::string& securityPatch) {
   Set(IAndroidInfo{.abiName = supportedAbis,
@@ -111,6 +113,7 @@ static void JNI_AndroidInfo_FillFields(
                    .manufacturer = manufacturer,
                    .model = model,
                    .sdkInt = sdkInt,
+                   .sdkIntFull = sdkIntFull,
                    .securityPatch = securityPatch,
                    .socManufacturer = socManufacturer,
                    .versionIncremental = versionIncremental});
@@ -150,6 +153,10 @@ const std::string& android_build_fp() {
 
 int sdk_int() {
   return get_android_info().sdkInt;
+}
+
+int sdk_int_full() {
+  return get_android_info().sdkIntFull;
 }
 
 bool is_debug_android() {

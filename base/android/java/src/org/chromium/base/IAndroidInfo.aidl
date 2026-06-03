@@ -17,6 +17,8 @@ parcelable IAndroidInfo {
   String manufacturer;
   String model;
   int sdkInt;
+  // Introduced in Baklava, for pre-Baklava, derived consistently from sdkInt.
+  int sdkIntFull;
   String securityPatch;
   // Available only on android S+. For S-, this method returns empty string.
   String socManufacturer;

@@ -47,6 +47,7 @@ public final class AndroidInfo {
                         /* socManufacturer= */ info.socManufacturer,
                         /* supportedAbis= */ info.abiName,
                         /* sdkInt= */ info.sdkInt,
+                        /* sdkIntFull= */ info.sdkIntFull,
                         /* isDebugAndroid= */ info.isDebugAndroid,
                         /* securityPatch= */ info.securityPatch);
     }
@@ -66,6 +67,12 @@ public final class AndroidInfo {
         info.manufacturer = Build.MANUFACTURER;
         info.model = Build.MODEL;
         info.sdkInt = Build.VERSION.SDK_INT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            info.sdkIntFull = Build.VERSION.SDK_INT_FULL;
+        } else {
+            // This calculation holds for all the pre-Baklava SDK_INT_FULL constants.
+            info.sdkIntFull = Build.VERSION.SDK_INT * 100000;
+        }
         info.securityPatch = Build.VERSION.SECURITY_PATCH;
         info.socManufacturer =
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? Build.SOC_MANUFACTURER : "";
@@ -112,6 +119,7 @@ public final class AndroidInfo {
                 @JniType("std::string") String socManufacturer,
                 @JniType("std::string") String supportedAbis,
                 int sdkInt,
+                int sdkIntFull,
                 boolean isDebugAndroid,
                 @JniType("std::string") String securityPatch);
     }
