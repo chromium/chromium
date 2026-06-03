@@ -12,7 +12,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.test.transit.StatusStore.StatusRegion;
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -37,6 +36,11 @@ import java.util.Set;
 /** Polls multiple {@link Condition}s in parallel. */
 @NullMarked
 public class ConditionWaiter {
+    /** Returns the current time in milliseconds, based on System.nanoTime(). */
+    public static long getNow() {
+        return System.nanoTime() / 1_000_000;
+    }
+
     /**
      * The process of waiting for a {@link Condition} to be fulfilled.
      *
@@ -171,12 +175,6 @@ public class ConditionWaiter {
             long minTimeToFulfill = mTimeUnfulfilled - mTimeStarted;
             long maxTimeToFulfill = mTimeFulfilled - mTimeStarted;
             return Pair.create(minTimeToFulfill, maxTimeToFulfill);
-        }
-
-        private static long getNow() {
-            long now = TimeUtils.currentTimeMillis();
-            assert now > 0;
-            return now;
         }
 
         /**
