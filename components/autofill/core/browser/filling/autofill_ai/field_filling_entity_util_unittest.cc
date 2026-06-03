@@ -353,6 +353,24 @@ TEST_F(GetFillValueForEntityTest, ObfuscatedAttributes) {
       kNumber);
 }
 
+// Tests that select element are not previewed with obfuscated attributes.
+TEST_F(GetFillValueForEntityTest, ObfuscatedSelectElement) {
+  constexpr char16_t kNumber[] = u"12";
+  auto field = std::make_unique<AutofillField>(
+      test::CreateTestSelectField({"11", "12", "13"}));
+  field->set_server_predictions({CreatePrediction(PASSPORT_NUMBER)});
+
+  EntityInstance passport =
+      test::GetPassportEntityInstance({.number = kNumber});
+
+  EXPECT_EQ(GetFillValueForEntity(passport, field,
+                                  mojom::ActionPersistence::kPreview),
+            u"");
+  EXPECT_EQ(
+      GetFillValueForEntity(passport, field, mojom::ActionPersistence::kFill),
+      kNumber);
+}
+
 // Tests that we can correctly fill structured name information into fields.
 TEST_F(GetFillValueForEntityTest, FillingStructuredNames) {
   EntityInstance passport = test::GetPassportEntityInstance();

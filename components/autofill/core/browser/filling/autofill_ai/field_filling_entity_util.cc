@@ -286,6 +286,13 @@ FillingValueAndType GetFillingValueAndTypeForEntity(
     return FillingValueAndType(u"", field_type);
   }
 
+  const bool should_obfuscate =
+      action_persistence != mojom::ActionPersistence::kFill &&
+      attribute->type().is_obfuscated();
+  if (should_obfuscate && field.IsSelectElement()) {
+    return FillingValueAndType(u"", field_type);
+  }
+
   if (field.IsSelectElement()) {
     std::optional<SelectOption> select_control_option =
         GetOptionForSelect(*attribute, field, app_locale, address_normalizer);
@@ -297,10 +304,6 @@ FillingValueAndType GetFillingValueAndTypeForEntity(
         field_type);
   } else {
     std::u16string fill_value = GetValueForInput(*attribute, field, app_locale);
-
-    const bool should_obfuscate =
-        action_persistence != mojom::ActionPersistence::kFill &&
-        attribute->type().is_obfuscated();
 
     return FillingValueAndType(should_obfuscate ? GetObfuscatedValue(fill_value)
                                                 : std::move(fill_value),
