@@ -87,8 +87,8 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
         WebStateList::InsertionParams::Automatic().Activate());
   }
 
-  void SetupForFileDownload(base::Value* url_value) {
-    GURL test_url = GURL(url_value->GetString());
+  void SetupForFileDownload() {
+    GURL test_url = GURL(url_value_.GetString());
     auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(test_url);
     test_web_state->SetContentsMimeType("application/pdf");
@@ -109,7 +109,7 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
     frames_manager_ptr->AddWebFrame(std::move(main_frame));
 
     main_frame_ptr->AddResultForExecutedJs(
-        url_value, activity_services::kCanonicalURLScript);
+        &url_value_, activity_services::kCanonicalURLScript);
 
     AppendNewWebState(std::move(test_web_state));
   }
@@ -120,6 +120,7 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
   UIView* fake_origin_view_;
   id snackbar_handler_;
   SharingScenario test_scenario_;
+  base::Value url_value_;
 };
 
 // Tests that the start method shares the current page and ends up presenting
@@ -127,7 +128,7 @@ class SharingCoordinatorTest : public BookmarkIOSUnitTestSupport {
 TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
   // Create a test web state.
   GURL test_url = GURL("https://example.com");
-  base::Value url_value = base::Value(test_url.spec());
+  url_value_ = base::Value(test_url.spec());
   auto test_web_state = std::make_unique<web::FakeWebState>();
   test_web_state->SetNavigationManager(
       std::make_unique<web::FakeNavigationManager>());
@@ -146,7 +147,7 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
   frames_manager_ptr->AddWebFrame(std::move(main_frame));
 
   main_frame_ptr->AddResultForExecutedJs(
-      &url_value, activity_services::kCanonicalURLScript);
+      &url_value_, activity_services::kCanonicalURLScript);
 
   AppendNewWebState(std::move(test_web_state));
 
@@ -283,8 +284,8 @@ TEST_F(SharingCoordinatorTest, Start_ShareURL) {
 // Enterprise Download Protection feature is disabled, the scan result is always
 // SUCCESS and it proceeds normally.
 TEST_F(SharingCoordinatorTest, Start_FileDownloadShouldProceed) {
-  base::Value url_value = base::Value("https://example.com/test.pdf");
-  SetupForFileDownload(&url_value);
+  url_value_ = base::Value("https://example.com/test.pdf");
+  SetupForFileDownload();
 
   SharingParams* params =
       [[SharingParams alloc] initWithScenario:test_scenario_];
@@ -332,8 +333,8 @@ TEST_F(SharingCoordinatorTest,
        Start_DLPEnabledNoPolicy_FileDownloadShouldProceed) {
   scoped_feature_list_.InitAndEnableFeature(
       enterprise_connectors::kEnableFileDownloadConnectorIOS);
-  base::Value url_value = base::Value("https://example.com/test.pdf");
-  SetupForFileDownload(&url_value);
+  url_value_ = base::Value("https://example.com/test.pdf");
+  SetupForFileDownload();
 
   SharingParams* params =
       [[SharingParams alloc] initWithScenario:test_scenario_];
@@ -379,8 +380,8 @@ TEST_F(SharingCoordinatorTest,
 // Tests that switching tabs while a download is in progress cancels the share
 // sheet presentation.
 TEST_F(SharingCoordinatorTest, Start_TabSwitchDuringDownloadCancelsShare) {
-  base::Value url_value = base::Value("https://example.com/test.pdf");
-  SetupForFileDownload(&url_value);
+  url_value_ = base::Value("https://example.com/test.pdf");
+  SetupForFileDownload();
 
   SharingParams* params =
       [[SharingParams alloc] initWithScenario:test_scenario_];
@@ -413,8 +414,8 @@ TEST_F(SharingCoordinatorTest, Start_TabSwitchDuringDownloadCancelsShare) {
 // Tests that switching tabs after download but before scan completes cancels
 // the share sheet presentation.
 TEST_F(SharingCoordinatorTest, Start_TabSwitchDuringScanningCancelsShare) {
-  base::Value url_value = base::Value("https://example.com/test.pdf");
-  SetupForFileDownload(&url_value);
+  url_value_ = base::Value("https://example.com/test.pdf");
+  SetupForFileDownload();
 
   SharingParams* params =
       [[SharingParams alloc] initWithScenario:test_scenario_];
@@ -447,8 +448,8 @@ TEST_F(SharingCoordinatorTest, Start_TabSwitchDuringScanningCancelsShare) {
 // Tests that switching tabs away while a download is in progress cancels the
 // share sheet presentation.
 TEST_F(SharingCoordinatorTest, Start_TabStayOnDifferentTabCancelsShare) {
-  base::Value url_value = base::Value("https://example.com/test.pdf");
-  SetupForFileDownload(&url_value);
+  url_value_ = base::Value("https://example.com/test.pdf");
+  SetupForFileDownload();
 
   SharingParams* params =
       [[SharingParams alloc] initWithScenario:test_scenario_];
