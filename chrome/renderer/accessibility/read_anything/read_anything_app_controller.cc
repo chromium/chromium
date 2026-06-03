@@ -1400,6 +1400,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::IsPhraseHighlightingEnabled)
       .SetProperty("htmlTitle",
                    &ReadAnythingAppController::GetDomDistillerTitle)
+      .SetProperty("documentUrl", &ReadAnythingAppController::GetDocumentUrl)
       .SetProperty("htmlContent",
                    &ReadAnythingAppController::GetDomDistillerContentHtml)
       .SetProperty("axTreeAnchors",
@@ -1417,6 +1418,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
       .SetMethod("getPrefixText", &ReadAnythingAppController::GetPrefixText)
       .SetMethod("getUrl", &ReadAnythingAppController::GetUrl)
+      .SetMethod("getHtmlId", &ReadAnythingAppController::GetHtmlId)
       .SetMethod("getAltText", &ReadAnythingAppController::GetAltText)
       .SetMethod("shouldBold", &ReadAnythingAppController::ShouldBold)
       .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
@@ -1930,6 +1932,27 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
     return url;
   }
   return "";
+}
+
+std::string ReadAnythingAppController::GetDocumentUrl() const {
+  ui::AXSerializableTree* tree = model_.GetActiveTree();
+  if (!tree) {
+    return "";
+  }
+  ui::AXNode* doc_root = tree->root();
+  if (!doc_root) {
+    return "";
+  }
+  return doc_root->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
+}
+
+std::string ReadAnythingAppController::GetHtmlId(
+    ui::AXNodeID ax_node_id) const {
+  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
+  if (!ax_node) {
+    return "";
+  }
+  return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId);
 }
 
 // TODO(crbug.com/463728166): Remove IsImmersiveReadAnythingEnabled flag when no

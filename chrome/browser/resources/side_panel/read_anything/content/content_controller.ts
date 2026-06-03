@@ -507,6 +507,10 @@ export class ContentController {
     }
 
     const element = document.createElement(htmlTag);
+    const htmlId = chrome.readingMode.getHtmlId(nodeId);
+    if (htmlId) {
+      element.id = htmlId;
+    }
     // Add required data attributes.
     for (const [attr, val] of dataAttributes) {
       element.dataset[attr] = val;
@@ -548,11 +552,92 @@ export class ContentController {
     }
   }
 
+  private safeParseUrl_(url: string, base?: string): URL|null {
+    try {
+      return base ? new URL(url, base) : new URL(url);
+    } catch (e) {
+      console.warn('Failed to parse URL:', url, base, e);
+      return null;
+    }
+  }
+
+  scrollToAnchor(url: string, root: ShadowRoot|Document): boolean {
+    if (!url) {
+      return false;
+    }
+
+    let targetId: string|null = null;
+
+    if (url.startsWith('#')) {
+      try {
+        targetId = decodeURIComponent(url.substring(1));
+      } catch (e) {
+        targetId = url.substring(1);
+      }
+    } else {
+      const pageUrlString = chrome.readingMode.documentUrl;
+      if (!pageUrlString) {
+        return false;
+      }
+
+      const pageUrl = this.safeParseUrl_(pageUrlString);
+      const linkUrl = pageUrl ? this.safeParseUrl_(url, pageUrl.href) : null;
+
+      if (!pageUrl || !linkUrl) {
+        return false;
+      }
+
+      const isSameDocument = linkUrl.origin === pageUrl.origin &&
+          linkUrl.pathname === pageUrl.pathname &&
+          linkUrl.search === pageUrl.search;
+
+      if (!isSameDocument) {
+        return false;
+      }
+
+      if (linkUrl.hash) {
+        try {
+          targetId = decodeURIComponent(linkUrl.hash.substring(1));
+        } catch (e) {
+          targetId = linkUrl.hash.substring(1);
+        }
+      } else {
+        targetId = null;
+      }
+    }
+
+    // Case 1: We have a specific target ID. Try to scroll to it.
+    if (targetId) {
+      const target = root.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({behavior: 'smooth'});
+        return true;
+      }
+      if (targetId.toLowerCase() !== 'top') {
+        return false;  // Target ID was specified but element not found.
+      }
+      // Fall through to Case 2 for 'top'
+    }
+
+    // Case 2: Same-document navigation with no hash (navigated back to top).
+    const scroller = root.getElementById('containerScroller');
+    if (scroller) {
+      scroller.scrollTo({top: 0, behavior: 'smooth'});
+      return true;
+    }
+
+    return false;
+  }
+
   private setLinkAttributes_(
       element: HTMLElement, url: string, nodeId?: number) {
     element.setAttribute('href', url);
     element.onclick = (event: MouseEvent) => {
       event.preventDefault();
+      const root = element.getRootNode();
+      if (root instanceof ShadowRoot || root instanceof Document) {
+        this.scrollToAnchor(url, root);
+      }
       if (nodeId) {
         chrome.readingMode.onLinkClicked(nodeId);
       }
@@ -623,7 +708,9 @@ export class ContentController {
       const links = root.querySelectorAll('a');
       for (const link of links) {
         const nodeId = this.nodeStore_.getAxId(link);
-        this.setLinkAttributes_(link, link.href, nodeId);
+        // Use raw href attribute instead of resolved link.href
+        const rawHref = link.getAttribute('href') || '';
+        this.setLinkAttributes_(link, rawHref, nodeId);
       }
     }
   }
@@ -790,7 +877,8 @@ export class ContentController {
     let noMatchCount = 0;
     let tooManyMatchesCount = 0;
     for (const anchor of anchors) {
-      const url = anchor.href;
+      // Use raw href attribute to match axTreeAnchors keys correctly
+      const url = anchor.getAttribute('href') || '';
       if (!url) {
         noHrefCount++;
         this.transformLinkContainer_(anchor, false);

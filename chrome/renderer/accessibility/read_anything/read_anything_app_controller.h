@@ -283,6 +283,8 @@ class ReadAnythingAppController
   std::u16string GetPrefixText(ui::AXNodeID ax_node_id) const;
   std::string GetTextDirection(ui::AXNodeID ax_node_id) const;
   std::string GetUrl(ui::AXNodeID ax_node_id) const;
+  std::string GetDocumentUrl() const;
+  std::string GetHtmlId(ui::AXNodeID ax_node_id) const;
   std::string GetAltText(ui::AXNodeID ax_node_id) const;
   std::string GetDomDistillerTitle() const;
   std::string GetDomDistillerContentHtml() const;

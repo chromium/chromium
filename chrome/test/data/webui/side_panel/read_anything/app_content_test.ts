@@ -1257,4 +1257,425 @@ suite('AppContent', () => {
       });
     });
   });
+
+  suite('footnote navigation', () => {
+    test(
+        'buildSubtree_ sets element.id when getHtmlId is available',
+        async () => {
+          const divId = 10;
+          const textId = 11;
+          readingMode.rootId = divId;
+          readingMode.getHtmlTag = (id) => (id === divId) ? 'div' : '';
+          readingMode.getChildren = (id) => (id === divId) ? [textId] : [];
+          readingMode.getTextContent = (id) =>
+              (id === textId) ? 'Some text content' : '';
+          readingMode.htmlIds.set(divId, 'footnote-target');
+
+          app.updateContent();
+          await microtasksFinished();
+
+          const renderedDiv = app.$.container.querySelector('#footnote-target');
+          assertTrue(!!renderedDiv);
+          assertEquals('footnote-target', renderedDiv.id);
+        });
+
+    test(
+        'click handler intercepts same-page hash links and scrolls',
+        async () => {
+          const linkId = 10;
+          const textId = 11;
+          const targetId = 12;
+          const documentUrl = 'https://www.example.com/page.html';
+          const targetUrl = 'https://www.example.com/page.html#footnote-1';
+
+          readingMode.rootId = 1;
+          readingMode.getChildren = (id) => {
+            if (id === 1) {
+              return [linkId, targetId];
+            }
+            if (id === linkId) {
+              return [textId];
+            }
+            return [];
+          };
+          readingMode.getHtmlTag = (id) => {
+            if (id === 1) {
+              return 'div';
+            }
+            if (id === linkId) {
+              return 'a';
+            }
+            if (id === targetId) {
+              return 'p';
+            }
+            return '';
+          };
+          readingMode.getTextContent = (id) => {
+            if (id === textId) {
+              return 'Footnote Link';
+            }
+            if (id === targetId) {
+              return 'Footnote Target Content';
+            }
+            return '';
+          };
+          readingMode.getUrl = (id) => (id === linkId) ? targetUrl : '';
+          readingMode.htmlIds.set(targetId, 'footnote-1');
+          readingMode.documentUrl = documentUrl;
+
+          // Spies
+          let linkClickedId = -1;
+          readingMode.onLinkClicked = (id) => {
+            linkClickedId = id;
+          };
+
+          app.updateContent();
+          await microtasksFinished();
+
+          // Find the target element and mock its scrollIntoView
+          const targetElement =
+              app.$.container.querySelector<HTMLElement>('#footnote-1');
+          assertTrue(!!targetElement);
+          let scrollIntoViewCalled = false;
+          let scrollOptions: ScrollIntoViewOptions|undefined;
+          targetElement.scrollIntoView = (options) => {
+            scrollIntoViewCalled = true;
+            scrollOptions = options as ScrollIntoViewOptions;
+          };
+
+          // Find the link and click it
+          const linkElement =
+              app.$.container.querySelector<HTMLAnchorElement>('a');
+          assertTrue(!!linkElement);
+          linkElement.click();
+
+          assertTrue(scrollIntoViewCalled);
+          assertTrue(!!scrollOptions);
+          assertEquals('smooth', scrollOptions.behavior);
+          assertEquals(linkId, linkClickedId);
+        });
+
+    test('click handler falls back to default for external links', async () => {
+      const linkId = 10;
+      const textId = 11;
+      const documentUrl = 'https://www.example.com/page.html';
+      const targetUrl = 'https://www.different-domain.com/page.html#footnote-1';
+
+      readingMode.rootId = 1;
+      readingMode.getChildren = (id) => (id === 1) ? [linkId] :
+          (id === linkId)                          ? [textId] :
+                                                     [];
+      readingMode.getHtmlTag = (id) => (id === 1) ? 'div' :
+          (id === linkId)                         ? 'a' :
+                                                    '';
+      readingMode.getTextContent = (id) =>
+          (id === textId) ? 'External Link' : '';
+      readingMode.getUrl = (id) => (id === linkId) ? targetUrl : '';
+      readingMode.documentUrl = documentUrl;
+
+      let linkClickedId = -1;
+      readingMode.onLinkClicked = (id) => {
+        linkClickedId = id;
+      };
+
+      app.updateContent();
+      await microtasksFinished();
+
+      // Setup a mock target in DOM that would scroll if it were same-document
+      const target = document.createElement('div');
+      target.id = 'footnote-1';
+      app.$.container.appendChild(target);
+      let scrollIntoViewCalled = false;
+      target.scrollIntoView = () => {
+        scrollIntoViewCalled = true;
+      };
+
+      // Find the link and click it
+      const linkElement = app.$.container.querySelector<HTMLAnchorElement>('a');
+      assertTrue(!!linkElement);
+      linkElement.click();
+
+      assertEquals(linkId, linkClickedId);
+      assertFalse(scrollIntoViewCalled);
+
+      // Clean up
+      app.$.container.removeChild(target);
+    });
+
+    test(
+        'click handler triggers real navigation for mailto links', async () => {
+          // <div>
+          //   <a href="mailto:test@example.com">Email Link</a>
+          // </div>
+          const linkId = 10;
+          const textId = 11;
+          const documentUrl = 'https://www.example.com/page.html';
+          const targetUrl = 'mailto:test@example.com';
+
+          readingMode.rootId = 1;
+          readingMode.getChildren = (id) => (id === 1) ? [linkId] :
+              (id === linkId)                          ? [textId] :
+                                                         [];
+          readingMode.getHtmlTag = (id) => (id === 1) ? 'div' :
+              (id === linkId)                         ? 'a' :
+                                                        '';
+          readingMode.getTextContent = (id) =>
+              (id === textId) ? 'Email Link' : '';
+          readingMode.getUrl = (id) => (id === linkId) ? targetUrl : '';
+          readingMode.documentUrl = documentUrl;
+
+          let linkClickedId = -1;
+          readingMode.onLinkClicked = (id) => {
+            linkClickedId = id;
+          };
+
+          // Mock containerScroller.scrollTo to verify we do not scroll
+          let scrollToCalled = false;
+          app.$.containerScroller.scrollTo = () => {
+            scrollToCalled = true;
+          };
+
+          app.updateContent();
+          await microtasksFinished();
+
+          // Find the link and click it
+          const linkElement =
+              app.$.container.querySelector<HTMLAnchorElement>('a');
+          assertTrue(!!linkElement);
+          linkElement.click();
+
+          // Confirm that onLinkClicked is called on the mailto link.
+          assertEquals(linkId, linkClickedId);
+          assertFalse(scrollToCalled, 'Should not scroll');
+        });
+
+    test(
+        'click handler falls back to default if target is missing',
+        async () => {
+          const linkId = 10;
+          const textId = 11;
+          const documentUrl = 'https://www.example.com/page.html';
+          const targetUrl =
+              'https://www.example.com/page.html#footnote-missing';
+
+          readingMode.rootId = 1;
+          readingMode.getChildren = (id) => (id === 1) ? [linkId] :
+              (id === linkId)                          ? [textId] :
+                                                         [];
+          readingMode.getHtmlTag = (id) => (id === 1) ? 'div' :
+              (id === linkId)                         ? 'a' :
+                                                        '';
+          readingMode.getTextContent = (id) =>
+              (id === textId) ? 'Missing Target Link' : '';
+          readingMode.getUrl = (id) => (id === linkId) ? targetUrl : '';
+          readingMode.documentUrl = documentUrl;
+
+          let linkClickedId = -1;
+          readingMode.onLinkClicked = (id) => {
+            linkClickedId = id;
+          };
+
+          // Mock containerScroller.scrollTo to verify we do not scroll to top
+          let scrollToCalled = false;
+          app.$.containerScroller.scrollTo = () => {
+            scrollToCalled = true;
+          };
+
+          app.updateContent();
+          await microtasksFinished();
+
+          // Find the link and click it
+          const linkElement =
+              app.$.container.querySelector<HTMLAnchorElement>('a');
+          assertTrue(!!linkElement);
+          linkElement.click();
+
+          assertEquals(linkId, linkClickedId);
+          assertFalse(scrollToCalled);
+        });
+
+    suite('scrollToAnchor', () => {
+      let root: ShadowRoot;
+
+      setup(() => {
+        root = app.shadowRoot;
+      });
+
+      test('scrolls to target', () => {
+        const targetId = 'footnote-1';
+        const target = document.createElement('div');
+        target.id = targetId;
+        app.$.container.appendChild(target);
+
+        let scrollIntoViewCalled = false;
+        let scrollOptions: ScrollIntoViewOptions|undefined;
+        target.scrollIntoView = (options) => {
+          scrollIntoViewCalled = true;
+          scrollOptions = options as ScrollIntoViewOptions;
+        };
+
+        chrome.readingMode.documentUrl = 'https://example.com/page.html';
+        const result = contentController.scrollToAnchor(
+            'https://example.com/page.html#footnote-1', root);
+
+        assertTrue(result);
+        assertTrue(scrollIntoViewCalled);
+        assertEquals('smooth', scrollOptions?.behavior);
+      });
+
+      test('scrolls to top on empty hash', () => {
+        let scrollToCalled = false;
+        let scrollToOptions: ScrollToOptions|undefined;
+        app.$.containerScroller.scrollTo = (options) => {
+          scrollToCalled = true;
+          scrollToOptions = options as ScrollToOptions;
+        };
+
+        chrome.readingMode.documentUrl = 'https://example.com/page.html';
+        const result = contentController.scrollToAnchor(
+            'https://example.com/page.html', root);
+
+        assertTrue(result);
+        assertTrue(scrollToCalled);
+        assertEquals(0, scrollToOptions?.top);
+        assertEquals('smooth', scrollToOptions?.behavior);
+      });
+
+      test('resolves relative links', () => {
+        const targetId = 'footnote-1';
+        const target = document.createElement('div');
+        target.id = targetId;
+        app.$.container.appendChild(target);
+
+        let scrollIntoViewCalled = false;
+        target.scrollIntoView = () => {
+          scrollIntoViewCalled = true;
+        };
+
+        chrome.readingMode.documentUrl = 'https://example.com/page.html';
+
+        // Test hash only
+        let result = contentController.scrollToAnchor('#footnote-1', root);
+        assertTrue(result);
+        assertTrue(scrollIntoViewCalled);
+
+        // Reset and test relative path
+        scrollIntoViewCalled = false;
+        result =
+            contentController.scrollToAnchor('./page.html#footnote-1', root);
+        assertTrue(result);
+        assertTrue(scrollIntoViewCalled);
+      });
+
+      test('ignores different page URLs', () => {
+        chrome.readingMode.documentUrl = 'https://example.com/page.html';
+        const result = contentController.scrollToAnchor(
+            'https://different.com/page.html#footnote-1', root);
+        assertFalse(result);
+      });
+
+      test('ignores different pathnames', () => {
+        chrome.readingMode.documentUrl = 'https://example.com/page.html';
+        const result = contentController.scrollToAnchor(
+            'https://example.com/other.html#footnote-1', root);
+        assertFalse(result);
+      });
+
+      test('ignores different search parameters', () => {
+        chrome.readingMode.documentUrl =
+            'https://example.com/page.html?query=1';
+        const result = contentController.scrollToAnchor(
+            'https://example.com/page.html?query=2#footnote-1', root);
+        assertFalse(result);
+      });
+
+      test('scrolls with identical search parameters', () => {
+        const targetId = 'footnote-1';
+        const target = document.createElement('div');
+        target.id = targetId;
+        app.$.container.appendChild(target);
+
+        let scrollIntoViewCalled = false;
+        target.scrollIntoView = () => {
+          scrollIntoViewCalled = true;
+        };
+
+        chrome.readingMode.documentUrl =
+            'https://example.com/page.html?query=1';
+        const result = contentController.scrollToAnchor(
+            'https://example.com/page.html?query=1#footnote-1', root);
+
+        assertTrue(result);
+        assertTrue(scrollIntoViewCalled);
+
+        // Clean up
+        app.$.container.removeChild(target);
+      });
+
+      test('handles invalid URLs gracefully', () => {
+        chrome.readingMode.documentUrl = 'https://example.com/page.html';
+        const result = contentController.scrollToAnchor('invalid://url', root);
+        assertFalse(result);
+      });
+
+      test('handles malformed URI percent-encoding gracefully', () => {
+        chrome.readingMode.documentUrl = 'https://example.com/page.html';
+
+        // Test hash only with malformed percent-encoding
+        let result = contentController.scrollToAnchor('#foo%2', root);
+        assertFalse(result);
+
+        // Test relative path with malformed percent-encoding
+        result = contentController.scrollToAnchor('./page.html#foo%2', root);
+        assertFalse(result);
+      });
+
+      test('falls back to top on #top hash if element is missing', () => {
+        let scrollToCalled = false;
+        let scrollToOptions: ScrollToOptions|undefined;
+        app.$.containerScroller.scrollTo = (options) => {
+          scrollToCalled = true;
+          scrollToOptions = options as ScrollToOptions;
+        };
+
+        chrome.readingMode.documentUrl = 'https://example.com/page.html';
+
+        // Test hash only
+        let result = contentController.scrollToAnchor('#top', root);
+        assertTrue(result);
+        assertTrue(scrollToCalled);
+        assertEquals(0, scrollToOptions?.top);
+        assertEquals('smooth', scrollToOptions?.behavior);
+
+        // Reset and test absolute URL
+        scrollToCalled = false;
+        result = contentController.scrollToAnchor(
+            'https://example.com/page.html#top', root);
+        assertTrue(result);
+        assertTrue(scrollToCalled);
+        assertEquals(0, scrollToOptions?.top);
+        assertEquals('smooth', scrollToOptions?.behavior);
+      });
+
+      test('scrolls to element on #top hash if element is present', () => {
+        const targetId = 'top';
+        const target = document.createElement('div');
+        target.id = targetId;
+        app.$.container.appendChild(target);
+
+        let scrollIntoViewCalled = false;
+        target.scrollIntoView = () => {
+          scrollIntoViewCalled = true;
+        };
+
+        chrome.readingMode.documentUrl = 'https://example.com/page.html';
+        const result = contentController.scrollToAnchor('#top', root);
+        assertTrue(result);
+        assertTrue(scrollIntoViewCalled);
+
+        // Clean up
+        app.$.container.removeChild(target);
+      });
+    });
+  });
 });

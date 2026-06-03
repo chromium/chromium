@@ -1753,6 +1753,38 @@ TEST_F(ReadAnythingAppControllerTest, GetUrl) {
   EXPECT_EQ("", controller().GetUrl(6));
 }
 
+TEST_F(ReadAnythingAppControllerTest, GetDocumentUrl) {
+  std::string document_url = "https://www.google.com";
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddStringAttribute(ax::mojom::StringAttribute::kUrl, document_url);
+
+  SendUpdateWithNodes({std::move(root)});
+  controller().OnAXTreeDistilled(tree_id_, {});
+
+  EXPECT_EQ(document_url, controller().GetDocumentUrl());
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetHtmlId) {
+  ui::AXNodeData node1;
+  node1.id = 2;
+  node1.AddStringAttribute(ax::mojom::StringAttribute::kHtmlId, "footnote-1");
+
+  ui::AXNodeData node2;
+  node2.id = 3;
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {node1.id, node2.id};
+  SendUpdateWithNodes({std::move(root), std::move(node1), std::move(node2)});
+
+  controller().OnAXTreeDistilled(tree_id_, {});
+  EXPECT_EQ("footnote-1", controller().GetHtmlId(2));
+  EXPECT_EQ("", controller().GetHtmlId(3));
+  EXPECT_EQ("", controller().GetHtmlId(4));
+}
+
 TEST_F(ReadAnythingAppControllerTest, ShouldBold) {
   ui::AXNodeData overline_node;
   overline_node.id = 2;

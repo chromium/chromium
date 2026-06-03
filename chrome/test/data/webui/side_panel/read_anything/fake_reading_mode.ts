@@ -93,6 +93,8 @@ export class FakeReadingMode {
   distillationTypeReadability: number = 1;
 
   imagesFeatureEnabled: boolean = false;
+  documentUrl: string = 'https://www.google.com';
+  htmlIds: Map<number, string> = new Map();
 
   // Whether the Immersive Read Anything feature flag is enabled.
   isImmersiveEnabled: boolean = false;
@@ -195,6 +197,10 @@ export class FakeReadingMode {
   // Returns the url of the AXNode for the provided AXNodeID.
   getUrl(_nodeId: number): string {
     return 'foo';
+  }
+
+  getHtmlId(nodeId: number): string {
+    return this.htmlIds.get(nodeId) || '';
   }
 
   // Returns the alt text of the AXNode for the provided AXNodeID.
