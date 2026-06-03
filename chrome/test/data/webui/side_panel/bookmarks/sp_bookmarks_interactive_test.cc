@@ -78,7 +78,13 @@ IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, BookmarksMigrateUiChanges) {
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, TreeView) {
+// TODO(crbug.com/493823435) Investigate why this is flaky only on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TreeView DISABLED_TreeView
+#else
+#define MAYBE_TreeView TreeView
+#endif
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, MAYBE_TreeView) {
   RunTest("side_panel/bookmarks/power_bookmarks_app_tree_view_test.js",
           "mocha.run()");
 }
