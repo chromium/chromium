@@ -7712,14 +7712,11 @@ class SSLServerPaddingBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(https://crbug.com/517861023): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ValidHandshakeAndHistograms DISABLED_ValidHandshakeAndHistograms
-#else
-#define MAYBE_ValidHandshakeAndHistograms ValidHandshakeAndHistograms
-#endif
+using testing::Gt;
+using testing::SizeIs;
+
 IN_PROC_BROWSER_TEST_P(SSLServerPaddingBrowserTest,
-                       MAYBE_ValidHandshakeAndHistograms) {
+                       ValidHandshakeAndHistograms) {
   base::HistogramTester histograms;
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   net::SSLServerConfig ssl_config;
@@ -7730,7 +7727,7 @@ IN_PROC_BROWSER_TEST_P(SSLServerPaddingBrowserTest,
 
   // Make sure there's no favicon so that only one request is sent.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server.GetURL("/local_network_access/no-favicon.html")));
+      browser(), https_server.GetURL("/no-favicon.html")));
 
   content::FetchHistogramsFromChildProcesses();
   base::test::TestFuture<void> future;
@@ -7739,8 +7736,17 @@ IN_PROC_BROWSER_TEST_P(SSLServerPaddingBrowserTest,
   ASSERT_TRUE(future.Wait());
 
   if (padding_enabled()) {
-    histograms.ExpectTotalCount("Net.SSL_Connection_Latency_ServerPadding", 1);
-    histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 1);
+    // Most of the time, there is only one handshake, and so there should be
+    // only one entry. This isn't always true on all platforms, so just
+    // check to make sure we have at least one entry in each histogram.
+    //
+    // See crbug.com/517861023
+    EXPECT_THAT(
+        histograms.GetAllSamples("Net.SSL_Connection_Latency_ServerPadding"),
+        SizeIs(Gt(0)));
+    EXPECT_THAT(
+        histograms.GetAllSamples("Net.HttpTimeToFirstByte.ServerPadding"),
+        SizeIs(Gt(0)));
   } else {
     histograms.ExpectTotalCount("Net.SSL_Connection_Latency_ServerPadding", 0);
     histograms.ExpectTotalCount("Net.HttpTimeToFirstByte.ServerPadding", 0);
