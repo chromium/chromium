@@ -9,8 +9,8 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -39,7 +39,7 @@ class GeminiFREWrapperViewControllerTest : public PlatformTest {
                          FREType:GeminiFREType::kNewUser
             consentConfiguration:consent_config];
     mock_mutator_ =
-        [OCMockObject mockForProtocol:@protocol(GeminiConsentMutator)];
+        [OCMockObject mockForProtocol:@protocol(GeminiFirstRunMutator)];
     [[[mock_mutator_ stub] andReturnValue:@NO] shouldShowImageRemixRow];
     view_controller.mutator = mock_mutator_;
     // Force view initialisation since this view controller is never added into

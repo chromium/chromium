@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
 
-#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_mutator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -38,7 +38,7 @@ class GeminiPromoViewControllerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     view_controller_ = [[GeminiPromoViewController alloc] init];
-    mock_mutator_ = OCMProtocolMock(@protocol(GeminiConsentMutator));
+    mock_mutator_ = OCMProtocolMock(@protocol(GeminiPromoMutator));
     view_controller_.mutator = mock_mutator_;
   }
 

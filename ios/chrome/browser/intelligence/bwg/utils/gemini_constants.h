@@ -129,6 +129,7 @@ enum class GenAiDefaultSettingsPolicy {
 };
 
 // Current state of the Gemini FRE.
+// TODO(crbug.com/519213385): Rename to FirstRunState.
 // LINT.IfChange(FREState)
 enum class FREState {
   // Initial state, when the flow was never started by the user.
@@ -210,6 +211,7 @@ enum class InputType {
 }  // namespace gemini
 
 // Types of Gemini First Run Experience (FRE).
+// TODO(crbug.com/519213385): Rename to GeminiFirstRunType.
 enum class GeminiFREType {
   kNewUser,
   kLive,
@@ -236,6 +238,7 @@ enum class GeminiFREType {
 extern NSString* const kGeminiPromoConsentFullDetentIdentifier;
 
 // Gemini UI Lottie Animation name for FRE Banner.
+// TODO(crbug.com/519213385): Rename to kLottieAnimationFirstRunBannerName.
 extern NSString* const kLottieAnimationFREBannerName;
 
 // Session map dictionary key for the last interaction timestamp.

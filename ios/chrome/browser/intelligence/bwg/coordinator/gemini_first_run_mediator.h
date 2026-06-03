@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 
 @protocol SceneCommands;
@@ -25,7 +25,7 @@ class IdentityManager;
 @class GeminiConsentConfiguration;
 
 // Gemini First Run Mediator.
-@interface GeminiFirstRunMediator : NSObject <GeminiConsentMutator>
+@interface GeminiFirstRunMediator : NSObject <GeminiFirstRunMutator>
 
 // The delegate for this mediator.
 @property(nonatomic, weak) id<GeminiFirstRunMediatorDelegate> delegate;

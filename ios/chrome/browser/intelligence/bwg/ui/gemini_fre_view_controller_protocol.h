@@ -9,6 +9,7 @@
 
 // Protocol that Gemini view controllers conform to in order to share the same
 // logic.
+// TODO(crbug.com/519213385): Rename to GeminiFirstRunViewControllerProtocol.
 @protocol GeminiFREViewControllerProtocol <NSObject>
 
 // Content height of the FRE Gemini UI.

@@ -174,7 +174,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   return !_geminiService->HasModelExecutionCapability();
 }
 
-#pragma mark - GeminiConsentMutator
+#pragma mark - GeminiFirstRunMutator
 
 - (BOOL)shouldShowImageRemixRow {
   return IsGeminiImageRemixToolShowFRERowEnabled() &&

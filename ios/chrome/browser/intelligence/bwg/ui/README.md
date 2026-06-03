@@ -23,6 +23,8 @@ graph TD
     A container `UIViewController` utilizing sheets presentation. It orchestrates transitions between the Promotional intro page (`GeminiPromoViewController`) and the main Consent/Permissions page (`GeminiConsentViewController`).
 *   **[gemini_fre_view_controller_protocol.h](./gemini_fre_view_controller_protocol.h)**:
     Defines standard interface protocols for nested onboarding view controllers.
+*   **[gemini_first_run_mutator.h](./gemini_first_run_mutator.h)**:
+    Defines mutator protocols for updating states and opening hyperlinks, bridging UI actions to the background mediator layer.
 
 ### 2. Promotional Intro
 *   **[gemini_promo_view_controller.h](./gemini_promo_view_controller.h) & [gemini_promo_view_controller.mm](./gemini_promo_view_controller.mm)**:
@@ -35,8 +37,6 @@ graph TD
     *   South Korea compliance localized overrides (substituting custom terms and privacy notices).
     *   Permissions interface for **Gemini Live** (initiating microphone authorizations).
     *   Custom hyperlink interactions via `UITextViewDelegate` to safely open privacy links in new tabs without launching context menus.
-*   **[gemini_consent_mutator.h](./gemini_consent_mutator.h)**:
-    Defines mutator protocols for updating states and opening hyperlinks, bridging UI actions to the background mediator layer.
 
 ### 4. Helpers & Utilities
 *   **[gemini_ui_utils.h](./gemini_ui_utils.h) & [gemini_ui_utils.mm](./gemini_ui_utils.mm)**:

@@ -9,11 +9,12 @@
 #import "ios/chrome/common/ui/button_stack/button_stack_view_controller.h"
 
 @class GeminiConsentConfiguration;
-@protocol GeminiConsentMutator;
+@protocol GeminiFirstRunMutator;
 
 // UIViewController that owns GeminiPromo and GeminiConsent view controllers and
 // manages their transitions with a horizontal scroll view.
 //
+// TODO(crbug.com/519213385): Rename to GeminiFirstRunWrapperViewController.
 // The layout is structured as follows:
 // +--------------------------------+
 // |      Vertical Scroll View      |
@@ -54,7 +55,7 @@
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // The mutator for this view controller to communicate to the mediator.
-@property(nonatomic, weak) id<GeminiConsentMutator> mutator;
+@property(nonatomic, weak) id<GeminiFirstRunMutator> mutator;
 
 @end
 
