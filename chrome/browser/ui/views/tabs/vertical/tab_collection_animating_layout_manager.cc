@@ -381,7 +381,7 @@ void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
   // information to determine whether the view was reparented or newly-added.
   if (!delegate_->IsViewDragging(*view_to_reparent) &&
       !previous_bounds_in_screen.IsEmpty()) {
-    view_to_reparent->SetPaintToLayer();
+    view_to_reparent->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
     view_to_reparent->layer()->SetFillsBoundsOpaquely(false);
     view_to_reparent->SetProperty(kPreviousCollectionBounds,
                                   previous_bounds_in_screen);
