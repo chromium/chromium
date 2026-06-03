@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
@@ -51,7 +50,6 @@ public class PopupMultiwindowPTTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288012
     public void testBasic() {
         PopupOnClickPageStation page =
                 PopupOnClickPageStation.loadInCurrentTab(
@@ -72,7 +70,6 @@ public class PopupMultiwindowPTTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
     public void testBasicIncognito() {
         final IncognitoNewTabPageStation incognitoEntryPoint =
                 mEntryPage.openNewIncognitoTabOrWindowFast();
