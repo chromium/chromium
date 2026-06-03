@@ -2765,8 +2765,11 @@
   },
   {
     "name": "enable-accessibility-manifest-v3-chromevox",
-    "owners": [ "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 150
+    "owners": [
+      "katie@chromium.org",
+      "//ui/accessibility/OWNERS"
+    ],
+    "expiry_milestone": 155
   },
   {
     "name": "enable-accessibility-manifest-v3-espeakng",
