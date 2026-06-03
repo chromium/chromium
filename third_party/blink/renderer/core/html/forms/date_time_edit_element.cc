@@ -925,6 +925,12 @@ void DateTimeEditElement::StepUp() {
 
 void DateTimeEditElement::UpdateUIState() {
   if (IsDisabled()) {
+    // Skip blur() during Node::moveBefore: it would dispatch synchronous
+    // events to author script, which must not run while an atomic move is
+    // in progress. Mirrors the guard in `HTMLFieldSetElement::ChildrenChanged`.
+    if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+      return;
+    }
     if (DateTimeFieldElement* field = FocusedField())
       field->blur();
   }
