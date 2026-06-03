@@ -1018,6 +1018,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   CHECK(IsSplitToolbarMode(self));
   CHECK(self.layoutGuideCenter);
 
+  widthConstraint.constant = searchFieldNormalWidth;
+
   UIView* topOmniboxView =
       [self.layoutGuideCenter referencedViewUnderName:kTopOmniboxGuide];
 
@@ -1052,7 +1054,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     // bottom.
     self.fakeOmniboxContainer.transform = CGAffineTransformIdentity;
   }
-  widthConstraint.constant = searchFieldNormalWidth;
   self.alpha = std::max<CGFloat>(1.0 - progress, 0.01);
 }
 

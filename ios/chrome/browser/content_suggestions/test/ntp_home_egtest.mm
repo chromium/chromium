@@ -194,8 +194,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix tests with Chrome Next enabled.
-  config.features_disabled.push_back(kChromeNextIa);
 
   // Make sure the search engine country is set, for `testFavicons` test.
   config.additional_args.push_back(
@@ -531,6 +529,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the fake omnibox width is correctly updated after a rotation done
 // while the fake omnibox is pinned to the top.
 - (void)testOmniboxPinnedWidthRotation {
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"NTP Omnibox scroll scaling and rotation is "
+                           @"obsolete under Chrome Next");
+  }
+
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fake Omnibox is not pinned to the top on iPad");
   }
@@ -564,6 +567,28 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the fake omnibox remains visible when scrolling, by pinning itself
 // to the top of the NTP. Also ensures that NTP minimum height is respected.
 - (void)testOmniboxPinsToTop {
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    // Under Chrome Next, the fake omnibox scrolls away, and the real omnibox
+    // fades in.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+        performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+    [ChromeEarlGreyUI waitForAppToIdle];
+
+    // Verify fakebox is no longer visible (it scrolled away).
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+        assertWithMatcher:mostlyNotVisible()];
+
+    // Verify real omnibox in the top toolbar is visible.
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    return;
+  }
+
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(
         @"Disabled for iPad since it does not pin the omnibox.");
@@ -591,6 +616,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that the fake omnibox animation works, increasing the width of the
 // omnibox.
 - (void)testOmniboxWidthChangesWithScroll {
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"NTP Omnibox scroll scaling is obsolete under Chrome Next");
+  }
+
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(
         @"Disabled for iPad since the width does not change for it.");
@@ -801,6 +831,11 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // does not consider the shifting offset in the instance the omnibox was already
 // pinned to the top of the page before focusing.
 - (void)testPositionRestoredWithoutShiftingOffset {
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"NTP Omnibox scroll pinning is obsolete under Chrome Next");
+  }
+
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Pinning Fake Omnibox to top of surface is only on iphone");
