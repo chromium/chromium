@@ -18,8 +18,12 @@ export function getHtml(this: WebnnInternalsInfoPageElement) {
           <div class="grid-item">
             <div class="description">Name:</div>
             <div>${ep.name}</div>
-            <div class="description">Vendor:</div>
+            <div class="description">EP Vendor:</div>
             <div>${ep.vendor}</div>
+            <div class="description">Hardware Vendor ID:</div>
+            <div>${ep.vendorId}</div>
+            <div class="description">Hardware Device ID:</div>
+            <div>${ep.deviceId}</div>
             <div class="description">Hardware Type:</div>
             <div>${ep.hardwareType}</div>
             ${ep.version ? html`

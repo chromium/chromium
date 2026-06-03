@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split_win.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -622,6 +623,10 @@ ConvertEpListForIntrospection(base::span<const OrtEpDevice* const> ep_devices) {
     CHECK(hardware_device);
     ep_details->hardware_type = OrtHardwareDeviceTypeToString(
         ort_api->HardwareDevice_Type(hardware_device));
+    ep_details->vendor_id = base::StringPrintf(
+        "0x%04x", ort_api->HardwareDevice_VendorId(hardware_device));
+    ep_details->device_id = base::StringPrintf(
+        "0x%04x", ort_api->HardwareDevice_DeviceId(hardware_device));
     const OrtKeyValuePairs* ep_metadata =
         ort_api->EpDevice_EpMetadata(ep_device);
     CHECK(ep_metadata);

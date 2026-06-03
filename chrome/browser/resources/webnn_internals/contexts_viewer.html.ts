@@ -26,7 +26,9 @@ export function getHtml(this: WebnnInternalsContextsViewerElement) {
               <div class="ep ${ep.firstSelected ? 'first-selected' : ''}">
                 Execution Provider ${index}
                 <div class="ep-detail">Name: ${ep.name}</div>
-                <div class="ep-detail">Vendor: ${ep.vendor}</div>
+                <div class="ep-detail">EP Vendor: ${ep.vendor}</div>
+                <div class="ep-detail">Hardware Vendor ID: ${ep.vendorId}</div>
+                <div class="ep-detail">Hardware Device ID: ${ep.deviceId}</div>
                 <div class="ep-detail">Hardware Type: ${ep.hardwareType}</div>
                 ${ep.version ? html`
                   <div class="ep-detail">Version: ${ep.version}</div>

@@ -11,6 +11,10 @@ struct WebNNExecutionProviderDetails {
   string vendor;
   // Hardware type of the execution provider, e.g. "CPU", "GPU", "NPU".
   string hardware_type;
+  // Vendor ID of the hardware device used by the execution provider.
+  string vendor_id;
+  // Device ID of the hardware device used by the execution provider.
+  string device_id;
   // Version of the execution provider if provided otherwise empty.
   string version;
   // Indicates if this execution provider is the first selected one, otherwise
