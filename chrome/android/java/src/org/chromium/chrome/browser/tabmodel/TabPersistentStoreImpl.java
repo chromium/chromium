@@ -16,6 +16,7 @@ import android.util.SparseIntArray;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StreamUtil;
@@ -60,6 +61,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -2021,6 +2023,87 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
     public void setSequencedTaskRunnerForTesting(SequencedTaskRunner sequencedTaskRunner) {
         mSequencedTaskRunner = sequencedTaskRunner;
+    }
+
+    /** Information about a tab in a closed window instance. */
+    public static class ClosedWindowTabInfo {
+        public final int id;
+        public final GURL url;
+        public final boolean isActive;
+
+        /**
+         * Creates an instance of {@link ClosedWindowTabInfo}.
+         *
+         * @param id The ID of the tab.
+         * @param url The URL of the tab.
+         * @param isActive Whether the tab was the active tab in the window.
+         */
+        public ClosedWindowTabInfo(int id, GURL url, boolean isActive) {
+            this.id = id;
+            this.url = url;
+            this.isActive = isActive;
+        }
+    }
+
+    /**
+     * Retrieves the list of tabs for a closed window instance from its persisted state
+     * asynchronously.
+     *
+     * @param instanceId The instance ID of the closed window.
+     * @param callback The callback to receive the list of {@link ClosedWindowTabInfo}.
+     */
+    public static void getTabListForClosedWindow(
+            int instanceId, Callback<List<ClosedWindowTabInfo>> callback) {
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT,
+                () -> {
+                    List<ClosedWindowTabInfo> tabs = getTabListForClosedWindow(instanceId);
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                callback.onResult(tabs);
+                            });
+                });
+    }
+
+    public static List<ClosedWindowTabInfo> getTabListForClosedWindow(int instanceId) {
+        List<ClosedWindowTabInfo> tabs = new ArrayList<>();
+        File file =
+                new File(
+                        TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
+                        TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(instanceId));
+
+        if (!file.exists()) {
+            return tabs;
+        }
+
+        DataInputStream stream = null;
+        try {
+            stream = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+            TabMetadataFileManager.readSavedMetadataFile(
+                    stream, createClosedWindowTabReader(tabs), /* tabIds= */ null);
+        } catch (Exception e) {
+            Log.i(TAG, "getTabListForClosedWindowSync exception: " + e.toString(), e);
+        } finally {
+            StreamUtil.closeQuietly(stream);
+        }
+
+        return tabs;
+    }
+
+    private static TabMetadataFileManager.OnTabStateReadCallback createClosedWindowTabReader(
+            final List<ClosedWindowTabInfo> tabs) {
+        return (int index,
+                int id,
+                String url,
+                @Nullable Boolean isIncognito,
+                boolean isStandardActiveIndex,
+                boolean isIncognitoActiveIndex) -> {
+            if (isIncognito != null && isIncognito) {
+                return;
+            }
+            tabs.add(new ClosedWindowTabInfo(id, new GURL(url), isStandardActiveIndex));
+        };
     }
 
     /**

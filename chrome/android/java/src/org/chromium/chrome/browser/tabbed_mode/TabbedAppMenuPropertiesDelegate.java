@@ -1092,6 +1092,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 count++;
             } else if (entry instanceof RecentlyClosedWindow window) {
                 items.add(buildClosedWindowMenuItem(window));
+                manager.preFetchTabsForWindow(window);
                 count++;
             }
 
@@ -1105,6 +1106,21 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 () -> {
                     List<ListItem> submenuItems = new ArrayList<>();
                     submenuItems.add(buildRestoreWindowMenuItem(window));
+
+                    RecentlyClosedEntriesManager manager =
+                            mRecentlyClosedEntriesManagerSupplier.get();
+                    assert manager != null;
+
+                    List<RecentlyClosedTab> tabs = manager.getTabsForClosedWindow(window);
+                    if (!tabs.isEmpty()) {
+                        submenuItems.add(
+                                new ListItem(
+                                        AppMenuHandler.AppMenuItemType.DIVIDER,
+                                        buildModelForDivider(R.id.divider_line_id)));
+                        for (RecentlyClosedTab tab : tabs) {
+                            submenuItems.add(buildClosedWindowTabMenuItem(tab));
+                        }
+                    }
                     return submenuItems;
                 };
 
@@ -1148,6 +1164,26 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                 AppMenuItemProperties.ICON,
                                 AppCompatResources.getDrawable(
                                         mContext, R.drawable.ic_open_in_new_24dp))
+                        .build();
+        return new ListItem(AppMenuHandler.AppMenuItemType.RECENT_ENTRY, model);
+    }
+
+    private ListItem buildClosedWindowTabMenuItem(RecentlyClosedTab tab) {
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuRecentEntryItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, R.id.recent_entry_tab_menu_item)
+                        .with(AppMenuItemProperties.TITLE, tab.getTitle())
+                        .with(
+                                AppMenuItemProperties.ICON_SUPPLIER,
+                                createIconSupplierForTab(
+                                        tab.getUrl(),
+                                        /* tabGroupId= */ null,
+                                        /* isOffTheRecord= */ false,
+                                        /* cachedFavicon= */ null,
+                                        /* fallbackToHost= */ false))
+                        .with(AppMenuItemProperties.ICON_NO_TINT, true)
+                        .with(AppMenuItemProperties.ENABLED, false)
+                        .with(AppMenuRecentEntryItemProperties.RECENT_ENTRY, tab)
                         .build();
         return new ListItem(AppMenuHandler.AppMenuItemType.RECENT_ENTRY, model);
     }
@@ -2314,6 +2350,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     @Override
     public void onMenuDismissed() {
         super.onMenuDismissed();
+        RecentlyClosedEntriesManager manager = mRecentlyClosedEntriesManagerSupplier.get();
+        if (manager != null) {
+            manager.clearTabListCache();
+        }
         if (mUpdateMenuItemVisible) {
             UpdateMenuItemHelper updateHelper =
                     UpdateMenuItemHelper.getInstance(getProfileFromTabModel());

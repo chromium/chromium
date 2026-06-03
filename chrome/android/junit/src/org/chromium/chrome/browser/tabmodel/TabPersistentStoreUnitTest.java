@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl.TabRestoreDetails;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
+import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
@@ -1041,5 +1042,55 @@ public class TabPersistentStoreUnitTest {
         public boolean matches(LoadUrlParams argument) {
             return TextUtils.equals(mUrl, argument.getUrl());
         }
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    public void testGetTabListForClosedWindow() throws Exception {
+        // Set base directory for tests.
+        TabStateDirectory.setBaseStateDirectoryForTests(mTemporaryFolder.getRoot());
+        TabStateDirectory.resetTabbedModeStateDirectoryForTesting();
+
+        int instanceId = 42;
+        TabModelSelectorMetadata metadata =
+                new TabModelSelectorMetadata(
+                        new TabMetadataFileManager.TabModelMetadata(/* selectedIndex= */ 1),
+                        new TabMetadataFileManager.TabModelMetadata(
+                                /* selectedIndex= */ TabList.INVALID_TAB_INDEX));
+
+        // Normal tabs:
+        metadata.normalModelMetadata.ids.add(10);
+        metadata.normalModelMetadata.urls.add("https://normal1.com");
+        metadata.normalModelMetadata.ids.add(20);
+        metadata.normalModelMetadata.urls.add("https://normal2.com");
+
+        // Incognito tabs:
+        metadata.incognitoModelMetadata.ids.add(30);
+        metadata.incognitoModelMetadata.urls.add("https://incognito1.com");
+
+        // Write file to the tabbed mode directory.
+        File dir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
+        File file =
+                new File(
+                        dir,
+                        TabMetadataFileManager.getMetadataFileName(Integer.toString(instanceId)));
+        TabMetadataFileManager.saveListToFile(file, metadata);
+
+        // Query tab list.
+        List<TabPersistentStoreImpl.ClosedWindowTabInfo> tabs =
+                TabPersistentStoreImpl.getTabListForClosedWindow(instanceId);
+
+        // Verify results. Incognito should be ignored.
+        assertThat(tabs).hasSize(2);
+
+        // First tab:
+        assertThat(tabs.get(0).id).isEqualTo(10);
+        assertThat(tabs.get(0).url.getSpec()).isEqualTo("https://normal1.com/");
+        assertThat(tabs.get(0).isActive).isFalse();
+
+        // Second tab (active):
+        assertThat(tabs.get(1).id).isEqualTo(20);
+        assertThat(tabs.get(1).url.getSpec()).isEqualTo("https://normal2.com/");
+        assertThat(tabs.get(1).isActive).isTrue();
     }
 }

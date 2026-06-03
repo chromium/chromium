@@ -450,7 +450,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/usage_stats/UsageStatsServiceTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/tabpersistence:java",
+    ]
   }
 
   robolectric_library(

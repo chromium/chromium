@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -40,6 +41,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
@@ -60,14 +62,19 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
+import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -80,6 +87,7 @@ import java.util.concurrent.TimeUnit;
 public class RecentlyClosedEntriesManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    @Rule public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
     private static final int RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW = 25;
     @Mock MultiInstanceManager mMultiInstanceManager;
@@ -1298,5 +1306,116 @@ public class RecentlyClosedEntriesManagerUnitTest {
 
     private static long getDaysAgoMillis(int numDaysAgo) {
         return TimeUtils.currentTimeMillis() - TimeUnit.DAYS.toMillis(numDaysAgo);
+    }
+
+    @Test
+    public void testGetTabsForClosedWindow() throws Exception {
+        TabStateDirectory.setBaseStateDirectoryForTests(mTemporaryFolder.getRoot());
+        TabStateDirectory.resetTabbedModeStateDirectoryForTesting();
+
+        int instanceId = 42;
+        TabModelSelectorMetadata metadata =
+                new TabModelSelectorMetadata(
+                        new TabMetadataFileManager.TabModelMetadata(/* selectedIndex= */ 1),
+                        new TabMetadataFileManager.TabModelMetadata(
+                                /* selectedIndex= */ TabList.INVALID_TAB_INDEX));
+
+        // Normal tabs.
+        metadata.normalModelMetadata.ids.add(10);
+        metadata.normalModelMetadata.urls.add("https://normal1.com");
+        metadata.normalModelMetadata.ids.add(20);
+        metadata.normalModelMetadata.urls.add("https://normal2.com");
+
+        // Write file to the tabbed mode directory.
+        File dir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
+        File file =
+                new File(
+                        dir,
+                        TabMetadataFileManager.getMetadataFileName(Integer.toString(instanceId)));
+        TabMetadataFileManager.saveListToFile(file, metadata);
+
+        RecentlyClosedWindow window =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 1000L,
+                        instanceId,
+                        /* url= */ "https://normal2.com",
+                        /* title= */ "Window Title",
+                        /* activeTabTitle= */ "Active Tab Title",
+                        /* tabCount= */ 2);
+
+        // Trigger pre-fetch.
+        mRecentlyClosedEntriesManager.preFetchTabsForWindow(window);
+
+        // Run background tasks.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Query tabs from the manager.
+        List<RecentlyClosedTab> tabs = mRecentlyClosedEntriesManager.getTabsForClosedWindow(window);
+
+        // Verify mapping.
+        assertEquals(2, tabs.size());
+
+        // First tab (non-active):
+        assertEquals(10, tabs.get(0).getSessionId());
+        assertEquals("https://normal1.com/", tabs.get(0).getUrl().getSpec());
+        assertEquals("normal1.com", tabs.get(0).getTitle());
+
+        // Second tab (active):
+        assertEquals(20, tabs.get(1).getSessionId());
+        assertEquals("https://normal2.com/", tabs.get(1).getUrl().getSpec());
+        assertEquals("Active Tab Title", tabs.get(1).getTitle());
+    }
+
+    @Test
+    public void testGetTabsForClosedWindowSyncFallback() throws Exception {
+        TabStateDirectory.setBaseStateDirectoryForTests(mTemporaryFolder.getRoot());
+        TabStateDirectory.resetTabbedModeStateDirectoryForTesting();
+
+        int instanceId = 42;
+        TabModelSelectorMetadata metadata =
+                new TabModelSelectorMetadata(
+                        new TabMetadataFileManager.TabModelMetadata(/* selectedIndex= */ 1),
+                        new TabMetadataFileManager.TabModelMetadata(
+                                /* selectedIndex= */ TabList.INVALID_TAB_INDEX));
+
+        // Normal tabs.
+        metadata.normalModelMetadata.ids.add(10);
+        metadata.normalModelMetadata.urls.add("https://normal1.com");
+        metadata.normalModelMetadata.ids.add(20);
+        metadata.normalModelMetadata.urls.add("https://normal2.com");
+
+        // Write file to the tabbed mode directory.
+        File dir = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
+        File file =
+                new File(
+                        dir,
+                        TabMetadataFileManager.getMetadataFileName(Integer.toString(instanceId)));
+        TabMetadataFileManager.saveListToFile(file, metadata);
+
+        RecentlyClosedWindow window =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 1000L,
+                        instanceId,
+                        /* url= */ "https://normal2.com",
+                        /* title= */ "Window Title",
+                        /* activeTabTitle= */ "Active Tab Title",
+                        /* tabCount= */ 2);
+
+        // Query tabs from the manager WITHOUT pre-fetching or flushing background tasks.
+        // This should trigger the sync fallback.
+        List<RecentlyClosedTab> tabs = mRecentlyClosedEntriesManager.getTabsForClosedWindow(window);
+
+        // Verify mapping.
+        assertEquals(2, tabs.size());
+
+        // First tab (non-active):
+        assertEquals(10, tabs.get(0).getSessionId());
+        assertEquals("https://normal1.com/", tabs.get(0).getUrl().getSpec());
+        assertEquals("normal1.com", tabs.get(0).getTitle());
+
+        // Second tab (active):
+        assertEquals(20, tabs.get(1).getSessionId());
+        assertEquals("https://normal2.com/", tabs.get(1).getUrl().getSpec());
+        assertEquals("Active Tab Title", tabs.get(1).getTitle());
     }
 }
