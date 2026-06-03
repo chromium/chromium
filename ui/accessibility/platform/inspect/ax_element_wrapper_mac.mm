@@ -285,8 +285,12 @@ AXOptionalNSObject AXElementWrapper::GetParameterizedAttributeValue(
   if (IsAXUIElement()) {
     base::apple::ScopedCFTypeRef<CFTypeRef> parameter_ref(
         CFBridgingRetain(parameter));
+    // SAFETY: Apple documents -[NSValue objCType] as returning "a C string"
+    // (https://developer.apple.com/documentation/foundation/nsvalue/objctype),
+    // and @encode(...) is a NUL-terminated string literal. Foundation exposes
+    // no length-bearing counterpart, so strcmp is the documented comparison.
     if ([parameter isKindOfClass:[NSValue class]] &&
-        !UNSAFE_TODO(strcmp([parameter objCType], @encode(NSRange)))) {
+        !UNSAFE_BUFFERS(strcmp([parameter objCType], @encode(NSRange)))) {
       NSRange range = [parameter rangeValue];
       parameter_ref.reset(AXValueCreate(kAXValueTypeCFRange, &range));
     }

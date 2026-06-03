@@ -365,8 +365,12 @@ AXTextEdit::~AXTextEdit() = default;
 }  // namespace ui
 
 bool ui::IsNSRange(id value) {
+  // SAFETY: Apple documents -[NSValue objCType] as returning "a C string"
+  // (https://developer.apple.com/documentation/foundation/nsvalue/objctype),
+  // and @encode(...) is a NUL-terminated string literal. Foundation exposes
+  // no length-bearing counterpart, so strcmp is the documented comparison.
   return [value isKindOfClass:[NSValue class]] &&
-         0 == UNSAFE_TODO(strcmp([value objCType], @encode(NSRange)));
+         0 == UNSAFE_BUFFERS(strcmp([value objCType], @encode(NSRange)));
 }
 
 @implementation BrowserAccessibilityCocoa {
