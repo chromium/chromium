@@ -353,7 +353,8 @@ bool HistoryMenuBridge::AddWindowEntryToMenu(
 
   // Create the submenu.
   NSMenu* submenu = [[NSMenu alloc] init];
-  int added_count = AddTabsToSubmenu(submenu, item.get(), tabs);
+  int added_count = AddTabsToSubmenu(submenu, item.get(), tabs,
+                                     IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC);
 
   // Sometimes it is possible for there to not be any subitems for a given
   // window; if that is the case, do not add the entry to the main menu.
@@ -408,7 +409,8 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(sessions::tab_restore::Group* group,
 
   // Create the submenu.
   NSMenu* submenu = [[NSMenu alloc] init];
-  AddTabsToSubmenu(submenu, item.get(), tabs);
+  AddTabsToSubmenu(submenu, item.get(), tabs,
+                   IDS_HISTORY_CLOSED_RESTORE_GROUP_MAC);
 
   NSImage* image = NSImageFromImageSkia(group_icon);
   item->icon = image;
@@ -456,7 +458,8 @@ bool HistoryMenuBridge::AddSplitEntryToMenu(sessions::tab_restore::Split* split,
 
   // Create the submenu.
   NSMenu* submenu = [[NSMenu alloc] init];
-  AddTabsToSubmenu(submenu, item.get(), tabs);
+  AddTabsToSubmenu(submenu, item.get(), tabs,
+                   IDS_HISTORY_CLOSED_RESTORE_SPLIT_MAC);
 
   // Create the menu item parent.
   NSMenuItem* parent_item = AddItemToMenu(std::move(item), menu, tag, index);
@@ -467,14 +470,14 @@ bool HistoryMenuBridge::AddSplitEntryToMenu(sessions::tab_restore::Split* split,
 int HistoryMenuBridge::AddTabsToSubmenu(
     NSMenu* submenu,
     HistoryItem* item,
-    const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs) {
+    const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs,
+    int restore_string_id) {
   // Create standard items within the submenu.
   // Duplicate the HistoryItem otherwise the different NSMenuItems will
   // point to the same HistoryItem, which would then be double-freed when
   // removing the items from the map or in the dtor.
   auto restore_item = std::make_unique<HistoryItem>(*item);
-  NSString* restore_title =
-      l10n_util::GetNSString(IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC);
+  NSString* restore_title = l10n_util::GetNSString(restore_string_id);
   restore_item->menu_item =
       [[NSMenuItem alloc] initWithTitle:restore_title
                                  action:@selector(openHistoryMenuItem:)

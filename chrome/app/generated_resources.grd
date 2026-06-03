@@ -1705,8 +1705,8 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_REPORT_UNSAFE_SITE" desc="Text label of the Report Unsafe Site menu item">
           Report an &amp;unsafe site...
         </message>
-        <message name="IDS_RESTORE_ALL_TABS" desc="The text label of the Restore All Tabs menu item.">
-          R&amp;estore all tabs
+        <message name="IDS_RESTORE_SPLIT" desc="The text label of the Restore Split View menu item.">
+          R&amp;estore split view
         </message>
         <message name="IDS_RESTORE_TAB" desc="The text label of the Restore Tab menu item">
           R&amp;eopen closed tab
@@ -1755,8 +1755,8 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_TAKE_SCREENSHOT" desc="The text label of the Take Screenshot menu item">
           T&amp;ake Screenshot
         </message>
-        <message name="IDS_RESTORE_ALL_TABS" desc="In Title Case: The text label of the Restore All Tabs menu item.">
-          R&amp;estore All Tabs
+        <message name="IDS_RESTORE_SPLIT" desc="In Title Case: The text label of the Restore Split View menu item.">
+          R&amp;estore Split View
         </message>
         <message name="IDS_RESTORE_TAB" desc="In Title Case: The text label of the Restore Tab menu item">
           R&amp;eopen Closed Tab
@@ -15819,7 +15819,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Recently Closed
         </message>
         <message name="IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC" desc="The Mac menu item for restoring all the tabs of a recently closed window.">
-          Restore All Tabs
+          Restore Window
+        </message>
+        <message name="IDS_HISTORY_CLOSED_RESTORE_GROUP_MAC" desc="The Mac menu item for restoring all the tabs of a recently closed group.">
+          Restore Group
+        </message>
+        <message name="IDS_HISTORY_CLOSED_RESTORE_SPLIT_MAC" desc="The Mac menu item for restoring a recently closed split.">
+          Restore Split View
         </message>
         <!-- Window menu -->
         <message name="IDS_MINIMIZE_WINDOW_MAC"
@@ -15968,7 +15974,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Recently Closed
         </message>
         <message name="IDS_HISTORY_CLOSED_RESTORE_WINDOW_LINUX" desc="The Linux menu item for restoring all the tabs of a recently closed window.">
-          Restore All Tabs
+          Restore window
+        </message>
+        <message name="IDS_HISTORY_CLOSED_RESTORE_GROUP_LINUX" desc="The Linux menu item for restoring all the tabs of a recently closed group.">
+          Restore group
+        </message>
+        <message name="IDS_HISTORY_CLOSED_RESTORE_SPLIT_LINUX" desc="The Linux menu item for restoring a recently closed split.">
+          Restore split view
         </message>
       </if>
 

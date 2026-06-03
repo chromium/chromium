@@ -219,7 +219,8 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   int AddTabsToSubmenu(
       NSMenu* submenu,
       HistoryItem* item,
-      const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs);
+      const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs,
+      int restore_string_id);
 
   // Called by the ctor if |service_| is ready at the time, or by a
   // notification receiver. Finishes initialization tasks by subscribing for

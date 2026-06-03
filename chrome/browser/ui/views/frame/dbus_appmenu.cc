@@ -362,7 +362,8 @@ void DbusAppmenu::AddEntryToHistoryMenu(
     SessionID id,
     std::u16string title,
     int index,
-    const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs) {
+    const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs,
+    int restore_string_id) {
   // Create the item for the parent/window.
   auto item = std::make_unique<HistoryItem>();
   item->session_id = id;
@@ -370,8 +371,7 @@ void DbusAppmenu::AddEntryToHistoryMenu(
   auto parent_menu = std::make_unique<ui::SimpleMenuModel>(this);
   int command = NextCommandId();
   history_menu_->InsertSubMenuAt(index, command, title, parent_menu.get());
-  parent_menu->AddItemWithStringId(command,
-                                   IDS_HISTORY_CLOSED_RESTORE_WINDOW_LINUX);
+  parent_menu->AddItemWithStringId(command, restore_string_id);
   parent_menu->AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
   // Loop over the tabs and add them to the submenu.
@@ -539,7 +539,8 @@ void DbusAppmenu::TabRestoreServiceChanged(
         std::u16string title = l10n_util::GetPluralStringFUTF16(
             IDS_RECENTLY_CLOSED_WINDOW, tabs.size());
 
-        AddEntryToHistoryMenu(window->id, title, index, tabs);
+        AddEntryToHistoryMenu(window->id, title, index, tabs,
+                              IDS_HISTORY_CLOSED_RESTORE_WINDOW_LINUX);
         ++index;
         ++added_count;
         break;
@@ -572,7 +573,8 @@ void DbusAppmenu::TabRestoreServiceChanged(
               title, group->visual_data.title(), nullptr);
         }
 
-        AddEntryToHistoryMenu(group->id, title, index, tabs);
+        AddEntryToHistoryMenu(group->id, title, index, tabs,
+                              IDS_HISTORY_CLOSED_RESTORE_GROUP_LINUX);
         ++index;
         ++added_count;
         break;
@@ -589,7 +591,8 @@ void DbusAppmenu::TabRestoreServiceChanged(
         std::u16string title =
             l10n_util::GetStringUTF16(IDS_RECENTLY_CLOSED_SPLIT);
 
-        AddEntryToHistoryMenu(split->id, title, index, tabs);
+        AddEntryToHistoryMenu(split->id, title, index, tabs,
+                              IDS_HISTORY_CLOSED_RESTORE_SPLIT_LINUX);
         ++index;
         ++added_count;
         break;

@@ -94,7 +94,8 @@ class DbusAppmenu : public AvatarMenuObserver,
       SessionID id,
       std::u16string title,
       int index,
-      const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs);
+      const std::vector<std::unique_ptr<sessions::tab_restore::Tab>>& tabs,
+      int restore_string_id);
 
   // Sends a message off to History for data.
   void GetTopSitesData();

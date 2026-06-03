@@ -781,7 +781,7 @@ RecentTabsSubMenuModel::CreateSplitSubMenuModel(
       std::make_unique<ui::SimpleMenuModel>(this);
   int command_id = GetAndIncrementNextMenuID();
   split_model->AddItemWithStringIdAndIcon(
-      command_id, IDS_RESTORE_ALL_TABS,
+      command_id, IDS_RESTORE_SPLIT,
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchOldIcon));
   local_split_items_.emplace(command_id, split.id);
   split_model->AddSeparator(ui::NORMAL_SEPARATOR);
