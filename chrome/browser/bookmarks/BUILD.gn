@@ -7,6 +7,7 @@ import("//components/offline_pages/buildflags/features.gni")
 
 source_set("bookmarks") {
   public = [
+    "bookmark_bar_policy_handler.h",
     "bookmark_expanded_state_tracker.h",
     "bookmark_expanded_state_tracker_factory.h",
     "bookmark_html_writer.h",
@@ -30,6 +31,7 @@ source_set("bookmarks") {
     "//components/keyed_service/core",
     "//components/offline_pages/buildflags",
     "//components/os_crypt/async/common",
+    "//components/policy/core/browser",
     "//components/power_bookmarks/core",
     "//url",
   ]
@@ -37,6 +39,7 @@ source_set("bookmarks") {
 
 source_set("impl") {
   sources = [
+    "bookmark_bar_policy_handler.cc",
     "bookmark_expanded_state_tracker.cc",
     "bookmark_expanded_state_tracker_factory.cc",
     "bookmark_html_writer.cc",

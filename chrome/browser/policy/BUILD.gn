@@ -926,6 +926,7 @@ source_set("impl") {
     ":policy_util",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/browsing_data",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/download",
