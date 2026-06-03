@@ -27,6 +27,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -125,6 +126,7 @@ public class AllPasswordsBottomSheetRenderTest {
 
         View bottomSheetView =
                 mActivityTestRule.getActivity().findViewById(R.id.all_passwords_bottom_sheet);
+        CriteriaHelper.pollUiThread(bottomSheetView::isLaidOut);
         mRenderTestRule.render(bottomSheetView, "all_passwords_bottom_sheet");
     }
 }
