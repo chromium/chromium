@@ -27,6 +27,13 @@ import "url/mojom/url.mojom";
 // Run this script to update them, and read it for details.
 // chrome/browser/resources/glic/glic_api_impl/generate.py
 
+// @generate glic_api
+struct GeminiEnterpriseSettings {
+  string project_id;
+  string app_id;
+  string location;
+};
+
 // Struct containing data about eligibility for GLIC.
 struct ProfileEnablement {
   // Whether the GLIC feature is enabled.
@@ -73,6 +80,9 @@ struct ProfileEnablement {
   // Whether 'Create Image with Gemini' functionality is allowed for this
   // account type.
   bool share_image_allowed;
+
+  // Settings for Gemini Enterprise.
+  GeminiEnterpriseSettings? gemini_enterprise_settings;
 
   // Summary of whether actuation is enabled, and if not, why not.
   ActuationEligibility actuation_eligibility;
@@ -519,13 +529,6 @@ enum FormFactor {
   kDesktop = 1,
   kPhone = 2,
   kTablet = 3,
-};
-
-// @generate glic_api
-struct GeminiEnterpriseSettings {
-  string project_id;
-  string app_id;
-  string location;
 };
 
 // The result of `WebClientCreated()`. Contains information that needs to be

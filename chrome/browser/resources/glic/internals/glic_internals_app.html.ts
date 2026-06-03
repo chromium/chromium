@@ -55,6 +55,24 @@ export function getHtml(this: GlicInternalsAppElement) {
           </td>
         </tr>
         <tr>
+          <td>Gemini Enterprise Settings</td>
+          <td>
+            ${this.data_.enablement.geminiEnterpriseSettings ? html`
+              <div>
+                Project ID:
+                ${this.data_.enablement.geminiEnterpriseSettings.projectId}
+              </div>
+              <div>
+                App ID: ${this.data_.enablement.geminiEnterpriseSettings.appId}
+              </div>
+              <div>
+                Location:
+                ${this.data_.enablement.geminiEnterpriseSettings.location}
+              </div>
+            ` : html`🚫`}
+          </td>
+        </tr>
+        <tr>
           <td>Actuation eligibility</td>
           <td>
             ${this.getActuationEligibilityString_(

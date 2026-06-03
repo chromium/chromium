@@ -271,6 +271,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     // Whether share image functionality is allowed for this account type.
     bool share_image_allowed : 1 = true;
 
+    // Settings for Gemini Enterprise.
+    std::optional<glic::mojom::GeminiEnterpriseSettings>
+        gemini_enterprise_settings;
+
     // LINT.IfChange(FeatureDisabledReason)
     enum class FeatureDisabledReason {
       kFeatureFlagDisabled = 0,
@@ -331,6 +335,8 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     bool EligibleForLive() const;
 
     bool EligibleForShareImage() const;
+
+    bool EligibleForGeminiEnterpriseSettings() const;
 
     bool DisallowedByAdmin() const;
 

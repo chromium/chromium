@@ -449,6 +449,11 @@ bool GlicEnabling::ProfileEnablement::EligibleForShareImage() const {
   return IsProfileEligible() && share_image_allowed;
 }
 
+bool GlicEnabling::ProfileEnablement::EligibleForGeminiEnterpriseSettings()
+    const {
+  return IsProfileEligible() && gemini_enterprise_settings.has_value();
+}
+
 bool GlicEnabling::ProfileEnablement::DisallowedByAdmin() const {
   return !allowed_by_chrome_policy || !allowed_by_remote_admin;
 }
@@ -564,6 +569,8 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
           signin::Tribool::kTrue;
     }
   }
+
+  result.gemini_enterprise_settings = GetGeminiEnterpriseSettings(profile);
 
   if (profile->GetPrefs()->GetInteger(::prefs::kGeminiSettings) !=
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled)) {

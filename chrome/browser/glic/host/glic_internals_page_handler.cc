@@ -64,6 +64,13 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
   result->allowed_by_locale_filter = enablement.allowed_by_locale_filter;
   result->live_allowed = enablement.live_allowed;
   result->share_image_allowed = enablement.share_image_allowed;
+  if (enablement.gemini_enterprise_settings) {
+    result->gemini_enterprise_settings =
+        glic::mojom::GeminiEnterpriseSettings::New(
+            enablement.gemini_enterprise_settings->project_id,
+            enablement.gemini_enterprise_settings->app_id,
+            enablement.gemini_enterprise_settings->location);
+  }
   auto* service = GlicKeyedService::Get(profile);
   result->actuation_is_consented =
       (service && service->enabling().GetUserEnabledActuationOnWeb());

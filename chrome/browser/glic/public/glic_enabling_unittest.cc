@@ -1516,6 +1516,20 @@ TEST_P(GlicEnablingGeminiEnterpriseSettingsTest, ExpectedBehavior) {
   } else {
     EXPECT_EQ(settings, std::nullopt);
   }
+
+  auto enablement = GlicEnabling::EnablementForProfile(profile());
+  if (expected.has_value()) {
+    ASSERT_TRUE(enablement.gemini_enterprise_settings.has_value());
+    EXPECT_EQ(enablement.gemini_enterprise_settings->project_id,
+              expected->project_id);
+    EXPECT_EQ(enablement.gemini_enterprise_settings->app_id, expected->app_id);
+    EXPECT_EQ(enablement.gemini_enterprise_settings->location,
+              expected->location);
+  } else {
+    EXPECT_FALSE(enablement.gemini_enterprise_settings.has_value());
+  }
+  EXPECT_EQ(enablement.EligibleForGeminiEnterpriseSettings(),
+            expected.has_value());
 }
 
 INSTANTIATE_TEST_SUITE_P(
