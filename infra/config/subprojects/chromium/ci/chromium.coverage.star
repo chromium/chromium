@@ -70,26 +70,22 @@ consoles.console_view(
 )
 
 def coverage_builder(**kwargs):
+    kwargs.setdefault("triggered_by", ["code-coverage-gitiles-trigger"])
+    kwargs.setdefault("triggering_policy", scheduler.greedy_batching(
+        max_concurrent_invocations = 2,
+    ))
     return ci.builder(
         schedule = "triggered",
-        triggered_by = ["code-coverage-gitiles-trigger"],
-        # This should allow one to be pending should code coverage
-        # builds take longer.
-        triggering_policy = scheduler.greedy_batching(
-            max_concurrent_invocations = 2,
-        ),
         **kwargs
     )
 
 def coverage_webview_builder(**kwargs):
+    kwargs.setdefault("triggered_by", ["code-coverage-webview-gitiles-trigger"])
+    kwargs.setdefault("triggering_policy", scheduler.greedy_batching(
+        max_concurrent_invocations = 2,
+    ))
     return ci.builder(
         schedule = "triggered",
-        triggered_by = ["code-coverage-webview-gitiles-trigger"],
-        # This should allow one to be pending should code coverage
-        # builds take longer.
-        triggering_policy = scheduler.greedy_batching(
-            max_concurrent_invocations = 2,
-        ),
         **kwargs
     )
 
@@ -1171,6 +1167,10 @@ coverage_builder(
 coverage_builder(
     name = "linux-fuzz-coverage",
     executable = "recipe:chromium/fuzz",
+    triggered_by = ["chromium-gitiles-trigger"],
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 1,
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1227,6 +1227,10 @@ coverage_builder(
     name = "linux-centipede-fuzz-coverage",
     description_html = "This builder collects code coverage for centipede.",
     executable = "recipe:chromium/fuzz",
+    triggered_by = ["chromium-gitiles-trigger"],
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 1,
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1260,6 +1264,7 @@ coverage_builder(
     ),
     builderless = True,
     os = os.LINUX_DEFAULT,
+    free_space = builders.free_space.high,
     console_view_entry = [
         consoles.console_view_entry(
             category = "linux-fuzz",
