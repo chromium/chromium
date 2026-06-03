@@ -1325,6 +1325,7 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
   // Want to cut the vertical tabstrip and its decorations out of the top
   // container in transparency mode.
   std::vector<const views::View*> top_container_cutout_views;
+  std::vector<const views::View*> main_background_cutout_views;
 
   // Set vertical tabstrip corners.
   if (layout_data_->tab_strip_type == TabStripType::kVertical) {
@@ -1451,6 +1452,11 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       top_container_cutout_views.push_back(
           views().vertical_tab_strip_top_corner);
     }
+    main_background_cutout_views = top_container_cutout_views;
+    if (animation.bottom_corner > 0) {
+      main_background_cutout_views.push_back(
+          views().vertical_tab_strip_bottom_corner);
+    }
   }
 
   if (!is_fullscreen(layout_data_->window_state) &&
@@ -1515,6 +1521,12 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
                                  ->AsA<CustomCornersBackground>();
     CHECK(background)
         << "Expected main background region to have a CustomCornersBackground.";
+
+    // Do the main area cutouts.
+    if (features::IsGlassFrameEnabled()) {
+      background->SetCutoutFrom(main_background_cutout_views);
+    }
+
     CustomCornersBackground::Corners main_background_corners;
 
     // Frame-colored corners are shown at the top in horizontal tabstrip mode.
