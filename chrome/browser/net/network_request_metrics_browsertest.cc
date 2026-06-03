@@ -113,14 +113,13 @@ class NetworkRequestMetricsBrowserTest
       public testing::WithParamInterface<RequestType> {
  public:
   NetworkRequestMetricsBrowserTest() {
-    // TODO(crbug.com/452061489, crbug.com/444358999): Remove
-    // `scoped_feature_list_` when these features are enabled in
-    // fieldtrial_testing_config.json or tip of tree.
+    // Disable InitialWebUI and WebUI Omnibox Popup features to prevent
+    // background preloaded WebUI navigations from flakily recording extra
+    // samples in the test's histograms.
     scoped_feature_list_.InitWithFeatures(
-        {features::kInitialWebUI, features::kWebUIReloadButton,
-         omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup},
-        {});
+        {}, {features::kInitialWebUI, features::kWebUIReloadButton,
+             omnibox::internal::kWebUIOmniboxPopup,
+             omnibox::internal::kWebUIOmniboxAimPopup});
   }
   ~NetworkRequestMetricsBrowserTest() override = default;
 
