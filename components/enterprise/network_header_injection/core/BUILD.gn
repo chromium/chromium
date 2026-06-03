@@ -31,12 +31,15 @@ static_library("core") {
     "http_header_injection_matcher.h",
     "http_header_injection_rule.cc",
     "http_header_injection_rule.h",
+    "http_header_injection_service.cc",
+    "http_header_injection_service.h",
     "network_header_injection_prefs.cc",
     "network_header_injection_prefs.h",
   ]
 
   deps = [
     "//base",
+    "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/prefs",
     "//components/url_matcher",
@@ -50,6 +53,7 @@ source_set("unit_tests") {
   sources = [
     "http_header_injection_matcher_unittest.cc",
     "http_header_injection_rule_unittest.cc",
+    "http_header_injection_service_unittest.cc",
   ]
   if (!is_android) {
     sources += [ "http_header_injection_policy_handler_unittest.cc" ]
@@ -62,6 +66,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/policy/core/browser",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/strings:components_strings",
     "//net",
     "//testing/gtest",

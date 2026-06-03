@@ -470,6 +470,7 @@
     BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
+#include "chrome/browser/enterprise/network_header_injection/http_header_injection_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_observer_factory.h"
 #endif
 
@@ -973,6 +974,10 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (base::FeatureList::IsEnabled(enterprise_connectors::kTelomereReporting)) {
     enterprise_connectors::TelomereEventRouterFactory::GetInstance();
   }
+#endif
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  enterprise_custom_headers::HttpHeaderInjectionServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
   enterprise_data_protection::DataProtectionUrlLookupServiceFactory::

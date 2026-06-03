@@ -869,7 +869,10 @@ source_set("profiles_extra_parts_impl") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
-    deps += [ "//chrome/browser/multistep_filter" ]
+    deps += [
+      "//chrome/browser/enterprise/network_header_injection",
+      "//chrome/browser/multistep_filter",
+    ]
   }
 
   if (is_win || is_mac || is_linux) {
