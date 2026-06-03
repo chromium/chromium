@@ -449,8 +449,6 @@ crbug.com/443182226 [ angle-vulkan arm fuchsia ] conformance/uniforms/no-over-op
 # Possible HLSL compiler bug.
 crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
 
-# The functions test have been persistently flaky on D3D9
-crbug.com/956134 [ angle-d3d9 intel-0x9bc5 release-x64 target-cpu-64 win ] conformance/extensions/webgl-depth-texture.html [ Failure ]
 
 ## Win / AMD RX 5500 XT failures ##
 
@@ -483,8 +481,6 @@ crbug.com/415086850 [ win11 nvidia-0x2184 angle-vulkan passthrough ] conformance
 crbug.com/41496016 [ win11 qualcomm-0x36334330 angle-d3d11 ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
 crbug.com/452924810 [ win11 qualcomm-0x36334330 angle-vulkan ] conformance/extensions/webgl-blend-func-extended.html [ Failure ]
 
-## Win / Intel / D3D9
-crbug.com/498951069 [ angle-d3d9 intel-0x9bc5 passthrough win ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
 
 ####################
 # Mac failures     #
