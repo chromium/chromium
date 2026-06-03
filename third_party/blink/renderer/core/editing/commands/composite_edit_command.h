@@ -60,8 +60,25 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
     return ending_selection_;
   }
 
+  // Raw-DOM lane: never VP-canonicalized at command birth. Migrated
+  // commands prefer these accessors under EditingUseDomPositionApi so
+  // they see the selection as the user authored it, not the layout-
+  // canonicalized form. Unmigrated commands keep using the legacy
+  // accessors above and observe no behavior change.
+  const SelectionForUndoStep& StartingDomSelection() const {
+    return starting_dom_selection_;
+  }
+  const SelectionForUndoStep& EndingDomSelection() const {
+    return ending_dom_selection_;
+  }
+
   void SetStartingSelection(const SelectionForUndoStep&);
   void SetEndingSelection(const SelectionForUndoStep&);
+
+  // Raw-DOM lane setters. Migrated commands call these to update the
+  // dom lane without going through the legacy (VP-aware) setter path.
+  void SetStartingDomSelection(const SelectionForUndoStep&);
+  void SetEndingDomSelection(const SelectionForUndoStep&);
 
   void SetParent(CompositeEditCommand*) override;
 
@@ -245,6 +262,12 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
 
   SelectionForUndoStep starting_selection_;
   SelectionForUndoStep ending_selection_;
+  // Raw-DOM lane mirroring starting_/ending_selection_. Seeded from
+  // FrameSelection::GetSelectionInDOMTree() at command birth (no VP
+  // canonicalization). Updated via SetStartingDomSelection /
+  // SetEndingDomSelection. Inherited from parent in SetParent.
+  SelectionForUndoStep starting_dom_selection_;
+  SelectionForUndoStep ending_dom_selection_;
   Member<UndoStep> undo_step_;
 };
 

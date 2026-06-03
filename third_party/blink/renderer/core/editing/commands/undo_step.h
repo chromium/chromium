@@ -43,7 +43,9 @@ class UndoStep final : public GarbageCollected<UndoStep> {
  public:
   UndoStep(Document*,
            const SelectionForUndoStep& starting_selection,
-           const SelectionForUndoStep& ending_selection);
+           const SelectionForUndoStep& ending_selection,
+           const SelectionForUndoStep& starting_dom_selection,
+           const SelectionForUndoStep& ending_dom_selection);
 
   // Returns true if is owned by |element|
   bool IsOwnedBy(const Element& element) const;
@@ -62,6 +64,17 @@ class UndoStep final : public GarbageCollected<UndoStep> {
   bool SelectionIsDirectional() const { return selection_is_directional_; }
   void SetStartingSelection(const SelectionForUndoStep&);
   void SetEndingSelection(const SelectionForUndoStep&);
+
+  // Raw-DOM lane mirroring starting_/ending_selection_ without VP
+  // canonicalization. See CompositeEditCommand for rationale.
+  const SelectionForUndoStep& StartingDomSelection() const {
+    return starting_dom_selection_;
+  }
+  const SelectionForUndoStep& EndingDomSelection() const {
+    return ending_dom_selection_;
+  }
+  void SetStartingDomSelection(const SelectionForUndoStep&);
+  void SetEndingDomSelection(const SelectionForUndoStep&);
   void SetSelectionIsDirectional(bool is_directional) {
     selection_is_directional_ = is_directional;
   }
@@ -82,6 +95,8 @@ class UndoStep final : public GarbageCollected<UndoStep> {
   Member<Document> document_;
   SelectionForUndoStep starting_selection_;
   SelectionForUndoStep ending_selection_;
+  SelectionForUndoStep starting_dom_selection_;
+  SelectionForUndoStep ending_dom_selection_;
   HeapVector<Member<SimpleEditCommand>> commands_;
   const uint64_t sequence_number_;
   bool selection_is_directional_ = false;

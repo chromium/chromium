@@ -117,13 +117,19 @@ bool IsWhitespaceForRebalance(const Text& text_node, UChar character) {
 CompositeEditCommand::CompositeEditCommand(Document& document,
                                            DataTransfer* data_transfer)
     : EditCommand(document), data_transfer_(data_transfer) {
+  FrameSelection& frame_selection = document.GetFrame()->Selection();
+  // Legacy lane: VP-canonicalized at command birth (unchanged behavior).
   const VisibleSelection& visible_selection =
-      document.GetFrame()
-          ->Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated();
+      frame_selection.ComputeVisibleSelectionInDOMTreeDeprecated();
   SetStartingSelection(
       SelectionForUndoStep::From(visible_selection.AsSelection()));
   SetEndingSelection(starting_selection_);
+  // Raw-DOM lane: seed unconditionally without VP canonicalization.
+  // Migrated commands read this via StartingDomSelection() /
+  // EndingDomSelection() to see the selection as the user authored it.
+  starting_dom_selection_ =
+      SelectionForUndoStep::From(frame_selection.GetSelectionInDOMTree());
+  ending_dom_selection_ = starting_dom_selection_;
 }
 
 CompositeEditCommand::~CompositeEditCommand() {
@@ -206,7 +212,8 @@ UndoStep* CompositeEditCommand::EnsureUndoStep() {
     command = command->Parent();
   if (!command->undo_step_) {
     command->undo_step_ = MakeGarbageCollected<UndoStep>(
-        &GetDocument(), StartingSelection(), EndingSelection());
+        &GetDocument(), StartingSelection(), EndingSelection(),
+        StartingDomSelection(), EndingDomSelection());
   }
   return command->undo_step_.Get();
 }
@@ -2117,12 +2124,40 @@ void CompositeEditCommand::SetEndingSelection(
   }
 }
 
+void CompositeEditCommand::SetStartingDomSelection(
+    const SelectionForUndoStep& selection) {
+  for (CompositeEditCommand* command = this;; command = command->Parent()) {
+    if (UndoStep* undo_step = command->GetUndoStep()) {
+      DCHECK(command->IsTopLevelCommand());
+      undo_step->SetStartingDomSelection(selection);
+    }
+    command->starting_dom_selection_ = selection;
+    if (!command->Parent() || command->Parent()->IsFirstCommand(command))
+      break;
+  }
+}
+
+void CompositeEditCommand::SetEndingDomSelection(
+    const SelectionForUndoStep& selection) {
+  for (CompositeEditCommand* command = this; command;
+       command = command->Parent()) {
+    if (UndoStep* undo_step = command->GetUndoStep()) {
+      DCHECK(command->IsTopLevelCommand());
+      undo_step->SetEndingDomSelection(selection);
+    }
+    command->ending_dom_selection_ = selection;
+  }
+}
+
 void CompositeEditCommand::SetParent(CompositeEditCommand* parent) {
   EditCommand::SetParent(parent);
   if (!parent)
     return;
   starting_selection_ = parent->ending_selection_;
   ending_selection_ = parent->ending_selection_;
+  // Child inherits dom lane from parent's ending (only non-seed inheritance).
+  starting_dom_selection_ = parent->ending_dom_selection_;
+  ending_dom_selection_ = parent->ending_dom_selection_;
 }
 
 // Determines whether a node is inside a range or visibly starts and ends at the
@@ -2161,6 +2196,8 @@ void CompositeEditCommand::Trace(Visitor* visitor) const {
   visitor->Trace(commands_);
   visitor->Trace(starting_selection_);
   visitor->Trace(ending_selection_);
+  visitor->Trace(starting_dom_selection_);
+  visitor->Trace(ending_dom_selection_);
   visitor->Trace(undo_step_);
   visitor->Trace(data_transfer_);
   EditCommand::Trace(visitor);

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
@@ -329,6 +330,19 @@ TEST_F(CompositeEditCommandTest,
                                                     &editing_state);
   EXPECT_TRUE(editing_state.IsAborted());
   EXPECT_EQ("<div><br></div><input>", body->GetInnerHTMLString());
+}
+
+// Dom lane preserves the raw position; legacy lane is VP-canonicalized.
+TEST_F(CompositeEditCommandTest, DomLaneSeedsFromRawDomSelection) {
+  SetBodyContent("<div contenteditable id='ed'>X<br></div>");
+  Element* div = GetElementById("ed");
+  const Position raw(div, 1);
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder().Collapse(raw).Build(), SetSelectionOptions());
+
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  EXPECT_EQ(raw, sample.StartingDomSelection().Anchor());
+  EXPECT_NE(raw, sample.StartingSelection().Anchor());
 }
 
 }  // namespace blink
