@@ -209,6 +209,8 @@ import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator;
 import org.chromium.chrome.browser.notifications.tips.TipsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
+import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
+import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
@@ -402,6 +404,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.edge_to_edge.TabbedSystemBarColorHelper;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionInitializer;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
@@ -4292,22 +4295,40 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_RECENT_TABS_MANAGER);
             }
             RecordUserAction.record("MobileMenuRecentTabs");
-        } else if (id == R.id.recent_entry_menu_item) {
-            assert menuItemData != null
-                    && menuItemData.get(
-                                    AppMenuPropertiesDelegateImpl
-                                            .RECENT_ENTRY_SESSION_ID_BUNDLE_KEY)
-                            != null;
+        } else if (id == R.id.recent_entry_tab_menu_item) {
+            assert menuItemData != null;
+            assert menuItemData.get(
+                            AppMenuPropertiesDelegateImpl.RECENT_ENTRY_SESSION_ID_BUNDLE_KEY)
+                    != null;
 
             int sessionId =
                     menuItemData.getInt(
                             AppMenuPropertiesDelegateImpl.RECENT_ENTRY_SESSION_ID_BUNDLE_KEY);
-
-            var entry = mRecentlyClosedEntriesManager.findRecentlyClosedEntry(sessionId);
-            if (entry != null) {
-                mRecentlyClosedEntriesManager.openRecentlyClosedEntry(entry);
+            var entry =
+                    mRecentlyClosedEntriesManager.findRecentlyClosedEntry(
+                            sessionId, /* isInstanceId= */ false);
+            if (entry != null && entry instanceof RecentlyClosedTab) {
+                mRecentlyClosedEntriesManager.openRecentlyClosedTab(
+                        (RecentlyClosedTab) entry, WindowOpenDisposition.NEW_FOREGROUND_TAB);
+                RecordUserAction.record("MobileMenuRecentEntry");
             }
-            RecordUserAction.record("MobileMenuRecentEntry");
+        } else if (id == R.id.recent_entry_window_menu_item) {
+            assert menuItemData != null
+                    && menuItemData.get(
+                                    AppMenuPropertiesDelegateImpl
+                                            .RECENT_ENTRY_INSTANCE_ID_BUNDLE_KEY)
+                            != null;
+            int instanceId =
+                    menuItemData.getInt(
+                            AppMenuPropertiesDelegateImpl.RECENT_ENTRY_INSTANCE_ID_BUNDLE_KEY);
+            var entry =
+                    mRecentlyClosedEntriesManager.findRecentlyClosedEntry(
+                            instanceId, /* isInstanceId= */ true);
+            if (entry != null) {
+                assert entry instanceof RecentlyClosedWindow;
+                mRecentlyClosedEntriesManager.openRecentlyClosedEntry(entry);
+                RecordUserAction.record("MobileMenuRecentEntry");
+            }
         } else if (id == R.id.extensions_menu_menu_id) {
             ExtensionsToolbarCoordinator coordinator =
                     getToolbarManager().getExtensionsToolbarCoordinator();

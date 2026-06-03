@@ -103,6 +103,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
+import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -127,6 +128,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemWithSubmenuProperties;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuRecentEntryItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsBuildflags;
@@ -4320,8 +4322,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.recent_tabs_menu_id),
                                 item(R.id.quick_delete_menu_id),
                                 item(R.id.divider_line_id),
-                                item(R.id.recent_entry_menu_item),
-                                item(R.id.recent_entry_menu_item)));
+                                item(R.id.recent_entry_tab_menu_item),
+                                item(R.id.recent_entry_tab_menu_item)));
 
         List<ListItem> items =
                 findItemById(
@@ -4340,6 +4342,156 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                             expectedId,
                             item.model.get(AppMenuItemProperties.MENU_ITEM_ID));
                 });
+    }
+
+    @Test
+    public void testHistorySubmenu_WithRecentlyClosedWindow() {
+        setUpMocksForPageMenu();
+
+        List<RecentlyClosedEntry> entries = new ArrayList<>();
+        RecentlyClosedWindow closedWindow =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 0,
+                        /* instanceId= */ 1,
+                        JUnitTestGURLs.URL_1.getSpec(),
+                        /* title= */ "Custom Window",
+                        "Active Tab Title",
+                        /* tabCount= */ 3);
+        entries.add(closedWindow);
+        when(mRecentlyClosedEntriesManager.getRecentlyClosedEntries()).thenReturn(entries);
+
+        List<MenuItem> expectedSubmenu =
+                new ArrayList<>(
+                        Arrays.asList(
+                                item(R.id.open_history_menu_id),
+                                item(R.id.recent_tabs_menu_id),
+                                item(R.id.quick_delete_menu_id),
+                                item(R.id.divider_line_id),
+                                item(
+                                        R.id.recent_entry_menu_item,
+                                        item(R.id.recent_entry_window_menu_item))));
+
+        List<ListItem> items =
+                findItemById(
+                                mTabbedAppMenuPropertiesDelegate.getMenuItems(),
+                                R.id.history_parent_menu_id)
+                        .model
+                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
+                        .get();
+
+        assertMenuTreesAreEqual(
+                items,
+                expectedSubmenu,
+                (item, expectedId) -> {
+                    assertEquals(
+                            "Mismatched item id",
+                            expectedId,
+                            item.model.get(AppMenuItemProperties.MENU_ITEM_ID));
+                });
+
+        Context context = ContextUtils.getApplicationContext();
+        String tabsText =
+                context.getResources()
+                        .getQuantityString(R.plurals.recent_tabs_group_closure_without_title, 3, 3);
+        String restoreText = context.getString(R.string.menu_recent_entry_restore_window);
+
+        List<MenuItem> expectedTitles =
+                new ArrayList<>(
+                        Arrays.asList(
+                                item(R.string.menu_history),
+                                item(R.string.menu_recent_tabs),
+                                item(R.string.menu_quick_delete),
+                                item(0),
+                                item(
+                                        context.getString(
+                                                R.string.menu_window_title_with_tab_count,
+                                                "Custom Window",
+                                                tabsText),
+                                        item(restoreText))));
+
+        assertMenuTitlesAreEqual(items, expectedTitles);
+
+        // Index 4 is the first recently closed entry in the submenu (after the default history
+        // actions: History, Recent Tabs, Quick Delete, and the Divider).
+        ListItem windowItem = items.get(4);
+        List<ListItem> windowSubmenu =
+                windowItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+        ListItem restoreItem = windowSubmenu.get(0);
+        assertEquals(
+                closedWindow, restoreItem.model.get(AppMenuRecentEntryItemProperties.RECENT_ENTRY));
+    }
+
+    @Test
+    public void testHistorySubmenu_WithUnnamedRecentlyClosedWindow() {
+        setUpMocksForPageMenu();
+
+        List<RecentlyClosedEntry> entries = new ArrayList<>();
+        RecentlyClosedWindow closedWindow =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 0,
+                        /* instanceId= */ 1,
+                        JUnitTestGURLs.URL_1.getSpec(),
+                        /* title= */ null,
+                        "Active Tab Title",
+                        /* tabCount= */ 3);
+        entries.add(closedWindow);
+        when(mRecentlyClosedEntriesManager.getRecentlyClosedEntries()).thenReturn(entries);
+
+        List<MenuItem> expectedSubmenu =
+                new ArrayList<>(
+                        Arrays.asList(
+                                item(R.id.open_history_menu_id),
+                                item(R.id.recent_tabs_menu_id),
+                                item(R.id.quick_delete_menu_id),
+                                item(R.id.divider_line_id),
+                                item(
+                                        R.id.recent_entry_menu_item,
+                                        item(R.id.recent_entry_window_menu_item))));
+
+        List<ListItem> items =
+                findItemById(
+                                mTabbedAppMenuPropertiesDelegate.getMenuItems(),
+                                R.id.history_parent_menu_id)
+                        .model
+                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
+                        .get();
+
+        assertMenuTreesAreEqual(
+                items,
+                expectedSubmenu,
+                (item, expectedId) -> {
+                    assertEquals(
+                            "Mismatched item id",
+                            expectedId,
+                            item.model.get(AppMenuItemProperties.MENU_ITEM_ID));
+                });
+
+        Context context = ContextUtils.getApplicationContext();
+        String tabsText =
+                context.getResources()
+                        .getQuantityString(R.plurals.recent_tabs_group_closure_without_title, 3, 3);
+        String restoreText = context.getString(R.string.menu_recent_entry_restore_window);
+
+        List<MenuItem> expectedTitles =
+                new ArrayList<>(
+                        Arrays.asList(
+                                item(R.string.menu_history),
+                                item(R.string.menu_recent_tabs),
+                                item(R.string.menu_quick_delete),
+                                item(0),
+                                item(tabsText, item(restoreText))));
+
+        assertMenuTitlesAreEqual(items, expectedTitles);
+
+        // Verify the recent entry itself in the model.
+        // Index 4 is the first recently closed entry in the submenu (after the default history
+        // actions: History, Recent Tabs, Quick Delete, and the Divider).
+        ListItem windowItem = items.get(4);
+        List<ListItem> windowSubmenu =
+                windowItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+        ListItem restoreItem = windowSubmenu.get(0);
+        assertEquals(
+                closedWindow, restoreItem.model.get(AppMenuRecentEntryItemProperties.RECENT_ENTRY));
     }
 
     private static MenuItem item(Object id, MenuItem... subItems) {

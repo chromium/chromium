@@ -10,7 +10,7 @@ import org.chromium.build.annotations.Nullable;
 /** Represents a recently closed window from MultiInstanceManager. */
 @NullMarked
 public class RecentlyClosedWindow extends RecentlyClosedEntry {
-    private static final String WINDOW_DEFAULT_TITLE = "Window";
+    public static final String WINDOW_DEFAULT_TITLE = "Window";
     private final int mInstanceId;
     private final int mTabCount;
     private final String mTitle;

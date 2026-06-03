@@ -1242,10 +1242,58 @@ public class RecentlyClosedEntriesManagerUnitTest {
         // Update entries so they are loaded into mRecentlyClosedEntries.
         mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
 
-        SessionRecentlyClosedEntry result =
-                mRecentlyClosedEntriesManager.findRecentlyClosedEntry(sessionId);
+        RecentlyClosedEntry result =
+                mRecentlyClosedEntriesManager.findRecentlyClosedEntry(
+                        sessionId, /* isInstanceId= */ false);
 
         assertEquals("Expected to find the correct entry", tab, result);
+    }
+
+    @Test
+    public void testFindRecentlyClosedWindow_ByInstanceId() {
+        int instanceId = 42;
+        RecentlyClosedWindow window =
+                new RecentlyClosedWindow(
+                        /* timestamp= */ 0,
+                        instanceId,
+                        JUnitTestGURLs.URL_1.getSpec(),
+                        "Title",
+                        "Active Tab",
+                        /* tabCount= */ 1);
+
+        // We need to make sure the manager has this window in its list.
+        List<InstanceInfo> instanceInfoList = new ArrayList<>();
+        instanceInfoList.add(
+                new InstanceInfo(
+                        instanceId,
+                        /* taskId= */ 0,
+                        InstanceInfo.Type.OTHER,
+                        JUnitTestGURLs.URL_1.getSpec(),
+                        "Active Tab",
+                        "Title",
+                        /* tabCount= */ 1,
+                        /* incognitoTabCount= */ 0,
+                        /* isIncognitoSelected= */ false,
+                        /* lastAccessedTime= */ 0,
+                        /* closureTime= */ 1));
+        when(mMultiInstanceManager.getRecentlyClosedInstances()).thenReturn(instanceInfoList);
+
+        // Update entries so they are loaded into mRecentlyClosedEntries.
+        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
+
+        RecentlyClosedEntry result =
+                mRecentlyClosedEntriesManager.findRecentlyClosedEntry(
+                        instanceId, /* isInstanceId= */ true);
+
+        assertTrue(
+                "Expected result to be RecentlyClosedWindow",
+                result instanceof RecentlyClosedWindow);
+        RecentlyClosedWindow resultWindow = (RecentlyClosedWindow) result;
+        assertEquals(window.getInstanceId(), resultWindow.getInstanceId());
+        assertEquals(window.getTabCount(), resultWindow.getTabCount());
+        assertEquals(window.getTitle(), resultWindow.getTitle());
+        assertEquals(window.getActiveTabTitle(), resultWindow.getActiveTabTitle());
+        assertEquals(window.getUrl(), resultWindow.getUrl());
     }
 
     private static long getDaysAgoMillis(int numDaysAgo) {

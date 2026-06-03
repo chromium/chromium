@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
+import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.ntp.TitleUtil;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.open_in_app.OpenInAppMenuItemProvider;
@@ -1089,11 +1090,66 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                         /* cachedFavicon= */ null,
                                         /* fallbackToHost= */ true)));
                 count++;
+            } else if (entry instanceof RecentlyClosedWindow window) {
+                items.add(buildClosedWindowMenuItem(window));
+                count++;
             }
 
-            // TODO(crbug.com/509065810): Support windows and bulk closures.
+            // TODO(crbug.com/509065810): Support other bulk closures.
         }
         return items;
+    }
+
+    private ListItem buildClosedWindowMenuItem(RecentlyClosedWindow window) {
+        Supplier<List<ListItem>> submenuItemsSupplier =
+                () -> {
+                    List<ListItem> submenuItems = new ArrayList<>();
+                    submenuItems.add(buildRestoreWindowMenuItem(window));
+                    return submenuItems;
+                };
+
+        int tabCount = window.getTabCount();
+        String tabsText =
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.recent_tabs_group_closure_without_title,
+                                tabCount,
+                                tabCount);
+
+        String title =
+                window.getTitle().equals(RecentlyClosedWindow.WINDOW_DEFAULT_TITLE)
+                        ? tabsText
+                        : mContext.getString(
+                                R.string.menu_window_title_with_tab_count,
+                                window.getTitle(),
+                                tabsText);
+
+        PropertyModel model =
+                buildModelForMenuItemWithSubmenu(
+                        R.id.recent_entry_menu_item,
+                        title,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_window_24dp : Resources.ID_NULL,
+                        submenuItemsSupplier);
+
+        return new ListItem(AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU, model);
+    }
+
+    private ListItem buildRestoreWindowMenuItem(RecentlyClosedWindow window) {
+        PropertyModel model =
+                populateBaseModelForTextItem(
+                                new PropertyModel.Builder(
+                                        AppMenuRecentEntryItemProperties.ALL_KEYS),
+                                R.id.recent_entry_window_menu_item)
+                        .with(
+                                AppMenuItemProperties.TITLE,
+                                mContext.getString(R.string.menu_recent_entry_restore_window))
+                        .with(AppMenuRecentEntryItemProperties.RECENT_ENTRY, window)
+                        .with(
+                                AppMenuItemProperties.ICON,
+                                AppCompatResources.getDrawable(
+                                        mContext, R.drawable.ic_open_in_new_24dp))
+                        .build();
+        return new ListItem(AppMenuHandler.AppMenuItemType.RECENT_ENTRY, model);
     }
 
     private ListItem buildRecentEntryMenuItem(
@@ -1104,7 +1160,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 populateBaseModelForTextItem(
                                 new PropertyModel.Builder(
                                         AppMenuRecentEntryItemProperties.ALL_KEYS),
-                                R.id.recent_entry_menu_item)
+                                R.id.recent_entry_tab_menu_item)
                         .with(AppMenuItemProperties.TITLE, title)
                         .with(AppMenuRecentEntryItemProperties.RECENT_ENTRY, entry);
         if (shouldShowIconBeforeItem() && iconSupplier != null) {

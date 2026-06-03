@@ -53,6 +53,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
+import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
+import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.ntp.SessionRecentlyClosedEntry;
 import org.chromium.chrome.browser.open_in_app.OpenInAppMenuItemProvider;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -112,6 +114,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     public static final String BOOKMARK_ID_BUNDLE_KEY = "BookmarkId";
     public static final String TAB_ID_BUNDLE_KEY = "TabId";
     public static final String RECENT_ENTRY_SESSION_ID_BUNDLE_KEY = "RecentEntrySessionId";
+    public static final String RECENT_ENTRY_INSTANCE_ID_BUNDLE_KEY = "RecentEntryInstanceId";
 
     private static @Nullable Boolean sItemBookmarkedForTesting;
 
@@ -915,11 +918,17 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             return bundle;
         }
         if (model.containsKey(AppMenuRecentEntryItemProperties.RECENT_ENTRY)) {
-            Object entry = model.get(AppMenuRecentEntryItemProperties.RECENT_ENTRY);
-            assert entry != null && entry instanceof SessionRecentlyClosedEntry;
-            SessionRecentlyClosedEntry sessionEntry = (SessionRecentlyClosedEntry) entry;
+            RecentlyClosedEntry entry =
+                    (RecentlyClosedEntry) model.get(AppMenuRecentEntryItemProperties.RECENT_ENTRY);
+            assert entry != null;
             Bundle bundle = new Bundle();
-            bundle.putInt(RECENT_ENTRY_SESSION_ID_BUNDLE_KEY, sessionEntry.getSessionId());
+            if (entry instanceof SessionRecentlyClosedEntry sessionEntry) {
+                bundle.putInt(RECENT_ENTRY_SESSION_ID_BUNDLE_KEY, sessionEntry.getSessionId());
+            } else if (entry instanceof RecentlyClosedWindow window) {
+                bundle.putInt(RECENT_ENTRY_INSTANCE_ID_BUNDLE_KEY, window.getInstanceId());
+            } else {
+                assert false;
+            }
             return bundle;
         }
         return null;
