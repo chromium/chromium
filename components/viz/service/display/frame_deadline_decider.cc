@@ -30,7 +30,7 @@ size_t FrameDeadlineDecider::SelectDeadline(
 #endif  // BUILDFLAG(IS_ANDROID)
   if (use_platform_preferred_deadlines ||
       possible_deadlines.deadlines.empty()) {
-    return possible_deadlines.preferred_index;
+    return possible_deadlines.os_preferred_index;
   }
 
   absl::Cleanup update_present_delta = [this, &possible_deadlines] {
@@ -96,15 +96,15 @@ size_t FrameDeadlineDecider::SelectDeadline(
   const PossibleDeadline& chrome_preferred_deadline = *it;
 
   if (chrome_preferred_deadline.present_delta > target_present_delta) {
-    curr_sequence_deadline_index_ = possible_deadlines.preferred_index;
+    curr_sequence_deadline_index_ = possible_deadlines.os_preferred_index;
     return curr_sequence_deadline_index_;
   }
 
   if (chrome_preferred_deadline.present_delta <
-      possible_deadlines.GetPreferredDeadline().present_delta) {
+      possible_deadlines.GetOSPreferredDeadline().present_delta) {
     // Fallback to os preferred deadline instead of reducing the preferred
     // deadline. We are not sure if this would actually happen in field.
-    curr_sequence_deadline_index_ = possible_deadlines.preferred_index;
+    curr_sequence_deadline_index_ = possible_deadlines.os_preferred_index;
     return curr_sequence_deadline_index_;
   }
 

@@ -68,8 +68,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
       int64_t choreographer_vsync_id,
       base::TimeTicks frame_time,
       base::TimeDelta interval,
-      std::optional<PossibleDeadline> deadline,
-      std::optional<PossibleDeadline> preferred) override;
+      std::optional<PossibleDeadline> selected_deadline,
+      std::optional<PossibleDeadline> os_preferred) override;
 
   // DisplayDamageTracker::Delegate implementation.
   void OnDisplayDamaged(SurfaceId surface_id) override;

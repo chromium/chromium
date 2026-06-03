@@ -247,8 +247,8 @@ void Display::PresentationGroupTiming::OnDraw(
     HintSession::BoostType boost_type,
     int64_t choreographer_vsync_id,
     int64_t swap_trace_id,
-    std::optional<PossibleDeadline> deadline,
-    std::optional<PossibleDeadline> preferred) {
+    std::optional<PossibleDeadline> selected_deadline,
+    std::optional<PossibleDeadline> os_preferred) {
   frame_time_ = frame_time;
   interval_ = interval;
   draw_start_timestamp_ = draw_start_timestamp;
@@ -257,8 +257,8 @@ void Display::PresentationGroupTiming::OnDraw(
   boost_type_ = boost_type;
   choreographer_vsync_id_ = choreographer_vsync_id;
   swap_trace_id_ = swap_trace_id;
-  deadline_ = std::move(deadline);
-  preferred_ = std::move(preferred);
+  selected_deadline_ = std::move(selected_deadline);
+  os_preferred_deadline_ = std::move(os_preferred);
 }
 
 void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings,
@@ -1061,7 +1061,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         std::move(renderer_main_thread_ids),
         /*boost_type=*/HintSession::BoostType::kDefault,
         params.choreographer_vsync_id.value_or(0), display_trace_id,
-        params.deadline, params.preferred_deadline);
+        params.selected_deadline, params.os_preferred_deadline);
 
     bool has_interactive_frame = false;
     bool has_animated_frame = false;
@@ -1380,8 +1380,8 @@ void Display::DidReceivePresentationFeedback(
         copy_feedback, presentation_group_timing.choreographer_vsync_id(),
         presentation_group_timing.frame_time(),
         presentation_group_timing.interval(),
-        presentation_group_timing.deadline(),
-        presentation_group_timing.preferred());
+        presentation_group_timing.selected_deadline(),
+        presentation_group_timing.os_preferred_deadline());
   }
   pending_presentation_group_timings_.erase(group_it);
 }

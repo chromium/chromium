@@ -153,16 +153,16 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
   int64_t frame_time_nanos =
       gfx::AChoreographerCompat33::Get()
           .AChoreographerFrameCallbackData_getFrameTimeNanosFn(callback_data);
-  size_t preferred_index =
+  size_t os_preferred_index =
       gfx::AChoreographerCompat33::Get()
           .AChoreographerFrameCallbackData_getPreferredFrameTimelineIndexFn(
               callback_data);
   size_t size = gfx::AChoreographerCompat33::Get()
                     .AChoreographerFrameCallbackData_getFrameTimelinesLengthFn(
                         callback_data);
-  CHECK_LT(preferred_index, size);
+  CHECK_LT(os_preferred_index, size);
 
-  PossibleDeadlines possible_deadlines(preferred_index);
+  PossibleDeadlines possible_deadlines(os_preferred_index);
   for (size_t i = 0; i < size; ++i) {
     int64_t vsync_id =
         gfx::AChoreographerCompat33::Get()
@@ -215,7 +215,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
 
     const bool emit_only_preferred_deadline = !viz_enabled;
     if (emit_only_preferred_deadline) {
-      const auto& deadline = possible_deadlines.deadlines[preferred_index];
+      const auto& deadline = possible_deadlines.deadlines[os_preferred_index];
       auto* timeline = data->set_chrome_preferred_frame_timeline();
       populate_timeline(timeline, deadline);
       return;
@@ -225,7 +225,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
       auto* timeline = data->add_frame_timeline();
       populate_timeline(timeline, deadline);
     }
-    data->set_preferred_frame_timeline_index(preferred_index);
+    data->set_preferred_frame_timeline_index(os_preferred_index);
   });
 }
 

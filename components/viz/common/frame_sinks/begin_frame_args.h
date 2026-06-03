@@ -97,7 +97,7 @@ struct VIZ_COMMON_EXPORT PossibleDeadline {
 };
 
 struct VIZ_COMMON_EXPORT PossibleDeadlines {
-  explicit PossibleDeadlines(size_t preferred_index);
+  explicit PossibleDeadlines(size_t os_preferred_index);
   ~PossibleDeadlines();
 
   // Out-of-line copy and assignment operators.
@@ -106,10 +106,10 @@ struct VIZ_COMMON_EXPORT PossibleDeadlines {
   PossibleDeadlines& operator=(const PossibleDeadlines& other);
   PossibleDeadlines& operator=(PossibleDeadlines&& other);
 
-  const PossibleDeadline& GetPreferredDeadline() const;
+  const PossibleDeadline& GetOSPreferredDeadline() const;
 
   // Index into to `deadlines` vector picked by the OS as the default.
-  size_t preferred_index;
+  size_t os_preferred_index;
   std::vector<PossibleDeadline> deadlines;
 };
 

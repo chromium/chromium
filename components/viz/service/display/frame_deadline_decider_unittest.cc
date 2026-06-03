@@ -31,9 +31,9 @@ class FrameDeadlineDeciderTest : public testing::Test {
 };
 
 PossibleDeadlines CreatePossibleDeadlines(
-    size_t preferred_index,
+    size_t os_preferred_index,
     std::vector<PossibleDeadline> deadlines) {
-  PossibleDeadlines possible_deadlines(preferred_index);
+  PossibleDeadlines possible_deadlines(os_preferred_index);
   possible_deadlines.deadlines = std::move(deadlines);
   return possible_deadlines;
 }

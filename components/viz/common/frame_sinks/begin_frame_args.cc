@@ -85,8 +85,8 @@ PossibleDeadline& PossibleDeadline::operator=(const PossibleDeadline& other) =
 PossibleDeadline& PossibleDeadline::operator=(PossibleDeadline&& other) =
     default;
 
-PossibleDeadlines::PossibleDeadlines(size_t preferred_index)
-    : preferred_index(preferred_index) {}
+PossibleDeadlines::PossibleDeadlines(size_t os_preferred_index)
+    : os_preferred_index(os_preferred_index) {}
 PossibleDeadlines::PossibleDeadlines(const PossibleDeadlines& other) = default;
 PossibleDeadlines::PossibleDeadlines(PossibleDeadlines&& other) = default;
 PossibleDeadlines::~PossibleDeadlines() = default;
@@ -95,8 +95,8 @@ PossibleDeadlines& PossibleDeadlines::operator=(
 PossibleDeadlines& PossibleDeadlines::operator=(PossibleDeadlines&& other) =
     default;
 
-const PossibleDeadline& PossibleDeadlines::GetPreferredDeadline() const {
-  return deadlines[preferred_index];
+const PossibleDeadline& PossibleDeadlines::GetOSPreferredDeadline() const {
+  return deadlines[os_preferred_index];
 }
 
 BeginFrameArgs::BeginFrameArgs()
