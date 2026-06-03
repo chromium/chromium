@@ -3751,7 +3751,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Database.Size{SafeBrowsing_V4Store_Metrics}"
-    units="KB" expires_after="2026-07-12">
+    units="KB" expires_after="2027-06-02">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
