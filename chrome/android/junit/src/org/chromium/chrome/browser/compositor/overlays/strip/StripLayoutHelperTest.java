@@ -122,6 +122,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -238,6 +240,7 @@ public class StripLayoutHelperTest {
     @Mock private StripTabUnderlineManager.Natives mStripTabUnderlineMock;
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private ActivityResultTracker mActivityResultTracker;
+    @Mock private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
 
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
@@ -321,6 +324,7 @@ public class StripLayoutHelperTest {
         mSharedGroupTestHelper = new SharedGroupTestHelper(mCollaborationService);
 
         StripTabUnderlineManagerJni.setInstanceForTesting(mStripTabUnderlineMock);
+        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
     }
 
     @After
