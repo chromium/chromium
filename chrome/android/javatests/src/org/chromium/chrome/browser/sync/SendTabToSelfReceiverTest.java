@@ -4,7 +4,18 @@
 
 package org.chromium.chrome.browser.sync;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.chromium.chrome.browser.layouts.LayoutTestUtils.waitForLayout;
+
 import androidx.test.filters.LargeTest;
+
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,15 +28,19 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SendTabToSelfSpecifics;
+import org.chromium.ui.test.util.RenderTestRule.Component;
 
 /** Test suite for the Send Tab To Self sync data type. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -34,6 +49,13 @@ import org.chromium.components.sync.protocol.SendTabToSelfSpecifics;
 @EnableFeatures({ChromeFeatureList.SEND_TAB_TO_SELF_AUTO_OPEN})
 public class SendTabToSelfReceiverTest {
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(Component.SERVICES_SYNC)
+                    .setRevision(1)
+                    .build();
 
     private static final long UNIX_TO_WINDOWS_EPOCH_SECONDS = 11644473600L;
 
@@ -106,5 +128,70 @@ public class SendTabToSelfReceiverTest {
         Assert.assertEquals(
                 "https://www.example2.com/",
                 ThreadUtils.runOnUiThreadBlocking(() -> bgTab2.getUrl().getSpec()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    public void testSendTabToSelfMessageBanner() throws Exception {
+        long now = getCurrentTimeSinceWindowsEpochMicros();
+        injectSendTabToSelfEntity(
+                "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+
+        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 2, 0);
+
+        // Verify that the message banner is displayed.
+        onView(withId(R.id.message_primary_button)).check(matches(isDisplayed()));
+
+        mRenderTestRule.render(
+                mSyncTestRule.getActivity().findViewById(R.id.message_container),
+                "stts_message_banner");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    public void testSendTabToSelfMessageBannerClickOpensTabSwitcher() throws Exception {
+        long now = getCurrentTimeSinceWindowsEpochMicros();
+        injectSendTabToSelfEntity(
+                "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+
+        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 2, 0);
+
+        // Verify that the message banner is displayed.
+        onView(withId(R.id.message_primary_button)).check(matches(isDisplayed()));
+
+        // Click on the message banner primary button.
+        onView(withId(R.id.message_primary_button)).perform(click());
+
+        // Verify that the tab switcher is opened.
+        waitForLayout(mSyncTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
+
+        // Verify that the message banner goes away.
+        onView(withId(R.id.message_primary_button)).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    public void testNoSendTabToSelfMessageBannerForExpiredEntry() throws Exception {
+        long now = getCurrentTimeSinceWindowsEpochMicros();
+        // Set the shared time to 10 days ago, which is greater than the TTL of the STTS entry.
+        long sharedTime = now - TimeUnit.DAYS.toMicros(10);
+        injectSendTabToSelfEntity(
+                "stts_test_guid",
+                "https://www.example.com",
+                "Example",
+                "Example Phone",
+                sharedTime);
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+
+        // Verify that the STTS entry is not opened in a new tab.
+        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 1, 0);
+
+        // Verify that the message banner is not displayed.
+        onView(withId(R.id.message_primary_button)).check(doesNotExist());
     }
 }
