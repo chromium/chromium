@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -78,6 +79,7 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
      * @param browserControlsVisibilityDelegate Delegate interface allowing control of the
      *     visibility of the browser controls (i.e. toolbar).
      * @param fuseboxStateSupplier Used to decide if an plus button for fusebox should be shown.
+     * @param fuseboxLayoutModeSupplier Used to decide if the plus button should be hidden (AL).
      * @param onPlusButtonClicked Toggle the fusebox attachments menu when plus button used.
      * @param exactMatchUrlSupplier The URL if there is an exact match.
      */
@@ -92,6 +94,7 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
             @Nullable BrowserStateBrowserControlsVisibilityDelegate
                     browserControlsVisibilityDelegate,
             NonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
+            NonNullObservableSupplier<@FuseboxLayoutMode Integer> fuseboxLayoutModeSupplier,
             Runnable onPlusButtonClicked,
             NullableObservableSupplier<GURL> exactMatchUrlSupplier) {
         mIsTablet = isTablet;
@@ -124,6 +127,7 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
                         windowAndroid,
                         pageInfoAction,
                         fuseboxStateSupplier,
+                        fuseboxLayoutModeSupplier,
                         onPlusButtonClicked,
                         exactMatchUrlSupplier);
 

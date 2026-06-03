@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineIconObserver;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxFeatureUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
@@ -93,6 +94,7 @@ public class StatusMediator
     private final PageInfoIphController mPageInfoIphController;
     private final PageInfoAction mPageInfoAction;
     private final NonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
+    private final NonNullObservableSupplier<@FuseboxLayoutMode Integer> mFuseboxLayoutModeSupplier;
     private final OnClickListener mFuseboxOnPlusButtonClicked;
     private final NullableObservableSupplier<GURL> mExactMatchUrlSupplier;
     private final OmniboxImageSupplier mImageSupplier;
@@ -149,6 +151,7 @@ public class StatusMediator
      * @param pageInfoAction Callback to display the page info UI surface.
      * @param fuseboxStateSupplier Notifies about the state of the fusebox.
      * @param onPlusButtonClicked Toggle the fusebox attachments menu when plus button used.
+     * @param fuseboxLayoutModeSupplier Notifies about the layout mode of the fusebox.
      * @param exactMatchUrlSupplier Holds the url of an exact match, null otherwise.
      */
     public StatusMediator(
@@ -162,6 +165,7 @@ public class StatusMediator
             WindowAndroid windowAndroid,
             PageInfoAction pageInfoAction,
             NonNullObservableSupplier<Integer> fuseboxStateSupplier,
+            NonNullObservableSupplier<Integer> fuseboxLayoutModeSupplier,
             Runnable onPlusButtonClicked,
             NullableObservableSupplier<GURL> exactMatchUrlSupplier) {
         mContext = context;
@@ -184,6 +188,7 @@ public class StatusMediator
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, false);
 
         mFuseboxStateSupplier = fuseboxStateSupplier;
+        mFuseboxLayoutModeSupplier = fuseboxLayoutModeSupplier;
         mFuseboxOnPlusButtonClicked = v -> onPlusButtonClicked.run();
         mFuseboxStateSupplier.addSyncObserver(mOnFuseboxStateChanged);
 
@@ -571,8 +576,9 @@ public class StatusMediator
             iconRes = R.drawable.search_spark_black_24dp;
             descRes = R.string.accessibility_omnibox_open_context_popup;
             doubleTapDescriptionRes = Resources.ID_NULL;
-        } else if (mFuseboxStateSupplier.get() == FuseboxState.COMPACT
-                || shouldShowNtpPlusButton()) {
+        } else if (mFuseboxLayoutModeSupplier.get() == FuseboxLayoutMode.TOOLBAR
+                && (mFuseboxStateSupplier.get() == FuseboxState.COMPACT
+                        || shouldShowNtpPlusButton())) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             tintRes = mNavigationIconTintRes;
             iconRes = R.drawable.ic_add_round_20dp_with_inset;

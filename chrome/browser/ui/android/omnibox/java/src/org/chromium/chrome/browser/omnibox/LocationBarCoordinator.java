@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -314,14 +315,18 @@ public class LocationBarCoordinator
                                         : null,
                         backPressManager);
         NonNullObservableSupplier<Integer> fuseboxStateSupplier;
+        NonNullObservableSupplier<Integer> fuseboxLayoutModeSupplier;
         if (OmniboxFeatures.isMultimodalInputEnabled(context)) {
             fuseboxStateSupplier = mFuseboxCoordinator.getFuseboxStateSupplier();
             fuseboxStateSupplier.addSyncObserverAndPostIfNonNull(mOnFuseboxStateChange);
             mFuseboxCoordinator
                     .getPopupStateSupplier()
                     .addSyncObserverAndPostIfNonNull(mOnPopupStateChange);
+            fuseboxLayoutModeSupplier = mFuseboxCoordinator.getFuseboxLayoutModeSupplier();
         } else {
             fuseboxStateSupplier = ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
+            fuseboxLayoutModeSupplier =
+                    ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
         }
 
         if (mLocationBarLayout instanceof LocationBarTablet tabletLayout) {
@@ -442,6 +447,7 @@ public class LocationBarCoordinator
                         pageInfoAction,
                         browserControlsVisibilityDelegate,
                         fuseboxStateSupplier,
+                        fuseboxLayoutModeSupplier,
                         this::onPlusButtonClicked,
                         mLocationBarMediator.getExactMatchUrlSupplier());
         mLocationBarMediator.setCoordinators(
