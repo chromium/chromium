@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -293,8 +294,10 @@ HRESULT CreateMFSampleFromAudioBus(const AudioBus& audio_bus,
 
   // Convert data from `audio_bus` to interleaved signed int16_t data, as this
   // is the format required by the encoder.
-  audio_bus.ToInterleaved<SignedInt16SampleTypeTraits>(
-      audio_bus.frames(), reinterpret_cast<int16_t*>(dest_buffer_ptr));
+  // SAFETY: `dest_buffer_ptr` points to the `dest_buffer` we just allocated,
+  // which has at least `source_data_size` bytes (checked above).
+  audio_bus.ToInterleavedBytes<SignedInt16SampleTypeTraits>(
+      UNSAFE_BUFFERS(base::span<uint8_t>(dest_buffer_ptr, source_data_size)));
   RETURN_IF_FAILED(dest_buffer->Unlock());
   RETURN_IF_FAILED(dest_buffer->SetCurrentLength(source_data_size));
 
