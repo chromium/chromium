@@ -122,11 +122,11 @@ base::expected<void, const char*> VerifySignatureFromEC_KEY(
     base::span<const uint8_t> message,
     const ECDSA_SIG* ecdsa_sig,
     const EC_KEY* ec_key) {
-  uint8_t hash[SHA256_DIGEST_LENGTH];
-  SHA256(message.data(), message.size(), hash);
+  std::array<uint8_t, SHA256_DIGEST_LENGTH> hash;
+  SHA256(message.data(), message.size(), hash.data());
 
   const int verify_result =
-      ECDSA_do_verify(hash, SHA256_DIGEST_LENGTH, ecdsa_sig, ec_key);
+      ECDSA_do_verify(hash.data(), hash.size(), ecdsa_sig, ec_key);
   if (verify_result == 1) {
     return base::ok();
   } else if (verify_result < 0) {
@@ -148,13 +148,11 @@ base::expected<void, const char*> VerifyConcatSignatureFromEC_KEY(
     return base::unexpected("Invalid signature length; expected 64 bytes");
   }
   bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(ECDSA_SIG_new());
-  const uint8_t* r_bytes = signature.data();
-  const uint8_t* s_bytes = signature.subspan(kP256FieldElementBytes).data();
+  auto r_span = signature.first<kP256FieldElementBytes>();
+  auto s_span = signature.subspan<kP256FieldElementBytes>();
 
-  bssl::UniquePtr<BIGNUM> r(
-      BN_bin2bn(r_bytes, kP256FieldElementBytes, nullptr));
-  bssl::UniquePtr<BIGNUM> s(
-      BN_bin2bn(s_bytes, kP256FieldElementBytes, nullptr));
+  bssl::UniquePtr<BIGNUM> r(BN_bin2bn(r_span.data(), r_span.size(), nullptr));
+  bssl::UniquePtr<BIGNUM> s(BN_bin2bn(s_span.data(), s_span.size(), nullptr));
 
   CHECK(ECDSA_SIG_set0(ecdsa_sig.get(), r.release(), s.release()));
   return VerifySignatureFromEC_KEY(message, ecdsa_sig.get(), ec_key);
@@ -474,17 +472,16 @@ base::expected<void, const char*> VerifyExtensions(
 base::expected<void, const char*> CheckRootKeyHash(
     base::span<const uint8_t> root_key,
     base::span<const uint8_t, REPORT_DATA_SIZE> report_data) {
-  uint8_t digest[SHA256_DIGEST_LENGTH];
-  SHA256(root_key.data(), root_key.size(), digest);
+  std::array<uint8_t, SHA256_DIGEST_LENGTH> digest;
+  SHA256(root_key.data(), root_key.size(), digest.data());
   static_assert(REPORT_DATA_SIZE >= sizeof(digest));
   if (!std::ranges::equal(digest, report_data.first<sizeof(digest)>())) {
     return base::unexpected("root key hash incorrect");
   }
   // The rest of the report data should be zeros.
-  for (size_t i = sizeof(digest); i < REPORT_DATA_SIZE; i++) {
-    if (report_data[i]) {
-      return base::unexpected("report data is not zero-padded");
-    }
+  if (!std::ranges::all_of(report_data.subspan(sizeof(digest)),
+                           [](uint8_t b) { return b == 0; })) {
+    return base::unexpected("report data is not zero-padded");
   }
 
   return base::ok();
@@ -527,11 +524,11 @@ base::expected<void, const char*> VerifyAttestationReportSignature(
   bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(ECDSA_SIG_new());
   CHECK(ECDSA_SIG_set0(ecdsa_sig.get(), bn_r.release(), bn_s.release()));
 
-  uint8_t digest[SHA384_DIGEST_LENGTH];
-  SHA384(message.data(), message.size(), digest);
+  std::array<uint8_t, SHA384_DIGEST_LENGTH> digest;
+  SHA384(message.data(), message.size(), digest.data());
 
-  const int verify_result =
-      ECDSA_do_verify(digest, sizeof(digest), ecdsa_sig.get(), ec_key.get());
+  const int verify_result = ECDSA_do_verify(digest.data(), digest.size(),
+                                            ecdsa_sig.get(), ec_key.get());
   if (verify_result == 1) {
     return base::ok();
   } else if (verify_result < 0) {
@@ -711,7 +708,7 @@ base::expected<AttestationResult, const char*> ProcessAttestation(
   // report.
   static_assert(sizeof(attestation_report.data) == 0x2a0);
   RETURN_IF_ERROR(VerifyAttestationReportSignature(
-      amd_attestation.subspan(0ul, sizeof(attestation_report.data)),
+      amd_attestation.first<sizeof(attestation_report.data)>(),
       attestation_report.signature, *values.vcek_cert));
 
   base::span<const uint8_t> root_cose_key =
