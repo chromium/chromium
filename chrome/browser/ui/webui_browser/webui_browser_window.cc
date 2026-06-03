@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
+#include "chrome/browser/ui/webui_browser/browser_elements_webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_exclusive_access_context.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_modal_dialog_host.h"
@@ -134,6 +135,12 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
   widget_->SetNativeWindowProperty(kWebUIBrowserWindowKey, this);
   widget_->MakeCloseSynchronous(base::BindOnce(
       &WebUIBrowserWindow::OnWindowCloseRequested, base::Unretained(this)));
+
+  auto* browser_elements =
+      BrowserElements::From(browser_)->AsA<BrowserElementsWebUiBrowser>();
+  browser_elements->Init(
+      views::Widget::GetWidgetForNativeWindow(GetNativeWindow()));
+
   auto web_view = std::make_unique<views::WebView>(browser_->profile());
 
   auto* ui_web_contents = web_view->GetWebContents();

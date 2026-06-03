@@ -840,12 +840,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     bookmark_bar_controller_->SetDelegate(browser_view);
   }
 
-  if (auto* const provider =
-          browser_elements_->AsA<BrowserElementsWebUiBrowser>()) {
-    provider->Init(views::Widget::GetWidgetForNativeWindow(
-        browser->window()->GetNativeWindow()));
-  }
-
   if (webui_browser_window) {
     focus_manager = webui_browser_window->widget()->GetFocusManager();
 
@@ -884,15 +878,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
 void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     BrowserView* browser_view) {
-  if (auto* const provider =
-          browser_elements_->AsA<BrowserElementsViewsImpl>()) {
-    provider->Init(browser_view);
-    provider->AddRetrievalCallback(
-        kActiveContentsWebViewRetrievalId,
-        base::BindRepeating(&BrowserView::GetActiveContentsWebView,
-                            base::Unretained(browser_view)));
-  }
-
   scrim_view_controller_ = std::make_unique<ScrimViewController>(browser_view);
 
   // Set the window for the animation controller. Add animation providers here
