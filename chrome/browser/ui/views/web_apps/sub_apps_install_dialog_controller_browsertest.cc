@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -23,9 +24,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace web_app {
@@ -116,14 +118,16 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
       std::to_underlying(DialogViewIDForTesting::SUB_APP_ICON), &sub_app_icons);
   EXPECT_EQ(sub_app_icons.size(), 3u);
 
-  views::View* data_sharing_explanation =
-      widget->GetContentsView()->GetViewByID(
-          std::to_underlying(DialogViewIDForTesting::DATA_SHARING_EXPLANATION));
-  ASSERT_TRUE(data_sharing_explanation);
-  EXPECT_EQ(
-      static_cast<views::StyledLabel*>(data_sharing_explanation)->GetText(),
+  // Verify the dialog title and contents (app name and instructions).
+  views::View* contents_view = widget->GetContentsView();
+  EXPECT_TRUE(
+      test::HasChildLabelWithSubstring(contents_view, u"Install apps?"));
+  EXPECT_TRUE(
+      test::HasChildLabelWithSubstring(contents_view, u"\"Parent App\""));
+  EXPECT_TRUE(test::HasChildLabelWithSubstring(
+      contents_view,
       u"This app data will be shared between \"Parent App\" and its installed "
-      u"apps.");
+      u"apps."));
 
   widget->CloseNow();
 }
@@ -167,14 +171,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,
   EXPECT_FALSE(icon_view->GetImageModel().IsEmpty());
   EXPECT_EQ(icon_view->GetVisibleBounds().size(), gfx::Size(32, 32));
 
-  views::View* data_sharing_explanation =
-      widget->GetContentsView()->GetViewByID(
-          std::to_underlying(DialogViewIDForTesting::DATA_SHARING_EXPLANATION));
-  ASSERT_TRUE(data_sharing_explanation);
-  EXPECT_EQ(
-      static_cast<views::StyledLabel*>(data_sharing_explanation)->GetText(),
+  views::View* contents_view = widget->GetContentsView();
+  EXPECT_TRUE(test::HasChildLabelWithSubstring(
+      contents_view,
       u"This app data will be shared between \"Parent App\" and its installed "
-      u"apps.");
+      u"apps."));
 }
 
 IN_PROC_BROWSER_TEST_F(SubAppsInstallDialogControllerBrowserTest,

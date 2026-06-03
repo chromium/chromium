@@ -31,6 +31,10 @@ class BrowserWindowInterface;
 class GURL;
 class Profile;
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -232,6 +236,9 @@ MATCHER_P3(PendingUpdateInfoIs, location, version, integrity_block_data, "") {
                 integrity_block_data))),
       arg, result_listener);
 }
+
+bool HasChildLabelWithSubstring(views::View* parent,
+                                const std::u16string& substring);
 
 }  // namespace test
 

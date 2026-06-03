@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
@@ -41,6 +42,8 @@ class WebAppUninstallDialogDelegateView
   METADATA_HEADER(WebAppUninstallDialogDelegateView, views::DialogDelegateView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kUninstallCheckboxId);
+
   // Constructor for view component of dialog.
   WebAppUninstallDialogDelegateView(
       Profile* profile,

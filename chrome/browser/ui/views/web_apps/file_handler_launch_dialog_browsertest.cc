@@ -4,9 +4,13 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -22,12 +26,19 @@
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/file_handler_launch_dialog_view.h"
+#include "chrome/browser/ui/views/web_apps/sub_apps_install_dialog_controller.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -38,11 +49,18 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "third_party/blink/public/common/features.h"
+#include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -51,8 +69,6 @@ namespace {
 const char kStartUrl[] = "https://example.org/";
 const char kFileLaunchUrl[] = "https://example.org/file_launch/";
 const char kFileLaunchUrl2[] = "https://example.org/file_launch2/";
-
-}  // namespace
 
 // Tests for the `FileHandlerLaunchDialogView` as well as
 // `startup::web_app::MaybeHandleWebAppLaunch()`. As Chrome OS uses the app
@@ -357,5 +373,163 @@ IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, MultiLaunch) {
           });
   EXPECT_EQ(app_browsers.size(), 3U);
 }
+
+class FileHandlerLaunchDialogIwaTest : public IsolatedWebAppBrowserTestHarness {
+ public:
+  void SetUpOnMainThread() override {
+    IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
+    test::WaitUntilReady(WebAppProvider::GetForTest(profile()));
+  }
+
+  void LaunchAppWithFiles(const webapps::AppId& app_id,
+                          const std::vector<base::FilePath>& paths) {
+    StartupBrowserCreator browser_creator;
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchASCII(switches::kAppId, app_id);
+    for (const auto& path : paths) {
+      command_line.AppendArgPath(path);
+    }
+
+    browser_creator.Start(command_line, profile_manager->user_data_dir(),
+                          {profile(), StartupProfileMode::kBrowserWindow}, {});
+  }
+
+  webapps::AppId InstallSubAppAndWait(content::WebContents* iwa_contents,
+                                      std::string_view install_url,
+                                      const GURL& expected_sub_app_url) {
+    auto dialog_override =
+        SubAppsInstallDialogController::SetAutomaticActionForTesting(
+            SubAppsInstallDialogController::DialogActionForTesting::kAccept);
+
+    base::test::TestFuture<webapps::AppId> test_future;
+    WebAppInstallManagerObserverAdapter observer(profile());
+    observer.SetWebAppInstalledWithOsHooksDelegate(
+        test_future.GetRepeatingCallback<const webapps::AppId&>());
+
+    EXPECT_TRUE(content::ExecJs(iwa_contents,
+                                base::ReplaceStringPlaceholders(
+                                    R"(
+              navigator.subApps.add({
+                "$1": {"installURL": "$1"}
+              })
+            )",
+                                    {std::string(install_url)}, nullptr)));
+
+    webapps::AppId sub_app_id = GenerateAppId(
+        /*manifest_id_path=*/std::nullopt, expected_sub_app_url);
+
+    EXPECT_EQ(sub_app_id, test_future.Take());
+    return sub_app_id;
+  }
+
+ private:
+  base::test::ScopedFeatureList features_{blink::features::kSubApps};
+};
+
+IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogIwaTest,
+                       LaunchIwaShowsVersionLabel) {
+  auto bundle = IsolatedWebAppBuilder(
+                    ManifestBuilder()
+                        .SetName("Test IWA")
+                        .SetVersion("2.1.3")
+                        .AddFileHandler("/handle_file", {{"text/*", {".txt"}}}))
+                    .AddHtml("/handle_file", "<h1>Handle File</h1>")
+                    .BuildBundle();
+  IsolatedWebAppUrlInfo url_info = bundle->InstallChecked(profile());
+  webapps::AppId app_id = url_info.app_id();
+
+  base::RunLoop run_loop;
+  startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
+
+  FileHandlerLaunchDialogView::SetDefaultRememberSelectionForTesting(false);
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "FileHandlerLaunchDialogView");
+
+  LaunchAppWithFiles(app_id, {{base::FilePath::FromASCII("foo.txt")}});
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  views::View* contents_view = widget->GetContentsView();
+  EXPECT_TRUE(test::HasChildLabelWithSubstring(contents_view, u"2.1.3"));
+
+  views::test::CancelDialog(widget);
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogIwaTest,
+                       LaunchSubAppShowsParentAppNameLabel) {
+  auto parent_bundle =
+      IsolatedWebAppBuilder(
+          ManifestBuilder()
+              .SetName("Parent IWA")
+              .AddPermissionsPolicy(
+                  network::mojom::PermissionsPolicyFeature::kSubApps,
+                  /*self=*/true, /*origins=*/{}))
+          .AddHtml("/", "<h1>Parent</h1>")
+          .AddHtml("/subapp/index.html", R"(
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <link rel="manifest" href="/subapp.webmanifest">
+                <title>Sub App</title>
+              </head>
+              <body><h1>Sub App</h1></body>
+            </html>
+          )")
+          .AddResource("/subapp.webmanifest",
+                       R"(
+            {
+              "name": "Sub App",
+              "version": "1.0.0",
+              "start_url": "/subapp/index.html",
+              "display": "standalone",
+              "icons": [{
+                "src": "/icon.png",
+                "sizes": "256x256",
+                "type": "image/png"
+              }],
+              "file_handlers": [{
+                "action": "/subapp/handle_file",
+                "accept": {
+                  "text/*": [".txt"]
+                }
+              }]
+            }
+          )",
+                       "application/manifest+json")
+          .BuildBundle();
+  IsolatedWebAppUrlInfo parent_url_info =
+      parent_bundle->InstallChecked(profile());
+
+  Browser* parent_browser =
+      LaunchWebAppBrowserAndWait(parent_url_info.app_id());
+  ASSERT_NE(parent_browser, nullptr);
+  content::WebContents* parent_contents =
+      parent_browser->tab_strip_model()->GetActiveWebContents();
+
+  webapps::AppId sub_app_id = InstallSubAppAndWait(
+      parent_contents, "/subapp/index.html",
+      parent_url_info.origin().GetURL().Resolve("/subapp/index.html"));
+
+  base::RunLoop run_loop;
+  startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
+
+  FileHandlerLaunchDialogView::SetDefaultRememberSelectionForTesting(false);
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "FileHandlerLaunchDialogView");
+
+  LaunchAppWithFiles(sub_app_id, {{base::FilePath::FromASCII("foo.txt")}});
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  views::View* contents_view = widget->GetContentsView();
+  EXPECT_TRUE(test::HasChildLabelWithSubstring(contents_view, u"Parent IWA"));
+
+  views::test::CancelDialog(widget);
+  run_loop.Run();
+}
+
+}  // namespace
 
 }  // namespace web_app

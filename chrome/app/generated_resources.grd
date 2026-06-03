@@ -19243,6 +19243,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE" desc="Subtitle of an error popup during the verification step of the Isolated Web App installer">
       This bundle might be broken or compromised. Please close this window and download it again
     </message>
+    <message name="IDS_IWA_SUB_APPS_INSTALLER_PARENT_APP_NAME" desc="Label before the Sub App's parent Isolated Web App name in the app related dialogs.">
+    Parent App: <ph name="APP_NAME">$1<ex>Google Maps</ex></ph>
+    </message>
     <if expr="is_chromeos">
         <message name="IDS_IWA_INSTALLER_SHELF_ITEM_TITLE" desc="Title of an Isolated Web App installer item on the ChromeOS Shelf.">
           Application Installer

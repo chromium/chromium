@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
 
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -11,10 +14,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_identity_view.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/sub_app_identity_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/model/web_app_icon_types.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -27,7 +33,9 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -39,8 +47,12 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppUninstallDialogDelegateView,
+                                      kUninstallCheckboxId);
 
 namespace {
 
@@ -57,6 +69,29 @@ enum HistogramCloseAction {
   kMaxValue = kCancelled
 };
 
+std::unique_ptr<views::View> CreateAppIdentityView(
+    const gfx::ImageSkia& image,
+    const web_app::WebAppRegistrar& registrar,
+    const webapps::AppId& app_id,
+    bool is_maskable) {
+  std::u16string app_name =
+      base::UTF8ToUTF16(registrar.GetAppShortName(app_id));
+  if (auto parent_app_name = registrar.GetParentAppShortName(app_id)) {
+    return SubAppIdentityView::Create(image, std::move(app_name),
+                                      base::UTF8ToUTF16(*parent_app_name),
+                                      is_maskable);
+  }
+  if (auto* web_app = registrar.GetAppById(
+          app_id, web_app::WebAppFilter::IsIsolatedApp())) {
+    return IsolatedWebAppIdentityView::Create(
+        image, std::move(app_name), web_app->isolation_data()->version(),
+        is_maskable);
+  }
+  const GURL app_start_url = registrar.GetAppStartUrl(app_id);
+  return WebAppIconNameAndOriginView::Create(image, std::move(app_name),
+                                             app_start_url, is_maskable);
+}
+
 }  // namespace
 
 WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
@@ -70,11 +105,6 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
       uninstall_choice_callback_(std::move(uninstall_choice_callback)) {
   provider_ = web_app::WebAppProvider::GetForWebApps(profile_)->AsWeakPtr();
   DCHECK(provider_);
-
-  const GURL app_start_url =
-      provider_->registrar_unsafe().GetAppStartUrl(app_id_);
-  DCHECK(!app_start_url.is_empty());
-  DCHECK(app_start_url.is_valid());
 
   web_app::UnorderedSizeToBitmap icon_bitmaps(icon_metadata.icons_map.begin(),
                                               icon_metadata.icons_map.end());
@@ -90,10 +120,12 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
 
   SetTitle(l10n_util::GetStringUTF16(IDS_APP_UNINSTALL_PROMPT_TITLE));
 
-  AddChildView(WebAppIconNameAndOriginView::Create(
-      image_,
-      base::UTF8ToUTF16(provider_->registrar_unsafe().GetAppShortName(app_id_)),
-      app_start_url, icon_metadata.purpose == web_app::IconPurpose::MASKABLE));
+  const auto& registrar = provider_->registrar_unsafe();
+
+  AddChildView(CreateAppIdentityView(
+      image_, registrar, app_id_,
+      icon_metadata.purpose == web_app::IconPurpose::MASKABLE));
+
   SetButtonLabel(
       ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_APP_BUTTON));
@@ -125,15 +157,21 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
   checkbox_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, checkbox_insets));
 
-  // For IWAs checkbox will not be displayed, removal of storage is
-  // automatically enforced.
+  // The uninstaller model for web apps includes a checkbox to optionally clear
+  // the site data. This checkbox is hidden for:
+  // 1. Isolated web apps since the data is wiped unconditionally.
+  // 2. Sub-apps of isolated web apps because they share
+  // their origin with the parent isolated web app (and hence clearing the data
+  // will affect the parent too).
   if (!provider_->registrar_unsafe().AppMatches(
-          app_id_, web_app::WebAppFilter::IsIsolatedApp())) {
+          app_id_, web_app::WebAppFilter::IsIsolatedApp() |
+                       web_app::WebAppFilter::IsIsolatedSubApp())) {
     std::u16string checkbox_label =
         l10n_util::GetStringUTF16(IDS_APP_ALSO_DELETE_APPS_DATA);
 
     auto checkbox = std::make_unique<views::Checkbox>(checkbox_label);
     checkbox->SetMultiLine(true);
+    checkbox->SetProperty(views::kElementIdentifierKey, kUninstallCheckboxId);
     checkbox_ = checkbox_container->AddChildView(std::move(checkbox));
   }
 
@@ -204,7 +242,9 @@ void WebAppUninstallDialogDelegateView::ProcessAutoConfirmValue() {
     case extensions::ScopedTestDialogAutoConfirm::NONE:
       break;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
-      checkbox_->SetChecked(/*checked=*/true);
+      if (checkbox_) {
+        checkbox_->SetChecked(/*checked=*/true);
+      }
       AcceptDialog();
       break;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT:

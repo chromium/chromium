@@ -18,25 +18,46 @@
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+
+namespace web_app {
 
 namespace {
 
 bool g_default_remember_selection = false;
 
-}  // namespace
+std::unique_ptr<views::Label> CreateAppInfoView(
+    const WebAppRegistrar& registrar,
+    const webapps::AppId& app_id) {
+  if (auto parent_app_name = registrar.GetParentAppShortName(app_id)) {
+    return CreateParentNameLabel(base::UTF8ToUTF16(*parent_app_name));
+  }
 
-namespace web_app {
+  if (auto* web_app =
+          registrar.GetAppById(app_id, WebAppFilter::IsIsolatedApp())) {
+    return CreateVersionLabel(web_app->isolation_data()->version().version());
+  }
+
+  return CreateOriginLabelFromStartUrl(registrar.GetAppStartUrl(app_id), true);
+}
+
+}  // namespace
 
 void LaunchAppUserChoiceDialogView::SetDefaultRememberSelectionForTesting(
     bool remember_selection) {
@@ -146,12 +167,12 @@ void LaunchAppUserChoiceDialogView::InitChildViews() {
     app_name_publisher_view->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical));
-    app_name_publisher_view->AddChildViewRaw(
-        CreateNameLabel(base::UTF8ToUTF16(registrar.GetAppShortName(app_id_)))
-            .release());
-    app_name_publisher_view->AddChildViewRaw(
-        CreateOriginLabelFromStartUrl(registrar.GetAppStartUrl(app_id_), true)
-            .release());
+    app_name_publisher_view->AddChildView(
+        CreateNameLabel(base::UTF8ToUTF16(registrar.GetAppShortName(app_id_))));
+
+    app_name_publisher_view->AddChildView(
+        CreateAppInfoView(registrar, app_id_));
+
     app_info_view->AddChildView(std::move(app_name_publisher_view));
 
     AddChildView(std::move(app_info_view));

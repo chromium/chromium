@@ -134,7 +134,7 @@ enum class PwaInProductHelpState {
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogAppTitle);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogIconView);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogOriginLabel);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogAppInfoLabel);
 
 // Shows the PWA installation confirmation bubble anchored off the PWA install
 // icon in the omnibox.

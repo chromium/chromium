@@ -413,6 +413,12 @@ class WebAppRegistrar {
   std::vector<webapps::AppId> GetAllSubAppIds(
       const webapps::AppId& parent_app_id) const;
 
+  // Gets the name of the Parent App of a given sub app.
+  // The function returns std::nullopt if the given app_id does not
+  // belong to sub app of an isolated web app.
+  std::optional<std::string> GetParentAppShortName(
+      const webapps::AppId& app_id) const;
+
   // Maps all app IDs to their parent apps' IDs. Maps that do not have a parent
   // are omitted. This query should only be called with an AllAppsLock since all
   // apps are queried for their parent.

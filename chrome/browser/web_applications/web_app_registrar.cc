@@ -2042,6 +2042,16 @@ WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
   });
 }
 
+std::optional<std::string> WebAppRegistrar::GetParentAppShortName(
+    const webapps::AppId& app_id) const {
+  auto* sub_app = GetAppById(app_id, WebAppFilter::IsIsolatedSubApp());
+  if (!sub_app) {
+    return std::nullopt;
+  }
+
+  return GetAppShortName(sub_app->parent_app_id().value());
+}
+
 bool IsRegistryEqual(const Registry& registry,
                      const Registry& registry2,
                      bool exclude_current_os_integration) {

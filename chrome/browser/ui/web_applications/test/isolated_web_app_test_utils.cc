@@ -58,6 +58,11 @@
 #include "third_party/skia/include/core/SkStream.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -341,5 +346,26 @@ void CommitPendingIsolatedWebAppNavigation(content::WebContents* web_contents) {
                    permissions_policy_cache->GetPolicy(iwa_origin),
                    iwa_origin.origin());
 }
+
+namespace test {
+
+bool HasChildLabelWithSubstring(views::View* parent,
+                                const std::u16string& substring) {
+  return views::test::AnyViewMatchingPredicate(
+             parent, [&](const views::View* view) {
+               if (auto* label = views::AsViewClass<views::Label>(view)) {
+                 return label->GetText().find(substring) !=
+                        std::u16string::npos;
+               }
+               if (auto* styled_label =
+                       views::AsViewClass<views::StyledLabel>(view)) {
+                 return styled_label->GetText().find(substring) !=
+                        std::u16string::npos;
+               }
+               return false;
+             }) != nullptr;
+}
+
+}  // namespace test
 
 }  // namespace web_app

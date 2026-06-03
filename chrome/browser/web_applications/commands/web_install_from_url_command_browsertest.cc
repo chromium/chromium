@@ -2083,7 +2083,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandDialogTest,
 
   // Verify the origin label.
   views::Label* start_url_view = tracker_views->GetUniqueViewAs<views::Label>(
-      kSimpleInstallDialogOriginLabel, context);
+      kSimpleInstallDialogAppInfoLabel, context);
   ASSERT_NE(start_url_view, nullptr);
   EXPECT_EQ(
       start_url_view->GetText(),

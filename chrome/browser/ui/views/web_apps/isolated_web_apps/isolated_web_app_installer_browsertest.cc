@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_user_installability_checker.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
@@ -42,6 +43,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/test/dialog_test.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -60,8 +62,6 @@ void AcceptDialogAndContinue(views::Widget* widget) {
   auto* delegate = widget->widget_delegate()->AsDialogDelegate();
   delegate->AcceptDialog();
 }
-
-}  // namespace
 
 class IsolatedWebAppInstallerBrowserTest : public WebAppBrowserTestBase {
  public:
@@ -125,6 +125,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
 
   views::Widget* main_widget = controller->GetWidgetForTesting();
   ASSERT_TRUE(main_widget);
+
+  // Verify the installer metadata dialog title and pane contents
+  views::View* contents_view = main_widget->GetContentsView();
+  EXPECT_TRUE(test::HasChildLabelWithSubstring(contents_view, u"Test App"));
+  EXPECT_TRUE(test::HasChildLabelWithSubstring(contents_view, u"0.0.1"));
+  EXPECT_TRUE(test::HasChildLabelWithSubstring(contents_view, u"fancy comp"));
 
   AcceptDialogAndContinue(main_widget);
 
@@ -369,5 +375,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerDisabledBrowserTest,
   EXPECT_EQ(model->step(), IsolatedWebAppInstallerModel::Step::kNone);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+}  // namespace
 
 }  // namespace web_app

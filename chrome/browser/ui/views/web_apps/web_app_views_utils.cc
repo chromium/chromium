@@ -4,8 +4,18 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 
+#include <memory>
+#include <string>
+
+#include "base/strings/utf_string_conversions.h"
+#include "base/version.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/style/typography.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -44,6 +54,28 @@ std::unique_ptr<views::Label> CreateOriginLabelFromStartUrl(
   origin_label->SetMultiLine(false);
 
   return origin_label;
+}
+
+std::unique_ptr<views::Label> CreateVersionLabel(const base::Version& version) {
+  std::u16string version_u16 = base::UTF8ToUTF16(version.GetString());
+  auto version_label = std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16(
+          IDS_IWA_INSTALLER_SHOW_METADATA_APP_VERSION_LABEL, version_u16),
+      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY);
+  version_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  version_label->SetMultiLine(false);
+  return version_label;
+}
+
+std::unique_ptr<views::Label> CreateParentNameLabel(
+    const std::u16string& name) {
+  auto parent_app_label = std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16(IDS_IWA_SUB_APPS_INSTALLER_PARENT_APP_NAME,
+                                 name),
+      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY);
+  parent_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  parent_app_label->SetMultiLine(false);
+  return parent_app_label;
 }
 
 }  // namespace web_app

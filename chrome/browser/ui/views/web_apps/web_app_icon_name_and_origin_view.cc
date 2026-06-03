@@ -6,17 +6,23 @@
 
 #include <memory>
 #include <string>
+#include <utility>
+#include <variant>
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/version.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
@@ -25,7 +31,7 @@
 namespace web_app {
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogAppTitle);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogIconView);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogOriginLabel);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSimpleInstallDialogAppInfoLabel);
 }  // namespace web_app
 
 std::unique_ptr<WebAppIconNameAndOriginView>
@@ -34,7 +40,7 @@ WebAppIconNameAndOriginView::Create(const gfx::ImageSkia& icon_image,
                                     const GURL& start_url,
                                     bool should_mask_icon) {
   return base::WrapUnique(new WebAppIconNameAndOriginView(
-      icon_image, app_title, start_url, should_mask_icon));
+      icon_image, app_title, StartUrl(start_url), should_mask_icon));
 }
 
 WebAppIconNameAndOriginView::~WebAppIconNameAndOriginView() = default;
@@ -42,7 +48,7 @@ WebAppIconNameAndOriginView::~WebAppIconNameAndOriginView() = default;
 WebAppIconNameAndOriginView::WebAppIconNameAndOriginView(
     const gfx::ImageSkia& icon_image,
     std::u16string app_title,
-    const GURL& start_url,
+    AppInfo app_info,
     bool should_mask_icon) {
   base::TrimWhitespace(app_title, base::TRIM_ALL, &app_title);
   int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -72,11 +78,22 @@ WebAppIconNameAndOriginView::WebAppIconNameAndOriginView(
                           web_app::kSimpleInstallDialogAppTitle);
   labels_ptr->AddChildView(std::move(name_label));
 
-  auto origin_label = web_app::CreateOriginLabelFromStartUrl(
-      start_url, /*is_primary_text=*/false);
-  origin_label->SetProperty(views::kElementIdentifierKey,
-                            web_app::kSimpleInstallDialogOriginLabel);
-  labels_ptr->AddChildView(std::move(origin_label));
+  std::unique_ptr<views::Label> app_info_label = std::visit(
+      absl::Overload{[](const StartUrl& start_url) {
+                       return web_app::CreateOriginLabelFromStartUrl(
+                           start_url.value(), /*is_primary_text=*/false);
+                     },
+                     [](const base::Version& version) {
+                       return web_app::CreateVersionLabel(version);
+                     },
+                     [](const ParentAppTitle& parent_app_title) {
+                       return web_app::CreateParentNameLabel(
+                           parent_app_title.value());
+                     }},
+      app_info);
+  app_info_label->SetProperty(views::kElementIdentifierKey,
+                              web_app::kSimpleInstallDialogAppInfoLabel);
+  labels_ptr->AddChildView(std::move(app_info_label));
 }
 
 void WebAppIconNameAndOriginView::OnIconMaskingComplete(
