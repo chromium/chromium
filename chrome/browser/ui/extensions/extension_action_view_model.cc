@@ -488,16 +488,11 @@ void ExtensionActionViewModel::ExecuteUserAction(InvocationSource source) {
   }
 
   RecordInvocationSource(source);
-  if (base::FeatureList::IsEnabled(
-          features::kEnableExtensionsMenuTeardownFix)) {
-    // Asynchronously close the menu in case the action didn't trigger a
-    // focus-stealing popup.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ExtensionActionViewModel::CloseMenuTask,
-                                  weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    delegate_->CloseExtensionsMenuIfOpen();
-  }
+  // Asynchronously close the menu in case the action didn't trigger a
+  // focus-stealing popup.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ExtensionActionViewModel::CloseMenuTask,
+                                weak_ptr_factory_.GetWeakPtr()));
 
   // This method is only called to execute an action by the user, so we can
   // always grant tab permissions.

@@ -56,15 +56,7 @@ void ExtensionsMenuCoordinator::Hide() {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
   if (views::Widget* const menu = GetExtensionsMenuWidget()) {
-    if (base::FeatureList::IsEnabled(
-            features::kEnableExtensionsMenuTeardownFix)) {
-      menu->CloseNow();
-    } else {
-      menu->Close();
-      // Immediately stop tracking the view. Widget will be destroyed
-      // asynchronously.
-      bubble_tracker_.SetView(nullptr);
-    }
+    menu->CloseNow();
   }
 }
 
