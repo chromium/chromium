@@ -321,10 +321,10 @@ def CheckAccessibilityTestExpectationFilenames(input_api, output_api):
     problems = []
 
     for f in input_api.AffectedFiles(file_filter=FileFilter):
-      if f.Action() == 'D':
-          continue
-      if not any(f.LocalPath().endswith(suffix) for suffix in valid_suffixes):
-        problems.append(f.LocalPath())
+        if f.Action() == 'D':
+            continue
+        if not any(f.LocalPath().endswith(suffix) for suffix in valid_suffixes):
+            problems.append(f.LocalPath())
 
     if problems:
         return [
@@ -362,10 +362,10 @@ def CheckAccessibilityTestExpectationFilenamesMacWin(input_api, output_api):
     problems = []
 
     for f in input_api.AffectedFiles(file_filter=FileFilter):
-      if f.Action() == 'D':
-          continue
-      if not any(f.LocalPath().endswith(suffix) for suffix in valid_suffixes):
-        problems.append(f.LocalPath())
+        if f.Action() == 'D':
+            continue
+        if not any(f.LocalPath().endswith(suffix) for suffix in valid_suffixes):
+            problems.append(f.LocalPath())
 
     if problems:
         return [
@@ -431,26 +431,25 @@ def CheckAccessibilityHtmlFileTest(input_api, output_api):
         )
 
     html_files = {}  # Store HTML files and their base names
-    android_txt_files = {} # Store android txt files
+    android_txt_files = []  # Store android txt files
     problems = []
 
     for f in input_api.AffectedFiles(file_filter=FileFilter):
         if f.LocalPath().endswith(".html"):
-          html_files[input_api.os_path.basename(f.LocalPath())] = f.LocalPath()
+            html_files[input_api.os_path.basename(f.LocalPath())] = f.LocalPath()
         if f.LocalPath().endswith(".txt"):
             if "-expected-android-" in f.LocalPath():
-                android_txt_files[input_api.os_path.basename(f.LocalPath())] = f.LocalPath()
+                android_txt_files.append(f.LocalPath())
 
     # If any Android txt files were found, check for Java file changes
-    for txt_file_name, txt_file_path in android_txt_files.items():
+    for txt_file_path in android_txt_files:
         ################
-        # txt_file_name: example-expected-android-external.txt
         # txt_file_path: content/test/data/accessibility/html/example-expected-android-external.txt
-        # name:          example
         # html_path:     content/test/data/accessibility/html/example.html
+        # html_name:     example.html
         ################
-        name = txt_file_name.split("-expected-android")[0]
-        html_path = txt_file_path.split("-expected-android")[0] + ".html"
+        html_path = _ComputeAccessibilityHtmlFilePath(txt_file_path, input_api)
+        html_name = input_api.os_path.basename(html_path)
 
         java_test_suite_file = None
         readable_file_name = None
@@ -478,7 +477,7 @@ def CheckAccessibilityHtmlFileTest(input_api, output_api):
         if java_test_suite_file is not None:
             try:
                 test_contents = input_api.ReadFile(os.path.join(input_api.change.RepositoryRoot(), java_test_suite_file))
-                expected_addition = f"{name}.html"
+                expected_addition = f"{html_name}"
                 if expected_addition not in test_contents:
                     problems.append(f"{expected_addition} (missing reference in {readable_file_name})")
             except Exception as e:
@@ -526,6 +525,34 @@ def CheckAccessibilityHtmlFileTest(input_api, output_api):
             )
         ]
     return []
+
+
+def _ComputeAccessibilityHtmlFilePath(txt_file_path, input_api):
+    """Compute the HTML file path based on the expectation file path."""
+    txt_file_name = input_api.os_path.basename(txt_file_path)
+    txt_file_dir = input_api.os_path.dirname(txt_file_path)
+
+    # If the expectation file name is
+    # 'foo-expanded-awesome-feature-expected-android.txt', the
+    # HTML file name is either 'foo-expanded.html' or 'foo.html' depending on
+    # whether the feature is called 'awesome-feature' or
+    # 'expanded-awesome-feature' respectively.
+    FEATURE_DELIMITER = "-feature-expected-android"
+    if FEATURE_DELIMITER in txt_file_name:
+        hyphen_index = txt_file_name.find(FEATURE_DELIMITER)
+        while hyphen_index >= 0:
+            html_file_name = txt_file_name[0:hyphen_index] + ".html"
+            html_file_path = os.path.join(txt_file_dir, html_file_name)
+            abs_html_file_path = os.path.join(
+                input_api.change.RepositoryRoot(), html_file_path)
+            if input_api.os_path.exists(abs_html_file_path):
+                return html_file_path
+
+            hyphen_index = txt_file_name.rfind('-', 0, hyphen_index)
+
+    DEFAULT_DELIMITER = "-expected-android"
+    html_file_name = txt_file_name.split(DEFAULT_DELIMITER)[0]
+    return input_api.os_path.join(txt_file_dir, html_file_name) + ".html"
 
 
 # TODO(accessibility) Check the current directory for the html file,

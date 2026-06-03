@@ -3798,6 +3798,7 @@ data/accessibility/html/contenteditable-descendants-expected-fuchsia.txt
 data/accessibility/html/contenteditable-descendants-expected-mac.txt
 data/accessibility/html/contenteditable-descendants-expected-uia-win.txt
 data/accessibility/html/contenteditable-descendants-expected-win.txt
+data/accessibility/html/contenteditable-descendants-expose-non-atomic-text-field-children-feature-expected-android-external.txt
 data/accessibility/html/contenteditable-descendants-with-selection-expected-android.txt
 data/accessibility/html/contenteditable-descendants-with-selection-expected-auralinux.txt
 data/accessibility/html/contenteditable-descendants-with-selection-expected-blink.txt

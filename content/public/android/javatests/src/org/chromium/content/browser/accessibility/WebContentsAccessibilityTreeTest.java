@@ -1722,8 +1722,18 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    public void test_contenteditableDescendants() {
+    @DisableFeatures(ContentInternalFeatures.ACCESSIBILITY_EXPOSE_NON_ATOMIC_TEXT_FIELD_CHILDREN)
+    public void test_contenteditableDescendants_ExposeNonAtomicTextFieldChildrenFeatureDisabled() {
         performHtmlTest("contenteditable-descendants.html");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentInternalFeatures.ACCESSIBILITY_EXPOSE_NON_ATOMIC_TEXT_FIELD_CHILDREN)
+    public void test_contenteditableDescendants_ExposeNonAtomicTextFieldChildrenFeatureEnabled() {
+        performHtmlTest(
+                "contenteditable-descendants.html",
+                "contenteditable-descendants-expose-non-atomic-text-field-children-feature");
     }
 
     @Test
@@ -1734,7 +1744,17 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    public void test_contenteditableWithNoDescendants() {
+    @DisableFeatures(ContentInternalFeatures.ACCESSIBILITY_EXPOSE_NON_ATOMIC_TEXT_FIELD_CHILDREN)
+    public void
+            test_contenteditableWithNoDescendants_ExposeNonAtomicTextFieldChildrenFeatureDisabled() {
+        performHtmlTest("contenteditable-with-no-descendants.html");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentInternalFeatures.ACCESSIBILITY_EXPOSE_NON_ATOMIC_TEXT_FIELD_CHILDREN)
+    public void
+            test_contenteditableWithNoDescendants_ExposeNonAtomicTextFieldChildrenFeatureEnabled() {
         performHtmlTest("contenteditable-with-no-descendants.html");
     }
 

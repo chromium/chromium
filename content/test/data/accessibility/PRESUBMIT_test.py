@@ -630,45 +630,110 @@ class AccessibilityHtmlFileTestTest(unittest.TestCase):
         self.assertIn("dump_accessibility_events_browsertest.cc", results[0].items[1])
         self.assertNotIn("WebContentsAccessibilityEventsTest.java", results[0].items[1])
 
-    # Test warning when no filename added in interesting directories for Android
+    # Test warning when a HTML file in an Android interesting directory is not added to WebContentsAccessibilityTreeTest.java
     def testMissingReferenceForInterestingAndroidFolder(self):
         mock_input_api = MockInputApi()
-        mock_input_api.files = [
-            MockFile("content/test/data/accessibility/accname/foo.html", [], action='A'),
-            MockFile("content/test/data/accessibility/accname/foo-expected-android-external.txt", [], action='A'),
-            MockFile("content/browser/accessibility/dump_accessibility_node_browsertest.cc", [
-                "foo.html",
-            ], action='A'),
-            MockFile("content/test/data/accessibility/css/bar.html", [], action='A'),
-            MockFile("content/test/data/accessibility/css/bar-expected-android-external.txt", [], action='A'),
-            MockFile("content/test/data/accessibility/aria/baz.html", [], action='A'),
-            MockFile("content/test/data/accessibility/aria/baz-expected-android-assist-data.txt", [], action='A'),
-            MockFile("content/test/data/accessibility/html/beep.html", [], action='A'),
-            MockFile("content/test/data/accessibility/html/beep-expected-android-external.txt", [], action='A'),
-            MockFile("content/browser/accessibility/dump_accessibility_tree_browsertest.cc", [
-                "foo.html",
-                "bar.html",
-                "baz.html",
-                "beep.html",
-            ]),
-            MockFile("content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityTreeTest.java", []),
-        ]
+        mock_input_api.InitFiles([
+            MockFile("content/test/data/accessibility/accname/foo.html", [],
+                     action='A'),
+            MockFile(
+                "content/test/data/accessibility/accname/foo-expected-android-external.txt",
+                [],
+                action='A'),
+            MockFile(
+                "content/browser/accessibility/dump_accessibility_node_browsertest.cc",
+                [
+                    "foo.html",
+                ],
+                action='A'),
+            MockFile("content/test/data/accessibility/css/bar.html", [],
+                     action='A'),
+            MockFile(
+                "content/test/data/accessibility/css/bar-expected-android-external.txt",
+                [],
+                action='A'),
+            MockFile("content/test/data/accessibility/aria/baz.html", [],
+                     action='A'),
+            MockFile(
+                "content/test/data/accessibility/aria/baz-expected-android-assist-data.txt",
+                [],
+                action='A'),
+            MockFile("content/test/data/accessibility/html/beep.html", [],
+                     action='A'),
+            MockFile(
+                "content/test/data/accessibility/html/beep-expected-android-external.txt",
+                [],
+                action='A'),
+            MockFile(
+                "content/browser/accessibility/dump_accessibility_tree_browsertest.cc",
+                [
+                    "foo.html",
+                    "bar.html",
+                    "baz.html",
+                    "beep.html",
+                ]),
+            MockFile(
+                "content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityTreeTest.java",
+                []),
+        ])
         results = PRESUBMIT.CheckAccessibilityHtmlFileTest(mock_input_api, MockOutputApi())
         self.assertEqual(1, len(results))
         self.assertEqual(4, len(results[0].items))
-        self.assertIn("foo.html", results[0].items[0])
-        self.assertNotIn("dump_accessibility_tree_browsertest.cc", results[0].items[0])
-        self.assertIn("WebContentsAccessibilityTreeTest.java", results[0].items[0])
-        self.assertIn("bar.html", results[0].items[1])
-        self.assertNotIn("dump_accessibility_tree_browsertest.cc", results[0].items[1])
-        self.assertIn("WebContentsAccessibilityTreeTest.java", results[0].items[1])
-        self.assertIn("baz.html", results[0].items[2])
-        self.assertNotIn("dump_accessibility_tree_browsertest.cc", results[0].items[2])
-        self.assertIn("WebContentsAccessibilityTreeTest.java", results[0].items[2])
-        self.assertIn("beep.html", results[0].items[3])
-        self.assertNotIn("dump_accessibility_tree_browsertest.cc", results[0].items[3])
-        self.assertIn("WebContentsAccessibilityTreeTest.java", results[0].items[3])
+        self.assertErrorIsAboutStringMissingFromTreeTestJava(
+            results[0].items[0], "foo.html")
+        self.assertErrorIsAboutStringMissingFromTreeTestJava(
+            results[0].items[1], "bar.html")
+        self.assertErrorIsAboutStringMissingFromTreeTestJava(
+            results[0].items[2], "baz.html")
+        self.assertErrorIsAboutStringMissingFromTreeTestJava(
+            results[0].items[3], "beep.html")
 
+    # Test how HTML file name is computed based on txt expectation file name in :func:`CheckAccessibilityHtmlFileTest()`.
+    def testMissingReferenceForAndroidFeatureTest(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.InitFiles([
+            MockFile("content/test/data/accessibility/html/foo.html", [],
+                     action='A'),
+            MockFile(
+                "content/test/data/accessibility/html/foo-super-amazing-feature-expected-android-external.txt",
+                [],
+                action='A'),
+            MockFile(
+                "content/test/data/accessibility/html/foo-expanded-expected-android-external.txt",
+                [],
+                action='A'),
+            MockFile(
+                "content/browser/accessibility/dump_accessibility_tree_browsertest.cc",
+                [
+                    "foo.html",
+                    "bar.html",
+                    "baz.html",
+                    "beep.html",
+                ]),
+            MockFile(
+                "content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityTreeTest.java",
+                []),
+        ])
+        results = PRESUBMIT.CheckAccessibilityHtmlFileTest(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual(3, len(results[0].items))
+        self.assertErrorIsAboutStringMissingFromTreeTestJava(
+            results[0].items[0], "foo.html")
+        # Should have error about foo-expanded.html not existing.
+        self.assertIn("foo-expanded.html", results[0].items[1])
+        self.assertIn("No such file", results[0].items[1])
+        self.assertErrorIsAboutStringMissingFromTreeTestJava(
+            results[0].items[2], "foo-expanded.html")
+
+    # Assert that the error is about `expected_substring` not being found in
+    # WebContentsAccessibilityTreeTest.java
+    def assertErrorIsAboutStringMissingFromTreeTestJava(
+            self, error_string, expected_substring):
+        self.assertIn(expected_substring, error_string)
+        self.assertNotIn("dump_accessibility_tree_browsertest.cc",
+                         error_string)
+        self.assertIn("WebContentsAccessibilityTreeTest.java", error_string)
 
 class CheckAccessibilityHtmlExpectationsPairTest(unittest.TestCase):
 
@@ -732,8 +797,8 @@ class CheckAccessibilityHtmlExpectationsPairTest(unittest.TestCase):
         results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
         self.assertEqual(0, len(results))
 
-     # Test no warnings for frames, which are referenced in other tests but
-     # are not tested directly themselves.
+    # Test no warnings for frames, which are referenced in other tests but
+    # are not tested directly themselves.
     def testFrameFiles(self):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
