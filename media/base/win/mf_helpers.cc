@@ -45,20 +45,46 @@
 
 namespace media {
 
+namespace {
+
+void DestroySharedImageResourcesOnGpuThread(
+    std::unique_ptr<gpu::VideoImageRepresentation> representation,
+    std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
+        scoped_read_access,
+    scoped_refptr<gpu::SharedContextState> context_state) {
+  if (context_state && context_state->MakeCurrent(nullptr, /*needs_gl=*/true)) {
+    scoped_read_access.reset();
+    representation.reset();
+  } else {
+    if (representation) {
+      representation->OnContextLost();
+    }
+    scoped_read_access.reset();
+    representation.reset();
+  }
+}
+
+}  // namespace
+
 SharedImageReadLock::SharedImageReadLock(
     std::unique_ptr<gpu::VideoImageRepresentation> representation,
     std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
         scoped_read_access,
-    scoped_refptr<VideoFrame> frame)
-    : representation_(representation.release(),
-                      base::OnTaskRunnerDeleter(
-                          base::SequencedTaskRunner::GetCurrentDefault())),
-      scoped_read_access_(scoped_read_access.release(),
-                          base::OnTaskRunnerDeleter(
-                              base::SequencedTaskRunner::GetCurrentDefault())),
-      frame_(std::move(frame)) {}
+    scoped_refptr<VideoFrame> frame,
+    scoped_refptr<gpu::SharedContextState> context_state)
+    : representation_(std::move(representation)),
+      scoped_read_access_(std::move(scoped_read_access)),
+      frame_(std::move(frame)),
+      context_state_(std::move(context_state)),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
-SharedImageReadLock::~SharedImageReadLock() = default;
+SharedImageReadLock::~SharedImageReadLock() {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DestroySharedImageResourcesOnGpuThread,
+                     std::move(representation_), std::move(scoped_read_access_),
+                     std::move(context_state_)));
+}
 
 using Microsoft::WRL::ComPtr;
 using Microsoft::WRL::MakeAndInitialize;
@@ -1078,11 +1104,11 @@ void GenerateResourceOnSyncTokenReleased(
     RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "Invalid shared image stub");
   }
 
-  if (!shared_image_stub->shared_context_state()) {
+  auto shared_context_state = shared_image_stub->shared_context_state();
+  if (!shared_context_state) {
     RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "Invalid shared context state");
   }
 
-  auto shared_context_state = shared_image_stub->shared_context_state();
   if (!shared_context_state->MakeCurrent(nullptr, /*needs_gl=*/true)) {
     RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "Failed to make context current");
   }
@@ -1110,9 +1136,9 @@ void GenerateResourceOnSyncTokenReleased(
     RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "Failed to begin read access");
   }
   ComPtr<SharedImageReadLock> si_lock =
-      Microsoft::WRL::Make<SharedImageReadLock>(std::move(image_representation),
-                                                std::move(scoped_read_access),
-                                                frame);
+      Microsoft::WRL::Make<SharedImageReadLock>(
+          std::move(image_representation), std::move(scoped_read_access), frame,
+          std::move(shared_context_state));
   if (!si_lock) {
     RETURN_ON_FAILURE_WITH_CALLBACK(E_OUTOFMEMORY,
                                     "Failed to create SharedImageReadLock");

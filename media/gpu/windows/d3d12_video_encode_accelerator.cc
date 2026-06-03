@@ -142,9 +142,8 @@ void GenerateResourceOnSynTokenReleased(
     RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL,
                                     "Failed to get shared context state");
   }
-  if (!shared_image_stub->shared_context_state()->MakeCurrent(
-          nullptr,
-          /*needs_gl=*/true)) {
+  auto shared_context_state = shared_image_stub->shared_context_state();
+  if (!shared_context_state->MakeCurrent(nullptr, /*needs_gl=*/true)) {
     RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "Failed to make context current");
   }
 
@@ -167,7 +166,8 @@ void GenerateResourceOnSynTokenReleased(
   }
   Microsoft::WRL::ComPtr<SharedImageReadLock> si_lock =
       Microsoft::WRL::Make<SharedImageReadLock>(
-          std::move(representation), std::move(scoped_read_access), frame);
+          std::move(representation), std::move(scoped_read_access), frame,
+          std::move(shared_context_state));
   if (!si_lock) {
     RETURN_ON_FAILURE_WITH_CALLBACK(E_OUTOFMEMORY,
                                     "Failed to create SharedImageReadLock");

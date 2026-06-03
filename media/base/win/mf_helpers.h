@@ -32,6 +32,10 @@ struct ID3D11DeviceChild;
 struct ID3D11Device;
 class IMFMediaType;
 
+namespace gpu {
+class SharedContextState;
+}  // namespace gpu
+
 namespace media {
 
 // Helper function to print HRESULT to std::string.
@@ -256,7 +260,8 @@ class MEDIA_EXPORT SharedImageReadLock
       std::unique_ptr<gpu::VideoImageRepresentation> representation,
       std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
           scoped_read_access,
-      scoped_refptr<VideoFrame> frame);
+      scoped_refptr<VideoFrame> frame,
+      scoped_refptr<gpu::SharedContextState> context_state);
 
   gpu::VideoImageRepresentation::ScopedReadAccess* access() const {
     return scoped_read_access_.get();
@@ -265,12 +270,12 @@ class MEDIA_EXPORT SharedImageReadLock
  private:
   ~SharedImageReadLock() override;
 
-  std::unique_ptr<gpu::VideoImageRepresentation, base::OnTaskRunnerDeleter>
-      representation_;
-  std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess,
-                  base::OnTaskRunnerDeleter>
+  std::unique_ptr<gpu::VideoImageRepresentation> representation_;
+  std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
       scoped_read_access_;
   scoped_refptr<VideoFrame> frame_;
+  scoped_refptr<gpu::SharedContextState> context_state_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 // Parameters:
