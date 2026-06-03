@@ -291,6 +291,13 @@ TEST_P(SupervisedUserPrefStoreTest, CreatePrefStoreAfterInitialization) {
 #if BUILDFLAG(IS_ANDROID)
 TEST_P(SupervisedUserPrefStoreTest,
        ContentFiltersServiceEnablesBrowserFilters) {
+  // TODO(crbug.com/519472830): Replace with equivalent test for the url service
+  // With this flag enabled, the prefs no longer exist: their equivalents are
+  // set via the url filtering service.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      supervised_user::kSupervisedUserUseUrlFilteringService);
+
   SupervisedUserPrefStoreFixture fixture(&service_, device_parental_controls_);
   EXPECT_FALSE(fixture.initialization_completed());
 
@@ -405,4 +412,3 @@ TEST_F(SupervisedUserPrefStoreTestBase, SearchAndIncognitoPrefsAreMerged) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SupervisedUserPrefStoreTest);
-
