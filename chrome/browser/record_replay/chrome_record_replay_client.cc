@@ -5,6 +5,7 @@
 #include "chrome/browser/record_replay/chrome_record_replay_client.h"
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/record_replay/task_store_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -29,6 +31,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
 
 namespace {
@@ -126,6 +130,47 @@ void ChromeRecordReplayClient::ReportToUser(std::string_view message) {
   }
 }
 
+base::WeakPtr<record_replay::RecordReplayClient>
+ChromeRecordReplayClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void ChromeRecordReplayClient::OfferExecuting(
+    const record_replay::TaskDefinition& definition,
+    const record_replay::TaskParameterValues& values) {
+  offered_task_definition_ = definition;
+  offered_task_parameter_values_ = values;
+
+  chrome::ShowQuestionMessageBoxAsync(
+      tab().GetContents()->GetTopLevelNativeWindow(),
+      l10n_util::GetStringUTF16(IDS_APP_CONTINUE),
+      base::UTF8ToUTF16(definition.title()),
+      base::BindOnce(
+          [](base::WeakPtr<ChromeRecordReplayClient> client,
+             chrome::MessageBoxResult result) {
+            if (client && result == chrome::MESSAGE_BOX_RESULT_YES) {
+              client->OnExecutionAccepted();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChromeRecordReplayClient::OnExecutionAccepted() {
+  if (!offered_task_definition_) {
+    return;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(tab().GetContents()->GetBrowserContext());
+  if (auto* task_service =
+          record_replay::TaskServiceFactory::GetForProfile(profile)) {
+    task_service->OnExecutionAccepted(
+        *offered_task_definition_, offered_task_parameter_values_.value_or(
+                                       record_replay::TaskParameterValues()));
+  }
+  offered_task_definition_.reset();
+  offered_task_parameter_values_.reset();
+}
+
 void ChromeRecordReplayClient::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -137,7 +182,7 @@ void ChromeRecordReplayClient::DidFinishNavigation(
       Profile::FromBrowserContext(tab().GetContents()->GetBrowserContext());
   if (auto* task_service =
           record_replay::TaskServiceFactory::GetForProfile(profile)) {
-    task_service->OnURLVisited(navigation_handle->GetURL());
+    task_service->OnURLVisited(this, navigation_handle->GetURL());
   }
 
   task_discovery_service_->ShouldOfferTask(

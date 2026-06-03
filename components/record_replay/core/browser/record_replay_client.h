@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_RECORD_REPLAY_CORE_BROWSER_RECORD_REPLAY_CLIENT_H_
 #define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_RECORD_REPLAY_CLIENT_H_
 
+#include <string>
 #include <string_view>
+
+#include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 
 class GURL;
 
@@ -22,6 +26,10 @@ namespace record_replay {
 class TaskStore;
 class RecordReplayDriverFactory;
 class RecordReplayManager;
+class TaskDefinition;
+class TaskData;
+using TaskParameterValues =
+    base::flat_map<int, base::flat_map<std::string, std::string>>;
 
 // The abstract base interface for the tab-level owner of most record & replay
 // classes in the browser process.
@@ -51,6 +59,12 @@ class RecordReplayClient {
 
   // Reports a message in a user-visible way.
   virtual void ReportToUser(std::string_view message) = 0;
+
+  virtual base::WeakPtr<RecordReplayClient> GetWeakPtr() = 0;
+
+  // Offers to execute a saved automation task.
+  virtual void OfferExecuting(const TaskDefinition& definition,
+                              const TaskParameterValues& values) = 0;
 
  protected:
   RecordReplayClient();

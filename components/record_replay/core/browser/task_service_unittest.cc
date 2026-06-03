@@ -62,7 +62,7 @@ TEST_F(TaskServiceTest, OnURLVisitedRetrievesTaskDefinitions) {
             std::move(callback).Run(std::move(task_definitions));
           });
 
-  task_service.OnURLVisited(url);
+  task_service.OnURLVisited(nullptr, url);
 }
 
 TEST_F(TaskServiceTest, RegisterAndObserveTaskFlow) {
@@ -100,13 +100,13 @@ TEST_F(TaskServiceTest, RegisterAndObserveTaskFlow) {
 
   // 3. Visit a different URL and verify no observer is created.
   GURL unrelated_url("https://example.com/unrelated");
-  task_service_.OnURLVisited(unrelated_url);
+  task_service_.OnURLVisited(nullptr, unrelated_url);
   EXPECT_EQ(task_service_.getObserverForTesting(), nullptr);
 
   // 4. Visit the start URL and verify a TaskObserver is created and owned by
   // TaskService.
   GURL start_url("https://example.com/start");
-  task_service_.OnURLVisited(start_url);
+  task_service_.OnURLVisited(nullptr, start_url);
   ASSERT_NE(task_service_.getObserverForTesting(), nullptr);
 
   // Verify matched/copied task definition details.
@@ -170,7 +170,7 @@ TEST_F(TaskServiceTest, TaskFlowWithParametersExtractor) {
 
   // 1. Visit start URL. TaskObserver should be created.
   GURL start_url("https://example.com/start");
-  task_service.OnURLVisited(start_url);
+  task_service.OnURLVisited(nullptr, start_url);
 
   ASSERT_NE(task_service.getObserverForTesting(), nullptr);
 
@@ -194,7 +194,7 @@ TEST_F(TaskServiceTest, TaskFlowWithParametersExtractor) {
       });
 
   GURL final_url("https://example.com/final");
-  task_service.OnURLVisited(final_url);
+  task_service.OnURLVisited(nullptr, final_url);
 
   run_loop.Run();
 

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "components/record_replay/core/browser/record_replay_client.h"
 #include "components/record_replay/core/browser/recording.pb.h"
 #include "components/record_replay/core/browser/task_definition.pb.h"
 #include "components/record_replay/core/browser/task_observer.h"
@@ -23,7 +24,8 @@ TaskService::TaskService(TaskStore* task_store,
 
 TaskService::~TaskService() = default;
 
-void TaskService::OnURLVisited(const GURL& visited_url) {
+void TaskService::OnURLVisited(RecordReplayClient* client,
+                               const GURL& visited_url) {
   if (!task_store_) {
     return;
   }
@@ -38,16 +40,20 @@ void TaskService::OnURLVisited(const GURL& visited_url) {
   task_store_->GetTaskDefinitionsByUrl(
       visited_url.spec(),
       base::BindOnce(&TaskService::OnTaskDefinitionsRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), visited_url));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     client ? client->GetWeakPtr() : nullptr, visited_url));
 }
 
 void TaskService::OnTaskDefinitionsRetrieved(
+    base::WeakPtr<RecordReplayClient> client,
     const GURL& visited_url,
     std::vector<TaskDefinition> task_definitions) {
   for (TaskDefinition definition : task_definitions) {
     if (definition.url() == visited_url.spec()) {
       StartObserving(visited_url, definition);
-      OfferExecuting(visited_url, definition);
+      if (client) {
+        OfferExecuting(client.get(), visited_url, definition);
+      }
     }
   }
 }
@@ -63,10 +69,11 @@ void TaskService::StartObserving(const GURL& visited_url,
   observer_->OnURLVisited(visited_url);
 }
 
-void TaskService::OfferExecuting(const GURL& visited_url,
+void TaskService::OfferExecuting(RecordReplayClient* client,
+                                 const GURL& visited_url,
                                  TaskDefinition definition) {
-  // TODO(crbug.com/514303674): Pass the task definition and parameters to some
-  // further code that will offer the user to execute the task.
+  TaskParameterValues values;
+  client->OfferExecuting(std::move(definition), std::move(values));
 }
 
 void TaskService::OnTaskCompleted(const TaskObservation& observation) {

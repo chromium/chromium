@@ -30,6 +30,7 @@ static_library("impl") {
     "//chrome/browser/glic",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
@@ -40,6 +41,7 @@ static_library("impl") {
     "//components/tabs",
     "//content/public/browser",
     "//ui/base/unowned_user_data",
+    "//ui/strings",
   ]
 }
 

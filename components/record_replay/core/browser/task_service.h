@@ -24,6 +24,7 @@ class TaskDefinition;
 class TaskObservation;
 class TaskObserver;
 class TaskParametersExtractor;
+class RecordReplayClient;
 
 using TaskParameterValues =
     base::flat_map<int, base::flat_map<std::string, std::string>>;
@@ -46,7 +47,7 @@ class TaskService : public KeyedService {
 
   // Triggered upon top-level navigations. This will check whether or not to
   // start observing a task. If necessary, it will create a TaskObserver.
-  void OnURLVisited(const GURL& visited_url);
+  void OnURLVisited(RecordReplayClient* client, const GURL& visited_url);
 
   // Triggered when we land on the task-end URL, receives a TaskObservation
   // populated with TabParameterValues. The TaskObserver will receive this
@@ -62,11 +63,14 @@ class TaskService : public KeyedService {
     return observer_;
   }
  private:
-  void OnTaskDefinitionsRetrieved(const GURL& visited_url,
+  void OnTaskDefinitionsRetrieved(base::WeakPtr<RecordReplayClient> client,
+                                  const GURL& visited_url,
                                   std::vector<TaskDefinition> task_definitions);
 
   void StartObserving(const GURL& visited_url, TaskDefinition definition);
-  void OfferExecuting(const GURL& visited_url, TaskDefinition definition);
+  void OfferExecuting(RecordReplayClient* client,
+                      const GURL& visited_url,
+                      TaskDefinition definition);
 
   raw_ptr<TaskStore> task_store_;
   raw_ptr<TaskParametersExtractor> task_parameters_extractor_;

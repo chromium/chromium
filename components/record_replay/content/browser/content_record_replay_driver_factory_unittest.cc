@@ -53,6 +53,9 @@ class MockRecordReplayClient : public RecordReplayClient {
     ON_CALL(*this, GetManager()).WillByDefault(ReturnRef(manager_));
     ON_CALL(*this, GetDriverFactory())
         .WillByDefault(ReturnRef(driver_factory_));
+    ON_CALL(*this, GetWeakPtr()).WillByDefault([this]() {
+      return weak_ptr_factory_.GetWeakPtr();
+    });
   }
   ~MockRecordReplayClient() override = default;
 
@@ -62,10 +65,17 @@ class MockRecordReplayClient : public RecordReplayClient {
   MOCK_METHOD(GURL, GetPrimaryMainFrameUrl, (), (override));
   MOCK_METHOD(autofill::AutofillClient*, GetAutofillClient, (), (override));
   MOCK_METHOD(void, ReportToUser, (std::string_view message), (override));
+  MOCK_METHOD(base::WeakPtr<RecordReplayClient>, GetWeakPtr, (), (override));
+  MOCK_METHOD(void,
+              OfferExecuting,
+              (const TaskDefinition& definition,
+               const TaskParameterValues& values),
+              (override));
 
  private:
   RecordReplayManager manager_{this};
   ContentRecordReplayDriverFactory driver_factory_{*this};
+  base::WeakPtrFactory<MockRecordReplayClient> weak_ptr_factory_{this};
 };
 
 }  // namespace
