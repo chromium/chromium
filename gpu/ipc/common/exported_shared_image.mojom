@@ -11,7 +11,7 @@ import "ui/gfx/mojom/buffer_types.mojom";
 
 // gpu::SharedImageExportResult
 struct SharedImageExportResult {
-  gpu.mojom.SyncToken sync_token;
+  array<gpu.mojom.SyncToken> sync_tokens;
 };
 
 // gpu::ExportedSharedImage

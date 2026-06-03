@@ -91,8 +91,12 @@ struct ExportedSharedImage;
 
 class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageExportResult {
  public:
-  SharedImageExportResult() = default;
-  ~SharedImageExportResult() = default;
+  SharedImageExportResult();
+  ~SharedImageExportResult();
+  SharedImageExportResult(SharedImageExportResult&&);
+  SharedImageExportResult& operator=(SharedImageExportResult&&);
+  SharedImageExportResult(const SharedImageExportResult&) = delete;
+  SharedImageExportResult& operator=(const SharedImageExportResult&) = delete;
 
   // Used in FrameSinkResourceManager to facilitate creating a dummy
   // ReturnedResource for callback clearing.
@@ -107,16 +111,14 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageExportResult {
   // The two IsEqualForTesting methods allow easy SyncToken comparison without
   // unpacking SharedImageExportResult.
   bool IsEqualForTesting(const SyncToken& sync_token) const {
-    return sync_token_ == sync_token;
+    return sync_tokens_.size() == 1 && sync_tokens_[0] == sync_token;
   }
-
   bool IsEqualForTesting(const SharedImageExportResult& other_result) const {
-    return IsEqualForTesting(other_result.sync_token_);
+    return sync_tokens_ == other_result.sync_tokens_;
   }
 
-  bool HasData() const { return sync_token_.HasData(); }
-
-  std::string ToDebugString() const { return sync_token_.ToDebugString(); }
+  bool HasData() const;
+  std::string ToDebugString() const;
 
  private:
   friend class ClientSharedImage;
@@ -127,8 +129,9 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageExportResult {
                                    SharedImageExportResult>;
 
   explicit SharedImageExportResult(const SyncToken& sync_token);
+  explicit SharedImageExportResult(std::vector<SyncToken> sync_tokens);
 
-  SyncToken sync_token_;
+  std::vector<SyncToken> sync_tokens_;
 };
 
 // Wrapper around Mailbox and metadata for efficient sharing between threads
@@ -374,13 +377,27 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       uint64_t usage,
       webgpu::MailboxFlags mailbox_flags);
 
-  // Pack/unpack the SharedImageExportResult.
+  // Pack the SharedImageExportResult.
   SharedImageExportResult EndImport(const SyncToken& sync_token) {
     return SharedImageExportResult{sync_token};
   }
 
+  SharedImageExportResult EndImport(const std::vector<SyncToken>& sync_tokens) {
+    return SharedImageExportResult{sync_tokens};
+  }
+
+  // Unpack the SharedImageExportResult.
+  // This version expects an empty or a single-SyncToken export result.
   SyncToken EndExport(SharedImageExportResult&& result) {
-    return result.sync_token_;
+    if (result.sync_tokens_.empty()) {
+      return SyncToken();
+    }
+    CHECK(result.sync_tokens_.size() == 1);
+    return result.sync_tokens_[0];
+  }
+
+  std::vector<SyncToken> EndExportAsVector(SharedImageExportResult&& result) {
+    return std::move(result.sync_tokens_);
   }
 
 #if BUILDFLAG(IS_WIN)

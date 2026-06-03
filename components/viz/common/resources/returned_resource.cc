@@ -17,7 +17,7 @@ ReturnedResource::ReturnedResource(
     int count,
     bool lost)
     : id(id),
-      shared_image_export_result(shared_image_export_result),
+      shared_image_export_result(std::move(shared_image_export_result)),
       release_fence(std::move(release_fence)),
       count(count),
       lost(lost) {}

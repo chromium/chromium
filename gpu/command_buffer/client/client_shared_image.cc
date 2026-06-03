@@ -11,10 +11,12 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -125,8 +127,39 @@ uint32_t ComputeTextureTargetForSharedImage(
 
 }  // namespace
 
+SharedImageExportResult::SharedImageExportResult() = default;
+SharedImageExportResult::~SharedImageExportResult() = default;
+SharedImageExportResult::SharedImageExportResult(SharedImageExportResult&&) =
+    default;
+SharedImageExportResult& SharedImageExportResult::operator=(
+    SharedImageExportResult&&) = default;
+
 SharedImageExportResult::SharedImageExportResult(const SyncToken& sync_token)
-    : sync_token_(sync_token) {}
+    : sync_tokens_{sync_token} {}
+SharedImageExportResult::SharedImageExportResult(
+    std::vector<SyncToken> sync_tokens)
+    : sync_tokens_(std::move(sync_tokens)) {
+  CHECK(!sync_tokens_.empty());
+}
+
+bool SharedImageExportResult::HasData() const {
+  for (const auto& sync_token : sync_tokens_) {
+    if (sync_token.HasData()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::string SharedImageExportResult::ToDebugString() const {
+  if (sync_tokens_.empty()) {
+    return "empty";
+  }
+
+  std::vector<std::string> token_strings = base::ToVector(
+      sync_tokens_, [](const auto& token) { return token.ToDebugString(); });
+  return base::JoinString(token_strings, ",");
+}
 
 ClientSharedImage::ScopedMapping::ScopedMapping(const gfx::Size& size,
                                                 viz::SharedImageFormat format)

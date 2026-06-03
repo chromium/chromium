@@ -20,7 +20,7 @@ struct StructTraits<viz::mojom::ReturnedResourceDataView,
     return resource.id;
   }
 
-  static gpu::SharedImageExportResult shared_image_export_result(
+  static const gpu::SharedImageExportResult& shared_image_export_result(
       const viz::ReturnedResource& resource) {
     return resource.shared_image_export_result;
   }
