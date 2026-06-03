@@ -12,7 +12,11 @@ import org.chromium.net.impl.CronetLogger.CronetSource;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-/** Implementation of {@link ICronetEngineBuilder} that builds Java-based Cronet engine. */
+/**
+ * Implementation of {@link ICronetEngineBuilder} that builds Java-based Cronet engine.
+ *
+ * @hide
+ */
 public class JavaCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
     private static final AtomicLong sLogCronetInitializationRef = new AtomicLong(0);
 
