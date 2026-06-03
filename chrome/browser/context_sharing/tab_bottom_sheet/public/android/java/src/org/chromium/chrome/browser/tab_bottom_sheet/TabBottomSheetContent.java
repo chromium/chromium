@@ -124,7 +124,7 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public boolean swipeToDismissEnabled() {
-        return true;
+        return false;
     }
 
     @Override

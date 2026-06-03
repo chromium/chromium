@@ -1064,47 +1064,4 @@ public class TabBottomSheetCoordinatorTest {
         // Verify it was called again (1 time after clearing)
         verify(mView).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
-
-    @Test
-    public void testSheetEventsCallback_onBottomSheetClosed_UserDismissedByBackPress() {
-        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
-
-        // 1. Transition to HIDDEN via BACK_PRESS
-        observer.onSheetClosed(StateChangeReason.BACK_PRESS);
-
-        // 2. Trigger content changed to null
-        observer.onSheetContentChanged(null);
-
-        // Verify callback invoked with isUserDismiss = true
-        verify(mMockSheetEventsCallback).onBottomSheetClosed(eq(true));
-    }
-
-    @Test
-    public void testSheetEventsCallback_onBottomSheetClosed_UserDismissedBySwipe() {
-        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
-
-        // 1. Transition to HIDDEN via SWIPE
-        observer.onSheetClosed(StateChangeReason.SWIPE);
-
-        // 2. Trigger content changed to null
-        observer.onSheetContentChanged(null);
-
-        // Verify callback invoked with isUserDismiss = false (since we only care for swipe back /
-        // BACK_PRESS)
-        verify(mMockSheetEventsCallback).onBottomSheetClosed(eq(false));
-    }
-
-    @Test
-    public void testSheetEventsCallback_onBottomSheetClosed_Suppressed() {
-        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
-
-        // 1. Transition to HIDDEN via NONE
-        observer.onSheetClosed(StateChangeReason.NONE);
-
-        // 2. Trigger content changed to null
-        observer.onSheetContentChanged(null);
-
-        // Verify callback invoked with isUserDismiss = false
-        verify(mMockSheetEventsCallback).onBottomSheetClosed(eq(false));
-    }
 }
