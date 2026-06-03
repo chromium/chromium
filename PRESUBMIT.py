@@ -2296,13 +2296,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         treat_as_error=False,
     ),
     BanRule(
-        pattern='IS_CHROMEOS_ASH',
-        explanation=
-        ('IS_CHROMEOS_ASH is deprecated. Please use the equivalent IS_CHROMEOS '
-         'instead (Lacros is gone).', ),
-        treat_as_error=False,
-    ),
-    BanRule(
         pattern=(r'namespace {'),
         explanation=
         ('Anonymous namespaces are disallowed in C++ header files. See '
