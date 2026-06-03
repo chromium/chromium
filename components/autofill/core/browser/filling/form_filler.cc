@@ -1306,7 +1306,6 @@ void FormFiller::TriggerRefill(const FormData& form,
   if (refill_context->attempted_refill) {
     return;
   }
-  refill_context->attempted_refill = true;
 
   // Try to find the field from which the original fill originated.
   // The precedence for the look up is the following:
@@ -1338,6 +1337,10 @@ void FormFiller::TriggerRefill(const FormData& form,
   if (!found_matching_element) {
     return;
   }
+
+  // TODO(crbug.com/459458715): Consider only setting `attempted_refill` to true
+  // after making sure that the refill will fill at least one field.
+  refill_context->attempted_refill = true;
 
   autofill_metrics::LogRefillTriggerReason(refill_trigger_reason);
   std::map<FieldGlobalId, FillingValueAndType> forced_fill_values =
@@ -1392,12 +1395,7 @@ bool FormFiller::MaybeInitializeRefillContext(
     return false;
   }
 
-  RefillContext* refill_context = GetRefillContext(form.global_id());
-  if (refill_context && refill_context->attempted_refill) {
-    return false;
-  }
-
-  refill_context = SetRefillContext(
+  RefillContext* refill_context = SetRefillContext(
       form.global_id(), std::make_unique<RefillContext>(
                             fill_id, autofill_trigger_field,
                             augmented_filling_payload, blocked_fields));
