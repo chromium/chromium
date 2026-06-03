@@ -145,14 +145,7 @@ class FirstRunFeatureShowcasePixelTest
       gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
-// TODO(crbug.com/519129009): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
-IN_PROC_BROWSER_TEST_P(FirstRunFeatureShowcasePixelTest,
-                       MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(FirstRunFeatureShowcasePixelTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
