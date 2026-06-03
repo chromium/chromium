@@ -842,6 +842,7 @@ chromium-metrics-reviews@google.com.
   <int value="100" label="Skills Service"/>
   <int value="101" label="Context Memory Service"/>
   <int value="102" label="Sync Preview"/>
+  <int value="103" label="Fpop Service"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

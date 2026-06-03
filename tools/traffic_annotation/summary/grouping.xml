@@ -409,6 +409,7 @@ after discussions on the right group.
       <annotation id="chrome_sync_preview_fetcher"/>
       <annotation id="drive_thumbnail_source"/>
       <annotation id="partial_translate_one_platform"/>
+      <annotation id="contextual_search_fpop_service"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
