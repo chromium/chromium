@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 class AuxiliarySearchDonationServiceBridge implements Closeable {
     // Differs from `AuxiliarySearchDonor`, which uses the package name as both the database name
     // and namespace.
-    @VisibleForTesting static final String DATABASE_NAME = "browsing_history";
+    @VisibleForTesting static final String DATABASE_NAME = "browsing_data";
     @VisibleForTesting static final String HISTORY_NAMESPACE = "History";
     @VisibleForTesting static final long HISTORY_DOCUMENT_TTL_MILLIS = TimeUnit.HOURS.toMillis(24);
 
