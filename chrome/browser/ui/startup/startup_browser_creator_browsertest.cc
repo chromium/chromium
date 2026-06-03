@@ -1915,7 +1915,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Each profile should have one session restore bubble shown, so we should
   // observe count 3 in bucket 0 (which represents bubble shown).
-  histogram_tester.ExpectBucketCount("SessionCrashed.Bubble", 0, 3);
+  histogram_tester.ExpectBucketCount("Session.SessionCrashed.Bubble", 0, 3);
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

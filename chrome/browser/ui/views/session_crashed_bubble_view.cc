@@ -75,7 +75,7 @@ enum SessionCrashedBubbleHistogramValue {
 };
 
 void RecordBubbleHistogramValue(SessionCrashedBubbleHistogramValue value) {
-  UMA_HISTOGRAM_ENUMERATION("SessionCrashed.Bubble", value,
+  UMA_HISTOGRAM_ENUMERATION("Session.SessionCrashed.Bubble", value,
                             SESSION_CRASHED_BUBBLE_MAX);
 }
 
