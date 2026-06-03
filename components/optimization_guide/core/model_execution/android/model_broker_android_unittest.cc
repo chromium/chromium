@@ -314,7 +314,9 @@ TEST_F(ModelBrokerAndroidTest, DownloadProgressObserver) {
 
   // Add the first observer and request a session to trigger the download.
   MockDownloadProgressObserver observer1;
-  client.AddModelDownloadProgressObserver(observer1.BindNewPipeAndPassRemote());
+  client.AddModelDownloadProgressObserver(
+      ToUseCaseName(mojom::OnDeviceFeature::kTest),
+      observer1.BindNewPipeAndPassRemote());
 
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
   client.CreateSession(mojom::OnDeviceFeature::kTest, SessionConfigParams{},
@@ -332,7 +334,9 @@ TEST_F(ModelBrokerAndroidTest, DownloadProgressObserver) {
   // Add a second observer after download progress has started — it should
   // receive the initial (0, max) event.
   MockDownloadProgressObserver observer2;
-  client.AddModelDownloadProgressObserver(observer2.BindNewPipeAndPassRemote());
+  client.AddModelDownloadProgressObserver(
+      ToUseCaseName(mojom::OnDeviceFeature::kTest),
+      observer2.BindNewPipeAndPassRemote());
   observer2.ExpectReceivedUpdate(0, kNormalizedDownloadProgressMax);
 }
 
@@ -347,7 +351,9 @@ TEST_F(ModelBrokerAndroidTest, DownloadProgressObserverAfterDownloadComplete) {
   ASSERT_TRUE(session);
 
   MockDownloadProgressObserver observer;
-  client.AddModelDownloadProgressObserver(observer.BindNewPipeAndPassRemote());
+  client.AddModelDownloadProgressObserver(
+      ToUseCaseName(mojom::OnDeviceFeature::kTest),
+      observer.BindNewPipeAndPassRemote());
   observer.ExpectReceivedUpdate(0, kNormalizedDownloadProgressMax);
   observer.ExpectReceivedUpdate(kNormalizedDownloadProgressMax,
                                 kNormalizedDownloadProgressMax);

@@ -138,6 +138,7 @@ interface ModelBroker {
 
   // Start listening for download progress updates for models.
   AddModelDownloadProgressObserver(
+      string use_case,
       pending_remote<on_device_model.mojom.DownloadObserver> observer);
 
   // Request model assets of the provided use case. Must be called before a

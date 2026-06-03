@@ -200,6 +200,7 @@ class ModelBrokerClient final {
 
   // Add DownloadProgressObserver.
   void AddModelDownloadProgressObserver(
+      const std::string& use_case,
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer);
 
  private:

@@ -109,6 +109,7 @@ using OptimizationGuideModelSizeInTokenCallback =
 // The callback for adding a download progress observer to
 // OnDeviceModelDownloadProgressManager.
 using AddDownloadProgressObserverCallback = base::RepeatingCallback<void(
+    const std::string& use_case,
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver>)>;
 
 // Params used to control sampling output tokens for the on-device model.

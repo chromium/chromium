@@ -147,11 +147,31 @@ std::vector<mojom::BrokerUseCaseInfoPtr> ModelBrokerImpl::GetBrokerUseCaseInfo()
 }
 
 void ModelBrokerImpl::AddModelDownloadProgressObserver(
+    const std::string& use_case,
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
   TRACE_EVENT("optimization_guide",
               "ModelBrokerImpl::AddModelDownloadProgressObserver",
               perfetto::Flow::FromPointer(this));
-  add_download_progress_observer_callback_.Run(std::move(observer));
+  ensure_init_callback_.Run(
+      base::BindOnce(&ModelBrokerImpl::AddModelDownloadProgressObserverInternal,
+                     weak_ptr_factory_.GetWeakPtr(), use_case,
+                     std::move(observer), mojo::GetBadMessageCallback()));
+}
+
+void ModelBrokerImpl::AddModelDownloadProgressObserverInternal(
+    const std::string& use_case,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer,
+    mojo::ReportBadMessageCallback bad_message_callback,
+    const on_device_model::Capabilities& capabilities) {
+  TRACE_EVENT("optimization_guide",
+              "ModelBrokerImpl::AddModelDownloadProgressObserverInternal",
+              perfetto::Flow::FromPointer(this));
+  if (!solution_providers_.contains(use_case) &&
+      !GetFeatureForUseCase(use_case)) {
+    std::move(bad_message_callback).Run("Unsupported use case");
+    return;
+  }
+  add_download_progress_observer_callback_.Run(use_case, std::move(observer));
 }
 
 ModelBrokerImpl::Solution::Solution() = default;
