@@ -4,7 +4,7 @@
 
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import type {SearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
+import type {NtpSearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
@@ -15,9 +15,10 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 async function createAndAppendRealbox(
-    properties: Partial<SearchboxElement> = {}): Promise<SearchboxElement> {
+    properties: Partial<NtpSearchboxElement> = {}):
+    Promise<NtpSearchboxElement> {
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  const realbox = document.createElement('cr-searchbox');
+  const realbox = document.createElement('ntp-searchbox');
   Object.assign(realbox, properties);
   document.body.appendChild(realbox);
   await microtasksFinished();
@@ -55,7 +56,7 @@ suite('SearchboxFocusTest', () => {
   });
 
   test('searchbox renders', () => {
-    const realbox = document.querySelector('cr-searchbox');
+    const realbox = document.querySelector('ntp-searchbox');
     assertTrue(!!realbox);
   });
 });

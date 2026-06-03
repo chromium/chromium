@@ -4,7 +4,7 @@
 
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import type {SearchboxElement, SearchboxIconElement, SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
+import type {NtpSearchboxElement, SearchboxIconElement, SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -80,7 +80,7 @@ function verifyMatch(match: AutocompleteMatch, matchEl: SearchboxMatchElement) {
       text);
 }
 
-function arrowDown(realbox: SearchboxElement): KeyboardEvent {
+function arrowDown(realbox: NtpSearchboxElement): KeyboardEvent {
   const arrowDownEvent = new KeyboardEvent('keydown', {
     bubbles: true,
     cancelable: true,
@@ -92,9 +92,10 @@ function arrowDown(realbox: SearchboxElement): KeyboardEvent {
 }
 
 async function createAndAppendRealbox(
-    properties: Partial<SearchboxElement> = {}): Promise<SearchboxElement> {
+    properties: Partial<NtpSearchboxElement> = {}):
+    Promise<NtpSearchboxElement> {
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  const realbox = document.createElement('cr-searchbox');
+  const realbox = document.createElement('ntp-searchbox');
   Object.assign(realbox, properties);
   document.body.appendChild(realbox);
   await microtasksFinished();
@@ -102,7 +103,7 @@ async function createAndAppendRealbox(
 }
 
 async function setupRealboxTest(): Promise<{
-  realbox: SearchboxElement,
+  realbox: NtpSearchboxElement,
   testProxy: TestSearchboxBrowserProxy,
   testMetricsReporterProxy: TestMock<BrowserProxyImpl>,
 }> {
@@ -142,7 +143,7 @@ async function setupRealboxTest(): Promise<{
 }
 
 suite('SearchboxTest', () => {
-  let realbox: SearchboxElement;
+  let realbox: NtpSearchboxElement;
   let testProxy: TestSearchboxBrowserProxy;
   let testMetricsReporterProxy: TestMock<BrowserProxyImpl>;
 
@@ -2112,17 +2113,17 @@ suite('SearchboxTest', () => {
   test.skip(
       'match icons are updated when external icons become available',
       async () => {
-        function getIcon(element: SearchboxElement|SearchboxMatchElement):
+        function getIcon(element: NtpSearchboxElement|SearchboxMatchElement):
             SearchboxIconElement {
           if ('input' in (element.$ as any)) {
-            return (element as SearchboxElement).$.input.$.icon;
+            return (element as NtpSearchboxElement).$.input.$.icon;
           }
           return (element as SearchboxMatchElement).$.icon;
         }
 
         // Helper function to assert icon states.
         function assertIconState(
-            element: SearchboxElement|SearchboxMatchElement|undefined,
+            element: NtpSearchboxElement|SearchboxMatchElement|undefined,
             hasEntityImage: boolean, expectUseIconImg: boolean,
             expectedSrc: string|null) {
           const icon = getIcon(element!);
@@ -2145,7 +2146,7 @@ suite('SearchboxTest', () => {
 
         // Helper function to assert and dispatch load event.
         async function assertAndLoadIcon(
-            element: SearchboxElement|SearchboxMatchElement|undefined,
+            element: NtpSearchboxElement|SearchboxMatchElement|undefined,
             hasEntityImage: boolean, expectedSrc: string|null) {
           // Before load: icon image hidden.
           assertIconState(
