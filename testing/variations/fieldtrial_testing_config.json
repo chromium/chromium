@@ -5070,10 +5070,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "chrome_next_ia_lens_icon_visible": "true",
-                        "chrome_next_ia_share_icon_visible": "true"
-                    },
                     "enable_features": [
                         "ChromeNextIa",
                         "FullscreenRefactoring"
