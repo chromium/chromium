@@ -6518,6 +6518,35 @@ TEST_F(InputMethodStateAuraTest, GetCaretBounds) {
     EXPECT_EQ(measured_rect, text_input_client()->GetCaretBounds());
   }
 }
+TEST_F(InputMethodStateAuraTest, EditContextBoundsClamped) {
+  RenderWidgetHostViewAura* view = tab_view();
+  view->SetBounds(gfx::Rect(0, 0, 800, 600));
+  ActivateViewForTextInputManager(view, ui::TEXT_INPUT_TYPE_TEXT);
+  TextInputManager* manager = GetTextInputManager(view);
+
+  ui::mojom::TextInputState state;
+  state.type = ui::TEXT_INPUT_TYPE_TEXT;
+  state.edit_context_control_bounds = gfx::Rect(-50, -50, 100, 100);
+  state.edit_context_selection_bounds = gfx::Rect(-50, -50, 100, 100);
+
+  manager->UpdateTextInputState(view, state);
+
+  std::optional<gfx::Rect> control_bounds = manager->GetTextControlBounds();
+  std::optional<gfx::Rect> selection_bounds = manager->GetTextSelectionBounds();
+
+  EXPECT_TRUE(control_bounds.has_value());
+  EXPECT_TRUE(selection_bounds.has_value());
+
+  // Expected adjusted bounds in view local space is (0, 0, 100, 100).
+  gfx::Rect expected_local_bounds = gfx::Rect(0, 0, 100, 100);
+
+  gfx::Rect expected_bounds = gfx::Rect(
+      view->TransformPointToRootCoordSpace(expected_local_bounds.origin()),
+      expected_local_bounds.size());
+
+  EXPECT_EQ(control_bounds.value(), expected_bounds);
+  EXPECT_EQ(selection_bounds.value(), expected_bounds);
+}
 
 // This test is for composition character bounds.
 TEST_F(InputMethodStateAuraTest, GetCompositionCharacterBounds) {
@@ -6526,6 +6555,7 @@ TEST_F(InputMethodStateAuraTest, GetCompositionCharacterBounds) {
   EXPECT_FALSE(text_input_client()->GetCompositionCharacterBounds(0, &bound));
   for (auto index : active_view_sequence_) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
+    views_[index]->SetBounds(gfx::Rect(0, 0, 800, 600));
     // Simulate an IPC to set character bounds for the view.
     views_[index]->ImeCompositionRangeChanged(
         gfx::Range(), {{gfx::Rect(1, 2, 3, 4 + index)}});
