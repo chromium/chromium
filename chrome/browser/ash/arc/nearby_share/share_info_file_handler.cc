@@ -83,6 +83,46 @@ file_manager::util::FileSystemURLAndHandle GetFileSystemURLAndHandle(
 std::string StripPathComponents(const std::string& file_name) {
   return base::FilePath(file_name).BaseName().AsUTF8Unsafe();
 }
+
+// Create local unique share directory for cache files.
+base::FilePath DoCreateShareDirectory(const base::FilePath& base_directory) {
+  if (!base::PathExists(base_directory)) {
+    LOG(ERROR) << "Base directory does not exist: " << base_directory;
+    UpdateNearbyShareDataHandlingFail(
+        DataHandlingResult::kDirectoryDoesNotExist);
+    return base::FilePath();
+  }
+
+  // Prepare a temporary share directory to store cached share files.
+  base::FilePath temp_dir;
+  constexpr char kShareDirPrefix[] = "share-";
+  if (!base::CreateTemporaryDirInDir(base_directory, kShareDirPrefix,
+                                     &temp_dir) ||
+      !base::PathExists(temp_dir)) {
+    LOG(ERROR) << "Failed to create unique temp share directory under: "
+               << base_directory;
+    UpdateNearbyShareDataHandlingFail(
+        DataHandlingResult::kFailedToCreateDirectory);
+    return base::FilePath();
+  }
+  return temp_dir;
+}
+
+// Create file with create and write flags and return scoped fd.
+base::ScopedFD DoCreateFileForWrite(const base::FilePath& file_path) {
+  DCHECK(!file_path.empty());
+
+  base::File dest_file(file_path,
+                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  if (!dest_file.IsValid() || !base::PathExists(file_path)) {
+    LOG(ERROR) << "Invalid destination file at path: " << file_path;
+    UpdateNearbyShareDataHandlingFail(
+        DataHandlingResult::kInvalidDestinationFilePath);
+    return base::ScopedFD();
+  }
+
+  return base::ScopedFD(dest_file.TakePlatformFile());
+}
 }  // namespace
 
 ShareInfoFileHandler::FileShareConfig::FileShareConfig() = default;
@@ -117,23 +157,6 @@ ShareInfoFileHandler::ShareInfoFileHandler(
 }
 
 ShareInfoFileHandler::~ShareInfoFileHandler() = default;
-
-// static
-file_manager::util::FileSystemURLAndHandle
-ShareInfoFileHandler::GetFileSystemURL(content::BrowserContext* context,
-                                       const GURL& url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(context);
-
-  Profile* const profile = Profile::FromBrowserContext(context);
-  DCHECK(profile);
-
-  scoped_refptr<storage::FileSystemContext> file_system_context =
-      GetScopedFileSystemContext(profile, url);
-  DCHECK(file_system_context.get());
-
-  return GetFileSystemURLAndHandle(*file_system_context, url);
-}
 
 const std::vector<base::FilePath>& ShareInfoFileHandler::GetFilePaths() const {
   return file_config_.paths;
@@ -186,32 +209,9 @@ void ShareInfoFileHandler::StartPreparingFiles(
       << "Creating unique directory for share and converting URLs to files.";
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ShareInfoFileHandler::CreateShareDirectory, this),
+      base::BindOnce(&DoCreateShareDirectory, file_config_.directory),
       base::BindOnce(&ShareInfoFileHandler::OnShareDirectoryPathCreated,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-base::FilePath ShareInfoFileHandler::CreateShareDirectory() {
-  if (!base::PathExists(file_config_.directory)) {
-    LOG(ERROR) << "Base directory does not exist: " << file_config_.directory;
-    UpdateNearbyShareDataHandlingFail(
-        DataHandlingResult::kDirectoryDoesNotExist);
-    return base::FilePath();
-  }
-
-  // Prepare a temporary share directory to store cached share files.
-  base::FilePath temp_dir;
-  constexpr char kShareDirPrefix[] = "share-";
-  if (!base::CreateTemporaryDirInDir(file_config_.directory, kShareDirPrefix,
-                                     &temp_dir) ||
-      !base::PathExists(temp_dir)) {
-    LOG(ERROR) << "Failed to create unique temp share directory under: "
-               << file_config_.directory;
-    UpdateNearbyShareDataHandlingFail(
-        DataHandlingResult::kFailedToCreateDirectory);
-    return base::FilePath();
-  }
-  return temp_dir;
 }
 
 void ShareInfoFileHandler::OnShareDirectoryPathCreated(
@@ -253,30 +253,12 @@ void ShareInfoFileHandler::OnShareDirectoryPathCreated(
         share_dir.AppendASCII(StripPathComponents(file_name));
 
     task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&ShareInfoFileHandler::CreateFileForWrite, this,
-                       dest_file_path),
+        FROM_HERE, base::BindOnce(&DoCreateFileForWrite, dest_file_path),
         base::BindOnce(&ShareInfoFileHandler::OnFileDescriptorCreated,
                        weak_ptr_factory_.GetWeakPtr(), url, dest_file_path,
                        file_size));
   }
   std::move(started_callback_).Run();
-}
-
-base::ScopedFD ShareInfoFileHandler::CreateFileForWrite(
-    const base::FilePath& file_path) {
-  DCHECK(!file_path.empty());
-
-  base::File dest_file(file_path,
-                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  if (!dest_file.IsValid() || !base::PathExists(file_path)) {
-    LOG(ERROR) << "Invalid destination file at path: " << file_path;
-    UpdateNearbyShareDataHandlingFail(
-        DataHandlingResult::kInvalidDestinationFilePath);
-    return base::ScopedFD();
-  }
-
-  return base::ScopedFD(dest_file.TakePlatformFile());
 }
 
 void ShareInfoFileHandler::OnFileDescriptorCreated(

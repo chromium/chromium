@@ -156,8 +156,8 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Unowned pointer
   raw_ptr<aura::Window, DanglingUntriaged> arc_window_ = nullptr;
 
-  // Created and lives on the UI thread but is destructed on the IO thread.
-  scoped_refptr<ShareInfoFileHandler> file_handler_;
+  // Created and lives on the UI thread.
+  std::unique_ptr<ShareInfoFileHandler> file_handler_;
 
   std::unique_ptr<webshare::PrepareDirectoryTask> prepare_directory_task_;
   std::unique_ptr<ProgressBarDialogView> progress_bar_view_;

@@ -235,7 +235,7 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
   const base::FilePath arc_nearby_share_directory =
       GetUserCacheFilePath(profile_);
 
-  file_handler_ = base::MakeRefCounted<ShareInfoFileHandler>(
+  file_handler_ = std::make_unique<ShareInfoFileHandler>(
       profile_, share_info_.get(), arc_nearby_share_directory,
       backend_task_runner_);
 
