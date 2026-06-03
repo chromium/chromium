@@ -4501,12 +4501,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_BOOKMARKS_SAVE_FLOW_CONTENT_DESCRIPTION" desc="The content description for the bookmark bottom sheet save flow. Read as accessibility string when tapping on the bottom sheet.">
         Bookmark saved to <ph name="FOLDER_NAME">%1$s<ex>Mobile bookmarks</ex></ph>
       </message>
-        <message name="IDS_BOOKMARKS_SAVE_FLOW_OPENED_HALF" desc="The accessibility string read when the bookmark bottom sheet save flow is half opened.">
-        Bookmark save flow opened at half height
-      </message>
-      <message name="IDS_BOOKMARKS_SAVE_FLOW_OPENED_FULL" desc="The accessibility string read when the bookmark bottom sheet save flow is fully opened.">
-        Bookmark save flow folders opened at full height
-      </message>
+
       <message name="IDS_BOOKMARKS_SAVE_FLOW_CLOSED_DESCRIPTION" desc="The accessibility string read when the bookmark bottom sheet save flow is closed.">
         Bookmark save flow closed
       </message>

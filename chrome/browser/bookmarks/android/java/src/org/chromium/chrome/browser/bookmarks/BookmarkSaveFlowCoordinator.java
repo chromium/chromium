@@ -315,12 +315,12 @@ public class BookmarkSaveFlowCoordinator {
 
         @Override
         public @StringRes int getSheetHalfHeightAccessibilityStringId() {
-            return R.string.bookmarks_save_flow_opened_half;
+            return R.string.bookmark_save_flow_title;
         }
 
         @Override
         public @StringRes int getSheetFullHeightAccessibilityStringId() {
-            return R.string.bookmarks_save_flow_opened_full;
+            return R.string.bookmark_save_flow_title;
         }
 
         @Override
