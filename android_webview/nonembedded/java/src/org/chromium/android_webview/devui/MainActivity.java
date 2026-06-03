@@ -79,8 +79,6 @@ public class MainActivity extends FragmentActivity {
         MenuChoice.CHECK_UPDATES,
         MenuChoice.CRASHES_REFRESH,
         MenuChoice.ABOUT_DEVTOOLS,
-        MenuChoice.COMPONENTS_UI,
-        MenuChoice.COMPONENTS_UPDATE,
         MenuChoice.SAFEMODE_UI
     })
     public @interface MenuChoice {
@@ -89,8 +87,8 @@ public class MainActivity extends FragmentActivity {
         int CHECK_UPDATES = 2;
         int CRASHES_REFRESH = 3;
         int ABOUT_DEVTOOLS = 4;
-        int COMPONENTS_UI = 5;
-        int COMPONENTS_UPDATE = 6;
+        // int COMPONENTS_UI = 5;  // Component updater has been removed
+        // int COMPONENTS_UPDATE = 6;  // Component updater has been removed
         int SAFEMODE_UI = 7;
         int COUNT = 8;
     }
@@ -106,7 +104,6 @@ public class MainActivity extends FragmentActivity {
         FragmentNavigation.HOME_FRAGMENT,
         FragmentNavigation.CRASHES_LIST_FRAGMENT,
         FragmentNavigation.FLAGS_FRAGMENT,
-        FragmentNavigation.COMPONENTS_LIST_FRAGMENT,
         FragmentNavigation.SAFEMODE_FRAGMENT,
         FragmentNavigation.NETLOGS_FRAGMENT
     })
@@ -114,7 +111,7 @@ public class MainActivity extends FragmentActivity {
         int HOME_FRAGMENT = 0;
         int CRASHES_LIST_FRAGMENT = 1;
         int FLAGS_FRAGMENT = 2;
-        int COMPONENTS_LIST_FRAGMENT = 3;
+        // int COMPONENTS_LIST_FRAGMENT = 3;  // Component updater has been removed
         int SAFEMODE_FRAGMENT = 4;
         int NETLOGS_FRAGMENT = 5;
         int COUNT = 6;

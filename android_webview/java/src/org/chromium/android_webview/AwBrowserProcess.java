@@ -725,8 +725,8 @@ public final class AwBrowserProcess {
             if (metricServiceEnabledOnlySdkRuntime) {
                 AwMetricsLogUploader uploader = new AwMetricsLogUploader();
                 // Open a connection during startup while connecting to other services such as
-                // ComponentsProviderService and VariationSeedServer to try to avoid spinning the
-                // nonembedded ":webview_service" twice.
+                // VariationSeedServer to try to avoid spinning the nonembedded ":webview_service"
+                // twice.
                 uploader.initialize();
                 AndroidMetricsLogConsumer consumer =
                         useCppFiltering ? uploader : new MetricsFilteringDecorator(uploader);

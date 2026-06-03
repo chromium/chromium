@@ -37,7 +37,6 @@ source_set("metrics") {
     "//base",
     "//components/language/core/browser",
     "//components/metrics",
-    "//components/metrics:component_metrics",
     "//components/metrics:content",
     "//components/metrics:net",
     "//components/metrics:ui",

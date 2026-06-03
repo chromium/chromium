@@ -6,7 +6,6 @@ include_rules = [
   "+components/policy/android/java",
   "+components/safe_browsing/android/java",
   "+components/stylus_handwriting/android/java",
-  "+components/component_updater/android/java",
   "+components/webauthn/android",
   "+components/zoom/android/java",
 

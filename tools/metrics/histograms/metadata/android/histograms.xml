@@ -7681,8 +7681,6 @@ chromium-metrics-reviews@google.com.
     {AndroidWebViewFragment}
   </summary>
   <token key="AndroidWebViewFragment">
-    <variant name="ComponentsListFragment"
-        summary="This is for the components list tool"/>
     <variant name="CrashesListFragment"
         summary="This is for the crash list tool."/>
     <variant name="FlagsFragment"

@@ -287,7 +287,6 @@ source_set("browser") {
     "//components/js_injection/common:common_mojom",
     "//components/keyed_service/content",
     "//components/metrics",
-    "//components/metrics:component_metrics",
     "//components/metrics:content",
     "//components/metrics:net",
     "//components/minidump_uploader",

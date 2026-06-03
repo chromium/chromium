@@ -108,12 +108,6 @@
         android:process=":js_sandboxed_process0"
         android:visibleToInstantApps="true">
     </service>  # DIFF-ANCHOR: 1d3bf514
-    <service  # DIFF-ANCHOR: b9ec52c4
-        android:name="org.chromium.android_webview.nonembedded.AwComponentUpdateService"
-        android:exported="false"
-        android:permission="android.permission.BIND_JOB_SERVICE"
-        android:process=":webview_apk">
-    </service>  # DIFF-ANCHOR: b9ec52c4
     <service  # DIFF-ANCHOR: 3cd6d713
         android:name="org.chromium.android_webview.services.AwMinidumpUploadJobService"
         android:exported="true"
@@ -126,12 +120,6 @@
         android:permission="android.permission.BIND_JOB_SERVICE"
         android:process=":webview_service">
     </service>  # DIFF-ANCHOR: 65cddb26
-    <service  # DIFF-ANCHOR: c756cf8d
-        android:name="org.chromium.android_webview.services.ComponentsProviderService"
-        android:exported="true"
-        android:process=":webview_service"
-        android:visibleToInstantApps="true">
-    </service>  # DIFF-ANCHOR: c756cf8d
     <service  # DIFF-ANCHOR: 5cda9608
         android:name="org.chromium.android_webview.services.CrashReceiverService"
         android:exported="true"

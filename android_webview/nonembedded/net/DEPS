@@ -1,3 +1,0 @@
-include_rules = [
-  "+components/update_client",
-]

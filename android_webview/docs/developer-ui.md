@@ -198,26 +198,6 @@ Exposing your feature this way has several benefits:
 
 - [Design doc](http://go/webview-dev-ui-flags-design) (Google-only)
 
-## Components UI
-
-Components UI shows all the registered components and their respective installed
-versions, similar to `chrome://components`. Components are config files downloaded
-via chrome's [component updater](https://chromium.googlesource.com/chromium/src/+/lkgr/components/component_updater/README.md). This can be accessed by opening the 3-dotted
-menu and tapping the "Components" option.
-
-Tapping the "Update" button located in the options menu will download new versions
-of the components if any are available.
-
-*** note
-**Note:** Updating components via the UI runs in "on-demand" or "user-visible"
-mode by default which may have [different behavior](https://crbug.com/1250837)
-from automated updates. To simulate the behaviour of the automated update
-service, on-demand updates can be turned off using the toggle provided
-below the Components Summary.
-***
-
-![WebView components UI](images/webview_components_ui.png)
-
 ## More cool stuff
 
 ### Switching WebView provider

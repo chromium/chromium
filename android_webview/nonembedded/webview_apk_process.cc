@@ -16,8 +16,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
-#include "components/update_client/protocol_serializer_json.h"
-#include "components/update_client/update_client.h"
 
 namespace android_webview {
 
@@ -54,9 +52,6 @@ WebViewApkProcess::WebViewApkProcess() {
   // to the java thread the `WebViewApkProcess` is created on.
   main_task_executor_ = std::make_unique<base::SingleThreadTaskExecutor>(
       base::MessagePumpType::JAVA);
-  // WebView is not compatible with new compression protocols.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      update_client::switches::kComponentUpdaterCompatProtocols);
 
   RegisterPathProvider();
   CreatePrefService();
@@ -88,8 +83,6 @@ void WebViewApkProcess::CreatePrefService() {
 
 void WebViewApkProcess::RegisterPrefs(PrefRegistrySimple* pref_registry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  update_client::RegisterPrefs(pref_registry);
 }
 
 }  // namespace android_webview

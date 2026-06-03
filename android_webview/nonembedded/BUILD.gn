@@ -7,10 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 generate_jni("nonembedded_jni_headers") {
-  sources = [
-    "java/src/org/chromium/android_webview/nonembedded/NetworkFetcherTask.java",
-    "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
-  ]
+  sources = [ "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java" ]
 }
 
 # Contains classes needed by the webview apk, but not used when loading the apk
@@ -22,7 +19,6 @@ android_library("nonembedded_java") {
     "java/src/org/chromium/android_webview/nonembedded/AwPureJavaExceptionReporter.java",
     "java/src/org/chromium/android_webview/nonembedded/LicenseActivity.java",
     "java/src/org/chromium/android_webview/nonembedded/LicenseContentProvider.java",
-    "java/src/org/chromium/android_webview/nonembedded/NetworkFetcherTask.java",
     "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
   ]
   deps = [
@@ -172,10 +168,6 @@ source_set("nonembedded") {
     "//android_webview/test:*",
   ]
   sources = [
-    "net/network_fetcher_task.cc",
-    "net/network_fetcher_task.h",
-    "net/network_impl.cc",
-    "net/network_impl.h",
     "webview_apk_application.cc",
     "webview_apk_process.cc",
     "webview_apk_process.h",
@@ -185,7 +177,6 @@ source_set("nonembedded") {
     "//android_webview/common",
     "//base",
     "//components/prefs",
-    "//components/update_client",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
     "//mojo/public/cpp/base:protobuf_support",
