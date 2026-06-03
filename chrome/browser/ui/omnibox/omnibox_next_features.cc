@@ -84,6 +84,8 @@ BASE_FEATURE(kWebUIOmniboxFullPopup, DISABLED);
 // NOTE: This flag is intended to control the next-gen Omnibox experience and
 // will eventually supersede the `kWebUIOmniboxFullPopup` feature flag.
 BASE_FEATURE(kWebUIOmniboxFullPopupV2, DISABLED);
+// If enabled, enables EverywhereOmnibox popup triggered by shortcut.
+BASE_FEATURE(kEverywhereOmnibox, DISABLED);
 // Enables the WebUI for omnibox suggestions without modifying the popup UI.
 BASE_FEATURE(kWebUIOmniboxPopupDebug, DISABLED);
 // Enables side-by-side comparison omnibox suggestions in WebUI and Views.

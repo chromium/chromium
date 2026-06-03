@@ -1,0 +1,31 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <title>Omnibox Popup</title>
+  <link rel="stylesheet" href="//resources/css/text_defaults_md.css">
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
+  <style>
+    html {
+      height: auto;
+      overflow: hidden;
+
+      /* Note: Needed to prevent a horizontal scrollbar when this UI is shown
+         via OmniboxPopupPresenter (not reproducible in a tab). */
+      max-width: 100vw;
+    }
+
+    body {
+      background-color: transparent;
+      height: auto;
+      min-height: 480px;
+      padding: 32px 32px 64px 32px;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <omnibox-everywhere-app></omnibox-everywhere-app>
+</body>
+<script type="module" src="omnibox_popup_everywhere.js"></script>
+</html>

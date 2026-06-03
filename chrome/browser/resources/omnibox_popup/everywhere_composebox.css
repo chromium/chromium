@@ -1,0 +1,75 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_components/composebox/composebox_shared_style.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit composebox-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  position: relative;
+  border-radius: 28px;
+  --input-bottom-spacing: 10px;
+  --text-input-top-spacing: 10px;
+  --text-input-inline-end-spacing: 80px;
+  --text-input-inline-start-spacing: 16px;
+  --text-input-max-height: 190px;
+  --fade-duration: 100ms;
+  --color-composebox-type-ahead: #5f6368;
+  --color-composebox-type-ahead-chip: rgba(26, 115, 232, 0.1);
+  --color-composebox-font-light: #1f1f1f;
+}
+
+#composebox {
+  background-color: var(--color-searchbox-background, #fff);
+  border-radius: inherit;
+  display: flex;
+  flex-direction: column;
+  height: calc-size(auto, size);
+  max-height: var(--cr-composebox-max-height, 422px);
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  transition:
+    opacity var(--fade-duration) ease-in-out,
+    visibility var(--fade-duration) ease-in-out;
+  padding-bottom: 10px;
+  z-index: 2;
+}
+
+#inputContainer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+#contextEntrypoint::part(entrypoint-button) {
+  --cr-icon-button-size: 36px;
+}
+
+cr-composebox-tool-chip {
+  padding-inline-start: 8px;
+}
+
+search-animated-glow {
+  pointer-events: none;
+  inset: -2px;
+  z-index: 1;
+  position: absolute;
+}
+
+#shadow-container {
+  position: absolute;
+  inset: 0;
+  box-shadow: 0 4px 20px 2px rgba(0, 0, 0, 0.25);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}

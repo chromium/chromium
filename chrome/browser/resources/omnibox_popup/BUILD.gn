@@ -12,6 +12,7 @@ build_webui("build") {
     "images/create_images.png",
     "omnibox_popup.html",
     "omnibox_popup_aim.html",
+    "omnibox_popup_everywhere.html",
     "omnibox_popup_full.html",
   ]
   ts_files = [
@@ -20,10 +21,17 @@ build_webui("build") {
     "app.html.ts",
     "app_contextual_entrypoint.html.ts",
     "app.ts",
+    "everywhere_app.html.ts",
+    "everywhere_app.ts",
+    "everywhere_composebox.html.ts",
+    "everywhere_composebox.ts",
+    "everywhere_searchbox.html.ts",
+    "everywhere_searchbox.ts",
     "full_app.html.ts",
     "full_app.ts",
     "omnibox_composebox.html.ts",
     "omnibox_composebox.ts",
+    "omnibox_popup_everywhere.ts",
     "omnibox_popup.ts",
     "omnibox_popup_searchbox.html.ts",
     "omnibox_popup_searchbox.ts",
@@ -31,6 +39,9 @@ build_webui("build") {
   css_files = [
     "aim_app.css",
     "app.css",
+    "everywhere_app.css",
+    "everywhere_composebox.css",
+    "everywhere_searchbox.css",
     "omnibox_composebox.css",
     "omnibox_popup_searchbox.css",
     "omnibox_popup_shared_style.css",
@@ -62,7 +73,10 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "omnibox-popup.top-chrome"
-    optimize_webui_in_files = [ "omnibox_popup.js" ]
+    optimize_webui_in_files = [
+      "omnibox_popup.js",
+      "omnibox_popup_everywhere.js",
+    ]
     optimize_webui_excludes = [
       "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
       "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",

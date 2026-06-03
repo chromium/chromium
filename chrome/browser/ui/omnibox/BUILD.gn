@@ -35,6 +35,8 @@ source_set("omnibox") {
       "chrome_omnibox_client.h",
       "chrome_omnibox_navigation_observer.h",
       "clipboard_utils.h",
+      "everywhere_omnibox_service.h",
+      "everywhere_omnibox_service_factory.h",
       "omnibox_context_menu_controller.h",
       "omnibox_popup_view.h",
       "omnibox_tab_helper.h",
@@ -45,6 +47,7 @@ source_set("omnibox") {
       "//chrome/browser/bitmap_fetcher",
       "//chrome/browser/page_content_annotations:extraction_service",
       "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/common",
       "//components/infobars/core",
       "//components/omnibox/browser",
@@ -57,10 +60,12 @@ source_set("omnibox") {
       "//services/network/public/mojom:url_loader_base",
       "//skia",
       "//ui/base",
+      "//ui/base/accelerators/global_accelerator_listener",
       "//ui/base/unowned_user_data",
       "//ui/gfx",
       "//ui/gfx/geometry",
       "//ui/menus",
+      "//ui/views",
       "//url",
     ]
   }
@@ -130,10 +135,16 @@ source_set("impl") {
       "chrome_omnibox_client.cc",
       "chrome_omnibox_navigation_observer.cc",
       "clipboard_utils.cc",
+      "everywhere_omnibox_service.cc",
+      "everywhere_omnibox_service_factory.cc",
       "omnibox_context_menu_controller.cc",
       "omnibox_popup_view.cc",
       "omnibox_tab_helper.cc",
     ]
+    if (is_mac) {
+      sources += [ "everywhere_omnibox_service_mac.mm" ]
+      frameworks = [ "Cocoa.framework" ]
+    }
     deps += [
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
@@ -152,11 +163,13 @@ source_set("impl") {
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/extensions/",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/search_engines",
@@ -164,6 +177,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/composebox",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/common",
       "//components/contextual_search:public",
       "//components/dom_distiller/core",
@@ -186,8 +200,11 @@ source_set("impl") {
       "//ui/base:types",
       "//ui/base/clipboard",
       "//ui/base/data_transfer_policy",
+      "//ui/display",
       "//ui/gfx",
       "//ui/menus",
+      "//ui/views",
+      "//ui/views/controls/webview",
       "//url",
     ]
   }
@@ -235,6 +252,7 @@ if (!is_android) {
       "alternate_nav_infobar_delegate_unittest.cc",
       "chrome_omnibox_navigation_observer_unittest.cc",
       "clipboard_utils_unittest.cc",
+      "everywhere_omnibox_service_unittest.cc",
       "omnibox_context_menu_controller_unittest.cc",
       "omnibox_controller_unittest.cc",
       "omnibox_edit_model_unittest.cc",

@@ -43,6 +43,12 @@
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/omnibox/everywhere_omnibox_service.h"
+#include "chrome/browser/ui/omnibox/everywhere_omnibox_service_factory.h"
+#endif
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
@@ -1610,6 +1616,21 @@ void ContextualSearchboxHandler::OpenUrl(
   if (!url.is_valid()) {
     return;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // When the everywhere Omnibox is enabled, check to see if the current web
+  // contents is the everywhere omnibox popup -- if so redirect the open to
+  // the everywhere service.
+  if (base::FeatureList::IsEnabled(omnibox::kEverywhereOmnibox)) {
+    if (auto* service =
+            EverywhereOmniboxServiceFactory::GetForProfile(profile_)) {
+      if (service->IsEverywherePopup(web_contents_)) {
+        service->OpenUrl(url, disposition);
+        return;
+      }
+    }
+  }
+#endif
 
   auto* contextual_session_handle = GetContextualSessionHandle();
 
