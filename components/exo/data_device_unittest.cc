@@ -372,5 +372,20 @@ TEST_F(DataDeviceTest, ClipboardFocusedSurfaceDestroyed) {
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 }
 
+TEST_F(DataDeviceTest, TestDelegateDestroyed) {
+  auto local_delegate = std::make_unique<test::TestDataDeviceDelegate>();
+  auto local_device =
+      std::make_unique<DataDevice>(local_delegate.get(), seat_.get());
+
+  local_delegate.reset();
+
+  ui::DropTargetEvent event(data_, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_MOVE);
+  ui::Event::DispatcherApi(&event).set_target(surface_->window());
+
+  local_device->OnDragEntered(event);
+  local_device->OnDragUpdated(event);
+}
+
 }  // namespace
 }  // namespace exo
