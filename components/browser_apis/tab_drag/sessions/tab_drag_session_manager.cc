@@ -26,16 +26,27 @@ base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 TabDragSessionManager::StartDrag(
     const std::vector<tabs_api::NodeId>& source_tab_ids,
     const gfx::Point& start_point) {
-  if (active_session_) {
-    auto error = mojo_base::mojom::Error::New();
-    error->message = "A drag session is already active";
-    return base::unexpected(std::move(error));
+  if (source_tab_ids.empty()) {
+    return base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "source tabs are empty"));
   }
 
-  active_session_ = std::make_unique<TabDragSession>(
+  if (active_session_) {
+    return base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kFailedPrecondition,
+        "drag session is already active"));
+  }
+
+  auto session = std::make_unique<TabDragSession>(
       source_tab_ids, platform_provider_->tab_drag_session_input_adapter(),
       base::BindOnce(&TabDragSessionManager::OnSessionEnded,
                      weak_factory_.GetWeakPtr()));
+  auto start_result = session->Start();
+  if (!start_result.has_value()) {
+    return base::unexpected(std::move(start_result.error()));
+  }
+
+  active_session_ = std::move(session);
   return std::monostate();
 }
 

@@ -12,8 +12,13 @@ source_set("desktop_tab_drag_impl") {
 
   deps = [
     "//base",
+    "//chrome/browser/ui/browser_window",
     "//components/browser_apis/tab_drag",
     "//components/browser_apis/tab_drag/adapters",
     "//components/browser_apis/tab_strip/types",
+    "//components/tabs",
+    "//ui/base",
+    "//ui/events",
+    "//ui/views",
   ]
 }

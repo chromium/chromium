@@ -8,10 +8,14 @@ source_set("adapters") {
     "tab_drag_session_input_adapter.h",
   ]
 
-  public_deps = [ "//components/browser_apis/tab_strip/types" ]
+  public_deps = [
+    "//components/browser_apis/tab_strip/types",
+    "//ui/gfx/geometry",
+  ]
 
   deps = [
     "//base",
     "//components/browser_apis/tab_strip/types",
+    "//ui/gfx/geometry",
   ]
 }

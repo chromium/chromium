@@ -10,11 +10,10 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "components/browser_apis/tab_drag/adapters/tab_drag_session_input_adapter.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
 
 namespace tabs_api {
-
-class TabDragSessionInputAdapter;
 
 // Platform-agnostic coordinator for tab dragging.
 // Managed and owned by TabDragSessionManager.
@@ -30,8 +29,12 @@ class TabDragSession {
   // Explicitly cancel the session.
   void Cancel();
 
+  // Starts the session by initiating input capture.
+  base::expected<void, mojo_base::mojom::ErrorPtr> Start();
+
  private:
   void EndSession();
+  void OnInputEvent(const TabDragInputEvent& event);
 
   std::vector<tabs_api::NodeId> dragged_tabs_;
   const raw_ref<TabDragSessionInputAdapter> input_adapter_;

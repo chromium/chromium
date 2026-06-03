@@ -7,17 +7,35 @@
 
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
+#include "mojo/public/mojom/base/error.mojom.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace tabs_api {
+
+struct TabDragInputEvent {
+  enum class Type {
+    kMoved,
+    kCancelled,
+    kDropped,
+  };
+  Type type;
+  gfx::Point screen_point;
+};
+
+using EventCallback =
+    base::RepeatingCallback<void(const TabDragInputEvent& event)>;
 
 class TabDragSessionInputAdapter {
  public:
   virtual ~TabDragSessionInputAdapter() = default;
 
   // Starts capturing input on the platform.
-  virtual void StartInputCapture(
-      const std::vector<tabs_api::NodeId>& source_tab_ids) = 0;
+  virtual base::expected<void, mojo_base::mojom::ErrorPtr> StartInputCapture(
+      const std::vector<tabs_api::NodeId>& source_tab_ids,
+      EventCallback callback) = 0;
 
   // Releases input capture.
   virtual void ReleaseInputCapture() = 0;
