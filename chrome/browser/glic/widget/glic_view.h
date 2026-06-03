@@ -81,7 +81,6 @@ class GlicView : public views::WebView {
   std::optional<SkColor> GetClientBackgroundColor();
 
   base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate_;
-  raw_ptr<views::WebView> web_view_;
   gfx::RoundedCornersF background_radii_;
 
   // Defines the region of the view from which it can be dragged.
