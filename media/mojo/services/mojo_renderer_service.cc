@@ -16,6 +16,7 @@
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/services/media_resource_shim.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
+#include "mojo/public/cpp/bindings/message.h"
 
 namespace media {
 
@@ -58,7 +59,11 @@ void MojoRendererService::Initialize(
         streams,
     InitializeCallback callback) {
   DVLOG(1) << __func__;
-  DCHECK_EQ(state_, STATE_UNINITIALIZED);
+  if (state_ != STATE_UNINITIALIZED) {
+    std::move(callback).Run(false);
+    mojo::ReportBadMessage("MojoRendererService is already initialized");
+    return;
+  }
 
   client_.Bind(std::move(client));
   state_ = STATE_INITIALIZING;

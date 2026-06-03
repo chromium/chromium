@@ -649,6 +649,56 @@ TEST_F(StarboardRendererTest, GetMediaTimeReadsCurrentMediaTimeFromStarboard) {
   EXPECT_EQ(renderer.GetMediaTime(), kMediaTime);
 }
 
+// Regression test for crbug.com/503617302.
+TEST_F(StarboardRendererTest, DoesNotSetSbPlayerOnInitializationFailure) {
+  const gfx::RectF geometry(0, 0, 1920, 1080);
+  const gfx::OverlayTransform transform =
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE;
+
+  // Set up the mock to fail player creation.
+  EXPECT_CALL(*starboard_, CreatePlayer(_, _)).WillOnce(Return(nullptr));
+
+  // The player's bounds should NOT be set after a failed initialization, even
+  // if geometry changes occur.
+  EXPECT_CALL(*starboard_, SetPlayerBounds(_, _, _, _, _, _)).Times(0);
+
+  StarboardRenderer renderer(std::move(starboard_), task_runner_, plane_id_,
+                             /*enable_buffering=*/true,
+                             &geometry_setter_service_, &cast_metrics_helper_);
+  RunPendingTasks();
+
+  EXPECT_CALL(
+      pipeline_status_fn_,
+      Call(HasStatusCode(
+          ::media::PipelineStatusCodes::PIPELINE_ERROR_INITIALIZATION_FAILED)))
+      .Times(1);
+  renderer.Initialize(
+      &media_resource_, &client_,
+      base::BindLambdaForTesting(pipeline_status_fn_.AsStdFunction()));
+  RunPendingTasks();
+
+  // This geometry change should be ignored by the geometry_change_handler_,
+  // which was never initialized with a player.
+  static_cast<mojom::VideoGeometrySetter*>(&geometry_setter_service_)
+      ->SetVideoGeometry(geometry, transform, plane_id_);
+  RunPendingTasks();
+}
+
+TEST_F(StarboardRendererTest, Initialize_Twice_Crashes) {
+  StarboardRenderer renderer(std::move(starboard_), task_runner_, plane_id_,
+                             /*enable_buffering=*/true,
+                             &geometry_setter_service_, &cast_metrics_helper_);
+
+  renderer.Initialize(
+      &media_resource_, &client_,
+      base::BindLambdaForTesting(pipeline_status_fn_.AsStdFunction()));
+  RunPendingTasks();
+
+  EXPECT_CHECK_DEATH(renderer.Initialize(
+      &media_resource_, &client_,
+      base::BindLambdaForTesting(pipeline_status_fn_.AsStdFunction())));
+}
+
 TEST_F(StarboardRendererTest, SetPlaybackRateReportsMetric) {
   // Ignore unrelated metrics calls.
   EXPECT_CALL(cast_metrics_helper_, RecordApplicationEvent(_))
