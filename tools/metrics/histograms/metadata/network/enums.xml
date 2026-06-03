@@ -2249,7 +2249,7 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="x-webchannel-content-type"/>
 </enum>
 
-<!-- LINT.ThenChange(//services/network/request_header_to_enum.h:RequestHeader) -->
+<!-- LINT.ThenChange(//services/network/public/cpp/request_header_to_enum.h:RequestHeader) -->
 
 <enum name="SharedDictionaryDocumentRequestCacheResult">
   <int value="0" label="Cache Miss"/>

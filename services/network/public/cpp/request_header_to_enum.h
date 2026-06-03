@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_REQUEST_HEADER_TO_ENUM_H_
-#define SERVICES_NETWORK_REQUEST_HEADER_TO_ENUM_H_
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_REQUEST_HEADER_TO_ENUM_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_REQUEST_HEADER_TO_ENUM_H_
 
 #include <string_view>
+
+#include "base/component_export.h"
 
 namespace network {
 
@@ -93,13 +95,15 @@ enum class RequestHeader {
 // Returns the corresponding enum value if `name` is a match
 // for one of the headers in the RequestHeader enum, or RequestHeader::kOther
 // otherwise. `name` must be in lower-case.
+COMPONENT_EXPORT(NETWORK_CPP)
 RequestHeader LowerCaseRequestHeaderToEnum(std::string_view name);
 
 // Logs the request header to UMA with the specific histogram name.
 // `header_name` must be in lower-case.
+COMPONENT_EXPORT(NETWORK_CPP)
 void LogLowerCaseRequestHeaderToUma(std::string_view histogram_name,
                                     std::string_view header_name);
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_REQUEST_HEADER_TO_ENUM_H_
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_REQUEST_HEADER_TO_ENUM_H_
