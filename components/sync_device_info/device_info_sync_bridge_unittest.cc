@@ -16,6 +16,7 @@
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
@@ -405,12 +406,14 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   ~TestLocalDeviceInfoProvider() override = default;
 
   // MutableLocalDeviceInfoProvider implementation.
-  void Initialize(const std::string& cache_guid,
-                  const std::string& session_name,
-                  const std::string& manufacturer_name,
-                  const std::string& model_name,
-                  const std::string& full_hardware_class,
-                  const DeviceInfo* device_info_restored_from_store) override {
+  void Initialize(
+      const std::string& cache_guid,
+      const std::string& session_name,
+      const std::string& manufacturer_name,
+      const std::string& model_name,
+      const std::string& full_hardware_class,
+      std::optional<std::string> android_os_build_fingerprint_prefix,
+      const DeviceInfo* device_info_restored_from_store) override {
     std::string last_fcm_registration_token;
     DataTypeSet last_interested_data_types;
     DeviceInfo::GlicExperimentalTriggeringState
@@ -451,7 +454,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         /*desktop_to_ios_promo_receiving_types=*/
         MobilePromoOnDesktopPromoTypeSet{},
         /*glic_experimental_triggering_state=*/
-        glic_experimental_triggering_state);
+        glic_experimental_triggering_state,
+        android_os_build_fingerprint_prefix);
   }
 
   void Clear() override { local_device_info_.reset(); }
@@ -720,10 +724,6 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
 
   const std::string& local_personalizable_name() const {
     return local_device_name_info_.personalizable_name;
-  }
-
-  const std::string& local_device_model_name() const {
-    return local_device_name_info_.model_name;
   }
 
  private:
@@ -1846,6 +1846,36 @@ TEST_F(DeviceInfoSyncBridgeTest, PulseWithWallClockTimerTransportOnly) {
   EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
   ForcePulse();
   EXPECT_EQ(2, change_count());
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveAndroidBuildFingerprintPrefix) {
+  InitializeAndMergeInitialData(SyncMode::kFull);
+
+  const DeviceInfo* local_device_info =
+      bridge()->GetLocalDeviceInfoProvider()->GetLocalDeviceInfo();
+  ASSERT_TRUE(local_device_info);
+#if BUILDFLAG(IS_ANDROID)
+  std::string real_fingerprint = base::SysInfo::GetAndroidBuildFingerprint();
+  std::string expected_prefix =
+      DeriveAndroidBuildFingerprintPrefixForTesting(real_fingerprint);
+  EXPECT_EQ(local_device_info->android_os_build_fingerprint_prefix(),
+            expected_prefix);
+#else
+  EXPECT_EQ(local_device_info->android_os_build_fingerprint_prefix(),
+            std::nullopt);
+#endif
+}
+
+TEST(DeriveAndroidBuildFingerprintPrefixTest,
+     DeriveAndroidBuildFingerprintPrefix) {
+  EXPECT_EQ(DeriveAndroidBuildFingerprintPrefixForTesting(
+                "google/redfin/redfin:11/RQ3A.210805.001.A1/7478541:user/"
+                "release-keys"),
+            "google/redfin/redfin");
+  EXPECT_EQ(
+      DeriveAndroidBuildFingerprintPrefixForTesting("google/redfin/redfin"),
+      "google/redfin/redfin");
+  EXPECT_EQ(DeriveAndroidBuildFingerprintPrefixForTesting(""), "");
 }
 
 }  // namespace

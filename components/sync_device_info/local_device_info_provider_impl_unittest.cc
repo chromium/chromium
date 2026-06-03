@@ -100,6 +100,7 @@ class LocalDeviceInfoProviderImplTest : public testing::Test {
     provider_->Initialize(guid, kLocalDeviceClientName,
                           kLocalDeviceManufacturerName, kLocalDeviceModelName,
                           kLocalFullHardwareClass,
+                          /*android_os_build_fingerprint_prefix=*/std::nullopt,
                           /*device_info_restored_from_store=*/nullptr);
   }
 
@@ -368,7 +369,8 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       /*desktop_to_ios_promo_receiving_types=*/
       MobilePromoOnDesktopPromoTypeSet{},
       /*glic_experimental_triggering_state=*/
-      DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
+      DeviceInfo::GlicExperimentalTriggeringState::kUnavailable,
+      /*android_os_build_fingerprint_prefix=*/std::nullopt);
 
   // |kFCMRegistrationToken|, |kInterestedDataTypes|,
   // and |paask_info| should be taken from |device_info_restored_from_store|
@@ -376,6 +378,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
   provider_->Initialize(kLocalDeviceGuid, kLocalDeviceClientName,
                         kLocalDeviceManufacturerName, kLocalDeviceModelName,
                         kLocalFullHardwareClass,
+                        /*android_os_build_fingerprint_prefix=*/std::nullopt,
                         &device_info_restored_from_store);
 
   EXPECT_CALL(device_info_sync_client_, GetFCMRegistrationToken())

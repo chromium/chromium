@@ -148,4 +148,10 @@ SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
   return info;
 }
 
+std::string SysInfo::GetAndroidBuildFingerprint() {
+  char android_build_fingerprint_str[PROP_VALUE_MAX] = "";
+  __system_property_get("ro.build.fingerprint", android_build_fingerprint_str);
+  return std::string(android_build_fingerprint_str);
+}
+
 }  // namespace base

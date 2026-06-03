@@ -27,12 +27,14 @@ class FakeLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
       const base::RepeatingClosure& callback) override;
 
   // Overrides for MutableLocalDeviceInfoProvider:
-  void Initialize(const std::string& cache_guid,
-                  const std::string& client_name,
-                  const std::string& manufacturer_name,
-                  const std::string& model_name,
-                  const std::string& full_hardware_class,
-                  const DeviceInfo* device_info_restored_from_store) override;
+  void Initialize(
+      const std::string& cache_guid,
+      const std::string& client_name,
+      const std::string& manufacturer_name,
+      const std::string& model_name,
+      const std::string& full_hardware_class,
+      std::optional<std::string> android_os_build_fingerprint_prefix,
+      const DeviceInfo* device_info_restored_from_store) override;
   void Clear() override;
   void UpdateClientName(const std::string& client_name) override;
   void UpdateRecentSignInTime(base::Time time) override;

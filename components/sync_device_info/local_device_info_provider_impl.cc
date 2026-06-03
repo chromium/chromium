@@ -116,6 +116,7 @@ void LocalDeviceInfoProviderImpl::Initialize(
     const std::string& manufacturer_name,
     const std::string& model_name,
     const std::string& full_hardware_class,
+    std::optional<std::string> android_os_build_fingerprint_prefix,
     const DeviceInfo* device_info_restored_from_store) {
   TRACE_EVENT0("sync", "LocalDeviceInfoProviderImpl::Initialize");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -156,7 +157,8 @@ void LocalDeviceInfoProviderImpl::Initialize(
       auto_sign_out_last_signin_timestamp,
       sync_client_->GetDesktopToIOSPromoReceivingEnabled(),
       sync_client_->GetDesktopToIOSPromoReceivingTypes(),
-      sync_client_->GetGlicExperimentalTriggeringState());
+      sync_client_->GetGlicExperimentalTriggeringState(),
+      android_os_build_fingerprint_prefix);
 
   full_hardware_class_ = full_hardware_class;
 

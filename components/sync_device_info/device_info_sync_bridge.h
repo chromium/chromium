@@ -242,6 +242,9 @@ class DeviceInfoSyncBridge : public DataTypeSyncBridge,
   base::WeakPtrFactory<DeviceInfoSyncBridge> weak_ptr_factory_{this};
 };
 
+std::string DeriveAndroidBuildFingerprintPrefixForTesting(
+    const std::string& fingerprint);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_SYNC_BRIDGE_H_

@@ -182,31 +182,31 @@ class DeviceInfo {
   // LINT.ThenChange(//components/sync/protocol/sync_enums.proto:GlicExperimentalTriggeringState,
   // //tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringState)
 
-  DeviceInfo(
-      const std::string& guid,
-      const std::string& client_name,
-      const std::string& chrome_version,
-      const std::string& sync_user_agent,
-      DeviceType device_type,
-      OsType os_type,
-      FormFactor form_factor,
-      const std::string& signin_scoped_device_id,
-      const std::string& manufacturer_name,
-      const std::string& model_name,
-      const std::string& full_hardware_class,
-      base::Time last_updated_timestamp,
-      base::TimeDelta pulse_interval,
-      bool send_tab_to_self_receiving_enabled,
-      SendTabReceivingType send_tab_to_self_receiving_type,
-      const std::optional<SharingInfo>& sharing_info,
-      const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
-      const std::string& fcm_registration_token,
-      const DataTypeSet& interested_data_types,
-      std::optional<base::Time> auto_sign_out_last_signin_timestamp,
-      bool desktop_to_ios_promo_receiving_enabled,
-      const MobilePromoOnDesktopPromoTypeSet&
-          desktop_to_ios_promo_receiving_types,
-      GlicExperimentalTriggeringState glic_experimental_triggering_state);
+  DeviceInfo(const std::string& guid,
+             const std::string& client_name,
+             const std::string& chrome_version,
+             const std::string& sync_user_agent,
+             DeviceType device_type,
+             OsType os_type,
+             FormFactor form_factor,
+             const std::string& signin_scoped_device_id,
+             const std::string& manufacturer_name,
+             const std::string& model_name,
+             const std::string& full_hardware_class,
+             base::Time last_updated_timestamp,
+             base::TimeDelta pulse_interval,
+             bool send_tab_to_self_receiving_enabled,
+             SendTabReceivingType send_tab_to_self_receiving_type,
+             const std::optional<SharingInfo>& sharing_info,
+             const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
+             const std::string& fcm_registration_token,
+             const DataTypeSet& interested_data_types,
+             std::optional<base::Time> auto_sign_out_last_signin_timestamp,
+             bool desktop_to_ios_promo_receiving_enabled,
+             const MobilePromoOnDesktopPromoTypeSet&
+                 desktop_to_ios_promo_receiving_types,
+             GlicExperimentalTriggeringState glic_experimental_triggering_state,
+             std::optional<std::string> android_os_build_fingerprint_prefix);
 
   DeviceInfo& operator=(const DeviceInfo&) = delete;
 
@@ -257,6 +257,9 @@ class DeviceInfo {
   // HW combination of a ChromeOS device. Returns empty on other OS devices or
   // when UMA is disabled.
   const std::string& full_hardware_class() const;
+
+  // Prefix of the android.os.Build.FINGERPRINT. Populated on Android.
+  const std::optional<std::string>& android_os_build_fingerprint_prefix() const;
 
   // Returns the time at which this device was last updated to the sync servers.
   base::Time last_updated_timestamp() const;
@@ -360,6 +363,8 @@ class DeviceInfo {
   const std::string model_name_;
 
   std::string full_hardware_class_;
+
+  const std::optional<std::string> android_os_build_fingerprint_prefix_;
 
   const base::Time last_updated_timestamp_;
 

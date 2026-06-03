@@ -98,6 +98,9 @@ message DeviceInfoSpecifics {
 
   // The form factor of the device.
   optional SyncEnums.DeviceFormFactor device_form_factor = 20;
+
+  // Prefix of the android.os.Build.FINGERPRINT (until the first colon).
+  optional string android_os_build_fingerprint_prefix = 21;
 }
 
 // Feature specific information about the device that is running a sync-enabled

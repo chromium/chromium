@@ -40,7 +40,8 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
                    /*desktop_to_ios_promo_receiving_types=*/
                    MobilePromoOnDesktopPromoTypeSet{},
                    /*glic_experimental_triggering_state=*/
-                   DeviceInfo::GlicExperimentalTriggeringState::kUnavailable) {}
+                   DeviceInfo::GlicExperimentalTriggeringState::kUnavailable,
+                   /*android_os_build_fingerprint_prefix=*/std::nullopt) {}
 
 FakeLocalDeviceInfoProvider::~FakeLocalDeviceInfoProvider() = default;
 
@@ -65,6 +66,7 @@ void FakeLocalDeviceInfoProvider::Initialize(
     const std::string& manufacturer_name,
     const std::string& model_name,
     const std::string& full_hardware_class,
+    std::optional<std::string> android_os_build_fingerprint_prefix,
     const DeviceInfo* device_info_restored_from_store) {}
 
 void FakeLocalDeviceInfoProvider::Clear() {}

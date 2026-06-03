@@ -235,6 +235,10 @@ BASE_DECLARE_FEATURE(kSyncSearchEnginesAndroidLFF);
 // If enabled, ignores the value set in sessions_invalidations_enabled_ and
 // always registers for sessions invalidations.
 BASE_DECLARE_FEATURE(kAlwaysRegisterSessionsInvalidationsAndroid);
+
+// If enabled, the android.os.Build.FINGERPRINT prefix is uploaded in
+// DeviceInfo.
+BASE_DECLARE_FEATURE(kSyncUploadAndroidBuildFingerprintPrefix);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

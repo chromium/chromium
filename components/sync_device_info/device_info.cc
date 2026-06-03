@@ -84,7 +84,8 @@ DeviceInfo::DeviceInfo(
     bool desktop_to_ios_promo_receiving_enabled,
     const MobilePromoOnDesktopPromoTypeSet&
         desktop_to_ios_promo_receiving_types,
-    GlicExperimentalTriggeringState glic_experimental_triggering_state)
+    GlicExperimentalTriggeringState glic_experimental_triggering_state,
+    std::optional<std::string> android_os_build_fingerprint_prefix)
     : guid_(guid),
       client_name_(client_name),
       chrome_version_(chrome_version),
@@ -96,6 +97,7 @@ DeviceInfo::DeviceInfo(
       manufacturer_name_(manufacturer_name),
       model_name_(model_name),
       full_hardware_class_(full_hardware_class),
+      android_os_build_fingerprint_prefix_(android_os_build_fingerprint_prefix),
       last_updated_timestamp_(last_updated_timestamp),
       pulse_interval_(pulse_interval),
       send_tab_to_self_receiving_enabled_(send_tab_to_self_receiving_enabled),
@@ -165,6 +167,11 @@ const std::string& DeviceInfo::model_name() const {
 
 const std::string& DeviceInfo::full_hardware_class() const {
   return full_hardware_class_;
+}
+
+const std::optional<std::string>&
+DeviceInfo::android_os_build_fingerprint_prefix() const {
+  return android_os_build_fingerprint_prefix_;
 }
 
 base::Time DeviceInfo::last_updated_timestamp() const {

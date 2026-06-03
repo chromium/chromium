@@ -32,6 +32,8 @@ struct LocalDeviceNameInfo {
   // Unique hardware class string which details the
   // HW combination of a CrOS device. Empty on non-CrOS devices.
   std::string full_hardware_class;
+  // The android.os.Build.FINGERPRINT. Populated on Android.
+  std::optional<std::string> android_build_fingerprint;
 };
 
 DeviceInfo::DeviceType GetLocalDeviceType();

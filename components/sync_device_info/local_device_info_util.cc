@@ -57,10 +57,17 @@ void OnHardwareInfoReady(LocalDeviceNameInfo* name_info_ptr,
 #endif
 }
 
-void OnPersonalizableDeviceNameReady(LocalDeviceNameInfo* name_info_ptr,
-                                     base::ScopedClosureRunner done_closure,
-                                     std::string personalizable_name) {
-  name_info_ptr->personalizable_name = std::move(personalizable_name);
+struct BlockingDeviceDetails {
+  std::string personalizable_name;
+  std::optional<std::string> android_build_fingerprint;
+};
+
+void OnBlockingDeviceDetailsReady(LocalDeviceNameInfo* name_info_ptr,
+                                  base::ScopedClosureRunner done_closure,
+                                  BlockingDeviceDetails details) {
+  name_info_ptr->personalizable_name = std::move(details.personalizable_name);
+  name_info_ptr->android_build_fingerprint =
+      std::move(details.android_build_fingerprint);
 }
 
 void OnMachineStatisticsLoaded(LocalDeviceNameInfo* name_info_ptr,
@@ -160,6 +167,17 @@ std::string GetPersonalizableDeviceNameBlocking() {
   return device_name;
 }
 
+BlockingDeviceDetails GetBlockingDeviceDetails() {
+  std::string device_name = GetPersonalizableDeviceNameBlocking();
+
+  std::optional<std::string> android_build_fingerprint;
+#if BUILDFLAG(IS_ANDROID)
+  android_build_fingerprint = base::SysInfo::GetAndroidBuildFingerprint();
+#endif
+
+  return {std::move(device_name), std::move(android_build_fingerprint)};
+}
+
 void GetLocalDeviceNameInfo(
     base::OnceCallback<void(LocalDeviceNameInfo)> callback) {
   auto name_info = std::make_unique<LocalDeviceNameInfo>();
@@ -188,8 +206,8 @@ void GetLocalDeviceNameInfo(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&GetPersonalizableDeviceNameBlocking),
-      base::BindOnce(&OnPersonalizableDeviceNameReady, name_info_ptr,
+      base::BindOnce(&GetBlockingDeviceDetails),
+      base::BindOnce(&OnBlockingDeviceDetailsReady, name_info_ptr,
                      base::ScopedClosureRunner(done_closure)));
 }
 

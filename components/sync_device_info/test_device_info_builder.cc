@@ -69,6 +69,8 @@ TestDeviceInfoBuilder::TestDeviceInfoBuilder(const DeviceInfo& other)
       manufacturer_name_(other.manufacturer_name()),
       model_name_(other.model_name()),
       full_hardware_class_(other.full_hardware_class()),
+      android_os_build_fingerprint_prefix_(
+          other.android_os_build_fingerprint_prefix()),
       last_updated_timestamp_(other.last_updated_timestamp()),
       pulse_interval_(other.pulse_interval()),
       send_tab_to_self_receiving_enabled_(
@@ -104,7 +106,8 @@ std::unique_ptr<DeviceInfo> TestDeviceInfoBuilder::Build() const {
       auto_sign_out_last_signin_timestamp_,
       desktop_to_ios_promo_receiving_enabled_,
       desktop_to_ios_promo_receiving_types_,
-      glic_experimental_triggering_state_);
+      glic_experimental_triggering_state_,
+      android_os_build_fingerprint_prefix_);
 }
 
 TestDeviceInfoBuilder& TestDeviceInfoBuilder::WithGuid(
@@ -170,6 +173,12 @@ TestDeviceInfoBuilder& TestDeviceInfoBuilder::WithModelName(
 TestDeviceInfoBuilder& TestDeviceInfoBuilder::WithFullHardwareClass(
     const std::string& full_hardware_class) {
   full_hardware_class_ = full_hardware_class;
+  return *this;
+}
+
+TestDeviceInfoBuilder& TestDeviceInfoBuilder::WithAndroidBuildFingerprintPrefix(
+    std::optional<std::string> android_os_build_fingerprint_prefix) {
+  android_os_build_fingerprint_prefix_ = android_os_build_fingerprint_prefix;
   return *this;
 }
 
