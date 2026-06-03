@@ -58,7 +58,8 @@ sys.path.append(
 from build import (AddCMakeToPath, AddZlibToPath, CheckoutGitRepo, CopyFile,
                    DownloadDebianSysroot, GetLibXml2Dirs, GitCherryPick,
                    GitRevert, LLVM_DIR, IsGitAncestorToHead,
-                   LLVM_BUILD_TOOLS_DIR, RunCommand)
+                   LLVM_BUILD_TOOLS_DIR, RunCommand,
+                   DEFAULT_MACOSX_DEPLOYMENT_TARGET)
 from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
                     GetDefaultHostOs, RmTree, ReadStampFile, WriteStampFile,
                     UpdatePackage, STAMP_FILENAME as LLVM_STAMP_FILENAME,
@@ -369,9 +370,8 @@ class XPy:
             # `SDKROOT`.
             self._env['SDKROOT'] = sdk_path
 
-            # This should be in sync with `mac_deployment_target` in
-            # //build/config/mac/mac_sdk.gni.
-            self._env['MACOSX_DEPLOYMENT_TARGET'] = '13.0'
+            self._env[
+                'MACOSX_DEPLOYMENT_TARGET'] = DEFAULT_MACOSX_DEPLOYMENT_TARGET
 
         if zlib_path:
             self._env['CFLAGS'] += f' -I{zlib_path}'
