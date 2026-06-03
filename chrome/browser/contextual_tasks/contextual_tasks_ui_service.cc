@@ -255,7 +255,7 @@ ContextualTasksUiService::ContextualTasksUiService(
       cookie_synchronizer_(std::move(cookie_synchronizer)),
       eligibility_manager_(std::move(eligibility_manager)),
       tracker_manager_(
-          std::make_unique<ContextualTasksWindowTrackerManager>()) {
+          std::make_unique<ContextualTasksWindowTrackerManager>(profile)) {
   if (eligibility_manager_ && contextual_tasks::ShouldEnableCookiePrefetch()) {
     eligibility_subscription_ =
         eligibility_manager_->RegisterEligibilityChangedCallback(
@@ -989,12 +989,13 @@ bool ContextualTasksUiService::HandleNavigation(
     bool is_mobile_ua,
     const std::optional<url::Origin>& initiator_origin,
     const std::optional<content::GlobalRenderFrameHostToken>&
-        initiator_frame_token) {
+        initiator_frame_token,
+    const blink::mojom::WindowFeatures& window_features) {
   return HandleNavigationImpl(
       std::move(url_params), source_contents,
       tabs::TabInterface::MaybeGetFromContents(source_contents),
       is_from_embedded_page, from_can_create_window, is_same_site_or_from_ui,
-      is_mobile_ua, initiator_origin, initiator_frame_token);
+      is_mobile_ua, initiator_origin, initiator_frame_token, window_features);
 }
 
 void ContextualTasksUiService::GetAccessToken(
@@ -1068,7 +1069,8 @@ ContextualTasksUiService::CreateMessageProxyWebContents(
 }
 
 void ContextualTasksUiService::OpenUrl(
-    const content::OpenURLParams& url_params) {
+    const content::OpenURLParams& url_params,
+    const blink::mojom::WindowFeatures& window_features) {
   const GURL& url = url_params.url;
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: OpenUrl called "
@@ -1080,6 +1082,13 @@ void ContextualTasksUiService::OpenUrl(
   // Reset frame_tree_node_id to avoid targeting the source frame when opening
   // a new tab/window.
   nav_params.frame_tree_node_id = content::FrameTreeNodeId();
+
+  // Apply window features (bounds).
+  nav_params.window_features = window_features;
+  const auto& bounds = nav_params.window_features.bounds;
+  OMNIBOX_LOG("nav_trace") << "OpenUrl: applied window features: bounds=["
+                           << bounds.x() << "," << bounds.y() << " "
+                           << bounds.width() << "x" << bounds.height() << "]";
 
   std::unique_ptr<content::WebContents> message_proxy_web_contents;
   if (base::FeatureList::IsEnabled(kAimTriggeredThreadLinks) &&
@@ -1122,7 +1131,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     bool is_mobile_ua,
     const std::optional<url::Origin>& initiator_origin,
     const std::optional<content::GlobalRenderFrameHostToken>&
-        initiator_frame_token) {
+        initiator_frame_token,
+    const blink::mojom::WindowFeatures& window_features) {
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: HandleNavigationImpl called "
          "for URL: "
@@ -1372,7 +1382,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&ContextualTasksUiService::OpenUrl,
                                     weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(new_url_params)));
+                                    std::move(new_url_params),
+                                    blink::mojom::WindowFeatures()));
       return true;
     }
 
@@ -1482,6 +1493,12 @@ bool ContextualTasksUiService::HandleNavigationImpl(
           base::BindOnce(&ContextualTasksUiService::RemoveWindowTracker,
                          weak_ptr_factory_.GetWeakPtr()));
       tracker->SetOpenURLParams(url_params);
+      tracker->SetWindowFeatures(window_features);
+      OMNIBOX_LOG("window_tracker")
+          << "Stored window features for URL " << url_params.url.spec()
+          << ": bounds=[" << window_features.bounds.x() << ","
+          << window_features.bounds.y() << " " << window_features.bounds.width()
+          << "x" << window_features.bounds.height() << "]";
       tracker_manager_->AddTracker(std::move(tracker));
       tabs::TabInterface* source_tab =
           tabs::TabInterface::MaybeGetFromContents(source_contents);
@@ -1534,16 +1551,22 @@ bool ContextualTasksUiService::HandleNavigationImpl(
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, base::BindOnce(&ContextualTasksUiService::OpenUrl,
                                         weak_ptr_factory_.GetWeakPtr(),
-                                        std::move(url_params)));
+                                        std::move(url_params),
+                                        pending_tracker
+                                            ? pending_tracker->window_features()
+                                            : blink::mojom::WindowFeatures()));
         }
         return true;
       } else {
         // Allow the link to open to its intended destination as deemed by the
         // url_params.
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(&ContextualTasksUiService::OpenUrl,
-                                      weak_ptr_factory_.GetWeakPtr(),
-                                      std::move(url_params)));
+            FROM_HERE,
+            base::BindOnce(&ContextualTasksUiService::OpenUrl,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(url_params),
+                           pending_tracker ? pending_tracker->window_features()
+                                           : blink::mojom::WindowFeatures()));
         return true;
       }
     } else {

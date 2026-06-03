@@ -4504,6 +4504,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
     content::OpenURLParams url_params(
         target_url, referrer, disposition,
         ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL, true);
+    url_params.user_gesture = user_gesture;
     content::WebContents* responsible_web_contents =
         web_contents->GetResponsibleWebContents();
     bool is_from_embedded_page =
@@ -4518,7 +4519,8 @@ bool ChromeContentBrowserClient::CanCreateWindow(
             /*from_can_create_window=*/true, is_same_site_or_from_ui,
             /*is_mobile_ua=*/false,
             /*initiator_origin=*/opener->GetLastCommittedOrigin(),
-            /*initiator_frame_token=*/opener->GetGlobalFrameToken())) {
+            /*initiator_frame_token=*/opener->GetGlobalFrameToken(),
+            features)) {
       return false;
     }
   }
