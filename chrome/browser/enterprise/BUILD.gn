@@ -159,6 +159,7 @@ source_set("enterprise") {
       "connectors/device_trust/attestation/ash/flex_attester.h",
       "connectors/device_trust/signals/ash/ash_signals_filterer.h",
       "connectors/device_trust/signals/decorators/ash/ash_signals_decorator.h",
+      "data_protection/file_snapshot_creator.h",
       "reporting/android_app_info_generator.h",
     ]
   } else {
@@ -554,6 +555,7 @@ source_set("impl") {
       "connectors/device_trust/attestation/ash/flex_attester.cc",
       "connectors/device_trust/signals/ash/ash_signals_filterer.cc",
       "connectors/device_trust/signals/decorators/ash/ash_signals_decorator.cc",
+      "data_protection/file_snapshot_creator.cc",
       "reporting/android_app_info_generator.cc",
     ]
     deps += [

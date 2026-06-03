@@ -10590,6 +10590,9 @@ test("unit_tests") {
 
   if (enterprise_data_controls) {
     sources += [ "../browser/enterprise/data_protection/data_protection_clipboard_utils_unittest.cc" ]
+    if (is_chromeos) {
+      sources += [ "../browser/enterprise/data_protection/file_snapshot_creator_unittest.cc" ]
+    }
     deps += [
       "//chrome/browser/enterprise/data_controls:unit_tests",
       "//components/enterprise/data_controls/core/browser:features",
