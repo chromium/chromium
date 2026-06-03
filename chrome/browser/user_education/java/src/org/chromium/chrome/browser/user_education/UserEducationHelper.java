@@ -9,9 +9,12 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.view.View;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -24,6 +27,7 @@ import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.SnoozeAction;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
+import org.chromium.components.user_education.FeaturePromoClosedReason;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -52,6 +56,8 @@ public class UserEducationHelper {
     private Profile mProfile;
     private @Nullable List<IphCommand> mPendingIphCommands;
     private @Nullable TextBubble mTextBubble;
+    private @Nullable Callback<Boolean> mDismissCallback;
+    private long mShowStartTimeMs;
 
     /**
      * Constructs a {@link UserEducationHelper} that is immediately available to process inbound
@@ -160,6 +166,8 @@ public class UserEducationHelper {
             assert !contentString.isEmpty();
             assert !accessibilityString.isEmpty();
 
+            mShowStartTimeMs = SystemClock.uptimeMillis();
+
             mTextBubble =
                     new TextBubble.Builder(
                                     mActivity,
@@ -176,16 +184,34 @@ public class UserEducationHelper {
                     iphCommand.preferredHorizontalOrientation);
             mTextBubble.setHorizontalOverlapAnchor(iphCommand.horizontalOverlapAnchor);
             mTextBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
-            mTextBubble.addOnDismissListener(
-                    () -> {
+            mDismissCallback =
+                    (dismissedProgrammatically) -> {
+                        long elapsed = SystemClock.uptimeMillis() - mShowStartTimeMs;
+                        final int closedReason;
+                        if (dismissedProgrammatically) {
+                            closedReason = FeaturePromoClosedReason.ABORT_PROMO;
+                        } else if (iphCommand.autoDismissTimeout > 0
+                                && elapsed >= iphCommand.autoDismissTimeout) {
+                            closedReason = FeaturePromoClosedReason.TIMEOUT;
+                        } else if (mTextBubble != null && mTextBubble.wasDismissedByInsideTouch()) {
+                            closedReason = FeaturePromoClosedReason.DISMISS;
+                        } else {
+                            closedReason = FeaturePromoClosedReason.CANCEL;
+                        }
+
                         mHandler.postDelayed(
                                 () -> {
                                     if (featureName != null) {
+                                        RecordHistogram.recordEnumeratedHistogram(
+                                                "UserEducation.MessageAction." + featureName,
+                                                closedReason,
+                                                FeaturePromoClosedReason.MAX_VALUE + 1);
+
                                         if (iphCommand.enableSnoozeMode) {
                                             final int snoozeAction =
-                                                    mTextBubble != null
-                                                                    && mTextBubble
-                                                                            .wasDismissedByInsideTouch()
+                                                    (closedReason
+                                                                    == FeaturePromoClosedReason
+                                                                            .DISMISS)
                                                             ? SnoozeAction.DISMISSED
                                                             : SnoozeAction.SNOOZED;
                                             tracker.dismissedWithSnooze(featureName, snoozeAction);
@@ -200,7 +226,9 @@ public class UserEducationHelper {
                                     mTextBubble = null;
                                 },
                                 ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS);
-                    });
+                    };
+            mTextBubble.addOnDismissListener(
+                    () -> handleDismissal(/* dismissedProgrammatically= */ false));
             mTextBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
             if (iphCommand.dismissOnTouchTimeout != TextBubble.NO_TIMEOUT) {
                 TextBubble textBubbleForLambda = mTextBubble;
@@ -226,8 +254,16 @@ public class UserEducationHelper {
     /** Dismisses the currently showing text bubble, if any. */
     public void dismissTextBubble() {
         if (mTextBubble != null) {
+            handleDismissal(/* dismissedProgrammatically= */ true);
             mTextBubble.dismiss();
         }
+    }
+
+    private void handleDismissal(boolean dismissedProgrammatically) {
+        if (mDismissCallback == null) return;
+        Callback<Boolean> callback = mDismissCallback;
+        mDismissCallback = null;
+        callback.onResult(dismissedProgrammatically);
     }
 
     public @Nullable TextBubble getTextBubbleForTesting() {
