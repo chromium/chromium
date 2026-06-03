@@ -21,6 +21,10 @@
 class GURL;
 class PrefService;
 
+namespace contextual_tasks {
+struct ThreadTurn;
+}  // namespace contextual_tasks
+
 namespace lens {
 enum class MimeType;
 struct ContextualInputData;
@@ -202,13 +206,16 @@ class ContextualSearchSessionHandle {
   // confirmation that they are available on the server.
   std::vector<FileInfo> GetSubmittedContextFileInfos() const;
 
+  // Returns all the tab titles corresponding to the submitted context tokens.
+  virtual std::vector<std::string> GetSubmittedContextTabTitles() const;
+
   // Returns whether the current session_id is part of the uploaded context.
   bool IsTabInContext(SessionID session_id) const;
 
-  // Accessors for the last query submitted in this contextual session.
-  const std::string& previous_query() const { return previous_query_; }
-  void set_previous_query(const std::string& previous_query) {
-    previous_query_ = previous_query;
+  // Accessors for the last query and public turns in the contextual session.
+  void AddThreadTurn(const contextual_tasks::ThreadTurn& turn);
+  const std::vector<contextual_tasks::ThreadTurn>& previous_turns() const {
+    return previous_turns_;
   }
 
  private:
@@ -256,9 +263,9 @@ class ContextualSearchSessionHandle {
   // contextual searchbox within the Lens overlay.
   bool is_contextual_lens_session_ = false;
 
-  // TODO(crbug.com/511274967): Remove this when contextual_tasks::ThreadTurn
-  // is fully implemented.
-  std::string previous_query_;
+  // The list of previous turns in the contextual session, from oldest to
+  // newest.
+  std::vector<contextual_tasks::ThreadTurn> previous_turns_;
 
   // This needs to be the last member to ensure all outstanding WeakPtrs are
   // invalidated before the rest of the members.

@@ -57,6 +57,7 @@ source_set("contextual_tasks") {
     "//chrome/browser/ui/browser_window",
     "//components/contextual_search:public",
     "//components/contextual_tasks/public",
+    "//components/contextual_tasks/public:query_contextualizer",
     "//components/keyed_service/core",
     "//components/lens",
     "//components/lens:lens_url_utils",

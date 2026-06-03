@@ -41,6 +41,7 @@
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/contextual_tasks/public/utils.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
@@ -562,7 +563,9 @@ void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(
             contextual_search::ContextualSearchSource::kContextualTasks);
       }
     }
-    session_handle->set_previous_query(query);
+    contextual_tasks::ThreadTurn turn;
+    turn.query = query;
+    session_handle->AddThreadTurn(turn);
     // If there is an auto-added tab, the user sending the query means the
     // system should upload it.
     UploadSnapshotTabContextIfPresent();

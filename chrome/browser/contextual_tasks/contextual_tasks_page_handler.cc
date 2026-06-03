@@ -36,6 +36,7 @@
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
+#include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/composebox_features.h"
@@ -275,7 +276,9 @@ void ContextualTasksPageHandler::GetUrlForTask(const base::Uuid& uuid,
                       ->GetOrCreateContextualSessionHandle()) {
             std::string query = lens::ExtractTextQueryParameterValue(url);
             if (!query.empty()) {
-              session_handle->set_previous_query(query);
+              contextual_tasks::ThreadTurn turn;
+              turn.query = query;
+              session_handle->AddThreadTurn(turn);
             }
           }
         }

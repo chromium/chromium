@@ -130,6 +130,17 @@ class UploadTracker
   scoped_refptr<UploadTracker> self_ref_;
 };
 
+ThreadTurn::ThreadTurn() = default;
+ThreadTurn::~ThreadTurn() = default;
+ThreadTurn::ThreadTurn(const ThreadTurn&) = default;
+ThreadTurn& ThreadTurn::operator=(const ThreadTurn&) = default;
+
+ConversationThread::ConversationThread() = default;
+ConversationThread::~ConversationThread() = default;
+ConversationThread::ConversationThread(const ConversationThread&) = default;
+ConversationThread& ConversationThread::operator=(const ConversationThread&) =
+    default;
+
 QueryContextualizer::QueryContextualizer(ContextualTasksService* service,
                                          Delegate* delegate)
     : service_(service), delegate_(delegate) {

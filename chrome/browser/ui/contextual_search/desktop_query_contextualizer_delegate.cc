@@ -8,6 +8,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
@@ -99,8 +100,19 @@ void DesktopQueryContextualizerDelegate::GetRelevantTabsForQuery(
       contextual_tasks::GetSmartTabSharingTabSelectionTimeout();
   tab_selection_options.browser_window_interface = browser_window_interface_;
 
-  service_->GetRelevantTabsForQuery(
-      tab_selection_options, query_text, attached_context_urls,
+  contextual_tasks::ConversationThread conversation_thread;
+  conversation_thread.query = query_text;
+
+  contextual_search::ContextualSearchSessionHandle* session_handle =
+      GetOrCreateSessionHandleForQueryContextualizer();
+  if (session_handle) {
+    conversation_thread.previous_turns = session_handle->previous_turns();
+    conversation_thread.shared_tab_titles =
+        session_handle->GetSubmittedContextTabTitles();
+  }
+
+  service_->GetRelevantTabsForConversationThread(
+      tab_selection_options, conversation_thread, attached_context_urls,
       base::BindOnce(
           [](base::OnceCallback<void(std::vector<QueryContextualizer::TabId>)>
                  cb,

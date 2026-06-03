@@ -58,36 +58,7 @@ namespace contextual_tasks {
 
 struct SiteExclusionDetail;
 class ContextualTasksContextModelHandler;
-
-// Represents a single turn in a thread.
-struct ThreadTurn {
-  ThreadTurn();
-  ThreadTurn(const ThreadTurn&);
-  ThreadTurn& operator=(const ThreadTurn&);
-  ~ThreadTurn();
-
-  // User query for this turn.
-  std::string query;
-};
-
-// Represents a conversation thread, including current and previous turns.
-struct ConversationThread {
-  ConversationThread();
-  ConversationThread(const ConversationThread&);
-  ConversationThread& operator=(const ConversationThread&);
-  ~ConversationThread();
-
-  // The query from the current turn.
-  std::string query;
-
-  // Previous turns in the thread, in chronological order (oldest first).
-  // The first element in this vector is the first turn in the thread.
-  std::vector<ThreadTurn> previous_turns;
-
-  // Titles of shared (attached as context) tabs, coming from context library.
-  // These are union of tabs shared across all previous turns.
-  std::vector<std::string> shared_tab_titles;
-};
+struct ConversationThread;
 
 enum class ContextDeterminationStatus {
   kSuccess = 0,
