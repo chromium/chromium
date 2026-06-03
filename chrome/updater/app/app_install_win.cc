@@ -47,6 +47,7 @@
 #include "base/win/elevation_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/app/app_install_util_win.h"
@@ -859,15 +860,21 @@ void AppInstallControllerImpl::LoadLogo(const std::string& app_id,
     return;
   }
 
-  if (!::IsWindow(progress_hwnd)) {
-    VLOG(1) << __func__ << "progress_hwnd not valid anymore";
+  // Copy the bitmap on the background thread so it remains valid when the
+  // IPicture goes out of scope.
+  base::win::ScopedGDIObject<HBITMAP> standalone_bitmap(
+      reinterpret_cast<HBITMAP>(::CopyImage(bitmap, IMAGE_BITMAP, 0, 0, 0)));
+  if (!standalone_bitmap.is_valid()) {
+    VLOG(1) << __func__ << "::CopyImage failed";
     return;
   }
 
-  ::SendDlgItemMessage(progress_hwnd, IDC_APP_BITMAP, STM_SETIMAGE,
-                       IMAGE_BITMAP,
-                       reinterpret_cast<LPARAM>(::CopyImage(
-                           bitmap, IMAGE_BITMAP, 0, 0, LR_COPYRETURNORG)));
+  if (::PostMessage(progress_hwnd, ui::WM_SET_APP_LOGO,
+                    reinterpret_cast<WPARAM>(standalone_bitmap.get()), 0)) {
+    static_cast<void>(standalone_bitmap.release());
+  } else {
+    VLOG(1) << __func__ << "::PostMessage failed";
+  }
 }
 
 // Creates the install progress observer. The observer has thread affinity. It

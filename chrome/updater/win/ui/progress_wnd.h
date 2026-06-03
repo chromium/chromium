@@ -47,6 +47,8 @@ class ProgressWndEvents : public CompleteWndEvents {
   virtual void DoCancel() = 0;
 };
 
+inline constexpr UINT WM_SET_APP_LOGO = WM_APP + 10;
+
 // Implements the UI progress window.
 class ProgressWnd : public CompleteWnd, public AppInstallProgress {
  public:
@@ -58,6 +60,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   void SetEventSink(ProgressWndEvents* ev);
 
   CR_BEGIN_MSG_MAP_EX(ProgressWnd)
+    CR_MESSAGE_HANDLER_EX(WM_SET_APP_LOGO, OnSetAppLogo)
     CR_MESSAGE_HANDLER_EX(WM_INITDIALOG, OnInitDialog)
     CR_MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
     CR_MESSAGE_HANDLER_EX(WM_ERASEBKGND, OnEraseBkgnd)
@@ -128,6 +131,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   void OnPause() override;
   void OnComplete(const ObserverCompletionInfo& observer_info) override;
 
+  LRESULT OnSetAppLogo(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnInitDialog(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnSize(UINT msg, WPARAM wparam, LPARAM lparam);
   void OnClickedButton(UINT notify_code, int id, HWND wnd_ctl);
@@ -137,6 +141,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   HBRUSH OnCtlColorStatic(HDC dc, HWND ctl_hwnd);
 
   void SetControlText(int id, const std::wstring& text);
+  void SetAppLogo(HBITMAP bitmap);
 
   // Returns true if this window is closed.
   bool MaybeCloseWindow() override;
@@ -146,6 +151,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
 
   void HandleCancelRequest();
   void UpdateWindowRgn();
+  void ApplyDpiScaling(int dpi);
 
   void DeterminePostInstallUrls(const ObserverCompletionInfo& info);
 
@@ -172,6 +178,8 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   // Background image cache for both light and dark themes.
   base::win::ScopedGDIObject<HBITMAP> light_bg_bmp_;
   base::win::ScopedGDIObject<HBITMAP> dark_bg_bmp_;
+
+  base::win::ScopedGDIObject<HBITMAP> app_logo_bmp_;
 
   HBITMAP GetBackgroundBitmap();
 
