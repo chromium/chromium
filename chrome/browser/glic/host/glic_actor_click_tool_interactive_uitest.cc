@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -62,7 +63,13 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionWithCoordinatesSucceeds) {
 
 // A click on a button in a web component should work, but a click on another
 // element in the component should not.
-IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionInWebComponent) {
+// TODO(b/497283367): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ClickActionInWebComponent DISABLED_ClickActionInWebComponent
+#else
+#define MAYBE_ClickActionInWebComponent ClickActionInWebComponent
+#endif
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, MAYBE_ClickActionInWebComponent) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL(
       "/actor/page_with_web_component_button.html");
