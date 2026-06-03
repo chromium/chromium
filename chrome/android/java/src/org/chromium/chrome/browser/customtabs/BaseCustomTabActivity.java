@@ -193,6 +193,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private @Nullable BrowserServicesThemeColorProvider mBrowserServicesThemeColorProvider;
     private @Nullable CustomTabAllTabObserver mCustomTabAllTabObserver;
+    private @Nullable CustomTabSessionHandler mCustomTabSessionHandler;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -797,14 +798,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                     getCustomTabActivityNavigationController());
         }
 
-        new CustomTabSessionHandler(
-                getIntentDataProvider(),
-                getCustomTabActivityTabProvider(),
-                this::getCustomTabToolbarCoordinator,
-                this::getCustomTabBottomBarDelegate,
-                mCustomTabIntentHandler,
-                this,
-                getLifecycleDispatcher());
+        mCustomTabSessionHandler =
+                new CustomTabSessionHandler(
+                        getIntentDataProvider(),
+                        getCustomTabActivityTabProvider(),
+                        this::getCustomTabToolbarCoordinator,
+                        this::getCustomTabBottomBarDelegate,
+                        mCustomTabIntentHandler,
+                        this,
+                        getLifecycleDispatcher());
 
         BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
 
@@ -872,6 +874,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
     @Override
     protected void onDestroyInternal() {
+        if (mCustomTabSessionHandler != null) {
+            mCustomTabSessionHandler.onDestroy();
+            mCustomTabSessionHandler = null;
+        }
+
         if (mFullscreenManager != null) {
             mFullscreenManager.removeObserver(mFullscreenObserver);
             mFullscreenManager = null;
