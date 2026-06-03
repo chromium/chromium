@@ -73,6 +73,17 @@ void SubresourceSignedExchangeURLLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  if (request.mode == network::mojom::RequestMode::kNavigate) {
+    network::debug::ScopedResourceRequestCrashKeys request_crash_keys(request);
+    mojo::ReportBadMessage(
+        "SubresourceSignedExchangeURLLoaderFactory: "
+        "kNavigate mode is forbidden for subresources");
+    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
+        ->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
+    return;
+  }
+
   if (!IsValidRequestInitiator(request, request_initiator_origin_lock_)) {
     network::debug::ScopedResourceRequestCrashKeys request_crash_keys(request);
     network::debug::ScopedRequestInitiatorOriginLockCrashKey lock_crash_keys(

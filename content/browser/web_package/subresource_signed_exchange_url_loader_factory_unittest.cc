@@ -12,12 +12,14 @@
 #include "base/test/bind.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
+#include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -168,6 +170,86 @@ TEST(SubresourceSignedExchangeURLLoaderFactoryTest,
   EXPECT_EQ(received_error,
             "SubresourceSignedExchangeURLLoaderFactory: "
             "lock VS initiator mismatch");
+
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+}
+
+std::unique_ptr<PrefetchedSignedExchangeCacheEntry> CreateWorkingCacheEntry(
+    const GURL& outer_url,
+    const GURL& inner_url,
+    const std::string& inner_body,
+    storage::BlobStorageContext* blob_context) {
+  auto entry = std::make_unique<PrefetchedSignedExchangeCacheEntry>();
+  auto status = std::make_unique<network::URLLoaderCompletionStatus>();
+  entry->SetCompletionStatus(std::move(status));
+  entry->SetOuterUrl(outer_url);
+  entry->SetInnerUrl(inner_url);
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 200 OK\nContent-type: application/custom\n\n"));
+  auto outer_response = network::mojom::URLResponseHead::New();
+  outer_response->headers = headers;
+  entry->SetOuterResponse(std::move(outer_response));
+  auto header_integrity = std::make_unique<net::SHA256HashValue>();
+  entry->SetHeaderIntegrity(std::move(header_integrity));
+  auto inner_response = network::mojom::URLResponseHead::New();
+  inner_response->headers = headers;
+  entry->SetInnerResponse(std::move(inner_response));
+
+  auto builder = std::make_unique<storage::BlobDataBuilder>("working_uuid");
+  builder->AppendData(inner_body);
+  std::unique_ptr<storage::BlobDataHandle> blob_handle =
+      blob_context->AddFinishedBlob(std::move(builder));
+
+  entry->SetBlobDataHandle(std::move(blob_handle));
+  entry->SetSignatureExpireTime(base::Time::Now() + base::Days(1));
+  return entry;
+}
+
+TEST(SubresourceSignedExchangeURLLoaderFactoryTest, CorsBypassViaKNavigate) {
+  BrowserTaskEnvironment task_environment;
+  GURL inner_url("https://target.com/secret.json");
+  GURL outer_url("https://target.com/outer");
+  auto attacker_origin = url::Origin::Create(GURL("https://attacker.com"));
+
+  storage::BlobStorageContext blob_context;
+  std::string secret_data = "flag{bypass}";
+  auto entry =
+      CreateWorkingCacheEntry(outer_url, inner_url, secret_data, &blob_context);
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory;
+  new content::SubresourceSignedExchangeURLLoaderFactory(
+      factory.BindNewPipeAndPassReceiver(), std::move(entry),
+      /*request_initiator_origin_lock=*/attacker_origin);
+
+  std::string received_error;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { received_error = error; }));
+
+  mojo::Remote<network::mojom::URLLoader> loader;
+  network::TestURLLoaderClient client;
+  network::ResourceRequest request;
+  request.url = inner_url;
+  request.request_initiator = attacker_origin;
+
+  // Using kNavigate bypasses CORS and ORB checks in
+  // SignedExchangeInnerResponseURLLoader
+  request.mode = network::mojom::RequestMode::kNavigate;
+
+  factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), 123,
+      network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilComplete();
+
+  // The request should be rejected with net::ERR_INVALID_ARGUMENT.
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client.completion_status().error_code);
+
+  factory.FlushForTesting();
+  EXPECT_EQ(received_error,
+            "SubresourceSignedExchangeURLLoaderFactory: "
+            "kNavigate mode is forbidden for subresources");
 
   mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
