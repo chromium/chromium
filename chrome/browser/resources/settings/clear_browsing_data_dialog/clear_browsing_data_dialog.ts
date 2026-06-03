@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-clear-browsing-data-dialog-v2' allows the user to
+ * @fileoverview 'settings-clear-browsing-data-dialog' allows the user to
  * delete browsing data that has been cached by Chromium.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -43,7 +43,7 @@ import {RouteObserverMixin} from '../router.js';
 
 import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, TimePeriod} from './clear_browsing_data_browser_proxy.js';
-import {getTemplate} from './clear_browsing_data_dialog_v2.html.js';
+import {getTemplate} from './clear_browsing_data_dialog.html.js';
 import {canDeleteAccountData, isSignedIn} from './clear_browsing_data_signin_util.js';
 import type {SettingsClearBrowsingDataTimePicker} from './clear_browsing_data_time_picker.js';
 import {getTimePeriodString} from './clear_browsing_data_time_picker.js';
@@ -63,7 +63,7 @@ function closeDialog(dialog: CrDialogElement, isLast: boolean) {
   dialog.close();
 }
 
-export interface SettingsClearBrowsingDataDialogV2Element {
+export interface SettingsClearBrowsingDataDialogElement {
   $: {
     cancelButton: CrButtonElement,
     deleteButton: CrButtonElement,
@@ -146,13 +146,13 @@ export function getDataTypePrefName(datatypes: BrowsingDataType) {
   }
 }
 
-const SettingsClearBrowsingDataDialogV2ElementBase =
+const SettingsClearBrowsingDataDialogElementBase =
     RouteObserverMixin(WebUiListenerMixin(PrefsMixin(PolymerElement)));
 
-export class SettingsClearBrowsingDataDialogV2Element extends
-    SettingsClearBrowsingDataDialogV2ElementBase {
+export class SettingsClearBrowsingDataDialogElement extends
+    SettingsClearBrowsingDataDialogElementBase {
   static get is() {
-    return 'settings-clear-browsing-data-dialog-v2';
+    return 'settings-clear-browsing-data-dialog';
   }
 
   static get template() {
@@ -539,11 +539,11 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-clear-browsing-data-dialog-v2':
-        SettingsClearBrowsingDataDialogV2Element;
+    'settings-clear-browsing-data-dialog':
+        SettingsClearBrowsingDataDialogElement;
   }
 }
 
 customElements.define(
-    SettingsClearBrowsingDataDialogV2Element.is,
-    SettingsClearBrowsingDataDialogV2Element);
+    SettingsClearBrowsingDataDialogElement.is,
+    SettingsClearBrowsingDataDialogElement);

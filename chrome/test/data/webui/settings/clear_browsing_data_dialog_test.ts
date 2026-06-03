@@ -6,7 +6,7 @@
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogV2Element, SettingsHistoryDeletionDialogElement} from 'chrome://settings/lazy_load.js';
+import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement} from 'chrome://settings/lazy_load.js';
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, getDataTypePrefName, getTimePeriodString, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, SignedInState, StatusAction, SyncBrowserProxyImpl, Router, routes, resetRouterForTesting} from 'chrome://settings/settings.js';
@@ -24,7 +24,7 @@ suite('DeleteBrowsingDataDialog', function() {
   let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;
   let testSyncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-  let dialog: SettingsClearBrowsingDataDialogV2Element;
+  let dialog: SettingsClearBrowsingDataDialogElement;
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
@@ -76,7 +76,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
   async function createDialog() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    dialog = document.createElement('settings-clear-browsing-data-dialog-v2');
+    dialog = document.createElement('settings-clear-browsing-data-dialog');
     dialog.set('prefs', settingsPrefs.prefs);
     document.body.appendChild(dialog);
     return waitAfterNextRender(dialog);

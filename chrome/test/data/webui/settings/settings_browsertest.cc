@@ -1311,30 +1311,30 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyGuidePromoVisibility) {
   RunTest("settings/privacy_guide_promo_visibility_test.js", "mocha.run()");
 }
 
-using SettingsClearBrowsingDataV2Test = SettingsBrowserTest;
+using SettingsClearBrowsingDataTest = SettingsBrowserTest;
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
                        DeleteBrowsingDataAccountIndicator) {
   RunTest("settings/clear_browsing_data_account_indicator_test.js",
           "runMochaSuite('DeleteBrowsingDataAccountIndicator')");
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
                        DeleteBrowsingDataDialog) {
-  RunTest("settings/clear_browsing_data_dialog_v2_test.js",
+  RunTest("settings/clear_browsing_data_dialog_test.js",
           "runMochaSuite('DeleteBrowsingDataDialog')");
 }
 
 // TODO(crbug.com/440503425): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
                        DISABLED_OtherGoogleDataDialog) {
   RunTest("settings/other_google_data_dialog_test.js",
           "runMochaSuite('OtherGoogleDataDialog')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
                        DeleteBrowsingDataTimePicker) {
   RunTest("settings/clear_browsing_data_time_picker_test.js",
           "runMochaSuite('DeleteBrowsingDataTimePicker')");

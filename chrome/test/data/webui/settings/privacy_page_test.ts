@@ -65,12 +65,12 @@ suite('PrivacyPage', function() {
 
   test('showDeleteBrowsingDataDialog', function() {
     assertFalse(!!page.shadowRoot!.querySelector(
-        'settings-clear-browsing-data-dialog-v2'));
+        'settings-clear-browsing-data-dialog'));
     page.$.clearBrowsingData.click();
     flush();
 
-    const dialog = page.shadowRoot!.querySelector(
-        'settings-clear-browsing-data-dialog-v2');
+    const dialog =
+        page.shadowRoot!.querySelector('settings-clear-browsing-data-dialog');
     assertTrue(!!dialog);
   });
 
@@ -82,8 +82,8 @@ suite('PrivacyPage', function() {
     page.$.clearBrowsingData.click();
     flush();
 
-    const dialog = page.shadowRoot!.querySelector(
-        'settings-clear-browsing-data-dialog-v2');
+    const dialog =
+        page.shadowRoot!.querySelector('settings-clear-browsing-data-dialog');
     assertTrue(!!dialog);
     dialog.dispatchEvent(new CustomEvent('browsing-data-deleted', {
       bubbles: true,

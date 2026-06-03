@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
        "settings-main",
        "settings-privacy-page-index",
        "settings-privacy-page",
-       "settings-clear-browsing-data-dialog-v2",
+       "settings-clear-browsing-data-dialog",
        "#deleteButton"};
 
   RunTestSequence(
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(RealCriticalUserJourneyServiceInteractiveTest,
        "settings-main",
        "settings-privacy-page-index",
        "settings-privacy-page",
-       "settings-clear-browsing-data-dialog-v2",
+       "settings-clear-browsing-data-dialog",
        "#deleteButton"};
 
   ui::Accelerator clear_browsing_data_accelerator;
