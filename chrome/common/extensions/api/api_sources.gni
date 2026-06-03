@@ -71,8 +71,11 @@ uncompiled_sources_ = [
 types_only_schema_sources_ = []
 
 if (enable_extensions) {
-  schema_sources_ += [
+  types_only_schema_sources_ += [
     "accessibility_features.json",
+    "proxy_override_rules_private.json",
+  ]
+  schema_sources_ += [
     "autofill_private.idl",
     "autotest_private.webidl",
     "bookmark_manager_private.json",
@@ -86,7 +89,6 @@ if (enable_extensions) {
     "indigo_private.webidl",
     "language_settings_private.idl",
     "passwords_private.idl",
-    "proxy_override_rules_private.json",
     "resources_private.idl",
     "safe_browsing_private.idl",
     "settings_private.idl",

@@ -39,7 +39,8 @@ mojom("mojom") {
 # Private Targets
 
 generated_json_strings("generated_api_json_strings") {
-  sources = extensions_api_schema_files + extensions_api_uncompiled_sources +
+  sources = extensions_api_schema_files + extensions_types_only_schema_files +
+            extensions_api_uncompiled_sources +
             extensions_api_uncompiled_bundle_schema_sources
   bundle_name = ""
   root_namespace = extensions_api_root_namespace
