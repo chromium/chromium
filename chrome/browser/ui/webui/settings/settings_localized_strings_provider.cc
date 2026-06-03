@@ -66,7 +66,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/accessibility_annotator/core/url_constants.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -95,6 +94,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
+#include "components/personal_context/core/url_constants.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/core/browser/plus_address_service.h"
 #include "components/plus_addresses/core/common/features.h"
@@ -1948,10 +1948,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                           base::FeatureList::IsEnabled(
                               autofill::features::kAutofillAiReauthRequired));
 
-  // TODO(b/511147685): Rename URL constant.
-  html_source->AddString(
-      "personalContextSettingsUrl",
-      accessibility_annotator::kAccessibilityAnnotatorSettingsURL);
+  html_source->AddString("personalContextSettingsUrl",
+                         personal_context::kPersonalContextSettingsURL);
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

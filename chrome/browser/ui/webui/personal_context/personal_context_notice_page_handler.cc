@@ -14,7 +14,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "components/accessibility_annotator/core/url_constants.h"
+#include "components/personal_context/core/url_constants.h"
 #include "components/personal_context/first_run/personal_context_first_run_types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/page_navigator.h"
@@ -103,9 +103,8 @@ void PersonalContextNoticePageHandler::OnManageSettingsClicked() {
   if (browser_window_interface) {
     browser_window_interface->OpenURL(
         content::OpenURLParams(
-            GURL(accessibility_annotator::kAccessibilityAnnotatorSettingsURL),
-            content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-            ui::PAGE_TRANSITION_LINK,
+            GURL(kPersonalContextSettingsURL), content::Referrer(),
+            WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
             /*is_renderer_initiated=*/false),
         /*navigation_handle_callback=*/base::DoNothing());
   }
@@ -121,9 +120,8 @@ void PersonalContextNoticePageHandler::OnLearnMoreClicked() {
   if (browser_window_interface) {
     browser_window_interface->OpenURL(
         content::OpenURLParams(
-            GURL(accessibility_annotator::kAccessibilityAnnotatorLearnMoreURL),
-            content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-            ui::PAGE_TRANSITION_LINK,
+            GURL(kPersonalContextLearnMoreURL), content::Referrer(),
+            WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
             /*is_renderer_initiated=*/false),
         /*navigation_handle_callback=*/base::DoNothing());
   }

@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/webui/personal_context/personal_context_notice_page_handler.h"
 #include "chrome/grit/personal_context_notice_resources.h"
 #include "chrome/grit/personal_context_notice_resources_map.h"
-#include "components/accessibility_annotator/core/url_constants.h"
+#include "components/personal_context/core/url_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -56,9 +56,7 @@ PersonalContextNoticeUI::PersonalContextNoticeUI(content::WebUI* web_ui)
                              IDS_PERSONAL_CONTEXT_NOTICE_PRIMARY_BUTTON);
   source->AddLocalizedString("personalContextNoticeSecondaryButton",
                              IDS_PERSONAL_CONTEXT_NOTICE_SECONDARY_BUTTON);
-  source->AddString(
-      "personalContextTriggerText",
-      accessibility_annotator::kAccessibilityAnnotatorTriggerText);
+  source->AddString("personalContextTriggerText", kPersonalContextTriggerText);
 }
 
 PersonalContextNoticeUI::~PersonalContextNoticeUI() {

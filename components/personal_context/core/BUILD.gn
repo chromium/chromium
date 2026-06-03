@@ -19,6 +19,7 @@ source_set("core") {
     "personal_context_service_impl.h",
     "personal_context_types.cc",
     "personal_context_types.h",
+    "url_constants.h",
   ]
 
   public_deps = [

@@ -8,7 +8,6 @@ source_set("core") {
     "accessibility_query_service.h",
     "accessibility_query_service_delegate.cc",
     "accessibility_query_service_delegate.h",
-    "url_constants.h",
   ]
 
   public_deps = [

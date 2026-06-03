@@ -28,7 +28,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/accessibility_annotator/core/url_constants.h"
 #include "components/account_settings/account_setting_service.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -46,6 +45,7 @@
 #include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "components/personal_context/core/url_constants.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -101,8 +101,7 @@ static jboolean JNI_EntityDataManager_IsPersonalContextSettingVisible(
 
 static std::string JNI_EntityDataManager_GetPersonalContextSettingsUrl(
     JNIEnv* env) {
-  // TODO(b/511173039): Rename when service files are updated.
-  return accessibility_annotator::kAccessibilityAnnotatorSettingsURL;
+  return personal_context::kPersonalContextSettingsURL;
 }
 
 static int64_t JNI_EntityDataManager_Init(JNIEnv* env,

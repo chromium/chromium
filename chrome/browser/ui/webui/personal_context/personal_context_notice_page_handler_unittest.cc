@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/webui/personal_context/personal_context_notice_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/accessibility_annotator/core/url_constants.h"
+#include "components/personal_context/core/url_constants.h"
 #include "components/personal_context/first_run/personal_context_first_run_types.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -174,12 +174,10 @@ TEST_F(PersonalContextNoticePageHandlerTest,
 TEST_F(PersonalContextNoticePageHandlerTest, OnLearnMoreClicked) {
   EXPECT_EQ(0, user_action_tester_.GetActionCount(
                    "PersonalContext.Notice.LearnMoreLinkClick"));
-  EXPECT_CALL(
-      mock_browser_interface_,
-      OpenURL(testing::Field(&content::OpenURLParams::url,
-                             GURL(accessibility_annotator::
-                                      kAccessibilityAnnotatorLearnMoreURL)),
-              testing::_))
+  EXPECT_CALL(mock_browser_interface_,
+              OpenURL(testing::Field(&content::OpenURLParams::url,
+                                     GURL(kPersonalContextLearnMoreURL)),
+                      testing::_))
       .WillOnce(testing::Return(nullptr));
 
   handler_->OnLearnMoreClicked();
@@ -192,14 +190,10 @@ TEST_F(PersonalContextNoticePageHandlerTest, OnManageSettingsClicked) {
   EXPECT_EQ(0, user_action_tester_.GetActionCount(
                    "PersonalContext.Notice.SettingsLinkClick"));
 
-  EXPECT_CALL(
-      mock_browser_interface_,
-      OpenURL(
-          testing::Field(
-              &content::OpenURLParams::url,
-              GURL(
-                  accessibility_annotator::kAccessibilityAnnotatorSettingsURL)),
-          testing::_))
+  EXPECT_CALL(mock_browser_interface_,
+              OpenURL(testing::Field(&content::OpenURLParams::url,
+                                     GURL(kPersonalContextSettingsURL)),
+                      testing::_))
       .WillOnce(testing::Return(nullptr));
 
   handler_->OnManageSettingsClicked();
