@@ -1,0 +1,19 @@
+--- !tapi-tbd
+tbd-version:     4
+targets:         [ x86_64-macos, x86_64-maccatalyst, arm64-macos, arm64-maccatalyst, arm64e-macos, arm64e-maccatalyst ]
+install-name:    '/usr/lib/system/libsystem_eligibility.dylib'
+current-version: 319.121.1
+parent-umbrella:
+  - targets:         [ x86_64-macos, x86_64-maccatalyst, arm64-macos, arm64-maccatalyst, arm64e-macos, arm64e-maccatalyst ]
+    umbrella:        System
+exports:
+  - targets:         [ x86_64-macos, x86_64-maccatalyst, arm64-macos, arm64-maccatalyst, arm64e-macos, arm64e-maccatalyst ]
+    symbols:         [ _os_eligibility_domain_for_name, _os_eligibility_dump_sysdiagnose_data_to_dir,
+                       _os_eligibility_fetch_newest_policies, _os_eligibility_force_domain_answer,
+                       _os_eligibility_force_domain_set_answers, _os_eligibility_get_all_domain_answers,
+                       _os_eligibility_get_domain_answer, _os_eligibility_get_domain_notification_name,
+                       _os_eligibility_get_error_description, _os_eligibility_get_internal_state,
+                       _os_eligibility_get_state_dump, _os_eligibility_precise_locations,
+                       _os_eligibility_reset_all_domains, _os_eligibility_reset_domain,
+                       _os_eligibility_set_input, _os_eligibility_set_test_mode ]
+...
