@@ -70,6 +70,8 @@ class SearchboxOmniboxClient : public OmniboxClient {
       const std::u16string& text,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match) override;
+  void OpenUrl(GURL gurl,
+               WindowOpenDisposition disposition) override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
  protected:

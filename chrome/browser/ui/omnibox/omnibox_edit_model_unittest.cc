@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_view.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -1832,7 +1833,7 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupDisabled) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(false));
-  EXPECT_CALL(*client(), OpenUrl(_)).Times(1);
+  EXPECT_CALL(*client(), OpenUrl(_, _)).Times(1);
 
   model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/false);
 
@@ -1846,7 +1847,7 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabledNavigationFallback) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*client(), OpenUrl(_)).Times(1);
+  EXPECT_CALL(*client(), OpenUrl(_, _)).Times(1);
 
   model()->SetUserText(u"query");  // User input in progress.
 
@@ -1862,7 +1863,7 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabledPopupOpened) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*client(), OpenUrl(_)).Times(0);
+  EXPECT_CALL(*client(), OpenUrl(_, _)).Times(0);
 
   model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/true);
 
@@ -1880,7 +1881,7 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabled_ForcedNavigationDisabled) {
   feature_list.InitAndDisableFeature(omnibox::kAiModeEntryPointAlwaysNavigates);
 
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*client(), OpenUrl(_)).Times(0);
+  EXPECT_CALL(*client(), OpenUrl(_, _)).Times(0);
 
   controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
   model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/true);
@@ -1903,7 +1904,7 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabled_ForcedNavigationEnabled) {
   controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
 
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*client(), OpenUrl(_)).Times(1);
+  EXPECT_CALL(*client(), OpenUrl(_, _)).Times(1);
 
   model()->SetUserText(u"query");
   model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/false);
@@ -1921,7 +1922,7 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabled_ForcedNavigationEnabled) {
 
   testing::Mock::VerifyAndClearExpectations(client());
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*client(), OpenUrl(_)).Times(0);
+  EXPECT_CALL(*client(), OpenUrl(_, _)).Times(0);
 
   model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/true);
 
@@ -1937,7 +1938,7 @@ TEST_F(OmniboxEditModelPopupTest, AiModeButtonClickNtpOmnibox) {
       metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
 
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*client(), OpenUrl(_)).Times(0);
+  EXPECT_CALL(*client(), OpenUrl(_, _)).Times(0);
 
   model()->OpenAiMode(/*via_keyboard=*/false, /*via_context_menu=*/false);
 
@@ -1968,7 +1969,7 @@ TEST_F(OmniboxEditModelPopupTest, AiModeButtonClickSrpOmnibox) {
           SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT);
 
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*client(), OpenUrl(_)).Times(0);
+  EXPECT_CALL(*client(), OpenUrl(_, _)).Times(0);
 
   model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/false);
 
@@ -1998,7 +1999,7 @@ TEST_F(OmniboxEditModelPopupTest, AiModeButtonClickWebOmnibox) {
       metrics::OmniboxEventProto::OTHER);
 
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*client(), OpenUrl(_)).Times(0);
+  EXPECT_CALL(*client(), OpenUrl(_, _)).Times(0);
 
   model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/false);
 

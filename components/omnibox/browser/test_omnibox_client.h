@@ -90,7 +90,7 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
   MOCK_METHOD(PrefService*, GetPrefs, (), (override));
   MOCK_METHOD(const PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(bool, IsAimPopupEnabled, (), (const, override));
-  MOCK_METHOD(void, OpenUrl, (GURL), (override));
+  MOCK_METHOD(void, OpenUrl, (GURL, WindowOpenDisposition), (override));
   MOCK_METHOD(std::optional<lens::proto::LensOverlaySuggestInputs>,
               GetLensOverlaySuggestInputs,
               (),

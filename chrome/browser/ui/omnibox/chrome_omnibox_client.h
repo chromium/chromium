@@ -139,7 +139,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
       const AutocompleteMatch& alternative_nav_match) override;
   void OnInputInProgress(bool in_progress) override;
   void OnPopupVisibilityChanged(bool popup_is_open) override;
-  void OpenUrl(GURL gurl) override;
+  void OpenUrl(GURL gurl, WindowOpenDisposition disposition) override;
   void OpenUrlWithCallback(
       GURL gurl,
       WindowOpenDisposition disposition,
