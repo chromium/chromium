@@ -15,6 +15,9 @@ namespace gemini {
 
 #pragma mark - Features
 
+namespace {
+
+// Returns whether the specified feature is available for the given account.
 bool IsFeatureAvailable(Feature feature, const AccountInfo& account_info) {
   switch (feature) {
     case Feature::kImageRemix: {
@@ -37,6 +40,8 @@ bool IsFeatureAvailable(Feature feature, const AccountInfo& account_info) {
     }
   }
 }
+
+}  // namespace
 
 bool IsFeatureAvailable(Feature feature, ProfileIOS* profile) {
   if (!profile) {
