@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
@@ -358,6 +359,19 @@ public class AutocompleteMediatorUnitTest {
     private void verifyLoadUrl(GURL expectedUrl) {
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(expectedUrl.getSpec(), mOmniboxLoadUrlParamsCaptor.getValue().url);
+    }
+
+    private void verifySuggestionModelsRoundSides(@RoundSides int roundSides) {
+        assertTrue(mSuggestionModels.size() > 0);
+        for (int i = 0; i < mSuggestionModels.size(); i++) {
+            PropertyModel model = mSuggestionModels.get(i).model;
+            if (model.containsKey(SuggestionCommonProperties.BG_ROUND_SIDES)) {
+                assertEquals(
+                        "Unexpected round sides for suggestion at position " + i,
+                        roundSides,
+                        model.get(SuggestionCommonProperties.BG_ROUND_SIDES));
+            }
+        }
     }
 
     /**
@@ -1849,6 +1863,37 @@ public class AutocompleteMediatorUnitTest {
 
         assertTrue(mListModel.get(SuggestionListProperties.ROUND_TOP_CORNERS));
         assertTrue(mListModel.get(SuggestionListProperties.DRAW_OVER_ANCHOR));
+    }
+
+    @Test
+    @SmallTest
+    public void roundSidesPropagatedToModels_popoverLayoutModeTransitions() {
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
+        mMediator.beginInput(createEmptySession());
+        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
+
+        verifySuggestionModelsRoundSides(RoundSides.BOTTOM_ONLY);
+
+        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
+        verifySuggestionModelsRoundSides(RoundSides.NONE);
+
+        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
+        verifySuggestionModelsRoundSides(RoundSides.BOTTOM_ONLY);
+    }
+
+    @Test
+    @SmallTest
+    public void roundSidesPropagatedToModels_toolbarLayoutModeTransitions() {
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.TOOLBAR);
+        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
+        mMediator.beginInput(createEmptySession());
+        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
+
+        verifySuggestionModelsRoundSides(RoundSides.TOP_AND_BOTTOM);
+
+        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
+        verifySuggestionModelsRoundSides(RoundSides.TOP_AND_BOTTOM);
     }
 
     @Test

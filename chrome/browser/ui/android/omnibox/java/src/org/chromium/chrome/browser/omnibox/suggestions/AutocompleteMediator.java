@@ -23,6 +23,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -49,6 +51,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactory;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
@@ -157,6 +160,8 @@ class AutocompleteMediator
     private @Nullable FuseboxSessionState mSessionState;
     private @Nullable FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     private final boolean mForcePhoneStyleOmnibox;
+    private final SettableNonNullObservableSupplier<Integer> mRoundSidesSupplier =
+            ObservableSuppliers.createNonNull(RoundSides.TOP_AND_BOTTOM);
     private final Callback<@ControlsPosition Integer> mToolbarPositionChangedCallback =
             this::onToolbarPositionChanged;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
@@ -254,7 +259,8 @@ class AutocompleteMediator
                         locationBarDataProvider.getToolbarPositionSupplier());
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager =
-                new DropdownItemViewInfoListManager(mSuggestionModels, context);
+                new DropdownItemViewInfoListManager(
+                        mSuggestionModels, context, mRoundSidesSupplier);
         OmniboxResourceProvider.invalidateDrawableCache();
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
@@ -306,6 +312,7 @@ class AutocompleteMediator
         mFuseboxCoordinator.getFuseboxStateSupplier().removeObserver(mOnFuseboxStateChanged);
         mHandler.removeCallbacksAndMessages(null);
         mDropdownViewInfoListBuilder.destroy();
+        mDropdownViewInfoListManager.destroy();
         mLifecycleDispatcher.unregister(this);
     }
 
@@ -1331,6 +1338,7 @@ class AutocompleteMediator
                 SuggestionListProperties.ROUND_TOP_CORNERS, !separatedFuseboxOnTablet);
         mListPropertyModel.set(
                 SuggestionListProperties.DRAW_OVER_ANCHOR, !separatedFuseboxOnTablet);
+        mRoundSidesSupplier.set(calculateRoundSides());
     }
 
     boolean shouldAnimateFuseboxPopover() {
@@ -1340,6 +1348,15 @@ class AutocompleteMediator
 
     private @FuseboxLayoutMode int getFuseboxLayoutMode() {
         return mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get();
+    }
+
+    private @RoundSides int calculateRoundSides() {
+        if (getFuseboxLayoutMode() != FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            return RoundSides.TOP_AND_BOTTOM;
+        }
+        // Expanded will have buttons below suggestions, and should not get bottom rounding.
+        @FuseboxState int fuseboxState = mFuseboxCoordinator.getFuseboxStateSupplier().get();
+        return fuseboxState == FuseboxState.EXPANDED ? RoundSides.NONE : RoundSides.BOTTOM_ONLY;
     }
 
     /**

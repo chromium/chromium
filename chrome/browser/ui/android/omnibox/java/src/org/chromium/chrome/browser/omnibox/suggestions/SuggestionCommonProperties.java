@@ -12,8 +12,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /** The set of common properties associated with any omnibox suggestion. */
 @NullMarked
@@ -46,9 +48,10 @@ public @interface SuggestionCommonProperties {
     }
 
     /** The sides of the suggestion background that are allowed to be rounded. */
+    @Target(ElementType.TYPE_USE)
     @IntDef({RoundSides.NONE, RoundSides.BOTTOM_ONLY, RoundSides.TOP_AND_BOTTOM})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface RoundSides {
+    @interface RoundSides {
         int NONE = 0;
         int BOTTOM_ONLY = 1;
         int TOP_AND_BOTTOM = 2;

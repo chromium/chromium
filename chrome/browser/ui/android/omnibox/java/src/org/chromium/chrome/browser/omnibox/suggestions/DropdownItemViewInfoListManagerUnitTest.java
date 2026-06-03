@@ -24,7 +24,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -48,7 +51,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
     private @Mock ListObserver<Void> mListObserver;
 
     private ModelList mSuggestionModels;
-    private Context mContext;
+    private SettableNonNullObservableSupplier<Integer> mRoundSidesSupplier;
     private DropdownItemViewInfoListManager mManager;
 
     @Before
@@ -61,8 +64,11 @@ public class DropdownItemViewInfoListManagerUnitTest {
         mSuggestionModels = new ModelList();
         mSuggestionModels.addObserver(mListObserver);
 
-        mContext = ContextUtils.getApplicationContext();
-        mManager = new DropdownItemViewInfoListManager(mSuggestionModels, mContext);
+        Context context = ContextUtils.getApplicationContext();
+        mRoundSidesSupplier = ObservableSuppliers.createNonNull(RoundSides.TOP_AND_BOTTOM);
+        mManager =
+                new DropdownItemViewInfoListManager(
+                        mSuggestionModels, context, mRoundSidesSupplier);
         mManager.onNativeInitialized();
     }
 
@@ -101,6 +107,18 @@ public class DropdownItemViewInfoListManagerUnitTest {
                             .get(index)
                             .model
                             .get(SuggestionCommonProperties.COLOR_SCHEME));
+        }
+    }
+
+    private void verifyRoundSides(@RoundSides int roundSides) {
+        for (int index = 0; index < mSuggestionModels.size(); index++) {
+            PropertyModel model = mSuggestionModels.get(index).model;
+            if (model.containsKey(SuggestionCommonProperties.BG_ROUND_SIDES)) {
+                assertEquals(
+                        "Unexpected round sides for suggestion at position " + index,
+                        roundSides,
+                        model.get(SuggestionCommonProperties.BG_ROUND_SIDES));
+            }
         }
     }
 
@@ -187,5 +205,29 @@ public class DropdownItemViewInfoListManagerUnitTest {
         mManager.setSourceViewInfoList(list);
         verifyModelEquals(list);
         verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.INCOGNITO);
+    }
+
+    @Test
+    public void updateSuggestionsList_roundSidesArePropagatedToSuggestions() {
+        List<DropdownItemViewInfo> list =
+                Arrays.asList(
+                        new DropdownItemViewInfo(
+                                mHeaderProcessor,
+                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
+                                SECTION_1_NO_HEADER),
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
+                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
+                                SECTION_1_NO_HEADER));
+        mManager.setSourceViewInfoList(list);
+
+        verifyModelEquals(list);
+        verifyRoundSides(RoundSides.TOP_AND_BOTTOM);
+
+        mRoundSidesSupplier.set(RoundSides.BOTTOM_ONLY);
+        verifyRoundSides(RoundSides.BOTTOM_ONLY);
+
+        mRoundSidesSupplier.set(RoundSides.NONE);
+        verifyRoundSides(RoundSides.NONE);
     }
 }
