@@ -454,12 +454,13 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
       EnsureCompositorTransformNode(transform_node.Parent()->Unalias());
   id = transform_tree_.Insert(cc::TransformNode(), parent_id);
 
-  if (auto* scroll_translation_for_fixed =
-          transform_node.ScrollTranslationForFixed()) {
-    // Fixed-position can cause different topologies of the transform tree and
-    // the scroll tree. This ensures the ancestor scroll nodes of the scroll
-    // node for a descendant transform node below is created.
-    EnsureCompositorTransformNode(*scroll_translation_for_fixed);
+  if (auto* scroll_parent_scroll_translation =
+          transform_node.ScrollParentScrollTranslation()) {
+    // Fixed-position or overscroll-backdrop can cause different topologies of
+    // the transform tree and the scroll tree. This ensures the ancestor scroll
+    // nodes of the scroll node for a descendant transform node below is
+    // created.
+    EnsureCompositorTransformNode(*scroll_parent_scroll_translation);
   }
 
   cc::TransformNode& compositor_node = transform_tree_.MutableNode(id);

@@ -91,7 +91,8 @@ PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
       // This change affects cull rect expansion for the element itself.
       RequiresCullRectExpansion() != other.RequiresCullRectExpansion() ||
       scroll != other.scroll ||
-      scroll_translation_for_fixed != other.scroll_translation_for_fixed ||
+      scroll_parent_scroll_translation !=
+          other.scroll_parent_scroll_translation ||
       !base::ValuesEquivalent(sticky_constraint, other.sticky_constraint) ||
       !base::ValuesEquivalent(anchor_position_scroll_data,
                               other.anchor_position_scroll_data) ||
@@ -104,7 +105,7 @@ PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
 
 void TransformPaintPropertyNode::State::Trace(Visitor* visitor) const {
   visitor->Trace(scroll);
-  visitor->Trace(scroll_translation_for_fixed);
+  visitor->Trace(scroll_parent_scroll_translation);
 }
 
 TransformPaintPropertyNode::TransformPaintPropertyNode(RootTag)
@@ -169,7 +170,8 @@ bool TransformPaintPropertyNode::CanMergeForFixedPosition(
   return DirectCompositingReasons() == other.DirectCompositingReasons() &&
          RequiresCompositingForFixedPositionOnly() &&
          other.RequiresCompositingForFixedPositionOnly() &&
-         ScrollTranslationForFixed() == other.ScrollTranslationForFixed() &&
+         ScrollParentScrollTranslation() ==
+             other.ScrollParentScrollTranslation() &&
          Parent() == other.Parent();
 }
 
@@ -232,10 +234,10 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
   if (state_.scroll)
     json->SetString("scroll", String::Format("%p", state_.scroll.Get()));
 
-  if (state_.scroll_translation_for_fixed) {
+  if (state_.scroll_parent_scroll_translation) {
     json->SetString(
-        "scroll_translation_for_fixed",
-        String::Format("%p", state_.scroll_translation_for_fixed.Get()));
+        "scroll_parent_scroll_translation",
+        String::Format("%p", state_.scroll_parent_scroll_translation.Get()));
   }
   return json;
 }

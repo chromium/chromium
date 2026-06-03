@@ -182,8 +182,9 @@ void ScopedBoxContentsPaintState::AdjustForBoxContents(const LayoutBox& box) {
         // boxes because they don't scroll in the viewport.
         if (const auto* properties = fragment_to_paint_->PaintProperties()) {
           if (const auto* translation = properties->PaintOffsetTranslation()) {
-            if (translation->ScrollTranslationForFixed())
+            if (translation->ScrollParentScrollTranslation()) {
               mf_ignore_scope_.emplace(*mf_checker);
+            }
           }
         }
       }

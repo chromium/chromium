@@ -831,6 +831,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return node && node->IsPseudoElement();
   }
 
+  bool IsBackdropForOverscrollAreaParent() const;
+
   virtual bool IsBoxModelObject() const {
     NOT_DESTROYED();
     return false;

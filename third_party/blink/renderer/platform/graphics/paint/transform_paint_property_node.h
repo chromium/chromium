@@ -112,7 +112,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
    public:
     TransformAndOrigin transform_and_origin;
     Member<const ScrollPaintPropertyNode> scroll;
-    Member<const TransformPaintPropertyNode> scroll_translation_for_fixed;
+    Member<const TransformPaintPropertyNode> scroll_parent_scroll_translation;
 
     bool flattens_inherited_transform : 1 = false;
     bool in_subtree_of_page_scale : 1 = true;
@@ -217,8 +217,8 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
     return state_.scroll.Get();
   }
 
-  const TransformPaintPropertyNode* ScrollTranslationForFixed() const {
-    return state_.scroll_translation_for_fixed.Get();
+  const TransformPaintPropertyNode* ScrollParentScrollTranslation() const {
+    return state_.scroll_parent_scroll_translation.Get();
   }
 
   // If true, this node is translated by the viewport bounds delta, which is
@@ -272,10 +272,10 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   }
 
   // This is different from NearestScrollTranslationNode in that for a
-  // fixed-position paint offset translation, this returns
-  // ScrollTranslationForFixed() instead of the ancestor scroll translation
-  // because a scroll gesture on a fixed-position element should scroll the
-  // containing view.
+  // fixed-position or overscroll-backdrop paint offset translation, this
+  // returns ScrollParentScrollTranslation() instead of the ancestor scroll
+  // translation because a scroll gesture on such elements should scroll their
+  // scroll parent.
   const TransformPaintPropertyNode& ScrollTranslationState() const {
     return GetTransformCache().scroll_translation_state();
   }

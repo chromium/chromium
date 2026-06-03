@@ -261,9 +261,10 @@ CompositingReasons CompositingReasonsForViewportScrollEffect(
     return CompositingReason::kNone;
 
   CompositingReasons reasons = CompositingReason::kNone;
-  // This ensures that the scroll_translation_for_fixed will be initialized in
-  // FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation which in
-  // turn ensures that a TransformNode is created (for fixed elements) in cc.
+  // This ensures that the scroll_parent_scroll_translation will be initialized
+  // in FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation which in
+  // turn ensures that a TransformNode is created (for fixed/backdrop elements)
+  // in cc.
   if (frame->GetPage()->GetVisualViewport().GetOverscrollType() ==
       OverscrollType::kTransform) {
     reasons |= CompositingReason::kFixedPosition;
@@ -472,6 +473,10 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
     if (is_eligible) {
       reasons |= CompositingReason::kElementCapture;
     }
+  }
+
+  if (object.IsBackdropForOverscrollAreaParent()) {
+    reasons |= CompositingReason::kFixedBackdropInOverscrollAreaParent;
   }
 
   return reasons;

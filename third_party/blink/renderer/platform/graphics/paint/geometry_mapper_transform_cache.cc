@@ -54,8 +54,8 @@ void GeometryMapperTransformCache::Update(
 
   nearest_scroll_translation_ =
       node.ScrollNode() ? &node : parent.nearest_scroll_translation_.Get();
-  if (auto* for_fixed = node.ScrollTranslationForFixed()) {
-    scroll_translation_state_ = for_fixed;
+  if (auto* scroll_parent = node.ScrollParentScrollTranslation()) {
+    scroll_translation_state_ = scroll_parent;
   } else if (node.ScrollNode()) {
     scroll_translation_state_ = &node;
   } else {

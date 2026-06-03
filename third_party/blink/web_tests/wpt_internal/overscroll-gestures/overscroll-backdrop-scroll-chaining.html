@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll area backdrop scroll chaining test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: clip;
+    position: relative;
+  }
+  #menu {
+    position: absolute;
+    top: -100px;
+    left: 0px;
+    width: 200px;
+    height: 100px;
+    background: blue;
+  }
+  #menu::backdrop {
+    position: absolute;
+    inset: 0;
+    display: block;
+    background: green;
+  }
+  #content {
+    height: 400px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu" overscrollarea></div>
+  <div id="content"></div>
+</div>
+<button id="button" command="toggle-overscroll" commandfor="menu"></button>
+
+<script>
+function click(target) {
+  let event_received = new Promise(resolve => {
+    target.addEventListener("click", resolve, { once: true });
+  });
+  return Promise.all([test_driver.click(target), event_received]);
+}
+
+async function raf(n) {
+  for (let i = 0; i < n; ++i) {
+    await new Promise(requestAnimationFrame);
+  }
+}
+
+promise_test(async () => {
+  // Verify initial state: closed.
+  // The menu is top: -100px, height: 100px, so bottom should be 0.
+  assert_equals(menu.getBoundingClientRect().bottom, 0, "Initially closed");
+
+  // 1. Open the overscroll area via button.
+  await click(button);
+
+  // Verify it is open (menu should be fully in view, top at 0).
+  assert_equals(menu.getBoundingClientRect().top, 0, "Opened via toggle");
+
+  // 2. Perform a scroll gesture on the backdrop.
+  const actions = new test_driver.Actions();
+  await actions
+    .scroll(100, 150, 0, 100)
+    .send();
+  await raf(3);
+
+  // Verify if it closed.
+  assert_equals(menu.getBoundingClientRect().bottom, 0, "Closed via scrolling on backdrop");
+
+}, "Scrolling on backdrop should chain to overscroll area parent and close it");
+</script>

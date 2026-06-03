@@ -261,10 +261,10 @@ inline TransformPaintPropertyNode* CreateFixedPositionTranslation(
     const TransformPaintPropertyNodeOrAlias& parent,
     float offset_x,
     float offset_y,
-    const TransformPaintPropertyNode& scroll_translation_for_fixed) {
+    const TransformPaintPropertyNode& scroll_parent_scroll_translation) {
   TransformPaintPropertyNode::State state{
       {gfx::Transform::MakeTranslation(offset_x, offset_y)}};
-  state.scroll_translation_for_fixed = &scroll_translation_for_fixed;
+  state.scroll_parent_scroll_translation = &scroll_parent_scroll_translation;
   state.direct_compositing_reasons = CompositingReason::kFixedPosition;
   return TransformPaintPropertyNode::Create(parent, std::move(state));
 }

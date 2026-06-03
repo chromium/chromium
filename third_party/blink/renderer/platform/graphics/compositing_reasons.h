@@ -38,6 +38,7 @@ using CompositingReasons = uint64_t;
   V(AnchorPosition)                                                            \
   V(BackdropFilter)                                                            \
   V(BackdropFilterMask)                                                        \
+  V(FixedBackdropInOverscrollAreaParent)                                       \
   V(RootScroller)                                                              \
   V(Viewport)                                                                  \
   V(WillChangeTransform)                                                       \
@@ -135,7 +136,7 @@ class PLATFORM_EXPORT CompositingReason {
     kDirectReasonsForPaintOffsetTranslationProperty =
         kFixedPosition | kAffectedByOuterViewportBoundsDelta | kUndoOverscroll |
         kVideo | kCanvas | kCanvasChild | kPlugin | kIFrame |
-        kAffectedBySafeAreaBottom,
+        kAffectedBySafeAreaBottom | kFixedBackdropInOverscrollAreaParent,
 
     kFixedPositionReasons = kFixedPosition | kUndoOverscroll |
                             kAffectedByOuterViewportBoundsDelta |

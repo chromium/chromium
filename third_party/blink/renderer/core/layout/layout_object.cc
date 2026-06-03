@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -5409,6 +5410,14 @@ void LayoutObject::InvalidateSubtreePositionTry(bool mark_style_dirty) {
        child = child->NextSibling()) {
     child->InvalidateSubtreePositionTry(mark_style_dirty);
   }
+}
+
+bool LayoutObject::IsBackdropForOverscrollAreaParent() const {
+  NOT_DESTROYED();
+  const auto* pseudo = DynamicTo<PseudoElement>(GetNode());
+  return pseudo && pseudo->GetPseudoId() == kPseudoIdBackdrop &&
+         pseudo->UltimateOriginatingElement().GetPseudoElement(
+             kPseudoIdOverscrollAreaParent);
 }
 
 }  // namespace blink

@@ -824,10 +824,24 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
     if (auto* box = DynamicTo<LayoutBox>(object_)) {
       if (box->IsFixedToView(full_context_.container_for_fixed_position) &&
           object_.View()->FirstFragment().PaintProperties()->Scroll()) {
-        state.scroll_translation_for_fixed = object_.View()
-                                                 ->FirstFragment()
-                                                 .PaintProperties()
-                                                 ->ScrollTranslation();
+        state.scroll_parent_scroll_translation = object_.View()
+                                                     ->FirstFragment()
+                                                     .PaintProperties()
+                                                     ->ScrollTranslation();
+      } else if (box->IsBackdropForOverscrollAreaParent()) {
+        Element& overscroll_target =
+            To<PseudoElement>(box->GetNode())->UltimateOriginatingElement();
+        PseudoElement* overscroll_area_parent =
+            overscroll_target.GetPseudoElement(kPseudoIdOverscrollAreaParent);
+        const LayoutObject* parent_layout =
+            overscroll_area_parent->GetLayoutObject();
+        const auto* parent_properties =
+            parent_layout->FirstFragment().PaintProperties();
+        CHECK(parent_properties);
+        if (parent_properties->ScrollTranslation()) {
+          state.scroll_parent_scroll_translation =
+              parent_properties->ScrollTranslation();
+        }
       }
     }
 
@@ -3711,13 +3725,6 @@ void FragmentPaintPropertyTreeBuilder::FixAbsoluteContextToContainerBox() {
         &parent_object->FirstFragment().LocalBorderBoxProperties().Transform();
   }
 
-  // If we have a scroll parent, use that. Otherwise use the root scroll node.
-  if (parent_properties->Scroll() && parent_properties->Scroll()->Parent()) {
-    context_.current.scroll = parent_properties->Scroll()->Parent();
-  } else {
-    context_.current.scroll = &ScrollPaintPropertyNode::Root();
-  }
-
   context_.current.paint_offset = parent_object->FirstFragment().PaintOffset();
 }
 
@@ -3732,13 +3739,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
         DCHECK_EQ(full_context_.container_for_absolute_position,
                   box_model_object.Container());
         SwitchToOOFContext(context_.absolute_position);
-        if (object_.StyleRef().StyleType() == kPseudoIdBackdrop) {
-          Element& overscroll_target = To<PseudoElement>(object_.GetNode())
-                                           ->UltimateOriginatingElement();
-          if (overscroll_target.GetPseudoElement(
-                  kPseudoIdOverscrollAreaParent)) {
-            FixAbsoluteContextToContainerBox();
-          }
+        if (object_.IsBackdropForOverscrollAreaParent()) {
+          FixAbsoluteContextToContainerBox();
         }
         break;
       }
