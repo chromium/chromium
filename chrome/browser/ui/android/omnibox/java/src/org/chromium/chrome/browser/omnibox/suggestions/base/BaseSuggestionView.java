@@ -129,11 +129,11 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
 
         if (currentViewCount < desiredViewCount) {
             increaseActionButtonsCount(desiredViewCount);
+            mActionButtonsHighlighter.setItemCount(desiredViewCount);
         } else if (currentViewCount > desiredViewCount) {
+            mActionButtonsHighlighter.setItemCount(desiredViewCount);
             decreaseActionButtonsCount(desiredViewCount);
         }
-
-        mActionButtonsHighlighter.setItemCount(desiredViewCount);
     }
 
     /**
@@ -150,6 +150,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
      * @param isSelected whether to apply hairline
      */
     private void highlightActionButton(int buttonIndex, boolean isSelected) {
+        if (buttonIndex < 0 || buttonIndex >= mActionButtons.size()) return;
         ActionButtonView actionButtonView = mActionButtons.get(buttonIndex);
         actionButtonView.setSelected(isSelected);
         if (isSelected) {
