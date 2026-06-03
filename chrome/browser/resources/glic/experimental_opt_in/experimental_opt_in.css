@@ -13,9 +13,9 @@ html {
   font-family: Roboto, sans-serif;
   height: auto !important;
   margin: 0;
+  overflow: hidden;
   padding: 0;
   width: auto !important;
-  overflow: hidden;
 }
 
 .panel:not([hidden]) {
@@ -23,23 +23,23 @@ html {
 }
 
 .panel {
+  background-color: var(--color-glic-background);
+  box-sizing: border-box;
   flex-direction: column;
   width: var(--glic-experimental-opt-in-width, 512px);
-  box-sizing: border-box;
-  background-color: var(--color-glic-background);
 }
 
 .panel.dialog {
-  padding: 0;
   height: 502px;
+  padding: 0;
 }
 
 .header {
-  padding: 12px 20px 12px 12px;
-  height: 24px;
-  display: flex;
-  justify-content: space-between;
   -webkit-app-region: drag;
+  display: flex;
+  height: 24px;
+  justify-content: space-between;
+  padding: 12px 20px 12px 12px;
 }
 
 .logo {
@@ -54,8 +54,8 @@ html {
 
 .close-button {
   -webkit-app-region: no-drag;
-  --cr-icon-button-size: 24px;
   --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-size: 24px;
   color: var(--cr-fallback-color-on-surface-variant);
   margin: 0;
   padding: 0;
@@ -69,13 +69,13 @@ html {
 }
 
 .notice {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 0 48px 48px 48px;
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 48px 48px 48px;
+  text-align: center;
 }
 
 .notice .icon {
@@ -84,25 +84,25 @@ html {
 }
 
 .notice .icon cr-icon {
-  width: 24px;
   height: 24px;
+  width: 24px;
 }
 
 .headline {
+  color: var(--cr-fallback-color-on-surface);
   font-family: 'Google Sans', sans-serif;
   font-size: 16px;
-  line-height: 24px;
   font-weight: 500;
+  line-height: 24px;
   margin: 0 0 8px 0;
-  color: var(--cr-fallback-color-on-surface);
 }
 
 .notice-message {
+  color: var(--cr-fallback-color-on-surface-variant);
   font-family: 'Google Sans Text', sans-serif;
   font-size: 14px;
-  line-height: 20px;
   font-weight: 400;
-  color: var(--cr-fallback-color-on-surface-variant);
+  line-height: 20px;
   margin: 0;
   max-width: 320px;
 }
@@ -113,23 +113,23 @@ webview:not([hidden]) {
 
 webview {
   border: none;
-  width: var(--glic-experimental-opt-in-width);
   height: var(--glic-experimental-opt-in-height);
+  width: var(--glic-experimental-opt-in-width);
 }
 
 webview.autosized {
-  width: auto;
   height: auto;
+  width: auto;
 }
 
 .notice cr-button {
-  margin-top: 16px;
-  width: 90px;
   --cr-button-height: 36px;
+  border-radius: var(--corner-radii-fully-round, 100px);
   font-family: 'Google Sans Text', sans-serif;
   font-size: var(--cr-button-font-size, 13px);
   font-weight: 500;
-  border-radius: var(--corner-radii-fully-round, 100px);
+  margin-top: 16px;
+  width: 90px;
 }
 
 .tonal-button {
