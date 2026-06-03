@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 
 #include <AppKit/AppKit.h>
@@ -36,7 +35,6 @@
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
-#include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/accessibility/accessibility_features.h"
 #import "ui/accessibility/platform/browser_accessibility_cocoa.h"
 #import "ui/accessibility/platform/browser_accessibility_mac.h"
@@ -47,6 +45,7 @@
 #import "ui/base/cocoa/nsmenuitem_additions.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/touch_bar_util.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -608,15 +607,19 @@ static NSWindow* __weak _deferredResignKeyWindow;
 }
 
 - (NSTextCheckingType)allowedTextCheckingTypes {
-  if (_textInputType == ui::TEXT_INPUT_TYPE_NONE)
+  if (_textInputType == ui::TEXT_INPUT_TYPE_NONE) {
     return 0;
-  if (_textInputType == ui::TEXT_INPUT_TYPE_PASSWORD)
+  }
+  if (_textInputType == ui::TEXT_INPUT_TYPE_PASSWORD) {
     return 0;
-  if (_textInputFlags & blink::kWebTextInputFlagAutocorrectOff)
+  }
+  if (_textInputFlags & ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF) {
     return 0;
+  }
   NSTextCheckingType checkingTypes = NSTextCheckingTypeReplacement;
-  if (!(_textInputFlags & blink::kWebTextInputFlagSpellcheckOff))
+  if (!(_textInputFlags & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF)) {
     checkingTypes |= NSTextCheckingTypeQuote | NSTextCheckingTypeDash;
+  }
   return checkingTypes;
 }
 
@@ -2274,7 +2277,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 }
 
 - (BOOL)drawsVerticallyForCharacterAtIndex:(NSUInteger)charIndex {
-  return !!(_textInputFlags & blink::kWebTextInputFlagVertical);
+  return !!(_textInputFlags & ui::TEXT_INPUT_FLAG_VERTICAL);
 }
 
 - (NSRect)firstRectForCharacterRange:(NSRange)theRange
@@ -2306,7 +2309,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   rect = [self convertRect:rect toView:nil];
   rect = [[self window] convertRectToScreen:rect];
 
-  if (_textInputFlags & blink::kWebTextInputFlagVertical) {
+  if (_textInputFlags & ui::TEXT_INPUT_FLAG_VERTICAL) {
     // Google Japanese Input doesn't use the result of
     // drawsVerticallyForCharacterAtIndex. So we'd like to ask it to show its
     // horizontal candidate window at the right side of the caret if the text
@@ -2532,7 +2535,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // handle the command in the key event handler. Otherwise we can just handle
   // it here.
   if ([self isHandlingKeyDown]) {
-    if ((_textInputFlags & blink::kWebTextInputFlagVertical)) {
+    if ((_textInputFlags & ui::TEXT_INPUT_FLAG_VERTICAL)) {
       // Commands assigned to arrow keys are ignored and Blink handles key down
       // events because macOS doesn't work well with some vertical writing
       // modes. See editing_behavior.cc.
