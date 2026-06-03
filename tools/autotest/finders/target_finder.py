@@ -109,8 +109,15 @@ def FindTestTargets(
         out_dir,
         '--all',
         '--relation=source',
-        '--relation=input',
     ]
+
+    # C/C++ tests can be found reliably with only 'source' relation. Java
+    # requires 'input' relation. Including fewer relations is faster and
+    # can avoid finding the wrong test targets.
+    is_cpp_only = all(
+        p.endswith(('.cc', '.mm', '.cpp', '.h', '.m')) for p in paths)
+    if not is_cpp_only:
+      cmd.append('--relation=input')
 
     response_file = None
     if len(paths) > 100:
