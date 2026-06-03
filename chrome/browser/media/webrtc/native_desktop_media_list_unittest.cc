@@ -47,6 +47,10 @@
 #include "base/strings/string_util_win.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "components/remote_cocoa/browser/scoped_cg_window_id.h"
+#endif
+
 using content::DesktopMediaID;
 using testing::_;
 using testing::DoAll;
@@ -141,6 +145,8 @@ class FakeScreenCapturer : public ThumbnailCapturer {
 
   ~FakeScreenCapturer() override = default;
 
+  void SetSourceList(const SourceList& screens) { screens_ = screens; }
+
   // ThumbnailCapturer implementation.
   void Start(Consumer* consumer) override { consumer_ = consumer; }
 
@@ -157,17 +163,17 @@ class FakeScreenCapturer : public ThumbnailCapturer {
   }
 
   bool GetSourceList(SourceList* screens) override {
-    screens->push_back({0});
+    *screens = screens_;
     return true;
   }
 
   bool SelectSource(SourceId id) override {
-    EXPECT_EQ(0, id);
     return true;
   }
 
  protected:
   raw_ptr<Consumer> consumer_;
+  SourceList screens_ = {{0}};
 };
 
 class FakeWindowCapturer : public ThumbnailCapturer {
@@ -806,6 +812,37 @@ TEST_F(NativeDesktopMediaListTest, MinimizedCurrentProcessWindows) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+TEST_F(NativeDesktopMediaListTest, NonDelegatedScopedCGWindowIDCollision) {
+  CreateCapturerAndModel();
+  model_->SetUpdatePeriod(base::Milliseconds(20));
+
+  constexpr int kTargetWindowId = 12345;
+
+  // 1. Register a ScopedCGWindowID with our target window ID.
+  viz::FrameSinkId frame_sink_id(1, 1);
+  remote_cocoa::ScopedCGWindowID scoped_window_id(kTargetWindowId,
+                                                  frame_sink_id);
+
+  // 2. Set the capturer to return a source with ID kTargetWindowId.
+  webrtc::DesktopCapturer::SourceList sources;
+  webrtc::DesktopCapturer::Source source;
+  source.id = kTargetWindowId;
+  source.title = "Test Window";
+  sources.push_back(source);
+  window_capturer_->SetWindowList(sources);
+
+  // 3. Trigger an update to the model.
+  UpdateModel();
+
+  // 4. Since the capturer is non-delegated (is_source_list_delegated_ is
+  // false), the window_id should be updated to kTargetWindowId via
+  // ScopedCGWindowID.
+  ASSERT_GT(model_->GetSourceCount(), 0);
+  EXPECT_EQ(model_->GetSource(0).id.window_id, kTargetWindowId);
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 class DelegatedFakeScreenCapturer
     : public FakeScreenCapturer,
       public webrtc::DelegatedSourceListController {
@@ -1035,3 +1072,58 @@ TEST_F(NativeDesktopMediaListDelegatedTest, ClearSelectionNoOp) {
   WaitForCapturerTasks();
   EXPECT_EQ(1, capturer_->ensure_visible_call_count());
 }
+
+#if BUILDFLAG(IS_MAC)
+class NativeDesktopMediaListDelegatedWindowTest : public ChromeViewsTestBase {
+ public:
+  NativeDesktopMediaListDelegatedWindowTest() {
+    auto capturer = std::make_unique<DelegatedFakeScreenCapturer>();
+    capturer_ = capturer.get();
+    model_ = std::make_unique<NativeDesktopMediaList>(
+        DesktopMediaList::Type::kWindow, std::move(capturer));
+  }
+
+  ~NativeDesktopMediaListDelegatedWindowTest() override = default;
+
+  void UpdateModel() {
+    base::RunLoop run_loop;
+    base::OnceClosure update_consumer =
+        base::BindLambdaForTesting([&]() { run_loop.Quit(); });
+    model_->Update(std::move(update_consumer));
+    run_loop.Run();
+  }
+
+ protected:
+  MockObserver observer_;
+  std::unique_ptr<NativeDesktopMediaList> model_;
+  raw_ptr<DelegatedFakeScreenCapturer> capturer_;
+};
+
+TEST_F(NativeDesktopMediaListDelegatedWindowTest,
+       DelegatedScopedCGWindowIDCollision) {
+  constexpr int kTargetWindowId = 12345;
+
+  // 1. Register a ScopedCGWindowID with our target window ID.
+  viz::FrameSinkId frame_sink_id(1, 1);
+  remote_cocoa::ScopedCGWindowID scoped_window_id(kTargetWindowId,
+                                                  frame_sink_id);
+
+  // 2. Set the capturer to return a source with ID kTargetWindowId.
+  webrtc::DesktopCapturer::SourceList sources;
+  webrtc::DesktopCapturer::Source source;
+  source.id = kTargetWindowId;
+  source.title = "Test Window";
+  sources.push_back(source);
+  capturer_->SetSourceList(sources);
+
+  // 3. Trigger an update to the model and wait for it to finish.
+  UpdateModel();
+
+  // 4. Since the capturer is delegated (is_source_list_delegated_ is true),
+  // the window_id should NOT be set to kTargetWindowId (it should remain
+  // kNullId).
+  ASSERT_GT(model_->GetSourceCount(), 0);
+  EXPECT_EQ(model_->GetSource(0).id.window_id,
+            content::DesktopMediaID::kNullId);
+}
+#endif  // BUILDFLAG(IS_MAC)
