@@ -7,7 +7,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/captured_sites_test_utils.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
@@ -71,7 +70,6 @@ class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest> {
 
   GlicKeyedService* glic_service();
   GlicInstanceCoordinator& instance_coordinator();
-  GlicFreController& fre_controller();
   WebPageReplayServerWrapper* web_page_replay_server_wrapper();
   tabs::TabInterface* active_tab();
 

@@ -11,7 +11,6 @@
 #include "build/buildflag.h"
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -698,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
   Browser* const browser1 = CreateBrowser(&profile1);
   GlicKeyedService* const service1 =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser1->profile());
-  service1->fre_controller().AcceptFre(nullptr);
+  ::glic::SetFRECompletion(browser1->profile(), prefs::FreStatus::kCompleted);
   EXPECT_TRUE(service1->enabling().HasConsented());
 
   // Open glic

@@ -5,7 +5,6 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
@@ -157,9 +156,6 @@ class DISABLED_GlicProfileManagerUiTest : public test::InteractiveGlicTest {
     });
   }
 
-  GlicFreController* GetFreController(bool primary_profile) {
-    return &GetService(primary_profile)->fre_controller();
-  }
   GlicTestEnvironmentService& GetTestEnvForSecondProfile() {
     return *glic::GlicTestEnvironment::GetService(GetSecondProfile());
   }

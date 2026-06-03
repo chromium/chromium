@@ -48,7 +48,6 @@ source_set("test_support") {
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic/common",
-    "//chrome/browser/glic/fre",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui:ui_features",
     "//components/feature_engagement/test:test_support",

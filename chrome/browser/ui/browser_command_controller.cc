@@ -32,7 +32,6 @@
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -372,11 +371,6 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
                   base::BindRepeating(
                       &BrowserCommandController::GlicActiveInstanceChanged,
                       base::Unretained(this)));
-      glic_fre_state_change_subscription_ =
-          service->fre_controller().AddWebUiStateChangedCallback(
-              base::BindRepeating(
-                  &BrowserCommandController::GlicFreStateChanged,
-                  base::Unretained(this)));
     }
   }
 
@@ -527,10 +521,6 @@ void BrowserCommandController::GlicActiveInstanceChanged(
   UpdateGlicState();
 }
 
-void BrowserCommandController::GlicFreStateChanged(
-    glic::mojom::FreWebUiState new_state) {
-  UpdateGlicState();
-}
 
 void BrowserCommandController::FindBarVisibilityChanged() {
   // Block find command updates in locked fullscreen mode unless the instance is

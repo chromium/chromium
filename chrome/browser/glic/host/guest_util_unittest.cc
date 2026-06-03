@@ -5,7 +5,6 @@
 #include "chrome/browser/glic/host/guest_util.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/scoped_browser_locale.h"
@@ -109,11 +108,8 @@ TEST_F(GuestUtilMultiInstanceTest,
 }
 
 TEST_F(GuestUtilMultiInstanceTest, GetGlicGuestURLs) {
-  TestingProfile* profile = CreateTestingProfile();
     EXPECT_EQ(GURL("https://www.example.com/glic?mode=mi&hl=en"),
               GetGuestURL());
-    EXPECT_TRUE(
-        net::GetValueForKeyInQuery(GetFreURL(profile), "mode", nullptr));
 }
 
 TEST_F(GuestUtilMultiInstanceTest, MaybeAddMultiInstanceParameterDisabled) {

@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation_traits.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/widget/glic_view.h"
@@ -39,16 +38,6 @@ enum class GlicPanelState {
 
 namespace internal {
 
-// Observes FRE controller for changes to dialog being shown.
-class GlicFreShowingDialogObserver
-    : public ui::test::PollingStateObserver<bool> {
- public:
-  explicit GlicFreShowingDialogObserver(const GlicFreController& controller);
-  ~GlicFreShowingDialogObserver() override;
-};
-
-DECLARE_STATE_IDENTIFIER_VALUE(GlicFreShowingDialogObserver,
-                               kGlicFreShowingDialogState);
 
 // Observes `controller` for changes to state().
 // When `tab` is not null, it will return a GlicInstanceCoordinator::State
@@ -125,10 +114,6 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
 // The glic webview contents.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
 
-// The glic FRE WebUI web contents.
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicFreHostElementId);
-// The glic FRE webview contents.
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kGlicFreContentsElementId);
 
 }  // namespace glic::test
 

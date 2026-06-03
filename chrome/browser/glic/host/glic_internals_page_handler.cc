@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
-#include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -137,8 +136,7 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
 
   mojom::ConfigInfoPtr config = mojom::ConfigInfo::New();
   config->guest_url = GetGuestURL();
-  config->fre_guest_url =
-      GetFreURL(Profile::FromBrowserContext(browser_context_));
+  config->fre_guest_url = GURL();
 
   config->autopush_guest_url = GURL(g_browser_process->local_state()->GetString(
       prefs::kGlicGuestUrlPresetAutopush));

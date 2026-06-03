@@ -15,8 +15,6 @@
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/fre/fre_util.h"
-#include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_net_log.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/auth_controller.h"
@@ -348,7 +346,6 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddString("adminBlockedRedirectPatterns",
                     admin_blocked_redirect_patterns);
 
-  source->AddString("glicFreURL", GetFreURL(profile).spec());
   source->AddBoolean("shouldShowFre", false);
   source->AddInteger("reloadMaxLoadingTimeMs",
                      features::kGlicReloadMaxLoadingTimeMs.Get());
@@ -394,11 +391,6 @@ void GlicUI::BindInterface(
   }
 }
 
-void GlicUI::BindInterface(
-    mojo::PendingReceiver<glic::mojom::FrePageHandlerFactory> receiver) {
-  fre_page_factory_receiver_.reset();
-  fre_page_factory_receiver_.Bind(std::move(receiver));
-}
 
 void GlicUI::BindInterface(
     mojo::PendingReceiver<glic::mojom::GlicPreloadHandlerFactory> receiver) {
@@ -451,15 +443,6 @@ void GlicUI::CreateInternalsPageHandler(
       web_ui()->GetWebContents(), std::move(receiver));
 }
 
-void GlicUI::CreatePageHandler(
-    mojo::PendingReceiver<glic::mojom::FrePageHandler> fre_receiver) {
-  if (!IsProfileEligible()) {
-    return;
-  }
-  fre_page_handler_ = std::make_unique<GlicFrePageHandler>(
-      /*is_unified_fre=*/true, web_ui()->GetWebContents(),
-      std::move(fre_receiver));
-}
 
 void GlicUI::CreatePreloadHandler(
     mojo::PendingReceiver<glic::mojom::GlicPreloadHandler> receiver,

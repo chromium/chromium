@@ -497,16 +497,18 @@ class GlicInteractiveContextMenuTestBase
   }
 
   auto PollForAndCompleteOnboarding() {
-    return Steps(
-        PollUntil(
-            [this]() {
-              if (auto* instance = GetGlicInstanceImpl()) {
-                return instance->host().IsWebClientConnected();
-              }
-              return false;
-            },
-            "polling until the client is ready"),
-        Do([this]() { glic_service()->fre_controller().AcceptFre(nullptr); }));
+    return Steps(PollUntil(
+                     [this]() {
+                       if (auto* instance = GetGlicInstanceImpl()) {
+                         return instance->host().IsWebClientConnected();
+                       }
+                       return false;
+                     },
+                     "polling until the client is ready"),
+                 Do([this]() {
+                   ::glic::SetFRECompletion(browser()->profile(),
+                                            glic::prefs::FreStatus::kCompleted);
+                 }));
   }
 
   auto PollForAndInstrumentGlic() {

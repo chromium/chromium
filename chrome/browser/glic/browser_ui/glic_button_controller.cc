@@ -6,7 +6,6 @@
 
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -55,10 +54,6 @@ GlicButtonController::GlicButtonController(
   subscriptions_.push_back(
       glic_keyed_service_->instance_coordinator().AddGlobalShowHideCallback(
           update_callback));
-  subscriptions_.push_back(
-      glic_keyed_service_->fre_controller().AddWebUiStateChangedCallback(
-          base::BindRepeating(&GlicButtonController::OnFreStateChanged,
-                              base::Unretained(this))));
 }
 
 GlicButtonController::~GlicButtonController() {
@@ -98,9 +93,6 @@ void GlicButtonController::UpdateButton() {
   toolbar_glic_controller_delegate_->SetGlicPanelIsOpen(is_glic_panel_open);
 }
 
-void GlicButtonController::OnFreStateChanged(mojom::FreWebUiState) {
-  UpdateButton();
-}
 
 bool GlicButtonController::ShouldAutoSummarize() const {
   if (!base::FeatureList::IsEnabled(features::kGlicButtonAutoSummarize) ||

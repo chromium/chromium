@@ -8,7 +8,6 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
-#include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/ui/views/glic/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/buildflags.h"

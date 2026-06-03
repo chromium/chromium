@@ -242,7 +242,6 @@ static_library("ui") {
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/common",
-    "//chrome/browser/glic/fre",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/google",
     "//chrome/browser/gpu",
@@ -815,7 +814,6 @@ static_library("ui") {
     # browser_navigator.h, tabs/tab_strip_model.h) that can't be split out
     # yet.
     "//chrome/browser/glic/common",
-    "//chrome/browser/glic/fre",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/profiling_host",
 

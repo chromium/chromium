@@ -5,7 +5,6 @@
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 
 #include "base/scoped_observation_traits.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -16,13 +15,6 @@ namespace glic::test {
 
 namespace internal {
 
-GlicFreShowingDialogObserver::GlicFreShowingDialogObserver(
-    const GlicFreController& controller)
-    : PollingStateObserver([]() { return false; }) {}
-GlicFreShowingDialogObserver::~GlicFreShowingDialogObserver() = default;
-
-DEFINE_STATE_IDENTIFIER_VALUE(GlicFreShowingDialogObserver,
-                              kGlicFreShowingDialogState);
 
 GlicInstanceCoordinatorStateObserver::GlicInstanceCoordinatorStateObserver(
     const GlicInstanceCoordinator& controller,
@@ -82,7 +74,5 @@ void WebUiStateObserver::WebUiStateChanged(mojom::WebUiState state) {
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicHostElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicContentsElementId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicFreHostElementId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicFreContentsElementId);
 
 }  // namespace glic::test

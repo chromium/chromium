@@ -29,7 +29,6 @@ source_set("e2e_test_support") {
     "//chrome/browser/autofill:test_support_ui",
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
-    "//chrome/browser/glic/fre",
     "//chrome/browser/glic/suggestions",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/signin/e2e_tests:test_support",

@@ -30,7 +30,6 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/google/core/common/google_util.h"
@@ -41,7 +40,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
-#include "chrome/browser/ui/browser.h"
 #endif
 
 namespace glic {

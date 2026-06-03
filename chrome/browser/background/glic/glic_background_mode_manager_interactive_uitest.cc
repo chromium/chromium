@@ -11,7 +11,6 @@
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -334,7 +333,8 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
   GlicKeyedService* const second_keyed_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(second_browser->profile());
   EXPECT_FALSE(second_keyed_service->enabling().HasConsented());
-  second_keyed_service->fre_controller().AcceptFre(/*handler=*/nullptr);
+  ::glic::SetFRECompletion(second_browser->profile(),
+                           prefs::FreStatus::kCompleted);
   EXPECT_TRUE(second_keyed_service->enabling().HasConsented());
   EXPECT_TRUE(background_mode_manager->IsInBackgroundModeForTesting());
 }

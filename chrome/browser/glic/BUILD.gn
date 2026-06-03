@@ -605,7 +605,6 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 
   public_deps = [
-    "//chrome/browser/glic/fre:mojo_bindings",
     "//chrome/common:actor_webui_mojom",
     "//components/content_settings/core/common:content_settings_types",
     "//components/optimization_guide/content/mojom:mojo_interfaces",
@@ -700,8 +699,6 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/background",
       "//chrome/browser/glic/browser_ui:unit_tests",
-      "//chrome/browser/glic/fre",
-      "//chrome/browser/glic/fre:unit_tests",
       "//chrome/browser/glic/media:unit_tests",
       "//chrome/browser/glic/suggestions:test_support",
       "//chrome/browser/prefs",
@@ -753,7 +750,6 @@ source_set("browser_tests") {
     "//chrome/browser/glic/actor:test_support",
     "//chrome/browser/glic/common",
     "//chrome/browser/glic/common:browser_tests",
-    "//chrome/browser/glic/fre",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/skills",
@@ -945,7 +941,6 @@ if (!is_android) {
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//chrome/browser/glic:mojo_bindings",
       "//chrome/browser/glic/browser_ui:interactive_ui_tests",
-      "//chrome/browser/glic/fre",
       "//chrome/browser/glic/public:features",
       "//chrome/browser/glic/selection:interactive_ui_tests",
       "//chrome/browser/glic/suggestions",

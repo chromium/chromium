@@ -2782,7 +2782,6 @@ if (!is_android) {
       "//chrome/browser/glic:browser_tests",
       "//chrome/browser/glic:impl",
       "//chrome/browser/glic/browser_ui",
-      "//chrome/browser/glic/fre",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/headless:browser_tests",
       "//chrome/browser/heavy_ad_intervention:browser_tests",

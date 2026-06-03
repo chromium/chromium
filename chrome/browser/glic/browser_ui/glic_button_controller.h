@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -37,7 +36,6 @@ class GlicButtonController {
 
  private:
   void UpdateButton();
-  void OnFreStateChanged(mojom::FreWebUiState);
 
   raw_ptr<Profile> profile_;
   raw_ref<BrowserWindowInterface> browser_;

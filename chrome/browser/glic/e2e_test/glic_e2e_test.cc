@@ -16,7 +16,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/guest_util.h"
@@ -59,7 +58,6 @@ namespace glic::test {
 
 namespace {
 
-using glic::test::internal::kGlicFreShowingDialogState;
 using glic::test::internal::kGlicInstanceCoordinatorState;
 
 #if !BUILDFLAG(IS_WIN)
@@ -174,15 +172,13 @@ void GlicE2ETest::SetUpCommandLine(base::CommandLine* command_line) {
 void GlicE2ETest::PreRunTestOnMainThread() {
   LiveTest::PreRunTestOnMainThread();
 
-  GURL glic_fre_url = glic::GetFreURL(browser()->profile());
   GURL glic_guest_url = glic::GetGuestURL();
-  CHECK(glic_fre_url.is_valid() && glic_guest_url.is_valid())
-      << "Incorrect GLiC guest or FRE URL in cmd line arguments.";
+  CHECK(glic_guest_url.is_valid())
+      << "Incorrect GLiC guest URL in cmd line arguments.";
 
   if (test_mode_ == kRecord || test_mode_ == kReplay) {
     // When WPR is used, for consistency, require consistent host and path.
-    CHECK(glic_fre_url.spec().contains(kAllowedHostAndPathForWpr) &&
-          glic_guest_url.spec().contains(kAllowedHostAndPathForWpr))
+    CHECK(glic_guest_url.spec().contains(kAllowedHostAndPathForWpr))
         << "Please use allowed URL for WPR.";
   }
 }
@@ -248,10 +244,6 @@ void GlicE2ETest::TearDownOnMainThread() {
   LiveTest::TearDownOnMainThread();
 }
 
-ui::test::InteractiveTestApi::MultiStep GlicE2ETest::WaitForAndInstrumentFre() {
-  NOTIMPLEMENTED();
-  return MultiStep();
-}
 
 ui::test::InteractiveTestApi::MultiStep
 GlicE2ETest::WaitForAndInstrumentGlic() {
@@ -305,9 +297,6 @@ GlicInstanceCoordinator& GlicE2ETest::instance_coordinator() {
   return glic_service()->instance_coordinator();
 }
 
-GlicFreController& GlicE2ETest::fre_controller() {
-  return glic_service()->fre_controller();
-}
 WebPageReplayServerWrapper* GlicE2ETest::web_page_replay_server_wrapper() {
   return web_page_replay_server_wrapper_.get();
 }

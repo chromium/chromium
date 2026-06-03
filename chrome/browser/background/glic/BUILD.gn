@@ -138,7 +138,6 @@ if (!is_android) {
       "//chrome/browser/background",
       "//chrome/browser/glic",
       "//chrome/browser/glic:impl",
-      "//chrome/browser/glic/fre",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/status_icons",
       "//chrome/browser/ui/views/frame/",

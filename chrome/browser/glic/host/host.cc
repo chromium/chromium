@@ -13,7 +13,6 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/context/glic_pin_candidate_provider.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
@@ -218,7 +217,6 @@ void Host::CreateContents() {
   TRACE_EVENT("glic", "Host::CreateContents");
   VLOG(1) << "Glic [Host] CreateContents";
 
-  glic_service().fre_controller().RecordFrameworkStartTime();
   contents_ = instance_delegate_->CreateWebUIContentsContainer();
   contents_->AttachToHost(this);
 }
