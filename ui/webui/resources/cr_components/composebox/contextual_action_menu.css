@@ -20,6 +20,10 @@
   --cr-action-menu-overflow: visible;
 }
 
+#menu::part(dialog) {
+  max-height: none;
+}
+
 .suggestion-container {
   position: relative;
 }
