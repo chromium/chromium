@@ -266,6 +266,8 @@ BASE_FEATURE(kSelectFutureFrameDeadline, base::FEATURE_DISABLED_BY_DEFAULT);
 // dynamically select VSync deadlines based on input timestamps.
 BASE_FEATURE(kUseAndroidCustomFrameDeadlines,
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAndroidCustomFrameDeadlinePresentationOffset{
+    &kUseAndroidCustomFrameDeadlines, "presentation_offset", 0};
 #endif
 
 // When enabled, SDR maximum luminance nits of then current display will be used

@@ -310,8 +310,9 @@ bool DisplayScheduler::DrawAndSwap() {
   params.max_pending_swaps = MaxPendingSwaps();
   if (current_begin_frame_args_.possible_deadlines) {
     auto& deadlines = *current_begin_frame_args_.possible_deadlines;
-    auto selected_deadline =
-        deadlines.deadlines[decider_.SelectDeadline(deadlines)];
+    auto selected_deadline = deadlines.deadlines[decider_.SelectDeadline(
+        deadlines, current_begin_frame_args_.interval,
+        params.max_pending_swaps)];
     // TODO(crbug.com/500826814): Move this logic into FrameDeadlineDecider.
     if (base::FeatureList::IsEnabled(features::kSelectFutureFrameDeadline)) {
       base::TimeTicks now = NowTicks();

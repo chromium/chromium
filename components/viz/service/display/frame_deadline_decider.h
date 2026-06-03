@@ -18,9 +18,12 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   FrameDeadlineDecider(const FrameDeadlineDecider&) = delete;
   FrameDeadlineDecider& operator=(const FrameDeadlineDecider&) = delete;
 
-  // Returns the index of the selected deadline. Locks to preferred on first
-  // frame, and matches it on subsequent frames in the sequence.
-  size_t SelectDeadline(const PossibleDeadlines& possible_deadlines);
+  // Called at the start of DrawAndSwap to select the best deadline.
+  // Returns the index of the selected deadline. Locks to target present delta
+  // at sequence start, and matches it on subsequent frames in the sequence.
+  size_t SelectDeadline(const PossibleDeadlines& possible_deadlines,
+                        base::TimeDelta vsync_interval,
+                        int max_pending_swaps);
 
   // Called when the display scheduler goes idle or invisible, to reset sequence
   // state.

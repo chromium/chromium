@@ -4,9 +4,12 @@
 
 #include "components/viz/service/display/frame_deadline_decider.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace viz {
 
@@ -15,7 +18,9 @@ FrameDeadlineDecider::FrameDeadlineDecider() = default;
 FrameDeadlineDecider::~FrameDeadlineDecider() = default;
 
 size_t FrameDeadlineDecider::SelectDeadline(
-    const PossibleDeadlines& possible_deadlines) {
+    const PossibleDeadlines& possible_deadlines,
+    base::TimeDelta vsync_interval,
+    int max_pending_swaps) {
   bool use_platform_preferred_deadlines = true;
 #if BUILDFLAG(IS_ANDROID)
   use_platform_preferred_deadlines =
@@ -26,15 +31,64 @@ size_t FrameDeadlineDecider::SelectDeadline(
     return possible_deadlines.preferred_index;
   }
 
+  absl::Cleanup update_present_delta = [this, &possible_deadlines] {
+    curr_sequence_present_delta_ =
+        possible_deadlines.deadlines[curr_sequence_deadline_index_]
+            .present_delta;
+  };
+
   if (in_frame_sequence_) {
     curr_sequence_deadline_index_ =
         FindClosestDeadlineByPresentation(possible_deadlines);
-  } else {
-    in_frame_sequence_ = true;
-    curr_sequence_deadline_index_ = possible_deadlines.preferred_index;
+    return curr_sequence_deadline_index_;
   }
-  curr_sequence_present_delta_ =
-      possible_deadlines.deadlines[curr_sequence_deadline_index_].present_delta;
+
+  in_frame_sequence_ = true;
+  int presentation_offset = 0;
+#if BUILDFLAG(IS_ANDROID)
+  presentation_offset =
+      features::kAndroidCustomFrameDeadlinePresentationOffset.Get();
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  int num_buffers = max_pending_swaps + 1;
+  // num_buffers * vsync_interval is the maximum presentation interval we would
+  // want to target. Since going beyond this threshold means frames would now
+  // start stalling for long time, waiting for buffers to be freed. Thus,
+  // `presentation_offset` is expected to be non-positive (<= 0).
+  int target_present_multiplier = num_buffers + presentation_offset;
+  CHECK_GT(target_present_multiplier, 0);
+  base::TimeDelta target_present_delta =
+      target_present_multiplier * vsync_interval;
+
+  auto it = std::upper_bound(
+      possible_deadlines.deadlines.begin(), possible_deadlines.deadlines.end(),
+      target_present_delta,
+      [](base::TimeDelta target, const PossibleDeadline& deadline) {
+        return target < deadline.present_delta;
+      });
+
+  if (it != possible_deadlines.deadlines.begin()) {
+    --it;
+  }
+
+  const size_t chrome_preferred_index =
+      std::distance(possible_deadlines.deadlines.begin(), it);
+  const PossibleDeadline& chrome_preferred_deadline = *it;
+
+  if (chrome_preferred_deadline.present_delta > target_present_delta) {
+    curr_sequence_deadline_index_ = possible_deadlines.preferred_index;
+    return curr_sequence_deadline_index_;
+  }
+
+  if (chrome_preferred_deadline.present_delta <
+      possible_deadlines.GetPreferredDeadline().present_delta) {
+    // Fallback to os preferred deadline instead of reducing the preferred
+    // deadline. We are not sure if this would actually happen in field.
+    curr_sequence_deadline_index_ = possible_deadlines.preferred_index;
+    return curr_sequence_deadline_index_;
+  }
+
+  curr_sequence_deadline_index_ = chrome_preferred_index;
   return curr_sequence_deadline_index_;
 }
 
