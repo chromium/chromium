@@ -228,6 +228,13 @@ void OpusAudioDecoder::Decode(scoped_refptr<DecoderBuffer> input,
     return;
   }
 
+  if (input->size() == 0) {
+    discard_helper_->ProcessBuffers(
+        AudioDiscardHelper::TimeInfo::FromBuffer(*input), nullptr);
+    BindCallbackIfNeeded(std::move(decode_cb)).Run(DecoderStatus::Codes::kOk);
+    return;
+  }
+
   // Allocate a buffer for the output samples.
   const bool result = DecodeBuffer(input);
   BindCallbackIfNeeded(std::move(decode_cb))

@@ -252,6 +252,13 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
+  if (buffer->size() == 0) {
+    discard_helper_->ProcessBuffers(
+        AudioDiscardHelper::TimeInfo::FromBuffer(*buffer), nullptr);
+    std::move(decode_cb_bound).Run(OkStatus());
+    return;
+  }
+
   if (has_reset_) {
     ResetTimestampState();
     has_reset_ = false;

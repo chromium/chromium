@@ -74,6 +74,10 @@ class MEDIA_EXPORT AudioToolboxAudioDecoder : public AudioDecoder {
   // Staging structures for receiving decoded data.
   std::unique_ptr<AudioBus> output_bus_;
   std::unique_ptr<AudioBufferList, base::FreeDeleter> output_buffer_list_;
+
+  // Keeps track of the last input timestamp to use for output generated during
+  // flush (EOS).
+  base::TimeDelta last_input_timestamp_ = kNoTimestamp;
 };
 
 }  // namespace media

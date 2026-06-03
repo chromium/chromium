@@ -149,7 +149,6 @@ SymphoniaPacket ToSymphoniaPacket(
     packet.timestamp_us = 0;
     packet.duration_us = 0;
   } else {
-    CHECK_GT(buffer.size(), 0u);
     packet.data = rust::Slice<const uint8_t>(
         buffer.empty() ? nullptr : base::to_address(buffer.begin()),
         buffer.size());

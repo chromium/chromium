@@ -852,6 +852,14 @@ TEST_P(AudioDecoderTest, NoTimestamp) {
   EXPECT_THAT(last_decode_status(), IsDecodeErrorStatus());
 }
 
+TEST_P(AudioDecoderTest, EmptyBuffer) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(0);
+  buffer->set_timestamp(base::Microseconds(0));
+  DecodeBuffer(std::move(buffer));
+  EXPECT_TRUE(last_decode_status().is_ok());
+}
+
 TEST_P(AudioDecoderTest, EOSBuffer) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   DecodeBuffer(DecoderBuffer::CreateEOSBuffer());
