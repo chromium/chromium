@@ -78,7 +78,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
       dawn_control_client->GetOrCreateCanvasResource(
           image->GetSharedImageFormat(),
           gfx::Size(mailbox_texture_width, mailbox_texture_height),
-          image->GetColorSpace(), image->GetAlphaType());
+          image->GetColorSpace(), image->GetHdrMetadata(),
+          image->GetAlphaType());
 
   if (!recyclable_canvas_resource) {
     return nullptr;

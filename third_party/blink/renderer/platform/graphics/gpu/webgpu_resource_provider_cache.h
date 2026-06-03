@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
@@ -55,6 +56,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
       viz::SharedImageFormat format,
       gfx::Size size,
       const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
       SkAlphaType alpha_type);
 
   // When the holder is destroyed, move the resource provider to

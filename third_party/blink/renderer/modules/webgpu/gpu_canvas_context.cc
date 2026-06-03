@@ -225,7 +225,7 @@ GPUCanvasContext::GetOrCreateCanvasResourceProvider() {
         resource_provider_ =
             CanvasNon2DResourceProviderSharedImage::CreateForWebGPU(
                 Host()->Size(), GetSharedImageFormat(), GetAlphaType(),
-                GetColorSpace(),
+                GetColorSpace(), swap_buffers_->GetHDRMetadata(),
                 swap_buffers_->GetSharedImageUsagesForDisplay(), Host());
       }
       Host()->UpdateMemoryUsage();
@@ -1040,6 +1040,7 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
   auto resource_provider =
       CanvasNon2DResourceProviderSharedImage::CreateForWebGPU(
           size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
+          swap_buffers_->GetHDRMetadata(),
           swap_buffers_->GetSharedImageUsagesForDisplay());
   if (!resource_provider)
     return nullptr;

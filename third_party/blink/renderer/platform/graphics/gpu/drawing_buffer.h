@@ -220,6 +220,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   void SetIsInHiddenPage(bool);
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
+  const gfx::HDRMetadata& GetHdrMetadata() const { return hdr_metadata_; }
 
   // Whether the target for draw operations has format GL_RGBA, but is
   // emulating format GL_RGB. When the target's storage is first

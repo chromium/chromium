@@ -404,7 +404,8 @@ ExternalTexture CreateExternalTexture(
 
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       device->GetDawnControlClient()->GetOrCreateCanvasResource(
-          format, natural_size, resource_color_space, kPremul_SkAlphaType);
+          format, natural_size, resource_color_space,
+          media_video_frame->hdr_metadata(), kPremul_SkAlphaType);
   if (!recyclable_canvas_resource) {
     return external_texture;
   }

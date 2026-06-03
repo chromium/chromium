@@ -59,13 +59,15 @@ TEST_F(WebGPURecyclableResourceCacheTest, MRUSameSize) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_0->resource_provider());
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_1 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_1->resource_provider());
 
   // Now release the holders to recycle the resource_providers.
@@ -75,7 +77,8 @@ TEST_F(WebGPURecyclableResourceCacheTest, MRUSameSize) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_2 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_2->resource_provider());
 
   // GetOrCreateCanvasResource should return the MRU provider, which is
@@ -92,13 +95,15 @@ TEST_F(WebGPURecyclableResourceCacheTest, DifferentSize) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_0->resource_provider());
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_1 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size2,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_1->resource_provider());
 
   // Now release the holders to recycle the resource_providers.
@@ -108,13 +113,15 @@ TEST_F(WebGPURecyclableResourceCacheTest, DifferentSize) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_2 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_2->resource_provider());
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_3 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size2,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_3->resource_provider());
 
   // GetOrCreateCanvasResource should return the same resource provider
@@ -132,7 +139,8 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_0->resource_provider());
 
   // Now release the holder to recycle the resource_provider.
@@ -142,7 +150,8 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_1 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size2,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_1->resource_provider());
 
   // Cache miss. A new resource provider should be created.
@@ -152,7 +161,8 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_2 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGBLinear(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGBLinear(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_2->resource_provider());
 
   // Cache miss. A new resource provider should be created.
@@ -162,7 +172,8 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_3 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_F16, size1,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_3->resource_provider());
 
   // Cache miss. A new resource provider should be created.
@@ -172,7 +183,8 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_4 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGB(), kOpaque_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kOpaque_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_4->resource_provider());
 
   // Cache miss. A new resource provider should be created.
@@ -182,7 +194,8 @@ TEST_F(WebGPURecyclableResourceCacheTest, CacheMissHit) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_5 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, size1,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_5->resource_provider());
 
   // Should get the same provider.
@@ -199,13 +212,15 @@ TEST_F(WebGPURecyclableResourceCacheTest, StaleResourcesCleanUp) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, resource_size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_0->resource_provider());
 
   std::unique_ptr<RecyclableCanvasResource> provider_holder_1 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, resource_size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_1->resource_provider());
 
   // Now release the holders to recycle the resource_providers.
@@ -236,7 +251,8 @@ TEST_F(WebGPURecyclableResourceCacheTest, ReuseBeforeCleanUp) {
   std::unique_ptr<RecyclableCanvasResource> provider_holder_0 =
       recyclable_resource_cache_->GetOrCreateCanvasResource(
           viz::SinglePlaneFormat::kRGBA_8888, resource_size,
-          gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+          gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+          kPremul_SkAlphaType);
   returned_resource_providers.push_back(provider_holder_0->resource_provider());
 
   // Release the holder to recycle the resource_provider.
@@ -250,7 +266,8 @@ TEST_F(WebGPURecyclableResourceCacheTest, ReuseBeforeCleanUp) {
       std::unique_ptr<RecyclableCanvasResource> provider_holder_1 =
           recyclable_resource_cache_->GetOrCreateCanvasResource(
               viz::SinglePlaneFormat::kRGBA_8888, resource_size,
-              gfx::ColorSpace::CreateSRGB(), kPremul_SkAlphaType);
+              gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
+              kPremul_SkAlphaType);
       returned_resource_providers.push_back(
           provider_holder_1->resource_provider());
 

@@ -115,9 +115,10 @@ DawnControlClientHolder::GetOrCreateCanvasResource(
     viz::SharedImageFormat format,
     gfx::Size size,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     SkAlphaType alpha_type) {
   return recyclable_resource_cache_.GetOrCreateCanvasResource(
-      format, size, color_space, alpha_type);
+      format, size, color_space, hdr_metadata, alpha_type);
 }
 
 void DawnControlClientHolder::Flush() {

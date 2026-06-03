@@ -44,6 +44,7 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
     viz::SharedImageFormat format,
     gfx::Size size,
     const gfx::ColorSpace& color_space,
+    const gfx::HDRMetadata& hdr_metadata,
     SkAlphaType alpha_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -51,7 +52,7 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
       AcquireCachedProvider(size, format, alpha_type, color_space);
   if (!provider) {
     provider = CanvasNon2DResourceProviderSharedImage::CreateForWebGPU(
-        size, format, alpha_type, color_space);
+        size, format, alpha_type, color_space, hdr_metadata);
     if (!provider)
       return nullptr;
   }

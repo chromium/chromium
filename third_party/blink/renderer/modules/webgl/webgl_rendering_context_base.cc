@@ -967,6 +967,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     // Create an accelerated CRP in order to produce an accelerated snapshot.
     resource_provider = CanvasNon2DResourceProviderSharedImage::Create(
         size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
+        GetDrawingBuffer()->GetHdrMetadata(),
         SharedGpuContext::ContextProviderWrapper(), shared_image_usages);
 
     if (!resource_provider || !resource_provider->IsValid()) {
@@ -2197,6 +2198,9 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
   const SkAlphaType alpha_type = GetAlphaType();
   const viz::SharedImageFormat format = GetSharedImageFormat();
   const gfx::ColorSpace color_space = GetColorSpace();
+  const gfx::HDRMetadata hdr_metadata =
+      GetDrawingBuffer() ? GetDrawingBuffer()->GetHdrMetadata()
+                         : gfx::HDRMetadata();
   const gfx::Size size = base::FeatureList::IsEnabled(
                              kWebGLCanvasResourceProviderDrawingBufferSize)
                              ? GetDrawingBuffer()->Size()
@@ -2213,13 +2217,13 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     resource_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
-        size, format, alpha_type, color_space,
+        size, format, alpha_type, color_space, hdr_metadata,
         SharedGpuContext::ContextProviderWrapper(), shared_image_usage_flags,
         Host());
   } else {
     resource_provider_ =
         CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
-            size, format, alpha_type, color_space,
+            size, format, alpha_type, color_space, hdr_metadata,
             SharedGpuContext::SharedImageInterfaceProvider(), Host());
   }
   Host()->UpdateMemoryUsage();
@@ -9098,7 +9102,7 @@ CanvasNon2DResourceProviderSharedImage* WebGLRenderingContextBase::
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> temp =
       CanvasNon2DResourceProviderSharedImage::Create(
           info.size, info.format, info.alpha_type, info.color_space,
-          SharedGpuContext::ContextProviderWrapper(),
+          info.hdr_metadata, SharedGpuContext::ContextProviderWrapper(),
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 
   if (!temp) {

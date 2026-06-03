@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace base {
 
@@ -63,6 +64,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
       viz::SharedImageFormat format,
       gfx::Size size,
       const gfx::ColorSpace& color_space,
+      const gfx::HDRMetadata& hdr_metadata,
       SkAlphaType alpha_type);
 
   // Flush commands on this client immediately.
