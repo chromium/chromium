@@ -370,7 +370,11 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
   // If the previous cell was content, set it as unselected.
   if (selected_cell_ == CellType::kContent) {
     content_view_->UpdateStyle(/*selected=*/false);
-    content_view_->GetViewAccessibility().SetIsSelected(false);
+    if (!TrackAndRun(this, [this]() {
+          content_view_->GetViewAccessibility().SetIsSelected(false);
+        })) {
+      return;
+    }
     controller_->UnselectSuggestion();
   }
 
@@ -381,18 +385,34 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     // is required for a11y focus working on a non-activatable popup.  Consider
     // moving `SetIsSelected()` into `NotifyAXSelection()` (and rename it) to
     // hide this API complexity from clients.
-    GetA11ySelectionDelegate().NotifyAXSelection(*this);
-    GetViewAccessibility().SetIsSelected(true);
-    NotifyAccessibilityEventDeprecated(
-        ax::mojom::Event::kSelectedChildrenChanged, true);
+    if (!TrackAndRun(
+            this,
+            [this]() { GetA11ySelectionDelegate().NotifyAXSelection(*this); },
+            [this]() { GetViewAccessibility().SetIsSelected(true); },
+            [this]() {
+              NotifyAccessibilityEventDeprecated(
+                  ax::mojom::Event::kSelectedChildrenChanged, true);
+            })) {
+      return;
+    }
     selected_cell_ = new_cell;
   } else if (new_cell == CellType::kContent) {
     controller_->SelectSuggestion(line_number_);
     content_view_->UpdateStyle(/*selected=*/true);
-    GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
-    content_view_->GetViewAccessibility().SetIsSelected(true);
-    NotifyAccessibilityEventDeprecated(
-        ax::mojom::Event::kSelectedChildrenChanged, true);
+    if (!TrackAndRun(
+            this,
+            [this]() {
+              GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
+            },
+            [this]() {
+              content_view_->GetViewAccessibility().SetIsSelected(true);
+            },
+            [this]() {
+              NotifyAccessibilityEventDeprecated(
+                  ax::mojom::Event::kSelectedChildrenChanged, true);
+            })) {
+      return;
+    }
     selected_cell_ = new_cell;
   } else {
     // Set the selected cell to none in case an invalid choice was made (e.g.
@@ -400,8 +420,13 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     // explicitly with `std::nullopt`.
     selected_cell_ = std::nullopt;
 
-    GetViewAccessibility().SetIsSelected(false);
-    content_view_->GetViewAccessibility().SetIsSelected(false);
+    if (!TrackAndRun(
+            this, [this]() { GetViewAccessibility().SetIsSelected(false); },
+            [this]() {
+              content_view_->GetViewAccessibility().SetIsSelected(false);
+            })) {
+      return;
+    }
   }
 
   UpdateBackground();

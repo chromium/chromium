@@ -329,19 +329,29 @@ void PopupBaseView::DoHide() {
     // navigates into the menu, otherwise some screen readers will ignore
     // any focus events outside of the menu, including a focus event on
     // the form control itself.
-    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuPopupEnd, true);
-    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuEnd, true);
-    GetViewAccessibility().EndPopupFocusOverride();
-
-    // Also fire an accessible focus event on what currently has focus,
-    // typically the widget associated with this popup.
-    if (parent_widget_) {
-      if (views::FocusManager* focus_manager =
-              parent_widget_->GetFocusManager()) {
-        if (View* focused_view = focus_manager->GetFocusedView()) {
-          focused_view->GetViewAccessibility().FireFocusAfterMenuClose();
-        }
-      }
+    if (!TrackAndRun(
+            this,
+            [this]() {
+              NotifyAccessibilityEventDeprecated(
+                  ax::mojom::Event::kMenuPopupEnd, true);
+            },
+            [this]() {
+              NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuEnd,
+                                                 true);
+            },
+            [this]() { GetViewAccessibility().EndPopupFocusOverride(); },
+            [this]() {
+              if (parent_widget_) {
+                if (views::FocusManager* focus_manager =
+                        parent_widget_->GetFocusManager()) {
+                  if (View* focused_view = focus_manager->GetFocusedView()) {
+                    focused_view->GetViewAccessibility()
+                        .FireFocusAfterMenuClose();
+                  }
+                }
+              }
+            })) {
+      return;
     }
   }
 
@@ -369,8 +379,18 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
     // readers that the focus is only changing temporarily, and the screen
     // reader will restore the focus back to the appropriate textfield when the
     // menu closes.
-    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuStart, true);
-    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuPopupStart, true);
+    if (!TrackAndRun(
+            this,
+            [this]() {
+              NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuStart,
+                                                 true);
+            },
+            [this]() {
+              NotifyAccessibilityEventDeprecated(
+                  ax::mojom::Event::kMenuPopupStart, true);
+            })) {
+      return;
+    }
 
     is_ax_menu_start_event_fired_ = true;
   }

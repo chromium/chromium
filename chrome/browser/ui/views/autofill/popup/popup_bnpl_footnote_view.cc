@@ -120,9 +120,16 @@ void PopupBnplFootnoteView::FocusSettingsLink() {
     is_settings_link_selected_ = true;
     link->SetBorder(views::CreateSolidBorder(kSelectionBorderThickness,
                                              ui::kColorFocusableBorderFocused));
-    a11y_selection_delegate_->NotifyAXSelection(*this);
-    this->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
-    this->GetViewAccessibility().SetIsSelected(true);
+    if (!TrackAndRun(
+            this,
+            [this]() { a11y_selection_delegate_->NotifyAXSelection(*this); },
+            [this]() {
+              NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus,
+                                                 true);
+            },
+            [this]() { GetViewAccessibility().SetIsSelected(true); })) {
+      return;
+    }
     announce_callback_.Run(std::u16string(link->GetText()), /*polite=*/false);
   }
 }

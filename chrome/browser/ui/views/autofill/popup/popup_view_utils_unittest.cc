@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 
+#include <memory>
 #include <vector>
 
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/view.h"
 
 namespace autofill {
 
@@ -542,6 +544,18 @@ TEST(PopupViewUtilsTest, HtmlPopupOverlapsWithAutofillPopup) {
   non_overlapping_popup.bounds = gfx::Rect(200, 200, 10, 10);
   EXPECT_TRUE(internal::BoundsOverlapWithHtmlFormPopup(
       gfx::Rect(50, 50, 100, 100), {non_overlapping_popup, kBasePopup}));
+}
+
+TEST(PopupViewsUtilsTest, TrackAndRun_Basic) {
+  auto view = std::make_unique<views::View>();
+  bool cb2_called = false;
+
+  bool survived = TrackAndRun(
+      view.get(), [&view]() { view.reset(); },
+      [&cb2_called]() { cb2_called = true; });
+
+  EXPECT_FALSE(survived);
+  EXPECT_FALSE(cb2_called);
 }
 
 }  // namespace autofill

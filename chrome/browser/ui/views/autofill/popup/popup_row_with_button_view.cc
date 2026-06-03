@@ -190,18 +190,34 @@ views::View* PopupRowWithButtonView::GetButtonContainer() {
 }
 
 void PopupRowWithButtonView::HandleKeyPressEventFocusOnButton() {
-  button_->GetViewAccessibility().SetPopupFocusOverride();
-  GetContentView().GetViewAccessibility().SetIsSelected(false);
-  button_->GetViewAccessibility().SetIsSelected(true);
+  if (!TrackAndRun(
+          this,
+          [this]() { button_->GetViewAccessibility().SetPopupFocusOverride(); },
+          [this]() {
+            GetContentView().GetViewAccessibility().SetIsSelected(false);
+          },
+          [this]() { button_->GetViewAccessibility().SetIsSelected(true); })) {
+    return;
+  }
   views::InkDrop::Get(button_->ink_drop_view())->GetInkDrop()->SetHovered(true);
   UpdateFocusedPartAndSelectedSuggestion(RowWithButtonPart::kButton);
 }
 
 void PopupRowWithButtonView::HandleKeyPressEventFocusOnContent() {
-  UpdateFocusedPartAndSelectedSuggestion(RowWithButtonPart::kContent);
-  GetContentView().GetViewAccessibility().SetPopupFocusOverride();
-  button_->GetViewAccessibility().SetIsSelected(false);
-  GetContentView().GetViewAccessibility().SetIsSelected(true);
+  if (!TrackAndRun(
+          this,
+          [this]() {
+            UpdateFocusedPartAndSelectedSuggestion(RowWithButtonPart::kContent);
+          },
+          [this]() {
+            GetContentView().GetViewAccessibility().SetPopupFocusOverride();
+          },
+          [this]() { button_->GetViewAccessibility().SetIsSelected(false); },
+          [this]() {
+            GetContentView().GetViewAccessibility().SetIsSelected(true);
+          })) {
+    return;
+  }
   views::InkDrop::Get(button_->ink_drop_view())
       ->GetInkDrop()
       ->SetHovered(false);
@@ -248,7 +264,11 @@ bool PopupRowWithButtonView::HandleKeyPressEvent(
 }
 
 void PopupRowWithButtonView::SetSelectedCell(std::optional<CellType> cell) {
-  autofill::PopupRowView::SetSelectedCell(cell);
+  if (!TrackAndRun(this, [this, cell]() {
+        autofill::PopupRowView::SetSelectedCell(cell);
+      })) {
+    return;
+  }
 
   button_->SetVisible(ShouldButtonBeVisible());
 
