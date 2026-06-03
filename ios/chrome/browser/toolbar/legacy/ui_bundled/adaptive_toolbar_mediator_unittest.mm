@@ -494,8 +494,8 @@ TEST_F(AdaptiveToolbarMediatorTest, MenuElements) {
 
   ASSERT_EQ(3U, tab_grid_menu.children.count);
 
-  ASSERT_TRUE([tab_grid_menu.children[2] isKindOfClass:[UIAction class]]);
-  UIAction* close_tab = (UIAction*)tab_grid_menu.children[2];
+  ASSERT_TRUE([tab_grid_menu.children[0] isKindOfClass:[UIAction class]]);
+  UIAction* close_tab = (UIAction*)tab_grid_menu.children[0];
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB),
               close_tab.title);
   EXPECT_EQ(UIMenuElementAttributesDestructive, close_tab.attributes);
@@ -504,8 +504,8 @@ TEST_F(AdaptiveToolbarMediatorTest, MenuElements) {
   UIAction* action = (UIAction*)tab_grid_menu.children[1];
   EXPECT_EQ(0U, action.attributes);
 
-  ASSERT_TRUE([tab_grid_menu.children[0] isKindOfClass:[UIAction class]]);
-  action = (UIAction*)tab_grid_menu.children[0];
+  ASSERT_TRUE([tab_grid_menu.children[2] isKindOfClass:[UIAction class]]);
+  action = (UIAction*)tab_grid_menu.children[2];
   EXPECT_EQ(0U, action.attributes);
 }
 
