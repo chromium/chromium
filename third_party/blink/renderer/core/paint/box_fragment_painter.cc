@@ -2471,20 +2471,19 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     }
   }
 
-  // Check border-shape and border-radius clipping.
-  if (style.HasBorderShape()) {
-    PhysicalRect rect(physical_offset, size);
-    const Path outer_path = ComputeBorderShapeOuterPath(
-        style, rect, box_fragment_.GetLayoutObject());
-    if (!hit_test.location.Intersects(outer_path)) {
-      if (!hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow()) {
+  if (!hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow()) {
+    // Check if the location is outside any border-shape or border-radius.
+    if (style.HasBorderShape()) {
+      PhysicalRect rect(physical_offset, size);
+      const Path outer_path = ComputeBorderShapeOuterPath(
+          style, rect, box_fragment_.GetLayoutObject());
+      if (!hit_test.location.Intersects(outer_path)) {
         return false;
       }
-    }
-  } else if (style.HasBorderRadius() &&
-             HitTestClippedOutByBorder(hit_test.location, physical_offset)) {
-    if (!hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow()) {
-      return false;
+    } else if (style.HasBorderRadius()) {
+      if (HitTestClippedOutByBorder(hit_test.location, physical_offset)) {
+        return false;
+      }
     }
   }
 
