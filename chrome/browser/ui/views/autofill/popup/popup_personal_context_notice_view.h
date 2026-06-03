@@ -8,6 +8,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace views {
+class MdTextButton;
+}
+
 namespace autofill {
 
 // The view that displays the "Personal context" notice.
@@ -23,6 +27,13 @@ class PopupPersonalContextNoticeView : public views::View {
   PopupPersonalContextNoticeView& operator=(
       const PopupPersonalContextNoticeView&) = delete;
   ~PopupPersonalContextNoticeView() override;
+
+  views::MdTextButton* got_it_button_for_testing() { return got_it_button_; }
+
+ private:
+  void OnGotItButtonClicked();
+
+  raw_ptr<views::MdTextButton> got_it_button_ = nullptr;
 };
 
 }  // namespace autofill
