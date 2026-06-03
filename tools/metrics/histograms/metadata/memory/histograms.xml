@@ -1336,6 +1336,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Browser.ResidentSetPeak" units="MiB"
+    expires_after="2027-06-01">
+  <owner>colibie@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded only for Android WebView.
+
+    The peak size of the resident memory in the browser process (also known as
+    RSS High Water Mark).
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Browser.SharedMemoryFootprint" units="MB"
     expires_after="2026-11-15">
   <owner>erikchen@chromium.org</owner>
@@ -2940,6 +2954,20 @@ chromium-metrics-reviews@google.com.
     not measure the same thing on each platform. We have not found a good way to
     compare any system level memory metric across platforms due to the different
     nature of memory management on each platform.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Renderer.ResidentSetPeak" units="MiB"
+    expires_after="2027-06-01">
+  <owner>colibie@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded only for Android WebView.
+
+    The peak size of the resident memory in a renderer process (also known as
+    RSS High Water Mark).
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes.
   </summary>
 </histogram>
 

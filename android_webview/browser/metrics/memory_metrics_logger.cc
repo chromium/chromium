@@ -37,13 +37,26 @@ void RecordMemoryMetricsImpl(
   }
 
   uint64_t total_private_footprint_kb = 0;
+  uint64_t total_resident_set_kb = 0;
   for (const auto& process_dump : dump->process_dumps()) {
     total_private_footprint_kb += process_dump.os_dump().private_footprint_kb;
+    total_resident_set_kb += process_dump.os_dump().resident_set_kb;
+
+    uint64_t rss_mb = process_dump.os_dump().resident_set_kb / 1024;
+    uint64_t rss_peak_mb = process_dump.os_dump().peak_resident_set_kb / 1024;
+
     switch (process_dump.process_type()) {
       case memory_instrumentation::mojom::ProcessType::BROWSER: {
         MEMORY_METRICS_HISTOGRAM_MB(
             GetPrivateFootprintHistogramName(HistogramProcessType::kBrowser),
             process_dump.os_dump().private_footprint_kb / 1024);
+        MEMORY_METRICS_HISTOGRAM_MB("Memory.Browser.ResidentSet", rss_mb);
+        // Peak RSS can be 0 if collection failed or is not supported by the
+        // kernel. Only log valid >0 values.
+        if (rss_peak_mb > 0) {
+          MEMORY_METRICS_HISTOGRAM_MB("Memory.Browser.ResidentSetPeak",
+                                      rss_peak_mb);
+        }
         break;
       }
       case memory_instrumentation::mojom::ProcessType::RENDERER: {
@@ -52,18 +65,21 @@ void RecordMemoryMetricsImpl(
         MEMORY_METRICS_HISTOGRAM_MB(
             GetPrivateFootprintHistogramName(HistogramProcessType::kRenderer),
             process_dump.os_dump().private_footprint_kb / 1024);
-        break;
-      }
-      case memory_instrumentation::mojom::ProcessType::GPU: {
-        MEMORY_METRICS_HISTOGRAM_MB(
-            GetPrivateFootprintHistogramName(HistogramProcessType::kGpu),
-            process_dump.os_dump().private_footprint_kb / 1024);
+        MEMORY_METRICS_HISTOGRAM_MB("Memory.Renderer.ResidentSet", rss_mb);
+        // Peak RSS can be 0 if collection failed or is not supported by the
+        // kernel. Only log valid >0 values.
+        if (rss_peak_mb > 0) {
+          MEMORY_METRICS_HISTOGRAM_MB("Memory.Renderer.ResidentSetPeak",
+                                      rss_peak_mb);
+        }
         break;
       }
 
       // Currently this class only records metrics for the browser and
       // renderer process, as it originated from WebView, where there are no
       // other processes.
+      case memory_instrumentation::mojom::ProcessType::GPU:
+        [[fallthrough]];
       case memory_instrumentation::mojom::ProcessType::ARC:
         [[fallthrough]];
       case memory_instrumentation::mojom::ProcessType::UTILITY:
@@ -77,6 +93,10 @@ void RecordMemoryMetricsImpl(
   if (total_private_footprint_kb) {
     MEMORY_METRICS_HISTOGRAM_MB("Memory.Total.PrivateMemoryFootprint",
                                 total_private_footprint_kb / 1024);
+  }
+  if (total_resident_set_kb) {
+    MEMORY_METRICS_HISTOGRAM_MB("Memory.Total.ResidentSet",
+                                total_resident_set_kb / 1024);
   }
   if (done_callback) {
     std::move(done_callback).Run(true);

@@ -43,20 +43,27 @@ public class MemoryMetricsLoggerTest extends AwParameterizedTest {
         mHistogramExpectationBrowser =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes("Memory.Browser.PrivateMemoryFootprint", 1)
+                        .expectAnyRecordTimes("Memory.Browser.ResidentSet", 1)
+                        .expectAnyRecordTimes("Memory.Browser.ResidentSetPeak", 1)
                         .allowExtraRecordsForHistogramsAbove()
                         .build();
         mHistogramExpectationRendererMulti =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes("Memory.Renderer.PrivateMemoryFootprint", 1)
+                        .expectAnyRecordTimes("Memory.Renderer.ResidentSet", 1)
+                        .expectAnyRecordTimes("Memory.Renderer.ResidentSetPeak", 1)
                         .allowExtraRecordsForHistogramsAbove()
                         .build();
         mHistogramExpectationRendererSingle =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Memory.Renderer.PrivateMemoryFootprint")
+                        .expectNoRecords("Memory.Renderer.ResidentSet")
+                        .expectNoRecords("Memory.Renderer.ResidentSetPeak")
                         .build();
         mHistogramExpectationTotal =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes("Memory.Total.PrivateMemoryFootprint", 1)
+                        .expectAnyRecordTimes("Memory.Total.ResidentSet", 1)
                         .allowExtraRecordsForHistogramsAbove()
                         .build();
         TestAwContentsClient contentsClient = new TestAwContentsClient();
