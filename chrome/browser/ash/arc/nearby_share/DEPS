@@ -11,7 +11,6 @@ include_rules = [
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/file_manager",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/nearby_sharing",
   "+chrome/browser/profiles",
   "+chrome/browser/sharesheet",

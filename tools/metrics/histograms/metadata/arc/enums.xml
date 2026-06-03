@@ -237,8 +237,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="ArcNearbyShareDataHandlingResult">
   <int value="0" label="Directory does not exists."/>
-  <int value="1" label="Unexpected null g_browser_process."/>
-  <int value="2" label="Invalid profile."/>
+  <int value="1" label="(Obsolete) Unexpected null g_browser_process."/>
+  <int value="2" label="(Obsolete) Invalid profile."/>
   <int value="3" label="Base directory is empty."/>
   <int value="4" label="Failed to create unique temp directory."/>
   <int value="5" label="External urls are empty."/>

@@ -20,9 +20,7 @@
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -180,23 +178,6 @@ void ShareInfoFileHandler::StartPreparingFiles(
   completed_callback_ = std::move(completed_callback);
   update_callback_ = std::move(update_callback);
   file_sharing_started_ = true;
-
-  if (!g_browser_process) {
-    LOG(ERROR) << "Unexpected null g_browser_process.";
-    UpdateNearbyShareDataHandlingFail(DataHandlingResult::kNullGBrowserProcess);
-    NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_OPERATION);
-    return;
-  }
-
-  // |profile_| needs to be checked with ProfileManager::IsValidProfile
-  // before using it.  Abort if profile is not created.
-  if (g_browser_process->profile_manager() &&
-      !g_browser_process->profile_manager()->IsValidProfile(profile_)) {
-    LOG(ERROR) << "Invalid profile: " << profile_->GetProfileUserName();
-    UpdateNearbyShareDataHandlingFail(DataHandlingResult::kInvalidProfile);
-    NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_OPERATION);
-    return;
-  }
 
   if (file_config_.directory.empty()) {
     LOG(ERROR) << "Base directory is empty.";

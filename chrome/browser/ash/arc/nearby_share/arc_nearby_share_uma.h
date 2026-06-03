@@ -22,8 +22,8 @@ enum class ArcBridgeFailResult {
 // numeric values should never be reused.
 enum class DataHandlingResult {
   kDirectoryDoesNotExist = 0,
-  kNullGBrowserProcess = 1,
-  kInvalidProfile = 2,
+  // kNullGBrowserProcess = 1,  // Obsolete.
+  // kInvalidProfile = 2,       // Obsolete.
   kEmptyDirectory = 3,
   kFailedToCreateDirectory = 4,
   kEmptyExternalURL = 5,
