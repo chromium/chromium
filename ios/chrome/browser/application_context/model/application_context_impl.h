@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "build/blink_buildflags.h"
 #include "ios/chrome/browser/shared/model/application_context/application_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
@@ -24,7 +25,9 @@ class AutoDeletionService;
 namespace base {
 class CommandLine;
 class SequencedTaskRunner;
+#if !BUILDFLAG(USE_BLINK)
 class MemoryPressureListenerRegistry;
+#endif
 }  // namespace base
 
 class ApplicationBreadcrumbsLogger;
@@ -204,8 +207,10 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<optimization_guide::OptimizationGuideGlobalState>
       optimization_guide_global_state_;
 
+#if !BUILDFLAG(USE_BLINK)
   std::unique_ptr<base::MemoryPressureListenerRegistry>
       memory_pressure_listener_registry_;
+#endif
 
   // Must be the last member variable.
   base::WeakPtrFactory<ApplicationContextImpl> weak_ptr_factory_{this};

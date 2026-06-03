@@ -14,7 +14,6 @@
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#import "base/memory/memory_pressure_listener_registry.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
@@ -24,6 +23,7 @@
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
+#import "build/blink_buildflags.h"
 #import "components/activity_reporter/activity_reporter.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
@@ -99,15 +99,23 @@
 #import "services/network/public/mojom/network_service.mojom.h"
 #import "ui/base/resource/resource_bundle.h"
 
+#if !BUILDFLAG(USE_BLINK)
+#import "base/memory/memory_pressure_listener_registry.h"
+#endif
+
 ApplicationContextImpl::ApplicationContextImpl(
     base::SequencedTaskRunner* local_state_task_runner,
     const base::CommandLine& command_line,
     const std::string& locale,
     const std::string& country)
     : application_locale_storage_(std::make_unique<ApplicationLocaleStorage>()),
-      local_state_task_runner_(local_state_task_runner),
+      local_state_task_runner_(local_state_task_runner)
+#if !BUILDFLAG(USE_BLINK)
+      ,
       memory_pressure_listener_registry_(
-          std::make_unique<base::MemoryPressureListenerRegistry>()) {
+          std::make_unique<base::MemoryPressureListenerRegistry>())
+#endif
+{
   DCHECK(!GetApplicationContext());
   SetApplicationContext(this);
 
