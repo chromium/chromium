@@ -152,15 +152,17 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
 extern template class CORE_EXTERN_TEMPLATE_EXPORT
     SelectionTemplate<EditingInFlatTreeStrategy>;
 
-using SelectionInDOMTree = SelectionTemplate<EditingStrategy>;
+using SelectionInDomTree = SelectionTemplate<EditingStrategy>;
+// An alias of SelectionInDomTree. New code should use SelectionInDomTree.
+using SelectionInDOMTree = SelectionInDomTree;
 using SelectionInFlatTree = SelectionTemplate<EditingInFlatTreeStrategy>;
 
-CORE_EXPORT SelectionInDOMTree
-ConvertToSelectionInDOMTree(const SelectionInFlatTree&);
+CORE_EXPORT SelectionInDomTree
+ConvertToSelectionInDomTree(const SelectionInFlatTree&);
 CORE_EXPORT SelectionInFlatTree
-ConvertToSelectionInFlatTree(const SelectionInDOMTree&);
+ConvertToSelectionInFlatTree(const SelectionInDomTree&);
 
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const SelectionInDOMTree&);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const SelectionInDomTree&);
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const SelectionInFlatTree&);
 
 }  // namespace blink

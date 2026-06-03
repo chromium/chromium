@@ -1000,7 +1000,7 @@ void SelectionController::SetNonDirectionalSelectionIfNeeded(
   if (selection_remains_the_same)
     return;
   Selection().SetSelection(
-      ConvertToSelectionInDOMTree(selection_in_flat_tree),
+      ConvertToSelectionInDomTree(selection_in_flat_tree),
       SetSelectionOptions::Builder(set_selection_options)
           .SetShouldCloseTyping(true)
           .SetShouldClearTypingStyle(true)
@@ -1245,7 +1245,7 @@ bool SelectionController::HandleMouseReleaseEvent(
     if (Selection().ComputeVisibleSelectionInFlatTree() !=
         CreateVisibleSelection(new_selection)) {
       Selection().SetSelectionAndEndTyping(
-          ConvertToSelectionInDOMTree(new_selection));
+          ConvertToSelectionInDomTree(new_selection));
     }
 
     handled = true;
@@ -1431,7 +1431,7 @@ void SelectionController::PassMousePressEventToSubframe(
     Selection().SetSelectionAndEndTyping(SelectionInDOMTree());
     return;
   }
-  Selection().SetSelectionAndEndTyping(ConvertToSelectionInDOMTree(
+  Selection().SetSelectionAndEndTyping(ConvertToSelectionInDomTree(
       SelectionInFlatTree::Builder().Collapse(visible_pos).Build()));
 }
 

@@ -149,7 +149,7 @@ SelectionModifier::SelectionModifier(const LocalFrame& frame,
 
 VisibleSelection SelectionModifier::Selection() const {
   return CreateVisibleSelection(
-      ConvertToSelectionInDOMTree(current_selection_));
+      ConvertToSelectionInDomTree(current_selection_));
 }
 
 static VisiblePositionInFlatTree ComputeVisibleFocus(
