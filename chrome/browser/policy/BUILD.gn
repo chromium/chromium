@@ -651,6 +651,11 @@ source_set("unit_tests") {
       "//components/session_manager/test:test_support",
     ]
   }
+
+  if (enable_extensions) {
+    sources += [ "chrome_extension_policy_migrator_unittest.cc" ]
+    deps += [ ":policy_migrator" ]
+  }
 }
 
 source_set("policy") {

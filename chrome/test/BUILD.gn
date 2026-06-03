@@ -9561,7 +9561,6 @@ test("unit_tests") {
       "../browser/controlled_frame/controlled_frame_menu_icon_loader_unittest.cc",
       "../browser/controlled_frame/controlled_frame_permissions_unittest.cc",
       "../browser/media/cast_mirroring_service_host_unittest.cc",
-      "../browser/policy/chrome_extension_policy_migrator_unittest.cc",
       "../browser/safe_browsing/test_extension_event_observer.cc",
       "../browser/safe_browsing/test_extension_event_observer.h",
     ]
@@ -9597,7 +9596,6 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/affiliations",
-      "//chrome/browser/policy:policy_migrator",
       "//chrome/browser/sync_file_system:unit_tests",
       "//chrome/browser/ui/web_applications:unit_tests",
       "//chrome/browser/web_applications:unit_tests",
