@@ -111,8 +111,6 @@ IntroUI::IntroUI(content::WebUI* web_ui)
        IDS_FRE_REFRESH_DEFAULT_BROWSER_NO_THANKS},
       // Strings for finish or continue subpage.
       {"finishOrContinueTitle", IDS_FRE_FINISH_OR_CONTINUE_TITLE},
-      {"seeMoreTipsButtonLabel",
-       IDS_FRE_FINISH_OR_CONTINUE_SEE_MORE_TIPS_BUTTON_LABEL},
       {"startBrowsingButtonLabel",
        IDS_FRE_FINISH_OR_CONTINUE_START_BROWSING_BUTTON_LABEL},
   };
@@ -191,6 +189,13 @@ IntroUI::IntroUI(content::WebUI* web_ui)
     source->AddResourcePath(
         chrome::kChromeUIIntroFinishOrContinueSubPage,
         IDR_INTRO_FINISH_OR_CONTINUE_FINISH_OR_CONTINUE_HTML);
+
+    source->AddLocalizedString(
+        "seeMoreTipsButtonLabel",
+        IDS_FRE_FINISH_OR_CONTINUE_SEE_MORE_TIPS_BUTTON_LABEL);
+    source->AddLocalizedString(
+        "seeWhatsNewButtonLabel",
+        IDS_FRE_FINISH_OR_CONTINUE_SEE_WHATS_NEW_BUTTON_LABEL);
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

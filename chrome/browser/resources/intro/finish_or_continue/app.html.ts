@@ -13,16 +13,16 @@ export function getHtml(this: FinishOrContinueAppElement) {
 <h1 class="title">$i18n{finishOrContinueTitle}</h1>
 <div id="buttonContainer">
   <if expr="not is_win">
-    <cr-button id="seeMoreTipsButton">
-      $i18n{seeMoreTipsButtonLabel}
+    <cr-button id="continueEducationButton">
+      ${this.getContinueEducationButtonLabel_()}
     </cr-button>
   </if>
   <cr-button id="startBrowsingButton" class="action-button">
     $i18n{startBrowsingButtonLabel}
   </cr-button>
   <if expr="is_win">
-    <cr-button id="seeMoreTipsButton">
-      $i18n{seeMoreTipsButtonLabel}
+    <cr-button id="continueEducationButton">
+      ${this.getContinueEducationButtonLabel_()}
     </cr-button>
   </if>
 </div>
