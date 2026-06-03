@@ -60,20 +60,12 @@ base::flat_set<PageContext::FormFieldAutofillSignature> ComputeUniqueSignatures(
       base::sorted_unique, std::move(unique_signatures));
 }
 
-// Returns the set of field signatures that are unique among the same-origin
-// fields in `form`.
+// Returns the set of field signatures that are unique among the given fields.
 base::flat_set<autofill::FieldSignature> GetUniqueSignaturesInForm(
-    const autofill::FormStructure& form,
-    const url::Origin& origin) {
-  if (form.form_signature().value() == 0) {
-    return {};
-  }
+    base::span<const autofill::AutofillField* const> fields) {
   // Count occurrences of each signature in the form.
   absl::flat_hash_map<autofill::FieldSignature, size_t> counts;
-  for (const std::unique_ptr<autofill::AutofillField>& field : form.fields()) {
-    if (field->origin() != origin) {
-      continue;
-    }
+  for (const autofill::AutofillField* field : fields) {
     autofill::FieldSignature signature = field->GetFieldSignature();
     if (signature.value() != 0) {
       ++counts[signature];
@@ -103,15 +95,11 @@ AutofillTypeSet GetFieldProtoTypes(const autofill::AutofillField& field) {
 }
 
 // Returns the set of Autofill type sets that appear exactly once among the
-// same-origin fields in the form.
+// given fields.
 base::flat_set<AutofillTypeSet> GetUniqueTypeSetsInForm(
-    const autofill::FormStructure& form,
-    const url::Origin& origin) {
+    base::span<const autofill::AutofillField* const> fields) {
   base::flat_map<AutofillTypeSet, size_t> counts;
-  for (const std::unique_ptr<autofill::AutofillField>& field : form.fields()) {
-    if (field->origin() != origin) {
-      continue;
-    }
+  for (const autofill::AutofillField* field : fields) {
     AutofillTypeSet type_set = GetFieldProtoTypes(*field);
     if (!type_set.empty()) {
       ++counts[type_set];
@@ -282,9 +270,9 @@ void ReceivedTabFormsFiller::OnAutofillManagerStateChanged(
   }
 }
 
-// TODO(crbug.com/511137786): Evaluate if we really need all these matching
-// methods by looking at the UMA metrics. If fallbacks are not heavily used,
-// we can remove them to simplify the code and the proto.
+// TODO(crbug.com/511137786): Evaluate if all these matching methods are
+// really needed by looking at the UMA metrics. If fallbacks are not heavily
+// used, they can be removed to simplify the code and the proto.
 ReceivedTabFormsFiller::MatchResult
 ReceivedTabFormsFiller::FindPendingFieldMatching(
     const autofill::FormStructure& form,
@@ -380,22 +368,24 @@ void ReceivedTabFormsFiller::FillForms(
     return;
   }
   manager->ForEachCachedForm([&](const autofill::FormStructure& form) {
-    // TODO(crbug.com/511137786): Pull out the origin_ filtering logic into a
-    // common place (e.g. pre-filter fields in this loop) to avoid doing it
-    // repeatedly in GetUniqueSignaturesInForm(), GetUniqueTypeSetsInForm(),
-    // and again in the filling loop below.
-    const base::flat_set<autofill::FieldSignature> form_unique_signatures =
-        GetUniqueSignaturesInForm(form, origin_);
-    const base::flat_set<AutofillTypeSet> form_unique_type_sets =
-        GetUniqueTypeSetsInForm(form, origin_);
-
+    // Only same-origin fields are processed and filled for security reasons.
+    // Pre-filter them here to perform the check once and avoid repeating
+    // it in GetUniqueSignaturesInForm(), GetUniqueTypeSetsInForm(), and the
+    // filling loop below.
+    std::vector<const autofill::AutofillField*> same_origin_fields;
     for (const std::unique_ptr<autofill::AutofillField>& field :
          form.fields()) {
-      if (field->origin() != origin_) {
-        // Only same-origin fields are filled for security reasons.
-        continue;
+      if (field->origin() == origin_) {
+        same_origin_fields.push_back(field.get());
       }
+    }
 
+    const base::flat_set<autofill::FieldSignature> form_unique_signatures =
+        GetUniqueSignaturesInForm(same_origin_fields);
+    const base::flat_set<AutofillTypeSet> form_unique_type_sets =
+        GetUniqueTypeSetsInForm(same_origin_fields);
+
+    for (const autofill::AutofillField* field : same_origin_fields) {
       const MatchResult match = FindPendingFieldMatching(
           form, *field, form_unique_signatures, form_unique_type_sets);
       if (!match.field) {
