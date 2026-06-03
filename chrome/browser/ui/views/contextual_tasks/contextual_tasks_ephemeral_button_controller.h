@@ -16,16 +16,27 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class SidePanelEntry;
 
+namespace content {
+class Page;
+class WebContents;
+}  // namespace content
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 // Controller used to trigger the contextual task toolbar button to show
 // while the active tab is associated to a task and hidden otherwise.
 class ContextualTasksEphemeralButtonController
     : public contextual_tasks::ContextualTasksService::Observer,
-      public SidePanelEntryObserver {
+      public SidePanelEntryObserver,
+      public content::WebContentsObserver {
  public:
   DECLARE_USER_DATA(ContextualTasksEphemeralButtonController);
   explicit ContextualTasksEphemeralButtonController(
@@ -69,11 +80,18 @@ class ContextualTasksEphemeralButtonController
   bool ShouldShowEphemeralButton();
 
  private:
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+
   contextual_tasks::ContextualTasksService* GetContextualTasksService();
   std::optional<SessionID> GetCurrentTabSessionId();
   bool IsActiveTabAssociatedToTask();
   void OnActiveTabChange(BrowserWindowInterface* browser_window_interface);
   void MaybeNotifyVisibilityShouldChange();
+  void UpdateActiveTabObservation();
+  void OnTabDiscarded(tabs::TabInterface* tab,
+                      content::WebContents* old_contents,
+                      content::WebContents* new_contents);
 
   bool is_contextual_tasks_panel_open_ = false;
   bool is_hiding_contextual_tasks_panel_ = false;
@@ -85,6 +103,7 @@ class ContextualTasksEphemeralButtonController
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
 
   base::CallbackListSubscription tab_change_subscription_;
+  base::CallbackListSubscription tab_discard_subscription_;
   base::CallbackListSubscription aim_eligibility_service_subscription_;
   ui::ScopedUnownedUserData<ContextualTasksEphemeralButtonController>
       scoped_unowned_user_data_;
