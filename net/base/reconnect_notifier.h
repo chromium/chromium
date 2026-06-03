@@ -14,9 +14,22 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/socket/next_proto.h"
 
 namespace net {
+
+// LINT.IfChange(ConnectionEstablishmentInitiator)
+enum class ConnectionEstablishmentInitiator {
+  // The session was established for a preconnect request.
+  kPreconnect,
+  // The session was established for a normal request.
+  kRequest,
+  kMaxValue = kRequest
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:ConnectionEstablishmentInitiator)
+
 // TODO(crbug.com/406022435): Refactor the components to elsewhere to avoid
 // exposing un-necessary data structures to the browser.
 
@@ -38,6 +51,21 @@ enum class NetworkChangeEvent {
 // implemented when attempting to notify the observer of the reconnect event.
 class NET_EXPORT ConnectionChangeNotifier {
  public:
+  // Aggregates core connection-establishment statistics (connection protocol,
+  // setup latency, and request initiator) to pass onto connection change
+  // observers.
+  struct NET_EXPORT EstablishedConnectionInfo {
+    EstablishedConnectionInfo();
+    ~EstablishedConnectionInfo();
+    EstablishedConnectionInfo(const EstablishedConnectionInfo& other);
+    EstablishedConnectionInfo& operator=(
+        const EstablishedConnectionInfo& other);
+
+    NextProto connection_info = NextProto::kProtoUnknown;
+    base::TimeDelta connection_setup_time;
+    ConnectionEstablishmentInitiator initiator =
+        ConnectionEstablishmentInitiator::kRequest;
+  };
   // An observer class for the `ConnectionChangeNotifier`. This class will
   // unregister itself from the ObserverList of the notifier when destructing
   // to avoid dangling pointers.
@@ -48,6 +76,10 @@ class NET_EXPORT ConnectionChangeNotifier {
 
     Observer();
     ~Observer() override;
+
+    // Notify that the underlying network connection has been established.
+    virtual void OnConnectionEstablished(
+        const EstablishedConnectionInfo& info) = 0;
 
     // Notify that the underlying network session has been closed.
     virtual void OnSessionClosed(bool was_ever_used_to_create_streams) = 0;
@@ -75,6 +107,9 @@ class NET_EXPORT ConnectionChangeNotifier {
 
   ConnectionChangeNotifier();
   ~ConnectionChangeNotifier();
+
+  // Notify that the underlying network connection has been established.
+  void OnConnectionEstablished(const EstablishedConnectionInfo& info);
 
   // Notify that the underlying network session has been closed.
   void OnSessionClosed(bool was_ever_used_to_create_streams);

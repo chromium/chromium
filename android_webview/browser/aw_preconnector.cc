@@ -155,6 +155,12 @@ content::PreconnectManager& AwPreconnector::GetPreconnectManager() {
   return *preconnect_manager_.get();
 }
 
+void AwPreconnector::OnConnectionEstablished(
+    const net::ConnectionChangeNotifier::EstablishedConnectionInfo& info) {
+  // TODO(crbug.com/510847693): Record connection setup time and connection info
+  // attributes via UMA once we identify which metrics we want to add.
+}
+
 void AwPreconnector::OnSessionClosed(bool was_ever_used_to_create_streams) {
   // TODO(crbug.com/510847693): Use the `was_ever_used_to_create_streams`
   // parameter to record the session used status.

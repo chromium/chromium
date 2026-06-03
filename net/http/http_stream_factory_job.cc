@@ -24,6 +24,7 @@
 #include "net/base/port_util.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
+#include "net/base/reconnect_notifier.h"
 #include "net/base/session_usage.h"
 #include "net/base/task/task_runner.h"
 #include "net/base/url_util.h"
@@ -31,6 +32,7 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/http_basic_stream.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream_factory.h"
@@ -715,6 +717,7 @@ void HttpStreamFactory::Job::ResumeInitConnection() {
 }
 
 int HttpStreamFactory::Job::DoInitConnection() {
+  init_connection_time_ = base::TimeTicks::Now();
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB_INIT_CONNECTION);
   int result = DoInitConnectionImpl();
   if (!expect_on_quic_session_created_ && !expect_on_quic_host_resolution_) {
@@ -795,10 +798,10 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
       // If we're preconnecting, but we already have a SpdySession, we don't
       // actually need to preconnect any sockets, so we're done.
+      negotiated_protocol_ = NextProto::kProtoHTTP2;
       if (job_type_ == PRECONNECT) {
         return OK;
       }
-      negotiated_protocol_ = NextProto::kProtoHTTP2;
       next_state_ = STATE_CREATE_STREAM;
       return OK;
     }
@@ -958,6 +961,49 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
   // established.
   spdy_session_request_.reset();
 
+  // Determine the protocol (HTTP/1.1, HTTP/2, or HTTP/3) first so that
+  // negotiated_protocol_ is populated before observers are notified.
+  if (result == OK) {
+    if (using_quic_) {
+      // TODO(davidben): Record these values consistently between QUIC and TCP
+      // below. In the QUIC case, we only record it for origin connections. In
+      // the TCP case, we also record it for non-tunneled, proxied requests.
+      if (using_ssl_) {
+        negotiated_protocol_ = NextProto::kProtoQUIC;
+      }
+    } else if (connection_ && connection_->socket() &&
+               connection_->socket()->GetNegotiatedProtocol() !=
+                   NextProto::kProtoUnknown) {
+      // Only connections that use TLS (either to the origin or via a GET to a
+      // secure proxy) can negotiate ALPN.
+      bool get_to_secure_proxy =
+          IsGetToProxy(proxy_info_.proxy_chain(), request_info_.url) &&
+          proxy_info_.proxy_chain().Last().is_secure_http_like();
+      DCHECK(using_ssl_ || get_to_secure_proxy);
+      negotiated_protocol_ = connection_->socket()->GetNegotiatedProtocol();
+      net_log_.AddEvent(NetLogEventType::HTTP_STREAM_REQUEST_PROTO, [&] {
+        return NetLogHttpStreamProtoParams(negotiated_protocol_);
+      });
+      if (using_spdy()) {
+        if (is_websocket_) {
+          // WebSocket is not supported over a fresh HTTP/2 connection. This
+          // should not be reachable. For the origin, we do not request HTTP/2
+          // on fresh WebSockets connections, because not all HTTP/2 servers
+          // implement RFC 8441. For proxies, WebSockets are always tunneled.
+          //
+          // TODO(davidben): This isn't a CHECK() because, previously, it was
+          // reachable in https://crbug.com/828865. However, if reachable, it
+          // means a bug in the socket pools. The socket pools have since been
+          // cleaned up, so this may no longer be reachable. Restore the CHECK
+          // and see if this is still needed.
+          return ERR_NOT_IMPLEMENTED;
+        }
+      }
+    }
+  }
+
+  MaybeNotifyOfConnectionEstablished(result);
+
   if (is_preconnect()) {
     if (using_quic_) {
       return result;
@@ -999,55 +1045,6 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
   }
 
   resolve_error_info_ = connection_->resolve_error_info();
-
-  // Determine the protocol (HTTP/1.1, HTTP/2, or HTTP/3). This covers both the
-  // origin and some proxy cases. First, if the URL is HTTPS (or WSS), we may
-  // negotiate HTTP/2 or HTTP/3 with the origin. Second, non-tunneled requests
-  // (i.e. HTTP URLs) through an HTTPS or QUIC proxy work by sending the request
-  // to the proxy directly. In that case, this logic also handles the proxy's
-  // negotiated protocol. HTTPS requests are always tunneled, so at most one of
-  // these applies.
-  //
-  // Tunneled requests may also negotiate ALPN at the proxy, but
-  // HttpProxyConnectJob handles ALPN. The resulting StreamSocket will not
-  // report an ALPN protocol.
-  if (result == OK) {
-    if (using_quic_) {
-      // TODO(davidben): Record these values consistently between QUIC and TCP
-      // below. In the QUIC case, we only record it for origin connections. In
-      // the TCP case, we also record it for non-tunneled, proxied requests.
-      if (using_ssl_) {
-        negotiated_protocol_ = NextProto::kProtoQUIC;
-      }
-    } else if (connection_->socket()->GetNegotiatedProtocol() !=
-               NextProto::kProtoUnknown) {
-      // Only connections that use TLS (either to the origin or via a GET to a
-      // secure proxy) can negotiate ALPN.
-      bool get_to_secure_proxy =
-          IsGetToProxy(proxy_info_.proxy_chain(), request_info_.url) &&
-          proxy_info_.proxy_chain().Last().is_secure_http_like();
-      DCHECK(using_ssl_ || get_to_secure_proxy);
-      negotiated_protocol_ = connection_->socket()->GetNegotiatedProtocol();
-      net_log_.AddEvent(NetLogEventType::HTTP_STREAM_REQUEST_PROTO, [&] {
-        return NetLogHttpStreamProtoParams(negotiated_protocol_);
-      });
-      if (using_spdy()) {
-        if (is_websocket_) {
-          // WebSocket is not supported over a fresh HTTP/2 connection. This
-          // should not be reachable. For the origin, we do not request HTTP/2
-          // on fresh WebSockets connections, because not all HTTP/2 servers
-          // implement RFC 8441. For proxies, WebSockets are always tunneled.
-          //
-          // TODO(davidben): This isn't a CHECK() because, previously, it was
-          // reachable in https://crbug.com/828865. However, if reachable, it
-          // means a bug in the socket pools. The socket pools have since been
-          // cleaned up, so this may no longer be reachable. Restore the CHECK
-          // and see if this is still needed.
-          return ERR_NOT_IMPLEMENTED;
-        }
-      }
-    }
-  }
 
   if (using_quic_ && result < 0 && !proxy_info_.is_direct() &&
       proxy_info_.proxy_chain().Last().is_quic()) {
@@ -1132,6 +1129,34 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
 
   next_state_ = STATE_CREATE_STREAM;
   return OK;
+}
+
+void HttpStreamFactory::Job::MaybeNotifyOfConnectionEstablished(int result) {
+  if (result != OK || !management_config_.has_value() ||
+      !management_config_->connection_change_observer) {
+    return;
+  }
+  // If we are preconnecting under no error code propagation, we would always
+  // get `OK` as a result under spdy session. Because of this, we might send out
+  // the `OnConnectionEstablished` even if we did not create a stream. To avoid
+  // this, we return early if we are preconnecting under no error code
+  // propagation.
+  if (is_preconnect() &&
+      !base::FeatureList::IsEnabled(
+          net::features::kEnableErrorCodePropagationForPreconnect)) {
+    return;
+  }
+  CHECK(init_connection_time_.has_value());
+
+  ConnectionChangeNotifier::EstablishedConnectionInfo established_info;
+  established_info.connection_info = negotiated_protocol_;
+  established_info.connection_setup_time =
+      base::TimeTicks::Now() - *init_connection_time_;
+  established_info.initiator =
+      is_preconnect() ? ConnectionEstablishmentInitiator::kPreconnect
+                      : ConnectionEstablishmentInitiator::kRequest;
+  management_config_->connection_change_observer->OnConnectionEstablished(
+      established_info);
 }
 
 int HttpStreamFactory::Job::DoWaitingUserAction(int result) {

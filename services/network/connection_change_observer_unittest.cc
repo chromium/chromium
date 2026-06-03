@@ -28,6 +28,8 @@ enum NotificationType {
   kNone,
   // OnSessionClosed() notification.
   kSessionClosed,
+  // OnSessionEstablished() notification.
+  kSessionEstablished,
   // OnConnectionFailed() notification,
   kConnectionFailed,
   // OnNetworkChanged() notification.
@@ -48,6 +50,16 @@ class TestConnectionChangeObserverClient
       const TestConnectionChangeObserverClient&) = delete;
 
   ~TestConnectionChangeObserverClient() override = default;
+
+  void OnConnectionEstablished(
+      const net::ConnectionChangeNotifier::EstablishedConnectionInfo& info)
+      override {
+    session_established_++;
+    if (waiting_notification_type_ == kSessionEstablished) {
+      waiting_notification_type_ = kNone;
+      run_loop_->Quit();
+    }
+  }
 
   void OnSessionClosed(bool was_ever_used_to_create_streams) override {
     session_closed_++;
@@ -99,6 +111,7 @@ class TestConnectionChangeObserverClient
     }
   }
 
+  int session_established() { return session_established_; }
   int session_closed() { return session_closed_; }
   int connection_failed() { return connection_failed_; }
   int network_event() { return network_event_; }
@@ -109,6 +122,7 @@ class TestConnectionChangeObserverClient
   }
 
  private:
+  int session_established_ = 0;
   int session_closed_ = 0;
   int connection_failed_ = 0;
   int network_event_ = 0;

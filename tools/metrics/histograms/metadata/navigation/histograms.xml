@@ -3527,6 +3527,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="NavigationPredictor.SearchEnginePreconnector.SessionEstablished.ConnectionInfo"
+    enum="SSLNegotiatedAlpnProtocol" expires_after="2026-10-11">
+  <owner>suzukikeita@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The protocol utilized to establish this connection session for
+    SearchEnginePreconnector. Recorded when a preconnected network session has
+    been successfully established to the search engine host.
+  </summary>
+</histogram>
+
+<histogram
+    name="NavigationPredictor.SearchEnginePreconnector.SessionEstablished.ConnectionSetupTime"
+    units="ms" expires_after="2026-10-11">
+  <owner>suzukikeita@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The setup time (connection latency), including TLS and TCP handshakes, to
+    successfully construct the network connection session. Recorded in
+    milliseconds when the session is successfully established for
+    SearchEnginePreconnector.
+  </summary>
+</histogram>
+
+<histogram
+    name="NavigationPredictor.SearchEnginePreconnector.SessionEstablished.Initiator"
+    enum="ConnectionEstablishmentInitiator" expires_after="2026-10-11">
+  <owner>suzukikeita@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The trigger type of the client (either an active preconnect attempt or a
+    standard web request) which led to the connection establishment. Recorded
+    when the session has been successfully established for
+    SearchEnginePreconnector.
+  </summary>
+</histogram>
+
 <histogram name="NavigationPredictor.SearchEnginePreconnector.TriggerEvent"
     enum="PreconnectTriggerEvent" expires_after="2026-10-11">
   <owner>suzukikeita@google.com</owner>

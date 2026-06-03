@@ -2245,6 +2245,14 @@ mojom("mojom") {
           mojom = "network.mojom.NetworkChangeEvent"
           cpp = "::net::NetworkChangeEvent"
         },
+        {
+          mojom = "network.mojom.ConnectionEstablishmentInitiator"
+          cpp = "::net::ConnectionEstablishmentInitiator"
+        },
+        {
+          mojom = "network.mojom.EstablishedConnectionInfo"
+          cpp = "::net::ConnectionChangeNotifier::EstablishedConnectionInfo"
+        },
       ]
       traits_headers = [ "//services/network/public/cpp/connection_change_observer_client_mojom_traits.h" ]
       traits_sources = [ "//services/network/public/cpp/connection_change_observer_client_mojom_traits.cc" ]

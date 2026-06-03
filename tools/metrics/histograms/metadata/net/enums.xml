@@ -3620,12 +3620,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="SSLKEYLOGFILE environment variable set"/>
 </enum>
 
+<!-- LINT.IfChange(SSLNegotiatedAlpnProtocol) -->
+
 <enum name="SSLNegotiatedAlpnProtocol">
   <int value="0" label="ALPN not used"/>
   <int value="1" label="HTTP/1.1 negotiated via ALPN"/>
   <int value="2" label="HTTP/2 negotiated via ALPN"/>
   <int value="3" label="HTTP/3 (QUIC) negotiated via ALPN"/>
 </enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:NextProto) -->
 
 <enum name="SSLOrQUICVersion">
   <int value="0" label="Unknown"/>

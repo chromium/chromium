@@ -9,7 +9,9 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/reconnect_notifier.h"
+#include "services/network/public/cpp/load_timing_internal_info_mojom_traits.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom-shared.h"
+#include "services/network/public/mojom/network_types.mojom.h"
 
 namespace mojo {
 
@@ -48,6 +50,40 @@ struct StructTraits<network::mojom::ConnectionKeepAliveConfigDataView,
 
   static bool Read(network::mojom::ConnectionKeepAliveConfigDataView data,
                    net::ConnectionKeepAliveConfig* out);
+};
+
+template <>
+struct EnumTraits<network::mojom::ConnectionEstablishmentInitiator,
+                  net::ConnectionEstablishmentInitiator> {
+  static network::mojom::ConnectionEstablishmentInitiator ToMojom(
+      net::ConnectionEstablishmentInitiator initiator);
+
+  static net::ConnectionEstablishmentInitiator FromMojom(
+      network::mojom::ConnectionEstablishmentInitiator initiator);
+};
+
+template <>
+struct StructTraits<network::mojom::EstablishedConnectionInfoDataView,
+                    net::ConnectionChangeNotifier::EstablishedConnectionInfo> {
+ public:
+  static net::NextProto connection_info(
+      const net::ConnectionChangeNotifier::EstablishedConnectionInfo& info) {
+    return info.connection_info;
+  }
+
+  static const base::TimeDelta& connection_setup_time(
+      const net::ConnectionChangeNotifier::EstablishedConnectionInfo& info) {
+    return info.connection_setup_time;
+  }
+
+  static net::ConnectionEstablishmentInitiator initiator(
+      const net::ConnectionChangeNotifier::EstablishedConnectionInfo& info) {
+    return info.initiator;
+  }
+
+  static bool Read(
+      network::mojom::EstablishedConnectionInfoDataView data,
+      net::ConnectionChangeNotifier::EstablishedConnectionInfo* out);
 };
 
 }  // namespace mojo

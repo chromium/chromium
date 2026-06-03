@@ -27,6 +27,22 @@ ConnectionChangeNotifier::Observer::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+ConnectionChangeNotifier::EstablishedConnectionInfo::
+    EstablishedConnectionInfo() = default;
+ConnectionChangeNotifier::EstablishedConnectionInfo::
+    ~EstablishedConnectionInfo() = default;
+ConnectionChangeNotifier::EstablishedConnectionInfo::EstablishedConnectionInfo(
+    const EstablishedConnectionInfo& other) = default;
+ConnectionChangeNotifier::EstablishedConnectionInfo&
+ConnectionChangeNotifier::EstablishedConnectionInfo::operator=(
+    const EstablishedConnectionInfo& other) = default;
+
+void ConnectionChangeNotifier::OnConnectionEstablished(
+    const EstablishedConnectionInfo& info) {
+  observer_list_.Notify(
+      &ConnectionChangeNotifier::Observer::OnConnectionEstablished, info);
+}
+
 void ConnectionChangeNotifier::OnSessionClosed(
     bool was_ever_used_to_create_streams) {
   observer_list_.Notify(&ConnectionChangeNotifier::Observer::OnSessionClosed,

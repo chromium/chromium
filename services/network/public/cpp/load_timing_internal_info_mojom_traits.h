@@ -13,9 +13,17 @@
 #include "net/dns/public/resolution_details.h"
 #include "net/http/alternate_protocol_usage.h"
 #include "net/http/http_connection_info.h"
+#include "net/socket/next_proto.h"
 #include "services/network/public/mojom/load_timing_internal_info.mojom-shared.h"
 
 namespace mojo {
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    EnumTraits<network::mojom::NextProto, net::NextProto> {
+  static network::mojom::NextProto ToMojom(net::NextProto next_proto);
+  static net::NextProto FromMojom(network::mojom::NextProto in);
+};
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)

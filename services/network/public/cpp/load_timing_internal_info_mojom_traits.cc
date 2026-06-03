@@ -187,6 +187,39 @@ bool StructTraits<network::mojom::ResolutionDetailsDataView,
 }
 
 // static
+network::mojom::NextProto
+EnumTraits<network::mojom::NextProto, net::NextProto>::ToMojom(
+    net::NextProto next_proto) {
+  switch (next_proto) {
+    case net::NextProto::kProtoUnknown:
+      return network::mojom::NextProto::kProtoUnknown;
+    case net::NextProto::kProtoHTTP11:
+      return network::mojom::NextProto::kProtoHTTP11;
+    case net::NextProto::kProtoHTTP2:
+      return network::mojom::NextProto::kProtoHTTP2;
+    case net::NextProto::kProtoQUIC:
+      return network::mojom::NextProto::kProtoQUIC;
+  }
+  NOTREACHED();
+}
+
+// static
+net::NextProto EnumTraits<network::mojom::NextProto, net::NextProto>::FromMojom(
+    network::mojom::NextProto in) {
+  switch (in) {
+    case network::mojom::NextProto::kProtoUnknown:
+      return net::NextProto::kProtoUnknown;
+    case network::mojom::NextProto::kProtoHTTP11:
+      return net::NextProto::kProtoHTTP11;
+    case network::mojom::NextProto::kProtoHTTP2:
+      return net::NextProto::kProtoHTTP2;
+    case network::mojom::NextProto::kProtoQUIC:
+      return net::NextProto::kProtoQUIC;
+  }
+  NOTREACHED();
+}
+
+// static
 network::mojom::HttpConnectionInfoCoarse
 EnumTraits<network::mojom::HttpConnectionInfoCoarse,
            net::HttpConnectionInfoCoarse>::ToMojom(net::HttpConnectionInfoCoarse

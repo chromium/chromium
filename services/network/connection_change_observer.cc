@@ -22,6 +22,11 @@ ConnectionChangeObserver::ConnectionChangeObserver(
 
 ConnectionChangeObserver::~ConnectionChangeObserver() = default;
 
+void ConnectionChangeObserver::OnConnectionEstablished(
+    const net::ConnectionChangeNotifier::EstablishedConnectionInfo& info) {
+  observer_->OnConnectionEstablished(info);
+}
+
 void ConnectionChangeObserver::OnSessionClosed(
     bool was_ever_used_to_create_streams) {
   observer_->OnSessionClosed(was_ever_used_to_create_streams);

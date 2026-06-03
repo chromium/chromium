@@ -506,8 +506,11 @@ class TestConnectionChangeObserver : public ConnectionChangeNotifier::Observer {
   TestConnectionChangeObserver();
   ~TestConnectionChangeObserver() override;
 
-  void OnSessionClosed(bool was_ever_used_to_create_streams) override;
+  void OnConnectionEstablished(
+      const ConnectionChangeNotifier::EstablishedConnectionInfo& info)
+      override {}
 
+  void OnSessionClosed(bool was_ever_used_to_create_streams) override;
   void OnConnectionFailed() override;
 
   void OnNetworkEvent(net::NetworkChangeEvent event) override;

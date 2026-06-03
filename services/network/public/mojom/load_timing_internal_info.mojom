@@ -38,6 +38,16 @@ enum ResolutionSource {
 };
 // LINT.ThenChange(//net/dns/resolution_details.h:ResolutionSource)
 
+// Mirror of net::NextProto.
+// LINT.IfChange(NextProto)
+enum NextProto {
+  kProtoUnknown = 0,
+  kProtoHTTP11 = 1,
+  kProtoHTTP2 = 2,
+  kProtoQUIC = 3,
+};
+// LINT.ThenChange(//net/socket/next_proto.h:NextProto)
+
 // Mirror of net::HttpConnectionInfoCoarse.
 // LINT.IfChange(HttpConnectionInfoCoarse)
 enum HttpConnectionInfoCoarse {

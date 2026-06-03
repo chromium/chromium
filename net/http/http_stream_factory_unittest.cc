@@ -4021,6 +4021,107 @@ TEST_P(HttpStreamFactoryTest, PreconnectDirectNoSpdySessionForHttp1) {
   EXPECT_EQ(0, GetSpdySessionCount(session.get()));
 }
 
+TEST_P(HttpStreamFactoryTest,
+       PreconnectDirectCreatesSpdySessionWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      net::features::kEnableErrorCodePropagationForPreconnect);
+
+  SpdySessionDependencies session_deps;
+
+  // Prepare for an HTTPS connect that negotiates H2.
+  MockRead mock_read(ASYNC, OK);
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
+                                  base::span<MockWrite>());
+  socket_data.set_connect_data(MockConnect(ASYNC, OK));
+  session_deps.socket_factory->AddSocketDataProvider(&socket_data);
+
+  SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
+  ssl_socket_data.next_proto = NextProto::kProtoHTTP2;
+  session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
+
+  std::unique_ptr<HttpNetworkSession> session(
+      SpdySessionDependencies::SpdyCreateSession(&session_deps));
+
+  // Verify initially no sessions exist.
+  EXPECT_EQ(0, GetSpdySessionCount(session.get()));
+
+  // Set up connection change observer config.
+  class MockConnectionChangeObserver
+      : public ConnectionChangeNotifier::Observer {
+   public:
+    MockConnectionChangeObserver() = default;
+    ~MockConnectionChangeObserver() override = default;
+
+    void OnConnectionEstablished(
+        const ConnectionChangeNotifier::EstablishedConnectionInfo& info)
+        override {
+      connection_established_called_ = true;
+      connection_info_ = info.connection_info;
+    }
+
+    void OnSessionClosed(bool was_ever_used_to_create_streams) override {}
+    void OnConnectionFailed() override {}
+    void OnNetworkEvent(net::NetworkChangeEvent event) override {}
+
+    bool connection_established_called() const {
+      return connection_established_called_;
+    }
+    NextProto connection_info() const { return connection_info_; }
+
+   private:
+    bool connection_established_called_ = false;
+    NextProto connection_info_ = NextProto::kProtoUnknown;
+  };
+
+  MockConnectionChangeObserver observer;
+  ConnectionManagementConfig config;
+  config.connection_change_observer = observer.GetWeakPtr();
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.google.com");
+  request.load_flags = 0;
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  request.connection_management_config = config;
+
+  HttpNetworkSessionPeer peer(session.get());
+  auto factory = std::make_unique<HttpStreamFactory>(session.get());
+  peer.SetHttpStreamFactory(std::move(factory));
+
+  base::RunLoop run_loop;
+  session->http_stream_factory()->PreconnectStreams(1, request,
+                                                    run_loop.QuitClosure());
+  run_loop.Run();
+
+  if (HappyEyeballsV3Enabled()) {
+    // Verify that a SpdySession was created as a result of the preconnect.
+    EXPECT_EQ(1, GetSpdySessionCount(session.get()));
+    // Since we created a SpdySession, there should be no idle sockets.
+    EXPECT_EQ(0,
+              session
+                  ->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
+                                  ProxyChain::Direct())
+                  ->IdleSocketCount());
+    // Observer is not notified because HttpStreamPool does not support
+    // ConnectionManagementConfig.
+    EXPECT_FALSE(observer.connection_established_called());
+  } else {
+    // Verify that a SpdySession was NOT created under legacy.
+    EXPECT_EQ(0, GetSpdySessionCount(session.get()));
+    // Socket is kept as idle in the legacy pool.
+    EXPECT_EQ(1,
+              session
+                  ->GetSocketPool(HttpNetworkSession::SocketPoolType::kNormal,
+                                  ProxyChain::Direct())
+                  ->IdleSocketCount());
+    // Connection change observer should not have been notified under legacy
+    // preconnect.
+    EXPECT_FALSE(observer.connection_established_called());
+  }
+}
+
 TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   const GURL kUrlA("https://a.example.org");
   const GURL kUrlB("https://b.example.org");

@@ -4,6 +4,32 @@
 
 module network.mojom;
 
+import "services/network/public/mojom/load_timing_internal_info.mojom";
+import "services/network/public/mojom/network_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// LINT.IfChange(ConnectionEstablishmentInitiator)
+// Indicates the initiator of the connection establishment.
+// Mirrors `net::ConnectionEstablishmentInitiator`.
+enum ConnectionEstablishmentInitiator {
+    // The session was established for a preconnect request.
+    kPreconnect,
+    // The session was established for a normal request.
+    kRequest
+};
+// LINT.ThenChange(
+//   //net/base/reconnect_notifier.h:ConnectionEstablishmentInitiator
+// )
+
+// Aggregates core connection-establishment statistics to pass onto observers.
+struct EstablishedConnectionInfo {
+    // Connection protocol used.
+    NextProto connection_info;
+    // Time taken to establish the connection.
+    mojo_base.mojom.TimeDelta connection_setup_time;
+    // Initiator of the connection request.
+    ConnectionEstablishmentInitiator initiator;
+};
 // An enum which represents the possible network change event that may happen
 // in the underlying network connection. This mirrors `net::NetworkChangeEvent`.
 enum NetworkChangeEvent {
@@ -31,6 +57,8 @@ interface ConnectionChangeObserverClient {
     // create at least one stream.
     OnSessionClosed(bool was_ever_used_to_create_streams);
 
+    // Notify that a network connection has been established.
+    OnConnectionEstablished(EstablishedConnectionInfo info);
     // Notify on a network change event. This means that the status of
     // underlying network (such as 4G or Wifi) has changed.
     OnNetworkEvent(NetworkChangeEvent event);

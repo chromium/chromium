@@ -6,6 +6,7 @@
 #define NET_HTTP_HTTP_STREAM_FACTORY_JOB_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -383,6 +384,10 @@ class HttpStreamFactory::Job
   // Records histograms required at the end of the execution.
   void RecordCompletionHistograms(int result);
 
+  // Notifies the ConnectionChangeNotifier when a connection is successfully
+  // established.
+  void MaybeNotifyOfConnectionEstablished(int result);
+
   const StreamRequestInfo request_info_;
   RequestPriority priority_;
   const ProxyInfo proxy_info_;
@@ -497,6 +502,9 @@ class HttpStreamFactory::Job
   ResolveErrorInfo resolve_error_info_;
 
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> spdy_session_request_;
+
+  // The time when the connection setup attempt has started.
+  std::optional<base::TimeTicks> init_connection_time_;
 
   // Keeps track of the connection management config.
   std::optional<ConnectionManagementConfig> management_config_;

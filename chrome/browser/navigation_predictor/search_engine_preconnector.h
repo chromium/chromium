@@ -15,6 +15,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/preconnect_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/reconnect_notifier.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "url/origin.h"
 
@@ -118,6 +119,9 @@ class SearchEnginePreconnector
   bool IsPreconnectEnabled() override;
 
   // network::mojom::ConnectionChangeObserverClient
+  void OnConnectionEstablished(
+      const net::ConnectionChangeNotifier::EstablishedConnectionInfo& info)
+      override;
   void OnSessionClosed(bool was_ever_used_to_create_streams) override;
   void OnNetworkEvent(net::NetworkChangeEvent event) override;
   void OnConnectionFailed() override;
