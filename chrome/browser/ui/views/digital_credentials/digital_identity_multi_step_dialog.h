@@ -11,12 +11,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/color/color_variant.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/image_view_base.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -42,77 +42,10 @@ class DigitalIdentityMultiStepDialog {
   // different steps in the flow will use this method to configure the
   // corresponding illustration in each step. Implementation is in the header
   // file because this is a templated method.
-  template <typename T>
   static std::unique_ptr<views::BoxLayoutView> CreateHeaderView(
       std::u16string title,
       std::u16string body_text,
-      std::unique_ptr<T> illustration) {
-    constexpr int kImageMarginTop = 0;
-    constexpr int kImageMarginBottom = 2;
-    constexpr int kImageHeight = 112;
-    constexpr int kHeaderHeight =
-        kImageHeight + kImageMarginTop + kImageMarginBottom;
-
-    const gfx::Insets& insets =
-        ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-            views::DialogContentType::kText, views::DialogContentType::kText);
-    const int available_width =
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-        insets.right() - insets.left();
-    const gfx::Size header_size(available_width, kHeaderHeight);
-    // `illustration` will horizontally center if the width is
-    // larger than the size from the Lottie file, but the height is just used to
-    // truncate the image, so that is disabled with a very large value.
-    illustration->SetPreferredSize(gfx::Size(available_width, 9999));
-    illustration->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(kImageMarginTop, 0, kImageMarginBottom, 0)));
-    illustration->SetSize(header_size);
-    illustration->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-
-    auto illustration_container_view =
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kVertical)
-            .SetInsideBorderInsets(gfx::Insets())
-            .SetPreferredSize(header_size)
-            .Build();
-    illustration_container_view->AddChildView(std::move(illustration));
-
-    auto header_view =
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kVertical)
-            .SetInsideBorderInsets(gfx::Insets())
-            .SetBetweenChildSpacing(
-                views::LayoutProvider::Get()->GetDistanceMetric(
-                    views::DISTANCE_RELATED_CONTROL_VERTICAL))
-            .Build();
-    header_view->AddChildView(std::move(illustration_container_view));
-
-    // Add title if not empty
-    if (!title.empty()) {
-      auto title_label = views::Builder<views::Label>()
-                             .SetText(title)
-                             .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-                             .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                             .Build();
-      header_view->AddChildView(std::move(title_label));
-      header_view->GetViewAccessibility().SetRole(
-          ax::mojom::Role::kAlertDialog);
-      header_view->GetViewAccessibility().SetName(std::move(title));
-    }
-
-    // Add body text if not empty
-    if (!body_text.empty()) {
-      auto body_label = views::Builder<views::Label>()
-                            .SetText(std::move(body_text))
-                            .SetTextContext(views::style::CONTEXT_LABEL)
-                            .SetMultiLine(true)
-                            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                            .Build();
-      header_view->AddChildView(std::move(body_label));
-    }
-    return header_view;
-  }
+      std::unique_ptr<views::ImageViewBase> illustration);
 
   class TestApi {
    public:

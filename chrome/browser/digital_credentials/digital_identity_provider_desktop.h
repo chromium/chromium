@@ -7,8 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.h"
-#include "chrome/browser/ui/views/digital_credentials/digital_identity_multi_step_dialog.h"
 #include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "content/public/browser/digital_identity_provider.h"
@@ -21,6 +19,9 @@ class RenderFrameHost;
 namespace device::cablev2 {
 enum class Event;
 }
+
+class DigitalIdentityBluetoothManualDialogController;
+class DigitalIdentityMultiStepDialog;
 
 // Desktop-specific implementation of `DigitalIdentityProvider`. Uses FIDO
 // hybrid flow to retrieve credentials stored on a mobile device.
