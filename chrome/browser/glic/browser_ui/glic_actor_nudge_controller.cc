@@ -83,9 +83,13 @@ void GlicActorNudgeController::OnStateUpdate(
   switch (actor_task_nudge_state.text) {
     case ActorTaskNudgeState::Text::kDefault:
       ShowGlicActorTaskIcon();
-      // In either case, close the bubble as the nudge has been either hidden
-      // or reset.
-      CloseBubble();
+      if (show_bubble) {
+        ShowBubble();
+      } else {
+        // In either case, close the bubble as the nudge has been either hidden
+        // or reset.
+        CloseBubble();
+      }
       break;
     case ActorTaskNudgeState::Text::kNeedsAttention:
       UpdateNudgeLabelOrRetrigger(

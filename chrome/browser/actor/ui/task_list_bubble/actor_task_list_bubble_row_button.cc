@@ -144,12 +144,14 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
       std::make_unique<views::Label>(title_text));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+  title_->SetSubpixelRenderingEnabled(false);
 
   subtitle_ = labels_container->AddChildView(
       std::make_unique<views::Label>(GetRowSubtitle(state, has_tab)));
   subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   subtitle_->SetTextStyle(views::style::STYLE_BODY_5);
   subtitle_->SetEnabledColor(GetRowColor(state, has_tab, requires_processing));
+  subtitle_->SetSubpixelRenderingEnabled(false);
 
   redirect_icon_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&ActorTaskListBubbleRowButton::OnRedirectIconPressed,
@@ -158,6 +160,8 @@ ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
                                         : vector_icons::kLaunchOldIcon,
       kRedirectIconSize, ui::kColorMenuIcon, ui::kColorMenuIcon,
       ui::kColorMenuIcon));
+  redirect_icon_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TAB_SEARCH_A11Y_OPEN_TAB));
 
   // Set the preferred size on the button directly to accommodate the circle
   // highlight

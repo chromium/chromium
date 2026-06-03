@@ -204,7 +204,9 @@ bool GlicActorTaskIconManager::RequiresTaskProcessing(
     return false;
   }
   return GlicActorTaskIconManager::RequiresAttention(state) ||
-         state == TaskState::kFinished || state == TaskState::kFailed;
+         state == TaskState::kFinished || state == TaskState::kFailed ||
+         (feature_mode == glic::mojom::FeatureMode::kExperimentalTriggering &&
+          state == TaskState::kActing);
 }
 
 // static
@@ -234,6 +236,24 @@ bool GlicActorTaskIconManager::ShouldShowBubble(
   }
   return (state == TaskState::kFinished || state == TaskState::kFailed) &&
          duration != ActorTask::TaskDuration::kTransient;
+}
+
+bool GlicActorTaskIconManager::HasActiveExperimentalTask() const {
+  auto* ui_state_manager = actor_service_->GetActorUiStateManager();
+  if (!ui_state_manager) {
+    return false;
+  }
+  for (const auto& [task_id, requires_processing] :
+       actor_task_list_bubble_rows_) {
+    if (requires_processing &&
+        ui_state_manager->GetFeatureMode(task_id) ==
+            glic::mojom::FeatureMode::kExperimentalTriggering &&
+        ui_state_manager->GetActorTaskState(task_id) ==
+            actor::ActorTask::State::kActing) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace glic

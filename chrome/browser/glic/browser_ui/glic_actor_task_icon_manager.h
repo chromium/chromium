@@ -64,6 +64,7 @@ class GlicActorTaskIconManager : public KeyedService {
 
   actor::ui::ActorTaskNudgeState GetCurrentActorTaskNudgeState() const;
   size_t GetNumActorTasksNeedProcessing() const;
+  bool HasActiveExperimentalTask() const;
   const absl::flat_hash_map<actor::TaskId, bool>& actor_task_list_bubble_rows()
       const {
     return actor_task_list_bubble_rows_;

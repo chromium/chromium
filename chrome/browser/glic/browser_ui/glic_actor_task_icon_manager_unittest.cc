@@ -451,4 +451,43 @@ TEST_F(GlicActorTaskIconManagerTest,
       glic::mojom::FeatureMode::kExperimentalTriggering));
 }
 
+TEST_F(GlicActorTaskIconManagerTest, HasActiveExperimentalTask) {
+  EXPECT_FALSE(manager()->HasActiveExperimentalTask());
+
+  TaskId task_id =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+  actor_service()->GetTask(task_id)->SetState(actor::ActorTask::State::kActing);
+  actor_service()->GetActorUiStateManager()->OnUiEvent(
+      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+  manager()->UpdateTaskIconComponents(task_id);
+  EXPECT_TRUE(manager()->HasActiveExperimentalTask());
+
+  actor_service()->StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+  manager()->UpdateTaskIconComponents(task_id);
+  EXPECT_FALSE(manager()->HasActiveExperimentalTask());
+}
+
+TEST_F(GlicActorTaskIconManagerTest, RequiresTaskProcessing_FeatureModeRules) {
+  // Experimental Triggering task in kActing state should return true.
+  EXPECT_TRUE(GlicActorTaskIconManager::RequiresTaskProcessing(
+      actor::ActorTask::State::kActing,
+      glic::mojom::FeatureMode::kExperimentalTriggering));
+
+  // Non-Experimental Triggering task in kActing state should return false.
+  EXPECT_FALSE(GlicActorTaskIconManager::RequiresTaskProcessing(
+      actor::ActorTask::State::kActing,
+      glic::mojom::FeatureMode::kUnspecified));
+
+  // Experimental Triggering task in kCreated state should return false.
+  EXPECT_FALSE(GlicActorTaskIconManager::RequiresTaskProcessing(
+      actor::ActorTask::State::kCreated,
+      glic::mojom::FeatureMode::kExperimentalTriggering));
+
+  // Non-Experimental Triggering task that needs attention should return true.
+  EXPECT_TRUE(GlicActorTaskIconManager::RequiresTaskProcessing(
+      actor::ActorTask::State::kWaitingOnUser,
+      glic::mojom::FeatureMode::kUnspecified));
+}
+
 }  // namespace glic
