@@ -3655,22 +3655,6 @@ static_library("ui") {
       "views/chrome_web_dialog_view.h",
       "views/color_provider_browser_helper.cc",
       "views/color_provider_browser_helper.h",
-      "views/commerce/discounts_bubble_dialog_view.cc",
-      "views/commerce/discounts_bubble_dialog_view.h",
-      "views/commerce/discounts_coupon_code_label_view.cc",
-      "views/commerce/discounts_coupon_code_label_view.h",
-      "views/commerce/discounts_page_action_view_controller.cc",
-      "views/commerce/discounts_page_action_view_controller.h",
-      "views/commerce/price_insights_page_action_view_controller.cc",
-      "views/commerce/price_insights_page_action_view_controller.h",
-      "views/commerce/price_tracking_bubble_dialog_view.cc",
-      "views/commerce/price_tracking_bubble_dialog_view.h",
-      "views/commerce/price_tracking_email_dialog_view.cc",
-      "views/commerce/price_tracking_email_dialog_view.h",
-      "views/commerce/price_tracking_view.cc",
-      "views/commerce/price_tracking_view.h",
-      "views/commerce/shopping_collection_iph_view.cc",
-      "views/commerce/shopping_collection_iph_view.h",
       "views/confirm_bubble_views.cc",
       "views/confirm_bubble_views.h",
       "views/constrained_web_dialog_delegate_views.cc",
@@ -4711,6 +4695,8 @@ static_library("ui") {
       "//chrome/browser/ui/views/apps/app_info_dialog",
       "//chrome/browser/ui/views/apps/app_info_dialog:impl",
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/views/commerce",
+      "//chrome/browser/ui/views/commerce:impl",
       "//chrome/browser/ui/views/controls",
       "//chrome/browser/ui/views/digital_credentials",
       "//chrome/browser/ui/views/digital_credentials:impl",
@@ -4914,6 +4900,14 @@ static_library("ui") {
       # - c/b/ui/views/extensions/security_dialog_tracker.h
       # - c/b/ui/views/chrome_layout_provider.h
       "//chrome/browser/ui/views/digital_credentials:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # the following headers get modularized:
+      # - c/b/ui/chrome_pages.h
+      # - c/b/ui/scoped_tabbed_browser_displayer.h
+      # - c/b/ui/views/chrome_layout_provider.h
+      # - c/b/ui/views/controls/subpage_view.h
+      "//chrome/browser/ui/views/commerce:impl",
     ]
 
     if (is_linux) {

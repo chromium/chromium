@@ -1,0 +1,140 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(toolkit_views)
+
+source_set("commerce") {
+  public = [
+    "discounts_bubble_dialog_view.h",
+    "discounts_coupon_code_label_view.h",
+    "discounts_page_action_view_controller.h",
+    "price_insights_page_action_view_controller.h",
+    "price_tracking_bubble_dialog_view.h",
+    "price_tracking_email_dialog_view.h",
+    "price_tracking_view.h",
+    "shopping_collection_iph_view.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/page_action",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/views/location_bar",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core/subscriptions",
+    "//ui/base",
+    "//ui/base/interaction",
+    "//ui/base/unowned_user_data",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "discounts_bubble_dialog_view.cc",
+    "discounts_coupon_code_label_view.cc",
+    "discounts_page_action_view_controller.cc",
+    "price_insights_page_action_view_controller.cc",
+    "price_tracking_bubble_dialog_view.cc",
+    "price_tracking_email_dialog_view.cc",
+    "price_tracking_view.cc",
+    "shopping_collection_iph_view.cc",
+  ]
+  deps = [
+    ":commerce",
+    "//base",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/call_to_action",
+    "//chrome/browser/ui/commerce",
+    "//chrome/browser/ui/views/accessibility",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:metrics",
+    "//components/commerce/core:pref_names",
+    "//components/omnibox/browser:vector_icons",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/base",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "price_tracking_bubble_dialog_view_unittest.cc",
+    "price_tracking_view_unittest.cc",
+  ]
+  deps = [
+    ":commerce",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/commerce",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:pref_names",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/sync_bookmarks",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "discounts_bubble_dialog_view_browsertest.cc",
+    "discounts_icon_view_browsertest.cc",
+    "price_insights_icon_view_browsertest.cc",
+    "price_tracking_bubble_dialog_view_browsertest.cc",
+    "price_tracking_email_dialog_view_browsertest.cc",
+  ]
+  deps = [
+    ":commerce",
+    "//base",
+    "//base:build_time",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/commerce:test_support",
+    "//chrome/browser/ui/test:dialog",
+    "//chrome/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
+    "//content/test:test_support",
+  ]
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "discounts_interactive_uitest.cc",
+      "price_insights_icon_view_interactive_uitest.cc",
+      "price_tracking_email_dialog_view_interactive_uitest.cc",
+    ]
+    deps = [
+      ":commerce",
+      "//chrome/browser/bookmarks",
+      "//chrome/browser/commerce",
+      "//chrome/browser/feature_engagement",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/commerce:test_support",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/test:test_support",
+      "//components/commerce/core:account_checker_test_support",
+      "//components/commerce/core:feature_list",
+      "//components/commerce/core:shopping_service_test_support",
+      "//components/feature_engagement/test:test_support",
+      "//ui/base/clipboard:clipboard_test_support",
+    ]
+  }
+}
