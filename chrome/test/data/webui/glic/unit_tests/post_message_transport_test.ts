@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
-import {createBidirectionalPostMessageTransport, ON_PIPE_CLOSED} from 'chrome://glic/glic.js';
+import {createBidirectionalPostMessageTransport, InverseSet, ON_PIPE_CLOSED} from 'chrome://glic/glic.js';
 import type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageLifecycleObserver, PostMessageRouterImpl, PostMessageSender} from 'chrome://glic/glic.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertRejects, sleep, waitUntilEqual} from './test_helpers.js';
 
@@ -249,6 +249,26 @@ suite('PostMessageTransportTest', () => {
     assertEquals(1, candyHandler.lickCount);
   });
 
+  test('Multiple pipes with pending remotes in response', async () => {
+    const {host} = connect();
+    const candyHandler1 = new CandyHandler('sucker');
+    const candyHandler2 = new CandyHandler('jellybean');
+    const {remote: remote1, receiver: receiver1} =
+        host.router.newPipeWithReceiver<CandyApi>(candyHandler1);
+    const {remote: remote2} =
+        host.router.newPipeWithReceiver<CandyApi>(candyHandler2);
+    await host.rootRemote.requestWithResponse(
+        'lickTheCandy', {remote: remote1});
+    assertEquals(1, candyHandler1.lickCount);
+    assertEquals(0, candyHandler2.lickCount);
+
+    // Close the first receiver. The second receiver should still work.
+    receiver1.close();
+    await host.rootRemote.requestWithResponse(
+        'lickTheCandy', {remote: remote2});
+    assertEquals(1, candyHandler2.lickCount);
+  });
+
   test('Binding a receiver with pending messages', async () => {
     const {host} = connect();
     const candyHandler = new CandyHandler('jawbreaker');
@@ -370,5 +390,35 @@ suite('PostMessageTransportTest', () => {
           {event: 'exception', type: 'throwError'},
         ],
         clientObserver.calls);
+  });
+
+  test('InverseSet', () => {
+    const set = new InverseSet();
+    const internal =
+        (set as unknown as {notContained: Set<number>, maxValue: number});
+    assertFalse(set.has(0));
+    assertFalse(set.has(100));
+    assertEquals(internal.notContained.size, 0);
+
+    // Does not grow on delete.
+    set.delete(100);
+    assertEquals(internal.notContained.size, 0);
+    assertFalse(set.has(100));
+
+    // Grows on add.
+    set.add(2);
+    assertFalse(set.has(0));
+    assertFalse(set.has(1));
+    assertTrue(set.has(2));
+    assertFalse(set.has(3));
+    assertEquals(internal.notContained.size, 2);  // contains [0, 1]
+
+    // Remove item.
+    set.delete(2);
+    assertFalse(set.has(2));
+
+    // Add item within max value.
+    set.add(1);
+    assertTrue(set.has(1));
   });
 });

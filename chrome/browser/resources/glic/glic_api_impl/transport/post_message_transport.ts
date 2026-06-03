@@ -343,8 +343,7 @@ export class PostMessageRouterImpl extends MessageLogger implements
   // Pipes that are not closed.
   readonly pipes: Map<number, PipeInterface> = new Map();
   // Tracks IDs of pipes that have been closed.
-  // TODO(harringtond): Replace this with a more efficient data structure.
-  readonly closedPipes = new Set<number>();
+  readonly closedPipes = new InverseSet();
   private nextPipeId: number;
 
   constructor(
@@ -873,4 +872,29 @@ function toDebugJson(v: unknown): string {
     }
     return value;
   });
+}
+
+// Stores a set of non-negative integers in O(N) memory where N is the largest
+// integer _not_ stored between [0, M], and M is the largest
+// integer stored.
+export class InverseSet {
+  private notContained: Set<number> = new Set();
+  private maxValue = -1;
+
+  add(v: number): void {
+    assert(v >= 0);
+    while (v > this.maxValue) {
+      this.maxValue++;
+      this.notContained.add(this.maxValue);
+    }
+    this.notContained.delete(v);
+  }
+  delete(v: number): void {
+    if (v <= this.maxValue) {
+      this.notContained.add(v);
+    }
+  }
+  has(v: number): boolean {
+    return v <= this.maxValue && !this.notContained.has(v);
+  }
 }
