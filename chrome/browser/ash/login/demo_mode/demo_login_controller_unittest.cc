@@ -298,9 +298,6 @@ class DemoLoginControllerTest : public testing::Test {
   testing::NiceMock<ash::MockLoginDisplayHost> mock_login_display_host_;
   system::FakeStatisticsProvider statistics_provider_;
 
-  // Required for `user_manager::UserList`:
-  std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
-
   // Dependencies for `ExistingUserController`:
   FakeSessionManagerClient fake_session_manager_client_;
   ScopedCrosSettingsTestHelper settings_helper_;
@@ -311,6 +308,9 @@ class DemoLoginControllerTest : public testing::Test {
   session_manager::SessionManager session_manager_{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<ExistingUserController> existing_user_controller_;
+
+  // Required for `user_manager::UserList`:
+  std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
 
   std::unique_ptr<policy::MockCloudPolicyManager> cloud_policy_manager_;
 };
