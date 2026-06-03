@@ -47,6 +47,8 @@ serde_json = "1.0.149"
 shared-brotli-patch-decoder = "0.1.3"
 skrifa = "0.42.1"
 small_ctor = "0.1"
+# third-party/harfbuzz/BUILD.gn's HarfRust targets need a dependency to smallvec.
+smallvec = "1"
 static_assertions = "1"
 xml = "1.3.0"
 

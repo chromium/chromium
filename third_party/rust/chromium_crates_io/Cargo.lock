@@ -279,6 +279,7 @@ dependencies = [
  "shared-brotli-patch-decoder",
  "skrifa",
  "small_ctor",
+ "smallvec",
  "static_assertions",
  "strum 0.28.0",
  "subtle",
