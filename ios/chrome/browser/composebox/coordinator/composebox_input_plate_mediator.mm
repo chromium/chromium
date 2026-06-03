@@ -1882,7 +1882,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 // Whether the user can ask about the current Tab.
 - (BOOL)canAskAboutCurrentTab {
-  return IsAskAboutThisPageEnabled() && [self canAttachActiveTab];
+  return _entrypoint != ComposeboxEntrypoint::kCobrowse &&
+         IsAskAboutThisPageEnabled() && [self canAttachActiveTab];
 }
 
 // Whether the current tab is attachable.
