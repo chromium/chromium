@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/common/content_export.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/origin.h"
 
 namespace content::webid {
@@ -32,7 +31,6 @@ class CONTENT_EXPORT EvtVerifier {
   // `email` is the expected email address.
   // `nonce` is the expected session nonce.
   // `holder_pub_key` is the browser's public key that was bound in the EVT.
-  // `callback` is called with true if verification succeeds, false otherwise.
   enum class Result {
     kVerified,
     kInvalidSdJwtKb,
@@ -61,14 +59,13 @@ class CONTENT_EXPORT EvtVerifier {
     kKbSignatureFailed,
   };
 
-  static void Verify(const std::string& token,
-                     const url::Origin& issuer,
-                     base::DictValue issuer_pub_keys,
-                     const url::Origin& audience,
-                     const std::string& email,
-                     const std::string& nonce,
-                     const sdjwt::Jwk& holder_pub_key,
-                     base::OnceCallback<void(Result)> callback);
+  static Result Verify(const std::string& token,
+                       const url::Origin& issuer,
+                       base::DictValue issuer_pub_keys,
+                       const url::Origin& audience,
+                       const std::string& email,
+                       const std::string& nonce,
+                       const sdjwt::Jwk& holder_pub_key);
 };
 
 }  // namespace content::webid

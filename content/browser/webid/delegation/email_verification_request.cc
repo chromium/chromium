@@ -455,7 +455,7 @@ void EmailVerificationRequest::Verify(
               jwks->data = base::unexpected(
                   EmailVerificationRequestResult::kJwksHttpNotFound);
             } else {
-              jwks->data = base::Value(std::move(*result));
+              jwks->data = std::move(*result);
             }
             closure.Run();
           },
@@ -559,32 +559,21 @@ void EmailVerificationRequest::OnTokenAndKeysFetchComplete(
 
   std::string result = sd_jwt_kb.Serialize();
 
-  EvtVerifier::Verify(
-      result, issuer, std::move(jwks->data.value().GetDict()),
-      render_frame_host_->GetLastCommittedOrigin(), email, nonce,
-      *holder_pub_key,
-      base::BindOnce(
-          [](base::WeakPtr<EmailVerificationRequest> request, std::string token,
-             const url::Origin& issuer,
-             EmailVerifier::OnEmailVerifiedCallback callback,
-             EvtVerifier::Result result) {
-            if (!request) {
-              std::move(callback).Run(std::nullopt);
-              return;
-            }
-            if (result == EvtVerifier::Result::kVerified) {
-              // Step 5.3: the browser notifies the page that
-              // the SD-JWT+KB is ready.
-              request->CompleteVerifyRequest(
-                  std::move(callback), token,
-                  blink::mojom::EmailVerificationRequestResult::kSuccess);
-            } else {
-              request->CompleteVerifyRequest(
-                  std::move(callback), std::nullopt,
-                  VerificationResultToEvpRequestStatus(result));
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr(), result, issuer, std::move(callback)));
+  EvtVerifier::Result verification_result =
+      EvtVerifier::Verify(result, issuer, std::move(jwks->data).value(),
+                          render_frame_host_->GetLastCommittedOrigin(), email,
+                          nonce, *holder_pub_key);
+
+  if (verification_result == EvtVerifier::Result::kVerified) {
+    // Step 5.3: the browser notifies the page that
+    // the SD-JWT+KB is ready.
+    CompleteVerifyRequest(std::move(callback), result,
+                          EmailVerificationRequestResult::kSuccess);
+  } else {
+    CompleteVerifyRequest(
+        std::move(callback), std::nullopt,
+        VerificationResultToEvpRequestStatus(verification_result));
+  }
 }
 
 void EmailVerificationRequest::CompleteIsVerifiableRequest(

@@ -4,27 +4,19 @@
 
 #include "content/browser/webid/delegation/evt_verifier.h"
 
-#include "base/barrier_closure.h"
 #include "base/base64url.h"
+#include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "crypto/sha2.h"
 #include "crypto/sign.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace content::webid {
 
 using Result = EvtVerifier::Result;
 
 namespace {
-
-struct ParsedToken {
-  std::optional<base::DictValue> header;
-  std::optional<base::DictValue> payload;
-  std::optional<base::DictValue> kb_header;
-  std::optional<base::DictValue> kb_payload;
-};
 
 base::expected<void, Result> VerifyEVT(const sdjwt::SdJwt& sd_jwt,
                                        const sdjwt::Header& header,
@@ -176,104 +168,58 @@ base::expected<void, Result> VerifyKB(const sdjwt::Jwt& kb_jwt,
 
   return base::ok();
 }
+}  // namespace
 
-void OnTokenParsed(std::unique_ptr<ParsedToken> token,
-                   const sdjwt::SdJwt& sd_jwt,
-                   const sdjwt::Jwt& kb_jwt,
-                   const url::Origin& issuer,
-                   base::DictValue issuer_pub_keys,
-                   const url::Origin& audience,
-                   const std::string& email,
-                   const std::string& nonce,
-                   const sdjwt::Jwk& holder_pub_key,
-                   base::OnceCallback<void(Result)> callback) {
-  if (!token->header || !token->payload || !token->kb_header ||
-      !token->kb_payload) {
-    std::move(callback).Run(Result::kInvalidSdJwtKb);
-    return;
+EvtVerifier::Result EvtVerifier::Verify(const std::string& token,
+                                        const url::Origin& issuer,
+                                        base::DictValue issuer_pub_keys,
+                                        const url::Origin& audience,
+                                        const std::string& email,
+                                        const std::string& nonce,
+                                        const sdjwt::Jwk& holder_pub_key) {
+  auto sd_jwt_kb = sdjwt::SdJwtKb::Parse(token);
+  if (!sd_jwt_kb) {
+    return Result::kInvalidSdJwtKb;
   }
 
-  auto header = sdjwt::Header::From(*token->header);
-  auto payload = sdjwt::Payload::From(*token->payload);
-  auto kb_header = sdjwt::Header::From(*token->kb_header);
-  auto kb_payload = sdjwt::Payload::From(*token->kb_payload);
+  std::optional<base::DictValue> header_dict = base::JSONReader::ReadDict(
+      sd_jwt_kb->sd_jwt.jwt.header.value(), base::JSON_PARSE_RFC);
+  std::optional<base::DictValue> payload_dict = base::JSONReader::ReadDict(
+      sd_jwt_kb->sd_jwt.jwt.payload.value(), base::JSON_PARSE_RFC);
+  std::optional<base::DictValue> kb_header_dict = base::JSONReader::ReadDict(
+      sd_jwt_kb->kb_jwt.header.value(), base::JSON_PARSE_RFC);
+  std::optional<base::DictValue> kb_payload_dict = base::JSONReader::ReadDict(
+      sd_jwt_kb->kb_jwt.payload.value(), base::JSON_PARSE_RFC);
+
+  if (!header_dict || !payload_dict || !kb_header_dict || !kb_payload_dict) {
+    return Result::kInvalidSdJwtKb;
+  }
+
+  auto header = sdjwt::Header::From(*header_dict);
+  auto payload = sdjwt::Payload::From(*payload_dict);
+  auto kb_header = sdjwt::Header::From(*kb_header_dict);
+  auto kb_payload = sdjwt::Payload::From(*kb_payload_dict);
 
   if (!header || !payload || !kb_header || !kb_payload) {
-    std::move(callback).Run(Result::kInvalidSdJwtKb);
-    return;
+    return Result::kInvalidSdJwtKb;
   }
 
   // 1. Verify EVT part.
-  if (auto result = VerifyEVT(sd_jwt, *header, *payload, issuer_pub_keys,
-                              issuer, email, holder_pub_key);
+  if (auto result = VerifyEVT(sd_jwt_kb->sd_jwt, *header, *payload,
+                              issuer_pub_keys, issuer, email, holder_pub_key);
       result != base::ok()) {
-    std::move(callback).Run(result.error());
-    return;
+    return result.error();
   }
 
   // 2. Verify KB part.
-  if (auto result = VerifyKB(kb_jwt, *kb_header, *kb_payload, *payload,
-                             sd_jwt.Serialize(), audience, nonce);
+  if (auto result =
+          VerifyKB(sd_jwt_kb->kb_jwt, *kb_header, *kb_payload, *payload,
+                   sd_jwt_kb->sd_jwt.Serialize(), audience, nonce);
       result != base::ok()) {
-    std::move(callback).Run(result.error());
-    return;
+    return result.error();
   }
 
-  std::move(callback).Run(Result::kVerified);
-}
-
-}  // namespace
-
-void EvtVerifier::Verify(const std::string& token,
-                         const url::Origin& issuer,
-                         base::DictValue issuer_pub_keys,
-                         const url::Origin& audience,
-                         const std::string& email,
-                         const std::string& nonce,
-                         const sdjwt::Jwk& holder_pub_key,
-                         base::OnceCallback<void(Result)> callback) {
-  auto sd_jwt_kb = sdjwt::SdJwtKb::Parse(token);
-  if (!sd_jwt_kb) {
-    std::move(callback).Run(Result::kInvalidSdJwtKb);
-    return;
-  }
-
-  auto results = std::make_unique<ParsedToken>();
-  auto* results_ptr = results.get();
-
-  auto done_closure = base::BindOnce(
-      &OnTokenParsed, std::move(results), sd_jwt_kb->sd_jwt, sd_jwt_kb->kb_jwt,
-      issuer, std::move(issuer_pub_keys), audience, email, nonce,
-      holder_pub_key, std::move(callback));
-
-  auto barrier = base::BarrierClosure(4, std::move(done_closure));
-
-  auto parse_callback = base::BindRepeating(
-      [](std::optional<base::DictValue>* target, base::RepeatingClosure closure,
-         data_decoder::DataDecoder::ValueOrError result) {
-        if (result.has_value() && result->is_dict()) {
-          *target = std::move(result->GetDict());
-        } else {
-          *target = std::nullopt;
-        }
-        closure.Run();
-      });
-
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      sd_jwt_kb->sd_jwt.jwt.header.value(),
-      base::BindOnce(parse_callback, &results_ptr->header, barrier));
-
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      sd_jwt_kb->sd_jwt.jwt.payload.value(),
-      base::BindOnce(parse_callback, &results_ptr->payload, barrier));
-
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      sd_jwt_kb->kb_jwt.header.value(),
-      base::BindOnce(parse_callback, &results_ptr->kb_header, barrier));
-
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      sd_jwt_kb->kb_jwt.payload.value(),
-      base::BindOnce(parse_callback, &results_ptr->kb_payload, barrier));
+  return Result::kVerified;
 }
 
 }  // namespace content::webid
