@@ -25,6 +25,9 @@ enum class PromoAction : int;
 // flow.
 @property(nonatomic, weak) id<SystemIdentity> identity;
 
+// If `YES`, will allow switching signed-in account.
+@property(nonatomic, assign) BOOL canSwitchAccount;
+
 // Initiates a FullscreenSigninScreenCoordinator with `navigationController`,
 // `browser` and `delegate`.
 // The `delegate` parameter is for handling the transfer between screens.

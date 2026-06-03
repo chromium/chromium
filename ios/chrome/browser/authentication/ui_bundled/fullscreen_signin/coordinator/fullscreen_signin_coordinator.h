@@ -24,6 +24,9 @@
 // flow.
 @property(nonatomic, weak) id<SystemIdentity> identity;
 
+// If `YES`, will allow switching signed-in account.
+@property(nonatomic, assign) BOOL canSwitchAccount;
+
 // Initiate the coordinator.
 // `browser` used for authentication. It must not be off the record (incognito).
 // `screenProvider` helps decide which screen to show.

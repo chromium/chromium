@@ -75,7 +75,8 @@
   [super start];
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(self.profile);
-  CHECK(!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+  CHECK(self.canSwitchAccount ||
+            !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
         base::NotFatalUntil::M142);
   _signinInProgress = [self.sceneState createSigninInProgress];
   self.navigationController =
@@ -87,9 +88,10 @@
   [self presentScreen:[self.screenProvider nextScreenType]];
 
   // Note: If the user was already signed in, then the `presentScreen` call
-  // above may have already synchronously completed all the screens, and then
-  // `self.navigationController` would already be nil again. That is invalid;
-  // the caller must have checked for this case before.
+  // above may have already synchronously completed all the screens if account
+  // switching is not possible, and then `self.navigationController` would
+  // already be nil again. That is invalid; the caller must have checked for
+  // this case before.
   CHECK(self.navigationController);
 
   [self.navigationController setNavigationBarHidden:YES animated:NO];
@@ -166,6 +168,7 @@
               changeProfileContinuationProvider:
                   _changeProfileContinuationProvider];
       coordinator.identity = self.identity;
+      coordinator.canSwitchAccount = self.canSwitchAccount;
       return coordinator;
     }
     case kHistorySync:
