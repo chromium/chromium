@@ -57,19 +57,13 @@ size_t HidWriterWin::WriteOutputReport(base::span<const uint8_t> report) {
       // Wait for the write to complete. This causes WriteOutputReport to behave
       // synchronously.
       DWORD wait_object = ::WaitForSingleObject(overlapped.hEvent, 100);
-      if (wait_object == WAIT_OBJECT_0) {
-        ::GetOverlappedResult(hid_handle_.Get(), &overlapped, &bytes_written,
-                              true);
-      } else {
-        // Wait failed, or the timeout was exceeded before the write completed.
-        // Cancel the write request.
-        if (::CancelIo(hid_handle_.Get())) {
-          HANDLE handles[2];
-          handles[0] = hid_handle_.Get();
-          handles[1] = overlapped.hEvent;
-          ::WaitForMultipleObjects(2, handles, false, INFINITE);
-        }
+      if (wait_object != WAIT_OBJECT_0) {
+        ::CancelIo(hid_handle_.Get());
       }
+      // This blocks until the specific overlapped operation completes or
+      // aborts.
+      write_success = ::GetOverlappedResult(hid_handle_.Get(), &overlapped,
+                                            &bytes_written, true);
     }
   }
   return write_success ? bytes_written : 0;
