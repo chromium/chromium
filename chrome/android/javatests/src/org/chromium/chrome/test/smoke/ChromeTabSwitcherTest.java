@@ -116,7 +116,7 @@ public class ChromeTabSwitcherTest {
         Log.i(TAG, "Waiting for omnibox to show URL");
         assertThat(url).startsWith("http://");
         String urlWithoutScheme = url.substring(7);
-        IUi2Locator dataUrlText = Ui2Locators.withText(urlWithoutScheme);
+        IUi2Locator dataUrlText = Ui2Locators.withTextContaining(urlWithoutScheme);
         UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(dataUrlText);
 
         Log.i(TAG, "Waiting 5 seconds to ensure background logic does not crash");

@@ -218,6 +218,11 @@ public class UrlBarCoordinator
         mUrlBar.setBoundsEllipsisEnabled(enabled);
     }
 
+    /** Sets the accessibility warning text. */
+    public void setAccessibilityWarning(@Nullable String warning) {
+        mMediator.setAccessibilityWarning(warning);
+    }
+
     /**
      * Clears text selection, which also has the side effect of dismissing the Android selection
      * handles and context menu if showing.

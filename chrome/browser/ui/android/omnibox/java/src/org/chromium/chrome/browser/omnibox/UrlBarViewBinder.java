@@ -33,7 +33,9 @@ class UrlBarViewBinder {
      * @see PropertyModelChangeProcfessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(PropertyModel model, UrlBar view, PropertyKey propertyKey) {
-        if (UrlBarProperties.ACTION_MODE_CALLBACK.equals(propertyKey)) {
+        if (UrlBarProperties.ACCESSIBILITY_WARNING.equals(propertyKey)) {
+            view.setAccessibilityWarning(model.get(UrlBarProperties.ACCESSIBILITY_WARNING));
+        } else if (UrlBarProperties.ACTION_MODE_CALLBACK.equals(propertyKey)) {
             ActionMode.Callback callback = model.get(UrlBarProperties.ACTION_MODE_CALLBACK);
             if (callback == null && view.getCustomSelectionActionModeCallback() == null) return;
             view.setCustomSelectionActionModeCallback(callback);

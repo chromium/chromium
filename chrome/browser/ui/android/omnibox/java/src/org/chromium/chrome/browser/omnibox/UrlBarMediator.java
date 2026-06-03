@@ -478,6 +478,11 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, useSmallText);
     }
 
+    /** Sets the accessibility warning text. */
+    public void setAccessibilityWarning(@Nullable String warning) {
+        mModel.set(UrlBarProperties.ACCESSIBILITY_WARNING, warning);
+    }
+
     void startReparenting() {
         mIsReparenting = true;
     }

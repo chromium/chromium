@@ -131,6 +131,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AppBannerManager;
@@ -3062,5 +3063,81 @@ public class LocationBarMediatorTest {
 
         // 3. Popup state is BOTTOM -> suppressed
         popupStateSupplier.set(FuseboxCoordinator.PopupState.BOTTOM);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM)
+    public void testUrlBarAccessibilityWarning_notSecure_flagOn() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(ConnectionSecurityLevel.WARNING).when(mLocationBarDataProvider).getSecurityLevel();
+        clearInvocations(mUrlCoordinator);
+
+        mMediator.onSecurityStateChanged();
+
+        verify(mUrlCoordinator)
+                .setAccessibilityWarning(
+                        eq(mContext.getString(R.string.page_info_not_secure_description)));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM)
+    public void testUrlBarAccessibilityWarning_secure_flagOn() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(ConnectionSecurityLevel.SECURE).when(mLocationBarDataProvider).getSecurityLevel();
+        clearInvocations(mUrlCoordinator);
+
+        mMediator.onSecurityStateChanged();
+
+        verify(mUrlCoordinator).setAccessibilityWarning(eq(null));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM)
+    public void testUrlBarAccessibilityWarning_notSecure_flagOff() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(ConnectionSecurityLevel.WARNING).when(mLocationBarDataProvider).getSecurityLevel();
+        clearInvocations(mUrlCoordinator);
+
+        mMediator.onSecurityStateChanged();
+
+        verify(mUrlCoordinator).setAccessibilityWarning(eq(null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM)
+    public void testUrlBarAccessibilityWarning_notSecure_flagOn_focused() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(ConnectionSecurityLevel.WARNING).when(mLocationBarDataProvider).getSecurityLevel();
+
+        // Focus the URL bar.
+        mMediator.onUrlFocusChange(true);
+        clearInvocations(mUrlCoordinator);
+
+        mMediator.onSecurityStateChanged();
+
+        // The warning should be null because the URL bar is focused.
+        verify(mUrlCoordinator).setAccessibilityWarning(eq(null));
+
+        // Unfocus the URL bar.
+        clearInvocations(mUrlCoordinator);
+        mMediator.onUrlFocusChange(false);
+
+        // Now that it's unfocused, it should set the non-secure warning.
+        verify(mUrlCoordinator)
+                .setAccessibilityWarning(
+                        eq(mContext.getString(R.string.page_info_not_secure_description)));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM)
+    public void testUrlBarAccessibilityWarning_ntp_flagOn() {
+        mMediator.onFinishNativeInitialization();
+        doReturn(new GURL("chrome-native://newtab/")).when(mTab).getUrl();
+        doReturn(ConnectionSecurityLevel.NONE).when(mLocationBarDataProvider).getSecurityLevel();
+        clearInvocations(mUrlCoordinator);
+
+        mMediator.onSecurityStateChanged();
+
+        verify(mUrlCoordinator).setAccessibilityWarning(eq(null));
     }
 }

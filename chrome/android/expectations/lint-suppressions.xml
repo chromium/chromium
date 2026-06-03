@@ -385,9 +385,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- TODO(https://crbug.com/461840249): Remove the following 1 line after lint migrates to using merged manifests. -->
     <ignore regexp="The resource `R.string.menu` appears to be unused"/>
 
-    <!-- TODO(crbug.com/517591009): Remove this once the string is used in Omnibox. -->
-    <ignore regexp="The resource `R.string.page_info_not_secure_description` appears to be unused"/>
-
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
