@@ -170,6 +170,9 @@
   E_CPONLY(kColorFeaturePromoBubbleDefaultButtonBackground) \
   E_CPONLY(kColorFeaturePromoBubbleDefaultButtonForeground) \
   E_CPONLY(kColorFeaturePromoBubbleForeground) \
+  /* Feature Showcase colors. */ \
+  E_CPONLY(kColorFeatureShowcaseStepperCheck) \
+  E_CPONLY(kColorFeatureShowcaseStepperDot) \
   E_CPONLY(kColorFeatureLensPromoBubbleBackground) \
   E_CPONLY(kColorFeatureLensPromoBubbleForeground) \
   /* Find bar colors. */ \

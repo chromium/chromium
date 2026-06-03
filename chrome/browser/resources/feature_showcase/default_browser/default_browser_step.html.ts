@@ -11,6 +11,7 @@ export function getHtml(this: FeatureShowcaseDefaultBrowserStepElement) {
   return html`<!--_html_template_start_-->
 
 <feature-showcase-step>
+  <slot name="stepper" slot="stepper"></slot>
   <img slot="illustration" id="illustration" alt="">
   <span slot="title">$i18n{refreshDefaultBrowserTitle}</span>
   <span slot="description">$i18n{refreshDefaultBrowserSubtitle}</span>

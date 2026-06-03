@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import '//resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import './feature_showcase_stepper.js';
 import './default_browser/default_browser_step.js';
 import './example/example_step.js';
 import './feature_showcase_step.js';
@@ -42,13 +43,15 @@ export class FeatureShowcaseAppElement extends CrLitElement {
 
   static override get properties() {
     return {
+      activeStepIndex: {type: Number},
+      steps: {type: Array},
       areButtonsDisabled_: {type: Boolean},
       isDarkMode_: {type: Boolean},
     };
   }
 
-  private activeStepIndex_: number = 0;
-  private steps_: string[];
+  accessor activeStepIndex: number = 0;
+  accessor steps: string[] = [];
   protected accessor areButtonsDisabled_: boolean = false;
   protected accessor isDarkMode_: boolean = false;
   private matchMedia_: MediaQueryList;
@@ -57,7 +60,7 @@ export class FeatureShowcaseAppElement extends CrLitElement {
   constructor() {
     super();
     const steps = new URLSearchParams(window.location.search).get('steps');
-    this.steps_ = steps ?
+    this.steps = steps ?
         steps.split(',').map(s => s.trim()).filter(s => s.length > 0) :
         [];
 
@@ -82,9 +85,9 @@ export class FeatureShowcaseAppElement extends CrLitElement {
     // TODO(crbug.com/500274411): Clarify if assert here is ok or it's better
     // to have more graceful handling.
     assert(
-        this.steps_.length > 0, 'Feature showcase requires at least one step.');
+        this.steps.length > 0, 'Feature showcase requires at least one step.');
 
-    const step = this.steps_[this.activeStepIndex_]!;
+    const step = this.steps[this.activeStepIndex]!;
     this.$.viewManager.switchView(step);
   }
 
@@ -94,17 +97,17 @@ export class FeatureShowcaseAppElement extends CrLitElement {
   }
 
   protected hasStep_(stepId: string): boolean {
-    return this.steps_.includes(stepId);
+    return this.steps.includes(stepId);
   }
 
   protected onStepCompleted_() {
     assert(!this.areButtonsDisabled_, 'Buttons should not be disabled.');
     this.areButtonsDisabled_ = true;
-    this.activeStepIndex_++;
+    this.activeStepIndex++;
 
-    if (this.activeStepIndex_ < this.steps_.length) {
+    if (this.activeStepIndex < this.steps.length) {
       this.tryPlayingTransitionAnimations();
-      const step = this.steps_[this.activeStepIndex_]!;
+      const step = this.steps[this.activeStepIndex]!;
       this.$.viewManager.switchView(step).then(() => {
         this.areButtonsDisabled_ = false;
       });
@@ -116,8 +119,8 @@ export class FeatureShowcaseAppElement extends CrLitElement {
   }
 
   private tryPlayingTransitionAnimations() {
-    assert(this.activeStepIndex_ > 0, 'Step index should be greater than 0.');
-    const startFrame = (this.activeStepIndex_ - 1) * 120;
+    assert(this.activeStepIndex > 0, 'Step index should be greater than 0.');
+    const startFrame = (this.activeStepIndex - 1) * 120;
     const endFrame = startFrame + 120;
 
     this.$.rightAnimation.playSegments([startFrame, endFrame]);

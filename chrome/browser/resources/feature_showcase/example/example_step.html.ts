@@ -10,6 +10,7 @@ export function getHtml(this: FeatureShowcaseExampleStepElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <feature-showcase-step>
+  <slot name="stepper" slot="stepper"></slot>
   <img slot="illustration" id="illustration" alt="">
   <span slot="title">Feature Showcase Example title</span>
   <span slot="description">Feature Showcase Example description</span>

@@ -95,6 +95,8 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::WorkerSrc,
       "worker-src blob: chrome://resources 'self';");
 
+  source->AddResourcePath("images/product-logo.svg", IDR_PRODUCT_LOGO_SVG);
+
   AddDefaultBrowserStepResources(source);
   AddPasswordManagerStepResources(source);
 }

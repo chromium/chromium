@@ -25,6 +25,8 @@ build_webui("build") {
     "default_browser/default_browser_step.ts",
     "default_browser/default_browser_step.html.ts",
     "feature_showcase_browser_proxy.ts",
+    "feature_showcase_stepper.ts",
+    "feature_showcase_stepper.html.ts",
     "feature_showcase_step.ts",
     "feature_showcase_step.html.ts",
     "example/example_step.ts",
@@ -36,6 +38,7 @@ build_webui("build") {
   css_files = [
     "app.css",
     "default_browser/default_browser_step.css",
+    "feature_showcase_stepper.css",
     "feature_showcase_step.css",
     "example/example_step.css",
     "password_manager/password_manager_step.css",

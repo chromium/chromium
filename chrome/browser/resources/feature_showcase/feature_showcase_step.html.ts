@@ -14,10 +14,7 @@ export function getHtml(this: FeatureShowcaseStepElement) {
 </div>
 
 <div class="content-child" id="showcase-description">
-<!-- TODO(crbug.com/500272103): Substitute placeholder with real stepper. -->
-  <div id="stepper-placeholder">
-    <slot name="header-icon"></slot>
-  </div>
+  <slot name="stepper"></slot>
   <div id="showcase-text">
     <h1 class="title"><slot name="title"></slot></h1>
     <p class="subtitle"><slot name="description"></slot></p>

@@ -413,6 +413,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       kColorFeaturePromoBubbleBackground};
   mixer[kColorFeatureLensPromoBubbleForeground] = {
       kColorFeaturePromoBubbleForeground};
+  mixer[kColorFeatureShowcaseStepperCheck] = {ui::kColorAccent};
+  mixer[kColorFeatureShowcaseStepperDot] = {ui::kColorSubtleAccent};
   mixer[kColorFindBarBackground] = {ui::kColorTextfieldBackground};
   mixer[kColorFindBarButtonIcon] =
       ui::DeriveDefaultIconColor(ui::kColorTextfieldForeground);

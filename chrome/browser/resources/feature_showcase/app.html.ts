@@ -23,6 +23,10 @@ export function getHtml(this: FeatureShowcaseAppElement) {
       <feature-showcase-example-step id="example" slot="view"
           @step-completed="${this.onStepCompleted_}"
           ?buttons-disabled="${this.areButtonsDisabled_}">
+        <feature-showcase-stepper slot="stepper"
+            .steps="${this.steps}"
+            .activeIndex="${this.activeStepIndex}">
+        </feature-showcase-stepper>
       </feature-showcase-example-step>
   ` : ''}
 
@@ -30,6 +34,10 @@ export function getHtml(this: FeatureShowcaseAppElement) {
       <feature-showcase-default-browser-step id="default-browser" slot="view"
           @step-completed="${this.onStepCompleted_}"
           ?buttons-disabled="${this.areButtonsDisabled_}">
+        <feature-showcase-stepper slot="stepper"
+            .steps="${this.steps}"
+            .activeIndex="${this.activeStepIndex}">
+        </feature-showcase-stepper>
       </feature-showcase-default-browser-step>
   ` : ''}
 
@@ -37,6 +45,10 @@ export function getHtml(this: FeatureShowcaseAppElement) {
       <feature-showcase-password-manager-step id="password-manager" slot="view"
           @step-completed="${this.onStepCompleted_}"
           ?buttons-disabled="${this.areButtonsDisabled_}">
+        <feature-showcase-stepper slot="stepper"
+            .steps="${this.steps}"
+            .activeIndex="${this.activeStepIndex}">
+        </feature-showcase-stepper>
       </feature-showcase-password-manager-step>
   ` : ''}
 </cr-view-manager>
