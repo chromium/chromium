@@ -176,8 +176,6 @@ group("expectations") {
   } else if (is_mac) {
     data += [
       "platform/mac/",
-      "platform/mac-mac12/",
-      "platform/mac-mac12-arm64/",
       "platform/mac-mac13/",
       "platform/mac-mac13-arm64/",
       "platform/mac-mac14/",

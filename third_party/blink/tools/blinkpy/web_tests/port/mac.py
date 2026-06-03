@@ -36,8 +36,6 @@ _log = logging.getLogger(__name__)
 
 class MacPort(base.Port):
     SUPPORTED_VERSIONS = (
-        'mac12',
-        'mac12-arm64',
         'mac13',
         'mac13-arm64',
         'mac14',
@@ -58,9 +56,6 @@ class MacPort(base.Port):
     FALLBACK_PATHS['mac13'] = ['mac-mac13'] + FALLBACK_PATHS['mac14']
     FALLBACK_PATHS['mac13-arm64'] = ['mac-mac13-arm64'
                                      ] + FALLBACK_PATHS['mac14-arm64']
-    FALLBACK_PATHS['mac12'] = ['mac-mac12'] + FALLBACK_PATHS['mac13']
-    FALLBACK_PATHS['mac12-arm64'] = ['mac-mac12-arm64'
-                                     ] + FALLBACK_PATHS['mac13-arm64']
 
     CONTENT_SHELL_NAME = 'Content Shell'
     CHROME_NAME = 'Chromium'

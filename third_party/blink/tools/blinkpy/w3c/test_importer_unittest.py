@@ -66,7 +66,7 @@ class TestImporterTest(LoggingTestCase):
             },
             'cq-builder-b': {
                 'main': 'tryserver.blink',
-                'port_name': 'mac-mac12',
+                'port_name': 'mac-mac15',
                 'specifiers': ['Mac12', 'Release'],
                 'steps': {
                     'blink_web_tests': {},

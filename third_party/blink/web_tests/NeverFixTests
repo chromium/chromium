@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac12 Mac12-arm64 Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 iOS26-simulator ]
+# tags: [ Android Fuchsia Linux Mac Mac13 Mac13-arm64 Mac14 Mac14-arm64 Mac15 Mac15-arm64 Win Win10.20h2 Win11 Win11-arm64 iOS26-simulator ]
 # tags: [ Release Debug ]
 # results: [ Skip Pass ]
 
@@ -1666,8 +1666,6 @@ crbug.com/323752584 [ Win11-arm64 ] virtual/webnn-service-with-gpu/* [ Skip ]
 [ Linux ] virtual/webnn-service-with-gpu/* [ Skip ]
 
 # WebNN is only supported on macOS 14 and newer versions.
-[ Mac12 ] external/wpt/webnn/* [ Skip ]
-[ Mac12-arm64 ] external/wpt/webnn/* [ Skip ]
 [ Mac13 ] external/wpt/webnn/* [ Skip ]
 [ Mac13-arm64 ] external/wpt/webnn/* [ Skip ]
 
@@ -1833,7 +1831,6 @@ external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip
 # restrictOwnAudio is supported only on recent versions of Windows and Mac.
 [ Linux ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
 [ Win10.20h2 ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
-[ Mac12 ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
 [ Mac13 ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
 [ Android ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
 [ Fuchsia ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
@@ -1851,7 +1848,6 @@ crbug.com/40550039 svg/W3C-SVG-1.1-SE/struct-use-11-f.svg [ Skip ]
 [ Mac15-arm64 ] external/wpt/webxr/* [ Skip ]
 [ Mac14-arm64 ] external/wpt/webxr/* [ Skip ]
 [ Mac13-arm64 ] external/wpt/webxr/* [ Skip ]
-[ Mac12-arm64 ] external/wpt/webxr/* [ Skip ]
 [ Win11-arm64 ] external/wpt/webxr/* [ Skip ]
 
 # Expected failures for virtual/prefetch-force-off-the-main-thread:
