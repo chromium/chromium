@@ -36,12 +36,19 @@ BASE_FEATURE(kPageActionMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGeminiKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Default enabled countries and locales for PageActionMenu, matching Bluebird
-// in chrome/browser/glic/public/glic_enabling.cc. All locales have been
-// converted to lower case with '-' where it's applicable.
-constexpr std::array<std::string_view, 4> kDefaultEnabledCountries = {
-    "us", "ca", "nz", "in"};
+// Default enabled countries for PageActionMenu in Gemini for Chrome
+// Expansion V2.
+constexpr std::array<std::string_view, 53> kDefaultEnabledCountries = {
+    "as", "au", "bd", "bn", "bt", "ca", "cc", "ck", "cx", "fj", "fm",
+    "gu", "hk", "hm", "id", "in", "kh", "ki", "kr", "la", "lk", "mh",
+    "mm", "mn", "mo", "mp", "mv", "my", "nc", "nf", "np", "nr", "nu",
+    "nz", "pf", "pg", "ph", "pk", "pn", "pw", "sb", "sg", "th", "tk",
+    "tl", "to", "tv", "tw", "us", "vn", "vu", "wf", "ws"};
 
+// Default enabled locales for PageActionMenu. Locales are
+// matching Bluebird in chrome/browser/glic/public/glic_enabling.cc.
+// All locales have been converted to lower case with '-' where it's
+// applicable.
 constexpr std::array<std::string_view, 51> kDefaultEnabledLocales = {
     "af", "am",     "bg",    "bn",    "ca",    "cs",    "da",    "de", "el",
     "es", "es-419", "et",    "fi",    "fil",   "fr",    "gu",    "hi", "hr",
