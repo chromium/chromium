@@ -17,6 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.RadioButtonLayout;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -51,6 +52,9 @@ public class DefaultSearchEngineDialogCoordinator {
         View contentView =
                 LayoutInflater.from(activity)
                         .inflate(R.layout.default_search_engine_dialog_view, /* root= */ null);
+        FadingEdgeScrollView scrollView =
+                contentView.findViewById(R.id.search_engine_dialog_scroll_view);
+        scrollView.disableScrollbarOnTablet();
         Controller controller =
                 new Controller() {
                     @Override

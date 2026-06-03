@@ -24,6 +24,7 @@ found in the LICENSE file.
       tools:text="For John Doe — 1600 Amphitheatre Parkway" />
 
   <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
+      android:id="@+id/autofill_update_address_scroll_view"
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_marginTop="4dp"

@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.autofill.editors.address.AddressEditorCoordin
 import org.chromium.chrome.browser.autofill.editors.address.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -65,6 +66,12 @@ public class SaveUpdateAddressProfilePrompt {
             default:
                 mDialogView = inflater.inflate(R.layout.autofill_save_address_profile_prompt, null);
                 break;
+        }
+
+        FadingEdgeScrollView scrollView =
+                mDialogView.findViewById(R.id.autofill_update_address_scroll_view);
+        if (scrollView != null) {
+            scrollView.disableScrollbarOnTablet();
         }
 
         PropertyModel.Builder builder =

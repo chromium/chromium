@@ -13,6 +13,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 @NullMarked
@@ -26,6 +27,8 @@ public class AddUsernameDialogContentView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        FadingEdgeScrollView scrollView = findViewById(R.id.add_username_dialog_scroll_view);
+        scrollView.disableScrollbarOnTablet();
 
         TextInputEditText usernameInput = findViewById(R.id.username);
         usernameInput.addTextChangedListener(

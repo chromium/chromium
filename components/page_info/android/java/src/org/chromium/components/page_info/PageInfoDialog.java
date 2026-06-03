@@ -42,7 +42,7 @@ public class PageInfoDialog {
     private static final int CLOSE_CLEANUP_DELAY_MS = 10;
 
     private final PageInfoContainer mPageInfoContainer;
-    private final ViewGroup mScrollView;
+    private final FadingEdgeScrollView mScrollView;
 
     // The dialog implementation.
     // mSheetDialog is set if the dialog appears as a sheet. Otherwise, mModalDialog is set.
@@ -87,6 +87,7 @@ public class PageInfoDialog {
         } else {
             // On larger screens, modal dialog already has an maximum width set.
             mScrollView = new FadingEdgeScrollView(context, null);
+            mScrollView.disableScrollbarOnTablet();
         }
 
         mScrollView.setVisibility(View.INVISIBLE);
@@ -214,7 +215,7 @@ public class PageInfoDialog {
     }
 
     /** Create a container for PageInfo when it is shown as a top-sheet. */
-    private ViewGroup createSheetContainer(Context context, View containerView) {
+    private FadingEdgeScrollView createSheetContainer(Context context, View containerView) {
         return new FadingEdgeScrollView(context, null) {
             {
                 if (mPageInfoContainer != null) {

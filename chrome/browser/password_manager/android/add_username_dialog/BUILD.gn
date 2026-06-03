@@ -41,6 +41,7 @@ android_library("java") {
     "//chrome/browser/password_manager/android:java_resources",
     "//chrome/browser/password_manager/android/shared_ui:ui_java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
