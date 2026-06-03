@@ -899,6 +899,16 @@ const FeatureEntry::FeatureVariation kPopularSitesRefreshUsChoices[] = {
     {flag_descriptions::kPopularSitesRefreshUsChoiceArm3,
      kPopularSitesRefreshUsParamArm3, nullptr},
 };
+
+const FeatureEntry::FeatureParam
+    kDisablePartnerHomepageAndroidForZeroTabsParam[] = {
+        {"disable_partner_homepage_android_for_zero_tabs", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kDisablePartnerHomepageAndroidVariations[] = {
+        {"For zero tabs (US only)",
+         kDisablePartnerHomepageAndroidForZeroTabsParam, nullptr},
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
@@ -9913,7 +9923,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"disable-partner-homepage-android",
      flag_descriptions::kDisablePartnerHomepageAndroidName,
      flag_descriptions::kDisablePartnerHomepageAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDisablePartnerHomepageAndroid)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kDisablePartnerHomepageAndroid,
+         kDisablePartnerHomepageAndroidVariations,
+         "DisablePartnerHomepageAndroid")},
 
     {"tab-bottom-sheet", flag_descriptions::kTabBottomSheetName,
      flag_descriptions::kTabBottomSheetDescription, kOsAndroid,
