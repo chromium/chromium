@@ -58,6 +58,8 @@ public class SendTabToSelfCoordinator
      * Waits for Sync to download the list of target devices after sign-in. Aborts if the user
      * dismisses the sign-in bottom sheet ("account picker") before success.
      */
+    // TODO(crbug.com/519101926): Consider moving TargetDeviceListWaiter to a shared C++
+    // component (components/send_tab_to_self) and accessing it via JNI to reduce duplication.
     private static class TargetDeviceListWaiter extends EmptyBottomSheetObserver
             implements SyncService.SyncStateChangedListener {
         private final BottomSheetController mBottomSheetController;

@@ -354,7 +354,7 @@ void UrlLoadingBrowserAgent::LoadUrlInTab(const UrlLoadParams& params,
   // Send Tab to Self navigations require a reliable way to be identified later
   // in the navigation lifecycle for handling things like scroll restoration and
   // form filling. We attach this user data to the WebState here.
-  // TODO(crbug.com/485145029): Consider using UrlLoadingObserver to encapsulate
+  // TODO(crbug.com/519101926): Consider using UrlLoadingObserver to encapsulate
   // this.
   if (params.is_from_send_tab_to_self()) {
     SendTabToSelfLoadNavigationUserData::CreateForWebState(
@@ -545,7 +545,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(
   // in the navigation lifecycle for handling things like scroll restoration and
   // form filling. We attach this user data to the WebState here because it is
   // the exact moment the tab is created for the STTS action.
-  // TODO(crbug.com/485145029): Consider using UrlLoadingObserver to encapsulate
+  // TODO(crbug.com/519101926): Consider using UrlLoadingObserver to encapsulate
   // this.
   if (params.is_from_send_tab_to_self()) {
     SendTabToSelfLoadNavigationUserData::CreateForWebState(

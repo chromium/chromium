@@ -17,6 +17,9 @@ class SendTabToSelfEntry;
 // model. Implementors of this interface should override all functions and
 // update the UI accordingly. They should also register themselves with the
 // ReceivingUIRegistry.
+// TODO(crbug.com/519101926): Consider moving this interface to
+// components/send_tab_to_self to allow iOS to use it and unify the receiving
+// flow.
 class ReceivingUiHandler {
  public:
   ReceivingUiHandler() = default;

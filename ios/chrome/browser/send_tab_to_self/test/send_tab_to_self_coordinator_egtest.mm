@@ -446,7 +446,7 @@ ElementSelector* UsernameElement() {
                                                               title:@"Form Page"
                                                       formFieldData:formData];
 
-  // TODO(crbug.com/485145029): Investigate why manually triggering a sync cycle
+  // TODO(crbug.com/519101926): Investigate why manually triggering a sync cycle
   // is necessary. It might be because we are not waiting for the invalidations
   // system on the client to be started up. If so, we should find a global fix.
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];

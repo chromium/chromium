@@ -28,6 +28,9 @@ class SendTabToSelfModel;
 
 // Service that listens for SendTabToSelf model changes and calls UI
 // handlers to update the UI accordingly.
+// TODO(crbug.com/519101926): Consider refactoring this class to implement
+// send_tab_to_self::ReceivingUiHandler once that interface is moved to
+// components/send_tab_to_self, unifying the receiving flow.
 class SendTabToSelfBrowserAgent
     : public BrowserUserData<SendTabToSelfBrowserAgent>,
       public send_tab_to_self::SendTabToSelfModelObserver,

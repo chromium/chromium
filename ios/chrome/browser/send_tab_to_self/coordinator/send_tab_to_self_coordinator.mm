@@ -207,6 +207,9 @@ void SendTabToDeviceComplete(id<SnackbarCommands> snackbar_handler,
   }
 }
 
+// TODO(crbug.com/519101926): Consider moving TargetDeviceListWaiter to
+// components/send_tab_to_self as a shared C++ utility to be shared with
+// Android.
 class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
  public:
   using GetDisplayReasonCallback = base::RepeatingCallback<
@@ -454,7 +457,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   send_tab_to_self::PageContext pageContext;
   if (base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfPropagateFormFields)) {
-    // TODO(crbug.com/485145029): Making assumptions about which precise
+    // TODO(crbug.com/519101926): Making assumptions about which precise
     // WebState is being sent appears fishy. Ideally, the information should
     // come from higher layers.
     pageContext = send_tab_to_self::ExtractFormFieldsFromWebState(webState);

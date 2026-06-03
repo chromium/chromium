@@ -32,7 +32,7 @@ using AutofillTypeSet = ReceivedTabFormsFiller::AutofillTypeSet;
 
 namespace {
 
-// TODO(crbug.com/485145029): Consider making this configurable.
+// TODO(crbug.com/519101926): Consider making this configurable.
 constexpr base::TimeDelta kTimeout = base::Seconds(10);
 
 // Returns the set of signatures that appear exactly once in the incoming tab's

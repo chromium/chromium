@@ -23,6 +23,9 @@ class SendTabToSelfModel;
 
 // Service that listens for SendTabToSelf model changes and calls UI
 // handlers to update the UI accordingly.
+// TODO(crbug.com/519101926): Consider moving this service to
+// components/send_tab_to_self to allow iOS to use it and unify the receiving
+// flow.
 class SendTabToSelfClientService : public KeyedService,
                                    public SendTabToSelfModelObserver {
  public:
