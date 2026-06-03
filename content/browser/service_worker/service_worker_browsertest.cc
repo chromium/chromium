@@ -6318,6 +6318,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
+  base::HistogramTester histogram_tester;
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
   // Capture the response head.
@@ -6344,6 +6345,9 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
   // is delivered to the renderer.
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
             GetInnerText());
+
+  histogram_tester.ExpectUniqueSample("ServiceWorker.AutoPreload.Dispatched",
+                                      true, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest,
@@ -6548,6 +6552,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
                        BlockedHosts) {
+  base::HistogramTester histogram_tester;
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
   RegisterServiceWorkerWithBlockedHost();
@@ -6565,6 +6570,9 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
   // request is for the host in the blocked host params.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, GetRequestCount(relative_url));
+
+  histogram_tester.ExpectUniqueSample("ServiceWorker.AutoPreload.Dispatched",
+                                      false, 1);
 }
 
 class ServiceWorkerAutoPreloadWithEnableOnlyWhenSWNotRunningBrowserTest

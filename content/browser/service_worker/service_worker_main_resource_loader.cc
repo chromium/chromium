@@ -454,8 +454,14 @@ void ServiceWorkerMainResourceLoader::MaybeDispatchPreload(
       if (MaybeStartNavigationPreload(context_wrapper)) {
         return;
       }
-      if (MaybeStartAutoPreload(context_wrapper, version)) {
-        return;
+      {
+        bool auto_preload_dispatched =
+            MaybeStartAutoPreload(context_wrapper, version);
+        base::UmaHistogramBoolean("ServiceWorker.AutoPreload.Dispatched",
+                                  auto_preload_dispatched);
+        if (auto_preload_dispatched) {
+          return;
+        }
       }
       break;
     case RaceNetworkRequestMode::kSkipped:
