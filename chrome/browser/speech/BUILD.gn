@@ -297,6 +297,7 @@ if (!is_android) {
         "//components/soda:constants",
         "//sandbox/policy",
         "//services/audio/public/cpp",
+        "//services/audio/public/cpp:test_support",
       ]
       if (is_mac) {
         data_deps = [ "//third_party/soda-mac64:soda_resources" ]
