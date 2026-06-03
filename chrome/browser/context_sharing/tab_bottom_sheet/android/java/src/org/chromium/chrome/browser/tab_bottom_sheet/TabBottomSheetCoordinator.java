@@ -236,7 +236,9 @@ public class TabBottomSheetCoordinator {
             }
             // Notify that the sheet is opened synchronously. The precise expansion state will be
             // refined once the posted task completes and layout is available.
-            mSheetEventsCallback.onBottomSheetOpened(startsExpanded);
+            if (mSheetEventsCallback != null) {
+                mSheetEventsCallback.onBottomSheetOpened(startsExpanded);
+            }
 
             // If bottom sheet has never been initialized, the max bottom offset may be 0.
             // We set it here, and if it changes later, we will update it in the observer.
