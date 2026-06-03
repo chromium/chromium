@@ -1204,6 +1204,8 @@ const base::FeatureParam<std::string> kIndigoDeleteUrl{&kIndigo,
                                                        "indigo_delete_url", ""};
 const base::FeatureParam<std::string> kIndigoOnboardingUrl{
     &kIndigo, "indigo_onboarding_url", ""};
+const base::FeatureParam<std::string> kIndigoSavedUrl{
+    &kIndigo, "indigo_saved_url", "about:blank"};
 const base::FeatureParam<std::string> kIndigoScopes{
     &kIndigo, "indigo_scopes",
     "https://www.googleapis.com/auth/userinfo.email"};

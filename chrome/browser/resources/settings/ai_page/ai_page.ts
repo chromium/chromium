@@ -56,6 +56,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showSkillsSettingPage'),
       },
+
+      showIndigoControl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showIndigoControl'),
+      },
     };
   }
 
@@ -64,6 +69,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   declare private showPasswordChangeControl_: boolean;
   declare private showAiSuggestionsControl_: boolean;
   declare private showSkillsSettingPage_: boolean;
+  declare private showIndigoControl_: boolean;
 
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -93,6 +99,8 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     this.metricsBrowserProxy_.recordBooleanHistogram(
         'Settings.AiPage.ElementVisibility.AiSuggestions',
         this.showAiSuggestionsControl_);
+    this.metricsBrowserProxy_.recordBooleanHistogram(
+        'Settings.AiPage.ElementVisibility.Indigo', this.showIndigoControl_);
   }
 
   private onHistorySearchRowClick_() {
@@ -138,6 +146,15 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().SKILLS);
+  }
+
+  private onIndigoRowClick_() {
+    this.recordInteractionMetrics_(
+        AiPageInteractions.INDIGO_CLICK,
+        'Settings.AiPage.IndigoEntryPointClick');
+
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('indigoSavedUrl'));
   }
 
 

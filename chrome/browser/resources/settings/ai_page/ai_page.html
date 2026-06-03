@@ -48,5 +48,12 @@
         role-description="$i18n{subpageArrowRoleDescription}"
         on-click="onSkillsRowClick_">
     </cr-link-row>
+    <cr-link-row id="indigoRow" class="hr"
+        hidden="[[!showIndigoControl_]]"
+        start-icon="settings20:magic"
+        label="$i18n{indigoLabel}"
+        sub-label="$i18n{indigoSublabel}"
+        on-click="onIndigoRowClick_" external>
+    </cr-link-row>
   </div>
 </settings-section>

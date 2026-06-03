@@ -30,6 +30,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
+#include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
@@ -465,6 +466,10 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"skillsSettingSublabel", IDS_SETTINGS_SKILLS_SETTING_SUBLABEL},
       {"skillsToggleLabel", IDS_SETTINGS_SKILLS_TOGGLE_LABEL},
 
+      // Indigo strings.
+      {"indigoLabel", IDS_INDIGO_SETTINGS_LABEL},
+      {"indigoSublabel", IDS_INDIGO_SETTINGS_SUB_LABEL},
+
       // AI Mode Search Settings strings for Smart Tab Sharing (STS)
       {"stsSettingsEntrypointGoogleSearchAiMode",
        IDS_STS_SETTINGS_ENTRYPOINT_GOOGLE_SEARCH_AI_MODE},
@@ -524,6 +529,7 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
                          chrome::kComposeLearnMorePageManagedURL);
   html_source->AddString("passwordChangeSettingsUrl",
                          chrome::kChromeUiPasswordChangeUrl);
+  html_source->AddString("indigoSavedUrl", features::kIndigoSavedUrl.Get());
 }
 
 void AddAppearanceStrings(content::WebUIDataSource* html_source,

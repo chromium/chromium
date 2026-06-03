@@ -146,6 +146,15 @@
       <message name="IDS_INDIGO_TOOLBAR_DELETE_ORIGINAL_PHOTO" desc="Button label to delete the original photo." translateable="false">
         Delete original photo
       </message>
+
+      <!-- Settings -->
+      <!-- TODO(b/500383894): Move these to settings_strings.grdp when the feature is public. -->
+      <message name="IDS_INDIGO_SETTINGS_LABEL" desc="Label for the Indigo setting." translateable="false">
+        Indigo
+      </message>
+      <message name="IDS_INDIGO_SETTINGS_SUB_LABEL" desc="Sublabel for the Indigo setting." translateable="false">
+        Manage your Indigo data
+      </message>
     </messages>
   </release>
 </grit>

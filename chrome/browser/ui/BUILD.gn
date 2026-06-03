@@ -1458,6 +1458,7 @@ static_library("ui") {
       "//chrome/browser/glic/selection",
       "//chrome/browser/glic/suggestions",
       "//chrome/browser/indigo",
+      "//chrome/browser/indigo/resources:indigo_strings",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/password_manager/actor_login:factories",
       "//chrome/browser/password_manager/factories",

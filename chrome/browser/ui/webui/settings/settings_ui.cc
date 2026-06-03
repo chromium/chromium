@@ -623,6 +623,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
        base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)},
       {"showSkillsSettingPage",
        base::FeatureList::IsEnabled(features::kSkillsEnabled)},
+      {"showIndigoControl", base::FeatureList::IsEnabled(features::kIndigo)},
   };
 
   html_source->AddString("aiSuggestionsHelpCenterArticleLink",
