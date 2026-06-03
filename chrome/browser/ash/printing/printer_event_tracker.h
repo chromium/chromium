@@ -43,7 +43,7 @@ class PrinterEventTracker : public KeyedService {
   // disabled and the Record* functions are nops.
   void set_logging(bool logging);
 
-  // Store a succesful USB printer installation. |mode| indicates if
+  // Store a successful USB printer installation. |mode| indicates if
   // the PPD was selected automatically or chosen by the user.
   void RecordUsbPrinterInstalled(
       const chromeos::Printer::PpdReference& ppd_reference,
@@ -51,7 +51,7 @@ class PrinterEventTracker : public KeyedService {
       SetupMode mode,
       const std::string& ppd_filename);
 
-  // Store a succesful network printer installation. |mode| indicates if
+  // Store a successful network printer installation. |mode| indicates if
   // the PPD was selected automatically or chosen by the user.
   void RecordIppPrinterInstalled(
       const chromeos::Printer& printer,
