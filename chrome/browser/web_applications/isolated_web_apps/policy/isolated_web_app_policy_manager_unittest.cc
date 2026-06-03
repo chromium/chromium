@@ -261,7 +261,7 @@ class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
 
     std::unique_ptr<ScopedBundledIsolatedWebApp> app2 =
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
-            .BuildBundle();
+            .BuildBundle(test::GetDefaultEcdsaP256KeyPair());
     app2->FakeInstallPageState(profile());
 
     lazy_app1_id_ = app1->web_bundle_id();
@@ -1364,6 +1364,11 @@ TEST_F(IsolatedWebAppRetryTest, RetryTriggeredWhenAllTasksDone) {
   auto url_info_2 =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_2());
 
+  // Determine the alphabetical queue sorting order
+  bool is_1_first = url_info_1.web_bundle_id() < url_info_2.web_bundle_id();
+  const auto& first_url_info = is_1_first ? url_info_1 : url_info_2;
+  const auto& second_url_info = is_1_first ? url_info_2 : url_info_1;
+
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
       base::ListValue()
@@ -1376,11 +1381,11 @@ TEST_F(IsolatedWebAppRetryTest, RetryTriggeredWhenAllTasksDone) {
   // installation does not finish immediately and completion has to be triggered
   // later by the test (this simulates a completion delay), but will succeed.
   get_mock_scheduler()->SetCommandBehavior(
-      url_info_1.app_id(),
+      first_url_info.app_id(),
       RetryTestWebAppCommandScheduler::ExecutionMode::kSimulateFailure,
       /*execute_immediately=*/true);
   get_mock_scheduler()->SetCommandBehavior(
-      url_info_2.app_id(),
+      second_url_info.app_id(),
       RetryTestWebAppCommandScheduler::ExecutionMode::kRunCommand,
       /*execute_immediately=*/false);
 
@@ -1390,10 +1395,10 @@ TEST_F(IsolatedWebAppRetryTest, RetryTriggeredWhenAllTasksDone) {
 
   ASSERT_EQ(2u, get_mock_scheduler()->GetNumberOfCreatedInstallTasks());
   const WebApp* web_app1_t0 =
-      provider().registrar_unsafe().GetAppById(url_info_1.app_id());
+      provider().registrar_unsafe().GetAppById(first_url_info.app_id());
   ASSERT_THAT(web_app1_t0, IsNull());
   const WebApp* web_app2_t0 =
-      provider().registrar_unsafe().GetAppById(url_info_2.app_id());
+      provider().registrar_unsafe().GetAppById(second_url_info.app_id());
   ASSERT_THAT(web_app2_t0, IsNull());
 
   // Forward by 60 seconds. Because the second app was not completed yet, still
@@ -1401,25 +1406,25 @@ TEST_F(IsolatedWebAppRetryTest, RetryTriggeredWhenAllTasksDone) {
   task_environment().FastForwardBy(base::TimeDelta(base::Seconds(60)));
   ASSERT_EQ(2u, get_mock_scheduler()->GetNumberOfCreatedInstallTasks());
 
-  ASSERT_TRUE(get_mock_scheduler()->IsCommandStashed(url_info_2.app_id()));
+  ASSERT_TRUE(get_mock_scheduler()->IsCommandStashed(second_url_info.app_id()));
 
   // Complete install task for the second app (which succeeds).
   WebAppTestInstallObserver app2_install_observer(profile());
-  app2_install_observer.BeginListening({url_info_2.app_id()});
+  app2_install_observer.BeginListening({second_url_info.app_id()});
 
   task_environment().GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&RetryTestWebAppCommandScheduler::ScheduleCommand,
                      base::Unretained(get_mock_scheduler()),
-                     url_info_2.app_id()));
+                     second_url_info.app_id()));
   task_environment().FastForwardBy(base::TimeDelta(base::Seconds(1)));
 
-  EXPECT_EQ(app2_install_observer.Wait(), url_info_2.app_id());
+  EXPECT_EQ(app2_install_observer.Wait(), second_url_info.app_id());
 
   // The retry command for the first app should be successful. The second app
   // doesn't need a retry.
   get_mock_scheduler()->SetCommandBehavior(
-      url_info_1.app_id(),
+      first_url_info.app_id(),
       RetryTestWebAppCommandScheduler::ExecutionMode::kRunCommand,
       /*execute_immediately=*/true);
   task_environment().FastForwardBy(base::TimeDelta(base::Seconds(1)));
@@ -1433,21 +1438,21 @@ TEST_F(IsolatedWebAppRetryTest, RetryTriggeredWhenAllTasksDone) {
   ASSERT_EQ(2u, get_mock_scheduler()->GetNumberOfCreatedInstallTasks());
 
   WebAppTestInstallObserver app1_install_observer(profile());
-  app1_install_observer.BeginListening({url_info_1.app_id()});
+  app1_install_observer.BeginListening({first_url_info.app_id()});
 
   // Moving the clock forward will finally install the second app.
   task_environment().FastForwardBy(base::TimeDelta(base::Seconds(1)));
   ASSERT_EQ(3u, get_mock_scheduler()->GetNumberOfCreatedInstallTasks());
 
-  EXPECT_EQ(app1_install_observer.Wait(), url_info_1.app_id());
+  EXPECT_EQ(app1_install_observer.Wait(), first_url_info.app_id());
 
   const WebApp* web_app1_t2 =
-      provider().registrar_unsafe().GetAppById(url_info_1.app_id());
+      provider().registrar_unsafe().GetAppById(first_url_info.app_id());
   ASSERT_THAT(web_app1_t2, NotNull());
   EXPECT_THAT(web_app1_t2->GetSources(),
               Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
   const WebApp* web_app2_t2 =
-      provider().registrar_unsafe().GetAppById(url_info_2.app_id());
+      provider().registrar_unsafe().GetAppById(second_url_info.app_id());
   ASSERT_THAT(web_app2_t2, NotNull());
   EXPECT_THAT(web_app2_t2->GetSources(),
               Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
