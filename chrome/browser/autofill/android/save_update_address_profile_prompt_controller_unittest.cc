@@ -122,10 +122,6 @@ class SaveUpdateAddressProfilePromptControllerTest
   std::unique_ptr<SaveUpdateAddressProfilePromptController> controller_;
   raw_ptr<JNIEnv> env_ = base::android::AttachCurrentThread();
   base::android::JavaRef<jobject> mock_caller_{nullptr};
-
- private:
-  base::test::ScopedFeatureList feature_{
-      features::kAutofillEnableSupportForHomeAndWork};
 };
 
 void SaveUpdateAddressProfilePromptControllerTest::SigninUser() {

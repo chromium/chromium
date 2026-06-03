@@ -64,9 +64,7 @@ DenseSet<AutofillProfile::RecordType> kAccountRecordTypes = {
 // addresses that fail to meet the requirements after an update need to be
 // removed from local storage.
 bool IsIncompleteHomeAndWorkAddress(const AutofillProfile& profile) {
-  if (!profile.IsHomeAndWorkProfile() ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHomeAndWork)) {
+  if (!profile.IsHomeAndWorkProfile()) {
     return false;
   }
   const bool is_incomplete = !IsMinimumAddress(profile);

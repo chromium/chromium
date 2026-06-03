@@ -657,11 +657,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("showAiPageAiFeatureSection",
                           show_ai_features_section);
 
-  html_source->AddBoolean(
-      "enableSupportForHomeAndWork",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSupportForHomeAndWork));
-
   html_source->AddBoolean("replaceSyncPromosWithSignInPromos",
                           syncer::IsReplaceSyncPromosWithSignInPromosEnabled());
 

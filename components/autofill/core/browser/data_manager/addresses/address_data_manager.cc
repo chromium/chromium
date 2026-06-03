@@ -547,13 +547,10 @@ void AddressDataManager::SetPrefService(PrefService* pref_service) {
         prefs::kAutofillProfileEnabled, pref_service_,
         base::BindRepeating(&AddressDataManager::OnAutofillProfilePrefChanged,
                             base::Unretained(this)));
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForHomeAndWork)) {
-      home_and_work_metadata_ = std::make_unique<HomeAndWorkMetadataStore>(
-          pref_service_, sync_service_,
-          base::BindRepeating(&AddressDataManager::LoadProfiles,
-                              base::Unretained(this)));
-    }
+    home_and_work_metadata_ = std::make_unique<HomeAndWorkMetadataStore>(
+        pref_service_, sync_service_,
+        base::BindRepeating(&AddressDataManager::LoadProfiles,
+                            base::Unretained(this)));
   }
 }
 

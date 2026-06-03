@@ -280,8 +280,6 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM =
             "AutofillEnableSeparatePixPreferenceItem";
     public static final String AUTOFILL_ENABLE_SERVER_IBAN = "AutofillEnableServerIban";
-    public static final String AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK =
-            "AutofillEnableSupportForHomeAndWork";
     public static final String AUTOFILL_ENABLE_WALLET_BRANDING = "AutofillEnableWalletBranding";
     public static final String AUTOFILL_ENABLE_WALLET_BRANDING_V2 =
             "AutofillEnableWalletBrandingV2";

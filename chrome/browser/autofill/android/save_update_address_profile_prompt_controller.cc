@@ -94,24 +94,20 @@ std::u16string SaveUpdateAddressProfilePromptController::GetTitle() const {
             ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
             : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHomeAndWork)) {
-    // A new profile is created when extending a Home & Work profile, so the
-    // title should reflect this.
-    if (original_profile_->IsHomeAndWorkProfile()) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE);
-    }
-    // If there are no old values to replace, inform user that a new data
-    // point is being added to the profile.
-    if (old_diff_.empty()) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE);
-    }
-    // If the an existing value from profile is changed, inform user that a
-    // profile will be updated.
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
+  // A new profile is created when extending a Home & Work profile, so the
+  // title should reflect this.
+  if (original_profile_->IsHomeAndWorkProfile()) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE);
   }
+  // If there are no old values to replace, inform user that a new data
+  // point is being added to the profile.
+  if (old_diff_.empty()) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE);
+  }
+  // If the an existing value from profile is changed, inform user that a
+  // profile will be updated.
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 }
 
@@ -150,27 +146,24 @@ std::u16string SaveUpdateAddressProfilePromptController::GetRecordTypeNotice(
   }
   // Notify user that their address has already been saved in their Google
   // account and is only going to be updated there.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHomeAndWork)) {
-    switch (original_profile_->record_type()) {
-      case AutofillProfile::RecordType::kAccountHome:
-        return l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_ADDRESS_HOME_RECORD_TYPE_NOTICE,
-            base::UTF8ToUTF16(account->email));
-      case AutofillProfile::RecordType::kAccountWork:
-        return l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_ADDRESS_WORK_RECORD_TYPE_NOTICE,
-            base::UTF8ToUTF16(account->email));
-      case AutofillProfile::RecordType::kAccount:
-        return l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
-            base::UTF8ToUTF16(account->email));
-      case AutofillProfile::RecordType::kAccountNameEmail:
-        NOTIMPLEMENTED();
-        break;
-      case AutofillProfile::RecordType::kLocalOrSyncable:
-        NOTREACHED();
-    }
+  switch (original_profile_->record_type()) {
+    case AutofillProfile::RecordType::kAccountHome:
+      return l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_ADDRESS_HOME_RECORD_TYPE_NOTICE,
+          base::UTF8ToUTF16(account->email));
+    case AutofillProfile::RecordType::kAccountWork:
+      return l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_ADDRESS_WORK_RECORD_TYPE_NOTICE,
+          base::UTF8ToUTF16(account->email));
+    case AutofillProfile::RecordType::kAccount:
+      return l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
+          base::UTF8ToUTF16(account->email));
+    case AutofillProfile::RecordType::kAccountNameEmail:
+      NOTIMPLEMENTED();
+      break;
+    case AutofillProfile::RecordType::kLocalOrSyncable:
+      NOTREACHED();
   }
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_RECORD_TYPE_NOTICE,
@@ -185,18 +178,13 @@ std::u16string SaveUpdateAddressProfilePromptController::GetPositiveButtonText()
             ? IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_MIGRATION_OK_BUTTON_LABEL
             : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHomeAndWork)) {
-    if (original_profile_->IsHomeAndWorkProfile()) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
-    }
-    if (old_diff_.empty()) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL);
-    }
+  if (original_profile_->IsHomeAndWorkProfile()) {
     return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+        IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+  }
+  if (old_diff_.empty()) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL);
   }
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL);

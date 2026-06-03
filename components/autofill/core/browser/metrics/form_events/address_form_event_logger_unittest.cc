@@ -378,10 +378,6 @@ class AutofillOnDidShowSuggestionsMetricsTest : public AutofillMetricsBaseTest,
     personal_data().test_address_data_manager().ClearProfiles();
   }
   void TearDown() override { TearDownHelper(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableSupportForHomeAndWork};
 };
 
 TEST_F(AutofillOnDidShowSuggestionsMetricsTest,

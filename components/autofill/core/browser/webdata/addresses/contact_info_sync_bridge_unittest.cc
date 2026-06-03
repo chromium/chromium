@@ -291,8 +291,6 @@ TEST_F(ContactInfoSyncBridgeTest,
 // local storage, if necessary.
 TEST_F(ContactInfoSyncBridgeTest,
        ApplyIncrementalSyncChanges_HomeAndWorkCompleteness) {
-  base::test::ScopedFeatureList feature(
-      features::kAutofillEnableSupportForHomeAndWork);
   AutofillProfile remote = test::GetFullProfile();
   test_api(remote).set_record_type(AutofillProfile::RecordType::kAccountHome);
   base::HistogramTester histogram_tester;

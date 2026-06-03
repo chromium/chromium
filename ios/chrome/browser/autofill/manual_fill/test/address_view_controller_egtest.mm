@@ -232,12 +232,6 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self isRunningTest:@selector
-            (testDoNotEditHomeAndWorkAddressFromOverflowMenu)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillEnableSupportForHomeAndWork);
-  }
-
   if ([self isRunningTest:@selector(testDoNotEditNamEmailFromOverflowMenu)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillEnableSupportForNameAndEmail);

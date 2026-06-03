@@ -94,11 +94,6 @@ void AddressFormEventLogger::OnDidShowSuggestions(
       form, field, field.Type().GetAddressType(), form_parsed_timestamp,
       off_the_record, suggestions);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHomeAndWork)) {
-    return;
-  }
-
   const AddressDataManager& address_data_manager =
       client().GetPersonalDataManager().address_data_manager();
 
@@ -147,9 +142,7 @@ void AddressFormEventLogger::OnDidUndoAutofill() {
 void AddressFormEventLogger::OnDestroyed() {
   FormEventLoggerBase::OnDestroyed();
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHomeAndWork) &&
-      has_logged_suggestions_shown_) {
+  if (has_logged_suggestions_shown_) {
     if (profile_categories_available_.contains(
             AutofillProfileRecordTypeCategory::kAccountHome)) {
       base::UmaHistogramBoolean("Autofill.HomeAndWork.SuggestionPresent.Home",

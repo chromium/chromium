@@ -610,11 +610,6 @@ BASE_FEATURE(kAutofillEnableSkippingUnrecognizedAttribute,
 BASE_FEATURE(kAutofillEnableStreetAddressMergeModes,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, chrome will support home and work addresses from account.
-// TODO: crbug.com/354706653 - Clean up when launched.
-BASE_FEATURE(kAutofillEnableSupportForHomeAndWork,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, chrome will support name and email address profile.
 // TODO(crbug.com/356845298): Clean up when launched.
 BASE_FEATURE(kAutofillEnableSupportForNameAndEmail,

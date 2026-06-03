@@ -315,8 +315,6 @@ TEST_F(InfobarSaveAddressProfileViewControllerTest,
 // profile with new info.
 TEST_F(InfobarSaveAddressProfileViewControllerTest,
        TestAddInExistingAccountProfileModalInitialization) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableSupportForHomeAndWork);
   InfobarSaveAddressProfileViewController* update_view_controller =
       controller();
   [update_view_controller
@@ -346,8 +344,6 @@ TEST_F(InfobarSaveAddressProfileViewControllerTest,
 // new data to an existing home profile.
 TEST_F(InfobarSaveAddressProfileViewControllerTest,
        TestUpdateInAccountHomeModalInitialization) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      autofill::features::kAutofillEnableSupportForHomeAndWork);
   InfobarSaveAddressProfileViewController* update_view_controller =
       controller();
   [update_view_controller

@@ -161,17 +161,14 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kAutofillAmountExtractionAiTermsSeen, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHomeAndWork)) {
-    registry->RegisterDictionaryPref(
-        kAutofillHomeMetadata,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
-    registry->RegisterDictionaryPref(
-        kAutofillWorkMetadata,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
-    registry->RegisterIntegerPref(kAutofillSilentUpdatesToHomeAddress, 0);
-    registry->RegisterIntegerPref(kAutofillSilentUpdatesToWorkAddress, 0);
-  }
+  registry->RegisterDictionaryPref(
+      kAutofillHomeMetadata,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+  registry->RegisterDictionaryPref(
+      kAutofillWorkMetadata,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+  registry->RegisterIntegerPref(kAutofillSilentUpdatesToHomeAddress, 0);
+  registry->RegisterIntegerPref(kAutofillSilentUpdatesToWorkAddress, 0);
 
   // Deprecated prefs registered for migration.
   registry->RegisterBooleanPref(kAutofillEnabledDeprecated, true);

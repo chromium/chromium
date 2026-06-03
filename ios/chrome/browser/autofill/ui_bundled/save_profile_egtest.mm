@@ -232,11 +232,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
     config.features_enabled.push_back(kAutofillFixXhrForXframe);
   }
 
-  if ([self isRunningTest:@selector(testUserData_LocalUpdate)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillEnableSupportForHomeAndWork);
-  }
-
   // TODO(crbug.com/428189566): Re-enable after the test is fixed for
   // ios-fieldtrial-rel.
   if ([self isRunningTest:@selector

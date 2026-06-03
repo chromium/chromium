@@ -42,8 +42,6 @@ class HomeAndWorkMetadataStoreTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_{
-      features::kAutofillEnableSupportForHomeAndWork};
   std::unique_ptr<PrefService> prefs_;
   syncer::TestSyncService sync_service_;
 };

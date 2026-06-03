@@ -138,15 +138,6 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  if ([self isRunningTest:@selector(testHomeAndWorkProfileEditPage)] ||
-      [self isRunningTest:@selector(testHomeAndWorkProfileDeleteOnEdit)] ||
-      [self isRunningTest:@selector(testHomeAndWorkProfileRemove)] ||
-      [self isRunningTest:@selector(testConfirmationShownOnDeletion)] ||
-      [self isRunningTest:@selector(testConfirmationShownOnSwipeToDelete)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillEnableSupportForHomeAndWork);
-  }
-
   if ([self isRunningTest:@selector(testToggleEnhancedAutofillSwitch)] ||
       [self isRunningTest:@selector(testAddAndDeleteEntityUsingMenu)] ||
       [self isRunningTest:@selector(testVerificationSwitchReauthFailure)] ||

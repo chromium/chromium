@@ -1172,9 +1172,6 @@ TEST_F(
 
 // Tests that Home/Work suggestions are correctly generated.
 TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWork) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableSupportForHomeAndWork);
-
   AutofillProfile profile_default = test::GetFullProfile();
   AutofillProfile profile_home = test::GetFullProfile();
   AutofillProfile profile_work = test::GetFullProfile();
@@ -1247,34 +1244,6 @@ TEST_F(AddressSuggestionGeneratorTest,
       {profile_account_name_email}, {NAME_FIRST, NAME_LAST},
       SuggestionType::kAddressEntry, EMAIL_ADDRESS, triggering_field_email);
   EXPECT_THAT(suggestions, ElementsAre(HasIphFeature(kIphFeature)));
-}
-
-// Tests that Home/Work icons are not used if the H&W feature is disabled.
-TEST_F(AddressSuggestionGeneratorTest,
-       TestAddressSuggestion_HomeAndWorkIcons_FeatureDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      features::kAutofillEnableSupportForHomeAndWork);
-
-  AutofillProfile profile_default = test::GetFullProfile();
-  AutofillProfile profile_home = test::GetFullProfile();
-  AutofillProfile profile_work = test::GetFullProfile();
-
-  test_api(profile_home)
-      .set_record_type(AutofillProfile::RecordType::kAccountHome);
-  test_api(profile_work)
-      .set_record_type(AutofillProfile::RecordType::kAccountWork);
-
-  FormFieldData triggering_field_name;
-  triggering_field_name.set_label(u"Name");
-
-  std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
-      {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
-      SuggestionType::kAddressEntry, NAME_FIRST, triggering_field_name);
-
-  // Default icons are expected.
-  EXPECT_THAT(suggestions, Each(AllOf(HasIcon(Suggestion::Icon::kAccount),
-                                      HasNoIphFeature())));
 }
 
 #if !BUILDFLAG(IS_IOS)

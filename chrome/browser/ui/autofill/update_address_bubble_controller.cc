@@ -31,20 +31,17 @@ UpdateAddressBubbleController::~UpdateAddressBubbleController() = default;
 
 std::u16string UpdateAddressBubbleController::GetWindowTitle(
     bool has_empty_original_values) const {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHomeAndWork)) {
-    // A new profile is created when extending a Home & Work profile, so the
-    // title should reflect this.
-    if (original_profile_.IsHomeAndWorkProfile()) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE);
-    }
-    // If there are no old values to replace, inform user that a new data
-    // point is being added to the profile.
-    if (has_empty_original_values) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE);
-    }
+  // A new profile is created when extending a Home & Work profile, so the
+  // title should reflect this.
+  if (original_profile_.IsHomeAndWorkProfile()) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_ADDRESS_WITH_MORE_INFO_ADDRESS_PROMPT_TITLE);
+  }
+  // If there are no old values to replace, inform user that a new data
+  // point is being added to the profile.
+  if (has_empty_original_values) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE);
   }
 
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
@@ -55,13 +52,6 @@ std::u16string UpdateAddressBubbleController::GetFooterMessage() const {
     std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
-
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForHomeAndWork)) {
-      return l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
-          base::UTF8ToUTF16(account->email));
-    }
 
     switch (original_profile_.record_type()) {
       case AutofillProfile::RecordType::kAccountHome:
@@ -89,27 +79,21 @@ std::u16string UpdateAddressBubbleController::GetFooterMessage() const {
 
 std::u16string UpdateAddressBubbleController::GetPositiveButtonText(
     bool has_empty_original_values) const {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHomeAndWork)) {
-    if (original_profile_.IsHomeAndWorkProfile()) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
-    }
-    if (has_empty_original_values) {
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL);
-    }
+  if (original_profile_.IsHomeAndWorkProfile()) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
   }
-
+  if (has_empty_original_values) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL);
+  }
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
 }
 
 std::u16string UpdateAddressBubbleController::GetNegativeButtonText(
     bool has_empty_original_values) const {
-  if ((original_profile_.IsHomeAndWorkProfile() || has_empty_original_values) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForHomeAndWork)) {
+  if (original_profile_.IsHomeAndWorkProfile() || has_empty_original_values) {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_CANCEL_BUTTON_LABEL);
   }

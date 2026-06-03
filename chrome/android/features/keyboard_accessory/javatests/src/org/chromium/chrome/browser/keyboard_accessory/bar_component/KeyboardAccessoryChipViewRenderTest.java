@@ -81,7 +81,6 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({
     ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
-    ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK,
 })
 public class KeyboardAccessoryChipViewRenderTest {
 

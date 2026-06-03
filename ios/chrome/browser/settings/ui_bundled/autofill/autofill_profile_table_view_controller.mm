@@ -1542,13 +1542,8 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     return l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE);
   }
 
-  return base::FeatureList::IsEnabled(
-             autofill::features::kAutofillEnableSupportForHomeAndWork)
-             ? l10n_util::GetNSString(
-                   IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESSES_CONFIRMATION_BUTTON)
-             : l10n_util::GetPluralNSStringF(
-                   IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON,
-                   profileCount);
+  return l10n_util::GetNSString(
+      IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESSES_CONFIRMATION_BUTTON);
 }
 
 // Returns the deletion confirmation message string based on

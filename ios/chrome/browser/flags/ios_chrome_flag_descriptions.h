@@ -250,11 +250,6 @@ inline constexpr char
         "When enabled, risk data is prefetched during payments autofill flows "
         "to reduce user-perceived latency.";
 
-inline constexpr char kAutofillEnableSupportForHomeAndWorkName[] =
-    "Enable support for home and work addresses";
-inline constexpr char kAutofillEnableSupportForHomeAndWorkDescription[] =
-    "When enabled, chrome will support home and work addresses from account.";
-
 inline constexpr char kAutofillEnableSupportForNameAndEmailName[] =
     "Support for name and email addresses in Autofill";
 inline constexpr char kAutofillEnableSupportForNameAndEmailDescription[] =

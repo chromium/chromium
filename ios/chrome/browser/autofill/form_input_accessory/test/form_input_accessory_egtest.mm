@@ -395,8 +395,6 @@ void SlowlyTypeText(NSString* text) {
         kAutofillCorrectUserEditedBitInParsedField);
   }
   if ([self isRunningTest:@selector(testAddressHomeAndWorkIPH)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillEnableSupportForHomeAndWork);
     config.iph_feature_enabled =
         feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature.name;
   }

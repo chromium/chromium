@@ -557,29 +557,26 @@ const base::Feature* FetchIPHFeatureFromEnum(
                offerMigrateToAccount:(BOOL)offerMigrateToAccount {
   [self reset];
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSupportForHomeAndWork)) {
-    autofill::AutofillProfile::RecordType type = address.record_type();
-    id<SceneCommands> sceneHandler =
-        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
-    if (type == autofill::AutofillProfile::RecordType::kAccountHome) {
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithURLFromChrome:GURL(kGoogleMyAccountHomeAddressURL)];
-      [sceneHandler openURLInNewTab:command];
-      return;
-    }
+  autofill::AutofillProfile::RecordType type = address.record_type();
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  if (type == autofill::AutofillProfile::RecordType::kAccountHome) {
+    OpenNewTabCommand* command = [OpenNewTabCommand
+        commandWithURLFromChrome:GURL(kGoogleMyAccountHomeAddressURL)];
+    [sceneHandler openURLInNewTab:command];
+    return;
+  }
 
-    if (type == autofill::AutofillProfile::RecordType::kAccountWork) {
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithURLFromChrome:GURL(kGoogleMyAccountWorkAddressURL)];
-      [sceneHandler openURLInNewTab:command];
-      return;
-    }
+  if (type == autofill::AutofillProfile::RecordType::kAccountWork) {
+    OpenNewTabCommand* command = [OpenNewTabCommand
+        commandWithURLFromChrome:GURL(kGoogleMyAccountWorkAddressURL)];
+    [sceneHandler openURLInNewTab:command];
+    return;
   }
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSupportForNameAndEmail)) {
-    id<SceneCommands> sceneHandler =
+    sceneHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
     if (address.record_type() ==
         autofill::AutofillProfile::RecordType::kAccountNameEmail) {

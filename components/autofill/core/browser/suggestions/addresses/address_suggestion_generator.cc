@@ -609,34 +609,29 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kEmail) {
       suggestion.icon = Suggestion::Icon::kEmail;
     } else {
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableSupportForHomeAndWork)) {
-        switch (profile.record_type()) {
-          case AutofillProfile::RecordType::kAccountHome:
-            suggestion.icon = Suggestion::Icon::kHome;
-            suggestion.iph_metadata = Suggestion::IPHMetadata(
-                &feature_engagement::
-                    kIPHAutofillHomeWorkProfileSuggestionFeature);
-            suggestion.voice_over =
-                l10n_util::GetStringFUTF16(IDS_HOME_SUGGESTION_VOICE_OVER,
-                                           GetFullSuggestionText(suggestion));
-            break;
-          case AutofillProfile::RecordType::kAccountWork:
-            suggestion.icon = Suggestion::Icon::kWork;
-            suggestion.iph_metadata = Suggestion::IPHMetadata(
-                &feature_engagement::
-                    kIPHAutofillHomeWorkProfileSuggestionFeature);
-            suggestion.voice_over =
-                l10n_util::GetStringFUTF16(IDS_WORK_SUGGESTION_VOICE_OVER,
-                                           GetFullSuggestionText(suggestion));
-            break;
-          case AutofillProfile::RecordType::kLocalOrSyncable:
-          case AutofillProfile::RecordType::kAccount:
-          case AutofillProfile::RecordType::kAccountNameEmail:
-            suggestion.icon = Suggestion::Icon::kAccount;
-        }
-      } else {
-        suggestion.icon = Suggestion::Icon::kAccount;
+      switch (profile.record_type()) {
+        case AutofillProfile::RecordType::kAccountHome:
+          suggestion.icon = Suggestion::Icon::kHome;
+          suggestion.iph_metadata = Suggestion::IPHMetadata(
+              &feature_engagement::
+                  kIPHAutofillHomeWorkProfileSuggestionFeature);
+          suggestion.voice_over =
+              l10n_util::GetStringFUTF16(IDS_HOME_SUGGESTION_VOICE_OVER,
+                                         GetFullSuggestionText(suggestion));
+          break;
+        case AutofillProfile::RecordType::kAccountWork:
+          suggestion.icon = Suggestion::Icon::kWork;
+          suggestion.iph_metadata = Suggestion::IPHMetadata(
+              &feature_engagement::
+                  kIPHAutofillHomeWorkProfileSuggestionFeature);
+          suggestion.voice_over =
+              l10n_util::GetStringFUTF16(IDS_WORK_SUGGESTION_VOICE_OVER,
+                                         GetFullSuggestionText(suggestion));
+          break;
+        case AutofillProfile::RecordType::kLocalOrSyncable:
+        case AutofillProfile::RecordType::kAccount:
+        case AutofillProfile::RecordType::kAccountNameEmail:
+          suggestion.icon = Suggestion::Icon::kAccount;
       }
     }
     // This is intentionally not using `profile.IsAccountProfile()` because the

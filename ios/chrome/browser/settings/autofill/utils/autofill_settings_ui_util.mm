@@ -33,21 +33,6 @@ NSString* GetDeletionConfirmationString(int profile_count,
                                         bool has_account_profile,
                                         bool has_home_work_name_email_profile,
                                         const std::u16string& user_email) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSupportForHomeAndWork)) {
-    if (has_account_profile) {
-      std::u16string pattern = l10n_util::GetStringUTF16(
-          IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_CONFIRMATION_TITLE);
-      std::u16string confirmationString =
-          base::i18n::MessageFormatter::FormatWithNamedArgs(
-              pattern, "email", user_email, "count", profile_count);
-      return base::SysUTF16ToNSString(confirmationString);
-    }
-    return l10n_util::GetPluralNSStringF(
-        IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_ADDRESS_CONFIRMATION_TITLE,
-        profile_count);
-  }
-
   if (has_local_profile && has_account_profile &&
       has_home_work_name_email_profile) {
     return l10n_util::GetNSString(

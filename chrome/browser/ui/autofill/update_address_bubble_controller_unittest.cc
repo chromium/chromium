@@ -126,8 +126,6 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountAddress) {
 }
 
 TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountHomeAddress) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSupportForHomeAndWork);
   AutofillProfile profile = test::GetFullProfile();
   test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   AutofillProfile original_profile = test::GetFullProfile();
@@ -157,8 +155,6 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountHomeAddress) {
 }
 
 TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountWorkAddress) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSupportForHomeAndWork);
   AutofillProfile profile = test::GetFullProfile();
   test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   AutofillProfile original_profile = test::GetFullProfile();
@@ -188,8 +184,6 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountWorkAddress) {
 }
 
 TEST_F(UpdateAddressBubbleControllerTest, AddNewInfoToAccount) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSupportForHomeAndWork);
   AutofillProfile profile = test::GetFullProfile();
   test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
   AutofillProfile original_profile = test::GetFullProfile();

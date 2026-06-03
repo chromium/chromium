@@ -494,13 +494,11 @@ export class SettingsAutofillSectionElement extends
   private getAddressIcon_(
       address: chrome.autofillPrivate.AddressEntry,
       accountInfo: chrome.autofillPrivate.AccountInfo|null): string {
-    if (loadTimeData.getBoolean('enableSupportForHomeAndWork')) {
-      if (this.isAccountHomeAddress_(address)) {
-        return 'settings20:home';
-      }
-      if (this.isAccountWorkAddress_(address)) {
-        return 'settings20:work';
-      }
+    if (this.isAccountHomeAddress_(address)) {
+      return 'settings20:home';
+    }
+    if (this.isAccountWorkAddress_(address)) {
+      return 'settings20:work';
     }
     if (this.isCloudOffVisible_(address, accountInfo)) {
       return 'cr20:cloud-off';

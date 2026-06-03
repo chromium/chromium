@@ -360,14 +360,11 @@ const CGFloat kButtonHorizontalInset = 16;
         IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL);
   } else if (self.isUpdateModal) {
     int buttonTextId = IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL;
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableSupportForHomeAndWork)) {
-      if (self.homeProfile || self.workProfile) {
-        buttonTextId = IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL;
-      } else if (![self shouldShowOldSection]) {
-        buttonTextId =
-            IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL;
-      }
+    if (self.homeProfile || self.workProfile) {
+      buttonTextId = IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL;
+    } else if (![self shouldShowOldSection]) {
+      buttonTextId =
+          IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL;
     }
     title = l10n_util::GetNSString(buttonTextId);
   } else {
@@ -473,11 +470,6 @@ const CGFloat kButtonHorizontalInset = 16;
 
   if (!self.isUpdateModal) {
     return l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSupportForHomeAndWork)) {
-    return l10n_util::GetNSString(IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
   }
 
   if (self.homeProfile || self.workProfile) {
