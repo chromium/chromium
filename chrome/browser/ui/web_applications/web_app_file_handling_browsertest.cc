@@ -524,17 +524,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
 
 INSTANTIATE_TEST_SUITE_P(, WebAppFileHandlingIconBrowserTest, testing::Bool());
 
-class WebAppFileHandlingLaunchQueueBrowserTest
-    : public WebAppFileHandlingBrowserTest,
-      public base::test::WithFeatureOverride {
- public:
-  WebAppFileHandlingLaunchQueueBrowserTest()
-      : base::test::WithFeatureOverride(
-            ::webapps::features::kLaunchQueueStopSendingOnReload) {}
-};
-
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingLaunchQueueBrowserTest,
-                       LaunchQueueSetOnReload) {
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
   GURL handler_url = embedded_https_test_server().GetURL(
       "app.com", "/web_app_file_handling/handle_files.html");
   webapps::AppId app_id =
@@ -553,16 +543,10 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingLaunchQueueBrowserTest,
     navigation_observer.Wait();
     AttachTestConsumer(web_contents_);
   }
-  if (IsParamFeatureEnabled()) {
-    EXPECT_FALSE(HasLaunchParams());
-  } else {
-    EXPECT_TRUE(HasLaunchParams());
-    EXPECT_EQ(GetLaunchParamsTargetUrl(), handler_url);
-    VerifyPwaDidReceiveFileLaunchParams(file);
-  }
+  EXPECT_FALSE(HasLaunchParams());
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingLaunchQueueBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueSetOnReloadAfterPushState) {
   GURL handler_url = embedded_https_test_server().GetURL(
       "app.com", "/web_app_file_handling/handle_files.html");
@@ -592,16 +576,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingLaunchQueueBrowserTest,
     navigation_observer.Wait();
     AttachTestConsumer(web_contents_);
   }
-  if (IsParamFeatureEnabled()) {
-    EXPECT_FALSE(HasLaunchParams());
-  } else {
-    EXPECT_TRUE(HasLaunchParams());
-    EXPECT_EQ(GetLaunchParamsTargetUrl(), handler_url);
-    VerifyPwaDidReceiveFileLaunchParams(file);
-  }
+  EXPECT_FALSE(HasLaunchParams());
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    WebAppFileHandlingLaunchQueueBrowserTest);
 
 }  // namespace web_app

@@ -250,10 +250,6 @@ void WebAppTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (launch_queue_) {
-    launch_queue_->DidFinishNavigation(navigation_handle);
-  }
-
   provider_->ui_manager().NotifyDidFinishNavigation(navigation_handle);
 }
 

@@ -14,10 +14,7 @@
 class GURL;
 
 namespace content {
-
 class WebContents;
-class NavigationHandle;
-
 }  // namespace content
 
 namespace webapps {
@@ -53,16 +50,10 @@ class LaunchQueue {
 
   void FlushForTesting() const;
 
-  void DidFinishNavigation(content::NavigationHandle* handle);
-
  private:
   void SendLaunchParams(LaunchParams launch_params, const GURL& current_url);
 
   raw_ptr<content::WebContents> web_contents_;
-
-  // A copy of the last sent launch params ready to resend should the user
-  // reload the page.
-  std::optional<LaunchParams> last_sent_queued_launch_params_;
 
   std::unique_ptr<LaunchQueueDelegate> delegate_;
 };
