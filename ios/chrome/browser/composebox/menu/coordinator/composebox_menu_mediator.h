@@ -54,6 +54,10 @@ class WebStateList;
 - (void)composeboxMenuMediatorDidRequestTabSelection:
     (ComposeboxMenuMediator*)mediator;
 
+// Called when the drive file selection is requested.
+- (void)composeboxMenuMediatorDidRequestDriveFileSelection:
+    (ComposeboxMenuMediator*)mediator;
+
 @end
 
 // Mediator for the composebox menu.

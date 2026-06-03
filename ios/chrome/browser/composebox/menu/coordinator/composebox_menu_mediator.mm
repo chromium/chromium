@@ -178,7 +178,7 @@
       break;
     case ComposeboxMenuItemType::kAttachmentDrive:
       CHECK(IsComposeboxDriveOptionEnabled());
-      // TODO(crbug.com/515377633): Handle Drive files selection.
+      [self.delegate composeboxMenuMediatorDidRequestDriveFileSelection:self];
       break;
     case ComposeboxMenuItemType::kUnknown:
       break;

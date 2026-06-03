@@ -364,6 +364,12 @@ CGFloat const kSheetTopPadding = 40.0f;
   [_pickerPresenter presentTabPicker];
 }
 
+- (void)composeboxMenuMediatorDidRequestDriveFileSelection:
+    (ComposeboxMenuMediator*)mediator {
+  // TODO(crbug.com/515377633): Record metrics and start the drive file picker
+  // coordinator.
+}
+
 #pragma mark - ComposeboxPickerPresenterDelegate
 
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter

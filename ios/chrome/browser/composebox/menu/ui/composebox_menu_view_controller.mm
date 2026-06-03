@@ -482,8 +482,26 @@ UIImage* IconForModel(ComposeboxModelOption option) {
            disabled:[_inputState isAttachmentDisabled:
                                      ComposeboxAttachmentOption::kFile]];
 
-  // TODO(crbug.com/515377633): Add drive item.
-  return @[ currentTabItem, tabsItem, cameraItem, galleryItem, filesItem ];
+  NSMutableArray* attachmentItems =
+      [NSMutableArray arrayWithObjects:currentTabItem, tabsItem, cameraItem,
+                                       galleryItem, filesItem, nil];
+  if (IsComposeboxDriveOptionEnabled()) {
+    UIImage* driveSymbol =
+        DefaultSymbolWithPointSize(kFolderSymbol, kSymbolActionPointSize);
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+    driveSymbol =
+        CustomSymbolWithPointSize(kGoogleDriveSymbol, kSymbolActionPointSize);
+#endif
+    // TODO(crbug.com/515377633): Add string translation.
+    ComposeboxMenuItem* driveItem = [[ComposeboxMenuItem alloc]
+        initWithTitle:@"Drive"
+                image:driveSymbol
+                 type:ComposeboxMenuItemType::kAttachmentDrive
+             disabled:[_inputState isAttachmentDisabled:
+                                       ComposeboxAttachmentOption::kDrive]];
+    [attachmentItems addObject:driveItem];
+  }
+  return attachmentItems;
 }
 
 #pragma mark - UICollectionViewDelegate
