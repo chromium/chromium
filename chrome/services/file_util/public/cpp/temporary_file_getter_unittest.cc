@@ -45,4 +45,26 @@ TEST_F(TemporaryFileGetterTest, ExceedFileLimitTest) {
   EXPECT_FALSE(temp_file_.IsValid());
 }
 
+TEST_F(TemporaryFileGetterTest, GetTempFileWriteReadTest) {
+  auto callback = base::BindOnce(&UpdateTempFile, &temp_file_);
+  temp_file_getter_.RequestTemporaryFile(std::move(callback));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(temp_file_.IsValid());
+
+  constexpr char kTestData[] = "Some test data to write to temporary file getter";
+  std::optional<size_t> bytes_written =
+      temp_file_.WriteAtCurrentPos(base::as_byte_span(std::string_view(kTestData)));
+  ASSERT_TRUE(bytes_written.has_value());
+  EXPECT_EQ(std::size(kTestData) - 1, bytes_written.value());
+
+  ASSERT_TRUE(temp_file_.Seek(base::File::FROM_BEGIN, 0) == 0);
+
+  char read_buffer[sizeof(kTestData)] = {0};
+  std::optional<size_t> bytes_read =
+      temp_file_.ReadAtCurrentPos(base::as_writable_byte_span(read_buffer).first(bytes_written.value()));
+  ASSERT_TRUE(bytes_read.has_value());
+  EXPECT_EQ(bytes_written.value(), bytes_read.value());
+  EXPECT_EQ(std::string_view(kTestData), std::string_view(read_buffer, bytes_read.value()));
+}
+
 }  // namespace safe_browsing

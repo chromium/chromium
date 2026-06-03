@@ -155,4 +155,27 @@ TEST_F(BinaryFeatureExtractorTest, CanRemoveFileDuringExecution) {
       path_, BinaryFeatureExtractor::kDefaultOptions, &image_headers, nullptr);
 }
 
+TEST_F(BinaryFeatureExtractorTest, ExtractImageFeaturesContentMatch) {
+  constexpr char kTestData[] = "Safe copy of interesting binary content";
+  WriteFileToHash(base::as_byte_span(std::string_view(kTestData)));
+
+  scoped_refptr<MockBinaryFeatureExtractor> mock_extractor(
+      new MockBinaryFeatureExtractor());
+  EXPECT_CALL(*mock_extractor, ExtractImageFeaturesFromData(_, _, _, _))
+      .WillOnce(
+          [&](base::span<const uint8_t> data,
+              BinaryFeatureExtractor::ExtractHeadersOption options,
+              ClientDownloadRequest_ImageHeaders* image_headers,
+              google::protobuf::RepeatedPtrField<std::string>* signed_data) {
+            EXPECT_EQ(std::string_view(kTestData),
+                      std::string_view(reinterpret_cast<const char*>(data.data()),
+                                       data.size()));
+            return true;
+          });
+
+  ClientDownloadRequest_ImageHeaders image_headers;
+  EXPECT_TRUE(mock_extractor->ExtractImageFeatures(
+      path_, BinaryFeatureExtractor::kDefaultOptions, &image_headers, nullptr));
+}
+
 }  // namespace safe_browsing
