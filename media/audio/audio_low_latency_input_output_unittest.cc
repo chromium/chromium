@@ -334,7 +334,7 @@ class StreamWrapper {
     StreamType* stream = StreamTraits::CreateStream(
         audio_manager_,
         AudioParameters(format_,
-                        ChannelLayoutConfig(channel_layout_, channels()),
+                        ChannelLayoutConfig::FromLayout(channel_layout_),
                         sample_rate_, samples_per_packet_));
     EXPECT_TRUE(stream);
     return stream;

@@ -181,11 +181,9 @@ void NdkAudioEncoder::Initialize(const Options& options,
 
   output_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(output_callback));
 
-  output_params_.Reset(
-      AudioParameters::Format::AUDIO_PCM_LINEAR,
-      ChannelLayoutConfig(GuessChannelLayout(options_.channels),
-                          options_.channels),
-      options_.sample_rate, kAacFramesPerBuffer);
+  output_params_.Reset(AudioParameters::Format::AUDIO_PCM_LINEAR,
+                       ChannelLayoutConfig::Guess(options_.channels),
+                       options_.sample_rate, kAacFramesPerBuffer);
 
   // `fifo_` will upmix/downmix and repacketize inputs to make sure there are
   // the correct number of channels and samples per buffer, without resampling.

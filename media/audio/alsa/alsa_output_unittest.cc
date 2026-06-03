@@ -121,10 +121,8 @@ class AlsaPcmOutputStreamTest : public testing::Test {
 
   AlsaPcmOutputStream* CreateStream(ChannelLayout layout,
                                     int32_t samples_per_packet) {
-    AudioParameters params(
-        kTestFormat,
-        ChannelLayoutConfig(layout, ChannelLayoutToChannelCount(layout)),
-        kTestSampleRate, samples_per_packet);
+    AudioParameters params(kTestFormat, ChannelLayoutConfig::FromLayout(layout),
+                           kTestSampleRate, samples_per_packet);
     return new AlsaPcmOutputStream(kTestDeviceName,
                                    params,
                                    &mock_alsa_wrapper_,
