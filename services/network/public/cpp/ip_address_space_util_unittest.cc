@@ -355,6 +355,10 @@ class IPAddressSpaceOverridesTest : public testing::Test {
   void SetUp() override {
     network::IPAddressSpaceOverrides::GetInstance().ResetForTesting();
   }
+
+  void TearDown() override {
+    network::IPAddressSpaceOverrides::GetInstance().ResetForTesting();
+  }
 };
 
 // Verifies that overrides can be present and empty, in which case it is
