@@ -129,9 +129,6 @@ BASE_DECLARE_FEATURE(kOmniboxXGeoPermissionGranularity);
 BASE_DECLARE_FEATURE(kOmniboxItemDecoration);
 BASE_DECLARE_FEATURE(kExactMatchFavicons);
 
-// Whether to use short suggest path.
-BASE_DECLARE_FEATURE(kUseShortSuggestPathV1);
-
 // Omnibox suggestions tuning
 BASE_DECLARE_FEATURE(kNumNtpZpsRecentSearches);
 BASE_DECLARE_FEATURE(kNumNtpZpsTrendingSearches);
