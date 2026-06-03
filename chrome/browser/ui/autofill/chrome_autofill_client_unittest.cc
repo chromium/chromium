@@ -87,16 +87,19 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #endif
 
@@ -257,13 +260,14 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   }
 #endif
 
- private:
+ protected:
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
         autofill::PersonalDataManagerFactory::GetInstance(),
         base::BindRepeating(&CreateTestPersonalDataManager)}};
   }
 
+ private:
   static std::unique_ptr<KeyedService> CreateTestPersonalDataManager(
       content::BrowserContext* context) {
     auto pdm = std::make_unique<TestPersonalDataManager>();
@@ -656,49 +660,84 @@ TEST_F(ChromeAutofillClientTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class ChromeAutofillClientTestWithWindow : public BrowserWithTestWindowTest {
+class ChromeAutofillClientTestWithMockWindow : public ChromeAutofillClientTest {
  public:
-  void SetUp() override {
-    user_ed_override_ =
-        BrowserWindowFeatures::GetUserDataFactoryForTesting()
-            .AddOverrideForTesting(
-                base::BindRepeating([](BrowserWindowInterface& window) {
-                  return std::make_unique<MockBrowserUserEducationInterface>(
-                      &window);
-                }));
+  ChromeAutofillClientTestWithMockWindow() {
+    scoped_feature_list_.InitAndEnableFeature(features::kAutofillActorMode);
+    manager_injector_ =
+        std::make_unique<TestAutofillManagerInjector<MockAutofillManager>>();
+  }
 
-    BrowserWithTestWindowTest::SetUp();
-
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    TestingProfile::TestingFactories factories =
+        ChromeAutofillClientTest::GetTestingFactories();
     // Register the fake actor service before any tabs are added, so that
     // any TabFeatures created (including the first tab) use the fake service
     // instead of creating a real one that gets destroyed later.
-    actor::ActorKeyedServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-          return std::make_unique<actor::ActorKeyedServiceFake>(
-              Profile::FromBrowserContext(context));
-        }));
+    factories.push_back(
+        {actor::ActorKeyedServiceFactory::GetInstance(),
+         base::BindRepeating([](content::BrowserContext* context)
+                                 -> std::unique_ptr<KeyedService> {
+           return std::make_unique<actor::ActorKeyedServiceFake>(
+               Profile::FromBrowserContext(context));
+         })});
+    return factories;
+  }
 
-    // Create the first tab so that `web_contents()` exists.
-    AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
+  void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+
+    ChromeAutofillClientTest::SetUp();
+
+    // Register the testing profile in the profile attributes storage.
+    ProfileAttributesInitParams params;
+    params.profile_path = profile()->GetPath();
+    params.profile_name = u"Test Profile";
+    profile_manager_->profile_attributes_storage()->AddProfile(
+        std::move(params));
+
+    // Link MockTabInterface with the test profile, web contents, and mock
+    // window.
+    ON_CALL(mock_tab_interface_, GetContents()).WillByDefault([this]() {
+      return web_contents();
+    });
+    ON_CALL(mock_tab_interface_, GetProfile()).WillByDefault([this]() {
+      return profile();
+    });
+    ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
+        .WillByDefault(Return(&mock_browser_window_interface_));
+    ON_CALL(mock_tab_interface_, GetWeakPtr())
+        .WillByDefault(Return(mock_tab_interface_weak_factory_.GetWeakPtr()));
+    ON_CALL(mock_tab_interface_, GetTabHandle())
+        .WillByDefault(Return(mock_tab_interface_.GetHandle().raw_value()));
+
+    // Link MockBrowserWindowInterface with our UnownedUserDataHost and test
+    // profile.
+    ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
+        .WillByDefault(ReturnRef(unowned_user_data_host_));
+    ON_CALL(mock_browser_window_interface_, GetProfile())
+        .WillByDefault([this]() { return profile(); });
+
+    // Associate mock_tab_interface_ with web_contents()
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                         &mock_tab_interface_);
   }
 
   void TearDown() override {
     glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
-    BrowserWithTestWindowTest::TearDown();
+    manager_injector_.reset();
+    ChromeAutofillClientTest::TearDown();
+    profile_manager_.reset();
   }
 
-  MockBrowserUserEducationInterface* user_education() {
-    return static_cast<MockBrowserUserEducationInterface*>(
-        BrowserUserEducationInterface::From(browser()));
+  tabs::MockTabInterface& mock_tab_interface() { return mock_tab_interface_; }
+  MockBrowserWindowInterface& mock_browser_window_interface() {
+    return mock_browser_window_interface_;
   }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  TestChromeAutofillClient* client() {
-    return test_autofill_client_injector_[web_contents()];
+  ui::UnownedUserDataHost& unowned_user_data_host() {
+    return unowned_user_data_host_;
   }
 
   glic::MockGlicKeyedService* SetUpMockGlicKeyedService() {
@@ -723,15 +762,27 @@ class ChromeAutofillClientTestWithWindow : public BrowserWithTestWindowTest {
                                                            /*create=*/true));
   }
 
+ protected:
+  std::unique_ptr<TestAutofillManagerInjector<MockAutofillManager>>
+      manager_injector_;
+
  private:
-  TestAutofillClientInjector<TestChromeAutofillClient>
-      test_autofill_client_injector_;
-  ui::UserDataFactory::ScopedOverride user_ed_override_;
+  tabs::MockTabInterface mock_tab_interface_;
+  MockBrowserWindowInterface mock_browser_window_interface_;
+  ui::UnownedUserDataHost unowned_user_data_host_;
+  base::WeakPtrFactory<tabs::MockTabInterface> mock_tab_interface_weak_factory_{
+      &mock_tab_interface_};
   glic::GlicProfileManager glic_profile_manager_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ChromeAutofillClientTestWithWindow, AutofillFieldIPH_NotifyFeatureUsed) {
-  EXPECT_CALL(*user_education(),
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       AutofillFieldIPH_NotifyFeatureUsed) {
+  MockBrowserUserEducationInterface mock_user_education(
+      &mock_browser_window_interface());
+
+  EXPECT_CALL(mock_user_education,
               NotifyFeaturePromoFeatureUsed(
                   Ref(feature_engagement::kIPHAutofillAiOptInFeature),
                   FeaturePromoFeatureUsedAction::kClosePromoIfPresent));
@@ -740,7 +791,7 @@ TEST_F(ChromeAutofillClientTestWithWindow, AutofillFieldIPH_NotifyFeatureUsed) {
 
 // Tests that `OpenGeminiInSidebar` invokes Glic with the correct options and
 // prompt.
-TEST_F(ChromeAutofillClientTestWithWindow, OpenGeminiInSidebar) {
+TEST_F(ChromeAutofillClientTestWithMockWindow, OpenGeminiInSidebar) {
   glic::MockGlicKeyedService* mock_glic_service = SetUpMockGlicKeyedService();
   ASSERT_TRUE(mock_glic_service);
 
@@ -759,20 +810,14 @@ TEST_F(ChromeAutofillClientTestWithWindow, OpenGeminiInSidebar) {
 
 // Tests that `OnActorTaskStateChange` calls `ReparseKnownForms` on all drivers
 // when a new task gets assigned.
-TEST_F(ChromeAutofillClientTestWithWindow,
+TEST_F(ChromeAutofillClientTestWithMockWindow,
        OnActorTaskStateChange_ReparseForms) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAutofillActorMode);
-
   actor::ActorKeyedServiceFake* actor_service =
       static_cast<actor::ActorKeyedServiceFake*>(
           actor::ActorKeyedService::Get(profile()));
   ASSERT_TRUE(actor_service);
 
-  TestAutofillManagerInjector<MockAutofillManager> manager_injector;
-  AddTab(browser(), GURL("about:blank"));
-  content::WebContents* active_contents = web_contents();
-  MockAutofillManager* mock_manager = manager_injector[active_contents];
+  MockAutofillManager* mock_manager = (*manager_injector_)[web_contents()];
   ASSERT_TRUE(mock_manager);
 
   actor::TaskId task_id = actor_service->CreateTaskForTesting();
@@ -780,11 +825,8 @@ TEST_F(ChromeAutofillClientTestWithWindow,
   ASSERT_TRUE(task);
 
   // Associate the active tab with the task.
-  tabs::TabInterface* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(active_contents);
-  ASSERT_TRUE(tab_interface);
-  task->AddTab(tab_interface->GetHandle(), /*stop_task_on_detach=*/true,
-               base::DoNothing());
+  task->AddTab(mock_tab_interface().GetHandle(),
+               /*stop_task_on_detach=*/true, base::DoNothing());
 
   // Verify first call (assignment) triggers `ReparseKnownForms`.
   EXPECT_CALL(*mock_manager, ReparseKnownForms()).Times(1);
