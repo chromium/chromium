@@ -7,6 +7,7 @@ package org.chromium.chrome.test.transit.omnibox;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_QUERY_TILES;
@@ -52,6 +53,19 @@ public class FakeOmniboxSuggestions {
     }
 
     public void destroy() {
+        // Reset mocks to release any references Mockito's invocation history holds onto
+        // (e.g., listener arguments captured via addOnSuggestionsReceivedListener that
+        // transitively retain AutocompleteMediator -> ChromeTabbedActivity).
+        for (AutocompleteController controller : mControllers.values()) {
+            reset(controller);
+        }
+        mControllers.clear();
+        mListenersMap.clear();
+        if (mControllerJni != null) {
+            reset(mControllerJni);
+            AutocompleteControllerJni.setInstanceForTesting(null);
+            mControllerJni = null;
+        }
         sInstance = null;
     }
 
