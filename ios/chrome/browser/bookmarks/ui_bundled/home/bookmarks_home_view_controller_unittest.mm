@@ -32,22 +32,6 @@
                                      (const bookmarks::BookmarkNode*)folder;
 @end
 
-// Fake implementation of BookmarksFolderChooserCoordinator for testing.
-@interface FakeBookmarksFolderChooserCoordinator
-    : BookmarksFolderChooserCoordinator
-@property(nonatomic, assign) std::set<raw_ptr<const bookmarks::BookmarkNode>>
-    movedNodesSet;
-@end
-
-@implementation FakeBookmarksFolderChooserCoordinator
-- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)movedNodes {
-  return _movedNodesSet;
-}
-- (void)stop {
-  // Do nothing.
-}
-@end
-
 namespace {
 
 using BookmarksHomeViewControllerTest = BookmarkIOSUnitTestSupport;
@@ -288,20 +272,19 @@ TEST_F(BookmarksHomeViewControllerTest,
   std::set<raw_ptr<const bookmarks::BookmarkNode>> selectedNodes;
   selectedNodes.insert(bookmark);
 
-  // Use a fake folder chooser coordinator.
-  FakeBookmarksFolderChooserCoordinator* fakeFolderChooserCoordinator =
-      [[FakeBookmarksFolderChooserCoordinator alloc]
+  BookmarksFolderChooserCoordinator* folderChooserCoordinator =
+      [[BookmarksFolderChooserCoordinator alloc]
           initWithBaseViewController:nil
                              browser:browser_.get()
-                          movedNodes:{}];
-  fakeFolderChooserCoordinator.movedNodesSet = selectedNodes;
-  [controller setFolderChooserCoordinator:fakeFolderChooserCoordinator];
+                          movedNodes:selectedNodes];
+  [folderChooserCoordinator start];
+  [controller setFolderChooserCoordinator:folderChooserCoordinator];
 
   // Call the delegate method with the same parent folder.
   // This should result in MoveBookmarksWithUndoSnackbar returning nil,
   // and showSnackbarMessage: NOT being called.
   [controller
-      bookmarksFolderChooserCoordinatorDidConfirm:fakeFolderChooserCoordinator
+      bookmarksFolderChooserCoordinatorDidConfirm:folderChooserCoordinator
                                withSelectedFolder:mobileNode];
 
   [mockSnackbarHandler verify];
