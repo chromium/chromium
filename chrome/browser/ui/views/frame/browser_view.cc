@@ -1593,7 +1593,11 @@ void BrowserView::SetBounds(const gfx::Rect& bounds) {
     return;
   }
 
+  auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   exclusive_access_context_->ExitFullscreen();
+  if (!weak_ptr) {
+    return;
+  }
 
   // If the BrowserFrameView has been created, give it a chance to handle the
   // BrowserWidget's bounds change.
