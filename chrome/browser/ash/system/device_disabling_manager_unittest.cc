@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -209,7 +209,7 @@ void DeviceDisablingManagerOOBETest::SetDeviceDisabled(
     bool disabled,
     std::optional<bool> location_tracking_enabled) {
   ScopedDictPrefUpdate dict(TestingBrowserProcess::GetGlobal()->local_state(),
-                            prefs::kServerBackedDeviceState);
+                            ash::prefs::kServerBackedDeviceState);
   if (disabled) {
     dict->Set(policy::kDeviceStateMode, policy::kDeviceStateModeDisabled);
   } else {

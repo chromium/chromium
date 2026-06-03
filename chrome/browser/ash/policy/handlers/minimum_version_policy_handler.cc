@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/system_tray.h"
 #include "base/check_deref.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -182,9 +182,9 @@ bool MinimumVersionPolicyHandler::IsPolicyRestrictionAppliedForUser() const {
 
 //  static
 void MinimumVersionPolicyHandler::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(prefs::kUpdateRequiredTimerStartTime,
+  registry->RegisterTimePref(ash::prefs::kUpdateRequiredTimerStartTime,
                              base::Time());
-  registry->RegisterTimeDeltaPref(prefs::kUpdateRequiredWarningPeriod,
+  registry->RegisterTimeDeltaPref(ash::prefs::kUpdateRequiredWarningPeriod,
                                   base::TimeDelta());
 }
 
@@ -340,9 +340,9 @@ void MinimumVersionPolicyHandler::OnFetchEolInfo(
 void MinimumVersionPolicyHandler::HandleUpdateRequired(
     base::TimeDelta warning_time) {
   const base::Time stored_timer_start_time =
-      local_state_->GetTime(prefs::kUpdateRequiredTimerStartTime);
+      local_state_->GetTime(ash::prefs::kUpdateRequiredTimerStartTime);
   const base::TimeDelta stored_warning_time =
-      local_state_->GetTimeDelta(prefs::kUpdateRequiredWarningPeriod);
+      local_state_->GetTimeDelta(ash::prefs::kUpdateRequiredWarningPeriod);
   base::Time previous_deadline = stored_timer_start_time + stored_warning_time;
 
   // If update is already required, use the existing timer start time to
@@ -413,19 +413,20 @@ void MinimumVersionPolicyHandler::HandleUpdateRequired(
 }
 
 void MinimumVersionPolicyHandler::ResetLocalState() {
-  local_state_->ClearPref(prefs::kUpdateRequiredTimerStartTime);
-  local_state_->ClearPref(prefs::kUpdateRequiredWarningPeriod);
+  local_state_->ClearPref(ash::prefs::kUpdateRequiredTimerStartTime);
+  local_state_->ClearPref(ash::prefs::kUpdateRequiredWarningPeriod);
 }
 
 void MinimumVersionPolicyHandler::UpdateLocalState(
     base::TimeDelta warning_time) {
   base::Time timer_start_time =
-      local_state_->GetTime(prefs::kUpdateRequiredTimerStartTime);
+      local_state_->GetTime(ash::prefs::kUpdateRequiredTimerStartTime);
   if (timer_start_time.is_null()) {
-    local_state_->SetTime(prefs::kUpdateRequiredTimerStartTime,
+    local_state_->SetTime(ash::prefs::kUpdateRequiredTimerStartTime,
                           update_required_time_);
   }
-  local_state_->SetTimeDelta(prefs::kUpdateRequiredWarningPeriod, warning_time);
+  local_state_->SetTimeDelta(ash::prefs::kUpdateRequiredWarningPeriod,
+                             warning_time);
   local_state_->CommitPendingWrite();
 }
 

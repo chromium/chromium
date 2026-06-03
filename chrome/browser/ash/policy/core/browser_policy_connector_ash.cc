@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -72,7 +73,6 @@
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/browser/policy/policy_util.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -558,7 +558,7 @@ BrowserPolicyConnectorAsh::GetGlobalUserCloudPolicyProvider() {
 // static
 void BrowserPolicyConnectorAsh::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
-      prefs::kDevicePolicyRefreshRate,
+      ash::prefs::kDevicePolicyRefreshRate,
       CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
 }
 

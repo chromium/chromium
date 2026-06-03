@@ -56,7 +56,7 @@ class ServerBackedStateKeysBroker;
 //   * kEnrollment, or
 //   * kNoEnrollment.
 // In case we retrieved state, i.e. there was no error, additional details are
-// stored as a dictionary under key `prefs::kServerBackedDeviceState` in
+// stored as a dictionary under key `ash::prefs::kServerBackedDeviceState` in
 // `local_state`, which can contain entries with the following keys and values:
 //  * kDeviceStateMode:
 //    * empty string (used when the state is kNoEnrollment),

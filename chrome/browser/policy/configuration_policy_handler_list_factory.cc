@@ -186,6 +186,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
@@ -1517,7 +1518,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     arc::prefs::kUnaffiliatedDeviceArcAllowed,
     base::Value::Type::BOOLEAN },
   { key::kReportArcStatusEnabled,
-    prefs::kReportArcStatusEnabled,
+    ash::prefs::kReportArcStatusEnabled,
     base::Value::Type::BOOLEAN },
   { key::kSchedulerConfiguration,
     ash::prefs::kSchedulerConfiguration,
@@ -1538,7 +1539,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kLanguageAllowedInputMethodsForceEnabled,
     base::Value::Type::BOOLEAN },
   { key::kArcAppInstallEventLoggingEnabled,
-    prefs::kArcAppInstallEventLoggingEnabled,
+    ash::prefs::kArcAppInstallEventLoggingEnabled,
     base::Value::Type::BOOLEAN },
   { key::kNetworkFileSharesAllowed,
     ash::prefs::kNetworkFileSharesAllowed,
@@ -2199,7 +2200,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kKioskPinchToZoomAllowed,
     base::Value::Type::BOOLEAN},
   { key::kDevicePolicyRefreshRate,
-    prefs::kDevicePolicyRefreshRate,
+    ash::prefs::kDevicePolicyRefreshRate,
     base::Value::Type::INTEGER },
   { key::kClientCertificateManagementAllowed,
     prefs::kClientCertificateManagementAllowed,

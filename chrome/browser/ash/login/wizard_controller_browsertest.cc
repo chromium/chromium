@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -113,7 +114,6 @@
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -1270,8 +1270,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Enrollment) {
   device_state.Set(
       policy::kDeviceStateMode,
       base::Value(policy::kDeviceStateRestoreModeReEnrollmentEnforced));
-  g_browser_process->local_state()->SetDict(::prefs::kServerBackedDeviceState,
-                                            std::move(device_state));
+  g_browser_process->local_state()->SetDict(
+      ash::prefs::kServerBackedDeviceState, std::move(device_state));
   fetcher_factory.ReportEnrollmentState(
       policy::AutoEnrollmentResult::kEnrollment);
 
@@ -1295,8 +1295,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Disabled) {
                    base::Value(policy::kDeviceStateModeDisabled));
   device_state.Set(policy::kDeviceStateDisabledMessage,
                    base::Value(kDisabledMessage));
-  g_browser_process->local_state()->SetDict(::prefs::kServerBackedDeviceState,
-                                            std::move(device_state));
+  g_browser_process->local_state()->SetDict(
+      ash::prefs::kServerBackedDeviceState, std::move(device_state));
   fetcher_factory.ReportEnrollmentState(
       policy::AutoEnrollmentResult::kDisabled);
 
@@ -1366,8 +1366,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest,
                    base::Value(policy::kDeviceStateModeDisabled));
   device_state.Set(policy::kDeviceStateDisabledMessage,
                    base::Value(kDisabledMessage));
-  g_browser_process->local_state()->SetDict(::prefs::kServerBackedDeviceState,
-                                            std::move(device_state));
+  g_browser_process->local_state()->SetDict(
+      ash::prefs::kServerBackedDeviceState, std::move(device_state));
 
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl());
   EXPECT_CALL(*device_disabled_screen_view_,
@@ -1460,8 +1460,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest, FjordOobeScreenFlow) {
   device_state.Set(
       policy::kDeviceStateMode,
       base::Value(policy::kDeviceStateRestoreModeReEnrollmentEnforced));
-  g_browser_process->local_state()->SetDict(::prefs::kServerBackedDeviceState,
-                                            std::move(device_state));
+  g_browser_process->local_state()->SetDict(
+      ash::prefs::kServerBackedDeviceState, std::move(device_state));
   fetcher_factory.ReportEnrollmentState(
       policy::AutoEnrollmentResult::kEnrollment);
 
@@ -1502,8 +1502,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
   device_state.Set(
       policy::kDeviceStateMode,
       base::Value(policy::kDeviceStateRestoreModeReEnrollmentEnforced));
-  g_browser_process->local_state()->SetDict(::prefs::kServerBackedDeviceState,
-                                            std::move(device_state));
+  g_browser_process->local_state()->SetDict(
+      ash::prefs::kServerBackedDeviceState, std::move(device_state));
   fetcher_factory.ReportEnrollmentState(
       policy::AutoEnrollmentResult::kEnrollment);
 
@@ -2419,7 +2419,7 @@ class WizardControllerEnrollmentTokenRebootTest : public WizardControllerTest {
     device_state.Set(
         policy::kDeviceStateMode,
         base::Value(policy::kDeviceStateInitialModeTokenEnrollment));
-    local_state->SetDict(::prefs::kServerBackedDeviceState,
+    local_state->SetDict(ash::prefs::kServerBackedDeviceState,
                          std::move(device_state));
   }
 };

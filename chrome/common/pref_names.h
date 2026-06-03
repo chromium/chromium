@@ -587,18 +587,6 @@ inline constexpr char kStartupBrowserWindowLaunchSuppressed[] =
 inline constexpr char kLoginExtensionApiDataForNextLoginAttempt[] =
     "extensions_api.login.data_for_next_login_attempt";
 
-// Int64 pref indicating the time in microseconds since Windows epoch when the
-// timer for update required which will block user session was started. If the
-// timer is not started the pref holds the default value base::Time().
-inline constexpr char kUpdateRequiredTimerStartTime[] =
-    "update_required_timer_start_time";
-
-// Int64 pref indicating the waiting time in microseconds after which the update
-// required timer will expire and block user session. If the timer is not
-// started the pref holds the default value base::TimeDelta().
-inline constexpr char kUpdateRequiredWarningPeriod[] =
-    "update_required_warning_period";
-
 // String user profile pref that contains the host and port of the local
 // proxy which tunnels user traffic, in the format <address>:<proxy>. Only set
 // when System-proxy and ARC++ are enabled by policy.
@@ -2299,13 +2287,7 @@ inline constexpr char kDeviceRobotAnyApiRefreshTokenV2[] =
 inline constexpr char kDeviceRefreshTokenAnyApiIsV3Used[] =
     "device_refresh_token_is_v3_used.any-api";
 
-// A dictionary containing server-provided device state pulled form the cloud
-// after recovery.
-inline constexpr char kServerBackedDeviceState[] = "server_backed_device_state";
 
-// A boolean preference controlling Android status reporting.
-inline constexpr char kReportArcStatusEnabled[] =
-    "arc.status_reporting_enabled";
 
 // Dictionary indicating current network bandwidth throttling settings.
 // Contains a boolean (is throttling enabled) and two integers (upload rate
@@ -2316,12 +2298,7 @@ inline constexpr char kNetworkThrottlingEnabled[] = "net.throttling_enabled";
 // ash::PowerMetricsReporter.
 inline constexpr char kPowerMetricsDailySample[] = "power.metrics.daily_sample";
 
-// Key for list of users that should be reported.
-inline constexpr char kReportingUsers[] = "reporting_users";
 
-// Whether to log events for Android app installs.
-inline constexpr char kArcAppInstallEventLoggingEnabled[] =
-    "arc.app_install_event_logging_enabled";
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -2463,10 +2440,6 @@ inline constexpr char kProcessIsolationEnabled[] = "isolation_state.enabled";
 inline constexpr char kHardwareAccelerationModePrevious[] =
     "hardware_acceleration_mode_previous";
 
-// Integer that specifies the policy refresh rate for device-policy in
-// milliseconds. Not all values are meaningful, so it is clamped to a sane range
-// by the cloud policy subsystem.
-inline constexpr char kDevicePolicyRefreshRate[] = "policy.device_refresh_rate";
 
 #if !BUILDFLAG(IS_ANDROID)
 // A boolean where true means that the browser has previously attempted to

@@ -36,8 +36,8 @@ namespace system {
 // - If the device has been wiped, it will perform a hash dance during OOBE to
 //   find out whether any persistent state has been stored for it on the server.
 //   If so, persistent state is retrieved as a |DeviceStateRetrievalResponse|
-//   protobuf, parsed and written to the |prefs::kServerBackedDeviceState| local
-//   state pref. At the appropriate place in the OOBE flow, the
+//   protobuf, parsed and written to the |ash::prefs::kServerBackedDeviceState|
+//   local state pref. At the appropriate place in the OOBE flow, the
 //   |WizardController| will call CheckWhetherDeviceDisabledDuringOOBE() to find
 //   out whether the device is disabled, causing it to either show or skip the
 //   device disabled screen.

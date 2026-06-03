@@ -6,11 +6,11 @@
 
 #include <string>
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace policy {
@@ -51,7 +51,7 @@ const char kDeviceStateAssignedUpgradeTypeKiosk[] = "kiosk";
 DeviceStateMode GetDeviceStateMode() {
   const std::string* device_state_mode =
       g_browser_process->local_state()
-          ->GetDict(prefs::kServerBackedDeviceState)
+          ->GetDict(ash::prefs::kServerBackedDeviceState)
           .FindString(kDeviceStateMode);
   if (!device_state_mode || device_state_mode->empty())
     return RESTORE_MODE_NONE;

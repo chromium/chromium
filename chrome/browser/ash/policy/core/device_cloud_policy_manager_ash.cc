@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -167,7 +166,7 @@ void DeviceCloudPolicyManagerAsh::Shutdown() {
 void DeviceCloudPolicyManagerAsh::RegisterPrefs(PrefRegistrySimple* registry) {
   ReportingUserTracker::RegisterPrefs(registry);
 
-  registry->RegisterDictionaryPref(::prefs::kServerBackedDeviceState);
+  registry->RegisterDictionaryPref(ash::prefs::kServerBackedDeviceState);
   registry->RegisterBooleanPref(ash::prefs::kRemoveUsersRemoteCommand, false);
   registry->RegisterStringPref(ash::prefs::kLastRsuDeviceIdUploaded,
                                std::string());
@@ -210,7 +209,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   core()->StartRefreshScheduler();
   core()->RefreshSoon(PolicyFetchReason::kBrowserStart);
   core()->TrackRefreshDelayPref(local_state_,
-                                ::prefs::kDevicePolicyRefreshRate);
+                                ash::prefs::kDevicePolicyRefreshRate);
 
   external_data_manager_->Connect(
       g_browser_process->shared_url_loader_factory());

@@ -7,7 +7,7 @@
 
 namespace policy {
 
-// Dictionary key constants for prefs::kServerBackedDeviceState.
+// Dictionary key constants for ash::prefs::kServerBackedDeviceState.
 extern const char kDeviceStateManagementDomain[];
 extern const char kDeviceStateMode[];
 extern const char kDeviceStateDisabledMessage[];

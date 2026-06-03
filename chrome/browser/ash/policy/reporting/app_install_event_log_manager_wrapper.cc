@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/reporting/install_event_log_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -40,7 +40,7 @@ AppInstallEventLogManagerWrapper::CreateForProfile(Profile* profile) {
 // static
 void AppInstallEventLogManagerWrapper::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kArcAppInstallEventLoggingEnabled,
+  registry->RegisterBooleanPref(ash::prefs::kArcAppInstallEventLoggingEnabled,
                                 false);
 }
 
@@ -57,7 +57,7 @@ AppInstallEventLogManagerWrapper::AppInstallEventLogManagerWrapper(
 
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
-      prefs::kArcAppInstallEventLoggingEnabled,
+      ash::prefs::kArcAppInstallEventLoggingEnabled,
       base::BindRepeating(&AppInstallEventLogManagerWrapper::EvaluatePref,
                           base::Unretained(this)));
 }
@@ -114,7 +114,7 @@ void AppInstallEventLogManagerWrapper::DisableLogging() {
 
 void AppInstallEventLogManagerWrapper::EvaluatePref() {
   if (profile_->GetPrefs()->GetBoolean(
-          prefs::kArcAppInstallEventLoggingEnabled)) {
+          ash::prefs::kArcAppInstallEventLoggingEnabled)) {
     InitLogging();
   } else {
     DisableLogging();

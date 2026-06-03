@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
@@ -439,7 +439,7 @@ TEST_F(ChildStatusCollectorTest, ReportingBootMode) {
 TEST_F(ChildStatusCollectorTest, ReportingArcStatus) {
   RestartStatusCollector(
       base::BindRepeating(&GetFakeAndroidStatus, kArcStatus, kDroidGuardInfo));
-  testing_profile_->GetPrefs()->SetBoolean(prefs::kReportArcStatusEnabled,
+  testing_profile_->GetPrefs()->SetBoolean(ash::prefs::kReportArcStatusEnabled,
                                            true);
 
   GetStatus();

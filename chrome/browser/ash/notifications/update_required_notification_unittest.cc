@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_chromeos_version_info.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
@@ -340,9 +340,9 @@ TEST_F(UpdateRequiredNotificationTest, LastHourEolNotifications) {
   PrefService* prefs = TestingBrowserProcess::GetGlobal()->local_state();
   const base::TimeDelta delta =
       base::Days(kShortWarningInDays) - base::Hours(1);
-  prefs->SetTime(prefs::kUpdateRequiredTimerStartTime,
+  prefs->SetTime(ash::prefs::kUpdateRequiredTimerStartTime,
                  base::Time::Now() - delta);
-  prefs->SetTimeDelta(prefs::kUpdateRequiredWarningPeriod,
+  prefs->SetTimeDelta(ash::prefs::kUpdateRequiredWarningPeriod,
                       base::Days(kShortWarningInDays));
 
   // This is needed to wait till EOL status is fetched from the update_engine.

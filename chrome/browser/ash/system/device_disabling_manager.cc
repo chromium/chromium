@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -127,7 +127,7 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
   // Update the enrollment domain.
   enrollment_domain_.clear();
   const std::string* maybe_enrollment_domain =
-      local_state_->GetDict(prefs::kServerBackedDeviceState)
+      local_state_->GetDict(ash::prefs::kServerBackedDeviceState)
           .FindString(policy::kDeviceStateManagementDomain);
   enrollment_domain_ =
       maybe_enrollment_domain ? *maybe_enrollment_domain : std::string();
@@ -138,7 +138,7 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
 
   // Update the disabled message.
   const std::string* maybe_disabled_message =
-      local_state_->GetDict(prefs::kServerBackedDeviceState)
+      local_state_->GetDict(ash::prefs::kServerBackedDeviceState)
           .FindString(policy::kDeviceStateDisabledMessage);
   std::string disabled_message =
       maybe_disabled_message ? *maybe_disabled_message : std::string();
@@ -146,7 +146,7 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
 
   // Update the location tracking enabled state.
   std::optional<bool> maybe_location_tracking_enabled =
-      local_state_->GetDict(prefs::kServerBackedDeviceState)
+      local_state_->GetDict(ash::prefs::kServerBackedDeviceState)
           .FindBool(policy::kDeviceStateLocationTrackingEnabled);
   bool location_tracking_enabled =
       maybe_location_tracking_enabled.value_or(false);

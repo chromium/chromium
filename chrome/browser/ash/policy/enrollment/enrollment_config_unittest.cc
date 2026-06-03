@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 
 #include "ash/constants/ash_login_pref_names.h"
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
@@ -77,7 +77,8 @@ TEST_F(EnrollmentConfigTest, TokenEnrollmentModeWithNoTokenYieldsModeNone) {
   enrollment_test_helper_.SetUpFlexDevice();
   auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
-  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
+  local_state_.SetDict(ash::prefs::kServerBackedDeviceState,
+                       state_dict.Clone());
 
   const auto config = GetPrescribedConfig();
 
@@ -93,7 +94,8 @@ TEST_F(
   enrollment_test_helper_.SetUpEnrollmentTokenConfig();
   auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
-  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
+  local_state_.SetDict(ash::prefs::kServerBackedDeviceState,
+                       state_dict.Clone());
 
   const EnrollmentConfig config = GetPrescribedConfig();
 
@@ -121,7 +123,8 @@ TEST_F(
       kRemoteDeploymentFlexOobeConfig);
   auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
-  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
+  local_state_.SetDict(ash::prefs::kServerBackedDeviceState,
+                       state_dict.Clone());
 
   const EnrollmentConfig config = GetPrescribedConfig();
 
@@ -170,7 +173,8 @@ TEST_P(EnrollmentConfigOOBEConfigSourceTest,
   enrollment_test_helper_.SetUpEnrollmentTokenConfig(oobe_config.c_str());
   auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
-  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
+  local_state_.SetDict(ash::prefs::kServerBackedDeviceState,
+                       state_dict.Clone());
 
   const EnrollmentConfig config = GetPrescribedConfig();
 
@@ -229,7 +233,8 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentRequested)
           .Set(kDeviceStateManagementDomain, kTestDomain);
-  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
+  local_state_.SetDict(ash::prefs::kServerBackedDeviceState,
+                       state_dict.Clone());
   {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_SERVER_ADVERTISED, config.mode);
@@ -270,7 +275,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
 
   // Server-backed state: forced initial attestation-based enrollment.
   local_state_.SetDict(
-      prefs::kServerBackedDeviceState,
+      ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateInitialModeEnrollmentZeroTouch)
           .Set(kDeviceStateManagementDomain, kTestDomain));
@@ -292,7 +297,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
 
   // Server-backed state: forced attestation-based re-enrollment.
   local_state_.SetDict(
-      prefs::kServerBackedDeviceState,
+      ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentZeroTouch)
           .Set(kDeviceStateManagementDomain, kTestDomain));
@@ -313,7 +318,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
 
   // Server-backed state: forced initial enrollment.
   local_state_.SetDict(
-      prefs::kServerBackedDeviceState,
+      ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateInitialModeEnrollmentEnforced)
           .Set(kDeviceStateManagementDomain, kTestDomain));
@@ -328,7 +333,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
 
   // Server-backed state: forced re-enrollment.
   local_state_.SetDict(
-      prefs::kServerBackedDeviceState,
+      ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentEnforced)
           .Set(kDeviceStateManagementDomain, kTestDomain));
@@ -444,7 +449,7 @@ TEST_F(EnrollmentConfigTest, GetEffectiveManualEnrollmentConfig) {
   }
 
   local_state_.SetDict(
-      prefs::kServerBackedDeviceState,
+      ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateManagementDomain, kTestDomain)
           .Set(kDeviceStateLicenseType, kDeviceStateLicenseTypeEducation));
@@ -500,7 +505,7 @@ TEST_F(EnrollmentConfigTest, FalseRecoveryFlagDetectedWhenDmTokenExists) {
   }
 
   local_state_.SetDict(
-      prefs::kServerBackedDeviceState,
+      ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentEnforced)
           .Set(kDeviceStateManagementDomain, kTestDomain));
@@ -534,7 +539,7 @@ TEST_F(EnrollmentConfigTest, FalseRecoveryFlagIgnoredWithoutSerialNumber) {
   }
 
   local_state_.SetDict(
-      prefs::kServerBackedDeviceState,
+      ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentEnforced)
           .Set(kDeviceStateManagementDomain, kTestDomain));
@@ -560,7 +565,7 @@ TEST_F(EnrollmentConfigTest, EnrolledDevicesDoNotEnrollAgain) {
 
   // Server backed state is irrelevant if the device is already managed.
   local_state_.SetDict(
-      prefs::kServerBackedDeviceState,
+      ash::prefs::kServerBackedDeviceState,
       base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentEnforced)
           .Set(kDeviceStateManagementDomain, kTestDomain));

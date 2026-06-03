@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/values.h"
-#include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -35,13 +35,13 @@ ReportingUserTracker::~ReportingUserTracker() = default;
 
 // static
 void ReportingUserTracker::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(::prefs::kReportingUsers);
+  registry->RegisterListPref(ash::prefs::kReportingUsers);
 }
 
 bool ReportingUserTracker::ShouldReportUser(
     const std::string& user_email) const {
   const base::ListValue& reporting_users =
-      local_state_->GetList(::prefs::kReportingUsers);
+      local_state_->GetList(ash::prefs::kReportingUsers);
   std::string user_email_value(FullyCanonicalize(user_email));
   return reporting_users.contains(user_email_value);
 }
@@ -81,7 +81,7 @@ void ReportingUserTracker::OnUserRemoved(
 }
 
 void ReportingUserTracker::AddReportingUser(const AccountId& account_id) {
-  ScopedListPrefUpdate users_update(local_state_, ::prefs::kReportingUsers);
+  ScopedListPrefUpdate users_update(local_state_, ash::prefs::kReportingUsers);
   std::string email(FullyCanonicalize(account_id.GetUserEmail()));
   if (!users_update.Get().contains(email)) {
     users_update->Append(email);
@@ -89,7 +89,7 @@ void ReportingUserTracker::AddReportingUser(const AccountId& account_id) {
 }
 
 void ReportingUserTracker::RemoveReportingUser(const AccountId& account_id) {
-  ScopedListPrefUpdate users_update(local_state_, ::prefs::kReportingUsers);
+  ScopedListPrefUpdate users_update(local_state_, ash::prefs::kReportingUsers);
   base::ListValue& update_list = users_update.Get();
   auto it = std::ranges::find(
       update_list, base::Value(FullyCanonicalize(account_id.GetUserEmail())));

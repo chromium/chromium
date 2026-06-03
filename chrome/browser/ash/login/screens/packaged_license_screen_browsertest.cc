@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
@@ -43,7 +43,8 @@ class PackagedLicenseScreenTest : public OobeBaseTest {
   }
 
   void SetUpLicense(bool value) {
-    ScopedDictPrefUpdate dict(local_state(), prefs::kServerBackedDeviceState);
+    ScopedDictPrefUpdate dict(local_state(),
+                              ash::prefs::kServerBackedDeviceState);
     if (value) {
       dict->Set(policy::kDeviceStatePackagedLicense, true);
     } else {

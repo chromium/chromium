@@ -11,6 +11,7 @@
 #include <tuple>
 #include <variant>
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
@@ -709,7 +709,7 @@ class EnrollmentState {
 
   void StoreResponse(PrefService* local_state, const base::DictValue& dict) {
     LOG(WARNING) << "ServerBackedDeviceState pref: " << dict;
-    local_state->SetDict(prefs::kServerBackedDeviceState, dict.Clone());
+    local_state->SetDict(ash::prefs::kServerBackedDeviceState, dict.Clone());
   }
 
  private:
@@ -1011,7 +1011,7 @@ class EnrollmentStateFetcherImpl::Sequence {
   base::TimeTicks fetch_started_;
 
   // Used to store the initial enrollment state (if available) in a dict at
-  // `prefs::kServerBackedDeviceState`.
+  // `ash::prefs::kServerBackedDeviceState`.
   // Must not be nullptr for initial enrollment state determination.
   raw_ptr<PrefService> local_state_ = nullptr;
 

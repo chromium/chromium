@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/logging.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/status_collector/app_info_generator.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"
@@ -82,7 +82,7 @@ StatusCollectorParams& StatusCollectorParams::operator=(
 // -----------------------------------------------------------------------------
 // static
 void StatusCollector::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kReportArcStatusEnabled, false);
+  registry->RegisterBooleanPref(ash::prefs::kReportArcStatusEnabled, false);
 
   // TODO(crbug.com/40569404): move to ChildStatusCollector after migration.
   registry->RegisterDictionaryPref(ash::prefs::kUserActivityTimes);

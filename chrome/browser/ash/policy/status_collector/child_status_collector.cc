@@ -15,6 +15,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/base64.h"
 #include "base/check.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/ash/policy/status_collector/child_activity_storage.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector_state.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -357,7 +357,7 @@ bool ChildStatusCollector::FillUserSpecificFields(
 
   // Android status.
   const bool report_android_status =
-      profile_->GetPrefs()->GetBoolean(prefs::kReportArcStatusEnabled);
+      profile_->GetPrefs()->GetBoolean(ash::prefs::kReportArcStatusEnabled);
   if (report_android_status)
     GetAndroidStatus(state);
 

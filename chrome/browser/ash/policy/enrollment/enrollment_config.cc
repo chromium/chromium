@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_login_pref_names.h"
+#include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -400,7 +400,7 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
   }
 
   const base::DictValue& device_state =
-      local_state->GetDict(prefs::kServerBackedDeviceState);
+      local_state->GetDict(ash::prefs::kServerBackedDeviceState);
 
   return EnrollmentConfig(
       PrescribedConfig::GetPrescribedConfig(local_state, statistics_provider,

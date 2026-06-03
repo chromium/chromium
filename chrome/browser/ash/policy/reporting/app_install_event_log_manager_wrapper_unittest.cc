@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 
+#include "ash/constants/ash_policy_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -15,7 +16,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -168,7 +168,7 @@ class AppInstallEventLogManagerWrapperTest
 // log file nor the prefs are cleared.
 TEST_P(AppInstallEventLogManagerWrapperTest, EnableCreate) {
   PopulateLogFileAndPrefs();
-  profile_.GetPrefs()->SetBoolean(prefs::kArcAppInstallEventLoggingEnabled,
+  profile_.GetPrefs()->SetBoolean(ash::prefs::kArcAppInstallEventLoggingEnabled,
                                   true);
 
   CreateWrapper();
@@ -194,7 +194,7 @@ TEST_P(AppInstallEventLogManagerWrapperTest, EnableCreate) {
 // prefs are cleared.
 TEST_P(AppInstallEventLogManagerWrapperTest, DisableCreate) {
   PopulateLogFileAndPrefs();
-  profile_.GetPrefs()->SetBoolean(prefs::kArcAppInstallEventLoggingEnabled,
+  profile_.GetPrefs()->SetBoolean(ash::prefs::kArcAppInstallEventLoggingEnabled,
                                   false);
 
   CreateWrapper();
@@ -216,7 +216,7 @@ TEST_P(AppInstallEventLogManagerWrapperTest, DisableCreate) {
 // and is still pending. Then, destroy the wrapper. Verify that neither the log
 // file nor the prefs are cleared.
 TEST_P(AppInstallEventLogManagerWrapperTest, CreateEnable) {
-  profile_.GetPrefs()->SetBoolean(prefs::kArcAppInstallEventLoggingEnabled,
+  profile_.GetPrefs()->SetBoolean(ash::prefs::kArcAppInstallEventLoggingEnabled,
                                   false);
 
   CreateWrapper();
@@ -238,7 +238,7 @@ TEST_P(AppInstallEventLogManagerWrapperTest, CreateEnable) {
     EXPECT_CALL(*wrapper_, CreateManager());
     EXPECT_CALL(*wrapper_, DestroyManager()).Times(0);
   }
-  profile_.GetPrefs()->SetBoolean(prefs::kArcAppInstallEventLoggingEnabled,
+  profile_.GetPrefs()->SetBoolean(ash::prefs::kArcAppInstallEventLoggingEnabled,
                                   true);
   Mock::VerifyAndClearExpectations(&wrapper_);
   FlushPendingTasks();
@@ -256,7 +256,7 @@ TEST_P(AppInstallEventLogManagerWrapperTest, CreateEnable) {
 // is destroyed and the log file and the prefs are cleared.
 TEST_P(AppInstallEventLogManagerWrapperTest, CreateDisable) {
   PopulateLogFileAndPrefs();
-  profile_.GetPrefs()->SetBoolean(prefs::kArcAppInstallEventLoggingEnabled,
+  profile_.GetPrefs()->SetBoolean(ash::prefs::kArcAppInstallEventLoggingEnabled,
                                   true);
 
   CreateWrapper();
@@ -279,7 +279,7 @@ TEST_P(AppInstallEventLogManagerWrapperTest, CreateDisable) {
     EXPECT_CALL(*wrapper_, CreateManager()).Times(0);
     EXPECT_CALL(*wrapper_, DestroyManager());
   }
-  profile_.GetPrefs()->SetBoolean(prefs::kArcAppInstallEventLoggingEnabled,
+  profile_.GetPrefs()->SetBoolean(ash::prefs::kArcAppInstallEventLoggingEnabled,
                                   false);
   Mock::VerifyAndClearExpectations(&wrapper_);
   FlushPendingTasks();
