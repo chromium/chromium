@@ -272,12 +272,7 @@ class [[clang::lto_visibility_public]] BrokerServicesDelegate {
       base::OnceCallback<void(CreateTargetResult)> reply) = 0;
   // Called before a target process is created. This will be called on the
   // thread pool.
-  virtual void BeforeTargetProcessCreateOnCreationThread(
-      const void* trace_id) = 0;
-  // Called after a target process is created. This will be called on the thread
-  // pool.
-  virtual void AfterTargetProcessCreateOnCreationThread(const void* trace_id,
-                                                        DWORD process_id) = 0;
+  virtual void BeforeTargetProcessCreateOnCreationThread() = 0;
 
   // Record error histograms when CreateThreadAction IPC failed to create a
   // thread in the target process.

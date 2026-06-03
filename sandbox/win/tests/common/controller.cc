@@ -167,11 +167,8 @@ class TestBrokerServicesDelegateImpl : public BrokerServicesDelegate {
         std::move(task), std::move(reply));
   }
 
-  void BeforeTargetProcessCreateOnCreationThread(
-      const void* trace_id) override {}
+  void BeforeTargetProcessCreateOnCreationThread() override {}
 
-  void AfterTargetProcessCreateOnCreationThread(const void* trace_id,
-                                                DWORD process_id) override {}
   void OnCreateThreadActionCreateFailure(DWORD last_error) override {}
   void OnCreateThreadActionDuplicateFailure(DWORD last_error) override {}
 };

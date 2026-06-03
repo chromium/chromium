@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/access_token.h"
 #include "base/win/current_module.h"
 #include "base/win/scoped_handle.h"
@@ -588,11 +589,8 @@ void BrokerServicesBase::SpawnTargetAsyncImpl(
 CreateTargetResult BrokerServicesBase::CreateTarget(
     base::CommandLine command_line,
     CreateTargetInfo target_info) {
-  // A trace ID for the current scope is generated from the address of a local
-  // variable to ensure uniqueness across threads.
-  const void* trace_id = &target_info;
-  broker_services_delegate_->BeforeTargetProcessCreateOnCreationThread(
-      trace_id);
+  TRACE_EVENT_BEGIN("startup", "TargetProcess::Create");
+  broker_services_delegate_->BeforeTargetProcessCreateOnCreationThread();
 
   // Spawn the target process suspended.
   CreateTargetResult result;
@@ -601,8 +599,7 @@ CreateTargetResult BrokerServicesBase::CreateTarget(
       std::get<std::unique_ptr<StartupInformationHelper>>(target_info).get(),
       result.process_info, result.last_error);
 
-  broker_services_delegate_->AfterTargetProcessCreateOnCreationThread(
-      trace_id, result.process_info.process_id());
+  TRACE_EVENT_END("startup", "pid", result.process_info.process_id());
 
   return result;
 }
