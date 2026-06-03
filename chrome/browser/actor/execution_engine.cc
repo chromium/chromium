@@ -91,8 +91,6 @@ namespace {
 
 static constexpr std::string_view kPermissionGrantedHistogram =
     "Actor.NavigationGating.PermissionGranted";
-static constexpr std::string_view kActionNavigationsApprovedByServerHistogram =
-    "Actor.NavigationGating.ActionNavigationsApprovedByServer";
 
 BASE_FEATURE(kActorReloadCrashedTabBeforeAct, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -314,17 +312,11 @@ ExecutionEngine::ShouldDeferNavigation(
       LogNavigationGating(source_origin, navigation_handle.GetInitiatorOrigin(),
                           url::Origin::Create(navigation_handle.GetURL()),
                           /*applied_gate=*/false);
-      MaybeRecordNavigationConfirmationMetrics(
-          state(), url::Origin::Create(navigation_handle.GetURL()),
-          /*is_pre_approved=*/true);
       return content::NavigationThrottle::PROCEED;
     case GatingDecision::kAllowByStaticList:
       LogNavigationGating(source_origin, navigation_handle.GetInitiatorOrigin(),
                           url::Origin::Create(navigation_handle.GetURL()),
                           /*applied_gate=*/false);
-      MaybeRecordNavigationConfirmationMetrics(
-          state(), url::Origin::Create(navigation_handle.GetURL()),
-          /*is_pre_approved=*/false);
       return content::NavigationThrottle::PROCEED;
     case GatingDecision::kBlockByStaticList:
     case GatingDecision::kBlockByContainerConfig:
@@ -342,12 +334,7 @@ ExecutionEngine::ShouldDeferNavigation(
               navigation_handle.GetInitiatorOrigin(),
               navigation_handle.GetURL(),
               GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
-              skip_prompt, std::move(timer),
-              std::move(callback).Then(base::BindOnce(
-                  &ExecutionEngine::MaybeRecordNavigationConfirmationMetrics,
-                  GetActionSequenceWeakPtr(), state(),
-                  url::Origin::Create(navigation_handle.GetURL()),
-                  /*is_pre_approved=*/false))));
+              skip_prompt, std::move(timer), std::move(callback)));
       return content::NavigationThrottle::DEFER;
     }
   }
@@ -544,48 +531,6 @@ void ExecutionEngine::SendNavigationConfirmationRequest(
   }
   task_->delegate()->RequestToConfirmNavigation(task_->id(), destination,
                                                 std::move(callback));
-}
-
-void ExecutionEngine::MaybeRecordNavigationConfirmationMetrics(
-    ExecutionEngine::State state_for_metrics,
-    const url::Origin& destination,
-    bool is_pre_approved) {
-  if (!base::FeatureList::IsEnabled(
-          kGlicRecordNavigationConfirmationRequestMetrics)) {
-    return;
-  }
-
-  // Record a metric if we can attribute this metric to an action (i.e. the
-  // execution engine is in a relevant state)
-  if (state_for_metrics != ExecutionEngine::State::kToolInvoke &&
-      state_for_metrics != ExecutionEngine::State::kUiPostInvoke) {
-    return;
-  }
-
-  if (is_pre_approved) {
-    base::UmaHistogramBoolean(kActionNavigationsApprovedByServerHistogram,
-                              true);
-    return;
-  }
-
-  if (!task_->delegate()) {
-    return;
-  }
-  task_->delegate()->RequestToConfirmNavigation(
-      task_->id(), destination,
-      base::BindOnce([](webui::mojom::NavigationConfirmationResponsePtr
-                            response) {
-        switch (response->result->which()) {
-          case webui::mojom::ConfirmationRequestResult::Tag::kPermissionGranted:
-            base::UmaHistogramBoolean(
-                kActionNavigationsApprovedByServerHistogram,
-                response->result->get_permission_granted());
-            return;
-          case webui::mojom::ConfirmationRequestResult::Tag::kErrorReason:
-            return;
-        }
-        NOTREACHED();
-      }));
 }
 
 void ExecutionEngine::OnNavigationConfirmationDecision(

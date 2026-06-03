@@ -345,8 +345,18 @@ class ExecutionEngineOriginGatingBrowserTest
   }
   ~ExecutionEngineOriginGatingBrowserTest() override = default;
 
+  void PreRunTestOnMainThread() override {
+    InProcessBrowserTest::PreRunTestOnMainThread();
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
@@ -394,6 +404,18 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   // Should log that permission was *granted* once.
   histogram_tester.ExpectUniqueSample(
       "Actor.NavigationGating.PermissionGranted", true, 1);
+
+  const auto ukm_entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::Actor_OriginGating::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  // Same origin navigation should not have triggered UKM
+  test_ukm_recorder()->ExpectEntryMetric(
+      ukm_entries[0], "ServerConfirmationResult", /*expected_value=*/
+      static_cast<int64_t>(
+          ExecutionEngine::ActorServerConfirmationResult::kAccepted));
+  test_ukm_recorder()->ExpectEntryMetric(
+      ukm_entries[0], "EngineState", /*expected_value=*/
+      static_cast<int64_t>(ExecutionEngine::State::kToolInvoke));
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
@@ -426,6 +448,18 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   // Should log that permission was *denied* once.
   histogram_tester.ExpectUniqueSample(
       "Actor.NavigationGating.PermissionGranted", false, 1);
+
+  const auto ukm_entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::Actor_OriginGating::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  // Same origin navigation should not have triggered UKM
+  test_ukm_recorder()->ExpectEntryMetric(
+      ukm_entries[0], "ServerConfirmationResult", /*expected_value=*/
+      static_cast<int64_t>(
+          ExecutionEngine::ActorServerConfirmationResult::kRejected));
+  test_ukm_recorder()->ExpectEntryMetric(
+      ukm_entries[0], "EngineState", /*expected_value=*/
+      static_cast<int64_t>(ExecutionEngine::State::kToolInvoke));
 }
 
 class ExecutionEngineOriginGatingExplicitGrantBrowserTest
@@ -756,6 +790,26 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
           {url::Origin::Create(cross_origin_url)}),
       result2.GetCallback());
   ExpectOkResult(result2);
+
+  const auto ukm_entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::Actor_OriginGating::kEntryName);
+  EXPECT_EQ(2u, ukm_entries.size());
+  // First navigation was rejected
+  test_ukm_recorder()->ExpectEntryMetric(
+      ukm_entries[0], "ServerConfirmationResult", /*expected_value=*/
+      static_cast<int64_t>(
+          ExecutionEngine::ActorServerConfirmationResult::kRejected));
+  test_ukm_recorder()->ExpectEntryMetric(
+      ukm_entries[0], "EngineState", /*expected_value=*/
+      static_cast<int64_t>(ExecutionEngine::State::kToolInvoke));
+  // Second navigation did not record UKM since origin was allowlisted
+  test_ukm_recorder()->ExpectEntryMetric(
+      ukm_entries[1], "ServerConfirmationResult", /*expected_value=*/
+      static_cast<int64_t>(
+          ExecutionEngine::ActorServerConfirmationResult::kNotRequired));
+  test_ukm_recorder()->ExpectEntryMetric(
+      ukm_entries[1], "EngineState", /*expected_value=*/
+      static_cast<int64_t>(ExecutionEngine::State::kToolInvoke));
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
@@ -1855,350 +1909,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "GateBySite" : "GateByOrigin";
                          });
 
-class ExecutionEngineGatingConfirmationMetricBrowserTest
-    : public ExecutionEngineOriginGatingBrowserTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  ExecutionEngineGatingConfirmationMetricBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {kGlicCrossOriginNavigationGating,
-         {{"confirm_navigation_to_new_origins", "true"}}}};
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (recording_metrics_enabled()) {
-      enabled_features.push_back(
-          {kGlicRecordNavigationConfirmationRequestMetrics, {}});
-    } else {
-      disabled_features.push_back(
-          kGlicRecordNavigationConfirmationRequestMetrics);
-    }
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
-  }
-  ~ExecutionEngineGatingConfirmationMetricBrowserTest() override = default;
-
-  bool recording_metrics_enabled() { return GetParam(); }
-
-  void PreRunTestOnMainThread() override {
-    InProcessBrowserTest::PreRunTestOnMainThread();
-    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-  }
-
-  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
-    return test_ukm_recorder_.get();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-};
-
-IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
-                       SameOriginNavigation) {
-  base::HistogramTester histogram_tester;
-  const GURL start_url =
-      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  OpenGlicAndCreateTask();
-
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", start_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kOk);
-
-  StopAllTasks();
-  if (recording_metrics_enabled()) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return histogram_tester
-                 .GetAllSamples(
-                     "Actor.NavigationGating.ActionNavigationsApprovedByServer")
-                 .size() == 1;
-    }));
-    histogram_tester.ExpectUniqueSample(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
-  }
-  const auto& ukm_entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::Actor_OriginGating::kEntryName);
-  EXPECT_EQ(0u, ukm_entries.size());
-}
-
-IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
-                       NovelNavigation) {
-  base::HistogramTester histogram_tester;
-  const GURL start_url =
-      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL novel_url =
-      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  OpenGlicAndCreateTask();
-
-  RunTestSequence(CreateMockWebClientRequest(
-      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
-
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", novel_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kOk);
-
-  StopAllTasks();
-  if (recording_metrics_enabled()) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return histogram_tester
-                 .GetAllSamples(
-                     "Actor.NavigationGating.ActionNavigationsApprovedByServer")
-                 .size() == 1;
-    }));
-    histogram_tester.ExpectUniqueSample(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
-  }
-  const auto& ukm_entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::Actor_OriginGating::kEntryName);
-  EXPECT_EQ(1u, ukm_entries.size());
-  test_ukm_recorder()->ExpectEntryMetric(
-      ukm_entries[0], "ServerConfirmationResult", /*expected_value=*/
-      static_cast<int64_t>(
-          ExecutionEngine::ActorServerConfirmationResult::kAccepted));
-  test_ukm_recorder()->ExpectEntryMetric(
-      ukm_entries[0], "EngineState", /*expected_value=*/
-      static_cast<int64_t>(ExecutionEngine::State::kToolInvoke));
-}
-
-IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
-                       NovelNavigation_Denied) {
-  base::HistogramTester histogram_tester;
-  const GURL start_url =
-      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL novel_url =
-      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  OpenGlicAndCreateTask();
-
-  RunTestSequence(CreateMockWebClientRequest(
-      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
-
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", novel_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
-
-  StopAllTasks();
-  if (recording_metrics_enabled()) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return histogram_tester
-                 .GetAllSamples(
-                     "Actor.NavigationGating.ActionNavigationsApprovedByServer")
-                 .size() == 1;
-    }));
-    histogram_tester.ExpectUniqueSample(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", false, 1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
-  }
-  const auto& ukm_entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::Actor_OriginGating::kEntryName);
-  EXPECT_EQ(1u, ukm_entries.size());
-  test_ukm_recorder()->ExpectEntryMetric(
-      ukm_entries[0], "ServerConfirmationResult", /*expected_value=*/
-      static_cast<int64_t>(
-          ExecutionEngine::ActorServerConfirmationResult::kRejected));
-  test_ukm_recorder()->ExpectEntryMetric(
-      ukm_entries[0], "EngineState", /*expected_value=*/
-      static_cast<int64_t>(ExecutionEngine::State::kToolInvoke));
-}
-
-IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
-                       NovelNavigation_AllowedByServer) {
-  base::HistogramTester histogram_tester;
-  const GURL start_url =
-      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL novel_url =
-      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  OpenGlicAndCreateTask();
-
-  RunTestSequence(CreateMockWebClientRequest(
-      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
-
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace("setLink($1);", novel_url)));
-
-  std::optional<int> dom_node_id =
-      content::GetDOMNodeId(*main_frame(), "#link");
-  ASSERT_TRUE(dom_node_id);
-  std::unique_ptr<ToolRequest> click =
-      MakeClickRequest(*main_frame(), dom_node_id.value());
-  PerformActionsFuture result;
-  actor_keyed_service().PerformActions(
-      actor_task().id(), ToRequestList(click),
-      ActorTaskMetadata::WithAddedWritableMainframeOriginsForTesting(
-          {url::Origin::Create(novel_url)}),
-      result.GetCallback());
-  ExpectOkResult(result);
-
-  StopAllTasks();
-  if (recording_metrics_enabled()) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return histogram_tester
-                 .GetAllSamples(
-                     "Actor.NavigationGating.ActionNavigationsApprovedByServer")
-                 .size() == 1;
-    }));
-    histogram_tester.ExpectUniqueSample(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
-  }
-  const auto& ukm_entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::Actor_OriginGating::kEntryName);
-  EXPECT_EQ(1u, ukm_entries.size());
-  test_ukm_recorder()->ExpectEntryMetric(
-      ukm_entries[0], "ServerConfirmationResult", /*expected_value=*/
-      static_cast<int64_t>(
-          ExecutionEngine::ActorServerConfirmationResult::kNotRequired));
-  test_ukm_recorder()->ExpectEntryMetric(
-      ukm_entries[0], "EngineState", /*expected_value=*/
-      static_cast<int64_t>(ExecutionEngine::State::kToolInvoke));
-}
-
-IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
-                       SensitiveNavigation) {
-  base::HistogramTester histogram_tester;
-  const GURL start_url =
-      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL sensitive_url = embedded_https_test_server().GetURL(
-      "blocked.example.com", "/actor/blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  OpenGlicAndCreateTask();
-
-  // We need to set up both the user AND navigation confirmation responses since
-  // the user confirmation is used for sensitive sites
-  RunTestSequence(CreateMockWebClientRequest(
-      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
-  RunTestSequence(CreateMockWebClientRequest(
-      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
-
-  EXPECT_TRUE(content::ExecJs(
-      web_contents(), content::JsReplace("setLink($1);", sensitive_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kOk);
-
-  StopAllTasks();
-  if (recording_metrics_enabled()) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return histogram_tester
-                 .GetAllSamples(
-                     "Actor.NavigationGating.ActionNavigationsApprovedByServer")
-                 .size() == 1;
-    }));
-    histogram_tester.ExpectUniqueSample(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
-  }
-  const auto& ukm_entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::Actor_OriginGating::kEntryName);
-  EXPECT_EQ(0u, ukm_entries.size());
-}
-
-IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
-                       AllowlistedNavigation) {
-  base::HistogramTester histogram_tester;
-  const GURL start_url =
-      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL allowlisted_url =
-      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
-
-  SafetyListManager::GetInstance()->ParseSafetyLists(
-      content::JsReplace(R"json(
-    {
-      "navigation_allowed": [
-        { "from": "*", "to": $1 }
-      ]
-    }
-  )json",
-                         allowlisted_url.host()));
-
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  OpenGlicAndCreateTask();
-
-  RunTestSequence(CreateMockWebClientRequest(
-      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
-
-  EXPECT_TRUE(content::ExecJs(
-      web_contents(), content::JsReplace("setLink($1);", allowlisted_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kOk);
-
-  StopAllTasks();
-  if (recording_metrics_enabled()) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return histogram_tester
-                 .GetAllSamples(
-                     "Actor.NavigationGating.ActionNavigationsApprovedByServer")
-                 .size() == 1;
-    }));
-    histogram_tester.ExpectUniqueSample(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
-  } else {
-    histogram_tester.ExpectTotalCount(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
-  }
-  const auto& ukm_entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::Actor_OriginGating::kEntryName);
-  EXPECT_EQ(0u, ukm_entries.size());
-}
-
-IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
-                       BlocklistedNavigation) {
-  base::HistogramTester histogram_tester;
-  const GURL start_url =
-      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
-  const GURL blocklisted_url =
-      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
-
-  SafetyListManager::GetInstance()->ParseSafetyLists(
-      content::JsReplace(R"json(
-    {
-      "navigation_blocked": [
-        { "from": "*", "to": $1 }
-      ]
-    }
-  )json",
-                         blocklisted_url.host()));
-
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  OpenGlicAndCreateTask();
-
-  RunTestSequence(CreateMockWebClientRequest(
-      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
-
-  EXPECT_TRUE(content::ExecJs(
-      web_contents(), content::JsReplace("setLink($1);", blocklisted_url)));
-  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
-
-  StopAllTasks();
-
-  histogram_tester.ExpectTotalCount(
-      "Actor.NavigationGating.ActionNavigationsApprovedByServer", 0);
-
-  const auto& ukm_entries = test_ukm_recorder()->GetEntriesByName(
-      ukm::builders::Actor_OriginGating::kEntryName);
-  EXPECT_EQ(0u, ukm_entries.size());
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExecutionEngineGatingConfirmationMetricBrowserTest,
-                         testing::Bool(),
-                         [](const auto& info) {
-                           return info.param ? "MetricsEnabled"
-                                             : "MetricsDisabled";
-                         });
-
 class ExecutionEngineBlocklistDisabledBrowserTest
     : public ExecutionEngineOriginGatingBrowserTestBase {
  public:
@@ -2293,9 +2003,7 @@ class ExecutionEngineOriginGatingDarkLaunchBrowserTest
                  {"confirm_navigation_to_new_origins_dark_launch", "true"},
              }},
         },
-        /*disabled_features=*/{
-            features::kGlicWarming,
-            kGlicRecordNavigationConfirmationRequestMetrics});
+        /*disabled_features=*/{features::kGlicWarming});
   }
   ~ExecutionEngineOriginGatingDarkLaunchBrowserTest() override = default;
 

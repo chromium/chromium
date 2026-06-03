@@ -86,9 +86,6 @@ BASE_FEATURE_PARAM(bool,
                    "allow_implicit_tool_origin_grants",
                    true);
 
-BASE_FEATURE(kGlicRecordNavigationConfirmationRequestMetrics,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicSkipAwaitVisualStateForNewTabs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

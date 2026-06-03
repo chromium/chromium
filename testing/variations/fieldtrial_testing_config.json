@@ -12053,24 +12053,6 @@
             ]
         }
     ],
-    "GlicRecordNavigationConfirmationMetrics": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicRecordNavigationConfirmationRequestMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicResetPanelSizeAndLocationOnOpen": [
         {
             "platforms": [
