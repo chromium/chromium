@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -21,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -1146,4 +1148,85 @@ TEST_F(
             {"gs_ps", "1"},
             {"pageTitle", "Page+Title"},
             {"url", "https%3A%2F%2Fpage.url"}});
+}
+
+TEST_F(RemoteSuggestionsServiceTest, LensOverlaySuggestPath) {
+  const std::string& test_url = base::StringPrintf(
+      "https://www.google.com/%s?q={searchTerms}&client=chrome-multimodal",
+      TemplateURLService::kLensOverlaySuggestPathPlaceholder);
+  auto google_template_url = CreateGoogleTemplateURL(test_url, test_url);
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
+  search_terms_args.request_source =
+      SearchTermsData::RequestSource::LENS_OVERLAY;
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
+  SearchTermsData search_terms_data;
+
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::SuggestPathClientConfig>
+        scoped_config;
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        omnibox_feature_configs::SuggestPathClientConfig::
+            kUseShortSuggestPathV1);
+    scoped_config.Reset();
+
+    GURL url = RemoteSuggestionsService::EndpointUrl(
+        *google_template_url, search_terms_args, search_terms_data);
+    EXPECT_TRUE(base::EndsWith(url.path(), "search"));
+    EXPECT_FALSE(base::EndsWith(url.path(), "s"));
+  }
+
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::SuggestPathClientConfig>
+        scoped_config;
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        omnibox_feature_configs::SuggestPathClientConfig::
+            kUseShortSuggestPathV1,
+        {{"OmniboxSuggestPathClient", ""}});
+    scoped_config.Reset();
+
+    GURL url = RemoteSuggestionsService::EndpointUrl(
+        *google_template_url, search_terms_args, search_terms_data);
+    EXPECT_TRUE(base::EndsWith(url.path(), "s"));
+    EXPECT_FALSE(base::EndsWith(url.path(), "search"));
+  }
+
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::SuggestPathClientConfig>
+        scoped_config;
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        omnibox_feature_configs::SuggestPathClientConfig::
+            kUseShortSuggestPathV1,
+        {{"OmniboxSuggestPathClient", "chrome,chrome-multimodal"}});
+    scoped_config.Reset();
+
+    GURL url = RemoteSuggestionsService::EndpointUrl(
+        *google_template_url, search_terms_args, search_terms_data);
+    EXPECT_TRUE(base::EndsWith(url.path(), "s"));
+    EXPECT_FALSE(base::EndsWith(url.path(), "search"));
+  }
+
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::SuggestPathClientConfig>
+        scoped_config;
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        omnibox_feature_configs::SuggestPathClientConfig::
+            kUseShortSuggestPathV1,
+        {{"OmniboxSuggestPathClient", "chrome,chrome-omni"}});
+    scoped_config.Reset();
+
+    GURL url = RemoteSuggestionsService::EndpointUrl(
+        *google_template_url, search_terms_args, search_terms_data);
+    EXPECT_TRUE(base::EndsWith(url.path(), "search"));
+    EXPECT_FALSE(base::EndsWith(url.path(), "s"));
+  }
 }

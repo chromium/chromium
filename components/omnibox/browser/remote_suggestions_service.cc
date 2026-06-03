@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/search/search.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
@@ -316,6 +317,34 @@ GURL AddSmartComposePreviousQueryToEndpointUrl(
   return modified_url;
 }
 
+GURL ReplaceLensSuggestPathPlaceholderInEndpointUrl(
+    const TemplateURLRef::SearchTermsArgs& search_terms_args,
+    const GURL& url_to_modify) {
+  if (search_terms_args.request_source !=
+      SearchTermsData::RequestSource::LENS_OVERLAY) {
+    return url_to_modify;
+  }
+
+  std::string current_client;
+  if (!net::GetValueForKeyInQuery(url_to_modify, "client", &current_client) ||
+      current_client.empty()) {
+    return url_to_modify;
+  }
+
+  std::string modified_url = url_to_modify.spec();
+  base::ReplaceSubstringsAfterOffset(
+      &modified_url, 0, TemplateURLService::kLensOverlaySuggestPathPlaceholder,
+      TemplateURL::GetSuggestionPath(current_client));
+
+  const bool found_placeholder =
+      modified_url.find(
+          TemplateURLService::kLensOverlaySuggestPathPlaceholder) !=
+      std::string::npos;
+  CHECK(!found_placeholder);
+
+  return GURL(modified_url);
+}
+
 }  // namespace
 
 RemoteSuggestionsService::Delegate::Delegate() = default;
@@ -408,6 +437,7 @@ GURL RemoteSuggestionsService::EndpointUrl(
   url = AddLensOverlaySuggestInputsDataToEndpointUrl(search_terms_args, url);
   url = AddAimInputStateParamsToEndpointUrl(search_terms_args, url);
   url = AddSmartComposePreviousQueryToEndpointUrl(search_terms_args, url);
+  url = ReplaceLensSuggestPathPlaceholderInEndpointUrl(search_terms_args, url);
 
   return url;
 }

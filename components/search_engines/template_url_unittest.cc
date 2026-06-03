@@ -2680,7 +2680,7 @@ TEST_F(TemplateURLTest, GenerateURL_WithSuggestPathAndClientParam) {
     std::string result_url = turl.suggestions_url_ref().ReplaceSearchTerms(
         search_terms_args, search_terms_data);
     EXPECT_EQ(base::StringPrintf("https://foo/s?q=user+query&client=%s",
-                                 expected_client.c_str()),
+                                 expected_client),
               result_url);
   }
 
@@ -2693,7 +2693,7 @@ TEST_F(TemplateURLTest, GenerateURL_WithSuggestPathAndClientParam) {
         omnibox_feature_configs::SuggestPathClientConfig::
             kUseShortSuggestPathV1,
         {{"OmniboxSuggestPathClient",
-          base::StringPrintf("test-client,%s", expected_client.c_str())}});
+          base::StringPrintf("test-client,%s", expected_client)}});
     scoped_config.Reset();
 
     TemplateURL turl(data);
