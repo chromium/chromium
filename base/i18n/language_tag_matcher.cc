@@ -6,7 +6,7 @@
 // supported locale for a given preferred locale.
 //
 // The matching process relies on a precomputed graph where:
-// 1. Nodes are LanguageCodes.
+// 1. Nodes are LanguageTags.
 // 2. Edges represent fallback relationships (e.g., "en-US" falls back to "en").
 //    In the graph, these are stored as "parent to child" edges (e.g., "en" ->
 //    "en-US") to facilitate finding supported descendants.
@@ -18,7 +18,7 @@
 // used, but specific pairs (e.g., "es-419" -> "es-MX") can have lower weights
 // to express a stronger preference for that specific mapping.
 
-#include "base/i18n/language_code_matcher.h"
+#include "base/i18n/language_tag_matcher.h"
 
 #include <algorithm>
 #include <iterator>
@@ -32,9 +32,9 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/i18n/internal/icu_bridge.rs.h"
-#include "base/i18n/language_code.h"
-#include "base/i18n/language_code_builder.h"
-#include "base/i18n/language_codes.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/tags.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -53,9 +53,8 @@ using ::base::i18n::internal::IcuFallbacker;
 // - "en-US" -> ["en"]
 // - "es-AR" -> ["es-419", "es"]
 // - "zh-TW" -> ["zh-Hant"]
-std::vector<LanguageCode> GetFallbackLocales(
-    const IcuFallbacker& icu_fallbacker,
-    const LanguageCode& locale) {
+std::vector<LanguageTag> GetFallbackLocales(const IcuFallbacker& icu_fallbacker,
+                                            const LanguageTag& locale) {
   rust::Vec<Icu4xLocale> fallback_locales =
       icu_fallbacker.fallback_to_vec(rust::Slice<const uint8_t>(
           reinterpret_cast<const uint8_t*>(locale.ToString().data()),
@@ -64,14 +63,14 @@ std::vector<LanguageCode> GetFallbackLocales(
     return {};
   }
 
-  const auto& lcode_builder = LanguageCodeBuilder::GetInstance();
+  const auto& ltag_builder = LanguageTagConverter::GetInstance();
 
   // ICU4X's fallbacker normalizes the locale striping away default scripts for
   // languages when they are present, this could make the original locale not
   // appear in the output.
-  LanguageCode first_fallback_locale =
-      lcode_builder.FromIcu4xLocale(fallback_locales.front());
-  std::vector<LanguageCode> result;
+  LanguageTag first_fallback_locale =
+      ltag_builder.FromIcu4xLocale(fallback_locales.front());
+  std::vector<LanguageTag> result;
   result.reserve(fallback_locales.size());
   if (first_fallback_locale != locale) {
     result.push_back(first_fallback_locale);
@@ -79,7 +78,7 @@ std::vector<LanguageCode> GetFallbackLocales(
 
   // Skip the first locale in the fallback chain as it is the original locale.
   for (size_t i = 1; i < fallback_locales.size(); ++i) {
-    result.push_back(lcode_builder.FromIcu4xLocale(fallback_locales[i]));
+    result.push_back(ltag_builder.FromIcu4xLocale(fallback_locales[i]));
   }
 
   return result;
@@ -93,34 +92,34 @@ std::vector<LanguageCode> GetFallbackLocales(
 // Spanish locales and the preferred one is es-MX. Once This would no longer be
 // needed when ICU4X implements a locale matcher:
 // https://github.com/unicode-org/icu4x/issues/3023
-float GetEdgeWeight(const LanguageCode& source, const LanguageCode& target) {
+float GetEdgeWeight(const LanguageTag& source, const LanguageTag& target) {
   static const base::NoDestructor<
-      base::flat_map<std::pair<LanguageCode, LanguageCode>, float>>
+      base::flat_map<std::pair<LanguageTag, LanguageTag>, float>>
       kNonDefaultEdges([]() {
-        base::flat_map<std::pair<LanguageCode, LanguageCode>, float>
+        base::flat_map<std::pair<LanguageTag, LanguageTag>, float>
             non_default_edges;
         // Prefer Mexican Spanish for Latin American Spanish.
         non_default_edges.emplace(
-            std::make_pair(language_codes::SPANISH_LATIN_AMERICAN(),
-                           language_codes::SPANISH_MEXICO()),
+            std::make_pair(language_tags::SPANISH_LATIN_AMERICAN(),
+                           language_tags::SPANISH_MEXICO()),
             0.8);
         // Prefer Brazilian Portuguese for generic Portuguese.
         non_default_edges.emplace(
-            std::make_pair(language_codes::PORTUGUESE(),
-                           language_codes::BRAZILIAN_PORTUGUESE()),
+            std::make_pair(language_tags::PORTUGUESE(),
+                           language_tags::BRAZILIAN_PORTUGUESE()),
             0.8);
         // Global English (en-001) preferences.
-        LanguageCode english_global =
-            LanguageCodeBuilder::GetInstance().FromString("en-001").value();
+        LanguageTag english_global =
+            LanguageTagConverter::GetInstance().FromString("en-001").value();
         non_default_edges.emplace(
-            std::make_pair(english_global, language_codes::ENGLISH_US()), 0.8);
+            std::make_pair(english_global, language_tags::ENGLISH_US()), 0.8);
         non_default_edges.emplace(
-            std::make_pair(english_global, language_codes::BRITISH_ENGLISH()),
+            std::make_pair(english_global, language_tags::BRITISH_ENGLISH()),
             0.81);
         // Chinese locales
         non_default_edges.emplace(
-            std::make_pair(language_codes::CHINESE(),
-                           language_codes::CHINA_CHINESE()),
+            std::make_pair(language_tags::CHINESE(),
+                           language_tags::CHINA_CHINESE()),
             0.8);
 
         return non_default_edges;
@@ -134,14 +133,13 @@ float GetEdgeWeight(const LanguageCode& source, const LanguageCode& target) {
 }
 
 // A graph used to precompute the best supported locale for various language
-// codes. It builds a directed graph where edges point from a parent locale
+// tags. It builds a directed graph where edges point from a parent locale
 // (e.g., "en") to a child locale (e.g., "en-US").
-class LanguageCodePreferenceGraph {
+class LanguageTagPreferenceGraph {
  public:
-  LanguageCodePreferenceGraph(
-      const IcuFallbacker& icu_fallbacker,
-      base::span<const LanguageCode> supported_locales) {
-    for (const LanguageCode& supported_lc : supported_locales) {
+  LanguageTagPreferenceGraph(const IcuFallbacker& icu_fallbacker,
+                             base::span<const LanguageTag> supported_tags) {
+    for (const LanguageTag& supported_tag : supported_tags) {
       // Build the graph by tracing the fallback chain of each supported locale.
       // If a supported locale is "zh-Hans-CN", its fallbacks might be:
       // zh-Hans-CN -> [zh-Hans,  zh].
@@ -149,27 +147,25 @@ class LanguageCodePreferenceGraph {
       // zh -> zh-Hans -> zh-Hans-CN.
       // This allows traversing from a generic locale to the most specific
       // supported one.
-      LanguageCode previous = supported_lc;
-      for (const LanguageCode& fallback_language_code :
-           GetFallbackLocales(icu_fallbacker, supported_lc)) {
+      LanguageTag previous = supported_tag;
+      for (const LanguageTag& fallback_tag :
+           GetFallbackLocales(icu_fallbacker, supported_tag)) {
         // For example, an edge is added between <en -> en-US>
-        edges_[fallback_language_code].push_back(previous);
-        distance_.try_emplace(fallback_language_code,
-                              std::numeric_limits<float>::max());
-        previous = fallback_language_code;
+        edges_[fallback_tag].push_back(previous);
+        distance_.try_emplace(fallback_tag, std::numeric_limits<float>::max());
+        previous = fallback_tag;
       }
 
       // Supported locales are their own best match with 0 distance.
-      distance_.insert_or_assign(supported_lc, 0);
-      closest_supported_locale_.insert_or_assign(supported_lc, supported_lc);
+      distance_.insert_or_assign(supported_tag, 0);
+      closest_supported_tag_.insert_or_assign(supported_tag, supported_tag);
     }
   }
 
   // Computes the closest supported locale for all reachable nodes in the graph.
   // A vector is returned because an immutable flat_map can be efficiently
   // created from a vector, which just needs to be sorted.
-  base::flat_map<LanguageCode, LanguageCode>
-  ComputeClosestSupportedLocale() && {
+  base::flat_map<LanguageTag, LanguageTag> ComputeClosestSupportedTag() && {
     // Traverse the graph starting from every root/ancestor node to precompute
     // the best supported descendant.
     // The distance_ map has an entry for every node in the graph initialized
@@ -178,29 +174,28 @@ class LanguageCodePreferenceGraph {
       Dfs(it.first);
     }
 
-    std::vector<std::pair<LanguageCode, LanguageCode>> output;
-    output.reserve(closest_supported_locale_.size());
-    std::ranges::move(closest_supported_locale_.begin(),
-                      closest_supported_locale_.end(),
-                      std::back_inserter(output));
+    std::vector<std::pair<LanguageTag, LanguageTag>> output;
+    output.reserve(closest_supported_tag_.size());
+    std::ranges::move(closest_supported_tag_.begin(),
+                      closest_supported_tag_.end(), std::back_inserter(output));
     return base::flat_map(std::move(output));
   }
 
  private:
   struct Result {
     float distance;
-    LanguageCode closest_supported;
+    LanguageTag closest_supported;
   };
 
   // Uses memoized DFS to find the shortest path from 'current' to any
   // supported locale.
-  Result Dfs(const LanguageCode& current) {
+  Result Dfs(const LanguageTag& current) {
     auto it = distance_.find(current);
-    auto it_closest_supported = closest_supported_locale_.find(current);
+    auto it_closest_supported = closest_supported_tag_.find(current);
     // If this node has already been computed (or it's a supported locale),
     // return the cached result.
     if (it != distance_.end() &&
-        it_closest_supported != closest_supported_locale_.end()) {
+        it_closest_supported != closest_supported_tag_.end()) {
       return Result{.distance = it->second,
                     .closest_supported = it_closest_supported->second};
     }
@@ -214,7 +209,7 @@ class LanguageCodePreferenceGraph {
       return best_result;
     }
 
-    for (const LanguageCode& next_locale : edges_it->second) {
+    for (const LanguageTag& next_locale : edges_it->second) {
       Result result = Dfs(next_locale);
       if (result.distance + GetEdgeWeight(current, next_locale) <
           best_result.distance) {
@@ -226,45 +221,45 @@ class LanguageCodePreferenceGraph {
 
     // Cache the result for this node.
     distance_.insert_or_assign(current, best_result.distance);
-    closest_supported_locale_.insert_or_assign(current,
-                                               best_result.closest_supported);
+    closest_supported_tag_.insert_or_assign(current,
+                                            best_result.closest_supported);
     return best_result;
   }
 
-  absl::flat_hash_map<LanguageCode, std::vector<LanguageCode>> edges_;
-  absl::flat_hash_map<LanguageCode, LanguageCode> closest_supported_locale_;
-  absl::flat_hash_map<LanguageCode, float> distance_;
+  absl::flat_hash_map<LanguageTag, std::vector<LanguageTag>> edges_;
+  absl::flat_hash_map<LanguageTag, LanguageTag> closest_supported_tag_;
+  absl::flat_hash_map<LanguageTag, float> distance_;
 };
 
 }  // namespace
 
 // static
-LanguageCodeMatcher LanguageCodeMatcher::Create(
-    base::span<const LanguageCode> supported_locales) {
+LanguageTagMatcher LanguageTagMatcher::Create(
+    base::span<const LanguageTag> supported_tags) {
   rust::Box<IcuFallbacker> fallbacker = create_icu_fallbacker();
-  LanguageCodePreferenceGraph graph(*fallbacker, supported_locales);
+  LanguageTagPreferenceGraph graph(*fallbacker, supported_tags);
 
-  return LanguageCodeMatcher(std::move(graph).ComputeClosestSupportedLocale(),
-                             std::move(fallbacker));
+  return LanguageTagMatcher(std::move(graph).ComputeClosestSupportedTag(),
+                            std::move(fallbacker));
 }
 
-std::optional<LanguageCode> LanguageCodeMatcher::Match(
-    const LanguageCode& preferred_locale) const {
+std::optional<LanguageTag> LanguageTagMatcher::Match(
+    const LanguageTag& preferred_locale) const {
   // Step 1: Check if the preferred locale or any of its ancestors were part of
   // the precomputed graph (i.e., they are supported or lead to a supported
   // locale).
-  auto it = closest_supported_locale_.find(preferred_locale);
-  if (it != closest_supported_locale_.end()) {
+  auto it = closest_supported_tag_.find(preferred_locale);
+  if (it != closest_supported_tag_.end()) {
     return it->second;
   }
 
   // Step 2: If the preferred locale is not in the graph, traverse its fallback
   // chain and check each ancestor. For example, if "fr-CA" is preferred but
   // not in the graph, its fallbacks ("fr", "und") are checked.
-  for (const LanguageCode& fallback :
+  for (const LanguageTag& fallback :
        GetFallbackLocales(*icu_fallbacker_, preferred_locale)) {
-    auto it_fallback = closest_supported_locale_.find(fallback);
-    if (it_fallback != closest_supported_locale_.end()) {
+    auto it_fallback = closest_supported_tag_.find(fallback);
+    if (it_fallback != closest_supported_tag_.end()) {
       return it_fallback->second;
     }
   }
@@ -272,12 +267,12 @@ std::optional<LanguageCode> LanguageCodeMatcher::Match(
   return std::nullopt;
 }
 
-LanguageCodeMatcher::LanguageCodeMatcher(
-    base::flat_map<LanguageCode, LanguageCode> closest_supported_locale,
+LanguageTagMatcher::LanguageTagMatcher(
+    base::flat_map<LanguageTag, LanguageTag> closest_supported_tag,
     rust::Box<i18n::internal::IcuFallbacker> icu_fallbacker)
-    : closest_supported_locale_(std::move(closest_supported_locale)),
+    : closest_supported_tag_(std::move(closest_supported_tag)),
       icu_fallbacker_(std::move(icu_fallbacker)) {}
 
-LanguageCodeMatcher::~LanguageCodeMatcher() = default;
+LanguageTagMatcher::~LanguageTagMatcher() = default;
 
 }  // namespace base

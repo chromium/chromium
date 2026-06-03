@@ -6,16 +6,16 @@ source_set("base_i18n_export") {
   public = [ "base_i18n_export.h" ]
 }
 
-source_set("language_code") {
+source_set("language_tag") {
   sources = [
-    "language_code.cc",
-    "language_code.h",
-    "language_code_builder.cc",
-    "language_code_builder.h",
-    "language_code_matcher.cc",
-    "language_code_matcher.h",
-    "language_codes.cc",
-    "language_codes.h",
+    "language_tag.cc",
+    "language_tag.h",
+    "language_tag_matcher.cc",
+    "language_tag_matcher.h",
+    "tag_converters.cc",
+    "tag_converters.h",
+    "tags.cc",
+    "tags.h",
   ]
 
   defines = [ "BASE_I18N_IMPLEMENTATION" ]
@@ -24,7 +24,7 @@ source_set("language_code") {
   deps = [
     "//base",
     "//base/i18n/internal",
-    "//base/i18n/internal:canonical_language_codes",
+    "//base/i18n/internal:canonical_language_tags",
     "//base/i18n/internal:i18n_icu_bridge_ffi",
   ]
   visibility = [
@@ -45,8 +45,8 @@ source_set("time_formatting_types") {
 source_set("unittests") {
   testonly = true
   sources = [
-    "language_code_matcher_unittest.cc",
-    "language_code_unittest.cc",
+    "language_tag_matcher_unittest.cc",
+    "language_tag_unittest.cc",
   ]
   deps = [
     "//base",

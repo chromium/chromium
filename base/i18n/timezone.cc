@@ -127,12 +127,12 @@ std::string TimeZone::GetRegion() const {
   return std::string();
 }
 
-std::u16string TimeZone::GetDisplayName(const base::LanguageCode& language_code,
+std::u16string TimeZone::GetDisplayName(const base::LanguageTag& language_tag,
                                         DisplayType style) const {
   icu::UnicodeString name;
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale locale = icu::Locale::forLanguageTag(
-      std::string(language_code.ToString()).c_str(), status);
+      std::string(language_tag.ToString()).c_str(), status);
   DCHECK(U_SUCCESS(status));
   impl_->icu_timezone->getDisplayName(false, ToIcuDisplayType(style), locale,
                                       name);

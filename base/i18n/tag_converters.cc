@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/i18n/language_code_builder.h"
+#include "base/i18n/tag_converters.h"
 
 #include <string_view>
 #include <vector>
@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/i18n/internal/icu_bridge.rs.h"
 #include "base/i18n/internal/legacy_icu_converter.h"
-#include "base/i18n/language_code.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 
@@ -61,27 +61,27 @@ i18n::internal::ImmutableString ImmutableStringFromIcu4xLocale(
 
 }  // namespace
 
-class LanguageCodeBuilder::Impl {
+class LanguageTagConverter::Impl {
  public:
   explicit Impl() : canonicalizer_(create_icu_canonicalizer()) {}
   ~Impl() = default;
 
-  std::optional<LanguageCode> FromString(std::string_view code) const;
-  LanguageCode FromIcu4xLocale(const Icu4xLocale& icu_locale) const;
+  std::optional<LanguageTag> FromString(std::string_view tag) const;
+  LanguageTag FromIcu4xLocale(const Icu4xLocale& icu_locale) const;
 
  private:
   rust::Box<base::i18n::internal::IcuCanonicalizer> canonicalizer_;
 };
 
-LanguageCode LanguageCodeBuilder::Impl::FromIcu4xLocale(
+LanguageTag LanguageTagConverter::Impl::FromIcu4xLocale(
     const Icu4xLocale& icu_locale) const {
-  return LanguageCode(ImmutableStringFromIcu4xLocale(icu_locale));
+  return LanguageTag(ImmutableStringFromIcu4xLocale(icu_locale));
 }
 
-std::optional<LanguageCode> LanguageCodeBuilder::Impl::FromString(
-    std::string_view code) const {
+std::optional<LanguageTag> LanguageTagConverter::Impl::FromString(
+    std::string_view tag) const {
   rust::Slice<const uint8_t> locale_bytes(
-      reinterpret_cast<const uint8_t*>(code.data()), code.size());
+      reinterpret_cast<const uint8_t*>(tag.data()), tag.size());
 
   // Use the new OptionalIcu4xLocale return type.
   i18n::internal::OptionalIcu4xLocale opt_locale =
@@ -94,35 +94,36 @@ std::optional<LanguageCode> LanguageCodeBuilder::Impl::FromString(
   return FromIcu4xLocale(*opt_locale.value);
 }
 
-LanguageCodeBuilder::~LanguageCodeBuilder() = default;
-LanguageCodeBuilder::LanguageCodeBuilder() : impl_(std::make_unique<Impl>()) {}
+LanguageTagConverter::~LanguageTagConverter() = default;
+LanguageTagConverter::LanguageTagConverter()
+    : impl_(std::make_unique<Impl>()) {}
 
-const LanguageCodeBuilder& LanguageCodeBuilder::GetInstance() {
-  static base::NoDestructor<LanguageCodeBuilder> instance;
+const LanguageTagConverter& LanguageTagConverter::GetInstance() {
+  static base::NoDestructor<LanguageTagConverter> instance;
   return *instance;
 }
 
-LanguageCode LanguageCodeBuilder::FromIcu4xLocale(
+LanguageTag LanguageTagConverter::FromIcu4xLocale(
     const Icu4xLocale& icu_locale) const {
   return impl_->FromIcu4xLocale(icu_locale);
 }
 
-std::optional<LanguageCode> LanguageCodeBuilder::FromString(
-    std::string_view code) const {
-  // A valid BCP47 language code is at least 2 chars (e.g. "en")
-  if (code.size() < 2) {
+std::optional<LanguageTag> LanguageTagConverter::FromString(
+    std::string_view tag) const {
+  // A valid BCP47 language tag is at least 2 chars (e.g. "en")
+  if (tag.size() < 2) {
     return std::nullopt;
   }
 
-  std::optional<std::string> bcp47_converted_code =
-      ConvertLegacyCodeToBcp47IfNecessary(code);
+  std::optional<std::string> bcp47_converted_tag =
+      ConvertLegacyCodeToBcp47IfNecessary(tag);
   // If there is no value, the code is already bcp47-compatible and extra copies
   // can be avoided.
-  if (!bcp47_converted_code.has_value()) {
-    return impl_->FromString(code);
+  if (!bcp47_converted_tag.has_value()) {
+    return impl_->FromString(tag);
   }
 
-  return impl_->FromString(*bcp47_converted_code);
+  return impl_->FromString(*bcp47_converted_tag);
 }
 
 }  // namespace base

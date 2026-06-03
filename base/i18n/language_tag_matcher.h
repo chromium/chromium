@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_I18N_LANGUAGE_CODE_MATCHER_H_
-#define BASE_I18N_LANGUAGE_CODE_MATCHER_H_
+#ifndef BASE_I18N_LANGUAGE_TAG_MATCHER_H_
+#define BASE_I18N_LANGUAGE_TAG_MATCHER_H_
 
 #include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/i18n/base_i18n_export.h"
-#include "base/i18n/language_code.h"
-#include "base/i18n/language_codes.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tags.h"
 #include "third_party/rust/cxx/v1/cxx.h"
 
 namespace base {
@@ -19,45 +19,45 @@ namespace i18n::internal {
 struct IcuFallbacker;
 }
 
-// A class that matches a preferred language code against a set of supported
-// language codes using ICU fallback rules and precomputed distances.
+// A class that matches a preferred language tag against a set of supported
+// language tags using ICU fallback rules and precomputed distances.
 //
 // Example usage:
-//   const LanguageCodeBuilder& builder = LanguageCodeBuilder::GetInstance();
-//   LanguageCodeMatcher matcher = LanguageCodeMatcher::Create({
-//      language_codes::ENGLISH_US(),
-//      language_codes::FRENCH_FRANCE(),
-//      language_codes::SPANISH_ARGENTINA(),
+//   const LanguageTagConverter& builder = LanguageTagConverter::GetInstance();
+//   LanguageTagMatcher matcher = LanguageTagMatcher::Create({
+//      language_tags::ENGLISH_US(),
+//      language_tags::FRENCH_FRANCE(),
+//      language_tags::SPANISH_ARGENTINA(),
 //   });
 //
 //   // Exact match:
-//   matcher.Match(language_codes::ENGLISH_US()); // Returns "en-US"
+//   matcher.Match(language_tags::ENGLISH_US()); // Returns "en-US"
 //
 //   // Fallback match:
-//   matcher.Match(language_codes::BRITISH_ENGLISH()); // Returns "en-US"
+//   matcher.Match(language_tags::BRITISH_ENGLISH()); // Returns "en-US"
 //
 //   // Macro-region match:
-//   matcher.Match(language_codes::SPANISH_MEXICO()); // Returns "es-419"
+//   matcher.Match(language_tags::SPANISH_MEXICO()); // Returns "es-419"
 //
 //   // No match:
-//   matcher.Match(language_codes::GERMAN()); // Returns nullopt
-class BASE_I18N_EXPORT LanguageCodeMatcher {
+//   matcher.Match(language_tags::GERMAN()); // Returns nullopt
+class BASE_I18N_EXPORT LanguageTagMatcher {
  public:
   // Creates a new matcher for the given set of supported locales.
   // Precomputes matching logic for the provided list of supported locales.
   // This operation can be expensive and should typically be performed once
   // (e.g., during application startup or when the set of supported languages
   // changes).
-  static LanguageCodeMatcher Create(
-      base::span<const LanguageCode> supported_locales);
+  static LanguageTagMatcher Create(
+      base::span<const LanguageTag> supported_tags);
 
-  ~LanguageCodeMatcher();
+  ~LanguageTagMatcher();
 
-  LanguageCodeMatcher(const LanguageCodeMatcher&) = delete;
-  LanguageCodeMatcher& operator=(const LanguageCodeMatcher&) = delete;
+  LanguageTagMatcher(const LanguageTagMatcher&) = delete;
+  LanguageTagMatcher& operator=(const LanguageTagMatcher&) = delete;
 
-  // Finds the best match between the supported locales and the preferred
-  // locale. Returns the matched LanguageCode from the supported list, or
+  // Finds the best match between the supported tags and the preferred
+  // tag. Returns the matched LanguageTag from the supported list, or
   // std::nullopt if no match is found.
   //
   // The matching algorithm uses ICU fallback rules, likely subtags, and
@@ -74,17 +74,17 @@ class BASE_I18N_EXPORT LanguageCodeMatcher {
   //   Supported: {"zh-TW"}, Preferred: "zh-HK" -> Matches "zh-TW" (Traditional)
   // - Macro-region:
   //   Supported: {"es-419"}, Preferred: "es-AR" -> Matches "es-419" (Latin Am.)
-  std::optional<LanguageCode> Match(const LanguageCode& preferred_locale) const;
+  std::optional<LanguageTag> Match(const LanguageTag& preferred_tag) const;
 
  private:
-  explicit LanguageCodeMatcher(
-      base::flat_map<LanguageCode, LanguageCode> closest_supported_locale,
+  explicit LanguageTagMatcher(
+      base::flat_map<LanguageTag, LanguageTag> closest_supported_tag,
       rust::Box<i18n::internal::IcuFallbacker> icu_fallbacker);
 
-  const base::flat_map<LanguageCode, LanguageCode> closest_supported_locale_;
+  const base::flat_map<LanguageTag, LanguageTag> closest_supported_tag_;
   rust::Box<i18n::internal::IcuFallbacker> icu_fallbacker_;
 };
 
 }  // namespace base
 
-#endif  // BASE_I18N_LANGUAGE_CODE_MATCHER_H_
+#endif  // BASE_I18N_LANGUAGE_TAG_MATCHER_H_

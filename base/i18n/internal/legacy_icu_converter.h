@@ -12,7 +12,7 @@
 namespace base::i18n::internal {
 
 // TODO(crbug.com/517510055): implement the inversion once Extensions is
-// available in `LanguageCode`.
+// available in `LanguageTag`.
 // Converts a legacy ICU locale code (e.g., "en_US@currency=USD") to a BCP47
 // language tag (e.g., "en-US-u-cu-usd").
 //
@@ -29,7 +29,7 @@ namespace base::i18n::internal {
 // Note: this function does not run checks on whether the keys and values in
 // unicode extensions are valid, as this function is supposed to be used to
 // prepare the input for the actual parsing that happens later when constructing
-// a LanguageCode.
+// a LanguageTag.
 std::optional<std::string> ConvertLegacyCodeToBcp47IfNecessary(
     std::string_view code);
 

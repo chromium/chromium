@@ -38,9 +38,9 @@ rust_static_library("i18n_icu_bridge_ffi") {
   ]
 }
 
-action("canonical_language_codes_gen") {
+action("canonical_language_tags_gen") {
   script = "//tools/i18n/generate_canonical_locales_list.py"
-  outputs = [ "$root_gen_dir/base/i18n/internal/canonical_language_codes.inc" ]
+  outputs = [ "$root_gen_dir/base/i18n/internal/canonical_language_tags.inc" ]
   args = rebase_path(outputs, root_build_dir) + [ "${enable_pseudolocales}" ]
   visibility = [
     ":*",
@@ -48,9 +48,9 @@ action("canonical_language_codes_gen") {
   ]
 }
 
-source_set("canonical_language_codes") {
-  deps = [ ":canonical_language_codes_gen" ]
-  sources = [ "$root_gen_dir/base/i18n/internal/canonical_language_codes.inc" ]
+source_set("canonical_language_tags") {
+  deps = [ ":canonical_language_tags_gen" ]
+  sources = [ "$root_gen_dir/base/i18n/internal/canonical_language_tags.inc" ]
   visibility = [
     ":*",
     "//base/i18n:*",

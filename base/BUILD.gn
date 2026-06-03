@@ -3126,7 +3126,7 @@ component("i18n") {
   public_deps = [
     ":base",
     "//base/i18n:base_i18n_export",
-    "//base/i18n:language_code",
+    "//base/i18n:language_tag",
     "//base/i18n:time_formatting_types",
     "//base/i18n/icubridge",
     "//third_party/ced",
