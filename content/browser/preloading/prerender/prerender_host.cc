@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/check_is_test.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -352,6 +353,39 @@ FrameTreeNodeId PrerenderHost::GetFrameTreeNodeIdForId(PrerenderHostId id) {
   return it->second;
 }
 
+namespace {
+
+struct CaseInsensitiveCompare {
+  constexpr bool operator()(std::string_view a, std::string_view b) const {
+    return base::CompareCaseInsensitiveASCII(a, b) < 0;
+  }
+};
+
+constexpr auto kIgnoredHeaders =
+    base::MakeFixedFlatSet<std::string_view, CaseInsensitiveCompare>({
+        // `prerender_headers` contains the "Sec-Purpose: prefetch;prerender" to
+        // notify servers of prerender requests, while
+        // `potential_activation_headers` doesn't contain it. Ignore it so that
+        // activation works with the header. Ditto for "Sec-Speculation-Tags".
+        blink::kSecPurposeHeaderName,
+        blink::kSecSpeculationTagsHeaderName,
+
+        "rtt",
+        "downlink",
+        "ect",
+
+        // The viewport size of the initiator page can be changed during
+        // prerendering. See also https://crbug.com/1401244.
+        "viewport-width",
+        "sec-ch-viewport-width",
+
+        // Don't need to handle "viewport-height" as it is not defined in the
+        // specs.
+        "sec-ch-viewport-height",
+    });
+
+}  // namespace
+
 // static
 bool PrerenderHost::AreHttpRequestHeadersCompatible(
     const std::string& potential_activation_headers_str,
@@ -374,70 +408,36 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
       potential_activation_additional_headers_str);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // `prerender_headers` contains the "Sec-Purpose: prefetch;prerender" to
-  // notify servers of prerender requests, while `potential_activation_headers`
-  // doesn't contain it. Remove "Sec-Purpose" matching from consideration so
-  // that activation works with the header.
-  prerender_headers.RemoveHeader(blink::kSecPurposeHeaderName);
-  potential_activation_headers.RemoveHeader(blink::kSecPurposeHeaderName);
-  // Ditto for "Sec-Speculation-Tags".
-  prerender_headers.RemoveHeader(blink::kSecSpeculationTagsHeaderName);
   CHECK(!potential_activation_headers.HasHeader(
       blink::kSecSpeculationTagsHeaderName));
 
-  prerender_headers.RemoveHeader("RTT");
-  potential_activation_headers.RemoveHeader("RTT");
-  prerender_headers.RemoveHeader("Downlink");
-  potential_activation_headers.RemoveHeader("Downlink");
-  prerender_headers.RemoveHeader("ECT");
-  potential_activation_headers.RemoveHeader("ECT");
-
-  // TODO(crbug.com/40244149): Instead of handling headers added by
-  // embedders specifically, prerender should expose an interface to embedders
-  // to set url parameters.
-  // Remove X-Geo header for embedder triggers (e.g. search prefetch) as it can
-  // change easily.
-  if (trigger_type == PreloadingTriggerType::kEmbedder) {
-    prerender_headers.RemoveHeader("X-Geo");
-    potential_activation_headers.RemoveHeader("X-Geo");
-  }
-
-  // Remove the viewport headers as the viewport size of the initiator page can
-  // be changed during prerendering. See also https://crbug.com/1401244.
-  prerender_headers.RemoveHeader("viewport-width");
-  potential_activation_headers.RemoveHeader("viewport-width");
-  prerender_headers.RemoveHeader("sec-ch-viewport-width");
-  potential_activation_headers.RemoveHeader("sec-ch-viewport-width");
-  // Don't need to handle "viewport-height" as it is not defined in the specs.
-  prerender_headers.RemoveHeader("sec-ch-viewport-height");
-  potential_activation_headers.RemoveHeader("sec-ch-viewport-height");
-
-  // Allow mismatches on `X-` headers. Currently this is allowed only on the
-  // WebView.
-  // TODO(crbug.com/40244149): Expand this to other platforms and non-x-headers.
-  if (allow_x_header_mismatch) {
-    absl::flat_hash_set<std::string> headers_to_be_removed;
-    for (net::HttpRequestHeaders::Iterator it(prerender_headers);
-         it.GetNext();) {
-      if (it.name().starts_with("X-") || it.name().starts_with("x-")) {
-        headers_to_be_removed.insert(it.name());
-      }
+  const auto should_ignore = [allow_x_header_mismatch,
+                              trigger_type](const std::string& lowered_key) {
+    // Ignore X-Geo header for embedder triggers (e.g. search prefetch) as it
+    // can change easily.
+    // TODO(crbug.com/40244149): Instead of handling headers added by embedders
+    // specifically, prerender should expose an interface to embedders to set
+    // url parameters.
+    if (trigger_type == PreloadingTriggerType::kEmbedder &&
+        lowered_key == "x-geo") {
+      return true;
     }
-    for (net::HttpRequestHeaders::Iterator it(potential_activation_headers);
-         it.GetNext();) {
-      if (it.name().starts_with("X-") || it.name().starts_with("x-")) {
-        headers_to_be_removed.insert(it.name());
-      }
+
+    // Allow mismatches on `X-` headers. Currently this is allowed only on the
+    // WebView.
+    // TODO(crbug.com/40244149): Expand this to other platforms and
+    // non-x-headers.
+    if (allow_x_header_mismatch && lowered_key.starts_with("x-")) {
+      return true;
     }
-    for (const std::string& name : headers_to_be_removed) {
-      prerender_headers.RemoveHeader(name);
-      potential_activation_headers.RemoveHeader(name);
-    }
-  }
+
+    return kIgnoredHeaders.contains(lowered_key);
+  };
 
   auto mismatched_headers = network::MatchHttpRequestHeaders(
       prerender_headers, potential_activation_headers,
-      network::MatchHttpRequestHeadersValueOption::kEqualsCaseInsensitiveASCII);
+      network::MatchHttpRequestHeadersValueOption::kEqualsCaseInsensitiveASCII,
+      should_ignore);
 
   if (mismatched_headers.empty()) {
     return true;
