@@ -5469,12 +5469,12 @@
       "lugli@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "glic-toolbar-height-side-panel",
     "owners": [ "estalin@chromium.org", "//chrome/browser/glic/OWNERS" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "glic-z-order-changes",
