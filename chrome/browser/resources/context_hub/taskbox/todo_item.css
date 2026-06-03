@@ -1,0 +1,61 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  background-color: var(--cr-card-background-color, #FFF);
+  border-radius: var(--cr-card-border-radius, 16px);
+  border: 1px solid #F1F5F9;
+  overflow: hidden;
+}
+
+cr-expand-button {
+  padding: 16px 20px;
+  --cr-section-min-height: unset;
+}
+
+.todo-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+}
+
+.todo-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.todo-info h3 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--cr-primary-text-color, #0F172A);
+}
+
+.description {
+  font-size: 14px;
+  color: #64748B;
+  margin: 4px 0 0 0;
+  text-align: start;
+}
+
+.todo-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+cr-button cr-icon {
+  --cr-icon-size: 16px;
+  margin-inline-start: 4px;
+}

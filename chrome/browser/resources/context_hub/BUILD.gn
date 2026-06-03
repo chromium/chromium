@@ -17,9 +17,15 @@ build_webui("build") {
     "memory_banks/memory_banks.ts",
     "taskbox/ai_taskbox.html.ts",
     "taskbox/ai_taskbox.ts",
+    "taskbox/todo_item.html.ts",
+    "taskbox/todo_item.ts",
   ]
 
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "taskbox/ai_taskbox.css",
+    "taskbox/todo_item.css",
+  ]
 
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/context_hub:mojo_bindings_ts__generator" ]
