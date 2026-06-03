@@ -67,6 +67,13 @@ template("_androidx_prebuilt") {
       ignore_proguard_configs = true
     } else if (target_name == "androidx_graphics_graphics_core_java") {
       ignore_native_libraries = true
+      bytecode_rewriter_target =
+          "//build/android/bytecode:system_load_library_remover"
+      bytecode_rewriter_args = [ "org.chromium.androidx.GraphicsCoreJniLoader" ]
+    } else if (target_name == "androidx_ink_ink_nativeloader_android_java") {
+      ignore_native_libraries = true
+      bytecode_rewriter_target =
+          "//build/android/bytecode:system_load_library_remover"
     } else if (filter_include([ target_name ], [ "androidx_ink_*" ]) != []) {
       if (invoker.target_type == "android_aar_prebuilt") {
         ignore_native_libraries = true

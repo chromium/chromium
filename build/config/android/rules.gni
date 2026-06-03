@@ -4523,6 +4523,7 @@ if (!is_robolectric && enable_java_templates) {
     if (_scanned_files.has_classes_jar) {
       _java_library_vars = [
         "alternative_android_sdk_dep",
+        "bytecode_rewriter_args",
         "bytecode_rewriter_target",
         "enable_bytecode_checks",
         "jar_excluded_patterns",

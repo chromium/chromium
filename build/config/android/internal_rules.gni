@@ -434,6 +434,7 @@ template("write_build_config") {
                              [
                                "assets",
                                "bypass_platform_checks",
+                               "bytecode_rewriter_target",
                                "chromium_code",
                                "create_locales_java_list",
                                "dex_needs_classpath",
@@ -3630,8 +3631,12 @@ if (enable_java_templates) {
           }
         }
       } else if (_is_prebuilt && _build_host_jar) {
-        # Skip "process device" step if the step would be just a copy.
-        _processed_jar_path = invoker.jar_path
+        if (defined(invoker.bytecode_rewriter_target)) {
+          _processed_jar_path = "$target_out_dir/$target_name.rewritten.jar"
+        } else {
+          # Skip "process device" step if the step would be just a copy.
+          _processed_jar_path = invoker.jar_path
+        }
       } else if (_has_sources) {
         if (defined(invoker.bytecode_rewriter_target)) {
           _processed_jar_path = "$target_out_dir/$target_name.rewritten.jar"
@@ -3771,6 +3776,7 @@ if (enable_java_templates) {
                                "aar_path",
                                "annotation_processor_deps",
                                "base_allowlist_rtxt_path",
+                               "bytecode_rewriter_target",
                                "create_locales_java_list",
                                "direct_deps_only",
                                "enable_lint",
@@ -4007,6 +4013,7 @@ if (enable_java_templates) {
           target_sources_file = _target_sources_file
           chromium_code = _chromium_code
           include_android_sdk = _requires_robolectric || _requires_android
+
           if (defined(invoker.enable_compose)) {
             enable_compose = invoker.enable_compose
           }
@@ -4191,6 +4198,9 @@ if (enable_java_templates) {
           "--output-jar",
           rebase_path(_rewritten_jar, root_build_dir),
         ]
+        if (defined(invoker.bytecode_rewriter_args)) {
+          args += invoker.bytecode_rewriter_args
+        }
         deps = _unprocessed_jar_deps + _javac_classpath_deps +
                [ invoker.bytecode_rewriter_target ]
       }

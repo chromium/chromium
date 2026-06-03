@@ -21,6 +21,9 @@ def main(argv):
   parser.add_argument('--classpath', action='append', nargs='+')
   parser.add_argument('--input-jar', required=True)
   parser.add_argument('--output-jar', required=True)
+  parser.add_argument('args',
+                      nargs='*',
+                      help='Arguments to pass to the rewriter script.')
   args = parser.parse_args(argv)
 
   classpath = action_helpers.parse_gn_list(args.classpath)
@@ -31,6 +34,7 @@ def main(argv):
       args.script, '--classpath', ':'.join(classpath), args.input_jar,
       args.output_jar
   ]
+  cmd.extend(args.args)
   build_utils.CheckOutput(cmd, print_stdout=True)
 
 
