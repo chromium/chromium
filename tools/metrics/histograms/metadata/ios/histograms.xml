@@ -7107,7 +7107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Sessions.DiscardedSceneConnectedAfterBeingPurged"
-    enum="Boolean" expires_after="2026-07-05">
+    enum="Boolean" expires_after="2026-12-31">
   <owner>sdefresne@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
