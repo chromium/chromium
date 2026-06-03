@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/webui_url_constants.h"
@@ -1421,6 +1422,9 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
     return false;
   }
 
+  base::ElapsedTimer total_timer;
+  base::ElapsedTimer step_timer;
+
   text_to_ax_map_.clear();
   occupied_ax_ranges_.clear();
   // Ensure the mapping storage size matches the input blocks.
@@ -1428,20 +1432,22 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
   should_map_rendered_text_to_tree_for_readability_ = false;
 
   FlattenAXTree(tree);
+  base::TimeDelta flattening_duration = step_timer.Elapsed();
 
   // If the AXTree is empty, there is no text to map back to.
   if (global_ax_tree_text_.empty()) {
     return false;
   }
 
-  // TODO: crbug.com/507453378 - Create Mapping algorithm execution time metric.
-
   // Build a Suffix Array index of the original page's text. Finding a text
   // block can then be done in O(log N) time.
+  step_timer = base::ElapsedTimer();
   SuffixArray index;
   index.Build(global_ax_tree_text_);
+  base::TimeDelta suffix_array_duration = step_timer.Elapsed();
 
   // Build a frequency map of the distilled blocks.
+  step_timer = base::ElapsedTimer();
   base::flat_map<std::u16string_view, int> readability_block_counts;
   for (const auto& block : blocks) {
     if (!block.empty()) {
@@ -1454,8 +1460,11 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
 
   std::vector<AlignmentAnchor> major_anchors =
       FilterMonotonicAnchors(std::move(candidates));
+  base::TimeDelta initial_anchors_duration = step_timer.Elapsed();
 
+  step_timer = base::ElapsedTimer();
   GapSubstringAlignment(blocks, index, major_anchors);
+  base::TimeDelta gap_alignment_duration = step_timer.Elapsed();
 
   // Sort mapping segments for every block to ensure physical DOM splitting
   // happens in sequential order in the WebUI.
@@ -1465,6 +1474,10 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
                 return a.start < b.start;
               });
   }
+
+  RecordReadabilityMappingMetrics(
+      total_timer.Elapsed(), flattening_duration, suffix_array_duration,
+      initial_anchors_duration, gap_alignment_duration);
 
   return true;
 }
@@ -1898,6 +1911,33 @@ ReadAnythingAppModel::CreateSegmentsForMatch(size_t ax_start,
     segments.push_back(ms);
   }
   return segments;
+}
+
+void ReadAnythingAppModel::RecordReadabilityMappingMetrics(
+    base::TimeDelta total_duration,
+    base::TimeDelta flattening_duration,
+    base::TimeDelta suffix_array_duration,
+    base::TimeDelta initial_anchors_duration,
+    base::TimeDelta gap_alignment_duration) {
+  base::UmaHistogramTimes(
+      "Accessibility.ReadAnything.ReadabilityMapping.1_Flattening."
+      "ExecutionTime",
+      flattening_duration);
+  base::UmaHistogramTimes(
+      "Accessibility.ReadAnything.ReadabilityMapping.2_SuffixArray."
+      "ExecutionTime",
+      suffix_array_duration);
+  base::UmaHistogramTimes(
+      "Accessibility.ReadAnything.ReadabilityMapping.3_InitialAnchors."
+      "ExecutionTime",
+      initial_anchors_duration);
+  base::UmaHistogramTimes(
+      "Accessibility.ReadAnything.ReadabilityMapping.4_GapAlignment."
+      "ExecutionTime",
+      gap_alignment_duration);
+  base::UmaHistogramTimes(
+      "Accessibility.ReadAnything.ReadabilityMapping.0_Total.ExecutionTime",
+      total_duration);
 }
 
 std::vector<ReadAnythingAppModel::MappingSegment>

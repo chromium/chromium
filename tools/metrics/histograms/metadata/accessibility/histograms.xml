@@ -3298,6 +3298,26 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram
+    name="Accessibility.ReadAnything.ReadabilityMapping.{Step}.ExecutionTime"
+    units="ms" expires_after="2027-01-01">
+  <owner>gusmartin@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records the time taken for the {Step} phase of the Readability text
+    alignment algorithm. Recorded once per successful mapping attempt.
+  </summary>
+  <token key="Step">
+    <variant name="0_Total" summary="entire algorithm"/>
+    <variant name="1_Flattening" summary="AXTree flattening and state reset"/>
+    <variant name="2_SuffixArray" summary="building the suffix array index"/>
+    <variant name="3_InitialAnchors"
+        summary="finding and filtering unique blocks (first pass)"/>
+    <variant name="4_GapAlignment"
+        summary="recursive locally-unique substring alignment (second pass)"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.ReadAloud.EngineVersion"
     units="yyyymmdd0" expires_after="2026-10-11">
   <owner>lwinston@google.com</owner>

@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -2513,6 +2514,37 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_ResetsMappingState) {
   EXPECT_EQ(model().text_to_ax_map().size(), 2u);
   EXPECT_TRUE(model().text_to_ax_map()[0].empty());
   EXPECT_TRUE(model().text_to_ax_map()[1].empty());
+}
+
+TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_RecordsMetrics) {
+  base::HistogramTester histograms;
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+  // Setup a simple tree
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+  update.nodes = {test::TextNode(1, u"Hello World")};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().MapRenderedTextToTree({u"Hello World"});
+
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.ReadabilityMapping.0_Total.ExecutionTime", 1);
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.ReadabilityMapping.1_Flattening."
+      "ExecutionTime",
+      1);
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.ReadabilityMapping.2_SuffixArray."
+      "ExecutionTime",
+      1);
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.ReadabilityMapping.3_InitialAnchors."
+      "ExecutionTime",
+      1);
+  histograms.ExpectTotalCount(
+      "Accessibility.ReadAnything.ReadabilityMapping.4_GapAlignment."
+      "ExecutionTime",
+      1);
 }
 
 TEST_F(ReadAnythingAppModelTest,
