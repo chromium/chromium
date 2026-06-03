@@ -23,6 +23,8 @@
 
 namespace {
 
+constexpr int kStrokeSize = views::Separator::kThickness;
+
 // Returns the orientation in which to visually draw the corner; will mirror
 // `orientation` for RtL.
 CustomFloatingCorner::CornerOrientation GetVisualOrientation(
@@ -112,29 +114,8 @@ void CustomFloatingCorner::SetStroke(std::optional<ui::ColorId> stroke_color,
   }
 }
 
-gfx::Size CustomFloatingCorner::CalculatePreferredSize(
-    const views::SizeBounds& available_size) const {
-  // This can return nullptr when there is no Widget (for context, see
-  // http://crbug.com/40178332). The nullptr dereference does not always
-  // crash due to compiler optimizations, so CHECKing here ensures we crash.
-  CHECK(GetLayoutProvider());
-  const float corner_radius =
-      GetLayoutProvider()->GetCornerRadiusMetric(corner_radius_token_);
-  const float horizontal_size =
-      corner_radius + (stroke_color_ ? views::Separator::kThickness : 0);
-  const float vertical_size =
-      corner_radius + (stroke_color_ && !is_vertical_window_edge_
-                           ? views::Separator::kThickness
-                           : 0);
-  return gfx::Size(horizontal_size, vertical_size);
-}
-
-void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
-  const int kStrokeSize = views::Separator::kThickness;
-  const gfx::Rect rect(GetLocalBounds());
-
-  gfx::ScopedCanvas scoped(canvas);
-
+SkPath CustomFloatingCorner::GetBackgroundPath(
+    const gfx::Rect& in_bounds) const {
   // This assumes that the view has gotten its preferred size, however, it will
   // scale gracefully if it is not that size. The view should be the preferred
   // corner radius in each dimension, plus the stroke thickness if there is a
@@ -153,63 +134,110 @@ void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
   SkPathBuilder clip_path;
   switch (visual_orientation) {
     case CornerOrientation::kTopLeading:
-      clip_path.moveTo(0, 0);
-      clip_path.lineTo(rect.width(), 0);
+      clip_path.moveTo(in_bounds.x(), in_bounds.y());
+      clip_path.lineTo(in_bounds.right(), in_bounds.y());
       if (extend_vertical) {
-        clip_path.lineTo(rect.width(), kStrokeSize);
+        clip_path.lineTo(in_bounds.right(), in_bounds.y() + kStrokeSize);
       }
       clip_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
                       SkPathDirection::kCCW,
-                      SkPoint(has_stroke ? kStrokeSize : 0, rect.height()));
+                      SkPoint(in_bounds.x() + (has_stroke ? kStrokeSize : 0),
+                              in_bounds.bottom()));
       if (has_stroke) {
-        clip_path.lineTo(0, rect.height());
+        clip_path.lineTo(in_bounds.x(), in_bounds.bottom());
       }
-      clip_path.lineTo(0, 0);
+      clip_path.lineTo(in_bounds.x(), in_bounds.y());
       break;
     case CornerOrientation::kTopTrailing:
-      clip_path.moveTo(0, 0);
-      clip_path.lineTo(rect.width(), 0);
-      clip_path.lineTo(rect.width(), rect.height());
+      clip_path.moveTo(in_bounds.x(), in_bounds.y());
+      clip_path.lineTo(in_bounds.right(), in_bounds.y());
+      clip_path.lineTo(in_bounds.right(), in_bounds.bottom());
       if (has_stroke) {
-        clip_path.lineTo(rect.width() - kStrokeSize, rect.height());
+        clip_path.lineTo(in_bounds.right() - kStrokeSize, in_bounds.bottom());
       }
-      clip_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
-                      SkPathDirection::kCCW,
-                      SkPoint(0, extend_vertical ? kStrokeSize : 0));
+      clip_path.arcTo(
+          corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
+          SkPathDirection::kCCW,
+          SkPoint(in_bounds.x(),
+                  in_bounds.y() + (extend_vertical ? kStrokeSize : 0)));
       if (extend_vertical) {
-        clip_path.lineTo(0, 0);
+        clip_path.lineTo(in_bounds.x(), in_bounds.y());
       }
       break;
     case CornerOrientation::kBottomLeading:
-      clip_path.moveTo(0, 0);
+      clip_path.moveTo(in_bounds.x(), in_bounds.y());
       if (has_stroke) {
-        clip_path.lineTo(kStrokeSize, 0);
+        clip_path.lineTo(in_bounds.x() + kStrokeSize, in_bounds.y());
       }
-      clip_path.arcTo(
-          corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
-          SkPathDirection::kCCW,
-          SkPoint(rect.width(), extend_vertical ? rect.height() - kStrokeSize
-                                                : rect.height()));
+      clip_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
+                      SkPathDirection::kCCW,
+                      SkPoint(in_bounds.right(),
+                              extend_vertical ? in_bounds.bottom() - kStrokeSize
+                                              : in_bounds.bottom()));
       if (extend_vertical) {
-        clip_path.lineTo(rect.width(), rect.height());
+        clip_path.lineTo(in_bounds.right(), in_bounds.bottom());
       }
-      clip_path.lineTo(0, rect.height());
-      clip_path.lineTo(0, 0);
+      clip_path.lineTo(in_bounds.x(), in_bounds.bottom());
+      clip_path.lineTo(in_bounds.x(), in_bounds.y());
       break;
     case CornerOrientation::kBottomTrailing:
-      clip_path.moveTo(rect.width(), 0);
-      clip_path.lineTo(rect.width(), rect.height());
-      clip_path.lineTo(0, rect.height());
+      clip_path.moveTo(in_bounds.right(), in_bounds.y());
+      clip_path.lineTo(in_bounds.right(), in_bounds.bottom());
+      clip_path.lineTo(in_bounds.x(), in_bounds.bottom());
       if (extend_vertical) {
-        clip_path.lineTo(0, rect.height() - kStrokeSize);
+        clip_path.lineTo(in_bounds.x(), in_bounds.bottom() - kStrokeSize);
       }
-      clip_path.arcTo(
-          corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
-          SkPathDirection::kCCW,
-          SkPoint(has_stroke ? rect.width() - kStrokeSize : rect.width(), 0));
+      clip_path.arcTo(corner_radius, 0, SkPathBuilder::kSmall_ArcSize,
+                      SkPathDirection::kCCW,
+                      SkPoint(has_stroke ? in_bounds.right() - kStrokeSize
+                                         : in_bounds.right(),
+                              in_bounds.y()));
+      if (has_stroke) {
+        clip_path.lineTo(in_bounds.right(), in_bounds.y());
+      }
       break;
   }
-  canvas->ClipPath(clip_path.detach(), /*do_anti_alias=*/true);
+
+  return clip_path.detach();
+}
+
+gfx::Size CustomFloatingCorner::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  // This can return nullptr when there is no Widget (for context, see
+  // http://crbug.com/40178332). The nullptr dereference does not always
+  // crash due to compiler optimizations, so CHECKing here ensures we crash.
+  CHECK(GetLayoutProvider());
+  const float corner_radius =
+      GetLayoutProvider()->GetCornerRadiusMetric(corner_radius_token_);
+  const float horizontal_size =
+      corner_radius + (stroke_color_ ? views::Separator::kThickness : 0);
+  const float vertical_size =
+      corner_radius + (stroke_color_ && !is_vertical_window_edge_
+                           ? views::Separator::kThickness
+                           : 0);
+  return gfx::Size(horizontal_size, vertical_size);
+}
+
+void CustomFloatingCorner::OnPaint(gfx::Canvas* canvas) {
+  const gfx::Rect rect(GetLocalBounds());
+
+  gfx::ScopedCanvas scoped(canvas);
+
+  // This assumes that the view has gotten its preferred size, however, it will
+  // scale gracefully if it is not that size. The view should be the preferred
+  // corner radius in each dimension, plus the stroke thickness if there is a
+  // stroke.
+  const bool has_stroke = stroke_color_.has_value();
+  const bool extend_vertical = has_stroke && !is_vertical_window_edge_;
+  const SkVector corner_radius(
+      has_stroke ? width() - kStrokeSize : width(),
+      extend_vertical ? height() - kStrokeSize : height());
+
+  // Because we're painting, we have to account for RTL.
+  const CornerOrientation visual_orientation =
+      GetVisualOrientation(orientation_);
+
+  canvas->ClipPath(GetBackgroundPath(rect), /*do_anti_alias=*/true);
 
   // Fill the clipped canvas.
   PaintPath(canvas,

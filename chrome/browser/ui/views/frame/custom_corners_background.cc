@@ -13,7 +13,9 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/ui/views/frame/custom_floating_corner.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -23,8 +25,10 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -120,18 +124,61 @@ CustomCornersBackground::Corner CustomCornersBackground::GetWindowCorner(
   return corner;
 }
 
+SkPath CustomCornersBackground::GetBackgroundPath(const gfx::Rect& in_bounds,
+                                                  CornerRadii* radii) const {
+  const Corners corners = GetMirroredCorners();
+  CornerRadii local_radii;
+  if (!radii) {
+    radii = &local_radii;
+  }
+  *radii = {CornerToRadiusVector(corners.upper_leading, default_radius_),
+            CornerToRadiusVector(corners.upper_trailing, default_radius_),
+            CornerToRadiusVector(corners.lower_trailing, default_radius_),
+            CornerToRadiusVector(corners.lower_leading, default_radius_)};
+  return SkPath::RRect(
+      SkRRect::MakeRectRadii(gfx::RectToSkRect(in_bounds), radii->data()));
+}
+
+void CustomCornersBackground::SetCutoutFrom(
+    const std::vector<const views::View*>& views) {
+  cutout_paths_.clear();
+  for (const auto* view : views) {
+    gfx::Rect bounds = view->GetLocalBounds();
+    views::View::ConvertRectToScreen(&*view, &bounds);
+    bounds = views::View::ConvertRectFromScreen(&*view_, bounds);
+    SkPath cutout_path;
+    if (auto* const corner = views::AsViewClass<CustomFloatingCorner>(view)) {
+      cutout_path = corner->GetBackgroundPath(bounds);
+    } else if (view->background() &&
+               view->background()->IsA<CustomCornersBackground>()) {
+      cutout_path =
+          view->background()->AsA<CustomCornersBackground>()->GetBackgroundPath(
+              bounds, nullptr);
+    } else {
+      cutout_path = SkPath::Rect(gfx::RectToSkRect(bounds));
+    }
+    cutout_paths_.push_back(cutout_path);
+  }
+}
+
 void CustomCornersBackground::Paint(gfx::Canvas* canvas,
                                     views::View* view) const {
   if (!visible_) {
     return;
   }
 
+  if (view->layer()) {
+    CHECK(!view->layer()->fills_bounds_opaquely());
+  }
+
+  gfx::ScopedCanvas scoped_canvas(canvas);
+
   if (alpha_ < 1.0f) {
     canvas->SaveLayerAlpha(static_cast<uint8_t>(255 * alpha_));
   }
 
-  if (view->layer()) {
-    CHECK(!view->layer()->fills_bounds_opaquely());
+  for (auto& cutout_path : cutout_paths_) {
+    canvas->ClipPath(cutout_path, true, SkClipOp::kDifference);
   }
 
   gfx::Rect rect(view->GetLocalBounds());
@@ -171,14 +218,9 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
   }
 
   // Draw solid rect/rrect background:
-  SkVector radii[4] = {
-      CornerToRadiusVector(corners.upper_leading, default_radius_),
-      CornerToRadiusVector(corners.upper_trailing, default_radius_),
-      CornerToRadiusVector(corners.lower_trailing, default_radius_),
-      CornerToRadiusVector(corners.lower_leading, default_radius_)};
-  const SkPath path =
-      SkPath::RRect(SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
-  PaintPath(canvas, path, primary_color_, /*anti_alias=*/true);
+  CornerRadii radii;
+  PaintPath(canvas, GetBackgroundPath(view_->GetLocalBounds(), &radii),
+            primary_color_, /*anti_alias=*/true);
 
   // Paint strokes around the outside. Corners get strokes if they are between
   // two sides with strokes and have a radius. Multiple paths may be drawn if

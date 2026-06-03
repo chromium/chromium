@@ -1322,6 +1322,10 @@ void BrowserViewTabbedLayoutImpl::DoPreLayoutComputations(
 
 void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     const BrowserLayoutParams& params) {
+  // Want to cut the vertical tabstrip and its decorations out of the top
+  // container in transparency mode.
+  std::vector<const views::View*> top_container_cutout_views;
+
   // Set vertical tabstrip corners.
   if (layout_data_->tab_strip_type == TabStripType::kVertical) {
     // Vertical tabstrip goes all the way to the top of the window if it is not
@@ -1439,6 +1443,23 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       vertical_tabs_outline.bottom = true;
     }
     vertical_tabs_background->SetOutline(vertical_tabs_outline);
+
+    // Cut the vertical tab strip out of the top container.
+    top_container_cutout_views.push_back(
+        views().vertical_tab_strip_region_view);
+    if (animation.top_corner > 0) {
+      top_container_cutout_views.push_back(
+          views().vertical_tab_strip_top_corner);
+    }
+  }
+
+  if (!is_fullscreen(layout_data_->window_state) &&
+      features::IsGlassFrameEnabled()) {
+    // Do the top container cutouts.
+    views()
+        .top_container->background()
+        ->AsA<CustomCornersBackground>()
+        ->SetCutoutFrom(top_container_cutout_views);
   }
 
   // Set toolbar corners.

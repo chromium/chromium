@@ -212,8 +212,11 @@ class COMPONENT_EXPORT(GFX) Canvas {
   void ClipRect(const RectF& rect, SkClipOp op = SkClipOp::kIntersect);
 
   // Adds |path| to the current clip. |do_anti_alias| is true if the clip
-  // should be antialiased.
-  void ClipPath(const SkPath& path, bool do_anti_alias);
+  // should be antialiased. Use `SkClipOp::kDifference` for `op` if you want to
+  // subtract this area instead.
+  void ClipPath(const SkPath& path,
+                bool do_anti_alias,
+                SkClipOp op = SkClipOp::kIntersect);
 
   // Returns the bounds of the current clip (in local coordinates) in the
   // |bounds| parameter, and returns true if it is non empty.

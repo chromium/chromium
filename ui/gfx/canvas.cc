@@ -190,8 +190,8 @@ void Canvas::ClipRect(const RectF& rect, SkClipOp op) {
   canvas_->clipRect(RectFToSkRect(rect), op);
 }
 
-void Canvas::ClipPath(const SkPath& path, bool do_anti_alias) {
-  canvas_->clipPath(path, SkClipOp::kIntersect, do_anti_alias);
+void Canvas::ClipPath(const SkPath& path, bool do_anti_alias, SkClipOp op) {
+  canvas_->clipPath(path, op, do_anti_alias);
 }
 
 bool Canvas::GetClipBounds(Rect* bounds) {

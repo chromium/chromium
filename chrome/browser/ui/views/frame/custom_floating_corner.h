@@ -59,6 +59,9 @@ class CustomFloatingCorner : public views::View, public CustomCorners {
   void SetStroke(std::optional<ui::ColorId> stroke_color,
                  bool is_vertical_window_edge);
 
+  // Returns the background path of the corner.
+  SkPath GetBackgroundPath(const gfx::Rect& in_bounds) const;
+
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;

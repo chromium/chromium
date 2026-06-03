@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_CUSTOM_CORNERS_BACKGROUND_H_
 
 #include <variant>
+#include <vector>
 
 #include "base/types/strong_alias.h"
 #include "chrome/browser/ui/views/frame/custom_corners.h"
@@ -70,6 +71,9 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
     bool operator==(const Outline&) const = default;
   };
 
+  // Struct to store corner radii.
+  using CornerRadii = std::array<SkVector, 4>;
+
   CustomCornersBackground(views::View& view,
                           BrowserView& browser_view,
                           ColorChoice primary_color,
@@ -105,6 +109,11 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
 
   bool visible_for_testing() const { return visible_; }
 
+  // Cuts the backgrounds from `views` out of `this`. Works for views with a
+  // `CustomCornersBackground` as well as for `CustomFloatingCorner`. Empty
+  // clears the cutout.
+  void SetCutoutFrom(const std::vector<const views::View*>& views);
+
   // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override;
   void OnViewThemeChanged(views::View* view) override;
@@ -121,6 +130,10 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   // Hide this as it should not be used directly.
   using Background::SetColor;
 
+  // Returns a path containing the entire painted background region.
+  SkPath GetBackgroundPath(const gfx::Rect& in_bounds,
+                           CornerRadii* corners = nullptr) const;
+
   // Possibly mirrors corners for RtL.
   Corners GetMirroredCorners() const;
 
@@ -134,6 +147,7 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   int default_radius_;
   Corners corners_;
   Outline outline_;
+  std::vector<SkPath> cutout_paths_;
   const raw_ref<views::View> view_;
 };
 
