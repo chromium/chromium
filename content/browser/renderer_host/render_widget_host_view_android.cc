@@ -3103,6 +3103,24 @@ bool RenderWidgetHostViewAndroid::OnMouseEvent(
   int action_button = event.GetActionButton();
   if (webMouseEventType == blink::WebInputEvent::Type::kMouseDown) {
     UpdateMouseState(action_button, event.GetX(0), event.GetY(0));
+    if (!HasFocus() &&
+        base::FeatureList::IsEnabled(
+            features::kFocusRenderWidgetHostViewAndroidOnMouseDown)) {
+      // On Android, mouse clicks (ACTION_BUTTON_PRESS generic motion events)
+      // do not automatically request focus in the View hierarchy because the
+      // touch ACTION_DOWN is filtered out in Java (see EventForwarder.java's
+      // sendNativeMouseEvent). We explicitly request focus here so Blink
+      // processes the click in a focused state. This mirrors the touch-focus
+      // logic inside OnTouchEvent().
+      //
+      // Note: WebView is not excluded here (unlike ActionDown focus via
+      // kFocusRenderWidgetHostViewAndroidOnActionDown). Touch down initiates
+      // scrolls, so touch-focus risks stealing focus during scrolling.
+      // Mouse down (kMouseDown) is exclusively for clicks/drags (e.g. text
+      // selection) which require focus, while mouse scrolls are handled
+      // separately via wheel/scroll events.
+      Focus();
+    }
   }
 
   int click_count = 0;
