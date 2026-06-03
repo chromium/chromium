@@ -40,11 +40,6 @@ public class NtpBackgroundDataGroup implements Iterable<NtpBackgroundDataBase> {
         return mNtpBackgroundDataList.iterator();
     }
 
-    /** Returns the background data list of this group. */
-    public List<NtpBackgroundDataBase> getList() {
-        return mNtpBackgroundDataList;
-    }
-
     /**
      * Returns the element at the specified position in this list.
      *

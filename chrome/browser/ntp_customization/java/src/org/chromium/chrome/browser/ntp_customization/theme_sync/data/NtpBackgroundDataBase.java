@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme_sync.data;
 
-import android.graphics.drawable.Drawable;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -13,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 
 import java.lang.annotation.Retention;
@@ -61,12 +58,7 @@ public abstract class NtpBackgroundDataBase {
     }
 
     /** Returns the NTP background type. */
-    public abstract @NtpBackgroundType int getBackgroundType();
-
-    /** Returns the image drawable of this background data. */
-    public @Nullable Drawable getImageDrawable() {
-        return null;
-    }
+    protected abstract @NtpBackgroundType int getBackgroundType();
 
     /** Returns the JSON representation of the object. */
     public JSONObject toJson() throws JSONException {

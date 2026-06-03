@@ -67,7 +67,7 @@ public class NtpBackgroundDataUploadImage extends NtpBackgroundDataBase {
     // NtpBackgroundDataBase implementations.
 
     @Override
-    public @NtpBackgroundType int getBackgroundType() {
+    protected @NtpBackgroundType int getBackgroundType() {
         return NtpBackgroundType.IMAGE_FROM_DISK;
     }
 

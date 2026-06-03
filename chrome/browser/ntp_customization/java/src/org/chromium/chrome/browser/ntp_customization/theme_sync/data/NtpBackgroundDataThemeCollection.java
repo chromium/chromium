@@ -69,7 +69,7 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataBase {
 
     // NtpBackgroundDataBase implementations.
     @Override
-    public @NtpBackgroundType int getBackgroundType() {
+    protected @NtpBackgroundType int getBackgroundType() {
         return NtpBackgroundType.THEME_COLLECTION;
     }
 
