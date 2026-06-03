@@ -523,6 +523,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &segmentation_platform::features::kSegmentationPlatformAndroidHomeModuleRanker,
     &segmentation_platform::features::kSegmentationPlatformAndroidHomeModuleRankerV2,
     &segmentation_platform::features::kSegmentationPlatformEphemeralCardRanker,
+    &send_tab_to_self::kSendTabToSelfAutoOpen,
     &send_tab_to_self::kSendTabToSelfExtraEntryPoints,
     &send_tab_to_self::kSendTabToSelfGesture,
     &send_tab_to_self::kSendTabToSelfPostSendToast,

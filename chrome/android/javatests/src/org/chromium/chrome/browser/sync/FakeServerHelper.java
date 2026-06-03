@@ -396,6 +396,12 @@ public class FakeServerHelper {
                                 .deleteAllEntitiesForDataType(mNativeFakeServer, dataType));
     }
 
+    /** Returns the local device's sync cache GUID. */
+    public String getLocalCacheGuid() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> FakeServerHelperJni.get().getLocalCacheGuid());
+    }
+
     @NativeMethods
     interface Natives {
         long createFakeServer();
@@ -487,5 +493,8 @@ public class FakeServerHelper {
                 int numberOfTabs);
 
         void deleteAllEntitiesForDataType(long fakeServer, int dataType);
+
+        @JniType("std::string")
+        String getLocalCacheGuid();
     }
 }

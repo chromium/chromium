@@ -629,6 +629,7 @@ public abstract class ChromeFeatureList {
             "SegmentationPlatformAndroidHomeModuleRankerV2";
     public static final String SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER =
             "SegmentationPlatformEphemeralCardRanker";
+    public static final String SEND_TAB_TO_SELF_AUTO_OPEN = "SendTabToSelfAutoOpen";
     public static final String SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS =
             "SendTabToSelfExtraEntryPoints";
     public static final String SEND_TAB_TO_SELF_GESTURE = "SendTabToSelfGesture";

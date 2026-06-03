@@ -15,14 +15,17 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace content {
+class NavigationHandle;
 class WebContents;
-}
+}  // namespace content
+
+struct NavigateParams;
 
 namespace send_tab_to_self {
 
+struct PageContext;
 class SendTabToSelfEntry;
 class SendTabToSelfModel;
 
@@ -55,6 +58,14 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
   // TabModelListObserver:
   void OnTabModelAdded(TabModel* tab_model) override;
   void OnTabModelRemoved(TabModel* tab_model) override;
+
+  void OnNavigationStarted(
+      const std::string& guid,
+      const GURL& url,
+      const std::string& device_name,
+      const PageContext& page_context,
+      std::unique_ptr<NavigateParams> nav_params,
+      base::WeakPtr<content::NavigationHandle> navigation_handle);
 
   // Handles application state transitions (e.g., Chrome coming to foreground).
   void HandleApplicationStateChange(base::android::ApplicationState state);

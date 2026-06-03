@@ -13,15 +13,21 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/send_tab_to_self/send_tab_to_self_android_bridge.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
@@ -248,25 +254,38 @@ void AndroidNotificationHandler::CheckAndOpenPendingEntries() {
 void AndroidNotificationHandler::OpenEntryInBackgroundTab(
     const SendTabToSelfEntry& entry,
     content::WebContents& target_web_contents) {
-  // Navigates the specified WebContents to the entry's URL and records the
-  // entry as opened.
-  content::OpenURLParams params(entry.GetURL(), content::Referrer(),
-                                WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                                ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
-  params.should_replace_current_entry = false;
-  params.internal_scroll_to_text_fragment =
+  auto nav_params = std::make_unique<NavigateParams>(
+      Profile::FromBrowserContext(target_web_contents.GetBrowserContext()),
+      entry.GetURL(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  nav_params->source_contents = &target_web_contents;
+  nav_params->disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  nav_params->window_action = NavigateParams::WindowAction::kNoAction;
+  nav_params->internal_scroll_to_text_fragment =
       GetScrollToTextFragmentFromEntry(entry);
 
-  content::WebContents* new_contents =
-      target_web_contents.OpenURL(params, /*navigation_handle_callback=*/{});
+  NavigateParams* nav_params_ptr = nav_params.get();
+  Navigate(nav_params_ptr,
+           base::BindOnce(&AndroidNotificationHandler::OnNavigationStarted,
+                          weak_factory_.GetWeakPtr(), entry.GetGUID(),
+                          entry.GetURL(), entry.GetDeviceName(),
+                          entry.GetPageContext(), std::move(nav_params)));
+}
 
-  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields) &&
-      new_contents) {
-    FillWebContents(new_contents, url::Origin::Create(entry.GetURL()),
-                    entry.GetPageContext());
+void AndroidNotificationHandler::OnNavigationStarted(
+    const std::string& guid,
+    const GURL& url,
+    const std::string& device_name,
+    const PageContext& page_context,
+    std::unique_ptr<NavigateParams> nav_params,
+    base::WeakPtr<content::NavigationHandle> navigation_handle) {
+  if (content::WebContents* new_contents =
+          nav_params->navigated_or_inserted_contents;
+      new_contents &&
+      base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
+    FillWebContents(new_contents, url::Origin::Create(url), page_context);
   }
 
-  send_tab_to_self_model_->MarkEntryOpened(entry.GetGUID());
+  send_tab_to_self_model_->MarkEntryOpened(guid);
 }
 
 void AndroidNotificationHandler::ShowMessageBanner(

@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/android/send_tab_to_self/android_notification_handler_test_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
@@ -21,6 +22,7 @@
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -82,6 +84,10 @@ class AndroidNotificationHandlerTest : public ChromeRenderViewHostTestHarness {
     tab_model_->SetWebContentsList({web_contents()});
     tab_model_->SetIsActiveModel(true);
 
+    // It is expected that web_contents() has an associated TabInterface.
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                         &mock_tab_interface_);
+
     handler_ = std::make_unique<MockAndroidNotificationHandler>(model());
     model()->SetLocalCacheGuid(kDeviceId);
   }
@@ -103,6 +109,7 @@ class AndroidNotificationHandlerTest : public ChromeRenderViewHostTestHarness {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_{kSendTabToSelfAutoOpen};
   std::unique_ptr<TestTabModel> tab_model_;
+  tabs::MockTabInterface mock_tab_interface_;
   std::unique_ptr<MockAndroidNotificationHandler> handler_;
 };
 
@@ -117,20 +124,19 @@ TEST_F(AndroidNotificationHandlerTest,
                                 PageContext(), NavigationHistory());
   const std::string guid = entry->GetGUID();
 
-  base::RunLoop run_loop;
+  EntryOpenedWaiter waiter(model());
+
   // Ensure no system notification is shown since Chrome is active.
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
-  // Expect the message banner to be displayed on the active WebContents and
-  // quit the loop.
-  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  // Expect the message banner to be displayed on the active WebContents.
+  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
 
   // Trigger the addition of a new entry using the public ReceivingUiHandler
   // interface.
   static_cast<ReceivingUiHandler*>(handler())->DisplayNewEntries({entry});
 
-  // Wait for the asynchronous UI thread task to complete.
-  run_loop.Run();
+  // Wait for the asynchronous UI thread task and OnTabNavigated to complete.
+  waiter.Wait();
 
   // Verify that the model was notified to mark the entry as opened.
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
@@ -177,6 +183,8 @@ TEST_F(AndroidNotificationHandlerTest,
   const std::string guid1 = entry1->GetGUID();
   const std::string guid2 = entry2->GetGUID();
 
+  EntryOpenedWaiter waiter(model(), /*expected_count=*/2);
+
   // Ensure no new system notifications are shown during activation.
   EXPECT_CALL(*handler(), ShowNotification).Times(0);
   // Expect existing system notifications for both pending entries to be hidden.
@@ -186,8 +194,10 @@ TEST_F(AndroidNotificationHandlerTest,
   EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
 
   // Adding the tab model triggers OnTabModelAdded which executes auto-open on
-  // all unread entries synchronously.
+  // all unread entries.
   TabModelList::AddTabModel(tab_model_.get());
+
+  waiter.Wait();
 
   // Verify that both entries are marked as opened.
   EXPECT_TRUE(model()->GetEntryByGUID(guid1)->IsOpened());
@@ -243,16 +253,15 @@ TEST_F(AndroidNotificationHandlerTest, ShouldEnqueueMessageBannerOnAutoOpen) {
                                 PageContext(), NavigationHistory());
   const std::string guid = entry->GetGUID();
 
-  base::RunLoop run_loop;
+  EntryOpenedWaiter waiter(model());
+
   // Expect the message banner to be shown upon auto-opening the entry.
-  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
 
   // Trigger the addition of a new entry.
   static_cast<ReceivingUiHandler*>(handler())->DisplayNewEntries({entry});
 
-  // Wait for the UI thread task to execute the auto-open logic.
-  run_loop.Run();
+  waiter.Wait();
 
   // Verify that the entry is marked as opened.
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());

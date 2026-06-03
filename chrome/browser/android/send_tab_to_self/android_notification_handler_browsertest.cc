@@ -14,12 +14,12 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "chrome/browser/android/send_tab_to_self/android_notification_handler_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/fake_send_tab_to_self_model.h"
@@ -44,27 +44,6 @@ std::unique_ptr<KeyedService> BuildStubSendTabToSelfSyncService(
   return std::make_unique<StubSendTabToSelfSyncService>();
 }
 
-class TabAddedWaiter : public TabListInterfaceObserver {
- public:
-  explicit TabAddedWaiter(TabListInterface* tab_list) {
-    tab_list_interface_observation_.Observe(tab_list);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  // TabListInterfaceObserver:
-  void OnTabAdded(TabListInterface& tab_list,
-                  tabs::TabInterface* tab,
-                  int index) override {
-    run_loop_.Quit();
-  }
-
- private:
-  base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
-      tab_list_interface_observation_{this};
-  base::RunLoop run_loop_;
-};
-
 }  // namespace
 
 class AndroidNotificationHandlerBrowserTest : public AndroidBrowserTest {
@@ -86,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
   ASSERT_TRUE(model);
 
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
-  TabAddedWaiter waiter(GetTabListInterface());
+  EntryOpenedWaiter waiter(model);
 
   const SendTabToSelfEntry* entry =
       model->AddEntryRemotely(GURL(kExampleUrl), "Title", "device_id",
@@ -127,14 +106,12 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerBrowserTest,
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
 
   const int initial_tab_count = GetTabListInterface()->GetTabCount();
-  TabAddedWaiter waiter(GetTabListInterface());
+  EntryOpenedWaiter waiter(model);
 
   const SendTabToSelfEntry* entry =
       model->AddEntryRemotely(GURL(kExampleUrl), "Title", "device_id",
                               PageContext(), NavigationHistory());
   const std::string guid = entry->GetGUID();
-
-  static_cast<ReceivingUiHandler*>(handler)->DisplayNewEntries({entry});
 
   waiter.Wait();
 
