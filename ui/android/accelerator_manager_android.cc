@@ -21,11 +21,14 @@ using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
 
 AcceleratorManagerAndroid* AcceleratorManagerAndroid::FromWindow(
-    WindowAndroid& window) {
+    WindowAndroid* window) {
+  if (!window) {
+    return nullptr;
+  }
   JNIEnv* env = AttachCurrentThread();
   return reinterpret_cast<AcceleratorManagerAndroid*>(
       Java_AcceleratorManager_getNativePointerFromWindow(
-          env, window.GetJavaObject()));
+          env, window->GetJavaObject()));
 }
 
 AcceleratorManagerAndroid::AcceleratorManagerAndroid(

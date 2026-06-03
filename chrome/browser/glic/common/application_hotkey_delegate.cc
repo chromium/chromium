@@ -79,11 +79,13 @@ class ApplicationScopedHotkeyRegistration
     }
 #else
     if (auto* window = browser_window_interface->GetWindow()) {
-      ui::AcceleratorManagerAndroid::FromWindow(*window->GetNativeWindow())
-          ->RegisterAccelerator(
-              accelerator_,
-              ui::AcceleratorManager::HandlerPriority::kNormalPriority,
-              target_.get());
+      if (auto* accelerator_manager = ui::AcceleratorManagerAndroid::FromWindow(
+              window->GetNativeWindow())) {
+        accelerator_manager->RegisterAccelerator(
+            accelerator_,
+            ui::AcceleratorManager::HandlerPriority::kNormalPriority,
+            target_.get());
+      }
     }
 #endif
   }
@@ -97,8 +99,10 @@ class ApplicationScopedHotkeyRegistration
     }
 #else
     if (auto* window = browser_window_interface->GetWindow()) {
-      ui::AcceleratorManagerAndroid::FromWindow(*window->GetNativeWindow())
-          ->UnregisterAccelerator(accelerator_, target_.get());
+      if (auto* accelerator_manager = ui::AcceleratorManagerAndroid::FromWindow(
+              window->GetNativeWindow())) {
+        accelerator_manager->UnregisterAccelerator(accelerator_, target_.get());
+      }
     }
 #endif
   }
