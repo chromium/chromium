@@ -916,6 +916,7 @@
 <translation id="422474357428465195">Vous avez plusieurs problèmes relatifs aux mots de passe qui pourraient compromettre votre sécurité.</translation>
 <translation id="422477017457571619">Une protection propulsée par l'IA en temps réel contre les sites, les extensions et les téléchargements dangereux, basée sur vos données de navigation envoyées à Google</translation>
 <translation id="4231395118547300571">Les notifications de Vérification de sécurité sont activées</translation>
+<translation id="4232376164796433044">Mots passe et rempli. automa.</translation>
 <translation id="4232817129213135694">Configurer des clés d'accès pour cet appareil</translation>
 <translation id="4237377247299956313">Touchez <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Enregistrez le numéro de voyageur connu</translation>
@@ -1931,6 +1932,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="7603308509262646847">Remplir automatiquement le nom du titulaire de la carte <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Fen context bloq (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">La synchronisation ne fonctionne pas</translation>
+<translation id="7606639338662398635">Groupes d'onglets</translation>
 <translation id="760667371114328991">Désactiver les notifications de Vérification de sécurité</translation>
 <translation id="7612619742409846846">Connecté(e) à Google en tant que</translation>
 <translation id="7612849887607288481">Ouvrir le menu de prototypage d'IA</translation>
@@ -2247,6 +2249,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="8636825310635137004">Pour synchroniser vos onglets sur vos autres appareils, activez la synchronisation.</translation>
 <translation id="8637431369725868556">Protégez-vous contre les sites Web dangereux.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
+<translation id="8639963783467694461">Paramètres du remplissage automatique</translation>
 <translation id="8642417828095157370">Les onglets sont partagés pour fournir des réponses plus pertinentes</translation>
 <translation id="8643403533759285912">Supprimer le groupe</translation>
 <translation id="8647280737650867362">Impossible d'annuler le suivi du prix.</translation>

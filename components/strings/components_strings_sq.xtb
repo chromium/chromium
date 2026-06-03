@@ -875,6 +875,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2354001756790975382">Faqeshënues të tjerë</translation>
 <translation id="2355395290879513365">Sulmuesit mund të arrijnë t'i shikojnë imazhet që po shikon në këtë sajt dhe të të mashtrojnë duke i modifikuar ato.</translation>
 <translation id="2356941001189392209">Një listë e kufizuar e URL-ve të faqeve që viziton ti ku ka ngjarje të teknologjisë së vjetër</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Do të ndajë 1 skedë}other{Do të ndajë {NUM_TABS} skeda}}</translation>
 <translation id="2357481397660644965">Pajisja jote menaxhohet nga <ph name="DEVICE_MANAGER" /> dhe llogaria jote menaxhohet nga <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Disa</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
@@ -4068,7 +4069,6 @@ Detaje shtesë:
 <translation id="7388380253839603603">Çmimet e karburantit dhe furnizimi i automjeteve</translation>
 <translation id="7388594495505979117">{0,plural, =1{Pajisja do të riniset pas 1 minute}other{Pajisja do të riniset pas # minutash}}</translation>
 <translation id="7393161616326137353">Lojëra me aventurë</translation>
-<translation id="7393243238767102021">Të lejohet që <ph name="DOMAIN" /> ta verifikojë automatikisht këtë email?</translation>
 <translation id="7393475648162498734">Shfaq se cilat shpërblime dhe përfitime ofrohen për kartat e tua në përfundim të blerjes</translation>
 <translation id="7393971683644170444">Po lidhet me ofruesin e kartës sate...</translation>
 <translation id="739728382607845710">Ikona e përpunuesit të pagesave</translation>

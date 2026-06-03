@@ -415,7 +415,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1282311502488501110">Ne pas se connecter</translation>
 <translation id="1282436639288565079">Détails du groupe d'onglets</translation>
 <translation id="1282577885428483870">Sites et comptes</translation>
-<translation id="1283344108460935898">Skills n'est pas accessible</translation>
 <translation id="1284277788676816155">Ne pas autoriser l'enregistrement des données</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
 <translation id="1285484354230578868">Stocker les données dans votre compte Google Disque</translation>
@@ -775,6 +774,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1566049601598938765">Site Web</translation>
 <translation id="15662109988763471">L'imprimante sélectionnée n'est pas accessible ou n'est pas installée correctement. Vérifiez votre imprimante ou essayez d'en sélectionner une autre.</translation>
 <translation id="1566329594234563241">Lorsqu'il est inactif et branché</translation>
+<translation id="1567069630205219514">Augmentez la taille de la fenêtre pour reprendre le clavardage</translation>
 <translation id="1567135437923613642">Activer les fonctionnalités expérimentales</translation>
 <translation id="1567579616025300478">Ce site n'est pas autorisé à enregistrer des données sur votre appareil.</translation>
 <translation id="156793199942386351">La touche « <ph name="CURRENTKEY" /> » est déjà attribuée à l'action « <ph name="ACTION" /> ». Appuyez sur n'importe quelle touche pour <ph name="RESPONSE" />.</translation>
@@ -1185,6 +1185,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1861262398884155592">Ce dossier est vide</translation>
 <translation id="1862311223300693744">Avez-vous installé un RPV, un mandataire, un pare-feu ou un logiciel pour serveur de stockage NAS?</translation>
 <translation id="1863182668524159459">Aucun port série n'a été trouvé</translation>
+<translation id="1863374797460198869">Clavardage masqué</translation>
 <translation id="1864111464094315414">Connexion</translation>
 <translation id="1864400682872660285">Plus froid</translation>
 <translation id="1864454756846565995">Appareil USB-C (port arrière)</translation>
@@ -2059,6 +2060,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2477065602824695373">Comme vous avez configuré plusieurs commutateurs, la recherche automatique a été désactivée.</translation>
 <translation id="2478176599153288112">Autorisations de fichier média pour « <ph name="EXTENSION" /> »</translation>
 <translation id="24786041351753425">Activer le service de récupération de données.</translation>
+<translation id="2479148705183875116">Accéder aux paramètres</translation>
 <translation id="2479541499757560845">Paramètres du clavier d'accessibilité</translation>
 <translation id="2480868415629598489">Modifier les données que vous copiez et collez</translation>
 <translation id="2480881140544300950">Le moteur de recherche actuel qui gère votre page Nouvel onglet</translation>
@@ -2475,7 +2477,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2766629385177215776">Épingler automatiquement les nouveaux groupes d'onglets créés sur n'importe quel appareil à la barre de favoris</translation>
 <translation id="2767077837043621282">Impossible de mettre à jour votre Chromebook. Veuillez réessayer plus tard.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> sera en mesure de modifier le fichier <ph name="FILENAME" /> jusqu'à ce que vous fermiez tous les onglets pour ce site</translation>
-<translation id="2767771295575888898">Ouvrir « <ph name="SELECTION" /> » en mode Lecture</translation>
 <translation id="2769174155451290427">Image téléversée</translation>
 <translation id="2770082596325051055">Interrompre <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Retirer de la liste</translation>
@@ -2788,7 +2789,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2996108796702395498">Le numéro de série de votre appareil est <ph name="SERIAL_NUMBER" />. Ce numéro peut être utilisé pour aider à activer le service.</translation>
 <translation id="2996286169319737844">Des données ont été chiffrées à l'aide de votre phrase de passe de synchronisation. Cette méthode ne couvre pas les modes de paiement ni les adresses de Google Pay.</translation>
 <translation id="2996722619877761919">Retourner sur les bords longs</translation>
-<translation id="2997608191364087784">&amp;Traduire « <ph name="SELECTION" /> » en <ph name="LANGUAGE" /></translation>
 <translation id="2998097899774209901">Activée • Cette extension ne respecte pas la politique de la boutique en ligne Chrome Web Store</translation>
 <translation id="2998267783395280091">Réseau trouvé</translation>
 <translation id="3000378525979847272">Autorisations accordées : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
@@ -6970,6 +6970,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="609942571968311933">Texte copié de l'appareil <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Toujours autoriser <ph name="HOST" /> à contrôler et à reprogrammer vos appareils MIDI</translation>
 <translation id="6100736666660498114">Menu Démarrer</translation>
+<translation id="6100737823178787570">Augmentez la taille de la fenêtre pour reprendre la tâche</translation>
 <translation id="6101226222197207147">Nouvelle application installée (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Ce fichier a été bloqué par la protection avancée.</translation>
 <translation id="6103681770816982672">Avertissement : vous êtes sur le point de passer à la version développeur</translation>
@@ -7392,7 +7393,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6418511932144861495">Installer une mise à jour essentielle</translation>
 <translation id="641899100123938294">Rechercher de nouveaux appareils</translation>
 <translation id="6419546358665792306">Charger une extension non empaquetée</translation>
-<translation id="6423685703035190381">Recevez des alertes Suivi des prix sur votre téléphone</translation>
 <translation id="6425556984042222041">Vitesse de la synthèse vocale</translation>
 <translation id="642729974267661262">Non autorisés à faire jouer des sons</translation>
 <translation id="6427752304227226701">Signaler un site dangereux…</translation>
@@ -7823,7 +7823,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6739266861259291931">Réinitialiser la langue de l'appareil</translation>
 <translation id="6739923123728562974">Afficher le raccourci du bureau</translation>
 <translation id="6740234557573873150">Mettre en pause <ph name="FILE_NAME" /></translation>
-<translation id="6742816895667193660">Ouvrir « <ph name="SELECTION" /> » en mode Lecture</translation>
 <translation id="6743841972744298686">Paramètres de synchronisation</translation>
 <translation id="6744397361782514824">Échanger avec l'affichage de gauche</translation>
 <translation id="6746124502594467657">Déplacer vers le bas</translation>
@@ -8309,7 +8308,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="707772989579681711">Votre choix précédent</translation>
 <translation id="7077751457066325012">Afficher et personnaliser les raccourcis clavier</translation>
 <translation id="7077829361966535409">Échec du chargement de la page de connexion avec les paramètres de mandataire actuels. Veuillez <ph name="GAIA_RELOAD_LINK_START" />essayer de vous reconnecter<ph name="GAIA_RELOAD_LINK_END" /> ou utiliser d'autres <ph name="PROXY_SETTINGS_LINK_START" />paramètres de mandataire<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
-<translation id="7078103664368916714">&amp;Imprimer « <ph name="SELECTION" /> »</translation>
 <translation id="7078120482318506217">Tous les réseaux</translation>
 <translation id="708060913198414444">C&amp;opier l'adresse de l'audio</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> est géré par votre administrateur</translation>
@@ -9208,7 +9206,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7752832973194460442">Informations sur l'application Android</translation>
 <translation id="7754704193130578113">Toujours demander où enregistrer les fichiers</translation>
 <translation id="7757592200364144203">Modifier le nom de l'appareil</translation>
-<translation id="7757735653610827848">&amp;Copier « <ph name="SELECTION" /> »</translation>
 <translation id="7757739382819740102">Les contacts à proximité peuvent partager du contenu avec vous. Une approbation sera requise.</translation>
 <translation id="7757787379047923882">Texte partagé à partir de <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>

@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Você pode baixar PDFs aqui</translation>
 <translation id="107147699690128016">Se você mudar a extensão do arquivo, ele poderá ser aberto em um aplicativo diferente e colocar em risco seu dispositivo.</translation>
 <translation id="1073328695547557412">Toque no ícone do Google Lens.</translation>
+<translation id="1080116354587839789">Ajustar à largura</translation>
 <translation id="1086486568852410168">Pesquisar com o Lens</translation>
 <translation id="1087799850623149508">Toque e pressione para mover a barra de endereço para baixo</translation>
 <translation id="1089606299949659462">Revisão concluída</translation>
@@ -536,6 +537,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> guia}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> guia}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> guias}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 senha foi salva apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos.}one{# senha foi salva apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos.}other{# senhas foram salvas apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos.}}</translation>
 <translation id="3293181007446299124">Seu histórico de navegação é mantido no seu dispositivo, e os relatórios são enviados com um atraso para proteger sua identidade</translation>
+<translation id="3301639354590628973">Quer trocar de conta?</translation>
 <translation id="3301936297336370235">Confirmação da sugestão de senha</translation>
 <translation id="3302615849591357577">Restaurar grupo <ph name="TITLE_OF_GROUP" />, cor <ph name="COLOR_NAME" />, como um novo grupo de guias em segundo plano.</translation>
 <translation id="3303855915957856445">Nenhum resultado de pesquisa encontrado</translation>

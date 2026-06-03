@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
 <translation id="2553552004849639664">Được bảo vệ trước các mối đe doạ trên mạng bằng công nghệ mạnh mẽ nhất của Chrome</translation>
 <translation id="2570922361219980984">Quyền truy cập vị trí cũng đã bị tắt đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Đã mở rộng - nhấp để thu gọn.</translation>
 <translation id="2586657967955657006">Bảng nhớ tạm</translation>
 <translation id="2588271083332682494">Sắp xếp gọn gàng nhờ các nhóm thẻ</translation>
 <translation id="2592917252160773942">Các trang web có thể yêu cầu sử dụng camera của bạn</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Yêu cầu chế độ xem trên máy tính</translation>
 <translation id="5091663350197390230">Khi bạn bật tuỳ chọn này, các trang web có thể dùng JavaScript. Khi bạn tắt tuỳ chọn này, các trang web không thể dùng JavaScript.</translation>
 <translation id="5099358668261120049">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ.</translation>
-<translation id="5100237604440890931">Đã thu gọn - nhấp để mở rộng.</translation>
 <translation id="5116239826668864748">Bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
 <translation id="512938610812707830">Bảng bộ sưu tập giao diện trang thẻ mới ở dưới cùng đã mở toàn bộ</translation>
@@ -696,7 +694,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8197286292360124385">Đã cho phép: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8211406090763984747">Kết nối này an toàn</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Khi bạn bật lựa chọn này, trang web có thể yêu cầu quyền truy cập vào các thiết bị khác trên mạng cục bộ của bạn. Khi bạn tắt lựa chọn này, trang web không thể truy cập vào các thiết bị khác trên mạng cục bộ của bạn.</translation>
 <translation id="8249310407154411074">Chuyển lên trên cùng</translation>
 <translation id="8261506727792406068">Xoá</translation>

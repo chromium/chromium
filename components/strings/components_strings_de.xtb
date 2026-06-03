@@ -875,6 +875,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2354001756790975382">Weitere Lesezeichen</translation>
 <translation id="2355395290879513365">Angreifer können unter Umständen die Bilder sehen, die du dir auf dieser Website ansiehst, und könnten dann versuchen, dich durch Ändern der Bilder zu täuschen.</translation>
 <translation id="2356941001189392209">Eine begrenzte Liste mit URLs der von dir besuchten Seiten, auf denen Probleme aufgrund von veralteter Technologie auftreten</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 Tab wird geteilt}other{{NUM_TABS} Tabs werden geteilt}}</translation>
 <translation id="2357481397660644965">Dein Gerät wird von <ph name="DEVICE_MANAGER" /> und dein Konto von <ph name="ACCOUNT_MANAGER" /> verwaltet.</translation>
 <translation id="2359629602545592467">Mehrere</translation>
 <translation id="2359808026110333948">Weiter</translation>
@@ -4068,7 +4069,6 @@ Weitere Details:
 <translation id="7388380253839603603">Treibstoffpreise und Kraftstoffe für Fahrzeuge</translation>
 <translation id="7388594495505979117">{0,plural, =1{Dein Gerät startet in 1 Minute neu}other{Dein Gerät startet in # Minuten neu}}</translation>
 <translation id="7393161616326137353">Abenteuerspiele</translation>
-<translation id="7393243238767102021"><ph name="DOMAIN" /> erlauben, diese E-Mail-Adresse automatisch zu bestätigen?</translation>
 <translation id="7393475648162498734">Anzeigen, welche Prämien und Vorteile für deine Karten an der Kasse verfügbar sind</translation>
 <translation id="7393971683644170444">Verbindung zu deinem Kartenanbieter wird hergestellt…</translation>
 <translation id="739728382607845710">Symbol für die Zahlungsabwicklung</translation>

@@ -875,6 +875,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2354001756790975382">Andre bogmærker</translation>
 <translation id="2355395290879513365">Hackere kan muligvis se de billeder, du kigger på på dette website, og narre dig ved at ændre dem.</translation>
 <translation id="2356941001189392209">En begrænset liste over webadresser for sider, du besøger, hvor der forekommer hændelser relateret til forældet teknologi</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Deler 1 fane}one{Deler {NUM_TABS} fane}other{Deler {NUM_TABS} faner}}</translation>
 <translation id="2357481397660644965">Din enhed administreres af <ph name="DEVICE_MANAGER" />, og din konto administreres af <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Flere</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
@@ -4070,7 +4071,6 @@ Yderligere oplysninger:
 <translation id="7388380253839603603">Brændstoftspriser og opfyldning af biler</translation>
 <translation id="7388594495505979117">{0,plural, =1{Din enhed genstarter om 1 minut}one{Din enhed genstarter om # minut}other{Din enhed genstarter om # minutter}}</translation>
 <translation id="7393161616326137353">Adventurespil</translation>
-<translation id="7393243238767102021">Vil du give <ph name="DOMAIN" /> tilladelse til automatisk at verificere denne mailadresse?</translation>
 <translation id="7393475648162498734">Se, hvilke bonusser og fordele der er tilgængelige for dine kort, når du betaler</translation>
 <translation id="7393971683644170444">Opretter forbindelse til din kortudbyder…</translation>
 <translation id="739728382607845710">Ikon for betalingshandler</translation>

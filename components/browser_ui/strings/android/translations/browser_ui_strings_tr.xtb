@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Çerezler ve site verileri</translation>
 <translation id="2553552004849639664">Chrome'un internetteki tehditlere karşı en güçlü korumasından yararlanın</translation>
 <translation id="2570922361219980984">Konum erişimi bu cihaz için de kapalı. Konum erişimini <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ndan açın.</translation>
-<translation id="257931822824936280">Genişletildi - Daraltmak için tıklayın.</translation>
 <translation id="2586657967955657006">Pano</translation>
 <translation id="2588271083332682494">Sekme gruplarıyla düzenleyin</translation>
 <translation id="2592917252160773942">Siteler, kameranızı kullanmak isteyebilir</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Masaüstü görünümü iste</translation>
 <translation id="5091663350197390230">Bu düğme açıkken siteler JavaScript kullanabilir. Düğme kapalıyken siteler JavaScript kullanamaz.</translation>
 <translation id="5099358668261120049">Bu işlem, Ana ekranınızdaki <ph name="ORIGIN" /> sitesi ve sitenin uygulaması tarafından depolanan tüm verileri ve çerezleri temizleyecek.</translation>
-<translation id="5100237604440890931">Daraltıldı - Genişletmek için tıklayın.</translation>
 <translation id="5116239826668864748">Mesajlardaki, belgelerdeki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chrome'u kullanabilirsiniz.</translation>
 <translation id="5123685120097942451">Gizli sekme</translation>
 <translation id="512938610812707830">Yeni sekme sayfası görünümü tema koleksiyonları alt sayfası tam ekranda açıldı</translation>
@@ -696,7 +694,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> için izin verildi</translation>
 <translation id="8200772114523450471">Sürdür</translation>
 <translation id="8211406090763984747">Bağlantı güvenli</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Düğme açık olduğunda siteler yerel ağınızdaki diğer cihazlara erişmek isteyebilir. Düğme kapalı olduğunda siteler yerel ağınızdaki diğer cihazlara erişemez.</translation>
 <translation id="8249310407154411074">En üste taşı</translation>
 <translation id="8261506727792406068">Sil</translation>

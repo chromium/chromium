@@ -415,7 +415,6 @@
 <translation id="1282311502488501110">Մուտք չգործել</translation>
 <translation id="1282436639288565079">Ներդիրների խմբի մասին</translation>
 <translation id="1282577885428483870">Կայքեր և հաշիվներ</translation>
-<translation id="1283344108460935898">Հմտությունները հասանելի չեն</translation>
 <translation id="1284277788676816155">Չթույլատրել տվյալներ պահել</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
 <translation id="1285484354230578868">Պահեստավորել տվյալները ձեր Google Drive հաշվում</translation>
@@ -775,6 +774,7 @@
 <translation id="1566049601598938765">Կայք</translation>
 <translation id="15662109988763471">Նշված տպիչը հասանելի չէ կամ ճիշտ չէ տեղադրված: Ստուգեք ձեր տպիչը կամ փորձեք ընտրել մեկ այլ տպիչ:</translation>
 <translation id="1566329594234563241">Անգործուն և հոսանքին միացված ժամանակ</translation>
+<translation id="1567069630205219514">Զրույցը վերսկսելու համար մեծացրեք պատուհանի չափսը</translation>
 <translation id="1567135437923613642">Միացնել առաջարկվող փորձարկումները</translation>
 <translation id="1567579616025300478">Կայքը չի կարող տվյալներ պահել ձեր սարքում։</translation>
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» ստեղնն արդեն նշանակված է «<ph name="ACTION" />» գործողության համար։ Սեղմեք որևէ ստեղն՝ <ph name="RESPONSE" /> համար։</translation>
@@ -1185,6 +1185,7 @@
 <translation id="1861262398884155592">Այս պանակը դատարկ է</translation>
 <translation id="1862311223300693744">Ձեր համակարգչում տեղադրվա՞ծ է որևէ հատուկ VPN, պրոքսի, հրապատ կամ NAS ծրագրաշար։</translation>
 <translation id="1863182668524159459">Հաջորդական միացքներ չեն գտնվել</translation>
+<translation id="1863374797460198869">Զրույցը թաքցված է</translation>
 <translation id="1864111464094315414">Մուտք</translation>
 <translation id="1864400682872660285">Սառը</translation>
 <translation id="1864454756846565995">USB-C սարք (հետևի միացք)</translation>
@@ -2059,6 +2060,7 @@
 <translation id="2477065602824695373">Քանի որ դուք մի քանի փոխանջատիչ եք նշանակել, ավտոմատ սկանավորումն անջատվել է։</translation>
 <translation id="2478176599153288112">Մեդիա ֆայլերի օգտագործման թույլտվություններ «<ph name="EXTENSION" />»-ի համար</translation>
 <translation id="24786041351753425">Տվյալների վերականգնման ծառայության միացում</translation>
+<translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
 <translation id="2479541499757560845">Հատուկ գործառույթների ստեղնաշարի կարգավորումներ</translation>
 <translation id="2480868415629598489">Փոփոխել տվյալները, որոնք դուք պատճենում և տեղադրում եք</translation>
 <translation id="2480881140544300950">Ընթացիկ որոնողական համակարգը կառավարում է ձեր նոր ներդիրի էջը</translation>
@@ -2472,7 +2474,6 @@
 <translation id="2766629385177215776">Էջանիշների գոտում ավտոմատ ամրացնել նոր ներդիրների խմբերը, որոնք ստեղծվել են ցանկացած սարքում</translation>
 <translation id="2767077837043621282">Չհաջողվեց թարմացնել ձեր Chromebook-ը։ Փորձեք ավելի ուշ։</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> կայքը կկարողանա փոփոխել <ph name="FILENAME" /> ֆայլը, մինչև չփակեք այս կայքի բոլոր ներդիրները</translation>
-<translation id="2767771295575888898">Բացել «<ph name="SELECTION" />» տեքստը ընթերցման ռեժիմում</translation>
 <translation id="2769174155451290427">Վերբեռնված պատկեր</translation>
 <translation id="2770082596325051055">Դադարեցնել <ph name="FILE_NAME" /> ֆայլի ներբեռնումը</translation>
 <translation id="2770465223704140727">Հեռացնել ցանկից</translation>
@@ -2784,7 +2785,6 @@
 <translation id="2996108796702395498">Ձեր սարքի սերիական համարն է <ph name="SERIAL_NUMBER" />։ Դրա միջոցով կարող եք ակտիվացնել ծառայությունը։</translation>
 <translation id="2996286169319737844">Տվյալները գաղտնագրվել են ձեր համաժամացման անցաբառով: Գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։</translation>
 <translation id="2996722619877761919">Շրջել երկար եզրի կողմով</translation>
-<translation id="2997608191364087784">&amp;Թարգմանել «<ph name="SELECTION" />» տեքստը <ph name="LANGUAGE" /> լեզվով</translation>
 <translation id="2998097899774209901">Միացված է • Այս ընդլայնումը խախտում է Chrome Web Store-ի կանոնները</translation>
 <translation id="2998267783395280091">Գտնվել է ցանց</translation>
 <translation id="3000378525979847272">Տրված թույլտվություններ՝ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -6962,6 +6962,7 @@
 <translation id="609942571968311933">Տեքստը պատճենվեց «<ph name="DEVICE_NAME" />» սարքից</translation>
 <translation id="6099766472403716061">Թույլատրել <ph name="HOST" /> կայքին ձեր MIDI սարքերի կառավարումն ու վերածրագրավորումը</translation>
 <translation id="6100736666660498114">Մեկնարկի ընտրացանկ</translation>
+<translation id="6100737823178787570">Առաջադրանքը շարունակելու համար մեծացրեք պատուհանի չափսը</translation>
 <translation id="6101226222197207147">Ավելացվել է նոր հավելված (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Լրացուցիչ պաշտպանությունն արգելափակել է այս ֆայլը։</translation>
 <translation id="6103681770816982672">Դուք անցնում եք մշակողների վարկածին</translation>
@@ -7384,7 +7385,6 @@
 <translation id="6418511932144861495">Կարևոր թարմացման տեղադրում</translation>
 <translation id="641899100123938294">Որոնել նոր սարքեր</translation>
 <translation id="6419546358665792306">Բեռնել ապափաթեթավորված ընդլայնումը</translation>
-<translation id="6423685703035190381">Ստացեք գների հետագծման ծանուցումներ հեռախոսում</translation>
 <translation id="6425556984042222041">Տեքստի հնչեցման արագությունը</translation>
 <translation id="642729974267661262">Չի թույլատրվում նվագարկել ձայն</translation>
 <translation id="6427752304227226701">Հաղորդել վտանգավոր կայքի մասին...</translation>
@@ -7815,7 +7815,6 @@
 <translation id="6739266861259291931">Վերականգնել սարքի լեզուն</translation>
 <translation id="6739923123728562974">Ցուցադրել աշխատասեղանի դյուրանցումը</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" />-ի ներբեռնումը դադարեցված է</translation>
-<translation id="6742816895667193660">Բացել «<ph name="SELECTION" />» տեքստը ընթերցման ռեժիմում</translation>
 <translation id="6743841972744298686">Համաժամացման կարգավորումներ</translation>
 <translation id="6744397361782514824">Տեղերով փոխել ձախ դիտակերպի հետ</translation>
 <translation id="6746124502594467657">Տեղափոխել վար</translation>
@@ -8301,7 +8300,6 @@
 <translation id="707772989579681711">Ձեր նախորդ ընտրությունը</translation>
 <translation id="7077751457066325012">Դիտել և հարմարեցնել ստեղնային դյուրանցումները</translation>
 <translation id="7077829361966535409">Պրոքսի-սերվերի ընթացիկ կարգավորումների միջոցով մուտքի էջի բեռնումը չհաջողվեց: <ph name="GAIA_RELOAD_LINK_START" />Փորձեք նորից մուտք գործել<ph name="GAIA_RELOAD_LINK_END" /> կամ օգտագործեք <ph name="PROXY_SETTINGS_LINK_START" />պրոքսի-սերվերի այլ կարգավորումներ<ph name="PROXY_SETTINGS_LINK_END" />:</translation>
-<translation id="7078103664368916714">&amp;Տպել «<ph name="SELECTION" />» տեքստը</translation>
 <translation id="7078120482318506217">Բոլոր ցանցերը</translation>
 <translation id="708060913198414444">Պատճենել ձայնանյութի հասցեն</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> ցանցը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
@@ -9200,7 +9198,6 @@
 <translation id="7752832973194460442">Android-ի համար հավելվածի տեղեկություններ</translation>
 <translation id="7754704193130578113">Յուրաքանչյուր ֆայլ ներբեռնելուց առաջ հարցնել որտեղ պահել</translation>
 <translation id="7757592200364144203">Փոխել սարքի անունը</translation>
-<translation id="7757735653610827848">&amp;Պատճենել «<ph name="SELECTION" />» տեքստը</translation>
 <translation id="7757739382819740102">Մոտակայքում գտնվող կոնտակտները կարող են կիսվել ձեզ հետ բովանդակությամբ։ Կպահանջվի հաստատում։</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> սարքից ուղարկված հաղորդագրություն</translation>
 <translation id="7758143121000533418">Family Link</translation>

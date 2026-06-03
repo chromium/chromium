@@ -875,6 +875,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2354001756790975382">Outros favoritos</translation>
 <translation id="2355395290879513365">É possível que invasores consigam ver as imagens que você está olhando nesse site e as modifiquem para enganar você.</translation>
 <translation id="2356941001189392209">Uma lista limitada de URLs de páginas acessadas em que eventos de tecnologia legados estão ocorrendo</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Vai compartilhar 1 guia}one{Vai compartilhar {NUM_TABS} guia}other{Vai compartilhar {NUM_TABS} guias}}</translation>
 <translation id="2357481397660644965">Seu dispositivo é gerenciado por <ph name="DEVICE_MANAGER" />, e sua conta é gerenciada por <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -4070,7 +4071,6 @@ Mais detalhes:
 <translation id="7388380253839603603">Preços de combustível e abastecimento de veículos</translation>
 <translation id="7388594495505979117">{0,plural, =1{Seu dispositivo será reiniciado em 1 minuto}one{Seu dispositivo será reiniciado em # minuto}other{Seu dispositivo será reiniciado em # minutos}}</translation>
 <translation id="7393161616326137353">Jogos de aventura</translation>
-<translation id="7393243238767102021">Permitir que <ph name="DOMAIN" /> verifique este e-mail automaticamente?</translation>
 <translation id="7393475648162498734">Mostrar recompensas e benefícios disponíveis para seus cartões na finalização da compra</translation>
 <translation id="7393971683644170444">Conectando ao emissor do seu cartão…</translation>
 <translation id="739728382607845710">Ícone do gerenciador de pagamentos</translation>

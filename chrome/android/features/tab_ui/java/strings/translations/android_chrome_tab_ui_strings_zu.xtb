@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">Ukwehla kwentengo engu-<ph name="PRICE_DROP" /> ku-<ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Isithonjana sombala wethebhu leqembu esi-<ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Uhlu lweqembu lethebhu luvaliwe</translation>
+<translation id="3152596030350326139">Bonisa amathebhu avundlile</translation>
+<translation id="31806439105337256">Bonisa amathebhu aqondile</translation>
 <translation id="3194464645767632461">isilinganisela</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Faka ithebhu engu-<ph name="TABS_COUNT_ONE" /> eqenjini}one{Faka amathebhu angu-<ph name="TABS_COUNT_MANY" /> eqenjini}other{Faka amathebhu angu-<ph name="TABS_COUNT_MANY" /> eqenjini}}</translation>
 <translation id="3328308545011660196">Isiphakamiso: amathebhu a-<ph name="NUMBER_OF_TABS" /> abonakala ahlobene. Wenze iqembu?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Vala le nto}one{Vala lezi zinto}other{Vala lezi zinto}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Isithonjana sokwabelana ngokuhlola kuqala kweshidi.</translation>
+<translation id="3775705724665058594">Thumela kumadivayisi akho</translation>
 <translation id="3776329373944672717">Isihloko seqembu lethebhu ye-<ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Phatha</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Susa ukuphina ithebhu}one{Susa ukuphina amathebhu}other{Susa ukuphina amathebhu}}</translation>

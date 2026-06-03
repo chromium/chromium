@@ -149,6 +149,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1227224963052638717">Gidalerro ezezaguna.</translation>
 <translation id="1227677022489889280">Mugitzeko arrazoia (beharrezkoa)</translation>
 <translation id="1228893227497259893">Entitate-identifikatzaile okerra</translation>
+<translation id="122989279399348496">Saioa hasita daukazun bitartean, <ph name="DOMAIN" /> domeinuak <ph name="EMAIL" /> berrets dezake onartzen diren webguneetan, sarrera-ontzia egiaztatu behar ez izateko</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatikoki hauteman da)</translation>
 <translation id="1232569758102978740">Izengabea</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> behar da</translation>
@@ -510,6 +511,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />: hainbat ekintza dituzu eskuragarri. Sakatu tabuladorea batetik bestera joateko.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Txartel birtualaren xehetasunak</translation>
+<translation id="1802420021606590788">Chrome-k hodeiko eremu pribatu batean prozesatzen ditu orrien izenak eta URLak</translation>
 <translation id="1803254472779303354">Sagua blokea daiteke</translation>
 <translation id="1803351196216024260">Mikrofonoa erabiltzea eska dezake</translation>
 <translation id="1804258830776932716">Gaitu Pix zure kontua bizkor lotuta</translation>
@@ -873,6 +875,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2354001756790975382">Beste laster-markak</translation>
 <translation id="2355395290879513365">Baliteke erasotzaileak webgune honetan zer irudi ikusi dituzun hautemateko eta, haiek aldatuz, zu engainatzeko gai izatea.</translation>
 <translation id="2356941001189392209">bisitatzen dituzun orrien URLen zerrenda mugatu bat, non aurreko bertsioko teknologia-gertaerak jazotzen baitira</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Fitxa bat partekatuko da}other{{NUM_TABS} fitxa partekatuko dira}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> domeinuak kudeatzen du gailua; <ph name="ACCOUNT_MANAGER" /> domeinuak, berriz, kontua.</translation>
 <translation id="2359629602545592467">Bat baino gehiago</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
@@ -3023,6 +3026,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5742806904559466333">Tabernak, klubak eta gaugiroa</translation>
 <translation id="5743684619253032786">Azazkalen zaintzarako produktuak</translation>
 <translation id="574392208103952083">Ertaina</translation>
+<translation id="5745586894920491759">Chrome-k hodeian prozesatzen ditu orrien izenak eta URLak</translation>
 <translation id="5745733273847572235">Kokapena eska dezake</translation>
 <translation id="5750869797196646528">Eskuen jarraipena</translation>
 <translation id="5752327398324808817">Idatzi 1-2 hitz</translation>
@@ -3416,6 +3420,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Ikusi erregistroak</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proxya, suebakia eta DNS konfigurazioa egiaztatzen<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Berretsi mezu elektronikoak automatikoki</translation>
 <translation id="6366710531182496394">Bi grapa ezkerrean</translation>
 <translation id="6367196786591004737">Ezabatu sarrera</translation>
 <translation id="6370022303958842211">gailua atzitzeko ekintzak; esate baterako, saioa hasten saiatzea (huts egiten duenean barne), saioa amaitzea, gailua blokeatzea edo gailua desblokeatzea</translation>
@@ -5055,6 +5060,7 @@ Xehetasun gehiago:
 <translation id="8963117664422609631">Joan webgunearen ezarpenetara</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Iradokizunak:<ph name="MARKUP_2" />Ziurtatu datu-konexioa duzula.<ph name="MARKUP_3" />Kargatu web-orria berriro geroago<ph name="MARKUP_4" />Egiaztatu idatzitako helbidea zuzena dela.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Gailuko fitxategiak <ph name="HOURS" /> ordu barru ezabatuko dira</translation>
+<translation id="8964904785315870349">Egiaztatutako helbide elektronikoa</translation>
 <translation id="8968766641738584599">Gorde txartela</translation>
 <translation id="8970887620466824814">Arazoren bat izan da.</translation>
 <translation id="8971063699422889582">Zerbitzariaren ziurtagiria iraungi egin da.</translation>

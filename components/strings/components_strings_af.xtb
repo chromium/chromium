@@ -875,6 +875,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2354001756790975382">Ander boekmerke</translation>
 <translation id="2355395290879513365">Aanvallers sal dalk die prente kan sien waarna jy op hierdie werf kyk en jou mislei deur hulle te wysig.</translation>
 <translation id="2356941001189392209">’n Beperkte lys URL’e van bladsye wat jy besoek waar vorigetegnologiegeleenthede plaasvind</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Sal 1 oortjie deel}other{Sal {NUM_TABS} oortjies deel}}</translation>
 <translation id="2357481397660644965">Jou toestel word deur <ph name="DEVICE_MANAGER" /> bestuur en jou rekening word deur <ph name="ACCOUNT_MANAGER" /> bestuur.</translation>
 <translation id="2359629602545592467">Veelvuldige</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
@@ -4069,7 +4070,6 @@ Bykomende besonderhede:
 <translation id="7388380253839603603">Brandstofpryse en voertuigbrandstofinname</translation>
 <translation id="7388594495505979117">{0,plural, =1{Jou toestel sal oor 1 minuut herbegin}other{Jou toestel sal oor # minute herbegin}}</translation>
 <translation id="7393161616326137353">Avontuurspeletjies</translation>
-<translation id="7393243238767102021">Laat <ph name="DOMAIN" /> toe om hierdie e-posadres outomaties te verifieer?</translation>
 <translation id="7393475648162498734">Wys watter belonings en voordele vir jou kaarte beskikbaar is by die betaalpunt</translation>
 <translation id="7393971683644170444">Koppel tans aan jou kaartverskaffer …</translation>
 <translation id="739728382607845710">Betalinghanteerder-ikoon</translation>

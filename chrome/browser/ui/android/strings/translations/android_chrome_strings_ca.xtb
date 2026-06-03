@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Pots baixar els PDF aquí</translation>
 <translation id="107147699690128016">Si canvies l'extensió del fitxer, pot ser que el fitxer s'obri en una altra aplicació i pot arribar a ser perillós per al dispositiu.</translation>
 <translation id="1073328695547557412">Toca la icona de Google Lens</translation>
+<translation id="1080116354587839789">Ajusta a l'amplada</translation>
 <translation id="1086486568852410168">Cerca amb Google Lens</translation>
 <translation id="1087799850623149508">Pots mantenir premuda la barra d'adreces per moure-la a la part inferior</translation>
 <translation id="1089606299949659462">Revisió completada</translation>
@@ -536,6 +537,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> pestanya}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> pestanyes}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 contrasenya s'ha desat només en aquest dispositiu. Per utilitzar-la als altres dispositius que fas servir, desa-la al teu Compte de Google.}other{# contrasenyes s'han desat només en aquest dispositiu. Per utilitzar-les als altres dispositius que fas servir, desa-les al teu Compte de Google.}}</translation>
 <translation id="3293181007446299124">L'historial de navegació es desa en privat al teu dispositiu i els informes s'envien amb retard per protegir la teva identitat</translation>
+<translation id="3301639354590628973">Vols canviar de compte?</translation>
 <translation id="3301936297336370235">Confirmació del suggeriment de contrasenya</translation>
 <translation id="3302615849591357577">Restaura el grup de pestanyes <ph name="TITLE_OF_GROUP" />, de color <ph name="COLOR_NAME" />, com un nou grup de pestanyes en segon pla.</translation>
 <translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
@@ -1447,7 +1449,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, pestanya nova o actualitzada</translation>
 <translation id="6976811588313110624">Afegeix una drecera nova.</translation>
 <translation id="6978717888677691380">Llocs web que has bloquejat</translation>
-<translation id="6979737339423435258">Sempre</translation>
+<translation id="6979737339423435258">Des de sempre</translation>
 <translation id="6980258170429555165">El menú <ph name="MENU_NAME" /> està marcat.</translation>
 <translation id="6983306615164277634">També pots mantenir premuda la barra d'adreces per canviar la posició.</translation>
 <translation id="6987047470128880212">El mode d'incògnit no està disponible en aquest dispositiu</translation>

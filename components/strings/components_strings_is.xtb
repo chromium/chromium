@@ -875,6 +875,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2354001756790975382">Önnur bókamerki</translation>
 <translation id="2355395290879513365">Tölvuþrjótar gætu séð myndirnar sem þú skoðar á þessu vefsvæði og gabbað þig með því að breyta þeim.</translation>
 <translation id="2356941001189392209">Takmarkaður listi vefslóða síðna sem þú opnar þar sem tilvik vegna eldri tækni koma upp</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Mun deila einum flipa}one{Mun deila {NUM_TABS} flipa}other{Mun deila {NUM_TABS} flipum}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> hefur umsjón með tækinu þínu og <ph name="ACCOUNT_MANAGER" /> hefur umsjón með reikningnum þínum.</translation>
 <translation id="2359629602545592467">Margir</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
@@ -4069,7 +4070,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7388380253839603603">Eldsneytisverð og orkugjafar fyrir ökutæki</translation>
 <translation id="7388594495505979117">{0,plural, =1{Tækið verður endurræst eftir 1 mínútu}one{Tækið verður endurræst eftir # mínútu}other{Tækið verður endurræst eftir # mínútur}}</translation>
 <translation id="7393161616326137353">Ævintýraleikir</translation>
-<translation id="7393243238767102021">Leyfa <ph name="DOMAIN" /> að staðfesta þetta netfang sjálfkrafa?</translation>
 <translation id="7393475648162498734">Sjáðu hvaða fríðindi eru í boði fyrir kortin þín þegar þú gengur frá greiðslu</translation>
 <translation id="7393971683644170444">Tengist kortaútgefanda ...</translation>
 <translation id="739728382607845710">Tákn greiðslumiðlara</translation>

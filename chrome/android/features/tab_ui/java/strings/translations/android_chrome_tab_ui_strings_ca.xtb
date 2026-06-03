@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">Baixada de preu de <ph name="PRICE_DROP" /> per a <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Icona del color del grup de pestanyes (<ph name="COLOR_NAME" />)</translation>
 <translation id="311432875115153175">S'ha tancat la llista de grup de pestanyes</translation>
+<translation id="3152596030350326139">Mostra les pestanyes horitzontalment</translation>
+<translation id="31806439105337256">Mostra les pestanyes verticalment</translation>
 <translation id="3194464645767632461">puntuació</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Afegeix <ph name="TABS_COUNT_ONE" /> pestanya al grup}other{Afegeix <ph name="TABS_COUNT_MANY" /> pestanyes al grup}}</translation>
 <translation id="3328308545011660196">Suggeriment: sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Tanca l'element}other{Tanca els elements}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura del full de compartició.</translation>
+<translation id="3775705724665058594">Envia als teus dispositius</translation>
 <translation id="3776329373944672717">Títol del grup de pestanyes <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Gestiona</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{No fixis la pestanya}other{No fixis les pestanyes}}</translation>

@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Informasjonskapsler og data fra nettsteder</translation>
 <translation id="2553552004849639664">Få den sterkeste beskyttelsen i Chrome mot trusler på nettet</translation>
 <translation id="2570922361219980984">Posisjonstilgang er også slått av for denne enheten. Slå den på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Utvidet – klikk for å minimere.</translation>
 <translation id="2586657967955657006">Utklippstavle</translation>
 <translation id="2588271083332682494">Rydd opp med fanegrupper</translation>
 <translation id="2592917252160773942">Nettsteder kan be om å få bruke kameraet ditt</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Be om datamaskinvisning</translation>
 <translation id="5091663350197390230">Når dette er på, kan nettsteder bruke JavaScript. Når dette er av, kan ikke nettsteder bruke JavaScript.</translation>
 <translation id="5099358668261120049">Dette sletter alle data og informasjonskapsler som er lagret av <ph name="ORIGIN" /> eller den tilhørende appen på startskjermen.</translation>
-<translation id="5100237604440890931">Minimert – klikk for å utvide</translation>
 <translation id="5116239826668864748">Du kan bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="512938610812707830">Feltet nederst for temasamlinger for utseende på Ny fane-side er åpnet i full høyde</translation>
@@ -696,7 +694,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> er tillatt</translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="8211406090763984747">Tilkoblingen er sikker</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Når dette er på, kan nettsteder be om å få bruke andre enheter på det lokale nettverket ditt. Når dette er av, kan ikke nettsteder bruke andre enheter på det lokale nettverket ditt.</translation>
 <translation id="8249310407154411074">Flytt til toppen</translation>
 <translation id="8261506727792406068">Slett</translation>

@@ -875,6 +875,7 @@
 <translation id="2354001756790975382">其他书签</translation>
 <translation id="2355395290879513365">攻击者可能能够看到您正在此网站上浏览的图片，并通过编辑这些图片让您受骗。</translation>
 <translation id="2356941001189392209">被您访问过且发生了旧版技术事件的部分网页网址的列表</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{将分享 1 个标签页}other{将分享 {NUM_TABS} 个标签页}}</translation>
 <translation id="2357481397660644965">您的设备由 <ph name="DEVICE_MANAGER" /> 管理，您的账号由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多种货币</translation>
 <translation id="2359808026110333948">继续</translation>
@@ -4065,7 +4066,6 @@
 <translation id="7388380253839603603">油价与汽车燃料</translation>
 <translation id="7388594495505979117">{0,plural, =1{您的设备将在 1 分钟后重启}other{您的设备将在 # 分钟后重启}}</translation>
 <translation id="7393161616326137353">冒险游戏</translation>
-<translation id="7393243238767102021">要允许 <ph name="DOMAIN" /> 自动验证此邮箱吗？</translation>
 <translation id="7393475648162498734">在结账时显示凭您的卡可以享受哪些奖励和福利</translation>
 <translation id="7393971683644170444">正在连接发卡机构…</translation>
 <translation id="739728382607845710">付款处理程序图标</translation>

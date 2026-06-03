@@ -875,6 +875,7 @@
 <translation id="2354001756790975382">기타 북마크</translation>
 <translation id="2355395290879513365">공격자는 사용자가 이 사이트에서 보고 있는 이미지를 볼 수 있으며 이미지를 수정하여 사용자를 속일 수 있습니다.</translation>
 <translation id="2356941001189392209">기존 기술 이벤트가 발생하는 페이지의 제한된 URL 목록</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{탭 1개 공유 예정}other{탭 {NUM_TABS}개 공유 예정}}</translation>
 <translation id="2357481397660644965">내 기기는 <ph name="DEVICE_MANAGER" />에서 관리하며 내 계정은 <ph name="ACCOUNT_MANAGER" />에서 관리합니다.</translation>
 <translation id="2359629602545592467">복수</translation>
 <translation id="2359808026110333948">계속</translation>
@@ -4070,7 +4071,6 @@
 <translation id="7388380253839603603">유가 및 차량용 연료</translation>
 <translation id="7388594495505979117">{0,plural, =1{1분 후에 기기가 다시 시작됩니다}other{#분 후에 기기가 다시 시작됩니다}}</translation>
 <translation id="7393161616326137353">어드벤처 게임</translation>
-<translation id="7393243238767102021"><ph name="DOMAIN" /> 도메인이 이 이메일을 자동으로 확인하도록 허용하시겠습니까?</translation>
 <translation id="7393475648162498734">결제 과정에서 카드에 적용 가능한 리워드 및 혜택을 표시합니다.</translation>
 <translation id="7393971683644170444">카드 제공업체에 연결 중…</translation>
 <translation id="739728382607845710">결제 핸들러 아이콘</translation>

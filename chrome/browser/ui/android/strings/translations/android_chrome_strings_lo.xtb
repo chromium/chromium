@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">ທ່ານສາມາດດາວໂຫຼດ PDF ໄດ້ບ່ອນນີ້</translation>
 <translation id="107147699690128016">ຖ້າທ່ານປ່ຽນແປງນາມສະກຸນໄຟລ໌, ໄຟລ໌ອາດຈະເປີດໃນແອັບພລິເຄຊັນອື່ນ ແລະ ເປັນໄປໄດ້ວ່າອາດຈະເປັນອັນຕະລາຍຕໍ່ກັບອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="1073328695547557412">ແຕະໄອຄອນ Google Lens</translation>
+<translation id="1080116354587839789">ເຮັດ​ໃຫ້​ເຂົ້າ​ກັນ​ກັບ​ລວງ​ກ້​ວາງ</translation>
 <translation id="1086486568852410168">ຊອກຫາດ້ວຍ Google Lens</translation>
 <translation id="1087799850623149508">ທ່ານສາມາດແຕະຄ້າງໄວ້ເພື່ອຍ້າຍແຖບທີ່ຢູ່ໄປລຸ່ມສຸດໄດ້</translation>
 <translation id="1089606299949659462">ກວດສອບສຳເລັດແລ້ວ!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ແຖບ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{ລະບົບຈະບັນທຶກລະຫັດຜ່ານ 1 ລາຍການໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ, ໃຫ້ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.}other{ລະບົບຈະບັນທຶກລະຫັດຜ່ານ # ລາຍການໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ, ໃຫ້ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.}}</translation>
 <translation id="3293181007446299124">ປະຫວັດການທ່ອງເວັບຂອງທ່ານຖືກເກັບຮັກສາໄວ້ເປັນສ່ວນຕົວຢູ່ອຸປະກອນຂອງທ່ານ ແລະ ລາຍງານແມ່ນຖືກສົ່ງແບບໜ່ວງເວລາເພື່ອປົກປ້ອງຕົວຕົນຂອງທ່ານ</translation>
+<translation id="3301639354590628973">ສະຫຼັບບັນຊີບໍ?</translation>
 <translation id="3301936297336370235">ການຢືນຢັນການແນະນຳລະຫັດຜ່ານ</translation>
 <translation id="3302615849591357577">ກູ້ຄືນກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" />, ສີ <ph name="COLOR_NAME" />, ເປັນກຸ່ມແຖບໃໝ່ໃນພື້ນຫຼັງ.</translation>
 <translation id="3303855915957856445">ບໍ່ພົບຜົນການຊອກຫາໃດໆ</translation>

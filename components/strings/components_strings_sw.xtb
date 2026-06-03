@@ -875,6 +875,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2354001756790975382">Alamisho zingine</translation>
 <translation id="2355395290879513365">Wavamizi wanaweza kuona picha unazoangalia kwenye tovuti hii na wakuhadae kwa kuzibadilisha.</translation>
 <translation id="2356941001189392209">Orodha zenye kikomo za URL za kurasa unazotembelea ambapo matukio ya teknolojia yaliyopitwa na wakati yanatokea</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Itaruhusu kichupo 1 kifikiwe}other{Itaruhusu vichupo {NUM_TABS} vifikiwe}}</translation>
 <translation id="2357481397660644965">Kifaa chako kinadhibitiwa na <ph name="DEVICE_MANAGER" /> na akaunti yako inadhibitiwa na <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Nyingi</translation>
 <translation id="2359808026110333948">Endelea</translation>
@@ -4068,7 +4069,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="7388380253839603603">Bei za Mafuta na Ujazaji Mafuta kwenye Magari</translation>
 <translation id="7388594495505979117">{0,plural, =1{Kifaa chako kitazimika na kuwaka tena baada ya dakika moja}other{Vifaa vyako vitazimika na kuwaka tena baada ya dakika #}}</translation>
 <translation id="7393161616326137353">Michezo ya Matukio ya Kusisimua</translation>
-<translation id="7393243238767102021">Ungependa kuruhusu <ph name="DOMAIN" /> ithibitishe barua pepe hii kiotomatiki?</translation>
 <translation id="7393475648162498734">Onyesha zawadi na manufaa yanayopatikana kwenye kadi zako unapolipa</translation>
 <translation id="7393971683644170444">Inaunganisha kwenye mtoa huduma wa kadi yako...</translation>
 <translation id="739728382607845710">Aikoni ya kidhibiti cha malipo</translation>

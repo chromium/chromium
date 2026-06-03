@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">ធ្លាក់ថ្លៃ <ph name="PRICE_DROP" /> សម្រាប់ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">រូបពណ៌​ក្រុមផ្ទាំង<ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">បានបិទ​បញ្ជី​ក្រុមផ្ទាំង</translation>
+<translation id="3152596030350326139">បង្ហាញផ្ទាំងផ្ដេក</translation>
+<translation id="31806439105337256">បង្ហាញផ្ទាំងបញ្ឈរ</translation>
 <translation id="3194464645767632461">ការវាយតម្លៃដោយដាក់ផ្កាយ</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{បញ្ចូល <ph name="TABS_COUNT_ONE" /> ផ្ទាំងទៅក្រុម}other{បញ្ចូល <ph name="TABS_COUNT_MANY" /> ផ្ទាំងទៅក្រុម}}</translation>
 <translation id="3328308545011660196">ការណែនាំ៖ ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{បិទ​ធាតុ}other{បិទ​ធាតុ}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">រូបក្របតំណាងការមើលសាកល្បងនៃបញ្ជីដែលបានចែករំលែក។</translation>
+<translation id="3775705724665058594">ផ្ញើ​ទៅ​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="3776329373944672717">ចំណង​ជើង​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">គ្រប់គ្រង</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{ដកខ្ទាស់​ផ្ទាំង}other{ដកខ្ទាស់​ផ្ទាំង}}</translation>

@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">Priset på <ph name="PRODUCT_NAME" /> sänkt med <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">Ikon för flikgruppsfärgen <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Listan över flikgrupper har stängts</translation>
+<translation id="3152596030350326139">Visa flikar horisontellt</translation>
+<translation id="31806439105337256">Visa flikar vertikalt</translation>
 <translation id="3194464645767632461">betyg</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Lägg till <ph name="TABS_COUNT_ONE" /> flik i gruppen}other{Lägg till <ph name="TABS_COUNT_MANY" /> flikar i gruppen}}</translation>
 <translation id="3328308545011660196">Förslag: <ph name="NUMBER_OF_TABS" /> flikar verkar höra ihop. Vill du gruppera dem?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Stäng objekt}other{Stäng objekt}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatyr för förhandsgranskning av delningsblad.</translation>
+<translation id="3775705724665058594">Skicka till dina enheter</translation>
 <translation id="3776329373944672717">Flikgruppens namn <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Hantera</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Lossa flik}other{Lossa flikar}}</translation>

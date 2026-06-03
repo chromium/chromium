@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Datos de sitios y cookies</translation>
 <translation id="2553552004849639664">Obtén la protección más sólida de Chrome contra las amenazas en línea</translation>
 <translation id="2570922361219980984">El acceso a la ubicación también está desactivado en este dispositivo. Actívalo en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Expandido; haz clic para contraer.</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2588271083332682494">Organiza con grupos de pestañas</translation>
 <translation id="2592917252160773942">Los sitios pueden solicitar el uso de la cámara</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Solicitar vista para computadoras de escritorio</translation>
 <translation id="5091663350197390230">Cuando esta opción está activada, los sitios pueden usar JavaScript. Cuando está desactivada, los sitios no pueden usar JavaScript.</translation>
 <translation id="5099358668261120049">Esta acción borrará todos los datos y cookies almacenados por <ph name="ORIGIN" /> o su app que aparece en la pantalla principal.</translation>
-<translation id="5100237604440890931">Contraído; haz clic para expandir.</translation>
 <translation id="5116239826668864748">Puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos y otras apps</translation>
 <translation id="5123685120097942451">Pestaña de incógnito</translation>
 <translation id="512938610812707830">La hoja inferior de las colecciones de temas de la apariencia de la página Nueva pestaña está totalmente abierta</translation>
@@ -696,7 +694,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:<
 <translation id="8197286292360124385">Permitido: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8211406090763984747">La conexión es segura</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Cuando esta opción está activada, los sitios pueden solicitar acceso a otros dispositivos de tu red local. Cuando está desactivada, los sitios no pueden acceder a otros dispositivos de tu red local.</translation>
 <translation id="8249310407154411074">Mover al principio</translation>
 <translation id="8261506727792406068">Borrar</translation>

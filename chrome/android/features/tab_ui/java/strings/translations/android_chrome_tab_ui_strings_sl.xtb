@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />-odstotno znižanje cene izdelka <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ikona barve skupine zavihkov</translation>
 <translation id="311432875115153175">Seznam skupin zavihkov je zaprt</translation>
+<translation id="3152596030350326139">Prikaži zavihke vodoravno</translation>
+<translation id="31806439105337256">Prikaži zavihke navpično</translation>
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> zavihek skupini}one{Dodaj <ph name="TABS_COUNT_MANY" /> zavihek skupini}two{Dodaj <ph name="TABS_COUNT_MANY" /> zavihka skupini}few{Dodaj <ph name="TABS_COUNT_MANY" /> zavihke skupini}other{Dodaj <ph name="TABS_COUNT_MANY" /> zavihkov skupini}}</translation>
 <translation id="3328308545011660196">Predlog: Videti je, da je toliko sorodnih zavihkov: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Zapri element}one{Zapri elemente}two{Zapri elemente}few{Zapri elemente}other{Zapri elemente}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Sličica za predogled deljenega lista.</translation>
+<translation id="3775705724665058594">Pošiljanje v vaše naprave</translation>
 <translation id="3776329373944672717">Naslov skupine zavihkov <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Odpni zavihek}one{Odpni zavihke}two{Odpni zavihke}few{Odpni zavihke}other{Odpni zavihke}}</translation>

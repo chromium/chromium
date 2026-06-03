@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">Visa fler emojis</translation>
 <translation id="2328561734797404498">Starta om enheten om du vill använda <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">En äldre version av Bluetooth används av Chromebook eller Bluetooth-enheten. Använd den interna mikrofonen för att få bättre ljudkvalitet.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering i dag. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}other{<ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering före deadline. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda laserpekaren eller förstoringsglaset.</translation>
 <translation id="2341729377289034582">Låst i stående läge</translation>
@@ -568,6 +569,7 @@
 <translation id="2687510499067466116">Kortkommandot har ändrats</translation>
 <translation id="2689613560355655046">Skrivbord 8</translation>
 <translation id="2692092709110488417">Tryck på tabb för att fokusera och flytta det valda området</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{I dag är sista dagen för att uppdatera <ph name="DEVICE_TYPE" />}other{Uppdatera <ph name="DEVICE_TYPE" /> inom {NUM_DAYS} dagar}}</translation>
 <translation id="2695305337569143674">webb</translation>
 <translation id="2697697418792422688">Visa tangentbordsinställningar. <ph name="KEYBOARD_NAME" /> har markerats.</translation>
 <translation id="2699913284398121653">Använd appen Innehållsöverföring för att flytta data från ditt skolkonto till ditt personliga konto</translation>
@@ -794,6 +796,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="334927402682780278">Markera text från markören till slutet av raden</translation>
 <translation id="3349345708646875009">Öppna Aktivitetshanteraren</translation>
 <translation id="3353786022389205125">Aktivera Visa låsskärm efter viloläge och försök igen</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Uppdatera <ph name="DEVICE_TYPE" /> inom 1 vecka}other{Uppdatera <ph name="DEVICE_TYPE" /> inom {NUM_WEEKS} veckor}}</translation>
 <translation id="3364721542077212959">Verktyg för e-penna</translation>
 <translation id="3365281428003534650">Ställ in en timer och uppgift</translation>
 <translation id="3365977133351922112">Telefonen är för långt bort. Flytta telefonen närmare.</translation>
@@ -953,6 +956,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3741482431277446954">Höger musknapp</translation>
 <translation id="3742055079367172538">Skärmbilden har tagits</translation>
 <translation id="3743775386021959186">Fokus är på, <ph name="REMAINING_TIME" /> kvar</translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> i dag.}other{<ph name="MANAGER" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> före deadline.}}</translation>
 <translation id="3750403286520637847">Dölj väderförslag</translation>
 <translation id="3752253558646317685">Låt ditt barn trycka och lyfta på fingret upprepade gånger så att fingeravtrycket sparas</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Appdata är all data som har sparats i en app (utifrån utvecklarens inställningar), bland annat data som kontakter, meddelanden och foton.<ph name="END_PARAGRAPH1" />
@@ -1077,6 +1081,9 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="412298498316631026">fönster</translation>
 <translation id="4123259114412175274">Kontrollera att Bluetooth är aktiverat på telefonen om du vill låsa upp Chromebook</translation>
 <translation id="4123868835475902435">Det var grunderna. Fortsätt i vår inbyggda app Utforska för tips och hjälp. Där hittar du tips för att komma igång, specialerbjudanden och de senaste <ph name="PRODUCT_NAME" />-funktionerna.</translation>
+<translation id="4124779003103520737">{0,plural, =1{Din <ph name="DEVICE_TYPE" /> kommer att låsas automatiskt om # sekund.
+        <ph name="DOMAIN" /> kräver att du har smartkortet isatt.}other{Din <ph name="DEVICE_TYPE" /> kommer att låsas automatiskt om # sekunder.
+        <ph name="DOMAIN" /> kräver att du har smartkortet isatt.}}</translation>
 <translation id="4125970834901680537">Det går inte att streama appar i surfplatteläge. Försök igen i laptopläge.</translation>
 <translation id="4131973331381812765">Temperatur: <ph name="TEMPERATURE" /> °C – Aktuell hastighet: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">På till soluppgången</translation>
@@ -1385,6 +1392,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4964188651935955085">När du inaktiverar Bluetooth kopplas den här externa enheten från din <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Höj volymen</translation>
 <translation id="496999337731226334">Rundtur, steg <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. I Snabbinställningar hittar ofta använda inställningar som wifi, Bluetooth och volym. Här kan du även ta en skärmbild. Tryck på Alt + Skift + S för att öppna Snabbinställningar.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du laddar ned en uppdatering i dag. Uppdateringen laddas ned automatiskt när du ansluter till internet.}other{<ph name="MANAGER" /> kräver att du laddar ned en uppdatering före deadline. Uppdateringen laddas ned automatiskt när du ansluter till internet.}}</translation>
 <translation id="4975771730019223894">Appmärkning</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1461,6 +1469,7 @@ Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph
 <translation id="5176318573511391780">Spela in en del av skärmen</translation>
 <translation id="5187627942836026988">Visa information om surfzon. Surfzonen blockeras av administratören.</translation>
 <translation id="5188648870018555788">Använd plats. Tillåt att de appar, webbplatser och tjänster för ChromeOS och Android som har platsbehörighet använder enhetens plats. Platsangivelsens exakthet tillhandahåller en mer exakt plats för Android-appar och Android-tjänster. För att göra detta hanterar Google med jämna mellanrum information om enhetssensorer och trådlösa signaler från din enhet i samband med massinsamling av platser för trådlösa signaler. Dessa används utan att identifiera dig för att förbättra platsangivelsens exakthet och platsbaserade tjänster och för att förbättra, tillhandahålla och underhålla Googles tjänster baserat på Googles och tredje parters berättigade intressen för att tillgodose användarnas behov. <ph name="BEGIN_LINK1" />Läs mer om hur du använder plats<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Returnera <ph name="DEVICE_TYPE" /> inom {NUM_WEEKS} vecka}other{Returnera <ph name="DEVICE_TYPE" /> inom {NUM_WEEKS} veckor}}</translation>
 <translation id="5198039720391525849">Utvalda giffar</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> händelser</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> kombinerades med <ph name="IN_PLACE_APP" /> för att skapa en ny mapp.</translation>
@@ -1778,6 +1787,9 @@ Inga enheter är anslutna.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Du loggas ut automatiskt om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">Inställningar för videosamtal</translation>
+<translation id="6070081109266557120">{0,plural, =1{Du kommer att loggas ut automatiskt om # sekund.
+        <ph name="DOMAIN" /> kräver att du har smartkortet isatt.}other{Du kommer att loggas ut automatiskt om # sekunder.
+        <ph name="DOMAIN" /> kräver att du har smartkortet isatt.}}</translation>
 <translation id="6071576563962215370">Det gick inte att fastställa enhetens attributlås för installationstid.</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> är inte tillåtet på den här enheten. Kontakta administratören. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
@@ -2127,6 +2139,8 @@ Nyligen installerad</translation>
 <translation id="7076878155205969899">Stäng av ljudet</translation>
 <translation id="7083848064787091821">Fokus</translation>
 <translation id="7084678090004350185">Aktivera eller inaktivera surfzon. Surfzonen är aktiverad. <ph name="DEVICECOUNT" /> enheter är anslutna.</translation>
+<translation id="7086438436964931440">Du loggas nu ut automatiskt.
+        <ph name="DOMAIN" /> kräver att du har smartkortet isatt.</translation>
 <translation id="7086931198345821656">Denna uppdatering kräver att en powerwash görs av <ph name="DEVICE_TYPE" />. All data raderas. Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Brytarstyrning</translation>
 <translation id="709015856939120012">Zooma in på sidan</translation>
@@ -2529,6 +2543,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8220076512072059941">Lägg till <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Dölj det här förslaget</translation>
 <translation id="8230305195727960608">Läge för inverterade färger</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Måste returneras omedelbart}other{Returnera <ph name="DEVICE_TYPE" /> inom {NUM_DAYS} dagar}}</translation>
 <translation id="8236042855478648955">Dags för en paus</translation>
 <translation id="8237964652943995219">Nästa skrivbord: <ph name="DESK_NAME" />. Skrivbord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Ta en snabbtitt på hur du navigerar på <ph name="PRODUCT_NAME" />. Kom igång i fem steg.</translation>
@@ -2704,6 +2719,8 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8756799553341497810">Du kan börja anpassa appens layout när du har stängt den här vyn.</translation>
 <translation id="8759408218731716181">Det går inte att starta multiinloggning</translation>
 <translation id="8759753423332885148">Läs mer.</translation>
+<translation id="8760172428247796445">Din <ph name="DEVICE_TYPE" /> låses nu.
+        <ph name="DOMAIN" /> kräver att du har smartkortet isatt.</translation>
 <translation id="8763883995157866248">Sätt enheten i viloläge</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, installerad app, blockerad</translation>
 <translation id="8782565991310229362">Starten av kioskappen avbröts.</translation>

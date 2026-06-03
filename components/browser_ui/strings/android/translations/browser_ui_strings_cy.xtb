@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Cwcis a data gwefan</translation>
 <translation id="2553552004849639664">Cael amddiffyniad cryfaf Chrome rhag bygythiadau ar-lein</translation>
 <translation id="2570922361219980984">Mae mynediad lleoliad hefyd wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Wedi'i ehangu - cliciwch i grebachu.</translation>
 <translation id="2586657967955657006">Clipfwrdd</translation>
 <translation id="2588271083332682494">Tacluso gyda grwpiau tab</translation>
 <translation id="2592917252160773942">Gall gwefannau ofyn am eich camera</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Gofyn am wedd bwrdd gwaith</translation>
 <translation id="5091663350197390230">Pan fydd wedi'i droi ymlaen, gall gwefannau ddefnyddio JavaScript. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio JavaScript.</translation>
 <translation id="5099358668261120049">Bydd hyn yn dileu'r holl ddata a chwcis sy'n cael eu storio gan <ph name="ORIGIN" /> neu gan ei ap ar eich sgrîn Hafan.</translation>
-<translation id="5100237604440890931">Wedi'i grebachu - cliciwch i'w ehangu.</translation>
 <translation id="5116239826668864748">Gallwch ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill</translation>
 <translation id="5123685120097942451">Tab anhysbys</translation>
 <translation id="512938610812707830">Dalen waelod casgliadau thema ymddangosiad tudalen tab newydd wedi'i hagor ar uchder llawn</translation>
@@ -696,7 +694,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:</translation>
 <translation id="8197286292360124385">Caniateir <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Parhau</translation>
 <translation id="8211406090763984747">Mae'r cysylltiad yn ddiogel</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael mynediad at ddyfeisiau eraill ar eich rhwydwaith lleol. Pan fydd wedi'i ddiffodd, ni all gwefannau gael mynediad at ddyfeisiau eraill ar eich rhwydwaith lleol.</translation>
 <translation id="8249310407154411074">Symud i'r brig</translation>
 <translation id="8261506727792406068">Dileu</translation>

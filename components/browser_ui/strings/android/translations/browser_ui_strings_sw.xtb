@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Data ya vidakuzi na tovuti</translation>
 <translation id="2553552004849639664">Pata ulinzi thabiti zaidi wa Chrome dhidi ya vitisho vya mtandaoni</translation>
 <translation id="2570922361219980984">Kipengele cha mahali pia kimezimwa kwenye kifaa hiki. Kiwashe katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Imepanuliwa - bofya ili ukunje.</translation>
 <translation id="2586657967955657006">Ubao wa kunakili</translation>
 <translation id="2588271083332682494">Kupanga maudhui kwa kutumia vikundi vya vichupo</translation>
 <translation id="2592917252160773942">Tovuti zinaweza kuomba ruhusa ya kufikia kamera yako</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Omba mwonekano wa kompyuta</translation>
 <translation id="5091663350197390230">Kikiwashwa, tovuti zinaweza kutumia JavaScript. Kikizimwa, tovuti haziwezi kutumia JavaScript.</translation>
 <translation id="5099358668261120049">Hatua hii itafuta data na vidakuzi vyote vilivyohifadhiwa na <ph name="ORIGIN" /> au na programu yake kwenye Skrini yako ya kwanza.</translation>
-<translation id="5100237604440890931">Imekunjwa - bofya ili upanue.</translation>
 <translation id="5116239826668864748">Unaweza kutumia Chrome wakati wowote unapogusa viungo kwenye ujumbe, hati na programu zingine</translation>
 <translation id="5123685120097942451">Kichupo fiche</translation>
 <translation id="512938610812707830">Laha ya chini ya mikusanyiko ya mandhari ya mwonekano wa kichupo kipya imefunguliwa katika urefu kamili</translation>
@@ -696,7 +694,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:</translation>
 <translation id="8197286292360124385">Umeruhusu <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Endelea</translation>
 <translation id="8211406090763984747">Muunganisho ni salama</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Ikiwa umewasha, tovuti zinaweza kuomba idhini ya kufikia vifaa vingine kwenye mtandao wako wa karibu. Ikiwa umezima, tovuti haziwezi kufikia vifaa vingine kwenye mtandao wako wa karibu.</translation>
 <translation id="8249310407154411074">Sogeza juu</translation>
 <translation id="8261506727792406068">Futa</translation>

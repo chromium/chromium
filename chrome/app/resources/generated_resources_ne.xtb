@@ -415,7 +415,6 @@
 <translation id="1282311502488501110">साइन इन नगर्नुहोस्</translation>
 <translation id="1282436639288565079">ट्याब समूहसम्बन्धी विवरणहरू</translation>
 <translation id="1282577885428483870">साइट तथा खाताहरू</translation>
-<translation id="1283344108460935898">Skills उपलब्ध छैन</translation>
 <translation id="1284277788676816155">डेटा सेभ गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="1285484354230578868">तपाईंको गूगल ड्राइभ खातामा डाटा भण्डार गर्नुहोस्</translation>
@@ -776,6 +775,7 @@
 <translation id="1566049601598938765">वेबसाइट</translation>
 <translation id="15662109988763471">चयन गरिएको प्रिन्टर उपलब्ध छैन वा त्यसलाई राम्ररी स्थापना गरिएको छैन। आफ्नो प्रिन्टर जाँच्नुहोस् वा अर्को प्रिन्टर चयन गरी हेर्नुहोस्।</translation>
 <translation id="1566329594234563241">डिभाइस निष्क्रिय हुँदा र प्लगइन गरिएको बेला</translation>
+<translation id="1567069630205219514">च्याट सुचारु गर्न विन्डोको आकार बढाउनुहोस्</translation>
 <translation id="1567135437923613642">परीक्षणको चरणमा रहेका विशेष सुविधाहरू अन गर्नुहोस्</translation>
 <translation id="1567579616025300478">यो साइटलाई तपाईंको डिभाइसमा डेटा सेभ गर्ने अनुमति दिइएको छैन।</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' की '<ph name="ACTION" />' कारबाहीका लागि तोकिसकिएको छ। <ph name="RESPONSE" /> कुनै की थिच्नुहोस्।</translation>
@@ -1186,6 +1186,7 @@
 <translation id="1861262398884155592">यो फोल्डर खाली छ</translation>
 <translation id="1862311223300693744">तपाईंले कुनै पनि विशेष VPN, प्रोक्सी, फायरवाल वा NAS सफ्टवेयर इन्स्टल गर्नुभएको छ?</translation>
 <translation id="1863182668524159459">कुनै पनि सिरियल पोर्ट फेला परेन</translation>
+<translation id="1863374797460198869">च्याट लुकाइएको छ</translation>
 <translation id="1864111464094315414">लगइन</translation>
 <translation id="1864400682872660285">अझ शीतल</translation>
 <translation id="1864454756846565995">USB-C यन्त्र (पछाडिको पोर्ट)</translation>
@@ -2059,6 +2060,7 @@
 <translation id="2477065602824695373">तपाईंले एकभन्दा बढी स्विच सेटअप गर्नुभएकाले अटो-स्क्यान गर्ने सुविधा अफ गरिएको छ।</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" को लागि मिडिया</translation>
 <translation id="24786041351753425">डेटा रिकभर गर्ने सेवा अन गर्नुहोस्।</translation>
+<translation id="2479148705183875116">सेटिङमा जानुहोस्</translation>
 <translation id="2479541499757560845">एक्सेसिबिलिटी किबोर्डका सेटिङ</translation>
 <translation id="2480868415629598489">तपाईंले प्रतिलिपि गरी टाँस्नुभएको डेटालाई परिमार्जन गर्नुहोस्</translation>
 <translation id="2480881140544300950">हालको सर्च इन्जिनले तपाईंको नयाँ ट्याब नामक पेज व्यवस्थापन गरिरहेको छ</translation>
@@ -2474,7 +2476,6 @@
 <translation id="2766629385177215776">कुनै पनि डिभाइसमा बनाइएका नयाँ ट्याब समूहहरू बुकमार्क बारमा स्वतः पिन गर्नुहोस्</translation>
 <translation id="2767077837043621282">तपाईंको Chromebook अपडेट गर्न सकिएन। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2767127727915954024">तपाईंले यो साइटका सबै ट्याबहरू बन्द नगरुन्जेल <ph name="ORIGIN" /> ले <ph name="FILENAME" /> सम्पादन गर्न सक्ने छ</translation>
-<translation id="2767771295575888898">"<ph name="SELECTION" />" रिडिङ मोडमा खोल्नुहोस्</translation>
 <translation id="2769174155451290427">अपलोड गरिएको फोटो</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> पज गर्नुहोस्</translation>
 <translation id="2770465223704140727">सूचीबाट हटाउनुहोस्</translation>
@@ -2787,7 +2788,6 @@
 <translation id="2996108796702395498">तपाईंको डिभाइसको सिरियल नम्बर <ph name="SERIAL_NUMBER" /> हो। यो नम्बर सेवा एक्टिभेट गर्ने प्रयोजनका लागि प्रयोग गर्न सकिन्छ।</translation>
 <translation id="2996286169319737844">तपाईंको सिंक पासफ्रेजमार्फत डेटा इन्क्रिप्ट गरिन्छ। यसअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्।</translation>
 <translation id="2996722619877761919">लम्बाइपट्टिको भागबाट पल्टाउनुहोस्</translation>
-<translation id="2997608191364087784">"<ph name="SELECTION" />" लाई <ph name="LANGUAGE" /> भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="2998097899774209901">अन • यो एक्स्टेन्सनले Chrome वेब स्टोरको नीति उल्लङ्घन गर्छ</translation>
 <translation id="2998267783395280091">नेटवर्क भेटिएको छ</translation>
 <translation id="3000378525979847272">तपाईंले हालसालै <ph name="PERMISSION_1" /> र <ph name="PERMISSION_2" /> सम्बन्धी अनुमति दिनुभएको छ</translation>
@@ -6966,6 +6966,7 @@
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> बाट पाठ कपी गरियो</translation>
 <translation id="6099766472403716061"><ph name="HOST" /> लाई तपाईंका MIDI डिभाइसहरू नियन्त्रण तथा रिप्रोग्राम गर्ने अनुमति सधैँ दिइयोस्</translation>
 <translation id="6100736666660498114">सुरुवात मेनु</translation>
+<translation id="6100737823178787570">यो कार्य सुचारु गर्न विन्डोको आकार बढाउनुहोस्</translation>
 <translation id="6101226222197207147">नयाँ एप थपियो (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">सुरक्षासम्बन्धी उन्नत सुविधाले यो फाइललाई रोक लगाएको छ।</translation>
 <translation id="6103681770816982672">चेतावनी: तपाईं विकासकर्ता च्यानलमा स्विच गर्दै हुनुहुन्छ</translation>
@@ -7388,7 +7389,6 @@
 <translation id="6418511932144861495">महत्वपूर्ण अद्यावधिक स्थापना गर्नुहोस्</translation>
 <translation id="641899100123938294">नयाँ डिभाइसहरू खोज्नुहोस्</translation>
 <translation id="6419546358665792306">लोड अनप्याक गर्नुहोस्</translation>
-<translation id="6423685703035190381">आफ्नो फोनमा मूल्य ट्र्याकिङसम्बन्धी अलर्टहरू प्राप्त गर्नुहोस्</translation>
 <translation id="6425556984042222041">टेक्स्ट-टू-स्पिचको दर</translation>
 <translation id="642729974267661262">ध्वनि प्ले गर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="6427752304227226701">असुरक्षित साइटका बारेमा रिपोर्ट गर्नुहोस्...</translation>
@@ -7817,7 +7817,6 @@
 <translation id="6739266861259291931">रिसेट गरी डिभाइसको भाषा सेट गर्नुहोस्</translation>
 <translation id="6739923123728562974">डेस्कटपको सर्टकट देखाउनुहोस्</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> रोकियो</translation>
-<translation id="6742816895667193660">"<ph name="SELECTION" />" रिडिङ मोडमा खोल्नुहोस्</translation>
 <translation id="6743841972744298686">सिंकसम्बन्धी सेटिङहरू</translation>
 <translation id="6744397361782514824">बायाँ भ्यूसँग अदलबदल गर्नुहोस्</translation>
 <translation id="6746124502594467657">तल सार्नुहोस्</translation>
@@ -8303,7 +8302,6 @@
 <translation id="707772989579681711">तपाईंको पहिलेको रोजाइ</translation>
 <translation id="7077751457066325012">किबोर्डका सर्टकटहरू हेर्नुहोस् र कस्टमाइज गर्नुहोस्</translation>
 <translation id="7077829361966535409">साइन पृष्ठ हालको प्रोक्सी सेटिङहरू प्रयोग गरेर लोड हुन असफल भयो। कृपया <ph name="GAIA_RELOAD_LINK_START" />पुन: साइन इन गर्ने प्रयास गर्नुहोस्<ph name="GAIA_RELOAD_LINK_END" />, वा फरक <ph name="PROXY_SETTINGS_LINK_START" />प्रोक्सी सेटिङहरू<ph name="PROXY_SETTINGS_LINK_END" /> प्रयोग गर्नुहोस</translation>
-<translation id="7078103664368916714"><ph name="SELECTION" />" प्रिन्ट गर्नुहोस्</translation>
 <translation id="7078120482318506217">सबै नेटवर्कहरू</translation>
 <translation id="708060913198414444">अडियो ठेगाना कपी गर्नुहोस्</translation>
 <translation id="7082568314107259011">तपाईंका एड्मिन <ph name="NETWORK_NAME" /> व्यवस्थापन गर्नुहुन्छ</translation>
@@ -9202,7 +9200,6 @@
 <translation id="7752832973194460442">Android एपसम्बन्धी जानकारी</translation>
 <translation id="7754704193130578113">डाउनलोड गर्नुभन्दा पहिले प्रत्येक फाइललाई कहाँ बचत गर्ने भनेर सोध्नुहोस्</translation>
 <translation id="7757592200364144203">डिभाइसको नाम बदल्नुहोस्</translation>
-<translation id="7757735653610827848">&amp;"<ph name="SELECTION" />" कपी गर्नुहोस्</translation>
 <translation id="7757739382819740102">नजिकैका कन्ट्याक्टहरू तपाईंसँग सामग्री सेयर गर्न सक्छन्। तपाईंले अनुमति दिनु पर्ने हुन्छ।</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ले आदान प्रदान गरेको पाठ</translation>
 <translation id="7758143121000533418">Family Link</translation>

@@ -415,7 +415,6 @@
 <translation id="1282311502488501110">Без влизане в профила</translation>
 <translation id="1282436639288565079">Подробности за групата раздели</translation>
 <translation id="1282577885428483870">Сайтове и профили</translation>
-<translation id="1283344108460935898">Няма достъп до страницата с умения</translation>
 <translation id="1284277788676816155">Забраняване на запазването на данни</translation>
 <translation id="1285320974508926690">Този сайт да не се превежда никога</translation>
 <translation id="1285484354230578868">Съхраняване на данните в профила ви в Google Диск</translation>
@@ -773,6 +772,7 @@
 <translation id="1566049601598938765">Уебсайт</translation>
 <translation id="15662109988763471">Избраният принтер не е налице или не е инсталиран правилно. Проверете го или изберете друг.</translation>
 <translation id="1566329594234563241">При неактивност и захранване от електрическата мрежа</translation>
+<translation id="1567069630205219514">Увеличете размера на прозореца, за да възобновите разговора</translation>
 <translation id="1567135437923613642">Активиране на представените експерименти</translation>
 <translation id="1567579616025300478">Този сайт няма разрешение да запазва данни на устройството ви.</translation>
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> вече се използва за действието „<ph name="ACTION" />“. Натиснете произволен клавиш, за да <ph name="RESPONSE" />.</translation>
@@ -1191,6 +1191,7 @@
 <translation id="1862311223300693744">Имате ли инсталиран специален софтуер за VPN, прокси сървър, защитна стена или
 мрежово хранилище (NAS)?</translation>
 <translation id="1863182668524159459">Няма намерени серийни портове</translation>
+<translation id="1863374797460198869">Чатът е скрит</translation>
 <translation id="1864111464094315414">Вход</translation>
 <translation id="1864400682872660285">По-студени цветове</translation>
 <translation id="1864454756846565995">USB-C устройство (задният порт)</translation>
@@ -2068,6 +2069,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2477065602824695373">Тъй като настроихте няколко превключвателя, автоматичното сканиране бе изключено.</translation>
 <translation id="2478176599153288112">Разрешения за медийни файлове за <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Активиране на услугата за възстановяване на данни.</translation>
+<translation id="2479148705183875116">Към настройките</translation>
 <translation id="2479541499757560845">Настройки за клавиатурата за достъпност</translation>
 <translation id="2480868415629598489">Промяна на данните, които копирате и поставяте</translation>
 <translation id="2480881140544300950">Текущата търсеща машина управлява новия раздел в браузъра</translation>
@@ -2483,7 +2485,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2766629385177215776">Новите групи раздели, създадени на което и да е устройство, да се фиксират автоматично в лентата на отметките</translation>
 <translation id="2767077837043621282">Вашият Chromebook не бе актуализиран. Опитайте отново по-късно.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ще може да редактира <ph name="FILENAME" />, докато не затворите всички раздели със сайта</translation>
-<translation id="2767771295575888898">Отваряне на „<ph name="SELECTION" />“ в режима на четене</translation>
 <translation id="2769174155451290427">Качено изображение</translation>
 <translation id="2770082596325051055">Поставяне на пауза на <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Премахване от списъка</translation>
@@ -2795,7 +2796,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2996108796702395498">Серийният номер на устройството ви е <ph name="SERIAL_NUMBER" />. Той може да се използва за активиране на услугата.</translation>
 <translation id="2996286169319737844">Данните са шифровани с пропуска ви за синхронизиране. Това не включва начините на плащане и адресите от Google Pay.</translation>
 <translation id="2996722619877761919">Обръщане по дългата страна</translation>
-<translation id="2997608191364087784">&amp;Превод на „<ph name="SELECTION" />“ на <ph name="LANGUAGE" /></translation>
 <translation id="2998097899774209901">Включено • Това разширение нарушава правилата на уеб магазина на Chrome</translation>
 <translation id="2998267783395280091">Намерена е мрежа</translation>
 <translation id="3000378525979847272">Разрешени са „<ph name="PERMISSION_1" />“ и „<ph name="PERMISSION_2" />“</translation>
@@ -6980,6 +6980,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="609942571968311933">Текст, копиран от <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Контролирането и препрограмирането на MIDI устройствата ви да са винаги разрешени за <ph name="HOST" /></translation>
 <translation id="6100736666660498114">Меню „Старт“</translation>
+<translation id="6100737823178787570">Увеличете размера на прозореца, за да възобновите задачата</translation>
 <translation id="6101226222197207147">Бе добавено ново приложение (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Този файл бе блокиран от функцията за разширена защита.</translation>
 <translation id="6103681770816982672">Предупреждение: превключвате към канала за програмисти</translation>
@@ -7402,7 +7403,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6418511932144861495">Инсталиране на критична актуализация</translation>
 <translation id="641899100123938294">Сканиране за нови устройства</translation>
 <translation id="6419546358665792306">Зареждане на разпакетираното</translation>
-<translation id="6423685703035190381">Получавайте сигнали за проследяване на цените на телефона си</translation>
 <translation id="6425556984042222041">Скорост на синтезирания говор</translation>
 <translation id="642729974267661262">Сайтове без разрешение за възпроизвеждане на звук</translation>
 <translation id="6427752304227226701">Подаване на сигнал за &amp;опасен сайт...</translation>
@@ -7831,7 +7831,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6739266861259291931">Повторно задаване на езика на устройството</translation>
 <translation id="6739923123728562974">Показване на прекия път на работния плот</translation>
 <translation id="6740234557573873150">„<ph name="FILE_NAME" />“ е на пауза</translation>
-<translation id="6742816895667193660">Отваряне на „<ph name="SELECTION" />“ в режима на четене</translation>
 <translation id="6743841972744298686">Настройки за синхронизиране</translation>
 <translation id="6744397361782514824">Размяна с левия изглед</translation>
 <translation id="6746124502594467657">Придвижване надолу</translation>
@@ -8318,7 +8317,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="707772989579681711">Предишният ви избор</translation>
 <translation id="7077751457066325012">Преглед и персонализиране на клавишните комбинации</translation>
 <translation id="7077829361966535409">Зареждането на страницата за вход посредством текущите настройки на прокси сървъра не бе успешно. Моля, <ph name="GAIA_RELOAD_LINK_START" />опитайте отново да влезете в профила си<ph name="GAIA_RELOAD_LINK_END" /> или използвайте други <ph name="PROXY_SETTINGS_LINK_START" />настройки<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
-<translation id="7078103664368916714">&amp;Отпечатване на „<ph name="SELECTION" />“</translation>
 <translation id="7078120482318506217">Всички мрежи</translation>
 <translation id="708060913198414444">К&amp;опиране на адреса на аудиозаписа</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> се управлява от администратора ви</translation>
@@ -9217,7 +9215,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7752832973194460442">Информация за приложенията за Android</translation>
 <translation id="7754704193130578113">Извеждане на запитване къде да бъде запазен всеки файл преди изтеглянето му</translation>
 <translation id="7757592200364144203">Промяна на името на устройството</translation>
-<translation id="7757735653610827848">&amp;Копиране на „<ph name="SELECTION" />“</translation>
 <translation id="7757739382819740102">Контактите в близост могат да споделят с вас. За целта ще се изисква одобрение.</translation>
 <translation id="7757787379047923882">Текст, споделен от <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>

@@ -415,7 +415,6 @@
 <translation id="1282311502488501110">સાઇન ઇન કરશો નહીં</translation>
 <translation id="1282436639288565079">ટૅબના ગ્રૂપની વિગતો</translation>
 <translation id="1282577885428483870">સાઇટ અને એકાઉન્ટ</translation>
-<translation id="1283344108460935898">કૌશલ્યો ઉપલબ્ધ નથી</translation>
 <translation id="1284277788676816155">ડેટા સાચવવાની મંજૂરી આપશો નહીં</translation>
 <translation id="1285320974508926690">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="1285484354230578868">તમારા Google ડ્રાઇવ એકાઉન્ટમાં ડેટા સ્ટોર કરો</translation>
@@ -772,6 +771,7 @@
 <translation id="1566049601598938765">વેબસાઇટ</translation>
 <translation id="15662109988763471">પસંદ કરેલું પ્રિન્ટર ઉપલબ્ધ નથી અથવા યોગ્ય રીતે ઇન્સ્ટૉલ કરેલું નથી. તમારું પ્રિન્ટર ચેક કરો અથવા બીજું પ્રિન્ટર પસંદ કરી જુઓ.</translation>
 <translation id="1566329594234563241">જ્યારે નિષ્ક્રિય અને પ્લગ ઇન કરેલું હોય</translation>
+<translation id="1567069630205219514">ચૅટ ફરી શરૂ કરવા માટે વિન્ડોનું કદ વધારો</translation>
 <translation id="1567135437923613642">વૈશિષ્ટકૃત પ્રયોગોની સુવિધા ચાલુ કરો</translation>
 <translation id="1567579616025300478">આ સાઇટને તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી નથી.</translation>
 <translation id="156793199942386351">'<ph name="ACTION" />' ક્રિયાને '<ph name="CURRENTKEY" />' કી પહેલેથી સોંપવામાં આવી છે. <ph name="RESPONSE" /> માટે કોઈપણ કી દબાવો.</translation>
@@ -1182,6 +1182,7 @@
 <translation id="1861262398884155592">આ ફોલ્ડર ખાલી છે</translation>
 <translation id="1862311223300693744">શું તમે કોઈ વિશિષ્ટ VPN, પ્રૉક્સી, ફાયરવૉલ અથવા NAS સૉફ્ટવેર ઇન્સ્ટૉલ કરેલું છે?</translation>
 <translation id="1863182668524159459">કોઈ સીરિયલ પોર્ટ મળ્યાં નથી</translation>
+<translation id="1863374797460198869">ચૅટ છુપાવેલી છે</translation>
 <translation id="1864111464094315414">લૉગિન</translation>
 <translation id="1864400682872660285">કૂલર</translation>
 <translation id="1864454756846565995">USB-C ઉપકરણ (પાછળનું પોર્ટ)</translation>
@@ -2057,6 +2058,7 @@
 <translation id="2477065602824695373">તમે એકથી વધુ સ્વિચનું સેટઅપ કર્યું હોવાને કારણે ઑટો-સ્કૅનની સુવિધા બંધ કરવામાં આવી છે.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" માટે મીડિયા-ફાઇલ પરવાનગીઓ</translation>
 <translation id="24786041351753425">ડેટા રિકવરી સેવા ચાલુ કરો.</translation>
+<translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
 <translation id="2479541499757560845">કીબોર્ડના સેટિંગની ઍક્સેસિબિલિટી</translation>
 <translation id="2480868415629598489">તમે કૉપિ અને પેસ્ટ કરો છો તે ડેટાને સંશોધિત કરો</translation>
 <translation id="2480881140544300950">તમારા નવા ટૅબના પેજને મેનેજ કરતું વર્તમાન શોધ એન્જિન</translation>
@@ -2472,7 +2474,6 @@
 <translation id="2766629385177215776">કોઈપણ ડિવાઇસ પર બનાવેલા નવા ટૅબ ગ્રૂપને બુકમાર્ક બારમાં ઑટોમૅટિક રીતે પિન કરો</translation>
 <translation id="2767077837043621282">તમારી Chromebook અપડેટ કરી શકાઈ નથી. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="2767127727915954024">આ સાઇટ માટે, જ્યાં સુધી તમે બધી ટૅબ બંધ નહીં કરો ત્યાં સુધી <ph name="ORIGIN" />, <ph name="FILENAME" />માં ફેરફાર કરી શકશે</translation>
-<translation id="2767771295575888898">"<ph name="SELECTION" />"ને વાંચન મોડમાં ખોલો</translation>
 <translation id="2769174155451290427">અપલોડ કરેલી છબી</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> થોભાવો</translation>
 <translation id="2770465223704140727">સૂચિમાંથી દૂર કરો</translation>
@@ -2784,7 +2785,6 @@
 <translation id="2996108796702395498">તમારા ડિવાઇસનો અનુક્રમ નંબર <ph name="SERIAL_NUMBER" /> છે. સેવા સક્રિય કરવામાં સહાય માટે આ નંબરનો ઉપયોગ કરી શકાય છે.</translation>
 <translation id="2996286169319737844">ડેટા તમારા સિંક પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કર્યો હતો. આમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી.</translation>
 <translation id="2996722619877761919">લાંબી કિનારી પર ફ્લિપ કરો</translation>
-<translation id="2997608191364087784">"<ph name="SELECTION" />"નો <ph name="LANGUAGE" />માં અનુવાદ કરો</translation>
 <translation id="2998097899774209901">ચાલુ • આ એક્સ્ટેન્શન Chrome વેબ સ્ટોર પૉલિસીનું ઉલ્લંઘન કરે છે</translation>
 <translation id="2998267783395280091">નેટવર્ક મળ્યું</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />ને મંજૂરી આપી</translation>
@@ -6970,6 +6970,7 @@ USB ડિવાઇસ</translation>
 <translation id="609942571968311933"><ph name="DEVICE_NAME" />માંથી ટેક્સ્ટ કૉપિ કરવામાં આવી</translation>
 <translation id="6099766472403716061"><ph name="HOST" />ને હંમેશાં તમારા MIDI ડિવાઇસને નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવાની મંજૂરી આપો</translation>
 <translation id="6100736666660498114">પ્રારંભ મેનૂ</translation>
+<translation id="6100737823178787570">કાર્ય ફરી શરૂ કરવા માટે વિન્ડોનું કદ વધારો</translation>
 <translation id="6101226222197207147">નવી ઍપ્લિકેશન ઉમેરાઈ (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">આ ફાઇલને વિગતવાર સુરક્ષા દ્વારા બ્લૉક કરી હતી.</translation>
 <translation id="6103681770816982672">ચેતવણી: તમે વિકાસકર્તાની ચેનલ પર સ્વિચ કરી રહ્યાં છો</translation>
@@ -7392,7 +7393,6 @@ USB ડિવાઇસ</translation>
 <translation id="6418511932144861495">મહત્ત્વપૂર્ણ અપડેટ ઇન્સ્ટૉલ કરો</translation>
 <translation id="641899100123938294">નવા ડિવાઇસ સ્કૅન કરો</translation>
 <translation id="6419546358665792306">અનપૅક કરેલ એક્સ્ટેન્શન લોડ કરો</translation>
-<translation id="6423685703035190381">તમારા ફોન પર કિંમત ટ્રૅક કરવા સંબંધિત અલર્ટ મેળવો</translation>
 <translation id="6425556984042222041">ટેક્સ્ટ ટૂ સ્પીચની ઝડપ</translation>
 <translation id="642729974267661262">સાઉન્ડ ચલાવવાની મંજૂરી નથી</translation>
 <translation id="6427752304227226701">અસલામત સાઇટની જાણ કરો...</translation>
@@ -7823,7 +7823,6 @@ USB ડિવાઇસ</translation>
 <translation id="6739266861259291931">ડિવાઇસની ભાષા પર રીસેટ કરો</translation>
 <translation id="6739923123728562974">ડેસ્કટૉપ શૉર્ટકટ બતાવો</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> થોભાવી</translation>
-<translation id="6742816895667193660">"<ph name="SELECTION" />"ને વાંચન મોડમાં ખોલો</translation>
 <translation id="6743841972744298686">સિંક સેટિંગ</translation>
 <translation id="6744397361782514824">ડાબા વ્યૂ સાથે સ્વૉપ કરો</translation>
 <translation id="6746124502594467657">નીચે ખસેડો</translation>
@@ -8310,7 +8309,6 @@ USB ડિવાઇસ</translation>
 <translation id="707772989579681711">તમારી પાછલી પસંદગી</translation>
 <translation id="7077751457066325012">કીબોર્ડ શૉર્ટકટ જુઓ અને કસ્ટમાઇઝ કરો</translation>
 <translation id="7077829361966535409">સાઇન-ઇન પેજ વર્તમાન પ્રૉક્સી સેટિંગનો ઉપયોગ કરીને લોડ થવામાં નિષ્ફળ થયું. કૃપા કરીને <ph name="GAIA_RELOAD_LINK_START" />ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો<ph name="GAIA_RELOAD_LINK_END" /> અથવા જુદા <ph name="PROXY_SETTINGS_LINK_START" />પ્રૉક્સી સેટિંગ<ph name="PROXY_SETTINGS_LINK_END" />નો ઉપયોગ કરો.</translation>
-<translation id="7078103664368916714">"<ph name="SELECTION" />" પ્રિન્ટ કરો</translation>
 <translation id="7078120482318506217">તમામ નેટવર્ક્સ</translation>
 <translation id="708060913198414444">ઑડિઓ સરનામું કૉ&amp;પિ કરો</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" />ને તમારા ઍડમિનિસ્ટ્રેટર દ્વારા મેનેજ કરવામાં આવે છે</translation>
@@ -9209,7 +9207,6 @@ USB ડિવાઇસ</translation>
 <translation id="7752832973194460442">Android ઍપની માહિતી</translation>
 <translation id="7754704193130578113">ડાઉનલોડ કરતાં પહેલાં પ્રત્યેક ફાઇલને ક્યાં સાચવવી છે તે જણાવો</translation>
 <translation id="7757592200364144203">ડિવાઇસનું નામ બદલો</translation>
-<translation id="7757735653610827848">"<ph name="SELECTION" />" &amp;કૉપિ કરો</translation>
 <translation id="7757739382819740102">નજીકના સંપર્કો તમારી સાથે શેર કરી શકશે. મંજૂરી આવશ્યક રહેશે.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />માંથી ટેક્સ્ટ શેર કરી</translation>
 <translation id="7758143121000533418">Family Link</translation>

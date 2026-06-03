@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ਨੂੰ <ph name="PRICE_DROP" /> ਕੀਮਤ ਘਟੀ</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ਟੈਬ ਗਰੁੱਪ ਦੇ ਰੰਗ ਦਾ ਪ੍ਰਤੀਕ</translation>
 <translation id="311432875115153175">ਟੈਬ ਗਰੁੱਪ ਸੂਚੀ ਬੰਦ ਹੈ</translation>
+<translation id="3152596030350326139">ਟੈਬਾਂ ਨੂੰ ਲੇਟਵੇਂ ਤੌਰ 'ਤੇ ਦਿਖਾਓ</translation>
+<translation id="31806439105337256">ਟੈਬਾਂ ਨੂੰ ਖੜ੍ਹਵੇਂ ਤੌਰ 'ਤੇ ਦਿਖਾਓ</translation>
 <translation id="3194464645767632461">ਰੇਟਿੰਗ</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}}</translation>
 <translation id="3328308545011660196">ਸੁਝਾਅ: <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਸੰਬੰਧਿਤ ਲੱਗਦੀਆਂ ਹਨ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰਨਾ ਹੈ?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ਆਈਟਮ ਨੂੰ ਬੰਦ ਕਰੋ}one{ਆਈਟਮ ਨੂੰ ਬੰਦ ਕਰੋ}other{ਆਈਟਮਾਂ ਨੂੰ ਬੰਦ ਕਰੋ}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">'ਸਾਂਝਾ ਕਰੋ' ਸ਼ੀਟ ਦੀ ਪੂਰਵ-ਝਲਕ ਲਈ ਲਘੂ-ਚਿੱਤਰ।</translation>
+<translation id="3775705724665058594">ਆਪਣੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="3776329373944672717">ਟੈਬ ਗਰੁੱਪ ਦਾ ਸਿਰਲੇਖ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{ਟੈਬ ਅਣਪਿੰਨ ਕਰੋ}one{ਟੈਬ ਅਣਪਿੰਨ ਕਰੋ}other{ਟੈਬਾਂ ਅਣਪਿੰਨ ਕਰੋ}}</translation>

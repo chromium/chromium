@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="2553552004849639664">온라인 위협에 대비한 Chrome의 가장 강력한 보호 기능을 이용하세요.</translation>
 <translation id="2570922361219980984">이 기기의 위치 정보 액세스도 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
-<translation id="257931822824936280">펼쳐짐 - 접으려면 클릭</translation>
 <translation id="2586657967955657006">클립보드</translation>
 <translation id="2588271083332682494">탭 그룹으로 깔끔하게 정리하기</translation>
 <translation id="2592917252160773942">사이트에서 카메라를 요청할 수 있음</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">데스크톱 뷰 요청</translation>
 <translation id="5091663350197390230">사용 설정하면 사이트에서 JavaScript를 사용할 수 있습니다. 사용 중지하면 사이트에서 JavaScript를 사용할 수 없습니다.</translation>
 <translation id="5099358668261120049">이렇게 하면 <ph name="ORIGIN" /> 또는 홈 화면의 앱에 저장한 데이터 및 쿠키가 모두 삭제됩니다.</translation>
-<translation id="5100237604440890931">접힘 - 펼치려면 클릭</translation>
 <translation id="5116239826668864748">메시지, 문서, 다른 앱에서 링크를 탭하여 언제든지 Chrome을 사용할 수 있습니다.</translation>
 <translation id="5123685120097942451">시크릿 탭</translation>
 <translation id="512938610812707830">새 탭 페이지 모양 테마 모음 하단 시트가 전체 높이로 열림</translation>
@@ -696,7 +694,6 @@
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> 허용됨</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8211406090763984747">이 연결은 안전합니다.</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">사용 설정하면 사이트에서 로컬 네트워크의 다른 기기에 대한 액세스 권한을 요청할 수 있습니다. 사용 중지하면 사이트에서 로컬 네트워크의 다른 기기에 액세스할 수 없습니다.</translation>
 <translation id="8249310407154411074">맨 위로 이동</translation>
 <translation id="8261506727792406068">삭제</translation>

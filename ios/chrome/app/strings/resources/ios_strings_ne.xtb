@@ -916,6 +916,7 @@
 <translation id="422474357428465195">तपाईंको सुरक्षा जोखिममा पार्न सक्ने पासवर्डसम्बन्धी कयौँ समस्याहरू छन्।</translation>
 <translation id="422477017457571619">Google मा पठाइने तपाईंको ब्राउजिङ डेटाका आधारमा प्रदान गरिने खतरनाक वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट सक्रिय र AI मा आधारित सुरक्षा</translation>
 <translation id="4231395118547300571">सुरक्षा जाँच गर्ने सुविधासम्बन्धी नोटिफिकेसनहरू अन गरिएका छन्</translation>
+<translation id="4232376164796433044">पासवर्डहरू र अटोफिल</translation>
 <translation id="4232817129213135694">यो डिभाइसको पासकी सेटअप गर्नुहोस्</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />डिफल्ट ब्राउजर एप<ph name="END_BOLD" />मा ट्याप गर्नुहोस्</translation>
 <translation id="424063167283213501">Known Traveler Number सेभ गर्नुहोस्</translation>
@@ -1931,6 +1932,7 @@
 <translation id="7603308509262646847">कार्डवालाको नाम (<ph name="NAME" />) स्वतः भर्नुहोस्</translation>
 <translation id="7603852183842204213">पप-अपहरु ब्लक गरियो (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">सिंकले काम गरिरहेको छैन</translation>
+<translation id="7606639338662398635">ट्याब समूह</translation>
 <translation id="760667371114328991">सुरक्षा जाँच गर्ने सुविधासम्बन्धी नोटिफिकेसनहरू अफ गर्नुहोस्</translation>
 <translation id="7612619742409846846">यस रूपमा Google मा साइन इन गरियो</translation>
 <translation id="7612849887607288481">AI प्रोटोटाइपिङ मेनु खोल्नुहोस्</translation>
@@ -2247,6 +2249,7 @@
 <translation id="8636825310635137004">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न सिंकलाई अन गर्नुहोस्।</translation>
 <translation id="8637431369725868556">खतरनाक साइटहरूबाट सुरक्षित रहनुहोस्।</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{कुनै पनि पासवर्ड ह्याक वा चोरी भएको छैन}=1{{COUNT} वटा पासवर्ड ह्याक वा चोरी भएको छ}other{{COUNT} वटा पासवर्ड ह्याक वा चोरी भएका छन्}}</translation>
+<translation id="8639963783467694461">सेटिङहरू स्वत: भर्नुहोस्</translation>
 <translation id="8642417828095157370">अझ सान्दर्भिक जवाफहरू दिने प्रयोजनका लागि ट्याबहरू सेयर गरिन्छन्</translation>
 <translation id="8643403533759285912">समूह मेटाउनुहोस्</translation>
 <translation id="8647280737650867362">मूल्य ट्र्याक गर्ने कार्य रद्द गर्न सकिएन।</translation>

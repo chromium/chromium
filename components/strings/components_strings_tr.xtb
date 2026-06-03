@@ -875,6 +875,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2354001756790975382">Diğer yer işaretleri</translation>
 <translation id="2355395290879513365">Saldırganlar bu sitede baktığınız resimleri görebilir ve bu resimler üzerinde değişiklik yaparak sizi kandırabilirler.</translation>
 <translation id="2356941001189392209">Eski teknoloji etkinliklerinin gerçekleştiği, ziyaret ettiğiniz sayfaların URL'lerinin sınırlı bir listesi</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 sekme paylaşılacak}other{{NUM_TABS} sekme paylaşılacak}}</translation>
 <translation id="2357481397660644965">Cihazınız <ph name="DEVICE_MANAGER" /> tarafından, hesabınız ise <ph name="ACCOUNT_MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="2359629602545592467">Birden fazla</translation>
 <translation id="2359808026110333948">Devam</translation>
@@ -4070,7 +4071,6 @@ Ek ayrıntılar:
 <translation id="7388380253839603603">Petrol Fiyatları ve Araç Yakıtı Doldurma</translation>
 <translation id="7388594495505979117">{0,plural, =1{Cihazınız 1 dakika içinde yeniden başlatılacak}other{Cihazınız # dakika içinde yeniden başlatılacak}}</translation>
 <translation id="7393161616326137353">Macera Oyunları</translation>
-<translation id="7393243238767102021"><ph name="DOMAIN" /> tarafından bu e-postanın otomatik olarak doğrulanmasına izin verilsin mi?</translation>
 <translation id="7393475648162498734">Ödeme sırasında kartlarınızla kullanabileceğiniz ödül ve avantajlar gösterilir</translation>
 <translation id="7393971683644170444">Kart sağlayıcınıza bağlanılıyor...</translation>
 <translation id="739728382607845710">Ödeme işleyici simgesi</translation>

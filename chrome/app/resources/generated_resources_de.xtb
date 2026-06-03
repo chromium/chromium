@@ -415,7 +415,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1282311502488501110">Nicht anmelden</translation>
 <translation id="1282436639288565079">Details zur Tabgruppe</translation>
 <translation id="1282577885428483870">Websites und Konten</translation>
-<translation id="1283344108460935898">Skills ist nicht verfügbar</translation>
 <translation id="1284277788676816155">Speichern von Daten nicht genehmigen</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
 <translation id="1285484354230578868">Daten in meinem Google Drive-Konto speichern</translation>
@@ -772,6 +771,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">Der ausgewählte Drucker ist entweder nicht verfügbar oder nicht ordnungsgemäß installiert. Überprüfe den Drucker oder wähle einen anderen Drucker aus.</translation>
 <translation id="1566329594234563241">Wenn das Gerät inaktiv und an die Stromversorgung angeschlossen ist</translation>
+<translation id="1567069630205219514">Vergrößere das Fenster, um den Chat fortzusetzen</translation>
 <translation id="1567135437923613642">Vorgestellte Tests aktivieren</translation>
 <translation id="1567579616025300478">Diese Website darf keine Daten auf deinem Gerät speichern.</translation>
 <translation id="156793199942386351">„<ph name="CURRENTKEY" />“ wurde bereits der Aktion „<ph name="ACTION" />“ zugewiesen. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
@@ -1182,6 +1182,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1861262398884155592">Dieser Ordner ist leer</translation>
 <translation id="1862311223300693744">Hast du ein spezielles VPN, einen speziellen Proxy oder eine spezielle Firewall- oder NAS-Software installiert?</translation>
 <translation id="1863182668524159459">Keine seriellen Schnittstellen gefunden</translation>
+<translation id="1863374797460198869">Chat ausgeblendet</translation>
 <translation id="1864111464094315414">Anmeldung</translation>
 <translation id="1864400682872660285">Kälter</translation>
 <translation id="1864454756846565995">USB-C-Gerät (Port hinten)</translation>
@@ -2056,6 +2057,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2477065602824695373">Da du mehrere Schalter eingerichtet hast, wurde der automatische Scan deaktiviert.</translation>
 <translation id="2478176599153288112">Mediendatei-Berechtigungen für "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Dienst zur Datenwiederherstellung aktivieren</translation>
+<translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2479541499757560845">Tastatureinstellungen für Bedienungshilfen</translation>
 <translation id="2480868415629598489">Daten ändern, die du kopierst und einfügst</translation>
 <translation id="2480881140544300950">Suchmaschine, die aktuell deine „Neuer Tab“-Seite verwaltet</translation>
@@ -2471,7 +2473,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2766629385177215776">Neue Tabgruppen, die auf einem beliebigen Gerät erstellt wurden, automatisch an die Lesezeichenleiste anpinnen</translation>
 <translation id="2767077837043621282">Dein Chromebook konnte nicht aktualisiert werden. Bitte versuche es später noch einmal.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> kann dann <ph name="FILENAME" /> bearbeiten, solange Tabs dieser Website geöffnet sind</translation>
-<translation id="2767771295575888898">„<ph name="SELECTION" />“ im Lesemodus öffnen</translation>
 <translation id="2769174155451290427">Hochgeladenes Bild</translation>
 <translation id="2770082596325051055">„<ph name="FILE_NAME" />“ pausieren</translation>
 <translation id="2770465223704140727">Aus Liste entfernen</translation>
@@ -2783,7 +2784,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2996108796702395498">Die Seriennummer des Geräts lautet <ph name="SERIAL_NUMBER" />. Diese Nummer kann zur Aktivierung des Diensts verwendet werden.</translation>
 <translation id="2996286169319737844">Daten sind mit deiner Synchronisierungspassphrase verschlüsselt. Davon ausgenommen sind Zahlungsmethoden oder Adressen von Google Pay.</translation>
 <translation id="2996722619877761919">Entlang der langen Seite wenden</translation>
-<translation id="2997608191364087784">&amp;Übersetze „<ph name="SELECTION" />“ in die Sprache „<ph name="LANGUAGE" />“</translation>
 <translation id="2998097899774209901">Aktiviert • Diese Erweiterung verletzt die Chrome Web Store-Richtlinien</translation>
 <translation id="2998267783395280091">Netzwerk gefunden</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> zugelassen</translation>
@@ -2886,6 +2886,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3060987956645097882">Es konnte keine Verbindung zu deinem Smartphone hergestellt werden. Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="3061302636956643119">Der Text wird zur Verarbeitung an Google gesendet.</translation>
 <translation id="306166624240243643">Aktualisierung des Namens und der URL überprüfen</translation>
+<translation id="3062037978804523418"><ph name="TASK_TITLE" />: Wenn du nicht bald antwortest, stoppt Gemini die Bearbeitung dieser Aufgabe, um den Akku zu schonen.</translation>
 <translation id="3064871050034234884">Websites dürfen Ton wiedergeben</translation>
 <translation id="3065041951436100775">Feedback zur Tab-Beendigung</translation>
 <translation id="3065522099314259755">Wiederholungslatenz für Tastatur</translation>
@@ -3051,6 +3052,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3193695589337931419">Dienstprogramm für Systemsignale</translation>
 <translation id="3194095220941877499">Zeigt eine Bestätigung an, wenn du Links, Bilder oder Videos kopierst</translation>
 <translation id="3194924099707928914">Du musst dich anmelden, bevor Chrome diese Aufgabe abschließen kann</translation>
+<translation id="3195773549050092642">Gemini wird die Aufgabe stoppen</translation>
 <translation id="3196912927885212665">Zur Einrichtung mit deinem Android-Smartphone muss Bluetooth auf deinem Chromebook aktiviert sein</translation>
 <translation id="3197453258332670132">Wenn du rechts klickst oder lange drückst, werden verknüpfte Informationen zum ausgewählten Text angezeigt</translation>
 <translation id="3199637719075529971">Dieser Tab ist mit einem seriellen Port verbunden</translation>
@@ -3669,6 +3671,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3662207097851752847">Google-Konto auf dem Smartphone bestätigen</translation>
 <translation id="3663417513679360795">Weitere Informationen zum Aktivieren des standardmäßigen Vorabladens</translation>
 <translation id="3664511988987167893">Erweiterungssymbol</translation>
+<translation id="366484203224589850"><ph name="TASK_TITLE" />: Gemini arbeitet schon lange an dieser Aufgabe und wird bald stoppen, um den Akku zu schonen.</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> beitreten?}=1{Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> und # weiteren Person beitreten?}other{Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> und # weiteren Personen beitreten?}}</translation>
 <translation id="3665301845536101715">In Seitenleiste öffnen</translation>
 <translation id="3665589677786828986">Chrome hat festgestellt, dass einige deiner Einstellungen von einem anderen Programm manipuliert wurden, und hat sie auf die ursprünglichen Standardwerte zurückgesetzt.</translation>
@@ -5266,6 +5269,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4824958205181053313">Synchronisierung abbrechen?</translation>
 <translation id="4825462365587146530">Weitere Informationen zum Chrome Root Store erhältst du auf einem neuen Tab.</translation>
 <translation id="4825532258163983651">Passkey kann nicht gelöscht werden</translation>
+<translation id="4825863060583917820">Mit Strg + Tabulatortaste zwischen den beiden zuletzt verwendeten Tabs wechseln</translation>
 <translation id="4827134188176577524">Der Chrome Root Store enthält Zertifikate von Zertifizierungsstellen, die vom Chrome Root Program als vertrauenswürdig eingestuft werden. Er wird regelmäßig überprüft.</translation>
 <translation id="4827283332383516812">Karte löschen</translation>
 <translation id="4827675678516992122">Verbindung nicht möglich</translation>
@@ -5856,6 +5860,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5249818097095743806">Sicherheitsschlüssel verwenden</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> verwendet deinen Standort, um dir lokale Inhalte bereitzustellen. Du kannst dies unter <ph name="SETTINGS_LINK" /> ändern.</translation>
 <translation id="5254233580564156835">Arbeitsspeichernutzung: <ph name="MEMORY_USAGE" /></translation>
+<translation id="5254678337198156877">Diese App-Daten werden zwischen „<ph name="APP_NAME" />“ und den zugehörigen installierten Apps geteilt.</translation>
 <translation id="5255726914791076208">Das Bearbeiten deines Passkeys hat keine Auswirkungen auf dein <ph name="RP_ID" />-Konto</translation>
 <translation id="5255859108402770436">Erneut anmelden</translation>
 <translation id="5256174546894739043">Nachfragen, wenn eine Website meine Handbewegungen verfolgen möchte</translation>
@@ -6285,6 +6290,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5578387000057347457">Gib einen benutzerdefinierten Prompt ein oder markiere Text, um ein Bild zu erstellen</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{1 Element wird nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, <ph name="BEGIN_LINK" />speichere es in deinem Google-Konto<ph name="END_LINK" />.}other{{ITEM_COUNT} Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, <ph name="BEGIN_LINK" />speichere sie in deinem Google-Konto<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560"><ph name="SITE" /> aus der Liste „<ph name="SECTION_HEADER" />“ entfernen</translation>
+<translation id="5581031802689147441">Geteilte Ansicht</translation>
 <translation id="5581134892342029705">Übersetzung in die Sprache <ph name="LANGUAGE" /> abgeschlossen</translation>
 <translation id="558170650521898289">Verifizierung von Microsoft Windows-Hardwaretreibern</translation>
 <translation id="5582634344048669777">8-Punkt</translation>
@@ -6764,6 +6770,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> möchte lokale Schriftarten verwenden</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5952020381407136867">Touchpad</translation>
+<translation id="5952784976463781389">Diese App-Daten werden zwischen „<ph name="PARENT_APP_NAME" />“ und den zugehörigen installierten Apps geteilt</translation>
 <translation id="5953211687820750364">Die Richtlinien <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> wirken sich auf diese Liste aus</translation>
 <translation id="5955192144223994637">Arbeit in diesem Profil fortsetzen</translation>
 <translation id="5955304353782037793">app</translation>
@@ -6953,6 +6960,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="609942571968311933">Text kopiert von <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061"><ph name="HOST" /> darf meine MIDI-Geräte immer steuern und neu programmieren</translation>
 <translation id="6100736666660498114">Startmenü</translation>
+<translation id="6100737823178787570">Vergrößere das Fenster, um die Aufgabe fortzusetzen</translation>
 <translation id="6101226222197207147">Neue App hinzugefügt (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Diese Datei wurde vom Erweiterten Sicherheitsprogramm blockiert.</translation>
 <translation id="6103681770816982672">Achtung: Du wechselst zum Entwicklerkanal</translation>
@@ -7375,7 +7383,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6418511932144861495">Wichtiges Update installieren</translation>
 <translation id="641899100123938294">Nach neuen Geräten suchen</translation>
 <translation id="6419546358665792306">Entpackte Erweiterung laden</translation>
-<translation id="6423685703035190381">Preis-Tracking-Benachrichtigungen auf dem Smartphone erhalten</translation>
 <translation id="6425556984042222041">Tempo der Sprachausgabe</translation>
 <translation id="642729974267661262">Dürfen keinen Ton abspielen</translation>
 <translation id="6427752304227226701">&amp;Unsichere Website melden…</translation>
@@ -7509,6 +7516,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="6527574156657772563">Keine verfügbaren Geräte. Füge deinem Smartphone dein Google-Konto hinzu, um es mit diesem <ph name="DEVICE_TYPE" /> zu verbinden. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="652969759100732863">Drücke ⌘ + Umschalttaste + A, um die Tab-Suche zu öffnen. Ab sofort kannst du hier nach deinen Tabs suchen und sie schließen. Du kannst dies jederzeit loslösen.</translation>
+<translation id="6529890283323814131">Weitere Tipps</translation>
 <translation id="6530030995840538405">Generiertes Bild <ph name="INDEX" /> von <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Diese Einstellungen werden von deinem Administrator erzwungen</translation>
 <translation id="6530267432324197764">Profil wird von <ph name="MANAGER" /> verwaltet</translation>
@@ -7803,7 +7811,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6739266861259291931">Auf Gerätesprache zurücksetzen</translation>
 <translation id="6739923123728562974">Desktopverknüpfung einblenden</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> angehalten</translation>
-<translation id="6742816895667193660">„<ph name="SELECTION" />“ im Lesemodus öffnen</translation>
 <translation id="6743841972744298686">Synchronisierungseinstellungen</translation>
 <translation id="6744397361782514824">Mit linker Ansicht tauschen</translation>
 <translation id="6746124502594467657">Nach unten</translation>
@@ -8290,7 +8297,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="707772989579681711">Deine vorherige Auswahl</translation>
 <translation id="7077751457066325012">Tastenkombinationen ansehen und anpassen</translation>
 <translation id="7077829361966535409">Die Anmeldeseite konnte mit den aktuellen Proxy-Einstellungen nicht geladen werden. <ph name="GAIA_RELOAD_LINK_START" />Versuche erneut, dich anzumelden<ph name="GAIA_RELOAD_LINK_END" />, oder verwende andere <ph name="PROXY_SETTINGS_LINK_START" />Proxy-Einstellungen<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
-<translation id="7078103664368916714">&amp;Drucke „<ph name="SELECTION" />“</translation>
 <translation id="7078120482318506217">Alle Netzwerke</translation>
 <translation id="708060913198414444">Audioadresse k&amp;opieren</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> wird von deinem Administrator verwaltet</translation>
@@ -8883,6 +8889,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7520766081042531487">Inkognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Verknüpfungen anzeigen</translation>
 <translation id="7521430434164837205">Microsoft 365-Dateien</translation>
+<translation id="7521805955117875767">Die Lesezeichenleiste wurde ausgeblendet, weil du sie in letzter Zeit nicht verwendet hast</translation>
 <translation id="7523117833414447032">Beim Lesen von Großbuchstaben</translation>
 <translation id="7523585675576642403">Profil umbenennen</translation>
 <translation id="7525067979554623046">Erstellen</translation>
@@ -9188,7 +9195,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7752832973194460442">Informationen zu Android-Apps</translation>
 <translation id="7754704193130578113">Vor dem Download von Dateien nach dem Speicherort fragen</translation>
 <translation id="7757592200364144203">Gerätenamen ändern</translation>
-<translation id="7757735653610827848">„<ph name="SELECTION" />“ &amp;kopieren</translation>
 <translation id="7757739382819740102">Kontakte in deiner Nähe können etwas mit dir teilen. Hierfür ist eine Genehmigung erforderlich.</translation>
 <translation id="7757787379047923882">Text geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>

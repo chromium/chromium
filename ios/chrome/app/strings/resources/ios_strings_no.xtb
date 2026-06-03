@@ -916,6 +916,7 @@
 <translation id="422474357428465195">Du har flere passordproblemer som kan utgjøre en sikkerhetsrisiko.</translation>
 <translation id="422477017457571619">AI-basert sanntidsbeskyttelse mot farlige nettsteder, nedlastinger og utvidelser, som fungerer ved at nettlesingsdataene dine sendes til Google</translation>
 <translation id="4231395118547300571">Varsler fra sikkerhetssjekk er slått på</translation>
+<translation id="4232376164796433044">Passord og autofyll</translation>
 <translation id="4232817129213135694">Konfigurer passnøkler for denne enheten</translation>
 <translation id="4237377247299956313">Trykk på <ph name="BEGIN_BOLD" />Standard nettleserapp<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Lagre known traveler-nummer</translation>
@@ -1931,6 +1932,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="7603308509262646847">Autofyll kortholderen <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Blokkerte forgrunnsvinduer (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synkronisering fungerer ikke</translation>
+<translation id="7606639338662398635">Fanegrupper</translation>
 <translation id="760667371114328991">Slå av varsler fra sikkerhetssjekk</translation>
 <translation id="7612619742409846846">Logget på Google som</translation>
 <translation id="7612849887607288481">Åpne menyen for AI-prototyping</translation>
@@ -2247,6 +2249,7 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="8636825310635137004">For å få fanene dine fra de andre enhetene du bruker, slå på synkronisering.</translation>
 <translation id="8637431369725868556">Få beskyttelse mot farlige nettsteder.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ingen passord er utsatt for sikkerhetsbrudd}=1{{COUNT} passord er utsatt for sikkerhetsbrudd}other{{COUNT} passord er utsatt for sikkerhetsbrudd}}</translation>
+<translation id="8639963783467694461">Innstillinger for autofyll</translation>
 <translation id="8642417828095157370">Faner deles for å gi deg mer relevante svar</translation>
 <translation id="8643403533759285912">Slett gruppen</translation>
 <translation id="8647280737650867362">Kunne ikke avslutte prissporing.</translation>

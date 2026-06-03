@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Kukit dhe të dhënat e faqes</translation>
 <translation id="2553552004849639664">Merr mbrojtjen më të fortë të Chrome ndaj kërcënimeve online</translation>
 <translation id="2570922361219980984">Qasja te vendndodhja është po ashtu joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">I zgjeruar - kliko për ta palosur.</translation>
 <translation id="2586657967955657006">Kujtesa e fragmenteve</translation>
 <translation id="2588271083332682494">Organizohu me grupet e skedave</translation>
 <translation id="2592917252160773942">Sajtet mund të të kërkojnë të përdorin kamerën</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Kërko pamjen për desktop</translation>
 <translation id="5091663350197390230">Kur cilësimi është aktiv, sajtet mund të përdorin JavaScript. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin JavaScript.</translation>
 <translation id="5099358668261120049">Kjo do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga <ph name="ORIGIN" /> ose nga aplikacioni përkatës në ekranin bazë.</translation>
-<translation id="5100237604440890931">I palosur - kliko për ta zgjeruar</translation>
 <translation id="5116239826668864748">Mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="5123685120097942451">Skeda "e fshehtë"</translation>
 <translation id="512938610812707830">Fleta e poshtme e koleksioneve të temave për pamjen e faqeve të skedave të reja u hap në lartësi të plotë</translation>
@@ -696,7 +694,6 @@
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> është lejuar</translation>
 <translation id="8200772114523450471">Vazhdo</translation>
 <translation id="8211406090763984747">Lidhja është e sigurt</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të qasen në pajisjet e tjera në rrjetin tënd lokal. Kur cilësimi është joaktiv, sajtet nuk mund të qasen në pajisjet e tjera në rrjetin tënd lokal.</translation>
 <translation id="8249310407154411074">Lëvize në krye</translation>
 <translation id="8261506727792406068">Fshi</translation>

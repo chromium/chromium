@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Cookie fayllari va sayt ma’lumotlari</translation>
 <translation id="2553552004849639664">Onlayn tahdidlardan himoyalanish uchun Chrome kuchli xavfsizlik tizimidan foydalaning</translation>
 <translation id="2570922361219980984">Bu qurilmada joylashuv xizmati yoqilmagan, uni <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali yoqing.</translation>
-<translation id="257931822824936280">Kengaytirilgan - yig‘ish uchun bosing</translation>
 <translation id="2586657967955657006">Klipbord</translation>
 <translation id="2588271083332682494">Varaqlar guruhlari yordamida tartibga soling</translation>
 <translation id="2592917252160773942">Saytlar kameradan foydalanishga ruxsat soʻrashi mumkin</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Kompyuter versiyasi</translation>
 <translation id="5091663350197390230">Yoqilsa, saytlar JavaScript ishlatishi mumkin. Oʻchirilsa, foydalana olmaydi.</translation>
 <translation id="5099358668261120049">Bunda <ph name="ORIGIN" /> saytidan saqlangan barcha maʼlumotlar va cookie fayllar yoki Bosh ekrandagi ilovalar oʻchirib tashlanadi.</translation>
-<translation id="5100237604440890931">Yig‘ilgan - Kengaytirish uchun bosing</translation>
 <translation id="5116239826668864748">Chromium brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin</translation>
 <translation id="5123685120097942451">Inkognito varaq</translation>
 <translation id="512938610812707830">Yangi varaq sahifasi koʻrinishining mavzular toʻplami pastki oynasi toʻliq balandlikda ochildi</translation>
@@ -696,7 +694,6 @@ Kuchaytirilgan himoya boshqaruvida quyidagi Chrome sozlamalari mavjud:</translat
 <translation id="8197286292360124385">Ruxsat berildi: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8211406090763984747">Bu ulanish xavfsiz</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Yoqilsa, saytlar mahalliy tarmoqdagi boshqa qurilmalarga ruxsat soʻrashi mumkin. Faolsizlantirilsa, saytlar mahalliy tarmoqdagi boshqa qurilmalarga ruxsat olmaydi.</translation>
 <translation id="8249310407154411074">Tepaga siljitish</translation>
 <translation id="8261506727792406068">O‘chirish</translation>

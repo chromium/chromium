@@ -415,7 +415,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1282311502488501110">Non accedere</translation>
 <translation id="1282436639288565079">Dettagli gruppo di schede</translation>
 <translation id="1282577885428483870">Siti e account</translation>
-<translation id="1283344108460935898">Skills non è disponibile</translation>
 <translation id="1284277788676816155">Non consentire il salvataggio dei dati</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1285484354230578868">Memorizza dati nel tuo account Google Drive</translation>
@@ -775,6 +774,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1566049601598938765">Sito web</translation>
 <translation id="15662109988763471">La stampante selezionata non è disponibile o non è installata correttamente. Controlla la stampante o prova a selezionarne un'altra.</translation>
 <translation id="1566329594234563241">Quando inattivo e collegato</translation>
+<translation id="1567069630205219514">Aumenta le dimensioni della finestra per riprendere la chat</translation>
 <translation id="1567135437923613642">Attiva esperimenti in primo piano</translation>
 <translation id="1567579616025300478">Questo sito non è autorizzato a salvare dati sul dispositivo.</translation>
 <translation id="156793199942386351">Il tasto "'<ph name="CURRENTKEY" />" è già stato assegnato all'azione "<ph name="ACTION" />". Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
@@ -1185,6 +1185,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1861262398884155592">Questa cartella è vuota</translation>
 <translation id="1862311223300693744">Hai installato VPN, proxy, firewall o software NAS particolari?</translation>
 <translation id="1863182668524159459">Nessuna porta seriale trovata</translation>
+<translation id="1863374797460198869">Chat nascosta</translation>
 <translation id="1864111464094315414">Accesso</translation>
 <translation id="1864400682872660285">Più fredda</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta posteriore)</translation>
@@ -2058,6 +2059,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2477065602824695373">Dato che hai configurato più sensori, la scansione automatica è stata disattivata.</translation>
 <translation id="2478176599153288112">Autorizzazioni file multimediali per "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Attiva il servizio di recupero dati</translation>
+<translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2479541499757560845">Impostazioni della tastiera di accessibilità</translation>
 <translation id="2480868415629598489">Modifica dei dati copiati e incollati</translation>
 <translation id="2480881140544300950">Motore di ricerca corrente che gestisce la pagina Nuova scheda</translation>
@@ -2473,7 +2475,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2766629385177215776">Blocca automaticamente i nuovi gruppi di schede creati su qualsiasi dispositivo nella barra dei preferiti</translation>
 <translation id="2767077837043621282">Impossibile aggiornare Chromebook. Riprova più tardi.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> potrà modificare il file <ph name="FILENAME" /> fino alla chiusura di tutte le schede di questo sito</translation>
-<translation id="2767771295575888898">Apri "<ph name="SELECTION" />" in modalità Lettura</translation>
 <translation id="2769174155451290427">Immagine caricata</translation>
 <translation id="2770082596325051055">Metti in pausa <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Rimuovi dall'elenco</translation>
@@ -2785,7 +2786,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2996108796702395498">Il numero di serie del tuo dispositivo è <ph name="SERIAL_NUMBER" />. Questo numero può essere utilizzato per attivare il servizio.</translation>
 <translation id="2996286169319737844">I dati vengono criptati con la tua passphrase di sincronizzazione. Non sono inclusi i metodi di pagamento e gli indirizzi di Google Pay.</translation>
 <translation id="2996722619877761919">Lato lungo</translation>
-<translation id="2997608191364087784">&amp;Traduci "<ph name="SELECTION" />" in <ph name="LANGUAGE" /></translation>
 <translation id="2998097899774209901">On • Questa estensione viola le norme del Chrome Web Store</translation>
 <translation id="2998267783395280091">Rete trovata</translation>
 <translation id="3000378525979847272">Autorizzazioni consentite: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
@@ -6965,6 +6965,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="609942571968311933">Testo copiato da <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Consenti sempre a <ph name="HOST" /> di controllare e riprogrammare i tuoi dispositivi MIDI</translation>
 <translation id="6100736666660498114">Menu di avvio</translation>
+<translation id="6100737823178787570">Aumenta le dimensioni della finestra per riprendere l'attività</translation>
 <translation id="6101226222197207147">Nuova applicazione aggiunta (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Questo file è stato bloccato dalla protezione avanzata.</translation>
 <translation id="6103681770816982672">Avviso. Stai per passare al canale per gli sviluppatori</translation>
@@ -7387,7 +7388,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6418511932144861495">Installa aggiornamento critico</translation>
 <translation id="641899100123938294">Cerca nuovi dispositivi</translation>
 <translation id="6419546358665792306">Carica estensione non pacchettizzata</translation>
-<translation id="6423685703035190381">Ricevi avvisi per il monitoraggio dei prezzi sullo smartphone</translation>
 <translation id="6425556984042222041">Velocità sintesi vocale</translation>
 <translation id="642729974267661262">Non possono riprodurre suoni</translation>
 <translation id="6427752304227226701">Segnala un sito non sicuro…</translation>
@@ -7816,7 +7816,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6739266861259291931">Reimposta lingua del dispositivo</translation>
 <translation id="6739923123728562974">Mostra collegamento sul desktop</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> in pausa</translation>
-<translation id="6742816895667193660">Apri "<ph name="SELECTION" />" in modalità Lettura</translation>
 <translation id="6743841972744298686">Impostazioni di sincronizzazione</translation>
 <translation id="6744397361782514824">Passa alla visualizzazione da sinistra</translation>
 <translation id="6746124502594467657">Sposta giù</translation>
@@ -8303,7 +8302,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="707772989579681711">La tua scelta precedente</translation>
 <translation id="7077751457066325012">Visualizza e personalizza le scorciatoie da tastiera</translation>
 <translation id="7077829361966535409">Caricamento della pagina di accesso non riuscito utilizzando le impostazioni proxy correnti. <ph name="GAIA_RELOAD_LINK_START" />Prova ad accedere di nuovo<ph name="GAIA_RELOAD_LINK_END" /> o utilizza altre <ph name="PROXY_SETTINGS_LINK_START" />impostazioni proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
-<translation id="7078103664368916714">&amp;Stampa "<ph name="SELECTION" />"</translation>
 <translation id="7078120482318506217">Tutte le reti</translation>
 <translation id="708060913198414444">C&amp;opia l'indirizzo dell'audio</translation>
 <translation id="7082568314107259011">La rete <ph name="NETWORK_NAME" /> è gestita dall'amministratore</translation>
@@ -9202,7 +9200,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7752832973194460442">Informazioni app per Android</translation>
 <translation id="7754704193130578113">Chiedi dove salvare il file prima di scaricarlo</translation>
 <translation id="7757592200364144203">Cambia nome del dispositivo</translation>
-<translation id="7757735653610827848">&amp;Copia "<ph name="SELECTION" />"</translation>
 <translation id="7757739382819740102">I contatti nelle vicinanze possono condividere contenuti con te. Sarà richiesta l'approvazione.</translation>
 <translation id="7757787379047923882">Testo condiviso da <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>

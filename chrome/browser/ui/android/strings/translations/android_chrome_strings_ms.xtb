@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Anda boleh memuat turun PDF di sini</translation>
 <translation id="107147699690128016">Jika anda menukar sambungan fail, fail itu mungkin akan dibuka dalam aplikasi lain dan berkemungkinan mendatangkan bahaya kepada peranti anda.</translation>
 <translation id="1073328695547557412">Ketik ikon Google Lens</translation>
+<translation id="1080116354587839789">Muat ikut lebar</translation>
 <translation id="1086486568852410168">Cari dengan Google Lens</translation>
 <translation id="1087799850623149508">Anda boleh menyentuh dan menahan untuk mengalihkan bar alamat kepada bahagian bawah</translation>
 <translation id="1089606299949659462">Semakan selesai!</translation>
@@ -538,6 +539,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda.}other{# kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan item ini pada peranti anda yang lain, simpan item dalam Google Account anda.}}</translation>
 <translation id="3293181007446299124">Sejarah penyemakan imbas anda dipastikan tertutup pada peranti anda dan penghantaran laporan dilengahkan untuk melindungi identiti anda</translation>
+<translation id="3301639354590628973">Tukar akaun?</translation>
 <translation id="3301936297336370235">Pengesahan cadangan kata laluan</translation>
 <translation id="3302615849591357577">Pulihkan kumpulan tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />, sebagai kumpulan tab latar baharu.</translation>
 <translation id="3303855915957856445">Tiada hasil carian ditemui</translation>

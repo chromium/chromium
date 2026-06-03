@@ -150,6 +150,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="2580411288591421699">Não é possível instalar a mesma versão do Google Chrome atualmente em execução. Feche o Google Chrome e tente novamente.</translation>
 <translation id="2586406160782125153">Esta ação elimina os dados de navegação deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Falha ao colocar o instalador transferido em cache. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Obtenha uma vista geral rápida deste documento e faça perguntas com o Gemini no Chrome</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="263447411082773721">Mantenha as suas palavras-passe, marcadores e histórico perfeitamente sincronizados entre dispositivos. Atualize o seu navegador predefinido para o Chrome e aceda facilmente às funcionalidades que conhece e adora. O Chrome vai ser afixado à barra de tarefas para um acesso rápido.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -745,6 +746,7 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="8624541899164515475">Definições, abre num novo separador.</translation>
 <translation id="8625237574518804553">{0,plural, =1{O Chrome será reiniciado dentro de 1 minuto}other{O Chrome será reiniciado dentro de # minutos}}</translation>
 <translation id="8637932705841171563">Para partilhar a sua janela, permita a gravação de ecrã para o Chrome nas Definições do sistema</translation>
+<translation id="8642497536370021917">Para se certificar de que pode sempre usar e guardar dados do Chrome na sua Conta Google, valide a sua identidade</translation>
 <translation id="8656634243791296665">Abra o Gemini no Chrome Dev</translation>
 <translation id="8669527147644353129">Ajudante do Google Chrome</translation>
 <translation id="8679801911857917785">Também controla a página apresentada quando inicia o Chrome.</translation>

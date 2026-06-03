@@ -875,6 +875,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2354001756790975382">Outros marcadores</translation>
 <translation id="2355395290879513365">É posible que os atacantes poidan ver as imaxes que estás observando neste sitio e enganarte modificándoas.</translation>
 <translation id="2356941001189392209">Unha lista limitada dos URL das páxinas que visites nas que se produzan eventos de tecnoloxía antiga</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Compartirase 1 pestana}other{Compartiranse {NUM_TABS} pestanas}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> xestiona o teu dispositivo e <ph name="ACCOUNT_MANAGER" /> xestiona a túa conta.</translation>
 <translation id="2359629602545592467">Varias divisas</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -4069,7 +4070,6 @@ Detalles adicionais:
 <translation id="7388380253839603603">Combustible para vehículos e prezos do combustible</translation>
 <translation id="7388594495505979117">{0,plural, =1{O dispositivo reiniciarase en 1 minuto}other{O dispositivo reiniciarase en # minutos}}</translation>
 <translation id="7393161616326137353">Xogos de aventura</translation>
-<translation id="7393243238767102021">Queres permitir que <ph name="DOMAIN" /> verifique este correo electrónico automaticamente?</translation>
 <translation id="7393475648162498734">Mostra que recompensas e beneficios ofrecen as túas tarxetas ao tramitar as compras</translation>
 <translation id="7393971683644170444">Establecendo conexión co provedor da túa tarxeta...</translation>
 <translation id="739728382607845710">Icona do controlador de pagos</translation>

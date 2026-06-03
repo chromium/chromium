@@ -876,6 +876,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2354001756790975382">Bookmark lain</translation>
 <translation id="2355395290879513365">Penyerang mungkin dapat melihat gambar yang sedang Anda lihat di situs dan mengelabui Anda dengan memodifikasinya.</translation>
 <translation id="2356941001189392209">Daftar terbatas URL halaman yang Anda buka tempat peristiwa teknologi lama terjadi</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Akan membagikan 1 tab}other{Akan membagikan {NUM_TABS} tab}}</translation>
 <translation id="2357481397660644965">Perangkat Anda dikelola oleh <ph name="DEVICE_MANAGER" /> dan akun Anda dikelola oleh <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Beberapa</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
@@ -4068,7 +4069,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7388380253839603603">Harga Bahan Bakar &amp; Pengisian Bahan Bakar Kendaraan</translation>
 <translation id="7388594495505979117">{0,plural, =1{Perangkat Anda akan dimulai ulang dalam 1 menit}other{Perangkat Anda akan dimulai ulang dalam # menit}}</translation>
 <translation id="7393161616326137353">Game Petualangan</translation>
-<translation id="7393243238767102021">Izinkan <ph name="DOMAIN" /> memverifikasi email ini secara otomatis?</translation>
 <translation id="7393475648162498734">Tampilkan reward dan manfaat yang tersedia untuk kartu Anda saat checkout</translation>
 <translation id="7393971683644170444">Menghubungkan ke penyedia kartu Anda...</translation>
 <translation id="739728382607845710">Ikon pengendali pembayaran</translation>

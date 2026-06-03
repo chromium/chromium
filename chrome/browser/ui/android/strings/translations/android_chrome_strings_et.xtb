@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">PDF-id saate alla laadida siin</translation>
 <translation id="107147699690128016">Kui muudate faililaiendit, võib fail avaneda mõnes teises rakenduses ja teie seadmele ohtu kujutada.</translation>
 <translation id="1073328695547557412">Puudutage Google Lensi ikooni.</translation>
+<translation id="1080116354587839789">Sobita laiusesse</translation>
 <translation id="1086486568852410168">Otsing Google Lensiga</translation>
 <translation id="1087799850623149508">Aadressiriba allapoole liigutamiseks puudutage seda pikalt</translation>
 <translation id="1089606299949659462">Ülevaatus on lõpetatud!</translation>
@@ -536,6 +537,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> vaheleht}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> vahelehte}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Üks parool on salvestatud ainult sellesse seadmesse. Selle kasutamiseks muudes seadmetes salvestage see oma Google’i kontole.}other{# parooli on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google'i kontole.}}</translation>
 <translation id="3293181007446299124">Teie sirvimisajalugu hoitakse teie seadmes privaatsena ja aruanded saadetakse viivitusega, et teie isikut saladuses hoida</translation>
+<translation id="3301639354590628973">Kas vahetada kontot?</translation>
 <translation id="3301936297336370235">Paroolisoovituse kinnitamine</translation>
 <translation id="3302615849591357577">Vahelehegrupi <ph name="TITLE_OF_GROUP" /> (värv: <ph name="COLOR_NAME" />) taastamine uue taustal oleva vahelehegrupina.</translation>
 <translation id="3303855915957856445">Otsingutulemusi ei leitud</translation>

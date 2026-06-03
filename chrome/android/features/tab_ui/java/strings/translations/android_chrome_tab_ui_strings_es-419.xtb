@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> de descuento en <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Ícono de color <ph name="COLOR_NAME" /> del grupo de pestañas</translation>
 <translation id="311432875115153175">Se cerró la lista de grupos de pestañas</translation>
+<translation id="3152596030350326139">Mostrar las pestañas horizontalmente</translation>
+<translation id="31806439105337256">Mostrar las pestañas verticalmente</translation>
 <translation id="3194464645767632461">calificación</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Agregar <ph name="TABS_COUNT_ONE" /> pestaña al grupo}other{Agregar <ph name="TABS_COUNT_MANY" /> pestañas al grupo}}</translation>
 <translation id="3328308545011660196">Sugerencia: <ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Cerrar elemento}other{Cerrar elementos}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Hoja de compartir en miniatura.</translation>
+<translation id="3775705724665058594">Enviar a tus dispositivos</translation>
 <translation id="3776329373944672717">Título del grupo de pestañas <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Dejar de fijar pestaña}other{Dejar de fijar pestañas}}</translation>

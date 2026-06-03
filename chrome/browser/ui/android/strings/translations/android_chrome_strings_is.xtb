@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Hér geturðu sótt PDF-skrár</translation>
 <translation id="107147699690128016">Ef þú breytir skráarendingunni gæti skráin opnast í öðru forriti og hugsanlega valdið skaða á tækinu.</translation>
 <translation id="1073328695547557412">Ýttu á tákn Google-linsu</translation>
+<translation id="1080116354587839789">Laga að breidd</translation>
 <translation id="1086486568852410168">Leita með Google linsu</translation>
 <translation id="1087799850623149508">Þú getur haldið veffangastikunni neðst inni til að færa hana</translation>
 <translation id="1089606299949659462">Yfirferð lokið!</translation>
@@ -536,6 +537,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> flipi}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> flipi}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> flipar}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Eitt aðgangsorð er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu vista það á Google-reikningnum þínum.}one{# aðgangsorð er aðeins vistað í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum.}other{# aðgangsorð eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum.}}</translation>
 <translation id="3293181007446299124">Aðeins þú getur séð vafraferilinn þinn í tækinu og sendingum skýrslna er seinkað til að vernda auðkenni þitt</translation>
+<translation id="3301639354590628973">Viltu skipta um reikning?</translation>
 <translation id="3301936297336370235">Staðfesting á tillögu að aðgangsorði</translation>
 <translation id="3302615849591357577">Endurheimta flipahópinn „<ph name="TITLE_OF_GROUP" />“ í litnum „<ph name="COLOR_NAME" />“ sem nýjan flipahóp í bakgrunni.</translation>
 <translation id="3303855915957856445">Engar leitarniðurstöður fundust</translation>

@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> üçün <ph name="PRICE_DROP" /> endirim</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> tab qrupu rəngi ikonası</translation>
 <translation id="311432875115153175">Tab qrupu siyahısı bağlandı</translation>
+<translation id="3152596030350326139">Tabları üfüqi formada göstərin</translation>
+<translation id="31806439105337256">Tabları şaquli formada göstərin</translation>
 <translation id="3194464645767632461">reytinq</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabı qrupa əlavə edin}other{<ph name="TABS_COUNT_MANY" /> tabı qrupa əlavə edin}}</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Elementi bağlayın}other{Elementləri bağlayın}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Paylaşım vərəqi önizləməsi üçün miniatür.</translation>
+<translation id="3775705724665058594">Cihazlara göndərin</translation>
 <translation id="3776329373944672717">Tab qrupu başlığı <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">İdarə edin</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Tabı bərkitməyin}other{Tabları bərkitməyin}}</translation>

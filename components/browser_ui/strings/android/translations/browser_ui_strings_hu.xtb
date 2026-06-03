@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Cookie-k és webhelyadatok</translation>
 <translation id="2553552004849639664">Szerezze be a Chrome legerősebb védelmét az online fenyegetésekkel szemben</translation>
 <translation id="2570922361219980984">A helyhozzáférés is ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
-<translation id="257931822824936280">Kibontva – kattintson az összecsukáshoz.</translation>
 <translation id="2586657967955657006">Vágólap</translation>
 <translation id="2588271083332682494">Rendszerezés lapcsoportokkal</translation>
 <translation id="2592917252160773942">A webhelyek kérhetik a kamerájához való hozzáférést</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Asztali nézet kérelmezése</translation>
 <translation id="5091663350197390230">Ha be van kapcsolva, a webhelyek használhatnak JavaScriptet. Ha ki van kapcsolva, a webhelyek nem használhatnak JavaScriptet.</translation>
 <translation id="5099358668261120049">Ezzel törli a(z) <ph name="ORIGIN" /> vagy az alkalmazása által tárolt összes adatot és cookie-t a kezdőképernyőn.</translation>
-<translation id="5100237604440890931">Összecsukva – kattintson a kibontáshoz.</translation>
 <translation id="5116239826668864748">Bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint</translation>
 <translation id="5123685120097942451">Inkognitó lap</translation>
 <translation id="512938610812707830">Az Új lap oldal megjelenéséhez tartozó témagyűjtemények alsó lapja teljes magasságban megnyitva</translation>
@@ -696,7 +694,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> engedélyezve</translation>
 <translation id="8200772114523450471">Folytatás</translation>
 <translation id="8211406090763984747">A kapcsolat biztonságos</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" /> és <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a helyi hálózaton lévő más eszközökhöz való hozzáférésre. Ha ki van kapcsolva, a webhelyek nem férhetnek hozzá a helyi hálózaton lévő más eszközökhöz.</translation>
 <translation id="8249310407154411074">Mozgatás az elejére</translation>
 <translation id="8261506727792406068">Törlés</translation>

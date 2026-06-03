@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Du kan ladda ned PDF-filer här</translation>
 <translation id="107147699690128016">Om du ändrar filnamnstillägget kanske filen öppnas i ett annat program vilket kan utgöra en fara för enheten.</translation>
 <translation id="1073328695547557412">Tryck på Google Lens-ikonen</translation>
+<translation id="1080116354587839789">Anpassa till fönstrets bredd</translation>
 <translation id="1086486568852410168">Sök med Google Lens</translation>
 <translation id="1087799850623149508">Du kan trycka länge för att flytta adressfältet längst ned</translation>
 <translation id="1089606299949659462">Granskningen är klar</translation>
@@ -536,6 +537,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> flik}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> flikar}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 lösenord sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot.}other{# lösenord sparas endast på den här enheten. Om du vill använda dem på dina andra enheter sparar du dem i Google-kontot.}}</translation>
 <translation id="3293181007446299124">Webbhistoriken förblir privat på enheten och rapporter skickas med en fördröjning för att skydda din identitet</translation>
+<translation id="3301639354590628973">Vill du byta konto?</translation>
 <translation id="3301936297336370235">Bekräftelse för lösenordsförslag</translation>
 <translation id="3302615849591357577">Återställ flikgruppen <ph name="TITLE_OF_GROUP" /> med färgen <ph name="COLOR_NAME" /> som en ny flikgrupp i bakgrunden.</translation>
 <translation id="3303855915957856445">Inga sökresultat hittades</translation>

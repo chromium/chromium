@@ -875,6 +875,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2354001756790975382">Otros favoritos</translation>
 <translation id="2355395290879513365">Es posible que los atacantes vean las imágenes que observas en este sitio y las modifiquen para engañarte.</translation>
 <translation id="2356941001189392209">Una lista limitada de las URLs de las páginas que visitas, en las que se producen eventos tecnológicos heredados</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Se compartirá 1 pestaña}other{Se compartirán {NUM_TABS} pestañas}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> y <ph name="ACCOUNT_MANAGER" /> administran tu dispositivo y tu cuenta, respectivamente.</translation>
 <translation id="2359629602545592467">Varias</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -4071,7 +4072,6 @@ Detalles adicionales:
 <translation id="7388380253839603603">Precios de gasolina y combustible para vehículos</translation>
 <translation id="7388594495505979117">{0,plural, =1{El dispositivo se reiniciará dentro de 1 minuto}other{El dispositivo se reiniciará dentro de # minutos}}</translation>
 <translation id="7393161616326137353">Juegos de aventura</translation>
-<translation id="7393243238767102021">¿Quieres permitir que <ph name="DOMAIN" /> verifique este correo electrónico automáticamente?</translation>
 <translation id="7393475648162498734">Muestra qué recompensas y beneficios están disponibles para tus tarjetas durante la confirmación de la compra.</translation>
 <translation id="7393971683644170444">Estableciendo conexión con el proveedor de tu tarjeta…</translation>
 <translation id="739728382607845710">Ícono del controlador de pagos</translation>

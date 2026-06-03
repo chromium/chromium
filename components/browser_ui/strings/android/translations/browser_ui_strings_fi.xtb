@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Evästeet ja sivustotiedot</translation>
 <translation id="2553552004849639664">Saat Chromen tehokkaimman suojauksen verkkouhkia vastaan</translation>
 <translation id="2570922361219980984">Sijainti on poissa käytöstä myös tällä laitteella. Voit ottaa sen käyttöön <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Laajennettu – tiivistä klikkaamalla.</translation>
 <translation id="2586657967955657006">Leikepöytä</translation>
 <translation id="2588271083332682494">Laita asiat järjestykseen välilehtiryhmillä</translation>
 <translation id="2592917252160773942">Sivustot voivat pyytää pääsyä kameraan</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Pyydä tietokonenäkymää</translation>
 <translation id="5091663350197390230">Kun tämä on päällä, sivustot voivat käyttää JavaScriptiä. Kun tämä on pois päältä, sivustot eivät voi käyttää JavaScriptiä.</translation>
 <translation id="5099358668261120049">Tämä poistaa kaiken datan ja kaikki evästeet, jotka <ph name="ORIGIN" /> tai sen aloitusnäytölläsi oleva sovellus on tallentanut.</translation>
-<translation id="5100237604440890931">Tiivistetty – laajenna klikkaamalla.</translation>
 <translation id="5116239826668864748">Voit käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa</translation>
 <translation id="5123685120097942451">Incognito-välilehti</translation>
 <translation id="512938610812707830">Uusi välilehti ‐sivun ulkoasun teemakokoelmien alapaneeli avattu kokonaan</translation>
@@ -696,7 +694,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> sallittu</translation>
 <translation id="8200772114523450471">Jatka</translation>
 <translation id="8211406090763984747">Yhteys on turvallinen</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Kun tämä on päällä, sivustot voivat pyytää pääsyä muille paikallisessa verkossa oleville laitteille. Kun tämä on pois päältä, sivustot eivät pääse muille paikallisessa verkossa oleville laitteille.</translation>
 <translation id="8249310407154411074">Siirrä ylimmäksi</translation>
 <translation id="8261506727792406068">Poista</translation>

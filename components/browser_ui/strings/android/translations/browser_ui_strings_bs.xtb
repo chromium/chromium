@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Kolačići i podaci web lokacije</translation>
 <translation id="2553552004849639664">Nabavite Chromeovu najjaču zaštitu od online prijetnji</translation>
 <translation id="2570922361219980984">Pristup lokaciji je također isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Prošireno – kliknite da suzite.</translation>
 <translation id="2586657967955657006">Međumemorija</translation>
 <translation id="2588271083332682494">Organizirajte se pomoću grupa kartica</translation>
 <translation id="2592917252160773942">Web lokacije mogu zatražiti pristup kameri</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Zatraži prikaz na računaru</translation>
 <translation id="5091663350197390230">Kada je postavka uključena, web lokacije mogu koristiti JavaScript. Kada je postavka isključena, web lokacije ne mogu koristiti JavaScript.</translation>
 <translation id="5099358668261120049">Ovim će se izbrisati svi podaci i kolačići koje je pohranila web lokacija <ph name="ORIGIN" /> ili njena aplikacija na početnom ekranu.</translation>
-<translation id="5100237604440890931">Suženo – kliknite da proširite.</translation>
 <translation id="5116239826668864748">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama</translation>
 <translation id="5123685120097942451">Anonimna kartica</translation>
 <translation id="512938610812707830">Donja tabela kolekcija tema izgleda stranice Nova kartica je otvorena u punoj visini</translation>
@@ -696,7 +694,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:</translation>
 <translation id="8197286292360124385">Dozvoljeno: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="8211406090763984747">Veza je sigurna</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Kada je ova funkcija uključena, web lokacije mogu zatražiti pristup drugim uređajima na lokalnoj mreži. Kada je isključena, web lokacije ne mogu pristupati drugim uređajima na lokalnoj mreži.</translation>
 <translation id="8249310407154411074">Premjesti na vrh</translation>
 <translation id="8261506727792406068">Izbriši</translation>

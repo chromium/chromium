@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Cookie-uri și date privind site-ul</translation>
 <translation id="2553552004849639664">Beneficiază de cea mai puternică protecție Chrome împotriva amenințărilor online.</translation>
 <translation id="2570922361219980984">Accesul la locație este dezactivat și pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Afișare extinsă – dă clic pentru a restrânge.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2588271083332682494">Organizează-te cu ajutorul grupurilor de file</translation>
 <translation id="2592917252160773942">Site-urile pot solicita permisiunea de a folosi camera</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Solicită afișarea pe desktop</translation>
 <translation id="5091663350197390230">Când opțiunea este activată, site-urile pot folosi JavaScript. Când opțiunea este dezactivată, site-urile nu pot folosi JavaScript.</translation>
 <translation id="5099358668261120049">Astfel, se vor șterge toate datele și cookie-urile stocate de <ph name="ORIGIN" /> sau de aplicația asociată de pe ecranul de pornire.</translation>
-<translation id="5100237604440890931">Afișare restrânsă – dă clic pentru a extinde.</translation>
 <translation id="5116239826668864748">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații</translation>
 <translation id="5123685120097942451">Filă incognito</translation>
 <translation id="512938610812707830">Foaia din partea de jos cu colecțiile de teme pentru aspectul paginii Filă nouă este deschisă la înălțime completă</translation>
@@ -696,7 +694,6 @@ Protecția avansată gestionează următoarele setări Chrome:</translation>
 <translation id="8197286292360124385">Se permite <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reia</translation>
 <translation id="8211406090763984747">Conexiunea este securizată</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Când opțiunea este activată, site-urile pot solicita permisiunea de a accesa alte dispozitive din rețeaua ta locală. Când opțiunea este dezactivată, site-urile nu pot accesa alte dispozitive din rețeaua ta locală.</translation>
 <translation id="8249310407154411074">Mută la început</translation>
 <translation id="8261506727792406068">Șterge</translation>

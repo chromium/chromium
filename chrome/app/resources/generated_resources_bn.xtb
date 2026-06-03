@@ -415,7 +415,6 @@
 <translation id="1282311502488501110">সাইন-ইন করতে চাই না</translation>
 <translation id="1282436639288565079">ট্যাব গ্রুপ সম্পর্কিত বিবরণ</translation>
 <translation id="1282577885428483870">সাইট ও অ্যাকাউন্ট</translation>
-<translation id="1283344108460935898">স্কিল উপলভ্য নেই</translation>
 <translation id="1284277788676816155">ডেটা সেভ করার অনুমতি দেবেন না</translation>
 <translation id="1285320974508926690">কখনই এই সাইটটিকে অনুবাদ করবেন না</translation>
 <translation id="1285484354230578868">আপনার Google ড্রাইভ অ্যাকাউন্টে ডেটা সেভ করুন</translation>
@@ -776,6 +775,7 @@
 <translation id="1566049601598938765">ওয়েবসাইট</translation>
 <translation id="15662109988763471">বেছে নেওয়া প্রিন্টারটি উপলভ্য নয় অথবা সেটি ঠিকভাবে ইনস্টল করা নেই। আপনার প্রিন্টার পরীক্ষা করুন অথবা অন্য একটি প্রিন্টার বেছে নিন।</translation>
 <translation id="1566329594234563241">চালু না করা ও প্লাগ-ইন করা থাকলে</translation>
+<translation id="1567069630205219514">চ্যাট আবার শুরু করতে, উইন্ডোর সাইজ বাড়ায়</translation>
 <translation id="1567135437923613642">বাছাই করা পরীক্ষা চালু করুন</translation>
 <translation id="1567579616025300478">আপনার ডিভাইসে এই সাইটকে ডেটা সেভ করার অনুমতি দেওয়া হয়নি।</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />'-কে আগে থেকেই '<ph name="ACTION" />' অ্যাকশনের জন্য অ্যাসাইন করা হয়েছে। <ph name="RESPONSE" />-এর জন্য যেকোনও কী প্রেস করুন।</translation>
@@ -1195,6 +1195,7 @@
 <translation id="1862311223300693744">আপনি কি কোনও বিশেষ ভিপিএন, প্রক্সি, ফায়ারওয়াল বা NAS সফ্টওয়্যার
     ইনস্টল করে রেখেছেন?</translation>
 <translation id="1863182668524159459">কোনও সিরিয়াল পোর্ট পাওয়া যায়নি</translation>
+<translation id="1863374797460198869">চ্যাট লুকানো আছে</translation>
 <translation id="1864111464094315414">লগ-ইন করুন</translation>
 <translation id="1864400682872660285">কুলার</translation>
 <translation id="1864454756846565995">USB-C ডিভাইস (পিছনের পোর্ট)</translation>
@@ -2072,6 +2073,7 @@
 <translation id="2477065602824695373">আপনি একাধিক সুইচ সেট আপ করার জন্য, অটো-স্ক্যান বন্ধ হয়ে গেছে।</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" এর জন্য মিডিয়া-ফাইলের অনুমতি</translation>
 <translation id="24786041351753425">ডেটা আগের অবস্থায় ফেরানোর পরিষেবা চালু করুন।</translation>
+<translation id="2479148705183875116">সেটিংসে যান</translation>
 <translation id="2479541499757560845">অ্যাক্সেসিবিলিটি কীবোর্ডের সেটিংস</translation>
 <translation id="2480868415629598489">আপনি যে ডেটা কপি করে আটকান তা সংশোধন করুন</translation>
 <translation id="2480881140544300950">বর্তমান সার্চ ইঞ্জিন আপনার নতুন ট্যাব পৃষ্ঠা ম্যানেজ করছে</translation>
@@ -2487,7 +2489,6 @@
 <translation id="2766629385177215776">যেকোনও ডিভাইসে নতুন তৈরি করা ট্যাব গ্রুপ অটোমেটিক বুকমার্ক বারে পিন করুন</translation>
 <translation id="2767077837043621282">আপনার Chromebook আপডেট করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> <ph name="FILENAME" /> এডিট করতে পারবে যতক্ষণ না আপনি এই সাইটের জন্য সব ট্যাব বন্ধ করে দিচ্ছেন</translation>
-<translation id="2767771295575888898">রিডিং মোড-এ "<ph name="SELECTION" />" খুলুন</translation>
 <translation id="2769174155451290427">আপলোড করা ছবি</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> পজ করুন</translation>
 <translation id="2770465223704140727">তালিকা থেকে সরান</translation>
@@ -2799,7 +2800,6 @@
 <translation id="2996108796702395498">আপনার ডিভাইসের সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />। পরিষেবা চালু করতে সাহায্য করার জন্য এই নম্বর ব্যবহার করা যেতে পারে।</translation>
 <translation id="2996286169319737844">আপনার সিঙ্ক পাসফ্রেজ দিয়ে ডেটা এনক্রিপ্ট করা হয়েছে। এতে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না।</translation>
 <translation id="2996722619877761919">লং-এজ ফ্লিপ করুন</translation>
-<translation id="2997608191364087784"><ph name="LANGUAGE" />-তে "<ph name="SELECTION" />" &amp;Translate</translation>
 <translation id="2998097899774209901">চালু আছে • এই এক্সটেনশন Chrome ওয়েব স্টোরের নীতি লঙ্ঘন করে</translation>
 <translation id="2998267783395280091">নেটওয়ার্ক পাওয়া গেছে</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
@@ -6984,6 +6984,7 @@
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> থেকে টেক্সট কপি করা হয়েছে</translation>
 <translation id="6099766472403716061"><ph name="HOST" />-কে সব সময়ই আপনার MIDI ডিভাইস কন্ট্রোল ও এটি রিপ্রোগ্রাম করার অনুমতি দিন</translation>
 <translation id="6100736666660498114">সূচনা মেনু</translation>
+<translation id="6100737823178787570">টাস্ক আবার শুরু করতে উইন্ডোর সাইজ বাড়ায়</translation>
 <translation id="6101226222197207147">নতুন অ্যাপ্লিকেশন জোড়া হয়েছে (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">এই ফাইল উন্নত সুরক্ষা দ্বারা ব্লক করা হয়েছে।</translation>
 <translation id="6103681770816982672">সতর্কতা: আপনি ডেভেলপারদের চ্যানেলে স্যুইচ করছেন৷</translation>
@@ -7406,7 +7407,6 @@
 <translation id="6418511932144861495">জরুরী আপডেট ইনস্টল করুন</translation>
 <translation id="641899100123938294">নতুন ডিভাইসের জন্য স্ক্যান করুন</translation>
 <translation id="6419546358665792306">আনপ্যাক করা অবস্থায় লোড করুন</translation>
-<translation id="6423685703035190381">আপনার ফোনে দাম ট্র্যাক করা সংক্রান্ত সতর্কতা পান</translation>
 <translation id="6425556984042222041">টেক্সট-টু-স্পিচ রেট</translation>
 <translation id="642729974267661262">সাউন্ড চালানোর অনুমতি দেওয়া হয়নি</translation>
 <translation id="6427752304227226701">অসুরক্ষিত সাইট সম্পর্কে অভিযোগ জানান...</translation>
@@ -7837,7 +7837,6 @@
 <translation id="6739266861259291931">ডিভাইসের ভাষাতে রিসেট করুন</translation>
 <translation id="6739923123728562974">ডেস্কটপ শর্টকাট দেখান</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> বিরাম দেওয়া হয়েছে</translation>
-<translation id="6742816895667193660">রিডিং মোডে "<ph name="SELECTION" />" খুলুন</translation>
 <translation id="6743841972744298686">সিঙ্ক সেটিংস করুন</translation>
 <translation id="6744397361782514824">বাঁদিকের ভিউয়ের সাথে অদল বদল করুন</translation>
 <translation id="6746124502594467657">নিচে যান</translation>
@@ -8324,7 +8323,6 @@
 <translation id="707772989579681711">আপনার আগের পছন্দ</translation>
 <translation id="7077751457066325012">কীবোর্ড শর্টকাট দেখুন এবং কাস্টমাইজ করুন</translation>
 <translation id="7077829361966535409">সাইন-ইন পৃষ্ঠাটি বর্তমান প্রক্সি সেটিংস ব্যবহার করে লোড করা যায়নি৷ অনুগ্রহ করে <ph name="GAIA_RELOAD_LINK_START" />আবার সাইন-ইনের চেষ্টা করুন<ph name="GAIA_RELOAD_LINK_END" /> অথবা অন্য কোনও <ph name="PROXY_SETTINGS_LINK_START" />প্রক্সি সেটিংস<ph name="PROXY_SETTINGS_LINK_END" /> ব্যবহার করুন৷</translation>
-<translation id="7078103664368916714">"<ph name="SELECTION" />" &amp;Print</translation>
 <translation id="7078120482318506217">সকল নেটওয়ার্কগুলি</translation>
 <translation id="708060913198414444">অ&amp;ডিও ঠিকানা কপি করুন</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
@@ -9223,7 +9221,6 @@
 <translation id="7752832973194460442">Android অ্যাপের তথ্য</translation>
 <translation id="7754704193130578113">প্রতিটি ফাইল ডাউনলোড করার আগে তা কোথায় সংরক্ষণ করতে হবে জিজ্ঞাসা করুন</translation>
 <translation id="7757592200364144203">ডিভাইসের নাম পরিবর্তন করুন</translation>
-<translation id="7757735653610827848">&amp;Copy "<ph name="SELECTION" />"</translation>
 <translation id="7757739382819740102">আশেপাশের পরিচিতি আপনার সাথে শেয়ার করা যেতে পারে। অনুমোদনের প্রয়োজন।</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> থেকে টেক্সট শেয়ার করা হয়েছে</translation>
 <translation id="7758143121000533418">Family Link</translation>

@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">PDFak hemen deskarga ditzakezu</translation>
 <translation id="107147699690128016">Fitxategi-luzapena aldatzen baduzu, baliteke fitxategia beste aplikazio batean irekitzea eta zure gailuan kalteak eragitea.</translation>
 <translation id="1073328695547557412">Sakatu Google Lens-en ikonoa</translation>
+<translation id="1080116354587839789">Doitu zabalerara</translation>
 <translation id="1086486568852410168">Bilatu Google Lens bidez</translation>
 <translation id="1087799850623149508">Helbide-barra behera eramateko, sakatuta eduki dezakezu</translation>
 <translation id="1089606299949659462">Osatu duzu berrikuspena!</translation>
@@ -536,6 +537,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> fitxa}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> fitxa}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 pasahitz gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan.}other{# pasahitz gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan.}}</translation>
 <translation id="3293181007446299124">Arakatze-historia pribatu mantentzen da gailuan eta txostenak beranduago bidaltzen dira, zure identitatea babesteko.</translation>
+<translation id="3301639354590628973">Kontua aldatu nahi duzu?</translation>
 <translation id="3301936297336370235">Iradokitako pasahitzaren berrespena</translation>
 <translation id="3302615849591357577">Leheneratu <ph name="TITLE_OF_GROUP" /> fitxa taldea (kolorea: <ph name="COLOR_NAME" />) atzeko planoko fitxa talde berri gisa.</translation>
 <translation id="3303855915957856445">Ez da aurkitu bilaketa-emaitzarik</translation>
@@ -678,6 +680,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, pantaila txiki gainjarrian dagoen fitxa ainguratuta</translation>
 <translation id="3950820424414687140">Hasi saioa</translation>
 <translation id="395377504920307820">Erabili konturik gabe</translation>
+<translation id="3955353672249727801">Gehitu da orria irakurketa-zerrendan</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Gailua konektatu egiten denean kargatuko du Chrome-k orria}other{Gailua konektatu egiten denean kargatuko ditu Chrome-k orriak}}</translation>
 <translation id="3969142555815019568">Chrome-k ezin ditu egiaztatu pasahitzak</translation>
 <translation id="3969863827134279083">Joan gora</translation>

@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Témoins et données des sites</translation>
 <translation id="2553552004849639664">Obtenez la protection la plus robuste de Chrome contre les menaces en ligne</translation>
 <translation id="2570922361219980984">L'accès à la localisation est également désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Développé : cliquer pour réduire</translation>
 <translation id="2586657967955657006">Presse-papiers</translation>
 <translation id="2588271083332682494">Rester organisé avec des groupes d'onglets</translation>
 <translation id="2592917252160773942">Les sites peuvent demander d'accéder à votre appareil photo</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Demandez l'affichage sur ordinateur de bureau</translation>
 <translation id="5091663350197390230">Lorsque cette option est activée, les sites peuvent utiliser JavaScript. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser JavaScript.</translation>
 <translation id="5099358668261120049">Cette action supprimera l'ensemble des données et des témoins stockés par <ph name="ORIGIN" /> ou par son application sur votre écran d'accueil.</translation>
-<translation id="5100237604440890931">Réduit : cliquer pour développer</translation>
 <translation id="5116239826668864748">Vous pouvez utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applis</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
 <translation id="512938610812707830">Zone de contenu dans le bas de l'écran concernant les collections de thèmes de l'apparence de la page Nouvel onglet ouverte à pleine hauteur</translation>
@@ -696,7 +694,6 @@ La protection avancée contrôle ces paramètres Chrome :</translation>
 <translation id="8197286292360124385">Autorisation <ph name="PERMISSION_1" /> accordée</translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8211406090763984747">Connexion sécurisée</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Lorsque cette option est activée, les sites peuvent demander à accéder à d'autres appareils sur votre réseau local. Lorsqu'elle est désactivée, les sites ne peuvent pas accéder aux autres appareils de votre réseau local.</translation>
 <translation id="8249310407154411074">Placer en première position</translation>
 <translation id="8261506727792406068">Supprimer</translation>

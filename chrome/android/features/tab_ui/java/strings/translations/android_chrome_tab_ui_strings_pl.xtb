@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> taniej o <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ikona koloru grupy kart</translation>
 <translation id="311432875115153175">Lista grup kart zamknięta</translation>
+<translation id="3152596030350326139">Pokaż karty w poziomie</translation>
+<translation id="31806439105337256">Pokaż karty w pionie</translation>
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> kartę do grupy}few{Dodaj <ph name="TABS_COUNT_MANY" /> karty do grupy}many{Dodaj <ph name="TABS_COUNT_MANY" /> kart do grupy}other{Dodaj <ph name="TABS_COUNT_MANY" /> karty do grupy}}</translation>
 <translation id="3328308545011660196">Sugestia: liczba prawdopodobnie powiązanych kart wynosi <ph name="NUMBER_OF_TABS" />. Czy chcesz je pogrupować?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Zamknij element}few{Zamknij elementy}many{Zamknij elementy}other{Zamknij elementy}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura podglądu arkusza udostępniania.</translation>
+<translation id="3775705724665058594">Wyślij na swoje urządzenia</translation>
 <translation id="3776329373944672717">Nazwa grupy kart <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Odepnij kartę}few{Odepnij karty}many{Odepnij karty}other{Odepnij karty}}</translation>

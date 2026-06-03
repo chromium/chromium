@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Tutaj możesz pobrać pliki PDF</translation>
 <translation id="107147699690128016">Jeśli zmienisz rozszerzenie pliku, będzie mogła go otworzyć inna aplikacja, co może nie być bezpieczne dla Twojego urządzenia.</translation>
 <translation id="1073328695547557412">Kliknij ikonę Obiektywu Google</translation>
+<translation id="1080116354587839789">Dopasuj do szerokości</translation>
 <translation id="1086486568852410168">Szukaj za pomocą Obiektywu Google</translation>
 <translation id="1087799850623149508">Możesz nacisnąć i przytrzymać pasek adresu, aby przenieść go na dół</translation>
 <translation id="1089606299949659462">Sprawdzanie zakończone</translation>
@@ -536,6 +537,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> kartę}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> karty}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kart}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> karty}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie Google.}few{# hasła zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}many{# haseł zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}other{# hasła zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google.}}</translation>
 <translation id="3293181007446299124">Historia przeglądania jest przechowywana na Twoim urządzeniu w sposób poufny, a raporty są przesyłane z opóźnieniem, co chroni Twoją tożsamość</translation>
+<translation id="3301639354590628973">Zmienić konto?</translation>
 <translation id="3301936297336370235">Potwierdzenie sugestii hasła</translation>
 <translation id="3302615849591357577">Przywróć grupę kart <ph name="TITLE_OF_GROUP" />, kolor <ph name="COLOR_NAME" />, jako nową grupę kart w tle.</translation>
 <translation id="3303855915957856445">Brak wyników wyszukiwania</translation>

@@ -875,6 +875,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2354001756790975382">Amanye amawebhusayithi</translation>
 <translation id="2355395290879513365">Abahlaseli kungenzeka bakwazi ukubona izithombe ozibonayo kuleli sayithi baphinde bakukhohlise ngokuzilungisa.</translation>
 <translation id="2356941001189392209">Uhlu olukhawulelwe lwama-URL wamakhasi owavakashelayo lapho imicimbi yobuchwepheshe befa yenzeka khona</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Izokwabelana ngethebhu e-1}one{Izokwabelana ngamathebhu angu-{NUM_TABS}}other{Izokwabelana ngamathebhu angu-{NUM_TABS}}}</translation>
 <translation id="2357481397660644965">Idivayisi yakho iphethwe yi-<ph name="DEVICE_MANAGER" /> futhi i-akhawunti yakho iphethwe yi-<ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Okuningi</translation>
 <translation id="2359808026110333948">Qhubeka</translation>
@@ -4066,7 +4067,6 @@ Imininingwane engeziwe:
 <translation id="7388380253839603603">Izintengo Zegesi Nokuthelwa Uphethiloli Kwezimoto</translation>
 <translation id="7388594495505979117">{0,plural, =1{Idivayisi yakho izoqala kabusha emzuzwini o-1}one{Idivayisi yakho izoqala kabusha emizuzwini engu-#f}other{Idivayisi yakho izoqala kabusha emizuzwini engu-#f}}</translation>
 <translation id="7393161616326137353">Amageyimu okuzidela</translation>
-<translation id="7393243238767102021">Vumela i-<ph name="DOMAIN" /> ukuthi iqinisekise le imeyili ngokuzenzekelayo?</translation>
 <translation id="7393475648162498734">Bonisa ukuthi yimiphi imiklomelo nezinzuzo ezitholakalayo zamakhadi akho uma ukhokha</translation>
 <translation id="7393971683644170444">Kuxhunywa umhlinzeki wekhadi lakho...</translation>
 <translation id="739728382607845710">Isithonjana sesibambi senkokhelo</translation>

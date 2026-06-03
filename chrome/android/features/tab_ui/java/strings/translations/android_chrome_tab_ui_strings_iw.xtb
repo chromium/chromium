@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">הנחה בסך <ph name="PRICE_DROP" /> על <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">סמל בצבע <ph name="COLOR_NAME" /> של קבוצת הכרטיסיות</translation>
 <translation id="311432875115153175">רשימת קבוצות הכרטיסיות נסגרה</translation>
+<translation id="3152596030350326139">הצגת הכרטיסיות לרוחב</translation>
+<translation id="31806439105337256">הצגת הכרטיסיות לאורך</translation>
 <translation id="3194464645767632461">דירוג</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{הוספת כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) לקבוצה}one{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}two{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}other{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}}</translation>
 <translation id="3328308545011660196">הצעה: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{סגירת הפריט}one{סגירת פריטים}two{סגירת פריטים}other{סגירת פריטים}}</translation>
 <translation id="3652027618765638838"><ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
 <translation id="374923079891132274">תצוגה מקדימה ממוזערת לשיתוף גיליון.</translation>
+<translation id="3775705724665058594">שליחה אל המכשירים שלך</translation>
 <translation id="3776329373944672717">השם של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">ניהול</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{ביטול ההצמדה של הכרטיסייה}one{ביטול ההצמדה של הכרטיסיות}two{ביטול ההצמדה של הכרטיסיות}other{ביטול ההצמדה של הכרטיסיות}}</translation>

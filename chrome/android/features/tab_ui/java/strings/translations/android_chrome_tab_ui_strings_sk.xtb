@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> pokles ceny produktu <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Farebná ikona skupiny kariet: <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Zoznam skupín kariet je zavretý</translation>
+<translation id="3152596030350326139">Zobrazovať karty vodorovne</translation>
+<translation id="31806439105337256">Zobrazovať karty zvisle</translation>
 <translation id="3194464645767632461">hodnotenie</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Pridať <ph name="TABS_COUNT_ONE" /> kartu do skupiny}few{Pridať <ph name="TABS_COUNT_MANY" /> karty do skupiny}many{Add <ph name="TABS_COUNT_MANY" /> tabs to group}other{Pridať <ph name="TABS_COUNT_MANY" /> kariet do skupiny}}</translation>
 <translation id="3328308545011660196">Návrh: Zdá, sa že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Zavrieť položku}few{Zavrieť položky}many{Close items}other{Zavrieť položky}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniat. zdieľ. ukážky tab.</translation>
+<translation id="3775705724665058594">Odoslanie do zariadení</translation>
 <translation id="3776329373944672717">Názov skupiny kariet: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Spravovať</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Odopnúť kartu}few{Odopnúť karty}many{Unpin tabs}other{Odopnúť karty}}</translation>

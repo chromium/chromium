@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">Punguzo la bei la <ph name="PRICE_DROP" /> kwenye <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Aikoni ya rangi <ph name="COLOR_NAME" /> ya kikundi cha vichupo</translation>
 <translation id="311432875115153175">Orodha ya kikundi cha vichupo imefungwa</translation>
+<translation id="3152596030350326139">Onyesha vichupo kwa mlalo</translation>
+<translation id="31806439105337256">Onyesha vichupo kwa mkao wima</translation>
 <translation id="3194464645767632461">ukadiriaji</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Weka kichupo <ph name="TABS_COUNT_ONE" /> kwenye kikundi}other{Weka vichupo <ph name="TABS_COUNT_MANY" /> kwenye kikundi}}</translation>
 <translation id="3328308545011660196">Pendekezo: Vichupo <ph name="NUMBER_OF_TABS" /> vinaonekana kuwa vinahusiana. Ungependa kuvipanga pamoja?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Funga kipengee}other{Funga vipengee}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Kijipicha cha kushiriki onyesho la kukagua laha</translation>
+<translation id="3775705724665058594">Tuma kwenye vifaa vyako</translation>
 <translation id="3776329373944672717">Jina la kikundi cha vichupo <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Dhibiti</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Bandua kichupo}other{Bandua vichupo}}</translation>

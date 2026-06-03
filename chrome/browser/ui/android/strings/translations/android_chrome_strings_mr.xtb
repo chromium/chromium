@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">तुम्ही इथे PDFs डाउनलोड करू शकता</translation>
 <translation id="107147699690128016">तुम्ही फाइल एक्स्टेंशन बदलल्यास, फाइल कदाचित दुसऱ्या ॲप्लिकेशनमध्ये उघडू शकते आणि यामुळे तुमच्या डिव्हाइसला संभाव्य धोका असू शकतो.</translation>
 <translation id="1073328695547557412">Google Lens आयकनवर टॅप करा</translation>
+<translation id="1080116354587839789">रूंदीत फिट करा</translation>
 <translation id="1086486568852410168">Google Lens वापरून शोधा</translation>
 <translation id="1087799850623149508">तुम्ही अ‍ॅड्रेस बार तळाशी हलवण्यासाठी स्पर्श करून धरून ठेवू शकता</translation>
 <translation id="1089606299949659462">पुनरावलोकन पूर्ण झाले आहे!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> टॅब}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> टॅब}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{१ पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. तो तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये सेव्ह करा.}other{# पासवर्ड फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये सेव्ह करा.}}</translation>
 <translation id="3293181007446299124">तुमचा ब्राउझिंग इतिहास तुमच्या डिव्हाइसवर खाजगी ठेवला जातो आणि तुमची ओळख संरक्षित करण्यासाठी अहवाल विलंबाने पाठवले जातात</translation>
+<translation id="3301639354590628973">खाती स्विच करायची आहेत का?</translation>
 <translation id="3301936297336370235">पासवर्डसंबंधित सूचना कन्फर्म करणे</translation>
 <translation id="3302615849591357577">नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TITLE_OF_GROUP" /> टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.</translation>
 <translation id="3303855915957856445">कोणतेही शोध परिणाम आढळले नाहीत</translation>

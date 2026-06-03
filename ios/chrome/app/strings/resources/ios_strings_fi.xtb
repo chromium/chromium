@@ -916,6 +916,7 @@
 <translation id="422474357428465195">Sinulla on useita salasanaongelmia, jotka voivat vaarantaa turvallisuutesi.</translation>
 <translation id="422477017457571619">Googlelle lähetettävään selausdataan perustuva reaaliaikainen, tekoälyä hyödyntävä suojaus vaarallisia sivustoja, latauksia ja laajennuksia vastaan</translation>
 <translation id="4231395118547300571">Turvatarkistusilmoitukset on laitettu päälle</translation>
+<translation id="4232376164796433044">Salasanat ja autom. täyttö</translation>
 <translation id="4232817129213135694">Ota avainkoodit käyttöön tällä laitteella</translation>
 <translation id="4237377247299956313">Valitse <ph name="BEGIN_BOLD" />Oletusselainsovellus<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Tallenna tunnetun matkustajan numero</translation>
@@ -1931,6 +1932,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="7603308509262646847">Täytä kortinhaltija <ph name="NAME" /> automaattisesti</translation>
 <translation id="7603852183842204213">Ponn.ikk. estetty (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synkronointi ei toimi</translation>
+<translation id="7606639338662398635">Välilehtiryhmät</translation>
 <translation id="760667371114328991">Laita turvatarkistusilmoitukset pois päältä</translation>
 <translation id="7612619742409846846">Olet kirjautunut Googleen käyttäjänä</translation>
 <translation id="7612849887607288481">Avaa AI-prototyyppivalikko</translation>
@@ -2247,6 +2249,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="8636825310635137004">Ota synkronointi käyttöön, niin voit käyttää välilehtiäsi kaikilla laitteilla.</translation>
 <translation id="8637431369725868556">Suojaudu vaarallisilta sivustoilta.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ei vaarantuneita salasanoja}=1{{COUNT} vaarantunut salasana}other{{COUNT} vaarantunutta salasanaa}}</translation>
+<translation id="8639963783467694461">Automaattisen täytön asetukset</translation>
 <translation id="8642417828095157370">Välilehdet jaetaan, jotta saat relevantimpia vastauksia</translation>
 <translation id="8643403533759285912">Poista ryhmä</translation>
 <translation id="8647280737650867362">Hinnan seuraamisen lopettaminen epäonnistui.</translation>

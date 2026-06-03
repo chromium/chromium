@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> hinnalangus teenuse <ph name="PRODUCT_NAME" /> puhul</translation>
 <translation id="3078350928901129212">vahelehegrupi värviikoon <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Vahelehegruppide loend on suletud.</translation>
+<translation id="3152596030350326139">Kuva vahelehed horisontaalselt</translation>
+<translation id="31806439105337256">Kuva vahelehed vertikaalselt</translation>
 <translation id="3194464645767632461">hinnang</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vahelehe lisamine gruppi}other{<ph name="TABS_COUNT_MANY" /> vahelehe lisamine gruppi}}</translation>
 <translation id="3328308545011660196">Soovitus: <ph name="NUMBER_OF_TABS" /> vahelehte näivad olevat seotud. Kas soovite need grupeerida?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Sule üksus}other{Sule üksused}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Jagatud lehe eelvaate pisipilt.</translation>
+<translation id="3775705724665058594">Saatmine teie seadmetesse</translation>
 <translation id="3776329373944672717">Vahelehegrupi pealkiri <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Halda</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Vabasta vaheleht}other{Vabasta vahelehed}}</translation>

@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Cookie 和網站資料</translation>
 <translation id="2553552004849639664">取得 Chrome 最強大的防護機制，抵禦線上威脅</translation>
 <translation id="2570922361219980984">此外，這部裝置的位置資訊存取權已關閉。請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中予以開啟。</translation>
-<translation id="257931822824936280">已展開 - 按一下即可收合。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2588271083332682494">使用分頁群組，分頁有條不紊</translation>
 <translation id="2592917252160773942">網站可以要求使用攝影機</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">要求電腦檢視畫面</translation>
 <translation id="5091663350197390230">如果啟用，網站就可以使用 JavaScript。如果停用，網站將無法使用 JavaScript，</translation>
 <translation id="5099358668261120049">這會刪除 <ph name="ORIGIN" /> 或該網站在主畫面上的應用程式儲存的所有資料和 Cookie。</translation>
-<translation id="5100237604440890931">已收合 - 按一下即可展開。</translation>
 <translation id="5116239826668864748">你隨時可以輕觸訊息、文件或其他應用程式中的連結，使用 Chrome 開啟</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
 <translation id="512938610812707830">新分頁外觀主題系列底部功能表已開啟，並顯示在整個畫面</translation>
@@ -696,7 +694,6 @@
 <translation id="8197286292360124385">已允許「<ph name="PERMISSION_1" />」</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8211406090763984747">已建立安全連線</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">開啟時，網站可以要求存取區域網路上的其他裝置。關閉時，網站將無法存取區域網路上的其他裝置。</translation>
 <translation id="8249310407154411074">移至頂端</translation>
 <translation id="8261506727792406068">刪除</translation>

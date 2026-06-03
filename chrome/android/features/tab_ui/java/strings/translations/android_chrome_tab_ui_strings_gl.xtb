@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">Baixada de prezo de <ph name="PRICE_DROP" /> no seguinte produto: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Icona de cor <ph name="COLOR_NAME" /> do grupo de pestanas</translation>
 <translation id="311432875115153175">Lista dos grupos de pestanas pechada</translation>
+<translation id="3152596030350326139">Mostrar pestanas en horizontal</translation>
+<translation id="31806439105337256">Mostrar pestanas en vertical</translation>
 <translation id="3194464645767632461">valoración</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Engadir <ph name="TABS_COUNT_ONE" /> pestana ao grupo}other{Engadir <ph name="TABS_COUNT_MANY" /> pestanas ao grupo}}</translation>
 <translation id="3328308545011660196">Suxestión: Hai <ph name="NUMBER_OF_TABS" /> pestanas que parecen relacionadas. Queres agrupalas?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Pechar elemento}other{Pechar elementos}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura vista previa compartida.</translation>
+<translation id="3775705724665058594">Enviar contido aos teus dispositivos</translation>
 <translation id="3776329373944672717">Título do grupo de pestanas: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Xestionar</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Deixar de fixar a pestana}other{Deixar de fixar as pestanas}}</translation>

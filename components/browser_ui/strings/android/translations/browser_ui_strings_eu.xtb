@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Cookieak eta webguneetako datuak</translation>
 <translation id="2553552004849639664">Lortu Chrome-ren sareko mehatxuen aurkako babesik sendoena</translation>
 <translation id="2570922361219980984">Kokapenerako sarbidea desaktibatuta dago gailu honetan ere. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Zabalduta; egin klik tolesteko.</translation>
 <translation id="2586657967955657006">Arbela</translation>
 <translation id="2588271083332682494">Txukundu dena fitxa taldeekin</translation>
 <translation id="2592917252160773942">Webguneek zure kamera erabiltzeko baimena eska dezakete</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Eskatu ordenagailuetarako ikuspegia</translation>
 <translation id="5091663350197390230">Aktibatuta dagoenean, webguneek JavaScript erabil dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili JavaScript.</translation>
 <translation id="5099358668261120049"><ph name="ORIGIN" /> webguneak edo hari dagokion orri nagusiko aplikazioak gorde dituen datu eta cookie guztiak ezabatuko dira.</translation>
-<translation id="5100237604440890931">Tolestuta; egin klik zabaltzeko.</translation>
 <translation id="5116239826668864748">Chrome erabili ahalko duzu mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean</translation>
 <translation id="5123685120097942451">Ezkutuko moduko fitxa</translation>
 <translation id="512938610812707830">Pantailaren behealdean ainguratutako orria, fitxa berriaren itxura aldatzeko gaien bildumak dituena, altuera osoan irekita dago</translation>
@@ -696,7 +694,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:</translat
 <translation id="8197286292360124385">Baimena eman zaio honi: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Berrekin</translation>
 <translation id="8211406090763984747">Konexioa segurua da</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Aktibatuta dagoenean, webguneek sare lokaleko beste gailu batzuk erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili sare lokaleko beste gailurik.</translation>
 <translation id="8249310407154411074">Eraman goraino</translation>
 <translation id="8261506727792406068">Ezabatu</translation>

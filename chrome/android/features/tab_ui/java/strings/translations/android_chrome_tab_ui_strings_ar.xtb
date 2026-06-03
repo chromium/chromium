@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">انخفاض في سعر <ph name="PRODUCT_NAME" /> بقيمة <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">رمز مجموعة علامات التبويب باللون <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">تم إغلاق قائمة مجموعات علامات التبويب</translation>
+<translation id="3152596030350326139">عرض علامات التبويب أفقيًا</translation>
+<translation id="31806439105337256">عرض علامات التبويب عموديًا</translation>
 <translation id="3194464645767632461">التقييم</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{إضافة علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) إلى المجموعة}zero{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب إلى المجموعة}two{إضافة علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) إلى المجموعة}few{إضافة <ph name="TABS_COUNT_MANY" /> علامات تبويب إلى المجموعة}many{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب إلى المجموعة}other{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب إلى المجموعة}}</translation>
 <translation id="3328308545011660196">اقتراح: يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{إغلاق علامة التبويب}zero{إغلاق علامات التبويب}two{إغلاق علامتَي التبويب}few{إغلاق علامات التبويب}many{إغلاق علامات التبويب}other{إغلاق علامات التبويب}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">صورة مصغّرة لمعاينة صفحة المشاركة</translation>
+<translation id="3775705724665058594">إرسال إلى أجهزتك</translation>
 <translation id="3776329373944672717">عنوان مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3810973564298564668">إدارة</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{إزالة تثبيت علامة التبويب}zero{إزالة تثبيت علامات التبويب}two{إزالة تثبيت علامتَي التبويب}few{إزالة تثبيت علامات التبويب}many{إزالة تثبيت علامات التبويب}other{إزالة تثبيت علامات التبويب}}</translation>

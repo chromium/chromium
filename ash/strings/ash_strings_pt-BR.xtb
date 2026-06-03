@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">Mostrar mais emojis</translation>
 <translation id="2328561734797404498">Reinicie o dispositivo para usar o app <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">Seu Chromebook ou dispositivo Bluetooth está usando uma versão mais antiga do Bluetooth. Use o microfone interno para melhorar a qualidade do áudio.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> precisa que você se conecte hoje ao Wi-Fi para baixar uma atualização. Você também pode usar uma conexão limitada (sujeito a cobranças).}one{<ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi e baixe uma atualização antes do fim do prazo. Você também pode usar uma conexão limitada (sujeito a cobranças).}other{<ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi e baixe uma atualização antes do fim do prazo. Você também pode usar uma conexão limitada (sujeito a cobranças).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Toque no botão da stylus na estante para criar uma nota, fazer uma captura de tela e usar o apontador laser ou a lupa.</translation>
 <translation id="2341729377289034582">Bloqueado na vertical</translation>
@@ -568,6 +569,7 @@
 <translation id="2687510499067466116">O atalho do teclado foi editado</translation>
 <translation id="2689613560355655046">Espaço de trabalho 8</translation>
 <translation id="2692092709110488417">Pressione Tab para focar e mover a área selecionada</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Último dia para atualizar o <ph name="DEVICE_TYPE" />}one{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia}other{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias}}</translation>
 <translation id="2695305337569143674">Web</translation>
 <translation id="2697697418792422688">Mostrar configurações do teclado. O <ph name="KEYBOARD_NAME" /> está selecionado.</translation>
 <translation id="2699913284398121653">Use o app Transferência de conteúdo para mover os dados da sua conta escolar para a pessoal</translation>
@@ -794,6 +796,7 @@ Caso contrário, o touchpad integrado será reativado em <ph name="TIMEOUT_SECON
 <translation id="334927402682780278">Selecionar o texto do cursor até o fim da linha</translation>
 <translation id="3349345708646875009">Abrir o gerenciador de tarefas</translation>
 <translation id="3353786022389205125">Ative a opção "Mostrar tela de bloqueio ao sair do modo de suspensão" e tente novamente.</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Atualize o <ph name="DEVICE_TYPE" /> em até 1 semana}one{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_WEEKS} semana}other{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_WEEKS} semanas}}</translation>
 <translation id="3364721542077212959">Ferramentas da stylus</translation>
 <translation id="3365281428003534650">Definir timer, tarefa e música</translation>
 <translation id="3365977133351922112">Seu smartphone está muito longe. Aproxime os dispositivos.</translation>
@@ -953,6 +956,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3741482431277446954">Botão direito do mouse</translation>
 <translation id="3742055079367172538">Captura de tela realizada</translation>
 <translation id="3743775386021959186">Foco ativado, faltam <ph name="REMAINING_TIME" /></translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> hoje.}one{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> antes do fim do prazo.}other{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> antes do fim do prazo.}}</translation>
 <translation id="3750403286520637847">Ocultar sugestão de clima</translation>
 <translation id="3752253558646317685">Peça para a criança levantar o dedo algumas vezes para salvar a impressão digital</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Os dados do app podem ser quaisquer dados que um app tenha salvo (com base nas configurações do desenvolvedor), incluindo informações como contatos, mensagens e fotos.<ph name="END_PARAGRAPH1" />
@@ -1077,6 +1081,10 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="412298498316631026">da janela</translation>
 <translation id="4123259114412175274">Para desbloquear o Chromebook, verifique se o Bluetooth do seu smartphone está ligado</translation>
 <translation id="4123868835475902435">Esses são os princípios básicos. Continue em nosso app integrado Explorar, que inclui dicas e ajuda. Você vai encontrar dicas para começar, ofertas especiais e os recursos mais recentes do <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4124779003103520737">{0,plural, =1{Seu <ph name="DEVICE_TYPE" /> será bloqueado automaticamente em # segundo.
+        <ph name="DOMAIN" /> precisa que você deixe o cartão inteligente inserido.}one{Seu <ph name="DEVICE_TYPE" /> será bloqueado automaticamente em # segundo.
+        <ph name="DOMAIN" /> precisa que você deixe o cartão inteligente inserido.}other{Seu <ph name="DEVICE_TYPE" /> será bloqueado automaticamente em # segundos.
+        <ph name="DOMAIN" /> precisa que você deixe o cartão inteligente inserido.}}</translation>
 <translation id="4125970834901680537">Não é possível fazer streaming de apps no modo tablet. Tente novamente no modo laptop.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C. Velocidade atual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Ativado até o amanhecer</translation>
@@ -1385,6 +1393,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4964188651935955085">Quando você desativar o Bluetooth, este dispositivo externo será desconectado do <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Aumentar o volume</translation>
 <translation id="496999337731226334">Etapa <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> do tour. Os controles usados com frequência, como Wi-Fi, Bluetooth e volume, estão nas Configurações Rápidas. Elas também permitem fazer capturas de tela. Pressione Alt + Shift + S para abrir as Configurações Rápidas.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> precisa que você baixe uma atualização hoje. A atualização será baixada automaticamente quando você se conectar à internet.}one{<ph name="MANAGER" /> precisa que você baixe uma atualização antes do fim do prazo. A atualização será baixada automaticamente quando você se conectar à internet.}other{<ph name="MANAGER" /> precisa que você baixe uma atualização antes do fim do prazo. A atualização será baixada automaticamente quando você se conectar à internet.}}</translation>
 <translation id="4975771730019223894">Notificações de apps</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1461,6 +1470,7 @@ Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depo
 <translation id="5176318573511391780">Gravar tela parcial</translation>
 <translation id="5187627942836026988">Consulte detalhes do ponto de acesso. O ponto de acesso foi bloqueado pelo administrador.</translation>
 <translation id="5188648870018555788">Usar o local. Permitir que apps, sites e serviços do ChromeOS e do Android com permissão de localização usem o local do dispositivo. A Precisão de Local fornece dados mais precisos para apps e serviços Android. Para isso, o Google processa periodicamente as informações sobre sensores de dispositivos e sinais sem fio do seu dispositivo para contribuir para a localização de sinais sem fio. Essas informações são usadas sem identificar você para melhorar a precisão e os serviços com base na localização e para melhorar, fornecer e manter os Serviços do Google com base nos interesses legítimos próprios e de terceiros para atender às necessidades dos usuários. <ph name="BEGIN_LINK1" />Saiba mais sobre o uso da localização.<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_WEEKS} semana}one{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_WEEKS} semana}other{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_WEEKS} semanas}}</translation>
 <translation id="5198039720391525849">GIFs em destaque</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinado com <ph name="IN_PLACE_APP" /> para criar uma nova pasta.</translation>
@@ -1778,6 +1788,10 @@ Nenhum dispositivo conectado.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Você sairá automaticamente em <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">Controles de videochamada</translation>
+<translation id="6070081109266557120">{0,plural, =1{Sua conta será desconectada automaticamente em # segundo.
+        <ph name="DOMAIN" /> precisa que você deixe o cartão inteligente inserido.}one{Sua conta será desconectada automaticamente em # segundo.
+        <ph name="DOMAIN" /> precisa que você deixe o cartão inteligente inserido.}other{Sua conta será desconectada automaticamente em # segundos.
+        <ph name="DOMAIN" /> precisa que você deixe o cartão inteligente inserido.}}</translation>
 <translation id="6071576563962215370">Falha do sistema ao estabelecer o bloqueio de atributos do tempo de instalação do dispositivo.</translation>
 <translation id="6072442788591997866">O app <ph name="APP_NAME" /> não é permitido neste dispositivo. Entre em contato com o administrador. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Parar de gravar</translation>
@@ -2127,6 +2141,8 @@ Nova instalação</translation>
 <translation id="7076878155205969899">Desativar som</translation>
 <translation id="7083848064787091821">Foco</translation>
 <translation id="7084678090004350185">Ative ou desative o ponto de acesso. O ponto de acesso está ativado e <ph name="DEVICECOUNT" /> dispositivos estão conectados.</translation>
+<translation id="7086438436964931440">Sua conta será desconectada automaticamente agora.
+        <ph name="DOMAIN" /> precisa que você deixe o cartão inteligente inserido.</translation>
 <translation id="7086931198345821656">Essa atualização exige que você faça um Powerwash no seu <ph name="DEVICE_TYPE" />. Todos os dados serão excluídos. Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Acesso com interruptor</translation>
 <translation id="709015856939120012">Aumentar zoom na página</translation>
@@ -2529,6 +2545,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8220076512072059941">Adicionar <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Ocultar esta sugestão</translation>
 <translation id="8230305195727960608">Modo de inversão de cores</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Devolução imediata necessária}one{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia}other{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias}}</translation>
 <translation id="8236042855478648955">Hora de fazer uma pausa</translation>
 <translation id="8237964652943995219">Próximo espaço de trabalho: <ph name="DESK_NAME" />. Espaço de trabalho <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Faça um tour rápido para aprender a usar o <ph name="PRODUCT_NAME" />. Comece a aproveitar em cinco etapas.</translation>
@@ -2704,6 +2721,8 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8756799553341497810">Você pode começar a personalizar o layout do app depois de sair desta visualização.</translation>
 <translation id="8759408218731716181">Não é possível configurar o login múltiplo</translation>
 <translation id="8759753423332885148">Saiba mais.</translation>
+<translation id="8760172428247796445">Seu <ph name="DEVICE_TYPE" /> será bloqueado agora.
+        <ph name="DOMAIN" /> precisa que você deixe o cartão inteligente inserido.</translation>
 <translation id="8763883995157866248">Colocar o dispositivo no modo de espera</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app instalado, bloqueado</translation>
 <translation id="8782565991310229362">A inicialização do aplicativo de quiosque foi cancelada.</translation>

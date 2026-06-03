@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Možete preuzeti PDF-ove ovdje</translation>
 <translation id="107147699690128016">Ako promijenite ekstenziju fajla, moguće je da će se fajl otvoriti u drugoj aplikaciji i potencijalno predstavljati opasnost po vaš uređaj.</translation>
 <translation id="1073328695547557412">Dodirnite ikonu Google Objektiva</translation>
+<translation id="1080116354587839789">Uklopi po širini</translation>
 <translation id="1086486568852410168">Pretraži putem Google Objektiva</translation>
 <translation id="1087799850623149508">Možete dodirnuti i zadržati da premjestite traku za adresu u donji dio</translation>
 <translation id="1089606299949659462">Pregled je završen!</translation>
@@ -536,6 +537,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kartica}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kartice}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kartica}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 lozinka je sačuvana samo na ovom uređaju. Da je koristite na drugim uređajima, sačuvajte je na Google računu.}one{# lozinka je sačuvana samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}few{# lozinke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}other{# lozinki je sačuvano samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu.}}</translation>
 <translation id="3293181007446299124">Vaša historija pregledanja se privatno pohranjuje na vašem uređaju, a izvještaji se šalju s kašnjenjem radi zaštite vašeg identiteta</translation>
+<translation id="3301639354590628973">Promijeniti račun?</translation>
 <translation id="3301936297336370235">Potvrda prijedloga lozinke</translation>
 <translation id="3302615849591357577">Vraćanje grupe kartica <ph name="TITLE_OF_GROUP" />, boje <ph name="COLOR_NAME" /> kao nove pozadinske grupe kartica.</translation>
 <translation id="3303855915957856445">Nije pronađen nijedan rezultat pretraživanja</translation>

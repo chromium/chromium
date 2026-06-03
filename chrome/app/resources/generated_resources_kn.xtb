@@ -415,7 +415,6 @@
 <translation id="1282311502488501110">ಸೈನ್ ಇನ್ ಮಾಡಬೇಡಿ</translation>
 <translation id="1282436639288565079">ಟ್ಯಾಬ್ ಗುಂಪಿನ ವಿವರಗಳು</translation>
 <translation id="1282577885428483870">ಸೈಟ್‌ಗಳು ಮತ್ತು ಖಾತೆಗಳು</translation>
-<translation id="1283344108460935898">ಕೌಶಲ್ಯಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="1284277788676816155">ಡೇಟಾವನ್ನು ಉಳಿಸಲು ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="1285320974508926690">ಈ ಸೈಟ್ ಅನ್ನು ಎಂದಿಗೂ ಭಾಷಾಂತರಿಸದಿರಿ</translation>
 <translation id="1285484354230578868">ಡೇಟಾವನ್ನು ನಿಮ್ಮ Google ಡ್ರೈವ್ ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹಿಸಿ</translation>
@@ -777,6 +776,7 @@
 <translation id="1566049601598938765">ವೆಬ್‌ಸೈಟ್</translation>
 <translation id="15662109988763471">ಆಯ್ಕೆಮಾಡಿದ ಪ್ರಿಂಟರ್ ಲಭ್ಯವಿಲ್ಲ ಅಥವಾ ಸರಿಯಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರಿಂಟರ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಅಥವಾ ಬೇರೊಂದು ಪ್ರಿಂಟರ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1566329594234563241">ನಿಷ್ಕ್ರಿಯವಾಗಿರುವಾಗ ಮತ್ತು ಪ್ಲಗ್-ಇನ್ ಆಗಿರುವಾಗ</translation>
+<translation id="1567069630205219514">ಚಾಟ್ ಅನ್ನು ಪುನರಾರಂಭಿಸಲು ವಿಂಡೋ ಗಾತ್ರವನ್ನು ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="1567135437923613642">ಫೀಚರ್ ಮಾಡಿದ ಪ್ರಯೋಗಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1567579616025300478">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೇಟಾ ಸೇವ್ ಮಾಡಲು ಈ ಸೈಟ್‌ಗೆ ಅನುಮತಿಯಿಲ್ಲ.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' ಅನ್ನು ಈಗಾಗಲೇ '<ph name="ACTION" />' ಕ್ರಿಯೆಗೆ ನಿಯೋಜಿಸಲಾಗಿದೆ. <ph name="RESPONSE" /> ಗೆ ಯಾವುದೇ ಕೀ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
@@ -1187,6 +1187,7 @@
 <translation id="1861262398884155592">ಈ ಫೋಲ್ಡರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="1862311223300693744">ನಿಮ್ಮಲ್ಲಿ ಯಾವುದೇ ವಿಶೇಷವಾದ VPN, ಪ್ರಾಕ್ಸಿ, ಫೈರ್‌ವಾಲ್‌ ಅಥವಾ NAS ಸಾಫ್ಟ್‌ವೇರ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆಯೇ?</translation>
 <translation id="1863182668524159459">ಯಾವುದೇ ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
+<translation id="1863374797460198869">ಚಾಟ್ ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1864111464094315414">ಲಾಗಿನ್</translation>
 <translation id="1864400682872660285">ಕೂಲರ್</translation>
 <translation id="1864454756846565995">USB-C ಸಾಧನ (ಹಿಂದಿನ ಪೋರ್ಟ್)</translation>
@@ -2064,6 +2065,7 @@
 <translation id="2477065602824695373">ನೀವು ಹಲವಾರು ಸ್ವಿಚ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿದ ನಂತರ, ಸ್ವಯಂ-ಸ್ಕ್ಯಾನ್ ಅನ್ನು ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" ಗಾಗಿ ಮಾಧ್ಯಮ-ಫೈಲ್ ಒಪ್ಪಿಗೆಗಳು</translation>
 <translation id="24786041351753425">ಡೇಟಾ ಮರುಪಡೆಯುವಿಕೆ ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
+<translation id="2479148705183875116">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="2479541499757560845">ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಕೀಬೋರ್ಡ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2480868415629598489">ನೀವು ನಕಲಿಸಿದ ಮತ್ತು ಅಂಟಿಸಿದ ಡೇಟಾವನ್ನು ಮಾರ್ಪಡಿಸಿ</translation>
 <translation id="2480881140544300950">ನಿಮ್ಮ ಹೊಸ ಟ್ಯಾಬ್ ಪುಟವನ್ನು ನಿರ್ವಹಿಸುತ್ತಿರುವ ಪ್ರಸ್ತುತ ಸರ್ಚ್ ಎಂಜಿನ್</translation>
@@ -2479,7 +2481,6 @@
 <translation id="2766629385177215776">ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ರಚಿಸಲಾದ ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಪಟ್ಟಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="2767077837043621282">ನಿಮ್ಮ Chromebook ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2767127727915954024">ಈ ಸೈಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೀವು ಮುಚ್ಚುವವರೆಗೆ, <ph name="FILENAME" /> ಫೈಲ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
-<translation id="2767771295575888898">"<ph name="SELECTION" />" ಅನ್ನು ರೀಡಿಂಗ್ ಮೋಡ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="2769174155451290427">ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> ಅನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
 <translation id="2770465223704140727">ಪಟ್ಟಿಯಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
@@ -2791,7 +2792,6 @@
 <translation id="2996108796702395498">ನಿಮ್ಮ ಸಾಧನದ ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" /> ಆಗಿದೆ. ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಲು ಈ ಸಂಖ್ಯೆಯನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="2996286169319737844">ನಿಮ್ಮ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್‌ ಬಳಸಿಕೊಂಡು ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಇದು Google Pay ನಿಂದ ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಒಳಗೊಂಡಿರುವುದಿಲ್ಲ.</translation>
 <translation id="2996722619877761919">ಉದ್ದದ ಅಂಚಿನಲ್ಲಿ ಫ್ಲಿಪ್ ಮಾಡಿ</translation>
-<translation id="2997608191364087784">"<ph name="SELECTION" />" ಅನ್ನು <ph name="LANGUAGE" /> ಗೆ &amp;ಅನುವಾದಿಸಿ</translation>
 <translation id="2998097899774209901">ಆನ್ • ಈ ವಿಸ್ತರಣೆಯು Chrome ವೆಬ್ ಸ್ಟೋರ್‌ನ ನೀತಿಯನ್ನು ಉಲ್ಲಂಘಿಸುತ್ತದೆ</translation>
 <translation id="2998267783395280091">ನೆಟ್‌ವರ್ಕ್ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -6974,6 +6974,7 @@
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> ಸಾಧನದಿಂದ ಪಠ್ಯವನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6099766472403716061">ನಿಮ್ಮ MIDI ಸಾಧನಗಳನ್ನು ನಿಯಂತ್ರಿಸಲು ಮತ್ತು ಮರು ಪ್ರೋಗ್ರಾಂ ಮಾಡಲು <ph name="HOST" /> ಗೆ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="6100736666660498114">ಸ್ಟಾರ್ಟ್ ಮೆನು</translation>
+<translation id="6100737823178787570">ಕಾರ್ಯವನ್ನು ಪುನರಾರಂಭಿಸಲು ವಿಂಡೋ ಗಾತ್ರವನ್ನು ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="6101226222197207147">ಹೊಸ ಆ್ಯಪ್‌ ಸೇರಿಸಲಾಗಿದೆ (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">ಈ ಫೈಲ್ ಅನ್ನು ಸುಧಾರಿತ ಸಂರಕ್ಷಣೆಯ ಮೂಲಕ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="6103681770816982672">ಎಚ್ಚರಿಕೆ: ನೀವು ಡೆವಲಪರ್ ಚಾನಲ್‌ಗೆ ಬದಲಾಯಿಸುತ್ತಿರುವಿರಿ</translation>
@@ -7396,7 +7397,6 @@
 <translation id="6418511932144861495">ಮಹತ್ವದ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="641899100123938294">ಹೊಸ ಸಾಧನಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="6419546358665792306">ಲೋಡ್ ಅನ್‌ಪ್ಯಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="6423685703035190381">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ದರ ಟ್ರ್ಯಾಕಿಂಗ್ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="6425556984042222041">ಪಠ್ಯದಿಂದ ಧ್ವನಿ ದರ</translation>
 <translation id="642729974267661262">ಧ್ವನಿ ಪ್ಲೇ ಮಾಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6427752304227226701">&amp;ಅಸುರಕ್ಷಿತ ಸೈಟ್ ಅನ್ನು ವರದಿ ಮಾಡಿ...</translation>
@@ -7827,7 +7827,6 @@
 <translation id="6739266861259291931">ಸಾಧನದ ಭಾಷೆಗೆ ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="6739923123728562974">ಡೆಸ್ಕ್‌ಟಾಪ್ ಶಾರ್ಟ್‌ಕಟ್ ತೋರಿಸಿ</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="6742816895667193660">"<ph name="SELECTION" />" ಅನ್ನು ರೀಡಿಂಗ್ ಮೋಡ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="6743841972744298686">ಸಿಂಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="6744397361782514824">ಎಡ ವೀಕ್ಷಣೆಯೊಂದಿಗೆ ಸ್ವ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="6746124502594467657">ಕೆಳಗೆ ಸರಿಸಿ</translation>
@@ -8315,7 +8314,6 @@
 <translation id="707772989579681711">ನಿಮ್ಮ ಹಿಂದಿನ ಆಯ್ಕೆ</translation>
 <translation id="7077751457066325012">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="7077829361966535409">ಪ್ರಸ್ತುತ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಲೋಡ್ ಮಾಡುವಾಗ ಸೈನ್-ಇನ್ ಪುಟವು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು <ph name="GAIA_RELOAD_LINK_START" />ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ<ph name="GAIA_RELOAD_LINK_END" />, ಅಥವಾ ಬೇರೆ <ph name="PROXY_SETTINGS_LINK_START" />ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="PROXY_SETTINGS_LINK_END" /> ಬಳಸಿ.</translation>
-<translation id="7078103664368916714">"<ph name="SELECTION" />" ಅನ್ನು &amp;ಪ್ರಿಂಟ್ ಮಾಡಿ</translation>
 <translation id="7078120482318506217">ಎಲ್ಲಾ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="708060913198414444">ಆಡಿಯೋ ವಿಳಾಸವನ್ನು ನ&amp;ಕಲಿಸಿ</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ</translation>
@@ -9213,7 +9211,6 @@
 <translation id="7752832973194460442">Android ಆ್ಯಪ್ ಮಾಹಿತಿ</translation>
 <translation id="7754704193130578113">ಡೌನ್‌ಲೋಡ್ ಮಾಡುವ ಮೊದಲು ಪ್ರತಿ ಫೈಲ್ ಅನ್ನು ಎಲ್ಲಿ ಉಳಿಸಬೇಕೆಂದು ಕೇಳಿ</translation>
 <translation id="7757592200364144203">ಸಾಧನದ ಹೆಸರನ್ನು ಬದಲಾಯಿಸಿ</translation>
-<translation id="7757735653610827848">"<ph name="SELECTION" />" &amp;ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="7757739382819740102">ಸಮೀಪದ ಸಂಪರ್ಕಗಳು ನಿಮ್ಮೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಬಹುದು. ಅನುಮೋದನೆ ಮಾಡುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ಮೂಲಕ ಪಠ್ಯವನ್ನು ಹಂಚಲಾಗಿದೆ</translation>
 <translation id="7758143121000533418">Family Link</translation>

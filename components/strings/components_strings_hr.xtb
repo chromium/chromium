@@ -875,6 +875,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2354001756790975382">Druge oznake</translation>
 <translation id="2355395290879513365">Napadači možda mogu vidjeti slike koje gledate na ovoj web-lokaciji i izmijeniti ih kako bi vas prevarili.</translation>
 <translation id="2356941001189392209">Ograničeni popis URL-ova stranica koje posjećujete na kojima se odvijaju događaji naslijeđene tehnologije</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Dijelit će se jedna kartica}one{Dijelit će se {NUM_TABS} kartica}few{Dijelit će se {NUM_TABS} kartice}other{Dijelit će se {NUM_TABS} kartica}}</translation>
 <translation id="2357481397660644965">Vašim uređajem upravlja <ph name="DEVICE_MANAGER" />, a vašim računom upravlja <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Veći broj</translation>
 <translation id="2359808026110333948">Nastavi</translation>
@@ -4069,7 +4070,6 @@ Dodatne pojedinosti:
 <translation id="7388380253839603603">Cijene benzina i točenje goriva u vozila</translation>
 <translation id="7388594495505979117">{0,plural, =1{Vaš će se uređaj ponovno pokrenuti za 1 minutu}one{Vaš će se uređaj ponovno pokrenuti za # minutu}few{Vaš će se uređaj ponovno pokrenuti za # minute}other{Vaš će se uređaj ponovno pokrenuti za # minuta}}</translation>
 <translation id="7393161616326137353">Avanturističke igre</translation>
-<translation id="7393243238767102021">Želite li dopustiti da <ph name="DOMAIN" /> automatski potvrdi ovu e-adresu?</translation>
 <translation id="7393475648162498734">Pri naplati pokažite nagrade i pogodnosti koje su dostupne za vaše kartice</translation>
 <translation id="7393971683644170444">Povezivanje s davateljem kartice...</translation>
 <translation id="739728382607845710">Ikona rukovatelja plaćanjem</translation>

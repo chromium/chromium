@@ -875,6 +875,7 @@
 <translation id="2354001756790975382">Digər əlfəcinlər</translation>
 <translation id="2355395290879513365">Hücumçular bu saytda baxdığınız şəkilləri görə bilər və onları deyişdirərək Sizi aldada bilər.</translation>
 <translation id="2356941001189392209">Köhnə texnologiya hadisələri olan səhifələrin məhdud URL siyahısı</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 tab paylaşılacaq}other{{NUM_TABS} tab paylaşılacaq}}</translation>
 <translation id="2357481397660644965">Cihazı <ph name="DEVICE_MANAGER" />, hesabı isə<ph name="ACCOUNT_MANAGER" /> idarə edir.</translation>
 <translation id="2359629602545592467">Çoxsaylı</translation>
 <translation id="2359808026110333948">Davam edin</translation>
@@ -4065,7 +4066,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7388380253839603603">Yanacaq Qiymətləri və Avtomobillərin Doldurulması</translation>
 <translation id="7388594495505979117">{0,plural, =1{Cihazınız 1 dəqiqə ərzində yenidən başladılacaq}other{Cihazınız # dəqiqə ərzində yenidən başladılacaq}}</translation>
 <translation id="7393161616326137353">Macəra Oyunları</translation>
-<translation id="7393243238767102021"><ph name="DOMAIN" /> domeninin bu e-poçtu avtomatik doğrulamasına icazə verilsin?</translation>
 <translation id="7393475648162498734">Kassada kartlarınız üçün əlçatan olan mükafat və imtiyazları göstərin</translation>
 <translation id="7393971683644170444">Kart provayderinizə qoşulur...</translation>
 <translation id="739728382607845710">Ödəniş idarəedicisi işarəsi</translation>

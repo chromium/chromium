@@ -875,6 +875,7 @@
 <translation id="2354001756790975382">其他書籤</translation>
 <translation id="2355395290879513365">攻擊者可能可以看到您正在此網站上看到的圖片，然後透過修改圖片來欺騙您。</translation>
 <translation id="2356941001189392209">你瀏覽的網頁網址清單 (只列出發生舊版科技事件的網址)</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{將會分享 1 個分頁}other{將會分享 {NUM_TABS} 個分頁}}</translation>
 <translation id="2357481397660644965">您的裝置由 <ph name="DEVICE_MANAGER" /> 管理，而您的帳戶由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多種貨幣</translation>
 <translation id="2359808026110333948">繼續</translation>
@@ -4069,7 +4070,6 @@
 <translation id="7388380253839603603">氣油價格和汽車燃料</translation>
 <translation id="7388594495505979117">{0,plural, =1{裝置將於 1 分鐘後重新啟動}other{裝置將於 # 分鐘後重新啟動}}</translation>
 <translation id="7393161616326137353">冒險遊戲</translation>
-<translation id="7393243238767102021">要允許 <ph name="DOMAIN" /> 自動驗證此電郵嗎？</translation>
 <translation id="7393475648162498734">結帳時顯示付款卡可享有哪些獎賞和禮遇</translation>
 <translation id="7393971683644170444">正在連接發卡機構…</translation>
 <translation id="739728382607845710">付款處理常式圖示</translation>

@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> verðlækkun á <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> litatákn flipahóps</translation>
 <translation id="311432875115153175">Flipahópalisti lokaður</translation>
+<translation id="3152596030350326139">Sýna flipa lárétt</translation>
+<translation id="31806439105337256">Sýna flipa lóðrétt</translation>
 <translation id="3194464645767632461">einkunn</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Bæta <ph name="TABS_COUNT_ONE" /> flipa við hópinn}one{Bæta <ph name="TABS_COUNT_MANY" /> flipa við hópinn}other{Bæta <ph name="TABS_COUNT_MANY" /> flipum við hópinn}}</translation>
 <translation id="3328308545011660196">Tillaga: <ph name="NUMBER_OF_TABS" /> flipar virðast vera tengdir. Viltu setja þá í hóp?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Loka atriði}one{Loka atriðum}other{Loka atriðum}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Smámynd til að deila forskoðun blaðs</translation>
+<translation id="3775705724665058594">Senda í tækin þín</translation>
 <translation id="3776329373944672717">Heiti flipahóps: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Stjórna</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Losa flipa}one{Losa flipa}other{Losa flipa}}</translation>

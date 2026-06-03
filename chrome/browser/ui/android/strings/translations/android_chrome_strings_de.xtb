@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Du kannst PDFs hier herunterladen</translation>
 <translation id="107147699690128016">Eine Änderung der Dateiendung kann zum Öffnen der Datei in einer anderen Anwendung führen und Schäden an deinem Gerät verursachen.</translation>
 <translation id="1073328695547557412">Tippe auf das Google Lens-Symbol</translation>
+<translation id="1080116354587839789">An Breite anpassen</translation>
 <translation id="1086486568852410168">Mit Google Lens suchen</translation>
 <translation id="1087799850623149508">Du kannst die Adressleiste nach unten verschieben, indem du sie gedrückt hältst</translation>
 <translation id="1089606299949659462">Fertig!</translation>
@@ -536,6 +537,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> Tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> Tabs}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 Passwort ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto.}other{# Passwörter sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto.}}</translation>
 <translation id="3293181007446299124">Dein Browserverlauf wird sicher auf deinem Gerät gespeichert und Berichte werden mit einer Verzögerung gesendet, um deine Identität zu schützen</translation>
+<translation id="3301639354590628973">Konto wechseln?</translation>
 <translation id="3301936297336370235">Bestätigung des Passwortvorschlags</translation>
 <translation id="3302615849591357577">Tabgruppe <ph name="TITLE_OF_GROUP" /> mit der Farbe <ph name="COLOR_NAME" /> als neue Tabgruppe im Hintergrund wiederherstellen.</translation>
 <translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>

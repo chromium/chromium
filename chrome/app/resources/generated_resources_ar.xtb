@@ -415,7 +415,6 @@
 <translation id="1282311502488501110">عدم تسجيل الدخول</translation>
 <translation id="1282436639288565079">تفاصيل مجموعة علامات التبويب</translation>
 <translation id="1282577885428483870">المواقع الإلكترونية والحسابات</translation>
-<translation id="1283344108460935898">‏ميزة Skills غير متاحة</translation>
 <translation id="1284277788676816155">عدم السماح بحفظ البيانات</translation>
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
 <translation id="1285484354230578868">‏تخزين البيانات في حساب Google Drive</translation>
@@ -776,6 +775,7 @@
 <translation id="1566049601598938765">موقع إلكتروني</translation>
 <translation id="15662109988763471">لا تتوفر الطابعة المختارة أو لم يتم تثبيتها بشكلٍ صحيح. يُرجى التحقق من الطابعة أو تجربة اختيار طابعة أخرى.</translation>
 <translation id="1566329594234563241">عندما يكون الجهاز غير نشط وموصولاً بمصدر طاقة</translation>
+<translation id="1567069630205219514">يجب زيادة حجم النافذة لاستئناف المحادثة</translation>
 <translation id="1567135437923613642">تفعيل التجارب المميَّزة</translation>
 <translation id="1567579616025300478">هذا الموقع الإلكتروني غير مسموح له بحفظ البيانات على جهازك.</translation>
 <translation id="156793199942386351">سبق وتم تخصيص مفتاح "<ph name="CURRENTKEY" />" للإجراء "<ph name="ACTION" />". يمكنك الضغط على أي مفتاح لاختيار <ph name="RESPONSE" />.</translation>
@@ -1187,6 +1187,7 @@
 <translation id="1861262398884155592">هذا المجلد فارغ</translation>
 <translation id="1862311223300693744">‏هل لديك شبكة VPN أو خادم وكيل أو جدار حماية أو برنامج NAS مثبت؟</translation>
 <translation id="1863182668524159459">لم يتم العثور على منافذ تسلسلية</translation>
+<translation id="1863374797460198869">المحادثة مخفية</translation>
 <translation id="1864111464094315414">تسجيل الدخول</translation>
 <translation id="1864400682872660285">أكثر برودة</translation>
 <translation id="1864454756846565995">‏جهاز USB-C (المنفذ الخلفي)</translation>
@@ -2062,6 +2063,7 @@
 <translation id="2477065602824695373">بما أنّه سبق لك إعداد عدة مفاتيح تحكّم، تم إيقاف ميزة "المسح التلقائي".</translation>
 <translation id="2478176599153288112">أذونات ملف الوسائط لـ "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">تفعيل خدمة استرداد البيانات</translation>
+<translation id="2479148705183875116">الانتقال إلى الإعدادات</translation>
 <translation id="2479541499757560845">إعدادات لوحة مفاتيح تسهيل الاستخدام</translation>
 <translation id="2480868415629598489">تعديل البيانات التي يتم نسخها ولصقها</translation>
 <translation id="2480881140544300950">محرّك البحث الحالي الذي يدير صفحة علامة التبويب الجديدة</translation>
@@ -2478,7 +2480,6 @@
 <translation id="2766629385177215776">تثبيت مجموعات علامات التبويب الجديدة التي تم إنشاؤها على أي جهاز في شريط الإشارات تلقائيًا</translation>
 <translation id="2767077837043621282">‏تعذَر تحديث جهاز Chromebook. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2767127727915954024">سيتمكّن <ph name="ORIGIN" /> من تعديل <ph name="FILENAME" /> إلى أن يتم إغلاق جميع علامات تبويب هذا الموقع الإلكتروني.</translation>
-<translation id="2767771295575888898">فتح "<ph name="SELECTION" />" في "وضع القراءة"</translation>
 <translation id="2769174155451290427">الصورة التي تم تحميلها</translation>
 <translation id="2770082596325051055">إيقاف تنزيل "<ph name="FILE_NAME" />" مؤقتًا</translation>
 <translation id="2770465223704140727">إزالة من القائمة</translation>
@@ -2789,7 +2790,6 @@
 <translation id="2996108796702395498">الرقم التسلسلي للجهاز هو <ph name="SERIAL_NUMBER" />. يمكن استخدام هذا الرقم للمساعدة في تفعيل الخدمة.</translation>
 <translation id="2996286169319737844">‏تم ترميز بياناتك باستخدام عبارة مرور المزامنة. لا يتضمّن ذلك طرق الدفع والعناوين من Google Pay.</translation>
 <translation id="2996722619877761919">القلب عند الحافة الطويلة</translation>
-<translation id="2997608191364087784">&amp;ترجمة "<ph name="SELECTION" />" إلى <ph name="LANGUAGE" /></translation>
 <translation id="2998097899774209901">‏مفعَّلة • هذه الإضافة تنتهك "سياسة سوق Chrome الإلكتروني".</translation>
 <translation id="2998267783395280091">تم العثور على الشبكة</translation>
 <translation id="3000378525979847272">تمت الموافقة على إذن <ph name="PERMISSION_1" /> وإذن <ph name="PERMISSION_2" />.</translation>
@@ -6971,6 +6971,7 @@
 <translation id="609942571968311933">تم نسخ النص من <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">‏السماح للموقع الإلكتروني <ph name="HOST" /> دائمًا بالتحكُّم في أجهزة MIDI وإعادة برمجتها</translation>
 <translation id="6100736666660498114">قائمة بدء التشغيل</translation>
+<translation id="6100737823178787570">يجب زيادة حجم النافذة لاستئناف المَهمة</translation>
 <translation id="6101226222197207147">تمت إضافة تطبيق جديد (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">تم حظر الملف من خلال برنامج "الحماية المتقدمة".</translation>
 <translation id="6103681770816982672">تحذير: أنت الآن تجري تحويلاً إلى قناة المطوّر</translation>
@@ -7393,7 +7394,6 @@
 <translation id="6418511932144861495">تثبيت تحديث مهم</translation>
 <translation id="641899100123938294">البحث عن أجهزة جديدة</translation>
 <translation id="6419546358665792306">تحميل إضافة تم فك حزمتها</translation>
-<translation id="6423685703035190381">تلقّي تنبيهات ميزة "تتبُّع الأسعار" على هاتفك</translation>
 <translation id="6425556984042222041">معدّل "تحويل النص إلى كلام"</translation>
 <translation id="642729974267661262">المواقع الإلكترونية التي لا يُسمح لها بتشغيل الصوت</translation>
 <translation id="6427752304227226701">الإبلاغ عن موقع إلكتروني غير آمن…</translation>
@@ -7830,7 +7830,6 @@
 <translation id="6739266861259291931">إعادة الضبط على لغة الجهاز</translation>
 <translation id="6739923123728562974">عرض اختصار على سطح المكتب</translation>
 <translation id="6740234557573873150">إيقاف <ph name="FILE_NAME" /> مؤقتًا</translation>
-<translation id="6742816895667193660">فتح "<ph name="SELECTION" />" في "وضع القراءة"</translation>
 <translation id="6743841972744298686">إعدادات المزامنة</translation>
 <translation id="6744397361782514824">التبديل مع العرض الأيسر</translation>
 <translation id="6746124502594467657">الانتقال إلى الأسفل</translation>
@@ -8317,7 +8316,6 @@
 <translation id="707772989579681711">خيارك السابق</translation>
 <translation id="7077751457066325012">عرض اختصارات لوحة المفاتيح وتخصيصها</translation>
 <translation id="7077829361966535409">تعذّر تحميل صفحة تسجيل الدخول باستخدام إعدادات الخادم الوكيل الحالية. يُرجى <ph name="GAIA_RELOAD_LINK_START" />إعادة محاولة تسجيل الدخول<ph name="GAIA_RELOAD_LINK_END" />، أو استخدام <ph name="PROXY_SETTINGS_LINK_START" />إعدادات خادم وكيل<ph name="PROXY_SETTINGS_LINK_END" /> مختلفة.</translation>
-<translation id="7078103664368916714">&amp;طباعة "<ph name="SELECTION" />"</translation>
 <translation id="7078120482318506217">جميع الشبكات</translation>
 <translation id="708060913198414444">ن&amp;سخ عنوان الصوت</translation>
 <translation id="7082568314107259011">يدير المشرف <ph name="NETWORK_NAME" /></translation>
@@ -9216,7 +9214,6 @@
 <translation id="7752832973194460442">‏معلومات تطبيق Android</translation>
 <translation id="7754704193130578113">السؤال عن مكان حفظ الملفّات قبل تنزيلها</translation>
 <translation id="7757592200364144203">تغيير اسم الجهاز</translation>
-<translation id="7757735653610827848">&amp;نسخ "<ph name="SELECTION" />"</translation>
 <translation id="7757739382819740102">يمكن لجهات الاتصال القريبة المشاركة معك. وسيكون عليك الموافقة على المشاركة.</translation>
 <translation id="7757787379047923882">تمت مشاركة النص من <ph name="DEVICE_NAME" />.</translation>
 <translation id="7758143121000533418">Family Link</translation>

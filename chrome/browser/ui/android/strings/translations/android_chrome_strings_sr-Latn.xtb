@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Ovde možete da preuzmete PDF-ove</translation>
 <translation id="107147699690128016">Ako promenite ekstenziju datoteke, ona može da se otvori u drugoj aplikaciji i da bude opasna po uređaj.</translation>
 <translation id="1073328695547557412">Dodirnite ikonu Google objektiva</translation>
+<translation id="1080116354587839789">Uklopite po širini</translation>
 <translation id="1086486568852410168">Pretražite pomoću Google objektiva</translation>
 <translation id="1087799850623149508">Možete da dodirnete i zadržite da biste premestili traku za adresu na dno</translation>
 <translation id="1089606299949659462">Pregled je završen!</translation>
@@ -536,6 +537,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kartica}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kartice}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kartica}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 lozinka je sačuvana samo na ovom uređaju. Da biste je koristili na drugim uređajima, sačuvajte je na Google nalogu.}one{# lozinka je sačuvana samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}few{# lozinke su sačuvane samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}other{# lozinki je sačuvano samo na ovom uređaju. Da biste ih koristili na drugim uređajima, sačuvajte ih na Google nalogu.}}</translation>
 <translation id="3293181007446299124">Istorija pregledanja ostaje privatna na uređaju, a izveštaji se šalju sa kašnjenjem radi zaštite identiteta</translation>
+<translation id="3301639354590628973">Želite da promenite nalog?</translation>
 <translation id="3301936297336370235">Potvrda predloga za lozinku</translation>
 <translation id="3302615849591357577">Vratite grupu kartica <ph name="TITLE_OF_GROUP" />, u boji <ph name="COLOR_NAME" />, kao novu grupu kartica u pozadini.</translation>
 <translation id="3303855915957856445">Nisu pronađeni rezultati pretrage</translation>

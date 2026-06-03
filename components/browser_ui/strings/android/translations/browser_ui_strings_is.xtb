@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Fótspor og gögn vefsvæða</translation>
 <translation id="2553552004849639664">Fáðu öflugustu vörn Chrome gegn netógnum</translation>
 <translation id="2570922361219980984">Einnig er slökkt á aðgangi að staðsetningu fyrir þetta tæki. Kveiktu á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Stækkað – smelltu til að minnka.</translation>
 <translation id="2586657967955657006">Klippiborð</translation>
 <translation id="2588271083332682494">Taktu til með flipahópum</translation>
 <translation id="2592917252160773942">Vefsvæði geta beðið um myndavélina þína</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Biðja um tölvuútgáfu</translation>
 <translation id="5091663350197390230">Þegar kveikt er á þessu geta vefsvæði notað JavaScript. Þegar slökkt er á þessu geta vefsvæði ekki notað JavaScript.</translation>
 <translation id="5099358668261120049">Þetta eyðir öllum gögnum og fótsporum sem <ph name="ORIGIN" /> eða forrit þess hafa vistað á heimaskjánum</translation>
-<translation id="5100237604440890931">Minnkað – smelltu til að stækka.</translation>
 <translation id="5116239826668864748">Þú getur notað Chrome til að opna tengla úr skilaboðum, skjölum og öðrum forritum hvenær sem er</translation>
 <translation id="5123685120097942451">Huliðsflipi</translation>
 <translation id="512938610812707830">Blað neðst með útlitsþemasöfnum fyrir síðu nýrra flipa, opið til fulls</translation>
@@ -696,7 +694,6 @@
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> leyft</translation>
 <translation id="8200772114523450471">Halda áfram</translation>
 <translation id="8211406090763984747">Tengingin er örugg</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Þegar kveikt er á þessu geta vefsvæði beðið um aðgang að öðrum tækjum á staðarnetinu þínu. Þegar slökkt er á þessu geta vefsvæði ekki fengið aðgang að öðrum tækjum á staðarnetinu þínu.</translation>
 <translation id="8249310407154411074">Færa efst</translation>
 <translation id="8261506727792406068">Eyða</translation>

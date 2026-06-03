@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ላይ የ<ph name="PRICE_DROP" /> ዋጋ ቅናሽ</translation>
 <translation id="3078350928901129212">የ<ph name="COLOR_NAME" /> ትር ቡድን ቀለም አዶ</translation>
 <translation id="311432875115153175">የትር ቡድን ዝርዝር ተዘግቷል</translation>
+<translation id="3152596030350326139">ትሮችን በአግድም አሳይ</translation>
+<translation id="31806439105337256">ትሮችን በአቀባዊ አሳይ</translation>
 <translation id="3194464645767632461">የተሰጡ ደረጃዎች</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ወደ ቡድን ያክሉ}one{<ph name="TABS_COUNT_MANY" /> ትርን ወደ ቡድን ያክሉ}other{<ph name="TABS_COUNT_MANY" /> ትሮችን ወደ ቡድን ያክሉ}}</translation>
 <translation id="3328308545011660196">የአስተያየት ጥቆማ፦ <ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ። ይቦደኑ?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ንጥልን ዝጋ}one{ንጥልን ዝጋ}other{ንጥሎችን ዝጋ}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ለሉህ ቅድመ ዕይታን አጋራ ጥፍር አከል</translation>
+<translation id="3775705724665058594">ወደ መሣሪያዎችዎ ይላኩ</translation>
 <translation id="3776329373944672717">የትር ቡድን ርዕስ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">አደራጅ</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{ትር ንቀል}one{ትር ንቀል}other{ትሮችን ንቀል}}</translation>

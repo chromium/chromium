@@ -875,6 +875,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2354001756790975382">Andere bookmarks</translation>
 <translation id="2355395290879513365">Aanvallers kunnen mogelijk de afbeeldingen zien die je op deze site bekijkt en je misleiden door de afbeeldingen aan te passen.</translation>
 <translation id="2356941001189392209">Een beperkte lijst met URL's van pagina's die je bezoekt waarop verouderde technologiegebeurtenissen plaatsvinden</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Deelt 1 tabblad}other{Deelt {NUM_TABS} tabbladen}}</translation>
 <translation id="2357481397660644965">Je apparaat wordt beheerd door <ph name="DEVICE_MANAGER" /> en je account wordt beheerd door <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Meerdere</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
@@ -4063,7 +4064,6 @@ Aanvullende informatie:
 <translation id="7388380253839603603">Brandstofprijzen en tanken</translation>
 <translation id="7388594495505979117">{0,plural, =1{Je apparaat wordt over 1 minuut opnieuw opgestart}other{Je apparaat wordt over # minuten opnieuw opgestart}}</translation>
 <translation id="7393161616326137353">Avonturengames</translation>
-<translation id="7393243238767102021">Toestaan dat <ph name="DOMAIN" /> dit e-mailadres automatisch verifieert?</translation>
 <translation id="7393475648162498734">Toon bij het afrekenen welke beloningen en voordelen beschikbaar zijn voor je kaarten</translation>
 <translation id="7393971683644170444">Verbinding maken met je kaartuitgever...</translation>
 <translation id="739728382607845710">Icoon van betalingshandler</translation>

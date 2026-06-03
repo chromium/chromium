@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Slapukai ir svetainės duomenys</translation>
 <translation id="2553552004849639664">Gaukite itin patikimą „Chrome“ apsaugą nuo grėsmių internete</translation>
 <translation id="2570922361219980984">Vietos prieiga taip pat išjungta šiame įrenginyje. Įjunkite ją skiltyje <ph name="BEGIN_LINK" />„Android“ nustatymai“<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Išskleista – spustelėkite, kad sutrauktumėte</translation>
 <translation id="2586657967955657006">Iškarpinė</translation>
 <translation id="2588271083332682494">Tvarkykite naudodami skirtukų grupes</translation>
 <translation id="2592917252160773942">Svetainės gali prašyti leidimo naudoti vaizdo kamerą</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Pateikti užklausą dėl rodinio versijos staliniams kompiuteriams</translation>
 <translation id="5091663350197390230">Įjungus svetainėse galima naudoti „JavaScript“. Išjungus svetainėse negalima naudoti „JavaScript“.</translation>
 <translation id="5099358668261120049">Bus ištrinti visi duomenys ir slapukai, kuriuos domenas <ph name="ORIGIN" /> arba jo programa saugo jūsų pagrindiniame ekrane.</translation>
-<translation id="5100237604440890931">Sutraukta – spustelėkite, kad išskleistumėte</translation>
 <translation id="5116239826668864748">Galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose</translation>
 <translation id="5123685120097942451">Inkognito skirtukas</translation>
 <translation id="512938610812707830">Naujo skirtuko puslapio išvaizdos temų rinkinių apatinis lapas atidarytas per visą ekrano aukštį</translation>
@@ -696,7 +694,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.</
 <translation id="8197286292360124385">Leidžiama: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8211406090763984747">Ryšys saugus</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Įjungus svetainės gali prašyti pasiekti kitus įrenginius vietiniame tinkle. Išjungus svetainės negali pasiekti kitų įrenginių vietiniame tinkle.</translation>
 <translation id="8249310407154411074">Perkelti į viršų</translation>
 <translation id="8261506727792406068">Ištrinti</translation>

@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">Kuva rohkem emotikone</translation>
 <translation id="2328561734797404498">Rakenduse <ph name="APP_NAME" /> kasutamiseks taaskäivitage seade.</translation>
 <translation id="2335091074961603075">Teie Chromebook või Bluetooth-seade kasutab Bluetoothi vanemat versiooni. Parema helikvaliteedi huvides kasutage sisemist mikrofoni.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> nõuab, et looksite täna WiFi-ühenduse, et värskendus alla laadida. Võite allalaadimiseks kasutada ka mahupõhist ühendust (rakenduda võivad tasud).}other{<ph name="MANAGER" /> nõuab, et looksite ühenduse WiFi-võrguga ja laadiksite enne tähtaega alla värskenduse. Võite allalaadimiseks kasutada ka mahupõhist ühendust (rakenduda võivad tasud).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Puudutage riiulil elektronpliiatsi nuppu, et teha märkmeid, jäädvustada ekraanipilt, kasutada laserkursorit või suurendusklaasi.</translation>
 <translation id="2341729377289034582">Lukustatud vertikaalasendisse</translation>
@@ -568,6 +569,7 @@
 <translation id="2687510499067466116">Klaviatuuri otseteed on muudetud</translation>
 <translation id="2689613560355655046">Töölaud 8</translation>
 <translation id="2692092709110488417">Fokuseerimiseks ja valitud ala teisaldamiseks vajutage tabulaatorit</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Viimane päev seadme (<ph name="DEVICE_TYPE" />) värskendamiseks}other{Värskendage seadet (<ph name="DEVICE_TYPE" />) {NUM_DAYS} päeva jooksul}}</translation>
 <translation id="2695305337569143674">veeb</translation>
 <translation id="2697697418792422688">Klaviatuuriseadete kuvamine. <ph name="KEYBOARD_NAME" /> on valitud.</translation>
 <translation id="2699913284398121653">Kasutage koolikonto andmete ülekandmiseks oma isiklikule kontole rakendust Sisuedastus</translation>
@@ -794,6 +796,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="334927402682780278">Teksti valimine kursorist rea lõpuni</translation>
 <translation id="3349345708646875009">Ava tegumihaldur</translation>
 <translation id="3353786022389205125">Lülitage sisse valik „Kuva unerežiimist ärkamisel lukustuskuva“ ja proovige uuesti</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Värskendage seadet (<ph name="DEVICE_TYPE" />) ühe nädala jooksul}other{Värskendage seadet (<ph name="DEVICE_TYPE" />) {NUM_WEEKS} nädala jooksul}}</translation>
 <translation id="3364721542077212959">Elektronpliiatsi tööriistad</translation>
 <translation id="3365281428003534650">Määrake taimer ja ülesanne</translation>
 <translation id="3365977133351922112">Teie telefon on liiga kaugel. Tooge telefon lähemale.</translation>
@@ -953,6 +956,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3741482431277446954">Parem hiirenupp</translation>
 <translation id="3742055079367172538">Ekraanipilt on tehtud</translation>
 <translation id="3743775386021959186">Keskendumise režiim on sisse lülitatud, jäänud on <ph name="REMAINING_TIME" /></translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> nõuab, et varundaksite oma andmed ja tagastaksite seadme <ph name="DEVICE_TYPE" /> täna.}other{<ph name="MANAGER" /> nõuab, et varundaksite oma andmed ja tagastaksite seadme <ph name="DEVICE_TYPE" /> enne tähtaega.}}</translation>
 <translation id="3750403286520637847">Peida ilmasoovitus</translation>
 <translation id="3752253558646317685">Sõrmejälje salvestamiseks paluge lapsel sõrm andurilt eemaldada ja siis seda uuesti puudutada</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Rakenduse andmed võivad olla mis tahes andmed, mille rakendus on salvestanud (arendaja seadete põhjal), sh näiteks kontaktid, sõnumid ja fotod.<ph name="END_PARAGRAPH1" />
@@ -1078,6 +1082,9 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="412298498316631026">aken</translation>
 <translation id="4123259114412175274">Chromebooki avamiseks veenduge, et telefoni Bluetooth oleks sisse lülitatud</translation>
 <translation id="4123868835475902435">See oli põhiteave. Jätkake meie sisseehitatud rakenduses Avastamine, et saada nõuandeid ja abi. Leiate sealt nõuandeid alustamiseks, eripakkumisi ja toote <ph name="PRODUCT_NAME" /> uusimaid funktsioone.</translation>
+<translation id="4124779003103520737">{0,plural, =1{Teie <ph name="DEVICE_TYPE" /> lukustatakse # sekundi pärast automaatselt.
+        <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.}other{Teie <ph name="DEVICE_TYPE" /> lukustatakse # sekundi pärast automaatselt.
+        <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.}}</translation>
 <translation id="4125970834901680537">Ei saa rakendusi tahvelarvutirežiimis voogesitada. Proovige uuesti sülearvutirežiimis.</translation>
 <translation id="4131973331381812765">Temperatuur: <ph name="TEMPERATURE" />°C – Praegune kiirus: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">Päikesetõusuni sisse lülitatud</translation>
@@ -1386,6 +1393,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4964188651935955085">Kui lülitate Bluetoothi välja, katkestatakse selle välisseadme ühendus teie seadmega <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Suurenda helitugevust</translation>
 <translation id="496999337731226334">Tutvustuse toiming <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Sageli kasutatavad juhtelemendid, näiteks WiFi, Bluetooth ja helitugevus, asuvad kiirseadetes. Siin saate teha ka ekraanipilte. Kiirseadete avamiseks vajutage klahve Alt + tõstuklahv + S.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{Domeen <ph name="MANAGER" /> nõuab, et laadiksite täna alla värskenduse. Värskendus laaditakse internetiühenduse loomisel automaatselt alla.}other{Domeen <ph name="MANAGER" /> nõuab, et laadiksite enne tähtaega alla värskenduse. Värskendus laaditakse internetiühenduse loomisel automaatselt alla.}}</translation>
 <translation id="4975771730019223894">Rakenduse ikooni märguandetäpp</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1462,6 +1470,7 @@ Kasutada saate ka klaviatuuri otseteed. Esmalt tõstke tekst esile, seejärel va
 <translation id="5176318573511391780">Ekraani osa salvestamine</translation>
 <translation id="5187627942836026988">Kuumkoha üksikasjade kuvamine. Teie administraator on kuumkoha blokeerinud.</translation>
 <translation id="5188648870018555788">Asukoha kasutamine. Lubage asukohale juurdepääsu loaga ChromeOS-i ja Androidi rakendustel, veebisaitidel ning teenustel teie seadme asukohta kasutada. Asukohatäpsus pakub Androidi rakenduste ja teenuste jaoks täpsemat asukohta. Selleks töötleb Google regulaarselt teavet seadme andurite ja teie seadme juhtmeta signaalide kohta, et juhtmeta signaalide asukohti ühiselt tuvastada. Neid kasutatakse teie isikut tuvastamata asukohatäpsuse ja asukohapõhiste teenuste parandamiseks ning Google’i teenuste täiustamiseks, pakkumiseks ja haldamiseks, lähtudes Google’i ning kolmandate osapoolte õigustatud huvidest, et kasutajate vajadusi rahuldada. <ph name="BEGIN_LINK1" />Lisateave asukoha kasutamise kohta<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Tagastage seade (<ph name="DEVICE_TYPE" />) {NUM_WEEKS} nädala jooksul}other{Tagastage seade (<ph name="DEVICE_TYPE" />) {NUM_WEEKS} nädala jooksul}}</translation>
 <translation id="5198039720391525849">Esiletõstetud GIF-id</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> sündmust</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> kombineeriti uue kausta loomiseks rakendusega <ph name="IN_PLACE_APP" />.</translation>
@@ -1779,6 +1788,9 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Teid logitakse automaatselt välja <ph name="LOGOUT_TIME_LEFT" /> pärast.</translation>
 <translation id="6068258534237496331">Videokõne juhtelemendid</translation>
+<translation id="6070081109266557120">{0,plural, =1{Teid logitakse # sekundi pärast automaatselt välja.
+        <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.}other{Teid logitakse # sekundi pärast automaatselt välja.
+        <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.}}</translation>
 <translation id="6071576563962215370">Süsteemil ei õnnestunud määrata seadme installiaegsete atribuutide lukustust.</translation>
 <translation id="6072442788591997866">Rakendust <ph name="APP_NAME" /> ei lubata selles seadmes kasutada. Võtke ühendust administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Peata salvestamine</translation>
@@ -2128,6 +2140,8 @@ Uus installimine</translation>
 <translation id="7076878155205969899">Vaigistab heli</translation>
 <translation id="7083848064787091821">Keskendumise režiim</translation>
 <translation id="7084678090004350185">Kuumkoha sisse-/väljalülitamine. Kuumkoht on sisse lülitatud, <ph name="DEVICECOUNT" /> seadet on ühendatud.</translation>
+<translation id="7086438436964931440">Teid logitakse nüüd automaatselt välja.
+        <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.</translation>
 <translation id="7086931198345821656">Selle värskenduse jaoks on vaja seademes <ph name="DEVICE_TYPE" /> kasutada funktsiooni Powerwash. Kõik andmed kustutatakse. Vaadake lisateavet operatsioonisüsteemi <ph name="SYSTEM_APP_NAME" /> uusima värskenduse kohta.</translation>
 <translation id="7088960765736518739">Lülitiga juurdepääs</translation>
 <translation id="709015856939120012">Lehel sissesuumimine</translation>
@@ -2530,6 +2544,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8220076512072059941">Lisa <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Peida see soovitus</translation>
 <translation id="8230305195727960608">Värvide ümberpööramise režiim</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Nõutav on kohene tagastamine}other{Tagastage seade (<ph name="DEVICE_TYPE" />) {NUM_DAYS} päeva jooksul}}</translation>
 <translation id="8236042855478648955">Aeg pausi pidada</translation>
 <translation id="8237964652943995219">Järgmine töölaud: <ph name="DESK_NAME" />. Töölaud <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Vaadake kiiret tutvustust <ph name="PRODUCT_NAME" />is navigeerimise kohta. Viie toiminguga saate tööd alustada.</translation>
@@ -2705,6 +2720,8 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8756799553341497810">Saate oma rakenduse paigutuse kohandamist alustada, kui väljute sellest vaatest.</translation>
 <translation id="8759408218731716181">Mitmesse kontosse sisselogimist ei saa häälestada</translation>
 <translation id="8759753423332885148">Lisateave.</translation>
+<translation id="8760172428247796445">Teie <ph name="DEVICE_TYPE" /> lukustatakse kohe.
+        <ph name="DOMAIN" /> nõuab, et teie kiipkaart oleks pidevalt sisestatud.</translation>
 <translation id="8763883995157866248">Sea seade puhkerežiimi</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, installitud rakendus, blokeeritud</translation>
 <translation id="8782565991310229362">Kioski rakenduse käivitamine tühistati.</translation>

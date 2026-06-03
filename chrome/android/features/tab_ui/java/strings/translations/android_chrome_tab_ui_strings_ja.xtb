@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> が <ph name="PRICE_DROP" /> 値下げ</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> のタブグループ カラーアイコン</translation>
 <translation id="311432875115153175">タブグループのリストを閉じました</translation>
+<translation id="3152596030350326139">タブを横方向に表示</translation>
+<translation id="31806439105337256">タブを縦方向に表示</translation>
 <translation id="3194464645767632461">評価</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブをグループに追加}other{<ph name="TABS_COUNT_MANY" /> 個のタブをグループに追加}}</translation>
 <translation id="3328308545011660196">おすすめ: <ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{アイテムを閉じる}other{アイテムを閉じる}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">共有シートのプレビューのサムネイル。</translation>
+<translation id="3775705724665058594">お使いのデバイスに送信</translation>
 <translation id="3776329373944672717">タブグループのタイトル <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{タブの固定を解除}other{タブの固定を解除}}</translation>

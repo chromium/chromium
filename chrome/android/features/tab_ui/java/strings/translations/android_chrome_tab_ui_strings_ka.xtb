@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-ზე ფასის <ph name="PRICE_DROP" />-ით შემცირება</translation>
 <translation id="3078350928901129212">ჩანართების ჯგუფის <ph name="COLOR_NAME" /> ფერის ხატულა</translation>
 <translation id="311432875115153175">ჩანართების ჯგუფების სია დახურულია</translation>
+<translation id="3152596030350326139">ჩანართების ჰორიზონტალურად ჩვენება</translation>
+<translation id="31806439105337256">ჩანართების ვერტიკალურად ჩვენება</translation>
 <translation id="3194464645767632461">შეფასება</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის დამატება ჯგუფში}other{<ph name="TABS_COUNT_MANY" /> ჩანართის დამატება ჯგუფში}}</translation>
 <translation id="3328308545011660196">შემოთავაზება: როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ერთეულის დახურვა}other{ერთეულების დახურვა}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ესკიზი ფურცლის გაზიარების გადახედვისთვის.</translation>
+<translation id="3775705724665058594">გააგზავნეთ თქვენს მოწყობილობებზე</translation>
 <translation id="3776329373944672717">ჩანართების ჯგუფის სათაური „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="3810973564298564668">მართვა</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{ჩანართის ჩამაგრების მოხსნა}other{ჩანართების ჩამაგრების მოხსნა}}</translation>

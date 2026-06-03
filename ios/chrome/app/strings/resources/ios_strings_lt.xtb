@@ -916,6 +916,7 @@
 <translation id="422474357428465195">Kilo kelios slaptažodžio problemos, dėl kurių gali kilti saugos pavojus.</translation>
 <translation id="422477017457571619">Realiuoju laiku teikiama DI pagrįsta apsauga nuo pavojingų svetainių, atsisiuntimų ir plėtinių, pagrįsta jūsų naršymo duomenimis, siunčiamais „Google“</translation>
 <translation id="4231395118547300571">Saugos patikros pranešimai įjungti</translation>
+<translation id="4232376164796433044">Slaptažodžiai ir autom. pildymas</translation>
 <translation id="4232817129213135694">Šio įrenginio prieigos rakto nustatymas</translation>
 <translation id="4237377247299956313">Palieskite <ph name="BEGIN_BOLD" />Numatytoji naršyklės programa<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Išsaugokite žinomo keliautojo numerį</translation>
@@ -1931,6 +1932,7 @@ Jei norite tęsti kompiuteryje, perjunkite į <ph name="OTHER_EMAIL" />. Gausite
 <translation id="7603308509262646847">Automatiškai pildyti kortelės savininko vardą (<ph name="NAME" />)</translation>
 <translation id="7603852183842204213">Blokuoti išš. l. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Sinchronizavimas neveikia</translation>
+<translation id="7606639338662398635">Skirtukų grupės</translation>
 <translation id="760667371114328991">Išjunkite Saugos patikros pranešimus</translation>
 <translation id="7612619742409846846">Prisijungta prie „Google“ kaip</translation>
 <translation id="7612849887607288481">Atidaryti DI prototipų meniu</translation>
@@ -2247,6 +2249,7 @@ Jei norite tęsti kompiuteryje, perjunkite į <ph name="OTHER_EMAIL" />. Gausite
 <translation id="8636825310635137004">Jei norite pasiekti skirtukus iš kitų įrenginių, įjunkite sinchronizavimą.</translation>
 <translation id="8637431369725868556">Pasinaudokite apsauga nuo pavojingų svetainių.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Pažeistų slaptažodžių nėra}=1{{COUNT} pažeistas slaptažodis}one{{COUNT} pažeistas slaptažodis}few{{COUNT} pažeisti slaptažodžiai}many{{COUNT} pažeisto slaptažodžio}other{{COUNT} pažeistų slaptažodžių}}</translation>
+<translation id="8639963783467694461">Automatinio pildymo nustatymai</translation>
 <translation id="8642417828095157370">Skirtukai bendrinami, kad gautumėte aktualesnius atsakymus</translation>
 <translation id="8643403533759285912">Ištrinti grupę</translation>
 <translation id="8647280737650867362">Nepavyko atsisakyti kainos stebėjimo.</translation>

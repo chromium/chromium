@@ -875,6 +875,7 @@
 <translation id="2354001756790975382">บุ๊กมาร์กอื่นๆ</translation>
 <translation id="2355395290879513365">ผู้โจมตีอาจเห็นรูปภาพที่คุณกำลังดูอยู่บนเว็บไซต์นี้และหลอกลวงคุณโดยการแก้ไขรูปภาพ</translation>
 <translation id="2356941001189392209">รายการ URL ที่จำกัดไว้ของหน้าเว็บที่คุณเข้าชมซึ่งใช้เหตุการณ์เทคโนโลยีเดิม</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{จะแชร์ 1 แท็บ}other{จะแชร์ {NUM_TABS} แท็บ}}</translation>
 <translation id="2357481397660644965">อุปกรณ์ของคุณจัดการโดย <ph name="DEVICE_MANAGER" /> และบัญชีของคุณจัดการโดย <ph name="ACCOUNT_MANAGER" /></translation>
 <translation id="2359629602545592467">หลายรายการ</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
@@ -4069,7 +4070,6 @@
 <translation id="7388380253839603603">ราคาน้ำมันและเชื้อเพลิงยานพาหนะ</translation>
 <translation id="7388594495505979117">{0,plural, =1{อุปกรณ์จะรีสตาร์ทใน 1 นาที}other{อุปกรณ์จะรีสตาร์ทใน # นาที}}</translation>
 <translation id="7393161616326137353">เกมผจญภัย</translation>
-<translation id="7393243238767102021">อนุญาตให้ <ph name="DOMAIN" /> ยืนยันอีเมลนี้โดยอัตโนมัติไหม</translation>
 <translation id="7393475648162498734">แสดงรางวัลและสิทธิประโยชน์ที่ใช้กับบัตรของคุณได้เมื่อชำระเงิน</translation>
 <translation id="7393971683644170444">กำลังเชื่อมต่อกับผู้ให้บริการบัตร...</translation>
 <translation id="739728382607845710">ไอคอนเครื่องจัดการการชําระเงิน</translation>

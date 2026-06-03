@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Cookies og websitedata</translation>
 <translation id="2553552004849639664">Få Chromes bedste beskyttelse mod onlinetrusler</translation>
 <translation id="2570922361219980984">Lokationsadgang er også deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Udvidet – klik for at skjule.</translation>
 <translation id="2586657967955657006">Udklipsholder</translation>
 <translation id="2588271083332682494">Hold orden med fanegrupper</translation>
 <translation id="2592917252160773942">Websites kan anmode om adgang til dit kamera</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Anmod om computervenlig visning</translation>
 <translation id="5091663350197390230">Når dette er slået til, kan websites anvende JavaScript. Når dette er slået fra, kan websites ikke anvende JavaScript.</translation>
 <translation id="5099358668261120049">Denne handling sletter alle data og cookies, som er gemt af <ph name="ORIGIN" /> eller de tilhørende apps på din startside.</translation>
-<translation id="5100237604440890931">Skjult – klik for at udvide.</translation>
 <translation id="5116239826668864748">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="512938610812707830">Feltet i bunden med temasamlinger til siden Ny fane er åbnet i fuld højde</translation>
@@ -696,7 +694,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> blev tilladt</translation>
 <translation id="8200772114523450471">Genoptag</translation>
 <translation id="8211406090763984747">Forbindelsen er sikker</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Når funktionen er aktiveret, kan websites anmode om adgang til andre enheder på dit lokale netværk. Når funktionen er deaktiveret, kan websites ikke tilgå andre enheder på dit lokale netværk.</translation>
 <translation id="8249310407154411074">Flyt til toppen</translation>
 <translation id="8261506727792406068">Slet</translation>

@@ -415,7 +415,6 @@
 <translation id="1282311502488501110">Не се најавувај</translation>
 <translation id="1282436639288565079">Детали за групата картички</translation>
 <translation id="1282577885428483870">Сајтови и сметки</translation>
-<translation id="1283344108460935898">Skills не е достапна</translation>
 <translation id="1284277788676816155">Не дозволувај да се зачувуваат податоци</translation>
 <translation id="1285320974508926690">Никогаш не преведувај ја оваа локација</translation>
 <translation id="1285484354230578868">Складирајте податоци на вашата сметка на Google Диск</translation>
@@ -776,6 +775,7 @@
 <translation id="1566049601598938765">Вебсајт</translation>
 <translation id="15662109988763471">Избраниот печатач не е достапен или не е правилно инсталиран. Проверете го или обидете се да изберете друг печатач.</translation>
 <translation id="1566329594234563241">Додека е неактивен и приклучен во струја</translation>
+<translation id="1567069630205219514">Зголемете ја големината на прозорецот за да го отпаузирате разговорот</translation>
 <translation id="1567135437923613642">Овозможете ги истакнатите експерименти</translation>
 <translation id="1567579616025300478">Сајтов нема дозвола за зачувување податоци на уредот.</translation>
 <translation id="156793199942386351">Копчето „<ph name="CURRENTKEY" />“ е веќе назначено за дејството „<ph name="ACTION" />“. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
@@ -1195,6 +1195,7 @@
 <translation id="1862311223300693744">Дали имате инсталирано посебна VPN, прокси, заштитен ѕид или
     софтвер NAS?</translation>
 <translation id="1863182668524159459">Не се најдени сериски порти</translation>
+<translation id="1863374797460198869">Разговорот е скриен</translation>
 <translation id="1864111464094315414">Најавување</translation>
 <translation id="1864400682872660285">Поладни</translation>
 <translation id="1864454756846565995">USB-Ц уред (задна порта)</translation>
@@ -2072,6 +2073,7 @@
 <translation id="2477065602824695373">Автоматското скенирање е исклучено бидејќи доделивте повеќе прекинувачи.</translation>
 <translation id="2478176599153288112">Дозволи на медиумски датотеки за „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Овозможете услуга за враќање податоци.</translation>
+<translation id="2479148705183875116">Отворете „Поставки“</translation>
 <translation id="2479541499757560845">Поставки за тастатурата за пристапност</translation>
 <translation id="2480868415629598489">Измена на податоците што ги копирате</translation>
 <translation id="2480881140544300950">Тековниот пребарувач што управува со вашата страница во нова картичка</translation>
@@ -2487,7 +2489,6 @@
 <translation id="2766629385177215776">Автоматски закачувај ги новите групи картички создадени на кој било уред на лентата со обележувачи</translation>
 <translation id="2767077837043621282">Не можеше да се ажурира Chromebook. Обидете се подоцна.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> ќе може да ја изменува <ph name="FILENAME" /> сѐ додека не ги затворите сите картички за сајтов</translation>
-<translation id="2767771295575888898">Отвори „<ph name="SELECTION" />“ во „Режим за читање“</translation>
 <translation id="2769174155451290427">Прикачена слика</translation>
 <translation id="2770082596325051055">Паузирај ја <ph name="FILE_NAME" /></translation>
 <translation id="2770465223704140727">Отстрани од список</translation>
@@ -2799,7 +2800,6 @@
 <translation id="2996108796702395498">Серискиот број на вашиот уред е <ph name="SERIAL_NUMBER" />. Бројов може да се користи за активирање услуга.</translation>
 <translation id="2996286169319737844">Податоците се шифрирани со вашата лозинка за синхронизација. Тоа не ги вклучува начините на плаќање и адресите од Google Pay.</translation>
 <translation id="2996722619877761919">Прелистување од долгиот раб</translation>
-<translation id="2997608191364087784">&amp;Преведи „<ph name="SELECTION" />“ на <ph name="LANGUAGE" /></translation>
 <translation id="2998097899774209901">Вклучено • екстензијава ги прекршува правилата на „Веб-продавницата на Chrome“</translation>
 <translation id="2998267783395280091">Најдена е мрежа</translation>
 <translation id="3000378525979847272">Дозволени: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -6983,6 +6983,7 @@
 <translation id="609942571968311933">Текстот е копиран од <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">Секогаш дозволувај <ph name="HOST" /> да ги контролира и репрограмира MIDI-уредите</translation>
 <translation id="6100736666660498114">Почетно мени</translation>
+<translation id="6100737823178787570">Зголемете ја големината на прозорецот за да ја отпаузирате задачата</translation>
 <translation id="6101226222197207147">Додадена е нова апликација (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Оваа датотека беше блокирана од „Напредна заштита“.</translation>
 <translation id="6103681770816982672">Предупредување: се префрлате на канал за програмери</translation>
@@ -7405,7 +7406,6 @@
 <translation id="6418511932144861495">Инсталирајте важно ажурирање</translation>
 <translation id="641899100123938294">Скенирајте за нови уреди</translation>
 <translation id="6419546358665792306">Вчитај неотпакувана</translation>
-<translation id="6423685703035190381">Добивајте известувања за Price Tracking на телефонот</translation>
 <translation id="6425556984042222041">Брзина на говорот за „Од текст во говор“</translation>
 <translation id="642729974267661262">Не им е дозволено да пуштаат звук</translation>
 <translation id="6427752304227226701">Пријавете &amp;небезбеден сајт…</translation>
@@ -7836,7 +7836,6 @@
 <translation id="6739266861259291931">Ресетирајте на јазикот на уредот</translation>
 <translation id="6739923123728562974">Прикажи кратенка за работна површина</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> е паузиран</translation>
-<translation id="6742816895667193660">Отвори „<ph name="SELECTION" />“ во „Режим за читање“</translation>
 <translation id="6743841972744298686">Поставки за синхронизација</translation>
 <translation id="6744397361782514824">Замени со приказот лево</translation>
 <translation id="6746124502594467657">Премести долу</translation>
@@ -8322,7 +8321,6 @@
 <translation id="707772989579681711">Вашиот претходен избор</translation>
 <translation id="7077751457066325012">Прегледајте и приспособете ги кратенките од тастатура</translation>
 <translation id="7077829361966535409">Страницата за пријавување не успеа да се вчита со користење на тековните поставки за прокси. <ph name="GAIA_RELOAD_LINK_START" />Обидете се да се пријавите повторно<ph name="GAIA_RELOAD_LINK_END" /> или користете поинакви <ph name="PROXY_SETTINGS_LINK_START" />поставки за прокси<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
-<translation id="7078103664368916714">&amp;Отпечати „<ph name="SELECTION" />“</translation>
 <translation id="7078120482318506217">Сите мрежи</translation>
 <translation id="708060913198414444">К&amp;опирај ја адресата на аудиото</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> е управувана од вашиот администратор</translation>
@@ -9221,7 +9219,6 @@
 <translation id="7752832973194460442">Податоци за апликација за Android</translation>
 <translation id="7754704193130578113">Прашај каде да се зачува секоја датотека пред преземање</translation>
 <translation id="7757592200364144203">Променете го името на уредот</translation>
-<translation id="7757735653610827848">&amp;Копирај „<ph name="SELECTION" />“</translation>
 <translation id="7757739382819740102">Контактите во близина може да споделуваат со вас. Ќе биде потребно одобрување.</translation>
 <translation id="7757787379047923882">Текстот е споделен од <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>

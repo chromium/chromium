@@ -916,6 +916,7 @@
 <translation id="422474357428465195">Sono presenti diversi problemi relativi alle password che potrebbero mettere a rischio la tua sicurezza.</translation>
 <translation id="422477017457571619">Protezione basata sull'AI in tempo reale da estensioni, siti e download pericolosi in base ai tuoi dati di navigazione inviati a Google</translation>
 <translation id="4231395118547300571">Notifiche del controllo di sicurezza attivate</translation>
+<translation id="4232376164796433044">Password e compilazione automatica</translation>
 <translation id="4232817129213135694">Configura le passkey per questo dispositivo</translation>
 <translation id="4237377247299956313">Tocca <ph name="BEGIN_BOLD" />App browser predefinita<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Salva Known Traveler Number</translation>
@@ -1931,6 +1932,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="7603308509262646847">Compila automaticamente il titolare della carta <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Popup bloccati (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">La sincronizzazione non funziona</translation>
+<translation id="7606639338662398635">Gruppi di schede</translation>
 <translation id="760667371114328991">Disattiva le notifiche del controllo di sicurezza</translation>
 <translation id="7612619742409846846">Accesso effettuato a Google come</translation>
 <translation id="7612849887607288481">Apri il menu di prototipazione AI</translation>
@@ -2247,6 +2249,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="8636825310635137004">Attiva la sincronizzazione per recuperare le tue schede dagli altri dispositivi.</translation>
 <translation id="8637431369725868556">Ricevi protezione da siti pericolosi.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
+<translation id="8639963783467694461">Impostazioni di Compilazione automatica</translation>
 <translation id="8642417828095157370">Le schede vengono condivise per ricevere risposte più pertinenti</translation>
 <translation id="8643403533759285912">Elimina gruppo</translation>
 <translation id="8647280737650867362">Impossibile interrompere il monitoraggio del prezzo.</translation>

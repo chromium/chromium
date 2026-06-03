@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Cookies e datos dos sitios</translation>
 <translation id="2553552004849639664">Obtén a máxima protección de Chrome contra as ameazas en liña</translation>
 <translation id="2570922361219980984">O acceso á localización tamén está desactivado neste dispositivo. Actívao na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Vista ampliada (fai clic para contraela).</translation>
 <translation id="2586657967955657006">Portapapeis</translation>
 <translation id="2588271083332682494">Ten todo ordenado cos grupos de pestanas</translation>
 <translation id="2592917252160773942">Os sitios poden pedir permiso para acceder á cámara</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Solicita a vista para ordenadores</translation>
 <translation id="5091663350197390230">Cando esta opción está activada, os sitios poden utilizar JavaScript. Cando esta opción está desactivada, os sitios non poden utilizar JavaScript.</translation>
 <translation id="5099358668261120049">Ao realizar esta acción, eliminaranse os datos e as cookies que almacenase <ph name="ORIGIN" /> ou a súa aplicación na túa pantalla de inicio.</translation>
-<translation id="5100237604440890931">Vista contraída (fai clic para ampliala).</translation>
 <translation id="5116239826668864748">Podes utilizar Chrome cando toques as ligazóns en mensaxes, en documentos e noutras aplicacións</translation>
 <translation id="5123685120097942451">Pestana do modo de incógnito</translation>
 <translation id="512938610812707830">Panel inferior de coleccións de temas de aparencia da páxina Nova pestana aberto a altura completa</translation>
@@ -696,7 +694,6 @@ A Protección avanzada controla estas opcións de Chrome:</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> (permitido)</translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8211406090763984747">A conexión é segura</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Cando esta opción está activada, os sitios poden pedir permiso para acceder a outros dispositivos conectados á túa rede local. Cando está desactivada, non poden acceder.</translation>
 <translation id="8249310407154411074">Mover á parte superior</translation>
 <translation id="8261506727792406068">Eliminar</translation>

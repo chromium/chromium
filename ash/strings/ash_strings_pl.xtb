@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">Pokaż więcej emotikonów</translation>
 <translation id="2328561734797404498">Aby użyć <ph name="APP_NAME" />, uruchom ponownie urządzenie.</translation>
 <translation id="2335091074961603075">Na Twoim Chromebooku lub urządzeniu Bluetooth funkcja Bluetooth jest dostępna w starszej wersji. Aby uzyskać lepszą jakość dźwięku, używaj mikrofonu wewnętrznego.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji dzisiaj. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}few{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}many{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}other{Domena <ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji przed upływem wyznaczonego terminu. Możesz też rozpocząć pobieranie za pomocą połączenia z pomiarem użycia danych (mogą zostać naliczone opłaty).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Kliknij przycisk rysika na półce, by zrobić notatkę lub zrzut ekranu albo użyć wskaźnika laserowego bądź lupy.</translation>
 <translation id="2341729377289034582">Zablokowano w orientacji pionowej</translation>
@@ -568,6 +569,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2687510499067466116">Skrót klawiszowy został zmieniony</translation>
 <translation id="2689613560355655046">Biurko 8</translation>
 <translation id="2692092709110488417">Naciśnij Tab, aby zaznaczyć i przenieść wybrany obszar</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Ostatni dzień na zaktualizowanie urządzenia <ph name="DEVICE_TYPE" />}few{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dni}many{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dni}other{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dnia}}</translation>
 <translation id="2695305337569143674">internet</translation>
 <translation id="2697697418792422688">Pokaż ustawienia klawiatury. Wybrano: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Za pomocą aplikacji Przenoszenie treści możesz przenieść dane z konta szkolnego na osobiste</translation>
@@ -794,6 +796,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="334927402682780278">Zaznacz tekst od kursora do końca wiersza</translation>
 <translation id="3349345708646875009">Otwórz menedżera zadań</translation>
 <translation id="3353786022389205125">Włącz „Pokaż ekran blokady po wybudzeniu” i spróbuj ponownie</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu tygodnia}few{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodni}many{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodni}other{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodnia}}</translation>
 <translation id="3364721542077212959">Narzędzia rysika</translation>
 <translation id="3365281428003534650">Ustaw minutnik, zadanie i muzykę</translation>
 <translation id="3365977133351922112">Twój telefon jest za daleko. Przysuń go bliżej.</translation>
@@ -953,6 +956,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3741482431277446954">Prawy przycisk myszy</translation>
 <translation id="3742055079367172538">Wykonano zrzut ekranu</translation>
 <translation id="3743775386021959186">Tryb skupienia jest włączony, pozostały czas: <ph name="REMAINING_TIME" /></translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{Domena <ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia <ph name="DEVICE_TYPE" /> dzisiaj.}few{Domena <ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia <ph name="DEVICE_TYPE" /> przed podanym terminem.}many{Domena <ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia <ph name="DEVICE_TYPE" /> przed podanym terminem.}other{Domena <ph name="MANAGER" /> wymaga utworzenia kopii zapasowej danych i zwrotu tego urządzenia <ph name="DEVICE_TYPE" /> przed podanym terminem.}}</translation>
 <translation id="3750403286520637847">Ukryj sugestię dotyczącą pogody</translation>
 <translation id="3752253558646317685">Twoje dziecko musi unosić i opuszczać palec, aby można było zapisać odcisk</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Dane aplikacji mogą obejmować dowolne informacje zapisane przez aplikację (w zależności od ustawień określonych przez dewelopera) – w tym dane takie jak kontakty, wiadomości i zdjęcia.<ph name="END_PARAGRAPH1" />
@@ -1077,6 +1081,11 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="412298498316631026">okno</translation>
 <translation id="4123259114412175274">Aby odblokować Chromebooka, sprawdź, czy na telefonie jest włączony Bluetooth</translation>
 <translation id="4123868835475902435">To były podstawy. Jeśli potrzebujesz bardziej szczegółowych wskazówek i instrukcji, skorzystaj z wbudowanej aplikacji Odkrywaj. Znajdziesz w niej porady na początek, oferty specjalne oraz opis najnowszych funkcji urządzenia <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4124779003103520737">{0,plural, =1{Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie automatycznie zablokowane za # sekundę.
+        Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}few{Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie automatycznie zablokowane za # sekundy.
+        Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}many{Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie automatycznie zablokowane za # sekund.
+        Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}other{Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie automatycznie zablokowane za # sekundy.
+        Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}}</translation>
 <translation id="4125970834901680537">W trybie tabletu nie można strumieniować aplikacji. Spróbuj ponownie w trybie laptopa.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" />°C – aktualna szybkość: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Włączone do wschodu słońca</translation>
@@ -1385,6 +1394,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4964188651935955085">Gdy wyłączysz Bluetooth, to urządzenie zewnętrzne rozłączy się z urządzeniem <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Zwiększ głośność</translation>
 <translation id="496999337731226334">Prezentacja – krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" />. Często używane elementy sterujące dotyczące np. Wi-Fi, Bluetootha czy głośności znajdziesz w Szybkich ustawieniach. Możesz tam też robić zrzuty ekranu. Naciśnij Alt + Shift + S, aby otworzyć Szybkie ustawienia.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{Domena <ph name="MANAGER" /> wymaga pobrania aktualizacji dzisiaj. Gdy połączysz się z internetem, aktualizacja pobierze się automatycznie.}few{Domena <ph name="MANAGER" /> wymaga pobrania aktualizacji przed upływem wyznaczonego terminu. Gdy połączysz się z internetem, aktualizacja pobierze się automatycznie.}many{Domena <ph name="MANAGER" /> wymaga pobrania aktualizacji przed upływem wyznaczonego terminu. Gdy połączysz się z internetem, aktualizacja pobierze się automatycznie.}other{Domena <ph name="MANAGER" /> wymaga pobrania aktualizacji przed upływem wyznaczonego terminu. Gdy połączysz się z internetem, aktualizacja pobierze się automatycznie.}}</translation>
 <translation id="4975771730019223894">Plakietki aplikacji</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1461,6 +1471,7 @@ Możesz też użyć skrótu klawiszowego. Zaznacz tekst, a potem naciśnij <ph 
 <translation id="5176318573511391780">Nagraj fragment ekranu</translation>
 <translation id="5187627942836026988">Pokaż szczegóły hotspota. Jest on zablokowany przez administratora.</translation>
 <translation id="5188648870018555788">Używaj lokalizacji. Zezwól aplikacjom na ChromeOS i Androida oraz witrynom i usługom, które mają dostęp do lokalizacji, na używanie lokalizacji tego urządzenia. Ustawienie Dokładność lokalizacji zapewnia dokładniejszą lokalizację aplikacjom i usługom na Androida. W tym celu Google okresowo przetwarza dane z czujników urządzenia i sygnały bezprzewodowe z Twojego urządzenia do ustalania lokalizacji sygnałów bezprzewodowych na zasadzie crowdsourcingu. Dane są wykorzystywane – bez identyfikowania Cię – do poprawiania dokładności lokalizacji i usług wykorzystujących lokalizację, a także do udoskonalania, świadczenia i utrzymywania usług Google w oparciu o uzasadniony interes Google i innych firm w spełnianiu potrzeb użytkowników. <ph name="BEGIN_LINK1" />Więcej informacji o używaniu lokalizacji<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Zwróć urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodnia}few{Zwróć urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodni}many{Zwróć urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodni}other{Zwróć urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodnia}}</translation>
 <translation id="5198039720391525849">Polecane GIF-y</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, zdarzenia: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Aplikacja <ph name="MOVED_APP_NAME" /> została połączona z aplikacją <ph name="IN_PLACE_APP" />, by utworzyć nowy folder.</translation>
@@ -1778,6 +1789,11 @@ Brak połączonych urządzeń.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Zostaniesz automatycznie wylogowany za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">Elementy sterujące rozmową wideo</translation>
+<translation id="6070081109266557120">{0,plural, =1{Za # sekundę nastąpi automatyczne wylogowanie.
+        Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}few{Za # sekundy nastąpi automatyczne wylogowanie.
+        Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}many{Za # sekund nastąpi automatyczne wylogowanie.
+        Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}other{Za # sekundy nastąpi automatyczne wylogowanie.
+        Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.}}</translation>
 <translation id="6071576563962215370">System nie mógł ustanowić blokady atrybutów instalacyjnych urządzenia.</translation>
 <translation id="6072442788591997866">Aplikacja <ph name="APP_NAME" /> nie jest dozwolona na tym urządzeniu. Skontaktuj się z administratorem. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Zatrzymaj nagrywanie</translation>
@@ -2126,6 +2142,8 @@ Brak połączonych urządzeń.</translation>
 <translation id="7076878155205969899">Wycisz dźwięk</translation>
 <translation id="7083848064787091821">Skupienie</translation>
 <translation id="7084678090004350185">Przełącz hotspota. Hotspot jest włączony. Połączono z <ph name="DEVICECOUNT" /> urządzeniami.</translation>
+<translation id="7086438436964931440">Teraz nastąpi automatyczne wylogowanie.
+        Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.</translation>
 <translation id="7086931198345821656">Ta aktualizacja wymaga wykonania na urządzeniu <ph name="DEVICE_TYPE" /> procedury Powerwash. Wszystkie dane zostaną usunięte. Więcej informacji o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="709015856939120012">Powiększ na stronie</translation>
@@ -2528,6 +2546,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8220076512072059941">Dodaj: <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Ukryj tę sugestię</translation>
 <translation id="8230305195727960608">Tryb odwrócenia kolorów</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Wymagany natychmiastowy zwrot}few{Zwróć urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dni}many{Zwróć urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dni}other{Zwróć urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_DAYS} dnia}}</translation>
 <translation id="8236042855478648955">Czas na przerwę</translation>
 <translation id="8237964652943995219">Następne biurko: <ph name="DESK_NAME" />. Biurko <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Obejrzyj krótką prezentację, aby dowiedzieć się, jak korzystać z urządzenia <ph name="PRODUCT_NAME" />. Zacznij w 5 krokach.</translation>
@@ -2703,6 +2722,8 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8756799553341497810">Po zamknięciu tego widoku możesz zacząć dostosowywać układ aplikacji.</translation>
 <translation id="8759408218731716181">Nie można skonfigurować wielokrotnego logowania</translation>
 <translation id="8759753423332885148">Więcej informacji.</translation>
+<translation id="8760172428247796445">Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie teraz zablokowane.
+        Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.</translation>
 <translation id="8763883995157866248">Przełącz urządzenie w tryb uśpienia</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, zainstalowana aplikacja, zablokowana</translation>
 <translation id="8782565991310229362">Uruchamianie aplikacji kiosku zostało anulowane.</translation>

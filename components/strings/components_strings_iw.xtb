@@ -875,6 +875,7 @@
 <translation id="2354001756790975382">סימניות אחרות</translation>
 <translation id="2355395290879513365">ייתכן שתוקפים יוכלו לראות את התמונות שבהן צפית באתר זה, ולאחר מכן הם ינסו להונות אותך על ידי שינוי התמונות.</translation>
 <translation id="2356941001189392209">‏רשימה חלקית של כתובות URL של דפים עם אירועי שימוש בטכנולוגיה מדור קודם שביקרת בהם</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{כרטיסייה אחת תשותף}one{‫{NUM_TABS} כרטיסיות ישותפו}two{‫{NUM_TABS} כרטיסיות ישותפו}other{‫{NUM_TABS} כרטיסיות ישותפו}}</translation>
 <translation id="2357481397660644965">המכשיר שלך מנוהל על ידי <ph name="DEVICE_MANAGER" /> והחשבון שלך מנוהל על ידי <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">מטבעות מרובים</translation>
 <translation id="2359808026110333948">המשך</translation>
@@ -4075,7 +4076,6 @@ Del</translation>
 <translation id="7388380253839603603">מחירי דלק ותדלוק</translation>
 <translation id="7388594495505979117">{0,plural, =1{המכשיר יופעל מחדש בתוך דקה}one{המכשיר יופעל מחדש בתוך # דקות}two{המכשיר יופעל מחדש בתוך # דקות}other{המכשיר יופעל מחדש בתוך # דקות}}</translation>
 <translation id="7393161616326137353">משחקי הרפתקאות</translation>
-<translation id="7393243238767102021">לאפשר ל-<ph name="DOMAIN" /> לאמת אוטומטית את כתובת האימייל הזו?</translation>
 <translation id="7393475648162498734">הצגת הפרסים וההטבות שזמינים לכרטיסים שלך בקופה</translation>
 <translation id="7393971683644170444">מתבצעת התחברות לספק הכרטיס…</translation>
 <translation id="739728382607845710">‏סמל רכיב ה-handler של התשלומים</translation>

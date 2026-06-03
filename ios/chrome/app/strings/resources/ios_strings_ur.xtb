@@ -916,6 +916,7 @@
 <translation id="422474357428465195">آپ کے پاس ورڈ میں مختلف مسائل ہیں جن سے آپ کی سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔</translation>
 <translation id="422477017457571619">‏‫Google کو بھیجے جا رہے آپ کے براؤزنگ ڈیٹا کی بنیاد پر خطرناک سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز کے خلاف ریئل ٹائم میں AI تقویت یافتہ حفاظت ملتی ہے</translation>
 <translation id="4231395118547300571">سیفٹی چیک کی اطلاعات آن ہیں</translation>
+<translation id="4232376164796433044">پاس ورڈز اور آٹو فل</translation>
 <translation id="4232817129213135694">اس آلہ کے لیے پاس کیز سیٹ اپ کریں</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ڈیفالٹ براؤزر ایپ<ph name="END_BOLD" /> پر تھپتھپائیں</translation>
 <translation id="424063167283213501">معلوم مسافر نمبر محفوظ کریں</translation>
@@ -1931,6 +1932,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7603308509262646847">کارڈ کے حامل <ph name="NAME" /> کو آٹو فل کریں</translation>
 <translation id="7603852183842204213">پاپ اپس کو مسدود کر دیا گیا (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">مطابقت پذیری کام نہیں کر رہی ہے</translation>
+<translation id="7606639338662398635">ٹیب گروپس</translation>
 <translation id="760667371114328991">سیفٹی چیک کی اطلاعات کو آف کریں</translation>
 <translation id="7612619742409846846">‏Google میں سائن ان ہے بطور</translation>
 <translation id="7612849887607288481">‏‫AI پروٹو ٹائپنگ مینو کھولیں</translation>
@@ -2247,6 +2249,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8636825310635137004">اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، مطابقت پذیری کو آن کریں۔</translation>
 <translation id="8637431369725868556">خطرناک سائٹس سے تحفظ حاصل کریں۔</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{{COUNT} متاثرہ پاس ورڈ}other{{COUNT} متاثرہ پاس ورڈز}}</translation>
+<translation id="8639963783467694461">آٹو فل ترتیبات</translation>
 <translation id="8642417828095157370">مزید متعلقہ جوابات کے لیے ٹیبز کا اشتراک کیا جاتا ہے</translation>
 <translation id="8643403533759285912">گروپ حذف کریں</translation>
 <translation id="8647280737650867362">قیمت کے ٹریک کو کالعدم نہیں کیا جا سکا۔</translation>

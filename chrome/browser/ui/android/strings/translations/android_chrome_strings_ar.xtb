@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">‏يمكنك تنزيل ملفات PDF هنا</translation>
 <translation id="107147699690128016">في حال تغيير امتداد الملف، قد يفتح الملف في تطبيق مختلف ومن المحتمل أن يشكّل خطورة على جهازك.</translation>
 <translation id="1073328695547557412">‏انقر على رمز "عدسة Google"</translation>
+<translation id="1080116354587839789">ملاءمة مع العرض</translation>
 <translation id="1086486568852410168">‏البحث باستخدام "عدسة Google"</translation>
 <translation id="1087799850623149508">يمكنك النقر مع الاستمرار لنقل شريط العناوين إلى أسفل الشاشة</translation>
 <translation id="1089606299949659462">اكتملت المراجعة</translation>
@@ -537,6 +538,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{‫<ph name="TAB_GROUPS_PART" /> وعلامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />)}zero{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب}two{‫<ph name="TAB_GROUPS_PART" /> وعلامتَي تبويب (<ph name="TAB_COUNT_MANY" />)}few{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامات تبويب}many{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب}other{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{‏تم حفظ كلمة مرور واحدة على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}zero{‏تم حفظ # كلمة مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}two{‏تم حفظ كلمتَي مرور على هذا الجهاز فقط. ولاستخدامهما على أجهزتك الأخرى، يجب حفظهما في حسابك على Google.}few{‏تم حفظ # كلمات مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}many{‏تم حفظ # كلمة مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}other{‏تم حفظ # كلمة مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}}</translation>
 <translation id="3293181007446299124">يتم الحفاظ على خصوصية سجلّ التصفُّح في جهازك ويتم تأخير إرسال التقارير بهدف حماية هويتك.</translation>
+<translation id="3301639354590628973">تبديل الحسابات؟</translation>
 <translation id="3301936297336370235">تأكيد اقتراح كلمة المرور</translation>
 <translation id="3302615849591357577">استعادة مجموعة علامات تبويب "<ph name="TITLE_OF_GROUP" />" بلون "<ph name="COLOR_NAME" />" كمجموعة علامات تبويب جديدة في الخلفية</translation>
 <translation id="3303855915957856445">لم يتم العثور على أي نتائج بحث</translation>

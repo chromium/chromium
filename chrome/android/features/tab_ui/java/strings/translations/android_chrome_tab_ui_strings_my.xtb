@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> သည် <ph name="PRICE_DROP" /> ဈေးကျသွားသည်</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> တဘ်အုပ်စု အရောင်သင်္ကေတ</translation>
 <translation id="311432875115153175">တဘ်အုပ်စုစာရင်း ပိတ်လိုက်သည်</translation>
+<translation id="3152596030350326139">တဘ်များကို အလျားလိုက်ပြပါ</translation>
+<translation id="31806439105337256">တဘ်များကို ဒေါင်လိုက်ပြပါ</translation>
 <translation id="3194464645767632461">အဆင့်သတ်မှတ်ခြင်း</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုတွင် ထည့်ရန်}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုတွင် ထည့်ရန်}}</translation>
 <translation id="3328308545011660196">အကြံပြုချက်- တဘ် <ph name="NUMBER_OF_TABS" /> ခုက ဆက်စပ်ပုံပေါ်သည်။ ၎င်းတို့ကို အုပ်စုဖွဲ့မလား။</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{တဘ်ကို ပိတ်ရန်}other{တဘ်များကို ပိတ်ရန်}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">စာမျက်နှာအစမ်းကြည့်ရှုမှု မျှဝေရန်ပုံသေး။</translation>
+<translation id="3775705724665058594">သင့်ကိရိယာများသို့ ပို့ပါ</translation>
 <translation id="3776329373944672717">တဘ်အုပ်စု ခေါင်းစဉ် <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{တဘ်ကို ပင်ဖြုတ်ရန်}other{တဘ်များကို ပင်ဖြုတ်ရန်}}</translation>

@@ -152,7 +152,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2575822587468774919">Pilih apa-apa sahaja untuk dicari dengan Carian Imej</translation>
 <translation id="2576118232315942160">Untuk mendapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chromium</translation>
 <translation id="2592940277904433508">Terus menggunakan Chromium</translation>
-<translation id="2597357854077911882">ChromiumOS tidak dapat menyimpan data Chromium dalam Google Account anda disebabkan oleh ralat log masuk.</translation>
 <translation id="259935314519650377">Gagal mengcache pemasang yang dimuat turun. Ralat: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Organisasi anda dapat melihat dan mengurus data penyemakan imbas, seperti penanda halaman, sejarah dan kata laluan anda. Organisasi anda tidak dapat melihat data semakan imbas dalam profil Chromium peribadi</translation>
@@ -168,7 +167,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2722636413143664436">Untuk mendapatkan kata laluan dan penanda halaman anda serta pelbagai lagi pada semua peranti anda, log masuk ke Chromium</translation>
 <translation id="2738871930057338499">Tidak dapat disambungkan kepada Internet. HTTP 403 Dilarang. Sila semak konfigurasi proksi anda.</translation>
 <translation id="2753623023919742414">Klik untuk mencari</translation>
-<translation id="2762938400427952043">ChromiumOS tidak dapat menyimpan data Chromium dalam Google Account anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="2768103863314748511">Tetapkan Chromium sebagai alat lihat PDF lalai anda</translation>
 <translation id="2785438272836277133">Sambungan ini mengandungi perisian hasad dan tidak selamat. Alih keluar sambungan ini daripada Chromium supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="2799223571221894425">Lancarkan semula</translation>

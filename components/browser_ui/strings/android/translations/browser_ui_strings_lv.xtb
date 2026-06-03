@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
 <translation id="2553552004849639664">Iegūstiet Chrome visaugstāko aizsardzības līmeni pret draudiem tiešsaistē.</translation>
 <translation id="2570922361219980984">Arī piekļuve šīs ierīces atrašanās vietai ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Izvērsts — noklikšķiniet, lai sakļautu.</translation>
 <translation id="2586657967955657006">Starpliktuve</translation>
 <translation id="2588271083332682494">Ciļņu kārtošana, izmantojot ciļņu grupas</translation>
 <translation id="2592917252160773942">Vietnes var pieprasīt atļauju piekļūt jūsu kamerai</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Pieprasīt skatu datorā</translation>
 <translation id="5091663350197390230">Kad šis slēdzis ir ieslēgts, vietnes var izmantot JavaScript. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot JavaScript.</translation>
 <translation id="5099358668261120049">Tiks izdzēsti visi dati un sīkfaili, ko jūsu sākuma ekrānā glabā vietne <ph name="ORIGIN" /> vai tās lietotne.</translation>
-<translation id="5100237604440890931">Sakļauts — noklikšķiniet, lai izvērstu.</translation>
 <translation id="5116239826668864748">Varat izmantot Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="5123685120097942451">Inkognito cilne</translation>
 <translation id="512938610812707830">Jaunas cilnes lapas izskata motīvu kolekciju ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
@@ -696,7 +694,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus.</transl
 <translation id="8197286292360124385">Atļauta: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8211406090763984747">Savienojums ir drošs</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju piekļūt citām ierīcēm jūsu lokālajā tīklā. Kad šis slēdzis ir izslēgts, vietnes nevar piekļūt citām ierīcēm jūsu lokālajā tīklā.</translation>
 <translation id="8249310407154411074">Pārvietot uz augšdaļu</translation>
 <translation id="8261506727792406068">Dzēst</translation>

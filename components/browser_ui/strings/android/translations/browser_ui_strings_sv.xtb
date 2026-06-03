@@ -161,7 +161,6 @@
 <translation id="2546283357679194313">Cookies och webbplatsdata</translation>
 <translation id="2553552004849639664">Få det bästa skyddet i Chrome mot onlinehot</translation>
 <translation id="2570922361219980984">Platsåtkomst har inaktiverats på enheten också. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
-<translation id="257931822824936280">Vyn har expanderats. Komprimera den genom att klicka.</translation>
 <translation id="2586657967955657006">Urklipp</translation>
 <translation id="2588271083332682494">Få mer ordning med flikgrupper</translation>
 <translation id="2592917252160773942">Webbplatser får begära åtkomst till kameran</translation>
@@ -407,7 +406,6 @@
 <translation id="509133520954049755">Begär datorvy</translation>
 <translation id="5091663350197390230">När detta är aktiverat kan webbplatser använda JavaScript. När detta är inaktiverat får webbplatser inte använda JavaScript.</translation>
 <translation id="5099358668261120049">All data och alla cookies som har sparats av <ph name="ORIGIN" /> eller motsvarande app på startskärmen raderas.</translation>
-<translation id="5100237604440890931">Vyn har komprimerats. Expandera den genom att klicka.</translation>
 <translation id="5116239826668864748">Du kan använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar</translation>
 <translation id="5123685120097942451">Inkognitoflik</translation>
 <translation id="512938610812707830">Arket på nedre delen av skärmen för temasamlingar för utseende på sidan Ny flik har öppnats över hela skärmen</translation>
@@ -696,7 +694,6 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> tillåts</translation>
 <translation id="8200772114523450471">Återuppta</translation>
 <translation id="8211406090763984747">Anslutningen är säker</translation>
-<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="823874716226307142">När detta är aktiverat kan webbplatser begära åtkomst till andra enheter i det lokala nätverket. När detta är inaktiverat får webbplatser inte komma åt andra enheter i det lokala nätverket.</translation>
 <translation id="8249310407154411074">Flytta högst upp</translation>
 <translation id="8261506727792406068">Radera</translation>

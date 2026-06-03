@@ -875,6 +875,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2354001756790975382">Ostatné</translation>
 <translation id="2355395290879513365">Útočníci môžu vidieť obrázky, ktoré si prehliadate na tomto webe, a môžu vás napadnúť tým, že ich podvodným spôsobom upravia.</translation>
 <translation id="2356941001189392209">Obmedzený zoznam webových adries stránok, ktoré navštívite a na ktorých sa vyskytujú udalosti využívajúce starú technológiu</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Bude sa zdieľať 1 karta}few{Budú sa zdieľať {NUM_TABS} karty}many{Will share {NUM_TABS} tabs}other{Bude sa zdieľať {NUM_TABS} kariet}}</translation>
 <translation id="2357481397660644965">Vaše zariadenie spravuje <ph name="DEVICE_MANAGER" /> a váš účet spravuje <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Viaceré</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
@@ -4065,7 +4066,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7388380253839603603">Ceny pohonných látok a tankovanie vozidiel</translation>
 <translation id="7388594495505979117">{0,plural, =1{Vaše zariadenie sa reštartuje o 1 minútu}few{Vaše zariadenie sa reštartuje o # minúty}many{Vaše zariadenie sa reštartuje o # minúty}other{Vaše zariadenie sa reštartuje o # minút}}</translation>
 <translation id="7393161616326137353">Dobrodružné hry</translation>
-<translation id="7393243238767102021">Chcete povoliť webu <ph name="DOMAIN" /> automaticky overovať túto e‑mailovú adresu?</translation>
 <translation id="7393475648162498734">Zobrazte si, ktoré odmeny a výhody sú k dispozícii pre vaše karty pri platbe.</translation>
 <translation id="7393971683644170444">Pripája sa k poskytovateľovi karty…</translation>
 <translation id="739728382607845710">Ikona obslužného nástroja platieb</translation>

@@ -875,6 +875,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2354001756790975382">Autres favoris</translation>
 <translation id="2355395290879513365">Il se peut que des pirates informatiques puissent voir les images que vous regardez sur ce site et vous piègent en les modifiant.</translation>
 <translation id="2356941001189392209">Liste limitée des URL des pages que vous consultez sur lesquelles ont lieu des événements technologiques anciens</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 onglet sera partagé}one{{NUM_TABS} onglet sera partagé}other{{NUM_TABS} onglets seront partagés}}</translation>
 <translation id="2357481397660644965">Votre appareil est géré par <ph name="DEVICE_MANAGER" />, et votre compte par <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Plusieurs</translation>
 <translation id="2359808026110333948">Continuer</translation>
@@ -4071,7 +4072,6 @@ Informations supplémentaires :
 <translation id="7388380253839603603">Prix de l'essence et carburants pour véhicules</translation>
 <translation id="7388594495505979117">{0,plural, =1{Votre appareil va redémarrer dans 1 minute}one{Votre appareil va redémarrer dans # minute}other{Votre appareil va redémarrer dans # minutes}}</translation>
 <translation id="7393161616326137353">Jeux d'aventure</translation>
-<translation id="7393243238767102021">Autoriser <ph name="DOMAIN" /> à valider automatiquement cette adresse e-mail ?</translation>
 <translation id="7393475648162498734">Afficher les récompenses et avantages disponibles pour vos cartes lors du paiement</translation>
 <translation id="7393971683644170444">Connexion à l'émetteur de votre carte...</translation>
 <translation id="739728382607845710">Icône du gestionnaire de paiement</translation>

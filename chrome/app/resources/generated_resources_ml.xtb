@@ -415,7 +415,6 @@
 <translation id="1282311502488501110">സൈൻ ഇൻ ചെയ്യരുത്</translation>
 <translation id="1282436639288565079">ടാബ് ഗ്രൂപ്പ് വിശദാംശങ്ങൾ</translation>
 <translation id="1282577885428483870">സൈറ്റുകളും അക്കൗണ്ടുകളും</translation>
-<translation id="1283344108460935898">സ്കില്ലുകൾ ലഭ്യമല്ല</translation>
 <translation id="1284277788676816155">ഡാറ്റ സംരക്ഷിക്കാൻ അനുവദിക്കരുത്</translation>
 <translation id="1285320974508926690">ഈ സൈറ്റ് ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
 <translation id="1285484354230578868">നിങ്ങളുടെ Google ഡ്രൈവ് അക്കൗണ്ടിൽ ഡാറ്റ സംഭരിക്കുക</translation>
@@ -772,6 +771,7 @@
 <translation id="1566049601598938765">വെബ്‌സൈറ്റ്</translation>
 <translation id="15662109988763471">തിരഞ്ഞെടുത്ത പ്രിൻ്റർ ലഭ്യമല്ല, അല്ലെങ്കിൽ ശരിയായി ഇൻസ്‌റ്റാൾ ചെയ്‌തിട്ടില്ല. നിങ്ങളുടെ പ്രിൻ്റർ പരിശോധിക്കുകയോ മറ്റൊരു പ്രിൻ്റർ തിരഞ്ഞെടുത്ത് ശ്രമിക്കുകയോ ചെയ്യുക.</translation>
 <translation id="1566329594234563241">നിഷ്‌ക്രിയവും പ്ലഗ്-ഇൻ ചെയ്‌ത നിലയിലും ആയിരിക്കുമ്പോൾ</translation>
+<translation id="1567069630205219514">ചാറ്റ് പുനരാരംഭിക്കാൻ വിൻഡോയുടെ വലുപ്പം കൂട്ടുക</translation>
 <translation id="1567135437923613642">ഫീച്ചർ ചെയ്‌ത പരീക്ഷണങ്ങൾ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="1567579616025300478">നിങ്ങളുടെ ഉപകരണത്തിൽ ഡാറ്റ സംരക്ഷിക്കാൻ ഈ സൈറ്റിന് അനുവാദമില്ല.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' മുമ്പേ '<ph name="ACTION" />' എന്ന പ്രവർത്തനത്തിന് അസൈൻ ചെയ്‌തിട്ടുണ്ട്. <ph name="RESPONSE" /> ചെയ്യാൻ ഏതെങ്കിലും കീ അമർത്തുക.</translation>
@@ -1182,6 +1182,7 @@
 <translation id="1861262398884155592">ഈ ഫോൾഡറിൽ ഒന്നുമില്ല</translation>
 <translation id="1862311223300693744">നിങ്ങൾക്ക് ഇൻസ്റ്റാൾ ചെയ്‌ത ഏതെങ്കിലും പ്രത്യേക VPN, പ്രോക്‌സി, ഫയർവാൾ അല്ലെങ്കിൽ NAS സോഫ്‌റ്റ്‌വെയർ ഉണ്ടോ?</translation>
 <translation id="1863182668524159459">സീരിയൽ പോർട്ടുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
+<translation id="1863374797460198869">ചാറ്റ് മറച്ചു</translation>
 <translation id="1864111464094315414">സൈൻ ഇൻ</translation>
 <translation id="1864400682872660285">കൂളർ</translation>
 <translation id="1864454756846565995">USB-C ഉപകരണം (പുറകിലെ പോർട്ട്)</translation>
@@ -2055,6 +2056,7 @@
 <translation id="2477065602824695373">നിങ്ങൾ ഒന്നിലധികം സ്വിച്ചുകൾ സജ്ജീകരിച്ചതിനാൽ സ്വയമേവ-സ്‌കാൻ ചെയ്യൽ ഓഫാക്കി.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" എന്നതിനായുള്ള മീഡിയ-ഫയൽ അനുമതികൾ</translation>
 <translation id="24786041351753425">ഡാറ്റ വീണ്ടെടുക്കൽ സേവനം പ്രവർത്തനക്ഷമമാക്കുക.</translation>
+<translation id="2479148705183875116">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="2479541499757560845">ഉപയോഗസഹായി കീബോർഡ് ക്രമീകരണം</translation>
 <translation id="2480868415629598489">നിങ്ങൾ പകർത്തി ഒട്ടിക്കുന്ന വിവരത്തിൽ മാറ്റം വരുത്തുക</translation>
 <translation id="2480881140544300950">നിങ്ങളുടെ പുതിയ ടാബ് പേജ് മാനേജ് ചെയ്യുന്ന നിലവിലെ തിരയൽ എഞ്ചിൻ</translation>
@@ -2470,7 +2472,6 @@
 <translation id="2766629385177215776">ഏതൊരു ഉപകരണത്തിലും സൃഷ്‌ടിച്ച പുതിയ ടാബ് ഗ്രൂപ്പുകളെ ബുക്ക്‌മാർക്ക് ബാറിലേക്ക് സ്വയമേവ പിൻ ചെയ്യുക</translation>
 <translation id="2767077837043621282">നിങ്ങളുടെ Chromebook അപ്‌ഡേറ്റ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2767127727915954024">ഈ സൈറ്റിനുള്ള എല്ലാ ടാബുകളും നിങ്ങൾ അടയ്ക്കുന്നത് വരെ <ph name="ORIGIN" />-ന് <ph name="FILENAME" /> എഡിറ്റ് ചെയ്യാനാവും</translation>
-<translation id="2767771295575888898">റീഡിംഗ് മോഡിൽ "<ph name="SELECTION" />" തുറക്കുക</translation>
 <translation id="2769174155451290427">അപ്‌ലോഡ് ചെയ്‌ത ചിത്രം</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="2770465223704140727">പട്ടികയില്‍‌ നിന്നും നീക്കംചെയ്യുക</translation>
@@ -2782,7 +2783,6 @@
 <translation id="2996108796702395498">നിങ്ങളുടെ ഉപകരണത്തിന്റെ സീരിയൽ നമ്പർ <ph name="SERIAL_NUMBER" /> ആണ്. സേവനം സജീവമാക്കാൻ സഹായിക്കുന്നതിന് ഈ നമ്പർ ഉപയോഗിക്കാം.</translation>
 <translation id="2996286169319737844">നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച് ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. ഇതിൽ Google Pay-ൽ നിന്നുള്ള പേയ്മെന്‍റ് രീതികളും വിലാസങ്ങളും അടങ്ങുന്നില്ല.</translation>
 <translation id="2996722619877761919">ദീർഘ എഡ്‌ജിൽ ഫ്ലിപ്പ് ചെയ്യുക</translation>
-<translation id="2997608191364087784">"<ph name="SELECTION" />" എന്നത് <ph name="LANGUAGE" /> ഭാഷയിലേക്ക് &amp;വിവർത്തനം ചെയ്യുക</translation>
 <translation id="2998097899774209901">ഓണാണ് • ഈ വിപുലീകരണം Chrome വെബ് സ്റ്റോർ നയം ലംഘിക്കുന്നു</translation>
 <translation id="2998267783395280091">നെറ്റ്‌വർക്ക് കണ്ടെത്തി</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവ അനുവദിച്ചു</translation>
@@ -6965,6 +6965,7 @@
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് പകർത്തിയ ടെക്‌സ്‌റ്റ്</translation>
 <translation id="6099766472403716061">നിങ്ങളുടെ MIDI ഉപകരണങ്ങൾ നിയന്ത്രിക്കാനും റീപ്രോഗ്രാം ചെയ്യാനും <ph name="HOST" /> എന്നതിനെ എപ്പോഴും അനുവദിക്കുക</translation>
 <translation id="6100736666660498114">ആരംഭമെനു</translation>
+<translation id="6100737823178787570">ടാസ്ക് പുനരാരംഭിക്കാൻ വിൻഡോ വലുപ്പം കൂട്ടുക</translation>
 <translation id="6101226222197207147">പുതിയ ആപ്പ് ചേർത്തു (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">ഈ ഫയൽ വിപുലമായ പരിരക്ഷ ബ്ലോക്ക് ചെയ്‌തു.</translation>
 <translation id="6103681770816982672">മുന്നറിയിപ്പ്: നിങ്ങൾ ഡെവലപ്പർ ചാനലിലേക്ക് മാറുന്നു</translation>
@@ -7387,7 +7388,6 @@
 <translation id="6418511932144861495">സുപ്രധാന അപ്‌ഡേറ്റുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="641899100123938294">പുതിയ ഉപകരണങ്ങൾക്ക് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="6419546358665792306">അൺപായ്‌ക്ക് ചെയ്‌തവ ലോഡ് ചെയ്യുക</translation>
-<translation id="6423685703035190381">നിങ്ങളുടെ ഫോണിൽ നിരക്ക് ട്രാക്ക് ചെയ്യലുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ നേടൂ</translation>
 <translation id="6425556984042222041">ടെക്‌സ്റ്റ് ടു സ്‌പീച്ച് റേറ്റ്</translation>
 <translation id="642729974267661262">ശബ്‌ദം പ്ലേ ചെയ്യാൻ അനുവാദമില്ല</translation>
 <translation id="6427752304227226701">&amp;സുരക്ഷിതമല്ലാത്ത സൈറ്റ് റിപ്പോർട്ട് ചെയ്യുക...</translation>
@@ -7816,7 +7816,6 @@
 <translation id="6739266861259291931">ഉപകരണ ഭാഷയിലേക്ക് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6739923123728562974">ഡെസ്‌ക്‌ടോപ്പ് കുറുക്കുവഴി കാണിക്കുക</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> താൽക്കാലികമായി നിർത്തി</translation>
-<translation id="6742816895667193660">റീഡിംഗ് മോഡിൽ "<ph name="SELECTION" />" തുറക്കുക</translation>
 <translation id="6743841972744298686">സമന്വയ ക്രമീകരണം</translation>
 <translation id="6744397361782514824">ഇടതുവശത്തെ കാഴ്‌ച ഉപയോഗിച്ച് സ്വാപ്പ് ചെയ്യുക</translation>
 <translation id="6746124502594467657">താഴേക്ക് നീക്കുക</translation>
@@ -8303,7 +8302,6 @@
 <translation id="707772989579681711">നിങ്ങളുടെ മുമ്പത്തെ ചോയ്‌സ്</translation>
 <translation id="7077751457066325012">കീബോഡ് കുറുക്കുവഴികൾ കാണുക, ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="7077829361966535409">നിലവിലെ പ്രോക്‌സി ക്രമീകരണങ്ങൾ ഉപയോഗിച്ച് ലോഡ് ചെയ്യുന്നതിൽ സൈൻ-ഇൻ പേജ് പരാജയപ്പെട്ടു. <ph name="GAIA_RELOAD_LINK_START" />വീണ്ടും സൈൻ ഇൻ ചെയ്യാൻ ശ്രമിക്കുക<ph name="GAIA_RELOAD_LINK_END" />, അല്ലെങ്കിൽ മറ്റ് <ph name="PROXY_SETTINGS_LINK_START" />പ്രോക്‌സി ക്രമീകരണങ്ങൾ<ph name="PROXY_SETTINGS_LINK_END" /> ഉപയോഗിക്കുക.</translation>
-<translation id="7078103664368916714">"<ph name="SELECTION" /> " &amp;പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="7078120482318506217">എല്ലാ നെറ്റ്‌വർക്കുകളും</translation>
 <translation id="708060913198414444">ഓഡിയോ വിലാസം പകർത്തുക</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്ന നെറ്റ്‌വർക്കാണ്</translation>
@@ -9201,7 +9199,6 @@
 <translation id="7752832973194460442">Android ആപ്പ് വിവരങ്ങൾ</translation>
 <translation id="7754704193130578113">ഡൗൺലോഡ് ചെയ്യുന്നതിനു മുമ്പ് ഓരോ ഫയലും എവിടെ സംരക്ഷിക്കണമെന്ന് ചോദിക്കുക</translation>
 <translation id="7757592200364144203">ഉപകരണത്തിന്റെ പേര് മാറ്റുക</translation>
-<translation id="7757735653610827848">"<ph name="SELECTION" />" &amp;പകർത്തുക</translation>
 <translation id="7757739382819740102">സമീപത്തുള്ള കോൺടാക്റ്റുകൾക്ക് നിങ്ങളുമായി പങ്കിടാം. അനുമതി ആവശ്യമാണ്.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് പങ്കിട്ട ടെക്‌സ്റ്റ്</translation>
 <translation id="7758143121000533418">Family Link</translation>

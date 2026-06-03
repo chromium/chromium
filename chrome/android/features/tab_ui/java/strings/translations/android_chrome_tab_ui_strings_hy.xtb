@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> գնիջեցում <ph name="PRODUCT_NAME" />-ի համար</translation>
 <translation id="3078350928901129212">Ներդիրների խմբի <ph name="COLOR_NAME" /> գույնի պատկերակ</translation>
 <translation id="311432875115153175">Ներդիրների խմբերի ցանկը փակված է</translation>
+<translation id="3152596030350326139">Ցույց տալ ներդիրները հորիզոնական դիրքով</translation>
+<translation id="31806439105337256">Ցույց տալ ներդիրներն ուղղաձիգ դիրքով</translation>
 <translation id="3194464645767632461">գնահատական</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Ավելացրեք <ph name="TABS_COUNT_ONE" /> ընտրված ներդիր խմբում}one{Ավելացրեք <ph name="TABS_COUNT_MANY" /> ընտրված ներդիր խմբում}other{Ավելացրեք <ph name="TABS_COUNT_MANY" /> ընտրված ներդիր խմբում}}</translation>
 <translation id="3328308545011660196">Հուշում․ <ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Փակել տարրը}one{Փակել տարրը}other{Փակել տարրերը}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Թերթի նախադիտ․ կիսվելու մանրապատկեր</translation>
+<translation id="3775705724665058594">Ուղարկել սարքերին</translation>
 <translation id="3776329373944672717">Ներդիրների խմբի անվանում <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Կառավարել</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Ապամրացնել ներդիրը}one{Ապամրացնել ներդիրը}other{Ապամրացնել ներդիրները}}</translation>

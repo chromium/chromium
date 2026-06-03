@@ -916,6 +916,7 @@
 <translation id="422474357428465195">Tem vários problemas de palavras-passe que podem pôr a sua segurança em risco.</translation>
 <translation id="422477017457571619">Proteção com tecnologia de IA em tempo real contra sites, transferências e extensões perigosas, com base no envio dos seus dados de navegação para a Google</translation>
 <translation id="4231395118547300571">Notificações da verificação de segurança ativadas</translation>
+<translation id="4232376164796433044">Palavras-passe/preench. autom.</translation>
 <translation id="4232817129213135694">Configure chaves de acesso para este dispositivo</translation>
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegador predefinida<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Guarde o número de viajante conhecido</translation>
@@ -1931,6 +1932,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="7603308509262646847">Preencher automaticamente o titular do cartão <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">A sincronização não está a funcionar</translation>
+<translation id="7606639338662398635">Grupos de separadores</translation>
 <translation id="760667371114328991">Desative as notificações da verificação de segurança</translation>
 <translation id="7612619742409846846">Iniciou sessão no Google como</translation>
 <translation id="7612849887607288481">Abrir menu Criar protótipo de IA</translation>
@@ -2247,6 +2249,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="8636825310635137004">Para obter os separadores dos seus outros dispositivos, ative a sincronização.</translation>
 <translation id="8637431369725868556">Proteja-se contra sites perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nenhuma palavra-passe comprometida}=1{{COUNT} palavra-passe comprometida}other{{COUNT} palavras-passe comprometidas}}</translation>
+<translation id="8639963783467694461">Definições de preenchimento automático</translation>
 <translation id="8642417828095157370">Os separadores são partilhados para receber respostas mais relevantes</translation>
 <translation id="8643403533759285912">Apagar grupo</translation>
 <translation id="8647280737650867362">Não foi possível deixar de acompanhar o preço.</translation>

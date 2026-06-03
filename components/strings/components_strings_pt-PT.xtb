@@ -3022,6 +3022,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5728246486828755318">Pode pedir para usar funcionalidades avançadas da impressora</translation>
 <translation id="5729442113829771034">Educação para a primeira infância</translation>
 <translation id="5730040223043577876">O Chrome recomenda a reposição da palavra-passe se a tiver reutilizado noutros sites.</translation>
+<translation id="5735174108294025227">Os endereços de email validados são apresentados aqui</translation>
 <translation id="573555826359077410">Botão Criar formulário; ative para criar rapidamente um novo formulário no Google Forms</translation>
 <translation id="5738385766833540397">Faça a gestão da forma como recebe alertas de descida do preço relativos a produtos que monitoriza</translation>
 <translation id="5739619009927381786">Desbloqueie o ecrã no passo seguinte, normalmente, com a sua impressão digital. Em alternativa, pode <ph name="BEGIN_LINK" />usar outro método de validação<ph name="END_LINK" />.</translation>
@@ -4071,7 +4072,6 @@ Detalhes adicionais:
 <translation id="7388380253839603603">Preços dos combustíveis e abastecimento de veículos</translation>
 <translation id="7388594495505979117">{0,plural, =1{O seu dispositivo será reiniciado dentro de 1 minuto}other{O seu dispositivo será reiniciado dentro de # minutos}}</translation>
 <translation id="7393161616326137353">Jogos de aventura</translation>
-<translation id="7393243238767102021">Permitir que o domínio <ph name="DOMAIN" /> valide este email automaticamente?</translation>
 <translation id="7393475648162498734">Mostrar que recompensas e vantagens estão disponíveis para os seus cartões no momento do pagamento</translation>
 <translation id="7393971683644170444">A estabelecer ligação ao seu fornecedor do cartão…</translation>
 <translation id="739728382607845710">Ícone do controlador de pagamentos</translation>

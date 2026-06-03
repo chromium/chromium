@@ -415,7 +415,6 @@
 <translation id="1282311502488501110">로그인 안함</translation>
 <translation id="1282436639288565079">탭 그룹 세부정보</translation>
 <translation id="1282577885428483870">사이트 및 계정</translation>
-<translation id="1283344108460935898">역량을 사용할 수 없음</translation>
 <translation id="1284277788676816155">데이터 저장 허용 안 함</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
 <translation id="1285484354230578868">Google Drive 계정에 데이터 저장</translation>
@@ -776,6 +775,7 @@
 <translation id="1566049601598938765">웹사이트</translation>
 <translation id="15662109988763471">선택한 프린터가 사용 불가능하거나 올바르게 설치되어 있지 않습니다. 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
 <translation id="1566329594234563241">비활성 상태이며 전원에 연결되어 있는 동안</translation>
+<translation id="1567069630205219514">채팅을 재개하려면 창 크기를 늘리세요</translation>
 <translation id="1567135437923613642">추천 실험 기능 사용</translation>
 <translation id="1567579616025300478">이 사이트에서는 기기에 데이터를 저장할 수 없습니다.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' 키는 이미 '<ph name="ACTION" />' 작업에 할당되었습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
@@ -1195,6 +1195,7 @@
 <translation id="1862311223300693744">특별히 설치한 VPN, 프록시, 방화벽 또는 NAS 소프트웨어가
     있나요?</translation>
 <translation id="1863182668524159459">직렬 포트를 찾을 수 없음</translation>
+<translation id="1863374797460198869">채팅 숨김</translation>
 <translation id="1864111464094315414">로그인</translation>
 <translation id="1864400682872660285">시원함</translation>
 <translation id="1864454756846565995">USB-C 기기(후면 포트)</translation>
@@ -2074,6 +2075,7 @@
 <translation id="2477065602824695373">여러 스위치를 설정했으므로 자동 스캔이 사용 중지되었습니다.</translation>
 <translation id="2478176599153288112">'<ph name="EXTENSION" />'의 미디어 파일 권한</translation>
 <translation id="24786041351753425">데이터 복구 서비스 사용 설정</translation>
+<translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2479541499757560845">접근성 키보드 설정</translation>
 <translation id="2480868415629598489">복사하고 붙여넣는 데이터 수정</translation>
 <translation id="2480881140544300950">현재 새 탭 페이지를 관리하는 검색엔진</translation>
@@ -2489,7 +2491,6 @@
 <translation id="2766629385177215776">모든 기기에서 생성된 새 탭 그룹을 북마크바에 자동으로 고정</translation>
 <translation id="2767077837043621282">Chromebook을 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2767127727915954024">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 수정할 수 있게 됩니다.</translation>
-<translation id="2767771295575888898">읽기 모드에서 "<ph name="SELECTION" />" 열기</translation>
 <translation id="2769174155451290427">업로드된 이미지</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> 다운로드 일시중지</translation>
 <translation id="2770465223704140727">목록에서 삭제</translation>
@@ -2801,7 +2802,6 @@
 <translation id="2996108796702395498">기기 일련번호는 <ph name="SERIAL_NUMBER" />입니다. 이 번호를 사용하여 서비스를 활성화할 수 있습니다.</translation>
 <translation id="2996286169319737844">동기화 암호로 데이터가 암호화됩니다. Google Pay의 결제 수단 및 주소는 암호화되지 않습니다.</translation>
 <translation id="2996722619877761919">옆으로 넘김</translation>
-<translation id="2997608191364087784">"<ph name="SELECTION" />"을(를) <ph name="LANGUAGE" />로 번역(T)</translation>
 <translation id="2998097899774209901">사용 중 • 이 확장 프로그램은 Chrome 웹 스토어 정책을 위반합니다.</translation>
 <translation id="2998267783395280091">네트워크 발견됨</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 허용함</translation>
@@ -2904,6 +2904,7 @@
 <translation id="3060987956645097882">휴대전화와 연결을 설정할 수 없습니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="3061302636956643119">처리를 위해 텍스트가 Google로 전송됩니다.</translation>
 <translation id="306166624240243643">이름 및 URL 업데이트 검토</translation>
+<translation id="3062037978804523418"><ph name="TASK_TITLE" />: 곧 응답하지 않으면 배터리 절약을 위해 Gemini가 이 작업을 중지합니다.</translation>
 <translation id="3064871050034234884">사이트에서 소리를 재생할 수 있음</translation>
 <translation id="3065041951436100775">탭 사용 중지 관련 피드백</translation>
 <translation id="3065522099314259755">키보드 반복 지연 시간</translation>
@@ -3071,6 +3072,7 @@
 <translation id="3193695589337931419">시스템 신호 유틸리티</translation>
 <translation id="3194095220941877499">링크, 이미지 또는 동영상을 복사할 때 확인 메시지를 표시합니다</translation>
 <translation id="3194924099707928914">Chrome에서 이 작업을 완료하려면 로그인해야 합니다.</translation>
+<translation id="3195773549050092642">Gemini가 작업을 중지합니다</translation>
 <translation id="3196912927885212665">Android 휴대전화로 설정하려면 Chromebook의 블루투스가 사용 설정되어 있어야 합니다.</translation>
 <translation id="3197453258332670132">마우스 오른쪽 버튼으로 클릭하거나 길게 누르면 선택한 텍스트에 관한 관련 정보가 표시됩니다.</translation>
 <translation id="3199637719075529971">이 탭은 직렬 포트에 연결되어 있습니다</translation>
@@ -3689,6 +3691,7 @@
 <translation id="3662207097851752847">휴대전화에서 Google 계정 확인하기</translation>
 <translation id="3663417513679360795">표준 미리 로드 사용 설정에 관한 추가 정보</translation>
 <translation id="3664511988987167893">확장 프로그램 아이콘</translation>
+<translation id="366484203224589850"><ph name="TASK_TITLE" />: Gemini가 이 작업을 오랫동안 진행해 왔으며 배터리 절약을 위해 작업을 곧 중지합니다.</translation>
 <translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" />님이 있는 탭 그룹에 참여}=1{<ph name="OWNER_FIRST_NAME" />님 외 1명이 있는 탭 그룹에 참여}other{<ph name="OWNER_FIRST_NAME" />님 외 #명이 있는 탭 그룹에 참여}}</translation>
 <translation id="3665301845536101715">측면 패널에서 열기</translation>
 <translation id="3665589677786828986">Chrome에서 다른 프로그램이 브라우저 설정을 일부 손상시키고 원래 기본값으로 재설정했음을 감지했습니다.</translation>
@@ -5284,6 +5287,7 @@
 <translation id="4824958205181053313">동기화를 취소하시겠습니까?</translation>
 <translation id="4825462365587146530">새 탭에서 Chrome Root Store에 관해 자세히 알아보세요.</translation>
 <translation id="4825532258163983651">패스키를 삭제할 수 없음</translation>
+<translation id="4825863060583917820">Ctrl+Tab을 사용하여 가장 최근에 사용한 탭 2개 간에 전환</translation>
 <translation id="4827134188176577524">Chrome Root Store에는 Chrome 루트 프로그램에서 신뢰하는 인증 기관의
       인증서가 포함되어 있으며, Chrome Root Store는 지속적으로 검토됩니다.</translation>
 <translation id="4827283332383516812">카드 삭제</translation>
@@ -5875,6 +5879,7 @@
 <translation id="5249818097095743806">보안 키 사용</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" />에서 내 위치를 사용하여 지역에 맞는 콘텐츠를 제공합니다. 이 설정은 <ph name="SETTINGS_LINK" />에서 변경할 수 있습니다.</translation>
 <translation id="5254233580564156835">메모리 사용량: <ph name="MEMORY_USAGE" /></translation>
+<translation id="5254678337198156877">이 앱 데이터는 "<ph name="APP_NAME" />" 및 설치된 앱 간에 공유됩니다.</translation>
 <translation id="5255726914791076208">패스키를 수정해도 <ph name="RP_ID" /> 계정은 변경되지 않습니다.</translation>
 <translation id="5255859108402770436">다시 로그인</translation>
 <translation id="5256174546894739043">사이트에서 내 손을 추적하려고 할 때 확인</translation>
@@ -6305,6 +6310,7 @@
 <translation id="5578387000057347457">맞춤 프롬프트를 입력하거나 텍스트를 강조 표시하여 이미지를 만드세요.</translation>
 <translation id="5579039729633239699">{ITEM_COUNT,plural, =1{항목 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 <ph name="BEGIN_LINK" />Google 계정에 저장하세요<ph name="END_LINK" />.}other{항목 {ITEM_COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 <ph name="BEGIN_LINK" />Google 계정에 저장하세요<ph name="END_LINK" />.}}</translation>
 <translation id="5579225964082017560"><ph name="SECTION_HEADER" /> 목록에서 <ph name="SITE" /> 삭제</translation>
+<translation id="5581031802689147441">분할 뷰</translation>
 <translation id="5581134892342029705"><ph name="LANGUAGE" />로의 번역이 완료됨</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification</translation>
 <translation id="5582634344048669777">8점</translation>
@@ -6786,6 +6792,7 @@
 <translation id="5951303645598168883"><ph name="ORIGIN" />에서 로컬 글꼴을 사용하려고 합니다.</translation>
 <translation id="5951624318208955736">모니터</translation>
 <translation id="5952020381407136867">터치패드</translation>
+<translation id="5952784976463781389">이 앱 데이터는 "<ph name="PARENT_APP_NAME" />" 및 설치된 앱 간에 공유됩니다</translation>
 <translation id="5953211687820750364">이 목록은 <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           및 <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" />의 영향을 받습니다.</translation>
 <translation id="5955192144223994637">이 프로필에서 계속 작업</translation>
@@ -6976,6 +6983,7 @@
 <translation id="609942571968311933"><ph name="DEVICE_NAME" />에서 텍스트가 복사됨</translation>
 <translation id="6099766472403716061"><ph name="HOST" />에서 MIDI 기기를 제어하고 다시 프로그래밍하도록 항상 허용</translation>
 <translation id="6100736666660498114">시작 메뉴</translation>
+<translation id="6100737823178787570">작업을 재개하려면 창 크기를 늘리세요</translation>
 <translation id="6101226222197207147">새 앱이 추가됨(<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">고급 보호 기능이 이 파일을 차단했습니다.</translation>
 <translation id="6103681770816982672">경고: 개발자 채널로 전환</translation>
@@ -7398,7 +7406,6 @@
 <translation id="6418511932144861495">중요한 업데이트 설치</translation>
 <translation id="641899100123938294">새 기기 검색</translation>
 <translation id="6419546358665792306">압축해제된 확장 프로그램 로드</translation>
-<translation id="6423685703035190381">휴대전화로 가격 추적 알림 받기</translation>
 <translation id="6425556984042222041">텍스트 음성 변환 속도</translation>
 <translation id="642729974267661262">소리 재생이 허용되지 않음</translation>
 <translation id="6427752304227226701">안전하지 않은 사이트 신고...</translation>
@@ -7532,6 +7539,7 @@
 <translation id="6527303717912515753">공유</translation>
 <translation id="6527574156657772563">사용할 수 있는 기기가 없습니다. <ph name="DEVICE_TYPE" />에 연결하려면 휴대전화에 Google 계정을 추가하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="652969759100732863">탭 검색을 열려면 ⌘ + Shift + A를 누르세요. 이제 여기에서 탭을 검색하고 닫을 수 있습니다. 언제든지 이 고정을 해제할 수 있습니다.</translation>
+<translation id="6529890283323814131">도움말 더보기</translation>
 <translation id="6530030995840538405">생성된 <ph name="SUBJECT" /> 이미지 <ph name="INDEX" /></translation>
 <translation id="6530186581263215931">이 설정은 관리자가 시행합니다.</translation>
 <translation id="6530267432324197764"><ph name="MANAGER" /> 관리 프로필</translation>
@@ -7826,7 +7834,6 @@
 <translation id="6739266861259291931">기기 언어로 재설정</translation>
 <translation id="6739923123728562974">바탕화면 바로가기 표시</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> 일시중지됨</translation>
-<translation id="6742816895667193660">읽기 모드에서 "<ph name="SELECTION" />" 열기</translation>
 <translation id="6743841972744298686">동기화 설정</translation>
 <translation id="6744397361782514824">왼쪽 뷰와 바꾸기</translation>
 <translation id="6746124502594467657">아래로 이동</translation>
@@ -8313,7 +8320,6 @@
 <translation id="707772989579681711">이전 선택 항목</translation>
 <translation id="7077751457066325012">키보드 단축키 보기 및 맞춤설정</translation>
 <translation id="7077829361966535409">현재 프록시 설정을 사용하여 로그인 페이지를 로드하지 못했습니다. <ph name="GAIA_RELOAD_LINK_START" />다시 로그인<ph name="GAIA_RELOAD_LINK_END" />하거나 다른 <ph name="PROXY_SETTINGS_LINK_START" />프록시 설정<ph name="PROXY_SETTINGS_LINK_END" />을 사용합니다.</translation>
-<translation id="7078103664368916714">"<ph name="SELECTION" />" 인쇄(P)</translation>
 <translation id="7078120482318506217">모든 네트워크</translation>
 <translation id="708060913198414444">오디오 주소 복사(&amp;O)</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> 네트워크는 관리자가 관리함</translation>
@@ -8905,6 +8911,7 @@
 <translation id="7520766081042531487">시크릿 모드 포털: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">바로가기 표시</translation>
 <translation id="7521430434164837205">Microsoft 365 파일</translation>
+<translation id="7521805955117875767">최근에 사용하지 않은 북마크바가 숨겨졌습니다</translation>
 <translation id="7523117833414447032">대문자 읽는 방식</translation>
 <translation id="7523585675576642403">프로필 이름 바꾸기</translation>
 <translation id="7525067979554623046">만들기</translation>
@@ -9210,7 +9217,6 @@
 <translation id="7752832973194460442">Android 앱 정보</translation>
 <translation id="7754704193130578113">다운로드 전에 각 파일의 저장 위치 확인</translation>
 <translation id="7757592200364144203">기기 이름 변경</translation>
-<translation id="7757735653610827848">"<ph name="SELECTION" />" 복사(&amp;C)</translation>
 <translation id="7757739382819740102">주변에 있는 연락처가 나와 공유할 수 있습니다. 수락해야 합니다.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />에서 공유된 텍스트</translation>
 <translation id="7758143121000533418">Family Link</translation>

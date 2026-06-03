@@ -875,6 +875,7 @@
 <translation id="2354001756790975382">ሌላ እልባቶች</translation>
 <translation id="2355395290879513365">አጥቂዎች በዚህ ጣቢያ ላይ እርስዎ እየተመለከቱዋቸው ያሉ ምስሎችን ማየት እና በላያቸው ላይ ለውጦችን በማድረግ ሊያታልልዎት ይችሉ ይሆናል።</translation>
 <translation id="2356941001189392209">እርስዎ የሚጎበኟቸው የቆዩ የቴክኖሎጂ ክስተቶች የሚከሰቱባቸው ገፆች ዩአርኤሎች የተወሰነ ዝርዝር</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 ትር ያጋራል}one{{NUM_TABS} ትር ያጋራል}other{{NUM_TABS} ትሮችን ያጋራል}}</translation>
 <translation id="2357481397660644965">የእርስዎ መሣሪያ የሚተዳደረው በ<ph name="DEVICE_MANAGER" /> ሲሆን መለያዎ የሚተዳደረው በ<ph name="ACCOUNT_MANAGER" /> ነው።</translation>
 <translation id="2359629602545592467">በርካታ</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
@@ -4069,7 +4070,6 @@
 <translation id="7388380253839603603">የነዳጅ ዋጋዎች እና የተሽከርካሪ ነዳጅ</translation>
 <translation id="7388594495505979117">{0,plural, =1{መሣሪያዎ በ1 ደቂቃ ውስጥ ዳግም ይነሳል}one{መሣሪያዎ በ# ደቂቃዎች ውስጥ ዳግም ይነሳል}other{መሣሪያዎ በ# ደቂቃዎች ውስጥ ዳግም ይነሳል}}</translation>
 <translation id="7393161616326137353">የጀብዱ ጨዋታዎች</translation>
-<translation id="7393243238767102021"><ph name="DOMAIN" /> ይህን ኢሜይል በራስ-ሰር እንዲያረጋግጥ ይፈቀድ?</translation>
 <translation id="7393475648162498734">ካርድዎን ሲከፍሉ ምን ዓይነት ሽልማቶች እና ጥቅሞች እንዳሉት አሳይ</translation>
 <translation id="7393971683644170444">ከካርድ አቅራቢዎ ጋር በመገናኘት ላይ...</translation>
 <translation id="739728382607845710">የክፍያ መያዣ አዶ</translation>

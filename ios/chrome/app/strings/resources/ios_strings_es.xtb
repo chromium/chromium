@@ -916,6 +916,7 @@
 <translation id="422474357428465195">Tienes varios problemas relacionados con contraseñas que podrían poner en riesgo tu seguridad.</translation>
 <translation id="422477017457571619">Protección basada en IA en tiempo real contra descargas, extensiones y sitios peligrosos, que se basa en el envío de tus datos de navegación a Google.</translation>
 <translation id="4231395118547300571">Notificaciones de Comprobación de tu estado activadas</translation>
+<translation id="4232376164796433044">Contraseñas y Autocompletar</translation>
 <translation id="4232817129213135694">Configurar llaves de acceso para este dispositivo</translation>
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />Navegador predeterminado<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Guardar número de viajero conocido</translation>
@@ -1931,6 +1932,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="7603308509262646847">Autocompletar el titular de la tarjeta: <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">La sincronización no funciona</translation>
+<translation id="7606639338662398635">Grupos de pestañas</translation>
 <translation id="760667371114328991">Desactivar notificaciones de Comprobación de tu estado</translation>
 <translation id="7612619742409846846">Has iniciado sesión en Google como</translation>
 <translation id="7612849887607288481">Abrir menú de prototipado de IA</translation>
@@ -2247,6 +2249,7 @@ Para continuar desde tu ordenador, cambia a <ph name="OTHER_EMAIL" />. Podrás a
 <translation id="8636825310635137004">Activa la sincronización para ver las pestañas de tus otros dispositivos.</translation>
 <translation id="8637431369725868556">Protégete frente a sitios peligrosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{No hay contraseñas vulneradas}=1{{COUNT} contraseña vulnerada}other{{COUNT} contraseñas vulneradas}}</translation>
+<translation id="8639963783467694461">Configuración de Autocompletar</translation>
 <translation id="8642417828095157370">Las pestañas se comparten para obtener respuestas más pertinentes</translation>
 <translation id="8643403533759285912">Eliminar grupo</translation>
 <translation id="8647280737650867362">No se ha podido dejar de seguir el precio.</translation>

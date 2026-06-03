@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">Diskon <ph name="PRICE_DROP" /> untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Ikon warna grup tab <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Daftar grup tab ditutup</translation>
+<translation id="3152596030350326139">Tampilkan tab secara horizontal</translation>
+<translation id="31806439105337256">Tampilkan tab secara vertikal</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Tambahkan <ph name="TABS_COUNT_ONE" /> tab ke grup}other{Tambahkan <ph name="TABS_COUNT_MANY" /> tab ke grup}}</translation>
 <translation id="3328308545011660196">Saran: <ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Tutup item}other{Tutup item}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Thumbnail untuk pratinjau sheet berbagi.</translation>
+<translation id="3775705724665058594">Kirim ke perangkat Anda</translation>
 <translation id="3776329373944672717">Judul grup tab <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Kelola</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Lepaskan sematan tab}other{Lepaskan sematan tab}}</translation>

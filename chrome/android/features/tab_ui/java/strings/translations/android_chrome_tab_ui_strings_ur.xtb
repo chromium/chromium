@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> سے قیمت میں <ph name="PRICE_DROP" /> گراوٹ</translation>
 <translation id="3078350928901129212">ٹیب گروپ کے رنگ آئیکن کا رنگ <ph name="COLOR_NAME" /> ہے</translation>
 <translation id="311432875115153175">ٹیب گروپ کی فہرست بند ہے</translation>
+<translation id="3152596030350326139">ٹیبز کو افقی طور پر دکھائیں</translation>
+<translation id="31806439105337256">ٹیبز کو عمودی طور پر دکھائیں</translation>
 <translation id="3194464645767632461">درجہ بندی</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> ٹیب کو گروپ میں شامل کریں}other{‫<ph name="TABS_COUNT_MANY" /> ٹیبز کو گروپ میں شامل کریں}}</translation>
 <translation id="3328308545011660196">تجویز: <ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{آئٹم بند کریں}other{آئٹمز بند کریں}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">شیٹ پیش منظر شیئر کریں کیلئے تھمب نیل</translation>
+<translation id="3775705724665058594">اپنے آلات پر بھیجیں</translation>
 <translation id="3776329373944672717">ٹیب گروپ کا عنوان <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">نظم کریں</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{ٹیب کی پن ہٹائیں}other{ٹیبز کی پن ہٹائیں}}</translation>

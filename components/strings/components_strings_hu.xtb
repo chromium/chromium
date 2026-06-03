@@ -875,6 +875,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2354001756790975382">További könyvjelzők</translation>
 <translation id="2355395290879513365">A felhasználók esetleg láthatják a webhelyen éppen megtekintett képeit, és a képeket módosítva félrevezethetik Önt.</translation>
 <translation id="2356941001189392209">A felkeresett oldalak URL-jeinek korlátozott listája, ahol régi technológiai események történnek</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 lapot fog megosztani}other{{NUM_TABS} lapot fog megosztani}}</translation>
 <translation id="2357481397660644965">Eszközét a(z) <ph name="DEVICE_MANAGER" />, fiókját pedig a(z) <ph name="ACCOUNT_MANAGER" /> kezeli.</translation>
 <translation id="2359629602545592467">Több</translation>
 <translation id="2359808026110333948">Tovább</translation>
@@ -4067,7 +4068,6 @@ További részletek:
 <translation id="7388380253839603603">Benzinárak és járművek tankolása</translation>
 <translation id="7388594495505979117">{0,plural, =1{Eszköze 1 perc múlva újraindul}other{Eszköze # perc múlva újraindul}}</translation>
 <translation id="7393161616326137353">Kalandjátékok</translation>
-<translation id="7393243238767102021">Engedélyezi a(z) <ph name="DOMAIN" /> számára az e-mail automatikus ellenőrzését?</translation>
 <translation id="7393475648162498734">Fizetéskor mutassa meg, hogy milyen jutalmak és előnyök állnak rendelkezésre a kártyáihoz</translation>
 <translation id="7393971683644170444">Kapcsolódás a kártyaszolgáltatóhoz…</translation>
 <translation id="739728382607845710">Fizetéskezelő ikonja</translation>

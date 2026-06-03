@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">他の絵文字を表示</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> を使用するには、デバイスを再起動してください。</translation>
 <translation id="2335091074961603075">Chromebook または Bluetooth デバイスで古いバージョンの Bluetooth が使用されています。音質を向上させるには、内蔵マイクを使用してください。</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、Wi-Fi に接続して、今日中にアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}other{<ph name="MANAGER" /> が、Wi-Fi に接続して、期限までにアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">シェルフにあるタッチペン ボタンをタップして、メモやスクリーンショットをとったり、レーザー ポインタや虫メガネを使用したりすることができます。</translation>
 <translation id="2341729377289034582">縦に固定</translation>
@@ -568,6 +569,7 @@
 <translation id="2687510499067466116">キーボード ショートカットが変更されました</translation>
 <translation id="2689613560355655046">デスク 8</translation>
 <translation id="2692092709110488417">Tab キーを押して、選択した領域にフォーカスおよび移動します</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> の更新は今日が期限です}other{{NUM_DAYS} 日以内に <ph name="DEVICE_TYPE" /> を更新してください}}</translation>
 <translation id="2695305337569143674">ウェブ</translation>
 <translation id="2697697418792422688">キーボード設定を表示します。<ph name="KEYBOARD_NAME" /> が選択されています。</translation>
 <translation id="2699913284398121653">コンテンツ移行アプリを使用して、学校用アカウントのデータを個人アカウントに移動してください</translation>
@@ -794,6 +796,7 @@
 <translation id="334927402682780278">カーソル位置から行末までのテキストを選択する</translation>
 <translation id="3349345708646875009">タスク マネージャーを開きます</translation>
 <translation id="3353786022389205125">[スリープから復帰するときにロック画面を表示する] をオンにしてから、もう一度お試しください</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{1 週間以内に <ph name="DEVICE_TYPE" /> を更新してください}other{{NUM_WEEKS} 週間以内に <ph name="DEVICE_TYPE" /> を更新してください}}</translation>
 <translation id="3364721542077212959">タッチペン ツール</translation>
 <translation id="3365281428003534650">タイマー、タスク、音楽を設定する</translation>
 <translation id="3365977133351922112">スマートフォンが遠すぎます。近づけてください。</translation>
@@ -953,6 +956,7 @@
 <translation id="3741482431277446954">マウスの右ボタン</translation>
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
 <translation id="3743775386021959186">フォーカス モードがオンになっています。残り時間は <ph name="REMAINING_TIME" /> です</translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、データをバックアップして、今日中にこの <ph name="DEVICE_TYPE" /> を返却するよう求めています。}other{<ph name="MANAGER" /> が、データをバックアップして、期限までにこの <ph name="DEVICE_TYPE" /> を返却するよう求めています。}}</translation>
 <translation id="3750403286520637847">天気情報の提案を非表示にする</translation>
 <translation id="3752253558646317685">指紋を保存するには、お子様に指をかざしてもらってください</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。<ph name="END_PARAGRAPH1" />
@@ -1077,6 +1081,9 @@
 <translation id="412298498316631026">ウィンドウ</translation>
 <translation id="4123259114412175274">Chromebook のロックを解除するには、スマートフォンの Bluetooth がオンになっていることをご確認ください</translation>
 <translation id="4123868835475902435">基本的なことは以上です。より詳しい情報をご覧になりたい場合は、組み込みのアプリ「使い方・ヒント」をご活用ください。ご利用開始のヒント、スペシャル オファー、<ph name="PRODUCT_NAME" /> の最新機能を紹介しています。</translation>
+<translation id="4124779003103520737">{0,plural, =1{<ph name="DEVICE_TYPE" /> は # 秒後に自動的にロックされます。
+        <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}other{<ph name="DEVICE_TYPE" /> は # 秒後に自動的にロックされます。
+        <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}}</translation>
 <translation id="4125970834901680537">タブレット モードでアプリをストリーミングできません。ノートパソコン モードでもう一度お試しください。</translation>
 <translation id="4131973331381812765">温度: <ph name="TEMPERATURE" />°C - 現在の速度: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">日の出までオン</translation>
@@ -1385,6 +1392,7 @@
 <translation id="4964188651935955085">Bluetooth をオフにすると、次の外部デバイスが <ph name="DEVICE_TYPE" /> と接続解除されます。</translation>
 <translation id="4966431234408005599">音量を上げる</translation>
 <translation id="496999337731226334">ステップ <ph name="STEP" />/<ph name="TOTAL_STEPS" />。Wi-Fi、Bluetooth、音量など、よく使用するコントロールはクイック設定に表示されます。クイック設定からスクリーンショットを撮ることもできます。クイック設定を開くには、Alt+Shift+S キーを押します。</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、今日中にアップデートをダウンロードするよう求めています。アップデートは、インターネットに接続すると自動的にダウンロードされます。}other{<ph name="MANAGER" /> が、期限までにアップデートをダウンロードするよう求めています。アップデートは、インターネットに接続すると自動的にダウンロードされます。}}</translation>
 <translation id="4975771730019223894">アプリのバッジ</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />、
@@ -1461,6 +1469,7 @@
 <translation id="5176318573511391780">画面の一部を録画</translation>
 <translation id="5187627942836026988">アクセス ポイントの詳細を表示します。アクセス ポイントは管理者によってブロックされています。</translation>
 <translation id="5188648870018555788">位置情報を使用するとともに、位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、デバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。<ph name="BEGIN_LINK1" />位置情報の使用に関する詳細<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{{NUM_WEEKS} 週間以内に <ph name="DEVICE_TYPE" /> を返却してください}other{{NUM_WEEKS} 週間以内に <ph name="DEVICE_TYPE" /> を返却してください}}</translation>
 <translation id="5198039720391525849">おすすめの GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />、<ph name="NUMBER" /> 件の予定</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> で <ph name="IN_PLACE_APP" /> を使用して新しいフォルダが作成されました。</translation>
@@ -1778,6 +1787,9 @@
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">あと <ph name="LOGOUT_TIME_LEFT" />で自動的にログアウトします。</translation>
 <translation id="6068258534237496331">ビデオ通話コントロール</translation>
+<translation id="6070081109266557120">{0,plural, =1{# 秒後に自動的にログアウトします。
+        <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}other{# 秒後に自動的にログアウトします。
+        <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}}</translation>
 <translation id="6071576563962215370">デバイスの installation-time 属性のロックを確立できませんでした。</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> はこのデバイスで許可されていません。管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="6073451960410192870">撮影を停止</translation>
@@ -2127,6 +2139,8 @@
 <translation id="7076878155205969899">音声をミュートする</translation>
 <translation id="7083848064787091821">フォーカス モード</translation>
 <translation id="7084678090004350185">アクセス ポイントを切り替えます。アクセス ポイントはオンです。<ph name="DEVICECOUNT" /> 台のデバイスが接続されています。</translation>
+<translation id="7086438436964931440">今すぐ自動的にログアウトします。
+        <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。</translation>
 <translation id="7086931198345821656">このアップデートを適用するには、<ph name="DEVICE_TYPE" /> を Powerwash　する必要があります。データはすべて削除されます。<ph name="SYSTEM_APP_NAME" /> の最新アップデートの詳細をご確認ください。</translation>
 <translation id="7088960765736518739">スイッチ アクセス</translation>
 <translation id="709015856939120012">ページを拡大する</translation>
@@ -2530,6 +2544,7 @@
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> 延長</translation>
 <translation id="8228175756124063692">この提案を非表示にする</translation>
 <translation id="8230305195727960608">色反転モード</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{今すぐ返却してください}other{{NUM_DAYS} 日以内に <ph name="DEVICE_TYPE" /> を返却してください}}</translation>
 <translation id="8236042855478648955">休憩の時間です</translation>
 <translation id="8237964652943995219">次のデスク: <ph name="DESK_NAME" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
 <translation id="8238817965863339552"><ph name="PRODUCT_NAME" /> について学べるクイックツアーをお試しください。5 つのステップでご利用を開始できます。</translation>
@@ -2704,6 +2719,8 @@
 <translation id="8756799553341497810">この画面を離れると、アプリのレイアウトのカスタマイズを開始できます。</translation>
 <translation id="8759408218731716181">マルチログインを設定できません</translation>
 <translation id="8759753423332885148">詳細</translation>
+<translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> は今すぐロックされます。
+        <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。</translation>
 <translation id="8763883995157866248">デバイスをスリープモードにします</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />、インストール済みアプリ、ブロック中</translation>
 <translation id="8782565991310229362">キオスク アプリケーションの起動がキャンセルされました。</translation>

@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">Gostyngiad pris o <ph name="PRICE_DROP" /> ar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Eicon lliw grŵp tab <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Rhestr grwpiau tabiau ar gau</translation>
+<translation id="3152596030350326139">Dangos tabiau'n llorweddol</translation>
+<translation id="31806439105337256">Dangos tabiau'n fertigol</translation>
 <translation id="3194464645767632461">sgôr</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Ychwanegu <ph name="TABS_COUNT_ONE" /> tab at grŵp}zero{Ychwanegu <ph name="TABS_COUNT_MANY" /> tab at grŵp}two{Ychwanegu <ph name="TABS_COUNT_MANY" /> dab at grŵp}few{Ychwanegu <ph name="TABS_COUNT_MANY" /> thab at grŵp}many{Ychwanegu <ph name="TABS_COUNT_MANY" /> thab at grŵp}other{Ychwanegu <ph name="TABS_COUNT_MANY" /> tab at grŵp}}</translation>
 <translation id="3328308545011660196">Awgrym: Mae <ph name="NUMBER_OF_TABS" /> o dabiau yn ymddangos yn berthnasol. Grwpio nhw?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Cau'r eitem}zero{Cau'r eitemau}two{Cau'r eitemau}few{Cau'r eitemau}many{Cau'r eitemau}other{Cau'r eitemau}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Mân-lun ar gyfer rhagolwg taflen rhannu.</translation>
+<translation id="3775705724665058594">Anfon at eich dyfeisiau</translation>
 <translation id="3776329373944672717">Enw'r grŵp tabiau <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Rheoli</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Dad-binio tab}zero{Dad-binio tabiau}two{Dad-binio tabiau}few{Dad-binio tabiau}many{Dad-binio tabiau}other{Dad-binio tabiau}}</translation>

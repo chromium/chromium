@@ -916,6 +916,7 @@
 <translation id="422474357428465195">Imate več težav z gesli, ki lahko ogrozijo vašo varnost.</translation>
 <translation id="422477017457571619">Sprotna zaščita z uporabo umetne inteligence pred nevarnimi spletnimi mesti, prenosi in razširitvami, ki temelji na podatkih brskanja, poslanih Googlu</translation>
 <translation id="4231395118547300571">Obvestila varnostnega preverjanja so vklopljena</translation>
+<translation id="4232376164796433044">Gesla in samodejno izpolnjevanje</translation>
 <translation id="4232817129213135694">Nastavitev ključev za dostop za to napravo</translation>
 <translation id="4237377247299956313">Dotaknite se možnosti za <ph name="BEGIN_BOLD" />privzeto aplikacijo za brskanje<ph name="END_BOLD" />.</translation>
 <translation id="424063167283213501">Shranite številko rednega potnika</translation>
@@ -1931,6 +1932,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7603308509262646847">Samodejno izpolni imetnika kartice <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pojavna okna so blokirana (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
+<translation id="7606639338662398635">Skupine zavihkov</translation>
 <translation id="760667371114328991">Izklop obvestil za varnostno preverjanje</translation>
 <translation id="7612619742409846846">V Google ste prijavljeni kot</translation>
 <translation id="7612849887607288481">Odpri meni za prototipe umetne inteligence</translation>
@@ -2247,6 +2249,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8636825310635137004">Če želite dostopati do zavihkov iz drugih naprav, vklopite sinhronizacijo.</translation>
 <translation id="8637431369725868556">Zagotovite si zaščito pred nevarnimi spletnimi mesti.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ni ogroženih gesel}=1{{COUNT} ogroženo geslo}one{{COUNT} ogroženo geslo}two{{COUNT} ogroženi gesli}few{{COUNT} ogrožena gesla}other{{COUNT} ogroženih gesel}}</translation>
+<translation id="8639963783467694461">Nastavitve samodejnega izpolnjevanja</translation>
 <translation id="8642417828095157370">Zavihki se delijo z namenom zagotavljanja ustreznejših odgovorov</translation>
 <translation id="8643403533759285912">Izbris skupine</translation>
 <translation id="8647280737650867362">Cene ni bilo mogoče prenehati spremljati.</translation>

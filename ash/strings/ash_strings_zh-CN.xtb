@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">显示更多表情符号</translation>
 <translation id="2328561734797404498">请重启您的设备，即可使用 <ph name="APP_NAME" />。</translation>
 <translation id="2335091074961603075">您的 Chromebook 或蓝牙设备使用的是旧版蓝牙。请使用内置麦克风以获得更好的音质。</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您今天连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络进行下载（可能需要支付相应费用）。}other{<ph name="MANAGER" /> 要求您在截止日期前连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络进行下载（可能需要支付相应费用）。}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">点按任务栏中的触控笔按钮即可开始记事、截取屏幕截图以及使用激光笔/放大镜。</translation>
 <translation id="2341729377289034582">已锁定为纵向</translation>
@@ -568,6 +569,7 @@
 <translation id="2687510499067466116">键盘快捷键已更改</translation>
 <translation id="2689613560355655046">桌面 8</translation>
 <translation id="2692092709110488417">按 Tab 键可将焦点移至所选区域并移动</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{今天是更新 <ph name="DEVICE_TYPE" /> 的最后期限}other{请在 {NUM_DAYS} 天内更新 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="2695305337569143674">网络</translation>
 <translation id="2697697418792422688">显示键盘设置。已选择“<ph name="KEYBOARD_NAME" />”。</translation>
 <translation id="2699913284398121653">使用 Content Transfer 应用将学校账号数据转移到个人账号</translation>
@@ -794,6 +796,7 @@
 <translation id="334927402682780278">选中从光标处到行尾的文字</translation>
 <translation id="3349345708646875009">打开任务管理器</translation>
 <translation id="3353786022389205125">开启“从休眠状态唤醒时显示锁定屏幕”，然后重试</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{请在 1 周内更新 <ph name="DEVICE_TYPE" />}other{请在 {NUM_WEEKS} 周内更新 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="3364721542077212959">触控笔工具</translation>
 <translation id="3365281428003534650">设置定时器、任务和音乐</translation>
 <translation id="3365977133351922112">您的手机太远了，请移近些。</translation>
@@ -953,6 +956,7 @@
 <translation id="3741482431277446954">鼠标右键</translation>
 <translation id="3742055079367172538">已完成屏幕截图</translation>
 <translation id="3743775386021959186">已开启专注模式，还剩 <ph name="REMAINING_TIME" /></translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您备份数据并在今天退还此 <ph name="DEVICE_TYPE" />。}other{<ph name="MANAGER" /> 要求您备份数据并在截止日期前退还此 <ph name="DEVICE_TYPE" />。}}</translation>
 <translation id="3750403286520637847">隐藏天气信息建议</translation>
 <translation id="3752253558646317685">让您的孩子不时地移开手指，以便保存指纹</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />应用数据可以是应用根据开发者设置而保存的任何数据，包括通讯录、邮件/消息、照片等数据。<ph name="END_PARAGRAPH1" />
@@ -1077,6 +1081,9 @@
 <translation id="412298498316631026">窗口</translation>
 <translation id="4123259114412175274">如需解锁 Chromebook，请确保手机的蓝牙已开启</translation>
 <translation id="4123868835475902435">您刚才看到的只是基本操作！您可继续使用内置的“探索”应用来获取各种提示和帮助：入门提示、特别优惠以及最新的 <ph name="PRODUCT_NAME" /> 功能，一应俱全。</translation>
+<translation id="4124779003103520737">{0,plural, =1{<ph name="DEVICE_TYPE" /> 将在 # 秒后自动锁定。
+        <ph name="DOMAIN" /> 要求智能卡保持插入状态。}other{<ph name="DEVICE_TYPE" /> 将在 # 秒后自动锁定。
+        <ph name="DOMAIN" /> 要求智能卡保持插入状态。}}</translation>
 <translation id="4125970834901680537">无法在平板电脑模式下流式传输应用。请在笔记本电脑模式下重试。</translation>
 <translation id="4131973331381812765">温度：<ph name="TEMPERATURE" />°C - 当前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">保持开启状态，直到日出</translation>
@@ -1384,6 +1391,7 @@
 <translation id="4964188651935955085">关闭蓝牙后，以下外部设备将与您的 <ph name="DEVICE_TYPE" /> 断开连接：</translation>
 <translation id="4966431234408005599">调高音量</translation>
 <translation id="496999337731226334">导览第 <ph name="STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步。您可在“快捷设置”中找到常用控件（例如 Wi-Fi、蓝牙和音量），也可在那里执行截屏操作。按 Alt + Shift + S 键即可打开“快捷设置”。</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您今天下载更新。联网后，系统会自动下载更新。}other{<ph name="MANAGER" /> 要求您在截止日期前下载更新。联网后，系统会自动下载更新。}}</translation>
 <translation id="4975771730019223894">应用通知数量标志</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />：
         <ph name="NOTIFICATION_1" />；
@@ -1460,6 +1468,7 @@
 <translation id="5176318573511391780">录制部分屏幕</translation>
 <translation id="5187627942836026988">显示热点详情。管理员已禁用热点。</translation>
 <translation id="5188648870018555788">使用位置信息：允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用设备的位置信息。开启“位置信息精确度”设置可为 Android 应用和服务提供更精确的位置信息。为此，Google 会定期处理来自您设备的传感器信息和无线信号信息，然后汇总根据无线信号识别的位置信息。Google 会在不识别您个人身份的情况下，使用这些信息来提高位置信息精确度和改善基于地理位置的服务，并根据 Google 和第三方的合法权益来改进、提供和维护 Google 服务，以满足用户的需求。<ph name="BEGIN_LINK1" />详细了解如何使用位置信息<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{请在 {NUM_WEEKS} 周内退还 <ph name="DEVICE_TYPE" />}other{请在 {NUM_WEEKS} 周内退还 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="5198039720391525849">精选 GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 个事件</translation>
 <translation id="5198715732953550718">将“<ph name="MOVED_APP_NAME" />”和“<ph name="IN_PLACE_APP" />”移到一起创建了一个新文件夹。</translation>
@@ -1776,6 +1785,9 @@
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">您将在<ph name="LOGOUT_TIME_LEFT" />后自动退出。</translation>
 <translation id="6068258534237496331">视频通话控件</translation>
+<translation id="6070081109266557120">{0,plural, =1{您将在 # 秒后自动退出账号。
+        <ph name="DOMAIN" /> 要求智能卡保持插入状态。}other{您将在 # 秒后自动退出账号。
+        <ph name="DOMAIN" /> 要求智能卡保持插入状态。}}</translation>
 <translation id="6071576563962215370">系统未能建立设备安装时间属性锁定。</translation>
 <translation id="6072442788591997866">不允许在此设备上使用 <ph name="APP_NAME" />。请与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="6073451960410192870">停止录制</translation>
@@ -2125,6 +2137,8 @@
 <translation id="7076878155205969899">静音</translation>
 <translation id="7083848064787091821">专注模式</translation>
 <translation id="7084678090004350185">开启/关闭热点。热点处于开启状态，且已连接 <ph name="DEVICECOUNT" /> 部设备。</translation>
+<translation id="7086438436964931440">您将立即自动退出账号。
+        <ph name="DOMAIN" /> 要求智能卡保持插入状态。</translation>
 <translation id="7086931198345821656">这项更新需要对您的 <ph name="DEVICE_TYPE" /> 执行 Powerwash 操作。此设备中的所有数据都将被删除。详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新。</translation>
 <translation id="7088960765736518739">开关控制</translation>
 <translation id="709015856939120012">放大网页</translation>
@@ -2527,6 +2541,7 @@
 <translation id="8220076512072059941">增加 <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">隐藏此建议</translation>
 <translation id="8230305195727960608">颜色反转模式</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{需立即退还}other{请在 {NUM_DAYS} 天内退还 <ph name="DEVICE_TYPE" />}}</translation>
 <translation id="8236042855478648955">该休息了</translation>
 <translation id="8237964652943995219">下一个桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
 <translation id="8238817965863339552">不妨观看快速导览，了解如何玩转 <ph name="PRODUCT_NAME" />。只需 5 步，即可启动并运行。</translation>
@@ -2702,6 +2717,8 @@
 <translation id="8756799553341497810">退出此视图后，您就可以开始自定义应用布局。</translation>
 <translation id="8759408218731716181">无法设置多账号登录</translation>
 <translation id="8759753423332885148">了解详情。</translation>
+<translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> 将立即锁定。
+        <ph name="DOMAIN" /> 要求智能卡保持插入状态。</translation>
 <translation id="8763883995157866248">将设备设为睡眠模式</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />，已安装的应用，已禁用</translation>
 <translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>

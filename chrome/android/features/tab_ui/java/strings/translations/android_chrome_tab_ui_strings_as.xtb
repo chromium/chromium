@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ৰ দাম <ph name="PRICE_DROP" /> কমিছে</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> টেবৰ গোটৰ ৰঙৰ চিহ্ন</translation>
 <translation id="311432875115153175">টেবৰ গোটৰ সূচী বন্ধ কৰা হৈছে</translation>
+<translation id="3152596030350326139">টেবসমূহ অনুভূমিকভাৱে দেখুৱাওক</translation>
+<translation id="31806439105337256">টেবসমূহ উলম্বভাৱে দেখুৱাওক</translation>
 <translation id="3194464645767632461">মূল্যাংকন</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{গোটত <ph name="TABS_COUNT_ONE" /> টা টেব যোগ দিয়ক}one{গোটত <ph name="TABS_COUNT_MANY" /> টা টেব যোগ দিয়ক}other{গোটত <ph name="TABS_COUNT_MANY" /> টা টেব যোগ দিয়ক}}</translation>
 <translation id="3328308545011660196">পৰামৰ্শ: <ph name="NUMBER_OF_TABS" />টা টেব জড়িত যেন লাগিছে। সেইকেইটা একগোট কৰিবনে?</translation>
@@ -87,6 +89,7 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{বস্তু বন্ধ কৰক}one{বস্তু বন্ধ কৰক}other{বস্তু বন্ধ কৰক}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">শ্বেয়াৰ শ্বীট পূৰ্বদৰ্শনৰ থাম্বনেইল।</translation>
+<translation id="3775705724665058594">আপোনাৰ ডিভাইচসমূহলৈ পঠিয়াওক</translation>
 <translation id="3776329373944672717">টেবৰ গোট শিৰোনাম <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{টেব আনপিন কৰক}one{টেবসমূহ আনপিন কৰক}other{টেবসমূহ আনপিন কৰক}}</translation>

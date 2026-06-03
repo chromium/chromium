@@ -875,6 +875,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2354001756790975382">Iba pang mga bookmark</translation>
 <translation id="2355395290879513365">Maaaring makita ng mga umaatake ang mga larawang tinitingnan mo sa site na ito at lilinlangin ka sa pamamagitan ng pagbago sa mga ito.</translation>
 <translation id="2356941001189392209">Limitadong listahan ng mga URL ng mga page na binisita mo kung saan may mga event ng legacy na teknolohiya</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Magse-share ng 1 tab}one{Magse-share ng {NUM_TABS} tab}other{Magse-share ng {NUM_TABS} na tab}}</translation>
 <translation id="2357481397660644965">Pinapamahalaan ng <ph name="DEVICE_MANAGER" /> ang iyong device at pinapamahalaan ng <ph name="ACCOUNT_MANAGER" /> ang account mo.</translation>
 <translation id="2359629602545592467">Marami</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
@@ -4070,7 +4071,6 @@ Mga karagdagang detalye:
 <translation id="7388380253839603603">Mga Presyo ng Gasolina at Fuel ng Sasakyan</translation>
 <translation id="7388594495505979117">{0,plural, =1{Magre-restart ang iyong device pagkalipas ng 1 minuto}one{Magre-restart ang iyong device pagkalipas ng # minuto}other{Magre-restart ang iyong device pagkalipas ng # na minuto}}</translation>
 <translation id="7393161616326137353">Mga Adventure Game</translation>
-<translation id="7393243238767102021">Payagan ang <ph name="DOMAIN" /> na awtomatikong i-verify ang email na ito?</translation>
 <translation id="7393475648162498734">Ipakita kung aling mga reward at benepisyo ang available para sa iyong card kapag nag-checkout</translation>
 <translation id="7393971683644170444">Kumokonekta sa iyong provider ng card...</translation>
 <translation id="739728382607845710">Icon ng tagapangasiwa ng pagbabayad</translation>

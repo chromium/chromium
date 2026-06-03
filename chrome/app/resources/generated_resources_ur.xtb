@@ -415,7 +415,6 @@
 <translation id="1282311502488501110">سائن ان نہ کریں</translation>
 <translation id="1282436639288565079">ٹیب گروپ کی تفصیلات</translation>
 <translation id="1282577885428483870">سائٹس اور اکاؤنٹس</translation>
-<translation id="1283344108460935898">مہارتیں دستیاب نہیں ہیں</translation>
 <translation id="1284277788676816155">ڈیٹا محفوظ کرنے کی اجازت نہ دیں</translation>
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
 <translation id="1285484354230578868">‏اپنے Google اکاؤنٹ میں ڈیٹا اسٹور کریں</translation>
@@ -775,6 +774,7 @@
 <translation id="1566049601598938765">ویب سائٹ</translation>
 <translation id="15662109988763471">منتخب کردہ پرنٹر دستیاب نہیں ہے یا صحیح طریقے سے انسٹال نہیں ہوا ہے۔ اپنا پرنٹر چیک کریں یا دوسرا پرنٹر منتخب کر کے آزمائيں۔</translation>
 <translation id="1566329594234563241">غیر فعال اور پلگ ان رہتے ہوئے</translation>
+<translation id="1567069630205219514">چیٹ دوبارہ شروع کرنے کے لیے ونڈو کا سائز بڑھائیں</translation>
 <translation id="1567135437923613642">نمایاں کردہ تجربات فعال کریں</translation>
 <translation id="1567579616025300478">اس سائٹ کو آپ کے آلے پر ڈیٹا محفوظ کرنے کی اجازت نہیں ہے</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' پہلے سے ہی '<ph name="ACTION" />' کارروائی کو تفویض کردہ ہے۔ <ph name="RESPONSE" /> کے لیے کوئی بھی کلید دبائیں۔</translation>
@@ -1184,6 +1184,7 @@
 <translation id="1861262398884155592">یہ فولڈر خالی ہے</translation>
 <translation id="1862311223300693744">‏کیا آپ نے کوئی خصوصی VPN، پراکسی، فائروال یا NAS سافٹ ویئر انسٹال کیا ہوا ہے؟</translation>
 <translation id="1863182668524159459">کوئی سیریل پورٹ نہیں ملا</translation>
+<translation id="1863374797460198869">چیٹ چھپا دی گئی</translation>
 <translation id="1864111464094315414">لاگ ان</translation>
 <translation id="1864400682872660285">کولر</translation>
 <translation id="1864454756846565995">‏USB-C آلہ (پیچھے کا پورٹ)</translation>
@@ -2060,6 +2061,7 @@
 <translation id="2477065602824695373">چونکہ آپ نے ایک سے زیادہ سوئچز مرتب کیے ہیں، لہذا خودکار اسکین کو آف کر دیا گیا ہے۔</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" کیلئے میڈیا فائل کی اجازتیں</translation>
 <translation id="24786041351753425">ڈیٹا بازیابی کی سروس کو فعال کریں۔</translation>
+<translation id="2479148705183875116">ترتیبات پر جائیں</translation>
 <translation id="2479541499757560845">ایکسیسبیلٹی کی بورڈ کی ترتیبات</translation>
 <translation id="2480868415629598489">آپ جو ڈیٹا کاپی اور پیسٹ کرتے ہیں اس میں ترمیم کریں</translation>
 <translation id="2480881140544300950">موجودہ سرچ انجن آپ کے نئے ٹیب صفحہ کا نظم کر رہا ہے</translation>
@@ -2475,7 +2477,6 @@
 <translation id="2766629385177215776">کسی بھی آلہ پر بنائے گئے نئے ٹیب گروپس کو خودکار طور پر بُک مارکس بار میں پن کریں</translation>
 <translation id="2767077837043621282">‏آپ کی Chromebook کو اپ ڈیٹ نہیں کیا جا سکا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="2767127727915954024">اس سائٹ کے لیے آپ کے سبھی ٹیبز کو بند کرنے تک <ph name="ORIGIN" /> <ph name="FILENAME" /> میں ترمیم کر سکے گا</translation>
-<translation id="2767771295575888898">ریڈنگ موڈ میں "<ph name="SELECTION" />" کھولیں</translation>
 <translation id="2769174155451290427">اپ لوڈ کردہ تصویر</translation>
 <translation id="2770082596325051055"><ph name="FILE_NAME" /> موقوف کریں</translation>
 <translation id="2770465223704140727">فہرست سے ہٹائیں</translation>
@@ -2787,7 +2788,6 @@
 <translation id="2996108796702395498">آپ کے آلے کا سیریل نمبر <ph name="SERIAL_NUMBER" /> ہے۔ سروس کو فعال کرنے میں مدد کیلئے اس نمبر کا استعمال کیا جا سکتا ہے۔</translation>
 <translation id="2996286169319737844">‏آپ کے پاس فریز کے ساتھ ڈیٹا کی مرموزکاری کی جاتی ہے۔ اس میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔</translation>
 <translation id="2996722619877761919">طویل کنارہ پر فلپ کریں</translation>
-<translation id="2997608191364087784">‫"<ph name="SELECTION" />" کا <ph name="LANGUAGE" /> میں ترجمہ کریں</translation>
 <translation id="2998097899774209901">‏آن ہے • اس ایکسٹینشن سے Chrome ویب اسٹور کی پالیسی کی خلاف ورزی ہوتی ہے</translation>
 <translation id="2998267783395280091">نیٹ ورک ملا</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> کی اجازت دی گئی</translation>
@@ -6966,6 +6966,7 @@
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> سے ٹیکسٹ کاپی کیا گیا</translation>
 <translation id="6099766472403716061">‏<ph name="HOST" /> کو اپنے MIDI آلات کو کنٹرول اور دوبارہ پروگرام کرنے کی ہمیشہ اجازت دیں</translation>
 <translation id="6100736666660498114">شروع کرنے کا مینیو</translation>
+<translation id="6100737823178787570">ٹاسک دوبارہ شروع کرنے کے لیے ونڈو کا سائز بڑھائیں</translation>
 <translation id="6101226222197207147">نئی ایپ شامل کر دی گئی (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">اعلی تحفظ نے اس فائل کو مسدود کر دیا ہے۔</translation>
 <translation id="6103681770816982672">وارننگ: آپ ڈویلپر چینل پر سوئچ کر رہے ہیں</translation>
@@ -7388,7 +7389,6 @@
 <translation id="6418511932144861495">اہم اپ ڈیٹ انسٹال کریں</translation>
 <translation id="641899100123938294">نئے آلات کیلئے اسکین کریں</translation>
 <translation id="6419546358665792306">پیک سے نکالی گئی ایکسٹینشن کو لوڈ کریں</translation>
-<translation id="6423685703035190381">اپنے فون پر قیمت کی ٹریکنگ کے الرٹس حاصل کریں</translation>
 <translation id="6425556984042222041">ٹیکسٹ ٹو اسپیچ کی شرح</translation>
 <translation id="642729974267661262">آواز چلانے کی اجازت نہیں ہے</translation>
 <translation id="6427752304227226701">غیر محفوظ سائٹ کی اطلاع دیں...</translation>
@@ -7817,7 +7817,6 @@
 <translation id="6739266861259291931">آلے کی زبان پر ری سیٹ کریں</translation>
 <translation id="6739923123728562974">ڈیسک ٹاپ شارٹ کٹ دکھائیں</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> موقوف ہو گئی</translation>
-<translation id="6742816895667193660">ریڈنگ موڈ میں "<ph name="SELECTION" />" کھولیں</translation>
 <translation id="6743841972744298686">مطابقت پذیری کی ترتیبات</translation>
 <translation id="6744397361782514824">بائيں منظر کے ساتھ تبدیل کریں</translation>
 <translation id="6746124502594467657">نیچے منتقل کریں</translation>
@@ -8303,7 +8302,6 @@
 <translation id="707772989579681711">آپ کا پچھلا انتخاب</translation>
 <translation id="7077751457066325012">کی بورڈ شارٹ کٹس دیکھیں اور حسب ضرورت بنائیں</translation>
 <translation id="7077829361966535409">موجودہ پراکسی ترتیبات کا استعمال کر کے سائن ان صفحہ لوڈ ہونے میں ناکام ہوگیا۔ براہ کرم <ph name="GAIA_RELOAD_LINK_START" />دوبارہ سائن ان کرنے کی کوشش کریں<ph name="GAIA_RELOAD_LINK_END" /> یا مختلف <ph name="PROXY_SETTINGS_LINK_START" />پراکسی ترتیبات<ph name="PROXY_SETTINGS_LINK_END" /> استعمال کریں۔</translation>
-<translation id="7078103664368916714">&amp;پرنٹ کریں "<ph name="SELECTION" />"</translation>
 <translation id="7078120482318506217">تمام نیٹ ورکس</translation>
 <translation id="708060913198414444">آڈیو پتہ کا&amp;پی کریں</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> آپ کے منتظم کے زیر انتظام ہے</translation>
@@ -9202,7 +9200,6 @@
 <translation id="7752832973194460442">‏Android ایپ کی معلومات</translation>
 <translation id="7754704193130578113">ہر فائل ڈاؤن لوڈ کرنے سے پہلے پوچھیں کہ کہاں پر محفوظ کرنا ہے</translation>
 <translation id="7757592200364144203">آلے کا نام تبدیل کریں</translation>
-<translation id="7757735653610827848">‏‫&amp;quot;<ph name="SELECTION" />" کاپی کریں</translation>
 <translation id="7757739382819740102">قریبی رابطے آپ کے ساتھ اشتراک کر سکتے ہیں۔ منظوری درکار ہوگی۔</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> سے ٹیکسٹ کا اشتراک کیا گیا ہے</translation>
 <translation id="7758143121000533418">Family Link</translation>

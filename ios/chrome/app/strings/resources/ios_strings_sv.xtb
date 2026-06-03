@@ -916,6 +916,7 @@
 <translation id="422474357428465195">Du har flera problem med lösenord som kan innebära en säkerhetsrisk.</translation>
 <translation id="422477017457571619">AI-baserat skydd i realtid mot farliga webbplatser, nedladdningar och tillägg baserat på webbinformation som skickas till Google</translation>
 <translation id="4231395118547300571">Aviseringar från säkerhetskontroll har aktiverats</translation>
+<translation id="4232376164796433044">Lösenord och autofyll</translation>
 <translation id="4232817129213135694">Ställ in nycklar för den här enheten</translation>
 <translation id="4237377247299956313">Tryck på <ph name="BEGIN_BOLD" />Standardwebbläsarapp<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Spara ditt Known Traveler Number</translation>
@@ -1931,6 +1932,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7603308509262646847">Autofyll kortinnehavaren <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Popup blockeras (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Det går inte att synkronisera</translation>
+<translation id="7606639338662398635">Flikgrupper</translation>
 <translation id="760667371114328991">Inaktivera aviseringar från säkerhetskontroll</translation>
 <translation id="7612619742409846846">Inloggad i Google som</translation>
 <translation id="7612849887607288481">Öppna menyn för AI-prototyp</translation>
@@ -2247,6 +2249,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8636825310635137004">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter.</translation>
 <translation id="8637431369725868556">Få skydd mot farliga webbplatser.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Inga utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
+<translation id="8639963783467694461">Inställningar för autofyll</translation>
 <translation id="8642417828095157370">Flikar delas för mer relevanta svar</translation>
 <translation id="8643403533759285912">Radera grupp</translation>
 <translation id="8647280737650867362">Det gick inte att avsluta prisbevakningen.</translation>

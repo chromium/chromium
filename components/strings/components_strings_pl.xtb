@@ -875,6 +875,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2354001756790975382">Inne zakładki</translation>
 <translation id="2355395290879513365">Osoby dokonujące ataków mogą widzieć te same obrazy w witrynie co Ty i zmodyfikować je, by Cię oszukać.</translation>
 <translation id="2356941001189392209">Ograniczona lista adresów URL odwiedzanych przez Ciebie stron, na których występują zdarzenia oparte na starszej technologii</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Zostanie udostępniona 1 karta}few{Zostaną udostępnione {NUM_TABS} karty}many{Zostanie udostępnionych {NUM_TABS} kart}other{Zostanie udostępnione {NUM_TABS} karty}}</translation>
 <translation id="2357481397660644965">Twoim urządzeniem zarządza <ph name="DEVICE_MANAGER" />, a Twoim kontem – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Różne</translation>
 <translation id="2359808026110333948">Dalej</translation>
@@ -4070,7 +4071,6 @@ Dodatkowe informacje:
 <translation id="7388380253839603603">Ceny paliw i tankowanie pojazdów</translation>
 <translation id="7388594495505979117">{0,plural, =1{Twoje urządzenie uruchomi się ponownie za 1 minutę}few{Twoje urządzenie uruchomi się ponownie za # minuty}many{Twoje urządzenie uruchomi się ponownie za # minut}other{Twoje urządzenie uruchomi się ponownie za # minuty}}</translation>
 <translation id="7393161616326137353">Gry przygodowe</translation>
-<translation id="7393243238767102021">Zezwolić domenie <ph name="DOMAIN" /> na automatyczne potwierdzanie tego adresu e-mail?</translation>
 <translation id="7393475648162498734">W momencie płatności pokaż, jakie nagrody i korzyści są dostępne w przypadku Twoich kart</translation>
 <translation id="7393971683644170444">Łączę z dostawcą karty…</translation>
 <translation id="739728382607845710">Ikona modułu obsługi płatności</translation>

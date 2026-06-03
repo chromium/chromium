@@ -3022,6 +3022,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5728246486828755318">Lahko zahteva uporabo dodatnih funkcij tiskalnika</translation>
 <translation id="5729442113829771034">Izobraževanje v zgodnjem otroštvu</translation>
 <translation id="5730040223043577876">Chrome priporoča, da ponastavite geslo, če ste ga uporabljali na drugih spletnih mestih.</translation>
+<translation id="5735174108294025227">Preverjeni e-poštni naslovi bodo prikazani tukaj</translation>
 <translation id="573555826359077410">Gumb za ustvarjanje obrazca, aktivirajte, če želite hitro ustvariti nov obrazec v Google Obrazcih</translation>
 <translation id="5738385766833540397">Upravljanje načina prejemanja opozoril o znižanju cen za izdelke, ki jih spremljate.</translation>
 <translation id="5739619009927381786">V naslednjem koraku odklenite zaslon, običajno s prstnim odtisom. Kodo lahko <ph name="BEGIN_LINK" />preverite tudi na drug način<ph name="END_LINK" />.</translation>
@@ -4071,7 +4072,6 @@ Dodatne podrobnosti:
 <translation id="7388380253839603603">Cene pogonskih goriv in oskrba vozil z gorivom</translation>
 <translation id="7388594495505979117">{0,plural, =1{Naprava se bo znova zagnala čez 1 minuto}one{Naprava se bo znova zagnala čez # minuto}two{Naprava se bo znova zagnala čez # minuti}few{Naprava se bo znova zagnala čez # minute}other{Naprava se bo znova zagnala čez # minut}}</translation>
 <translation id="7393161616326137353">Pustolovske igre</translation>
-<translation id="7393243238767102021">Ali spletnemu mestu <ph name="DOMAIN" /> dovolite, da samodejno preveri ta e-poštni naslov?</translation>
 <translation id="7393475648162498734">Ob zaključku nakupa je prikazano, katere nagrade in ugodnosti so na voljo za vaše kartice</translation>
 <translation id="7393971683644170444">Povezovanje s ponudnikom kartice …</translation>
 <translation id="739728382607845710">Ikona rutine za obravnavo plačil</translation>

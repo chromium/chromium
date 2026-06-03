@@ -875,6 +875,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2354001756790975382">Citas grāmatzīmes</translation>
 <translation id="2355395290879513365">Uzbrucēji var skatīt attēlus, kurus skatāt šajā vietnē, un apmānīt jūs, pārveidojot šos attēlus.</translation>
 <translation id="2356941001189392209">Ierobežots to jūsu apmeklēto lapu vietrāžu URL saraksts, kuros rodas mantotās tehnoloģijas notikumi</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Tiks kopīgota viena cilne}zero{Tiks kopīgotas {NUM_TABS} cilnes}one{Tiks kopīgota {NUM_TABS} cilne}other{Tiks kopīgotas {NUM_TABS} cilnes}}</translation>
 <translation id="2357481397660644965">Jūsu ierīci pārvalda <ph name="DEVICE_MANAGER" />, un jūsu kontu pārvalda <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Vairākas</translation>
 <translation id="2359808026110333948">Turpināt</translation>
@@ -4068,7 +4069,6 @@ Papildu informācija:
 <translation id="7388380253839603603">Degvielas cenas un uzpilde</translation>
 <translation id="7388594495505979117">{0,plural, =1{Jūsu ierīce tiks restartēta pēc 1 minūtes}zero{Jūsu ierīce tiks restartēta pēc # minūtēm}one{Jūsu ierīce tiks restartēta pēc # minūtes}other{Jūsu ierīce tiks restartēta pēc # minūtēm}}</translation>
 <translation id="7393161616326137353">Piedzīvojumu spēles</translation>
-<translation id="7393243238767102021">Vai atļaut lietotnei <ph name="DOMAIN" /> automātiski verificēt šo e-pasta adresi?</translation>
 <translation id="7393475648162498734">Norēķināšanās laikā tiks parādīts, kādas atlīdzības un priekšrocības ir pieejamas jūsu kartēm.</translation>
 <translation id="7393971683644170444">Notiek savienojuma izveide ar jūsu kartes izsniedzēju…</translation>
 <translation id="739728382607845710">Maksājumu apstrādātāja ikona</translation>
