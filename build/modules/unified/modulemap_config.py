@@ -52,8 +52,8 @@ class Header:
 # files to #include. It is not precompiled.
 class AllowedHeader(Header):
 
-  def __init__(self, path: str):
-    super().__init__(path, force=True, lazy=True)
+  def __init__(self, path: str, exists: bool = True):
+    super().__init__(path, force=True, lazy=True, exists=exists)
 
 
 def headers(os):
@@ -71,15 +71,33 @@ def headers(os):
   return [
       Header('alloca.h'),
       # Include loop with sys/cdefs.h
-      Header('android/api-level.h', textual=True),
+      Header('android/api-level.h', exists=is_android, textual=True),
+      Header('android/ndk-version.h', exists=is_android),
+      Header('android/versioning.h', exists=is_android),
       AllowedHeader('arpa/inet.h'),
+      Header('asm/fcntl.h', module_name='asm_fcntl', exists=is_android),
+      AllowedHeader('asm/hwcap.h'),
+      Header('asm/ioctl.h', lazy=True, textual=True),
+      AllowedHeader('asm/ptrace.h'),
+      Header('asm/sigcontext.h', lazy=True),
+      Header('asm-generic/fcntl.h',
+             module_name='asm_generic_fcntl',
+             exists=is_android),
+      Header('asm-generic/ioctl.h', module_name='asm_generic_ioctl', lazy=True),
+      Header('asm-generic/ioctls.h',
+             module_name='asm_generic_ioctls',
+             lazy=True),
       # We need posix_types_32.h to define __kernel_mode_t in the same TU.
       # This way it appears as an override rather than a second definition.
+      Header('asm-generic/posix_types.h', textual=True, lazy=True),
       Header('asm-generic/posix_types.h', textual=True, lazy=True),
       # Inherently textual
       Header('assert.h', textual=True),
       # avx512 headers are missing from clang modulemap.
       Header('avx512dqintrin.h', textual=True, lazy=True),
+      Header('bits/fcntl.h', module_name='bits_fcntl', exists=is_android),
+      Header('bits/getopt.h', module_name='bits_getopt', lazy=True),
+      Header('bits/ioctl.h', module_name='bits_ioctl', lazy=True),
       # This isn't guarded, so it needs to be textual to prevent duplicate
       # definitions.
       Header('bits/mbstate_t.h', textual=False, lazy=True),
@@ -96,9 +114,14 @@ def headers(os):
       AllowedHeader('dlfcn.h'),
       AllowedHeader('elf.h'),
       Header('endian.h'),
-      AllowedHeader('fcntl.h'),
+      Header('fcntl.h',
+             exports=[
+                 'asm_fcntl', 'asm_generic_fcntl', 'bits_fcntl',
+                 'linux_fadvise', 'linux_fcntl'
+             ]),
       Header('features.h'),
       Header('fenv.h'),
+      Header('getopt.h', exports=['bits_getopt']),
       AllowedHeader('grp.h'),
       AllowedHeader('libgen.h'),
       # See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/bits/local_lim.h.html#56
@@ -108,11 +131,16 @@ def headers(os):
       # if it's textual, limits.h undefs something it defined itself.
       Header('limits.h', textual=True),
       AllowedHeader('link.h'),
+      Header('linux/fadvise.h', module_name='linux_fadvise'),
       AllowedHeader('linux/futex.h'),
+      Header('linux/ioctl.h'),
       # See above comment about limits.h
       Header('linux/limits.h', textual=True),
       AllowedHeader('linux/posix_types.h'),
       AllowedHeader('linux/random.h'),
+      AllowedHeader('linux/sched.h'),
+      Header('linux/fcntl.h', module_name='linux_fcntl'),
+      Header('linux/stat.h', module_name='linux_stat'),
       Header('linux/types.h'),
       Header('locale.h'),
       Header('malloc.h'),
@@ -136,13 +164,16 @@ def headers(os):
       Header('sys/cdefs.h', textual=not is_android),
       AllowedHeader('sys/eventfd.h'),
       AllowedHeader('sys/inotify.h'),
+      Header('sys/ioctl.h',
+             exports=['asm_generic_ioctl', 'asm_generic_ioctls', 'bits_ioctl']),
       AllowedHeader('sys/mman.h'),
       AllowedHeader('sys/prctl.h'),
       Header('sys/procfs.h'),
+      AllowedHeader('sys/ptrace.h'),
       AllowedHeader('sys/resource.h'),
       Header('sys/select.h'),
       AllowedHeader('sys/socket.h'),
-      Header('sys/stat.h', exists=is_win),
+      Header('sys/stat.h', exports=['linux_stat']),
       Header('sys/time.h'),
       AllowedHeader('sys/syscall.h'),
       AllowedHeader('sys/sysinfo.h'),
@@ -157,7 +188,7 @@ def headers(os):
       AllowedHeader('syscall.h'),
       Header('time.h'),
       AllowedHeader('ucontext.h'),
-      Header('unistd.h'),
+      Header('unistd.h', exports=['bits_getopt']),
       # We need to re-export std::exception in std.exception.exception and type
       # info.
       Header('vcruntime_exception.h',
