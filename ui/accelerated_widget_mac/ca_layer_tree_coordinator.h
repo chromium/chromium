@@ -76,7 +76,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
 
   virtual ~CALayerTreeCoordinator();
 
-  CALayer* root_ca_layer() const { return root_ca_layer_; }
+  CALayer* root_ca_layer() {
+    EnsureCAContextAndRootLayer();
+    return root_ca_layer_;
+  }
 
   // Set the composited frame's size.
   void Resize(const gfx::Size& pixel_size, float scale_factor);
