@@ -382,7 +382,7 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kSkillSaved,
       ToastSpecification::Builder(
-          features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+          features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
           IDS_SKILL_SAVED_TOAST_BODY)
           .AddCloseButton()
           .AddActionButton(IDS_SKILL_SAVED_TOAST_BUTTON,
@@ -397,7 +397,7 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kSkillSavedWithoutInvokeButton,
       ToastSpecification::Builder(
-          features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+          features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
           IDS_SKILL_SAVED_TOAST_BODY)
           .Build());
 
@@ -620,7 +620,7 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kReportUnsafeSiteConfirmation,
       ToastSpecification::Builder(
-          features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+          features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
           IDS_REPORT_UNSAFE_SITE_CONFIRMATION_TOAST)
           .Build());
 
@@ -628,7 +628,7 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kDefaultBrowserUpdateSuccess,
       ToastSpecification::Builder(
-          features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+          features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
           IDS_DEFAULT_BROWSER_SUCCESS_TOAST_BODY)
           .Build());
 #endif  // !BUILDFLAG(IS_CHROMEOS)

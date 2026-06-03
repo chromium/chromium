@@ -364,7 +364,7 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
       return ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGED_TITLE),
-          features::IsRoundedIconsEnabled() ? views::kCheckIcon
+          features::IsRoundedIconsEnabled() ? views::kCheckSmallIcon
                                             : views::kMenuCheckOldIcon,
           std::move(cancel_toast_callback),
           l10n_util::GetStringUTF16(

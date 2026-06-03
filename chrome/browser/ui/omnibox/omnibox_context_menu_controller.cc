@@ -370,7 +370,7 @@ void OmniboxContextMenuController::AddRecentTabItems() {
         base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox)) {
       size_t index = target_menu_model->GetItemCount() - 1;
       auto check_icon = ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+          features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
           ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
       target_menu_model->SetMinorIcon(index, check_icon);
       // Set checkmark icon on the right.
@@ -523,7 +523,7 @@ void OmniboxContextMenuController::AddModelPickerItems() {
       ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
 
   auto check_icon = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+      features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
       ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
 
   const bool show_rhs_checkmark =

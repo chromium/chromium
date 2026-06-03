@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   auto* web_contents = GetWebContents();
 
   auto check_icon = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+      features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
       ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
 
   // Set the popup state to composebox AIM so that session handle and composebox
@@ -1345,7 +1345,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Build the expected checkmark representation for matching menu assets later.
   auto check_icon = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+      features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
       ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
 
   // Force the popup state manager into AIM mode to mimic active UI conditions.
