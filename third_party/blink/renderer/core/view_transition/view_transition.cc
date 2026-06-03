@@ -59,9 +59,8 @@ namespace blink {
 int ViewTransition::next_id_ = 0;
 
 ViewTransition::ScopedPauseRendering::ScopedPauseRendering(
-    const Element& element,
+    const Document& document,
     bool has_document_scope) {
-  const Document& document = element.GetDocument();
   if (!document.GetFrame() || !document.GetFrame()->IsLocalRoot()) {
     return;
   }
@@ -164,7 +163,7 @@ ViewTransition::ViewTransition(PassKey,
     : ExecutionContextLifecycleObserver(element->GetExecutionContext()),
       creation_type_(CreationType::kScript),
       document_(element->GetDocument()),
-      scope_(element),
+      scope_(element->IsDocumentElement() ? nullptr : element),
       has_document_scope_(element->IsDocumentElement()),
       delegate_(delegate),
       style_tracker_(
@@ -190,7 +189,7 @@ ViewTransition::ViewTransition(PassKey,
     : ExecutionContextLifecycleObserver(element->GetExecutionContext()),
       creation_type_(CreationType::kScript),
       document_(element->GetDocument()),
-      scope_(element),
+      scope_(element->IsDocumentElement() ? nullptr : element),
       has_document_scope_(element->IsDocumentElement()),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           element->GetExecutionContext(),
@@ -229,7 +228,6 @@ ViewTransition::ViewTransition(PassKey,
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       creation_type_(CreationType::kForSnapshot),
       document_(document),
-      scope_(document->documentElement()),
       has_document_scope_(true),
       delegate_(delegate),
       transition_token_(transition_token),
@@ -262,7 +260,6 @@ ViewTransition::ViewTransition(PassKey,
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       creation_type_(CreationType::kFromSnapshot),
       document_(document),
-      scope_(document->documentElement()),
       has_document_scope_(true),
       delegate_(delegate),
       transition_token_(transition_state.transition_token),
@@ -287,7 +284,6 @@ ViewTransition::ViewTransition(PassKey,
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
       creation_type_(CreationType::kPreview),
       document_(document),
-      scope_(document->documentElement()),
       has_document_scope_(true),
       delegate_(delegate),
       style_tracker_(
@@ -817,7 +813,6 @@ void ViewTransition::ProcessCurrentState() {
             base::FeatureList::IsEnabled(
                 features::kDelayLayerTreeViewDeletionOnLocalSwap)));
         delegate_->OnTransitionFinished(this);
-        LogIfDocumentElementChanged();
 
         style_tracker_ = nullptr;
 
@@ -835,16 +830,6 @@ void ViewTransition::ProcessCurrentState() {
         break;
     }
   }
-}
-
-void ViewTransition::LogIfDocumentElementChanged() const {
-  if (!has_document_scope_ || !IsCreatedViaScriptAPI()) {
-    return;
-  }
-  if (scope_ && scope_->IsDocumentElement()) {
-    return;
-  }
-  UseCounter::Count(*document_, WebFeature::kViewTransitionChangeRootElement);
 }
 
 ViewTransitionTypeSet* ViewTransition::Types() {
@@ -975,6 +960,7 @@ bool ViewTransition::NeedsViewTransitionEffectNode(
   if (IsA<LayoutView>(object)) {
     return has_document_scope_ && !IsTerminalState(state_);
   }
+  CHECK(has_document_scope_ || scope_);
   if (!has_document_scope_ && object == scope_->GetLayoutObject()) {
     return !IsTerminalState(state_);
   }
@@ -1162,7 +1148,11 @@ bool ViewTransition::HasIncompatibleStyle() const {
   // hierarchy.
   // Note that we can have a valid view-transition from or to display: none.
   // These correspond to a fade in or fade out transition.
-  const Element* source = scope_ ? Scope() : document_->documentElement();
+  const Element* source = Scope();
+  if (!source) {
+    return false;
+  }
+
   if (const ComputedStyle* style = source->GetComputedStyle()) {
     if (style && style->Display() == EDisplay::kContents) {
       return true;
@@ -1181,7 +1171,7 @@ void ViewTransition::PauseRendering() {
     return;
   }
 
-  rendering_paused_scope_.emplace(*scope_, has_document_scope_);
+  rendering_paused_scope_.emplace(*document_, has_document_scope_);
   document_->GetPage()->GetChromeClient().UnregisterFromCommitObservation(this);
 
   if (has_document_scope_ &&
@@ -1215,8 +1205,8 @@ void ViewTransition::OnRenderingPausedTimeout() {
 }
 
 bool ViewTransition::UnsupportedCapture() {
-  if (scope_ && scope_ != scope_->GetDocument().documentElement() &&
-      scope_->GetComputedStyle()) {
+  CHECK(!scope_ || scope_ != scope_->GetDocument().documentElement());
+  if (scope_ && scope_->GetComputedStyle()) {
     // TODO(crbug.com/429763389): image masks are not currently supported on the
     // scoped element. This restriction may be resolved by making the
     // view-transition's layout object a sibling of the scoped element's
@@ -1251,11 +1241,12 @@ bool ViewTransition::UnsupportedCapture() {
 }
 
 void ViewTransition::LogMessageToConsole(const String& message) {
-  if (!scope_) {
+  auto* scope = Scope();
+  if (!scope) {
     return;
   }
 
-  LocalFrame* frame = scope_->GetDocument().GetFrame();
+  LocalFrame* frame = scope->GetDocument().GetFrame();
   if (!frame) {
     return;
   }
@@ -1323,6 +1314,10 @@ bool ViewTransition::MaybeCrossFrameSink() const {
 bool ViewTransition::IsGeneratingPseudo(
     const ViewTransitionPseudoElementBase& pseudo_element) const {
   return pseudo_element.IsBoundTo(style_tracker_.Get());
+}
+
+Element* ViewTransition::Scope() const {
+  return scope_ ? scope_.Get() : document_->documentElement();
 }
 
 void ViewTransition::NotifySkippedTransitionDOMCallbackScheduled() {

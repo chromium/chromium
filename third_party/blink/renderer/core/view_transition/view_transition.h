@@ -291,7 +291,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool IsGeneratingPseudo(
       const ViewTransitionPseudoElementBase& pseudo_element) const;
 
-  Element* Scope() const { return scope_.Get(); }
+  Element* Scope() const;
 
   // The start of a VT cancels the previous transition; however, first VT's
   // DOM callback must still run. To avoid capturing its DOM changes are part
@@ -428,8 +428,6 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // API are never cross frame sink.
   bool MaybeCrossFrameSink() const;
 
-  void LogIfDocumentElementChanged() const;
-
   static int NextId() { return next_id_++; }
 
   State state_ = State::kInitial;
@@ -438,11 +436,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   Member<Document> document_;
 
   // For a scoped transition, this is the element scope.
-  // For a document transition, this is the document element at the time the
-  // ViewTransition was created.
+  // For a document transition, this is null.
   // TODO(crbug.com/394052227): Consider skipping the transition if the identity
   // of the document element changes.
-  Member<Element> scope_;
+  Member<Element> scope_ = nullptr;
   bool has_document_scope_ = false;
 
   Delegate* const delegate_ = nullptr;
@@ -463,7 +460,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // selectively pausing animations for a CC instance is difficult.
   class ScopedPauseRendering {
    public:
-    explicit ScopedPauseRendering(const Element&, bool has_document_scope);
+    explicit ScopedPauseRendering(const Document&, bool has_document_scope);
     ~ScopedPauseRendering();
 
     bool ShouldThrottleRendering() const;
