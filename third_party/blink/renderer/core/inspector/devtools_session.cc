@@ -134,17 +134,7 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
                             MakeUnwrappingCrossThreadWeakHandle(session_)));
   }
 
-  void AddScriptToEvaluateOnNewDocument(
-      const String& identifier,
-      mojom::blink::ScriptToEvaluateOnNewDocumentPtr script,
-      bool run_immediately,
-      AddScriptToEvaluateOnNewDocumentCallback callback) override {
-    NOTIMPLEMENTED();
-  }
 
-  void RemoveScriptToEvaluateOnNewDocument(const String& identifier) override {
-    NOTIMPLEMENTED();
-  }
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
@@ -488,26 +478,6 @@ void DevToolsSession::UnpauseAndTerminate() {
   v8_session_->resume(true /* terminate on resume */);
 }
 
-void DevToolsSession::AddScriptToEvaluateOnNewDocument(
-    const String& identifier,
-    mojom::blink::ScriptToEvaluateOnNewDocumentPtr script,
-    bool run_immediately,
-    AddScriptToEvaluateOnNewDocumentCallback callback) {
-  // client_->IsPausedForNewWindow(): When opening a new popup,
-  // Page.addScriptToEvaluateOnNewDocument could be called after
-  // Runtime.enable that forces main context creation. In this case, we would
-  // not normally evaluate the script, but we should.
-  bool should_run_immediately =
-      run_immediately ||
-      (agent_->client_ && agent_->client_->IsPausedForNewWindow());
-  injected_script_manager_->AddScriptToEvaluateOnNewDocument(
-      identifier, std::move(script), should_run_immediately);
-  std::move(callback).Run();
-}
 
-void DevToolsSession::RemoveScriptToEvaluateOnNewDocument(
-    const String& identifier) {
-  injected_script_manager_->RemoveScriptToEvaluateOnNewDocument(identifier);
-}
 
 }  // namespace blink

@@ -122,6 +122,20 @@ class CORE_EXPORT InspectorPageAgent final
   protocol::Response enable(
       std::optional<bool> enable_file_chooser_opened_event) override;
   protocol::Response disable() override;
+  protocol::Response addScriptToEvaluateOnLoad(const String& script_source,
+                                               const String& browser_generated_identifier,
+                                               String* identifier) override;
+  protocol::Response removeScriptToEvaluateOnLoad(
+      const String& identifier) override;
+  protocol::Response addScriptToEvaluateOnNewDocument(
+      const String& source,
+      std::optional<String> world_name,
+      std::optional<bool> include_command_line_api,
+      std::optional<bool> runImmediately,
+      const String& browser_generated_identifier,
+      String* identifier) override;
+  protocol::Response removeScriptToEvaluateOnNewDocument(
+      const String& identifier) override;
   protocol::Response setLifecycleEventsEnabled(bool) override;
   protocol::Response reload(std::optional<bool> bypass_cache,
                             std::optional<String> script_to_evaluate_on_load,
