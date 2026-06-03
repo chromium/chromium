@@ -28,6 +28,7 @@
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 #include "url/origin.h"
 

@@ -76,6 +76,7 @@ static_library("discovery") {
     "//components/version_info",
     "//content/public/browser",
     "//content/public/common",
+    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
   ]

@@ -19,10 +19,8 @@ source_set("data_decoder_util") {
     "data_decoder_util.cc",
     "data_decoder_util.h",
   ]
-  deps = [
-    "//base",
-    "//services/data_decoder/public/cpp",
-  ]
+  public_deps = [ "//services/data_decoder/public/cpp" ]
+  deps = [ "//base" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 

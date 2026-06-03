@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
@@ -78,13 +79,11 @@ CastMessageHandler::Observer::~Observer() {
 }
 
 CastMessageHandler::CastMessageHandler(CastSocketService* socket_service,
-                                       ParseJsonCallback parse_json,
                                        std::string_view user_agent,
                                        std::string_view browser_version,
                                        std::string_view locale)
     : source_id_(
           base::StringPrintf("sender-%d", base::RandIntInclusive(0, 1000000))),
-      parse_json_(std::move(parse_json)),
       user_agent_(user_agent),
       browser_version_(browser_version),
       locale_(locale),
@@ -360,12 +359,13 @@ void CastMessageHandler::OnMessage(const CastSocket& socket,
   if (IsCastReservedNamespace(message.namespace_())) {
     if (message.payload_type() ==
         openscreen::cast::proto::CastMessage_PayloadType_STRING) {
-      parse_json_.Run(
-          message.payload_utf8(),
-          base::BindOnce(&CastMessageHandler::HandleCastInternalMessage,
-                         weak_ptr_factory_.GetWeakPtr(), socket.id(),
-                         message.source_id(), message.destination_id(),
-                         message.namespace_()));
+      HandleCastInternalMessage(
+          socket.id(), message.source_id(), message.destination_id(),
+          message.namespace_(),
+          base::JSONReader::ReadAndReturnValueWithError(message.payload_utf8(),
+                                                        base::JSON_PARSE_RFC)
+              .transform_error(
+                  [](auto&& error) { return std::move(error.message); }));
     } else {
       DLOG(ERROR) << "Dropping internal message with binary payload: "
                   << message.namespace_();
@@ -388,7 +388,7 @@ void CastMessageHandler::HandleCastInternalMessage(
     const std::string& source_id,
     const std::string& destination_id,
     const std::string& namespace_,
-    data_decoder::DataDecoder::ValueOrError parse_result) {
+    base::expected<base::Value, std::string> parse_result) {
   ASSIGN_OR_RETURN(base::Value value, std::move(parse_result),
                    ReportParseError);
 

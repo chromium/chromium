@@ -56,11 +56,9 @@ static_library("channel") {
     "//content/public/browser",
     "//crypto",
     "//net",
-    "//services/data_decoder/public/cpp",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
   ]
   public_deps = [
-    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
@@ -110,8 +108,6 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//content/test:test_support",
     "//net:test_support",
-    "//services/data_decoder/public/cpp",
-    "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/openscreen/src/cast/common/certificate/proto:certificate_unittest_proto",

@@ -20,10 +20,10 @@
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
 #include "base/token.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace cast_channel {
 
@@ -170,13 +170,7 @@ class CastMessageHandler : public CastSocket::Observer {
     virtual void OnMessageSent(int channel_id, const CastMessage& message) = 0;
   };
 
-  // |parse_json|: A callback which can be used to parse a string of potentially
-  // unsafe JSON data.
-  using ParseJsonCallback = base::RepeatingCallback<void(
-      const std::string& string,
-      data_decoder::DataDecoder::ValueParseCallback callback)>;
   CastMessageHandler(CastSocketService* socket_service,
-                     ParseJsonCallback parse_json,
                      std::string_view user_agent,
                      std::string_view browser_version,
                      std::string_view locale);
@@ -357,7 +351,7 @@ class CastMessageHandler : public CastSocket::Observer {
       const std::string& source_id,
       const std::string& destination_id,
       const std::string& namespace_,
-      data_decoder::DataDecoder::ValueOrError parse_result);
+      base::expected<base::Value, std::string> parse_result);
 
   // Set of pending requests keyed by socket ID.
   base::flat_map<int, std::unique_ptr<PendingRequests>> pending_requests_;
@@ -365,9 +359,6 @@ class CastMessageHandler : public CastSocket::Observer {
   // Source ID used for platform messages. The suffix is randomized to
   // distinguish it from other Cast senders on the same network.
   const std::string source_id_;
-
-  // Used for parsing JSON payload from receivers.
-  ParseJsonCallback parse_json_;
 
   // User agent and browser version strings included in virtual connection
   // messages.

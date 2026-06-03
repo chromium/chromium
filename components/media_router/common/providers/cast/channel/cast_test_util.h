@@ -193,7 +193,7 @@ class MockCastSocket : public CastSocket {
 
 class MockCastMessageHandler : public CastMessageHandler {
  public:
-  explicit MockCastMessageHandler(MockCastSocketService* socket_service);
+  explicit MockCastMessageHandler(CastSocketService* socket_service);
 
   MockCastMessageHandler(const MockCastMessageHandler&) = delete;
   MockCastMessageHandler& operator=(const MockCastMessageHandler&) = delete;
