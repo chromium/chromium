@@ -178,7 +178,7 @@ BASE_FEATURE(kBackForwardCacheEntryTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // BackForwardCache is disabled on low memory devices. The threshold is defined
 // via a field trial param: "memory_threshold_for_back_forward_cache_in_mb"
-// It is compared against base::SysInfo::AmountOfPhysicalMemoryMB().
+// It is compared against base::SysInfo::AmountOfTotalPhysicalMemory().
 
 // "BackForwardCacheMemoryControls" is checked before "BackForwardCache". It
 // means the low memory devices will activate neither the control group nor the

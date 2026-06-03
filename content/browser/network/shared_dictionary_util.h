@@ -19,8 +19,9 @@ class StoragePartition;
 // thread, and sends the caliculated value to NetworkContext of
 // `storage_partition`.
 // When `path` is empty, caliculates the max size for in memory cache using
-// base::SysInfo::AmountOfPhysicalMemory. Otherwise, caliculates the max size
-// for on disk cache using base::SysInfo::AmountOfFreeDiskSpace with the `path`.
+// base::SysInfo::AmountOfTotalPhysicalMemory. Otherwise, calculates the max
+// size for on disk cache using base::SysInfo::AmountOfFreeDiskSpace with the
+// `path`.
 void CalculateAndSetSharedDictionaryCacheMaxSize(
     base::WeakPtr<StoragePartition> storage_partition,
     const base::FilePath& path);

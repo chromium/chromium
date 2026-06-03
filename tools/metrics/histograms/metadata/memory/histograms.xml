@@ -1590,7 +1590,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The percentage of physical memory on the system considered
     &quot;available&quot; by base::SysInfo::AmountOfAvailablePhysicalMemory()
-    and base::SysInfo::AmountOfPhysicalMemory().
+    and base::SysInfo::AmountOfTotalPhysicalMemory().
 
     Recorded every 2 minutes.
   </summary>

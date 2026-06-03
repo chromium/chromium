@@ -98,13 +98,6 @@ class BASE_EXPORT SysInfo {
   // will return the lesser of the actual physical memory, or 512MB.
   static ByteSize AmountOfTotalPhysicalMemory();
 
-  // Deprecated: Prefer AmountOfTotalPhysicalMemory(), which returns a ByteSize.
-  // ByteCount is deprecated.
-  // TODO(crbug.com/448661443): Migrate all callers and remove this.
-  static ByteCount AmountOfPhysicalMemory() {
-    return AmountOfTotalPhysicalMemory().AsDeprecatedByteCount();
-  }
-
   // Return the number of bytes of current available physical memory on the
   // machine.
   // (The amount of memory that can be allocated without any significant
