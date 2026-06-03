@@ -78,6 +78,13 @@
 - (void)l2capChannelClosed:(IOBluetoothL2CAPChannel*)l2capChannel {
   [_l2capChannel setDelegate:nil];
 
+  // Maintain a strong local reference to ensure the delegate survives the
+  // callback. This is necessary for incoming connections or failed outgoing
+  // connections where `_strongSelf` is never armed, leaving `delegate_` in
+  // C++ as the only strong reference keeping this object alive.
+  [[maybe_unused]] NS_VALID_UNTIL_END_OF_SCOPE BluetoothL2capChannelDelegate*
+      keepAlive = self;
+
   // If `_channel` still exists, notify it that the channel was closed so it
   // can release its strong references to `l2capChannel` and the channel
   // delegate (this object). In the typical case we expect `_channel` has
