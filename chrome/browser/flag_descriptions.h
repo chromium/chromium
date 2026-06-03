@@ -6655,14 +6655,6 @@ inline constexpr char kUseWinrtMidiApiDescription[] =
     "Use Windows Runtime MIDI API for WebMIDI (effective only on Windows 10 or "
     "later).";
 
-inline constexpr char kWebRtcAllowWgcScreenCapturerName[] =
-    "Use Windows WGC API for screen capture";
-inline constexpr char kWebRtcAllowWgcScreenCapturerDescription[] =
-    "Use Windows.Graphics.Capture API based screen capturer in combination "
-    "with the WebRTC based Web API getDisplayMedia. Requires  Windows 10, "
-    "version 1803 or higher. Adds a thin yellow border around the captured "
-    "screen area. The DXGI API is used as screen capture API when this flag is "
-    "disabled.";
 
 inline constexpr char kWebRtcWgcRequireBorderName[] =
     "Border around WGC captures";

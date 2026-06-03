@@ -146,38 +146,10 @@ void LogDesktopCaptureRequestRefreshRate(DesktopMediaID::Type capturer_type,
 
 #if BUILDFLAG(IS_WIN)
 bool IsWgcEnabledForScreenCapture() {
-  bool enabled =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer);
-  if (enabled) {
-    return true;
-  }
-
-  if (base::FeatureList::GetInstance() &&
-      base::FeatureList::GetInstance()->IsFeatureOverridden(
-          features::kWebRtcAllowWgcScreenCapturer.name)) {
-    return enabled;
-  }
-
   // Starting from WIN11 24H2 (build 26100), the Capture API returns empty
   // frame when the captured content is unchanged, helping to maintain
   // performance for 0Hz capture scenarios.
-  enabled = (base::win::GetVersion() >= base::win::Version::WIN11_24H2);
-  return enabled;
-}
-
-bool IsWgcZeroHzEnabledForScreenCapture() {
-  bool enabled =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenZeroHz);
-  if (enabled) {
-    return true;
-  }
-
-  if (base::FeatureList::GetInstance() &&
-      base::FeatureList::GetInstance()->IsFeatureOverridden(
-          features::kWebRtcAllowWgcScreenZeroHz.name)) {
-    return enabled;
-  }
-  return IsWgcEnabledForScreenCapture();
+  return base::win::GetVersion() >= base::win::Version::WIN11_24H2;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -976,16 +948,15 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   if (IsWgcEnabledForScreenCapture()) {
     options.set_allow_wgc_screen_capturer(true);
 
-    // 0Hz support is enabled for WGC window capture but disabled by default for
-    // screen capture through the `kWebRtcAllowWgcScreenZeroHz` feature flag.
-    // When 0Hz is enabled, the WGC capturer will compare the pixel values of
-    // the new frame and the previous frame and update the DesktopRegion part of
-    // the frame to reflect if the content has changed or not.
-    // DesktopFrame::updated_region() will be empty if nothing has changed and
-    // contain one (damage) region corresponding to the complete screen or
-    // window being captured if any change is detected.
+    // 0Hz support is enabled for WGC window capture and screen capture (on
+    // compatible OS versions). When 0Hz is enabled, the WGC capturer will
+    // compare the pixel values of the new frame and the previous frame and
+    // update the DesktopRegion part of the frame to reflect if the content has
+    // changed or not. DesktopFrame::updated_region() will be empty if nothing
+    // has changed and contain one (damage) region corresponding to the complete
+    // screen or window being captured if any change is detected.
     if (source.type == DesktopMediaID::TYPE_SCREEN) {
-      options.set_allow_wgc_zero_hertz(IsWgcZeroHzEnabledForScreenCapture());
+      options.set_allow_wgc_zero_hertz(true);
     }
   }
   options.set_allow_wgc_window_capturer(true);
@@ -1122,16 +1093,6 @@ DesktopCaptureDevice::DesktopCaptureDevice(
   DVLOG(1) << __func__ << "(type=" << DesktopMediaTypeToString(type) << ")";
 
   bool zero_hertz_is_supported = true;
-#if BUILDFLAG(IS_WIN)
-  // On Windows, 0Hz might be disabled for screen capture when using the
-  // Windows.Graphics.Capture (WGC) API.  See comment in
-  // `DesktopCaptureDevice::Create()` above for details.
-  if (IsWgcEnabledForScreenCapture()) {
-    zero_hertz_is_supported = IsWgcZeroHzEnabledForScreenCapture();
-  }
-  VLOG(1) << __func__ << " [zero_hertz_is_supported=" << zero_hertz_is_supported
-          << "]";
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
   thread_.Start();
