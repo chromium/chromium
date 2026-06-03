@@ -526,10 +526,17 @@ URLMatcherCondition URLMatcherConditionFactory::CreateCondition(
 
 std::string URLMatcherConditionFactory::CanonicalizeHostSuffix(
     const std::string& suffix) const {
-  if (suffix.empty()) {
+  // Strip all trailing dots, then append exactly one. This collapses
+  // "host", "host." and "host.." (etc.) to the same canonical "host." so
+  // that multi-dot FQDN forms cannot bypass host-suffix filters. GURL
+  // accepts hosts with empty labels (see url/url_idna_icu.cc), so the
+  // URL side can otherwise present "host.." while the filter side stores
+  // "host.".
+  const size_t end = suffix.find_last_not_of('.');
+  if (end == std::string::npos) {
     return ".";
   }
-  return suffix.back() == '.' ? suffix : suffix + ".";
+  return suffix.substr(0, end + 1) + ".";
 }
 
 std::string URLMatcherConditionFactory::CanonicalizeHostPrefix(

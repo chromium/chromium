@@ -320,6 +320,11 @@ TEST(URLMatcherConditionFactoryTest, TestComponentSearches) {
       "&ie=UTF-8&ion=1#hl=en&output=search&sclient=psy-ab"
       "&q=chrome%20is%20awesome");
   std::string url2 = factory.CanonicalizeURLForComponentSearches(gurl2);
+  GURL gurl3(
+      "https://www.google.com..:1234/webhp?sourceid=chrome-instant"
+      "&ie=UTF-8&ion=1#hl=en&output=search&sclient=psy-ab"
+      "&q=chrome%20is%20awesome");
+  std::string url3 = factory.CanonicalizeURLForComponentSearches(gurl3);
 
   // Test host component.
   EXPECT_TRUE(Matches(factory.CreateHostPrefixCondition(std::string()), url));
@@ -335,34 +340,81 @@ TEST(URLMatcherConditionFactoryTest, TestComponentSearches) {
 
   EXPECT_TRUE(Matches(factory.CreateHostSuffixCondition(std::string()), url));
   EXPECT_TRUE(Matches(factory.CreateHostSuffixCondition(std::string()), url2));
+  EXPECT_TRUE(Matches(factory.CreateHostSuffixCondition(std::string()), url3));
   EXPECT_TRUE(Matches(factory.CreateHostSuffixCondition("com"), url));
   EXPECT_TRUE(Matches(factory.CreateHostSuffixCondition("com"), url2));
+  EXPECT_TRUE(Matches(factory.CreateHostSuffixCondition("com"), url3));
   EXPECT_TRUE(Matches(factory.CreateHostSuffixCondition(".com"), url));
+  EXPECT_TRUE(Matches(factory.CreateHostSuffixCondition(".com"), url3));
   EXPECT_TRUE(
       Matches(factory.CreateHostSuffixCondition("www.google.com"), url));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostSuffixCondition("www.google.com"), url3));
   EXPECT_TRUE(
       Matches(factory.CreateHostSuffixCondition(".www.google.com"), url));
   EXPECT_TRUE(
       Matches(factory.CreateHostSuffixCondition(".www.google.com"), url2));
   EXPECT_TRUE(
+      Matches(factory.CreateHostSuffixCondition(".www.google.com"), url3));
+  EXPECT_TRUE(
       Matches(factory.CreateHostSuffixCondition(".www.google.com."), url));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostSuffixCondition(".www.google.com."), url3));
+
+  // Suffix patterns with multiple trailing dots should be canonicalized to a
+  // single trailing dot and match.
+  EXPECT_TRUE(
+      Matches(factory.CreateHostSuffixCondition("www.google.com.."), url));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostSuffixCondition("www.google.com.."), url2));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostSuffixCondition("www.google.com.."), url3));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostSuffixCondition(".www.google.com.."), url));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostSuffixCondition(".www.google.com.."), url2));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostSuffixCondition(".www.google.com.."), url3));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostSuffixCondition(".www.google.com..."), url));
+
   EXPECT_FALSE(Matches(factory.CreateHostSuffixCondition("www"), url));
   EXPECT_FALSE(
       Matches(factory.CreateHostSuffixCondition("www.google.com/"), url));
   EXPECT_FALSE(Matches(factory.CreateHostSuffixCondition("webhp"), url));
 
   EXPECT_FALSE(Matches(factory.CreateHostEqualsCondition(std::string()), url));
+  EXPECT_FALSE(Matches(factory.CreateHostEqualsCondition(std::string()), url3));
   EXPECT_FALSE(Matches(factory.CreateHostEqualsCondition("www"), url));
   EXPECT_TRUE(
       Matches(factory.CreateHostEqualsCondition("www.google.com"), url));
   EXPECT_TRUE(
       Matches(factory.CreateHostEqualsCondition("www.google.com"), url2));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostEqualsCondition("www.google.com"), url3));
   EXPECT_FALSE(
       Matches(factory.CreateHostEqualsCondition("www.google.com/"), url));
   EXPECT_TRUE(
       Matches(factory.CreateHostEqualsCondition(".www.google.com."), url));
   EXPECT_TRUE(
       Matches(factory.CreateHostEqualsCondition(".www.google.com."), url2));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostEqualsCondition(".www.google.com."), url3));
+
+  // Equals patterns with multiple trailing dots should be canonicalized to a
+  // single trailing dot and match.
+  EXPECT_TRUE(
+      Matches(factory.CreateHostEqualsCondition("www.google.com.."), url));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostEqualsCondition("www.google.com.."), url2));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostEqualsCondition("www.google.com.."), url3));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostEqualsCondition(".www.google.com.."), url));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostEqualsCondition(".www.google.com.."), url2));
+  EXPECT_TRUE(
+      Matches(factory.CreateHostEqualsCondition(".www.google.com.."), url3));
 
   // Test path component.
   EXPECT_TRUE(Matches(factory.CreatePathPrefixCondition(std::string()), url));
