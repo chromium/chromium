@@ -85,7 +85,7 @@ class ProofVerifierChromium::Job {
   quic::QuicAsyncStatus VerifyCertChain(
       const std::string& hostname,
       const uint16_t port,
-      const std::vector<std::string>& certs,
+      const std::vector<std::string_view>& certs,
       const std::string& ocsp_response,
       const std::string& cert_sct,
       std::string* error_details,
@@ -101,7 +101,7 @@ class ProofVerifierChromium::Job {
 
   // Convert |certs| to |cert_|(X509Certificate). Returns true if successful.
   bool GetX509Certificate(
-      const std::vector<string>& certs,
+      const std::vector<std::string_view>& certs,
       std::string* error_details,
       std::unique_ptr<quic::ProofVerifyDetails>* verify_details);
 
@@ -227,8 +227,11 @@ quic::QuicAsyncStatus ProofVerifierChromium::Job::VerifyProof(
   verify_details_ = std::make_unique<ProofVerifyDetailsChromium>();
 
   // Converts |certs| to |cert_|.
-  if (!GetX509Certificate(certs, error_details, verify_details))
+  if (!GetX509Certificate(
+          std::vector<std::string_view>(certs.begin(), certs.end()),
+          error_details, verify_details)) {
     return quic::QUIC_FAILURE;
+  }
 
   // We call VerifySignature first to avoid copying of server_config and
   // signature.
@@ -248,7 +251,7 @@ quic::QuicAsyncStatus ProofVerifierChromium::Job::VerifyProof(
 quic::QuicAsyncStatus ProofVerifierChromium::Job::VerifyCertChain(
     const string& hostname,
     const uint16_t port,
-    const std::vector<string>& certs,
+    const std::vector<std::string_view>& certs,
     const std::string& ocsp_response,
     const std::string& cert_sct,
     std::string* error_details,
@@ -277,7 +280,7 @@ quic::QuicAsyncStatus ProofVerifierChromium::Job::VerifyCertChain(
 }
 
 bool ProofVerifierChromium::Job::GetX509Certificate(
-    const std::vector<string>& certs,
+    const std::vector<std::string_view>& certs,
     std::string* error_details,
     std::unique_ptr<quic::ProofVerifyDetails>* verify_details) {
   if (certs.empty()) {
@@ -289,11 +292,7 @@ bool ProofVerifierChromium::Job::GetX509Certificate(
   }
 
   // Convert certs to X509Certificate.
-  std::vector<std::string_view> cert_pieces(certs.size());
-  for (unsigned i = 0; i < certs.size(); i++) {
-    cert_pieces[i] = std::string_view(certs[i]);
-  }
-  cert_ = X509Certificate::CreateFromDERCertChain(cert_pieces);
+  cert_ = X509Certificate::CreateFromDERCertChain(certs);
   if (!cert_.get()) {
     *error_details = "Failed to create certificate chain";
     DLOG(WARNING) << *error_details;
@@ -551,7 +550,7 @@ quic::QuicAsyncStatus ProofVerifierChromium::VerifyProof(
 quic::QuicAsyncStatus ProofVerifierChromium::VerifyCertChain(
     const std::string& hostname,
     const uint16_t port,
-    const std::vector<std::string>& certs,
+    const std::vector<std::string_view>& certs,
     const std::string& ocsp_response,
     const std::string& cert_sct,
     const quic::ProofVerifyContext* verify_context,
