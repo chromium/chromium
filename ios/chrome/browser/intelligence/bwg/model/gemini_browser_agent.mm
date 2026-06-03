@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_picker_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
@@ -251,6 +252,11 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       gemini_camera_handler_ = [[GeminiCameraHandler alloc]
           initWithPrefService:browser_->GetProfile()->GetPrefs()];
       bwg_gateway_.cameraHandler = gemini_camera_handler_;
+    }
+
+    if (IsGeminiMultiTabContextEnabled()) {
+      gemini_tab_picker_handler_ = [[GeminiTabPickerHandler alloc] init];
+      bwg_gateway_.tabPickerHandler = gemini_tab_picker_handler_;
     }
 
     if (IsGeminiActorEnabled() && IsActorEnabled()) {

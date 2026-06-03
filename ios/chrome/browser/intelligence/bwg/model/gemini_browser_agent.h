@@ -44,6 +44,7 @@ class ScopedFullscreenDisabler;
 @class GeminiPageStateChangeHandler;
 @class GeminiSessionHandler;
 @class GeminiCameraHandler;
+@class GeminiTabPickerHandler;
 @class GeminiConsentProviderHandler;
 @class GeminiPageContext;
 @class GeminiViewStateChangeHandler;
@@ -348,6 +349,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Handler for Gemini camera.
   __strong GeminiCameraHandler* gemini_camera_handler_ = nullptr;
+
+  // Handler for Gemini tab picker.
+  __strong GeminiTabPickerHandler* gemini_tab_picker_handler_ = nullptr;
 
   // Handler for Gemini consent provider.
   __strong GeminiConsentProviderHandler* gemini_consent_provider_handler_ =

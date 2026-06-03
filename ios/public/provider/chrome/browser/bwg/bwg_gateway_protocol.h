@@ -29,9 +29,6 @@
     pageStateChangeHandler;
 @property(nonatomic, weak) id<GeminiSessionDelegate> sessionHandler;
 @property(nonatomic, weak) id<GeminiSuggestionDelegate> suggestionHandler;
-
-// TODO(crbug.com/512101817): Remove optional when internal is implemented.
-@optional
 @property(nonatomic, weak) id<GeminiTabPickerDelegate> tabPickerHandler;
 
 @end

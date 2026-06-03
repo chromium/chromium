@@ -28,6 +28,8 @@ source_set("model") {
     "gemini_suggestion_handler.h",
     "gemini_suggestion_handler.mm",
     "gemini_tab_picker_delegate.h",
+    "gemini_tab_picker_handler.h",
+    "gemini_tab_picker_handler.mm",
     "gemini_view_state_delegate.h",
   ]
   deps = [
@@ -259,6 +261,7 @@ source_set("unit_tests") {
     "gemini_startup_configuration_unittest.mm",
     "gemini_suggestion_handler_unittest.mm",
     "gemini_tab_helper_unittest.mm",
+    "gemini_tab_picker_handler_unittest.mm",
     "gemini_view_state_change_handler_unittest.mm",
   ]
   deps = [
