@@ -346,6 +346,39 @@ TEST_F(OmniboxAutofillDelegateTest,
 }
 
 TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_MultipleCreditCardNumberFields_Aborts) {
+  base::HistogramTester histogram_tester;
+
+  // Create a credit card form, but include multiple card number fields.
+  FormData form;
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  autofill_client().set_last_committed_primary_main_frame_url(form.url());
+  test_api(form).Append(CreateTestFormField("Name on Card", "nameoncard", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("Card Number 1", "cardnumber1", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("Card Number 2", "cardnumber2", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("Expiration Date", "ccmonth", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(
+      CreateTestFormField("", "ccyear", "", FormControlType::kInputText));
+  test_api(form).Append(
+      CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
+  form = CreateFormDataForFrame(form, autofill_driver().GetFrameToken());
+
+  FormsSeen({form});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::
+          kFoundMultipleCreditCardNumberFields,
+      1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
        OnFieldTypesDetermined_OptimizationGuideDeciderMissing_Aborts) {
   base::HistogramTester histogram_tester;
 

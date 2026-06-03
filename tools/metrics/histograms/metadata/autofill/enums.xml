@@ -5351,9 +5351,10 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Aborted; failed to fetch cached form"/>
   <int value="4" label="Aborted; card number or expiration date field missing"/>
   <int value="5" label="Aborted; form or client context not secure"/>
-  <int value="6" label="Aborted; OptimizationGuideDecider missing"/>
-  <int value="7" label="Aborted; found field from non-allowlisted iframe"/>
-  <int value="8" label="All prior checks passed; started IntersectionObserver"/>
+  <int value="6" label="Aborted; found multiple credit card number fields"/>
+  <int value="7" label="Aborted; OptimizationGuideDecider missing"/>
+  <int value="8" label="Aborted; found field from non-allowlisted iframe"/>
+  <int value="9" label="All prior checks passed; started IntersectionObserver"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h:OmniboxAutofillShowChipDecisionPart1) -->

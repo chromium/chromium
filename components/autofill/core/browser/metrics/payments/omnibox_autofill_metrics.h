@@ -42,15 +42,18 @@ enum class OmniboxAutofillShowChipDecisionPart1 {
   // The form or client context was not secure, such as being HTTP.
   kFormOrClientContextNotSecure = 5,
 
+  // The form contained more than one relevant CREDIT_CARD_NUMBER field.
+  kFoundMultipleCreditCardNumberFields = 6,
+
   // The OptimizationGuideDecider was not present.
-  kMissingOptimizationGuideDecider = 6,
+  kMissingOptimizationGuideDecider = 7,
 
   // Form field was in a non-allowlisted iframe.
-  kNonAllowlistedIframe = 7,
+  kNonAllowlistedIframe = 8,
 
   // All checks up to this point passed, and the IntersectionObserver checks can
   // be started.
-  kSuccess = 8,
+  kSuccess = 9,
 
   kMaxValue = kSuccess,
 };

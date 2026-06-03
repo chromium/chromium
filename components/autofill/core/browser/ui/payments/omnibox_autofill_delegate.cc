@@ -89,16 +89,28 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
     return;
   }
 
-  // All fields of the form must be either in the main frame or an allowlisted
-  // iframe.
+  // Iterate over all AutofillFields in the FormStructure, paying attention to
+  // the frame they are in (main vs. iframe) as well as ensuring there's only a
+  // single CREDIT_CARD_NUMBER type.
+  bool found_credit_card_number_field = false;
   std::set<url::Origin> iframe_origins;
   for (const std::unique_ptr<AutofillField>& field : form_structure->fields()) {
-    if (FieldIsInMainFrame(manager, *field)) {
-      // Field is in main frame; no need for allowlist check.
-      continue;
+    if (field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
+      if (found_credit_card_number_field) {
+        LogOmniboxAutofillShowChipDecisionPart1(
+            OmniboxAutofillShowChipDecisionPart1::
+                kFoundMultipleCreditCardNumberFields);
+        return;
+      }
+      found_credit_card_number_field = true;
     }
-    iframe_origins.insert(field->origin());
+    if (!FieldIsInMainFrame(manager, *field)) {
+      iframe_origins.insert(field->origin());
+    }
   }
+
+  // All fields of the form must be either in the main frame or an allowlisted
+  // iframe.
   if (!iframe_origins.empty() &&
       !manager.client().GetAutofillOptimizationGuideDecider()) {
     LogOmniboxAutofillShowChipDecisionPart1(
