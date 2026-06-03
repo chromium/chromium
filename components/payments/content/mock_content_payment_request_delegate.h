@@ -94,7 +94,6 @@ class MockContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
               (),
               (override));
   MOCK_METHOD(autofill::RegionDataLoader*, GetRegionDataLoader, (), (override));
-  MOCK_METHOD(ukm::UkmRecorder*, GetUkmRecorder, (), (override));
   MOCK_METHOD(std::string, GetAuthenticatedEmail, (), (override, const));
   MOCK_METHOD(PrefService*, GetPrefService, (), (override));
 };

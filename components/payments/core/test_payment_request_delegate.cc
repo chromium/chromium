@@ -55,10 +55,6 @@ autofill::RegionDataLoader* TestPaymentRequestDelegate::GetRegionDataLoader() {
   return nullptr;
 }
 
-ukm::UkmRecorder* TestPaymentRequestDelegate::GetUkmRecorder() {
-  return nullptr;
-}
-
 autofill::TestAddressNormalizer*
 TestPaymentRequestDelegate::test_address_normalizer() {
   return &address_normalizer_;

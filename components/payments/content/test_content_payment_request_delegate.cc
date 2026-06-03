@@ -106,10 +106,6 @@ TestContentPaymentRequestDelegate::GetRegionDataLoader() {
   return core_delegate_.GetRegionDataLoader();
 }
 
-ukm::UkmRecorder* TestContentPaymentRequestDelegate::GetUkmRecorder() {
-  return core_delegate_.GetUkmRecorder();
-}
-
 std::string TestContentPaymentRequestDelegate::GetAuthenticatedEmail() const {
   return core_delegate_.GetAuthenticatedEmail();
 }

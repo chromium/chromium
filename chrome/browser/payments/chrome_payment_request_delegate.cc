@@ -44,7 +44,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
@@ -173,10 +172,6 @@ ChromePaymentRequestDelegate::GetRegionDataLoader() {
   return new autofill::RegionDataLoaderImpl(GetAddressInputSource().release(),
                                             GetAddressInputStorage().release(),
                                             GetApplicationLocale());
-}
-
-ukm::UkmRecorder* ChromePaymentRequestDelegate::GetUkmRecorder() {
-  return ukm::UkmRecorder::Get();
 }
 
 std::string ChromePaymentRequestDelegate::GetAuthenticatedEmail() const {
