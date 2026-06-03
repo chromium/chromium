@@ -17,6 +17,7 @@ function getTestAnnotation(id: number): TextAnnotation {
     id: id,
     mojoTextInfo: new ArrayBuffer(0),
     pageIndex: 0,
+    pdfZoom: 1.0,
     text: 'Hello World',
     textAttributes: {
       typeface: TextTypeface.SANS_SERIF,
@@ -43,7 +44,6 @@ function getTestAnnotationMessageData(id: number): TextAnnotationMessageData {
     ...getTestAnnotation(id),
     isEdited: false,
     newTypefaces: [],
-    pdfZoom: 1.0,
     source: TextAnnotationSource.USER,
   };
 }
@@ -291,7 +291,6 @@ chrome.test.runTests([
       isEdited: true,
       mojoTextInfo: new ArrayBuffer(0),
       newTypefaces: [],
-      pdfZoom: 1.0,
       source: TextAnnotationSource.USER,
     };
     expectedMessageData1.textAttributes.color = blue;
@@ -1283,8 +1282,6 @@ chrome.test.runTests([
     // Zoom to 2.0 and redo.
     viewport.setZoom(2.0);
     manager.redo();
-    // TODO(crbug.com/514308934): Should be 1, like the first message.
-    expectedMessage.pdfZoom = 2;
     expectedMessage.text = 'Zoom';
     expectedMessage.source = TextAnnotationSource.REDO;
     verifyFinishTextAnnotationMessage(expectedMessage);

@@ -177,7 +177,7 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
-    verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true, 1.0);
+    verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true);
 
     chrome.test.succeed();
   },
@@ -208,7 +208,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
     // Message is identical to before because 'pointerup' was never fired.
-    verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true, 1.0);
+    verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true);
 
     chrome.test.succeed();
   },
@@ -244,7 +244,7 @@ chrome.test.runTests([
     chrome.test.assertFalse(isVisible(textbox));
 
     testAnnotation.text = '';
-    verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true, 1.0);
+    verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true);
 
     chrome.test.succeed();
   },
@@ -262,7 +262,7 @@ chrome.test.runTests([
     chrome.test.assertFalse(isVisible(textbox));
 
     testAnnotation.text = '';
-    verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true, 1.0);
+    verifyFinishTextAnnotationMessage(mockPlugin, testAnnotation, true);
 
     chrome.test.succeed();
   },

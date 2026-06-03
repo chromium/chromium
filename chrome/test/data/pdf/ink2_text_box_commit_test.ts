@@ -48,7 +48,7 @@ chrome.test.runTests([
       initializeBox(manager, 100, 100, 0, 0);
       await microtasksFinished();
       verifyFinishTextAnnotationMessage(
-          mockPlugin, expectedAnnotation, expectedIsEdited, 2.0);
+          mockPlugin, expectedAnnotation, expectedIsEdited);
       mockPlugin.clearMessages();
     }
 
@@ -57,7 +57,7 @@ chrome.test.runTests([
     // it an "existing" annotation. Screen coordinates 50, 60 map to page
     // coordinates 25 - 5, 30 - 3. 5 and 3 are the page margin offsets.
     const expectedAnnotation = getTestAnnotation(
-        {locationX: 20, locationY: 27, height: 50, width: 50});
+        {locationX: 20, locationY: 27, height: 50, width: 50}, 2.0);
     textbox.$.textbox.value = expectedAnnotation.text;
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
@@ -179,9 +179,9 @@ chrome.test.runTests([
     assertDeepEquals([TextBoxState.NEW, TextBoxState.EDITED], textBoxStates);
 
     // Still using 2.0 zoom, so 100x100 at 400, 300 maps to 50x50 at
-    // 400 / 2 - 5, 300 /2 - 3 in page coordinates.
+    // 400 / 2 - 5, 300 / 2 - 3 in page coordinates.
     const expectedAnnotation = getTestAnnotation(
-        {locationX: 195, locationY: 147, height: 50, width: 50});
+        {locationX: 195, locationY: 147, height: 50, width: 50}, 2.0);
     expectedAnnotation.text = 'Hello';
 
     await textbox.commitTextAnnotation();
@@ -190,8 +190,7 @@ chrome.test.runTests([
     assertDeepEquals(
         [TextBoxState.NEW, TextBoxState.EDITED, TextBoxState.INACTIVE],
         textBoxStates);
-    verifyFinishTextAnnotationMessage(
-        mockPlugin, expectedAnnotation, true, 2.0);
+    verifyFinishTextAnnotationMessage(mockPlugin, expectedAnnotation, true);
     mockPlugin.clearMessages();
 
     // When existing text is not edited, commitTextAnnotation() will trigger a
@@ -209,8 +208,7 @@ chrome.test.runTests([
     chrome.test.assertFalse(isVisible(textbox));
     // The annotation has not changed.
     assertDeepEquals([TextBoxState.NEW, TextBoxState.INACTIVE], textBoxStates);
-    verifyFinishTextAnnotationMessage(
-        mockPlugin, expectedAnnotation, false, 2.0);
+    verifyFinishTextAnnotationMessage(mockPlugin, expectedAnnotation, false);
     mockPlugin.clearMessages();
 
     chrome.test.succeed();

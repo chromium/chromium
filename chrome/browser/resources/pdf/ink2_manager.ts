@@ -268,6 +268,7 @@ export class Ink2Manager extends EventTarget {
       id: this.nextAnnotationId_,
       mojoTextInfo: new ArrayBuffer(0),
       pageIndex: page,
+      pdfZoom: this.viewport_.getZoom(),
       text: '',
       textAttributes: structuredClone(this.attributes_),
       textBoxRect: {
@@ -589,7 +590,6 @@ export class Ink2Manager extends EventTarget {
       ...annotation,
       isEdited,
       newTypefaces,
-      pdfZoom: this.viewport_.getZoom(),
       source: TextAnnotationSource.USER,
     };
     this.pluginController_.finishTextAnnotation(messageData);
@@ -710,7 +710,6 @@ export class Ink2Manager extends EventTarget {
       ...annotation,
       isEdited: true,
       newTypefaces: [],
-      pdfZoom: this.viewport_.getZoom(),
       source,
     };
     if (isDeletion) {

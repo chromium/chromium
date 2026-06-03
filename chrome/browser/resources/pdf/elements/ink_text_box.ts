@@ -331,6 +331,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
                 id: this.id_,
                 mojoTextInfo: result.mojoTextInfo,
                 pageIndex: this.pageIndex_,
+                pdfZoom: this.zoom_,
                 text: this.textValue_,
                 textAttributes: this.attributes_,
                 textBoxRect: {
