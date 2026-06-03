@@ -31,12 +31,6 @@ specific_include_rules = {
     "+components/url_formatter/elide_url.h",
   ],
 
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # TODO:(crbug.com/891834) Remove this exception.
-  "web_http_server_chrome_test_case\\.mm": [
-    "+ios/web/public/test/http_server",
-  ],
-
   "chrome_test_case\\.mm": [
     "+ios/third_party/edo",
   ],

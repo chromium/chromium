@@ -27,7 +27,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -56,7 +56,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 }
 
 // Bookmark folders integration tests for Chrome.
-@interface BookmarksFolderChooserTestCase : WebHttpServerChromeTestCase
+@interface BookmarksFolderChooserTestCase : ChromeTestCase
 @end
 
 @implementation BookmarksFolderChooserTestCase

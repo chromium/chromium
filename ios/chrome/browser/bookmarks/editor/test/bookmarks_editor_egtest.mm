@@ -10,7 +10,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -18,7 +18,7 @@
 using chrome_test_util::BookmarksSaveEditDoneButton;
 
 // Test suite for the Bookmarks Editor.
-@interface BookmarksEditorTestCase : WebHttpServerChromeTestCase
+@interface BookmarksEditorTestCase : ChromeTestCase
 @end
 
 @implementation BookmarksEditorTestCase

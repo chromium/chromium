@@ -33,7 +33,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -92,7 +91,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }  // namespace
 
 // Integration tests using the Google services settings screen.
-@interface GoogleServicesSettingsTestCase : WebHttpServerChromeTestCase
+@interface GoogleServicesSettingsTestCase : ChromeTestCase
 
 @property(nonatomic, strong) id<GREYMatcher> scrollViewMatcher;
 

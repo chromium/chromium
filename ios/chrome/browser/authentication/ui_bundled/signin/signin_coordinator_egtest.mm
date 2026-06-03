@@ -44,7 +44,6 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -118,7 +117,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Sign-in interaction tests that work both with Unified Consent enabled or
 // disabled.
-@interface SigninCoordinatorTestCase : WebHttpServerChromeTestCase
+@interface SigninCoordinatorTestCase : ChromeTestCase
 @end
 
 @implementation SigninCoordinatorTestCase
