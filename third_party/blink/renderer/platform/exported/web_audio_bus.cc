@@ -91,7 +91,7 @@ float* WebAudioBus::ChannelData(unsigned channel_index) {
   if (!private_)
     return nullptr;
   DCHECK_LT(channel_index, NumberOfChannels());
-  return private_->Channel(channel_index)->MutableData();
+  return private_->Channel(channel_index)->MutableSpan().data();
 }
 
 scoped_refptr<AudioBus> WebAudioBus::Release() {

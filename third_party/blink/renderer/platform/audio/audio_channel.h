@@ -73,13 +73,6 @@ class PLATFORM_EXPORT AudioChannel final {
   void ResizeSmaller(uint32_t new_length);
 
   // Direct access to PCM sample data. Non-const accessor clears silent flag.
-  float* MutableData() {
-    ClearSilentFlag();
-    return data_span_.data();
-  }
-
-  const float* Data() const { return data_span_.data(); }
-
   base::span<float> MutableSpan() {
     ClearSilentFlag();
     return data_span_;

@@ -226,7 +226,7 @@ void MediaStreamAudioDestinationHandler::ConsumeAudio(
       consumer_bus_wrapper_.resize(number_of_channels);
     }
     for (unsigned i = 0; i < number_of_channels; ++i) {
-      consumer_bus_wrapper_[i] = input_bus->Channel(i)->Data();
+      consumer_bus_wrapper_[i] = input_bus->Channel(i)->Span().data();
     }
 
     destination_consumer_->ConsumeAudio(consumer_bus_wrapper_,

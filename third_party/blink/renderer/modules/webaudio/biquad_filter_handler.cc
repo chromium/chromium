@@ -403,7 +403,7 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
     AudioBus* output_bus = Output(0).Bus();
     for (wtf_size_t k = 0; k < output_bus->NumberOfChannels(); ++k) {
       AudioChannel* channel = output_bus->Channel(k);
-      if (channel->length() > 0 && !std::isfinite(channel->Data()[0])) {
+      if (channel->length() > 0 && !std::isfinite(channel->Span()[0])) {
         did_warn_bad_filter_state_ = true;
         PostCrossThreadTask(
             *task_runner_, FROM_HERE,

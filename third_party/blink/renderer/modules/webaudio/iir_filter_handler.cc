@@ -249,7 +249,7 @@ bool IIRFilterHandler::HasNonFiniteOutput() const {
 
   for (wtf_size_t k = 0; k < output_bus->NumberOfChannels(); ++k) {
     AudioChannel* channel = output_bus->Channel(k);
-    if (channel->length() > 0 && !std::isfinite(channel->Data()[0])) {
+    if (channel->length() > 0 && !std::isfinite(channel->Span()[0])) {
       return true;
     }
   }
