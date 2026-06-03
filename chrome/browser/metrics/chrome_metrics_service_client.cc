@@ -115,6 +115,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_count_metrics_provider.h"
 #include "components/ukm/field_trials_provider_helper.h"
+#include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "components/ukm/ukm_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/version_info/version_info.h"
