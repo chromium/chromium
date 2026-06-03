@@ -965,6 +965,7 @@ public class NewTabPageTest {
     public void testAiModeButton_fusebox() {
         if (mActivityTestRule.getActivity().isTablet()) return;
 
+        OmniboxFeatures.sRedirectComposeplateButton.setForTesting(true);
         mActivityTestRule.skipWindowAndTabStateCleanup();
 
         View ntpLayout = mNtp.getLayout();
@@ -983,7 +984,6 @@ public class NewTabPageTest {
     public void testAiModeButton_fuseboxWithoutRedirect() {
         if (mActivityTestRule.getActivity().isTablet()) return;
 
-        OmniboxFeatures.sRedirectComposeplateButton.setForTesting(false);
         mActivityTestRule.skipWindowAndTabStateCleanup();
 
         View ntpLayout = mNtp.getLayout();
