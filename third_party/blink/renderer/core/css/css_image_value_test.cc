@@ -149,4 +149,56 @@ TEST_F(CSSImageValueTest, RegisteredPropertyDoesNotLaunderDanglingMarkup) {
   }
 }
 
+// Ensure that CSSUrlData::MakeComputed() does not launder the dangling markup
+// flag by overwriting relative_url_ with the canonicalized absolute URL.
+// The attack vector: style resolution creates a computed value via
+// MakeComputed(), then commitStyles() serializes it (via CssText(), which
+// uses relative_url_) and re-parses it on the element's inline style. If
+// relative_url_ was overwritten with the canonical form, the re-parsed URL
+// lacks newlines and the dangling markup flag is lost.
+TEST_F(CSSImageValueTest, MakeComputedDoesNotLaunderDanglingMarkup) {
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+
+  LoadURL("https://example.com/index.html");
+
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @keyframes anim {
+        from { background-image: url('/exfil?\a <secret'); }
+        to   { background-image: url('/exfil?\a <secret'); }
+      }
+      #target {
+        animation: anim 1s paused;
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  test::RunPendingTasks();
+  GetDocument().UpdateStyleAndLayoutTree();
+  Compositor().BeginFrame();
+
+  // commitStyles() serializes the computed animation style (which goes
+  // through MakeComputed()) and sets it on the inline style. If the fix
+  // is missing, the re-parsed URL loses the dangling markup flag.
+  MainFrame().ExecuteScript(WebScriptSource(R"JS(
+    const target = document.getElementById('target');
+    target.getAnimations()[0].commitStyles();
+  )JS"));
+
+  GetDocument().UpdateStyleAndLayoutTree();
+  Compositor().BeginFrame();
+
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  const StyleImage* image =
+      target->ComputedStyleRef().BackgroundLayers().GetImage();
+  if (image) {
+    EXPECT_TRUE(image->ErrorOccurred());
+  }
+}
+
 }  // namespace blink

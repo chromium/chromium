@@ -167,10 +167,16 @@ const CSSUrlData* CSSUrlData::MakeComputed() const {
   if (relative_url_.empty() || is_local_ || absolute_url_.empty()) {
     return this;
   }
+  // When the URL was flagged as potentially dangling markup, keep the raw
+  // relative spelling so that CssText() round-trips a string that re-derives
+  // PotentiallyDanglingMarkup() on the consuming side (e.g. via
+  // commitStyles()). Using the canonicalized serialization would launder away
+  // the newline/'<' characters. This matches the logic in MakeResolved().
   return MakeGarbageCollected<CSSUrlData>(
-      base::PassKey<CSSUrlData>(), absolute_url_, absolute_url_, Referrer(),
-      is_from_origin_clean_style_sheet_, is_ad_related_, is_local_,
-      potentially_dangling_markup_, modifiers_);
+      base::PassKey<CSSUrlData>(),
+      potentially_dangling_markup_ ? relative_url_ : absolute_url_,
+      absolute_url_, Referrer(), is_from_origin_clean_style_sheet_,
+      is_ad_related_, is_local_, potentially_dangling_markup_, modifiers_);
 }
 
 const CSSUrlData* CSSUrlData::MakeResolved(const KURL& base_url,

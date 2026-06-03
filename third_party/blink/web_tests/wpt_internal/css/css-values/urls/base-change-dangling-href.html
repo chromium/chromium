@@ -8,10 +8,15 @@
 <div id="target"></div>
 <script>
   test(() => {
-    const url_without_base = `url("${new URL("img.gif", location.href)}")`;
     target.style.listStyleImage = "url(img.gif)";
     base_elm.remove();
-    assert_equals(getComputedStyle(target).listStyleImage, url_without_base,
-                  "The url is re-resolved after the base change");
+    // The base element had a dangling markup href (containing newline and '<').
+    // Because potentially_dangling_markup is set, the raw relative URL is
+    // preserved through MakeComputed() to prevent laundering the dangling
+    // markup flag during serialization/re-parse cycles (e.g. commitStyles()).
+    // This is a deliberate deviation from CSS Values §4.5.1 (which says
+    // computed url() should be absolute) for this security edge case.
+    assert_equals(getComputedStyle(target).listStyleImage, 'url("img.gif")',
+                  "The dangling-markup url preserves the relative form");
   }, "Removing the base element should not crash.");
 </script>
