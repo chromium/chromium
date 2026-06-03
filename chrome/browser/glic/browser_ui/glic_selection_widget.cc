@@ -438,7 +438,6 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
   set_corner_radius(kCornerRadius);
   SetBackgroundColor(ui::ColorVariant(SK_ColorTRANSPARENT));
   set_shadow(views::BubbleBorder::NO_SHADOW);
-  SetCanActivate(false);
 
   UpdatePosition();
 }
