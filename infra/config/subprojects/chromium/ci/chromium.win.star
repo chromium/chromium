@@ -569,8 +569,6 @@ ci.thin_tester(
             ),
         },
     ),
-    # TODO(crbug.com/505579819): Enable gardening once the bot is stable.
-    gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release",

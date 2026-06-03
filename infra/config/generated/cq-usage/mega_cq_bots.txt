@@ -184,3 +184,4 @@ chromium/try/win32-official
 chromium/try/win_chromium_compile_dbg_ng
 chromium/try/win_chromium_compile_rel_ng
 chromium/try/win_chromium_x64_rel_ng
+chromium/try/windows-no-initial-webui-rel
