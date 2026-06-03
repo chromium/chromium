@@ -21,15 +21,8 @@ class PictureInPictureServiceMock {
   }
 
   async startSession(playerId, playerRemote, surfaceId, naturalSize,
-      showPlayPauseButton, observer, sourceBounds, immersiveOptions) {
+      showPlayPauseButton, observer, sourceBounds, requestImmersive) {
     return {session: null, size: {width: 0, height: 0}};
-  }
-
-  async requestImmersivePlaybackConfirmation() {
-    return {result: {
-      status: 3, // kFailed
-      options: null,
-    }};
   }
 };
 

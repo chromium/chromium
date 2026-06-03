@@ -96,6 +96,10 @@ interface PictureInPictureSession {
 interface PictureInPictureService {
   // Notify the service that it should start a Picture-in-Picture session. If a
   // Picture-in-Picture session is already running, it will be closed.
+  //
+  // Consecutive invocations of StartSession will preempt and cancel any pending
+  // immersive confirmation flow from a previous call.
+  //
   // player_id: WebMediaPlayer id used to control playback via the
   //            Picture-in-Picture window.
   // player_remote: MediaPlayer remote to communicate with the renderer side.
@@ -108,8 +112,14 @@ interface PictureInPictureService {
   //                video is displayed in physical pixels. This does not need
   //                to be exact; it will only be used to help the visual
   //                transition into picture in picture.
-  // immersive_options: Options for starting an immersive Picture-in-Picture
-  //                    session.
+  // request_immersive: Whether to start an immersive Picture-in-Picture
+  //                    session (prompting the user for options if needed).
+  //
+  // The callback returns:
+  // session: The session interface pointer. This will be null if the session
+  //          creation fails, or if the user denies or cancels the immersive
+  //          playback confirmation prompt.
+  // size: The size of the picture-in-picture window.
   //
   // TODO: Now that we are passing |player_remote|, it should be possible to get
   // rid of |player_id| once the few remaining uses of it in the browser process
@@ -122,14 +132,7 @@ interface PictureInPictureService {
       bool show_play_pause_button,
       pending_remote<PictureInPictureSessionObserver> observer,
       gfx.mojom.Rect source_bounds,
-      ImmersiveOptions? immersive_options)
+      bool request_immersive)
           => (pending_remote<PictureInPictureSession>? session,
               gfx.mojom.Size size);
-
-  // Requests user confirmation to enter an immersive Picture-in-Picture session
-  // on Android XR.
-  // TODO(crbug.com/500441418): Move RequestImmersivePlaybackConfirmation and
-  // related data structures to an XR-specific service.
-  RequestImmersivePlaybackConfirmation()
-      => (ImmersivePlaybackConfirmationResult result);
 };

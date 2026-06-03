@@ -80,9 +80,8 @@ class CORE_EXPORT PictureInPictureController
       HTMLVideoElement*,
       ScriptPromiseResolver<PictureInPictureWindow>*) = 0;
 
-  // Requests confirmation to start an immersive Picture-in-Picture session
-  // for the given video element.
-  virtual void RequestImmersivePlaybackConfirmation(
+  // Enters an immersive Picture-in-Picture session for the given video element.
+  virtual void EnterPictureInPictureImmersive(
       HTMLVideoElement& video_element) = 0;
 
   // Exit Picture-in-Picture for a video element and resolve promise if any.
