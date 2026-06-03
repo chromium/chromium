@@ -343,6 +343,11 @@ bool IsAccessibilityMagnificationFollowsFocusEnabled() {
       ::features::kAccessibilityMagnificationFollowsFocus);
 }
 
+BASE_FEATURE(kReadAloudNative, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsReadAloudNativeEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAloudNative);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
