@@ -261,7 +261,6 @@ crbug.com/417899571 [ angle-metal asan graphite-enabled intel-0x3e9b sonoma ] We
 
 # Pixel 10
 crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_1500000 [ Failure ]
-crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_1500000 [ Failure ]
 crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_1500000 [ Failure ]
 
 # Snapdragon X Elite
