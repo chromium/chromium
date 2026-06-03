@@ -51,12 +51,24 @@ public class ConditionWaiter {
      */
     protected static class ConditionWait {
 
+        /** The condition being waited for. */
         private final Condition mCondition;
+
+        /** The origin of the condition (e.g., ENTER, EXIT). */
         private final @ConditionOrigin int mOrigin;
+
+        /** True if this is the initial wait for the condition, false if it's a delayed wait. */
         private boolean mIsInitialWait = true;
+
+        /** The time when we started waiting for this condition in ConditionWaiter. */
         private long mTimeStarted;
+
+        /** The timestamp of the latest check where the condition was unfulfilled. */
         private long mTimeUnfulfilled;
+
+        /** The timestamp of the first check where the condition was fulfilled. */
         private long mTimeFulfilled;
+
         private final StatusStore mStatusStore = new StatusStore();
 
         /**
@@ -514,21 +526,21 @@ public class ConditionWaiter {
     }
 
     private static String createWaitConditionsSummary(
-            List<ConditionWait> conditionStatuses, boolean generateMainMessage) {
+            List<ConditionWait> conditionWaits, boolean generateMainMessage) {
         String firstUnfulfilledConditionString = null;
         int unfulfilledConditionCount = 0;
         StringBuilder detailsString = new StringBuilder();
         int i = 1;
-        for (ConditionWait conditionStatus : conditionStatuses) {
-            String conditionDescription = conditionStatus.mCondition.getDescription();
+        for (ConditionWait conditionWait : conditionWaits) {
+            String conditionDescription = conditionWait.mCondition.getDescription();
 
             String indexString = "[" + i + "]";
 
             String marker = "  ";
             String originString = "";
-            switch (conditionStatus.mOrigin) {
+            switch (conditionWait.mOrigin) {
                 case ConditionOrigin.ENTER:
-                    if (conditionStatus.isInitialWait()) {
+                    if (conditionWait.isInitialWait()) {
                         originString = "[ENTER ]";
                     } else {
                         originString = "[+ENTER]";
@@ -543,14 +555,14 @@ public class ConditionWaiter {
             }
 
             String verdictString;
-            if (conditionStatus.isFulfilled()) {
-                if (conditionStatus.getStatusStore().anyErrorsReported()) {
+            if (conditionWait.isFulfilled()) {
+                if (conditionWait.getStatusStore().anyErrorsReported()) {
                     verdictString = "[OK* ]";
                 } else {
                     verdictString = "[OK  ]";
                 }
             } else {
-                if (conditionStatus.getStatusStore().anyErrorsReported()) {
+                if (conditionWait.getStatusStore().anyErrorsReported()) {
                     verdictString = "[ERR*]";
                 } else {
                     verdictString = "[FAIL]";
@@ -563,18 +575,18 @@ public class ConditionWaiter {
             }
 
             StringBuilder historyString = new StringBuilder();
-            if (conditionStatus.getStatusStore().shouldPrintRegions()) {
+            if (conditionWait.getStatusStore().shouldPrintRegions()) {
                 List<StatusRegion> statusRegions =
-                        conditionStatus.getStatusStore().getStatusRegions();
+                        conditionWait.getStatusStore().getStatusRegions();
                 for (StatusRegion r : statusRegions) {
                     historyString.append("\n        ");
-                    historyString.append(r.getLogString(conditionStatus.mTimeStarted));
+                    historyString.append(r.getLogString(conditionWait.mTimeStarted));
                 }
             }
 
             String fulfilledString;
-            if (conditionStatus.isFulfilled()) {
-                Pair<Long, Long> timeToFulfill = conditionStatus.getTimeToFulfill();
+            if (conditionWait.isFulfilled()) {
+                Pair<Long, Long> timeToFulfill = conditionWait.getTimeToFulfill();
                 fulfilledString =
                         String.format(
                                 "{fulfilled after %d~%d ms}",
@@ -582,7 +594,7 @@ public class ConditionWaiter {
             } else {
                 fulfilledString =
                         String.format(
-                                "{unfulfilled after %d ms}", conditionStatus.getTimeUnfulfilled());
+                                "{unfulfilled after %d ms}", conditionWait.getTimeUnfulfilled());
             }
 
             detailsString
