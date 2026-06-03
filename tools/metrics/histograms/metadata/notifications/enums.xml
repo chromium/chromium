@@ -298,6 +298,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Shown"/>
   <int value="1" label="Accepted"/>
   <int value="2" label="Ignored"/>
+  <int value="3" label="Declined"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/tips/TipsOptInCoordinator.java:OptInPromoEventType) -->
