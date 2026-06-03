@@ -8,17 +8,13 @@ source_set("watermark_lib") {
     "settings.h",
     "watermark_features.cc",
     "watermark_features.h",
-    "watermark_style_policy_handler.cc",
-    "watermark_style_policy_handler.h",
   ]
 
   deps = [
     "//chrome/common:channel_info",
     "//components/enterprise/connectors/core",
     "//components/enterprise/watermarking",
-    "//components/policy/core/browser",
     "//components/prefs",
-    "//components/strings:components_strings_grit",
     "//components/version_info",
     "//ui/views",
   ]

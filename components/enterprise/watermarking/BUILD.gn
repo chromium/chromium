@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/enterprise/buildflags/buildflags.gni")
+
 source_set("watermarking") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
@@ -10,9 +12,24 @@ source_set("watermarking") {
     "watermark.h",
   ]
 
+  if (enterprise_watermark) {
+    sources += [
+      "watermark_style_policy_handler.cc",
+      "watermark_style_policy_handler.h",
+    ]
+  }
+
   public_deps = [
     "//skia",
     "//ui/gfx",
+  ]
+
+  deps = [
+    "//components/enterprise/connectors/core",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/strings:components_strings_grit",
   ]
 }
 
@@ -21,6 +38,10 @@ source_set("unit_tests") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [ "watermark_unittest.cc" ]
+
+  if (enterprise_watermark) {
+    sources += [ "watermark_style_policy_handler_unittest.cc" ]
+  }
 
   data = [
     "//components/test/data/enterprise/watermark_dark.png",
@@ -31,6 +52,10 @@ source_set("unit_tests") {
     ":watermarking",
     "//cc:test_support",
     "//cc/paint",
+    "//components/enterprise/connectors/core",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
     "//testing/gtest",
   ]
 }

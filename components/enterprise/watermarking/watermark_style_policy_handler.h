@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_STYLE_POLICY_HANDLER_H_
-#define CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_STYLE_POLICY_HANDLER_H_
+#ifndef COMPONENTS_ENTERPRISE_WATERMARKING_WATERMARK_STYLE_POLICY_HANDLER_H_
+#define COMPONENTS_ENTERPRISE_WATERMARKING_WATERMARK_STYLE_POLICY_HANDLER_H_
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
@@ -20,4 +20,4 @@ class WatermarkStylePolicyHandler
                            PrefValueMap* prefs) override;
 };
 
-#endif  // CHROME_BROWSER_ENTERPRISE_WATERMARK_WATERMARK_STYLE_POLICY_HANDLER_H_
+#endif  // COMPONENTS_ENTERPRISE_WATERMARKING_WATERMARK_STYLE_POLICY_HANDLER_H_
