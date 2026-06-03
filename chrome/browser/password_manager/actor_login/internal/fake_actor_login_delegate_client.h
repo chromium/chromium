@@ -106,9 +106,9 @@ class FakeActorLoginDelegateClient : public ActorLoginDelegateClient {
 
  private:
   raw_ptr<Profile> profile_ = nullptr;
-  bool test_requires_federated_button_click_;
+  bool test_requires_federated_button_click_ = false;
   url::Origin origin_;
-  raw_ptr<password_manager::PasswordManagerDriver> driver_;
+  raw_ptr<password_manager::PasswordManagerDriver> driver_ = nullptr;
   raw_ptr<ActorLoginWebContentInterface> web_interface_ = nullptr;
   raw_ptr<FakeActorLoginSiwgController> siwg_controller_ = nullptr;
   bool is_remove_federated_embedder_login_request_called_ = false;
