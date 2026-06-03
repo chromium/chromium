@@ -829,10 +829,14 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//base:callback_java",
       "//base:log_java",
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/junit",
     ]
 
-    sources = [ "android/javatests/src/org/chromium/base/test/transit/ElementFactoryUnitTest.java" ]
+    sources = [
+      "android/javatests/src/org/chromium/base/test/transit/ElementFactoryUnitTest.java",
+      "android/javatests/src/org/chromium/base/test/transit/TransitionTimeoutUnitTest.java",
+    ]
   }
 }
 
