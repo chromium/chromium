@@ -361,7 +361,6 @@ build_webui("build") {
     "assert_extras.ts",
     "common/app_management/actions.ts",
     "common/app_management/api_listener.ts",
-    "common/app_management/browser_proxy.ts",
     "common/app_management/reducers.ts",
     "common/app_management/store.ts",
     "common/app_management/store_mixin.ts",

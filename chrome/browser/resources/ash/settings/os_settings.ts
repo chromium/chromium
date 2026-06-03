@@ -66,6 +66,7 @@ export {ApnDetailDialog} from 'chrome://resources/ash/common/network/apn_detail_
 export {ApnSelectionDialog} from 'chrome://resources/ash/common/network/apn_selection_dialog.js';
 export {ApnSelectionDialogListItem} from 'chrome://resources/ash/common/network/apn_selection_dialog_list_item.js';
 export {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
+export {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 export {MetricsBrowserProxy} from 'chrome://resources/cr_components/app_management/metrics_browser_proxy.js';
 export type {OpenWindowProxy} from 'chrome://resources/js/open_window_proxy.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -80,7 +81,6 @@ export type {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-to
 export {AppLanguageSelectionDialogEntryPoint} from './common/app_language_selection_dialog/app_language_selection_dialog.js';
 export type {AppManagementActions} from './common/app_management/actions.js';
 export {addApp, changeApp, removeApp, updateSelectedAppId, updateSubAppToParentAppId} from './common/app_management/actions.js';
-export {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from './common/app_management/browser_proxy.js';
 export {reduceAction, updateApps} from './common/app_management/reducers.js';
 export type {AppManagementPageState} from './common/app_management/store.js';
 export {AppManagementStore} from './common/app_management/store.js';

@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {createInitialState} from 'chrome://resources/cr_components/app_management/util.js';
 
 import {addApp, changeApp, removeApp} from './actions.js';
 import type {AppManagementActions} from './actions.js';
-import {AppManagementBrowserProxy} from './browser_proxy.js';
 import {AppManagementStore} from './store.js';
 
 let initialized = false;
@@ -19,10 +19,9 @@ export async function initStoreAndListeners(): Promise<void> {
   initialized = true;
 
   // Call two async functions and wait for both of them.
-  const getAppsPromise =
-      AppManagementBrowserProxy.getInstance().handler.getApps();
+  const getAppsPromise = BrowserProxy.getInstance().handler.getApps();
   const getSubAppToParentMapPromise =
-      AppManagementBrowserProxy.getInstance().handler.getSubAppToParentMap();
+      BrowserProxy.getInstance().handler.getSubAppToParentMap();
 
   const responses =
       await Promise.all([getAppsPromise, getSubAppToParentMapPromise]);
@@ -34,7 +33,7 @@ export async function initStoreAndListeners(): Promise<void> {
       createInitialState(initialApps, initialSubAppToParentMap);
   AppManagementStore.getInstance().init(initialState);
 
-  const callbackRouter = AppManagementBrowserProxy.getInstance().callbackRouter;
+  const callbackRouter = BrowserProxy.getInstance().callbackRouter;
 
   callbackRouter.onAppAdded.addListener(onAppAdded);
   callbackRouter.onAppChanged.addListener(onAppChanged);

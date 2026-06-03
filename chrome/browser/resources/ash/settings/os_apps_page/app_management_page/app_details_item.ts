@@ -9,12 +9,12 @@ import './app_management_cros_shared_style.css.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AppManagementBrowserProxy} from '../../common/app_management/browser_proxy.js';
 import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
 
 import {getTemplate} from './app_details_item.html.js';
@@ -68,7 +68,7 @@ export class AppManagementAppDetailsItem extends
 
   private appIdChanged_(appId: string): void {
     if (appId && this.app) {
-      AppManagementBrowserProxy.getInstance().handler.updateAppSize(appId);
+      BrowserProxy.getInstance().handler.updateAppSize(appId);
     }
   }
 
@@ -192,8 +192,7 @@ export class AppManagementAppDetailsItem extends
     if (this.app !== null) {
       recordAppManagementUserAction(
           this.app.type, AppManagementUserAction.APP_STORE_LINK_CLICKED);
-      AppManagementBrowserProxy.getInstance().handler.openStorePage(
-          this.app.id);
+      BrowserProxy.getInstance().handler.openStorePage(this.app.id);
     }
   }
 

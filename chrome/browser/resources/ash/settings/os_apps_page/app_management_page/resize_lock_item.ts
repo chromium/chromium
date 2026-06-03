@@ -5,13 +5,13 @@
 import './toggle_row.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../../assert_extras.js';
-import {AppManagementBrowserProxy} from '../../common/app_management/browser_proxy.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 
@@ -60,7 +60,7 @@ export class AppManagementResizeLockItemElement extends PolymerElement {
   private toggleSetting_(): void {
     const newState = !this.app.resizeLocked;
     assert(newState === this.getToggleRow_().isChecked());
-    AppManagementBrowserProxy.getInstance().handler.setResizeLocked(
+    BrowserProxy.getInstance().handler.setResizeLocked(
         this.app.id,
         newState,
     );

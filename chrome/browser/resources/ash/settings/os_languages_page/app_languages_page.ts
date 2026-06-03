@@ -10,13 +10,13 @@ import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_element
 import type {CrLazyRenderElement} from 'chrome://resources/ash/common/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {alphabeticalSort, getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppLanguageSelectionDialogEntryPoint} from '../common/app_language_selection_dialog/app_language_selection_dialog.js';
-import {AppManagementBrowserProxy} from '../common/app_management/browser_proxy.js';
 import type {AppMap} from '../common/app_management/store.js';
 import {AppManagementStoreMixin} from '../common/app_management/store_mixin.js';
 import type {PrefsState} from '../common/types.js';
@@ -159,7 +159,7 @@ export class OsSettingsAppLanguagesPageElement extends
     // appears when `onDotsClick_()` is called, so `this.selectedApp_` should
     // always be defined here.
     assert(this.selectedApp_);
-    AppManagementBrowserProxy.getInstance().handler.setAppLocale(
+    BrowserProxy.getInstance().handler.setAppLocale(
         this.selectedApp_.id,
         DEVICE_LANGUAGE_LOCALE_TAG,
     );
