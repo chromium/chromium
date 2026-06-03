@@ -22,7 +22,6 @@
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -84,9 +83,6 @@ class ManagementGetPermissionWarningsByManifestFunction
  public:
   DECLARE_EXTENSION_FUNCTION("management.getPermissionWarningsByManifest",
                              MANAGEMENT_GETPERMISSIONWARNINGSBYMANIFEST)
-
-  // Called when manifest parsing is finished.
-  void OnParse(data_decoder::DataDecoder::ValueOrError result);
 
  protected:
   ~ManagementGetPermissionWarningsByManifestFunction() override {}

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -20,7 +21,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
@@ -56,7 +56,6 @@
 #include "extensions/common/permissions/permission_message.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -356,46 +355,30 @@ ManagementGetPermissionWarningsByManifestFunction::Run() {
       management::GetPermissionWarningsByManifest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      params->manifest_str,
-      base::BindOnce(
-          &ManagementGetPermissionWarningsByManifestFunction::OnParse, this));
+  base::JSONReader::Result json_result =
+      base::JSONReader::ReadAndReturnValueWithError(params->manifest_str,
+                                                    base::JSON_PARSE_RFC);
+  if (!json_result.has_value()) {
+    return RespondNow(Error(json_result.error().message));
+  }
 
-  // Matched with a Release() in OnParse().
-  AddRef();
+  const base::DictValue* parsed_manifest = json_result->GetIfDict();
+  if (!parsed_manifest) {
+    return RespondNow(Error(keys::kManifestParseError));
+  }
 
-  // Response is sent async in OnParse().
-  return RespondLater();
-}
+  std::u16string error;
+  scoped_refptr<Extension> extension =
+      Extension::Create(base::FilePath(), ManifestLocation::kInvalidLocation,
+                        *parsed_manifest, Extension::NO_FLAGS, &error);
+  // TODO(lazyboy): Do we need to use |error|?
+  if (!extension) {
+    return RespondNow(Error(keys::kExtensionCreateError));
+  }
 
-void ManagementGetPermissionWarningsByManifestFunction::OnParse(
-    data_decoder::DataDecoder::ValueOrError result) {
-  Respond([&]() -> ResponseValue {
-    ASSIGN_OR_RETURN(
-        base::Value value, std::move(result),
-        [&](std::string error) { return Error(std::move(error)); });
-
-    const base::DictValue* parsed_manifest = value.GetIfDict();
-    if (!parsed_manifest) {
-      return Error(keys::kManifestParseError);
-    }
-
-    std::u16string error;
-    scoped_refptr<Extension> extension =
-        Extension::Create(base::FilePath(), ManifestLocation::kInvalidLocation,
-                          *parsed_manifest, Extension::NO_FLAGS, &error);
-    // TODO(lazyboy): Do we need to use |error|?
-    if (!extension) {
-      return Error(keys::kExtensionCreateError);
-    }
-
-    return ArgumentList(
-        management::GetPermissionWarningsByManifest::Results::Create(
-            CreateWarningsList(extension.get())));
-  }());
-
-  // Matched with AddRef() in Run().
-  Release();
+  return RespondNow(
+      ArgumentList(management::GetPermissionWarningsByManifest::Results::Create(
+          CreateWarningsList(extension.get()))));
 }
 
 ExtensionFunction::ResponseAction ManagementLaunchAppFunction::Run() {

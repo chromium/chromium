@@ -24,7 +24,6 @@ source_set("management") {
     "//extensions/common",
     "//extensions/common:common_constants",
     "//extensions/common/api",
-    "//services/data_decoder/public/cpp",
     "//url",
   ]
 
