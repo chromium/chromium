@@ -179,6 +179,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // Called when the user has validated the download of an insecure file.
   virtual void ValidateInsecureDownload() = 0;
 
+  // Called when the user has validated the download of a non-dangerous file.
+  virtual void ConfirmNonDangerousDownload() = 0;
+
   // Called to acquire a dangerous download. Mmakes a temp copy of the
   // download file, and invokes |callback| with the path to the temp
   // copy. The caller is responsible for cleanup.  Note: It is important
@@ -427,6 +430,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // delivered and we will require a call to ValidateInsecureDownload() to
   // complete.  False if not insecure or that function has been called.
   virtual bool IsInsecure() const = 0;
+
+  // True if the user has accepted in the non-dangerous dialog to download
+  // a file. False if the user has rejected in the non-dangerous dialog to
+  // download a file.
+  virtual bool IsUserConfirmed() const = 0;
 
   // Why |safety_state_| is not SAFE.
   virtual DownloadDangerType GetDangerType() const = 0;

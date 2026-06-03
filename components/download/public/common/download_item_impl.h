@@ -262,6 +262,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   void UpdateObservers() override;
   void ValidateDangerousDownload() override;
   void ValidateInsecureDownload() override;
+  void ConfirmNonDangerousDownload() override;
   void CopyDownload(AcquireFileCallback callback) override;
   void Pause() override;
   void Resume(bool user_resume) override;
@@ -322,6 +323,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 #endif  // BUILDFLAG(IS_ANDROID)
   bool IsDangerous() const override;
   bool IsInsecure() const override;
+  bool IsUserConfirmed() const override;
   DownloadDangerType GetDangerType() const override;
   InsecureDownloadStatus GetInsecureDownloadStatus() const override;
   bool TimeRemaining(base::TimeDelta* remaining) const override;
@@ -912,6 +914,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   // Whether renaming is in progress.
   bool renaming_ = false;
+
+  // Whether user has confirmed dialog.
+  bool is_user_confirmed_ = false;
 
 #if BUILDFLAG(IS_ANDROID)
   bool is_from_external_app_ = false;

@@ -599,6 +599,26 @@ void DownloadItemImpl::ValidateInsecureDownload() {
   MaybeCompleteDownload();
 }
 
+void DownloadItemImpl::ConfirmNonDangerousDownload() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!IsDone());
+  DCHECK(!IsDangerous());
+
+  DVLOG(20) << __func__ << "() download=" << DebugString(true);
+
+  if (IsDone() || IsDangerous()) {
+    return;
+  }
+
+  is_user_confirmed_ = true;
+
+  UpdateObservers();  // TODO(asanka): This is potentially unsafe. The download
+                      // may not be in a consistent state or around at all after
+                      // invoking observers. http://crbug.com/586610
+
+  MaybeCompleteDownload();
+}
+
 void DownloadItemImpl::CopyDownload(AcquireFileCallback callback) {
   DVLOG(20) << __func__ << "() download = " << DebugString(true);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -1062,6 +1082,10 @@ bool DownloadItemImpl::AllowAutoOpenAfterCompletion() {
   return allow_auto_open_after_completion_;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+bool DownloadItemImpl::IsUserConfirmed() const {
+  return is_user_confirmed_;
+}
 
 bool DownloadItemImpl::IsDangerous() const {
   switch (danger_type_) {

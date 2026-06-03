@@ -98,6 +98,8 @@ void DangerousDownloadDialogBridge::Accepted(JNIEnv* env,
     download->RemoveObserver(this);
     if (download->IsDangerous()) {
       download->ValidateDangerousDownload();
+    } else {
+      download->ConfirmNonDangerousDownload();
     }
   }
 }
