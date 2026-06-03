@@ -915,6 +915,15 @@
     "expiry_milestone": 155
   },
   {
+    "name": "autofill-enable-ai-card-recommendation",
+    "owners": [
+      "haochenf@google.com",
+      "ferny@google.com",
+      "payments-autofill-team@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-enable-amount-extraction",
     "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 150

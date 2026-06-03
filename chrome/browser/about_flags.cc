@@ -13028,6 +13028,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidTabstripStartupCaptureBugFix)},
 #endif
+
+    {"autofill-enable-ai-card-recommendation",
+     flag_descriptions::kAutofillEnableAiCardRecommendationName,
+     flag_descriptions::kAutofillEnableAiCardRecommendationDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableAiCardRecommendation)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

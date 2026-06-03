@@ -39,6 +39,11 @@ BASE_FEATURE(kAutofillEnableAiBasedAmountExtraction,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+// When enabled, AI-based card recommendations will be offered on Autofill
+// when at least two credit card suggestions are shown.
+BASE_FEATURE(kAutofillEnableAiCardRecommendation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will extract the checkout amount from the checkout page
 // of the allowlisted merchant websites.
 BASE_FEATURE(kAutofillEnableAmountExtraction,

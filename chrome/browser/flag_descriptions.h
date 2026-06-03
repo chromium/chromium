@@ -932,6 +932,12 @@ inline constexpr char kAutofillAiWithDataSchemaDescription[] =
     "Enables the second iteration of Autofill AI, which uses a more advanced "
     "data schema.";
 
+inline constexpr char kAutofillEnableAiCardRecommendationName[] =
+    "Enable AI-based card recommendations on Autofill";
+inline constexpr char kAutofillEnableAiCardRecommendationDescription[] =
+    "When enabled, AI-based card recommendations will be offered on Autofill "
+    "when at least two credit card suggestions are shown.";
+
 inline constexpr char kAutofillEnableAmountExtractionName[] =
     "Enable checkout amount extraction.";
 inline constexpr char kAutofillEnableAmountExtractionDescription[] =
