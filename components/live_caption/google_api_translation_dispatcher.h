@@ -10,10 +10,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/live_caption/translation_dispatcher.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace content {
@@ -53,20 +51,11 @@ class GoogleApiTranslationDispatcher : public TranslationDispatcher {
   void EmitError(TranslateEventCallback callback,
                  const std::string& string) const;
 
-  // Called when the data decoder service provides parsed JSON data for a server
-  // response.
-  void OnResponseJsonParsed(TranslateEventCallback callback,
-                            data_decoder::DataDecoder::ValueOrError result);
-
   const std::string api_key_;
   raw_ptr<content::BrowserContext> browser_context_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-
-  data_decoder::DataDecoder data_decoder_;
-
-  base::WeakPtrFactory<GoogleApiTranslationDispatcher> weak_factory_{this};
 };
 
 }  // namespace captions

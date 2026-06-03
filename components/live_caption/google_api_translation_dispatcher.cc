@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -221,45 +222,18 @@ void GoogleApiTranslationDispatcher::OnURLLoadComplete(
 
   base::UmaHistogramEnumeration(kTranslationDispatcherLoadResultHistogram,
                                 TranslationDispatcherLoadResult::kSuccess);
-  // Parse the response in a utility process.
-  data_decoder_.ParseJson(
-      *response_body,
-      base::BindOnce(&GoogleApiTranslationDispatcher::OnResponseJsonParsed,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
 
-void GoogleApiTranslationDispatcher::EmitError(
-    TranslateEventCallback callback,
-    const std::string& message) const {
-  std::move(callback).Run(base::unexpected<std::string>(message));
-}
-
-void GoogleApiTranslationDispatcher::SetURLLoaderFactoryForTest(  // IN-TEST
-    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory) {
-  url_loader_factory_ = std::move(url_loader_factory);
-}
-
-void GoogleApiTranslationDispatcher::OnResponseJsonParsed(
-    TranslateEventCallback callback,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
+  std::optional<base::DictValue> result =
+      base::JSONReader::ReadDict(*response_body, base::JSON_PARSE_RFC);
+  if (!result) {
     base::UmaHistogramEnumeration(
         kTranslationDispatcherParseResultHistogram,
         TranslationDispatcherParseResult::kJsonParseError);
     EmitError(std::move(callback), "Error parsing response: value null");
     return;
   }
-  if (!result.value().is_dict()) {
-    base::UmaHistogramEnumeration(
-        kTranslationDispatcherParseResultHistogram,
-        TranslationDispatcherParseResult::kValueNotDict);
-    EmitError(std::move(callback),
-              "Error parsing response: result value is not a dictionary");
-    return;
-  }
 
-  const base::DictValue* data_dict =
-      result.value().GetDict().FindDict(kDataKey);
+  const base::DictValue* data_dict = result->FindDict(kDataKey);
   if (!data_dict) {
     base::UmaHistogramEnumeration(
         kTranslationDispatcherParseResultHistogram,
@@ -303,6 +277,17 @@ void GoogleApiTranslationDispatcher::OnResponseJsonParsed(
   base::UmaHistogramEnumeration(kTranslationDispatcherParseResultHistogram,
                                 TranslationDispatcherParseResult::kSuccess);
   std::move(callback).Run(TranslateEvent(*value));
+}
+
+void GoogleApiTranslationDispatcher::EmitError(
+    TranslateEventCallback callback,
+    const std::string& message) const {
+  std::move(callback).Run(base::unexpected<std::string>(message));
+}
+
+void GoogleApiTranslationDispatcher::SetURLLoaderFactoryForTest(  // IN-TEST
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory) {
+  url_loader_factory_ = std::move(url_loader_factory);
 }
 
 }  // namespace captions
