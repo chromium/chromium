@@ -100,7 +100,7 @@ bool ContentNotificationClient::HandleNotificationInteraction(
         kContentNotificationActionHistogramName,
         NotificationActionType::kNotificationActionTypeOpened);
     const GURL& url = contentNotificationService->GetDestinationUrl(payload);
-    if (url.is_empty()) {
+    if (url.is_empty() || !url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
       base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
                                 false);
       return true;

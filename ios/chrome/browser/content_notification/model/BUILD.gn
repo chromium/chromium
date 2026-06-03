@@ -113,6 +113,7 @@ source_set("unit_tests") {
   deps = [
     ":constants",
     ":content_notification_client",
+    ":content_notification_service",
     ":content_notification_service_factory",
     "//base",
     "//base/test:test_support",
