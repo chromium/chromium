@@ -7,6 +7,7 @@ source_set("unit_tests") {
 
   deps = [
     "//components/browser_apis/browser_controls:unit_tests",
+    "//components/browser_apis/tab_drag:unit_tests",
     "//components/browser_apis/tab_strip:unit_tests",
     "//components/browser_apis/ui_controllers/toolbar:unit_tests",
   ]
