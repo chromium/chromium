@@ -228,11 +228,10 @@ ContextualTasksButton::ContextualTasksButton(
         browser_window_interface->GetProfile()->GetPrefs(),
         base::BindRepeating(&ContextualTasksButton::OnPinStateChanged,
                             base::Unretained(this)));
-  } else {
-    CHECK(contextual_tasks::kShowEntryPoint.Get() ==
-              contextual_tasks::EntryPointOption::kToolbarRevisit ||
-          contextual_tasks::kShowEntryPoint.Get() ==
-              contextual_tasks::EntryPointOption::kToolbarEphemeralBranded);
+  } else if (contextual_tasks::kShowEntryPoint.Get() ==
+                 contextual_tasks::EntryPointOption::kToolbarRevisit ||
+             contextual_tasks::kShowEntryPoint.Get() ==
+                 contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     ContextualTasksEphemeralButtonController* const controller =
         ContextualTasksEphemeralButtonController::From(
             browser_window_interface_);

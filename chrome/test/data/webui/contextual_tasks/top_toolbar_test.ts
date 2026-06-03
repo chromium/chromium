@@ -356,12 +356,21 @@ suite('TopToolbarTest', () => {
     });
 
     test('handles pin button click', async () => {
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
+      assertTrue(!!moreButton);
+      moreButton.click();
+      await microtasksFinished();
+
+      const menu = topToolbar.$.overflowMenu.get();
       const pinButton =
-          topToolbar.shadowRoot.querySelector<HTMLElement>('#pinButton');
+          menu.shadowRoot.querySelector<HTMLElement>('#pinButton');
       assertTrue(!!pinButton);
 
       // Initially unpinned.
-      assertEquals(pinButton.title, 'Pin side panel');
+      assertEquals(
+          pinButton.innerText.trim(), loadTimeData.getString('pinTooltip'));
 
       pinButton.click();
       await proxy.handler.whenCalled('pinSidePanel');
@@ -372,12 +381,21 @@ suite('TopToolbarTest', () => {
       proxy.callbackRouterRemote.onSidePanelPinStateChanged(true);
       await microtasksFinished();
 
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
+      assertTrue(!!moreButton);
+      moreButton.click();
+      await microtasksFinished();
+
+      const menu = topToolbar.$.overflowMenu.get();
       const pinButton =
-          topToolbar.shadowRoot.querySelector<HTMLElement>('#pinButton');
+          menu.shadowRoot.querySelector<HTMLElement>('#pinButton');
       assertTrue(!!pinButton);
 
       // Now pinned.
-      assertEquals(pinButton.title, 'Unpin side panel');
+      assertEquals(
+          pinButton.innerText.trim(), loadTimeData.getString('unpinTooltip'));
 
       pinButton.click();
       await proxy.handler.whenCalled('unpinSidePanel');
@@ -392,6 +410,7 @@ suite('TopToolbarTest', () => {
         expandButtonEnabled: false,
         hideMenuOnAiPageEnabled: false,
         isAiPage: true,
+        enablePinButton: false,
       });
 
       topToolbar = document.createElement('top-toolbar');

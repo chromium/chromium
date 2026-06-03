@@ -41,13 +41,45 @@ export class OverflowMenuElement extends CrLitElement {
     return {
       enableOpenInNewTabButton: {type: Boolean, reflect: true},
       isSmallDeviceFormFactor: {type: Boolean},
+      isPinned: {type: Boolean},
+      isPinButtonEnabled: {type: Boolean},
+      isAiPage: {type: Boolean},
     };
   }
 
   accessor enableOpenInNewTabButton: boolean = false;
   accessor isSmallDeviceFormFactor: boolean =
       loadTimeData.getBoolean('isSmallDeviceFormFactor');
+  accessor isPinned: boolean =
+      loadTimeData.getBoolean('isSidePanelPinned');
+  accessor isPinButtonEnabled: boolean =
+      loadTimeData.getBoolean('enablePinButton');
+  accessor isAiPage: boolean =
+      loadTimeData.getBoolean('isAiPage');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private listenerIds_: number[] = [];
+
+  override connectedCallback() {
+    super.connectedCallback();
+    const callbackRouter = this.browserProxy_.callbackRouter;
+    this.listenerIds_ = [
+      callbackRouter.onSidePanelPinStateChanged.addListener(
+          (isPinned: boolean) => {
+            this.isPinned = isPinned;
+          }),
+      callbackRouter.onAiPageStatusChanged.addListener(
+          (isAiPage: boolean) => {
+            this.isAiPage = isAiPage;
+          }),
+    ];
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds_.forEach(
+        id => this.browserProxy_.callbackRouter.removeListener(id));
+    this.listenerIds_ = [];
+  }
 
   showAt(target: HTMLElement) {
     this.$.menu.showAt(target, {
@@ -58,6 +90,21 @@ export class OverflowMenuElement extends CrLitElement {
 
   close() {
     this.$.menu.close();
+  }
+
+  protected shouldShowPinButton_(): boolean {
+    return this.isPinButtonEnabled && this.isAiPage;
+  }
+
+  protected getPinButtonTooltip_(): string {
+    return this.isPinned ? loadTimeData.getString('unpinTooltip') :
+                           loadTimeData.getString('pinTooltip');
+  }
+
+  protected onPinClick_() {
+    this.close();
+    this.isPinned = !this.isPinned;
+    this.fire('pin-click');
   }
 
   protected onThreadHistoryClick_() {

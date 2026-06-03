@@ -23,7 +23,12 @@ suite('OverflowMenuTest', () => {
         'chrome://webui-test/contextual_tasks/test.html');
     BrowserProxyImpl.setInstance(proxy);
 
-    loadTimeData.resetForTesting({isSmallDeviceFormFactor: false});
+    loadTimeData.resetForTesting({
+      isSmallDeviceFormFactor: false,
+      isSidePanelPinned: false,
+      enablePinButton: false,
+      isAiPage: false,
+    });
 
     overflowMenu = document.createElement('contextual-tasks-overflow-menu');
     document.body.appendChild(overflowMenu);

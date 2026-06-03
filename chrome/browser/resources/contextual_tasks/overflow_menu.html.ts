@@ -24,6 +24,12 @@ export function getHtml(this: OverflowMenuElement) {
         </button>
         <div class="dropdown-divider"></div>
       `}
+      ${this.shouldShowPinButton_() ? html`
+        <button class="dropdown-item" id="pinButton" @click="${this.onPinClick_}">
+          <cr-icon icon="${this.isPinned ? 'contextual_tasks:keep_off' : 'contextual_tasks:keep'}"></cr-icon>
+          ${this.getPinButtonTooltip_()}
+        </button>
+      ` : ''}
       <button class="dropdown-item" @click="${this.onMyActivityClick_}">
 <if expr="_google_chrome">
         <cr-icon icon="contextual_tasks:g_logo"></cr-icon>
