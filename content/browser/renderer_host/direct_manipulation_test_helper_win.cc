@@ -32,6 +32,10 @@ UNSAFE_BUFFER_USAGE
 // [1]https://learn.microsoft.com/en-us/windows/win32/api/directmanipulation/nf-directmanipulation-idirectmanipulationcontent-getcontenttransform
 HRESULT MockDirectManipulationContent::GetContentTransform(float* transforms,
                                                            DWORD point_count) {
+  if (get_content_transform_callback_) {
+    std::move(get_content_transform_callback_).Run();
+  }
+
   DCHECK_EQ(point_count, transforms_.size());
 
   for (size_t i = 0; i < transforms_.size(); ++i)

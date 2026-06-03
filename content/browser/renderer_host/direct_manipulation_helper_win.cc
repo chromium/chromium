@@ -164,10 +164,18 @@ void DirectManipulationHelper::UpdateEventHandler(
     RemoveAnimationObserver();
   }
 
+  auto weak_ptr = weak_factory_.GetWeakPtr();
+
   if (event_handler_) {
     event_handler_.Reset();
     viewport_->Stop();
+    if (!weak_ptr) {
+      return;
+    }
     viewport_->RemoveEventHandler(view_port_handler_cookie_);
+    if (!weak_ptr) {
+      return;
+    }
   }
 
   window_tree_host_ = window_tree_host;
@@ -186,6 +194,9 @@ void DirectManipulationHelper::UpdateEventHandler(
   // IDirectManipulationViewportEventHandler.
   HRESULT hr = viewport_->AddEventHandler(window_, event_handler_.Get(),
                                           &view_port_handler_cookie_);
+  if (!weak_ptr) {
+    return;
+  }
   if (!SUCCEEDED(hr)) {
     event_handler_.Reset();
     return;
@@ -206,7 +217,12 @@ void DirectManipulationHelper::SetSizeInPixels(
     event_handler_->SetViewportSizeInPixels(size_in_pixels);
   }
 
+  auto weak_ptr = weak_factory_.GetWeakPtr();
+
   HRESULT hr = viewport_->Stop();
+  if (!weak_ptr) {
+    return;
+  }
   if (!SUCCEEDED(hr))
     return;
 
@@ -215,6 +231,18 @@ void DirectManipulationHelper::SetSizeInPixels(
 }
 
 void DirectManipulationHelper::OnPointerHitTest(WPARAM w_param) {
+  UINT32 pointer_id = GET_POINTERID_WPARAM(w_param);
+  POINTER_INPUT_TYPE pointer_type;
+  if (!::GetPointerType(pointer_id, &pointer_type)) {
+    // Use the generic "any pointer type" for unknown.
+    pointer_type = PT_POINTER;
+  }
+  OnPointerHitTest(pointer_id, pointer_type);
+}
+
+void DirectManipulationHelper::OnPointerHitTest(
+    UINT32 pointer_id,
+    POINTER_INPUT_TYPE pointer_type) {
   if (!event_handler_) {
     return;
   }
@@ -229,11 +257,12 @@ void DirectManipulationHelper::OnPointerHitTest(WPARAM w_param) {
   // For WM_POINTER, the pointer type will show the event from mouse.
   // For WM_POINTERACTIVATE, the pointer id will be different with the following
   // message.
-  UINT32 pointer_id = GET_POINTERID_WPARAM(w_param);
-  POINTER_INPUT_TYPE pointer_type;
-  if (::GetPointerType(pointer_id, &pointer_type) &&
-      pointer_type == PT_TOUCHPAD) {
+  if (pointer_type == PT_TOUCHPAD) {
+    auto weak_ptr = weak_factory_.GetWeakPtr();
     viewport_->SetContact(pointer_id);
+    if (!weak_ptr) {
+      return;
+    }
   }
 }
 
@@ -257,8 +286,15 @@ void DirectManipulationHelper::SetDeviceScaleFactorForTesting(float factor) {
 }
 
 void DirectManipulationHelper::Destroy() {
+  auto weak_ptr = weak_factory_.GetWeakPtr();
   UpdateEventHandler(nullptr, nullptr);
+  if (!weak_ptr) {
+    return;
+  }
   viewport_->Abandon();
+  if (!weak_ptr) {
+    return;
+  }
   manager_->Deactivate(window_);
 }
 
