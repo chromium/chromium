@@ -51,9 +51,11 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -86,7 +88,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 Tab tab,
                 Activity activity,
                 TabCreatorManager tabCreatorManager,
-                TabModel tabModel) {
+                TabModel tabModel,
+                ExclusiveAccessManager exclusiveAccessManager) {
             super(
                     tab,
                     activity,
@@ -99,7 +102,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                     mock(Supplier.class),
                     mock(Supplier.class),
                     mock(Supplier.class),
-                    null);
+                    exclusiveAccessManager);
             mTabModel = tabModel;
             mTabMap = new HashMap<>();
         }
@@ -154,6 +157,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock AppTask mAppTask;
     @Mock PopupCreator mPopupCreator;
     @Mock MultiWindowUtils mMultiWindowUtils;
+    @Mock ExclusiveAccessManager mExclusiveAccessManager;
+    @Mock RenderFrameHost mRenderFrameHost;
 
     @Captor private ArgumentCaptor<CompletableFuture<Boolean>> mFutureCaptor;
 
@@ -173,7 +178,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         PopupCreatorFactory.setInstanceForTesting(mPopupCreator);
         mTabWebContentsDelegateAndroid =
                 new TestActivityTabWebContentsDelegateAndroid(
-                        mTab, mActivity, mTabCreatorManager, mTabModel);
+                        mTab, mActivity, mTabCreatorManager, mTabModel, mExclusiveAccessManager);
         DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
         AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
         AndroidTaskUtils.setAppTaskForTesting(mAppTask);
@@ -464,4 +469,23 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), anyInt(), any());
     }
 
+    @Test
+    @DisableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
+    public void testCanEnterFullscreenModeForTab_exclusiveAccessManagerDisabled() {
+        assertTrue(mTabWebContentsDelegateAndroid.canEnterFullscreenModeForTab(mRenderFrameHost));
+        verify(mExclusiveAccessManager, never()).canEnterFullscreenModeForTab(any());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
+    public void testCanEnterFullscreenModeForTab_exclusiveAccessManagerEnabled() {
+        when(mExclusiveAccessManager.canEnterFullscreenModeForTab(mRenderFrameHost))
+                .thenReturn(true);
+        assertTrue(mTabWebContentsDelegateAndroid.canEnterFullscreenModeForTab(mRenderFrameHost));
+        verify(mExclusiveAccessManager, times(1)).canEnterFullscreenModeForTab(mRenderFrameHost);
+
+        when(mExclusiveAccessManager.canEnterFullscreenModeForTab(mRenderFrameHost))
+                .thenReturn(false);
+        assertFalse(mTabWebContentsDelegateAndroid.canEnterFullscreenModeForTab(mRenderFrameHost));
+    }
 }

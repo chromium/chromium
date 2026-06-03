@@ -143,6 +143,11 @@ public class WebContentsDelegateAndroid {
     }
 
     @CalledByNative
+    public boolean canEnterFullscreenModeForTab(RenderFrameHost renderFrameHost) {
+        return true;
+    }
+
+    @CalledByNative
     public void enterFullscreenModeForTab(
             RenderFrameHost renderFrameHost,
             boolean prefersNavigationBar,

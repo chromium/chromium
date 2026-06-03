@@ -168,6 +168,19 @@ public class ExclusiveAccessManager
     }
 
     /**
+     * EAM frontend to check if a frame can enter fullscreen.
+     *
+     * @param renderFrameHost the render frame host asking for fullscreen
+     * @return true if the frame can enter fullscreen
+     */
+    public boolean canEnterFullscreenModeForTab(RenderFrameHost renderFrameHost) {
+        if (mExclusiveAccessManagerAndroidNativePointer == 0) return false;
+        return ExclusiveAccessManagerJni.get()
+                .canEnterFullscreenModeForTab(
+                        mExclusiveAccessManagerAndroidNativePointer, renderFrameHost);
+    }
+
+    /**
      * EAM frontend for WebContentsDelegate to enter fullscreen
      *
      * @param renderFrameHost the render frame host requesting fullscreen
@@ -387,6 +400,9 @@ public class ExclusiveAccessManager
                 Context context,
                 FullscreenManager fullscreenManager,
                 ActivityTabProvider activityTabProvider);
+
+        boolean canEnterFullscreenModeForTab(
+                long nativeExclusiveAccessManagerAndroid, RenderFrameHost renderFrameHost);
 
         void enterFullscreenModeForTab(
                 long nativeExclusiveAccessManagerAndroid,

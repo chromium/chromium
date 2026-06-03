@@ -578,6 +578,16 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
+    public boolean canEnterFullscreenModeForTab(RenderFrameHost renderFrameHost) {
+        if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
+            if (mExclusiveAccessManager != null) {
+                return mExclusiveAccessManager.canEnterFullscreenModeForTab(renderFrameHost);
+            }
+        }
+        return super.canEnterFullscreenModeForTab(renderFrameHost);
+    }
+
+    @Override
     public void enterFullscreenModeForTab(
             RenderFrameHost renderFrameHost,
             boolean prefersNavigationBar,

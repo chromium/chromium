@@ -243,6 +243,11 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
+    public boolean canEnterFullscreenModeForTab(RenderFrameHost renderFrameHost) {
+        return mDelegate.canEnterFullscreenModeForTab(renderFrameHost);
+    }
+
+    @Override
     public void enterFullscreenModeForTab(
             RenderFrameHost renderFrameHost,
             boolean prefersNavigationBar,

@@ -30,6 +30,15 @@ ExclusiveAccessManagerAndroid::ExclusiveAccessManagerAndroid(
 
 ExclusiveAccessManagerAndroid::~ExclusiveAccessManagerAndroid() = default;
 
+bool ExclusiveAccessManagerAndroid::CanEnterFullscreenModeForTab(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& jrender_frame_host_android) {
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromJavaRenderFrameHost(
+          jrender_frame_host_android);
+  return eam_.fullscreen_controller()->CanEnterFullscreenModeForTab(rfh);
+}
+
 void ExclusiveAccessManagerAndroid::EnterFullscreenModeForTab(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jrender_frame_host_android,
