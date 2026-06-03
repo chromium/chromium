@@ -171,9 +171,8 @@ PrerenderCancellationReason PrerenderCancellationReason::
 }
 
 void PrerenderCancellationReason::SetPrerenderMismatchedHeaders(
-    std::unique_ptr<std::vector<network::MismatchedHttpRequestHeader>>
-        mismatched_headers) {
-  explanation_ = std::move(*mismatched_headers);
+    std::vector<network::MismatchedHttpRequestHeader> mismatched_headers) {
+  explanation_ = std::move(mismatched_headers);
 }
 
 //  static

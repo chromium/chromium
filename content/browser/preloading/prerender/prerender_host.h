@@ -175,15 +175,6 @@ class CONTENT_EXPORT PrerenderHost {
   // `id`. Returns an invalid FrameTreeNodeId if it is not found.
   static FrameTreeNodeId GetFrameTreeNodeIdForId(PrerenderHostId id);
 
-  // Checks whether two headers are the same in a case-insensitive and
-  // order-insensitive way.
-  // TODO(crbug.com/40267487): Migrate this method into
-  // `HttpRequestHeaders`.
-  static bool IsActivationHeaderMatch(
-      const net::HttpRequestHeaders& potential_activation_headers,
-      const net::HttpRequestHeaders& prerender_headers,
-      PrerenderCancellationReason& reaosn);
-
   static bool AreHttpRequestHeadersCompatible(
       const std::string& potential_activation_headers_str,
 #if BUILDFLAG(IS_ANDROID)

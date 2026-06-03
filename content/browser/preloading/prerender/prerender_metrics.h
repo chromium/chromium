@@ -98,8 +98,7 @@ class CONTENT_EXPORT PrerenderCancellationReason {
   GetPrerenderMismatchedHeaders() const;
 
   void SetPrerenderMismatchedHeaders(
-      std::unique_ptr<std::vector<network::MismatchedHttpRequestHeader>>
-          mismatched_headers);
+      std::vector<network::MismatchedHttpRequestHeader> mismatched_headers);
 
  private:
   PrerenderCancellationReason(PrerenderFinalStatus final_status,

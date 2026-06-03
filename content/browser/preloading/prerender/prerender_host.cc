@@ -435,8 +435,15 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
     }
   }
 
-  return PrerenderHost::IsActivationHeaderMatch(potential_activation_headers,
-                                                prerender_headers, reason);
+  auto mismatched_headers = network::MatchHttpRequestHeaders(
+      prerender_headers, potential_activation_headers,
+      network::MatchHttpRequestHeadersValueOption::kEqualsCaseInsensitiveASCII);
+
+  if (mismatched_headers.empty()) {
+    return true;
+  }
+  reason.SetPrerenderMismatchedHeaders(std::move(mismatched_headers));
+  return false;
 }
 
 // static
@@ -518,82 +525,6 @@ PrerenderHost::PrerenderHost(
     CHECK_IS_TEST();
     std::move(GetHostCreationCallback()).Run(prerender_host_id_);
   }
-}
-
-// static
-bool PrerenderHost::IsActivationHeaderMatch(
-    const net::HttpRequestHeaders& potential_activation_headers,
-    const net::HttpRequestHeaders& prerender_headers,
-    PrerenderCancellationReason& reason) {
-  // Normalize the headers.
-  using HeaderPair = net::HttpRequestHeaders::HeaderKeyValuePair;
-  auto cmp = [](const HeaderPair& a, const HeaderPair& b) {
-    return a.key < b.key;
-  };
-  auto lower_case = [](HeaderPair& x) { x.key = base::ToLowerASCII(x.key); };
-  auto same_predicate = [](const HeaderPair& a, const HeaderPair& b) {
-    return a.key == b.key && base::EqualsCaseInsensitiveASCII(a.value, b.value);
-  };
-
-  std::vector<HeaderPair> potential_header_list(
-      potential_activation_headers.GetHeaderVector());
-  std::vector<HeaderPair> prerender_header_list(
-      prerender_headers.GetHeaderVector());
-  std::for_each(potential_header_list.begin(), potential_header_list.end(),
-                lower_case);
-  std::for_each(prerender_header_list.begin(), prerender_header_list.end(),
-                lower_case);
-  std::sort(potential_header_list.begin(), potential_header_list.end(), cmp);
-  std::sort(prerender_header_list.begin(), prerender_header_list.end(), cmp);
-
-  auto mismatched_headers =
-      std::make_unique<std::vector<network::MismatchedHttpRequestHeader>>();
-
-  auto prerender_header_list_it = prerender_header_list.begin();
-  auto potential_header_list_it = potential_header_list.begin();
-
-  while (prerender_header_list_it != prerender_header_list.end() &&
-         potential_header_list_it != potential_header_list.end()) {
-    if (same_predicate(*prerender_header_list_it, *potential_header_list_it)) {
-      prerender_header_list_it++;
-      potential_header_list_it++;
-    } else if (prerender_header_list_it->key == potential_header_list_it->key) {
-      mismatched_headers->emplace_back(prerender_header_list_it->key,
-                                       prerender_header_list_it->value,
-                                       potential_header_list_it->value);
-      prerender_header_list_it++;
-      potential_header_list_it++;
-    } else if (prerender_header_list_it->key < potential_header_list_it->key) {
-      mismatched_headers->emplace_back(prerender_header_list_it->key,
-                                       prerender_header_list_it->value,
-                                       std::nullopt);
-      prerender_header_list_it++;
-    } else {
-      mismatched_headers->emplace_back(potential_header_list_it->key,
-                                       std::nullopt,
-                                       potential_header_list_it->value);
-      potential_header_list_it++;
-    }
-  }
-
-  while (prerender_header_list_it != prerender_header_list.end()) {
-    mismatched_headers->emplace_back(prerender_header_list_it->key,
-                                     prerender_header_list_it->value,
-                                     std::nullopt);
-    prerender_header_list_it++;
-  }
-
-  while (potential_header_list_it != potential_header_list.end()) {
-    mismatched_headers->emplace_back(potential_header_list_it->key,
-                                     std::nullopt,
-                                     potential_header_list_it->value);
-    potential_header_list_it++;
-  }
-  if (mismatched_headers->empty()) {
-    return true;
-  }
-  reason.SetPrerenderMismatchedHeaders(std::move(mismatched_headers));
-  return false;
 }
 
 PrerenderHost::~PrerenderHost() {

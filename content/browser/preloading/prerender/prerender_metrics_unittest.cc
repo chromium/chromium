@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/headers_matcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -27,8 +28,12 @@ TEST(PrerenderMetricsTest, NavigationHeaderMismatchMetric) {
     net::HttpRequestHeaders potential_headers;
     potential_headers.SetHeader("Content-Type", "cd");
     potential_headers.SetHeader("If-Match", "xy");
-    ASSERT_FALSE(PrerenderHost::IsActivationHeaderMatch(
-        potential_headers, prerender_headers, reason));
+    auto mismatched_headers = network::MatchHttpRequestHeaders(
+        prerender_headers, potential_headers,
+        network::MatchHttpRequestHeadersValueOption::
+            kEqualsCaseInsensitiveASCII);
+    ASSERT_FALSE(mismatched_headers.empty());
+    reason.SetPrerenderMismatchedHeaders(std::move(mismatched_headers));
     reason.ReportMetrics(".ForTesting");
     // label="content-type: value mismatch"
     histogram_tester.ExpectUniqueSample(kMetricName, 808179719, 1);
@@ -42,8 +47,12 @@ TEST(PrerenderMetricsTest, NavigationHeaderMismatchMetric) {
     net::HttpRequestHeaders potential_headers;
     potential_headers.SetHeader("Content-Type", "ab");
     potential_headers.SetHeader("If-Match", "xys");
-    ASSERT_FALSE(PrerenderHost::IsActivationHeaderMatch(
-        potential_headers, prerender_headers, reason));
+    auto mismatched_headers = network::MatchHttpRequestHeaders(
+        prerender_headers, potential_headers,
+        network::MatchHttpRequestHeadersValueOption::
+            kEqualsCaseInsensitiveASCII);
+    ASSERT_FALSE(mismatched_headers.empty());
+    reason.SetPrerenderMismatchedHeaders(std::move(mismatched_headers));
     reason.ReportMetrics(".ForTesting");
     // label="if-match: missing in prerendering request's headers"
     histogram_tester.ExpectUniqueSample(kMetricName, 667272509, 1);
@@ -55,8 +64,12 @@ TEST(PrerenderMetricsTest, NavigationHeaderMismatchMetric) {
     net::HttpRequestHeaders prerender_headers;
     prerender_headers.SetHeader("service-worker", "xyz");
     net::HttpRequestHeaders potential_headers;
-    ASSERT_FALSE(PrerenderHost::IsActivationHeaderMatch(
-        potential_headers, prerender_headers, reason));
+    auto mismatched_headers = network::MatchHttpRequestHeaders(
+        prerender_headers, potential_headers,
+        network::MatchHttpRequestHeadersValueOption::
+            kEqualsCaseInsensitiveASCII);
+    ASSERT_FALSE(mismatched_headers.empty());
+    reason.SetPrerenderMismatchedHeaders(std::move(mismatched_headers));
     reason.ReportMetrics(".ForTesting");
     // label="service-worker: missing in activation request's headers"
     histogram_tester.ExpectUniqueSample(kMetricName, -578377770, 1);
