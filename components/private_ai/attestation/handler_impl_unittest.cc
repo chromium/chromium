@@ -164,44 +164,6 @@ TEST_F(VerifyAttestationResponseTest, WrongSignature) {
   EXPECT_FALSE(attestation_handler.VerifyAttestationResponse(evidence));
 }
 
-// Test to cover the VerifyInit failure.
-TEST_F(VerifyAttestationResponseTest, VerifyInitFails) {
-  std::map<uint32_t, VerificationKey> keys =
-      LoadVerificationKeys(GetStagingKeysForTesting());
-  ASSERT_FALSE(keys.empty());
-
-  uint32_t key_id = keys.begin()->first;
-
-  VerificationKey& corrupted_key = keys.at(key_id);
-
-  // Corrupt the key in place to cause VerifyInit to fail.
-  // Providing an empty public key span should cause EVP_parse_public_key to
-  // fail inside VerifyInit.
-  corrupted_key.public_key.clear();
-
-  AttestationHandlerImpl attestation_handler(&logger_, std::move(keys));
-
-  AttestationEvidence evidence;
-  {
-    EndorsedEvidence endorsed_evidence;
-    Endorsement endorsement;
-    endorsement.message = {1, 2, 3, 4};
-
-    // Craft a signature header for the corrupted key ID.
-    std::vector<uint8_t> signature = {0x01};  // Tink prefix
-    signature.push_back((key_id >> 24) & 0xFF);
-    signature.push_back((key_id >> 16) & 0xFF);
-    signature.push_back((key_id >> 8) & 0xFF);
-    signature.push_back(key_id & 0xFF);
-    signature.insert(signature.end(), 64, 0xAA);
-    endorsement.signature = std::move(signature);
-
-    endorsed_evidence.endorsements.push_back(std::move(endorsement));
-    evidence.endorsed_evidence[kTestEvidenceId] = std::move(endorsed_evidence);
-  }
-
-  EXPECT_FALSE(attestation_handler.VerifyAttestationResponse(evidence));
-}
 
 // Test to ensure the non-LEGACY key type path is taken in VerifyUpdate.
 TEST_F(VerifyAttestationResponseTest, ForcedNonLegacyKeyType) {

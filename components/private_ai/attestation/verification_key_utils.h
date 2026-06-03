@@ -11,21 +11,22 @@
 
 #include "base/containers/span.h"
 #include "components/private_ai/attestation/server_verification_key.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
 
 namespace private_ai {
 
 struct VerificationKey {
-  VerificationKey(std::vector<uint8_t> public_key,
-                  crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+  VerificationKey(crypto::keypair::PublicKey public_key,
+                  crypto::sign::SignatureKind algorithm,
                   OutputPrefixType output_prefix_type);
   ~VerificationKey();
 
   VerificationKey(VerificationKey&&);
   VerificationKey& operator=(VerificationKey&&);
 
-  std::vector<uint8_t> public_key;  // SPKI format
-  crypto::SignatureVerifier::SignatureAlgorithm algorithm;
+  crypto::keypair::PublicKey public_key;
+  crypto::sign::SignatureKind algorithm;
   OutputPrefixType output_prefix_type;
 };
 

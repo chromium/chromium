@@ -18,8 +18,7 @@
 #include "components/private_ai/attestation/server_verification_key.h"
 #include "components/private_ai/attestation/verification_key_utils.h"
 #include "components/private_ai/common/private_ai_logger.h"
-#include "crypto/signature_verifier.h"
-#include "third_party/boringssl/src/include/openssl/err.h"
+#include "crypto/sign.h"
 
 namespace private_ai {
 
@@ -79,36 +78,17 @@ bool AttestationHandlerImpl::VerifyAttestationResponse(
       }
 
       const VerificationKey& verification_key = key_it->second;
-      crypto::SignatureVerifier verifier;
-
-      ERR_clear_error();  // Clear any pre-existing errors from the queue.
-
-      if (!verifier.VerifyInit(
-              verification_key.algorithm, raw_signature,
-              base::as_bytes(base::span(verification_key.public_key)))) {
-        logger_->LogError(FROM_HERE, "SignatureVerifier::VerifyInit failed.");
-        uint32_t err = ERR_get_error();  // Get the most recent error.
-        if (err != 0) {
-          char buf[256];
-          ERR_error_string_n(err, buf, sizeof(buf));
-          logger_->LogError(
-              FROM_HERE,
-              base::StringPrintf("VerifyInit BoringSSL error: %s", buf));
-        }
-        return false;
-      }
-
-      // Handle LEGACY prefix side effect where a null byte is appended to the
-      // data to be signed.
+      base::span<const uint8_t> message_to_verify = endorsement.message;
+      std::vector<uint8_t> message_with_null;
       if (verification_key.output_prefix_type == OutputPrefixType::LEGACY) {
-        std::vector<uint8_t> message_with_null = endorsement.message;
+        message_with_null = endorsement.message;
         message_with_null.push_back(0x00);
-        verifier.VerifyUpdate(base::as_bytes(base::span(message_with_null)));
-      } else {
-        verifier.VerifyUpdate(endorsement.message);
+        message_to_verify = message_with_null;
       }
 
-      if (!verifier.VerifyFinal()) {
+      if (!crypto::sign::Verify(verification_key.algorithm,
+                                verification_key.public_key, message_to_verify,
+                                raw_signature)) {
         logger_->LogError(
             FROM_HERE,
             base::StringPrintf("Signature verification failed for key ID: %u",
