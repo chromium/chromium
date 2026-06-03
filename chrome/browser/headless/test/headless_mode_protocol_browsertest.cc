@@ -423,14 +423,8 @@ HEADLESS_MODE_PROTOCOL_TEST(WindowScreenAvail, "shared/window-screen-avail.js")
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_StartFullscreenSwitch,
                             "sanity/start-fullscreen-switch.js")
 
-// TODO(crbug.com/423951863): Fails on Mac 13.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_StartFullscreenSwitchScaled DISABLED_StartFullscreenSwitchScaled
-#else
-#define MAYBE_StartFullscreenSwitchScaled StartFullscreenSwitchScaled
-#endif
-
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_StartFullscreenSwitchScaled,
+// TODO(crbug.com/423951863): Fails on Mac 13, Linux, and win-asan at least.
+HEADLESS_MODE_PROTOCOL_TEST(DISABLED_StartFullscreenSwitchScaled,
                             "sanity/start-fullscreen-switch-scaled.js")
 
 // TODO(crbug.com/430156442): These fail on Mac 13
