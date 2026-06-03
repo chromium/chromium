@@ -110,6 +110,7 @@ class VerticalTabView : public views::View,
   void RemovedFromWidget() override;
   void OnFocus() override;
   void OnBlur() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnThemeChanged() override;
   void UpdateParentLayer() override;
 

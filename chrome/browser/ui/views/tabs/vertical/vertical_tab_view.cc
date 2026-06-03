@@ -592,7 +592,7 @@ void VerticalTabView::PaintTabBackgroundFill(
     flags.setColor(tab_style_->GetCurrentTabBackgroundColor(
         GetSelectionState(), IsHoverAnimationActive(), GetHoverAnimationValue(),
         IsFrameActive(), GetColorProvider()));
-    canvas->DrawRoundRect(GetContentsBounds(), GetCornerRadius(), flags);
+    canvas->DrawRect(GetContentsBounds(), flags);
   }
 
   if (fill_id.has_value()) {
@@ -668,6 +668,10 @@ void VerticalTabView::OnBlur() {
     }
   }
   InvalidateLayout();
+}
+
+void VerticalTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  SetClipPath(GetPath());
 }
 
 void VerticalTabView::UpdateParentLayer() {
