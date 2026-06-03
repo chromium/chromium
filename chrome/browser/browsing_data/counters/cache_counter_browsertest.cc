@@ -152,7 +152,6 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
   while (true) {
     CacheCounter counter(profile);
     counter.Init(profile->GetPrefs(),
-                 browsing_data::ClearBrowsingDataTab::ADVANCED,
                  future.GetRepeatingCallback());
     counter.Restart();
 
@@ -174,7 +173,6 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, NonEmpty) {
   Profile* profile = browser()->profile();
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                future.GetRepeatingCallback());
   counter.Restart();
 
@@ -190,7 +188,6 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, AfterDoom) {
   Profile* profile = browser()->profile();
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                future.GetRepeatingCallback());
 
   browser()
@@ -212,7 +209,6 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, PrefChanged) {
   Profile* profile = browser()->profile();
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                future.GetRepeatingCallback());
   SetCacheDeletionPref(true);
 
@@ -229,7 +225,6 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, PeriodChanged) {
   Profile* profile = browser()->profile();
   CacheCounter counter(profile);
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                future.GetRepeatingCallback());
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_HOUR);

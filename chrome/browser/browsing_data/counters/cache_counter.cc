@@ -29,9 +29,7 @@ CacheCounter::CacheCounter(Profile* profile) : profile_(profile) {}
 CacheCounter::~CacheCounter() = default;
 
 const char* CacheCounter::GetPrefName() const {
-  return GetTab() == browsing_data::ClearBrowsingDataTab::BASIC
-             ? browsing_data::prefs::kDeleteCacheBasic
-             : browsing_data::prefs::kDeleteCache;
+  return browsing_data::prefs::kDeleteCache;
 }
 
 void CacheCounter::Count() {

@@ -10,7 +10,6 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/browsing_data/core/clear_browsing_data_tab.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "net/cookies/cookie_constants.h"
 
@@ -150,14 +149,12 @@ std::u16string GetCounterTextFromResult(
     const BrowsingDataCounter::Result* result);
 
 // Returns the preference that stores the time period.
-const char* GetTimePeriodPreferenceName(
-    ClearBrowsingDataTab clear_browsing_data_tab);
+const char* GetTimePeriodPreferenceName();
 
 // Copies the name of the deletion preference corresponding to the given
 // |data_type| to |out_pref|. Returns false if no such preference exists.
 bool GetDeletionPreferenceFromDataType(
     BrowsingDataType data_type,
-    ClearBrowsingDataTab clear_browsing_data_tab,
     std::string* out_pref);
 
 // Returns a BrowsingDataType if a type matching |pref_name| is found.

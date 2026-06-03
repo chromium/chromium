@@ -63,9 +63,7 @@ namespace {
 const int kMaxTimesHistoryNoticeShown = 1;
 
 // TODO(msramek): Get the list of deletion preferences from the JS side.
-// TODO(crbug.com/502885275): Refactor when removing the basic/advanced tabs
-// logic.
-const char* kCounterPrefsAdvanced[] = {
+const char* kCounterPrefs[] = {
     browsing_data::prefs::kDeleteBrowsingHistory,
     browsing_data::prefs::kDeleteCache,
     browsing_data::prefs::kDeleteCookies,
@@ -117,12 +115,11 @@ void ClearBrowsingDataHandler::OnJavascriptAllowed() {
   dse_service_observation_.Observe(
       TemplateURLServiceFactory::GetForProfile(profile_));
 
-  DCHECK(counters_basic_.empty());
-  DCHECK(counters_advanced_.empty());
+  DCHECK(counters_.empty());
 
-  for (const std::string& pref : kCounterPrefsAdvanced) {
-    AddCounter(BrowsingDataCounterFactory::GetForProfileAndPref(profile_, pref),
-               browsing_data::ClearBrowsingDataTab::ADVANCED);
+  for (const std::string& pref : kCounterPrefs) {
+    AddCounter(
+        BrowsingDataCounterFactory::GetForProfileAndPref(profile_, pref));
   }
 }
 
@@ -130,8 +127,7 @@ void ClearBrowsingDataHandler::OnJavascriptDisallowed() {
   dse_service_observation_.Reset();
   sync_service_observation_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
-  counters_basic_.clear();
-  counters_advanced_.clear();
+  counters_.clear();
 }
 
 void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
@@ -332,12 +328,9 @@ void ClearBrowsingDataHandler::HandleInitialize(const base::ListValue& args) {
   // However, it would be safer if the "initializeClearBrowsingData" delivered
   // the actual initial selection from the UI.
   PrefService* prefs = profile_->GetPrefs();
-  auto initial_period_basic = static_cast<browsing_data::TimePeriod>(
-      prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriodBasic));
-  auto initial_period_advanced = static_cast<browsing_data::TimePeriod>(
+  auto initial_period = static_cast<browsing_data::TimePeriod>(
       prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
-  RestartCounters(true /* basic */, initial_period_basic);
-  RestartCounters(false /* basic */, initial_period_advanced);
+  RestartCounters(initial_period);
 
   ResolveJavascriptCallback(callback_id, base::Value() /* Promise<void> */);
 }
@@ -351,9 +344,8 @@ void ClearBrowsingDataHandler::HandleGetSyncState(const base::ListValue& args) {
 void ClearBrowsingDataHandler::HandleRestartCounters(
     const base::ListValue& args) {
   AllowJavascript();
-  CHECK_EQ(2U, args.size());
-  RestartCounters(args[0].GetBool() /* basic */,
-                  static_cast<browsing_data::TimePeriod>(args[1].GetInt()));
+  CHECK_EQ(1U, args.size());
+  RestartCounters(static_cast<browsing_data::TimePeriod>(args[0].GetInt()));
 }
 
 void ClearBrowsingDataHandler::OnStateChanged(syncer::SyncService* sync) {
@@ -425,17 +417,14 @@ void ClearBrowsingDataHandler::UpdateHistoryDeletionDialog(bool show) {
 }
 
 void ClearBrowsingDataHandler::AddCounter(
-    std::unique_ptr<browsing_data::BrowsingDataCounter> counter,
-    browsing_data::ClearBrowsingDataTab tab) {
+    std::unique_ptr<browsing_data::BrowsingDataCounter> counter) {
   DCHECK(counter);
   counter->InitWithoutPeriodPref(
-      profile_->GetPrefs(), tab, base::Time(),
+      profile_->GetPrefs(), base::Time(),
       base::BindRepeating(&ClearBrowsingDataHandler::UpdateCounterText,
                           base::Unretained(this)));
 
-  ((tab == browsing_data::ClearBrowsingDataTab::BASIC) ? counters_basic_
-                                                       : counters_advanced_)
-      .push_back(std::move(counter));
+  counters_.push_back(std::move(counter));
 }
 
 void ClearBrowsingDataHandler::UpdateCounterText(
@@ -448,10 +437,9 @@ void ClearBrowsingDataHandler::UpdateCounterText(
 }
 
 void ClearBrowsingDataHandler::RestartCounters(
-    bool basic,
     browsing_data::TimePeriod time_period) {
   // Updating the begin time of a counter automatically forces a restart.
-  for (const auto& counter : (basic ? counters_basic_ : counters_advanced_)) {
+  for (const auto& counter : counters_) {
     counter->SetBeginTime(browsing_data::CalculateBeginDeleteTime(time_period));
   }
 }

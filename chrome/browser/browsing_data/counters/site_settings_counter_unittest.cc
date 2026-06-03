@@ -58,7 +58,6 @@ class SiteSettingsCounterTest : public testing::Test {
     counter_ = std::make_unique<SiteSettingsCounter>(
         map(), zoom_map(), handler_registry(), profile_->GetPrefs());
     counter_->Init(profile()->GetPrefs(),
-                   browsing_data::ClearBrowsingDataTab::ADVANCED,
                    base::BindRepeating(&SiteSettingsCounterTest::Callback,
                                        base::Unretained(this)));
 #if BUILDFLAG(IS_ANDROID)

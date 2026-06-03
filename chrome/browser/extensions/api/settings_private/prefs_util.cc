@@ -574,17 +574,11 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Clear browsing data settings.
   (*s_allowlist)[browsing_data::prefs::kDeleteBrowsingHistory] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[browsing_data::prefs::kDeleteBrowsingHistoryBasic] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[browsing_data::prefs::kDeleteDownloadHistory] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[browsing_data::prefs::kDeleteCache] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[browsing_data::prefs::kDeleteCacheBasic] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[browsing_data::prefs::kDeleteCookies] =
-      settings_api::PrefType::kBoolean;
-  (*s_allowlist)[browsing_data::prefs::kDeleteCookiesBasic] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[browsing_data::prefs::kDeletePasswords] =
       settings_api::PrefType::kBoolean;
@@ -595,10 +589,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[browsing_data::prefs::kDeleteHostedAppsData] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[browsing_data::prefs::kDeleteTimePeriod] =
-      settings_api::PrefType::kNumber;
-  (*s_allowlist)[browsing_data::prefs::kDeleteTimePeriodBasic] =
-      settings_api::PrefType::kNumber;
-  (*s_allowlist)[browsing_data::prefs::kLastClearBrowsingDataTab] =
       settings_api::PrefType::kNumber;
 
   // Accessibility.

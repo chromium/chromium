@@ -60,8 +60,6 @@ std::u16string CreatePasswordDomainExamples(
 std::u16string CreateHistoryCounterString(
     const browsing_data::HistoryCounter::HistoryResult* history_result) {
   CHECK(history_result->source()->GetPrefName() ==
-            browsing_data::prefs::kDeleteBrowsingHistoryBasic ||
-        history_result->source()->GetPrefName() ==
             browsing_data::prefs::kDeleteBrowsingHistory);
 
   if (!history_result->Finished()) {
@@ -283,11 +281,6 @@ std::u16string GetCounterTextFromResult(
                                             count);
   }
 
-  if (pref_name == prefs::kDeleteBrowsingHistoryBasic) {
-    // The basic tab doesn't show history counter results.
-    NOTREACHED();
-  }
-
   if (pref_name == prefs::kDeleteBrowsingHistory) {
     // History counter.
     return CreateHistoryCounterString(
@@ -386,37 +379,13 @@ std::u16string GetCounterTextFromResult(
   NOTREACHED();
 }
 
-const char* GetTimePeriodPreferenceName(
-    ClearBrowsingDataTab clear_browsing_data_tab) {
-  return clear_browsing_data_tab == ClearBrowsingDataTab::BASIC
-             ? prefs::kDeleteTimePeriodBasic
-             : prefs::kDeleteTimePeriod;
+const char* GetTimePeriodPreferenceName() {
+  return prefs::kDeleteTimePeriod;
 }
 
 bool GetDeletionPreferenceFromDataType(
     BrowsingDataType data_type,
-    ClearBrowsingDataTab clear_browsing_data_tab,
     std::string* out_pref) {
-  if (clear_browsing_data_tab == ClearBrowsingDataTab::BASIC) {
-    switch (data_type) {
-      case BrowsingDataType::HISTORY:
-        *out_pref = prefs::kDeleteBrowsingHistoryBasic;
-        return true;
-      case BrowsingDataType::CACHE:
-        *out_pref = prefs::kDeleteCacheBasic;
-        return true;
-      case BrowsingDataType::SITE_DATA:
-        *out_pref = prefs::kDeleteCookiesBasic;
-        return true;
-      case BrowsingDataType::PASSWORDS:
-      case BrowsingDataType::FORM_DATA:
-      case BrowsingDataType::SITE_SETTINGS:
-      case BrowsingDataType::DOWNLOADS:
-      case BrowsingDataType::HOSTED_APPS_DATA:
-      case BrowsingDataType::TABS:
-        return false;  // No corresponding preference on basic tab.
-    }
-  }
   switch (data_type) {
     case BrowsingDataType::HISTORY:
       *out_pref = prefs::kDeleteBrowsingHistory;
@@ -455,11 +424,8 @@ std::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(
   static base::NoDestructor<DataTypeMap> preference_to_datatype(
       std::initializer_list<DataTypeMap::value_type>{
           {prefs::kDeleteBrowsingHistory, BrowsingDataType::HISTORY},
-          {prefs::kDeleteBrowsingHistoryBasic, BrowsingDataType::HISTORY},
           {prefs::kDeleteCache, BrowsingDataType::CACHE},
-          {prefs::kDeleteCacheBasic, BrowsingDataType::CACHE},
           {prefs::kDeleteCookies, BrowsingDataType::SITE_DATA},
-          {prefs::kDeleteCookiesBasic, BrowsingDataType::SITE_DATA},
           {prefs::kDeletePasswords, BrowsingDataType::PASSWORDS},
           {prefs::kDeleteFormData, BrowsingDataType::FORM_DATA},
           {prefs::kDeleteSiteSettings, BrowsingDataType::SITE_SETTINGS},

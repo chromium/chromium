@@ -183,7 +183,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, SameDomain) {
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,
                                    base::Unretained(this)));
   counter.Restart();
@@ -207,7 +206,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, blocklisted) {
       profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,
                                    base::Unretained(this)));
   counter.Restart();
@@ -231,7 +229,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, PrefChanged) {
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,
                                    base::Unretained(this)));
   SetPasswordsDeletionPref(true);
@@ -253,7 +250,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, StoreChanged) {
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,
                                    base::Unretained(this)));
   counter.Restart();
@@ -289,7 +285,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, PeriodChanged) {
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,
                                    base::Unretained(this)));
 
@@ -338,7 +333,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, MostCommonDomains) {
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,
                                    base::Unretained(this)));
   counter.Restart();
@@ -359,7 +353,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, MultipleRestarts) {
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&PasswordsCounterTest::Callback,
                                    base::Unretained(this)));
   counter.Restart();

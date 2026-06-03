@@ -289,7 +289,7 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
   private onSyncStatusChanged_() {
     this.clearBrowsingDataBrowserProxy_.restartCounters(
-        /*isBasic=*/ false, this.$.timePicker.getSelectedTimePeriod());
+        this.$.timePicker.getSelectedTimePeriod());
   }
 
   override connectedCallback() {
@@ -391,7 +391,7 @@ export class SettingsClearBrowsingDataDialogV2Element extends
 
   private onTimePeriodChanged_() {
     this.clearBrowsingDataBrowserProxy_.restartCounters(
-        /*isBasic=*/ false, this.$.timePicker.getSelectedTimePeriod());
+        this.$.timePicker.getSelectedTimePeriod());
   }
 
   private onCancelClick_() {
@@ -409,7 +409,7 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     const dataTypes = this.getSelectedDataTypes_();
     const timePeriod = this.$.timePicker.getSelectedTimePeriod();
     this.clearBrowsingDataBrowserProxy_
-        .recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(timePeriod);
+        .recordSettingsClearBrowsingDataTimePeriodHistogram(timePeriod);
 
     // Update the DataType and TimePeriod prefs with the latest selection.
     this.$.deleteBrowsingDataDialog

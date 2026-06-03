@@ -255,7 +255,6 @@ class AutofillCounterTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, AutocompleteSuggestions) {
   browsing_data::AutofillCounter counter = GetCounter();
   counter.Init(browser()->profile()->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                future.GetRepeatingCallback());
   counter.Restart();
   WaitForResult();
@@ -290,7 +289,6 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, AutocompleteSuggestions) {
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Entities) {
   browsing_data::AutofillCounter counter = GetCounter();
   counter.Init(browser()->profile()->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                future.GetRepeatingCallback());
   counter.Restart();
   WaitForResult();
@@ -325,7 +323,6 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, CreditCards) {
   browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                future.GetRepeatingCallback());
   counter.Restart();
   WaitForResult();
@@ -369,7 +366,6 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Addresses) {
   browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                future.GetRepeatingCallback());
   counter.Restart();
 
@@ -427,7 +423,6 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, ComplexResult) {
   browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                future.GetRepeatingCallback());
   counter.Restart();
 
@@ -481,7 +476,6 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
   browsing_data::AutofillCounter counter = GetCounter();
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                future.GetRepeatingCallback());
 
   for (size_t i = 0; i < std::size(test_cases); i++) {

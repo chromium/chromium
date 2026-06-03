@@ -225,8 +225,7 @@ static bool JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
   // data types for consistency.
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(
-          static_cast<browsing_data::BrowsingDataType>(data_type),
-          browsing_data::ClearBrowsingDataTab::ADVANCED, &pref)) {
+          static_cast<browsing_data::BrowsingDataType>(data_type), &pref)) {
     return false;
   }
 
@@ -244,8 +243,7 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
 
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(
-          static_cast<browsing_data::BrowsingDataType>(data_type),
-          browsing_data::ClearBrowsingDataTab::ADVANCED, &pref)) {
+          static_cast<browsing_data::BrowsingDataType>(data_type), &pref)) {
     return;
   }
 
@@ -256,8 +254,7 @@ static int32_t JNI_BrowsingDataBridge_GetBrowsingDataDeletionTimePeriod(
     JNIEnv* env,
     Profile* profile) {
   return GetPrefService(profile)->GetInteger(
-      browsing_data::GetTimePeriodPreferenceName(
-          browsing_data::ClearBrowsingDataTab::ADVANCED));
+      browsing_data::GetTimePeriodPreferenceName());
 }
 
 static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
@@ -267,8 +264,7 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
   DCHECK_GE(time_period, 0);
   DCHECK_LE(time_period,
             static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST));
-  const char* pref_name = browsing_data::GetTimePeriodPreferenceName(
-      browsing_data::ClearBrowsingDataTab::ADVANCED);
+  const char* pref_name = browsing_data::GetTimePeriodPreferenceName();
   PrefService* prefs = GetPrefService(profile);
   int previous_value = prefs->GetInteger(pref_name);
   if (time_period != previous_value) {

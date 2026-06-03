@@ -194,9 +194,8 @@ class QuickDeleteMediatorTest : public PlatformTest {
         history_service_,
         browsing_data::HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
         nullptr);
-    // Initialize the counter in advanced tab so the correct pref name is
-    // returned.
-    history_counter.Init(prefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
+
+    history_counter.Init(prefs(),
                          browsing_data::BrowsingDataCounter::ResultCallback());
     const browsing_data::HistoryCounter::HistoryResult historyResult(
         &history_counter, num_unique_domains, false, false, "google.com");
@@ -329,10 +328,8 @@ TEST_F(QuickDeleteMediatorTest, TestBrowsingHistorySummary) {
       history_service_,
       browsing_data::HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
       nullptr);
-  // Initialize the counter in advanced tab so the correct pref name is
-  // returned.
-  counter.Init(prefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
-               browsing_data::BrowsingDataCounter::ResultCallback());
+
+  counter.Init(prefs(), browsing_data::BrowsingDataCounter::ResultCallback());
 
   for (const TestCase& test_case : kTestCases) {
     const browsing_data::HistoryCounter::HistoryResult result(

@@ -96,9 +96,8 @@ class BrowsingDataSettingsFunction : public ExtensionFunction {
                   const char* data_type,
                   bool is_selected);
 
-  // Returns whether `data_type` is currently selected for deletion on `tab`.
-  bool isDataTypeSelected(browsing_data::BrowsingDataType data_type,
-                          browsing_data::ClearBrowsingDataTab tab);
+  // Returns whether `data_type` is currently selected for deletion.
+  bool isDataTypeSelected(browsing_data::BrowsingDataType data_type);
 
   raw_ptr<PrefService> prefs_ = nullptr;
 };

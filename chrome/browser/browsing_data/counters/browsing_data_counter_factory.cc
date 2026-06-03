@@ -68,22 +68,13 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
                             base::Unretained(profile)),
         SyncServiceFactory::GetForProfile(profile));
   }
-  if (pref_name == browsing_data::prefs::kDeleteBrowsingHistoryBasic) {
-    // The history option on the basic tab doesn't use a counter.
-    return nullptr;
-  }
 
-  if (pref_name == browsing_data::prefs::kDeleteCache ||
-      pref_name == browsing_data::prefs::kDeleteCacheBasic) {
+  if (pref_name == browsing_data::prefs::kDeleteCache) {
     return std::make_unique<CacheCounter>(profile);
   }
 
   if (pref_name == browsing_data::prefs::kDeleteCookies) {
     return std::make_unique<SiteDataCounter>(profile);
-  }
-  if (pref_name == browsing_data::prefs::kDeleteCookiesBasic) {
-    // The cookies option on the basic tab doesn't use a counter.
-    return nullptr;
   }
 
   if (pref_name == browsing_data::prefs::kDeletePasswords) {

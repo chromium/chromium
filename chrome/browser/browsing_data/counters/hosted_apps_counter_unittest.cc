@@ -146,7 +146,6 @@ TEST_F(HostedAppsCounterTest, Count) {
   Profile* profile = GetProfile();
   HostedAppsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&HostedAppsCounterTest::Callback,
                                    base::Unretained(this)));
   counter.Restart();
@@ -174,7 +173,6 @@ TEST_F(HostedAppsCounterTest, OnlyHostedApps) {
   Profile* profile = GetProfile();
   HostedAppsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&HostedAppsCounterTest::Callback,
                                    base::Unretained(this)));
 
@@ -213,7 +211,6 @@ TEST_F(HostedAppsCounterTest, Examples) {
   Profile* profile = GetProfile();
   HostedAppsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&HostedAppsCounterTest::Callback,
                                    base::Unretained(this)));
   counter.Restart();

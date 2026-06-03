@@ -240,7 +240,7 @@ TEST_F(BrowsingDataUtilsTest, HistoryCounterResult) {
   HistoryCounter counter(&history_service,
                          HistoryCounter::GetUpdatedWebHistoryServiceCallback(),
                          nullptr);
-  counter.Init(prefs(), ClearBrowsingDataTab::ADVANCED, base::DoNothing());
+  counter.Init(prefs(), base::DoNothing());
 
   const struct TestCase {
     int unique_domains;

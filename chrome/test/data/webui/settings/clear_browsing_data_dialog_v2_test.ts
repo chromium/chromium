@@ -507,10 +507,9 @@ suite('DeleteBrowsingDataDialog', function() {
     await selectTimePeriodFromTimePicker(TimePeriod.LAST_WEEK);
     await flushTasks();
 
-    const args =
+    const timePeriod =
         await testClearBrowsingDataBrowserProxy.whenCalled('restartCounters');
-    assertEquals(args[0], /*isBasic=*/ false);
-    assertEquals(args[1], TimePeriod.LAST_WEEK);
+    assertEquals(timePeriod, TimePeriod.LAST_WEEK);
   });
 
   test('SyncStatusChangesRestartCounters', async function() {
@@ -523,10 +522,9 @@ suite('DeleteBrowsingDataDialog', function() {
     });
     await flushTasks();
 
-    const args =
+    const timePeriod =
         await testClearBrowsingDataBrowserProxy.whenCalled('restartCounters');
-    assertEquals(args[0], /*isBasic=*/ false);
-    assertEquals(args[1], TimePeriod.LAST_HOUR);
+    assertEquals(timePeriod, TimePeriod.LAST_HOUR);
   });
 
   test('CountersUpdateCheckboxSubLabel', async function() {
@@ -626,7 +624,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
 
     const metricTimePeriod = await testClearBrowsingDataBrowserProxy.whenCalled(
-        'recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram');
+        'recordSettingsClearBrowsingDataTimePeriodHistogram');
     assertEquals(TimePeriod.LAST_DAY, metricTimePeriod);
 
     // Verify dialog is closed after deletion is completed.

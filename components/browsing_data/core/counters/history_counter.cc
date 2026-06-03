@@ -43,9 +43,7 @@ bool HistoryCounter::HasTrackedTasksForTesting() {
 }
 
 const char* HistoryCounter::GetPrefName() const {
-  return GetTab() == ClearBrowsingDataTab::BASIC
-             ? browsing_data::prefs::kDeleteBrowsingHistoryBasic
-             : browsing_data::prefs::kDeleteBrowsingHistory;
+  return browsing_data::prefs::kDeleteBrowsingHistory;
 }
 
 history::WebHistoryService* HistoryCounter::GetWebHistoryService() {

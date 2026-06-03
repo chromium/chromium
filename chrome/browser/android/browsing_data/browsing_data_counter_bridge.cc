@@ -34,8 +34,7 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
 
   std::string pref;
   if (!browsing_data::GetDeletionPreferenceFromDataType(
-          static_cast<browsing_data::BrowsingDataType>(data_type),
-          browsing_data::ClearBrowsingDataTab::ADVANCED, &pref)) {
+          static_cast<browsing_data::BrowsingDataType>(data_type), &pref)) {
     return;
   }
 
@@ -46,7 +45,7 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     return;
 
   counter_->InitWithoutPeriodPref(
-      profile_->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
+      profile_->GetPrefs(),
       CalculateBeginDeleteTime(
           static_cast<browsing_data::TimePeriod>(selected_time_period)),
       base::BindRepeating(&BrowsingDataCounterBridge::onCounterFinished,

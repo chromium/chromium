@@ -34,21 +34,14 @@ inline constexpr char kClearBrowsingDataOnExitList[] =
 
 // Clear browsing data deletion time period.
 inline constexpr char kDeleteTimePeriod[] = "browser.clear_data.time_period";
-inline constexpr char kDeleteTimePeriodBasic[] =
-    "browser.clear_data.time_period_basic";
 
 // Clear Browsing Data dialog datatype preferences.
 inline constexpr char kDeleteBrowsingHistory[] =
     "browser.clear_data.browsing_history";
-inline constexpr char kDeleteBrowsingHistoryBasic[] =
-    "browser.clear_data.browsing_history_basic";
 inline constexpr char kDeleteDownloadHistory[] =
     "browser.clear_data.download_history";
 inline constexpr char kDeleteCache[] = "browser.clear_data.cache";
-inline constexpr char kDeleteCacheBasic[] = "browser.clear_data.cache_basic";
 inline constexpr char kDeleteCookies[] = "browser.clear_data.cookies";
-inline constexpr char kDeleteCookiesBasic[] =
-    "browser.clear_data.cookies_basic";
 inline constexpr char kDeletePasswords[] = "browser.clear_data.passwords";
 inline constexpr char kDeleteFormData[] = "browser.clear_data.form_data";
 inline constexpr char kDeleteHostedAppsData[] =
@@ -62,8 +55,6 @@ inline constexpr char kLastClearBrowsingDataTime[] =
     "browser.last_clear_browsing_data_time";
 inline constexpr char kClearBrowsingDataHistoryNoticeShownTimes[] =
     "browser.clear_data.history_notice_shown_times";
-inline constexpr char kLastClearBrowsingDataTab[] =
-    "browser.last_clear_browsing_data_tab";
 inline constexpr char kMigratedToQuickDeletePrefValues[] =
     "browser.migrated_to_quick_delete_pref_values";
 // LINT.IfChange(TipsPrefNames)

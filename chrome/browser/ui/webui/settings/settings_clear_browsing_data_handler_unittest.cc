@@ -67,22 +67,15 @@ class TestingClearBrowsingDataHandler
 
   TestingClearBrowsingDataHandler(content::WebUI* webui, Profile* profile)
       : ClearBrowsingDataHandler(webui, profile) {
-    AddCounter(std::make_unique<MockBrowsingDataCounter>(),
-               browsing_data::ClearBrowsingDataTab::BASIC);
-    AddCounter(std::make_unique<MockBrowsingDataCounter>(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED);
+    AddCounter(std::make_unique<MockBrowsingDataCounter>());
   }
 
   void HandleRestartCounters(const base::ListValue& args) {
     settings::ClearBrowsingDataHandler::HandleRestartCounters(args);
   }
 
-  MockBrowsingDataCounter* basic_counter() const {
-    return static_cast<MockBrowsingDataCounter*>(counters_basic_[0].get());
-  }
-
-  MockBrowsingDataCounter* advanced_counter() const {
-    return static_cast<MockBrowsingDataCounter*>(counters_advanced_[0].get());
+  MockBrowsingDataCounter* counter() const {
+    return static_cast<MockBrowsingDataCounter*>(counters_[0].get());
   }
 
   // Some services initialized in |OnJavascriptAllowed()| don't have test
@@ -290,35 +283,26 @@ TEST_F(ClearBrowsingDataHandlerUnitTest,
 }
 
 TEST_F(ClearBrowsingDataHandlerUnitTest, HandleRestartCounters) {
-  base::ListValue basic_args;
-  basic_args.Append(true /* basic */);
-  basic_args.Append(static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
+  base::ListValue args;
+  args.Append(static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
 
-  EXPECT_CALL(*(handler_->basic_counter()), Count());
-  EXPECT_CALL(*(handler_->basic_counter()), SetBeginTime(_));
+  EXPECT_CALL(*(handler_->counter()), Count());
+  EXPECT_CALL(*(handler_->counter()), SetBeginTime(_));
 
-  EXPECT_CALL(*(handler_->advanced_counter()), Count()).Times(0);
-  EXPECT_CALL(*(handler_->advanced_counter()), SetBeginTime(_)).Times(0);
-
-  handler_->HandleRestartCounters(basic_args);
+  handler_->HandleRestartCounters(args);
 
   // Test a different combination of parameters.
-  testing::Mock::VerifyAndClearExpectations(handler_->basic_counter());
-  testing::Mock::VerifyAndClearExpectations(handler_->advanced_counter());
+  testing::Mock::VerifyAndClearExpectations(handler_->counter());
 
-  base::ListValue advanced_args;
-  advanced_args.Append(false /* basic */);
-  advanced_args.Append(static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
+  args.clear();
+  args.Append(static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
 
-  EXPECT_CALL(*(handler_->basic_counter()), Count()).Times(0);
-  EXPECT_CALL(*(handler_->basic_counter()), SetBeginTime(_)).Times(0);
-
-  EXPECT_CALL(*(handler_->advanced_counter()), Count());
-  EXPECT_CALL(*(handler_->advanced_counter()),
+  EXPECT_CALL(*(handler_->counter()), Count());
+  EXPECT_CALL(*(handler_->counter()),
               SetBeginTime(browsing_data::CalculateBeginDeleteTime(
                   browsing_data::TimePeriod::ALL_TIME)));
 
-  handler_->HandleRestartCounters(advanced_args);
+  handler_->HandleRestartCounters(args);
 }
 
 }  // namespace settings

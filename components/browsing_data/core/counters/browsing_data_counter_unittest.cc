@@ -85,14 +85,11 @@ class BrowsingDataCounterTest : public testing::Test {
     pref_service_->registry()->RegisterIntegerPref(prefs::kDeleteTimePeriod, 0);
 
     counter_ = std::make_unique<MockBrowsingDataCounter>();
-    counter_->Init(pref_service_.get(),
-                   browsing_data::ClearBrowsingDataTab::ADVANCED,
-                   base::DoNothing());
+    counter_->Init(pref_service_.get(), base::DoNothing());
 
     counter_no_period_ = std::make_unique<MockBrowsingDataCounter>();
     counter_no_period_->InitWithoutPeriodPref(
-        pref_service_.get(), browsing_data::ClearBrowsingDataTab::ADVANCED,
-        base::Time::Min(), base::DoNothing());
+        pref_service_.get(), base::Time::Min(), base::DoNothing());
   }
 
   void TearDown() override {

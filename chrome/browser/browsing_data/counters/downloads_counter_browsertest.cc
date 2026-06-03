@@ -296,7 +296,6 @@ IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, Count) {
   Profile* profile = browser()->profile();
   DownloadsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&DownloadsCounterTest::ResultCallback,
                                    base::Unretained(this)));
   counter.Restart();
@@ -336,7 +335,6 @@ IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, AsynchronousInitialization) {
 
   DownloadsCounter counter(testing_profile.get());
   counter.Init(testing_profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&DownloadsCounterTest::ResultCallback,
                                    base::Unretained(this)));
 
@@ -368,7 +366,6 @@ IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, Types) {
   Profile* profile = browser()->profile();
   DownloadsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&DownloadsCounterTest::ResultCallback,
                                    base::Unretained(this)));
 
@@ -399,7 +396,6 @@ IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, NotPersisted) {
   Profile* profile = browser()->profile();
   DownloadsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&DownloadsCounterTest::ResultCallback,
                                    base::Unretained(this)));
 
@@ -455,7 +451,6 @@ IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, MAYBE_TimeRanges) {
   Profile* profile = browser()->profile();
   DownloadsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&DownloadsCounterTest::ResultCallback,
                                    base::Unretained(this)));
 

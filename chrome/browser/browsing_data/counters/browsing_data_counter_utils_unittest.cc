@@ -70,38 +70,23 @@ TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResult) {
   const struct TestCase {
     int bytes;
     bool is_upper_limit;
-    bool is_basic_tab;
     std::string expected_output;
   } kTestCases[] = {
-      {42, false, false, "Less than 1 MB"},
-      {42, false, true,
-       "Frees up less than 1 MB. Some sites may load more slowly on your next "
-       "visit."},
-      {static_cast<int>(2.312 * kBytesInAMegabyte), false, false, "2.3 MB"},
-      {static_cast<int>(2.312 * kBytesInAMegabyte), false, true,
-       "Frees up 2.3 MB. Some sites may load more slowly on your next visit."},
-      {static_cast<int>(2.312 * kBytesInAMegabyte), true, false,
-       "Less than 2.3 MB"},
-      {static_cast<int>(2.312 * kBytesInAMegabyte), true, true,
-       "Frees up less than 2.3 MB. Some sites may load more slowly on your "
-       "next visit."},
-      {static_cast<int>(500.2 * kBytesInAMegabyte), false, false, "500 MB"},
-      {static_cast<int>(500.2 * kBytesInAMegabyte), true, false,
-       "Less than 500 MB"},
+      {42, false, "Less than 1 MB"},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), false, "2.3 MB"},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), true, "Less than 2.3 MB"},
+      {static_cast<int>(500.2 * kBytesInAMegabyte), false, "500 MB"},
+      {static_cast<int>(500.2 * kBytesInAMegabyte), true, "Less than 500 MB"},
   };
 
   for (const TestCase& test_case : kTestCases) {
     CacheCounter counter(GetProfile());
-    browsing_data::ClearBrowsingDataTab tab =
-        test_case.is_basic_tab ? browsing_data::ClearBrowsingDataTab::BASIC
-                               : browsing_data::ClearBrowsingDataTab::ADVANCED;
-    counter.Init(GetProfile()->GetPrefs(), tab,
+    counter.Init(GetProfile()->GetPrefs(),
                  browsing_data::BrowsingDataCounter::ResultCallback());
     CacheCounter::CacheResult result(&counter, test_case.bytes,
                                      test_case.is_upper_limit);
-    SCOPED_TRACE(base::StringPrintf(
-        "Test params: %d bytes, %d is_upper_limit, %d is_basic_tab.",
-        test_case.bytes, test_case.is_upper_limit, test_case.is_basic_tab));
+    SCOPED_TRACE(base::StringPrintf("Test params: %d bytes, %d is_upper_limit.",
+                                    test_case.bytes, test_case.is_upper_limit));
 
     std::u16string output =
         GetChromeCounterTextFromResult(&result, GetProfile());
@@ -121,40 +106,27 @@ TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResultAndroid) {
   const struct TestCase {
     int bytes;
     bool is_upper_limit;
-    bool is_basic_tab;
     std::string expected_output;
   } kTestCases[] = {
-      {42, false, false,
+      {42, false,
        "Less than 1 MB. Some sites may load more slowly on your next "
        "visit."},
-      {42, false, true,
-       "Frees up less than 1 MB. Some sites may load more slowly on your next "
-       "visit."},
-      {static_cast<int>(2.312 * kBytesInAMegabyte), false, false,
+      {static_cast<int>(2.312 * kBytesInAMegabyte), false,
        "2.3 MB. Some sites may load more slowly on your next "
        "visit."},
-      {static_cast<int>(2.312 * kBytesInAMegabyte), false, true,
-       "Frees up 2.3 MB. Some sites may load more slowly on your next visit."},
-      {static_cast<int>(2.312 * kBytesInAMegabyte), true, false,
+      {static_cast<int>(2.312 * kBytesInAMegabyte), true,
        "Less than 2.3 MB. Some sites may load more slowly on your next "
        "visit."},
-      {static_cast<int>(2.312 * kBytesInAMegabyte), true, true,
-       "Frees up less than 2.3 MB. Some sites may load more slowly on your "
-       "next visit."},
   };
 
   for (const TestCase& test_case : kTestCases) {
     CacheCounter counter(GetProfile());
-    browsing_data::ClearBrowsingDataTab tab =
-        test_case.is_basic_tab ? browsing_data::ClearBrowsingDataTab::BASIC
-                               : browsing_data::ClearBrowsingDataTab::ADVANCED;
-    counter.Init(GetProfile()->GetPrefs(), tab,
+    counter.Init(GetProfile()->GetPrefs(),
                  browsing_data::BrowsingDataCounter::ResultCallback());
     CacheCounter::CacheResult result(&counter, test_case.bytes,
                                      test_case.is_upper_limit);
-    SCOPED_TRACE(base::StringPrintf(
-        "Test params: %d bytes, %d is_upper_limit, %d is_basic_tab.",
-        test_case.bytes, test_case.is_upper_limit, test_case.is_basic_tab));
+    SCOPED_TRACE(base::StringPrintf("Test params: %d bytes, %d is_upper_limit.",
+                                    test_case.bytes, test_case.is_upper_limit));
 
     std::u16string output =
         GetChromeCounterTextFromResult(&result, GetProfile());
@@ -205,7 +177,7 @@ TEST_F(BrowsingDataCounterUtilsTest, HostedAppsCounterResult) {
 }
 #endif
 
-// Tests the output for "Passwords and passkeys" on the advanced tab.
+// Tests the output for "Passwords and passkeys".
 TEST_F(BrowsingDataCounterUtilsTest, DeletePasswordsAndSigninData) {
   // This test assumes that the strings are served exactly as defined,
   // i.e. that the locale is set to the default "en".
@@ -295,8 +267,6 @@ TEST_F(BrowsingDataCounterUtilsTest, TabsCounterResult) {
   // This test assumes that the strings are served exactly as defined,
   // i.e. that the locale is set to the default "en".
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
-  browsing_data::ClearBrowsingDataTab tab =
-      browsing_data::ClearBrowsingDataTab::ADVANCED;
 
   // Test the output for various forms of CacheResults.
   const struct TestCase {
@@ -312,7 +282,7 @@ TEST_F(BrowsingDataCounterUtilsTest, TabsCounterResult) {
 
   for (const TestCase& test_case : kTestCases) {
     TabsCounter counter(GetProfile());
-    counter.Init(GetProfile()->GetPrefs(), tab,
+    counter.Init(GetProfile()->GetPrefs(),
                  browsing_data::BrowsingDataCounter::ResultCallback());
     TabsCounter::TabsResult result(&counter, test_case.tab_count,
                                    test_case.window_count);
@@ -468,7 +438,6 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
     // Run the test case.
     SiteDataCounter counter(testing_profile.get());
     counter.Init(testing_profile->GetPrefs(),
-                 browsing_data::ClearBrowsingDataTab::ADVANCED,
                  browsing_data::BrowsingDataCounter::ResultCallback());
 
     browsing_data::BrowsingDataCounter::FinishedResult result(

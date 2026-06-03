@@ -14,9 +14,7 @@
 namespace {
 
 // Returns true if all prefs (except tabs) used for the delete browsing data
-// selection still use their default value and have not been modified. These are
-// the prefs used for the advanced mode, or, in case of iOS, the only prefs
-// used.
+// selection still use their default value and have not been modified.
 bool AreAllSelectionPrefsDefaultValue(PrefService* pref_service) {
   const std::string_view selection_pref_names[] = {
       browsing_data::prefs::kDeleteTimePeriod,
@@ -49,15 +47,9 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       kDeleteTimePeriod,
       static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
-  registry->RegisterIntegerPref(
-      kDeleteTimePeriodBasic,
-      static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
   registry->RegisterBooleanPref(kDeleteBrowsingHistory, true);
-  registry->RegisterBooleanPref(kDeleteBrowsingHistoryBasic, true);
   registry->RegisterBooleanPref(kDeleteCache, true);
-  registry->RegisterBooleanPref(kDeleteCacheBasic, true);
   registry->RegisterBooleanPref(kDeleteCookies, true);
-  registry->RegisterBooleanPref(kDeleteCookiesBasic, true);
   registry->RegisterBooleanPref(kDeletePasswords, false);
   registry->RegisterBooleanPref(kDeleteFormData, false);
   registry->RegisterIntegerPref(
@@ -80,7 +72,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kMigratedToQuickDeletePrefValues, false);
 #endif  // BUILDFLAG(IS_IOS)
 
-  registry->RegisterIntegerPref(kLastClearBrowsingDataTab, 0);
   registry->RegisterBooleanPref(kQuickDeleteEverUsed, false);
 }
 

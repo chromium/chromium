@@ -92,18 +92,13 @@ export interface ClearBrowsingDataBrowserProxy {
   getSyncState(): Promise<UpdateSyncStateEvent>;
 
   /**
-   * Requests the backend to restart the browsing data counters of the basic or
-   * advanced tab (determined by |isBasic|), instructing them to calculate the
-   * data volume for the |timePeriod|. No return value, as the frontend needn't
-   * wait for the counting to be completed.
+   * Requests the backend to restart the browsing data counters, instructing
+   * them to calculate the data volume for the |timePeriod|. No return value, as
+   * the frontend needn't wait for the counting to be completed.
    */
-  restartCounters(isBasic: boolean, timePeriod: number): void;
+  restartCounters(timePeriod: number): void;
 
-  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(bucket: TimePeriod):
-      void;
-
-  recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(
-      bucket: TimePeriod): void;
+  recordSettingsClearBrowsingDataTimePeriodHistogram(bucket: TimePeriod): void;
 }
 
 export class ClearBrowsingDataBrowserProxyImpl implements
@@ -121,20 +116,11 @@ export class ClearBrowsingDataBrowserProxyImpl implements
     return sendWithPromise<UpdateSyncStateEvent>('getSyncState');
   }
 
-  restartCounters(isBasic: boolean, timePeriod: number) {
-    chrome.send('restartClearBrowsingDataCounters', [isBasic, timePeriod]);
+  restartCounters(timePeriod: number) {
+    chrome.send('restartClearBrowsingDataCounters', [timePeriod]);
   }
 
-  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(bucket: TimePeriod) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.ClearBrowsingData.Basic.TimePeriod',
-      bucket,
-      TimePeriod.TIME_PERIOD_LAST,
-    ]);
-  }
-
-  recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(bucket:
-                                                                 TimePeriod) {
+  recordSettingsClearBrowsingDataTimePeriodHistogram(bucket: TimePeriod) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.ClearBrowsingData.Advanced.TimePeriod',
       bucket,

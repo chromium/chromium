@@ -208,18 +208,11 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Records the time period that users cleared from the Clear Browsing Data
-    dialog advanced tab.
-  </summary>
-</histogram>
+    dialog.
 
-<histogram name="Settings.ClearBrowsingData.Basic.TimePeriod"
-    enum="SettingsClearBrowsingDataTimePeriod" expires_after="2026-05-24">
-  <owner>rainhard@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>chrome-privacy-controls@google.com</owner>
-  <summary>
-    Records the time period that users cleared from the Clear Browsing Data
-    dialog basic tab.
+    Note: The `Advanced` refers to the Advanced tab in Clear Browsing Data,
+    which has become the only available tab after DBD dialog revamp
+    (crbug.com/502885275).
   </summary>
 </histogram>
 

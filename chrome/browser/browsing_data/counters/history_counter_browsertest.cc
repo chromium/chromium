@@ -178,7 +178,6 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, DuplicateVisits) {
       SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&HistoryCounterTest::Callback,
                                    base::Unretained(this)));
   counter.Restart();
@@ -202,7 +201,6 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, WithoutSyncService) {
       nullptr /* sync_service */);
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&HistoryCounterTest::Callback,
                                    base::Unretained(this)));
   counter.Restart();
@@ -228,7 +226,6 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, PrefChanged) {
       SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&HistoryCounterTest::Callback,
                                    base::Unretained(this)));
   SetHistoryDeletionPref(true);
@@ -276,7 +273,6 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, PeriodChanged) {
       SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&HistoryCounterTest::Callback,
                                    base::Unretained(this)));
 
@@ -325,7 +321,6 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
       SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&HistoryCounterTest::Callback,
                                    base::Unretained(this)));
 

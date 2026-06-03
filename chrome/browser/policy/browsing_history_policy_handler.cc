@@ -25,7 +25,6 @@ void BrowsingHistoryPolicyHandler::ApplyPolicySettings(
       policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
   if (value && !value->GetBool()) {
     prefs->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, false);
-    prefs->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistoryBasic, false);
     prefs->SetBoolean(browsing_data::prefs::kDeleteDownloadHistory, false);
   }
 }

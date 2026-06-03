@@ -19,8 +19,7 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy
       'getSyncState',
       'clearBrowsingData',
       'restartCounters',
-      'recordSettingsClearBrowsingDataBasicTimePeriodHistogram',
-      'recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram',
+      'recordSettingsClearBrowsingDataTimePeriodHistogram',
     ]);
 
     /**
@@ -59,19 +58,13 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy
     });
   }
 
-  restartCounters(isBasic: boolean, timePeriod: number) {
-    this.methodCalled('restartCounters', isBasic, timePeriod);
+  restartCounters(timePeriod: number) {
+    this.methodCalled('restartCounters', timePeriod);
     return Promise.resolve();
   }
 
-  recordSettingsClearBrowsingDataBasicTimePeriodHistogram(bucket: TimePeriod) {
+  recordSettingsClearBrowsingDataTimePeriodHistogram(bucket: TimePeriod) {
     this.methodCalled(
-        'recordSettingsClearBrowsingDataBasicTimePeriodHistogram', bucket);
-  }
-
-  recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram(bucket:
-                                                                 TimePeriod) {
-    this.methodCalled(
-        'recordSettingsClearBrowsingDataAdvancedTimePeriodHistogram', bucket);
+        'recordSettingsClearBrowsingDataTimePeriodHistogram', bucket);
   }
 }

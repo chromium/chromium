@@ -28,15 +28,13 @@ BrowsingDataCounter::BrowsingDataCounter()
 BrowsingDataCounter::~BrowsingDataCounter() = default;
 
 void BrowsingDataCounter::Init(PrefService* pref_service,
-                               ClearBrowsingDataTab clear_browsing_data_tab,
                                ResultCallback callback) {
   DCHECK(!initialized_);
   callback_ = std::move(callback);
-  clear_browsing_data_tab_ = clear_browsing_data_tab;
   pref_.Init(GetPrefName(), pref_service,
              base::BindRepeating(&BrowsingDataCounter::Restart,
                                  base::Unretained(this)));
-  period_.Init(GetTimePeriodPreferenceName(GetTab()), pref_service,
+  period_.Init(GetTimePeriodPreferenceName(), pref_service,
                base::BindRepeating(&BrowsingDataCounter::Restart,
                                    base::Unretained(this)));
 
@@ -46,12 +44,10 @@ void BrowsingDataCounter::Init(PrefService* pref_service,
 
 void BrowsingDataCounter::InitWithoutPeriodPref(
     PrefService* pref_service,
-    ClearBrowsingDataTab clear_browsing_data_tab,
     base::Time begin_time,
     ResultCallback callback) {
   DCHECK(!initialized_);
   callback_ = std::move(callback);
-  clear_browsing_data_tab_ = clear_browsing_data_tab;
   pref_.Init(GetPrefName(), pref_service,
              base::BindRepeating(&BrowsingDataCounter::Restart,
                                  base::Unretained(this)));
@@ -65,7 +61,6 @@ void BrowsingDataCounter::InitWithoutPref(base::Time begin_time,
   DCHECK(!initialized_);
   use_delay_ = false;
   callback_ = std::move(callback);
-  clear_browsing_data_tab_ = ClearBrowsingDataTab::ADVANCED;
   begin_time_ = begin_time;
   initialized_ = true;
   OnInitialized();
@@ -161,10 +156,6 @@ void BrowsingDataCounter::DoReportResult(std::unique_ptr<Result> result) {
 const std::vector<BrowsingDataCounter::State>&
 BrowsingDataCounter::GetStateTransitionsForTesting() {
   return state_transitions_;
-}
-
-ClearBrowsingDataTab BrowsingDataCounter::GetTab() const {
-  return clear_browsing_data_tab_;
 }
 
 void BrowsingDataCounter::TransitionToShowCalculating() {

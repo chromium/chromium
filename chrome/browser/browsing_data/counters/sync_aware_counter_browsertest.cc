@@ -118,7 +118,6 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, AutofillCounter) {
       sync_service);
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&SyncAwareCounterTest::OnCounterResult,
                                    base::Unretained(this)));
 
@@ -187,7 +186,6 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, PasswordCounter) {
       profile->GetPrefs(), sync_service);
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&SyncAwareCounterTest::OnCounterResult,
                                    base::Unretained(this)));
 
@@ -262,7 +260,6 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
       sync_service);
 
   counter.Init(profile->GetPrefs(),
-               browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&SyncAwareCounterTest::OnCounterResult,
                                    base::Unretained(this)));
 

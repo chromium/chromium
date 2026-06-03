@@ -137,7 +137,7 @@ BrowsingDataCounterWrapper::BrowsingDataCounterWrapper(
   DCHECK(counter_);
   DCHECK(update_ui_callback_);
   counter_->Init(
-      pref_service, browsing_data::ClearBrowsingDataTab::ADVANCED,
+      pref_service,
       base::BindRepeating(&BrowsingDataCounterWrapper::UpdateWithResult,
                           base::Unretained(this)));
 }
@@ -152,7 +152,7 @@ BrowsingDataCounterWrapper::BrowsingDataCounterWrapper(
   DCHECK(counter_);
   DCHECK(update_ui_callback_);
   counter_->InitWithoutPeriodPref(
-      pref_service, browsing_data::ClearBrowsingDataTab::ADVANCED, begin_time,
+      pref_service, begin_time,
       base::BindRepeating(&BrowsingDataCounterWrapper::UpdateWithResult,
                           base::Unretained(this)));
 }

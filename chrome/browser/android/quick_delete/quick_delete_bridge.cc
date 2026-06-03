@@ -70,8 +70,7 @@ QuickDeleteBridge::QuickDeleteBridge(JNIEnv* env,
       CalculateBeginDeleteTime(browsing_data::TimePeriod::LAST_15_MINUTES);
 
   history_counter_->InitWithoutPeriodPref(
-      profile_->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
-      begin_time,
+      profile_->GetPrefs(), begin_time,
       base::BindRepeating(&QuickDeleteBridge::OnHistoryCounterResult,
                           weak_ptr_factory_.GetWeakPtr()));
 }
