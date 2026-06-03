@@ -279,6 +279,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
                                 ContactsPickerListener.ContactsPickerAction.CANCEL,
                                 null,
                                 ACTION_CANCEL));
+        mDialog.setOnDismissListener(dialog1 -> ContactsPicker.onContactsPickerDismissed());
 
         mPickerAdapter.notifyDataSetChanged();
         if (ContactsPickerFeatureMap.shouldShowSystemContactsPicker()) {
@@ -882,7 +883,6 @@ public class PickerCategoryView extends OptimizedFrameLayout
                 propertiesSiteRequested,
                 propertiesUserRejected);
         mDialog.dismiss();
-        ContactsPicker.onContactsPickerDismissed();
         recordFinalUmaStats(
                 umaId,
                 contactCount,

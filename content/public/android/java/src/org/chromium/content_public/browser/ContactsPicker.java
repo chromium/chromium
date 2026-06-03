@@ -55,6 +55,10 @@ public final class ContactsPicker {
         return sWebContentsObserver;
     }
 
+    public static boolean hasPickerForTesting() {
+        return sPicker != null;
+    }
+
     /**
      * Called to display the contacts picker.
      *

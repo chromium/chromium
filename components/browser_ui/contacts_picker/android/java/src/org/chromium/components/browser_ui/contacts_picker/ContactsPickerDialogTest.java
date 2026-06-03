@@ -35,6 +35,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -382,6 +383,9 @@ public class ContactsPickerDialogTest
         categoryView.onClick(cancel);
         onActionCallback.waitForCallback(callCount, 1);
         Assert.assertEquals(ContactsPickerAction.CANCEL, mLastActionRecorded);
+
+        // Wait until the dismiss listener runs and clears the picker.
+        CriteriaHelper.pollUiThread(() -> !ContactsPicker.hasPickerForTesting());
     }
 
     private void toggleSelectAll(
