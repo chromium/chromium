@@ -76,3 +76,9 @@ void FakeTranslateAgent::PageTranslated(bool cancelled,
   std::move(translate_callback_pending_)
       .Run(cancelled, source_lang, target_lang, error);
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+void FakeTranslateAgent::PdfPageCaptured(const std::u16string& contents,
+                                         const std::string& pdf_lang,
+                                         const GURL& page_url) {}
+#endif

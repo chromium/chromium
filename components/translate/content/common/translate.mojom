@@ -5,8 +5,8 @@
 module translate.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 enum TranslateError {
@@ -95,14 +95,22 @@ interface TranslateAgent {
   //
   // If |cancelled| is |true| all other response values should be
   // ignored.
-  TranslateFrame(string translate_script, string source_lang,
-                 string target_lang)
-      => (bool cancelled, string original_lang, string translated_lang,
+  TranslateFrame(
+      string translate_script, string source_lang, string target_lang)
+      => (bool cancelled,
+          string original_lang,
+          string translated_lang,
           TranslateError error);
 
   // Requests that the frame be reverted to its original language with
   // no translation applied.
   RevertTranslation();
+
+  // Requests that the TranslateAgent run language detection on extracted PDF
+  // text.
+  [EnableIf=enable_pdf]
+  PdfPageCaptured(
+      mojo_base.mojom.String16 contents, string pdf_lang, url.mojom.Url url);
 };
 
 // Reports when page is ready for translation. This is used by the
@@ -112,5 +120,6 @@ interface ContentTranslateDriver {
   // Notification that a new page is ready to translate,
   // and the language for it has been determined.
   RegisterPage(pending_remote<TranslateAgent> translate_agent,
-               LanguageDetectionDetails details, bool translation_critiera_met);
+               LanguageDetectionDetails details,
+               bool translation_critiera_met);
 };

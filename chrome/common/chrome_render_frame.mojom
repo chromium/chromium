@@ -104,22 +104,23 @@ interface ChromeRenderFrame {
   //  - Success with coordinates
   //  - Success without coordinates
   //  - Failure with an ActionResult which contains the error code.
-  InitializeTool(actor.mojom.ToolInvocation request) =>
-      (actor.mojom.InitializeToolResult result);
+  InitializeTool(actor.mojom.ToolInvocation request)
+      => (actor.mojom.InitializeToolResult result);
 
   // Requires InitializeTool to be called first.
   // Performs a second validation check to ensure the tool's target is still
   // valid, then executes the tool.
   // Returns the ActionResult based on the execution.
-  ExecuteTool(actor.mojom.TaskId task_id) => (actor.mojom.ActionResult result);
+  ExecuteTool(actor.mojom.TaskId task_id)
+      => (actor.mojom.ActionResult result);
 
   // Requests invoking of a tool from the actor automation framework. See
   // chrome/browser/actor
   //
   // Issuing InvokeTool() when a prior InvokeTool() request is outstanding will
   // result in kExecutorBusy.
-  InvokeTool(actor.mojom.ToolInvocation request) =>
-      (actor.mojom.ActionResult result);
+  InvokeTool(actor.mojom.ToolInvocation request)
+      => (actor.mojom.ActionResult result);
 
   // Cancels an in-progress tool invocation, if it exists -- while there's no
   // callback to notify cancelation completion (so the browser process doesn't
@@ -151,14 +152,14 @@ interface ChromeRenderFrame {
   //
   // Note that both documents involved are same-origin with each other.
   GetCrossDocumentScriptToolResult(
-    mojo_base.mojom.UnguessableToken execution_id) => (string result);
+      mojo_base.mojom.UnguessableToken execution_id) => (string result);
 
   // Requests actor automation framework journaling. Journaling can be
   // stopped by disconnecting the passed in remote. We use an associated
   // remote here to keep this consistent with navigation events. The
   // journal will record the last committed URL in the logs.
   StartActorJournal(
-    pending_associated_remote<actor.mojom.JournalClient> client);
+      pending_associated_remote<actor.mojom.JournalClient> client);
 
   // Creates page stability monitor in the renderer to monitor for page
   // stability. Multiple calls will clobber a PageStabilityMonitor previously
@@ -172,7 +173,15 @@ interface ChromeRenderFrame {
   // `supports_paint_stability` indicates whether to include paint stability in
   // page stability heuristics.
   CreatePageStabilityMonitor(
-    pending_receiver<page_content_annotations.mojom.PageStabilityMonitor>
-      monitor,
-    actor.mojom.TaskId task_id, bool supports_paint_stability);
+      pending_receiver<page_content_annotations.mojom.PageStabilityMonitor>
+          monitor,
+      actor.mojom.TaskId task_id,
+      bool supports_paint_stability);
+
+  // Requests that the TranslateAgent run language detection on extracted PDF
+  // text.
+  [EnableIf=enable_pdf]
+  PdfPageCaptured(mojo_base.mojom.String16 contents,
+                  string pdf_lang,
+                  url.mojom.Url page_url);
 };

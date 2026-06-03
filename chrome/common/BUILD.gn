@@ -773,6 +773,10 @@ mojom("mojo_bindings") {
   if (enable_bound_session_credentials) {
     enabled_features += [ "enable_bound_session_credentials" ]
   }
+
+  if (enable_pdf) {
+    enabled_features += [ "enable_pdf" ]
+  }
 }
 
 mojom("glic_enums_mojom") {

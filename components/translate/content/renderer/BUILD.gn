@@ -19,6 +19,7 @@ static_library("renderer") {
     "//components/translate/core/language_detection",
     "//content/public/common",
     "//content/public/renderer",
+    "//pdf:buildflags",
     "//services/service_manager/public/cpp",
     "//third_party/blink/public:blink",
     "//url",

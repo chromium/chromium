@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/pdf/chrome_pdf_document_helper_client.h"
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/download_stats.h"
@@ -14,16 +15,20 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_content_client.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/content_restriction.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/pdf/browser/pdf_document_helper.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/translate/core/common/translate_features.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "pdf/pdf_features.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace {
 
@@ -95,6 +100,44 @@ void ChromePDFDocumentHelperClient::OnDocumentLoadComplete(
   if (is_pdf_viewer) {
     LogGlicSummarizeMetrics(render_frame_host);
   }
+
+  if (base::FeatureList::IsEnabled(translate::kEnableTranslatePdf)) {
+    auto* pdf_helper =
+        pdf::PDFDocumentHelper::GetForCurrentDocument(render_frame_host);
+    if (pdf_helper) {
+      pdf_helper->GetPageText(
+          0, base::BindOnce(&ChromePDFDocumentHelperClient::OnPdfTextExtracted,
+                            weak_factory_.GetWeakPtr(),
+                            render_frame_host->GetGlobalId()));
+    }
+  }
+}
+
+void ChromePDFDocumentHelperClient::OnPdfTextExtracted(
+    content::GlobalRenderFrameHostId render_frame_host_id,
+    const std::u16string& text) {
+  auto* render_frame_host =
+      content::RenderFrameHost::FromID(render_frame_host_id);
+  if (!render_frame_host) {
+    return;
+  }
+
+  content::WebContents* web_contents = GetWebContentsToUse(render_frame_host);
+  if (!web_contents) {
+    return;
+  }
+
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  if (!main_frame) {
+    return;
+  }
+
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
+  main_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+      &chrome_render_frame);
+  // TODO(b/502015383): Use the actual PDF language tag.
+  chrome_render_frame->PdfPageCaptured(text, /*pdf_lang=*/"",
+                                       main_frame->GetLastCommittedURL());
 }
 
 void ChromePDFDocumentHelperClient::UpdateContentRestrictions(

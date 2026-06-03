@@ -709,6 +709,16 @@ void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
 #endif
 }
 
+#if BUILDFLAG(ENABLE_PDF)
+void ChromeRenderFrameObserver::PdfPageCaptured(const std::u16string& contents,
+                                                const std::string& pdf_lang,
+                                                const GURL& page_url) {
+  if (translate_agent_) {
+    translate_agent_->PdfPageCaptured(contents, pdf_lang, page_url);
+  }
+}
+#endif
+
 void ChromeRenderFrameObserver::OnRenderFrameObserverRequest(
     mojo::PendingAssociatedReceiver<chrome::mojom::ChromeRenderFrame>
         receiver) {

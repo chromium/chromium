@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/dns/mock_host_resolver.h"
+#include "pdf/buildflags.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -107,6 +108,12 @@ class MockTranslateAgent : public translate::mojom::TranslateAgent {
   }
 
   void RevertTranslation() override {}
+
+#if BUILDFLAG(ENABLE_PDF)
+  void PdfPageCaptured(const std::u16string& contents,
+                       const std::string& pdf_lang,
+                       const GURL& url) override {}
+#endif
 
   bool called_translate_ = false;
   std::optional<std::string> source_lang_;

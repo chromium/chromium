@@ -91,6 +91,18 @@ bool ShouldOverrideLanguageDetectionForTesting() {
   return false;
 }
 
+bool ShouldSkipLanguageDetection(const GURL& url) {
+  // Only detect the language of the content if the page is potentially a
+  // candidate for translation.  This should be strictly a subset of the
+  // conditions in TranslateService::IsTranslatableURL, however,
+  // due to layering they cannot be identical. Critically, this list should
+  // never filter anything that is eligible for translation. Under filtering is
+  // ok as the translate service will make the final call and only results in a
+  // slight overhead in running the model when unnecessary.
+  return url.is_empty() || url.SchemeIs(content::kChromeUIScheme) ||
+         url.SchemeIs(content::kChromeDevToolsScheme) || url.IsAboutBlank();
+}
+
 }  // namespace
 
 namespace translate {
@@ -152,8 +164,7 @@ void TranslateAgent::PageCaptured(
   // never filter anything that is eligible for translation. Under filtering is
   // ok as the translate service will make the final call and only results in a
   // slight overhead in running the model when unnecessary.
-  if (url.is_empty() || url.SchemeIs(content::kChromeUIScheme) ||
-      url.SchemeIs(content::kChromeDevToolsScheme) || url.IsAboutBlank()) {
+  if (ShouldSkipLanguageDetection(url)) {
     LanguageDetectionDetails details;
     details.time = base::Time::Now();
     details.url = url;
@@ -163,8 +174,6 @@ void TranslateAgent::PageCaptured(
     return;
   }
 
-  page_contents_length_ = contents->as_string().size();
-
   WebLanguageDetectionDetails web_detection_details =
       WebLanguageDetectionDetails::CollectLanguageDetectionDetails(document);
   WebLanguageDetectionDetails::RecordAcceptLanguageAndXmlHtmlLangMetric(
@@ -172,16 +181,53 @@ void TranslateAgent::PageCaptured(
 
   std::string content_language = web_detection_details.content_language.Utf8();
   std::string html_lang = web_detection_details.html_language.Utf8();
-  std::string model_detected_language;
-  bool is_model_reliable = false;
-  std::string detection_model_version;
-  float model_reliability_score = 0.0;
+
+  RunLanguageDetectionAndRegisterPage(
+      contents->as_string(), content_language, html_lang, url,
+      web_detection_details.has_no_translate_meta);
+}
+
+#if BUILDFLAG(ENABLE_PDF)
+void TranslateAgent::PdfPageCaptured(const std::u16string& contents,
+                                     const std::string& pdf_lang,
+                                     const GURL& url) {
+  TRACE_EVENT("browser", "TranslateAgent::PdfPageCaptured");
+  if (ShouldSkipLanguageDetection(url)) {
+    return;
+  }
+
+  // PDF uses the document language metadata as both content language and
+  // HTML language for language detection purposes.
+  // PDF does not support the "notranslate" meta tag.
+  RunLanguageDetectionAndRegisterPage(contents, pdf_lang, pdf_lang, url,
+                                      /*has_notranslate=*/false);
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+void TranslateAgent::CancelPendingTranslation() {
+  weak_method_factory_.InvalidateWeakPtrs();
+  // Make sure to send the cancelled response back.
+  if (translate_callback_pending_) {
+    std::move(translate_callback_pending_)
+        .Run(true, source_lang_, target_lang_, TranslateErrors::NONE);
+  }
+  source_lang_.clear();
+  target_lang_.clear();
+}
+
+void TranslateAgent::RunLanguageDetectionAndRegisterPage(
+    const std::u16string& contents,
+    const std::string& content_language,
+    const std::string& html_lang,
+    const GURL& url,
+    bool has_notranslate) {
+  page_contents_length_ = contents.size();
 
   if (ShouldOverrideLanguageDetectionForTesting()) {
     std::string language = "fr";
     LanguageDetectionDetails details;
     details.adopted_language = language;
-    details.contents = contents->as_string();
+    details.contents = contents;
     details.has_run_lang_detection = true;
 
     bool criteria =
@@ -189,6 +235,11 @@ void TranslateAgent::PageCaptured(
     RegisterPageInternal(std::move(details), criteria);
     return;
   }
+
+  std::string model_detected_language;
+  bool is_model_reliable = false;
+  std::string detection_model_version;
+  float model_reliability_score = 0.0;
 
   LanguageDetectionDetails details;
   std::string language;
@@ -204,7 +255,7 @@ void TranslateAgent::PageCaptured(
     language =
         is_available
             ? translate_language_detection_model_->DeterminePageLanguage(
-                  content_language, html_lang, contents->as_string(),
+                  content_language, html_lang, contents,
                   &model_detected_language, &is_model_reliable,
                   model_reliability_score)
             // If the model is not available do not run language
@@ -225,18 +276,18 @@ void TranslateAgent::PageCaptured(
   } else {
     // Use CLD3 and page contents to assist with language detection.
     language = DeterminePageLanguage(
-        content_language, html_lang, contents->as_string(),
-        &model_detected_language, &is_model_reliable, model_reliability_score);
+        content_language, html_lang, contents, &model_detected_language,
+        &is_model_reliable, model_reliability_score);
     detection_model_version = kCLDModelVersion;
     details.has_run_lang_detection = true;
   }
 
   details.time = base::Time::Now();
-  details.url = web_detection_details.url;
+  details.url = url;
   details.content_language = content_language;
   details.model_detected_language = model_detected_language;
   details.is_model_reliable = is_model_reliable;
-  details.has_notranslate = web_detection_details.has_no_translate_meta;
+  details.has_notranslate = has_notranslate;
   details.html_root_language = html_lang;
   details.adopted_language = language;
   details.model_reliability_score = model_reliability_score;
@@ -244,7 +295,7 @@ void TranslateAgent::PageCaptured(
 
   // TODO(hajimehoshi): If this affects performance, it should be set only if
   // translate-internals tab exists.
-  details.contents = contents->as_string();
+  details.contents = contents;
 
   bool criteria = !details.has_notranslate && !details.adopted_language.empty();
   RegisterPageInternal(std::move(details), criteria);
@@ -277,17 +328,6 @@ void TranslateAgent::RenewPageRegistration() {
   LanguageDetectionDetails details = std::move(*last_details_);
   bool criteria = !details.has_notranslate && !details.adopted_language.empty();
   RegisterPageInternal(std::move(details), criteria);
-}
-
-void TranslateAgent::CancelPendingTranslation() {
-  weak_method_factory_.InvalidateWeakPtrs();
-  // Make sure to send the cancelled response back.
-  if (translate_callback_pending_) {
-    std::move(translate_callback_pending_)
-        .Run(true, source_lang_, target_lang_, TranslateErrors::NONE);
-  }
-  source_lang_.clear();
-  target_lang_.clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

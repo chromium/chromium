@@ -21,6 +21,7 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "pdf/buildflags.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
@@ -155,6 +156,11 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
           page_content_annotations::mojom::PageStabilityMonitor> monitor,
       const actor::TaskId& task_id,
       bool supports_paint_stability) override;
+#if BUILDFLAG(ENABLE_PDF)
+  void PdfPageCaptured(const std::u16string& contents,
+                       const std::string& pdf_lang,
+                       const GURL& page_url) override;
+#endif
 
   // Initialize a |phishing_classifier_delegate_|.
   void SetClientSidePhishingDetection();

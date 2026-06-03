@@ -50,6 +50,7 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -190,6 +191,11 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
   }
 #if BUILDFLAG(IS_ANDROID)
   void SetCCTClientHeader(const std::string& header) override {}
+#endif
+#if BUILDFLAG(ENABLE_PDF)
+  void PdfPageCaptured(const std::u16string& contents,
+                       const std::string& pdf_lang,
+                       const GURL& page_url) override {}
 #endif
 
  private:

@@ -3,9 +3,15 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//pdf/features.gni")
 
 mojom("common") {
   sources = [ "translate.mojom" ]
+
+  enabled_features = []
+  if (enable_pdf) {
+    enabled_features += [ "enable_pdf" ]
+  }
 
   public_deps = [
     "//mojo/public/mojom/base",

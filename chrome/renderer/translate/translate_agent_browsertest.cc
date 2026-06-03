@@ -595,3 +595,26 @@ TEST_F(TranslateAgentBrowserTest, UnsupportedTranslateSchemes) {
   EXPECT_FALSE(fake_translate_driver_.page_level_translation_criteria_met_);
   EXPECT_TRUE(fake_translate_driver_.details_->adopted_language.empty());
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+TEST_F(TranslateAgentBrowserTest, PdfPageCaptured) {
+  GURL url("https://example.com");
+  translate_agent_->PdfPageCaptured(u"A random page with random content.", "fr",
+                                    url);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(fake_translate_driver_.called_new_page_);
+  EXPECT_TRUE(fake_translate_driver_.page_level_translation_criteria_met_);
+  EXPECT_EQ("fr", fake_translate_driver_.details_->content_language);
+  EXPECT_EQ("fr", fake_translate_driver_.details_->html_root_language);
+  EXPECT_FALSE(fake_translate_driver_.details_->has_notranslate);
+}
+
+TEST_F(TranslateAgentBrowserTest, PdfUnsupportedTranslateSchemes) {
+  GURL url("chrome://foo.com");
+  translate_agent_->PdfPageCaptured(u"pdf content", "en", url);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(fake_translate_driver_.called_new_page_);
+}
+#endif
