@@ -674,11 +674,25 @@ void SVGImage::MaybeRecordSvgImageProcessingTime(const Document& document) {
   }
 }
 
-Element* SVGImage::GetResourceElement(const AtomicString& id) const {
+Element* SVGImage::GetResourceElement(
+    base::PassKey<ExternalSVGResourceImageContent>,
+    const AtomicString& id) const {
   if (!document_host_) {
     return nullptr;
   }
   return GetFrame()->GetDocument()->getElementById(id);
+}
+
+void SVGImage::UpdateLifecycleForUse(
+    base::PassKey<ExternalSVGResourceImageContent>) {
+  if (!document_host_) {
+    return;
+  }
+  // Temporarily disable change notifications triggered by the lifecycle
+  // update.
+  ImageObserverDisabler disable_image_observer(this);
+  GetFrame()->View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kSVGImage);
 }
 
 void SVGImage::NotifyAsyncLoadCompleted() {

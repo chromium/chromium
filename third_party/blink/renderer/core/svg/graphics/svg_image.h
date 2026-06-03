@@ -31,6 +31,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
@@ -48,6 +49,7 @@ namespace blink {
 
 class Document;
 class Element;
+class ExternalSVGResourceImageContent;
 class IsolatedSVGDocumentHost;
 class LayoutSVGRoot;
 class LocalFrame;
@@ -135,8 +137,10 @@ class CORE_EXPORT SVGImage final : public Image {
   void SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme preferred_color_scheme);
 
-  // Introspective service hatch for mask-image. Don't abuse for anything else.
-  Element* GetResourceElement(const AtomicString& id) const;
+  // Specialized interface for mask-image (via ExternalSVGResourceImageContent).
+  Element* GetResourceElement(base::PassKey<ExternalSVGResourceImageContent>,
+                              const AtomicString& id) const;
+  void UpdateLifecycleForUse(base::PassKey<ExternalSVGResourceImageContent>);
 
  protected:
   // Whether or not size is available yet.
