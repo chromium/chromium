@@ -78,7 +78,7 @@ class SVGResource : public GarbageCollected<SVGResource> {
 
   virtual bool IsLoading() const { return false; }
 
-  Element* Target() const { return target_.Get(); }
+  Element* Target() const;
   // Returns the target's LayoutObject (if target exists and is attached to the
   // layout tree). Also perform cycle-checking, and may thus return nullptr if
   // this SVGResourceClient -> SVGResource reference would start a cycle.
@@ -104,6 +104,7 @@ class SVGResource : public GarbageCollected<SVGResource> {
   SVGResource();
 
   void InvalidateCycleCache();
+  virtual void UpdateContentLifecycleForUse() const = 0;
   void NotifyContentChanged();
 
   Member<Element> target_;
@@ -142,6 +143,7 @@ class LocalSVGResource final : public SVGResource {
   void Trace(Visitor*) const override;
 
  private:
+  void UpdateContentLifecycleForUse() const override {}
   void TargetChanged(const AtomicString& id);
 
   Member<TreeScope> tree_scope_;
@@ -166,6 +168,7 @@ class ExternalSVGResourceDocumentContent final
  private:
   bool IsLoading() const override;
   Element* ResolveTarget();
+  void UpdateContentLifecycleForUse() const override;
 
   // SVGResourceDocumentObserver:
   void ResourceNotifyFinished(SVGResourceDocumentContent*) override;
@@ -193,6 +196,7 @@ class ExternalSVGResourceImageContent final : public SVGResource,
 
   bool IsLoading() const override;
   Element* ResolveTarget();
+  void UpdateContentLifecycleForUse() const override;
 
   // ImageResourceObserver overrides
   void ImageNotifyFinished(ImageResourceContent*) override;
