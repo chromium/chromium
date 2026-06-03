@@ -4,16 +4,18 @@
 
 #include "content/browser/webid/delegation/federated_sd_jwt_handler.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "base/barrier_closure.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/flags.h"
@@ -89,44 +91,26 @@ void FederatedSdJwtHandler::ProcessSdJwt(const std::string& token) {
     return;
   }
 
-  // Each of the disclosures is an individual JSON Object.
-  // Parse them all and use BarrierCallback to get a callback when all
-  // parsing is done.
-  auto callback = BarrierClosure(
-      sd_jwt->disclosures.size(),
-      base::BindOnce(&FederatedSdJwtHandler::OnSdJwtParsed,
-                     weak_ptr_factory_.GetWeakPtr(), sd_jwt->jwt));
-
   for (const auto& json : sd_jwt->disclosures) {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        json.value(),
-        base::BindOnce(&FederatedSdJwtHandler::OnDisclosureParsed,
-                       weak_ptr_factory_.GetWeakPtr(), callback, json.value()));
+    std::optional<base::ListValue> result =
+        base::JSONReader::ReadList(json.value(), base::JSON_PARSE_RFC);
+    if (!result) {
+      continue;
+    }
+
+    auto disclosure = sdjwt::Disclosure::From(*result);
+    if (!disclosure) {
+      continue;
+    }
+
+    disclosures_.push_back({disclosure->name, sdjwt::JSONString(json.value())});
   }
+
+  OnSdJwtParsed(sd_jwt->jwt);
 }
 
 sdjwt::Jwk FederatedSdJwtHandler::GetPublicKey() const {
   return *sdjwt::ExportPublicKey(*private_key_);
-}
-
-void FederatedSdJwtHandler::OnDisclosureParsed(
-    base::RepeatingClosure cb,
-    const std::string& json,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result->is_list()) {
-    cb.Run();
-    return;
-  }
-
-  auto disclosure = sdjwt::Disclosure::From(result->GetList());
-  if (!disclosure) {
-    // Ignore invalid disclosure structures.
-    cb.Run();
-    return;
-  }
-
-  disclosures_.push_back({disclosure->name, sdjwt::JSONString(json)});
-  cb.Run();
 }
 
 void FederatedSdJwtHandler::OnSdJwtParsed(const sdjwt::Jwt& jwt) {
