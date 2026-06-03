@@ -14,6 +14,8 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "google_apis/gaia/core_account_id.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/test/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
@@ -122,6 +124,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 @implementation SigninCoordinatorTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(kAuthenticationFlowReauthFirstKillswitch);
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
   // Remove closed tab history to make sure the sign-in promo is always visible
@@ -152,6 +160,37 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Check `fakeIdentity` is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kRegular);
+}
+
+// Tests that opening the sign-in screen from the Settings and signing in works
+// correctly when there is an account that requires reauthentication on the
+// device.
+- (void)testSignInOneUserNeedsReauth {
+  // Set up a fake identity needing reauthentication.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
+                                                       fakeIdentity.gaiaId)];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [ChromeEarlGrey
+      waitForMatcher:chrome_test_util::ConsistencySigninPrimaryButtonMatcher()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Confirm the fake reauthentication dialog.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests that opening the sign-in screen from the Settings and signing in works

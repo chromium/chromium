@@ -7,6 +7,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "google_apis/gaia/core_account_id.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
@@ -14,8 +15,10 @@
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -42,7 +45,7 @@ void VerifySigninPromoSufficientlyVisible() {
              @"Sign-in promo not visible");
 }
 
-void VerifyHystoryOptInPromoSufficientlyVisible() {
+void VerifyHistoryOptInPromoSufficientlyVisible() {
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey
@@ -101,6 +104,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config;
   config.features_enabled.push_back(switches::kForceStartupSigninPromo);
+  config.features_disabled.push_back(kAuthenticationFlowReauthFirstKillswitch);
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableFullscreenSigninPromo);
   config.additional_args.push_back(std::string("-") +
@@ -132,7 +136,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
       assertWithMatcher:grey_notVisible()];
-  VerifyHystoryOptInPromoSufficientlyVisible();
+  VerifyHistoryOptInPromoSufficientlyVisible();
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       performAction:grey_tap()];
@@ -173,6 +177,37 @@ void OpenNTPAndBackgroundAndForegroundApp() {
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
   [self expectFullscreenSigninPromoMetricsAndPreferences];
+}
+
+// Tests that the sign-in promo is visible at start-up for a user whose identity
+// requires reauthentication, and triggers reauth prompt.
+- (void)testStartupSigninPromoShownNeedsReauth {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
+                                                       fakeIdentity.gaiaId)];
+
+  OpenNTPAndBackgroundAndForegroundApp();
+
+  VerifySigninPromoSufficientlyVisible();
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
+      performAction:grey_tap()];
+  // Confirm the fake reauthentication dialog.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  VerifyHistoryOptInPromoSufficientlyVisible();
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests sign-in promo behavior in landscape. It should appears if and only if

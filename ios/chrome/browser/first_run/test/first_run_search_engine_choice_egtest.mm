@@ -9,6 +9,7 @@
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "google_apis/gaia/core_account_id.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/first_run/public/features.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -39,6 +41,7 @@
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(kAuthenticationFlowReauthFirstKillswitch);
   // Need to use `switches::kEeaListCountryOverride` as the country to list all
   // the search engines. This is to make sure the more button appears.
   config.additional_args.push_back(
@@ -169,6 +172,47 @@
   [[self class] dismissDefaultBrowserAndRemainingScreens];
   [SearchEngineChoiceEarlGreyUI
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
+}
+
+// Tests completing the FRE onboarding including the Search Engine Choice screen
+// for an identity requiring reauthentication.
+- (void)testSearchEngineChoiceScreenWithSigninNeedsReauth {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
+                                                       fakeIdentity.gaiaId)];
+
+  // Accept sign-in on the welcome screen.
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackPrimaryButton()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+
+  // Accept sync.
+  [self acceptSyncOrHistory];
+
+  // Check that the choice screen is shown.
+  [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
+
+  // Select Bing.
+  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
+  [SearchEngineChoiceEarlGreyUI
+      selectSearchEngineCellWithName:searchEngineToSelect
+                     scrollDirection:kGREYDirectionDown
+                              amount:50];
+
+  // Confirm choice.
+  id<GREYMatcher> continueButtonMatcher =
+      grey_accessibilityID(kSearchEngineContinueButtonIdentifier);
+  [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+
+  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
+
+  // Verify user is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests that the search engine screen is skipped if the enterprise policies

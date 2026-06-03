@@ -12,6 +12,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "google_apis/gaia/core_account_id.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/test/expected_signin_histograms.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
@@ -210,6 +211,7 @@ void CompleteSigninFlow() {
 
 - (AppLaunchConfiguration)appConfigurationWithoutEnterprisePolicy {
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(kAuthenticationFlowReauthFirstKillswitch);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
 }
@@ -287,6 +289,32 @@ void CompleteSigninFlow() {
       performAction:grey_tap()];
 
   VerifyForcedSigninFullyDismissed();
+}
+
+// Tests the sign-in screen with an identity that requires reauthentication.
+- (void)testSignInScreenWithAccountNeedsReauth {
+  // Add an identity to sign-in to enable the "Continue as ..." button in the
+  // sign-in screen.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
+                                                       fakeIdentity.gaiaId)];
+
+  // Touch the continue button to go to the next screen.
+  [[EarlGrey selectElementWithMatcher:GetContinueButtonWithIdentityMatcher(
+                                          fakeIdentity)]
+      performAction:grey_tap()];
+
+  // Confirm the fake reauthentication dialog.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  VerifyForcedSigninFullyDismissed();
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests the sign-in screen without accounts where an account has to be added
