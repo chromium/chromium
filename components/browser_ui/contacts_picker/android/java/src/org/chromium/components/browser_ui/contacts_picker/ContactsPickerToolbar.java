@@ -66,6 +66,12 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
     }
 
     @Override
+    protected void onNavigationBack() {
+        assumeNonNull(mDelegate);
+        mDelegate.onNavigationBackCallback();
+    }
+
+    @Override
     public void initialize(
             SelectionDelegate<ContactDetails> delegate,
             int titleResId,
@@ -101,7 +107,9 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
             done.setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
         }
 
-        if (isSystemPickerEnabled || !contactsSelected) {
+        if (isSystemPickerEnabled) {
+            setNavigationButton(NavigationButton.CLOSE);
+        } else if (!contactsSelected) {
             showBackArrow();
         } else {
             setNavigationButton(NavigationButton.SELECTION_BACK);

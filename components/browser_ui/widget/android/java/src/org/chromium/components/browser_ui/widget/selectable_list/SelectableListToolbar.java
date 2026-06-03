@@ -103,7 +103,8 @@ public class SelectableListToolbar<E> extends Toolbar
         NavigationButton.NONE,
         NavigationButton.SEARCH_BACK,
         NavigationButton.SELECTION_BACK,
-        NavigationButton.NORMAL_VIEW_BACK
+        NavigationButton.NORMAL_VIEW_BACK,
+        NavigationButton.CLOSE
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface NavigationButton {
@@ -111,6 +112,7 @@ public class SelectableListToolbar<E> extends Toolbar
         int SEARCH_BACK = 1;
         int SELECTION_BACK = 2;
         int NORMAL_VIEW_BACK = 3;
+        int CLOSE = 4;
     }
 
     // These are used to track whether there is actually a change in selection state, so that we can
@@ -439,6 +441,7 @@ public class SelectableListToolbar<E> extends Toolbar
                 mSelectionDelegate.clearSelection();
                 break;
             case NavigationButton.NORMAL_VIEW_BACK:
+            case NavigationButton.CLOSE:
                 onNavigationBack();
                 break;
             default:
@@ -509,6 +512,12 @@ public class SelectableListToolbar<E> extends Toolbar
                         getContext()
                                 .getColorStateList(R.color.default_icon_color_secondary_tint_list));
                 contentDescriptionId = R.string.accessibility_toolbar_btn_back;
+                break;
+            case NavigationButton.CLOSE:
+                navigationButtonDrawable =
+                        UiUtils.getTintedDrawable(
+                                getContext(), R.drawable.material_ic_close_24dp, mIconColorList);
+                contentDescriptionId = R.string.close;
                 break;
             default:
                 assert false : "Incorrect navigationButton argument";
