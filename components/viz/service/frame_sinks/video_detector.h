@@ -84,9 +84,11 @@ class VIZ_SERVICE_EXPORT VideoDetector : public SurfaceObserver {
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override {}
   void OnSurfaceActivated(const SurfaceId& surface_id) override {}
   void OnSurfaceMarkedForDestruction(const SurfaceId& surface_id) override {}
-  bool OnSurfaceDamaged(const SurfaceId& surface_id,
-                        const BeginFrameAck& ack,
-                        HandleInteraction handle_interaction) override;
+  bool OnSurfaceDamaged(
+      const SurfaceId& surface_id,
+      const BeginFrameAck& ack,
+      HandleInteraction handle_interaction,
+      const std::vector<ui::LatencyInfo>& latency_info) override;
   void OnSurfaceDestroyed(const SurfaceId& surface_id) override {}
   void OnSurfaceDamageExpected(const SurfaceId& surface_id,
                                const BeginFrameArgs& args) override {}

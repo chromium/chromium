@@ -22,6 +22,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/latency/latency_info.h"
 
 namespace viz {
 namespace {
@@ -95,6 +96,28 @@ class DisplayDamageTrackerTest : public testing::Test {
       CompositorFrame frame = CompositorFrameBuilder()
                                   .SetRenderPassList(std::move(pass_list))
                                   .SetBeginFrameAck(ack)
+                                  .Build();
+
+      support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+    }
+
+    void SubmitCompositorFrame(const BeginFrameId& frame_id,
+                               std::vector<ui::LatencyInfo> latency_info) {
+      CompositorRenderPassList pass_list;
+      auto pass = CompositorRenderPass::Create();
+      pass->output_rect = gfx::Rect(0, 0, 100, 100);
+      pass->damage_rect = gfx::Rect(10, 10, 1, 1);
+      pass->id = CompositorRenderPassId{1u};
+      pass_list.push_back(std::move(pass));
+
+      BeginFrameAck ack;
+      ack.frame_id = frame_id;
+      ack.has_damage = true;
+
+      CompositorFrame frame = CompositorFrameBuilder()
+                                  .SetRenderPassList(std::move(pass_list))
+                                  .SetBeginFrameAck(ack)
+                                  .AddLatencyInfos(std::move(latency_info))
                                   .Build();
 
       support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
@@ -266,6 +289,58 @@ TEST_F(DisplayDamageTrackerTest, UnsolicitedFrameUnderAutoNeedsBeginFrame) {
 
   // Verify that the corresponding surface is not considered as pending.
   EXPECT_FALSE(damage_tracker_->HasPendingSurfaces(last_begin_frame_args_));
+}
+
+TEST_F(DisplayDamageTrackerTest, EarliestInputTimestamp) {
+  TickBeginFrame();
+
+  // Initially no earliest input timestamp.
+  EXPECT_FALSE(
+      damage_tracker_->GetEarliestInputGenerationTimeOfDamagedSurfaces()
+          .has_value());
+
+  // Submit a frame with latency info.
+  ui::LatencyInfo latency_info;
+  base::TimeTicks input_time = base::TimeTicks::Now();
+  latency_info.AddLatencyNumberWithTimestamp(
+      ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, input_time);
+
+  root_client_.SubmitCompositorFrame(last_begin_frame_args_.frame_id,
+                                     {latency_info});
+
+  // Now we should have the earliest input timestamp.
+  auto earliest_time =
+      damage_tracker_->GetEarliestInputGenerationTimeOfDamagedSurfaces();
+  EXPECT_TRUE(earliest_time.has_value());
+  EXPECT_EQ(*earliest_time, input_time);
+
+  // After DidFinishFrame, it should be reset.
+  damage_tracker_->DidFinishFrame();
+  EXPECT_FALSE(
+      damage_tracker_->GetEarliestInputGenerationTimeOfDamagedSurfaces()
+          .has_value());
+}
+
+TEST_F(DisplayDamageTrackerTest, IgnoreInputFromNonDamagingSurface) {
+  Client child_client(&manager_, kChildFrameSinkId);
+  // Do NOT register hierarchy, so child_client is not embedded.
+
+  TickBeginFrame();
+
+  // Submit a frame on child surface with latency info.
+  ui::LatencyInfo latency_info;
+  base::TimeTicks input_time = base::TimeTicks::Now();
+  latency_info.AddLatencyNumberWithTimestamp(
+      ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, input_time);
+
+  child_client.SubmitCompositorFrame(last_begin_frame_args_.frame_id,
+                                     {latency_info});
+
+  // Since child_client is not embedded, it shouldn't cause display damage,
+  // and its latency info should be ignored.
+  EXPECT_FALSE(
+      damage_tracker_->GetEarliestInputGenerationTimeOfDamagedSurfaces()
+          .has_value());
 }
 
 }  // namespace viz

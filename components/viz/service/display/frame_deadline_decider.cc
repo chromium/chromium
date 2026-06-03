@@ -20,7 +20,9 @@ FrameDeadlineDecider::~FrameDeadlineDecider() = default;
 size_t FrameDeadlineDecider::SelectDeadline(
     const PossibleDeadlines& possible_deadlines,
     base::TimeDelta vsync_interval,
-    int max_pending_swaps) {
+    int max_pending_swaps,
+    base::TimeTicks frame_time,
+    std::optional<base::TimeTicks> earliest_input_time) {
   bool use_platform_preferred_deadlines = true;
 #if BUILDFLAG(IS_ANDROID)
   use_platform_preferred_deadlines =
@@ -59,6 +61,24 @@ size_t FrameDeadlineDecider::SelectDeadline(
   CHECK_GT(target_present_multiplier, 0);
   base::TimeDelta target_present_delta =
       target_present_multiplier * vsync_interval;
+
+  if (earliest_input_time.has_value()) {
+    // The earliest input time can be in the future relative to frame_time
+    // in cases like WaitForLateScroll where we wait for input events to
+    // arrive after the begin frame is sent. Clamp to 0 in such cases.
+    const base::TimeDelta input_delta =
+        std::max(base::TimeDelta(), frame_time - *earliest_input_time);
+    // We subtract 1.25 * vsync_interval from the perceptible latency threshold
+    // to allow a safety buffer for potential OS side frame jank.
+    const base::TimeDelta latency_cap =
+        kPerceptibleLatencyThreshold - vsync_interval - (vsync_interval / 4);
+    const base::TimeDelta max_present_delta = latency_cap - input_delta;
+    if (max_present_delta < target_present_delta) {
+      // Reduce target presentation delta to pull the deadline earlier and
+      // satisfy the perceptible input-latency threshold constraints.
+      target_present_delta = max_present_delta;
+    }
+  }
 
   auto it = std::upper_bound(
       possible_deadlines.deadlines.begin(), possible_deadlines.deadlines.end(),

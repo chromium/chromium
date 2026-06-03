@@ -34,6 +34,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_observer.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/surfaces/surface_reference.h"
+#include "ui/latency/latency_info.h"
 
 #if DCHECK_IS_ON()
 #include <iosfwd>
@@ -114,7 +115,8 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // |ack.sequence_number| is only valid if called in response to a BeginFrame.
   bool SurfaceModified(const SurfaceId& surface_id,
                        const BeginFrameAck& ack,
-                       SurfaceObserver::HandleInteraction handle_interaction);
+                       SurfaceObserver::HandleInteraction handle_interaction,
+                       const std::vector<ui::LatencyInfo>& latency_info = {});
 
   // Called when a surface has an active frame for the first time.
   void FirstSurfaceActivation(const SurfaceInfo& surface_info);

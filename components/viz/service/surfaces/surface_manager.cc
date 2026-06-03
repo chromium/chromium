@@ -27,6 +27,7 @@
 #include "components/viz/service/surfaces/surface_allocation_group.h"
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/surfaces/surface_manager_delegate.h"
+#include "ui/latency/latency_info.h"
 
 #if DCHECK_IS_ON()
 #include <sstream>
@@ -503,14 +504,16 @@ Surface* SurfaceManager::GetSurfaceForId(const SurfaceId& surface_id) const {
 bool SurfaceManager::SurfaceModified(
     const SurfaceId& surface_id,
     const BeginFrameAck& ack,
-    SurfaceObserver::HandleInteraction handle_interaction) {
+    SurfaceObserver::HandleInteraction handle_interaction,
+    const std::vector<ui::LatencyInfo>& latency_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool changed = false;
   if (handle_interaction == SurfaceObserver::HandleInteraction::kYes) {
     last_interactive_frame_ = ack.frame_id;
   }
   for (auto& observer : observer_list_) {
-    changed |= observer.OnSurfaceDamaged(surface_id, ack, handle_interaction);
+    changed |= observer.OnSurfaceDamaged(surface_id, ack, handle_interaction,
+                                         latency_info);
   }
   return changed;
 }
@@ -531,7 +534,7 @@ void SurfaceManager::SurfaceActivated(Surface* surface) {
   // Trigger a display frame if necessary.
   const CompositorFrameMetadata& metadata = surface->GetActiveFrameMetadata();
   if (!SurfaceModified(surface->surface_id(), metadata.begin_frame_ack,
-                       GetHandleInteraction(metadata))) {
+                       GetHandleInteraction(metadata), metadata.latency_info)) {
     TRACE_EVENT_INSTANT("viz", "Damage not visible.");
     surface->SendAckToClient();
   } else if (HasBlockedEmbedder(surface->surface_id().frame_sink_id())) {

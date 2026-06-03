@@ -9,6 +9,7 @@
 #include "components/viz/service/display/surface_aggregator.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
+#include "ui/latency/latency_info.h"
 
 namespace viz {
 namespace {
@@ -89,13 +90,27 @@ void DisplayDamageTracker::ProcessSurfaceDamage(
     const SurfaceId& surface_id,
     const BeginFrameAck& ack,
     bool display_damaged,
-    HandleInteraction handle_interaction) {
+    HandleInteraction handle_interaction,
+    const std::vector<ui::LatencyInfo>& latency_info) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"),
                "DisplayDamageTracker::SurfaceDamaged", "surface_id",
                surface_id.ToString());
 
   has_surface_damage_due_to_interaction_ |=
       ShouldAccumulateInteraction(handle_interaction);
+
+  if (display_damaged) {
+    for (const auto& latency : latency_info) {
+      base::TimeTicks timestamp;
+      if (latency.FindLatency(ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,
+                              &timestamp)) {
+        if (!earliest_input_timestamp_.has_value() ||
+            timestamp < *earliest_input_timestamp_) {
+          earliest_input_timestamp_ = timestamp;
+        }
+      }
+    }
+  }
 
   if (surface_id == root_surface_id_)
     expecting_root_surface_damage_because_of_resize_ = false;
@@ -173,10 +188,16 @@ bool DisplayDamageTracker::HasDamageDueToInteraction() {
   return has_surface_damage_due_to_interaction_;
 }
 
+std::optional<base::TimeTicks>
+DisplayDamageTracker::GetEarliestInputGenerationTimeOfDamagedSurfaces() const {
+  return earliest_input_timestamp_;
+}
+
 void DisplayDamageTracker::DidFinishFrame() {
   // We need to unset this bit otherwise we will continue to draw immediately
   // even when we have no new damage from an active scroller.
   has_surface_damage_due_to_interaction_ = false;
+  earliest_input_timestamp_ = std::nullopt;
 }
 
 void DisplayDamageTracker::OnSurfaceMarkedForDestruction(
@@ -196,7 +217,8 @@ bool DisplayDamageTracker::CheckForDisplayDamage(const SurfaceId& surface_id) {
 bool DisplayDamageTracker::OnSurfaceDamaged(
     const SurfaceId& surface_id,
     const BeginFrameAck& ack,
-    HandleInteraction handle_interaction) {
+    HandleInteraction handle_interaction,
+    const std::vector<ui::LatencyInfo>& latency_info) {
   bool display_damaged = false;
   if (ack.has_damage) {
     // Display is damaged if we purged some resources or if this surface
@@ -213,7 +235,8 @@ bool DisplayDamageTracker::OnSurfaceDamaged(
   if (surface_id == root_surface_id_)
     UpdateRootFrameMissing();
 
-  ProcessSurfaceDamage(surface_id, ack, display_damaged, handle_interaction);
+  ProcessSurfaceDamage(surface_id, ack, display_damaged, handle_interaction,
+                       latency_info);
 
   return display_damaged;
 }

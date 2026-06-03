@@ -10,10 +10,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
+#include "ui/latency/latency_info.h"
 
 namespace viz {
 
@@ -70,6 +72,11 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   // touch interaction.
   bool HasDamageDueToInteraction();
 
+  // Returns the earliest input generation time among all damaged surfaces that
+  // contributed to the current frame, if they are handling interaction.
+  std::optional<base::TimeTicks>
+  GetEarliestInputGenerationTimeOfDamagedSurfaces() const;
+
   // Called after a frame finishes (may or may not result in a draw).
   void DidFinishFrame();
 
@@ -89,9 +96,11 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
 
   // SurfaceObserver implementation.
   void OnSurfaceMarkedForDestruction(const SurfaceId& surface_id) override;
-  bool OnSurfaceDamaged(const SurfaceId& surface_id,
-                        const BeginFrameAck& ack,
-                        HandleInteraction handle_interaction) override;
+  bool OnSurfaceDamaged(
+      const SurfaceId& surface_id,
+      const BeginFrameAck& ack,
+      HandleInteraction handle_interaction,
+      const std::vector<ui::LatencyInfo>& latency_info) override;
   void OnSurfaceDamageExpected(const SurfaceId& surface_id,
                                const BeginFrameArgs& args) override;
 
@@ -114,10 +123,12 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   bool CheckBeginFrameSourceId(uint64_t source_id);
 
   // Indicates that there was damage to one of the surfaces.
-  void ProcessSurfaceDamage(const SurfaceId& surface_id,
-                            const BeginFrameAck& ack,
-                            bool display_damaged,
-                            HandleInteraction handle_interaction);
+  void ProcessSurfaceDamage(
+      const SurfaceId& surface_id,
+      const BeginFrameAck& ack,
+      bool display_damaged,
+      HandleInteraction handle_interaction,
+      const std::vector<ui::LatencyInfo>& latency_info = {});
 
   // Used to send corresponding notifications to observers.
   void NotifyDisplayDamaged(SurfaceId surface_id);
@@ -134,6 +145,7 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   bool expecting_root_surface_damage_because_of_resize_ = false;
 
   bool has_surface_damage_due_to_interaction_ = false;
+  std::optional<base::TimeTicks> earliest_input_timestamp_;
 
   base::flat_map<SurfaceId, SurfaceBeginFrameState> surface_states_;
   std::vector<SurfaceId> surfaces_to_ack_on_next_draw_;

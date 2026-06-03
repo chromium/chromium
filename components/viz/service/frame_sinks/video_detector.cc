@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/latency/latency_info.h"
 
 namespace viz {
 
@@ -162,9 +163,11 @@ void VideoDetector::OnFrameSinkIdInvalidated(const FrameSinkId& frame_sink_id) {
   client_infos_.erase(frame_sink_id);
 }
 
-bool VideoDetector::OnSurfaceDamaged(const SurfaceId& surface_id,
-                                     const BeginFrameAck& ack,
-                                     HandleInteraction handle_interaction) {
+bool VideoDetector::OnSurfaceDamaged(
+    const SurfaceId& surface_id,
+    const BeginFrameAck& ack,
+    HandleInteraction handle_interaction,
+    const std::vector<ui::LatencyInfo>& latency_info) {
   return false;
 }
 

@@ -28,6 +28,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/latency/latency_info.h"
 
 namespace viz {
 namespace {
@@ -44,16 +45,19 @@ class TestDisplayDamageTracker : public DisplayDamageTracker {
   using DisplayDamageTracker::DisplayDamageTracker;
   ~TestDisplayDamageTracker() override = default;
 
-  void SurfaceDamagedForTest(const SurfaceId& surface_id,
-                             const BeginFrameAck& ack,
-                             bool display_damaged,
-                             bool is_handling_interaction = false) {
+  void SurfaceDamagedForTest(
+      const SurfaceId& surface_id,
+      const BeginFrameAck& ack,
+      bool display_damaged,
+      bool is_handling_interaction = false,
+      const std::vector<ui::LatencyInfo>& latency_info = {}) {
     if (display_damaged)
       undrawn_surfaces_.insert(surface_id);
     HandleInteraction interaction = is_handling_interaction
                                         ? HandleInteraction::kYes
                                         : HandleInteraction::kNo;
-    ProcessSurfaceDamage(surface_id, ack, display_damaged, interaction);
+    ProcessSurfaceDamage(surface_id, ack, display_damaged, interaction,
+                         latency_info);
   }
   void ClearUndrawnSurfaces() { undrawn_surfaces_.clear(); }
   void SetRootFrameMissingForTest(bool missing) {

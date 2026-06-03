@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_TEST_FAKE_SURFACE_OBSERVER_H_
 #define COMPONENTS_VIZ_TEST_FAKE_SURFACE_OBSERVER_H_
 
+#include <vector>
+
 #include "base/containers/flat_set.h"
 #include "base/scoped_observation.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -44,9 +46,11 @@ class FakeSurfaceObserver : public SurfaceObserver {
 
  private:
   // SurfaceObserver implementation:
-  bool OnSurfaceDamaged(const SurfaceId& surface_id,
-                        const BeginFrameAck& ack,
-                        HandleInteraction handle_interaction) override;
+  bool OnSurfaceDamaged(
+      const SurfaceId& surface_id,
+      const BeginFrameAck& ack,
+      HandleInteraction handle_interaction,
+      const std::vector<ui::LatencyInfo>& latency_info) override;
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override;
   void OnSurfaceActivated(const SurfaceId& surface_id) override;
 

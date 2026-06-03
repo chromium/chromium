@@ -5,6 +5,7 @@
 #include "components/viz/test/fake_surface_observer.h"
 
 #include "components/viz/service/surfaces/surface_manager.h"
+#include "ui/latency/latency_info.h"
 
 namespace viz {
 
@@ -31,7 +32,8 @@ bool FakeSurfaceObserver::IsSurfaceDamaged(const SurfaceId& surface_id) const {
 bool FakeSurfaceObserver::OnSurfaceDamaged(
     const SurfaceId& surface_id,
     const BeginFrameAck& ack,
-    HandleInteraction handle_interaction) {
+    HandleInteraction handle_interaction,
+    const std::vector<ui::LatencyInfo>& latency_info) {
   if (ack.has_damage)
     damaged_surfaces_.insert(surface_id);
   last_ack_ = ack;

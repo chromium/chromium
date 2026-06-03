@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_FRAME_DEADLINE_DECIDER_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_FRAME_DEADLINE_DECIDER_H_
 
+#include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -12,6 +14,10 @@ namespace viz {
 
 class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
  public:
+  // Input latency beyond this threshold is perceptible to the user.
+  static constexpr base::TimeDelta kPerceptibleLatencyThreshold =
+      base::Milliseconds(100);
+
   FrameDeadlineDecider();
   ~FrameDeadlineDecider();
 
@@ -23,7 +29,9 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   // at sequence start, and matches it on subsequent frames in the sequence.
   size_t SelectDeadline(const PossibleDeadlines& possible_deadlines,
                         base::TimeDelta vsync_interval,
-                        int max_pending_swaps);
+                        int max_pending_swaps,
+                        base::TimeTicks frame_time,
+                        std::optional<base::TimeTicks> earliest_input_time);
 
   // Called when the display scheduler goes idle or invisible, to reset sequence
   // state.
