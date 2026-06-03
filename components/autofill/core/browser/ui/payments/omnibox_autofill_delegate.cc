@@ -37,6 +37,11 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
     FormGlobalId form_id,
     AutofillManager::Observer::FieldTypeSource source,
     bool small_forms_were_parsed) {
+  if (candidate_form_found_) {
+    // Candidate already found and awaiting user action asynchronously.
+    return;
+  }
+
   // Only run checks using the outermost AutofillManager to avoid having
   // multiple managers triggering the logic flow at once.
   if (!IsOutermostMainFrameActiveAutofillManager(manager)) {
@@ -127,10 +132,20 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
     }
   }
 
-  // More checks to follow as implementation continues...
-
+  // All checks passed! Log the triggering form and field, start the
+  // IntersectionObserver, and prevent this logic from running again.
   LogOmniboxAutofillShowChipDecisionPart1(
       OmniboxAutofillShowChipDecisionPart1::kSuccess);
+  trigger_form_global_id_ = form_structure->global_id();
+  for (const std::unique_ptr<AutofillField>& field : form_structure->fields()) {
+    if (field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
+      trigger_field_global_id_ = field->global_id();
+      break;
+    }
+  }
+  candidate_form_found_ = true;
+
+  // TODO: crbug.com/490214534 - Initiate GetIntersectionObserverInfo(~).
 }
 
 void OmniboxAutofillDelegate::OnAutofillManagerStateChanged(
@@ -150,6 +165,10 @@ void OmniboxAutofillDelegate::OnAfterFormsSeen(
     AutofillManager& manager,
     base::span<const FormGlobalId> updated_forms,
     base::span<const FormGlobalId> removed_forms) {
+  if (!candidate_form_found_) {
+    // Candidate form has not yet been found, so the chip is not being shown.
+    return;
+  }
   for (const FormGlobalId& id : removed_forms) {
     if (id == trigger_form_global_id_) {
       client_->GetPaymentsAutofillClient()->HideOmniboxAutofillChip();

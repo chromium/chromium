@@ -52,7 +52,17 @@ class OmniboxAutofillDelegate : public AutofillManager::Observer {
   bool FieldIsInMainFrame(AutofillManager& manager,
                           const AutofillField& field) const;
 
+  // If true, the OmniboxAutofillDelegate is likely waiting for the user to
+  // scroll the candidate form into the viewport, so parsing logic to find
+  // candidate forms should no longer be run.
+  bool candidate_form_found_ = false;
+
+  // The global ID of the form for which Omnibox Autofill should trigger.
   FormGlobalId trigger_form_global_id_;
+
+  // The global ID of the field on which Omnibox Autofill should trigger. Note
+  // that this is ensured to be of type CREDIT_CARD_NUMBER.
+  FieldGlobalId trigger_field_global_id_;
 
   const raw_ref<AutofillClient> client_;
 

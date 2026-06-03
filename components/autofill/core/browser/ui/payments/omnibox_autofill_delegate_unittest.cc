@@ -415,6 +415,31 @@ TEST_F(OmniboxAutofillDelegateTest,
 }
 
 TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_CandidateFormFound_ReturnsEarly) {
+  FormData form = CreateTestCreditCardFormData();
+
+  // `FormsSeen(~)` will successfully run all OmniboxAutofillDelegate checks and
+  // mark `form` as the candidate form to trigger Omnibox Autofill.
+  {
+    base::HistogramTester histogram_tester;
+    FormsSeen({form});
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+        OmniboxAutofillShowChipDecisionPart1::kSuccess, 1);
+  }
+
+  // Because a candidate form was already found, all future check logic will be
+  // skipped, proven by the lack of new UMA logs coming from
+  // `OnFieldTypesDetermined(~)`.
+  {
+    base::HistogramTester histogram_tester;
+    FormsSeen({form});
+    histogram_tester.ExpectTotalCount(
+        "Autofill.OmniboxAutofill.ShowChipDecisionPart1", 0);
+  }
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
        OnAutofillManagerStateChanged_WasActive_HideChip) {
   payments_autofill_client().ShowOmniboxAutofillChip();
 
@@ -486,6 +511,18 @@ TEST_F(OmniboxAutofillDelegateTest,
 
   EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
   EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnAfterFormsSeen_CandidateFormNotFound_ReturnsEarly) {
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
+                                 /*removed_forms=*/{form_id});
+
+  // Since a candidate form has not been found yet (`candidate_form_found_` is
+  // false), checking `form_id` against the uninitialized
+  // `trigger_form_global_id_` would be pointless. Instead, abort hide logic.
+  EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
 }
 
 }  // namespace autofill
