@@ -220,6 +220,12 @@ void InterpolableNumber::Add(const InterpolableValue& other) {
   const CSSMathExpressionNode* result =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), &other_number.AsExpression(), CSSMathOperator::kAdd);
+  if (!result) {
+    // An accumulation operation can fail if the units are incompatible. We
+    // fallback to composite replace in this case by simply not adding the
+    // accumulated part.
+    return;
+  }
   SetExpression(*result);
 }
 
