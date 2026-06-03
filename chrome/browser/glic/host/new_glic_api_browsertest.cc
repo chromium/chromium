@@ -928,14 +928,8 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFailsWindowClosed) {
   ExecuteJsTest();
 }
 
-// TODO(https://crbug.com/503936424): Flaky on Android.
-#if (defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)) || BUILDFLAG(IS_MAC)
-#define MAYBE_testInitializeFailsWindowOpen \
-  DISABLED_testInitializeFailsWindowOpen
-#else
-#define MAYBE_testInitializeFailsWindowOpen testInitializeFailsWindowOpen
-#endif
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testInitializeFailsWindowOpen) {
+// TODO(https://crbug.com/503936424): Flaky.
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, DISABLED_testInitializeFailsWindowOpen) {
   ToggleGlicForActiveTab();
   ASSERT_OK(WaitForGlicOpen());
 
