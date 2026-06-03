@@ -139,7 +139,9 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
   static ScopedMessagePipeHandle SendIsolated(
       PlatformChannelEndpoint channel_endpoint,
       std::string_view connection_name = {},
-      base::ProcessHandle target_process = base::kNullProcessHandle);
+      base::ProcessHandle target_process = base::kNullProcessHandle,
+      MojoSendInvitationFlags invitation_flags =
+          MOJO_SEND_INVITATION_FLAG_NONE);
 
   // Similar to above but sends |invitation| via |server_endpoint|, which should
   // correspond to a |PlatformChannelServerEndpoint| taken from a
@@ -150,7 +152,9 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
   static ScopedMessagePipeHandle SendIsolated(
       PlatformChannelServerEndpoint server_endpoint,
       std::string_view connection_name = {},
-      base::ProcessHandle target_process = base::kNullProcessHandle);
+      base::ProcessHandle target_process = base::kNullProcessHandle,
+      MojoSendInvitationFlags invitation_flags =
+          MOJO_SEND_INVITATION_FLAG_NONE);
 
  private:
   MojoSendInvitationFlags extra_flags_ = MOJO_SEND_INVITATION_FLAG_NONE;

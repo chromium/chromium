@@ -156,7 +156,8 @@ void NamedMojoMessagePipeServer::OnClientConnected(
     // Create isolated connection.
     auto connection = std::make_unique<mojo::IsolatedConnection>();
     mojo::ScopedMessagePipeHandle message_pipe =
-        connection->Connect(std::move(endpoint), std::move(peer_process));
+        connection->Connect(std::move(endpoint), std::move(peer_process),
+                            options_.extra_send_invitation_flags);
     on_message_pipe_ready_.Run(std::move(message_pipe), std::move(info),
                                result.context, std::move(connection));
     return;
