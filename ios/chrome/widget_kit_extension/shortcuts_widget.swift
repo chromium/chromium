@@ -229,10 +229,12 @@ func loadMostVisitedSitesEntry(
   guard let unarchiver = unarchiverForAccount
   else { return emptyEntry }
 
-  unarchiver.requiresSecureCoding = false
+  unarchiver.requiresSecureCoding = true
 
+  let allowedClasses = [NSDictionary.self, NSURL.self, NTPTile.self]
   guard
-    let mostVisitedSites = unarchiver.decodeObject(forKey: NSKeyedArchiveRootObjectKey)
+    let mostVisitedSites = unarchiver.decodeObject(
+      of: allowedClasses, forKey: NSKeyedArchiveRootObjectKey)
       as? [NSURL: NTPTile]
   else {
     return emptyEntry
@@ -287,16 +289,16 @@ struct ShortcutsWidgetEntryView: View {
 
   // Create a chromewidgetkit:// url to open the given URL.
   private func convertURL(url: URL) -> URL {
-    let query_url = URLQueryItem(name: "url", value: url.absoluteString)
+    let queryUrl = URLQueryItem(name: "url", value: url.absoluteString)
     var urlcomps = URLComponents(
       url: WidgetConstants.ShortcutsWidget.open,
       resolvingAgainstBaseURL: false)!
     if entry.gaiaID == nil {
-      urlcomps.queryItems = [query_url]
+      urlcomps.queryItems = [queryUrl]
     } else {
       // Add the gaia_id parameter only if available.
-      let query_gaia = URLQueryItem(name: "gaia_id", value: entry.gaiaID)
-      urlcomps.queryItems = [query_url, query_gaia]
+      let queryGaia = URLQueryItem(name: "gaia_id", value: entry.gaiaID)
+      urlcomps.queryItems = [queryUrl, queryGaia]
     }
     return urlcomps.url!
   }
