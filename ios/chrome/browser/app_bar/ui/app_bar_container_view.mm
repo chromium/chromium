@@ -112,15 +112,14 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
   CGFloat containerLength = tallSideLength * 1.5;
   _heightConstraint.constant = containerLength;
 
+  CGFloat shortSideLength = MIN(windowSize.width, windowSize.height);
+  _appBarWidthConstraint.constant = shortSideLength;
+
+  CGFloat offset = (containerLength - tallSideLength) / 2;
+
   CGFloat extraOffset = 0;
-  CGFloat appBarWidth = 0;
-  // This is the "height" of the window when looked in AppBar coordinates (so
-  // with a fixed orientation).
-  CGFloat heightInAppCoordinates = 0;
   switch (self.appBarPosition) {
     case AppBarPosition::kBottom:
-      appBarWidth = windowSize.width;
-      heightInAppCoordinates = windowSize.height;
       extraOffset = (1 - self.fullscreenProgress) *
                     (kAppBarHeight - kAppBarHeightFullscreen);
       break;
@@ -128,17 +127,11 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
     case AppBarPosition::kLeft:
       [[fallthrough]];
     case AppBarPosition::kRight:
-      appBarWidth = windowSize.height;
-      heightInAppCoordinates = windowSize.width;
       extraOffset = kAppBarHeight - kAppBarHeightLandscape;
       break;
     case AppBarPosition::kNone:
       break;
   }
-
-  _appBarWidthConstraint.constant = appBarWidth;
-
-  CGFloat offset = (containerLength - heightInAppCoordinates) / 2;
 
   _appBarVerticalPositioning.constant = -offset + extraOffset;
 }

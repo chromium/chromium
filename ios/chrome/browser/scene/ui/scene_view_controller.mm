@@ -180,9 +180,6 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
   if (!IsFullscreenRefactoringEnabled()) {
     [self applyFrameForLayout];
   }
-  // This is necessary as the app bar container doesn't get all the refreshes
-  // when resizing the window.
-  [_appBar.view setNeedsLayout];
 }
 
 - (void)viewSafeAreaInsetsDidChange {
