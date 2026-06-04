@@ -39,6 +39,8 @@ extern const CGFloat kToolbarPadding;
 // The padding in the toolbar when at the top on iPhone portrait..
 extern const CGFloat kTopToolbarIPhonePortraitPadding;
 
+// The height of the toolbar when in fullscreen on iPad.
+extern const CGFloat kTopToolbarIPadHeightFullscreen;
 // The height of the toolbar when in fullscreen.
 extern const CGFloat kToolbarHeightFullscreen;
 // The height of the toolbar when at the top in fullscreen on iPhone portrait.

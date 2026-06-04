@@ -540,7 +540,10 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
       // zero. This is a temporary fix for the pdf bug.
       return IsFullscreenRefactoringEnabled() ? 0 : 1;
     }
-    if (ShouldHaveFullHeightTopToolbar(self.traitEnvironment)) {
+    if (CanShowTabStrip(self.traitEnvironment)) {
+      return kTopToolbarIPadHeightFullscreen;
+    }
+    if (!IsSplitToolbarMode(self.traitEnvironment)) {
       return kToolbarHeightFullscreen;
     }
     return kTopToolbarIPhonePortraitHeightFullscreen;

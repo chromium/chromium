@@ -34,6 +34,7 @@ constexpr CGFloat kTopLocationBarIPhonePortraitHeight = 46;
 constexpr CGFloat kToolbarPadding = 10;
 constexpr CGFloat kTopToolbarIPhonePortraitPadding = 8;
 
+constexpr CGFloat kTopToolbarIPadHeightFullscreen = 20;
 constexpr CGFloat kToolbarHeightFullscreen = 40;
 constexpr CGFloat kTopToolbarIPhonePortraitHeightFullscreen = 32;
 constexpr CGFloat kLocationBarHeightFullscreen = 32;
