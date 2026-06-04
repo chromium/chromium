@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -129,7 +130,13 @@ TEST_F(FileSnapshotCreatorTest, NonExistentFileErrorHandling) {
   EXPECT_TRUE(snapshot_path.empty());
 }
 
-TEST_F(FileSnapshotCreatorTest, MultiChunkFileCreation) {
+// TODO(crbug.com/519813376): Fails on ASan ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_MultiChunkFileCreation DISABLED_MultiChunkFileCreation
+#else
+#define MAYBE_MultiChunkFileCreation MultiChunkFileCreation
+#endif
+TEST_F(FileSnapshotCreatorTest, MAYBE_MultiChunkFileCreation) {
   std::string expected_content("a", FileSnapshotCreator::CHUNK_SIZE + 10);
   storage::FileSystemURL url =
       CreateVirtualFile("multi_chunk_file.txt", expected_content);
