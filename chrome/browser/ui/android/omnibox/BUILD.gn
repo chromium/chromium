@@ -665,6 +665,7 @@ robolectric_library("junit") {
     "//components/signin/public/android:signin_java_test_support",
     "//components/tab_groups:tab_groups_java",
     "//components/ukm/android:java",
+    "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
     "//components/webapps/browser/android:java",
     "//components/webapps/browser/android:webapps_jni_headers_java",

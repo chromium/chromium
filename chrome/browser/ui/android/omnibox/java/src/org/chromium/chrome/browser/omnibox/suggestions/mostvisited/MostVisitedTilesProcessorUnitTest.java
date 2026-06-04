@@ -87,6 +87,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     private @Captor ArgumentCaptor<Callback<Drawable>> mFavIconCallbackCaptor;
     private @Captor ArgumentCaptor<Callback<Drawable>> mGenIconCallbackCaptor;
     private @Mock Bitmap mFaviconBitmap;
+    private @Mock Drawable mFallbackDrawable;
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock OmniboxImageSupplier mImageSupplier;
     private @Mock AutocompleteInput mInput;
@@ -264,10 +265,8 @@ public final class MostVisitedTilesProcessorUnitTest {
         mFavIconCallbackCaptor.getValue().onResult(null);
 
         // We should now observe a request to generate bitmap.
-        verify(mImageSupplier).generateFavicon(eq(NAV_URL), mFavIconCallbackCaptor.capture());
-        mFavIconCallbackCaptor
-                .getValue()
-                .onResult(new BitmapDrawable(mContext.getResources(), mFaviconBitmap));
+        verify(mImageSupplier).generateFavicon(eq(NAV_URL), mGenIconCallbackCaptor.capture());
+        mGenIconCallbackCaptor.getValue().onResult(mFallbackDrawable);
         verifyNoMoreInteractions(mImageSupplier);
 
         // Since we "retrieved" an icon from LargeIconBridge, we should not generate a fallback.
@@ -276,9 +275,7 @@ public final class MostVisitedTilesProcessorUnitTest {
 
         Drawable drawable = tileModel.get(TileViewProperties.ICON);
         assertEquals(BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileItem.type);
-        assertThat(drawable, instanceOf(BitmapDrawable.class));
-        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-        assertEquals(mFaviconBitmap, bitmap);
+        assertEquals(mFallbackDrawable, drawable);
     }
 
     @Test
@@ -291,8 +288,8 @@ public final class MostVisitedTilesProcessorUnitTest {
         mFavIconCallbackCaptor.getValue().onResult(null);
 
         // We should now observe a request to generate bitmap. Return null.
-        verify(mImageSupplier).generateFavicon(eq(NAV_URL), mFavIconCallbackCaptor.capture());
-        mFavIconCallbackCaptor.getValue().onResult(null);
+        verify(mImageSupplier).generateFavicon(eq(NAV_URL), mGenIconCallbackCaptor.capture());
+        mGenIconCallbackCaptor.getValue().onResult(null);
         verifyNoMoreInteractions(mImageSupplier);
 
         // Since we failed all retrieve attempts, we should keep using fallback icons.
