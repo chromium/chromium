@@ -36,8 +36,7 @@ class CanvasResourceDispatcherClient {
 };
 
 class PLATFORM_EXPORT CanvasResourceDispatcher
-    : public viz::mojom::blink::CompositorFrameSinkClient,
-      public OffscreenCanvasPlaceholder::Client {
+    : public viz::mojom::blink::CompositorFrameSinkClient {
  public:
   static constexpr unsigned kMaxPendingCompositorFrames = 2;
 
@@ -67,7 +66,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   ~CanvasResourceDispatcher() override;
   void SetNeedsBeginFrame(bool);
   void SetAnimationState(
-      OffscreenCanvasPlaceholder::AnimationState animation_state) override;
+      OffscreenCanvasPlaceholder::AnimationState animation_state);
   OffscreenCanvasPlaceholder::AnimationState GetAnimationStateForTesting()
       const {
     return animation_state_;
@@ -106,6 +105,30 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
  private:
   friend class OffscreenCanvasPlaceholderTest;
   friend class CanvasResourceDispatcherTest;
+
+  class PlaceholderClient : public OffscreenCanvasPlaceholder::Client {
+   public:
+    explicit PlaceholderClient(base::RepeatingClosure animation_state_callback);
+    ~PlaceholderClient() override;
+
+    base::WeakPtr<PlaceholderClient> GetWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
+    void SetAnimationState(
+        OffscreenCanvasPlaceholder::AnimationState animation_state) override;
+
+    OffscreenCanvasPlaceholder::AnimationState GetAnimationState() {
+      return animation_state_;
+    }
+
+   private:
+    base::RepeatingClosure animation_state_callback_;
+
+    OffscreenCanvasPlaceholder::AnimationState animation_state_ =
+        OffscreenCanvasPlaceholder::AnimationState::kActive;
+    base::WeakPtrFactory<PlaceholderClient> weak_ptr_factory_{this};
+  };
 
   using ExportedResourceMap =
       HashMap<viz::ResourceId, scoped_refptr<ExportedCanvasResource>>;
@@ -171,6 +194,8 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
       agent_group_scheduler_compositor_task_runner_;
 
   TaskRunnerTimer<CanvasResourceDispatcher> fake_frame_timer_;
+
+  std::unique_ptr<PlaceholderClient> placeholder_client_;
 
   base::WeakPtrFactory<CanvasResourceDispatcher> weak_ptr_factory_{this};
 };

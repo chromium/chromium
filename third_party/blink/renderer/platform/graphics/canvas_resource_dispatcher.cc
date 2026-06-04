@@ -76,6 +76,15 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
                                 surface_embedder_.BindNewPipeAndPassReceiver());
   }
 
+  // `PlaceholderClient` runs callbacks synchronously and lives on the same
+  // thread. Because dispatcher owns client, Unretained is fine.
+  placeholder_client_ = std::make_unique<PlaceholderClient>(base::BindRepeating(
+      [](CanvasResourceDispatcher* dispatcher) {
+        dispatcher->SetAnimationState(
+            dispatcher->placeholder_client_->GetAnimationState());
+      },
+      base::Unretained(this)));
+
   RegisterWithPlaceholder();
 }
 
@@ -108,7 +117,7 @@ static void UpdatePlaceholderImage(
 }
 
 void UpdatePlaceholderDispatcher(
-    base::WeakPtr<CanvasResourceDispatcher> dispatcher,
+    base::WeakPtr<OffscreenCanvasPlaceholder::Client> client,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     DOMNodeId placeholder_canvas_id) {
   OffscreenCanvasPlaceholder* placeholder_canvas =
@@ -117,7 +126,7 @@ void UpdatePlaceholderDispatcher(
   // Note that the placeholder canvas may be destroyed when this post task get
   // to executed.
   if (placeholder_canvas)
-    placeholder_canvas->SetClient(dispatcher, task_runner);
+    placeholder_canvas->SetClient(client, task_runner);
 }
 
 }  // namespace
@@ -451,14 +460,25 @@ void CanvasResourceDispatcher::RegisterWithPlaceholder() {
   // the canvas resource dispatcher directly. So Offscreen Canvas can behave in
   // a more synchronous way when it's on the main thread.
   if (IsMainThread()) {
-    UpdatePlaceholderDispatcher(GetWeakPtr(), task_runner_,
+    UpdatePlaceholderDispatcher(placeholder_client_->GetWeakPtr(), task_runner_,
                                 placeholder_canvas_id_);
   } else {
     PostCrossThreadTask(
         *agent_group_scheduler_compositor_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(UpdatePlaceholderDispatcher, GetWeakPtr(),
-                            task_runner_, placeholder_canvas_id_));
+        CrossThreadBindOnce(UpdatePlaceholderDispatcher,
+                            placeholder_client_->GetWeakPtr(), task_runner_,
+                            placeholder_canvas_id_));
   }
+}
+
+CanvasResourceDispatcher::PlaceholderClient::PlaceholderClient(
+    base::RepeatingClosure animation_state_callback)
+    : animation_state_callback_(animation_state_callback) {}
+CanvasResourceDispatcher::PlaceholderClient::~PlaceholderClient() = default;
+void CanvasResourceDispatcher::PlaceholderClient::SetAnimationState(
+    OffscreenCanvasPlaceholder::AnimationState animation_state) {
+  animation_state_ = animation_state;
+  animation_state_callback_.Run();
 }
 
 }  // namespace blink
