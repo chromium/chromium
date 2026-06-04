@@ -4,3 +4,6 @@ per-file AudioFocus*.java=steimel@chromium.org
 # Process management related
 per-file BindingManager*.java=kawasin@google.com
 per-file ChildProcess*.java=kawasin@google.com
+
+# NFC related
+per-file NfcHost.java=file://third_party/blink/renderer/modules/nfc/OWNERS

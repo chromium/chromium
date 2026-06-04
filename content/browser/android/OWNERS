@@ -3,3 +3,4 @@ tedchoc@chromium.org
 yfriedman@chromium.org
 
 per-file ime_adapter_android.*=file://content/public/android/java/src/org/chromium/content/browser/input/OWNERS
+per-file nfc_host*=file://third_party/blink/renderer/modules/nfc/OWNERS
