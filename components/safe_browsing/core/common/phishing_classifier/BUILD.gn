@@ -1,0 +1,63 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("phishing_classifier") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "scorer.cc",
+    "scorer.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common:visual_utils",
+    "//components/safe_browsing/core/common/fbs:client_model",
+    "//components/safe_browsing/core/common/proto:client_model_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//crypto",
+    "//skia",
+    "//third_party/tflite",
+    "//third_party/tflite:tflite_public_headers",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
+  ]
+}
+
+source_set("unit_tests_support") {
+  testonly = true
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+  deps = [
+    ":phishing_classifier",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "features_unittest.cc",
+    "scorer_unittest.cc",
+  ]
+  deps = [
+    ":phishing_classifier",
+    ":unit_tests_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/safe_browsing/core/common/fbs:client_model",
+    "//components/safe_browsing/core/common/proto:client_model_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//crypto",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

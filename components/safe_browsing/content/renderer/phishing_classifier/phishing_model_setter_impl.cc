@@ -4,7 +4,7 @@
 
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_model_setter_impl.h"
 
-#include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
+#include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 namespace safe_browsing {

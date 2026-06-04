@@ -882,7 +882,6 @@ test("components_unittests") {
       "//components/safe_browsing/content/browser/download:unittests",
       "//components/safe_browsing/content/browser/notification_content_detection:unittests",
       "//components/safe_browsing/content/common:file_type_policies_unittest",
-      "//components/safe_browsing/content/common:unit_tests",
       "//components/safe_browsing/core/browser:intelligent_scan_delegate_unittest",
       "//components/safe_browsing/core/browser:referring_app_info_unittest",
       "//components/safe_browsing/core/browser:safe_browsing_hats_delegate_unittest",
@@ -922,6 +921,7 @@ test("components_unittests") {
       "//components/safe_browsing/core/browser/password_protection:unit_tests",
       "//components/safe_browsing/core/browser/sync:unittests",
       "//components/safe_browsing/core/common:unit_tests",
+      "//components/safe_browsing/core/common/phishing_classifier:unit_tests",
     ]
   } else if (safe_browsing_mode == 2) {
     deps += [

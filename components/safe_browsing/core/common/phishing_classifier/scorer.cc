@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
+#include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
 
 #include <math.h>
 
@@ -23,12 +23,11 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "components/safe_browsing/content/common/visual_utils.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/phishing_classifier/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "content/public/renderer/render_thread.h"
+#include "components/safe_browsing/core/common/visual_utils.h"
 #include "crypto/sha2.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -530,7 +529,7 @@ void Scorer::AttachImageEmbeddingModel(int image_embedding_input_width,
 void Scorer::ApplyVisualTfLiteModel(
     const SkBitmap& bitmap,
     base::OnceCallback<void(std::vector<double>)> callback) const {
-  DCHECK(content::RenderThread::IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (visual_tflite_model_.IsValid()) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
@@ -548,7 +547,7 @@ void Scorer::ApplyVisualTfLiteModel(
 void Scorer::ApplyVisualTfLiteModelImageEmbedding(
     const SkBitmap& bitmap,
     base::OnceCallback<void(ImageFeatureEmbedding)> callback) const {
-  DCHECK(content::RenderThread::IsMainThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (image_embedding_model_.IsValid()) {
     base::Time start_post_task_time = base::Time::Now();
     base::ThreadPool::PostTask(

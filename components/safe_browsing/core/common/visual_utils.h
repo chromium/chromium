@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_VISUAL_UTILS_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_VISUAL_UTILS_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_COMMON_VISUAL_UTILS_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_COMMON_VISUAL_UTILS_H_
 
 #include <string>
 
@@ -61,4 +61,4 @@ std::unique_ptr<VisualFeatures> ExtractVisualFeatures(const SkBitmap& bitmap);
 
 }  // namespace safe_browsing::visual_utils
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_VISUAL_UTILS_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_VISUAL_UTILS_H_

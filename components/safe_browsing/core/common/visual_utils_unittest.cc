@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/common/visual_utils.h"
+#include "components/safe_browsing/core/common/visual_utils.h"
 
 #include <array>
 
@@ -129,9 +129,11 @@ TEST_F(VisualUtilsTest, BlurImageRed) {
   VisualFeatures::BlurredImage blurred;
 
   // Draw red over the image.
-  for (int x = 0; x < 1000; x++)
-    for (int y = 0; y < 1000; y++)
+  for (int x = 0; x < 1000; x++) {
+    for (int y = 0; y < 1000; y++) {
       *bitmap_.getAddr32(x, y) = kSkPMRed;
+    }
+  }
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
 #if BUILDFLAG(IS_ANDROID)
@@ -194,17 +196,23 @@ TEST_F(VisualUtilsTest, BlockMeanAveragePartialBlocks) {
   // Draw a white, red, green, and blue box with the expected block sizes.
   bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 0, 600, 600));
 
-  for (int x = 600; x < 1000; x++)
-    for (int y = 0; y < 600; y++)
+  for (int x = 600; x < 1000; x++) {
+    for (int y = 0; y < 600; y++) {
       *bitmap_.getAddr32(x, y) = kSkPMRed;
+    }
+  }
 
-  for (int x = 0; x < 600; x++)
-    for (int y = 600; y < 1000; y++)
+  for (int x = 0; x < 600; x++) {
+    for (int y = 600; y < 1000; y++) {
       *bitmap_.getAddr32(x, y) = kSkPMGreen;
+    }
+  }
 
-  for (int x = 600; x < 1000; x++)
-    for (int y = 600; y < 1000; y++)
+  for (int x = 600; x < 1000; x++) {
+    for (int y = 600; y < 1000; y++) {
       *bitmap_.getAddr32(x, y) = kSkPMBlue;
+    }
+  }
 
   std::unique_ptr<SkBitmap> blocks = BlockMeanAverage(bitmap_, 600);
   ASSERT_EQ(2, blocks->width());

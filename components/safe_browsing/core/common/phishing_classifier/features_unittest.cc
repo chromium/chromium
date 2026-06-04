@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
+#include "components/safe_browsing/core/common/phishing_classifier/features.h"
 
 #include <stddef.h>
 
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/test_utils.h"
+#include "components/safe_browsing/core/common/phishing_classifier/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {

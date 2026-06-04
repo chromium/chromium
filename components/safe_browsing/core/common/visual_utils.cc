@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/common/visual_utils.h"
+#include "components/safe_browsing/core/common/visual_utils.h"
 
 #include <unordered_map>
 #include <vector>
@@ -42,10 +42,10 @@ const int kMinHeightForVisualFeatures = 576;
 #endif
 const int kPHashBlockSize = 6;
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if !BUILDFLAG(IS_ANDROID)
 // Parameters chosen to ensure privacy is preserved by visual features.
 const float kMaxZoomForVisualFeatures = 2.0;
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 int GetPHashDownsampleWidth() {
   if (base::FeatureList::IsEnabled(kVisualFeaturesSizes)) {
@@ -88,8 +88,9 @@ int GetMinHeightForVisualFeatures() {
 bool GetBlurredImage(const SkBitmap& image,
                      VisualFeatures::BlurredImage* blurred_image) {
   TRACE_EVENT0("safe_browsing", "GetBlurredImage");
-  if (image.drawsNothing())
+  if (image.drawsNothing()) {
     return false;
+  }
 
   // Use the Rec. 2020 color space, in case the user input is wide-gamut.
   sk_sp<SkColorSpace> rec2020 = SkColorSpace::MakeRGB(
@@ -164,8 +165,9 @@ std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
       num_blocks_wide, num_blocks_high, SkAlphaType::kUnpremul_SkAlphaType,
       image.refColorSpace());
   auto target = std::make_unique<SkBitmap>();
-  if (!target->tryAllocPixels(target_info))
+  if (!target->tryAllocPixels(target_info)) {
     return target;
+  }
 
   for (int block_x = 0; block_x < num_blocks_wide; block_x++) {
     for (int block_y = 0; block_y < num_blocks_high; block_y++) {
@@ -214,12 +216,14 @@ CanExtractVisualFeaturesResult CanExtractVisualFeatures(bool is_user_opted_in,
     return CanExtractVisualFeaturesResult::kUserNotOptedIn;
   }
 
-  if (is_off_the_record)
+  if (is_off_the_record) {
     return CanExtractVisualFeaturesResult::kOffTheRecord;
+  }
 
   if (size.width() < GetMinWidthForVisualFeatures() ||
-      size.height() < GetMinHeightForVisualFeatures())
+      size.height() < GetMinHeightForVisualFeatures()) {
     return CanExtractVisualFeaturesResult::kBelowMinFrame;
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   if (zoom_level > kMaxZoomForVisualFeatures) {

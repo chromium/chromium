@@ -8,6 +8,9 @@ include_rules = [
   "+components/strings/grit/components_strings.h",
   "+crypto/sha2.h",
   "+ipc",
+  "+skia/ext",
   "+third_party/opencv",
-  "+url"
+  "+third_party/skia/include",
+  "+ui/gfx",
+  "+url",
 ]

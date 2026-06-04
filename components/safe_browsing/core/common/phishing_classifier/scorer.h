@@ -9,8 +9,8 @@
 //
 // See features.h for a list of features that are currently used.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_SCORER_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_SCORER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_COMMON_PHISHING_CLASSIFIER_SCORER_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_COMMON_PHISHING_CLASSIFIER_SCORER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -24,6 +24,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
@@ -170,6 +171,7 @@ class Scorer {
   int image_embedding_input_width_;
   int image_embedding_input_height_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};
 };
 
@@ -205,4 +207,4 @@ class ScorerStorage {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_PHISHING_CLASSIFIER_SCORER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_PHISHING_CLASSIFIER_SCORER_H_

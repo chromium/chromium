@@ -32,6 +32,8 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser:verdict_cache_manager_unittest",
     "//components/safe_browsing/core/browser/db:unit_tests_local_db",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:unit_tests",
+    "//components/safe_browsing/core/common/phishing_classifier:unit_tests",
     "//ios/web/public",
     "//ios/web/public/test",
     "//testing/gmock",
