@@ -532,17 +532,6 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy
     # instead.
-    java_prebuilt("com_google_code_gson_gson_java") {
-      jar_path = "autorolled/cipd/libs/com_google_code_gson_gson/gson.jar"
-      output_name = "com_google_code_gson_gson"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-      deps = [ "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java" ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy
-    # instead.
     java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
       jar_path = "autorolled/cipd/libs/com_google_errorprone_error_prone_annotations/error_prone_annotations.jar"
       output_name = "com_google_errorprone_error_prone_annotations"
@@ -823,20 +812,6 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy
     # instead.
-    android_aar_prebuilt("io_grpc_grpc_android_java") {
-      aar_path = "autorolled/cipd/libs/io_grpc_grpc_android/grpc-android.aar"
-      info_path = "autorolled/committed/libs/io_grpc_grpc_android/io_grpc_grpc_android.info"
-      enable_bytecode_checks = false
-      testonly = true
-      deps = [
-        "//third_party/android_deps:guava_java",
-        "//third_party/android_deps:io_grpc_grpc_api_java",
-        "//third_party/android_deps:io_grpc_grpc_core_java",
-      ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy
-    # instead.
     java_prebuilt("io_grpc_grpc_api_java") {
       jar_path = "autorolled/cipd/libs/io_grpc_grpc_api/grpc-api.jar"
       output_name = "io_grpc_grpc_api"
@@ -852,62 +827,6 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy
     # instead.
-    android_aar_prebuilt("io_grpc_grpc_binder_java") {
-      aar_path = "autorolled/cipd/libs/io_grpc_grpc_binder/grpc-binder.aar"
-      info_path = "autorolled/committed/libs/io_grpc_grpc_binder/io_grpc_grpc_binder.info"
-      enable_bytecode_checks = false
-      deps = [
-        "//third_party/android_deps:guava_java",
-        "//third_party/android_deps:io_grpc_grpc_api_java",
-        "//third_party/android_deps:io_grpc_grpc_core_java",
-        "//third_party/androidx:androidx_annotation_annotation_java",
-        "//third_party/androidx:androidx_core_core_java",
-        "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
-      ]
-
-      # https://crbug.com/450243304.
-      ignore_manifest = true
-      jar_excluded_patterns = [
-        "META-INF/services/io.grpc.NameResolverProvider",
-        "io/grpc/binder/internal/IntentNameResolver*",
-      ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy
-    # instead.
-    java_prebuilt("io_grpc_grpc_inprocess_java") {
-      jar_path =
-          "autorolled/cipd/libs/io_grpc_grpc_inprocess/grpc-inprocess.jar"
-      output_name = "io_grpc_grpc_inprocess"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-      testonly = true
-      deps = [
-        "//third_party/android_deps:guava_java",
-        "//third_party/android_deps:io_grpc_grpc_api_java",
-        "//third_party/android_deps:io_grpc_grpc_core_java",
-      ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy
-    # instead.
-    java_prebuilt("io_grpc_grpc_protobuf_lite_java") {
-      jar_path = "autorolled/cipd/libs/io_grpc_grpc_protobuf_lite/grpc-protobuf-lite.jar"
-      output_name = "io_grpc_grpc_protobuf_lite"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-      deps = [
-        "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-        "//third_party/android_deps:guava_java",
-        "//third_party/android_deps:io_grpc_grpc_api_java",
-        "//third_party/android_deps:protobuf_lite_runtime_java",
-      ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy
-    # instead.
     java_prebuilt("io_grpc_grpc_stub_java") {
       jar_path = "autorolled/cipd/libs/io_grpc_grpc_stub/grpc-stub.jar"
       output_name = "io_grpc_grpc_stub"
@@ -918,42 +837,6 @@ template("define_autorolled_targets") {
         "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
         "//third_party/android_deps:guava_java",
         "//third_party/android_deps:io_grpc_grpc_api_java",
-        "//third_party/android_deps:org_codehaus_mojo_animal_sniffer_annotations_java",
-      ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy
-    # instead.
-    java_prebuilt("io_grpc_grpc_testing_java") {
-      jar_path = "autorolled/cipd/libs/io_grpc_grpc_testing/grpc-testing.jar"
-      output_name = "io_grpc_grpc_testing"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-      testonly = true
-      deps = [
-        "//third_party/android_deps:io_grpc_grpc_api_java",
-        "//third_party/android_deps:io_grpc_grpc_core_java",
-        "//third_party/android_deps:io_grpc_grpc_inprocess_java",
-        "//third_party/android_deps:io_grpc_grpc_stub_java",
-        "//third_party/android_deps:io_grpc_grpc_util_java",
-        "//third_party/junit",
-      ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy
-    # instead.
-    java_prebuilt("io_grpc_grpc_util_java") {
-      jar_path = "autorolled/cipd/libs/io_grpc_grpc_util/grpc-util.jar"
-      output_name = "io_grpc_grpc_util"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-      testonly = true
-      deps = [
-        "//third_party/android_deps:guava_java",
-        "//third_party/android_deps:io_grpc_grpc_api_java",
-        "//third_party/android_deps:io_grpc_grpc_core_java",
         "//third_party/android_deps:org_codehaus_mojo_animal_sniffer_annotations_java",
       ]
     }
@@ -1120,24 +1003,6 @@ template("define_autorolled_targets") {
         "//third_party/android_deps:org_yaml_snakeyaml_java",
         "//third_party/androidx:androidx_test_espresso_espresso_idling_resource_java",
         "//third_party/androidx:androidx_test_monitor_java",
-      ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy
-    # instead.
-    java_prebuilt("com_google_android_annotations_java") {
-      jar_path =
-          "autorolled/cipd/libs/com_google_android_annotations/annotations.jar"
-      output_name = "com_google_android_annotations"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-
-      # To remove visibility constraint, add this dependency to
-      # //third_party/android_deps/autorolled/build.gradle.template
-      visibility = [
-        ":*",
-        "//third_party/androidx:*",
       ]
     }
 
@@ -2012,75 +1877,6 @@ template("define_autorolled_targets") {
       deps = [
         "//third_party/android_deps:com_squareup_okio_okio_java",
         "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-      ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy
-    # instead.
-    java_prebuilt("io_grpc_grpc_context_java") {
-      jar_path = "autorolled/cipd/libs/io_grpc_grpc_context/grpc-context.jar"
-      output_name = "io_grpc_grpc_context"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-
-      # To remove visibility constraint, add this dependency to
-      # //third_party/android_deps/autorolled/build.gradle.template
-      visibility = [
-        ":*",
-        "//third_party/androidx:*",
-      ]
-      deps = [ "//third_party/android_deps:io_grpc_grpc_api_java" ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy
-    # instead.
-    java_prebuilt("io_grpc_grpc_core_java") {
-      jar_path = "autorolled/cipd/libs/io_grpc_grpc_core/grpc-core.jar"
-      output_name = "io_grpc_grpc_core"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-
-      # To remove visibility constraint, add this dependency to
-      # //third_party/android_deps/autorolled/build.gradle.template
-      visibility = [
-        ":*",
-        "//third_party/androidx:*",
-      ]
-      deps = [
-        "//third_party/android_deps:com_google_android_annotations_java",
-        "//third_party/android_deps:com_google_code_gson_gson_java",
-        "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
-        "//third_party/android_deps:guava_java",
-        "//third_party/android_deps:io_grpc_grpc_api_java",
-        "//third_party/android_deps:io_grpc_grpc_context_java",
-        "//third_party/android_deps:io_perfmark_perfmark_api_java",
-        "//third_party/android_deps:org_codehaus_mojo_animal_sniffer_annotations_java",
-      ]
-
-      # Needed only for gRPC networking (not IPC).
-      jar_excluded_patterns = [
-        "META-INF/services/io.grpc.NameResolverProvider",
-        "io/grpc/internal/DnsNameResolver*",
-      ]
-    }
-
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy
-    # instead.
-    java_prebuilt("io_perfmark_perfmark_api_java") {
-      jar_path =
-          "autorolled/cipd/libs/io_perfmark_perfmark_api/perfmark-api.jar"
-      output_name = "io_perfmark_perfmark_api"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-
-      # To remove visibility constraint, add this dependency to
-      # //third_party/android_deps/autorolled/build.gradle.template
-      visibility = [
-        ":*",
-        "//third_party/androidx:*",
       ]
     }
 

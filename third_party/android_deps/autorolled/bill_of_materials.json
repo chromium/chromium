@@ -1515,11 +1515,6 @@
         "version": "2.0.2"
     },
     {
-        "name": "annotations",
-        "group": "com.google.android",
-        "version": "4.1.1.4"
-    },
-    {
         "name": "impress",
         "group": "com.google.ar",
         "version": "0.0.12"
@@ -1538,11 +1533,6 @@
         "name": "jsr305",
         "group": "com.google.code.findbugs",
         "version": "3.0.2"
-    },
-    {
-        "name": "gson",
-        "group": "com.google.code.gson",
-        "version": "2.14.0"
     },
     {
         "name": "error_prone_annotation",
@@ -1820,37 +1810,7 @@
         "version": "2.1.1"
     },
     {
-        "name": "grpc-android",
-        "group": "io.grpc",
-        "version": "1.81.0"
-    },
-    {
         "name": "grpc-api",
-        "group": "io.grpc",
-        "version": "1.81.0"
-    },
-    {
-        "name": "grpc-binder",
-        "group": "io.grpc",
-        "version": "1.81.0"
-    },
-    {
-        "name": "grpc-context",
-        "group": "io.grpc",
-        "version": "1.81.0"
-    },
-    {
-        "name": "grpc-core",
-        "group": "io.grpc",
-        "version": "1.81.0"
-    },
-    {
-        "name": "grpc-inprocess",
-        "group": "io.grpc",
-        "version": "1.81.0"
-    },
-    {
-        "name": "grpc-protobuf-lite",
         "group": "io.grpc",
         "version": "1.81.0"
     },
@@ -1858,21 +1818,6 @@
         "name": "grpc-stub",
         "group": "io.grpc",
         "version": "1.81.0"
-    },
-    {
-        "name": "grpc-testing",
-        "group": "io.grpc",
-        "version": "1.81.0"
-    },
-    {
-        "name": "grpc-util",
-        "group": "io.grpc",
-        "version": "1.81.0"
-    },
-    {
-        "name": "perfmark-api",
-        "group": "io.perfmark",
-        "version": "0.27.0"
     },
     {
         "name": "rxandroid",
