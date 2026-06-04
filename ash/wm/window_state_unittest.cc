@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
+#include "ash/test_shell_delegate.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -406,6 +407,55 @@ TEST_F(WindowStateTest, AndroidPipWindowUmaMetricsCountsExitOnDestroy) {
             histograms.GetBucketCount(kAshPipEventsHistogramName,
                                       Sample32(AshPipEvents::ANDROID_PIP_END)));
   histograms.ExpectTotalCount(kAshPipEventsHistogramName, 4);
+}
+
+class TestWindowStateObserver : public WindowStateObserver {
+ public:
+  TestWindowStateObserver() = default;
+  ~TestWindowStateObserver() override = default;
+
+  void OnPostWindowStateTypeChange(
+      WindowState* window_state,
+      chromeos::WindowStateType old_type) override {
+    if (window_state->IsPip()) {
+      opened_count_++;
+    } else if (old_type == chromeos::WindowStateType::kPip) {
+      closed_count_++;
+    }
+  }
+
+  int opened_count() const { return opened_count_; }
+  int closed_count() const { return closed_count_; }
+
+ private:
+  int opened_count_ = 0;
+  int closed_count_ = 0;
+};
+
+TEST_F(WindowStateTest, NotifiesObserversOnPipTransition) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  WindowState* window_state = WindowState::Get(widget->GetNativeWindow());
+  TestWindowStateObserver observer;
+  window_state->AddObserver(&observer);
+
+  const int initial_opened_count = observer.opened_count();
+  const int initial_closed_count = observer.closed_count();
+
+  // Entering PiP should notify the observer.
+  const WMEvent enter_pip(WM_EVENT_PIP);
+  window_state->OnWMEvent(&enter_pip);
+  EXPECT_TRUE(window_state->IsPip());
+  EXPECT_EQ(observer.opened_count(), initial_opened_count + 1);
+  EXPECT_EQ(observer.closed_count(), initial_closed_count);
+
+  // Leaving PiP should notify the observer.
+  const WMEvent exit_pip(WM_EVENT_NORMAL);
+  window_state->OnWMEvent(&exit_pip);
+  EXPECT_FALSE(window_state->IsPip());
+  EXPECT_EQ(observer.opened_count(), initial_opened_count + 1);
+  EXPECT_EQ(observer.closed_count(), initial_closed_count + 1);
+
+  window_state->RemoveObserver(&observer);
 }
 
 // Test that modal window dialogs can be snapped.

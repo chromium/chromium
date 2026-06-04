@@ -10,8 +10,14 @@
 
 #include "ash/public/cpp/tab_strip_delegate.h"
 #include "ash/shell_delegate.h"
+#include "ash/wm/window_state_observer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
+#include "ui/aura/window_observer.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -20,7 +26,10 @@ namespace ash {
 class WindowState;
 }
 
-class ChromeShellDelegate : public ash::ShellDelegate {
+class ChromeShellDelegate : public ash::ShellDelegate,
+                            public ash::WindowStateObserver,
+                            public aura::EnvObserver,
+                            public aura::WindowObserver {
  public:
   ChromeShellDelegate();
 
@@ -104,6 +113,28 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   std::string GetVersionString() override;
   void OpenMultitaskingSettings() override;
   bool IsNoFirstRunSwitchOn() const override;
+
+  // ash::WindowStateObserver:
+  void OnPostWindowStateTypeChange(ash::WindowState* window_state,
+                                   chromeos::WindowStateType old_type) override;
+
+  // aura::EnvObserver:
+  void OnWindowInitialized(aura::Window* window) override;
+
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
+  void OnWindowDestroying(aura::Window* window) override;
+
+ private:
+  void MaybeObserveWindowState(ash::WindowState* window_state);
+
+  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observed_windows_{this};
+  base::ScopedMultiSourceObservation<ash::WindowState, ash::WindowStateObserver>
+      observed_window_states_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELL_DELEGATE_CHROME_SHELL_DELEGATE_H_
