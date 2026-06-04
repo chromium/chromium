@@ -228,6 +228,7 @@ if (current_toolchain == default_toolchain) {
       "settings.icon",
       "settings_chrome_refresh.icon",
       "settings_outline.icon",
+      "shield.icon",
       "shopping_bag.icon",
       "shopping_bag_refresh.icon",
       "shoppingmode.icon",

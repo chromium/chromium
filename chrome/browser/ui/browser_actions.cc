@@ -564,14 +564,8 @@ void BrowserActions::InitializePageActionIconActions() {
             .SetTooltipText(l10n_util::GetStringUTF16(
                 IDS_JS_OPTIMIZATIONS_DISABLED_ICON_TOOLTIP))
             .SetImage(ui::ImageModel::FromVectorIcon(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                vector_icons::kV8OffIcon,
-#else
-                // TODO(crbug.com/457422266): Figure out which icon to use for
-                // non-branded builds.
-                vector_icons::kCodeIcon,
-#endif
-                ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
+                vector_icons::kShieldIcon, ui::kColorIcon,
+                ui::SimpleMenuModel::kDefaultIconSize))
             .SetEnabled(true)
             .Build());
   }
