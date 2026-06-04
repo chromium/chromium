@@ -6,10 +6,6 @@
 <script src='/resources/testharnessreport.js'></script>
 <script>
   function runTest() {
-    // This should not be needed but is required to work around a bug in
-    // Chrome's old autosizer due to computed style being updated during layout.
-    // TODO(pdr): Remove this when b/340389272 launches.
-    const forceLayout = document.body.offsetHeight;
 
     test(() => {
       assert_equals(getComputedStyle(test_12)['line-height'], '18px');
