@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_filter.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
@@ -122,7 +124,10 @@ class AssistantAIMUIStateProvider
             containerHandler:_containerHandler
       contextualTasksService:contextualTasksService
                    URLLoader:UrlLoadingBrowserAgent::FromBrowser(self.browser)];
+
   _mediator.delegate = self;
+  _mediator.sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
 

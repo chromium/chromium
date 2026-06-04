@@ -7,10 +7,15 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/contextual_tasks/public/features.h"
+#import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
 #import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
@@ -22,6 +27,7 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_state_delegate_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -57,12 +63,17 @@ class AssistantAIMMediatorTest : public PlatformTest {
     web::test::OverrideJavaScriptFeatures(
         profile_.get(), {AimCobrowseJavaScriptFeature::GetInstance()});
 
+    mock_container_handler_ =
+        OCMProtocolMock(@protocol(AssistantContainerCommands));
+    mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
+
     mediator_ =
         [[AssistantAIMMediator alloc] initWithWebState:std::move(fake_web_state)
                                                context:nullptr
-                                      containerHandler:nil
+                                      containerHandler:mock_container_handler_
                                 contextualTasksService:nullptr
                                              URLLoader:url_loader_];
+    mediator_.sceneHandler = mock_scene_handler_;
 
     mock_delegate_ = OCMProtocolMock(@protocol(AssistantAIMMediatorDelegate));
     mediator_.delegate = mock_delegate_;
@@ -85,6 +96,8 @@ class AssistantAIMMediatorTest : public PlatformTest {
   raw_ptr<web::FakeWebState> fake_web_state_ = nullptr;
   AssistantAIMMediator* mediator_;
   id mock_delegate_;
+  id mock_container_handler_;
+  id mock_scene_handler_;
 };
 
 // Tests that prepareLoadForQueryText correctly aborts if the message is empty.
@@ -158,8 +171,9 @@ TEST_F(AssistantAIMMediatorTest, AllowsGoogleAIMSearchURL) {
 }
 
 // Tests that the navigation policy decider intercepts and cancels third-party
-// links, dispatching them to open in the current underlying tab.
-TEST_F(AssistantAIMMediatorTest, InterceptsThirdPartyURLAndOpensInCurrentTab) {
+// links, dispatching them to open in a new tab.
+TEST_F(AssistantAIMMediatorTest,
+       InterceptsSameWindowThirdPartyURLAndOpensInNewTab) {
   id<CRWWebStatePolicyDecider> policy_decider =
       static_cast<id<CRWWebStatePolicyDecider>>(mediator_);
 
@@ -182,7 +196,7 @@ TEST_F(AssistantAIMMediatorTest, InterceptsThirdPartyURLAndOpensInCurrentTab) {
            blocked_decision = decision;
          }];
   EXPECT_TRUE(blocked_decision.ShouldCancelNavigation());
-  EXPECT_EQ(url_loader_->load_current_tab_call_count, 1);
+  EXPECT_EQ(url_loader_->load_new_tab_call_count, 1);
   EXPECT_EQ(url_loader_->last_params.web_params.url, third_party_url);
 }
 
@@ -272,7 +286,7 @@ TEST_F(AssistantAIMMediatorTest, CancelsUnauthorizedGoogleRedirection) {
            blocked_decision = decision;
          }];
   EXPECT_TRUE(blocked_decision.ShouldCancelNavigation());
-  EXPECT_EQ(url_loader_->load_current_tab_call_count, 1);
+  EXPECT_EQ(url_loader_->load_new_tab_call_count, 1);
   EXPECT_EQ(url_loader_->last_params.web_params.url, unauthorized_google_url);
 }
 
@@ -500,4 +514,34 @@ TEST_F(AssistantAIMMediatorTest, HandshakeCapabilitiesResetOnNavigation) {
 
   // Verify capabilities are reset to std::nullopt.
   EXPECT_FALSE(mediator_.capabilities.has_value());
+}
+
+// Tests that createNewWebStateForURL correctly dispatches the request to open
+// in a new tab via the scene handler, and minimizes the assistant container.
+TEST_F(AssistantAIMMediatorTest, OpensWebStateInNewTabViaDelegate) {
+  GURL url("https://example.com");
+
+  // Expect the scene handler to be called with a command to open the URL in a
+  // new tab. We also verify that inIncognito is NO (as incognito is not
+  // supported).
+  OCMExpect([mock_scene_handler_
+      openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+        return command.URL == url && !command.inIncognito;
+      }]]);
+
+  // Expect the container to be animated to minimized detent.
+  OCMExpect([mock_container_handler_
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut]);
+
+  id<CRWWebStateDelegate> delegate = (id<CRWWebStateDelegate>)mediator_;
+  web::WebState* result = [delegate webState:fake_web_state_
+                     createNewWebStateForURL:url
+                                   openerURL:GURL()
+                             initiatedByUser:YES];
+
+  EXPECT_EQ(result, nullptr);
+  [mock_scene_handler_ verify];
+  [mock_container_handler_ verify];
 }

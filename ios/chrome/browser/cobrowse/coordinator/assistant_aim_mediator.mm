@@ -6,6 +6,7 @@
 
 #import <algorithm>
 
+#import "base/check.h"
 #import "base/logging.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"
@@ -26,6 +27,8 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -35,18 +38,20 @@
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_delegate_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "third_party/lens_server_proto/aim_communication.pb.h"
 #import "url/gurl.h"
 
 @interface AssistantAIMMediator () <CRWWebStatePolicyDecider,
-                                    CRWWebFramesManagerObserver>
-
+                                    CRWWebFramesManagerObserver,
+                                    CRWWebStateDelegate>
 @end
 
 @implementation AssistantAIMMediator {
   std::unique_ptr<web::WebState> _webState;
   std::unique_ptr<web::WebStatePolicyDeciderBridge> _policyDeciderBridge;
+  std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegateBridge;
   __weak id<AssistantAIMConsumer> _consumer;
   CobrowseContext* _context;
   id<AssistantContainerCommands> _containerHandler;
@@ -74,12 +79,17 @@
                        URLLoader:(UrlLoadingBrowserAgent*)URLLoader {
   self = [super init];
   if (self) {
+    DCHECK(webState);
+    DCHECK(!webState->GetDelegate());
     _webState = std::move(webState);
     _policyDeciderBridge = std::make_unique<web::WebStatePolicyDeciderBridge>(
         _webState.get(), self);
     _webState->SetUserAgentOverride(
         web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE) + " " +
         contextual_tasks::GetContextualTasksUserAgentSuffix());
+    _webStateDelegateBridge =
+        std::make_unique<web::WebStateDelegateBridge>(self);
+    _webState->SetDelegate(_webStateDelegateBridge.get());
     _context = context;
     _containerHandler = containerHandler;
     _contextualTasksService = contextualTasksService;
@@ -155,14 +165,38 @@
     // Filter out about:blank initialization navigations to prevent spawning
     // empty tabs in the main browser upon loading the Assistant AIM sheet.
     if (URL.is_valid() && !URL.IsAboutBlank()) {
-      BOOL openInNewTab = requestInfo.target_window_is_cross_origin;
-      UrlLoadParams params = openInNewTab ? UrlLoadParams::InNewTab(URL)
-                                          : UrlLoadParams::InCurrentTab(URL);
+      UrlLoadParams params = UrlLoadParams::InNewTab(URL);
       _urlLoader->Load(params);
+      [_containerHandler
+          animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                                   duration:kSheetDetentAnimationDuration
+                                      curve:UIViewAnimationCurveEaseInOut];
     }
   } else {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
+}
+
+#pragma mark - CRWWebStateDelegate
+
+- (web::WebState*)webState:(web::WebState*)webState
+    createNewWebStateForURL:(const GURL&)URL
+                  openerURL:(const GURL&)openerURL
+            initiatedByUser:(BOOL)initiatedByUser {
+  // Cobrowse is not supported in incognito, so new tabs are always opened in
+  // regular mode.
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL
+                                                               inIncognito:NO];
+  command.openerWebState = webState->GetWeakPtr();
+
+  [self.sceneHandler openURLInNewTab:command];
+
+  [_containerHandler
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut];
+
+  return nullptr;
 }
 
 #pragma mark - Private helpers

@@ -17,6 +17,7 @@
 #import "third_party/lens_server_proto/aim_communication.pb.h"
 
 @protocol AssistantContainerCommands;
+@protocol SceneCommands;
 @class CobrowseContext;
 
 namespace contextual_tasks {
@@ -44,6 +45,12 @@ class WebState;
 // The consumer for this mediator.
 @property(nonatomic, weak) id<AssistantAIMConsumer> consumer;
 
+// Handler for scene related commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
+
+// The delegate of the mediator.
+@property(nonatomic, weak) id<AssistantAIMMediatorDelegate> delegate;
+
 // Initializes the mediator with a web state and a cobrowse context that defines
 // the AI mode assistant state, a container handler, the contextual tasks
 // service, and the URL loader.
@@ -57,9 +64,6 @@ class WebState;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-// The delegate of the mediator.
-@property(nonatomic, weak) id<AssistantAIMMediatorDelegate> delegate;
 
 // Returns YES if the AIM page supports the given capability. Returns NO if
 // the handshake has not completed yet or the capability is not supported.
