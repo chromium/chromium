@@ -9,7 +9,7 @@
 
 namespace media {
 
-struct EncoderStatusTraits {
+struct MEDIA_EXPORT EncoderStatusTraits {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. Please keep the consistency with
   // EncoderStatus in tools/metrics/histograms/enums.xml.
@@ -103,13 +103,13 @@ struct EncoderStatusTraits {
 
     kMaxValue = kSharedImageResolveFailed,
   };
+
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
+  static std::string ReadableCodeName(Codes code);
 };
 
 using EncoderStatus = TypedStatus<EncoderStatusTraits>;
 
-MEDIA_EXPORT const char* EncoderStatusCodeToString(
-    const EncoderStatus& error_status);
 }  // namespace media
 
 #endif  // MEDIA_BASE_ENCODER_STATUS_H_

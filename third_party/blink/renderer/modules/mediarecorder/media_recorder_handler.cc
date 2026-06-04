@@ -1049,7 +1049,8 @@ void MediaRecorderHandler::OnAudioEncodingError(
     media::EncoderStatus error_status) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   recorder_->OnError(DOMExceptionCode::kEncodingError,
-                     String(media::EncoderStatusCodeToString(error_status)));
+                     String(media::EncoderStatusTraits::ReadableCodeName(
+                         error_status.code())));
 }
 
 std::unique_ptr<media::VideoEncoderMetricsProvider>
@@ -1215,10 +1216,11 @@ void MediaRecorderHandler::OnVideoEncodingError(
     // See https://crbug.com/441921804 for more details.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        blink::BindOnce(
-            &MediaRecorder::OnError, WrapWeakPersistent(recorder_.Get()),
-            DOMExceptionCode::kEncodingError,
-            String(media::EncoderStatusCodeToString(error_status))));
+        blink::BindOnce(&MediaRecorder::OnError,
+                        WrapWeakPersistent(recorder_.Get()),
+                        DOMExceptionCode::kEncodingError,
+                        String(media::EncoderStatusTraits::ReadableCodeName(
+                            error_status.code()))));
   }
 }
 

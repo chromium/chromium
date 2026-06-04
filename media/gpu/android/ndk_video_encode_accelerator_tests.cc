@@ -38,6 +38,7 @@
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_serializers.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
@@ -658,8 +659,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, InitializeAndDestroy) {
   EXPECT_CALL(*this, OnRequireBuffer()).WillOnce(Return(false));
 
   auto status = accelerator_->Initialize(config, this, NullLog());
-  ASSERT_TRUE(status.is_ok())
-      << EncoderStatusCodeToString(status.code()) << " " << status.message();
+  ASSERT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
   SetCommandBufferHelper();
 
   Run();
@@ -695,8 +695,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, HandleEncodingError) {
   EXPECT_CALL(*this, OnError()).WillOnce(Return(false));
 
   auto status = accelerator_->Initialize(config, this, NullLog());
-  ASSERT_TRUE(status.is_ok())
-      << EncoderStatusCodeToString(status.code()) << " " << status.message();
+  ASSERT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
   SetCommandBufferHelper();
   Run();
 
@@ -725,8 +724,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   });
 
   auto status = accelerator_->Initialize(config, this, NullLog());
-  ASSERT_TRUE(status.is_ok())
-      << EncoderStatusCodeToString(status.code()) << " " << status.message();
+  ASSERT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
   SetCommandBufferHelper();
   Run();
 
@@ -782,8 +780,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, ResizeOnEncode) {
       });
 
   auto status = accelerator_->Initialize(config, this, NullLog());
-  ASSERT_TRUE(status.is_ok())
-      << EncoderStatusCodeToString(status.code()) << " " << status.message();
+  ASSERT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
   SetCommandBufferHelper();
   Run();
 
@@ -832,8 +829,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeWithTemporalLayers) {
   });
 
   auto status = accelerator_->Initialize(config, this, NullLog());
-  ASSERT_TRUE(status.is_ok())
-      << EncoderStatusCodeToString(status.code()) << " " << status.message();
+  ASSERT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
   SetCommandBufferHelper();
   Run();
 
@@ -915,8 +911,7 @@ TEST_P(NdkVideoEncoderAcceleratorE2ETest, EncodeAndDecode) {
   });
 
   auto status = accelerator_->Initialize(config, this, NullLog());
-  ASSERT_TRUE(status.is_ok())
-      << EncoderStatusCodeToString(status.code()) << " " << status.message();
+  ASSERT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
   SetCommandBufferHelper();
   Run();
 

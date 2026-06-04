@@ -8,8 +8,9 @@
 
 namespace media {
 
-const char* EncoderStatusCodeToString(const EncoderStatus& error_status) {
-  switch (error_status.code()) {
+// static
+std::string EncoderStatusTraits::ReadableCodeName(Codes code) {
+  switch (code) {
     case EncoderStatus::Codes::kEncoderInitializeNeverCompleted:
       return "The encoder initialization has never completed successfully.";
     case EncoderStatus::Codes::kEncoderInitializeTwice:

@@ -23,6 +23,7 @@
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/converting_audio_fifo.h"
+#include "media/base/media_serializers.h"
 #include "media/base/status.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,33 +99,6 @@ constexpr auto kTestAudioParamsAAC = std::to_array<TestAudioParams>({
     {AudioCodec::kAAC, 1, 44100},
 });
 #endif  // HAS_AAC_ENCODER
-
-std::string EncoderStatusCodeToString(EncoderStatus::Codes code) {
-  switch (code) {
-    case EncoderStatus::Codes::kOk:
-      return "kOk";
-    case EncoderStatus::Codes::kEncoderInitializeNeverCompleted:
-      return "kEncoderInitializeNeverCompleted";
-    case EncoderStatus::Codes::kEncoderInitializeTwice:
-      return "kEncoderInitializeTwice";
-    case EncoderStatus::Codes::kEncoderFailedEncode:
-      return "kEncoderFailedEncode";
-    case EncoderStatus::Codes::kEncoderUnsupportedProfile:
-      return "kEncoderUnsupportedProfile";
-    case EncoderStatus::Codes::kEncoderUnsupportedCodec:
-      return "kEncoderUnsupportedCodec";
-    case EncoderStatus::Codes::kEncoderUnsupportedConfig:
-      return "kEncoderUnsupportedConfig";
-    case EncoderStatus::Codes::kEncoderInitializationError:
-      return "kEncoderInitializationError";
-    case EncoderStatus::Codes::kEncoderFailedFlush:
-      return "kEncoderFailedFlush";
-    case EncoderStatus::Codes::kEncoderMojoConnectionError:
-      return "kEncoderMojoConnectionError";
-    default:
-      NOTREACHED();
-  }
-}
 
 bool TimesAreNear(base::TimeTicks t1,
                   base::TimeTicks t2,
@@ -224,8 +198,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     AudioEncoder::EncoderStatusCB done_cb =
         base::BindLambdaForTesting([&](EncoderStatus error) {
           if (!error.is_ok()) {
-            FAIL() << "Error code: " << EncoderStatusCodeToString(error.code())
-                   << "\nError message: " << error.message();
+            FAIL() << MediaSerializeForTesting(error);
           }
           called_done = true;
         });
@@ -268,8 +241,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
       pending_callback_results_.emplace_back();
       done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
         if (!error.is_ok()) {
-          FAIL() << "Error code: " << EncoderStatusCodeToString(error.code())
-                 << "\nError message: " << error.message();
+          FAIL() << MediaSerializeForTesting(error);
         }
 
         pending_callback_results_[pending_callback_count_].status_code =
@@ -294,8 +266,9 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     bool flush_done = false;
     auto flush_done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
       if (error.code() != status_code) {
-        FAIL() << "Expected " << EncoderStatusCodeToString(status_code)
-               << " but got " << EncoderStatusCodeToString(error.code());
+        FAIL() << "Expected " << static_cast<int>(status_code) << " but got "
+               << static_cast<int>(error.code())
+               << " Full trace: " << MediaSerializeForTesting(error);
       }
       flush_done = true;
     });
@@ -384,7 +357,7 @@ TEST_P(AudioEncodersTest, InitializeTwice) {
   auto done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
     if (error.code() != EncoderStatus::Codes::kEncoderInitializeTwice)
       FAIL() << "Expected kEncoderInitializeTwice error but got "
-             << EncoderStatusCodeToString(error.code());
+             << MediaSerializeForTesting(error);
     called_done = true;
   });
 
@@ -409,7 +382,7 @@ TEST_P(AudioEncodersTest, EncodeWithoutInitialize) {
   auto done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
     if (error.code() != EncoderStatus::Codes::kEncoderInitializeNeverCompleted)
       FAIL() << "Expected kEncoderInitializeNeverCompleted error but got "
-             << EncoderStatusCodeToString(error.code());
+             << MediaSerializeForTesting(error);
     called_done = true;
   });
 
@@ -464,8 +437,7 @@ TEST_P(AudioEncodersTest, EncodeAndFlushTwice) {
       bool called_flush = false;
       auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
         if (error.code() != EncoderStatus::Codes::kOk) {
-          FAIL() << "Expected kOk but got "
-                 << EncoderStatusCodeToString(error.code());
+          FAIL() << "Expected kOk but got " << MediaSerializeForTesting(error);
         }
         called_flush = true;
       });
@@ -492,8 +464,7 @@ TEST_P(AudioEncodersTest, ProvideInputAfterDoneCb) {
   bool called_done = false;
   auto done_lambda = [&](EncoderStatus error) {
     if (error.code() != EncoderStatus::Codes::kOk)
-      FAIL() << "Expected kOk but got "
-             << EncoderStatusCodeToString(error.code());
+      FAIL() << "Expected kOk but got " << MediaSerializeForTesting(error);
     called_done = true;
   };
   AudioEncoder::EncoderStatusCB done_cb =
