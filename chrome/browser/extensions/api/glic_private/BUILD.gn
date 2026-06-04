@@ -18,6 +18,7 @@ source_set("glic_private") {
 
   deps = [
     "//base",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/extensions",
     "//chrome/browser/glic",
     "//chrome/browser/glic/actor",

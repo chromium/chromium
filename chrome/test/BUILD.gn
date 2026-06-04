@@ -1877,6 +1877,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/ui/zoom",
       "//components/back_forward_cache",
       "//components/bookmarks/managed",
+      "//components/contextual_tasks/public:feature_list",
       "//components/embedder_support",
       "//components/enterprise/browser/promotion",
       "//components/media_device_salt",
