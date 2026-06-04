@@ -84,7 +84,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> बाट पठाइएको</translation>
 <translation id="1310482092992808703">ट्याबहरू समूहबद्ध गर्नुहोस्</translation>
 <translation id="1318262688555255786">वेबपेज <ph name="PAGE_TITLE" /> को लिंक सेयर गर्नुहोस्। स्रोत: <ph name="PAGE_URL" /></translation>
-<translation id="1320912611264252795">बुकमार्क सेभ गर्ने फ्लोका फोल्डरहरू स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="1327257854815634930">नेभिगेसनको इतिहास खोलियो</translation>
 <translation id="1331212799747679585">Chrome अद्यावधिक गर्न सकिँदैन। थप विकल्पहरू</translation>
 <translation id="1332501820983677155">Google Chrome को विशेषताका सर्टकटहरू</translation>
@@ -642,6 +641,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3771290962915251154">अभिभावकीय नियन्त्रणहरू सक्रिय गरिएका हुनाले यो सेटिङ असक्षम छ</translation>
 <translation id="3771694256347217732">Google का सेवाका सर्तहरू</translation>
 <translation id="3777796259512476958">यसले अधिकांश साइटहरूबाट तपाईंलाई साइन आउट गर्छ</translation>
+<translation id="3786379886124795923">तपाईंले Chrome मा साइन इन गर्न QR कोड स्क्यान गर्नुभएको छ। तपाईं यस प्रोफाइलबाट पासवर्ड, बुकमार्क र अन्य विवरणहरू प्राप्त गर्न चाहनुहुन्छ भन्ने कुरा पुष्टि गर्नुहोस्।</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{१ ट्याब}other{# वटा ट्याब}}</translation>
 <translation id="3792938779249970121">खाता चयन गर्नुहोस्</translation>
 <translation id="3795154175078851242">लिंक भएको फोटो कपी गर्नुहोस्</translation>
@@ -715,7 +715,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4092709865241032354">Google पासवर्ड म्यानेजरलाई साइन इनसम्बन्धी जानकारी सेभ गर्न दिन यो साइटको युजरनेम हाल्नुहोस्</translation>
 <translation id="4095146165863963773">एपको डेटा मेट्ने हो?</translation>
 <translation id="4095483462103784441">नयाँ ट्याब समूह बनाउनुहोस्</translation>
-<translation id="4096227151372679484">बुकमार्क सेभ गर्ने फ्लो स्क्रिनको आधा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="4105527135143631701">Google पासवर्ड म्यानेजरको अपडेट खोलिएको छ</translation>
 <translation id="4113030288477039509">तपाईंको व्यवस्थापकबाट व्यवस्थित गरिएको</translation>
 <translation id="4116038641877404294">पृष्ठहरूलाई अफलाइन हेर्न तिनीहरूलाई डाउनलोड गर्नुहोस्</translation>
@@ -826,6 +825,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4532845899244822526">फोल्डर छान्नुहोस्</translation>
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> नामक साझा ट्याब समूह</translation>
 <translation id="4537137366307982887">सुझावसम्बन्धी नोटिफिकेसनहरू प्राप्त गर्ने सुविधामा अप्ट-इन गर्ने पाना पूरै स्क्रिनमा खोलिएको छ</translation>
+<translation id="4537987892902330164">तपाईं <ph name="NAME_OR_EMAIL" /> का रूपमा साइन इन अवस्थामा रहनुभयो।</translation>
 <translation id="4543131175509360848">कुनै पनि पासकी सिट खोलिएको छैन</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब, <ph name="TAB_COUNT_INCOGNITO" /> वटा इन्कोग्निटो ट्याब}}</translation>
 <translation id="4558311620361989323">वेबपृष्ठका सर्टकटहरू</translation>
@@ -1283,6 +1283,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6411219469806822692">योभन्दा माथि जान मिल्दैन। यो पेजको अझै माथिल्लो भागबाट ड्रयाग गरी हेर्नुहोस्।</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको ट्याब</translation>
 <translation id="641643625718530986">प्रिन्ट गर्नुहोस्...</translation>
+<translation id="6427723330233512782">उचाइमा अटाउनुहोस्</translation>
 <translation id="6433501201775827830">आफ्नो सर्च इन्जिन छनौट गर्नुहोस्</translation>
 <translation id="6434309073475700221">त्याग्नुहोस्</translation>
 <translation id="6435307030888827407">साइन आउट अवस्थामा रहिरहनुहोस्</translation>
@@ -2016,9 +2017,11 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="939598580284253335">पासफ्रेज प्रविष्टि गर्नुहोस्</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, पिन गरिएको Picture-in-Picture इन्कोग्निटो ट्याब</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
+<translation id="949667118776341807">रोटेट गर्नुहोस्</translation>
 <translation id="95817756606698420">Chrome ले चीनमा खोज गर्नका लागि <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> को प्रयोग गर्न सक्छ। तपाईं <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" />मा गई यसलाई बदल्न सक्नुहुन्छ।</translation>
 <translation id="961856697154696964">ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="963246339335003378">टास्क म्यानेजर खोल्नुहोस्</translation>
+<translation id="966337994629449077">तपाईं <ph name="FROM_EMAIL" /> का रूपमा साइन इन हुनुहुन्छ।\n\nआफ्नो कम्प्युटरबाट अघि बढ्न, <ph name="TO_EMAIL" /> मा स्विच गर्नुहोस्। तपाईं यो खातामा भएका पासवर्ड, बुकमार्क र अन्य कुराहरू प्राप्त गर्नु हुने छ।</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनेट बाँकी छ</translation>
 <translation id="981121421437150478">अफलाइन</translation>
 <translation id="983192555821071799">सबै ट्याबहरू बन्द गर्नुहोस्</translation>

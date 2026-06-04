@@ -84,7 +84,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> சாதனத்திலிருந்து அனுப்பப்பட்டது</translation>
 <translation id="1310482092992808703">தாவல்களைக் குழுவாக்கு</translation>
 <translation id="1318262688555255786"><ph name="PAGE_TITLE" /> என்ற இணையப் பக்கத்திற்கான இணைப்பைப் பகிரும். தகவல் ஆதாரம்: <ph name="PAGE_URL" /></translation>
-<translation id="1320912611264252795">புக்மார்க் சேமிப்புச் செயல்முறை முழுத் திரையில் காட்டப்பட்டுள்ளது</translation>
 <translation id="1327257854815634930">வழிசெலுத்தல் வரலாறு திறக்கப்பட்டுள்ளது</translation>
 <translation id="1331212799747679585">Chromeமைப் புதுப்பிக்க முடியாது. கூடுதல் விருப்பங்கள்</translation>
 <translation id="1332501820983677155">Google Chrome அம்சத்திற்கான ஷார்ட்கட்கள்</translation>
@@ -646,6 +645,7 @@
 <translation id="3771290962915251154">பெற்றோர் கட்டுப்பாடுகள் இயக்கத்தில் உள்ளதால் இந்த அமைப்பு முடக்கப்பட்டுள்ளது</translation>
 <translation id="3771694256347217732">Google சேவை விதிமுறைகள்</translation>
 <translation id="3777796259512476958">பெரும்பாலான தளங்களிலிருந்து உங்களை வெளியேற்றும்</translation>
+<translation id="3786379886124795923">Chromeமில் உள்நுழைய QR குறியீட்டை ஸ்கேன் செய்துள்ளீர்கள். இந்தச் சுயவிவரத்தில் இருந்து கடவுச்சொற்கள், புக்மார்க்குகள் மற்றும் பலவற்றைப் பெற விரும்புவதை உறுதிப்படுத்துங்கள்.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 பக்கம்}other{# பக்கங்கள்}}</translation>
 <translation id="3792938779249970121">கணக்கைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3795154175078851242">படத்தை இணைப்புடன் நகலெடு</translation>
@@ -719,7 +719,6 @@
 <translation id="4092709865241032354">உங்கள் உள்நுழைவுத் தகவலை Google Password Manager சேமிக்க உதவும் வகையில் இந்தத் தளத்திற்கான உங்கள் பயனர்பெயரைச் சேர்க்கவும்</translation>
 <translation id="4095146165863963773">பயன்பாட்டுத் தரவை நீக்கவா?</translation>
 <translation id="4095483462103784441">புதிய பக்கக் குழுவை உருவாக்கு</translation>
-<translation id="4096227151372679484">புக்மார்க் சேமிப்புச் செயல்முறை பாதித் திரையில் காட்டப்பட்டுள்ளது</translation>
 <translation id="4105527135143631701">Google Password Manager அறிவிப்பு திறக்கப்பட்டது</translation>
 <translation id="4113030288477039509">உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="4116038641877404294">ஆஃப்லைனில் பார்க்க, பக்கங்களைப் பதிவிறக்கவும்</translation>
@@ -831,6 +830,7 @@
 <translation id="4532845899244822526">ஃபோல்டரைத் தேர்வுசெய்யவும்</translation>
 <translation id="4535755320005483982">பகிரப்பட்ட <ph name="GROUP_TITLE" /> பக்கக் குழு</translation>
 <translation id="4537137366307982887">உதவிக்குறிப்பு அறிவிப்புகளுக்கு ஒப்புதல் அளிப்பதற்கான திரை முழு அளவிற்குத் திறந்துள்ளது</translation>
+<translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> கணக்கில் உள்நுழைந்தே இருக்கிறீர்கள்.</translation>
 <translation id="4543131175509360848">கடவுச்சாவிகள் எதுவுமில்லை என்று தெரிவிக்கும் தாள்</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> பக்கம்}other{<ph name="TAB_COUNT_MANY" /> பக்கங்கள், <ph name="TAB_COUNT_INCOGNITO" /> மறைநிலை}}</translation>
 <translation id="4558311620361989323">இணையப் பக்கக் ஷார்ட்கட்கள்</translation>
@@ -1288,6 +1288,7 @@
 <translation id="6411219469806822692">இதற்கும் மேல் செல்ல முடியாது. பக்கத்தின் மேற்பகுதியில் இருந்து எடுக்கவும்.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, பலமுறை தேர்ந்தெடுக்கப்பட்ட பக்கம்</translation>
 <translation id="641643625718530986">அச்சிடு...</translation>
+<translation id="6427723330233512782">உயரத்திற்கேற்ப பொருத்து</translation>
 <translation id="6433501201775827830">தேடல் இன்ஜினைத் தேர்வுசெய்யவும்</translation>
 <translation id="6434309073475700221">நிராகரி</translation>
 <translation id="6435307030888827407">வெளியேறிய நிலையிலேயே இரு</translation>
@@ -2025,9 +2026,11 @@
 <translation id="939598580284253335">கடவுச்சொற்றொடரை உள்ளிடுக</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, பின் செய்யப்பட்ட பிக்ச்சர்-இன்-பிக்ச்சர் மறைநிலைப் பக்கம்</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
+<translation id="949667118776341807">சுழற்று</translation>
 <translation id="95817756606698420">சீனாவில் தேடுவதற்கு, Chromeமில் <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />ஐப் பயன்படுத்தலாம். இதை <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> சென்று மாற்றலாம்.</translation>
 <translation id="961856697154696964">உலாவிய தரவை நீக்கு</translation>
 <translation id="963246339335003378">செயல் நிர்வாகியைத் திறக்கும்</translation>
+<translation id="966337994629449077"><ph name="FROM_EMAIL" /> என்ற கணக்கில் உள்நுழைந்துள்ளீர்கள்.\n\nஉங்கள் கம்ப்யூட்டரில் இருந்து தொடர, <ph name="TO_EMAIL" /> என்ற கணக்கிற்கு மாறுங்கள். இந்தக் கணக்கில் உள்ள கடவுச்சொற்கள், புக்மார்க்குகள் மற்றும் பலவற்றைப் பெறுவீர்கள்.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> நிமிடங்கள் மீதமுள்ளன</translation>
 <translation id="981121421437150478">ஆஃப்லைன்</translation>
 <translation id="983192555821071799">எல்லா தாவல்களையும் மூடு</translation>

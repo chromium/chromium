@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">Confirme que é você…</translation>
 <translation id="1634520742547161889">MM/AA</translation>
 <translation id="1636234353664774105">Confira rotas para seu destino usando o recurso de navegação guiada</translation>
-<translation id="1637811476055996098">Escolher arquivos</translation>
 <translation id="1641113438599504367">Navegação Segura</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="164673457281113247">{count,plural, =1{Favorito salvo}one{Favorito salvo}other{Favoritos salvos}}</translation>
@@ -487,6 +486,7 @@
 <translation id="2640733327287333451">Sem nome de usuário ••••••</translation>
 <translation id="264215785133931186">Verificadas agora mesmo</translation>
 <translation id="2647434099613338025">Adicionar idioma</translation>
+<translation id="2648812801228676606">A conta <ph name="NAME_OR_EMAIL" /> continua conectada.</translation>
 <translation id="2649592894792404568">Você está prestes a excluir seus dados do Gerenciador de senhas do Google</translation>
 <translation id="2652129567809778422">Selecionar senha</translation>
 <translation id="2658056020748144467">Não foi possível abrir arquivo</translation>
@@ -1457,7 +1457,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6045460247888249350">Adicionar título</translation>
 <translation id="6052269326659653305">Trocar de perfil</translation>
 <translation id="605721222689873409">AA</translation>
-<translation id="6058415747854995776">Gravar vídeo</translation>
 <translation id="6059830886158432458">Controle suas matérias e atividade aqui</translation>
 <translation id="6063802271331271857">Transforme imagens com o Remix</translation>
 <translation id="6066301408025741299">Toque para cancelar.</translation>
@@ -1850,7 +1849,6 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="7347998088283246662">Importe senhas, histórico, favoritos e muito mais</translation>
 <translation id="7352651011704765696">Algo deu errado</translation>
 <translation id="7357999308187750900">Ver tudo</translation>
-<translation id="7364796246159120393">Escolher arquivo</translation>
 <translation id="736564850024123010">Mude a posição da barra de endereço para personalizar sua experiência.</translation>
 <translation id="7366909168761621528">Dados de navegação</translation>
 <translation id="7367530036083223701">Acesse suas senhas com segurança na tela inicial com o widget do Gerenciador de senhas.</translation>
@@ -2012,7 +2010,6 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="7866872729285243843">Para ter sua Lista de leitura em todos os seus dispositivos, ative esse recurso nas Configurações.</translation>
 <translation id="7874107544081154809">Preencher formulário automaticamente com <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">Mostrar downloads</translation>
-<translation id="7882689957034389473">Tirar foto</translation>
 <translation id="7883882164760409935">Você tem senhas reutilizadas.</translation>
 <translation id="7887198238286927132">Para proteger sua privacidade, o Chrome não preencherá esse campo automaticamente.</translation>
 <translation id="7887552845761062935">Toque duas vezes e mantenha para abrir mais opções</translation>
@@ -2174,7 +2171,6 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="8395180897620197612">Parar de registrar</translation>
 <translation id="8407669440184693619">Nenhuma senha encontrada para este site</translation>
 <translation id="8407831512155324054">Senhas fortes</translation>
-<translation id="8414030140103493759">Registrar foto ou vídeo</translation>
 <translation id="8414283596511250978">Nunca mais esqueça suas senhas</translation>
 <translation id="8415120635186642416">Pesquise sobre qualquer assunto</translation>
 <translation id="842523302461531262">Definir como padrão nas configurações…</translation>
@@ -2192,7 +2188,6 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>
 <translation id="8477178913400731244">Excluir dados</translation>
-<translation id="847939250509903814">Biblioteca de fotos</translation>
 <translation id="8481184073299279701">Toque no botão "Iniciar registro" para coletar erros e registros futuros do Console JavaScript em todas as guias. Os registros serão coletados (e armazenados apenas na memória) até que a página seja fechada ou que o botão "Parar de registrar" seja pressionado.</translation>
 <translation id="8487667956631253959">Ativada</translation>
 <translation id="8487700953926739672">Disponível off-line</translation>

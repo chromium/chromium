@@ -306,6 +306,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1458140305240870199">Roupa íntima</translation>
 <translation id="1458770162980644530">Tela dos Termos de Serviço da opção Compre Agora, Pague Depois. Teclado oculto.</translation>
 <translation id="1459693405370120464">Clima</translation>
+<translation id="1460317464907341501">Verificar este e-mail de forma automática?</translation>
 <translation id="1461041542809785877">Desempenho</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Usar as fontes do seu computador para criar conteúdo de alta fidelidade</translation>
@@ -2005,6 +2006,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="412601465078863288">O tempo de upload expirou</translation>
 <translation id="4127317221386336246">Acessórios para roupas</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{mais 1}one{mais #}other{mais #}}</translation>
+<translation id="4129810348470013900">Algo deu errado. Verifique sua conexão de internet e tente de novo.</translation>
 <translation id="4129992181550680635">Recursos educacionais</translation>
 <translation id="4130226655945681476">Verificar os cabos de rede, modem e roteador</translation>
 <translation id="4132448310531350254">Gerenciadores duplicados da extensão de arquivo "<ph name="FILE_EXTENSION" />" referenciada pelos apps "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3022,6 +3024,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5728246486828755318">Pode pedir para usar recursos avançados da impressora</translation>
 <translation id="5729442113829771034">Educação infantil</translation>
 <translation id="5730040223043577876">O Chrome recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
+<translation id="5735174108294025227">Os endereços de e-mail verificados vão aparecer aqui</translation>
 <translation id="573555826359077410">Botão "Criar formulário". Ative para criar um novo arquivo no Google Formulários em instantes</translation>
 <translation id="5738385766833540397">Gerencie como você recebe alertas de redução no preço de produtos monitorados.</translation>
 <translation id="5739619009927381786">Use a impressão digital para desbloquear a tela na próxima etapa. Ou <ph name="BEGIN_LINK" />verifique de outra maneira<ph name="END_LINK" />.</translation>

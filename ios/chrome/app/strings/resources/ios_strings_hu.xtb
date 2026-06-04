@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">Személyazonosság igazolása…</translation>
 <translation id="1634520742547161889">HH/ÉÉ</translation>
 <translation id="1636234353664774105">A navigációs funkció használatával részletes útvonaltervet kaphat úti céljához.</translation>
-<translation id="1637811476055996098">Fájlok kiválasztása</translation>
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="164673457281113247">{count,plural, =1{Könyvjelző mentve}other{Könyvjelzők mentve}}</translation>
@@ -1457,7 +1456,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6045460247888249350">Cím megadása</translation>
 <translation id="6052269326659653305">Profilváltás</translation>
 <translation id="605721222689873409">ÉÉ</translation>
-<translation id="6058415747854995776">Videó készítése</translation>
 <translation id="6059830886158432458">Itt kezelheti a híreket és a tevékenységeket</translation>
 <translation id="6063802271331271857">Kép remixelése</translation>
 <translation id="6066301408025741299">Érintse meg a visszavonáshoz</translation>
@@ -1850,7 +1848,6 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="7347998088283246662">Importálhatja a jelszavakat, az előzményeket, a könyvjelzőket és egyebeket</translation>
 <translation id="7352651011704765696">Valami nem működik</translation>
 <translation id="7357999308187750900">Összes megtekintése</translation>
-<translation id="7364796246159120393">Fájl kiválasztása</translation>
 <translation id="736564850024123010">A személyre szabott élmény érdekében módosíthatja a címsáv pozícióját.</translation>
 <translation id="7366909168761621528">Böngészési adatok</translation>
 <translation id="7367530036083223701">A Jelszókezelő modullal biztonságosan hozzáférhet jelszavaihoz a kezdőképernyőn.</translation>
@@ -2012,7 +2009,6 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="7866872729285243843">Ha az összes eszközén szeretné elérni az olvasólistát, kapcsolja be a beállítások között az „Olvasólista” funkciót.</translation>
 <translation id="7874107544081154809">Űrlap automatikus kitöltése a következővel: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">Letöltések megjelenítése</translation>
-<translation id="7882689957034389473">Fotó készítése</translation>
 <translation id="7883882164760409935">Több helyen is felhasználja bizonyos jelszavait.</translation>
 <translation id="7887198238286927132">Adatai védelme érdekében a Chrome nem tölti ki automatikusan ezt a mezőt.</translation>
 <translation id="7887552845761062935">Koppintson duplán, és tartsa nyomva a képernyőt a további lehetőségek megjelenítéséhez</translation>
@@ -2174,7 +2170,6 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="8395180897620197612">Naplózás leállítása</translation>
 <translation id="8407669440184693619">Nem található jelszó a webhelyhez</translation>
 <translation id="8407831512155324054">Jelszavai erősnek tűnnek</translation>
-<translation id="8414030140103493759">Fotó vagy videó készítése</translation>
 <translation id="8414283596511250978">Soha nem felejti el jelszavait</translation>
 <translation id="8415120635186642416">Bármire rákereshet</translation>
 <translation id="842523302461531262">Beállítás alapértelmezettként a Beállításokban…</translation>
@@ -2192,7 +2187,6 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="8473863474539038330">Címek és egyebek</translation>
 <translation id="8474378002946546633">Értesítések engedélyezése</translation>
 <translation id="8477178913400731244">Adatok törlése</translation>
-<translation id="847939250509903814">Fotótár</translation>
 <translation id="8481184073299279701">A „Naplózás indítása” gombra koppintva kezdheti meg a jövőbeli JavaScript-konzolnaplók és -hibák gyűjtését az összes lapról. A böngésző addig gyűjti (és tárolja kizárólag a memóriában) a naplókat, amíg Ön be nem zárja az oldalt, vagy rá nem koppint a „Naplózás leállítása” gombra.</translation>
 <translation id="8487667956631253959">Bekapcsolva</translation>
 <translation id="8487700953926739672">Offline elérhető</translation>

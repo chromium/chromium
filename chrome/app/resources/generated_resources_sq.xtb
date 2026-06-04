@@ -1448,7 +1448,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2048182445208425546">Qasu te trafiku i rrjetit</translation>
 <translation id="2048254245884707305">Po kontrollon për softuerë keqdashës...</translation>
 <translation id="204914487372604757">Krijo shkurtore</translation>
-<translation id="2049573977943974163">Të aktivizohet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2050339315714019657">Vertikal</translation>
 <translation id="2051555741181591333">Çaktivizo automatikisht zonën e qasjes për internet</translation>
 <translation id="2051669996101374349">Përdor HTTPS kur është e mundur dhe merr paralajmërime para ngarkimit të sajteve që nuk e mbështesin atë. Nuk mund ta ndryshosh këtë cilësim sepse ke të aktivizuar "Mbrojtjen e përparuar".</translation>
@@ -6000,7 +5999,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5372529912055771682">Modaliteti i dhënë i regjistrimit nuk mbështetet nga ky version i sistemit operativ. Sigurohu që po përdor versionin më të fundit dhe provo sërish.</translation>
 <translation id="5372579129492968947">Zhgozhdo shtesën</translation>
 <translation id="5372632722660566343">Vazhdo pa një llogari</translation>
-<translation id="5372990315769030589">Të mbahet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5375318608039113175">Për të përdorur "Ndarjen në afërsi" me këto kontakte, shto te kontaktet e tua adresën e email-it të lidhur me "Llogarinë e tyre të Google".</translation>
 <translation id="5375374982898812658">Do të humbasësh menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet e tua</translation>
 <translation id="5375517140689139594">Modaliteti i leximit (<ph name="READING_MODE_SHORTCUT" />)</translation>

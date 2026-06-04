@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">Mehr Emojis anzeigen</translation>
 <translation id="2328561734797404498">Bitte starte dein Gerät neu, um <ph name="APP_NAME" /> verwenden zu können.</translation>
 <translation id="2335091074961603075">Auf deinem Chromebook oder Bluetooth-Gerät wird eine ältere Bluetooth-Version genutzt. Verwende für eine bessere Audioqualität das interne Mikrofon.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{Für <ph name="MANAGER" /> ist es erforderlich, dass du heute eine Verbindung zu einem WLAN herstellst, um ein Update herunterzuladen. Das Update kann auch über eine getaktete Verbindung heruntergeladen werden (hierfür können Gebühren anfallen).}other{Für <ph name="MANAGER" /> ist es erforderlich, dass du vor Ablauf der Frist eine Verbindung zu einem WLAN herstellst, um ein Update herunterzuladen. Das Update kann auch über eine getaktete Verbindung heruntergeladen werden (hierfür können Gebühren anfallen).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Tippe auf den Eingabestift-Button in der Ablage, um Notizen oder Screenshots zu erstellen, den Laserpointer oder die Vergrößerungsfunktion zu verwenden.</translation>
 <translation id="2341729377289034582">Vertikale Ausrichtung aktiv</translation>
@@ -568,6 +569,7 @@
 <translation id="2687510499067466116">Die Tastenkombination wurde geändert</translation>
 <translation id="2689613560355655046">Desktop 8</translation>
 <translation id="2692092709110488417">Drücke die Tabulatortaste, um den ausgewählten Bereich hervorzuheben und zu verschieben</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Letzter Tag für die Aktualisierung deines Geräts (<ph name="DEVICE_TYPE" />)}other{Aktualisiere dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von {NUM_DAYS} Tagen}}</translation>
 <translation id="2695305337569143674">Web</translation>
 <translation id="2697697418792422688">Tastatureinstellungen anzeigen. <ph name="KEYBOARD_NAME" /> ist ausgewählt.</translation>
 <translation id="2699913284398121653">Mit der App „Inhaltsübertragung“ kannst du die Daten aus dem Konto einer Bildungseinrichtung in dein privates Konto übertragen</translation>
@@ -794,6 +796,7 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="334927402682780278">Text von Cursor bis Zeilenende auswählen</translation>
 <translation id="3349345708646875009">Task-Manager öffnen</translation>
 <translation id="3353786022389205125">„Sperrbildschirm anzeigen, wenn der Ruhemodus beendet wird“ aktivieren und noch einmal versuchen</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Aktualisiere dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von 1 Woche}other{Aktualisiere dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von {NUM_WEEKS} Wochen}}</translation>
 <translation id="3364721542077212959">Eingabestift-Tools</translation>
 <translation id="3365281428003534650">Timer und Aufgabe festlegen</translation>
 <translation id="3365977133351922112">Dein Smartphone ist zu weit weg. Hole es näher heran.</translation>
@@ -953,6 +956,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3741482431277446954">Rechte Maustaste</translation>
 <translation id="3742055079367172538">Screenshot erstellt</translation>
 <translation id="3743775386021959186">Konzentrationsmodus ist aktiviert, noch <ph name="REMAINING_TIME" /></translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{Für <ph name="MANAGER" /> ist es erforderlich, dass du deine Daten sicherst und dein Gerät (<ph name="DEVICE_TYPE" />) heute zurückgibst.}other{Für <ph name="MANAGER" /> ist es erforderlich, dass du deine Daten sicherst und dein Gerät (<ph name="DEVICE_TYPE" />) vor Ablauf der Frist zurückgibst.}}</translation>
 <translation id="3750403286520637847">Wettervorschlag ausblenden</translation>
 <translation id="3752253558646317685">Bitte dein Kind, den Finger zu heben und wieder abzulegen, um den Fingerabdruck zu speichern</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />App-Daten können alle Daten sein, die eine App aufgrund der Einstellungen des Entwicklers gespeichert hat, wie z. B. Kontakte, Nachrichten und Fotos.<ph name="END_PARAGRAPH1" />
@@ -1077,6 +1081,9 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="412298498316631026">Fenster</translation>
 <translation id="4123259114412175274">Prüfe zum Entsperren deines Chromebooks, ob Bluetooth auf dem Smartphone aktiviert ist</translation>
 <translation id="4123868835475902435">Das waren die Grundlagen. Jetzt kannst du in „Entdecken“ fortfahren, unserer integrierten App für Tipps und Hilfe. Dort findest du Informationen zu den ersten Schritte, Angeboten und den neuesten <ph name="PRODUCT_NAME" />-Funktionen.</translation>
+<translation id="4124779003103520737">{0,plural, =1{Dein Gerät (<ph name="DEVICE_TYPE" />) wird in # Sekunde automatisch gesperrt.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.}other{Dein Gerät (<ph name="DEVICE_TYPE" />) wird automatisch in # Sekunden gesperrt.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.}}</translation>
 <translation id="4125970834901680537">Apps können im Tabletmodus nicht gestreamt werden. Bitte versuch es noch einmal im Laptopmodus.</translation>
 <translation id="4131973331381812765">Temperatur: <ph name="TEMPERATURE" /> °C – Aktuelle Geschwindigkeit: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Bis Sonnenaufgang aktiviert</translation>
@@ -1385,6 +1392,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4964188651935955085">Wenn du Bluetooth deaktivierst, wird die Verbindung dieses externen Geräts von deiner/m <ph name="DEVICE_TYPE" /> getrennt:</translation>
 <translation id="4966431234408005599">Lautstärke erhöhen</translation>
 <translation id="496999337731226334">Einführung: Schritt <ph name="STEP" /> von <ph name="TOTAL_STEPS" />. Häufig verwendete Einstellungen wie WLAN, Bluetooth und Lautstärke sind in den Schnelleinstellungen verfügbar. Du kannst hier auch Screenshots aufnehmen. Drücke „Alt + Umschalttaste + S“, um die Schnelleinstellungen zu öffnen.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{Für <ph name="MANAGER" /> ist es erforderlich, dass du heute ein Update herunterlädst. Das Update wird automatisch heruntergeladen, sobald du eine Verbindung zum Internet herstellst.}other{Für <ph name="MANAGER" /> ist es erforderlich, dass du vor Ablauf der Frist ein Update herunterlädst. Das Update wird automatisch heruntergeladen, sobald du eine Verbindung zum Internet herstellst.}}</translation>
 <translation id="4975771730019223894">App-Benachrichtigungssymbol</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1461,6 +1469,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5176318573511391780">Teil des Bildschirms aufzeichnen</translation>
 <translation id="5187627942836026988">Hotspot-Details anzeigen. Der Hotspot wird von deinem Administrator blockiert.</translation>
 <translation id="5188648870018555788">Standort verwenden. ChromeOS- und Android-Apps, ‑Websites und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Die Standortgenauigkeit ermöglicht eine genauere Standortermittlung für Android-Apps und ‑Dienste. Dafür verarbeitet Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale von deinem Gerät und den Geräten anderer Nutzer und kombiniert diese Informationen zur Standortbestimmung. Die so gewonnenen Daten bleiben anonym und werden verwendet, um die Standortgenauigkeit und die standortbezogenen Dienste zu verbessern und um Google-Dienste auf der Grundlage der berechtigten Interessen von Google und Dritten mit Blick auf die Anforderungen der Nutzer zu optimieren, bereitzustellen und zu verwalten. <ph name="BEGIN_LINK1" />Weitere Informationen zur Standortnutzung<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Gib dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von {NUM_WEEKS} Woche zurück}other{Gib dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von {NUM_WEEKS} Wochen zurück}}</translation>
 <translation id="5198039720391525849">Empfohlene GIFs</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> Termine</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> wurde mit <ph name="IN_PLACE_APP" /> kombiniert, um einen neuen Ordner zu erstellen.</translation>
@@ -1778,6 +1787,9 @@ Keine Geräte verbunden.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Du wirst in <ph name="LOGOUT_TIME_LEFT" /> automatisch abgemeldet.</translation>
 <translation id="6068258534237496331">Einstellungen für Videoanrufe</translation>
+<translation id="6070081109266557120">{0,plural, =1{Du wirst in # Sekunde automatisch abgemeldet.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.}other{Du wirst in # Sekunden automatisch abgemeldet.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.}}</translation>
 <translation id="6071576563962215370">Das System konnte die Attributsperre für die Geräteinstallationszeit nicht vornehmen.</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> ist auf diesem Gerät nicht zulässig. Wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Aufnahme beenden</translation>
@@ -2127,6 +2139,8 @@ Neuinstallation</translation>
 <translation id="7076878155205969899">Ton stummschalten</translation>
 <translation id="7083848064787091821">Konzentrationsmodus</translation>
 <translation id="7084678090004350185">Hotspot aktivieren oder deaktivieren. Hotspot ist aktiviert, <ph name="DEVICECOUNT" /> Geräte sind verbunden.</translation>
+<translation id="7086438436964931440">Du wirst jetzt automatisch abgemeldet.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.</translation>
 <translation id="7086931198345821656">Für dieses Update muss auf deinem Gerät (<ph name="DEVICE_TYPE" />) ein Powerwash durchgeführt werden. Sämtliche Daten auf dem Gerät werden gelöscht. Weitere Informationen zum aktuellen <ph name="SYSTEM_APP_NAME" />-Update.</translation>
 <translation id="7088960765736518739">Schalterzugriff</translation>
 <translation id="709015856939120012">Seite heranzoomen</translation>
@@ -2529,6 +2543,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> hinzufügen</translation>
 <translation id="8228175756124063692">Diesen Vorschlag ausblenden</translation>
 <translation id="8230305195727960608">Farbumkehrmodus</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Sofortige Rückgabe erforderlich}other{Gib dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von {NUM_DAYS} Tagen zurück}}</translation>
 <translation id="8236042855478648955">Zeit für eine Pause</translation>
 <translation id="8237964652943995219">Nächster Desktop: <ph name="DESK_NAME" />. Desktop <ph name="DESK_INDEX" /> von <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Sieh dir eine kurze Einführung zur Bedienung deines <ph name="PRODUCT_NAME" /> an. Nach 5 Schritten bist du startklar.</translation>
@@ -2704,6 +2719,8 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8756799553341497810">Du kannst dein App-Layout anpassen, sobald du diese Ansicht geschlossen hast.</translation>
 <translation id="8759408218731716181">Mehrfachanmeldung kann nicht eingerichtet werden</translation>
 <translation id="8759753423332885148">Weitere Informationen</translation>
+<translation id="8760172428247796445">Dein Gerät (<ph name="DEVICE_TYPE" />) wird jetzt gesperrt.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.</translation>
 <translation id="8763883995157866248">Gerät in den Ruhemodus versetzen</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, installierte App, gesperrt</translation>
 <translation id="8782565991310229362">Start der Kiosk-App abgebrochen</translation>

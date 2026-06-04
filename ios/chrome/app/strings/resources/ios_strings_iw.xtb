@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">אימות הזהות שלך…</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">קבלת מסלול מפורט ליעד בעזרת תכונת הניווט</translation>
-<translation id="1637811476055996098">יש לבחור קבצים</translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="164673457281113247">{count,plural, =1{הסימנייה נשמרה}one{סימניות נשמרו}two{סימניות נשמרו}other{סימניות נשמרו}}</translation>
@@ -1457,7 +1456,6 @@
 <translation id="6045460247888249350">הוספת שם</translation>
 <translation id="6052269326659653305">מעבר לפרופיל אחר</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6058415747854995776">צילום סרטון</translation>
 <translation id="6059830886158432458">כאן אפשר לנהל את הסטוריז והפעילות שלך</translation>
 <translation id="6063802271331271857">שינוי הסגנון של התמונה</translation>
 <translation id="6066301408025741299">יש ללחוץ כדי לבטל.</translation>
@@ -1850,7 +1848,6 @@
 <translation id="7347998088283246662">אפשר לייבא סיסמאות, היסטוריה, סימניות ועוד</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="7357999308187750900">הצגת כל הפריטים</translation>
-<translation id="7364796246159120393">בחירת קובץ</translation>
 <translation id="736564850024123010">כדי להתאים אישית את חוויית השימוש, אפשר לשנות את המיקום של סרגל הכתובות.</translation>
 <translation id="7366909168761621528">נתוני גלישה</translation>
 <translation id="7367530036083223701">הווידג'ט של מנהל הסיסמאות מאפשר לגשת לסיסמאות באופן מאובטח במסך הבית.</translation>
@@ -2012,7 +2009,6 @@
 <translation id="7866872729285243843">כדי שרשימת הקריאה תופיע בכל המכשירים שלך, עליך להפעיל את האפשרות 'רשימת קריאה' בהגדרות.</translation>
 <translation id="7874107544081154809">מילוי אוטומטי של הטופס באמצעות <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">הצגת ההורדות</translation>
-<translation id="7882689957034389473">צילום תמונה</translation>
 <translation id="7883882164760409935">יש לך סיסמאות בשימוש חוזר.</translation>
 <translation id="7887198238286927132">‏כדי לשמור על הפרטיות שלך, מערכת Chrome לא ממלאת את השדה הזה באופן אוטומטי.</translation>
 <translation id="7887552845761062935">כדי לפתוח אפשרויות נוספות, אפשר ללחוץ לחיצה כפולה וללחוץ לחיצה ארוכה</translation>
@@ -2174,7 +2170,6 @@
 <translation id="8395180897620197612">הפסקת הרישום ביומן</translation>
 <translation id="8407669440184693619">לא נמצאו סיסמאות בשביל האתר הזה</translation>
 <translation id="8407831512155324054">הסיסמאות נראות חזקות</translation>
-<translation id="8414030140103493759">צילום תמונה או סרטון</translation>
 <translation id="8414283596511250978">לא שוכחים את הסיסמאות</translation>
 <translation id="8415120635186642416">אפשר לחפש מידע על כל דבר</translation>
 <translation id="842523302461531262">להגדרה כברירת מחדל בהגדרות…</translation>
@@ -2192,7 +2187,6 @@
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="8474378002946546633">אפשר התראות</translation>
 <translation id="8477178913400731244">מחיקת נתונים</translation>
-<translation id="847939250509903814">ספריית התמונות</translation>
 <translation id="8481184073299279701">‏אפשר ללחוץ על הכפתור 'התחלת הרישום ביומן' כדי לאסוף רשומות יומן ושגיאות של לוח JavaScript מכל הכרטיסיות. רשומות היומן ייאספו (ויישמרו רק בזיכרון) עד לסגירת הדף הזה, או ללחיצה על 'הפסקת הרישום ביומן'.</translation>
 <translation id="8487667956631253959">מופעל</translation>
 <translation id="8487700953926739672">זמין אופליין</translation>

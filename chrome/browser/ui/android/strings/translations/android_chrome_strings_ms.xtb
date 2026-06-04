@@ -84,7 +84,6 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Dihantar daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="1310482092992808703">Himpunkan tab.</translation>
 <translation id="1318262688555255786">Kongsi pautan kepada halaman web <ph name="PAGE_TITLE" />. Sumber: <ph name="PAGE_URL" /></translation>
-<translation id="1320912611264252795">Folder aliran penyimpanan penanda halaman dibuka pada ketinggian penuh</translation>
 <translation id="1327257854815634930">Sejarah navigasi dibuka</translation>
 <translation id="1331212799747679585">Chrome tidak dapat dikemas kini. Lagi pilihan</translation>
 <translation id="1332501820983677155">Pintasan ciri Google Chrome</translation>
@@ -646,6 +645,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3771290962915251154">Tetapan ini dilumpuhkan kerana kawalan ibu bapa dihidupkan</translation>
 <translation id="3771694256347217732">Syarat Perkhidmatan Google</translation>
 <translation id="3777796259512476958">Mengelog anda keluar daripada kebanyakan laman</translation>
+<translation id="3786379886124795923">Anda telah mengimbas kod QR untuk log masuk ke Chrome. Sahkan bahawa anda mahu mendapatkan kata laluan, penanda halaman dan pelbagai lagi daripada profil ini.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tab}}</translation>
 <translation id="3792938779249970121">Pilih akaun</translation>
 <translation id="3795154175078851242">Salin imej dengan pautan</translation>
@@ -719,7 +719,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="4092709865241032354">Untuk membantu Google Password Manager menyimpan maklumat log masuk anda, tambahkan nama pengguna anda untuk laman ini</translation>
 <translation id="4095146165863963773">Padam data apl?</translation>
 <translation id="4095483462103784441">Buat kumpulan tab baharu</translation>
-<translation id="4096227151372679484">Aliran penyimpanan penanda halaman dibuka pada ketinggian separuh</translation>
 <translation id="4105527135143631701">Kemaskinian Google Password Manager dibuka</translation>
 <translation id="4113030288477039509">Diurus oleh pentadbir anda</translation>
 <translation id="4116038641877404294">Muat turun halaman untuk digunakan di luar talian</translation>
@@ -831,6 +830,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4532845899244822526">Pilih folder</translation>
 <translation id="4535755320005483982">Kumpulan tab <ph name="GROUP_TITLE" /> dikongsi</translation>
 <translation id="4537137366307982887">Pilihan ikut serta pemberitahuan petua dibuka pada ketinggian penuh</translation>
+<translation id="4537987892902330164">Anda kekal log masuk sebagai <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Tiada helaian kunci laluan</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Pintasan halaman web</translation>
@@ -1288,6 +1288,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6411219469806822692">Tidak dapat pergi lebih tinggi. Cuba bermula dari bahagian atas halaman.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, Tab Berbilang Pilihan</translation>
 <translation id="641643625718530986">Cetak…</translation>
+<translation id="6427723330233512782">Muat mengikut ketinggian</translation>
 <translation id="6433501201775827830">Pilih enjin carian anda</translation>
 <translation id="6434309073475700221">Buang</translation>
 <translation id="6435307030888827407">Kekal dilog keluar</translation>
@@ -2025,9 +2026,11 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="939598580284253335">Masukkan frasa laluan</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, Tab Inkognito Gambar dalam Gambar yang Disematkan</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
+<translation id="949667118776341807">Putar</translation>
 <translation id="95817756606698420">Chrome boleh menggunakan <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> untuk melakukan carian di China. Anda boleh menukarnya dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Padamkan data semakan imbas</translation>
 <translation id="963246339335003378">Buka Pengurus Tugas</translation>
+<translation id="966337994629449077">Anda telah log masuk sebagai <ph name="FROM_EMAIL" />.\n\nUntuk meneruskan proses daripada komputer anda, beralih kepada <ph name="TO_EMAIL" />. Anda akan mendapat kata laluan, penanda halaman dan pelbagai lagi daripada akaun ini.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minit lagi</translation>
 <translation id="981121421437150478">Luar talian</translation>
 <translation id="983192555821071799">Tutup semua tab</translation>

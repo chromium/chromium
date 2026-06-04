@@ -1448,7 +1448,6 @@
 <translation id="2048182445208425546">获取您的网络流量数据</translation>
 <translation id="2048254245884707305">正在检查是否存在恶意软件…</translation>
 <translation id="204914487372604757">创建快捷方式</translation>
-<translation id="2049573977943974163">要开启“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="2050339315714019657">纵向</translation>
 <translation id="2051555741181591333">自动停用热点</translation>
 <translation id="2051669996101374349">尽可能使用 HTTPS，并在加载不支持 HTTPS 的网站前收到警告。您无法更改此设置，因为您已启用“高级保护”。</translation>
@@ -2332,6 +2331,7 @@
 <translation id="2673848446870717676">请确保您的蓝牙设备处于配对模式且就在附近。应仅与您信任的设备配对。此 Chromebook 上的所有账号都可以看到已配对的设备。</translation>
 <translation id="2673873887296220733">将 1 个文件复制到 <ph name="CLOUD_PROVIDER" />后再打开？</translation>
 <translation id="267442004702508783">刷新</translation>
+<translation id="2674756932811577764">暂停特效</translation>
 <translation id="2675160405921703214">Chrome 中的 Gemini 闪亮登场</translation>
 <translation id="2676084251379299915">此扩展程序已被企业政策停用，因为 Chrome 应用商店已不再提供此扩展程序。</translation>
 <translation id="2677748264148917807">离开</translation>
@@ -3460,6 +3460,7 @@
 <translation id="351152300840026870">宽度固定的字体</translation>
 <translation id="3511528412952710609">短</translation>
 <translation id="3512465804715993309">自动调节选中内容</translation>
+<translation id="3512495006767217696">内置于 Chrome 中，可帮助您创建、保存和自动填充安全系数高的密码。添加快捷方式，访问更轻松</translation>
 <translation id="3513019849832307207">加入并打开</translation>
 <translation id="3513563267917474897">色调滑块从 <ph name="MIN_VALUE" /> 移动到 <ph name="MAX_VALUE" /></translation>
 <translation id="3514647716686280777">Chrome 正在为您提供标准安全保护。为了进一步防范危险的网站、下载内容和扩展程序，请在 Chrome 设置中开启“增强型安全浏览”功能。</translation>
@@ -4946,6 +4947,7 @@
 <translation id="4580127151758731432">头部移动幅度越大，光标的移动幅度越大</translation>
 <translation id="4580389561674319558">向所有联系人显示</translation>
 <translation id="4580596421317071374">系统会将密码保存到此设备上的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
+<translation id="4580939929828762295">使用 Google 密码管理工具确保安全</translation>
 <translation id="4582297591746054421">网站通常会读取您的剪贴板内容以实现某些功能（例如保留您所复制文字的格式）</translation>
 <translation id="4582563038311694664">重置所有设置</translation>
 <translation id="4584094413232466841">要从 Chrome 自动填充功能中移除此信息吗？</translation>
@@ -5995,7 +5997,6 @@
 <translation id="5372529912055771682">此版本的操作系统不支持所提供的注册模式。请确保您运行的是最新版本，然后重试。</translation>
 <translation id="5372579129492968947">取消固定扩展程序</translation>
 <translation id="5372632722660566343">在不登录账号的情况下继续</translation>
-<translation id="5372990315769030589">要保留“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="5375318608039113175">如需使用“附近分享”功能与这些联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。</translation>
 <translation id="5375374982898812658">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从您的所有设备中删除</translation>
 <translation id="5375517140689139594">阅读模式 (<ph name="READING_MODE_SHORTCUT" />)</translation>
@@ -7237,6 +7238,7 @@
 <translation id="6307268917612054609">系统服务以及具有摄像头使用权限的应用和网站可以使用您的摄像头</translation>
 <translation id="6307990684951724544">系统繁忙</translation>
 <translation id="6308493641021088955">登录服务提供方：<ph name="EXTENSION_NAME" /></translation>
+<translation id="6308778163698400658">添加到工具栏</translation>
 <translation id="6308937455967653460">链接另存为(&amp;K)...</translation>
 <translation id="6309443618838462258">您的管理员不允许使用此输入法</translation>
 <translation id="6309510305002439352">麦克风已关闭</translation>
@@ -7449,6 +7451,7 @@
 <translation id="6470823736074966819">将通知静音</translation>
 <translation id="6472893788822429178">显示“主页”按钮</translation>
 <translation id="6473315466413288899">选择一个选项</translation>
+<translation id="6473659734176498825">这张简图展示了 Chrome 中 Google 密码管理工具的入口点</translation>
 <translation id="6474498546677193336">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Linux 时停止共享此文件夹。</translation>
 <translation id="6474884162850599008">取消与 Google 云端硬盘账号的关联</translation>
 <translation id="6476482583633999078">语速</translation>
@@ -8979,6 +8982,7 @@
 <translation id="7605594153474022051">同步功能无法正常运行</translation>
 <translation id="7606560865764296217">暂停动画</translation>
 <translation id="7606639338662398635">标签页分组</translation>
+<translation id="7606802863538485839">播放特效</translation>
 <translation id="7607002721634913082">已暂停</translation>
 <translation id="7608810328871051088">Android 偏好设置</translation>
 <translation id="7610337976012700501">如需使用“<ph name="FEATURE_NAME" />”功能与这些联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。</translation>

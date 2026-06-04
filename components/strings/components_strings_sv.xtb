@@ -306,6 +306,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1458140305240870199">Underkläder</translation>
 <translation id="1458770162980644530">Användarvillkorsskärmen för Köp nu, betala senare. Tangentbordet är dolt.</translation>
 <translation id="1459693405370120464">Väder</translation>
+<translation id="1460317464907341501">Vill du verifiera den här e-postadressen automatiskt?</translation>
 <translation id="1461041542809785877">Prestanda</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Använd fonterna på datorn så att du kan skapa innehåll av hög kvalitet</translation>
@@ -2005,6 +2006,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="412601465078863288">Tidsgränsen för uppladdning överskreds</translation>
 <translation id="4127317221386336246">Accessoarer</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 till}other{# till}}</translation>
+<translation id="4129810348470013900">Något gick fel. Kontrollera internetanslutningen och försök igen.</translation>
 <translation id="4129992181550680635">Utbildningsresurser</translation>
 <translation id="4130226655945681476">Kontrollera nätverkskablar, modem och router</translation>
 <translation id="4132448310531350254">Dubbla hanterare för filnamnstillägget <ph name="FILE_EXTENSION" /> refereras av apparna <ph name="POLICY_IDS_LIST" />.</translation>
@@ -2396,7 +2398,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4761326898079498987">Granska för mer information</translation>
 <translation id="4761869838909035636">Kör säkerhetskontroll i Chrome</translation>
 <translation id="4762097990764616058">Vill du fortsätta betala med <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="4763196677855776703">Användarvillkoren tillhandahålls av <ph name="URL" /></translation>
+<translation id="4763196677855776703">Villkoren tillhandahålls av <ph name="URL" /></translation>
 <translation id="4764680219299728632">Spishällar, gasspisar och ugnar</translation>
 <translation id="4764776831041365478">Webbsidan på <ph name="URL" /> kan ligga nere för tillfället eller kan ha flyttats permanent till en ny webbadress.</translation>
 <translation id="4766713847338118463">Två häftklamrar längst ned</translation>
@@ -2967,7 +2969,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5632485077360054581">Visa hur man gör</translation>
 <translation id="563324245173044180">Bedrägligt innehåll har blockerats.</translation>
 <translation id="563371367637259496">Mobilt</translation>
-<translation id="5635478143789726479">Säljarens användarvillkor</translation>
+<translation id="5635478143789726479">Säljarens villkor</translation>
 <translation id="5640474731385449758">Tillägget <ph name="EXTENSION_NAME" /> vill öppna <ph name="PROTOCOL" />-länkar i <ph name="ORIGIN" /> via <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642411781689336699">Stereosystem och -komponenter</translation>
 <translation id="5642508497713047">CRL-signerare</translation>
@@ -3022,6 +3024,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5728246486828755318">Får begära åtkomst till avancerade skrivarfunktioner</translation>
 <translation id="5729442113829771034">Pedagogik för yngre barn</translation>
 <translation id="5730040223043577876">Du rekommenderas att återställa lösenordet om du har återanvänt det på andra webbplatser.</translation>
+<translation id="5735174108294025227">Verifierade e-postadresser visas här</translation>
 <translation id="573555826359077410">Knappen Skapa formulär: aktivera om du snabbt vill skapa ett nytt formulär i Google Formulär</translation>
 <translation id="5738385766833540397">Hantera hur du får sänkt pris-aviseringar för produkter du bevakar</translation>
 <translation id="5739619009927381786">Lås upp skärmen i nästa steg, vanligtvis med fingeravtryck. Du kan även <ph name="BEGIN_LINK" />verifiera dig på andra sätt<ph name="END_LINK" />.</translation>
@@ -4514,7 +4517,7 @@ Mer information.
 <translation id="803771048473350947">Arkiv</translation>
 <translation id="8038182528865038593">Röd 2</translation>
 <translation id="8041089156583427627">Skicka feedback</translation>
-<translation id="8043255123207491407">Läs säljarens användarvillkor</translation>
+<translation id="8043255123207491407">Läs säljarens villkor</translation>
 <translation id="8044986521421349135">Din senaste flik</translation>
 <translation id="8046360364391076336">Industriella material och utrustning</translation>
 <translation id="8052898407431791827">Kopierat till urklipp</translation>

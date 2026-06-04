@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">驗證你的身分…</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">使用導航功能即時規劃前往目的地的路線</translation>
-<translation id="1637811476055996098">選擇檔案</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="164673457281113247">{count,plural, =1{已儲存書籤}other{已儲存書籤}}</translation>
@@ -1457,7 +1456,6 @@
 <translation id="6045460247888249350">新增標題</translation>
 <translation id="6052269326659653305">切換個人檔案</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6058415747854995776">拍攝影片</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
 <translation id="6063802271331271857">改圖</translation>
 <translation id="6066301408025741299">輕按以取消。</translation>
@@ -1848,7 +1846,6 @@
 <translation id="7347998088283246662">匯入密碼、記錄、書籤等內容</translation>
 <translation id="7352651011704765696">發生問題</translation>
 <translation id="7357999308187750900">顯示全部</translation>
-<translation id="7364796246159120393">選擇檔案</translation>
 <translation id="736564850024123010">切換網址列的位置，享受自訂的使用體驗。</translation>
 <translation id="7366909168761621528">瀏覽資料</translation>
 <translation id="7367530036083223701">在主畫面上使用「密碼管理工具」小工具安全存取密碼。</translation>
@@ -2010,7 +2007,6 @@
 <translation id="7866872729285243843">如要將閱讀清單同步到所有裝置，請在設定中開啟「閱讀清單」。</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> 自動填寫表格</translation>
 <translation id="7879275349003161544">顯示下載內容</translation>
-<translation id="7882689957034389473">拍攝相片</translation>
 <translation id="7883882164760409935">你有重用密碼。</translation>
 <translation id="7887198238286927132">為保障您的私隱，Chrome 不會自動填入此欄位。</translation>
 <translation id="7887552845761062935">㩒兩下然後㩒住就可以打開多啲選項</translation>
@@ -2172,7 +2168,6 @@
 <translation id="8395180897620197612">停止記錄</translation>
 <translation id="8407669440184693619">找不到此網站的密碼</translation>
 <translation id="8407831512155324054">你密碼的安全度夠高</translation>
-<translation id="8414030140103493759">拍攝相片或影片</translation>
 <translation id="8414283596511250978">不再忘記密碼</translation>
 <translation id="8415120635186642416">研究任何主題</translation>
 <translation id="842523302461531262">在「設定」中設定為預設…</translation>
@@ -2190,7 +2185,6 @@
 <translation id="8473863474539038330">地址及其他資料</translation>
 <translation id="8474378002946546633">允許通知</translation>
 <translation id="8477178913400731244">刪除資料</translation>
-<translation id="847939250509903814">相片庫</translation>
 <translation id="8481184073299279701">輕按「開始記錄」按鈕即可收集未來的 JavaScript 控制器和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕按 [停止記錄] 為止。</translation>
 <translation id="8487667956631253959">開</translation>
 <translation id="8487700953926739672">可離線使用</translation>

@@ -1453,7 +1453,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2048182445208425546">Accesează traficul de rețea</translation>
 <translation id="2048254245884707305">Se caută programe malware...</translation>
 <translation id="204914487372604757">Creează o comandă rapidă</translation>
-<translation id="2049573977943974163">Activezi <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2051555741181591333">Dezactivează automat hotspotul</translation>
 <translation id="2051669996101374349">Folosește HTTPS ori de câte ori este posibil și primește un avertisment înainte de a încărca site-urile care nu acceptă acest protocol. Nu poți schimba această setare deoarece ai activată Protecția avansată.</translation>
@@ -6003,7 +6002,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5372529912055771682">Modul de înscriere furnizat nu este acceptat de această versiune a sistemului de operare. Asigurați-vă că rulați cea mai recentă versiune și încercați din nou.</translation>
 <translation id="5372579129492968947">Anulează fixarea extensiei</translation>
 <translation id="5372632722660566343">Continuă fără cont</translation>
-<translation id="5372990315769030589">Păstrezi <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5375318608039113175">Pentru a folosi Trimiterea în apropiere cu aceste persoane de contact, adaugă în agendă adresele de e-mail asociate Conturilor Google respective.</translation>
 <translation id="5375374982898812658">Vei pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și acesta va fi șters de pe toate dispozitivele tale</translation>
 <translation id="5375517140689139594">Mod de lectură (<ph name="READING_MODE_SHORTCUT" />)</translation>

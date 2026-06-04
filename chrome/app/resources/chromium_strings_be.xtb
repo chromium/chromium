@@ -69,6 +69,7 @@
 <translation id="1749104137266986751">Калі пратакол HTTPS недаступны, Chromium без папярэджання будзе выкарыстоўваць неабароненае падключэнне</translation>
 <translation id="1774152462503052664">Дазволіць Chromium выконвацца ў фонавым рэжыме</translation>
 <translation id="1779356040007214683">У мэтах бяспекі Chromium мы выключылі некаторыя пашырэнні, якія не значацца ў спісе <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і маглі быць дададзены без вашага ведама.</translation>
+<translation id="1793486931176048546">У апавяшчэнні Windows націсніце <ph name="BEGIN_BOLD" />Так<ph name="END_BOLD" />, каб замацаваць Chromium на панэлі задач для хуткага доступу.</translation>
 <translation id="1808667845054772817">Пераўсталяваць Chromium</translation>
 <translation id="1820835682567584003">Chromium спрабуе <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Пры наступным адкрыцці Chromium на прыладзе "<ph name="DEVICE_TYPE" />" вы ўбачыце прапанову выкарыстаць Менеджар пароляў Google.</translation>
@@ -384,6 +385,7 @@
 <translation id="5346389065299425353">Пашырце пошук, дадаўшы некалькі ўкладак, файлаў і інструментаў</translation>
 <translation id="5352264705793813212">У нас ёсць некалькі рэкамендацый па бяспецы пры рабоце ў Chromium</translation>
 <translation id="5352361688875342522">Іншыя профілі Chromium</translation>
+<translation id="535243042947607642">Сістэма ChromiumOS не змагла захаваць даныя Chromium у вашым Уліковым запісе Google, бо даныя для ўваходу ўстарэлі</translation>
 <translation id="5358375970380395591">Вы ўваходзіце праз уліковы запіс пад кіраваннем, што дае адміністратару кантроль над вашым профілем у браўзеры Chromium. Даныя Chromium (праграмы, закладкі, гісторыя, паролі і іншыя налады) будуць назаўсёды прывязаны да ўліковага запісу <ph name="USER_NAME" />. Вы зможаце выдаліць гэтыя даныя праз панэль кіравання Уліковымі запісамі Google, але іх нельга будзе звязаць з іншым уліковым запісам. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Дадатковы код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Каб наладзіць персаналізацыю, уключыце Chromium у гісторыю дзеянняў у інтэрнэце і праграмах</translation>
@@ -583,7 +585,6 @@
 <translation id="7368826207863345663">Каб атрымліваць наступныя абнаўленні Chromium, вам патрэбная версія macOS 13 ці пазнейшая. На гэтым камп’ютары выкарыстоўваецца macOS 12.</translation>
 <translation id="7376384068949534168">Вы даўно не наведвалі сайт. Браўзер Chromium адклікаў наступныя дазволы: <ph name="PERMISSION_1" /> і <ph name="PERMISSION_2" />.</translation>
 <translation id="73786666777299047">Адкрыць Вэб-краму Chrome</translation>
-<translation id="7384121030444253939">Пашырэнне больш не падтрымліваецца. Chromium рэкамендуе выдаліць яго.</translation>
 <translation id="7407655596887111931">Цяпер Chromium з’яўляецца стандартным браўзерам</translation>
 <translation id="7413153308467572558">Працягвайце з месца, дзе вы спыніліся: Chromium аднаўляе ўкладкі пры кожным перазапуску. Выключыць гэту наладу можна тут:</translation>
 <translation id="7427879960656355200">Імпарт пароляў у Chromium</translation>
@@ -718,6 +719,7 @@
 <translation id="8852026904190808918">На гэтай мове паказваюцца меню, налады, абвесткі і іншыя тэксты ў Chromium</translation>
 <translation id="8862326446509486874">Для ўсталявання на сістэмным узроўні ў вас няма неабходных правоў. Паспрабуйце запусціць усталёўшчык ад імені адміністратара.</translation>
 <translation id="8876044221123442390">Дадаць профіль Chromium</translation>
+<translation id="8890569919834781711">Сістэма ChromiumOS не змагла захаваць даныя Chromium у вашым Уліковым запісе Google з-за памылкі ўваходу</translation>
 <translation id="8891709362986793894">Палітыка вашай арганізацыі патрабуе, каб вы ўвайшлі ў Chromium</translation>
 <translation id="8907580949721785412">Chromium спрабуе паказаць паролі. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="8932992523185907506">Chromium больш не з’яўляецца стандартным браўзерам. Зрабіць Chromium стандартным браўзерам?</translation>

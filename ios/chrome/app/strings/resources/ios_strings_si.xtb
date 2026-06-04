@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">ඒ ඔබ බව සත්‍යාපන කරන්න…</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">සංචාලන විශේෂාංගය භාවිතයෙන් හැරීමෙන් හැරීම් මගපෙන්වීම සමග ඔබේ ගමනාන්තයට දිශාවන් ලබා ගන්න</translation>
-<translation id="1637811476055996098">ගොනු තෝරන්න</translation>
 <translation id="1641113438599504367">ආරක්ෂිත බ්‍රවුස් කිරීම</translation>
 <translation id="1644574205037202324">ඉතිහාසය</translation>
 <translation id="164673457281113247">{count,plural, =1{පිටුසන සුරකින ලදි}one{පිටුසන් සුරකින ලදි}other{පිටුසන් සුරකින ලදි}}</translation>
@@ -487,6 +486,7 @@
 <translation id="2640733327287333451">පරිශීලක නාමයක් නැත ••••••</translation>
 <translation id="264215785133931186">මේ දැන් පරීක්ෂා කරන ලදි</translation>
 <translation id="2647434099613338025">භාෂාව එක් කරන්න</translation>
+<translation id="2648812801228676606">ඔබ <ph name="NAME_OR_EMAIL" /> ලෙස පුරනය වී සිට ඇත</translation>
 <translation id="2649592894792404568">ඔබ ඔබේ Google මුරපද කළමනාකරු දත්ත මැකීමට ආසන්නයි</translation>
 <translation id="2652129567809778422">මුරපදය තෝරන්න</translation>
 <translation id="2658056020748144467">ගොනුව විවෘත කිරීමට නොහැකි වේ</translation>
@@ -1457,7 +1457,6 @@
 <translation id="6045460247888249350">මාතෘකාව එක් කරන්න</translation>
 <translation id="6052269326659653305">පැතිකඩ මාරු කරන්න</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6058415747854995776">වීඩියෝවක් අරගන්න</translation>
 <translation id="6059830886158432458">මෙහි ඔබේ කතා සහ ක්‍රියාකාරකම් පාලන කරන්න</translation>
 <translation id="6063802271331271857">රූපයක් යළිමුසු කරන්න</translation>
 <translation id="6066301408025741299">අවලංගු කිරීමට තට්ටු කරන්න.</translation>
@@ -1850,7 +1849,6 @@
 <translation id="7347998088283246662">මුරපද, ඉතිහාසය, පිටුසන් සහ තවත් දේ ආයාත කරන්න</translation>
 <translation id="7352651011704765696">යමක් වැරදිනි</translation>
 <translation id="7357999308187750900">සියල්ල බලන්න</translation>
-<translation id="7364796246159120393">ගොනුව තෝරන්න</translation>
 <translation id="736564850024123010">අභිරුචි කළ අත්දැකීමක් සඳහා ඔබේ ලිපින තීරුවේ පිහිටීම මාරු කරන්න.</translation>
 <translation id="7366909168761621528">බ්‍රවුස් කිරීමේ දත්ත</translation>
 <translation id="7367530036083223701">මුරපද කළමනාකරු විජට්ටුව සමග මුල් තිරයෙන් ඔබේ මුරපද වෙත සුරක්ෂිතව ප්‍රවේශ වන්න.</translation>
@@ -2012,7 +2010,6 @@
 <translation id="7866872729285243843">ඔබේ සියලු උපාංග මත ඔබේ කියවීම් ලැයිස්තුව ලබා ගැනීම සඳහා, සැකසීම් තුළ "කියවීමේ ලැයිස්තුව" ක්‍රියාත්මක කරන්න.</translation>
 <translation id="7874107544081154809"><ph name="CELL_ACCESSIBILITY_LABEL" /> සමග පෝරමය ස්වයං පුරවන්න</translation>
 <translation id="7879275349003161544">බාගැනීම් පෙන්වන්න</translation>
-<translation id="7882689957034389473">ඡායාරූපය ගන්න</translation>
 <translation id="7883882164760409935">ඔබ මුරපද නැවත භාවිතා කර ඇත.</translation>
 <translation id="7887198238286927132">ඔබේ පෞද්ගලිකත්වය ආරක්‍ෂා කිරීමට, Chrome මෙම ක්‍ෂේත්‍රය ස්වයං පිරවුම නොකරයි.</translation>
 <translation id="7887552845761062935">තවත් විකල්ප විවෘත කිරීමට දෙවරක් තට්ටු කරගෙන සිටින්න</translation>
@@ -2174,7 +2171,6 @@
 <translation id="8395180897620197612">ලොග් කිරීම නවත්වන්න</translation>
 <translation id="8407669440184693619">මෙම වෙබ් අඩවිය සඳහා මුරපද කිසිවක් හමු නොවිය</translation>
 <translation id="8407831512155324054">ඔබේ මුරපද ශක්තිමත් බව පෙනේ</translation>
-<translation id="8414030140103493759">ඡායාරූපය හෝ වීඩියෝව ගන්න</translation>
 <translation id="8414283596511250978">ඔබේ මුරපද කිසිදා අමතක නොකරන්න</translation>
 <translation id="8415120635186642416">ඕනෑම දෙයක් ගැන පර්යේෂණ කරන්න</translation>
 <translation id="842523302461531262">සැකසීම් තුළ පෙරනිමි බවට පත් කරන්න…</translation>
@@ -2192,7 +2188,6 @@
 <translation id="8473863474539038330">ලිපින සහ තව</translation>
 <translation id="8474378002946546633">දැනුම්දීම්වලට ඉඩ දෙන්න</translation>
 <translation id="8477178913400731244">දත්ත මකන්න</translation>
-<translation id="847939250509903814">ඡායාරූප පුස්තකාලය</translation>
 <translation id="8481184073299279701">සියලුම පටිතිවලින් අනාගත ජාවාස්ක්‍රිප්ට් කොන්සෝල ලොග සහ දෝෂ එකතු කිරීමට "ලොග් කිරීම පටන් ගන්න" බොත්තමට තට්ටු කරන්න. මෙම පිටුව වසන තෙක් හෝ "ලොග් කිරීම නවත්වන්න" තට්ටු කරන තෙක් ලොග් කිරීම් රැස් කරනු ලැබේ (සහ මතකය තුළ පමණක් ගබඩා කරනු ලැබේ).</translation>
 <translation id="8487667956631253959">ක්‍රියාත්මකයි</translation>
 <translation id="8487700953926739672">නොබැඳිව ලද  හැක</translation>

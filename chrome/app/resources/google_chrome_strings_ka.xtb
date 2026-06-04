@@ -79,7 +79,6 @@
 <translation id="177180974022074201">ცადეთ Gemini Chrome-ში</translation>
 <translation id="1786003790898721085">დარწმუნდით, რომ თქვენს <ph name="TARGET_DEVICE_NAME" />-ზე შესული ხართ Chrome-ში, შემდეგ კი ხელახლა ცადეთ გაგზავნა.</translation>
 <translation id="1786044937610313874">მალსახმობები იხსნება Chrome-ში</translation>
-<translation id="178701303897325119">ეს გაფართოება აღარ არის მხარდაჭერილი. Chrome გირჩევთ მის ამოშლას.</translation>
 <translation id="1812689907177901597">ამ პარამეტრის გამორთვის შემთხვევაში, Google-ის საიტებში (მაგალითად, Gmail-ში) შესვლას შეძლებთ Chrome-ში შესვლის გარეშე</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome გირჩევთ, დააპაუზოთ ჩანართი, რომელიც ანელებს თქვენი ბრაუზერის მუშაობას}other{Chrome გირჩევთ, დააპაუზოთ ჩანართები, რომლებიც ანელებს თქვენი ბრაუზერის მუშაობას}}</translation>
 <translation id="1832046143430087831">აჩქარებს Chrom-ის V8 მექანიზმის მქონე საიტების მუშაობას, მაგრამ Chrom ოდნავ ნაკლებად უძლებს შეტევებს. ეს პარამეტრი გამორთულია.</translation>
@@ -154,6 +153,7 @@
 <translation id="2580411288591421699">შეუძლებელია იმავე Google Chrome-ის ვერსიის დაყენება, რომელიც ამჟამად გაშვებულია. დახურეთ Google Chrome და ხელახლა სცადეთ.</translation>
 <translation id="2586406160782125153">ეს მოქმედება წაშლის თქვენს დათვალიერების მონაცემებს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">ჩამოტვირთული ინსტალატორის ქეშირება ვერ მოხერხდა. შეცდომა: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">მიიღეთ ამ დოკუმენტის სწრაფი მიმოხილვა და დასვით შეკითხვები Gemini-ს მეშვეობით Chrome-ში</translation>
 <translation id="2620436844016719705">სისტემა</translation>
 <translation id="263447411082773721">დაასინქრონეთ თქვენი პაროლები, სანიშნეები და ისტორია თქვენს მოწყობილობებში. ნაგულისხმევ ბრაუზერად Chrome-ის დაყენებით მარტივად მიიღეთ წვდომა თქვენთვის ნაცნობ და საყვარელ ფუნქციებზე. Chrome ჩამაგრდება თქვენს ამოცანათა ზოლში სწრაფი წვდომისთვის.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -161,6 +161,7 @@
 <translation id="2652691236519827073">ბმულის გახსნა Chrome-ის ახალ ჩა&amp;ნართში</translation>
 <translation id="2665296953892887393">დაგვეხმარეთ Google Chrome-ის გაუმჯობესებაში: გამოგზავნეთ მოხსენებები შეცდომების შესახებ <ph name="UMA_LINK" /> Google-ში</translation>
 <translation id="2668094785979141847">დააწკაპუნეთ Google Lens-იდან გასასვლელად</translation>
+<translation id="2674238339205910678">ChromeOS Flex-მა ვერ შეინახა Chrome-ის მონაცემები თქვენს Google ანგარიშში, რადგან თქვენი ანგარიშის შესვლის დეტალები მოძველებულია</translation>
 <translation id="2681444469812712297">გახსენით <ph name="URL" /> Google Chrome-ის ახალ ჩანართში.</translation>
 <translation id="2699790011615497488">Gemini Chrome Beta-ში გახსნა</translation>
 <translation id="2712141162840347885">აირჩიეთ ის, რისი მოძებნაც გსურთ Google Lens-ით, ან დააჭირეთ Escape-ს Google Lens-იდან გასასვლელად</translation>
@@ -539,6 +540,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6497147134301593682">Chrome ავტომატურად დაიხურა</translation>
 <translation id="6506909944137591434">თქვენი შემოგარენის 3-განზომილებიანი რუკის შესაქმნელად Chrome საჭიროებს მეხსიერებაზე წვდომის ნებართვას</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex-მა ვერ შეინახა Chrome-ის მონაცემები თქვენს Google ანგარიშში ავტორიზაციის შეცდომის გამო</translation>
 <translation id="6520670145826811516">თქვენი მდებარეობა რომ გამოიყენოთ, გახსენით <ph name="BEGIN_LINK" />სისტემის პარამეტრები<ph name="END_LINK" /> და მიანიჭეთ Chrome-ს წვდომა</translation>
 <translation id="652948702951888897">Chrome ისტორია</translation>
 <translation id="6532945796722480006">Gemini in Chrome Canary-ში გახსნა</translation>
@@ -586,6 +588,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7011190694940573312">ინსტალაცია ვერ მოხერხდა, რადგან ოპერაციული სისტემის ეს ვერსია მხარდაჭერილი არ არის.</translation>
 <translation id="7024536598735240744">შეცდომა ამოღებისას: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">აქ შეგიძლიათ Chrome პროფილებს შორის გადართვა</translation>
+<translation id="7026856149118332950">აირჩიეთ <ph name="BEGIN_BOLD" />დიახ<ph name="END_BOLD" /> Windows-ის შეტყობინებაში, რათა ჩაამაგროთ Chrome ამოცანათა ზოლში სწრაფი წვდომისთვის.</translation>
 <translation id="7047386856539490735">გამოგადგათ ეს შედეგები?</translation>
 <translation id="7051685429025310665">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">მოირგეთ Chrome</translation>
@@ -678,6 +681,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7890208801193284374">თუ თქვენ აზიარებთ კომპიუტერს, თქვენი მეგობრები და ოჯახის წევრები შეძლებენ ინტერნეტ-გვერდების დამოუკიდებლად დათვალიერებას და Chrome-ის დაყენებას საკუთარი სურვილის შესაბამისად.</translation>
 <translation id="7896673875602241923">Chrome-ში უკვე განხორციელდა შესვლა ამ კომპიუტერიდან, როგორც <ph name="ACCOUNT_EMAIL_LAST" />. გთხოვთ, შექმნათ Chrome-ის ახალი მომხმარებელი თქვენი ინფორმაციის ცალკე შესანახად.</translation>
 <translation id="7904985524660297937">ცადეთ Gemini Google Chrome-ში</translation>
+<translation id="7905880575591690197">ChromeOS-მა ვერ შეინახა Chrome-ის მონაცემები თქვენს Google ანგარიშში ავტორიზაციის შეცდომის გამო</translation>
 <translation id="7917876797003313048">შეგიძლიათ მართოთ თქვენი სისტემაში შესული Google ანგარიშები. თქვენი Google ანგარიშები გამოიყენება Chrome ბრაუზერისთვის, Play Store-ისთვის, Gmail-ისთვის და სხვა პროდუქტებისთვის. თუ სხვისი, მაგალითად, ოჯახის წევრის, ანგარიშის დამატება გსურთ, სანაცვლოდ დაამატეთ ახალი პიროვნება თქვენს <ph name="DEVICE_TYPE" />-ს. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome-მა დაბლოკა ეს ჩამოტვირთვა, რადგან ეს ფაილი შეცდომაში შემყვანია და მას შეუძლია მოულოდნელი ცვლილებების განხორციელება თქვენს მოწყობილობაზე</translation>
 <translation id="7951272445806340501">ChromeOS Flex უნდა გადაიტვირთოს განახლების გასააქტიურებლად.</translation>
@@ -753,6 +757,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8624541899164515475">პარამეტრები, გაიხსნება ახალ ჩანართში.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ხელახლა გაეშვება 1 წუთში}other{Chrome ხელახლა გაეშვება # წუთში}}</translation>
 <translation id="8637932705841171563">თქვენი ფანჯრის გასაზიარებლად დაუშვით ეკრანის ჩაწერა Chrome-ისთვის სისტემის პარამეტრებში</translation>
+<translation id="8642497536370021917">დაადასტურეთ ვინაობა, რომ თქვენს Google ანგარიშში გამოიყენოთ და შეინახოთ Chrome-ის მონაცემები</translation>
 <translation id="8656634243791296665">Gemini Chrome Dev-ში გახსნა</translation>
 <translation id="8669527147644353129">Google Chrome-ის დახმარება</translation>
 <translation id="8679801911857917785">იგი, ასევე, აკონტროლებს, თუ რომელი გვერდი გამოჩნდება Chrome-ის გაშვებისას.</translation>
@@ -802,6 +807,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="93760716455950538">გადატვირთეთ ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome გირჩევთ, დაასკანიროთ ეს ფაილი, რადგან ის შეიძლება სახიფათო იყოს.</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
+<translation id="973195869036269770">ChromeOS-მა ვერ შეინახა Chrome-ის მონაცემები თქვენს Google ანგარიშში, რადგან თქვენი ანგარიშის შესვლის დეტალები მოძველებულია</translation>
 <translation id="983803489796659991">ინსტალაცია ვერ მოხერხდა, რადგან განახლების სერვერს არ აქვს ამ აპლიკაციის ჰეშ-მონაცემები.</translation>
 <translation id="989369509083708165">Google Chrome თქვენი ნაგულისხმევი ბრაუზერია</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> გადართავს Chrome პროფილებს</translation>

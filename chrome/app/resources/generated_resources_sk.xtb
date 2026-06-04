@@ -1453,7 +1453,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2048182445208425546">Prístup k sieťovej premávke</translation>
 <translation id="2048254245884707305">Kontroluje sa prítomnosť malvéru…</translation>
 <translation id="204914487372604757">Vytvoriť odkaz</translation>
-<translation id="2049573977943974163">Chcete zapnúť <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">Na výšku</translation>
 <translation id="2051555741181591333">Automaticky deaktivovať hotspot</translation>
 <translation id="2051669996101374349">Používajte protokol HTTPS vždy, keď je to možné, a dostávajte upozornenia pred načítaním webov, ktoré ho nepodporujú. Toto nastavenie nemôžete zmeniť, pretože máte povolenú rozšírenú ochranu.</translation>
@@ -6004,7 +6003,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5372529912055771682">Poskytnutý režim registrácie v tejto verzii operačného systému už nie je podporovaný. Uistite sa, že používate najnovšiu verziu a skúste to znova.</translation>
 <translation id="5372579129492968947">Odopnúť rozšírenie</translation>
 <translation id="5372632722660566343">Pokračovať bez účtu</translation>
-<translation id="5372990315769030589">Chcete si <ph name="EXTENSION_NAME" /> ponechať?</translation>
 <translation id="5375318608039113175">Ak chcete s týmito kontaktmi používať Zdieľanie nablízku, pridajte e‑mailové adresy prepojené s ich účtami Google do svojich kontaktov.</translation>
 <translation id="5375374982898812658">Okamžite stratíte prístup ku skupine kariet <ph name="GROUP_NAME" />, ktorá bude odstránená zo všetkých vašich zariadení</translation>
 <translation id="5375517140689139594">Režim čítania (<ph name="READING_MODE_SHORTCUT" />)</translation>

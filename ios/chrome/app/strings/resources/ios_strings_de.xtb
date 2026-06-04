@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">Identität bestätigen…</translation>
 <translation id="1634520742547161889">MM/JJ</translation>
 <translation id="1636234353664774105">Mit der detaillierten Routenführung eine Wegbeschreibung zu deinem Ziel erhalten</translation>
-<translation id="1637811476055996098">Dateien auswählen</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="164673457281113247">{count,plural, =1{Lesezeichen wurde gespeichert}other{Lesezeichen wurden gespeichert}}</translation>
@@ -487,6 +486,7 @@
 <translation id="2640733327287333451">Kein Nutzername ••••••</translation>
 <translation id="264215785133931186">Zuletzt geprüft: gerade eben</translation>
 <translation id="2647434099613338025">Sprache hinzufügen</translation>
+<translation id="2648812801228676606">Du bist weiterhin als <ph name="NAME_OR_EMAIL" /> angemeldet</translation>
 <translation id="2649592894792404568">Du bist dabei, deine Daten im Google Passwortmanager zu löschen</translation>
 <translation id="2652129567809778422">Passwort auswählen</translation>
 <translation id="2658056020748144467">Fehler beim Öffnen der Datei</translation>
@@ -1457,7 +1457,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6045460247888249350">Titel hinzufügen</translation>
 <translation id="6052269326659653305">Profil wechseln</translation>
 <translation id="605721222689873409">JJ</translation>
-<translation id="6058415747854995776">Video aufnehmen</translation>
 <translation id="6059830886158432458">Hier kannst du festlegen, welche Meldungen und Aktivitäten dir angezeigt werden</translation>
 <translation id="6063802271331271857">Bild neu gestalten</translation>
 <translation id="6066301408025741299">Zum Abbrechen tippen</translation>
@@ -1850,7 +1849,6 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7347998088283246662">Du kannst Passwörter, deinen Verlauf, Lesezeichen und mehr importieren</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
 <translation id="7357999308187750900">Alle ansehen</translation>
-<translation id="7364796246159120393">Datei auswählen</translation>
 <translation id="736564850024123010">Du kannst die Position der Adressleiste verschieben, um den Browser an deine Bedürfnisse anzupassen.</translation>
 <translation id="7366909168761621528">Browserdaten</translation>
 <translation id="7367530036083223701">Mit dem Widget „Passwortmanager“ kannst du vom Startbildschirm aus sicher auf deine Passwörter zugreifen.</translation>
@@ -2012,7 +2010,6 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7866872729285243843">Wenn du deine Leseliste auf allen deinen Geräten sehen möchtest, aktiviere in den Einstellungen die Option „Leseliste“.</translation>
 <translation id="7874107544081154809">Formular mit <ph name="CELL_ACCESSIBILITY_LABEL" /> automatisch ausfüllen</translation>
 <translation id="7879275349003161544">Downloads anzeigen</translation>
-<translation id="7882689957034389473">Foto aufnehmen</translation>
 <translation id="7883882164760409935">Du nutzt wiederverwendete Passwörter.</translation>
 <translation id="7887198238286927132">Um deine Daten zu schützen, füllt Chrome dieses Feld nicht automatisch aus.</translation>
 <translation id="7887552845761062935">Doppeltippen und gedrückt halten, um weitere Optionen zu öffnen</translation>
@@ -2174,7 +2171,6 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8395180897620197612">Protokollierung anhalten</translation>
 <translation id="8407669440184693619">Keine Passwörter für diese Website gefunden</translation>
 <translation id="8407831512155324054">Deine Passwörter sind stark</translation>
-<translation id="8414030140103493759">Foto / Video aufnehmen</translation>
 <translation id="8414283596511250978">Nie wieder Passwörter vergessen</translation>
 <translation id="8415120635186642416">Recherchieren</translation>
 <translation id="842523302461531262">Zu den Einstellungen</translation>
@@ -2192,7 +2188,6 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8473863474539038330">Adressen und andere Daten</translation>
 <translation id="8474378002946546633">Benachrichtigungen zulassen</translation>
 <translation id="8477178913400731244">Daten löschen</translation>
-<translation id="847939250509903814">Fotogalerie</translation>
 <translation id="8481184073299279701">Tippe auf den Button „Protokollierung starten“, um künftig Protokolle und Fehler von allen Tabs der JavaScript-Konsole zu erheben. Protokolle werden erfasst und ausschließlich im Speicher aufbewahrt, bis die Seite geschlossen oder auf „Protokoll anhalten“ getippt wird.</translation>
 <translation id="8487667956631253959">An</translation>
 <translation id="8487700953926739672">Offline verfügbar</translation>

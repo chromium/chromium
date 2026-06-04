@@ -1449,7 +1449,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2048182445208425546">Pristup mrežnom saobraćaju</translation>
 <translation id="2048254245884707305">Traži se malver...</translation>
 <translation id="204914487372604757">Napravi prečicu</translation>
-<translation id="2049573977943974163">Želite da uključite <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2051555741181591333">Automatski onemogući hotspot</translation>
 <translation id="2051669996101374349">Koristite HTTPS kad god je to moguće i dobijajte upozorenje pre učitavanja sajtova koji ga ne podržavaju. Ne možete da promenite ovo podešavanje jer je omogućena Napredna zaštita.</translation>
@@ -6001,7 +6000,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5372529912055771682">Ova verzija operativnog sistema ne podržava navedeni režim prijavljivanja. Proverite da li koristite najnoviju verziju i pokušajte ponovo.</translation>
 <translation id="5372579129492968947">Otkačite dodatak</translation>
 <translation id="5372632722660566343">Nastavi bez naloga</translation>
-<translation id="5372990315769030589">Želite da zadržite <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5375318608039113175">Da biste koristili Deljenje u blizini sa ovim kontaktima, dodajte imejl adrese povezane sa Google nalozima tih osoba u kontakte.</translation>
 <translation id="5375374982898812658">Odmah ćete izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će biti izbrisana sa svih uređaja</translation>
 <translation id="5375517140689139594">Režim za čitanje (<ph name="READING_MODE_SHORTCUT" />)</translation>

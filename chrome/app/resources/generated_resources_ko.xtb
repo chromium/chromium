@@ -1464,7 +1464,6 @@
 <translation id="2048182445208425546">네트워크 트래픽에 액세스</translation>
 <translation id="2048254245884707305">멀웨어 검사 중...</translation>
 <translation id="204914487372604757">바로가기 만들기</translation>
-<translation id="2049573977943974163">"<ph name="EXTENSION_NAME" />"를 사용 설정하시겠습니까?</translation>
 <translation id="2050339315714019657">세로 방향</translation>
 <translation id="2051555741181591333">핫스팟 자동 사용 중지</translation>
 <translation id="2051669996101374349">가능하면 항상 HTTPS를 사용하고 이를 지원하지 않는 사이트를 로드하기 전에 경고를 표시합니다. 고급 보호가 사용 설정되어 있으므로 이 설정을 변경할 수 없습니다.</translation>
@@ -6019,7 +6018,6 @@
 <translation id="5372529912055771682">제공된 등록 모드는 해당 버전의 운영 체제에서 지원되지 않습니다. 최신 버전을 실행하고 있는지 확인한 뒤 다시 시도하세요.</translation>
 <translation id="5372579129492968947">확장 프로그램 고정 해제</translation>
 <translation id="5372632722660566343">계정 없이 계속</translation>
-<translation id="5372990315769030589">"<ph name="EXTENSION_NAME" />" 확장 프로그램을 계속 사용하시겠습니까?</translation>
 <translation id="5375318608039113175">이 연락처와 Nearby Share를 사용하려면 사용자의 Google 계정에 연결된 이메일 주소를 내 연락처에 추가하세요.</translation>
 <translation id="5375374982898812658">'<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="5375517140689139594">읽기 모드(<ph name="READING_MODE_SHORTCUT" />)</translation>

@@ -306,6 +306,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1458140305240870199">Unterwäsche</translation>
 <translation id="1458770162980644530">Bildschirm mit den Nutzungsbedingungen für „Jetzt kaufen, später bezahlen“. Tastatur ausgeblendet.</translation>
 <translation id="1459693405370120464">Wetter</translation>
+<translation id="1460317464907341501">Diese E‑Mail-Adresse automatisch bestätigen?</translation>
 <translation id="1461041542809785877">Leistung</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Die Schriftarten auf deinem Computer verwenden, damit du High Fidelity-Inhalte erstellen kannst</translation>
@@ -2003,6 +2004,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="412601465078863288">Zeitüberschreitung beim Hochladen</translation>
 <translation id="4127317221386336246">Accessoires</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 weiterer}other{# weitere}}</translation>
+<translation id="4129810348470013900">Ein Fehler ist aufgetreten. Prüfe deine Internetverbindung und versuche es noch einmal.</translation>
 <translation id="4129992181550680635">Bildungsressourcen</translation>
 <translation id="4130226655945681476">Netzwerkkabel, Modem und Router prüfen</translation>
 <translation id="4132448310531350254">Doppelte Handler für die Dateierweiterung „<ph name="FILE_EXTENSION" />“, referenziert durch die Apps „<ph name="POLICY_IDS_LIST" />“.</translation>

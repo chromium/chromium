@@ -1453,7 +1453,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2048182445208425546">Accéder au trafic de votre réseau</translation>
 <translation id="2048254245884707305">Recherche de logiciels malveillants...</translation>
 <translation id="204914487372604757">Créer un raccourci</translation>
-<translation id="2049573977943974163">Activer <ph name="EXTENSION_NAME" /> ?</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2051555741181591333">Désactiver automatiquement le point d'accès</translation>
 <translation id="2051669996101374349">Utilisez HTTPS autant que possible et recevez un avertissement avant de charger des sites qui ne le prennent pas en charge. Vous ne pouvez pas modifier ce paramètre, car la Protection Avancée est activée.</translation>
@@ -6002,7 +6001,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5372529912055771682">Le mode d'enregistrement fourni n'est pas compatible avec cette version du système d'exploitation. Veuillez vous assurer que vous utilisez bien la dernière version, puis réessayer.</translation>
 <translation id="5372579129492968947">Retirer l'extension</translation>
 <translation id="5372632722660566343">Continuer sans compte</translation>
-<translation id="5372990315769030589">Conserver <ph name="EXTENSION_NAME" /> ?</translation>
 <translation id="5375318608039113175">Pour utiliser le Partage à proximité avec ces contacts, ajoutez à ceux-ci l'adresse e-mail associée à leur compte Google.</translation>
 <translation id="5375374982898812658">Vous perdrez immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", qui sera supprimé de tous vos appareils</translation>
 <translation id="5375517140689139594">Mode Lecture (<ph name="READING_MODE_SHORTCUT" />)</translation>

@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">Verify that it's you…</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">Get directions to your destination with turn-by-turn guidance using the navigation feature.</translation>
-<translation id="1637811476055996098">Choose files</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="164673457281113247">{count,plural, =1{Bookmark saved}other{Bookmarks saved}}</translation>
@@ -1457,7 +1456,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6045460247888249350">Add title</translation>
 <translation id="6052269326659653305">Switch profile</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6058415747854995776">Take video</translation>
 <translation id="6059830886158432458">Control your stories and activity here</translation>
 <translation id="6063802271331271857">Remix an image</translation>
 <translation id="6066301408025741299">Tap to cancel.</translation>
@@ -1850,7 +1848,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7347998088283246662">Import passwords, history, bookmarks and more</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7357999308187750900">See all</translation>
-<translation id="7364796246159120393">Choose file</translation>
 <translation id="736564850024123010">Switch the position of your address bar for a customised experience.</translation>
 <translation id="7366909168761621528">Browsing data</translation>
 <translation id="7367530036083223701">Securely access your passwords from the home screen with the Password Manager widget.</translation>
@@ -2012,7 +2009,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7866872729285243843">To get your reading list on all your devices, turn on 'Reading list' in Settings.</translation>
 <translation id="7874107544081154809">Autofill form with <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">Show downloads</translation>
-<translation id="7882689957034389473">Take photo</translation>
 <translation id="7883882164760409935">You have reused passwords.</translation>
 <translation id="7887198238286927132">To protect your privacy, Chrome will not auto-fill this field.</translation>
 <translation id="7887552845761062935">Double-tap and hold to open more options</translation>
@@ -2174,7 +2170,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8395180897620197612">Stop logging</translation>
 <translation id="8407669440184693619">No passwords found for this site</translation>
 <translation id="8407831512155324054">Your passwords look strong</translation>
-<translation id="8414030140103493759">Take photo or video</translation>
 <translation id="8414283596511250978">Never forget your passwords</translation>
 <translation id="8415120635186642416">Research anything</translation>
 <translation id="842523302461531262">Make default in settings…</translation>
@@ -2192,7 +2187,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8474378002946546633">Allow notifications</translation>
 <translation id="8477178913400731244">Delete data</translation>
-<translation id="847939250509903814">Photo library</translation>
 <translation id="8481184073299279701">Tap the 'Start logging' button to collect future JavaScript console logs and errors from all tabs. Logs will be collected (and stored only in memory) until this page is closed or 'Stop logging' is tapped.</translation>
 <translation id="8487667956631253959">On</translation>
 <translation id="8487700953926739672">Available offline</translation>

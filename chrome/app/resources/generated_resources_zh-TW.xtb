@@ -1453,7 +1453,6 @@
 <translation id="2048182445208425546">存取你的網路流量</translation>
 <translation id="2048254245884707305">正在檢查惡意軟體...</translation>
 <translation id="204914487372604757">建立捷徑</translation>
-<translation id="2049573977943974163">要開啟「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="2050339315714019657">直向</translation>
 <translation id="2051555741181591333">自動停用無線基地台</translation>
 <translation id="2051669996101374349">盡可能使用 HTTPS，並在載入不支援該通訊協定的網站前發出警告。由於「進階保護」功能已啟用，因此你無法變更這項設定。</translation>
@@ -5997,7 +5996,6 @@
 <translation id="5372529912055771682">這個版本的作業系統不支援提供註冊模式。請確認你使用的是最新版本，然後再試一次。</translation>
 <translation id="5372579129492968947">取消固定擴充功能</translation>
 <translation id="5372632722660566343">繼續進行設定但不選擇帳戶</translation>
-<translation id="5372990315769030589">要保留「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="5375318608039113175">如要與這些聯絡人使用鄰近分享功能，請把對方用來連結 Google 帳戶的電子郵件地址，加到聯絡人清單。</translation>
 <translation id="5375374982898812658">你將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，且該群組會從你的所有裝置中刪除</translation>
 <translation id="5375517140689139594">閱讀模式 (<ph name="READING_MODE_SHORTCUT" />)</translation>

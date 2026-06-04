@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">Verifiera din identitet …</translation>
 <translation id="1634520742547161889">MM/ÅÅ</translation>
 <translation id="1636234353664774105">Få en detaljerad vägbeskrivning dit du ska med hjälp av navigeringsfunktionen</translation>
-<translation id="1637811476055996098">Välj filer</translation>
 <translation id="1641113438599504367">Säker webbsökning</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="164673457281113247">{count,plural, =1{Bokmärket har sparats}other{Bokmärkena har sparats}}</translation>
@@ -487,6 +486,7 @@
 <translation id="2640733327287333451">Inget användarnamn ••••••</translation>
 <translation id="264215785133931186">Kontrollerades alldeles nyss</translation>
 <translation id="2647434099613338025">Lägg till språk</translation>
+<translation id="2648812801228676606">Du förblev inloggad som <ph name="NAME_OR_EMAIL" /></translation>
 <translation id="2649592894792404568">Du håller på att radera din data i Google Lösenordshantering</translation>
 <translation id="2652129567809778422">Välj lösenord</translation>
 <translation id="2658056020748144467">Det gick inte att öppna filen</translation>
@@ -1457,7 +1457,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6045460247888249350">Lägg till titel</translation>
 <translation id="6052269326659653305">Byt profil</translation>
 <translation id="605721222689873409">ÅÅ</translation>
-<translation id="6058415747854995776">Spela in video</translation>
 <translation id="6059830886158432458">Styr dina berättelser och din aktivitet här</translation>
 <translation id="6063802271331271857">Remixa en bild</translation>
 <translation id="6066301408025741299">Avbryt genom att trycka här.</translation>
@@ -1850,7 +1849,6 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7347998088283246662">Importera lösenord, historik, bokmärken med mera</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7357999308187750900">Visa alla</translation>
-<translation id="7364796246159120393">Välj fil</translation>
 <translation id="736564850024123010">Anpassa upplevelsen genom att ändra adressfältets position.</translation>
 <translation id="7366909168761621528">Webbinformation</translation>
 <translation id="7367530036083223701">Få säker åtkomst till dina lösenord från startskärmen med widgeten för Lösenordshantering.</translation>
@@ -2012,7 +2010,6 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7866872729285243843">Aktivera Läslista i inställningarna om du vill få tillgång till din läslista på alla dina enheter.</translation>
 <translation id="7874107544081154809">Autofyll formulär med <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">Visa nedladdningar</translation>
-<translation id="7882689957034389473">Ta foto</translation>
 <translation id="7883882164760409935">Du har återanvända lösenord.</translation>
 <translation id="7887198238286927132">Av integritetsskäl fylls det här fältet inte i automatiskt.</translation>
 <translation id="7887552845761062935">Dubbeltryck och håll kvar fingret för att öppna fler alternativ</translation>
@@ -2174,7 +2171,6 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8395180897620197612">Stoppa loggning</translation>
 <translation id="8407669440184693619">Inga lösenord hittades för webbplatsen</translation>
 <translation id="8407831512155324054">Lösenorden ser starka ut</translation>
-<translation id="8414030140103493759">Ta foto eller spela in video</translation>
 <translation id="8414283596511250978">Glöm aldrig dina lösenord</translation>
 <translation id="8415120635186642416">Gör research om vad som helst</translation>
 <translation id="842523302461531262">Använd som standard i Inställningar …</translation>
@@ -2192,7 +2188,6 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8473863474539038330">Adresser och annat</translation>
 <translation id="8474378002946546633">Tillåt meddelanden</translation>
 <translation id="8477178913400731244">Ta bort data</translation>
-<translation id="847939250509903814">Fotobibliotek</translation>
 <translation id="8481184073299279701">Tryck på Starta loggning för att registrera loggar och fel från JavaScript-konsoler från alla flikar. Loggar registreras (och sparas bara i minnet) tills den här sidan stängs eller du trycker på Avbryt loggning.</translation>
 <translation id="8487667956631253959">På</translation>
 <translation id="8487700953926739672">Tillgänglig offline</translation>

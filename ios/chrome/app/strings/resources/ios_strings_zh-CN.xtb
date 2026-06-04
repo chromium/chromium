@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">验证身份…</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">使用导航功能查询前往目的地的精细路线指导</translation>
-<translation id="1637811476055996098">选择文件</translation>
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="164673457281113247">{count,plural, =1{书签已保存}other{个书签已保存}}</translation>
@@ -363,7 +362,7 @@
 <translation id="2196428379625389579">在网络上搜索</translation>
 <translation id="2199562093267256223">此操作会从已登录 <ph name="USER_EMAIL" /> 的所有设备中删除该分组。</translation>
 <translation id="2202084845446535117">没有电子邮件账号</translation>
-<translation id="2214453882118345682">使用相机购买、翻译和识别所见内容。</translation>
+<translation id="2214453882118345682">打开相机，轻松购物、实时翻译、拍照识物。</translation>
 <translation id="2216366330550244277">前往商品页面</translation>
 <translation id="2219935992754556187">Chrome 可利用面容 ID 确保您的敏感数据安全</translation>
 <translation id="2220529011494928058">报告问题</translation>
@@ -637,7 +636,7 @@
 <translation id="3190736958609431397">取消跟踪</translation>
 <translation id="3208260410153224535">您的组织关闭了登录功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
 <translation id="3211969308836412674">取消固定网站</translation>
-<translation id="3213807041830307252">使用相机和图库购买、翻译和识别所见内容。</translation>
+<translation id="3213807041830307252">打开相机和图库，轻松购物、实时翻译、拍照识物。</translation>
 <translation id="3214379938835224220">您在 iPad 重置过程中退出了账号。点按下方的“继续”即可登录。</translation>
 <translation id="3218296450292600703">登录受管理的账号后，您就能将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开</translation>
 <translation id="3224075676564434205">相应标签页将在此设备上保持打开状态，但该分组会从所有已登录 <ph name="USER_EMAIL" /> 的设备中删除。</translation>
@@ -1457,7 +1456,6 @@
 <translation id="6045460247888249350">添加标题</translation>
 <translation id="6052269326659653305">切换个人资料</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6058415747854995776">拍摄视频</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
 <translation id="6063802271331271857">为图片改换风格</translation>
 <translation id="6066301408025741299">点按可取消。</translation>
@@ -1850,7 +1848,6 @@
 <translation id="7347998088283246662">导入密码、历史记录、书签等</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7357999308187750900">查看全部</translation>
-<translation id="7364796246159120393">选择文件</translation>
 <translation id="736564850024123010">更换地址栏的位置，获享个性化体验。</translation>
 <translation id="7366909168761621528">浏览数据</translation>
 <translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>
@@ -2012,7 +2009,6 @@
 <translation id="7866872729285243843">若要将阅读清单同步到您的所有设备上，请在设置中开启“阅读清单”。</translation>
 <translation id="7874107544081154809">使用<ph name="CELL_ACCESSIBILITY_LABEL" />自动填充表单</translation>
 <translation id="7879275349003161544">显示下载内容</translation>
-<translation id="7882689957034389473">拍照</translation>
 <translation id="7883882164760409935">您有重复使用的密码。</translation>
 <translation id="7887198238286927132">为保护您的隐私，Chrome 不会自动填充此字段。</translation>
 <translation id="7887552845761062935">点按两次并按住即可显示更多选项</translation>
@@ -2174,7 +2170,6 @@
 <translation id="8395180897620197612">停止日志记录</translation>
 <translation id="8407669440184693619">未找到此网站的密码</translation>
 <translation id="8407831512155324054">您的密码看起来安全系数较高</translation>
-<translation id="8414030140103493759">拍摄照片或视频</translation>
 <translation id="8414283596511250978">再也不必担心忘记密码</translation>
 <translation id="8415120635186642416">研究任何内容</translation>
 <translation id="842523302461531262">在“设置”中设为默认选项…</translation>
@@ -2192,7 +2187,6 @@
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8474378002946546633">允许通知</translation>
 <translation id="8477178913400731244">删除数据</translation>
-<translation id="847939250509903814">照片库</translation>
 <translation id="8481184073299279701">点按“开始记录”按钮，即可从所有标签页中收集日后的 JavaScript 控制台日志和错误。系统会一直收集（并仅在内存中存储）日志，直到用户关闭此页面或点按“停止记录”。</translation>
 <translation id="8487667956631253959">已开启</translation>
 <translation id="8487700953926739672">可离线使用</translation>
@@ -2399,7 +2393,7 @@
 <translation id="9107664647686727385">检查是否有已泄露的密码</translation>
 <translation id="9119764377203471454">无法添加附件</translation>
 <translation id="9124387962554796433">Google 可能会使用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务。</translation>
-<translation id="9124978074365039456">使用相机和图库购买、翻译和识别所见内容</translation>
+<translation id="9124978074365039456">打开相机和图库，轻松购物、实时翻译、拍照识物</translation>
 <translation id="9130317582644834675">隐藏“缩放文字”</translation>
 <translation id="913036870884277353">轻松打开其他应用中的链接。</translation>
 <translation id="9137013805542155359">显示原始网页</translation>

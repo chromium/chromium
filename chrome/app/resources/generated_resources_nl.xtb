@@ -1453,7 +1453,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2048182445208425546">Toegang tot je netwerkverkeer</translation>
 <translation id="2048254245884707305">Checken op malware...</translation>
 <translation id="204914487372604757">Snelle link maken</translation>
-<translation id="2049573977943974163"><ph name="EXTENSION_NAME" /> aanzetten?</translation>
 <translation id="2050339315714019657">Staand</translation>
 <translation id="2051555741181591333">Hotspot automatisch uitzetten</translation>
 <translation id="2051669996101374349">Gebruik waar mogelijk HTTPS en krijg een waarschuwing voordat er sites worden geladen die dit niet ondersteunen. Je kunt deze instelling niet wijzigen, omdat je Geavanceerde beveiliging hebt aangezet.</translation>
@@ -2338,6 +2337,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2673848446870717676">Zorg dat je bluetooth-apparaat in de koppelingsstand staat en in de buurt is. Koppel alleen met apparaten die je vertrouwt. Gekoppelde apparaten zijn zichtbaar voor alle accounts op deze Chromebook.</translation>
 <translation id="2673873887296220733">1 bestand naar <ph name="CLOUD_PROVIDER" /> kopiëren om te openen?</translation>
 <translation id="267442004702508783">vernieuwen</translation>
+<translation id="2674756932811577764">Effecten onderbreken</translation>
 <translation id="2675160405921703214">Maak kennis met Gemini in Chrome</translation>
 <translation id="2676084251379299915">Deze extensie is uitgezet op basis van bedrijfsbeleid omdat de extensie niet meer beschikbaar is in de Chrome Web Store.</translation>
 <translation id="2677748264148917807">Verlaten</translation>
@@ -3466,6 +3466,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="351152300840026870">Lettertype met vaste breedte</translation>
 <translation id="3511528412952710609">Kort</translation>
 <translation id="3512465804715993309">Aanpasbaar markeren</translation>
+<translation id="3512495006767217696">Geïntegreerd in Chrome om je te helpen sterke wachtwoorden te maken, op te slaan en automatisch in te vullen. Voeg de snelkoppeling toe voor makkelijke toegang</translation>
 <translation id="3513019849832307207">Deelnemen en openen</translation>
 <translation id="3513563267917474897">Schuifregelaar voor kleurtinten van <ph name="MIN_VALUE" /> tot <ph name="MAX_VALUE" /></translation>
 <translation id="3514647716686280777">Je krijgt standaardbescherming. Zet de uitgebreide versie van Safe Browsing aan in de Chrome-instellingen voor meer bescherming tegen gevaarlijke websites, downloads en extensies.</translation>
@@ -4952,6 +4953,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4580127151758731432">Grotere hoofdbewegingen bewegen de cursor verder</translation>
 <translation id="4580389561674319558">Zichtbaar voor alle contacten</translation>
 <translation id="4580596421317071374">Wachtwoorden worden opgeslagen in <ph name="GOOGLE_PASSWORD_MANAGER" /> op dit apparaat.</translation>
+<translation id="4580939929828762295">Veilig blijven met Google Wachtwoordmanager</translation>
 <translation id="4582297591746054421">Sites lezen je klembord meestal voor functies zoals behoud van opmaak van de tekst die je hebt gekopieerd</translation>
 <translation id="4582563038311694664">Alle instellingen opnieuw instellen</translation>
 <translation id="4584094413232466841">Deze informatie verwijderen uit automatisch invullen in Chrome?</translation>
@@ -6001,7 +6003,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5372529912055771682">De geleverde inschrijvingsmodus wordt niet ondersteund door deze versie van het besturingssysteem. Zorg ervoor dat je de nieuwste versie gebruikt en probeer het opnieuw.</translation>
 <translation id="5372579129492968947">Extensie losmaken</translation>
 <translation id="5372632722660566343">Doorgaan zonder account</translation>
-<translation id="5372990315769030589"><ph name="EXTENSION_NAME" /> behouden?</translation>
 <translation id="5375318608039113175">Als je Dichtbij delen met deze contacten wilt gebruiken, voeg je het e-mailadres dat bij hun Google-account hoort aan je contacten toe.</translation>
 <translation id="5375374982898812658">Je raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en de groep wordt verwijderd van al je apparaten</translation>
 <translation id="5375517140689139594">Leesmodus (<ph name="READING_MODE_SHORTCUT" />)</translation>
@@ -7243,6 +7244,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6307268917612054609">Apps en websites met camerarechten en systeemservices kunnen je camera gebruiken</translation>
 <translation id="6307990684951724544">Systeem is bezet</translation>
 <translation id="6308493641021088955">Inloggen mogelijk gemaakt door <ph name="EXTENSION_NAME" /></translation>
+<translation id="6308778163698400658">Toevoegen aan werkbalk</translation>
 <translation id="6308937455967653460">Lin&amp;k opslaan als...</translation>
 <translation id="6309443618838462258">Je beheerder staat deze invoermethode niet toe</translation>
 <translation id="6309510305002439352">Microfoon staat uit</translation>
@@ -7455,6 +7457,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6470823736074966819">Meldingen negeren</translation>
 <translation id="6472893788822429178">Homepage-knop tonen</translation>
 <translation id="6473315466413288899">Selecteer een optie</translation>
+<translation id="6473659734176498825">Een vereenvoudigde afbeelding van het toegangspunt voor Google Wachtwoordmanager in Chrome</translation>
 <translation id="6474498546677193336">Kan het delen niet opheffen omdat een app deze map gebruikt. Het delen van de map wordt opgeheven als Linux weer wordt uitgezet.</translation>
 <translation id="6474884162850599008">Google Drive-account ontkoppelen</translation>
 <translation id="6476482583633999078">Spraaksnelheid</translation>
@@ -8984,6 +8987,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7605594153474022051">Synchronisatie werkt niet</translation>
 <translation id="7606560865764296217">Animatie onderbreken</translation>
 <translation id="7606639338662398635">Tabbladgroepen</translation>
+<translation id="7606802863538485839">Effecten afspelen</translation>
 <translation id="7607002721634913082">Onderbroken</translation>
 <translation id="7608810328871051088">Android-voorkeuren</translation>
 <translation id="7610337976012700501">Als je <ph name="FEATURE_NAME" /> met deze contacten wilt gebruiken, voeg je het e-mailadres dat bij hun Google-account hoort aan je contacten toe.</translation>

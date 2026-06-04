@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">Sahkan identiti anda…</translation>
 <translation id="1634520742547161889">BB/TT</translation>
 <translation id="1636234353664774105">Dapatkan arah menuju destinasi anda dengan bimbingan sepanjang jalan menggunakan ciri navigasi</translation>
-<translation id="1637811476055996098">Pilih Fail</translation>
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="164673457281113247">{count,plural, =1{Penanda halaman disimpan}other{Penanda halaman disimpan}}</translation>
@@ -487,6 +486,7 @@
 <translation id="2640733327287333451">Tiada Nama Pengguna ••••••</translation>
 <translation id="264215785133931186">Disemak sebentar tadi</translation>
 <translation id="2647434099613338025">Tambah bahasa</translation>
+<translation id="2648812801228676606">Anda kekal log masuk sebagai <ph name="NAME_OR_EMAIL" /></translation>
 <translation id="2649592894792404568">Anda akan memadamkan data Google Password Manager anda</translation>
 <translation id="2652129567809778422">Pilih kata laluan</translation>
 <translation id="2658056020748144467">Tidak dapat membuka fail</translation>
@@ -1457,7 +1457,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6045460247888249350">Tambahkan tajuk</translation>
 <translation id="6052269326659653305">Tukar profil</translation>
 <translation id="605721222689873409">TT</translation>
-<translation id="6058415747854995776">Rakam Video</translation>
 <translation id="6059830886158432458">Kawal cerita dan aktiviti anda di sini</translation>
 <translation id="6063802271331271857">Adun semula imej</translation>
 <translation id="6066301408025741299">Ketik untuk membatalkan.</translation>
@@ -1850,7 +1849,6 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="7347998088283246662">Import kata laluan, sejarah, penanda halaman dan pelbagai lagi</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
 <translation id="7357999308187750900">Lihat Semua</translation>
-<translation id="7364796246159120393">Pilih Fail</translation>
 <translation id="736564850024123010">Tukar kedudukan bar alamat anda untuk mendapatkan pengalaman yang disesuaikan.</translation>
 <translation id="7366909168761621528">Data penyemakan imbas</translation>
 <translation id="7367530036083223701">Akses kata laluan anda dengan selamat daripada skrin utama dengan widget Password Manager.</translation>
@@ -2012,7 +2010,6 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="7866872729285243843">Untuk mendapatkan senarai bacaan pada semua peranti anda, hidupkan “Senarai Bacaan” dalam tetapan.</translation>
 <translation id="7874107544081154809">Autoisi borang dengan <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">Tunjukkan Muat Turun</translation>
-<translation id="7882689957034389473">Ambil Foto</translation>
 <translation id="7883882164760409935">Anda mempunyai kata laluan yang digunakan semula.</translation>
 <translation id="7887198238286927132">Untuk melindungi privasi anda, Chrome tidak akan mengisi medan ini secara automatik.</translation>
 <translation id="7887552845761062935">Ketik dua kali dan tahan untuk membuka lebih banyak pilihan</translation>
@@ -2174,7 +2171,6 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="8395180897620197612">Hentikan pengelogan</translation>
 <translation id="8407669440184693619">Tiada kata laluan ditemui untuk tapak ini</translation>
 <translation id="8407831512155324054">Kata laluan anda kelihatan kukuh</translation>
-<translation id="8414030140103493759">Ambil Foto atau Rakam Video</translation>
 <translation id="8414283596511250978">Tidak sekali-kali melupakan kata laluan anda</translation>
 <translation id="8415120635186642416">Buat penyelidikan tentang apa-apa sahaja</translation>
 <translation id="842523302461531262">Jadikan lalai dalam tetapan…</translation>
@@ -2192,7 +2188,6 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
 <translation id="8474378002946546633">Benarkan pemberitahuan</translation>
 <translation id="8477178913400731244">Padamkan data</translation>
-<translation id="847939250509903814">Pustaka Foto</translation>
 <translation id="8481184073299279701">Ketik butang "Hentikan pengelogan" untuk mengumpulkan log konsol JavaScript yang akan datang dan ralat daripada semua tab. Log akan dikumpulkan (dan disimpan dalam memori sahaja) sehingga halaman ini ditutup atau "Hentikan pengelogan" diketik.</translation>
 <translation id="8487667956631253959">Hidup</translation>
 <translation id="8487700953926739672">Tersedia di luar talian</translation>

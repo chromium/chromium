@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">Prikaz više emodžija</translation>
 <translation id="2328561734797404498">Ponovo pokrenite uređaj da koristite aplikaciju <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">Chromebook ili Bluetooth uređaj koristi stariju verziju Bluetootha. Koristite interni mikrofon za bolji kvalitet zvuka.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{Upravitelj <ph name="MANAGER" /> zahtijeva da se danas povežete s WiFi-jem da preuzmete ažuriranje. Ili preuzmite putem veze s naplatom (mogu nastati troškovi).}one{Upravitelj <ph name="MANAGER" /> zahtijeva da se povežete s WiFi-jem i preuzmete ažuriranje prije roka. Ili preuzmite putem veze s naplatom (mogu nastati troškovi).}few{Upravitelj <ph name="MANAGER" /> zahtijeva da se povežete s WiFi-jem i preuzmete ažuriranje prije roka. Ili preuzmite putem veze s naplatom (mogu nastati troškovi).}other{Upravitelj <ph name="MANAGER" /> zahtijeva da se povežete s WiFi-jem i preuzmete ažuriranje prije roka. Ili preuzmite putem veze s naplatom (mogu nastati troškovi).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Dodirnite dugme sa olovkom na polici da napišete bilješku, napravite snimak ekrana, koristite laserski pokazivač ili lupu.</translation>
 <translation id="2341729377289034582">Zaključan vertikalni prikaz</translation>
@@ -568,6 +569,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="2687510499067466116">Prečica tastature je promijenjena</translation>
 <translation id="2689613560355655046">Radna površina 8</translation>
 <translation id="2692092709110488417">Fokusiranje i pomicanje odabranog područja pritiskom na Tab</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Posljednji je dan da ažurirate uređaj <ph name="DEVICE_TYPE" />}one{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}few{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}other{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}}</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Pogledajte postavke tastature. Izabrana je tastatura <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Pomoću aplikacije Prenos sadržaja prenesite podatke školskog računa na lični račun</translation>
@@ -794,6 +796,7 @@ U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIME
 <translation id="334927402682780278">Odabir teksta od kursora do kraja reda</translation>
 <translation id="3349345708646875009">Otvorite upravitelja zadataka</translation>
 <translation id="3353786022389205125">Uključite "Prikaži zaključani ekran prilikom vraćanja iz stanja mirovanja" i pokušajte ponovo</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od 1 sedmice}one{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmice}few{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmice}other{Ažurirajte uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmica}}</translation>
 <translation id="3364721542077212959">Stilos alati</translation>
 <translation id="3365281428003534650">Postavite tajmer/zadatak/muziku</translation>
 <translation id="3365977133351922112">Vaš telefon je previše udaljen. Približite ga.</translation>
@@ -953,6 +956,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3741482431277446954">Desno dugme miša</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
 <translation id="3743775386021959186">Fokusiranje je uključeno. Još <ph name="REMAINING_TIME" /></translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{Upravitelj <ph name="MANAGER" /> zahtijeva da napravite sigurnosnu kopiju podataka i vratite uređaj <ph name="DEVICE_TYPE" /> danas.}one{Upravitelj <ph name="MANAGER" /> zahtijeva da napravite sigurnosnu kopiju podataka i vratite uređaj <ph name="DEVICE_TYPE" /> prije roka.}few{Upravitelj <ph name="MANAGER" /> zahtijeva da napravite sigurnosnu kopiju podataka i vratite uređaj <ph name="DEVICE_TYPE" /> prije roka.}other{Upravitelj <ph name="MANAGER" /> zahtijeva da napravite sigurnosnu kopiju podataka i vratite uređaj <ph name="DEVICE_TYPE" /> prije roka.}}</translation>
 <translation id="3750403286520637847">Sakrij prijedlog vremena</translation>
 <translation id="3752253558646317685">Vaše dijete treba nastaviti podizati prst da sačuva otisak prsta</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Podaci aplikacija mogu biti bilo koji podaci koje je aplikacija sačuvala (na osnovu postavki programera), uključujući podatke kao što su kontakti, poruke i fotografije.<ph name="END_PARAGRAPH1" />
@@ -1077,6 +1081,11 @@ Povežite uređaj na napajanje.</translation>
 <translation id="412298498316631026">prozor</translation>
 <translation id="4123259114412175274">Da otključate Chromebook, provjerite je li Bluetooth na telefonu uključen</translation>
 <translation id="4123868835475902435">To su bile osnove! Nastavite u aplikaciji Istražite, našoj ugrađenoj aplikaciji za savjete i pomoć. Pronaći ćete savjete za početak, posebne ponude i najnovije funkcije uređaja <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4124779003103520737">{0,plural, =1{<ph name="DEVICE_TYPE" /> će se automatski zaključati za # sekundu.
+        Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}one{<ph name="DEVICE_TYPE" /> će se automatski zaključati za # sekundu.
+        Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}few{<ph name="DEVICE_TYPE" /> će se automatski zaključati za # sekunde.
+        Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}other{<ph name="DEVICE_TYPE" /> će se automatski zaključati za # sekundi.
+        Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</translation>
 <translation id="4125970834901680537">Nije moguće prenositi aplikacije u načinu rada tableta. Pokušajte ponovo u načinu rada laptopa.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C – trenutna brzina: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Uključeno do izlaska sunca</translation>
@@ -1385,6 +1394,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="4964188651935955085">Kada isključite Bluetooth, prekinut će se povezanost uređaja <ph name="DEVICE_TYPE" /> i vanjskog uređaja:</translation>
 <translation id="4966431234408005599">Pojačavanje zvuka</translation>
 <translation id="496999337731226334"><ph name="STEP" />. od <ph name="TOTAL_STEPS" /> koraka obilaska. Često korištene kontrole kao što su WiFi, Bluetooth i jačina zvuka su u Brzim postavkama. Na ovom mjestu također možete praviti snimke ekrana. Pritisnite Alt + Shift + S da otvorite Brze postavke.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{Upravitelj <ph name="MANAGER" /> zahtijeva da danas preuzmete ažuriranje. Ažuriranje će se automatski preuzeti kada se povežete s internetom.}one{Upravitelj <ph name="MANAGER" /> zahtijeva da preuzmete ažuriranje prije roka. Ažuriranje će se automatski preuzeti kada se povežete s internetom.}few{Upravitelj <ph name="MANAGER" /> zahtijeva da preuzmete ažuriranje prije roka. Ažuriranje će se automatski preuzeti kada se povežete s internetom.}other{Upravitelj <ph name="MANAGER" /> zahtijeva da preuzmete ažuriranje prije roka. Ažuriranje će se automatski preuzeti kada se povežete s internetom.}}</translation>
 <translation id="4975771730019223894">Označavanje aplikacija</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1461,6 +1471,7 @@ Također možete upotrijebiti prečicu na tastaturi. Prvo istaknite tekst, a zat
 <translation id="5176318573511391780">Snimanje dijela ekrana</translation>
 <translation id="5187627942836026988">Pogledajte detalje pristupne tačke. Administrator je blokirao pristupnu tačku.</translation>
 <translation id="5188648870018555788">Koristite lokaciju. Dozvolite ChromeOS i Android aplikacijama, web lokacijama i uslugama s odobrenjem za lokaciju da koriste lokaciju uređaja. Preciznost lokacije pruža precizniju lokaciju za Android aplikacije i usluge. Google u tu svrhu periodično obrađuje informacije o senzorima uređaja i bežičnim signalima koje uređaj šalje da prikupi lokacije bežičnih signala u vidu podrške internet javnosti. Ove informacije se koriste bez vaše identifikacije radi poboljšanja preciznosti lokacije i usluga zasnovanih na lokaciji te poboljšanja, pružanja i održavanja Googleovih usluga na osnovu legitimnih interesa Googlea i trećih strana da ispunjavaju potrebe korisnika. <ph name="BEGIN_LINK1" />Saznajte više o korištenju lokacije<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Vratite uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmice}one{Vratite uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmice}few{Vratite uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmice}other{Vratite uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmica}}</translation>
 <translation id="5198039720391525849">Istaknuti GIF-ovi</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> događaj(a)</translation>
 <translation id="5198715732953550718">Aplikacija <ph name="MOVED_APP_NAME" /> je kombinirana s aplikacijom <ph name="IN_PLACE_APP" /> za kreiranje novog foldera.</translation>
@@ -1778,6 +1789,11 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Bit ćete automatski odjavljeni za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">Kontrole video poziva</translation>
+<translation id="6070081109266557120">{0,plural, =1{Automatski ćete se odjaviti za # sekundu.
+        Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}one{Automatski ćete se odjaviti za # sekundu.
+        Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}few{Automatski ćete se odjaviti za # sekunde.
+        Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}other{Automatski ćete se odjaviti za # sekundi.
+        Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</translation>
 <translation id="6071576563962215370">Sistem nije uspio uspostaviti zaključavanje atributa za vrijeme instalacije na uređaju.</translation>
 <translation id="6072442788591997866">Aplikacija <ph name="APP_NAME" /> nije dozvoljena na ovom uređaju. Kontaktirajte administratora. Kȏd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
@@ -2127,6 +2143,8 @@ Nova instalacija</translation>
 <translation id="7076878155205969899">Isključivanje zvuka</translation>
 <translation id="7083848064787091821">Fokusiranje</translation>
 <translation id="7084678090004350185">Uključite/isključite pristupnu tačku. Pristupna tačka je uključena i povezano je nekoliko uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
+<translation id="7086438436964931440">Sada ćete se automatski odjaviti.
+        Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</translation>
 <translation id="7086931198345821656">Za ovo ažuriranje je potrebno izvršiti powerwash uređaja <ph name="DEVICE_TYPE" />. Svi podaci će se izbrisati. Saznajte više o najnovijem ažuriranju za aplikaciju <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Pristup pomoću prekidača</translation>
 <translation id="709015856939120012">Uvećavanje stranice</translation>
@@ -2529,6 +2547,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8220076512072059941">Dodavanje: <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Sakrij ovaj prijedlog</translation>
 <translation id="8230305195727960608">Način rada s inverzijom boja</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Morate odmah vratiti uređaj}one{Vratite uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}few{Vratite uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}other{Vratite uređaj <ph name="DEVICE_TYPE" /> u roku od {NUM_DAYS} dana}}</translation>
 <translation id="8236042855478648955">Vrijeme je za odmor</translation>
 <translation id="8237964652943995219">Sljedeća radna površina: <ph name="DESK_NAME" />. Radna površina <ph name="DESK_INDEX" /> od <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Krenite u kratki obilazak da saznate kako se kretati na uređaju <ph name="PRODUCT_NAME" />. Izvršite pokretanje u 5 koraka.</translation>
@@ -2704,6 +2723,8 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8756799553341497810">Možete započeti prilagođavati izgled svoje aplikacije kada izađete iz ovog prikaza.</translation>
 <translation id="8759408218731716181">Nije moguće postaviti višestruku prijavu</translation>
 <translation id="8759753423332885148">Saznajte više.</translation>
+<translation id="8760172428247796445"><ph name="DEVICE_TYPE" /> će se sada zaključati.
+        Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</translation>
 <translation id="8763883995157866248">Stavite uređaj u način rada mirovanja</translation>
 <translation id="878215960996152260">Aplikacija <ph name="APP_NAME" /> je instalirana i blokirana</translation>
 <translation id="8782565991310229362">Pokretanje aplikacije za kiosk je otkazano.</translation>

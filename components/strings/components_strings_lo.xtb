@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">ຊຸດຊັ້ນໃນ</translation>
 <translation id="1458770162980644530">ໜ້າຈໍຂໍ້ກຳນົດບໍລິການຂອງຊື້ກ່ອນຈ່າຍນຳຫຼັງ. ແປ້ນພິມເຊື່ອງຢູ່.</translation>
 <translation id="1459693405370120464">ສະພາບອາກາດ</translation>
+<translation id="1460317464907341501">ຢັ້ງຢືນອີເມວນີ້ໂດຍອັດຕະໂນມັດບໍ?</translation>
 <translation id="1461041542809785877">ການ​ປະ​ຕິ​ບັດ</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">ໃຊ້ຟອນໃນຄອມພິວເຕີຂອງທ່ານເພື່ອໃຫ້ທ່ານສາມາດສ້າງເນື້ອຫາທີ່ມີຄວາມຖືກຕ້ອງສູງໄດ້</translation>
@@ -2005,6 +2006,7 @@
 <translation id="412601465078863288">ການອັບໂຫຼດໝົດເວລາແລ້ວ</translation>
 <translation id="4127317221386336246">ເຄື່ອງປະດັບເສື້ອຜ້າ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ລາຍການອື່ນ}other{# ລາຍການອື່ນ}}</translation>
+<translation id="4129810348470013900">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
 <translation id="4129992181550680635">ແຫຼ່ງຂໍ້ມູນການສຶກສາ</translation>
 <translation id="4130226655945681476">ກຳລັງກວດເບິ່ງສາຍເຊື່ອມຕໍ່ເຄືອຂ່າຍ, ໂມເດັມ ແລະ ເຣົາເຕີ</translation>
 <translation id="4132448310531350254">ຕົວຈັດການຊ້ຳກັນສຳລັບ file_extension "<ph name="FILE_EXTENSION" />" ທີ່ອ້າງອີງໂດຍແອັບ "<ph name="POLICY_IDS_LIST" />".</translation>

@@ -306,6 +306,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1458140305240870199">Pakaian Dalam</translation>
 <translation id="1458770162980644530">Skrin syarat perkhidmatan Beli Sekarang, Bayar Kemudian. Papan kekunci tersembunyi.</translation>
 <translation id="1459693405370120464">Cuaca</translation>
+<translation id="1460317464907341501">Sahkan e-mel ini secara automatik?</translation>
 <translation id="1461041542809785877">Prestasi</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Gunakan fon pada komputer anda supaya anda dapat membuat kandungan fideliti tinggi</translation>
@@ -2006,6 +2007,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="412601465078863288">Muat naik tamat masa</translation>
 <translation id="4127317221386336246">Aksesori Pakaian</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 yang lain}other{# yang lain}}</translation>
+<translation id="4129810348470013900">Ada masalah. Semak sambungan Internet anda, kemudian cuba lagi.</translation>
 <translation id="4129992181550680635">Sumber Pendidikan</translation>
 <translation id="4130226655945681476">Memeriksa kabel rangkaian, modem dan penghala</translation>
 <translation id="4132448310531350254">Pengendali pendua untuk sambungan_fail "<ph name="FILE_EXTENSION" />" dirujuk oleh "<ph name="POLICY_IDS_LIST" />" apl.</translation>

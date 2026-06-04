@@ -306,6 +306,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1458140305240870199">Roupa interior</translation>
 <translation id="1458770162980644530">Ecrã dos Termos de Utilização do método Comprar agora e pagar depois. Teclado oculto.</translation>
 <translation id="1459693405370120464">Meteorologia</translation>
+<translation id="1460317464907341501">Validar este email automaticamente?</translation>
 <translation id="1461041542809785877">Desempenho</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Usar os tipos de letra presentes no computador para que possa criar conteúdo de alta-fidelidade.</translation>
@@ -2005,6 +2006,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="412601465078863288">O carregamento excedeu o tempo limite</translation>
 <translation id="4127317221386336246">Acessórios de vestuário</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 outro}other{# outros}}</translation>
+<translation id="4129810348470013900">Algo correu mal. Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="4129992181550680635">Recursos educacionais</translation>
 <translation id="4130226655945681476">Rever os cabos de rede, o modem e o router</translation>
 <translation id="4132448310531350254">Controladores duplicados para a file_extension "<ph name="FILE_EXTENSION" />" referenciada pelas apps "<ph name="POLICY_IDS_LIST" />".</translation>

@@ -1461,7 +1461,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2048182445208425546">A hálózati forgalom elérése</translation>
 <translation id="2048254245884707305">Rosszindulatú programok keresése…</translation>
 <translation id="204914487372604757">Parancsikon létrehozása</translation>
-<translation id="2049573977943974163">Bekapcsolja a következőt: <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">Álló</translation>
 <translation id="2051555741181591333">Hotspot automatikus letiltása</translation>
 <translation id="2051669996101374349">HTTPS használata, amikor csak lehetséges, és figyelmeztetés megjelenítése a protokollt nem támogató webhelyek betöltése előtt. Ezt a beállítást nem módosíthatja, mert be van kapcsolva a Speciális védelem.</translation>
@@ -6016,7 +6015,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5372529912055771682">Az operációs rendszer jelen verziója nem támogatja a kínált regisztrációs módot. Kérjük, győződjön meg arról, hogy a legújabb verziót használja, majd próbálkozzon újra.</translation>
 <translation id="5372579129492968947">Bővítmény rögzítésének feloldása</translation>
 <translation id="5372632722660566343">Folytatás fiók nélkül</translation>
-<translation id="5372990315769030589">Megtartja a(z) „<ph name="EXTENSION_NAME" />” bővítményt?</translation>
 <translation id="5375318608039113175">Ha névjegyeivel szeretné használni a Közeli megosztás funkciót, vegye fel a Google-fiókjukhoz tartozó e-mail-címüket a névjegyekhez.</translation>
 <translation id="5375374982898812658">Azonnal elveszíti a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz való hozzáférését, és a lapcsoport az összes eszközéről törlődik</translation>
 <translation id="5375517140689139594">Olvasási mód (<ph name="READING_MODE_SHORTCUT" />)</translation>

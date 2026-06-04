@@ -84,7 +84,6 @@
 <translation id="1303507811548703290">Домен: <ph name="DOMAIN" />. Отправлено с устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1310482092992808703">Сгруппировать вкладки</translation>
 <translation id="1318262688555255786">Поделиться ссылкой на веб-страницу "<ph name="PAGE_TITLE" />". Источник: <ph name="PAGE_URL" />.</translation>
-<translation id="1320912611264252795">Страница сохранения закладки, открытая на весь экран</translation>
 <translation id="1327257854815634930">История переходов открыта</translation>
 <translation id="1331212799747679585">Не удалось обновить Chrome. Другие настройки</translation>
 <translation id="1332501820983677155">Функции Google Chrome</translation>
@@ -646,6 +645,7 @@
 <translation id="3771290962915251154">Эта настройка отключена, так как работает родительский контроль</translation>
 <translation id="3771694256347217732">Условия использования Google</translation>
 <translation id="3777796259512476958">Вы автоматически выйдете из аккаунтов на большинстве сайтов</translation>
+<translation id="3786379886124795923">Вы отсканировали QR-код, чтобы войти в Chrome. Подтвердите, что хотите получить доступ к паролям, закладкам и другим данным из этого профиля.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="3792938779249970121">Выбор аккаунта</translation>
 <translation id="3795154175078851242">Скопировать изображение со ссылкой</translation>
@@ -719,7 +719,6 @@
 <translation id="4092709865241032354">Укажите имя пользователя для этого сайта, чтобы данные для входа были полностью сохранены в Google Менеджере паролей.</translation>
 <translation id="4095146165863963773">Удалить данные приложения?</translation>
 <translation id="4095483462103784441">Создать новую группу вкладок</translation>
-<translation id="4096227151372679484">Страница сохранения закладки, открытая на половину экрана</translation>
 <translation id="4105527135143631701">Открыто окно с предложением обновить Google Менеджер паролей</translation>
 <translation id="4113030288477039509">Управляется администратором</translation>
 <translation id="4116038641877404294">Скачивайте страницы и открывайте их без подключения к Интернету</translation>
@@ -831,6 +830,7 @@
 <translation id="4532845899244822526">Выбор папки</translation>
 <translation id="4535755320005483982">Общая группа вкладок "<ph name="GROUP_TITLE" />"</translation>
 <translation id="4537137366307982887">Нижний экран с предложением включить уведомления открыт полностью</translation>
+<translation id="4537987892902330164">Вы остались в аккаунте <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Пустой список ключей доступа</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладка инкогнито}few{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}many{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладок инкогнито}other{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}}</translation>
 <translation id="4558311620361989323">Работа с веб-страницами</translation>
@@ -1288,6 +1288,7 @@
 <translation id="6411219469806822692">Невозможно прокрутить дальше вверх. Начните делать скриншот выше на этой странице.</translation>
 <translation id="6412215853589222273">Вкладка "<ph name="TAB_TITLE" />", одна из выбранных</translation>
 <translation id="641643625718530986">Печать</translation>
+<translation id="6427723330233512782">Подогнать по высоте</translation>
 <translation id="6433501201775827830">Выберите поисковую систему по умолчанию</translation>
 <translation id="6434309073475700221">Отменить</translation>
 <translation id="6435307030888827407">Не входить</translation>
@@ -2025,9 +2026,11 @@
 <translation id="939598580284253335">Ввести кодовую фразу</translation>
 <translation id="94161319503679839">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
+<translation id="949667118776341807">Повернуть</translation>
 <translation id="95817756606698420">В Китае Chrome может использовать для поиска <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Это можно изменить в <ph name="BEGIN_LINK" />Настройках<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Удалить данные о работе в браузере</translation>
 <translation id="963246339335003378">Открыть диспетчер задач</translation>
+<translation id="966337994629449077">Вы вошли в аккаунт <ph name="FROM_EMAIL" />.\n\nЧтобы продолжить на компьютере, перейдите в аккаунт <ph name="TO_EMAIL" />. Вы получите доступ к паролям, закладкам и другим данным из этого аккаунта.</translation>
 <translation id="970715775301869095">Осталось <ph name="MINUTES" /> мин.</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Закрыть все вкладки</translation>

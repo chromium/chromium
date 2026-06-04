@@ -1453,7 +1453,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2048182445208425546">Acceder a tu tráfico de red</translation>
 <translation id="2048254245884707305">Comprobando si hay malware…</translation>
 <translation id="204914487372604757">Crear acceso directo</translation>
-<translation id="2049573977943974163">¿Activar <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2051555741181591333">Inhabilitar punto de acceso automáticamente</translation>
 <translation id="2051669996101374349">Usa HTTPS siempre que sea posible y recibe advertencias antes de cargar sitios que no sean compatibles con este protocolo. No puedes cambiar este ajuste porque tienes habilitada la Protección Avanzada.</translation>
@@ -6007,7 +6006,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5372529912055771682">El modo de registro proporcionado no es compatible con esta versión del sistema operativo. Comprueba que estés utilizando la última versión y vuelve a intentarlo.</translation>
 <translation id="5372579129492968947">No fijar extensión</translation>
 <translation id="5372632722660566343">Continuar sin cuenta</translation>
-<translation id="5372990315769030589">¿Conservar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5375318608039113175">Para usar Compartir con Nearby con estos contactos, añade a tus contactos las direcciones de correo electrónico vinculadas a sus cuentas de Google.</translation>
 <translation id="5375374982898812658">Perderás inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se eliminará de todos tus dispositivos</translation>
 <translation id="5375517140689139594">Modo Lectura (<ph name="READING_MODE_SHORTCUT" />)</translation>

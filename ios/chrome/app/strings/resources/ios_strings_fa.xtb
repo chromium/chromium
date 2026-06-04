@@ -189,10 +189,9 @@
 <translation id="1617300545081951343">‏<ph name="BEGIN_LINK" />شرایط<ph name="END_LINK" />، <ph name="BEGIN_LINK" />«شرایط خدمات مکان» کره<ph name="END_LINK" />، و <ph name="BEGIN_LINK" />اعلامیه حریم خصوصی<ph name="END_LINK" /> ما اعمال می‌شوند. Gemini هوشواره است و ممکن است اشتباه کند، ازجمله درباره افراد.</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1622717322707146952">‏«افزودن به تقویم Google» یا «افزودن به تقویم Apple» را انتخاب کنید.</translation>
-<translation id="1629162218487290695">به‌تأیید رساندن هویت…</translation>
+<translation id="1629162218487290695">درستی‌سنجی کردن هویت…</translation>
 <translation id="1634520742547161889">ماه/سال</translation>
 <translation id="1636234353664774105">با‌استفاده از ویژگی ناوبری، مسیرهای رسیدن به مقصد را با راهنمایی گام‌به‌گام دریافت کنید</translation>
-<translation id="1637811476055996098">انتخاب فایل‌ها</translation>
 <translation id="1641113438599504367">مرور ایمن</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="164673457281113247">{count,plural, =1{نشانک ذخیره شد}one{نشانک‌ها ذخیره شد}other{نشانک‌ها ذخیره شد}}</translation>
@@ -487,6 +486,7 @@
 <translation id="2640733327287333451">بدون نام کاربری ••••••</translation>
 <translation id="264215785133931186">آخرین بررسی: همین‌حالا</translation>
 <translation id="2647434099613338025">افزودن زبان</translation>
+<translation id="2648812801228676606">ازقبل با <ph name="NAME_OR_EMAIL" /> به سیستم وارد شده‌اید</translation>
 <translation id="2649592894792404568">‏در آستانه حذف داده‌هایتان از «مدیر گذرواژه Google» هستید</translation>
 <translation id="2652129567809778422">انتخاب گذرواژه</translation>
 <translation id="2658056020748144467">فایل باز نشد</translation>
@@ -1024,7 +1024,7 @@
 <translation id="4601095002996233687">اسکن‌های عمیق برای شناسایی بارگیری‌های مشکوک.</translation>
 <translation id="4606247758155004938">مرورگر را سازمانتان مدیریت می‌کند.</translation>
 <translation id="4607887340472970274">پیگیری قیمت</translation>
-<translation id="4619564267100705184">هویتتان را درستی‌سنجی کنید</translation>
+<translation id="4619564267100705184">درستی‌سنجی کردن هویت</translation>
 <translation id="4621768135601674446">باز کردن گزینه‌های «حالت خواندن»</translation>
 <translation id="4627107755957573804">به سایت‌ها و برنامه‌ها اجازه می‌دهد تا حساب‌های موجود را برای استفاده از گذرکلید ارتقا دهند</translation>
 <translation id="4629065796475200039">گذرواژه‌تان وارد نشد</translation>
@@ -1457,7 +1457,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6045460247888249350">افزودن عنوان</translation>
 <translation id="6052269326659653305">عوض کردن نمایه</translation>
 <translation id="605721222689873409">سال</translation>
-<translation id="6058415747854995776">فیلم گرفتن</translation>
 <translation id="6059830886158432458">داستان‌ها و فعالیت خود را اینجا کنترل کنید</translation>
 <translation id="6063802271331271857">بازآمیزی تصویر</translation>
 <translation id="6066301408025741299">برای لغو تک‌ضرب بزنید.</translation>
@@ -1850,7 +1849,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7347998088283246662">گذرواژه‌ها، سابقه، نشانک‌ها، و موارد دیگر را وارد کنید.</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7357999308187750900">دیدن همه</translation>
-<translation id="7364796246159120393">انتخاب فایل</translation>
 <translation id="736564850024123010">برای داشتن تجربه‌ای سفارشی‌سازی‌شده، جای نوار نشانی را تغییر دهید.</translation>
 <translation id="7366909168761621528">داده‌های مرور</translation>
 <translation id="7367530036083223701">با ابزاره «مدیر گذرواژه»، به‌طور ایمن ازطریق صفحه اصلی به گذرواژه‌هایتان دسترسی پیدا کنید.</translation>
@@ -2012,7 +2010,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7866872729285243843">برای دریافت فهرست خواندن در همه دستگاه‌هایتان، «فهرست خواندن» را در تنظیمات روشن کنید.</translation>
 <translation id="7874107544081154809">تکمیل خودکار فرم با <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">نمایش بارگیری‌ها</translation>
-<translation id="7882689957034389473">عکس گرفتن</translation>
 <translation id="7883882164760409935">چند گذرواژه دوباره‌استفاده‌شده دارید.</translation>
 <translation id="7887198238286927132">‏برای محافظت از حریم‌خصوصی‌تان، Chrome از ویژگی تکمیل خودکار برای این فیلد استفاده نخواهد کرد.</translation>
 <translation id="7887552845761062935">برای باز کردن گزینه‌های بیشتر، دو تک‌ضرب بزنید و نگه دارید</translation>
@@ -2174,7 +2171,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8395180897620197612">متوقف کردن گزارش‌گیری</translation>
 <translation id="8407669440184693619">هیچ گذرواژه‌ای برای این سایت پیدا نشد</translation>
 <translation id="8407831512155324054">گذرواژه‌هایتان قوی به‌نظر می‌رسند</translation>
-<translation id="8414030140103493759">عکس‌برداری یا فیلم‌برداری</translation>
 <translation id="8414283596511250978">هرگز گذرواژه‌هایتان را فراموش نکنید</translation>
 <translation id="8415120635186642416">درباره هر چیزی پژوهش کنید</translation>
 <translation id="842523302461531262">انتخاب کردن به‌عنوان پیش‌فرض در تنظیمات…</translation>
@@ -2192,7 +2188,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8473863474539038330">نشانی‌ها و موارد دیگر</translation>
 <translation id="8474378002946546633">مجاز بودن اعلان‌ها</translation>
 <translation id="8477178913400731244">حذف داده‌ها</translation>
-<translation id="847939250509903814">کتابخانه عکس</translation>
 <translation id="8481184073299279701">برای جمع‌آوری گزارش‌ها و خطاهای آتی کنسول جاوا اسکریپت از همه زبانه‌ها، روی دکمه «شروع گزارش‌گیری» تک‌ضرب بزنید. تا زمان بسته شدن این صفحه یا ضربه زدن روی «توقف گزارش‌گیری» گزارش جمع‌آوری می‌شود (و فقط در حافظه ذخیره می‌شود).</translation>
 <translation id="8487667956631253959">فعال</translation>
 <translation id="8487700953926739672">دردسترس در حالت آفلاین</translation>

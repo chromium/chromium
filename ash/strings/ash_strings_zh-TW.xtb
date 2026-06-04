@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">顯示更多表情符號</translation>
 <translation id="2328561734797404498">請重新啟動裝置以使用「<ph name="APP_NAME" />」。</translation>
 <translation id="2335091074961603075">Chromebook 或藍牙裝置使用的是舊版藍牙。如要提高音訊品質，請使用內部麥克風。</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付相關費用)。}other{<ph name="MANAGER" /> 要求你在期限內透過 Wi-Fi 連線下載更新，或使用計量付費連線下載更新 (可能要支付相關費用)。}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">輕觸檔案櫃的觸控筆圖示即可做筆記、擷取螢幕畫面，以及使用雷射筆或放大鏡。</translation>
 <translation id="2341729377289034582">已鎖定為垂直畫面</translation>
@@ -568,6 +569,7 @@
 <translation id="2687510499067466116">鍵盤快速鍵已變更</translation>
 <translation id="2689613560355655046">桌面 8</translation>
 <translation id="2692092709110488417">按下 Tab 鍵即可聚焦並移動所選區域</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{今天是更新「<ph name="DEVICE_TYPE" />」的最後一天}other{請在 {NUM_DAYS} 天內更新「<ph name="DEVICE_TYPE" />」}}</translation>
 <translation id="2695305337569143674">網路</translation>
 <translation id="2697697418792422688">顯示鍵盤設定。已選取<ph name="KEYBOARD_NAME" />。</translation>
 <translation id="2699913284398121653">使用內容轉移工具應用程式將學校帳戶資料移到個人帳戶</translation>
@@ -794,6 +796,7 @@
 <translation id="334927402682780278">選取從游標到該行結尾之間的文字</translation>
 <translation id="3349345708646875009">開啟工作管理員</translation>
 <translation id="3353786022389205125">請開啟「從休眠狀態喚醒時顯示螢幕鎖定」功能，然後再試一次</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{請在 1 週內更新「<ph name="DEVICE_TYPE" />」}other{請在 {NUM_WEEKS} 週內更新「<ph name="DEVICE_TYPE" />」}}</translation>
 <translation id="3364721542077212959">觸控筆工具</translation>
 <translation id="3365281428003534650">設定計時器、工作和音樂</translation>
 <translation id="3365977133351922112">你的手機距離太遠，請拿近一點。</translation>
@@ -951,6 +954,7 @@
 <translation id="3741482431277446954">滑鼠右鍵</translation>
 <translation id="3742055079367172538">已拍攝螢幕截圖</translation>
 <translation id="3743775386021959186">專注模式已開啟，還剩 <ph name="REMAINING_TIME" /></translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你備份自己的資料，並且在今天內歸還這部「<ph name="DEVICE_TYPE" />」。}other{<ph name="MANAGER" /> 要求你備份自己的資料，並且在期限內歸還這部「<ph name="DEVICE_TYPE" />」。}}</translation>
 <translation id="3750403286520637847">隱藏天氣建議</translation>
 <translation id="3752253558646317685">讓孩子不斷抬起再放下手指，藉此儲存指紋</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式依開發人員設定所儲存的任何資料，包括聯絡人、訊息和相片等。<ph name="END_PARAGRAPH1" />
@@ -1075,6 +1079,9 @@
 <translation id="412298498316631026">視窗</translation>
 <translation id="4123259114412175274">如要解鎖 Chromebook，請確認手機的藍牙已開啟</translation>
 <translation id="4123868835475902435">這些都是基本概念！如需其他使用訣竅和說明，歡迎使用內建的「探索」應用程式，瞭解新手入門祕訣、特價優惠和最新的 <ph name="PRODUCT_NAME" /> 功能。</translation>
+<translation id="4124779003103520737">{0,plural, =1{「<ph name="DEVICE_TYPE" />」會在 # 秒後自動鎖定。
+        <ph name="DOMAIN" /> 要求智慧卡保持插入，請勿拔出。}other{「<ph name="DEVICE_TYPE" />」會在 # 秒後自動鎖定。
+        <ph name="DOMAIN" /> 要求智慧卡保持插入，請勿拔出。}}</translation>
 <translation id="4125970834901680537">無法在平板電腦模式下串流應用程式，請改用筆記型電腦模式再試一次。</translation>
 <translation id="4131973331381812765">溫度：<ph name="TEMPERATURE" />°C - 目前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">開啟，直到日出</translation>
@@ -1382,6 +1389,7 @@
 <translation id="4964188651935955085">關閉藍牙後，以下外接裝置會與 <ph name="DEVICE_TYPE" /> 中斷連線：</translation>
 <translation id="4966431234408005599">調高音量</translation>
 <translation id="496999337731226334">導覽步驟 <ph name="STEP" />，共 <ph name="TOTAL_STEPS" /> 個步驟。快速設定內含 Wi-Fi、藍牙和音量等常用控制選項，你也可以透過快速設定拍攝螢幕截圖。按下 Alt + Shift + S 鍵可開啟快速設定。</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內下載更新。連上網際網路時，系統會自動下載更新。}other{<ph name="MANAGER" /> 要求你在期限內下載更新。連上網際網路時，系統會自動下載更新。}}</translation>
 <translation id="4975771730019223894">應用程式標記</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />：
         <ph name="NOTIFICATION_1" />；
@@ -1458,6 +1466,7 @@
 <translation id="5176318573511391780">錄製部分螢幕畫面</translation>
 <translation id="5187627942836026988">顯示無線基地台詳細資料。系統管理員已封鎖無線基地台。</translation>
 <translation id="5188648870018555788">使用定位服務。允許 ChromeOS 和具有位置存取權的 Android 應用程式、網站及服務使用裝置的位置資訊。「定位精確度」可為 Android 應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 服務，以滿足使用者需求。<ph name="BEGIN_LINK1" />進一步瞭解定位服務使用情形<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{請在 {NUM_WEEKS} 週內歸還「<ph name="DEVICE_TYPE" />」}other{請在 {NUM_WEEKS} 週內歸還「<ph name="DEVICE_TYPE" />」}}</translation>
 <translation id="5198039720391525849">精選 GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="5198715732953550718">已將「<ph name="MOVED_APP_NAME" />」與「<ph name="IN_PLACE_APP" />」合併，並建立新資料夾。</translation>
@@ -1775,6 +1784,9 @@
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">你將於 <ph name="LOGOUT_TIME_LEFT" />後自動登出。</translation>
 <translation id="6068258534237496331">視訊通話控制選項</translation>
+<translation id="6070081109266557120">{0,plural, =1{系統將在 # 秒後自動將你登出。
+        <ph name="DOMAIN" /> 要求智慧卡保持插入，請勿拔出。}other{系統將在 # 秒後自動將你登出。
+        <ph name="DOMAIN" /> 要求智慧卡保持插入，請勿拔出。}}</translation>
 <translation id="6071576563962215370">系統無法鎖定裝置安裝時的屬性。</translation>
 <translation id="6072442788591997866">不允許在這部裝置上使用「<ph name="APP_NAME" />」。請與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="6073451960410192870">停止錄影</translation>
@@ -2123,6 +2135,8 @@
 <translation id="7076878155205969899">關閉音效</translation>
 <translation id="7083848064787091821">專注模式</translation>
 <translation id="7084678090004350185">切換無線基地台。無線基地台已開啟，有 <ph name="DEVICECOUNT" /> 部裝置已連線。</translation>
+<translation id="7086438436964931440">系統會立即自動將你登出。
+        <ph name="DOMAIN" /> 要求智慧卡保持插入，請勿拔出。</translation>
 <translation id="7086931198345821656">這項更新會對你的 <ph name="DEVICE_TYPE" /> 執行 Powerwash。請注意，這麼做將刪除裝置上的所有資料。進一步瞭解最新的 <ph name="SYSTEM_APP_NAME" /> 更新內容。</translation>
 <translation id="7088960765736518739">切換控制功能</translation>
 <translation id="709015856939120012">放大網頁</translation>
@@ -2525,6 +2539,7 @@
 <translation id="8220076512072059941">延長 <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">隱藏這個建議</translation>
 <translation id="8230305195727960608">色彩反轉模式</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{請立即歸還}other{請在 {NUM_DAYS} 天內歸還「<ph name="DEVICE_TYPE" />」}}</translation>
 <translation id="8236042855478648955">休息時間到了</translation>
 <translation id="8237964652943995219">下一個桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 個桌面，共 <ph name="DESK_COUNT" /> 個。</translation>
 <translation id="8238817965863339552">請觀看快速導覽，瞭解如何操作 <ph name="PRODUCT_NAME" />。只要 5 個步驟，就能輕鬆上手。</translation>
@@ -2699,6 +2714,8 @@
 <translation id="8756799553341497810">離開這個檢視畫面後，即可開始自訂應用程式版面配置。</translation>
 <translation id="8759408218731716181">無法設定多重登入</translation>
 <translation id="8759753423332885148">瞭解詳情</translation>
+<translation id="8760172428247796445">系統會立即鎖定「<ph name="DEVICE_TYPE" />」。
+        <ph name="DOMAIN" /> 要求智慧卡保持插入，請勿拔出。</translation>
 <translation id="8763883995157866248">讓裝置進入休眠模式</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />，已安裝的應用程式，已封鎖</translation>
 <translation id="8782565991310229362">Kiosk 應用程式已取消執行。</translation>

@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">Show more emojis</translation>
 <translation id="2328561734797404498">Please restart your device to use <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">Your Chromebook or Bluetooth device is using an older version of Bluetooth. Use the internal microphone for better audio quality.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to connect to Wi-Fi today to download an update. Or, download from a metered connection (charges may apply).}other{<ph name="MANAGER" /> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Tap the stylus button on the shelf to take a note, screenshot, use the laser pointer or magnifying glass.</translation>
 <translation id="2341729377289034582">Locked to vertical</translation>
@@ -568,6 +569,7 @@
 <translation id="2687510499067466116">Keyboard shortcut has changed</translation>
 <translation id="2689613560355655046">Desk 8</translation>
 <translation id="2692092709110488417">Press tab to focus and move selected area</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Last day to update <ph name="DEVICE_TYPE" />}other{Update <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days}}</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected.</translation>
 <translation id="2699913284398121653">Use the Content Transfer app to move your school account data to your personal account</translation>
@@ -794,6 +796,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="334927402682780278">Select text from cursor to end of line</translation>
 <translation id="3349345708646875009">Open task manager</translation>
 <translation id="3353786022389205125">Turn on 'Show lock screen when waking from sleep' and try again</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Update <ph name="DEVICE_TYPE" /> within 1 week}other{Update <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}}</translation>
 <translation id="3364721542077212959">Stylus tools</translation>
 <translation id="3365281428003534650">Set a timer, task and music</translation>
 <translation id="3365977133351922112">Your phone is too far away. Bring your phone closer.</translation>
@@ -953,6 +956,7 @@ Connect your device to power.</translation>
 <translation id="3741482431277446954">Right mouse button</translation>
 <translation id="3742055079367172538">Screenshot taken</translation>
 <translation id="3743775386021959186">Focus is on, <ph name="REMAINING_TIME" /> left</translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> today.}other{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> before the deadline.}}</translation>
 <translation id="3750403286520637847">Hide weather suggestion</translation>
 <translation id="3752253558646317685">Get your child to keep lifting their finger to save the fingerprint</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages and photos.<ph name="END_PARAGRAPH1" />
@@ -1077,6 +1081,9 @@ Connect your device to power.</translation>
 <translation id="412298498316631026">window</translation>
 <translation id="4123259114412175274">To unlock your Chromebook, make sure that your phone's Bluetooth is on</translation>
 <translation id="4123868835475902435">Those were the basics! Continue in Explore, our built-in app for tips and help. You'll find tips for getting started, special offers and the newest <ph name="PRODUCT_NAME" /> features.</translation>
+<translation id="4124779003103520737">{0,plural, =1{Your <ph name="DEVICE_TYPE" /> will be locked automatically in # second.
+        <ph name="DOMAIN" /> requires you to keep your smart card inserted.}other{Your <ph name="DEVICE_TYPE" /> will be locked automatically in # seconds.
+        <ph name="DOMAIN" /> requires you to keep your smart card inserted.}}</translation>
 <translation id="4125970834901680537">Can't stream apps in tablet mode. Try again in laptop mode.</translation>
 <translation id="4131973331381812765">Temperature: <ph name="TEMPERATURE" />°C – Current speed: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">On until sunrise</translation>
@@ -1385,6 +1392,7 @@ One device connected.</translation>
 <translation id="4964188651935955085">When you turn off Bluetooth, this external device will disconnect from your <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Turn volume up</translation>
 <translation id="496999337731226334">Tour step <ph name="STEP" /> of <ph name="TOTAL_STEPS" />. Frequently used controls like Wi-Fi, Bluetooth and volume are in Quick Settings. You can also go here to take screenshots. Press Alt + shift + S to open Quick Settings.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to download an update today. The update will download automatically when you connect to the Internet.}other{<ph name="MANAGER" /> requires you to download an update before the deadline. The update will download automatically when you connect to the Internet.}}</translation>
 <translation id="4975771730019223894">App badging</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1461,6 +1469,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5176318573511391780">Record partial screen</translation>
 <translation id="5187627942836026988">Show hotspot details. Hotspot is blocked by your administrator.</translation>
 <translation id="5188648870018555788">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use your device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs. <ph name="BEGIN_LINK1" />Learn more about using location<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Return <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} week}other{Return <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}}</translation>
 <translation id="5198039720391525849">Featured GIFs</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> events</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combined with <ph name="IN_PLACE_APP" /> to create new folder.</translation>
@@ -1778,6 +1787,9 @@ No devices connected.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">You will automatically be signed out in <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">Video Call Controls</translation>
+<translation id="6070081109266557120">{0,plural, =1{You will be automatically signed out in # second.
+        <ph name="DOMAIN" /> requires you to keep your smart card inserted.}other{You will be automatically signed out in # seconds.
+        <ph name="DOMAIN" /> requires you to keep your smart card inserted.}}</translation>
 <translation id="6071576563962215370">The system failed to establish the device installation-time attributes lock.</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> isn't allowed on this device. Contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Stop recording</translation>
@@ -2127,6 +2139,8 @@ New install</translation>
 <translation id="7076878155205969899">Mute sound</translation>
 <translation id="7083848064787091821">Focus</translation>
 <translation id="7084678090004350185">Toggle hotspot. Hotspot is on, <ph name="DEVICECOUNT" /> devices connected.</translation>
+<translation id="7086438436964931440">You will be automatically signed out now.
+        <ph name="DOMAIN" /> requires you to keep your smart card inserted.</translation>
 <translation id="7086931198345821656">This update requires powerwashing your <ph name="DEVICE_TYPE" />. All data will be deleted. Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="709015856939120012">Zoom in on page</translation>
@@ -2529,6 +2543,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8220076512072059941">Add <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Hide this suggestion</translation>
 <translation id="8230305195727960608">Colour inversion mode</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Immediate return required}other{Return <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days}}</translation>
 <translation id="8236042855478648955">Time for a break</translation>
 <translation id="8237964652943995219">Next desk: <ph name="DESK_NAME" />. Desk <ph name="DESK_INDEX" /> of <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Take a quick tour to learn how to get around your <ph name="PRODUCT_NAME" />. Get up and running in five steps.</translation>
@@ -2704,6 +2719,8 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8756799553341497810">You can start customising your app layout once you exit this view.</translation>
 <translation id="8759408218731716181">Can't set up multiple sign-in</translation>
 <translation id="8759753423332885148">Learn more.</translation>
+<translation id="8760172428247796445">Your <ph name="DEVICE_TYPE" /> will be locked now.
+        <ph name="DOMAIN" /> requires you to keep your smart card inserted.</translation>
 <translation id="8763883995157866248">Put device in sleep mode</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, installed app, blocked</translation>
 <translation id="8782565991310229362">Kiosk application launch cancelled.</translation>

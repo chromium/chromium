@@ -1453,7 +1453,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2048182445208425546">Accéder à votre trafic réseau</translation>
 <translation id="2048254245884707305">Recherche de logiciels malveillants en cours…</translation>
 <translation id="204914487372604757">Créer un raccourci</translation>
-<translation id="2049573977943974163">Activer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2051555741181591333">Désactiver automatiquement le point d'accès sans fil</translation>
 <translation id="2051669996101374349">Dans la mesure du possible, utilisez le protocole HTTPS et soyez averti avant de charger des sites qui ne le prennent pas en charge. Vous ne pouvez pas modifier ce paramètre, car la protection avancée est activée.</translation>
@@ -2339,6 +2338,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2673848446870717676">Assurez-vous que votre appareil Bluetooth est en mode d'association et à proximité. Associez votre appareil uniquement à des appareils de confiance. Les appareils associés sont visibles par tous les comptes sur ce Chromebook.</translation>
 <translation id="2673873887296220733">Copier 1 fichier vers <ph name="CLOUD_PROVIDER" /> pour l'ouvrir?</translation>
 <translation id="267442004702508783">actualiser</translation>
+<translation id="2674756932811577764">Mettre les effets en pause</translation>
 <translation id="2675160405921703214">Voici Gemini sur Chrome</translation>
 <translation id="2676084251379299915">Cette extension a été désactivée par la politique de l'entreprise, car elle n'est plus offerte sur la boutique en ligne Chrome Web Store</translation>
 <translation id="2677748264148917807">Quitter</translation>
@@ -3470,6 +3470,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="351152300840026870">Police à largeur fixe</translation>
 <translation id="3511528412952710609">Court</translation>
 <translation id="3512465804715993309">Mise en évidence adaptative</translation>
+<translation id="3512495006767217696">Intégré à Chrome pour vous aider à créer, à enregistrer et à remplir automatiquement des mots de passe forts. Ajoutez le raccourci pour un accès facile</translation>
 <translation id="3513019849832307207">Se joindre et ouvrir</translation>
 <translation id="3513563267917474897">Curseur de teinte de <ph name="MIN_VALUE" /> à <ph name="MAX_VALUE" /></translation>
 <translation id="3514647716686280777">Vous bénéficiez d'une protection de sécurité standard. Pour obtenir une meilleure protection contre les sites Web, les extensions et les téléchargements dangereux, activez la navigation sécurisée améliorée dans les paramètres de Chrome.</translation>
@@ -4957,6 +4958,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="4580127151758731432">Des mouvements de tête plus amples déplaceront le curseur plus loin</translation>
 <translation id="4580389561674319558">Visible pour tous les contacts</translation>
 <translation id="4580596421317071374">Les mots de passe sont enregistrés dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> sur cet appareil.</translation>
+<translation id="4580939929828762295">Restez en sécurité avec le gestionnaire de mots de passe Google</translation>
 <translation id="4582297591746054421">Les sites lisent généralement le contenu de votre presse-papiers pour proposer certaines fonctionnalités, comme la conservation du formatage du texte copié</translation>
 <translation id="4582563038311694664">Réinitialiser tous les paramètres</translation>
 <translation id="4584094413232466841">Retirer ces informations du remplissage automatique de Chrome?</translation>
@@ -6006,7 +6008,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5372529912055771682">Le mode d'inscription fourni n'est pas compatible avec cette version du système d'exploitation. Veuillez vous assurer que vous utilisez bien la dernière version, puis réessayer.</translation>
 <translation id="5372579129492968947">Annuler l'épinglage de l'extension</translation>
 <translation id="5372632722660566343">Continuer sans compte</translation>
-<translation id="5372990315769030589">Conserver « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="5375318608039113175">Pour utiliser la fonctionnalité Partage à proximité avec ces contacts, ajoutez l'adresse de courriel associée à leur compte Google dans vos contacts.</translation>
 <translation id="5375374982898812658">Vous perdrez immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et il sera supprimé de tous vos appareils.</translation>
 <translation id="5375517140689139594">Mode Lecture (<ph name="READING_MODE_SHORTCUT" />)</translation>
@@ -7251,6 +7252,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6307268917612054609">Les services système ainsi que les applications et les sites Web disposant de l'autorisation d'accéder à la caméra peuvent utiliser votre caméra</translation>
 <translation id="6307990684951724544">Système occupé</translation>
 <translation id="6308493641021088955">Service de connexion fourni par <ph name="EXTENSION_NAME" /></translation>
+<translation id="6308778163698400658">Ajouter à la barre d'outils</translation>
 <translation id="6308937455967653460">Enregistrer le lie&amp;n sous...</translation>
 <translation id="6309443618838462258">Votre administrateur n'autorise pas cette méthode d'entrée</translation>
 <translation id="6309510305002439352">Microphone désactivé</translation>
@@ -7463,6 +7465,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6470823736074966819">Ignorer les notifications</translation>
 <translation id="6472893788822429178">Afficher le bouton Accueil</translation>
 <translation id="6473315466413288899">Choisir une option</translation>
+<translation id="6473659734176498825">Une image simplifiée montrant le point d'entrée du gestionnaire de mots de passe Google dans Chrome</translation>
 <translation id="6474498546677193336">Impossible d'annuler le partage parce qu'une application utilise ce dossier. Le partage sera annulé au prochain arrêt de Linux.</translation>
 <translation id="6474884162850599008">Se déconnecter du compte Google Disque</translation>
 <translation id="6476482583633999078">Débit de parole</translation>
@@ -8994,6 +8997,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7605594153474022051">La synchronisation ne fonctionne pas</translation>
 <translation id="7606560865764296217">Interrompre l'animation</translation>
 <translation id="7606639338662398635">Groupes d'onglets</translation>
+<translation id="7606802863538485839">Faire jouer les effets</translation>
 <translation id="7607002721634913082">Interrompu</translation>
 <translation id="7608810328871051088">Préférences d'Android</translation>
 <translation id="7610337976012700501">Pour utiliser le <ph name="FEATURE_NAME" /> avec ces contacts, ajoutez l'adresse de courriel associée au compte Google de chacun d'entre eux à vos contacts.</translation>

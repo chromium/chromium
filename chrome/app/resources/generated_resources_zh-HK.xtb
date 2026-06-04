@@ -1463,7 +1463,6 @@
 <translation id="2048182445208425546">存取您的網絡流量</translation>
 <translation id="2048254245884707305">正在檢查惡意軟件…</translation>
 <translation id="204914487372604757">建立捷徑</translation>
-<translation id="2049573977943974163">要開啟「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="2050339315714019657">直向</translation>
 <translation id="2051555741181591333">自動停用熱點</translation>
 <translation id="2051669996101374349">盡量使用 HTTPS，並在系統載入不支援 HTTPS 的網站前先接收提醒。由於已啟用「進階保護」功能，因此你無法變更此設定。</translation>
@@ -6014,7 +6013,6 @@
 <translation id="5372529912055771682">這個版本的作業系統不支援提供註冊模式。請確保您使用的是最新版本，然後再試一次。</translation>
 <translation id="5372579129492968947">取消固定擴充程式</translation>
 <translation id="5372632722660566343">在不登入帳戶的情況下繼續</translation>
-<translation id="5372990315769030589">要保留「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="5375318608039113175">如要與這些聯絡人使用「咫尺共享」，請將與他們 Google 帳戶連結的電郵地址加入您的通訊錄。</translation>
 <translation id="5375374982898812658">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從你的所有裝置刪除</translation>
 <translation id="5375517140689139594">閱讀模式 (<ph name="READING_MODE_SHORTCUT" />)</translation>

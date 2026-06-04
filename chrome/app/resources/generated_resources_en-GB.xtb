@@ -1463,7 +1463,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2048182445208425546">Access your network traffic</translation>
 <translation id="2048254245884707305">Checking for malware...</translation>
 <translation id="204914487372604757">Create shortcut</translation>
-<translation id="2049573977943974163">Turn '<ph name="EXTENSION_NAME" />' on?</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2051555741181591333">Automatically disable hotspot</translation>
 <translation id="2051669996101374349">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it. You can't change this setting because you have Advanced Protection enabled.</translation>
@@ -6019,7 +6018,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5372529912055771682">The supplied enrolment mode is not supported by this version of the operating system. Please make sure you are running the newest version and try again.</translation>
 <translation id="5372579129492968947">Unpin extension</translation>
 <translation id="5372632722660566343">Continue without an account</translation>
-<translation id="5372990315769030589">Keep '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="5375318608039113175">To use Nearby Share with these contacts, add the email address linked with their Google Account to your contacts.</translation>
 <translation id="5375374982898812658">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all your devices</translation>
 <translation id="5375517140689139594">Reading mode (<ph name="READING_MODE_SHORTCUT" />)</translation>

@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">本人確認…</translation>
 <translation id="1634520742547161889">MM/YY</translation>
 <translation id="1636234353664774105">ターンバイターン方式のナビゲーション ガイダンスで目的地までのルートを案内</translation>
-<translation id="1637811476055996098">ファイル選択</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="164673457281113247">{count,plural, =1{ブックマークを保存しました}other{ブックマークを保存しました}}</translation>
@@ -1457,7 +1456,6 @@
 <translation id="6045460247888249350">タイトルを追加</translation>
 <translation id="6052269326659653305">プロファイルを切り替え</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6058415747854995776">動画を撮る</translation>
 <translation id="6059830886158432458">ここで記事やアクティビティを管理します</translation>
 <translation id="6063802271331271857">画像をリミックス</translation>
 <translation id="6066301408025741299">タップしてキャンセルします。</translation>
@@ -1850,7 +1848,6 @@
 <translation id="7347998088283246662">パスワード、履歴、ブックマークなどをインポートできます</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7357999308187750900">すべて見る</translation>
-<translation id="7364796246159120393">ファイルを選択</translation>
 <translation id="736564850024123010">アドレスバーの位置を変更して使用環境をカスタマイズできます。</translation>
 <translation id="7366909168761621528">閲覧履歴データ</translation>
 <translation id="7367530036083223701">パスワード マネージャー ウィジェットを使用すると、ホーム画面からパスワードに安全にアクセスできます。</translation>
@@ -2012,7 +2009,6 @@
 <translation id="7866872729285243843">お使いのすべてのデバイスで同じリーディング リストを使用するには、設定で [リーディング リスト] をオンにします。</translation>
 <translation id="7874107544081154809">自動入力フォーム、<ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">ダウンロードを表示</translation>
-<translation id="7882689957034389473">写真を撮る</translation>
 <translation id="7883882164760409935">使い回しのパスワードがあります。</translation>
 <translation id="7887198238286927132">プライバシー保護のため、Chrome ではこの欄の自動入力は行われません。</translation>
 <translation id="7887552845761062935">ダブルタップして長押しするとその他のオプションが開きます</translation>
@@ -2174,7 +2170,6 @@
 <translation id="8395180897620197612">ログ記録を停止</translation>
 <translation id="8407669440184693619">このサイト用のパスワードが見つかりません</translation>
 <translation id="8407831512155324054">安全なパスワードが使用されています</translation>
-<translation id="8414030140103493759">写真または動画を撮影</translation>
 <translation id="8414283596511250978">パスワードを覚える必要はありません</translation>
 <translation id="8415120635186642416">さまざまなことを調べる</translation>
 <translation id="842523302461531262">[設定] でデフォルトにする…</translation>
@@ -2192,7 +2187,6 @@
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474378002946546633">通知を許可する</translation>
 <translation id="8477178913400731244">データを削除</translation>
-<translation id="847939250509903814">フォト ライブラリ</translation>
 <translation id="8481184073299279701">[ログ記録を開始] をタップすると、今後 JavaScript コンソールに表示されるすべてのタブのログやエラーが収集されます。ログは、このページを閉じるか [ログ記録を停止] をタップするまで収集（およびメモリにのみ保存）されます。</translation>
 <translation id="8487667956631253959">オン</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>

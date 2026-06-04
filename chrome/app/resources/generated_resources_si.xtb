@@ -149,6 +149,7 @@
 <translation id="1097016918605049747">මෙම පිටුව පරිවර්තනය කළ නොහැකි විය</translation>
 <translation id="1097658378307015415">ප්‍රවිෂ්ට වීමට පෙර, <ph name="NETWORK_ID" /> ජාලය සක්‍රීය කිරීම සඳහා ආගන්තුක ලෙස ඇතුළ් වන්න</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> වෙතින් පිටපත් කළ රූපය</translation>
+<translation id="1100040363679327583">කාර්යය සමාලෝචනය කරන්න. Gemini වෙතින් අසන්න</translation>
 <translation id="1100504063505580045">වත්මන් නිරූපකය</translation>
 <translation id="1101267749138963680">ආරක්ෂාව සඳහා පරීක්ෂා කරමින්...</translation>
 <translation id="1102759278139578486">ප්‍රධාන නෝඩ් අනුසටහන් ගොනු බාගත නොහැක. පසුව නැවත උත්සාහ කරන්න.</translation>
@@ -415,6 +416,7 @@
 <translation id="1282311502488501110">පුරන්න එපා</translation>
 <translation id="1282436639288565079">පටිති සමූහ විස්තර</translation>
 <translation id="1282577885428483870">අඩවි සහ ගිණුම්</translation>
+<translation id="1282689009629709205">නිපුණතා ගැලරිය</translation>
 <translation id="1284277788676816155">දත්ත සුරැකීමට ඉඩ නොදෙන්න</translation>
 <translation id="1285320974508926690">මෙම අඩවිය කිසිවිට පරිවර්තනය නොකරන්න</translation>
 <translation id="1285484354230578868">ඔබේ Google Drive ගිනුම තුළ දත්ත ගබඩා කරන්න</translation>
@@ -593,6 +595,7 @@
 <translation id="1431188203598586230">අවසාන මෘදුකාංග යාවත්කාලීනය</translation>
 <translation id="1433478348197382180">කියවීම් ප්‍රකාරය</translation>
 <translation id="1433980411933182122">ඇරඹුම</translation>
+<translation id="1434659328474177625"><ph name="ISSUER" /> ඔබේ ඉ-තැපෑල සත්‍යාපනය කර ඇත</translation>
 <translation id="1434696352799406980">මෙය ඔබේ ආරම්භක පිටුව, නව පටිති පිටුව, සෙවුම් එන්ජිම, සහ ඇමිණූ ටැබ් යළි පිහිටුවනු ඇත. එය සියලු දිගු ද අබල කරනු ඇති අතර කුකීස් මෙන් තාවකාලික දත්ත හිස් කරනු ඇත. ඔබේ පිටුසන්, ඉතිහාසය හා සුරැකි මුරපද හිස් නොකෙරෙනු ඇත.</translation>
 <translation id="1434886155212424586">මුල්පිටුව නව ටැබ පිටුවයි</translation>
 <translation id="1435940442311036198">වෙනස් උපාංගයක මුරයතුරක් භාවිතා කරන්න</translation>
@@ -836,6 +839,7 @@
 <translation id="1607540893439314147"><ph name="BEGIN_PARAGRAPH1" />Google AI සමග ලිවීම, සැලසුම් කිරීම, ඉගෙනීම සහ තවත් දේ ආරම්භ කිරීමට Gemini සමග කතාබස් කරන්න.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />පිහිටුවීමෙන් පසු, ඔබේ තිරයේ පහළින්, ඔබේ රාක්කයේ ඇති Gemini යෙදුම තේරීමෙන් Gemini භාවිත කිරීම ආරම්භ කරන්න.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1608668830839595724">තේරූ අයිතම සඳහා වැඩිදුර ක්‍රියා</translation>
+<translation id="1609603645228231640">Gemini Spark පරීක්ෂණාත්මක වන අතර විමසීමකින් තොරව ඔබේ තොරතුරු බෙදා ගැනීම හෝ මිල දී ගැනීම් කිරීම වැනි දේවල් කිරීමට ඉඩ ඇත. <ph name="LINK_BEGIN" />අවදානම් සමාලෝචනය කරන්න<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">යෙදුම් සැකසීම්</translation>
 <translation id="161042844686301425">සියන්</translation>
 <translation id="1611649489706141841">ඉදිරියට යන්න</translation>
@@ -919,6 +923,7 @@
 <translation id="1665328953287874063">ඔබේ <ph name="DEVICE_TYPE" /> අගුළු හැරීමට මුරපදයක් හෝ PIN එකක් භාවිතා කරන්න</translation>
 <translation id="1665859804801131136">ප්‍රකාශනවාදය</translation>
 <translation id="1667842670298352129">නිශ්චිත පෙළ ශබ්ද නඟා කියවීමට සවන් දෙන්න. පළමුව, ඔබේ තිරයෙහි පහළින් ඇති කථා කිරීමට තෝරන්න නිරූපකය තෝරා, ඉන්පසු පෙළ උද්දීපනය කරන්න. ඔබට යතුරු පුවරු කෙටිමඟක් ද භාවිතා කළ හැක: පෙළ උද්දීපනය කර, ඉන්පසු සෙවීම + S ඔබන්න.</translation>
+<translation id="1668231044084098661"><ph name="TASK_TITLE" />: Gemini ඔබේ කාර්යය සම්පූර්ණ කර ඇත, ඔබට එය Chrome තුළ බැලිය හැකි ය</translation>
 <translation id="1668435968811469751">හස්තීයව ලියාපදිංචි වන්න</translation>
 <translation id="1668804837842452164"><ph name="EMAIL" /> සඳහා <ph name="BRAND" /> වෙත සුරකින්න</translation>
 <translation id="1670070366970670971">PDF උපරාමුව: <ph name="SUBFRAME_SITE" /></translation>
@@ -1380,6 +1385,7 @@
 <translation id="1994173015038366702">අඩවි URL</translation>
 <translation id="1995916364271252349">වෙබ් අඩවිවලට භාවිත කිරීමට සහ පෙන්වීමට හැකි තොරතුරු පාලන කරයි (ස්ථානය, කැමරාව, උත්පතන, සහ තවත් ඒවා)</translation>
 <translation id="199610894463449797">{0,plural, =1{මෙම පැතිකඩ වසන්න}one{මෙම පැතිකඩ වසන්න (කවුළු #ක්)}other{මෙම පැතිකඩ වසන්න (කවුළු #ක්)}}</translation>
+<translation id="1996557034791506430">අවසරය ඉවත් කරන්න ද?</translation>
 <translation id="1997433994358798851">Chrome හට ඔබේ උපාංගයට සම්බන්ධ වීමට බ්ලූටූත් භාවිත කිරීමට අවසර අවශ්‍යයි</translation>
 <translation id="1997616988432401742">ඔබේ සහතික</translation>
 <translation id="1998715278591719161">ඔබේ අත් නිරීක්ෂණය කිරීමට ඉඩ දී ඇත</translation>
@@ -1397,6 +1403,7 @@
 <translation id="2010636492623189611">තෝරන ලදි.</translation>
 <translation id="2012935757369720523">ගොනුව මකන්න</translation>
 <translation id="2013550551806600826">එය උත්සාහ කරන්න. සැකසීම සක්‍රීය​ හෝ අක්‍රිය කරන්න, පසුව පරීක්ෂණ ප්‍රදේශයේ ඔබේ ස්පර්ශ පුවරුව මත ඇඟිලි දෙකකින් අනුචලන කරන්න. ඔබට මෙය පසුව සැකසීම් &gt; උපාංගය &gt; මුසිකය සහ ස්පර්ශ පුවරුව තුළ ද සොයා ගත හැක.</translation>
+<translation id="2014495120525813351">Gemini Spark හට මෙම උපාංගයෙහි බ්‍රවුස් කිරීමට ඉඩ දෙන්න</translation>
 <translation id="2016473077102413275">රූප අවශ්‍ය විශේෂාංග ක්‍රියා නොකරනු ඇත</translation>
 <translation id="2016574333161572915">ඔබගේ Google Meet දෘඪාංග පිහිටුවීමට සූදානම්ය</translation>
 <translation id="2017334798163366053">ක්‍රියාකාරීත්ව දත්ත එක්රැස් කිරීම අක්‍රීය කරන්න</translation>
@@ -1450,7 +1457,6 @@
 <translation id="2048182445208425546">ඔබගේ ජාල ගමනාගමනය ප්‍රවේශ කරන්න</translation>
 <translation id="2048254245884707305">අනිෂ්ට මෘදුකාංග සඳහා පරීක්ෂා කරමින්...</translation>
 <translation id="204914487372604757">කෙටිමඟ තනන්න</translation>
-<translation id="2049573977943974163">"<ph name="EXTENSION_NAME" />" ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="2050339315714019657">සිරස්</translation>
 <translation id="2051555741181591333">හොට්ස්පොට් ස්වයංක්‍රීයව අබල කරන්න</translation>
 <translation id="2051669996101374349">හැකි සෑම විට ම HTTPS භාවිතා කර එයට සහය නොදක්වන අඩවි පූරණය කිරීමට පෙර අනතුරු අඟවන්න. ඔබ උසස් ආරක්ෂණය සබල කර ඇති නිසා ඔබට මෙම සැකසීම වෙනස් කළ නොහැක.</translation>
@@ -2338,6 +2344,7 @@
 <translation id="2673848446870717676">ඔබේ බ්ලූටූත් උපාංගය යුගල කිරීමේ ප්‍රකාරයේ සහ අවට තිබෙන බව සහතික කර ගන්න. ඔබ විශ්වාස කරන උපාංග සමග පමණක් යුගල කරන්න. යුගල කළ උපාංග මෙම Chromebook හි සියලු ගිණුම්වලට දෘශ්‍යමාන වේ.</translation>
 <translation id="2673873887296220733">විවෘත කිරීම සඳහා <ph name="CLOUD_PROVIDER" /> වෙත 1 ගොනුවක් පිටපත් කරන්න ද?</translation>
 <translation id="267442004702508783">නැවුම් කිරීම</translation>
+<translation id="2674756932811577764">ප්‍රයෝග විරාම කරන්න</translation>
 <translation id="2675160405921703214">Chrome මත Gemini හමුවන්න</translation>
 <translation id="2676084251379299915">මෙම දිගුව තවදුරටත් Chrome Web Store හි නොමැති නිසා ව්‍යවසාය ප්‍රතිපත්තිය මගින් අබල කර ඇත.</translation>
 <translation id="2677748264148917807">හැර යන්න</translation>
@@ -2356,6 +2363,7 @@
 <translation id="2692503699962701720">කථන මූලාංගය ටයිප් කරන විට සහ පෙළ හැඩ ගැන් වූ විට තාරතාව වෙනස් කරන්න</translation>
 <translation id="2692901429679246677">ඇක්වා</translation>
 <translation id="2693134906590795721">ආරෝපණය වීමේ ශබ්ද</translation>
+<translation id="2694330288297637442">කාර්යය මත වැඩ කරමින්. Gemini වෙතින් අසන්න</translation>
 <translation id="2695943520968279338">දිගු සොයා ගන්න</translation>
 <translation id="2696675923413008404">මෙම වෙබ් අඩවියෙන් අන්තර්ගතය, එහි URL ඇතුළුව, Google වෙත යවනු ලබන අතර මෙම විශේෂාංගය වැඩි දියුණු කිරීම සඳහා මානව සමාලෝචකයින් විසින් දැකිය හැක</translation>
 <translation id="2698147581454716013">මෙය පොදි බඳින ලද උපාංගයක් වන අතර Kiosk සහ Signage Upgrade සමග ලියාපදිංචි විය නොහැක.</translation>
@@ -2647,6 +2655,7 @@
 <translation id="2893318819023133318">ප්‍රතිලෝම දසුන්</translation>
 <translation id="2894596417096093634">බිඳ වැටීම් වාර්තා හැඳුනුම්කාරක</translation>
 <translation id="2894757982205307093">කණ්ඩායම තුළ නව පටිත්ත</translation>
+<translation id="2895194086130800590">උපාංගය සක්‍රියව ඇත්නම් සහ Chrome ධාවනය වන්නේ නම් පමණක් Gemini Spark හට මෙම උපාංගයේ ස්වයංක්‍රියව බ්‍රවුස් කිරීම භාවිත කළ හැකි ය.</translation>
 <translation id="289695669188700754">යතුරු ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ඔබ ඔබගේ සියලු අප්‍රසිද්ධ කවුළු වැසූ විට මෙම අභිරුචි සැකසීම ඉවත් කරනු ඇත</translation>
 <translation id="2897878306272793870">ඔබට ටැබ <ph name="TAB_COUNT" />ක් විවෘත කිරීමට අවශ්‍ය බව ඔබට විශ්වාසද?</translation>
@@ -2703,6 +2712,7 @@
 <translation id="2934225044529065415">කැමරාව වෙත ප්‍රවේශ විය නොහැක</translation>
 <translation id="2935314715123552088">සක්‍රිය eSIM පැතිකඩ අබල කරන්න</translation>
 <translation id="2935654492420446828">පසුව පාසල් ගිණුමක් එක් කරන්න</translation>
+<translation id="2936067606203230121">ඔබ ආරම්භ කරන හෝ යාවත්කාලීන කරන කාර්යයන් මත පදනම්ව ගත යුතු ක්‍රියාමාර්ග Gemini Spark විසින් තීරණය කරනු ඇත.</translation>
 <translation id="2936851848721175671">උපස්ථය සහ ප්‍රතිසාධනය</translation>
 <translation id="2938981087412273365">මෙම අඩවිය කියවීමට සහ වෙනස් කිරීමට ඉඩ නැත</translation>
 <translation id="2939005221756255562">දැනුම්දීම් මධ්‍යස්ථානයේ දැනුම්දීම් සබල කරන්න. <ph name="BEGIN_LINK" />පද්ධති සැකසීම්<ph name="END_LINK" /> විවෘත කරන්න.</translation>
@@ -2909,6 +2919,7 @@
 <translation id="3082374807674020857"><ph name="PAGE_TITLE" /> - <ph name="PAGE_URL" /></translation>
 <translation id="3082493846131340396">දිගු</translation>
 <translation id="308268297242056490">URI</translation>
+<translation id="3082989400996696487">නව පටිති පිටුවෙහි පමණක් පෙන්වන්න</translation>
 <translation id="3083193146044397360">ඔබේ ආරක්ෂාව සුරැකීමට තාවකාලිකව අවහිර කර ඇත</translation>
 <translation id="3083899879156272923">තිරය මධ්‍යයේ මූසිකය තබාගෙන තිරය ගෙන යන්න</translation>
 <translation id="3084121729444215602"><ph name="EXTENSION_NAME" /> ඔබේ පරිපාලක විසින් අමුණා ඇත</translation>
@@ -2926,6 +2937,7 @@
 <translation id="3094080575472025333">යෙදුම් අවහිර කරන්න</translation>
 <translation id="3094521107841754472">මිල<ph name="PREVIOUS_PRICE" /> සිට <ph name="CURRENT_PRICE" /> ලෙස වෙනස් වී ඇත.</translation>
 <translation id="3095871294753148861">පිටුසන්, මුරපද, සහ අනෙකුත් බ්‍රවුසර දත්ත ප්‍රාථමික ගිණුම සමඟ සමමුහූර්ත කෙරේ.</translation>
+<translation id="3097674000822532270">ඔබේ යෙදුම් සහ සැකසීම් ඔබ ඔබේ Google ගිණුම සමග පුරනය වී ඇති සියලු ChromeOS Flex උපාංග හරහා සමමුහුර්ත වනු ඇත. ඔබේ Google ගිණුමේ සුරකින බ්‍රවුසර දත්ත මොනවා දැයි කළමනාකරණය කිරීමට, <ph name="LINK_BEGIN" />Chrome සැකසීම්<ph name="LINK_END" /> වෙත යන්න.</translation>
 <translation id="3101126716313987672">අඳුරු ආලෝකය</translation>
 <translation id="3101709781009526431">දිනය හා වේලාව</translation>
 <translation id="3101924772906986970">ඔබේ Chrome බ්‍රව්සරයේ පිටුසන්, මුරපද, ඉතිහාසය සහ තවත් දේ ඔබේ Google ගිණුමේ සුරකිනු ලැබේ</translation>
@@ -3048,6 +3060,7 @@
 <translation id="3188257591659621405">මගේ ගොනු</translation>
 <translation id="3189187154924005138">විශාල කර්සරය</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 මුරපදයක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න.}one{මුරපද {PASSWORD_COUNT}ක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න.}other{මුරපද {PASSWORD_COUNT}ක් සහ අනෙකුත් අයිතම මෙම උපාංගයට පමණක් සුරැකේ. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න.}}</translation>
+<translation id="3190404390992636561">නිපුණතා නොමැත</translation>
 <translation id="319044078641740013">ඔබ පිවිසි අඩවි වෙත පහසුවෙන් ආපසු යාමට, ඔබේ ඉතිහාසය සහ පටිති <ph name="ACCOUNT_EMAIL" /> වෙත සමමුහුර්ත කරන්න</translation>
 <translation id="3190558889382726167">මුරපදය සුරැකිණි</translation>
 <translation id="3192586965067888278">ගැටලුව විස්තරාත්මකව විස්තර කරන්න. ප්‍රතිපෝෂණ මානව සමාලෝචනය සඳහා Google වෙත යවනු ලබන අතර Google නිෂ්පාදන සහ සේවා වැඩි දියුණු කිරීම හෝ සංවර්ධනය කිරීම සඳහා භාවිතා කළ හැක.</translation>
@@ -3117,6 +3130,7 @@
 <translation id="3247649647204519958">මෙතැන් සිට, ඔබට ඔබ සිටින අඩවිය සඳහා දිගු අවසර බැලීම සහ කළමනාකරණය කළ හැක</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ජාල දෝෂය</translation>
 <translation id="3248902735035392926">ආරක්‍ෂාව වැදගත්. මොහොතක් ලබා ගෙන <ph name="BEGIN_LINK" />දැන් ඔබේ දිගු පරීක්‍ෂා කරන්න<ph name="END_LINK" /></translation>
+<translation id="3249558306861350254">ඔබේ Windows සැකසීම් තුළ <ph name="BEGIN_BOLD" />පෙරනිමිය සකසන්න<ph name="END_BOLD" /> ක්ලික් කරන්න.</translation>
 <translation id="3250374026663843838">ඔබේ කුසලතාව කළමනාකරණය කරන්න</translation>
 <translation id="3251119461199395237">ගොනු සමමුහුර්ත කිරීම</translation>
 <translation id="3251759466064201842">&lt;සහතිකයේ කොටසක් නොවේ&gt;</translation>
@@ -3466,6 +3480,7 @@
 <translation id="351152300840026870">අචල-පළලැති අකුරු</translation>
 <translation id="3511528412952710609">කොට</translation>
 <translation id="3512465804715993309">අනුවර්තී උද්දීපනය</translation>
+<translation id="3512495006767217696">ඔබට ශක්තිමත් මුරපද තැනීම, සුරැකීම සහ ස්වයං පිරවීම සඳහා උදවු කිරීම Chrome තුළට ම ඇතුළත් කර ඇත. පහසු ප්‍රවේශය සඳහා කෙටිමඟ එක් කරන්න</translation>
 <translation id="3513019849832307207">එකතු වී විවෘත කරන්න</translation>
 <translation id="3513563267917474897"><ph name="MIN_VALUE" /> සිට <ph name="MAX_VALUE" /> දක්වා පැහැය ස්ලයිඩරය</translation>
 <translation id="3514647716686280777">ඔබ සම්මත ආරක්ෂණ ආරක්ෂාව ලබන්නෙහි. අනතුරුදායක වෙබ් අඩවිවලට, බාගැනීම්වලට, සහ දිගුවලට එරෙහිව වැඩි ආරක්ෂාව ලබා ගැනීමට Chrome සැකසීම් තුළ ඉහළ නැංවූ සුරක්ෂිත බ්‍රවුස් කිරීම සක්‍රීය කරන්න.</translation>
@@ -3682,6 +3697,7 @@
 <translation id="3666196264870170605">Intel WiFi NICs නිදොස් කිරීමේ නික්ෂේපය</translation>
 <translation id="3666971425390608309">බාගැනීම විරාම කරන ලදි: <ph name="FILE_NAME" />.</translation>
 <translation id="3667189852455120515">ඔබේ <ph name="DEVICE_TYPE" /> මත ඔබේ පටිති සමූහ භාවිතා කරන්න</translation>
+<translation id="3668703890943804691">කාර්යය නතර විය</translation>
 <translation id="3670113805793654926">ඕනෑම විකුණුම්කරු වෙතින් උපාංග</translation>
 <translation id="3670159164851218963">AI මාදිලි ඉතිහාසය</translation>
 <translation id="3670229581627177274">බ්ලූටූත් ක්‍රියාත්මක කරන්න</translation>
@@ -4162,6 +4178,7 @@
 <translation id="3978732922947854545">Chrome PDF වඩා හොඳ කරයි</translation>
 <translation id="3979093622823535817">රැස්වීමට එක් වන්න <ph name="MEETING_TITLE" /></translation>
 <translation id="3979395879372752341">නව දිගුව (<ph name="EXTENSION_NAME" />) එක් කෙරිණි</translation>
+<translation id="3980708588513986958">ඔබේ නිපුණතා බලන්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="398095528354975981">මෙම පටිති සඟවන්න</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> සඳහා අවට උපාංගවලට <ph name="DEVICE_NAME" /> ලෙස දෘශ්‍යමාන වන්න...</translation>
 <translation id="3981760180856053153">වැරදි සුරැකුම් වර්ගයක් ඇතුළත් කර ඇත.</translation>
@@ -4926,6 +4943,7 @@
 <translation id="4564245002465020751">ඔබගේ දුරකථනයේ පිහිටුවීම අවසන් කරන්න</translation>
 <translation id="456449593072900590">පිටවීමේදී මකන්න</translation>
 <translation id="4565377596337484307">මුරපදය සඟවන්න</translation>
+<translation id="4565465014351935093">නව පටිති පිටුවෙහි පමණක් පෙන්වන්න</translation>
 <translation id="4565917129334815774">පද්ධති ලොග ගබඩා කරන්න</translation>
 <translation id="4566170377336116390">ඔබට ලියාපදිංචි වීමෙන් පසු මාරු වීමට අවශ්‍ය නම්, ඔබට ඔබගේ උපාංගය කර්මාන්තශාලා යළි සැකසීම (පවර්වොෂ්) කිරීමට අවශ්‍ය වනු ඇත.</translation>
 <translation id="4566417217121906555">මයික්‍රෆෝනය නිහඬ කරන්න</translation>
@@ -4953,6 +4971,7 @@
 <translation id="4580127151758731432">විශාල හිස චලනයන් කර්සරය ඈතට ගෙන යනු ඇත</translation>
 <translation id="4580389561674319558">සියලු සම්බන්ධතා වෙත දෘශ්‍යමාන වේ</translation>
 <translation id="4580596421317071374">මෙම උපාංගයේ <ph name="GOOGLE_PASSWORD_MANAGER" /> හි මුරපද සුරැකේ.</translation>
+<translation id="4580939929828762295">Google මුරපද කළමනාකරු සමග සුරක්ෂිතව සිටින්න</translation>
 <translation id="4582297591746054421">අඩවි සාමාන්‍යයෙන් ඔබ පිටපත් කළ පෙළ හැඩ ගැන්වීම තබා ගැනීම වැනි විශේෂාංග සඳහා ඔබේ පසුරු පුවරුව කියවයි</translation>
 <translation id="4582563038311694664">සියලු සැකසුම් යළි සකසන්න</translation>
 <translation id="4584094413232466841">Chrome ස්වයං පිරවුමෙන් මෙම තතු ඉවත් කරන්න ද?</translation>
@@ -5216,6 +5235,7 @@
 <translation id="4780321648949301421">පිටුව මෙලෙස සුරකින්න...</translation>
 <translation id="4780558987886269159">කාර්යාලය සඳහා</translation>
 <translation id="4784349455504343791"><ph name="WEBSITE_ORIGIN" /> හට ඔබේ ඩිජිටල් මුදල් පසුම්බියේ පුද්ගලික තතු භාවිතා කිරීමට අවශ්‍ය වේ.</translation>
+<translation id="4784506603920819520"><ph name="TASK_TITLE" />: මෙම කාර්යය දිගටම කරගෙන යාමට Gemini හට ඔබේ උදවු අවශ්‍යයි</translation>
 <translation id="4785719467058219317">ඔබ මෙම වෙබ් අඩවිය සමඟ ලියාපදිංචි නොකළ ආරක්‍ෂක යතුරක් භාවිත කරයි</translation>
 <translation id="4786430656008801173">උපාංගය මත AI</translation>
 <translation id="4787471921443575924">පරිශීලක නාමය සඳහා මුරයතුර සංස්කරණය කරන්න:<ph name="USER_EMAIL" /></translation>
@@ -5511,6 +5531,7 @@
 <translation id="4989966318180235467">පසුබිම් පිටුව විමර්ශනය (&amp;b)</translation>
 <translation id="499016799952867794">මෙය යෙදුමට අපේක්ෂිත පරිදි ක්‍රියාත්මක වීමට ඉඩ දෙයි.</translation>
 <translation id="4990673372047946816">කැමරාව ලබා ගත නොහැක</translation>
+<translation id="499126848196136237">Gemini Spark හට වෙබ් අඩවි සමග අන්තර් ක්‍රියා කිරීමට සහ ඔබ වෙනුවෙන් කාර්යයන් සම්පූර්ණ කිරීමට මෙම උපාංගයේ Chrome ස්වයංක්‍රියව බ්‍රවුස් කිරීම භාවිත කළ හැකි ය. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">ඉහළ පේලියේ යතුරු කාර්ය යතුරු ලෙස භාවිතා කරන්න</translation>
 <translation id="4991873517942703737">මෙම ලේඛනය ගැන අසන්න</translation>
 <translation id="4992066212339426712">නිශ්ශබ්දතාවය ඉවත් කරන්න</translation>
@@ -5724,6 +5745,7 @@
 <translation id="5149602533174716626">වීඩියෝ රාමුව පිටපත් කරන්න</translation>
 <translation id="5150254825601720210">නෙට්ස්කේප් සහතික SSL සේවාදායක නම</translation>
 <translation id="5151354047782775295">තැටි ඉඩ හිස් කරන්න නැතහොත් තෝරන දත්ත ස්වයංක්‍රියව මැකීමට හැකිය</translation>
+<translation id="5152381187352661267">Chrome හි නිපුණතා</translation>
 <translation id="5153074793829217329">ඔබේ මූසික කර්සරය පාලනය කිරීමට ඔබේ යතුරු පුවරුව හෝ සංඛ්‍යාත්මක යතුරු පෑඩයක් භාවිතා කරන්න</translation>
 <translation id="5153234146675181447">දුරකථනය අමතක කරන්න</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -6003,7 +6025,6 @@
 <translation id="5372529912055771682">සපයන ලද ඇතුළු කිරීමේ මාදිලිය මෙහෙයුම් පද්ධතියේ මෙම අනුවාදය සඳහා ආධාරක නොවේ.  කරුණාකර ඔබ නවතම අනුවාදය ක්‍රියාත්මක කරන බව තහවුරු කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="5372579129492968947">දිගුව නොඅමුණන්න</translation>
 <translation id="5372632722660566343">ගිණුමක් නොමැතිව ඉදිරියට යන්න</translation>
-<translation id="5372990315769030589">"<ph name="EXTENSION_NAME" />" තබා ගන්න ද?</translation>
 <translation id="5375318608039113175">මෙම සම්බන්ධතා සමග ළඟ බෙදා ගැනීම භාවිත කිරීමට, ඒවායෙහි Google ගිණුම සමග සම්බන්ධිත ඉ-තැපැල් ලිපිනය ඔබගේ සම්බන්ධතාවලට එක් කරන්න.</translation>
 <translation id="5375374982898812658">ඔබට වහාම “<ph name="GROUP_NAME" />” පටිති සමූහයට ප්‍රවේශය අහිමි වනු ඇති අතර, එය ඔබේ සියලු උපාංගවලින් මකනු ඇත</translation>
 <translation id="5375517140689139594">කියවීමේ මාදිලිය (<ph name="READING_MODE_SHORTCUT" />)</translation>
@@ -6984,6 +7005,7 @@
 <translation id="6112727384379533756">ප්‍රවේශපත්‍රයක් එක් කරන්න</translation>
 <translation id="6113434369102685411">Chrome බ්‍රව්සරය සහ <ph name="DEVICE_TYPE" /> දියත්කරණය සඳහා ඔබගේ පෙරනිමි සෙවුම් යන්ත්‍රය සකසන්න</translation>
 <translation id="6113832060210023016">දියත්කරණය + ක්ලික් කිරීම</translation>
+<translation id="6116004140911290070">Chrome තුළ නිපුණතා සබල කරන්න</translation>
 <translation id="6116921718742659598">භාශාව හා ආදාන සැකසුම් වෙනස් කරන්න</translation>
 <translation id="6119008366402292080">මුද්‍රකයක් නොමැත</translation>
 <translation id="6119972796024789243">වර්ණ නිවැරදි කිරීම</translation>
@@ -7136,6 +7158,7 @@
 <translation id="622568138962270592">Gemini යෙදුම් ක්‍රියාකාරකම</translation>
 <translation id="6226777517901268232">පුද්ගලික යතුරු ගොනුව (විකල්පමය)</translation>
 <translation id="6227280783235722609">දිගුව</translation>
+<translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini මෙම කාර්යය කිරීම නතර කර ඇත</translation>
 <translation id="622902691730729894">පිටුසන් තීරුවෙන් සමූහය ඉවත් කරන්න</translation>
 <translation id="6229062790325126537">ApnMigrator යළි සකසන්න</translation>
 <translation id="6229849828796482487">Wi-Fi ජාලය විසන්ධි කරන්න</translation>
@@ -7249,6 +7272,7 @@
 <translation id="6307268917612054609">කැමරා අවසරය ඇති යෙදුම් සහ වෙබ් අඩවිවලට මෙන්ම පද්ධති සේවාවලට ඔබේ කැමරාව භාවිත කළ හැකි ය</translation>
 <translation id="6307990684951724544">පද්ධතිය කාර්යබහුලයි</translation>
 <translation id="6308493641021088955">පුරනය වීම සපයන්නේ <ph name="EXTENSION_NAME" /></translation>
+<translation id="6308778163698400658">මෙවලම් තීරුවට එක් කරන්න</translation>
 <translation id="6308937455967653460">ලින්ක් ලෙස සුරකින්න...</translation>
 <translation id="6309443618838462258">ඔබගේ පරිපාලක මෙම ආදාන ක්‍රමය සඳහා ඉඩ නොදේ</translation>
 <translation id="6309510305002439352">මයික්‍රොෆෝනය අක්‍රියයි</translation>
@@ -7391,6 +7415,7 @@
 <translation id="6418511932144861495">වැදගත් යාවත්කාලීනය ස්ථාපනය කරන්න</translation>
 <translation id="641899100123938294">නව උපාංග සඳහා ස්කෑන් කරන්න</translation>
 <translation id="6419546358665792306">ඇසුරුම් ඉවත් කළ දිගුව පූරණය කරන්න</translation>
+<translation id="642022784593557216">කාර්යය සම්පූර්ණයි. Gemini වෙතින් අසන්න</translation>
 <translation id="6425556984042222041">කථනයට පාඨය අනුපාතය</translation>
 <translation id="642729974267661262">හඬ වාදනය කිරීමට ඉඩ නොදේ</translation>
 <translation id="6427752304227226701">&amp;අනාරක්ෂිත අඩවියක් වාර්තා කරන්න...</translation>
@@ -7461,6 +7486,7 @@
 <translation id="6470823736074966819">දැනුම්දීම් නිහඬ කරන්න</translation>
 <translation id="6472893788822429178">මුල්පිටු බොත්තම පෙන්වන්න</translation>
 <translation id="6473315466413288899">විකල්පයක් තෝරන්න</translation>
+<translation id="6473659734176498825">Chrome තුළ Google මුරපද කළමනාකරු ප්‍රවේශ ලක්ෂ්‍යය පෙන්වන සරල කළ රූපයක්</translation>
 <translation id="6474498546677193336">යෙදුමක් මෙම ෆෝල්ඩරය භාවිත කරන බැවින් බෙදා නොගත නොහැකි විය. ලිනක්ස් මීළඟ වරට වසා දැමෙන විට ෆෝල්ඩරය බෙදා නොගැනේ.</translation>
 <translation id="6474884162850599008">Google Drive ගිණුම විසන්ධි කරන්න</translation>
 <translation id="6476482583633999078">කථන වේගය</translation>
@@ -7678,6 +7704,7 @@
 <translation id="663569763553406962">අඩවියක් කියවිය හැකි හෝ වෙනස් කළ හැකි දිගු මොනවා දැයි බලන්න</translation>
 <translation id="6636258750460740634">ඉතිහාසය</translation>
 <translation id="6636623428211296678">පහත තවත් සැකසීම් ගවේෂණය කරන්න හෝ දැන් අවසන් කරන්න</translation>
+<translation id="6639405694338292402">නිපුණතා විශේෂාංගය දැනට අබල කර ඇත. ආරම්භ කිරීමට ඔබේ Chrome සැකසීම් යාවත්කාලීන කරන්න.</translation>
 <translation id="6639554308659482635">SQLite මතකය</translation>
 <translation id="6640268266988685324">ටැබය විවෘත කරන්න</translation>
 <translation id="664271268954513498">ප්‍රතිපත්ති අගය</translation>
@@ -7980,6 +8007,7 @@
 <translation id="6843264316370513305">ජාල නිදොසීම</translation>
 <translation id="6843404741389995311">ඔබේ කැමරාව සහ ඡායාරූප ගැලරිය සමග ඔබ දකින දෙය මිල දී ගන්න, පරිවර්තනය කරන්න, සහ හඳුනා ගන්න</translation>
 <translation id="6843725295806269523">නිහඬ කරන්න</translation>
+<translation id="6843919992766261684">ඉදිරියට යාමේ දී, <ph name="ISSUER" /> මෙම ඉ-තැපෑල ස්වයංක්‍රීයව තහවුරු කිරීම නවත්වනු ඇත</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">විශාලම කර විවෘත කරන්න</translation>
 <translation id="6845231585063669905">A සිට Z</translation>
@@ -8764,6 +8792,7 @@
 <translation id="7421293530411019405">පටිති සමූහය හැර යන්න ද?</translation>
 <translation id="7421925624202799674">පිටු මූලාශ්‍රය &amp;බලන්න</translation>
 <translation id="7422192691352527311">වරණයන්...</translation>
+<translation id="7423381908337122792">ඔබේ Gemini Spark නියෝජිතයා වෙත ප්‍රවේශය ඇති ඕනෑම කෙනෙකුට ඔබේ Chrome බ්‍රවුසරය පාලනය කළ හැකි ය.</translation>
 <translation id="7423425410216218516">මිනිත්තු <ph name="MINUTES" />ක් සඳහා දෘශ්‍යතාව ක්‍රියාත්මකයි</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> ඉවත් කරන්න</translation>
 <translation id="7424818322350938336">ජාලය එක් කරන ලදි</translation>
@@ -8990,6 +9019,7 @@
 <translation id="7605594153474022051">සමමුහුර්තය වැඩ නොකරයි</translation>
 <translation id="7606560865764296217">සජීවිකරණය විරාම ගන්වන්න</translation>
 <translation id="7606639338662398635">පටිති සමූහ</translation>
+<translation id="7606802863538485839">ප්‍රයෝග වාදනය කරන්න</translation>
 <translation id="7607002721634913082">අත්හිටුවන ලදි</translation>
 <translation id="7608810328871051088">Android මනාප</translation>
 <translation id="7610337976012700501">මෙම සම්බන්ධතා සමග <ph name="FEATURE_NAME" /> භාවිතය සඳහා, ඔවුන්ගේ Google ගිණුම සමග සම්බන්ධ කර ඇති ඉ-තැපැල් ලිපිනය ඔබේ සම්බන්ධතාවලට එක් කරන්න.</translation>
@@ -9393,6 +9423,7 @@
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (පෙරනිමිය)</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> සුරකින්න ද?</translation>
 <translation id="789722939441020330">බහුවිධ ගොනු ස්වයංක්‍රියව බාගැනීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
+<translation id="789859328812452250">සැමවිට පෙන්වන්න</translation>
 <translation id="7898725031477653577">සැමවිටම පරිවර්තනය කරන්න</translation>
 <translation id="7899720074434636454"><ph name="EXTENSION_NAME" /> සඳහා ඉල්ලීම ඉවත දමන්න</translation>
 <translation id="7900950034255258543">මෙම උපාංගය ආරක්ෂිතව භාවිත කළ හැකි බව සහතික කර ගැනීමට, ඔබේ සංවිධානයට එහි මෙහෙයුම් පද්ධතිය, බ්‍රවුසරය සහ සැකසීම් සහ උපාංගයේ ස්ථාපනය කර ඇති මෘදුකාංග පිළිබඳ තොරතුරු බැලීමට හැක</translation>
@@ -9681,6 +9712,7 @@
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> වින්‍යාස කරමින් ...</translation>
 <translation id="8086121155774250556">මෙම පටිත්ත ඔබේ තිරය බෙදා ගනිමින් සිටියි</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{මෙම ගොනුව සංකේතිතයි. එහි හිමිකරුට විකේතන කිරිමට කියන්න.}one{මෙම ගොනුවලින් සමහරක් සංකේතිතයි. ඒවායේ හිමිකරුට විකේතන කිරිමට කියන්න.}other{මෙම ගොනුවලින් සමහරක් සංකේතිතයි. ඒවායේ හිමිකරුට විකේතන කිරිමට කියන්න.}}</translation>
+<translation id="8088104901946731753">ඔබේ යෙදුම් සහ සැකසීම් ඔබ ඔබේ Google ගිණුම මගින් පුරනය වී ඇති සියලු ChromeOS උපාංග හරහා සමමුහුර්ත වනු ඇත. ඔබේ Google ගිණුමේ සුරකින බ්‍රවුසර දත්ත මොනවා දැයි කළමනාකරණය කිරීමට, <ph name="LINK_BEGIN" />Chrome සැකසීම්<ph name="LINK_END" /> වෙත යන්න.</translation>
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
 <translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{1 පිටුසනක් මෙම උපාංගයට පමණක් සුරැකේ. එය ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, එය ඔබේ Google ගිණුමේ සුරකින්න. මෙමගින් ඕනෑම අනුපතක් ද පිරිසිදු කරනු ඇත.}one{පිටුසන් {BOOKMARK_COUNT}ක් සුරැකෙන්නේ මෙම උපාංගයට පමණි. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න. මෙමගින් ඕනෑම අනුපතක් ද පිරිසිදු කරනු ඇත.}other{පිටුසන් {BOOKMARK_COUNT}ක් සුරැකෙන්නේ මෙම උපාංගයට පමණි. ඒවා ඔබේ අනෙකුත් උපාංගවල භාවිතා කිරීම සඳහා, ඒවා ඔබේ Google ගිණුමේ සුරකින්න. මෙමගින් ඕනෑම අනුපතක් ද පිරිසිදු කරනු ඇත.}}</translation>
 <translation id="8090234456044969073">ඔබේ වඩා මෑත පිවිසි වෙබ් අඩවි ලැයිස්තුවක් කියවන්න</translation>
@@ -10366,6 +10398,7 @@
 <translation id="8593686980889923154"><ph name="APP_NAME" /> ඔබේ <ph name="DEVICE_TYPE" /> තුළ අවහිර කෙරේ</translation>
 <translation id="8593938084085018349">ඔබේ ආරක්ෂක සැකසීම් උත්ශ්‍රේණි කර ඇත</translation>
 <translation id="8594912907680633924">සබැඳිය බෙදුම් දසුනෙන් විවෘත කරන්න</translation>
+<translation id="8595458782388608186"><ph name="TASK_TITLE" />: Gemini ඔබේ කාර්යය සිදු කරමින් සිටින අතර, තවත් ක්‍රියාමාර්ග අවශ්‍ය නම් ඔබට දන්වන්නෙමි.</translation>
 <translation id="8596400097994526901"><ph name="SEARCH_ENGINE_NAME" /> සඳහා තව ක්‍රියා</translation>
 <translation id="8596540852772265699">සැකසුම් ගොනු</translation>
 <translation id="8597845839771543242">වත්කම් හැඩසවිය:</translation>
@@ -10796,6 +10829,7 @@
 <translation id="8893779047492837414">ඔබට දැනට <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" />, සහ තවත් දේ තිබේ. ඔබේ සංවිධානයට, <ph name="ACCOUNT_MANAGER" />, මෙම දත්ත දැක බලා කළමනාකරණය කිරීමට හැකි වනු ඇත</translation>
 <translation id="8894761918470382415">උපාංග සඳහා දත්ත ප්‍රවේශ ආරක්ෂණය</translation>
 <translation id="8895454554629927345">පිටුසන් ලැයිස්තුව</translation>
+<translation id="8896431007199904654">ChromeOS දත්ත තවදුරටත් සමමුහුර්ත නොවේ</translation>
 <translation id="8896830132794747524">ඔබේ මූසිකය මගින් කෙරෙන ඉතා වේගවත් චලන කර්සරය ඉතා දුරට ගෙන යයි</translation>
 <translation id="8897537894864195436"><ph name="APP_NAME" /> සඳහා ඔබේ මුරයතුර ඇති උපාංගයේ කැමරාව සමග මෙම QR කේතය ස්කෑන් කරන්න</translation>
 <translation id="8898786835233784856">ඊළඟ ටැබය තෝරන්න</translation>
@@ -11126,6 +11160,7 @@
 <translation id="9116366756388192417">විෂයක් තෝරා ගන්න</translation>
 <translation id="9116799625073598554">සටහන්-ගැනීමේ යෙදුම</translation>
 <translation id="9117030152748022724">ඔබේ යෙදුම් කළමනා කරන්න</translation>
+<translation id="9117446363580518867">සෑම විටම සඟවන්න</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />හොඳම අත්දැකීම සඳහා, ඔබගේ අභ්‍යන්තර තැටියට <ph name="DEVICE_OS" /> ස්ථාපනය කරන්න. ඔබට එය පසුව ඔබගේ පිරීමේ තිරය වෙතින්ද ස්ථාපනය කළ හැකිය.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ඔබ ස්ථාපනය කිරීමට සූදානම් නැතිනම්, ඔබට එය උත්සාහ කර බැලීමට USB වෙතින් ධාවනය කළ හැකිය. මෙය ඔබගේ දැනට තිබෙන OS සහ දත්ත තබා ගනු ඇත, නමුත් ඔබ ගබඩා කිරීමේ සහ කාර්යසාධන සීමා දැකිය හැකිය.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">මෙවලම් තීරුව අභිරුචිකරණය කරන්න</translation>
@@ -11137,6 +11172,7 @@
 <translation id="9125912770834459638">ඔබේ සංවිධානය ඔබට පුරනය වීමට ඉඩ නොදේ</translation>
 <translation id="9126149354162942022">කර්සරයේ වර්ණය</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> සඳහා සැකසීම් පිටුව විවෘත කරන්න</translation>
+<translation id="9128359984587418908">ඔබේ සියලු උපාංගවල ඔබේ යෙදුම්, සැකසීම් සහ Wi-Fi ජාල ලබා ගැනීමට, ඔබේ ChromeOS සැකසීම් තුළ සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="9129562557082598582"><ph name="CERT_GROUP" /> සියල්ල නිර්යාත කරන්න</translation>
 <translation id="9130015405878219958">අවලංගු ප්‍රකාරය ඇතුළු කෙරිණි.</translation>
 <translation id="9130135798965366513">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබේ <ph name="FIELDS_STRING" /> මෙම අඩවිය සමග බෙදා ගනු ඇත. මෙම අඩවියෙහි <ph name="BEGIN_LINK1" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_LINK1" /> සහ <ph name="BEGIN_LINK2" />සේවා නියම<ph name="END_LINK2" /> බලන්න.</translation>
@@ -11241,6 +11277,7 @@
 <translation id="9219103736887031265">රූප</translation>
 <translation id="9219572436491982747">Chrome AI හි තාක්ෂණය වැඩි දියුණු කිරීම සඳහා Google වෙත යවන ලද දත්ත මානව සමාලෝචකයින් විසින් දැකිය හැක</translation>
 <translation id="9219741625496141320">බ්‍රවුස් කිරීමේ දත්ත ස්වයංක්‍රීයව මකා දමන ලදි</translation>
+<translation id="9220484506568374422">Gemini Spark හට ඔබ පුරනය වී ඇති වෙබ් අඩවි ඇතුළුව, ඔබට මෙන් ම එකම වෙබ් අඩවි වෙත ප්‍රවේශය ඇත. එය ඔබ සංවේදී යැයි සිතිය හැකි පුද්ගලික තතු ඇතුළත් විය හැකි තෙවන පාර්ශ්ව සමග අවශ්‍ය තතු බෙදා ගනු ඇත.</translation>
 <translation id="9220525904950070496">ගිනුම ඉවත් කරන්න</translation>
 <translation id="9220723036554088545">ගොනුවක් උඩුගත කරන්න</translation>
 <translation id="9220820413868316583">ඔසවා යළි උත්සාහ කරන්න.</translation>

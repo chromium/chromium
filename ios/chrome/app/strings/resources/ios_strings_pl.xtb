@@ -192,7 +192,6 @@
 <translation id="1629162218487290695">Potwierdź swoją tożsamość…</translation>
 <translation id="1634520742547161889">MM/RR</translation>
 <translation id="1636234353664774105">Korzystaj ze szczegółowych wskazówek dojazdu dostępnych w funkcji nawigacji</translation>
-<translation id="1637811476055996098">Wybierz pliki</translation>
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="164673457281113247">{count,plural, =1{Zakładka została zapisana}few{Zakładki zostały zapisane}many{Zakładki zostały zapisane}other{Zakładki zostały zapisane}}</translation>
@@ -487,6 +486,7 @@
 <translation id="2640733327287333451">Brak nazwy użytkownika ••••••</translation>
 <translation id="264215785133931186">Sprawdzono przed chwilą</translation>
 <translation id="2647434099613338025">Dodaj język</translation>
+<translation id="2648812801228676606">Korzystasz nadal z konta <ph name="NAME_OR_EMAIL" /></translation>
 <translation id="2649592894792404568">Zamierzasz usunąć dane z Menedżera haseł Google</translation>
 <translation id="2652129567809778422">Wybierz hasło</translation>
 <translation id="2658056020748144467">Nie można otworzyć pliku</translation>
@@ -1457,7 +1457,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6045460247888249350">Dodaj tytuł</translation>
 <translation id="6052269326659653305">Przełącz profil</translation>
 <translation id="605721222689873409">RR</translation>
-<translation id="6058415747854995776">Nagraj film</translation>
 <translation id="6059830886158432458">Tutaj możesz zarządzać wyświetlanymi wiadomościami i aktywnością</translation>
 <translation id="6063802271331271857">Zremiksuj obraz</translation>
 <translation id="6066301408025741299">Kliknij, by anulować.</translation>
@@ -1850,7 +1849,6 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7347998088283246662">Importuj hasła, historię, zakładki i inne dane</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7357999308187750900">Zobacz wszystkie</translation>
-<translation id="7364796246159120393">Wybierz plik</translation>
 <translation id="736564850024123010">Zmień położenie paska adresu, aby dostosować przeglądanie do swoich potrzeb.</translation>
 <translation id="7366909168761621528">Dane przeglądania</translation>
 <translation id="7367530036083223701">Widżet Menedżera haseł zapewnia bezpieczny dostęp do haseł na ekranie głównym.</translation>
@@ -2012,7 +2010,6 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7866872729285243843">Aby korzystać z listy Do przeczytania na wszystkich urządzeniach, włącz opcję „Do przeczytania” w ustawieniach.</translation>
 <translation id="7874107544081154809">Automatycznie uzupełnij formularz, używając <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="7879275349003161544">Wyświetl pobrane pliki</translation>
-<translation id="7882689957034389473">Zrób zdjęcie</translation>
 <translation id="7883882164760409935">Masz hasła użyte ponownie.</translation>
 <translation id="7887198238286927132">Aby chronić Twoją prywatność, Chrome nie będzie automatycznie wypełniać tego pola.</translation>
 <translation id="7887552845761062935">Kliknij dwukrotnie i przytrzymaj, aby wyświetlić więcej opcji</translation>
@@ -2174,7 +2171,6 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="8395180897620197612">Zatrzymaj rejestrowanie</translation>
 <translation id="8407669440184693619">Nie znaleziono haseł do tej strony</translation>
 <translation id="8407831512155324054">Twoje hasła wyglądają na silne</translation>
-<translation id="8414030140103493759">Zrób zdjęcie lub nagraj film</translation>
 <translation id="8414283596511250978">Pamiętanie haseł</translation>
 <translation id="8415120635186642416">Szukaj dowolnych informacji</translation>
 <translation id="842523302461531262">Określ jako domyślną w ustawieniach…</translation>
@@ -2192,7 +2188,6 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="8474378002946546633">Zezwalaj na powiadomienia.</translation>
 <translation id="8477178913400731244">Usuń dane</translation>
-<translation id="847939250509903814">Biblioteka zdjęć</translation>
 <translation id="8481184073299279701">Kliknij przycisk „Uruchom rejestrowanie”, aby rejestrować przyszłe dzienniki i błędy konsoli JavaScriptu ze wszystkich kart. Dzienniki będą gromadzone (i przechowywane tylko w pamięci) do czasu zamknięcia tej strony lub kliknięcia „Zatrzymaj rejestrowanie”.</translation>
 <translation id="8487667956631253959">Włączono</translation>
 <translation id="8487700953926739672">Dostępny offline</translation>

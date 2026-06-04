@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">Afficher plus d'emoji</translation>
 <translation id="2328561734797404498">Veuillez redémarrer l'appareil pour utiliser <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">Votre Chromebook ou votre appareil Bluetooth utilise une ancienne version du Bluetooth. Utilisez le micro interne pour améliorer la qualité audio.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi aujourd'hui afin de télécharger une mise à jour. Vous pouvez aussi la télécharger via une connexion limitée (susceptible d'entraîner des frais).}one{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi pour télécharger une mise à jour avant la date limite. Vous pouvez aussi la télécharger via une connexion limitée (susceptible d'entraîner des frais).}other{<ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi pour télécharger une mise à jour avant la date limite. Vous pouvez aussi la télécharger via une connexion limitée (susceptible d'entraîner des frais).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Appuyez sur le bouton du stylet situé sur l'étagère pour prendre des notes, effectuer des captures d'écran, et utiliser le pointeur laser ou la loupe.</translation>
 <translation id="2341729377289034582">Verrouillée en position verticale</translation>
@@ -568,6 +569,7 @@
 <translation id="2687510499067466116">Le raccourci clavier a changé</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
 <translation id="2692092709110488417">Appuyer sur Tabulation pour sélectionner une zone et la déplacer</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Dernier jour pour mettre à jour votre <ph name="DEVICE_TYPE" />}one{Mettez à jour votre <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jour}other{Mettez à jour votre <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jours}}</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Afficher les paramètres du clavier. <ph name="KEYBOARD_NAME" /> sélectionné.</translation>
 <translation id="2699913284398121653">Utilisez l'appli Transfert de contenus pour transférer les données de votre compte scolaire vers votre compte personnel</translation>
@@ -794,6 +796,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="334927402682780278">Sélectionner le texte entre le curseur et la fin de la ligne</translation>
 <translation id="3349345708646875009">Ouvrir le gestionnaire de tâches</translation>
 <translation id="3353786022389205125">Activez "Afficher l'écran de verrouillage en sortant du mode veille", puis réessayez.</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Mettez à jour votre <ph name="DEVICE_TYPE" /> d'ici 1 semaine}one{Mettez à jour votre <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaine}other{Mettez à jour votre <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaines}}</translation>
 <translation id="3364721542077212959">Outils de stylet</translation>
 <translation id="3365281428003534650">Ajoutez une durée et une tâche</translation>
 <translation id="3365977133351922112">Votre téléphone est trop loin. Rapprochez-le.</translation>
@@ -953,6 +956,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3741482431277446954">Bouton droit de la souris</translation>
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
 <translation id="3743775386021959186">Le mode Sans distractions est activé. Il reste <ph name="REMAINING_TIME" />.</translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner votre <ph name="DEVICE_TYPE" /> aujourd'hui.}one{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner votre <ph name="DEVICE_TYPE" /> avant la date limite.}other{<ph name="MANAGER" /> vous demande de sauvegarder vos données et de retourner votre <ph name="DEVICE_TYPE" /> avant la date limite.}}</translation>
 <translation id="3750403286520637847">Masquer la suggestion météo</translation>
 <translation id="3752253558646317685">Demandez à votre enfant de répéter cette opération pour enregistrer son empreinte</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Les données de l'application peuvent désigner toutes les données enregistrées par une application (en fonction des paramètres définis par le développeur), y compris celles comme les contacts, les messages et les photos.<ph name="END_PARAGRAPH1" />
@@ -1077,6 +1081,10 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="412298498316631026">fenêtre</translation>
 <translation id="4123259114412175274">Pour déverrouiller votre Chromebook, assurez-vous que le Bluetooth est activé sur votre téléphone</translation>
 <translation id="4123868835475902435">Vous avez vu les bases. Pour obtenir des conseils et de l'aide, continuez dans Explorer, notre appli intégrée. Vous y trouverez des astuces pour démarrer, des offres spéciales et les dernières fonctionnalités <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4124779003103520737">{0,plural, =1{Votre appareil (<ph name="DEVICE_TYPE" />) va être automatiquement verrouillé dans # seconde.
+        <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}one{Votre appareil (<ph name="DEVICE_TYPE" />) va être automatiquement verrouillé dans # seconde.
+        <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}other{Votre appareil (<ph name="DEVICE_TYPE" />) va être automatiquement verrouillé dans # secondes.
+        <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}}</translation>
 <translation id="4125970834901680537">Impossible de diffuser des applis en streaming en mode tablette. Réessayez en mode ordinateur portable.</translation>
 <translation id="4131973331381812765">Température : <ph name="TEMPERATURE" /> °C – Vitesse actuelle : <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Activé jusqu'au lever du soleil</translation>
@@ -1385,6 +1393,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4964188651935955085">L'appareil externe suivant sera alors déconnecté de votre <ph name="DEVICE_TYPE" /> :</translation>
 <translation id="4966431234408005599">Augmenter le volume</translation>
 <translation id="496999337731226334">Étape <ph name="STEP" /> sur <ph name="TOTAL_STEPS" /> de la visite. Les commandes fréquemment utilisées, comme le Wi-Fi, le Bluetooth et le volume, se trouvent dans les Réglages rapides. Vous pouvez aussi y accéder pour prendre des captures d'écran. Appuyez sur Alt+Maj+S pour ouvrir les Réglages rapides.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vous demande de télécharger une mise à jour aujourd'hui. Cette mise à jour sera téléchargée automatiquement lorsque vous vous connecterez à Internet.}one{<ph name="MANAGER" /> vous demande de télécharger une mise à jour avant la date limite. Cette mise à jour sera téléchargée automatiquement lorsque vous vous connecterez à Internet.}other{<ph name="MANAGER" /> vous demande de télécharger une mise à jour avant la date limite. Cette mise à jour sera téléchargée automatiquement lorsque vous vous connecterez à Internet.}}</translation>
 <translation id="4975771730019223894">Afficher un badge sur l'application</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" /> :
         <ph name="NOTIFICATION_1" />,
@@ -1461,6 +1470,7 @@ Vous pouvez aussi utiliser le raccourci clavier. Mettez d'abord le texte en surb
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
 <translation id="5187627942836026988">Voir les détails du point d'accès. Celui-ci est bloqué par votre administrateur.</translation>
 <translation id="5188648870018555788">Utiliser la localisation. Permettez aux applis, sites et services ChromeOS et Android autorisés à accéder à la position d'utiliser celle de votre appareil. La précision de la localisation permet aux applis et services Android d'obtenir une localisation plus précise. Pour ce faire, Google traite périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil émis par votre appareil afin d'obtenir la localisation des signaux sans fil à l'aide du crowdsourcing. Ces informations sont utilisées sans vous identifier pour améliorer la précision de la localisation et les services basés sur la localisation, ainsi que pour améliorer, fournir et gérer les services de Google en fonction des intérêts légitimes de Google et de tiers, afin de répondre aux besoins des utilisateurs. <ph name="BEGIN_LINK1" />En savoir plus sur l'utilisation de la localisation<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Retournez votre <ph name="DEVICE_TYPE" /> sous {NUM_WEEKS} semaine}one{Retournez votre <ph name="DEVICE_TYPE" /> sous {NUM_WEEKS} semaine}other{Retournez votre <ph name="DEVICE_TYPE" /> sous {NUM_WEEKS} semaines}}</translation>
 <translation id="5198039720391525849">Sélection de GIF</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> événements</translation>
 <translation id="5198715732953550718">Les applications <ph name="MOVED_APP_NAME" /> et <ph name="IN_PLACE_APP" /> ont été combinées pour créer un dossier.</translation>
@@ -1778,6 +1788,10 @@ Aucun appareil connecté.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Vous allez être déconnecté automatiquement dans <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">Commandes d'appel vidéo</translation>
+<translation id="6070081109266557120">{0,plural, =1{Vous serez automatiquement déconnecté dans # seconde.
+        <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}one{Vous serez automatiquement déconnecté dans # seconde.
+        <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}other{Vous serez automatiquement déconnecté dans # secondes.
+        <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}}</translation>
 <translation id="6071576563962215370">Échec du verrouillage des attributs de temps d'installation de l'appareil.</translation>
 <translation id="6072442788591997866">L'application <ph name="APP_NAME" /> n'est pas autorisée sur cet appareil. Contactez votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
@@ -2127,6 +2141,8 @@ Nouvelle installation</translation>
 <translation id="7076878155205969899">Couper le son</translation>
 <translation id="7083848064787091821">Sans distractions</translation>
 <translation id="7084678090004350185">Activer/Désactiver le point d'accès. Le point d'accès est activé, <ph name="DEVICECOUNT" /> appareils sont connectés.</translation>
+<translation id="7086438436964931440">Vous allez être déconnecté automatiquement maintenant.
+        <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
 <translation id="7086931198345821656">Cette mise à jour requiert un Powerwash de votre <ph name="DEVICE_TYPE" />. Toutes les données seront supprimées. En savoir plus sur la dernière mise à jour <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="709015856939120012">Faire un zoom avant sur la page</translation>
@@ -2530,6 +2546,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8220076512072059941">Ajouter <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Masquer cette suggestion</translation>
 <translation id="8230305195727960608">Mode d'inversion des couleurs</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Retour immédiat requis}one{Retournez votre <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jour}other{Retournez votre <ph name="DEVICE_TYPE" /> sous {NUM_DAYS} jours}}</translation>
 <translation id="8236042855478648955">Une pause s'impose !</translation>
 <translation id="8237964652943995219">Bureau suivant : <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> sur <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Découvrez rapidement comment utiliser votre <ph name="PRODUCT_NAME" />. Lancez-vous en cinq étapes.</translation>
@@ -2704,6 +2721,8 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8756799553341497810">Vous pourrez commencer à personnaliser la mise en page des applis lorsque vous aurez quitté cette vue.</translation>
 <translation id="8759408218731716181">Impossible de configurer la connexion multicompte.</translation>
 <translation id="8759753423332885148">En savoir plus</translation>
+<translation id="8760172428247796445">Votre <ph name="DEVICE_TYPE" /> va être verrouillé maintenant.
+        <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
 <translation id="8763883995157866248">Mettre l'appareil en mode veille</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, appli installée, bloquée</translation>
 <translation id="8782565991310229362">Annulation du lancement de l'application kiosque.</translation>
