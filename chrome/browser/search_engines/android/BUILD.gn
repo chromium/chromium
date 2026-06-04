@@ -172,6 +172,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/search_engines/settings/dialog/SiteSearchDialogDraftUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/dialog/SiteSearchDialogMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/dialog/SiteSearchDialogViewBinderUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/search_engines/settings/inactive_shortcut/InactiveShortcutAdapterUnitTest.java",
     "junit/src/org/chromium/chrome/browser/search_engines/settings/inactive_shortcut/InactiveShortcutMediatorUnitTest.java",
   ]
   deps = [
