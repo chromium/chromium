@@ -51,6 +51,13 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddInteger("tapRegionWidth", 300);
   html_source->AddBoolean("enableGradientRegionStroke", false);
   html_source->AddBoolean("enableWhiteRegionStroke", true);
+  html_source->AddInteger("lineSelectionStrokeWidth", 40);
+  html_source->AddInteger("colorLineSelectionGradient1",
+                          lens::kColorLineSelectionGradient1);
+  html_source->AddInteger("colorLineSelectionGradient2",
+                          lens::kColorLineSelectionGradient2);
+  html_source->AddInteger("colorLineSelectionGradient3",
+                          lens::kColorLineSelectionGradient3);
   html_source->AddBoolean("enableRegionSelectedGlow", true);
   html_source->AddInteger("sliderChangedTimeout", 1000);
   html_source->AddBoolean("cornerSlidersEnabled", true);
