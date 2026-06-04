@@ -5197,8 +5197,21 @@ void NavigationControllerImpl::SetSkippableForSameDocumentEntries(
       reference_entry->root_node()->frame_entry->document_sequence_number();
   for (int index = 0; index < GetEntryCount(); index++) {
     auto* entry = GetEntryAtIndex(index);
+
+    // A compromised renderer could forge a document sequence number (DSN) to
+    // match a cross-origin entry, attempting to mark a victim site's history
+    // entry as skippable. Enforcing a SiteInstance check prevents this.
+    //
+    // Note: When restoring a tab, NavigationEntries do not get SiteInstances
+    // until they are visited again. We allow the check to pass if `entry`'s
+    // SiteInstance is null to ensure same-document entries are correctly
+    // marked skippable after a restore. The risk is acceptable because an
+    // attacker cannot trigger a tab restore, DSNs are difficult to guess
+    // across sessions, and the impact is minimal.
     if (entry->root_node()->frame_entry->document_sequence_number() ==
-        document_sequence_number) {
+            document_sequence_number &&
+        (!entry->site_instance() ||
+         entry->site_instance() == reference_entry->site_instance())) {
       entry->set_should_skip_on_back_forward_ui(skippable);
     }
   }
