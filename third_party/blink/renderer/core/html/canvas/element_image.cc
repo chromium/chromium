@@ -12,14 +12,14 @@ namespace blink {
 ElementImage::ElementImage(std::unique_ptr<CanvasChildPaintRecord> record)
     : record_(std::move(record)) {}
 
-uint32_t ElementImage::width() const {
+double ElementImage::width() const {
   if (!record_) {
     return 0;
   }
   return record_->paint_state.box_size.width();
 }
 
-uint32_t ElementImage::height() const {
+double ElementImage::height() const {
   if (!record_) {
     return 0;
   }

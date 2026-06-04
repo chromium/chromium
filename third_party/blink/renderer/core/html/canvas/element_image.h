@@ -19,8 +19,8 @@ class CORE_EXPORT ElementImage final : public ScriptWrappable {
  public:
   explicit ElementImage(std::unique_ptr<CanvasChildPaintRecord> record);
 
-  uint32_t width() const;
-  uint32_t height() const;
+  double width() const;
+  double height() const;
   void close();
 
   const std::unique_ptr<CanvasChildPaintRecord>& PaintRecord() const {

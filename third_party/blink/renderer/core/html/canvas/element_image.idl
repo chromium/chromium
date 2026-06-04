@@ -4,9 +4,11 @@
 
 [RuntimeEnabled=CanvasDrawElement, Exposed=(Window,Worker), Transferable]
 interface ElementImage {
-  // dimensions in canvas output bitmap pixels
-  readonly attribute unsigned long width;
-  readonly attribute unsigned long height;
+  // The default size of the element in canvas grid coordinates. If the width
+  // and height parameters to drawElementImage() are omitted, these are the
+  // values that will be used.
+  readonly attribute double width;
+  readonly attribute double height;
 
   void close();
 };
