@@ -16,6 +16,9 @@ import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -49,6 +52,29 @@ public final class TestLogger extends CronetLogger {
             new ConditionVariable();
     private final ConditionVariable mWaitForLogCronetAdaptiveTrafficTerminated =
             new ConditionVariable();
+    private final AtomicInteger mCallsToLogCronetUmaHistogram = new AtomicInteger();
+    private final AtomicLong mLastCronetUmaBytesHash = new AtomicLong();
+    private final AtomicInteger mLastCronetUmaValue = new AtomicInteger();
+    private final ConditionVariable mWaitForLogCronetUmaHistogram = new ConditionVariable();
+
+    public static final class UmaSample {
+        public final long hash;
+        public final int value;
+        public final CronetSource source;
+
+        public UmaSample(long hash, int value, CronetSource source) {
+            this.hash = hash;
+            this.value = value;
+            this.source = source;
+        }
+
+        @Override
+        public String toString() {
+            return "UmaSample{hash=" + hash + ", value=" + value + ", source=" + source + "}";
+        }
+    }
+
+    private final List<UmaSample> mUmaSamples = Collections.synchronizedList(new ArrayList<>());
 
     @Override
     public long generateId() {
@@ -131,6 +157,15 @@ public final class TestLogger extends CronetLogger {
         mWaitForLogCronetAdaptiveTrafficTerminated.open();
     }
 
+    @Override
+    public void logCronetUmaHistogram(long metricHash, int value, CronetSource source) {
+        mCallsToLogCronetUmaHistogram.incrementAndGet();
+        mLastCronetUmaBytesHash.set(metricHash);
+        mLastCronetUmaValue.set(value);
+        mUmaSamples.add(new UmaSample(metricHash, value, source));
+        mWaitForLogCronetUmaHistogram.open();
+    }
+
     public void waitForLogCronetAdaptiveTrafficTerminated() {
         assertWithMessage(
                         "TestLogger has not received any telemetry. This can happen, for example,"
@@ -208,5 +243,34 @@ public final class TestLogger extends CronetLogger {
 
     public CronetSource getLastCronetSource() {
         return mSource.get();
+    }
+
+    public void waitForLogCronetUmaHistogram() {
+        assertWithMessage("TestLogger has not received any UMA telemetry.")
+                .that(mWaitForLogCronetUmaHistogram.block(/* timeoutMs= */ 5000))
+                .isTrue();
+        mWaitForLogCronetUmaHistogram.close();
+    }
+
+    public int callsToLogCronetUmaHistogram() {
+        return mCallsToLogCronetUmaHistogram.get();
+    }
+
+    public long getLastCronetUmaBytesHash() {
+        return mLastCronetUmaBytesHash.get();
+    }
+
+    public int getLastCronetUmaValue() {
+        return mLastCronetUmaValue.get();
+    }
+
+    public List<UmaSample> getUmaSamples() {
+        synchronized (mUmaSamples) {
+            return new ArrayList<>(mUmaSamples);
+        }
+    }
+
+    public void clearUmaSamples() {
+        mUmaSamples.clear();
     }
 }
