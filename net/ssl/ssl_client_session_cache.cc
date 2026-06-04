@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -26,6 +27,16 @@ auto TieKeyFields(const SSLClientSessionCache::Key& key) {
                   key.privacy_mode, key.session_usage, key.proxy_chain,
                   key.proxy_chain_index);
 }
+
+constexpr base::MemoryConsumerTraits kSSLClientSessionCacheTraits(
+    // Bounded capacity of sessions; way under 10MB.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    // Iterates base::LRUCache and triggers BoringSSL session frees.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Full handshake can be done if not cached.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Cache trimming runs synchronously on the calling thread.
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous);
 
 }  // namespace
 
@@ -52,7 +63,7 @@ SSLClientSessionCache::SSLClientSessionCache(const Config& config)
       cache_(config.max_entries),
       memory_consumer_registration_(
           "SSLClientSessionCache",
-          std::nullopt,  // TODO(crbug.com/489671163): Add traits.
+          kSSLClientSessionCacheTraits,
           this,
           base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled,
           base::AsyncMemoryConsumerRegistration::CheckRegistryExists::
