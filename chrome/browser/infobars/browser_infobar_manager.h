@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_INFOBARS_BROWSER_INFOBAR_MANAGER_H_
 #define CHROME_BROWSER_INFOBARS_BROWSER_INFOBAR_MANAGER_H_
 
+#include <map>
 #include <memory>
 
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -27,6 +29,9 @@ class BrowserInfoBarManager {
 
   static BrowserInfoBarManager* From(BrowserProcess* browser_process);
 
+  // Registers an InfoBarSpec with the manager.
+  void Register(InfoBarSpec spec);
+
   // Shows the InfoBar with the given identifier.
   void Show(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
 
@@ -34,7 +39,13 @@ class BrowserInfoBarManager {
   void Hide(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
 
  private:
+  // Returns the approved priority for an InfoBar.
+  InfoBarPriority GetApprovedPriority(
+      infobars::InfoBarDelegate::InfoBarIdentifier identifier);
   ui::ScopedUnownedUserData<BrowserInfoBarManager> scoped_unowned_user_data_;
+
+  std::map<infobars::InfoBarDelegate::InfoBarIdentifier, InfoBarSpec>
+      registered_specs_;
 };
 
 }  // namespace infobars

@@ -176,11 +176,13 @@ void GlobalFeatures::PostBrowserProcessInit() {
 }
 
 void GlobalFeatures::PostBrowserProcessInitCore() {
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(infobars::kCentralizedInfoBarFramework)) {
     browser_infobar_manager_ =
         GetUserDataFactory().CreateInstance<infobars::BrowserInfoBarManager>(
             *g_browser_process, g_browser_process);
   }
+#endif
   system_permissions_platform_handle_ = CreateSystemPermissionsPlatformHandle();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/463742800): Migrate WhatsNewRegistry (and other non-core

@@ -7,7 +7,6 @@ import("//extensions/buildflags/buildflags.gni")
 
 source_set("infobars") {
   public = [
-    "browser_infobar_manager.h",
     "confirm_infobar_creator.h",
     "infobar_features.h",
     "infobar_responder.h",
@@ -16,13 +15,17 @@ source_set("infobars") {
   ]
 
   sources = [
-    "browser_infobar_manager.cc",
     "confirm_infobar_creator.cc",
     "infobar_features.cc",
     "infobar_responder.cc",
     "infobar_spec.cc",
     "simple_alert_infobar_creator.cc",
   ]
+
+  if (!is_android) {
+    public += [ "browser_infobar_manager.h" ]
+    sources += [ "browser_infobar_manager.cc" ]
+  }
 
   public_deps = [
     "//base",
@@ -79,13 +82,17 @@ if (!is_android) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "infobars_browsertest.cc" ]
+    sources = [
+      "browser_infobar_manager_browsertest.cc",
+      "infobars_browsertest.cc",
+    ]
 
     deps = [
       ":infobars",
       "//base",
       "//chrome/browser/devtools",
       "//chrome/browser/infobars:test_support",
+      "//chrome/browser/ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/select_file_policy",
@@ -95,6 +102,12 @@ if (!is_android) {
       "//chrome/browser/ui/test:test_support",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
+      "//components/infobars/content",
+      "//components/infobars/core",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//url",
     ]
 
     if (is_win || is_mac || is_linux) {
