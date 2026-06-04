@@ -149,8 +149,10 @@ ViewTransition* ViewTransition::CreateFromScript(
 
 ViewTransition* ViewTransition::CreateSkipped(
     Element* element,
-    V8ViewTransitionCallback* callback) {
-  return MakeGarbageCollected<ViewTransition>(PassKey(), element, callback);
+    V8ViewTransitionCallback* callback,
+    const std::optional<Vector<String>>& types) {
+  return MakeGarbageCollected<ViewTransition>(PassKey(), element, callback,
+                                              types);
 }
 
 ViewTransition::ViewTransition(PassKey,
@@ -183,7 +185,8 @@ ViewTransition::ViewTransition(PassKey,
 
 ViewTransition::ViewTransition(PassKey,
                                Element* element,
-                               V8ViewTransitionCallback* update_dom_callback)
+                               V8ViewTransitionCallback* update_dom_callback,
+                               const std::optional<Vector<String>>& types)
     : ExecutionContextLifecycleObserver(element->GetExecutionContext()),
       creation_type_(CreationType::kScript),
       document_(element->GetDocument()),
@@ -193,6 +196,7 @@ ViewTransition::ViewTransition(PassKey,
           element->GetExecutionContext(),
           *this,
           update_dom_callback)) {
+  InitTypes(types.value_or(Vector<String>()));
   SkipTransition();
 }
 
@@ -268,6 +272,7 @@ ViewTransition::ViewTransition(PassKey,
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           document_->GetExecutionContext(),
           *this)) {
+  InitTypes(Vector<String>());
   TRACE_EVENT0("blink",
                "ViewTransition::ViewTransition - CreatingFromSnapshot");
   bool process_next_state = AdvanceTo(State::kWaitForRenderBlock);
