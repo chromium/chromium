@@ -88,6 +88,12 @@ static void UpdatePlaceholderImage(
     DOMNodeId placeholder_canvas_id,
     scoped_refptr<blink::ExportedCanvasResource>&& canvas_resource) {
   DCHECK(IsMainThread());
+
+  if (placeholder_canvas_id == OffscreenCanvasPlaceholder::kNoPlaceholderId ||
+      placeholder_canvas_id == kInvalidDOMNodeId) {
+    return;
+  }
+
   OffscreenCanvasPlaceholder* placeholder_canvas =
       OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
           placeholder_canvas_id);
@@ -104,6 +110,10 @@ void UpdatePlaceholderDispatcher(
     base::WeakPtr<CanvasResourceDispatcher> dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     DOMNodeId placeholder_canvas_id) {
+  if (placeholder_canvas_id == OffscreenCanvasPlaceholder::kNoPlaceholderId ||
+      placeholder_canvas_id == kInvalidDOMNodeId) {
+    return;
+  }
   OffscreenCanvasPlaceholder* placeholder_canvas =
       OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
           placeholder_canvas_id);
@@ -286,6 +296,12 @@ void CanvasResourceDispatcher::SetNeedsBeginFrame(bool needs_begin_frame) {
     // Offscreen Canvas can behave in a more synchronous way when it's on the
     // main thread.
     if (needs_begin_frame_ && IsMainThread()) {
+      if (placeholder_canvas_id_ ==
+              OffscreenCanvasPlaceholder::kNoPlaceholderId ||
+          placeholder_canvas_id_ == kInvalidDOMNodeId) {
+        return;
+      }
+
       OffscreenCanvasPlaceholder* placeholder_canvas =
           OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
               placeholder_canvas_id_);

@@ -83,10 +83,8 @@ void OffscreenCanvasPlaceholder::SetSuspendOffscreenCanvasAnimation(
 
 OffscreenCanvasPlaceholder*
 OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(DOMNodeId placeholder_id) {
-  if (placeholder_id == kNoPlaceholderId ||
-      placeholder_id == kInvalidDOMNodeId) {
-    return nullptr;
-  }
+  CHECK_NE(placeholder_id, kInvalidDOMNodeId);
+  CHECK_NE(placeholder_id, kNoPlaceholderId);
 
   PlaceholderIdMap::iterator it = placeholderRegistry().find(placeholder_id);
   if (it == placeholderRegistry().end())
