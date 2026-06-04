@@ -913,6 +913,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // If the color image is a renderbuffer, returns 0 for type.
   GLenum GetBoundReadFramebufferTextureType();
   GLenum GetBoundReadFramebufferInternalFormat();
+  bool IsBoundReadFramebufferMultisampledRenderbuffer();
 
   // Get the i-th draw buffer's internal format/type from the bound framebuffer.
   // If no framebuffer is bound, or no image is attached, or the DrawBuffers
@@ -4194,6 +4195,18 @@ GLenum GLES2DecoderImpl::GetBoundReadFramebufferInternalFormat() {
     }
     return back_buffer_color_format_;
   }
+}
+
+bool GLES2DecoderImpl::IsBoundReadFramebufferMultisampledRenderbuffer() {
+  Framebuffer* read_framebuffer = GetBoundReadFramebuffer();
+  // We check if the read framebuffer is a multisampled renderbuffer.
+  // We explicitly do NOT block multisampled texture attachments (with target
+  // GL_TEXTURE_2D, etc.) because they are implicit resolve textures (allocated
+  // via FramebufferTexture2DMultisampleEXT) and are safe to copy from (they are
+  // resolved on the fly). True multisampled textures
+  // (GL_TEXTURE_2D_MULTISAMPLE) are not supported by the validating decoder.
+  return read_framebuffer &&
+         read_framebuffer->GetReadBufferIsMultisampledRenderbuffer();
 }
 
 GLenum GLES2DecoderImpl::GetBoundColorDrawBufferType(GLint drawbuffer_i) {
@@ -13320,6 +13333,12 @@ void GLES2DecoderImpl::DoCopyTexImage2D(
     return;
   }
 
+  if (IsBoundReadFramebufferMultisampledRenderbuffer()) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
+                       "cannot copy from a multisampled framebuffer");
+    return;
+  }
+
   GLenum read_format = GetBoundReadFramebufferInternalFormat();
   GLenum read_type = GetBoundReadFramebufferTextureType();
   if (!ValidateCopyTexFormat(func_name, internal_format,
@@ -13572,6 +13591,12 @@ void GLES2DecoderImpl::DoCopyTexSubImage2D(
     return;
   }
 
+  if (IsBoundReadFramebufferMultisampledRenderbuffer()) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
+                       "cannot copy from a multisampled framebuffer");
+    return;
+  }
+
   GLenum read_format = GetBoundReadFramebufferInternalFormat();
   GLenum read_type = GetBoundReadFramebufferTextureType();
   if (!ValidateCopyTexFormat(func_name, internal_format,
@@ -13700,6 +13725,12 @@ void GLES2DecoderImpl::DoCopyTexSubImage3D(
 
   if (!CheckBoundReadFramebufferValid(func_name,
                                       GL_INVALID_FRAMEBUFFER_OPERATION)) {
+    return;
+  }
+
+  if (IsBoundReadFramebufferMultisampledRenderbuffer()) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
+                       "cannot copy from a multisampled framebuffer");
     return;
   }
 
