@@ -13,10 +13,10 @@
 #include "base/values.h"
 #include "chrome/browser/search/background/theme_delegate.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/themes/ntp_background_service.h"
 #include "components/themes/ntp_background_service_observer.h"
+#include "components/themes/ntp_custom_background_service_base.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_utils.h"
@@ -33,8 +33,7 @@ class FilePath;
 }  // namespace base
 
 // Manages custom backgrounds on the new tab page.
-class NtpCustomBackgroundService : public KeyedService,
-                                   public NtpBackgroundServiceObserver {
+class NtpCustomBackgroundService : public NtpCustomBackgroundServiceBase {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void ResetNtpTheme(Profile* profile);
@@ -149,10 +148,8 @@ class NtpCustomBackgroundService : public KeyedService,
       int headers_response_code);
 
   const raw_ptr<Profile> profile_;
-  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   std::unique_ptr<network::SimpleURLLoader> custom_background_image_url_loader_;
   PrefChangeRegistrar pref_change_registrar_;
-  raw_ptr<NtpBackgroundService, DanglingUntriaged> background_service_;
   base::ScopedObservation<NtpBackgroundService, NtpBackgroundServiceObserver>
       background_service_observation_{this};
   raw_ptr<base::Clock> clock_;

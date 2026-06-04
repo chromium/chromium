@@ -206,11 +206,12 @@ void NtpCustomBackgroundService::ResetProfilePrefs(Profile* profile) {
 }
 
 NtpCustomBackgroundService::NtpCustomBackgroundService(Profile* profile)
-    : profile_(profile),
-      pref_service_(profile_->GetPrefs()),
+    : NtpCustomBackgroundServiceBase(
+          profile->GetPrefs(),
+          NtpBackgroundServiceFactory::GetForProfile(profile)),
+      profile_(profile),
       clock_(base::DefaultClock::GetInstance()),
       background_updated_timestamp_(base::TimeTicks::Now()) {
-  background_service_ = NtpBackgroundServiceFactory::GetForProfile(profile_);
   if (background_service_)
     background_service_observation_.Observe(background_service_.get());
 
