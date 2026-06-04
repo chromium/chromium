@@ -437,8 +437,16 @@ void IndigoPageActionController::OnClose(IndigoToolbar* toolbar) {
 }
 
 void IndigoPageActionController::OnRegenerate(IndigoToolbar* toolbar) {
-  // TODO(b/512246764): Implement the regenerate image option.
-  NOTIMPLEMENTED();
+  content::WebContents* web_contents = tab().GetContents();
+  if (!web_contents) {
+    return;
+  }
+
+  auto* manager =
+      IndigoImageReplacementManager::GetForPage(web_contents->GetPrimaryPage());
+  if (manager && manager->RegenerateImage()) {
+    DestroyToolbar();
+  }
 }
 
 void IndigoPageActionController::OnReplaceOriginalPhoto(

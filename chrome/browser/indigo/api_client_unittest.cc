@@ -524,6 +524,27 @@ TEST_F(IndigoApiClientTest, GenerateSignOutDuringMainRequest) {
   EXPECT_EQ(result.error().message, "Request cancelled");
 }
 
+TEST_F(IndigoApiClientTest, GenerateCancel) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  base::test::TestFuture<base::expected<GeneratedImage, GenerateImageError>>
+      future;
+  base::OnceClosure cancel_closure =
+      client.Generate(kTestBytes, future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  // Cancel the request.
+  std::move(cancel_closure).Run();
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message, "Premature failure: CANCELLED");
+}
+
 TEST_F(IndigoApiClientTest, GenerateImageTooLarge) {
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);

@@ -41,19 +41,26 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
   protected accessor overlayAnimationState_: 'entry'|'exit'|'none' = 'none';
   protected accessor imageSrc_: string = '';
   protected accessor objectFit_: 'contain'|'cover' = 'contain';
+  private invocationId_: number|undefined;
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
-    await this.loadOriginalImage_();
-    requestAnimationFrame(async () => {
-      await chrome.indigoPrivate.readyToRender();
-      this.startAnimation_();
-      this.getReplacementImage_();
-    });
+    this.initialize_();
   }
 
   protected onMotionComplete_() {
     this.showOverlay_ = false;
+  }
+
+  private async initialize_() {
+    await this.loadOriginalImage_();
+    requestAnimationFrame(async () => {
+      this.invocationId_ = await chrome.indigoPrivate.readyToRender();
+      this.loadReplacementImage_();
+      chrome.indigoPrivate.onRegenerateStarted.addListener(() => {
+        this.loadReplacementImage_();
+      }, {instanceId: this.invocationId_});
+    });
   }
 
   private async loadOriginalImage_() {
@@ -64,19 +71,23 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
     }
   }
 
+  private async loadReplacementImage_() {
+    this.startAnimation_();
+    try {
+      const imageData = await chrome.indigoPrivate.getReplacementImage();
+      if (typeof imageData.value === 'string') {
+        URL.revokeObjectURL(this.imageSrc_);
+        await this.updateAndDecodeImage_(imageData.value);
+        this.objectFit_ = this.computeObjectFitForReplacement_();
+      }
+    } finally {
+      this.overlayAnimationState_ = 'exit';
+    }
+  }
+
   private startAnimation_() {
     this.showOverlay_ = true;
     this.overlayAnimationState_ = 'entry';
-  }
-
-  private async getReplacementImage_() {
-    const imageData = await chrome.indigoPrivate.getReplacementImage();
-    if (typeof imageData.value === 'string') {
-      URL.revokeObjectURL(this.imageSrc_);
-      await this.updateAndDecodeImage_(imageData.value);
-      this.objectFit_ = this.computeObjectFitForReplacement_();
-      this.overlayAnimationState_ = 'exit';
-    }
   }
 
   private async updateAndDecodeImage_(src: string) {

@@ -394,29 +394,31 @@ void ApiClient::ReconstructRequestSender() {
       /*custom_user_agent=*/std::string(), MISSING_TRAFFIC_ANNOTATION);
 }
 
-void ApiClient::Generate(base::span<const uint8_t> product_image_bytes,
-                         GenerateCallback callback) {
+base::OnceClosure ApiClient::Generate(
+    base::span<const uint8_t> product_image_bytes,
+    GenerateCallback callback) {
   if (product_image_bytes.size() > 4 * 1024 * 1024) {
     std::move(callback).Run(base::unexpected(
         GenerateImageError{"Product image is too large (> 4MB)"}));
-    return;
+    return base::NullCallback();
   }
 
   if (!request_sender_) {
     std::move(callback).Run(
         base::unexpected(GenerateImageError{"No signed in user"}));
-    return;
+    return base::NullCallback();
   }
 
   if (!generate_url_.is_valid()) {
     std::move(callback).Run(base::unexpected(GenerateImageError{
         base::StrCat({"Invalid generate URL: ", generate_url_.spec()})}));
-    return;
+    return base::NullCallback();
   }
 
-  request_sender_->StartRequestWithAuthRetry(std::make_unique<GenerateRequest>(
-      request_sender_.get(), generate_url_, product_image_bytes,
-      std::move(callback)));
+  return request_sender_->StartRequestWithAuthRetry(
+      std::make_unique<GenerateRequest>(request_sender_.get(), generate_url_,
+                                        product_image_bytes,
+                                        std::move(callback)));
 }
 
 void ApiClient::GetStatus(StatusCallback callback) {

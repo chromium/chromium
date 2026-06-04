@@ -141,8 +141,7 @@ TEST_F(IndigoToolbarTest, ExpandCollapseInteractions) {
   EXPECT_EQ(initial_origin, expanded_origin);
 
   // Buttons are drawn.
-  // TODO(b/512246764): Update expectation after making button visible.
-  EXPECT_FALSE(regenerate_button->IsDrawn());
+  EXPECT_TRUE(regenerate_button->IsDrawn());
   EXPECT_TRUE(replace_photo_button->IsDrawn());
   EXPECT_TRUE(delete_photo_button->IsDrawn());
 

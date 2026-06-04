@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "chrome/browser/indigo/fake_api.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
@@ -134,27 +135,51 @@ GURL GetComponentExtensionUrl() {
       "index.html");
 }
 
-std::string WaitUntilReplacementImageSrcIsSet(content::RenderFrameHost* rfh) {
-  return content::EvalJs(rfh, R"js(
+bool WaitUntilReplacementImageSrcMatches(content::RenderFrameHost* rfh,
+                                         const std::string& expected_src) {
+  constexpr std::string_view kScript = R"js(
     (async () => {
       const app = document.body.querySelector('indigo-image-replacement-app');
-      if (!app) return 'no app';
-      const img = app.$.image;
-      if (img.src.startsWith('data:')) {
-        return img.src;
+      if (!app) return false;
+      const img = app.shadowRoot?.getElementById('image');
+      if (!img) return false;
+      if (img.src === $1) {
+        return true;
       }
       return new Promise(resolve => {
         const observer = new MutationObserver(() => {
-          if (img.src.startsWith('data:')) {
+          if (img.src === $1) {
             observer.disconnect();
-            resolve(img.src);
+            resolve(true);
           }
         });
         observer.observe(img, { attributes: true, attributeFilter: ['src'] });
       });
     })();
+  )js";
+  return content::EvalJs(rfh, content::JsReplace(kScript, expected_src))
+      .ExtractBool();
+}
+
+bool WaitForOverlayToHide(content::RenderFrameHost* rfh) {
+  return content::EvalJs(rfh, R"js(
+    (async () => {
+      const app = document.body.querySelector('indigo-image-replacement-app');
+      if (!app) return false;
+      if (!app.showOverlay_) return true;
+      return new Promise(resolve => {
+        const check = () => {
+          if (!app.showOverlay_) {
+            resolve(true);
+          } else {
+            setTimeout(check, 50);
+          }
+        };
+        check();
+      });
+    })();
   )js")
-      .ExtractString();
+      .ExtractBool();
 }
 
 class MockImageReplacement : public blink::mojom::ImageReplacement {
@@ -469,9 +494,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
       content::ChildFrameAt(main_rfh.get(), 0));
   ASSERT_TRUE(subframe.get());
 
-  std::string actual_src = WaitUntilReplacementImageSrcIsSet(subframe.get());
-
-  EXPECT_EQ(actual_src, success_url.spec());
+  EXPECT_TRUE(
+      WaitUntilReplacementImageSrcMatches(subframe.get(), success_url.spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
@@ -662,9 +686,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
       content::ChildFrameAt(main_rfh.get(), 1));
   ASSERT_TRUE(subframe2.get());
 
-  std::string actual_src = WaitUntilReplacementImageSrcIsSet(subframe2.get());
-
-  EXPECT_EQ(actual_src, success_url.spec());
+  EXPECT_TRUE(
+      WaitUntilReplacementImageSrcMatches(subframe2.get(), success_url.spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
@@ -721,8 +744,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   content::RenderFrameHostWrapper subframe(
       content::ChildFrameAt(main_rfh.get(), 1));
   ASSERT_TRUE(subframe.get());
-  std::string actual_src = WaitUntilReplacementImageSrcIsSet(subframe.get());
-  EXPECT_EQ(actual_src, success_url.spec());
+  EXPECT_TRUE(
+      WaitUntilReplacementImageSrcMatches(subframe.get(), success_url.spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
@@ -901,4 +924,259 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBFCacheBrowserTest,
   ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
   mock_replacement.WaitForDisconnect();
 }
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       RegenerateImageFlow) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+  // Register primary replacement.
+  MockImageReplacement mock_replacement1(web_contents, 0);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
+  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement1.WaitForStartReplacement();
+
+  // Register non-primary replacement.
+  MockImageReplacement mock_replacement2(web_contents, 1);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
+  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/false);
+  mock_replacement2.WaitForStartReplacement();
+
+  mock_replacement1.WaitForRenderReplacement();
+  mock_replacement2.WaitForRenderReplacement();
+
+  // First generate request arrives and succeeds with success_url1.
+  fake_api_.WaitForGenerateRequest(0);
+  EXPECT_TRUE(fake_api_.RequestHasValidProductImage(kImageBytes, 0));
+  GURL success_url1(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+"
+      "M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url1, 0);
+
+  // Verify both frames show success_url1.
+  content::RenderFrameHostWrapper subframe1(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe1.get());
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe1.get(),
+                                                  success_url1.spec()));
+
+  content::RenderFrameHostWrapper subframe2(
+      content::ChildFrameAt(main_rfh.get(), 1));
+  ASSERT_TRUE(subframe2.get());
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe2.get(),
+                                                  success_url1.spec()));
+
+  // Call RegenerateImage() to trigger a new generation.
+  EXPECT_TRUE(manager->RegenerateImage());
+
+  // Second generate request arrives and succeeds with success_url2.
+  fake_api_.WaitForGenerateRequest(1);
+  EXPECT_TRUE(fake_api_.RequestHasValidProductImage(kImageBytes, 1));
+  GURL success_url2(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk"
+      "YPjfDwAEhQGA6R1ykwAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url2, 1);
+
+  // Verify both frames correctly update to show success_url2.
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe1.get(),
+                                                  success_url2.spec()));
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe2.get(),
+                                                  success_url2.spec()));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       RegenerateInOneTabDoesNotAffectAnotherTab) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+
+  // Setup Tab 1 with an image replacement.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+  content::WebContents* web_contents1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh1(
+      web_contents1->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager1 =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh1->GetPage());
+  ASSERT_TRUE(manager1);
+
+  MockImageReplacement mock_replacement1(web_contents1, 0);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
+  manager1->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
+                                     /*is_primary=*/true);
+  mock_replacement1.WaitForStartReplacement();
+  mock_replacement1.WaitForRenderReplacement();
+
+  // Setup Tab 2 with an image replacement.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  content::WebContents* web_contents2 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(web_contents1, web_contents2);
+  content::RenderFrameHostWrapper main_rfh2(
+      web_contents2->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager2 =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh2->GetPage());
+  ASSERT_TRUE(manager2);
+
+  MockImageReplacement mock_replacement2(web_contents2, 0);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
+  manager2->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
+                                     /*is_primary=*/true);
+  mock_replacement2.WaitForStartReplacement();
+  mock_replacement2.WaitForRenderReplacement();
+
+  // Process first generate request (for Tab 1).
+  fake_api_.WaitForGenerateRequest(0);
+  EXPECT_TRUE(fake_api_.RequestHasValidProductImage(kImageBytes, 0));
+  GURL success_url1(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+"
+      "M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url1, 0);
+
+  content::RenderFrameHostWrapper subframe1(
+      content::ChildFrameAt(main_rfh1.get(), 0));
+  ASSERT_TRUE(subframe1.get());
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe1.get(),
+                                                  success_url1.spec()));
+  EXPECT_TRUE(WaitForOverlayToHide(subframe1.get()));
+
+  // Process second generate request (for Tab 2).
+  fake_api_.WaitForGenerateRequest(1);
+  EXPECT_TRUE(fake_api_.RequestHasValidProductImage(kImageBytes, 1));
+  GURL success_url2(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk"
+      "YPjfDwAEhQGA6R1ykwAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url2, 1);
+
+  content::RenderFrameHostWrapper subframe2(
+      content::ChildFrameAt(main_rfh2.get(), 0));
+  ASSERT_TRUE(subframe2.get());
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe2.get(),
+                                                  success_url2.spec()));
+  EXPECT_TRUE(WaitForOverlayToHide(subframe2.get()));
+
+  // Call Regenerate in Tab 1.
+  EXPECT_TRUE(manager1->RegenerateImage());
+
+  // Process third generate request (for Tab 1 regeneration).
+  fake_api_.WaitForGenerateRequest(2);
+  EXPECT_TRUE(fake_api_.RequestHasValidProductImage(kImageBytes, 2));
+  GURL success_url3(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8"
+      "z8BQDwAEhQGA6R1ykwAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url3, 2);
+
+  // Tab 1's replacement should have the regenerated image.
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe1.get(),
+                                                  success_url3.spec()));
+
+  // Tab 2's replacement's animation/overlay should not be active and its image
+  // should be unchanged.
+  EXPECT_EQ(false, content::EvalJs(subframe2.get(), R"js(
+    (() => {
+      const app = document.body.querySelector('indigo-image-replacement-app');
+      return app?.showOverlay_ ?? false;
+    })();
+  )js"));
+  EXPECT_TRUE(WaitUntilReplacementImageSrcMatches(subframe2.get(),
+                                                  success_url2.spec()));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       SecondRegenerateCancelsPreviousRequest) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  // Register primary replacement.
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  // First generate request arrives and succeeds.
+  fake_api_.WaitForGenerateRequest(0);
+  GURL success_url1(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+"
+      "M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url1, 0);
+
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+  EXPECT_TRUE(
+      WaitUntilReplacementImageSrcMatches(subframe.get(), success_url1.spec()));
+
+  // Call RegenerateImage() the first time.
+  EXPECT_TRUE(manager->RegenerateImage());
+  // Wait for the second generate request (Regenerate #1) to arrive.
+  fake_api_.WaitForGenerateRequest(1);
+
+  // Call RegenerateImage() the second time immediately (before responding to
+  // the first regenerate).
+  EXPECT_TRUE(manager->RegenerateImage());
+  // Wait for the third generate request (Regenerate #2) to arrive.
+  fake_api_.WaitForGenerateRequest(2);
+
+  // Respond to the first regenerate request with success.
+  // Since it was cancelled, its callback should be invalidated, so this
+  // response should NOT change the image src from success_url1.
+  GURL success_url2(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk"
+      "YAAAAAYAAjCB0C8AAAAASUVORK5CYII=");
+  fake_api_.SendSuccessResponse(success_url2, 1);
+
+  // Wait a short bit and assert the image source is still success_url1 (it
+  // has NOT updated to success_url2).
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+  run_loop.Run();
+  EXPECT_EQ(content::EvalJs(subframe.get(), R"js(
+    document.body.querySelector(
+      'indigo-image-replacement-app').shadowRoot.getElementById('image').src
+  )js"),
+            success_url1.spec());
+
+  // Respond to the second regenerate request (index 2) with success.
+  // This should successfully update the image.
+  GURL success_url3(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk"
+      "YPjfDwAEhQGA6R1ykwAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url3, 2);
+
+  // Verify that the image replacement is now showing the response from the
+  // second regenerate request.
+  EXPECT_TRUE(
+      WaitUntilReplacementImageSrcMatches(subframe.get(), success_url3.spec()));
+}
+
 }  // namespace indigo
