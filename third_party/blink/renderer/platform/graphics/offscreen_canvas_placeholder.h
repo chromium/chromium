@@ -24,6 +24,10 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
   DISALLOW_NEW();
 
  public:
+  enum {
+    kNoPlaceholderId = -1,
+  };
+
   ~OffscreenCanvasPlaceholder();
 
   virtual void SetOffscreenCanvasResource(
@@ -64,9 +68,6 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
   base::WeakPtr<CanvasResourceDispatcher> frame_dispatcher_;
   scoped_refptr<base::SingleThreadTaskRunner> frame_dispatcher_task_runner_;
 
-  enum {
-    kNoPlaceholderId = -1,
-  };
   DOMNodeId placeholder_id_ = kNoPlaceholderId;
 
   // If an animation state change was requested, but we couldn't update it

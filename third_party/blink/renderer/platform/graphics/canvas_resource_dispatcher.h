@@ -49,10 +49,6 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   CanvasResourceDispatcherClient* Client() { return client_; }
 
-  enum {
-    kInvalidPlaceholderCanvasId = -1,
-  };
-
   enum class AnimationState {
     // Animation should be active, and use the real sync signal from viz.
     kActive,

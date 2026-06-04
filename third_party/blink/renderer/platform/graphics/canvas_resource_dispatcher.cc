@@ -117,7 +117,7 @@ void UpdatePlaceholderDispatcher(
 
 void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
     scoped_refptr<ExportedCanvasResource> exported_resource) {
-  if (placeholder_canvas_id_ == kInvalidPlaceholderCanvasId ||
+  if (placeholder_canvas_id_ == OffscreenCanvasPlaceholder::kNoPlaceholderId ||
       // `agent_group_scheduler_compositor_task_runner_` may be null if this
       // was created from a SharedWorker.
       !agent_group_scheduler_compositor_task_runner_) {

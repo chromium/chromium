@@ -1517,8 +1517,8 @@ CanvasResourceDispatcher* HTMLCanvasElement::GetOrCreateResourceDispatcher() {
             ->GetAgentGroupScheduler()
             .CompositorTaskRunner(),
         surface_layer_bridge_->GetFrameSinkId().client_id(),
-        surface_layer_bridge_->GetFrameSinkId().sink_id(),
-        CanvasResourceDispatcher::kInvalidPlaceholderCanvasId, Size());
+        surface_layer_bridge_->GetFrameSinkId().sink_id(), kNoPlaceholderId,
+        Size());
   }
   return frame_dispatcher_.get();
 }
