@@ -64,6 +64,9 @@ void SendSafeBrowsingDownloadReport(
 // in the UI (for malicious APK downloads). This checks the feature state only;
 // Safe Browsing state is checked elsewhere.
 bool ShouldShowSafeBrowsingAndroidDownloadWarnings();
+
+// Whether the download item ".apk" as a file extension.
+bool IsApkFile(download::DownloadItem* item);
 #endif
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_UI_SAFE_BROWSING_UTIL_H_

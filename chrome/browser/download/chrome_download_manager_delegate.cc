@@ -212,8 +212,6 @@ bool IsEphemeralWarningCancellationEnabled() {
 
 #if BUILDFLAG(IS_ANDROID)
 const char kPdfDirName[] = "pdfs";
-// File suffix for APKs.
-constexpr base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
 #endif
 
 // Used with GetPlatformDownloadPath() to indicate which platform path to
@@ -979,6 +977,17 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
       state->CompleteDownload();
       return false;
     }
+#if BUILDFLAG(IS_ANDROID)
+  } else if (ShouldShowSafeBrowsingAndroidDownloadWarnings() &&
+             IsApkFile(item) && state->is_complete() && !item->IsDangerous() &&
+             item->GetDangerType() !=
+                 download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED &&
+             !item->IsUserConfirmed()) {
+    // Don't complete the download of a non-dangerous file until the user
+    // consents.
+    DownloadController::GetInstance()->ShowDangerousDownloadDialog(item);
+    return false;
+#endif  // BUILDFLAG(IS_ANDROID)
   } else if (!state->is_complete() &&
              item->GetDangerType() !=
                  download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
@@ -986,7 +995,6 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
     state->set_callback(std::move(internal_complete_callback));
     return false;
   }
-
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   return true;
 }
@@ -1777,7 +1785,7 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         // DANGEROUS_FILE and produce a generic warning.
         if (base::FeatureList::IsEnabled(
                 safe_browsing::kMaliciousApkDownloadCheck) &&
-            item->GetFileNameToReportUser().MatchesExtension(kApkSuffix)) {
+            IsApkFile(item)) {
           danger_type = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
           break;
         }

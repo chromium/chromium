@@ -2005,9 +2005,15 @@ class ChromeDownloadManagerDelegateTestWithSafeBrowsing
   void RunUnknownVerdictTest(base::FilePath::StringViewType file_name,
                              download::DownloadDangerType expected) {
 #if BUILDFLAG(IS_ANDROID)
+    // Enable telemetry-only mode to prevent UNKNOWN verdicts from triggering the
+    // DangerousDownloadDialog, which would block the UI thread and timeout the test.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        safe_browsing::kMaliciousApkDownloadCheck);
+    base::FieldTrialParams params = {
+        {std::string(
+             safe_browsing::kMaliciousApkDownloadCheckTelemetryOnly.name),
+         "true"}};
+    feature_list.InitAndEnableFeatureWithParameters(
+        safe_browsing::kMaliciousApkDownloadCheck, params);
 #endif
 
     std::unique_ptr<download::MockDownloadItem> download_item =

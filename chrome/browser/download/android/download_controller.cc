@@ -209,6 +209,20 @@ bool isEnterpriseBlockDownloadDangerType(
 }
 // LINT.ThenChange(//components/browser_ui/util/android/java/src/org/chromium/components/browser_ui/util/DownloadUtils.java:isBlockedSensitiveDownload)
 
+ui::WindowAndroid* GetCurrentWindow() {
+  // Iterate through all tab models to find the active one.
+  for (const TabModel* model : TabModelList::models()) {
+    if (!model->IsActiveModel()) {
+      continue;
+    }
+    content::WebContents* active_web_contents = model->GetActiveWebContents();
+    if (active_web_contents) {
+      return active_web_contents->GetTopLevelNativeWindow();
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 static void JNI_DownloadController_CancelDownload(
@@ -471,7 +485,7 @@ void DownloadController::ShowDangerousDownloadWarning(DownloadUIModel& model) {
   if (item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
       item->GetDangerType() ==
           download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED) {
-    OnDangerousDownload(item);
+    ShowDangerousDownloadDialog(item);
   }
 }
 
@@ -482,17 +496,10 @@ void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
     return;
   }
 
-  WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
-  if (!web_contents) {
-    ScheduleRemoveDownloadItem(item);
-    item->RemoveObserver(this);
-    return;
-  }
-
-  ui::ViewAndroid* view_android =
-      web_contents ? web_contents->GetNativeView() : nullptr;
   ui::WindowAndroid* window_android =
-      view_android ? view_android->GetWindowAndroid() : nullptr;
+      GetWindowHelper(item, /*should_schedule_removal=*/true,
+                      /*fallback_to_current_window=*/false);
+
   if (!dangerous_download_bridge_) {
     dangerous_download_bridge_ =
         std::make_unique<DangerousDownloadDialogBridge>();
@@ -501,22 +508,38 @@ void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
 }
 
 void DownloadController::OnSensitiveDownload(download::DownloadItem* item) {
-  WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
-  if (!web_contents) {
-    ScheduleRemoveDownloadItem(item);
-    item->RemoveObserver(this);
-    return;
-  }
-
-  ui::ViewAndroid* view_android =
-      web_contents ? web_contents->GetNativeView() : nullptr;
   ui::WindowAndroid* window_android =
-      view_android ? view_android->GetWindowAndroid() : nullptr;
+      GetWindowHelper(item, /*should_schedule_removal=*/true,
+                      /*fallback_to_current_window=*/false);
+
   if (!policy_warning_download_bridge_) {
     policy_warning_download_bridge_ =
         std::make_unique<PolicyWarningDownloadDialogBridge>();
   }
   policy_warning_download_bridge_->Show(item, window_android);
+}
+
+void DownloadController::ShowDangerousDownloadDialog(
+    download::DownloadItem* item) {
+  if (item->GetDownloadSource() == download::DownloadSource::EXTENSION_API) {
+    return;
+  }
+
+  // Reached post-download (unlike OnDangerousDownload). If the original
+  // WebContents is missing, keep the download and fallback to showing the
+  // dialog in the current window.
+  ui::WindowAndroid* window_android =
+      GetWindowHelper(item, /*should_schedule_removal=*/false,
+                      /*fallback_to_current_window=*/true);
+  if (!window_android) {
+    return;
+  }
+
+  if (!dangerous_download_bridge_) {
+    dangerous_download_bridge_ =
+        std::make_unique<DangerousDownloadDialogBridge>();
+  }
+  dangerous_download_bridge_->Show(item, window_android);
 }
 
 void DownloadController::EnableVerifyAppsDone(
@@ -605,6 +628,28 @@ bool DownloadController::ShouldShowAppVerificationPrompt(
   }
 
   return true;
+}
+
+ui::WindowAndroid* DownloadController::GetWindowHelper(
+    download::DownloadItem* item,
+    bool should_schedule_removal,
+    bool fallback_to_current_window) {
+  WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
+  if (should_schedule_removal && !web_contents) {
+    ScheduleRemoveDownloadItem(item);
+    item->RemoveObserver(this);
+    return nullptr;
+  }
+
+  ui::ViewAndroid* view_android =
+      web_contents ? web_contents->GetNativeView() : nullptr;
+  ui::WindowAndroid* window_android =
+      view_android ? view_android->GetWindowAndroid() : nullptr;
+
+  if (fallback_to_current_window && !window_android) {
+    window_android = GetCurrentWindow();
+  }
+  return window_android;
 }
 
 DEFINE_JNI(DownloadController)

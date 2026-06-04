@@ -46,6 +46,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_METHOD0(UpdateObservers, void());
   MOCK_METHOD0(ValidateDangerousDownload, void());
   MOCK_METHOD0(ValidateInsecureDownload, void());
+  MOCK_METHOD0(ConfirmNonDangerousDownload, void());
   MOCK_METHOD1(CopyDownload, void(AcquireFileCallback));
   MOCK_METHOD0(Pause, void());
   MOCK_METHOD1(Resume, void(bool));
@@ -107,6 +108,7 @@ class MockDownloadItem : public DownloadItem {
 #endif  // BUILDFLAG(IS_ANDROID)
   MOCK_CONST_METHOD0(IsDangerous, bool());
   MOCK_CONST_METHOD0(IsInsecure, bool());
+  MOCK_CONST_METHOD0(IsUserConfirmed, bool());
   MOCK_CONST_METHOD0(GetDangerType, DownloadDangerType());
   MOCK_CONST_METHOD0(GetInsecureDownloadStatus, InsecureDownloadStatus());
   MOCK_CONST_METHOD1(TimeRemaining, bool(base::TimeDelta*));
