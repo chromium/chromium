@@ -934,6 +934,16 @@
     "expiry_milestone": 155
   },
   {
+    "name": "autofill-enable-bnpl-affirm-internationalization",
+    "owners": [ "yishuil@google.com", "vinnypersky@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "autofill-enable-bnpl-klarna-internationalization",
+    "owners": [ "yishuil@google.com", "vinnypersky@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-enable-bottom-sheet-scan-card-and-fill",
     "owners": [ "qihuizhao@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 155

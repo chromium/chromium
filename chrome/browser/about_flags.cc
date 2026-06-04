@@ -13073,6 +13073,22 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInfoBarInlineLinksDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kInfoBarInlineLinks)},
 
+    {"autofill-enable-bnpl-affirm-internationalization",
+     flag_descriptions::kAutofillEnableBnplAffirmInternationalizationName,
+     flag_descriptions::
+         kAutofillEnableBnplAffirmInternationalizationDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableBnplAffirmInternationalization)},
+
+    {"autofill-enable-bnpl-klarna-internationalization",
+     flag_descriptions::kAutofillEnableBnplKlarnaInternationalizationName,
+     flag_descriptions::
+         kAutofillEnableBnplKlarnaInternationalizationDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableBnplKlarnaInternationalization)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

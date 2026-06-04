@@ -61,6 +61,16 @@ BASE_FEATURE(kAutofillEnableAmountExtraction,
 BASE_FEATURE(kAutofillEnableAmountExtractionTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, buy now pay later (BNPL) for Affirm will be offered in
+// international markets.
+BASE_FEATURE(kAutofillEnableBnplAffirmInternationalization,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, buy now pay later (BNPL) for Klarna will be offered in
+// international markets.
+BASE_FEATURE(kAutofillEnableBnplKlarnaInternationalization,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_IOS)
 // When enabled, users are given the bottom sheet suggestion to scan credit
 // card, and save and fill the card information.

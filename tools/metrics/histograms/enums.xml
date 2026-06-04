@@ -12208,6 +12208,8 @@ from previous Chrome versions.
   <int value="-706194557" label="PerformanceInterventionDemoMode:disabled"/>
   <int value="-706159808" label="QuickAnswersOnEditableText:disabled"/>
   <int value="-706106753" label="AutofillGranularFillingAvailable:disabled"/>
+  <int value="-705860368"
+      label="AutofillEnableBnplKlarnaInternationalization:disabled"/>
   <int value="-705746939" label="ChromeDuet:enabled"/>
   <int value="-705262196"
       label="OpenAllProfilesFromProfilePickerExperiment:disabled"/>
@@ -14916,6 +14918,8 @@ from previous Chrome versions.
   <int value="189765932" label="WebNNLiteRT:disabled"/>
   <int value="189777537" label="DisableInitialMostVisitedFadeIn:enabled"/>
   <int value="190395448" label="SearchWebInSidePanel:enabled"/>
+  <int value="190872958"
+      label="AutofillEnableBnplAffirmInternationalization:enabled"/>
   <int value="190906756"
       label="ClientSideDetectionServerModelForScamDetectionAndroid:enabled"/>
   <int value="191737931" label="enable-mark-http-as"/>
@@ -19389,6 +19393,8 @@ from previous Chrome versions.
   <int value="1640386037" label="ContextualSuggestionsSlimPeekUI:disabled"/>
   <int value="1640633395" label="ApproximateGeolocationPermission:disabled"/>
   <int value="1641671651" label="ContextualPageActionShareModel:disabled"/>
+  <int value="1641948311"
+      label="AutofillEnableBnplAffirmInternationalization:disabled"/>
   <int value="1642200544" label="ArcExtendServiceAnrTimeout:disabled"/>
   <int value="1642478923" label="ContextualTriggersSelectionSize:enabled"/>
   <int value="1643450395" label="LacrosAuraCapture:disabled"/>
@@ -19790,6 +19796,8 @@ from previous Chrome versions.
   <int value="1770189877" label="ConfirmNtpSuggestionRemovals:enabled"/>
   <int value="1770848838" label="AndroidSystemContactsPicker:disabled"/>
   <int value="1770871311" label="TextClassifierTimeout:disabled"/>
+  <int value="1771277416"
+      label="AutofillEnableBnplKlarnaInternationalization:enabled"/>
   <int value="1771548551" label="DisableKeepaliveFetch:enabled"/>
   <int value="1772248386" label="SeedAccountsRevamp:enabled"/>
   <int value="1772277480" label="DefaultBrowserPromptRefresh:enabled"/>

@@ -956,6 +956,20 @@ inline constexpr char kAutofillEnableAmountExtractionTestingDescription[] =
     "will allow amount extraction to run on any website when a CC form is "
     "clicked.";
 
+inline constexpr char kAutofillEnableBnplAffirmInternationalizationName[] =
+    "Enable BNPL Affirm Internationalization";
+inline constexpr char
+    kAutofillEnableBnplAffirmInternationalizationDescription[] =
+        "When enabled, users will have the option to pay with BNPL Affirm "
+        "in international markets.";
+
+inline constexpr char kAutofillEnableBnplKlarnaInternationalizationName[] =
+    "Enable BNPL Klarna Internationalization";
+inline constexpr char
+    kAutofillEnableBnplKlarnaInternationalizationDescription[] =
+        "When enabled, users will have the option to pay with BNPL Klarna "
+        "in international markets.";
+
 inline constexpr char kAutofillEnableBuyNowPayLaterName[] =
     "Enable buy now pay later on Autofill";
 inline constexpr char kAutofillEnableBuyNowPayLaterDescription[] =
