@@ -682,6 +682,65 @@ IN_PROC_BROWSER_TEST_F(RuntimeApiTest,
   EXPECT_TRUE(content::WaitForLoadStop(tabs->GetActiveWebContents()));
   EXPECT_EQ(url::kAboutBlankURL, GetActiveUrl());
 }
+
+// TODO(crbug.com/510816360): Remove this histogram test around M155,
+// once we've gathered enough data to analyze usage.
+class ChromeRuntimeUninstallURLHistogramTest : public ExtensionApiTest {
+ public:
+  void SetUp() override {
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+    ExtensionApiTest::SetUp();
+  }
+
+  void TearDown() override {
+    histogram_tester_ = nullptr;
+    ExtensionApiTest::TearDown();
+  }
+
+ protected:
+  std::string GetUninstallURL() {
+    const Extension* extension = GetSingleLoadedExtension();
+    EXPECT_TRUE(extension) << "Exactly one extension should be loaded.";
+    EXPECT_EQ("Uninstall URL Histogram", extension->name());
+    ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
+    std::string url_string;
+    extension_prefs->ReadPrefAsString(extension->id(), "uninstall_url",
+                                      &url_string);
+    return url_string;
+  }
+
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+};
+
+// Test that the histogram for counting secure and insecure uninstall URLs
+// counts URLs on extension load.
+IN_PROC_BROWSER_TEST_F(ChromeRuntimeUninstallURLHistogramTest,
+                       PRE_UninstallURL) {
+  // Write the uninstall URL into persistent storage to be read in the main
+  // part of the test.
+  EXPECT_TRUE(RunExtensionTest("runtime/uninstall_url_histogram")) << message_;
+
+  // The last URL is used.
+  EXPECT_EQ("https://example.com", GetUninstallURL());
+
+  // Nothing is counted yet.
+  histogram_tester_->ExpectTotalCount("Extensions.RuntimeUninstallURL.Host",
+                                      /*expected_count=*/0);
+}
+
+// Confirm the uninstall URL is loaded from and histogram is emitted on
+// extension load.
+IN_PROC_BROWSER_TEST_F(ChromeRuntimeUninstallURLHistogramTest, UninstallURL) {
+  // The last URL is used.
+  EXPECT_EQ("https://example.com", GetUninstallURL());
+
+  // After the extension is loaded, the histogram counts should have
+  // been incremented. Only the last set uninstall URL is counted.
+  histogram_tester_->ExpectUniqueSample("Extensions.RuntimeUninstallURL.Host",
+                                        /*sample=kHTTPS*/ 0,
+                                        /*expected_bucket_count=*/1);
+}
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)

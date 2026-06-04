@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_number_conversions.h"
@@ -46,6 +47,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "net/base/url_util.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "url/gurl.h"
 
@@ -271,8 +273,45 @@ RuntimeAPI::RuntimeAPI(content::BrowserContext* context)
 
 RuntimeAPI::~RuntimeAPI() = default;
 
+// TODO(crbug.com/510816360): Remove this enum around M155, once we've gathered
+// enough data to analyze usage.
+enum class ExtensionRuntimeUninstallURLHost {
+  kHTTPS,
+  kHTTPLocal,
+  kHTTPRemote,
+  kMaxValue = kHTTPRemote,
+};
+
+// TODO(crbug.com/510816360): Remove this histogram around M155, once we've
+// gathered enough data to analyze usage.
+void RecordUninstallURLHistogram(content::BrowserContext* context,
+                                 const ExtensionId& extension_id) {
+  // The following 5 lines were copied from OnExtensionUninstalled().
+  // We do not need to record histogram if stored value will be ignored
+  // anyway.
+  GURL uninstall_url(
+      GetUninstallURL(ExtensionPrefs::Get(context), extension_id));
+  if (!uninstall_url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  const ExtensionRuntimeUninstallURLHost host =
+      uninstall_url.SchemeIs(url::kHttpsScheme)
+          ? ExtensionRuntimeUninstallURLHost::kHTTPS
+          : (net::IsLocalhost(uninstall_url)
+                 ? ExtensionRuntimeUninstallURLHost::kHTTPLocal
+                 : ExtensionRuntimeUninstallURLHost::kHTTPRemote);
+  base::UmaHistogramEnumeration("Extensions.RuntimeUninstallURL.Host", host);
+}
+
 void RuntimeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
                                    const Extension* extension) {
+  // Record histogram during session start to count every extension only once
+  // instead of counting every call to runtime.setUninstallURL().
+  // TODO(crbug.com/510816360): Remove this histogram around M155, once we've
+  // gathered enough data to analyze usage.
+  RecordUninstallURLHistogram(browser_context, extension->id());
+
   if (!dispatch_chrome_updated_event_) {
     return;
   }

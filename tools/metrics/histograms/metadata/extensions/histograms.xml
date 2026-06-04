@@ -3974,6 +3974,22 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.RuntimeSetUnistallURL.Host"
+    enum="ExtensionRuntimeUninstallURLHost" expires_after="M155">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>bershanskyi@gmail.com</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of extensions which have uninstall URL with given security
+    properties: HTTPS protocol, HTTP protocol and local hostname, or HTTP
+    protocol and non-local hostname. This histogram may allow us to deprecate
+    support for insecure remote unistall URLs. For purposes of this histogram,
+    any non-local domain name is considered non-local even if it resolves to a
+    local IP. Recorded on extension load if an extension has a valid uninstall
+    URL set.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.SandboxUnpackFailureReason2"
     enum="ExtensionUnpackFailureReason" expires_after="never">
 <!-- expires-never: Monitors core extension installation flows. -->

@@ -1,0 +1,9 @@
+{
+  "name": "Uninstall URL Histogram",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Browser test for chrome.runtime.setUninstallURL() histogram",
+  "background": {
+    "service_worker": "test.js"
+  }
+}

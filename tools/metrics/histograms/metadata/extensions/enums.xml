@@ -3306,6 +3306,12 @@ Called by update_extension_permission.py.-->
   <int value="4" label="Non-webstore extension without hashes skipped"/>
 </enum>
 
+<enum name="ExtensionRuntimeUninstallURLHost">
+  <int value="0" label="HTTPS"/>
+  <int value="1" label="Local HTTP"/>
+  <int value="2" label="Remote HTTP"/>
+</enum>
+
 <enum name="ExtensionsDatabaseOperation">
   <int value="0" label="get"/>
   <int value="1" label="set"/>
