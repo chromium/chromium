@@ -43,8 +43,7 @@
 
 namespace {
 // Test constants for sections to avoid magic numbers.
-const NSInteger kSectionIdentifierEnumZero = 0;
-const NSInteger kSectionIdentifierEnumOne = 1;
+const NSInteger kSectionIdentifierCardDetails = 0;
 }  // namespace
 
 @interface FakePaymentsScanSaveAndFillEditMutator
@@ -226,18 +225,13 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestLoadModel) {
   // Retrieve the snapshot representing the current UI state.
   NSDiffableDataSourceSnapshot* snapshot = GetSnapshot();
 
-  // Verify the number of sections (Card Details and Nickname).
-  EXPECT_EQ(2u, snapshot.sectionIdentifiers.count);
+  // Verify the number of sections (only Card Details).
+  EXPECT_EQ(1u, snapshot.sectionIdentifiers.count);
 
   // Card Details.
   NSArray* cardDetailsItems = [snapshot
-      itemIdentifiersInSectionWithIdentifier:@(kSectionIdentifierEnumZero)];
-  EXPECT_EQ(4u, cardDetailsItems.count);
-
-  // Nickname.
-  NSArray* nicknameItems = [snapshot
-      itemIdentifiersInSectionWithIdentifier:@(kSectionIdentifierEnumOne)];
-  EXPECT_EQ(1u, nicknameItems.count);
+      itemIdentifiersInSectionWithIdentifier:@(kSectionIdentifierCardDetails)];
+  EXPECT_EQ(5u, cardDetailsItems.count);
 }
 
 // Tests if the UI Model is updated correctly when data is passed from the
@@ -253,7 +247,7 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestScannerUpdatesUI) {
 
   NSDiffableDataSourceSnapshot* snapshot = GetSnapshot();
   NSArray* cardDetailsItems = [snapshot
-      itemIdentifiersInSectionWithIdentifier:@(kSectionIdentifierEnumZero)];
+      itemIdentifiersInSectionWithIdentifier:@(kSectionIdentifierCardDetails)];
 
   // Card Number.
   TableViewTextEditItem* numberItem =
@@ -273,8 +267,6 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestPlaceholders) {
   NSDiffableDataSourceSnapshot* snapshot = GetSnapshot();
   NSArray* cardDetailsItems =
       [snapshot itemIdentifiersInSectionWithIdentifier:@(0)];
-  NSArray* nicknameItems =
-      [snapshot itemIdentifiersInSectionWithIdentifier:@(1)];
 
   // Card Number.
   TableViewTextEditItem* numberItem =
@@ -304,7 +296,7 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestPlaceholders) {
 
   // Nickname.
   TableViewTextEditItem* nicknameItem =
-      base::apple::ObjCCastStrict<TableViewTextEditItem>(nicknameItems[0]);
+      base::apple::ObjCCastStrict<TableViewTextEditItem>(cardDetailsItems[4]);
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_NICKNAME),
       nicknameItem.textFieldPlaceholder);
@@ -341,11 +333,12 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestDidTapSave) {
                          expirationYear:@"29"];
 
   // Populate optional fields manually.
-  TableViewTextEditItem* nameItem = GetItem(kSectionIdentifierEnumZero, 2);
+  TableViewTextEditItem* nameItem = GetItem(kSectionIdentifierCardDetails, 2);
   nameItem.textFieldValue = @"John Doe";
-  TableViewTextEditItem* cvcItem = GetItem(kSectionIdentifierEnumZero, 3);
+  TableViewTextEditItem* cvcItem = GetItem(kSectionIdentifierCardDetails, 3);
   cvcItem.textFieldValue = @"123";
-  TableViewTextEditItem* nicknameItem = GetItem(kSectionIdentifierEnumOne, 0);
+  TableViewTextEditItem* nicknameItem =
+      GetItem(kSectionIdentifierCardDetails, 4);
   nicknameItem.textFieldValue = @"My Card";
 
   [view_controller_
@@ -414,7 +407,7 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
   CreateController();
   view_controller_.mutator = fake_mutator_;
 
-  TableViewTextEditItem* expItem = GetItem(kSectionIdentifierEnumZero, 1);
+  TableViewTextEditItem* expItem = GetItem(kSectionIdentifierCardDetails, 1);
   id<TableViewTextEditItemDelegate> delegate =
       (id<TableViewTextEditItemDelegate>)view_controller_;
 
@@ -453,7 +446,7 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestValidationTiming) {
   CreateController();
   view_controller_.mutator = fake_mutator_;
 
-  TableViewTextEditItem* numberItem = GetItem(kSectionIdentifierEnumZero, 0);
+  TableViewTextEditItem* numberItem = GetItem(kSectionIdentifierCardDetails, 0);
   id<TableViewTextEditItemDelegate> delegate =
       (id<TableViewTextEditItemDelegate>)view_controller_;
 
