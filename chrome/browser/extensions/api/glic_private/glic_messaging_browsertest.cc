@@ -31,7 +31,8 @@ class GlicMessagingBrowserTest : public GlicPrivateApiTestBase {
   GlicMessagingBrowserTest() {
     feature_list_.InitWithFeatures(
         {extensions_features::kApiGlicPrivate,
-         extensions_features::kApiGlicAccessFromGoogleWebpage},
+         extensions_features::kApiGlicAccessFromGoogleWebpage,
+         extensions_features::kApiGlicAccessFromPromotionPage},
         {});
   }
 
@@ -39,17 +40,6 @@ class GlicMessagingBrowserTest : public GlicPrivateApiTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class GlicMessagingAccessDisabledBrowserTest : public GlicPrivateApiTestBase {
- public:
-  GlicMessagingAccessDisabledBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {extensions_features::kApiGlicPrivate},
-        {extensions_features::kApiGlicAccessFromGoogleWebpage});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 namespace {
 
@@ -168,22 +158,6 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingBrowserTest, InvokeAPI) {
   EXPECT_EQ("Uncaught Error: local-glic-not-enabled", result_string);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicMessagingAccessDisabledBrowserTest,
-                       InvokeAPIPromotionPage_AccessDisabled) {
-  const Extension* extension =
-      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
-          extension_misc::kGlicExtensionId);
-  ASSERT_TRUE(extension);
-
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
-                            GURL("https://gemini.google.com/empty.html")));
-
-  content::EvalJsResult result =
-      ExecuteInvoke(GetActiveWebContents(), "1", "promotion-page");
-
-  std::string result_string = result.ExtractString();
-  EXPECT_EQ("Uncaught Error: local-glic-not-enabled", result_string);
-}
 
 // Tests that the extension cannot query the state of a tab if the tab's URL
 // indicates a different user account (e.g., authuser=1) than the one the

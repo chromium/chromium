@@ -73,7 +73,8 @@ enum ErrorCode {
   "local-invalid-document-id",
   "local-conversation-not-found",
   "local-no-bound-tabs",
-  "local-tab-not-in-window"
+  "local-tab-not-in-window",
+  "local-glic-access-from-page-disabled"
 };
 
 // Private API for Gemini (Glic) synchronization.
