@@ -178,9 +178,7 @@ import java.util.function.Supplier;
                         Snackbar.UMA_FUSEBOX_UPLOAD_FAILED);
 
         mModel.set(FuseboxProperties.BUTTON_ADD_CLICKED, this::onPlusButtonClicked);
-        mModel.set(
-                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
-                this::onRequestTypeButtonClicked);
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED, this::onRequestTypeButtonClicked);
         mModel.set(FuseboxProperties.ACTIVATION_CHIP_CLICKED, this::onActivationChipClicked);
 
         mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED, this::onTabPickerClicked);
@@ -493,7 +491,7 @@ import java.util.function.Supplier;
         mFuseboxStateSupplier.set(targetState);
         mModel.set(FuseboxProperties.FUSEBOX_STATE, targetState);
         mModel.set(FuseboxProperties.ADD_BUTTON_VISIBLE, targetState == FuseboxState.EXPANDED);
-        mModel.set(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON, showRequestTypeButton);
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, showRequestTypeButton);
     }
 
     @SuppressWarnings("checkstyle:SimplifyBooleanReturn")
@@ -915,7 +913,7 @@ import java.util.function.Supplier;
 
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType Integer type) {
         updateFuseboxState();
-        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
+        mModel.set(FuseboxProperties.REQUEST_TYPE, type);
 
         if (isInInputSession()) {
             if (!ToolModeUtils.isAimRequest(type)) {
@@ -943,7 +941,7 @@ import java.util.function.Supplier;
                 isInInputSession()
                         && mModel.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
                                 == FuseboxLayoutMode.SUGGESTIONS_POPOVER
-                        && mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE)
+                        && mModel.get(FuseboxProperties.REQUEST_TYPE)
                                 == AutocompleteRequestType.SEARCH;
         mModel.set(FuseboxProperties.ACTIVATION_CHIP_VISIBLE, showActivationChip);
     }

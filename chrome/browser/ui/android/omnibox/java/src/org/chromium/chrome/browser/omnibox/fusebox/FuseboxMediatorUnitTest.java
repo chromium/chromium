@@ -516,7 +516,7 @@ public class FuseboxMediatorUnitTest {
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
 
-        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
 
         assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
     }
@@ -565,30 +565,30 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void updateFuseboxState_setsShowRequestTypeButton_true() {
+    public void updateFuseboxState_setsRequestTypeButtonVisible_true() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
 
-        assertTrue(mModel.get(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON));
+        assertTrue(mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE));
     }
 
     @Test
-    public void updateFuseboxState_setsShowRequestTypeButton_false_conventional() {
+    public void updateFuseboxState_setsRequestTypeButtonVisible_false_conventional() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
 
-        assertFalse(mModel.get(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON));
+        assertFalse(mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE));
     }
 
     @Test
-    public void updateFuseboxState_setsShowRequestTypeButton_false_desktopAiMode() {
+    public void updateFuseboxState_setsRequestTypeButtonVisible_false_desktopAiMode() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
 
-        assertFalse(mModel.get(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON));
+        assertFalse(mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE));
     }
 
     @Test
@@ -895,23 +895,20 @@ public class FuseboxMediatorUnitTest {
     public void dedicatedButton_clearsAttachmentsAndAbandonsSession() {
         addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_TAB);
         assertEquals(
-                AutocompleteRequestType.AI_MODE,
-                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                AutocompleteRequestType.AI_MODE, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
 
-        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
         assertEquals(
-                AutocompleteRequestType.SEARCH,
-                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                AutocompleteRequestType.SEARCH, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
         assertEquals(0, mAttachments.size());
     }
 
     @Test
     public void dedicatedButton_startsSession() {
-        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
         verify(mComposeboxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
-                AutocompleteRequestType.AI_MODE,
-                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                AutocompleteRequestType.AI_MODE, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
     }
 
     @Test
@@ -934,7 +931,7 @@ public class FuseboxMediatorUnitTest {
         verify(mComposeboxQueryControllerBridge, never()).notifySessionStarted();
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
-                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
         histogramWatcher.assertExpected();
     }
 
@@ -942,18 +939,15 @@ public class FuseboxMediatorUnitTest {
     public void clickSelectedTool_transitionsToSearchMode() {
         // Initially in Search mode.
         assertEquals(
-                AutocompleteRequestType.SEARCH,
-                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                AutocompleteRequestType.SEARCH, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
 
         clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
         assertEquals(
-                AutocompleteRequestType.AI_MODE,
-                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                AutocompleteRequestType.AI_MODE, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
 
         clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
         assertEquals(
-                AutocompleteRequestType.SEARCH,
-                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                AutocompleteRequestType.SEARCH, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
     }
 
     @Test
@@ -961,12 +955,11 @@ public class FuseboxMediatorUnitTest {
         clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
-                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
 
         clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
         assertEquals(
-                AutocompleteRequestType.SEARCH,
-                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                AutocompleteRequestType.SEARCH, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
     }
 
     @Test
@@ -1005,8 +998,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(
-                AutocompleteRequestType.AI_MODE,
-                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                AutocompleteRequestType.AI_MODE, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
     }
 
@@ -1016,7 +1008,7 @@ public class FuseboxMediatorUnitTest {
         addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
         assertEquals(
                 AutocompleteRequestType.IMAGE_GENERATION,
-                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+                (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
     }
 
@@ -1124,10 +1116,10 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void autocompleteRequestTypeClicked_activatesSearchMode() {
+    public void requestTypeButtonClicked_activatesSearchMode() {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
 
-        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
 
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
         assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
@@ -1350,14 +1342,14 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void onRequestTypeButtonClicked_fromDeepSearch_activatesSearchMode() {
         mInput.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
-        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
         assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
     }
 
     @Test
     public void onRequestTypeButtonClicked_fromCanvas_activatesSearchMode() {
         mInput.setRequestType(AutocompleteRequestType.CANVAS);
-        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
         assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
     }
 
@@ -2284,7 +2276,7 @@ public class FuseboxMediatorUnitTest {
         clearInvocations(mComposeboxQueryControllerBridge);
 
         // The active model should be reset to the default (Pro).
-        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+        mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
         verify(mComposeboxQueryControllerBridge)
                 .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
         assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());

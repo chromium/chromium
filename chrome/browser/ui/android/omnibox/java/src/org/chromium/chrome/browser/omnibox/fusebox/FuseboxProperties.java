@@ -110,14 +110,6 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey ATTACHMENTS_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    /** Tracks the {@link AutocompleteRequestType}. */
-    public static final WritableObjectPropertyKey<@AutocompleteRequestType Integer>
-            AUTOCOMPLETE_REQUEST_TYPE = new WritableObjectPropertyKey<>();
-
-    /** Action to perform when the user clicks the Autocomplete Request Type button. */
-    public static final WritableObjectPropertyKey<Runnable> AUTOCOMPLETE_REQUEST_TYPE_CLICKED =
-            new WritableObjectPropertyKey<>();
-
     /** Action to perform when the user clicks the Add button. */
     public static final WritableObjectPropertyKey<Runnable> BUTTON_ADD_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -212,13 +204,29 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_MODEL_DIVIDER_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** The text for the models header in the popup. */
+    public static final WritableObjectPropertyKey<String> POPUP_MODEL_HEADER_TEXT =
+            new WritableObjectPropertyKey<>();
+
     /** Whether the models header in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_MODEL_HEADER_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    /** The text for the models header in the popup. */
-    public static final WritableObjectPropertyKey<String> POPUP_MODEL_HEADER_TEXT =
-            new WritableObjectPropertyKey<>();
+    /** Holds button data objects for each recent tab that is to be shown. */
+    public static final WritableObjectPropertyKey<List<PopupButtonData>>
+            POPUP_RECENT_TABS_BUTTON_DATA_LIST = new WritableObjectPropertyKey<>();
+
+    /** Whether the recent tabs divider in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_RECENT_TABS_DIVIDER_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the recent tab buttons in the popup are enabled. */
+    public static final WritableBooleanPropertyKey POPUP_RECENT_TABS_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the recent tabs header in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_RECENT_TABS_HEADER_VISIBLE =
+            new WritableBooleanPropertyKey();
 
     /** The state of the popup. */
     public static final WritableObjectPropertyKey<@PopupState Integer> POPUP_STATE =
@@ -232,32 +240,24 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_TOOL_DIVIDER_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    /** Whether the tools header in the popup is visible. */
-    public static final WritableBooleanPropertyKey POPUP_TOOL_HEADER_VISIBLE =
-            new WritableBooleanPropertyKey();
-
     /** The text for the tools header in the popup. */
     public static final WritableObjectPropertyKey<String> POPUP_TOOL_HEADER_TEXT =
             new WritableObjectPropertyKey<>();
 
-    /** Whether to show the request type button. */
-    public static final WritableBooleanPropertyKey SHOW_REQUEST_TYPE_BUTTON =
+    /** Whether the tools header in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_TOOL_HEADER_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    /** Holds button data objects for each recent tab that is to be shown. */
-    public static final WritableObjectPropertyKey<List<PopupButtonData>>
-            POPUP_RECENT_TABS_BUTTON_DATA_LIST = new WritableObjectPropertyKey<>();
+    /** Tracks the {@link AutocompleteRequestType}. */
+    public static final WritableObjectPropertyKey<@AutocompleteRequestType Integer> REQUEST_TYPE =
+            new WritableObjectPropertyKey<>();
 
-    /** Whether the recent tabs divider in the popup is visible. */
-    public static final WritableBooleanPropertyKey POPUP_RECENT_TABS_DIVIDER_VISIBLE =
-            new WritableBooleanPropertyKey();
+    /** Action to perform when the user clicks the request type button. */
+    public static final WritableObjectPropertyKey<Runnable> REQUEST_TYPE_BUTTON_CLICKED =
+            new WritableObjectPropertyKey<>();
 
-    /** Whether the recent tabs header in the popup is visible. */
-    public static final WritableBooleanPropertyKey POPUP_RECENT_TABS_HEADER_VISIBLE =
-            new WritableBooleanPropertyKey();
-
-    /** Whether the recent tab buttons in the popup are enabled. */
-    public static final WritableBooleanPropertyKey POPUP_RECENT_TABS_ENABLED =
+    /** Whether the request type button is visible. */
+    public static final WritableBooleanPropertyKey REQUEST_TYPE_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
@@ -267,8 +267,6 @@ class FuseboxProperties {
         ADAPTER,
         ADD_BUTTON_VISIBLE,
         ATTACHMENTS_VISIBLE,
-        AUTOCOMPLETE_REQUEST_TYPE,
-        AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
         BUTTON_ADD_CLICKED,
         COLOR_SCHEME,
         FUSEBOX_LAYOUT_MODE,
@@ -302,7 +300,9 @@ class FuseboxProperties {
         POPUP_TOOL_DIVIDER_VISIBLE,
         POPUP_TOOL_HEADER_TEXT,
         POPUP_TOOL_HEADER_VISIBLE,
-        SHOW_REQUEST_TYPE_BUTTON
+        REQUEST_TYPE,
+        REQUEST_TYPE_BUTTON_CLICKED,
+        REQUEST_TYPE_BUTTON_VISIBLE
         // go/keep-sorted end
     };
 }

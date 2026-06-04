@@ -69,12 +69,6 @@ class FuseboxViewBinder {
             view.attachmentsView.setAdapter(model.get(FuseboxProperties.ADAPTER));
         } else if (propertyKey == FuseboxProperties.ADD_BUTTON_VISIBLE) {
             updateAddButton(model, view);
-        } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE) {
-            updateRequestTypeButton(model, view);
-            updateButtonsA11yAnnouncements(model, view);
-        } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
-            view.requestType.setOnClickListener(
-                    v -> model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(FuseboxProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -192,13 +186,6 @@ class FuseboxViewBinder {
                                 ? View.VISIBLE
                                 : View.GONE);
             }
-        } else if (propertyKey == FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE) {
-            if (view.popup.mRecentTabsHeader != null) {
-                view.popup.mRecentTabsHeader.setVisibility(
-                        model.get(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE)
-                                ? View.VISIBLE
-                                : View.GONE);
-            }
         } else if (propertyKey == FuseboxProperties.POPUP_RECENT_TABS_ENABLED) {
             ViewGroup container = view.popup.mRecentTabsContainer;
             if (container != null) {
@@ -206,6 +193,13 @@ class FuseboxViewBinder {
                 for (int i = 0; i < container.getChildCount(); i++) {
                     container.getChildAt(i).setEnabled(enabled);
                 }
+            }
+        } else if (propertyKey == FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE) {
+            if (view.popup.mRecentTabsHeader != null) {
+                view.popup.mRecentTabsHeader.setVisibility(
+                        model.get(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE)
+                                ? View.VISIBLE
+                                : View.GONE);
             }
         } else if (propertyKey == FuseboxProperties.POPUP_STATE) {
             view.popup.setPopupState(model.get(FuseboxProperties.POPUP_STATE));
@@ -223,7 +217,13 @@ class FuseboxViewBinder {
                     model.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
-        } else if (propertyKey == FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON) {
+        } else if (propertyKey == FuseboxProperties.REQUEST_TYPE) {
+            updateRequestTypeButton(model, view);
+            updateButtonsA11yAnnouncements(model, view);
+        } else if (propertyKey == FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED) {
+            view.requestType.setOnClickListener(
+                    v -> model.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE) {
             updateRequestTypeButton(model, view);
         }
     }
@@ -491,7 +491,7 @@ class FuseboxViewBinder {
             PropertyModel model, FuseboxViewHolder view) {
         @StringRes
         int navButtonAccessibilityStringRes = R.string.acc_send_button_search_or_navigate;
-        switch (model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE)) {
+        switch (model.get(FuseboxProperties.REQUEST_TYPE)) {
             case AutocompleteRequestType.AI_MODE:
                 navButtonAccessibilityStringRes = R.string.acc_send_button_send_to_ai;
                 break;
@@ -558,13 +558,12 @@ class FuseboxViewBinder {
     }
 
     private static void updateRequestTypeButton(PropertyModel model, FuseboxViewHolder view) {
-        if (!model.get(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON)) {
+        if (!model.get(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE)) {
             view.requestType.setVisibility(View.GONE);
             return;
         }
 
-        @AutocompleteRequestType
-        int requestType = model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE);
+        @AutocompleteRequestType int requestType = model.get(FuseboxProperties.REQUEST_TYPE);
         if (!ToolModeUtils.isAimRequest(requestType)) {
             // The model is in an inconsistent state, wait for the next event.
             return;

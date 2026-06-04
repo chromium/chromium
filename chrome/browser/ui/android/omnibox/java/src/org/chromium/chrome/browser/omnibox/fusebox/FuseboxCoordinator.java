@@ -178,9 +178,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                 new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
                         .with(FuseboxProperties.FUSEBOX_LAYOUT_MODE, getFuseboxLayoutMode())
                         .with(FuseboxProperties.FUSEBOX_STATE, FuseboxState.DISABLED)
-                        .with(
-                                FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
-                                AutocompleteRequestType.SEARCH)
+                        .with(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.SEARCH)
                         // May not be correct, but the view side struggles to deal with a null here.
                         // Init with a default, and it will be corrected by the mediator before it
                         // matters.
