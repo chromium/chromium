@@ -46,7 +46,7 @@ def to_snake_case(name):
 
 
 def get_user_input():
-  """Prompts the user for feature name and description."""
+  """Prompts the user for feature name, description, and Java export preference."""
   print("Welcome to the IPH Entry Generator.")
   feature_name = input("Enter the feature name (UpperCamelCase): ").strip()
 
@@ -60,7 +60,11 @@ def get_user_input():
     print("Error: Both feature name and description are required.")
     sys.exit(1)
 
-  return feature_name, description
+  export_java_str = input(
+      "Do you want to export to Java? (y/N): ").strip().lower()
+  export_java = export_java_str in ('y', 'yes')
+
+  return feature_name, description, export_java
 
 
 def update_feature_constants_java(feature_name, description):
@@ -646,10 +650,14 @@ def update_histograms_xml(feature_name, description):
 
 
 def main():
-  feature_name, description = get_user_input()
+  feature_name, description, export_java = get_user_input()
 
-  update_feature_constants_java(feature_name, description)
-  update_event_constants_java(feature_name, description)
+  if export_java:
+    update_feature_constants_java(feature_name, description)
+    update_event_constants_java(feature_name, description)
+  else:
+    print("Skipping Java exports.")
+
   update_feature_configurations_cc(feature_name, description)
   update_feature_constants_h(feature_name, description)
   update_feature_constants_cc(feature_name, description)
@@ -660,10 +668,14 @@ def main():
 
   print("""
 Boilerplate generation complete!
-Please review the changes and fill in the three TODOs:
+Please review the changes and fill in the TODOs:
 Two TODOs are in the file: components/feature_engagement/public/feature_configurations.cc
-One TODO is in: components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/EventConstants.java
-  """)
+""")
+  if export_java:
+    print(
+        "One TODO is in: components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/EventConstants.java"
+    )
+    print("")
 
 
 if __name__ == "__main__":

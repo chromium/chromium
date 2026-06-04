@@ -105,8 +105,33 @@ All of the local tracking of data will happen per Chrome user profile.
 
 ## Developing a new In-Product Help Feature
 
-You need to do the following things to enable your feature, all described in
-detail below.
+### The Easy Way (Recommended)
+
+We have a helper script that automates almost all of the boilerplate setup. It
+will register your feature, add it to the required lists, and set up the basic
+UMA configurations.
+
+Just run:
+```sh
+python3 tools/feature_engagement/generate_iph_entry.py
+```
+
+It will prompt you for a feature name (e.g., `GoatTeleportation`), a
+description, and whether you want to export to Java (choose yes if your IPH
+is used on Android).
+
+After it runs, you will still need to:
+1.  Fill in the `TODO`s it left in `feature_configurations.cc` (and
+`EventConstants.java` if you opted for Java export) to define your feature's
+specific rules.
+2.  Start using the tracker in your code to trigger the IPH (see [Using the
+ tracker](#Using-the-feature_engagement_Tracker) below).
+3.  Set up your field trial config.
+
+### The Manual Way
+
+If you prefer to do it by hand (or want to know what the script just did),
+you need to:
 
 *   [Declare your feature](#Declaring-your-feature) and make it available to the
     `feature_engagement::Tracker`.
@@ -137,6 +162,9 @@ and be on the form:
 1.  Your unique CamelCased name, for example `GoatTeleportation`.
 
 #### Required Code Changes
+
+> [!NOTE]
+> The `generate_iph_entry.py` script handles all of these code changes for you.
 
 There are also a few more places where the feature should be added, so overall
 you would have to add it to the following places:
@@ -184,6 +212,9 @@ If the feature will also be used from Java, also add it to:
 constant.
 
 #### Required UMA Changes
+
+> [!NOTE]
+> The `generate_iph_entry.py` script handles these UMA changes for you.
 
 To enable UMA tracking, you need to make the following changes to the metrics
 configuration:
