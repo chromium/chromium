@@ -25,11 +25,11 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import java.util.List;
 
 @NullMarked
-public class CustomSearchEngineListMediator extends BaseSiteSearchMediator {
+public class CustomSearchEngineMediator extends BaseSiteSearchMediator {
     private final Callback<TemplateUrl> mOnEditSearchEngine;
     private final Callback<TemplateUrl> mOnRemoveSearchEngine;
 
-    public CustomSearchEngineListMediator(
+    public CustomSearchEngineMediator(
             Context context,
             ModelList modelList,
             Profile profile,

@@ -49,7 +49,7 @@ import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class CustomSearchEngineListMediatorUnitTest {
+public class CustomSearchEngineMediatorUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private Context mContext;
@@ -63,7 +63,7 @@ public class CustomSearchEngineListMediatorUnitTest {
     @Mock private Callback<TemplateUrl> mOnEditSearchEngine;
     @Mock private Callback<TemplateUrl> mOnRemoveSearchEngine;
 
-    private CustomSearchEngineListMediator mMediator;
+    private CustomSearchEngineMediator mMediator;
 
     @Before
     public void setUp() {
@@ -89,7 +89,7 @@ public class CustomSearchEngineListMediatorUnitTest {
                 .runWhenLoaded(any());
 
         mMediator =
-                new CustomSearchEngineListMediator(
+                new CustomSearchEngineMediator(
                         mContext, mModelList, mProfile, mOnEditSearchEngine, mOnRemoveSearchEngine);
     }
 

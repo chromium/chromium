@@ -16,7 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
-import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineListCoordinator;
+import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.custom_site_search.CustomSiteSearchCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.extensions.ExtensionSearchEngineCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.inactive_shortcut.InactiveShortcutCoordinator;
@@ -53,7 +53,7 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
-    private @Nullable CustomSearchEngineListCoordinator mSearchEngineCoordinator;
+    private @Nullable CustomSearchEngineCoordinator mSearchEngineCoordinator;
     private @Nullable CustomSiteSearchCoordinator mSiteSearchCoordinator;
     private @Nullable InactiveShortcutCoordinator mInactiveShortcutCoordinator;
     private @Nullable ExtensionSearchEngineCoordinator mExtensionSearchEngineCoordinator;
@@ -78,7 +78,7 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
         SearchEngineListPreference customSearchEnginePref =
                 findPreference(CUSTOM_SEARCH_ENGINE_LIST_PREF);
         mSearchEngineCoordinator =
-                new CustomSearchEngineListCoordinator(
+                new CustomSearchEngineCoordinator(
                         context, profile, customSearchEnginePref, modalDialogManager);
 
         // Site Search

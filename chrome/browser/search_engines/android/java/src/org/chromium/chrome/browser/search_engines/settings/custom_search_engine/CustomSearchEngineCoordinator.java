@@ -23,10 +23,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 @NullMarked
-public class CustomSearchEngineListCoordinator {
+public class CustomSearchEngineCoordinator {
     private final ModelList mModelList = new ModelList();
     private final SimpleRecyclerViewAdapter mAdapter;
-    private final CustomSearchEngineListMediator mMediator;
+    private final CustomSearchEngineMediator mMediator;
 
     private final PropertyModel mModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
@@ -35,7 +35,7 @@ public class CustomSearchEngineListCoordinator {
     private final ModalDialogManager mModalDialogManager;
     private final SiteSearchDialogCoordinator mSiteSearchDialogCoordinator;
 
-    public CustomSearchEngineListCoordinator(
+    public CustomSearchEngineCoordinator(
             Context context,
             Profile profile,
             SearchEngineListPreference pref,
@@ -61,7 +61,7 @@ public class CustomSearchEngineListCoordinator {
                 SiteSearchViewBinder::bind);
 
         mMediator =
-                new CustomSearchEngineListMediator(
+                new CustomSearchEngineMediator(
                         context,
                         mModelList,
                         profile,
