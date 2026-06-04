@@ -38,15 +38,11 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/framebust_intervention/framebust_blocked_delegate_android.h"
-#include "components/infobars/android/infobar_android.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #else
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #endif
 
-namespace infobars {
-class InfoBarAndroid;
-}
 
 class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:

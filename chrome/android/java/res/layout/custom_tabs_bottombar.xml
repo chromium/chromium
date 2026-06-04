@@ -16,6 +16,6 @@ found in the LICENSE file.
         android:id="@+id/bottombar_shadow"
         android:layout_width="match_parent"
         android:layout_height="@dimen/custom_tabs_bottom_bar_shadow_height"
-        android:background="@drawable/infobar_shadow_top" />
+        android:background="@drawable/bottombar_shadow_top" />
 
 </org.chromium.chrome.browser.customtabs.CustomTabBottomBarView>

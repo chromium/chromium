@@ -21,7 +21,7 @@ found in the LICENSE file.
         android:paddingTop="@dimen/editor_dialog_section_buttons_vertical_padding"
         android:paddingBottom="@dimen/editor_dialog_section_buttons_vertical_padding"
         android:background="@macro/default_bg_color"
-        app:stackedMargin="@dimen/infobar_margin_between_stacked_buttons"
+        app:stackedMargin="@dimen/dual_control_stacked_margin"
         app:primaryButtonText="@string/done"
         app:secondaryButtonText="@string/cancel"
         app:buttonAlignment="end" />

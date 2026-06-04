@@ -6,12 +6,7 @@ found in the LICENSE file.
 -->
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item>
-        <bitmap
-            android:src="@drawable/infobar_shadow_top"
-            android:gravity="top|fill_horizontal"
-            android:tileMode="disabled" />
-    </item>
+
     <!-- Java code reaches into the containing LayerDrawable and then this
          ColorDrawable using the id below. Be careful changing this layout
          without adjusting the code making these assumptions. -->

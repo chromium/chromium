@@ -24,6 +24,7 @@ found in the LICENSE file.
 
     <!-- DualControlLayout -->
     <dimen name="dual_control_margin_between_items">8dp</dimen>
+    <dimen name="dual_control_stacked_margin">24dp</dimen>
 
     <!-- Dialogs -->
     <dimen name="dialog_max_width">600dp</dimen>
