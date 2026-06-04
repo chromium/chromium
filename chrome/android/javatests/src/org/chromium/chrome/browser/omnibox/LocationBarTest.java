@@ -668,6 +668,7 @@ public class LocationBarTest {
 
     private void testFocusLogic_buttonVisibilityTablet(
             boolean expectDesktopMode, boolean profileDiscEnabled) {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(expectDesktopMode);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(expectDesktopMode);
         startActivityNormally();
 

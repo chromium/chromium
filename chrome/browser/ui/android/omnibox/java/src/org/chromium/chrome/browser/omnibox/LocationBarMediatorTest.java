@@ -227,6 +227,7 @@ public class LocationBarMediatorTest {
     @Mock private ComposeboxQueryControllerBridge mComposeboxBridge;
     @Mock private OmniboxSuggestionsContainer mSuggestionsContainer;
     @Mock private OmniboxSuggestionsDropdown mDropdown;
+    @Mock private VoiceRecognitionHandler mVoiceRecognitionHandler;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -2498,6 +2499,24 @@ public class LocationBarMediatorTest {
         clearInvocations(mLocationBarLayout);
         mMediator.updateButtonVisibility();
         verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ false);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testUpdateButtonVisibility_suggestionsPopover() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        mProfileSupplier.set(mProfile);
+        mMediator.onFinishNativeInitialization();
+        mMediator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        clearInvocations(mLocationBarLayout);
+        mMediator.updateButtonVisibility();
+        verify(mLocationBarLayout).setMicButtonVisibility(/* shouldShow= */ true);
     }
 
     @Test

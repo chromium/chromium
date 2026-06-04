@@ -123,6 +123,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -2143,7 +2144,12 @@ class LocationBarMediator
     boolean shouldShowMicButton() {
         if (isUrlBarFocusedWithUserInput()) return false;
 
-        if (isUrlBarFocusedOnDesktop()) return false;
+        if (mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get()
+                        == FuseboxLayoutMode.SUGGESTIONS_POPOVER
+                && mCurrentInput != null
+                && ToolModeUtils.isConventionalRequest(mCurrentInput.getRequestType())) {
+            return false;
+        }
 
         if (!mNativeInitialized
                 || mVoiceRecognitionHandler == null
