@@ -50,7 +50,9 @@ GetSupervisedUserServicesForProfile(ProfileIOS* profile) {
   CHECK(url_filtering_service);
   return {*supervised_user_service, *url_filtering_service,
           *profile->GetPrefs(),
-          *ios::HostContentSettingsMapFactory::GetForProfile(profile)};
+          *ios::HostContentSettingsMapFactory::GetForProfile(profile),
+          *supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
+              profile)};
 }
 
 // Helper class that holds a instance of the Family Link State.

@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
@@ -132,6 +134,11 @@ TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
 }
 
 TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledSupervisedUser) {
+  // This test vanishes when the flag is enabled and code is cleaned up.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      supervised_user::kSupervisedUserUseUrlFilteringService);
+
   // Enables parental controls with safe sites checks.
   EnableParentalControls(*supervised_user_test_environment_.pref_service());
   EXPECT_TRUE(
@@ -140,6 +147,11 @@ TEST_F(SupervisedUserPreferencesTest, IsSafeSitesEnabledSupervisedUser) {
 
 TEST_F(SupervisedUserPreferencesTest,
        IsSubjectToParentalControlsForSupervisedUser) {
+  // This test vanishes when the flag is enabled and code is cleaned up.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      supervised_user::kSupervisedUserUseUrlFilteringService);
+
   // Simply enables parental controls.
   EnableParentalControls(*supervised_user_test_environment_.pref_service());
   EXPECT_TRUE(supervised_user::IsSubjectToParentalControls(
@@ -163,6 +175,11 @@ TEST_F(SupervisedUserPreferencesTest,
 // but proves that these utility accessors are independent.
 TEST(SupervisedUserPreferencesTestWithoutEnvironment,
      IsSafeSitesEnabledIndependentlyFromSupervision) {
+  // This test vanishes when the flag is enabled and code is cleaned up.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      supervised_user::kSupervisedUserUseUrlFilteringService);
+
   TestingPrefServiceSimple pref_service;
   RegisterProfilePrefs(pref_service.registry());
 

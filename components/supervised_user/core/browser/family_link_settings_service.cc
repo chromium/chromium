@@ -648,6 +648,10 @@ FilteringBehavior FamilyLinkSettingsService::GetDefaultFilteringBehavior(
   return FilteringBehavior::kAllow;
 }
 
+bool FamilyLinkSettingsService::IsSafeSitesEnabled() const {
+  return IsSafeSitesEnabled(GetSettingsWithDefault());
+}
+
 bool FamilyLinkSettingsService::IsSafeSitesEnabled(
     const base::DictValue& settings) const {
   // In Family Link, safe sites setting defaults to true.

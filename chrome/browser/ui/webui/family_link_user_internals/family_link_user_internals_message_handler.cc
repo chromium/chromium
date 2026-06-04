@@ -285,12 +285,16 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   base::ListValue section_list;
   Profile* profile = Profile::FromWebUI(web_ui());
 
+  supervised_user::FamilyLinkSettingsService* settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
+          profile->GetProfileKey());
+
   base::ListValue* section_profile = AddSection(&section_list, "Profile");
   AddSectionEntry(section_profile, "Account", profile->GetProfileUserName());
 
   base::ListValue* section_filter = AddSection(&section_list, "Filter");
   AddSectionEntry(section_filter, "SafeSites enabled",
-                  supervised_user::IsSafeSitesEnabled(*profile->GetPrefs()));
+                  settings_service->IsSafeSitesEnabled());
   AddSectionEntry(
       section_filter, "Web filter type",
       WebFilterTypeToString(
@@ -342,21 +346,19 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   if (!approved_extensions.empty()) {
     base::ListValue* section_extensions =
         AddSection(&section_list, "Approved Extensions");
-    for (const auto&& [extension_id, version]: approved_extensions) {
-      AddSectionEntry(section_extensions, extension_id,
-                      version.is_string() ? version.GetString() : "unknown version");
+    for (const auto&& [extension_id, version] : approved_extensions) {
+      AddSectionEntry(
+          section_extensions, extension_id,
+          version.is_string() ? version.GetString() : "unknown version");
     }
   }
-#endif // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   base::DictValue result;
   result.Set("sections", std::move(section_list));
   FireWebUIListener("basic-info-received", result);
 
   // Trigger retrieval of the user settings
-  supervised_user::FamilyLinkSettingsService* settings_service =
-      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
-          profile->GetProfileKey());
   user_settings_subscription_ =
       settings_service->SubscribeForSettingsChange(base::BindRepeating(
           &FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings,

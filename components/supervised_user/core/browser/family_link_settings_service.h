@@ -211,6 +211,8 @@ class FamilyLinkSettingsService : public KeyedService,
   HostExceptions GetHostExceptions() const;
   UrlExceptions GetUrlExceptions() const;
 
+  bool IsSafeSitesEnabled() const;
+
  private:
   // Returns parsed logical value for the default filtering behavior setting,
   // considering its default value.

@@ -21,6 +21,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
@@ -140,7 +141,7 @@ inline void AddWebsiteException(
 }
 
 bool AreSafeSitesConfigured(const FamilyLinkSettingsState::Services& services) {
-  return IsSafeSitesEnabled(services.pref_service.get());
+  return services.family_link_settings_service->IsSafeSitesEnabled();
 }
 
 bool IsUrlConfigured(
@@ -471,11 +472,13 @@ FamilyLinkSettingsState::Services::Services(
     const SupervisedUserUrlFilteringService&
         supervised_user_url_filtering_service,
     const PrefService& pref_service,
-    const HostContentSettingsMap& host_content_settings_map)
+    const HostContentSettingsMap& host_content_settings_map,
+    const FamilyLinkSettingsService& family_link_settings_service)
     : supervised_user_service(supervised_user_service),
       supervised_user_url_filtering_service(
           supervised_user_url_filtering_service),
       pref_service(pref_service),
-      host_content_settings_map(host_content_settings_map) {}
+      host_content_settings_map(host_content_settings_map),
+      family_link_settings_service(family_link_settings_service) {}
 
 }  // namespace supervised_user
