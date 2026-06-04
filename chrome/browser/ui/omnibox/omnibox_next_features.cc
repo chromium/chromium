@@ -358,7 +358,7 @@ const base::FeatureParam<bool> kShowContextMenuHeaders(
 const base::FeatureParam<bool> kUseComposeboxFork(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_UseComposeboxFork",
-    false);
+    true);
 const base::FeatureParam<bool> kContextButtonHasBackground{
     &internal::kWebUIOmniboxSimplification,
     "Omnibox_ContextButtonHasBackground", false};
