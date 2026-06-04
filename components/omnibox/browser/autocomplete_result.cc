@@ -30,9 +30,6 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/device_info.h"
-#endif
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
@@ -1097,10 +1094,11 @@ void AutocompleteResult::ConvertOpenTabMatches(
 #if BUILDFLAG(IS_ANDROID)
       match.android_tab_id = tab_info->second.android_tab_id;
 #endif
-      if constexpr (is_android) {
+      if (!match.from_keyword ||
+          match.type != AutocompleteMatchType::OPEN_TAB) {
+        if constexpr (is_android) {
 #if BUILDFLAG(IS_ANDROID)
-        if (!base::android::device_info::is_desktop()) {
-          // On Android Phone, we attach the action to allow switching to tab.
+          // On Android, we attach the action to allow switching to tab.
           // This ensures the "Switch to Tab" button/chip is always available.
           // Attach the action as ActionInSuggest that will be
           // interpreted as either action button or chip per the form factor.
@@ -1111,15 +1109,14 @@ void AutocompleteResult::ConvertOpenTabMatches(
               std::move(template_action), std::nullopt);
           action_in_suggest->tab_id = tab_info->second.android_tab_id;
           match.actions.push_back(action_in_suggest);
-        }
 #endif
-      } else if (!match.from_keyword ||
-                 match.type != AutocompleteMatchType::OPEN_TAB) {
-        // The default action for suggestions from the open tab provider in
-        // keyword mode is to switch to the open tab so no button is
-        // necessary.
-        match.actions.push_back(
-            base::MakeRefCounted<TabSwitchAction>(match.destination_url));
+        } else {
+          // The default action for suggestions from the open tab provider in
+          // keyword mode is to switch to the open tab so no button is
+          // necessary.
+          match.actions.push_back(
+              base::MakeRefCounted<TabSwitchAction>(match.destination_url));
+        }
       }
     }
   }
