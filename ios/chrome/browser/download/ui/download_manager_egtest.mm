@@ -107,6 +107,7 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
   configuration.features_disabled.push_back(
       kDownloadAutoDeletionFeatureEnabled);
   configuration.features_disabled.push_back(kIOSSaveToDriveSignedOut);
+  configuration.features_disabled.push_back(kChromeNextIa);
 
   if ([self isEnterpriseDownloadTest]) {
     configuration.features_enabled.push_back(
