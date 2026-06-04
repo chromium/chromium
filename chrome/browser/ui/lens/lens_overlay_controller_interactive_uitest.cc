@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -294,7 +295,7 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                        InputType::kMouse));
   }
 
-  InteractiveTestApi::MultiStep OpenLensOverlayFromVideo() {
+  virtual InteractiveTestApi::MultiStep OpenLensOverlayFromVideo() {
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kVideoIsPlaying);
 
@@ -415,6 +416,67 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
 
  private:
   ui::UserDataFactory::ScopedOverride lens_search_controller_override_;
+};
+
+class ParameterizedLensOverlayControllerCUJTest
+    : public LensOverlayControllerCUJTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ParameterizedLensOverlayControllerCUJTest() = default;
+  ~ParameterizedLensOverlayControllerCUJTest() override = default;
+
+  void SetUpFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {lens::features::kLensOverlay, {}},
+        {lens::features::kLensOverlayTranslateButton, {}},
+        {media::kContextMenuSearchForVideoFrame, {}},
+        {lens::features::kLensOverlayContextualSearchbox,
+         {{"use-pdfs-as-context", "true"}, {"auto-focus-searchbox", "false"}}}};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        contextual_tasks::kContextualTasks,
+        features::kNonBlockingOsClipboardReads};
+
+    if (GetParam()) {
+      enabled_features.push_back({features::kMenuSimplification, {}});
+    } else {
+      disabled_features.push_back(features::kMenuSimplification);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  InteractiveTestApi::MultiStep OpenLensOverlayFromVideo() override {
+    if (GetParam()) {
+      DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+      DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kVideoIsPlaying);
+
+      const GURL url = embedded_test_server()->GetURL(kDocumentWithVideo);
+      const char kPlayVideo[] = "(el) => { el.play(); }";
+      const DeepQuery kPathToVideo{"video"};
+      constexpr char kMediaIsPlaying[] =
+          "(el) => { return el.currentTime > 0.1 && !el.paused && !el.ended && "
+          "el.readyState > 2; }";
+
+      StateChange video_is_playing;
+      video_is_playing.event = kVideoIsPlaying;
+      video_is_playing.where = kPathToVideo;
+      video_is_playing.test_function = kMediaIsPlaying;
+
+      return Steps(
+          InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
+          EnsurePresent(kActiveTab, kPathToVideo),
+          ExecuteJsAt(kActiveTab, kPathToVideo, kPlayVideo),
+          WaitForStateChange(kActiveTab, video_is_playing),
+          MoveMouseTo(kActiveTab, kPathToVideo), ClickMouse(ui_controls::RIGHT),
+          SelectMenuItem(RenderViewContextMenu::kVideoFrameSubmenuItem,
+                         InputType::kMouse),
+          SelectMenuItem(RenderViewContextMenu::kSearchForVideoFrameItem,
+                         InputType::kMouse));
+    } else {
+      return LensOverlayControllerCUJTest::OpenLensOverlayFromVideo();
+    }
+  }
 };
 
 // This tests the following CUJ:
@@ -788,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_SearchForImage) {
 #else
 #define MAYBE_SearchForVideoFrame SearchForVideoFrame
 #endif
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
+IN_PROC_BROWSER_TEST_P(ParameterizedLensOverlayControllerCUJTest,
                        MAYBE_SearchForVideoFrame) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
@@ -1832,5 +1894,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCsbTest, HidesCsbWhenDisabled) {
                           "el.getBoundingClientRect().width === 0 || "
                           "el.getBoundingClientRect().height === 0")));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ParameterizedLensOverlayControllerCUJTest,
+                         testing::Bool());
 
 }  // namespace

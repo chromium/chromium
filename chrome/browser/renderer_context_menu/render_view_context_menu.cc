@@ -998,6 +998,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kSearchForImageItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
                                       kSearchForVideoFrameItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(RenderViewContextMenu,
+                                      kVideoFrameSubmenuItem);
 
 RenderViewContextMenu::RenderViewContextMenu(
     content::RenderFrameHost& render_frame_host,
@@ -2393,6 +2395,8 @@ void RenderViewContextMenu::AppendVideoItems() {
         IDC_CONTENT_CONTEXT_VIDEO_FRAME,
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_VIDEO_FRAME),
         &video_frame_submenu_model_);
+    menu_model_.SetElementIdentifierAt(menu_model_.GetItemCount() - 1,
+                                       kVideoFrameSubmenuItem);
   }
 }
 

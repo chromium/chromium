@@ -374,6 +374,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/themes",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/test:test_support",
