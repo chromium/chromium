@@ -24,6 +24,12 @@ class PersonalContextService : public KeyedService {
       const google::protobuf::MessageLite& request_metadata,
       const ContextMemoryRequestOptions& options,
       FetchContextCallback callback) = 0;
+
+  // Fetches unmasked PII entities for the given `request` and invokes the
+  // `callback` with results.
+  virtual void FetchPiiEntities(const proto::FetchPiiEntitiesRequest& request,
+                                const ContextMemoryRequestOptions& options,
+                                FetchPiiContextCallback callback) = 0;
 };
 
 }  // namespace personal_context

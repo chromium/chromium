@@ -40,6 +40,9 @@ class PersonalContextServiceImpl : public PersonalContextService {
                     const google::protobuf::MessageLite& request_metadata,
                     const ContextMemoryRequestOptions& options,
                     FetchContextCallback callback) override;
+  void FetchPiiEntities(const proto::FetchPiiEntitiesRequest& request,
+                        const ContextMemoryRequestOptions& options,
+                        FetchPiiContextCallback callback) override;
 
  private:
   std::unique_ptr<PersonalContextManager> personal_context_manager_;

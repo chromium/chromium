@@ -45,6 +45,12 @@ class MockPersonalContextService
                const personal_context::ContextMemoryRequestOptions& options,
                personal_context::FetchContextCallback callback),
               (override));
+  MOCK_METHOD(void,
+              FetchPiiEntities,
+              (const personal_context::proto::FetchPiiEntitiesRequest& request,
+               const personal_context::ContextMemoryRequestOptions& options,
+               personal_context::FetchPiiContextCallback callback),
+              (override));
 };
 
 class MockPersonalContextEnablementService

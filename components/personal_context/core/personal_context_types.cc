@@ -19,4 +19,16 @@ FetchContextResult::FetchContextResult(FetchContextResult&& other) = default;
 
 FetchContextResult::~FetchContextResult() = default;
 
+FetchPiiEntitiesResult::FetchPiiEntitiesResult() = default;
+
+FetchPiiEntitiesResult::FetchPiiEntitiesResult(
+    base::expected<const proto::FetchPiiEntitiesResponse, ContextMemoryError>
+        response)
+    : response(std::move(response)) {}
+
+FetchPiiEntitiesResult::FetchPiiEntitiesResult(FetchPiiEntitiesResult&& other) =
+    default;
+
+FetchPiiEntitiesResult::~FetchPiiEntitiesResult() = default;
+
 }  // namespace personal_context

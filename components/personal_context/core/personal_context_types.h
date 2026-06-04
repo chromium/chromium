@@ -44,6 +44,23 @@ struct FetchContextResult {
 // Callback for receiving the result of a FetchContext call.
 using FetchContextCallback = base::OnceCallback<void(FetchContextResult)>;
 
+// Defines the result of a PersonalContextService::FetchPiiEntities operation.
+struct FetchPiiEntitiesResult {
+  FetchPiiEntitiesResult();
+  explicit FetchPiiEntitiesResult(
+      base::expected<const proto::FetchPiiEntitiesResponse, ContextMemoryError>
+          response);
+  FetchPiiEntitiesResult(FetchPiiEntitiesResult&& other);
+  ~FetchPiiEntitiesResult();
+
+  base::expected<const proto::FetchPiiEntitiesResponse, ContextMemoryError>
+      response;
+};
+
+// Callback for receiving the result of a FetchPiiEntities call.
+using FetchPiiContextCallback =
+    base::OnceCallback<void(FetchPiiEntitiesResult)>;
+
 // Optional parameters for PersonalContextService::FetchContext
 struct ContextMemoryRequestOptions {
   // Sets the X-Server-Timeout header of the HTTP request
