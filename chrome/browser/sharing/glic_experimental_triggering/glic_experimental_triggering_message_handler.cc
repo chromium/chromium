@@ -362,8 +362,13 @@ class ExperimentalTriggeringUpdatesHandler
             }
           },
           message_handler_, context_id_));
-      instance_->GetExperimentalTriggeringUpdates(std::move(remote),
-                                                  base::DoNothing());
+      instance_->GetExperimentalTriggeringUpdates(
+          std::move(remote), base::BindOnce([](bool success) {
+            if (!success) {
+              DLOG(WARNING) << "Failed to register experimental triggering "
+                               "updates handler.";
+            }
+          }));
     }
   }
 
@@ -578,7 +583,7 @@ class ExperimentalTriggeringUpdatesHandler
               [](std::string error_log_description,
                  SharingSendMessageResult result,
                  std::unique_ptr<components_sharing_message::ResponseMessage>
-                     response) {
+                     unused) {
                 if (result != SharingSendMessageResult::kSuccessful) {
                   DLOG(ERROR) << "Failed to send " << error_log_description
                               << " to server: " << static_cast<int>(result);
