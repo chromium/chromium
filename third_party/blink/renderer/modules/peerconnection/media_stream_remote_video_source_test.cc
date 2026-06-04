@@ -18,6 +18,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -331,10 +332,12 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   track->RemoveSink(&sink);
 }
 
-TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedColorSpaceIsIgnored) {
+TEST_F(MediaStreamRemoteVideoSourceTest, AlwaysSetsColorSpace) {
   base::test::ScopedFeatureList scoped_feauture_list;
-  scoped_feauture_list.InitAndEnableFeature(
-      blink::features::kWebRtcIgnoreUnspecifiedColorSpace);
+  scoped_feauture_list.InitWithFeatures(
+      {blink::features::kWebRtcIgnoreUnspecifiedColorSpace,
+       media::kWebRTCColorAccuracy},
+      {});
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
   blink::MockMediaStreamVideoSink sink;
   track->AddSink(&sink, sink.GetDeliverFrameCB(),
@@ -360,11 +363,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedColorSpaceIsIgnored) {
   EXPECT_EQ(1, sink.number_of_frames());
   scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
   EXPECT_TRUE(output_frame);
-  EXPECT_TRUE(output_frame->ColorSpace() ==
-              gfx::ColorSpace(gfx::ColorSpace::PrimaryID::INVALID,
-                              gfx::ColorSpace::TransferID::INVALID,
-                              gfx::ColorSpace::MatrixID::INVALID,
-                              gfx::ColorSpace::RangeID::INVALID));
+  EXPECT_TRUE(output_frame->ColorSpace() == gfx::ColorSpace::CreateREC601());
   track->RemoveSink(&sink);
 }
 
