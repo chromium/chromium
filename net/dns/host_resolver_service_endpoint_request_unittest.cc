@@ -68,7 +68,6 @@ IPEndPoint MakeIPEndPoint(std::string_view ip_literal, uint16_t port = 0) {
 class FakeAddressSorter : public AddressSorter {
  public:
   void Sort(const std::vector<IPEndPoint>& endpoints,
-            const NetworkAnonymizationKey& anonymization_key,
             CallbackType callback) const override {
     std::vector<IPEndPoint> sorted = endpoints;
     std::sort(sorted.begin(), sorted.end(),

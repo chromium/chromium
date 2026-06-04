@@ -760,7 +760,7 @@ void HostResolverDnsTask::SortTransactionAndHandleResults(
 
     // Sort() potentially calls OnTransactionSorted() synchronously.
     client_->GetAddressSorter()->Sort(
-        endpoints_to_sort, anonymization_key_,
+        endpoints_to_sort,
         base::BindOnce(&HostResolverDnsTask::OnTransactionSorted,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(transaction_info_ptr),
@@ -922,7 +922,7 @@ void HostResolverDnsTask::OnTransactionsFinished(
     if (!endpoints_to_sort.empty()) {
       // Sort addresses if needed.  Sort could complete synchronously.
       client_->GetAddressSorter()->Sort(
-          endpoints_to_sort, anonymization_key_,
+          endpoints_to_sort,
           base::BindOnce(&HostResolverDnsTask::OnSortComplete,
                          weak_ptr_factory_.GetWeakPtr(),
                          tick_clock_->NowTicks(), std::move(saved_results_),

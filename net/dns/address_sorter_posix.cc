@@ -7,10 +7,12 @@
 #include <netinet/in.h>
 
 #include <memory>
-#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_BSD)
@@ -29,20 +31,12 @@
 #include <netinet/in_var.h>
 #endif  // BUILDFLAG(IS_IOS)
 #endif
+#include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
-#include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/datagram_client_socket.h"
@@ -210,7 +204,6 @@ struct DestinationInfo {
   std::unique_ptr<DatagramClientSocket> socket;
   size_t common_prefix_length;
   bool failed = false;
-  std::optional<IPAddress> source_address;
 };
 
 // Returns true iff |dst_a| should precede |dst_b| in the address list.
@@ -266,150 +259,54 @@ bool CompareDestinations(const DestinationInfo& dst_a,
   return false;
 }
 
-// Masks the host-specific bits of the given IP address to group addresses
-// from the same subnet or prefix for connect caching.
-//
-// Specifically, this zero-masks the last octet of IPv4 and IPv4-mapped IPv6
-// addresses (masking to a /24 subnet), and zero-masks the lower 64 bits of
-// IPv6 addresses (masking to a /64 prefix). This aligns with standard internet
-// routing boundaries where route reachability and source address selection are
-// identical.
-IPAddress MaskIPAddress(const IPAddress& address) {
-  if (address.IsIPv4()) {
-    IPAddressBytes bytes = address.bytes();
-    bytes[3] = 0;
-    return IPAddress(bytes);
-  } else if (address.IsIPv6()) {
-    IPAddressBytes bytes = address.bytes();
-    if (address.IsIPv4MappedIPv6()) {
-      // Only mask the last byte, to match the IPv4 behavior.
-      bytes[15] = 0;
-      return IPAddress(bytes);
-    }
-    for (size_t i = 8; i < 16; ++i) {
-      bytes[i] = 0;
-    }
-    return IPAddress(bytes);
-  }
-  return address;
-}
-
 }  // namespace
 
 class AddressSorterPosix::SortContext {
  public:
   SortContext(size_t in_num_endpoints,
-              const NetworkAnonymizationKey& anonymization_key,
               AddressSorter::CallbackType callback,
-              const AddressSorterPosix* sorter,
-              base::TimeTicks start_time)
+              const AddressSorterPosix* sorter)
       : num_endpoints_(in_num_endpoints),
-        anonymization_key_(anonymization_key),
         callback_(std::move(callback)),
-        sorter_(sorter),
-        start_time_(start_time) {}
-  SortContext(const SortContext&) = delete;
-  SortContext& operator=(const SortContext&) = delete;
-
+        sorter_(sorter) {}
   ~SortContext() = default;
-
-  void ConnectWithInfo(DestinationInfo info) {
-    // TODO(crbug.com/515502437): Pass in a net log.
-    info.socket = sorter_->socket_factory_->CreateDatagramClientSocket(
-        DatagramSocket::DEFAULT_BIND, /*net_log=*/nullptr, NetLogSource());
-    IPEndPoint dest = info.endpoint;
-    // Even though no packets are sent, cannot use port 0 in Connect.
-    if (dest.port() == 0) {
-      dest = IPEndPoint(dest.address(), /*port=*/80);
-    }
-    sort_list_.push_back(std::move(info));
-    size_t info_index = sort_list_.size() - 1;
-    // This use of base::Unretained() is safe because the socket is owned by
-    // SortContext, and the callback won't be called after the socket is
-    // destroyed.
-    int rv = sort_list_.back().socket->ConnectAsync(
-        dest,
-        base::BindOnce(&AddressSorterPosix::SortContext::RecordConnectResult,
-                       base::Unretained(this), dest, info_index));
-    ++connect_calls_made_;
-    if (rv != ERR_IO_PENDING) {
-      RecordConnectResultWithInfo(dest, rv, sort_list_.back());
-    }
-  }
-
-  void UseCacheResultWithInfo(DestinationInfo info,
-                              const ConnectResult& result) {
-    if (result.rv == OK) {
-      info.source_address = result.source_address;
-    } else {
-      info.failed = true;
-    }
-    sort_list_.push_back(std::move(info));
-    DestinationInfo& moved_info = sort_list_.back();
-    RecordConnectResultWithInfo(moved_info.endpoint, result.rv, moved_info);
-  }
-
- private:
-  void RecordConnectResult(IPEndPoint dest, size_t info_index, int rv) {
-    DestinationInfo& info = sort_list_[info_index];
-    RecordConnectResultWithInfo(dest, rv, info);
-  }
-
-  void RecordConnectResultWithInfo(IPEndPoint dest,
-                                   int rv,
-                                   DestinationInfo& info) {
+  void DidCompleteConnect(IPEndPoint dest, size_t info_index, int rv) {
     ++num_completed_;
-    if (rv == OK) {
-      if (!info.source_address.has_value()) {
-        IPEndPoint src;
-        CHECK(info.socket);
-        rv = info.socket->GetLocalAddress(&src);
-        if (rv == OK) {
-          info.source_address = src.address();
-        } else {
-          DLOG(WARNING) << "Could not get local address for "
-                        << info.endpoint.ToStringWithoutPort() << " reason "
-                        << rv;
-          info.failed = true;
-        }
-      }
-    } else {
-      DVLOG(1) << "Could not connect to " << dest.ToStringWithoutPort()
-               << " reason " << rv;
-      info.failed = true;
-    }
-
-    if (sorter_->caching_enabled_) {
-      IPAddress masked_address = MaskIPAddress(info.endpoint.address());
-      CacheKey cache_key = std::pair(masked_address, anonymization_key_);
-      sorter_->connect_cache_.Put(
-          cache_key,
-          ConnectResult{rv, info.source_address.value_or(IPAddress())});
+    if (rv != OK) {
+      VLOG(1) << "Could not connect to " << dest.ToStringWithoutPort()
+              << " reason " << rv;
+      sort_list_[info_index].failed = true;
     }
 
     MaybeFinishSort();
   }
 
+  std::vector<DestinationInfo>& sort_list() { return sort_list_; }
+
+ private:
   void MaybeFinishSort() {
     // Sort the list of endpoints only after each Connect call has been made.
     if (num_completed_ != num_endpoints_) {
       return;
     }
-
-    base::UmaHistogramCounts100("Net.DNS.AddressSorterPosix.ConnectCalls",
-                                connect_calls_made_);
-
     for (auto& info : sort_list_) {
       if (info.failed) {
         continue;
       }
 
-      CHECK(info.source_address.has_value());
-      IPAddress src_address = info.source_address.value();
+      IPEndPoint src;
+      // Filter out unusable destinations.
+      int rv = info.socket->GetLocalAddress(&src);
+      if (rv != OK) {
+        LOG(WARNING) << "Could not get local address for "
+                     << info.endpoint.ToStringWithoutPort() << " reason " << rv;
+        info.failed = true;
+        continue;
+      }
 
-      auto iter = sorter_->source_map_.find(src_address);
+      auto iter = sorter_->source_map_.find(src.address());
       if (iter == sorter_->source_map_.end()) {
-        //  |src_address| may not be in the map if |source_info_| has not been
+        //  |src.address| may not be in the map if |source_info_| has not been
         //  updated from the OS yet. It will be updated and HostCache cleared
         //  soon, but we still want to sort, so fill in an empty
         info.src = AddressSorterPosix::SourceAddressInfo();
@@ -418,25 +315,21 @@ class AddressSorterPosix::SortContext {
       }
 
       if (info.src.scope == AddressSorterPosix::SCOPE_UNDEFINED) {
-        sorter_->FillPolicy(src_address, &info.src);
+        sorter_->FillPolicy(src.address(), &info.src);
       }
 
-      if (info.endpoint.address().size() == src_address.size()) {
+      if (info.endpoint.address().size() == src.address().size()) {
         info.common_prefix_length =
-            std::min(CommonPrefixLength(info.endpoint.address(), src_address),
+            std::min(CommonPrefixLength(info.endpoint.address(), src.address()),
                      info.src.prefix_length);
       }
     }
     std::erase_if(sort_list_, [](auto& element) { return element.failed; });
     std::stable_sort(sort_list_.begin(), sort_list_.end(), CompareDestinations);
 
-    std::vector<IPEndPoint> sorted_result = base::ToVector(
-        sort_list_, [](const DestinationInfo& info) { return info.endpoint; });
-
-    const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Net.DNS.AddressSorterPosix.SortDuration", elapsed,
-        base::Microseconds(1), base::Seconds(1), 50);
+    std::vector<IPEndPoint> sorted_result;
+    for (const auto& info : sort_list_)
+      sorted_result.push_back(info.endpoint);
 
     CallbackType callback = std::move(callback_);
     sorter_->FinishedSort(this);  // deletes this
@@ -445,54 +338,31 @@ class AddressSorterPosix::SortContext {
 
   const size_t num_endpoints_;
   size_t num_completed_ = 0;
-  size_t connect_calls_made_ = 0;
   std::vector<DestinationInfo> sort_list_;
-  NetworkAnonymizationKey anonymization_key_;
   AddressSorter::CallbackType callback_;
 
   raw_ptr<const AddressSorterPosix> sorter_;
-  const base::TimeTicks start_time_;
 };
-
-// Maximum size for the `connect_cache_`. Cache entries need to survive longer
-// than the DNS TTL to be useful. Some sites connect to 200+ different hosts,
-// and some hostnames resolve to 16 or more addresses, so this number needs to
-// be reasonably large. 4096 corresponds to about 350KB of memory usage.
-constexpr size_t kMaxCacheEntries = 4096;
 
 AddressSorterPosix::AddressSorterPosix(ClientSocketFactory* socket_factory)
     : socket_factory_(socket_factory),
       precedence_table_(LoadPolicy(kDefaultPrecedenceTable)),
       label_table_(LoadPolicy(kDefaultLabelTable)),
-      ipv4_scope_table_(LoadPolicy(kDefaultIPv4ScopeTable)),
-      connect_cache_(kMaxCacheEntries),
-      caching_enabled_(
-          base::FeatureList::IsEnabled(features::kAddressSorterConnectCache)) {
+      ipv4_scope_table_(LoadPolicy(kDefaultIPv4ScopeTable)) {
   NetworkChangeNotifier::AddIPAddressObserver(this);
-  if (caching_enabled_) {
-    NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  }
   OnIPAddressChanged(NetworkChangeNotifier::IP_ADDRESS_CHANGE_NORMAL);
 }
 
 AddressSorterPosix::~AddressSorterPosix() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (caching_enabled_) {
-    NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
-  }
   NetworkChangeNotifier::RemoveIPAddressObserver(this);
 }
 
 void AddressSorterPosix::Sort(const std::vector<IPEndPoint>& endpoints,
-                              const NetworkAnonymizationKey& anonymization_key,
                               CallbackType callback) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Calling base::TimeTicks::Now() before std::make_unique<>() permits us to
-  // include the memory allocation overhead in the time measurement.
   auto [it, inserted] = sort_contexts_.insert(std::make_unique<SortContext>(
-      endpoints.size(), anonymization_key, std::move(callback), this,
-      base::TimeTicks::Now()));
+      endpoints.size(), std::move(callback), this));
   CHECK(inserted);
   auto* sort_context = it->get();
   for (const IPEndPoint& endpoint : endpoints) {
@@ -503,17 +373,24 @@ void AddressSorterPosix::Sort(const std::vector<IPEndPoint>& endpoints,
         GetPolicyValue(precedence_table_, info.endpoint.address());
     info.label = GetPolicyValue(label_table_, info.endpoint.address());
 
-    if (caching_enabled_) {
-      IPAddress masked_address = MaskIPAddress(endpoint.address());
-      CacheKey cache_key = std::pair(masked_address, anonymization_key);
-      auto cache_it = connect_cache_.Get(cache_key);
-      if (cache_it != connect_cache_.end()) {
-        sort_context->UseCacheResultWithInfo(std::move(info), cache_it->second);
-        continue;
-      }
+    // Each socket can only be bound once.
+    info.socket = socket_factory_->CreateDatagramClientSocket(
+        DatagramSocket::DEFAULT_BIND, nullptr /* NetLog */, NetLogSource());
+    IPEndPoint dest = info.endpoint;
+    // Even though no packets are sent, cannot use port 0 in Connect.
+    if (dest.port() == 0) {
+      dest = IPEndPoint(dest.address(), /*port=*/80);
     }
-
-    sort_context->ConnectWithInfo(std::move(info));
+    sort_context->sort_list().push_back(std::move(info));
+    size_t info_index = sort_context->sort_list().size() - 1;
+    // Destroying a SortContext destroys the underlying socket.
+    int rv = sort_context->sort_list().back().socket->ConnectAsync(
+        dest,
+        base::BindOnce(&AddressSorterPosix::SortContext::DidCompleteConnect,
+                       base::Unretained(sort_context), dest, info_index));
+    if (rv != ERR_IO_PENDING) {
+      sort_context->DidCompleteConnect(dest, info_index, rv);
+    }
   }
 }
 
@@ -521,7 +398,6 @@ void AddressSorterPosix::OnIPAddressChanged(
     NetworkChangeNotifier::IPAddressChangeType change_type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   source_map_.clear();
-  connect_cache_.Clear();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40263501): This always returns nullptr on ChromeOS.
   const AddressMapOwnerLinux* address_map_owner =
@@ -589,12 +465,6 @@ void AddressSorterPosix::OnIPAddressChanged(
 #endif
 }
 
-void AddressSorterPosix::OnNetworkChanged(
-    NetworkChangeNotifier::ConnectionType type) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  connect_cache_.Clear();
-}
-
 void AddressSorterPosix::FillPolicy(const IPAddress& address,
                                     SourceAddressInfo* info) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -605,11 +475,6 @@ void AddressSorterPosix::FillPolicy(const IPAddress& address,
 void AddressSorterPosix::FinishedSort(SortContext* sort_context) const {
   auto it = sort_contexts_.find(sort_context);
   sort_contexts_.erase(it);
-}
-
-bool AddressSorterPosix::IsConnectCacheEmptyForTesting() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return connect_cache_.empty();
 }
 
 // static
