@@ -54,15 +54,14 @@ public class TestWebMessageListener implements WebMessageListener {
             final AwContents awContents,
             final String jsObjectName,
             final String[] allowedOriginRules,
-            final WebMessageListener listener)
-            throws Exception {
+            final WebMessageListener listener) {
         AwActivityTestRule.checkJavaScriptEnabled(awContents);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.addWebMessageListener(jsObjectName, allowedOriginRules, listener));
     }
 
     public static void removeWebMessageListenerOnUiThread(
-            final AwContents awContents, final String jsObjectName) throws Exception {
+            final AwContents awContents, final String jsObjectName) {
         AwActivityTestRule.checkJavaScriptEnabled(awContents);
         ThreadUtils.runOnUiThreadBlocking(() -> awContents.removeWebMessageListener(jsObjectName));
     }
@@ -72,8 +71,7 @@ public class TestWebMessageListener implements WebMessageListener {
             final String jsObjectName,
             final String[] allowedOriginRules,
             final WebMessageListener listener,
-            final String worldName)
-            throws Exception {
+            final String worldName) {
         AwActivityTestRule.checkJavaScriptEnabled(awContents);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -82,8 +80,7 @@ public class TestWebMessageListener implements WebMessageListener {
     }
 
     public static void removeWebMessageListenerOnUiThreadInIsolatedWorld(
-            final AwContents awContents, final String jsObjectName, String worldName)
-            throws Exception {
+            final AwContents awContents, final String jsObjectName, String worldName) {
         AwActivityTestRule.checkJavaScriptEnabled(awContents);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.removeWebMessageListener(jsObjectName, worldName));

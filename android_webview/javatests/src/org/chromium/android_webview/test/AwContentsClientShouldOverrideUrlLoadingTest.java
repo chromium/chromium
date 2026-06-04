@@ -1205,13 +1205,8 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
 
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
-                    try {
-                        Criteria.checkThat(
-                                mActivityTestRule.getTitleOnUiThread(mAwContents),
-                                Matchers.is(TITLE));
-                    } catch (Exception e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
+                    Criteria.checkThat(
+                            mActivityTestRule.getTitleOnUiThread(mAwContents), Matchers.is(TITLE));
                 });
     }
 

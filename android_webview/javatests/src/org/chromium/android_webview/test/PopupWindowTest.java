@@ -32,7 +32,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
@@ -264,13 +263,9 @@ public class PopupWindowTest extends AwParameterizedTest {
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    try {
-                        Criteria.checkThat(
-                                mActivityTestRule.getTitleOnUiThread(popupContents),
-                                Matchers.is(myUserAgentString));
-                    } catch (Exception e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
+                    Criteria.checkThat(
+                            mActivityTestRule.getTitleOnUiThread(popupContents),
+                            Matchers.is(myUserAgentString));
                 });
     }
 

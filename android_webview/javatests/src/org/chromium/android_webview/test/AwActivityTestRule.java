@@ -616,7 +616,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getTitle());
     }
 
-    public AwSettings getAwSettingsOnUiThread(final AwContents awContents) throws Exception {
+    public AwSettings getAwSettingsOnUiThread(final AwContents awContents) {
         return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getSettings());
     }
 
@@ -661,7 +661,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                 viewClient.getOnEvaluateJavaScriptResultHelper(), code);
     }
 
-    public static void checkJavaScriptEnabled(AwContents awContents) throws Exception {
+    public static void checkJavaScriptEnabled(AwContents awContents) {
         boolean javaScriptEnabled = AwActivityTestRule.getJavaScriptEnabledOnUiThread(awContents);
         if (!javaScriptEnabled) {
             throw new IllegalStateException(
@@ -698,8 +698,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             final AwContents awContents,
             final Object objectToInject,
             final String javascriptIdentifier,
-            final List<String> allowlist)
-            throws Exception {
+            final List<String> allowlist) {
         checkJavaScriptEnabled(awContents);
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -714,8 +713,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     public static void addJavascriptInterfaceOnUiThread(
             final AwContents awContents,
             final Object objectToInject,
-            final String javascriptIdentifier)
-            throws Exception {
+            final String javascriptIdentifier) {
         checkJavaScriptEnabled(awContents);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.addJavascriptInterface(objectToInject, javascriptIdentifier));
@@ -824,22 +822,22 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     }
 
     /** Returns pure page scale. */
-    public float getScaleOnUiThread(final AwContents awContents) throws Exception {
+    public float getScaleOnUiThread(final AwContents awContents) {
         return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getPageScaleFactor());
     }
 
     /** Returns page scale multiplied by the screen density. */
-    public float getPixelScaleOnUiThread(final AwContents awContents) throws Exception {
+    public float getPixelScaleOnUiThread(final AwContents awContents) {
         return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getScale());
     }
 
     /** Returns whether a user can zoom the page in. */
-    public boolean canZoomInOnUiThread(final AwContents awContents) throws Exception {
+    public boolean canZoomInOnUiThread(final AwContents awContents) {
         return ThreadUtils.runOnUiThreadBlocking(() -> awContents.canZoomIn());
     }
 
     /** Returns whether a user can zoom the page out. */
-    public boolean canZoomOutOnUiThread(final AwContents awContents) throws Exception {
+    public boolean canZoomOutOnUiThread(final AwContents awContents) {
         return ThreadUtils.runOnUiThreadBlocking(() -> awContents.canZoomOut());
     }
 

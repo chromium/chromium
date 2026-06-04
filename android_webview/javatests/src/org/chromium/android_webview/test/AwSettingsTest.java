@@ -151,7 +151,7 @@ public class AwSettingsTest {
 
         protected abstract void doEnsureSettingHasValue(T value) throws Throwable;
 
-        protected String getTitleOnUiThread() throws Exception {
+        protected String getTitleOnUiThread() {
             return mActivityTestRule.getTitleOnUiThread(mAwContents);
         }
 
