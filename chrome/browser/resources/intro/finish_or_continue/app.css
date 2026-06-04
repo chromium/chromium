@@ -11,7 +11,6 @@
 :host {
   --product-logo-size: 72px;
   --title-font-size: 60px;
-  --content-width: 732px;
 
   align-items: center;
   color: var(--cr-primary-text-color);
@@ -30,7 +29,6 @@
 .title {
   font-size: var(--title-font-size);
   margin: 0;
-  max-width: var(--content-width);
   text-align: center;
   width: 100%;
 }
@@ -40,6 +38,7 @@
   gap: 8px;
 }
 
+
 @media screen and ((max-width: 780px) or (max-height: 600px)) {
   :host {
     --product-logo-size: 48px;
@@ -48,102 +47,3 @@
     gap: 32px;
   }
 }
-
-@media screen and ((max-width: 900px) or (max-height: 650px)) {
-  .animation {
-    display: none;
-  }
-}
-
-.animation {
-  pointer-events: none;
-  position: fixed;
-  z-index: -1;
-}
-
-#left-animation {
-  aspect-ratio: 500 / 700;
-  height: 65vh;
-  left: 0;
-  top: 55%;
-  /* 50vw - var(--content-width) / 2 is the space between the left edge of the
-   * screen and the left edge of the content area.
-   *
-   * The animation begins translating to the left when the free space between
-   * the screen edge and the main content reaches 50% of the animation's width
-   * (to prevent overlapping). Bigger value makes the animation move earlier.
-   *
-   * If the result is positive, min it with 0 to prevent the animation from
-   * being pulled from the left edge to the center. */
-  transform: translate(
-    min(0px, calc(50vw - var(--content-width) / 2 - 50%)), -50%);
-}
-
-#right-animation {
-  aspect-ratio: 500 / 700;
-  height: 65vh;
-  right: 0;
-  top: 30%;
-  /* 50vw - var(--content-width) / 2 is the space between the right edge of the
-   * screen and the right edge of the content area.
-   *
-   * The animation begins translating to the right when the free space between
-   * the screen edge and the main content reaches 80% of the animation's width
-   * (2 * 40%). Bigger value makes the animation move earlier.
-   *
-   * Dividing by 2 makes the animation push out smoother, 1px of animation size
-   * for every 2px of space shrank.
-   * Everything is maxed with 0 to prevent the animation from being pulled
-   * from the right edge to the center of the screen. */
-  transform: translate(
-    max(0px, calc(40% - (50vw - var(--content-width) / 2) / 2)),
-    -50%);
-  width: auto;
-}
-
-#bottom-animation {
-  aspect-ratio: 700 / 400;
-  bottom: 0;
-  height: auto;
-  left: 70%;
-  /* 50vh - 200px (arbitrary value, around half of the screen height we cut
-   * out the animations at) is the space between the bottom edge of the screen
-   * and the bottom edge of the content area.
-   *
-   * The animation begins translating down when the free space between the
-   * bottom edge of the screen and the main content reaches 80% of the
-   * animation's height (2 * 40%).
-   *
-   * Dividing it by 2 makes the animation push out smoother, 1px of animation
-   * for every 2px of space shrank.
-   * Everything is maxed with 0 to prevent the animation from being
-   * pushed out of the bottom edge to the center of the screen. */
-  transform: translate(-50%, max(0px, calc(40% - (50vh - 200px) / 2)));
-  width: 40vw;
-}
-
-/* For RTL languages, flip the direction */
-:host-context([dir=rtl]) #left-animation {
-  left: auto;
-  right: 0;
-  transform: scaleX(-1) translate(
-    min(0px, calc(50vw - var(--content-width) / 2 - 50%)),
-    -50%);
-}
-
-:host-context([dir=rtl]) #right-animation {
-  left: 0;
-  right: auto;
-  transform: scaleX(-1) translate(
-    max(0px, calc(40% - (50vw - var(--content-width) / 2) / 2)),
-    -50%);
-}
-
-:host-context([dir=rtl]) #bottom-animation {
-  left: auto;
-  right: 70%;
-  transform: scaleX(-1) translate(
-    -50%,
-    max(0px, calc(40% - (50vh - 200px) / 2)));
-}
-

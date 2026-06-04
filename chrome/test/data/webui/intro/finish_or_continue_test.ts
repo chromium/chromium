@@ -4,23 +4,15 @@
 
 import 'chrome://intro/finish_or_continue/app.js';
 
-import {IntroBrowserProxyImpl} from 'chrome://intro/browser_proxy.js';
 import type {FinishOrContinueAppElement} from 'chrome://intro/finish_or_continue/app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {CrLottieElement} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import {isWindows} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestIntroBrowserProxy} from './test_intro_browser_proxy.js';
-
 suite('FinishOrContinueTest', function() {
-  let testBrowserProxy: TestIntroBrowserProxy;
-
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testBrowserProxy = new TestIntroBrowserProxy();
-    IntroBrowserProxyImpl.setInstance(testBrowserProxy);
 
     // Reset URL to default before each test to ensure isolation.
     const url = new URL(window.location.href);
@@ -90,35 +82,5 @@ suite('FinishOrContinueTest', function() {
     assertEquals(
         loadTimeData.getString('seeMoreTipsButtonLabel'),
         testElement.$.continueEducationButton.textContent.trim());
-  });
-
-  test('AnimationsExistAndChangeWithTheme', async function() {
-    const testElement = await createElement();
-    const leftAnimation = testElement.shadowRoot.querySelector<CrLottieElement>(
-        '#left-animation');
-    const rightAnimation =
-        testElement.shadowRoot.querySelector<CrLottieElement>(
-            '#right-animation');
-    const bottomAnimation =
-        testElement.shadowRoot.querySelector<CrLottieElement>(
-            '#bottom-animation');
-
-    assertTrue(!!leftAnimation);
-    assertTrue(!!rightAnimation);
-    assertTrue(!!bottomAnimation);
-
-    testBrowserProxy.setMatchMediaMatches(false);
-    await microtasksFinished();
-
-    assertTrue(leftAnimation.animationUrl.includes('light'));
-    assertTrue(rightAnimation.animationUrl.includes('light'));
-    assertTrue(bottomAnimation.animationUrl.includes('light'));
-
-    testBrowserProxy.setMatchMediaMatches(true);
-    await microtasksFinished();
-
-    assertTrue(leftAnimation.animationUrl.includes('dark'));
-    assertTrue(rightAnimation.animationUrl.includes('dark'));
-    assertTrue(bottomAnimation.animationUrl.includes('dark'));
   });
 });
