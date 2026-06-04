@@ -301,9 +301,6 @@ coverage_builder(
 
             # Keep this same as android-10-x86-rel
             "chrome_public_test_apk": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.chrome_public_test_apk.filter",
-                ],
                 swarming = targets.swarming(
                     dimensions = {
                         # use 8-core to shorten runtime
