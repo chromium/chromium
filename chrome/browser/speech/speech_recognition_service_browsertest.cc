@@ -377,9 +377,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
   size_t bytes_written = 0u;
   ASSERT_TRUE(handler->CopyTo(bus.get(), &bytes_written));
 
-  std::vector<int16_t> audio_data(bus->frames());
-  bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(bus->frames(),
-                                                         audio_data.data());
+  std::vector<int16_t> audio_data(bus->frames() * bus->channels());
+  bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(audio_data);
 
   constexpr size_t kMaxChunkSize = 1024;
   constexpr int kReplayAudioCount = 2;
@@ -433,9 +432,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
   size_t bytes_written = 0u;
   ASSERT_TRUE(handler->CopyTo(bus.get(), &bytes_written));
 
-  std::vector<int16_t> audio_data(bus->frames());
-  bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(bus->frames(),
-                                                         audio_data.data());
+  std::vector<int16_t> audio_data(bus->frames() * bus->channels());
+  bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(audio_data);
   constexpr size_t kMaxChunkSize = 1024;
 
   // Send an audio chunk to the service. It will output "Hey Google". When the
