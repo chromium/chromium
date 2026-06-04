@@ -10,21 +10,12 @@
 
 namespace ui {
 
-void MockWaylandPlatformWindowDelegate::OnWindowRemoved(WaylandWindow* window) {
-  if (wayland_window_ == window) {
-    wayland_window_ = nullptr;
-  }
-}
-
 MockWaylandPlatformWindowDelegate::MockWaylandPlatformWindowDelegate(
     raw_ptr<WaylandConnection> connection)
-    : connection_(connection) {
-  connection_->window_manager()->AddObserver(this);
-}
+    : connection_(connection) {}
 
-MockWaylandPlatformWindowDelegate::~MockWaylandPlatformWindowDelegate() {
-  connection_->window_manager()->RemoveObserver(this);
-}
+MockWaylandPlatformWindowDelegate::~MockWaylandPlatformWindowDelegate() =
+    default;
 
 gfx::Rect MockWaylandPlatformWindowDelegate::ConvertRectToPixels(
     const gfx::Rect& rect_in_dp) const {
@@ -45,7 +36,7 @@ MockWaylandPlatformWindowDelegate::CreateWaylandWindow(
     WaylandConnection* connection,
     PlatformWindowInitProperties properties) {
   auto window = WaylandWindow::Create(this, connection, std::move(properties));
-  wayland_window_ = window.get();
+  wayland_window_ = window->AsWeakPtr();
   return window;
 }
 
@@ -60,10 +51,16 @@ int64_t MockWaylandPlatformWindowDelegate::OnStateUpdate(
       old.window_scale != latest.window_scale) {
     bool origin_changed = old.bounds_dip.origin() != latest.bounds_dip.origin();
     OnBoundsChanged({origin_changed});
+    if (!wayland_window_) {
+      return -1;
+    }
   }
 
   if (!on_state_update_callback_.is_null()) {
     on_state_update_callback_.Run();
+    if (!wayland_window_) {
+      return -1;
+    }
   }
 
   if (!latest.WillProduceFrameOnUpdateFrom(old)) {
