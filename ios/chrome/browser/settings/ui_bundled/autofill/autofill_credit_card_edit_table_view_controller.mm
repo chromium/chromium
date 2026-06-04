@@ -475,7 +475,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_SECURITY_CODE);
   cvcItem.textFieldValue = autofill::GetCreditCardCvcString(_creditCard);
   cvcItem.textFieldPlaceholder =
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL);
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_OPTIONAL);
   cvcItem.textFieldEnabled = isEditing;
   cvcItem.autofillCreditCardUIType = AutofillCreditCardUIType::kSecurityCode;
   cvcItem.keyboardType = UIKeyboardTypeNumberPad;

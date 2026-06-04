@@ -186,10 +186,10 @@
         No thanks
       </message>
       <message name="IDS_AUTOFILL_SCAN_CARD_AND_AUTOFILL_PROMPT_PRIMARY_BUTTON_LABEL" desc="Label for the primary button of scan card and save prompt offer. This prompt is shown if the user clicks on the credit card form field and there are no saved cards on file on IOS devices.">
-        Scan card and autofill
+        Scan and autofill
       </message>
       <message name="IDS_AUTOFILL_SCAN_SAVE_AND_FILL_BOTTOM_SHEET_DESCRIPTION" desc="Description for the `Scan, Save and Fill` suggestion shown in the Autofill bottom sheet for users who don't have any cards saved in Autofill. When the suggestion is clicked, users are offered to scan, save and fill a credit card with a single click.">
-        Save your card in your Google Account to autofill it for this purchase and future purchases made on Chrome
+        Save your card in your Google Account to autofill it for this purchase and future purchases made on Chrome.
       </message>
       <message name="IDS_AUTOFILL_SCAN_SAVE_AND_FILL_BOTTOM_SHEET_TITLE" desc="Title for the `Scan, Save and Fill` suggestion shown in the Autofill bottom sheet for users who don't have any cards saved in Autofill. When the suggestion is clicked, users are offered to scan, save and fill a credit card with a single click.">
         Check out faster with autofill across your devices
@@ -752,9 +752,6 @@
       <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_NUMBER" desc="The placeholder text for credit card number in the payments card unmask dialog. [iOS only]">
           Number
       </message>
-      <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL" desc="The placeholder text for credit card CVC in the payment settings page. [iOS only]">
-        Optional
-      </message>
       <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRATION_YEAR" desc="The placeholder text for credit card expiration year in the payments card unmask dialog. [iOS only]">
           YYYY
       </message>
@@ -766,6 +763,9 @@
       </message>
       <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_NICKNAME" desc="The placeholder text for credit card nickname in the payments card unmask dialog. [iOS only]">
         Nickname
+      </message>
+      <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_OPTIONAL" desc="The placeholder text for optional fields in autofill forms. [iOS only]">
+        Optional
       </message>
       <message name="IDS_IOS_AUTOFILL_EDIT_ADDRESS" desc="Title for the view in Settings for editing an Autofill profile address. [Length: 20em] [iOS only]">
         Edit address
@@ -857,14 +857,11 @@
       <message name="IDS_IOS_AUTOFILL_SAVE_ELLIPSIS" desc="Title for the button that presents the View for Saving a credit card. The ellipsis indicate that a following action (the presentation) will take place. [Length: 10em] [iOS only]">
         Save…
       </message>
-      <message name="IDS_IOS_AUTOFILL_SCAN_CARD_CVC" desc="The placeholder text for credit card security code in the payments card unmask dialog. [iOS only]">
-        CVC
-      </message>
       <message name="IDS_IOS_AUTOFILL_SCAN_CARD_ENTER_MANUALLY" desc="Title for the button to skip scanning and enter credit card details manually. [iOS only]">
         Enter manually
       </message>
-      <message name="IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_CARD_NUMBER" desc="The placeholder text for credit card number in the payments card unmask dialog. [iOS only]">
-        Card Number
+      <message name="IDS_IOS_AUTOFILL_SCAN_CARD_EXP_DATE" desc="Title of the field representing the expiration date of a credit card in the scan card edit screen. [iOS only]">
+        Expiration date
       </message>
       <message name="IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_EXPIRY_DATE" desc="The placeholder text for credit card expiration date (month and year) in the payments card unmask dialog. [iOS only]">
         MM/YY
