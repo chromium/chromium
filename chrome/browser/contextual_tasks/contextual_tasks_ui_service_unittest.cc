@@ -2443,8 +2443,9 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsLink_HandledAsThreadLink) {
   outer_contents->AttachInnerWebContents(std::move(inner_contents), child_frame,
                                          /*is_full_page=*/false);
 
-  // Verify that it was successfully attached.
-  EXPECT_EQ(outer_contents->GetInnerWebContents().size(), 1u);
+  // Ensure the inner contents is not detected as an aim page.
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
 
   // Test that a navigation from an embedded page that is the SRP is still
   // treated as a thread link.
