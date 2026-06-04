@@ -199,12 +199,12 @@ public class Barrier {
             return;
         }
 
-        if (callbacks != CallbacksToRun.RUN_CRED_MAN_CALLBACK) {
-            assumeNonNull(mFido2ApiRunnable).run();
-        }
-
         if (callbacks != CallbacksToRun.RUN_FIDO_2_CALLBACK) {
             assumeNonNull(mCredManRunnable).run();
+        }
+
+        if (callbacks != CallbacksToRun.RUN_CRED_MAN_CALLBACK) {
+            assumeNonNull(mFido2ApiRunnable).run();
         }
     }
 

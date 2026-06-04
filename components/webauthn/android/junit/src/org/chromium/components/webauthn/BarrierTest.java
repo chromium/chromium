@@ -15,7 +15,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
@@ -249,8 +251,10 @@ public class BarrierTest {
 
         switch (mExpectation) {
             case Expectation.BOTH_RAN:
-                verify(mFido2ApiSuccessfulRunnable, times(1)).run();
-                verify(mCredManSuccesfulRunnable, times(1)).run();
+                InOrder inOrder =
+                        Mockito.inOrder(mCredManSuccesfulRunnable, mFido2ApiSuccessfulRunnable);
+                inOrder.verify(mCredManSuccesfulRunnable).run();
+                inOrder.verify(mFido2ApiSuccessfulRunnable).run();
                 verify(mRequestCallback, times(0)).onComplete(any());
                 break;
             case Expectation.ERROR_RAN:
