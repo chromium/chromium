@@ -244,15 +244,16 @@ template("rust_target") {
           testonly = invoker.testonly
         }
 
-        # `rust_bindgen_generator` promises that the first output file is always .rs.
+        # `rust_bindgen_generator` promises that the first output file is always
+        # .rs.
         sources = [ _bindgen_output_files[0] ]
         outputs = [ "$_env_out_dir/{{source_name_part}}.rs" ]
         deps = [ bindgen_dep ]
       }
 
-      # The bindgen-generated rs files are inputs to this library for the library
-      # to `include!` them.
-      # The output of the copy action is always a single file so just copy everything.
+      # The bindgen-generated rs files are inputs to this library for the
+      # library to `include!` them. The output of the copy action is always a
+      # single file so just copy everything.
       _bindgen_inputs += get_target_outputs(":$_copy_target_name")
 
       # Depend on the bindgen generation to make the above `_bindgen_inputs`.
@@ -386,10 +387,10 @@ template("rust_target") {
       # why targets in `//build/rust/std/rules/BUILD.gn` set `output_dir =
       # "$root_out_dir/local_rustc_sysroot/...".
       #
-      # OTOH, executables linked against these `.dll`s / `.so`s need to find them
-      # at runtime (i.e. the runtime linker needs to find them).  The `copy` target
-      # here helps with this part by copying them to the root of the build directory
-      # (same directory where executables go by default).
+      # OTOH, executables linked against these `.dll`s / `.so`s need to find
+      # them at runtime (i.e. the runtime linker needs to find them). The `copy`
+      # target here helps with this part by copying them to the root of the
+      # build directory (same directory where executables go by default).
       copy(_copy_so_or_dll_dylib_target_name) {
         # TODO(https://crbug.com/gn/490160737): If `get_target_outputs` can
         # support binary targets (unclear) then it should be used here, instead
