@@ -628,13 +628,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   // <if expr="enable_pdf_ink2">
-  private maybeCreateTextAnnotation_(location?: Point) {
+  private async maybeCreateTextAnnotation_(location?: Point) {
     const created =
-        Ink2Manager.getInstance().initializeTextAnnotation(location);
+        await Ink2Manager.getInstance().initializeTextAnnotation(location);
     if (!created && this.textboxState_ !== TextBoxState.INACTIVE) {
       const textbox = this.shadowRoot.querySelector('ink-text-box');
       assert(textbox);
-      textbox.commitTextAnnotation();
+      await textbox.commitTextAnnotation();
     }
   }
 

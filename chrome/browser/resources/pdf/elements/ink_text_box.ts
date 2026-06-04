@@ -120,6 +120,9 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         Ink2Manager.getInstance(), 'initialize-text-box',
         (e: Event) =>
             this.onInitializeTextBox_((e as CustomEvent<TextBoxInit>).detail));
+    this.eventTracker_.add(
+        Ink2Manager.getInstance(), 'deactivate-text-box',
+        () => this.commitTextAnnotation());
     this.onViewportChanged_(Ink2Manager.getInstance().getViewportParams());
     this.eventTracker_.add(
         Ink2Manager.getInstance(), 'viewport-changed',
@@ -155,6 +158,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (changedPrivateProperties.has('state_')) {
       this.hidden = this.state_ === TextBoxState.INACTIVE;
       this.fire('state-changed', this.state_);
+      Ink2Manager.getInstance().setTextBoxActive(!this.hidden);
     }
 
     if (changedPrivateProperties.has('viewportRotations_') ||
@@ -311,11 +315,24 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
                 return;
               }
 
-              // Save the existing state and immediately mark this text box as
-              // inactive.
+              // Save the existing state with dummy mojoTextInfo.
               assert(this.attributes_);
               const isEdited = this.state_ === TextBoxState.EDITED;
-              this.state_ = TextBoxState.INACTIVE;
+              const annotation: TextAnnotation = {
+                id: this.id_,
+                mojoTextInfo: new ArrayBuffer(0),
+                pageIndex: this.pageIndex_,
+                pdfZoom: this.zoom_,
+                text: this.textValue_,
+                textAttributes: structuredClone(this.attributes_),
+                textBoxRect: {
+                  height: this.height_,
+                  locationX: this.locationX_,
+                  locationY: this.locationY_,
+                  width: this.width_,
+                },
+                textOrientation: this.textOrientation_,
+              };
 
               const result =
                   await PdfViewerPrivateProxyImpl.getInstance().getTextInfo(
@@ -326,27 +343,16 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
                 Ink2Manager.getInstance().addKnownFontId(typeface.uniqueId);
               }
 
-              // Notify the backend.
-              const annotation: TextAnnotation = {
-                id: this.id_,
-                mojoTextInfo: result.mojoTextInfo,
-                pageIndex: this.pageIndex_,
-                pdfZoom: this.zoom_,
-                text: this.textValue_,
-                textAttributes: this.attributes_,
-                textBoxRect: {
-                  height: this.height_,
-                  locationX: this.locationX_,
-                  locationY: this.locationY_,
-                  width: this.width_,
-                },
-                textOrientation: this.textOrientation_,
-              };
+              // Notify the backend and set state to inactive so that a new
+              // annotation can be created.
+              annotation.mojoTextInfo = result.mojoTextInfo;
               Ink2Manager.getInstance().commitTextAnnotation(
                   annotation, isEdited, result.typefaces);
+              this.state_ = TextBoxState.INACTIVE;
             })
             .catch(e => {
               console.error('Error committing text annotation:', e);
+              this.state_ = TextBoxState.INACTIVE;
             });
     return this.whenTextAnnotationsCommitted_;
   }

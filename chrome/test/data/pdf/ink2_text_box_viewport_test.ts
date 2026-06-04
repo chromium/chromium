@@ -232,7 +232,7 @@ chrome.test.runTests([
     // level. A click position of 72 will offset the y location by
     // zoom * text size / 2 = text size = 12 by default. So this initializes
     // the top left corner to 60, 60.
-    manager.initializeTextAnnotation({x: 60, y: 72});
+    await manager.initializeTextAnnotation({x: 60, y: 72});
     await eventToPromise('textbox-focused-for-test', textbox);
     await microtasksFinished();
     const styles = getComputedStyle(textbox);

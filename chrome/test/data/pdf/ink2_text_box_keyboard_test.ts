@@ -26,7 +26,7 @@ async function setUpExistingAnnotation() {
 
   // Re-initialize the box as an existing annotation by simulating a click on
   // it.
-  const clicked = manager.initializeTextAnnotation({x: 105, y: 60});
+  const clicked = await manager.initializeTextAnnotation({x: 105, y: 60});
   chrome.test.assertTrue(clicked, 'Failed to click existing annotation');
   await microtasksFinished();
   chrome.test.assertFalse(textbox.hidden);

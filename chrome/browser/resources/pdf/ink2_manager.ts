@@ -138,6 +138,7 @@ export class Ink2Manager extends EventTarget {
   private pageIndex_: number = -1;
   private pluginController_: PluginController = PluginController.getInstance();
   private textResolver_: PromiseResolver<void>|null = null;
+  private textboxActiveResolver_: PromiseResolver<void>|null = null;
   private viewport_: Viewport|null = null;
   private viewportParams_: ViewportParams = {
     clockwiseRotations: 0,
@@ -171,13 +172,24 @@ export class Ink2Manager extends EventTarget {
   }
 
   // Initialize a text annotation at `location` in screen coordinates.
-  // No-op if there is no PDF page at `location`.
-  // If location is not provided, creates the annotation at the center of
+  // No-op if there is no PDF page at `location`. If a text annotation already
+  // exists at `location`, activates it for editing.
+  // If `location` is not provided, creates the annotation at the center of
   // the visible portion of the most visible page.
-  // Returns true if an annotation was initialized, and false otherwise.
-  initializeTextAnnotation(location?: Point): boolean {
+  // If an annotation is already actively being edited, fires a
+  // deactivate-text-box event and waits for the active text box to deactivate
+  // before creating or activating another annotation.
+  // Returns a promise that resolves to true if an annotation was initialized
+  // or reactivated for editing, and false otherwise.
+  async initializeTextAnnotation(location?: Point): Promise<boolean> {
     assert(this.isTextInitializationComplete());
     assert(this.viewport_);
+
+    if (this.textboxActiveResolver_) {
+      const resolver = this.textboxActiveResolver_;
+      this.dispatchEvent(new CustomEvent('deactivate-text-box'));
+      await resolver.promise;
+    }
 
     const isMouse = !!location;
     const page = location ? this.viewport_.getPageAtPoint(location) :
@@ -727,6 +739,17 @@ export class Ink2Manager extends EventTarget {
 
   saved() {
     this.stack_.setSaved();
+  }
+
+  setTextBoxActive(active: boolean) {
+    if (active && !this.textboxActiveResolver_) {
+      this.textboxActiveResolver_ = new PromiseResolver();
+      return;
+    }
+    if (!active && this.textboxActiveResolver_) {
+      this.textboxActiveResolver_.resolve();
+      this.textboxActiveResolver_ = null;
+    }
   }
 
   static getInstance(): Ink2Manager {

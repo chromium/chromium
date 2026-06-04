@@ -4,7 +4,7 @@
 
 import {TextBoxState, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {dragHandle, getTestAnnotation, initializeBox, setupTextBoxTest, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
 import {assertDeepEquals} from './test_util.js';
@@ -65,7 +65,7 @@ chrome.test.runTests([
 
     // --- (1) Re-activate and edit the text of the existing annotation ---
     // Click center of Box B: [100, 110] screen to re-activate it.
-    let clicked = manager.initializeTextAnnotation({x: 100, y: 110});
+    let clicked = await manager.initializeTextAnnotation({x: 100, y: 110});
     chrome.test.assertTrue(clicked, 'Failed to click existing annotation');
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
@@ -84,7 +84,7 @@ chrome.test.runTests([
 
     // --- (2) Re-activate and apply Move/Resize Edit ---
     // Re-activate by clicking on it again (at [100, 110] screen).
-    clicked = manager.initializeTextAnnotation({x: 100, y: 110});
+    clicked = await manager.initializeTextAnnotation({x: 100, y: 110});
     chrome.test.assertTrue(clicked, 'Failed to click existing annotation');
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
@@ -106,7 +106,7 @@ chrome.test.runTests([
 
     // --- (3) Re-activate and apply Font Change Edit ---
     // Re-activate the moved annotation (new center is at [200, 210] screen).
-    clicked = manager.initializeTextAnnotation({x: 200, y: 210});
+    clicked = await manager.initializeTextAnnotation({x: 200, y: 210});
     chrome.test.assertTrue(clicked, 'Failed to click moved annotation');
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
@@ -122,7 +122,7 @@ chrome.test.runTests([
     // --- (4) Re-activate and apply Text Cleared Edit ---
     // Re-activate the font-changed annotation (same coordinates [200, 210]
     // screen).
-    clicked = manager.initializeTextAnnotation({x: 200, y: 210});
+    clicked = await manager.initializeTextAnnotation({x: 200, y: 210});
     chrome.test.assertTrue(clicked, 'Failed to click font-changed annotation');
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
@@ -139,7 +139,8 @@ chrome.test.runTests([
         expectedAnnotationTextCleared, true);
 
     // De-activate the textbox to set up for the next test.
-    await textbox.commitTextAnnotation();
+    manager.dispatchEvent(new CustomEvent('deactivate-text-box'));
+    await eventToPromise('state-changed', textbox);
     chrome.test.succeed();
   },
 
@@ -197,7 +198,7 @@ chrome.test.runTests([
     // plugin message.
     textBoxStates = [];
     // Re-initialize the annotation.
-    const clicked = manager.initializeTextAnnotation({x: 450, y: 350});
+    const clicked = await manager.initializeTextAnnotation({x: 450, y: 350});
     chrome.test.assertTrue(clicked, 'Failed to click existing annotation');
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
