@@ -52,6 +52,7 @@ source_set("browser_tests") {
     "//extensions:test_support",
     "//extensions/browser",
     "//extensions/common",
+    "//ui/base:ozone_buildflags",
   ]
 }
 

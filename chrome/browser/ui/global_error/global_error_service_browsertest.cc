@@ -16,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "ui/base/ozone_buildflags.h"
 
 namespace {
 
@@ -67,7 +68,12 @@ class BubbleViewError final : public GlobalErrorWithStandardBubble {
 class GlobalErrorServiceBrowserTest : public InProcessBrowserTest {};
 
 // Test that showing a error with a bubble view works.
-IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest, ShowBubbleView) {
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+#define MAYBE_ShowBubbleView DISABLED_ShowBubbleView
+#else
+#define MAYBE_ShowBubbleView ShowBubbleView
+#endif
+IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest, MAYBE_ShowBubbleView) {
   // This will be deleted by the GlobalErrorService.
   BubbleViewError* error = new BubbleViewError;
 
