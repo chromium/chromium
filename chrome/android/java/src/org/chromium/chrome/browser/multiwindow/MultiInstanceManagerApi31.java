@@ -618,7 +618,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         recordInstanceCountHistogram();
         recordActivityCountHistogram();
         ActivityManager activityManager =
-                (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
+                (ActivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
         String launchActivityName = ChromeTabbedActivity.MAIN_LAUNCHER_ACTIVITY_NAME;
         if (activityManager != null) {
             sState =
