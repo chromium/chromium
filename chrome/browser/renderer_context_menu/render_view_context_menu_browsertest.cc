@@ -488,6 +488,36 @@ class ContextMenuBrowserTest : public ContextMenuBrowserTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class ContextMenuBrowserTestMenuSimplification
+    : public ContextMenuBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContextMenuBrowserTestMenuSimplification() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kMenuSimplification);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kMenuSimplification);
+    }
+  }
+
+ protected:
+  bool IsItemPresent(TestRenderViewContextMenu* menu, int command_id) {
+    return menu->GetMenuModelAndItemIndex(command_id).has_value();
+  }
+
+  bool IsItemChecked(TestRenderViewContextMenu* menu, int command_id) {
+    if (command_id == IDC_CONTENT_CONTEXT_PICTUREINPICTURE && GetParam()) {
+      return menu->IsCommandIdChecked(command_id);
+    }
+    auto model_and_index = menu->GetMenuModelAndItemIndex(command_id);
+    return model_and_index.has_value() &&
+           model_and_index->first->IsItemCheckedAt(model_and_index->second);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
  public:
   PdfPluginContextMenuBrowserTest() = default;
@@ -3434,7 +3464,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYAVLOCATION));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTestMenuSimplification,
                        ContextMenuForVideoWithReadableFrame) {
   content::ContextMenuParams params;
   params.media_type = blink::mojom::ContextMenuDataMediaType::kVideo;
@@ -3442,39 +3472,42 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
   auto menu = CreateContextMenuFromParams(params);
 
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
+  EXPECT_TRUE(IsItemPresent(menu.get(), IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
+  EXPECT_TRUE(IsItemPresent(menu.get(), IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
+  EXPECT_TRUE(
+      IsItemPresent(menu.get(), IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
   EXPECT_TRUE(
       menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTestMenuSimplification,
                        ContextMenuForVideoWithoutReadableFrame) {
   content::ContextMenuParams params;
   params.media_type = blink::mojom::ContextMenuDataMediaType::kVideo;
 
   auto menu = CreateContextMenuFromParams(params);
 
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
+  EXPECT_TRUE(IsItemPresent(menu.get(), IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS));
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
+  EXPECT_TRUE(IsItemPresent(menu.get(), IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
+  EXPECT_TRUE(
+      IsItemPresent(menu.get(), IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
   EXPECT_FALSE(
       menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, ContextMenuForEncryptedVideo) {
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTestMenuSimplification,
+                       ContextMenuForEncryptedVideo) {
   content::ContextMenuParams params;
   params.media_type = blink::mojom::ContextMenuDataMediaType::kVideo;
   params.media_flags |= blink::ContextMenuData::kMediaEncrypted;
 
   auto menu = CreateContextMenuFromParams(params);
 
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
+  EXPECT_TRUE(IsItemPresent(menu.get(), IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYVIDEOFRAME));
 }
 
@@ -3490,7 +3523,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   EXPECT_FALSE(menu->IsItemChecked(IDC_CONTENT_CONTEXT_PICTUREINPICTURE));
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTestMenuSimplification,
                        ContextMenuForVideoInPictureInPicture) {
   content::ContextMenuParams params;
   params.media_type = blink::mojom::ContextMenuDataMediaType::kVideo;
@@ -3499,8 +3532,54 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
   auto menu = CreateContextMenuFromParams(params);
 
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_PICTUREINPICTURE));
-  EXPECT_TRUE(menu->IsItemChecked(IDC_CONTENT_CONTEXT_PICTUREINPICTURE));
+  EXPECT_TRUE(IsItemPresent(menu.get(), IDC_CONTENT_CONTEXT_PICTUREINPICTURE));
+  EXPECT_TRUE(IsItemChecked(menu.get(), IDC_CONTENT_CONTEXT_PICTUREINPICTURE));
+}
+
+IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTestMenuSimplification,
+                       OpenInReadingMode) {
+  // Open in reading mode is an option when non-editable text is selected.
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuForTextInWebContents(u"selection text");
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+
+  // Open in reading mode is an option for editables menus when menu
+  // simplification is disabled.
+  content::ContextMenuParams params;
+  params.is_editable = true;
+  menu =
+      std::make_unique<TestRenderViewContextMenu>(*browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetPrimaryMainFrame(),
+                                                  params);
+  menu->Init();
+  if (GetParam()) {
+    ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+  } else {
+    ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+  }
+  // Open in reading mode is NOT an option for links.
+  menu = CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
+                                        GURL("http://www.google.com/"));
+  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+
+  // Open in reading mode is NOT an option for <image>.
+  menu = CreateContextMenuMediaTypeImage(GURL("http://url.com/image.png"));
+  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+
+  // Open in reading mode is NOT an option for <video>.
+  menu = CreateContextMenu(GURL("http://www.example.com/"),
+                           GURL("http://www.example.com/foo.mp4"), u"",
+                           blink::mojom::ContextMenuDataMediaType::kVideo,
+                           ui::mojom::MenuSourceType::kMouse);
+  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+
+  // Open in reading mode is NOT an option for <canvas>.
+  params = content::ContextMenuParams();
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kCanvas;
+  menu = CreateContextMenuFromParams(params);
+  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 }
 
 // This test checks that we don't crash when creating a context menu for a
@@ -3636,47 +3715,6 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT));
-}
-
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenInReadingMode) {
-  // Open in reading mode is an option when non-editable text is selected.
-  std::unique_ptr<TestRenderViewContextMenu> menu =
-      CreateContextMenuForTextInWebContents(u"selection text");
-  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
-
-  // Open in reading mode is an option for editables.
-  content::ContextMenuParams params;
-  params.is_editable = true;
-  menu =
-      std::make_unique<TestRenderViewContextMenu>(*browser()
-                                                       ->tab_strip_model()
-                                                       ->GetActiveWebContents()
-                                                       ->GetPrimaryMainFrame(),
-                                                  params);
-  menu->Init();
-  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
-
-  // Open in reading mode is NOT an option for links.
-  menu = CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
-                                        GURL("http://www.google.com/"));
-  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
-
-  // Open in reading mode is NOT an option for <image>.
-  menu = CreateContextMenuMediaTypeImage(GURL("http://url.com/image.png"));
-  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
-
-  // Open in reading mode is NOT an option for <video>.
-  menu = CreateContextMenu(GURL("http://www.example.com/"),
-                           GURL("http://www.example.com/foo.mp4"), u"",
-                           blink::mojom::ContextMenuDataMediaType::kVideo,
-                           ui::mojom::MenuSourceType::kMouse);
-  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
-
-  // Open in reading mode is NOT an option for <canvas>.
-  params = content::ContextMenuParams();
-  params.media_type = blink::mojom::ContextMenuDataMediaType::kCanvas;
-  menu = CreateContextMenuFromParams(params);
-  ASSERT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 }
 
 // Ensure that the context menu can tolerate changes to session history that
@@ -4126,5 +4164,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuSplitViewHorizontalDirectAccessBrowserTest,
   TestOpenLinkNewSplit(1, SplitViewLayoutMenuModel::CommandId::kStacked,
                        split_tabs::SplitTabLayout::kStacked);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextMenuBrowserTestMenuSimplification,
+                         testing::Bool());
 
 }  // namespace
