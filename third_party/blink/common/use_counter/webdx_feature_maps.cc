@@ -164,6 +164,8 @@ GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kWebBluetoothRemoteServerConnect,
            WebDXFeature::kWebBluetooth},
           {WebFeature::kWebNfcNdefReaderScan, WebDXFeature::kWebNfc},
+          {WebFeature::kWebNfcNdefWriterWrite, WebDXFeature::kWebNfc},
+          {WebFeature::kWebNfcNdefMakeReadOnly, WebDXFeature::kWebNfc},
           {WebFeature::kWebGPURequestAdapter, WebDXFeature::kWebgpu},
           {WebFeature::kSerialPortOpen, WebDXFeature::kSerial},
           {WebFeature::kModuleDedicatedWorker, WebDXFeature::kJsModulesWorkers},
