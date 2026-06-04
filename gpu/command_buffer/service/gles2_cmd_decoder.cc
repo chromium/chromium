@@ -2146,6 +2146,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
       case GL_UNSIGNED_INT_SAMPLER_CUBE:
         return GL_TEXTURE_CUBE_MAP;
       case GL_SAMPLER_EXTERNAL_OES:
+      case GL_SAMPLER_EXTERNAL_2D_Y2Y_EXT:
         return GL_TEXTURE_EXTERNAL_OES;
       case GL_SAMPLER_2D_RECT_ANGLE:
         return GL_TEXTURE_RECTANGLE_ANGLE;
