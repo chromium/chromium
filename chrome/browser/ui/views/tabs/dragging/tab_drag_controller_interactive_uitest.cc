@@ -30,6 +30,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -3338,6 +3339,71 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, DragInSameWindow) {
   // The tab strip should no longer have capture because the drag was ended and
   // mouse/touch was released.
   EXPECT_FALSE(tab_strip->GetWidget()->HasCapture());
+}
+
+// Tests that the TabDragPinnedness UMA metric is correctly logged for same
+// window drags.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       DragInSameWindowPinnedness) {
+  // Case 1: Drag an unpinned tab.
+  {
+    AddTabsAndResetBrowser(browser(), 2);
+    TabStrip* tab_strip = GetTabStripForBrowser(browser());
+    StopAnimating(tab_strip);
+
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(2)));
+    // Drag enough to ensure it starts.
+    ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0)));
+    ASSERT_TRUE(ReleaseInput());
+    StopAnimating(tab_strip);
+    histogram_tester.ExpectUniqueSample(
+        "TabStrip.HorizontalTabStrip.TabDragPinnedness", 0 /* kAllUnpinned */,
+        1);
+  }
+
+  // Case 2: Drag a pinned tab.
+  {
+    Browser* browser2 = CreateBrowser(browser()->profile());
+    AddTabsAndResetBrowser(browser2, 2);
+    TabStripModel* model2 = browser2->tab_strip_model();
+    TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
+    model2->SetTabPinned(0, true);
+    model2->ActivateTabAt(0);
+    StopAnimating(tab_strip2);
+
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(PressInputAtCenter(tab_strip2->tab_at(0)));
+    // Drag further to the right.
+    ASSERT_TRUE(DragInputToCenter(tab_strip2->tab_at(2)));
+    ASSERT_TRUE(ReleaseInput());
+    StopAnimating(tab_strip2);
+    histogram_tester.ExpectUniqueSample(
+        "TabStrip.HorizontalTabStrip.TabDragPinnedness", 1 /* kAllPinned */, 1);
+  }
+
+  // Case 3: Drag a mix of pinned and unpinned tabs.
+  {
+    Browser* browser3 = CreateBrowser(browser()->profile());
+    AddTabsAndResetBrowser(browser3, 2);
+    TabStripModel* model3 = browser3->tab_strip_model();
+    TabStrip* tab_strip3 = GetTabStripForBrowser(browser3);
+    model3->SetTabPinned(0, true);
+    ui::ListSelectionModel selection;
+    selection.AddIndexToSelection(0);
+    selection.AddIndexToSelection(1);
+    selection.set_active(0);
+    model3->SetSelectionFromModel(selection);
+    StopAnimating(tab_strip3);
+
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(PressInputAtCenter(tab_strip3->tab_at(0)));
+    ASSERT_TRUE(DragInputToCenter(tab_strip3->tab_at(2)));
+    ASSERT_TRUE(ReleaseInput());
+    StopAnimating(tab_strip3);
+    histogram_tester.ExpectUniqueSample(
+        "TabStrip.HorizontalTabStrip.TabDragPinnedness", 2 /* kMixed */, 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,

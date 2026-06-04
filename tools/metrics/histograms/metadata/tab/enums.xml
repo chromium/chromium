@@ -396,6 +396,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h:TabDragDestination) -->
 
+<!-- LINT.IfChange(TabDragPinnedness) -->
+
+<enum name="TabDragPinnedness">
+  <int value="0" label="All unpinned"/>
+  <int value="1" label="All pinned"/>
+  <int value="2" label="Mixed"/>
+</enum>
+
+<!-- LINT.ThenChange(chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h:TabDragPinnedness) -->
+
 <!-- LINT.IfChange(TabGroupingTransitionType) -->
 
 <enum name="TabGroupingTransitionType">

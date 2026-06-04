@@ -2252,6 +2252,30 @@ void TabDragController::CompleteDrag() {
       absl::StrFormat("TabStrip.%s.TabDragDestination", GetTabStripMode()),
       destination);
 
+  bool has_pinned = false;
+  bool has_unpinned = false;
+  for (const auto& data : drag_data_.tab_drag_data_) {
+    if (data.view_type == TabSlotView::ViewType::kTabGroupHeader ||
+        !data.pinned) {
+      has_unpinned = true;
+    } else if (data.pinned) {
+      has_pinned = true;
+    }
+  }
+
+  TabDragPinnedness pinnedness;
+  if (has_pinned && has_unpinned) {
+    pinnedness = TabDragPinnedness::kMixed;
+  } else if (has_pinned) {
+    pinnedness = TabDragPinnedness::kAllPinned;
+  } else {
+    pinnedness = TabDragPinnedness::kAllUnpinned;
+  }
+
+  base::UmaHistogramEnumeration(
+      absl::StrFormat("TabStrip.%s.TabDragPinnedness", GetTabStripMode()),
+      pinnedness);
+
   if (current_drag_target_ && current_drag_target_->CanDropTab()) {
     current_drag_target_->HandleTabDrop(*this);
     OnContextStoppedDragging();

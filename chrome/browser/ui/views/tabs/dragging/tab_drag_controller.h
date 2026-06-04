@@ -301,6 +301,17 @@ class TabDragController : public views::WidgetObserver,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabDraggingDestination)
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(TabDragPinnedness)
+  enum class TabDragPinnedness {
+    kAllUnpinned = 0,
+    kAllPinned = 1,
+    kMixed = 2,
+    kMaxValue = kMixed
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabDragPinnedness)
+
   // Overridden from views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
