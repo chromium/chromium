@@ -25,9 +25,9 @@ enum class AnchorMode {
   // View for the popovert alert. Only used when `_anchorMode` is VIEW.
   __weak UIView* _view;
 
-  // Bar button item for the popover alert.  Only used when `_anchorMode` is
+  // The source item for the popover alert. Only used when `_anchorMode` is
   // BAR_BUTTON_ITEM.
-  UIBarButtonItem* _barButtonItem;
+  id<UIPopoverPresentationControllerSourceItem> _barButtonItem;
 }
 
 @end
@@ -58,7 +58,9 @@ enum class AnchorMode {
                                    browser:(Browser*)browser
                                      title:(NSString*)title
                                    message:(NSString*)message
-                             barButtonItem:(UIBarButtonItem*)barButtonItem {
+                             barButtonItem:
+                                 (id<UIPopoverPresentationControllerSourceItem>)
+                                     barButtonItem {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                                      title:title
@@ -100,7 +102,7 @@ enum class AnchorMode {
       alert.popoverPresentationController.sourceRect = _rect;
       break;
     case AnchorMode::BAR_BUTTON_ITEM:
-      alert.popoverPresentationController.barButtonItem = _barButtonItem;
+      alert.popoverPresentationController.sourceItem = _barButtonItem;
       break;
   }
 
