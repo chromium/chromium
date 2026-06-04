@@ -31,6 +31,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
+import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
+import org.chromium.chrome.browser.browserservices.trustedwebactivityui.sharing.TwaSharingController;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.components.prefs.PrefService;
@@ -117,5 +119,36 @@ public class CustomTabActivityLaunchHandlerTest {
         doTestLaunchHandler(1, env.intentDataProvider);
         CustomTabIntentDataProvider dataProvider = createIntentDataProvider();
         doTestLaunchHandler(1, dataProvider);
+    }
+
+    @Test
+    public void trustedWebActivityInitialIntent_tabClearedBeforeAsyncCallback() {
+        CustomTabIntentHandlingStrategy defaultStrategy =
+                new DefaultCustomTabIntentHandlingStrategy(
+                        env.tabProvider,
+                        mNavigationController,
+                        env.customTabObserver,
+                        env.verifier,
+                        env.currentPageVerifier,
+                        env.activity);
+        CustomTabIntentHandlingStrategy twaStrategy =
+                new TwaIntentHandlingStrategy(
+                        defaultStrategy,
+                        new TwaSharingController(
+                                env.tabProvider, mNavigationController, env.verifier));
+
+        new CustomTabIntentHandler(
+                env.tabProvider,
+                env.intentDataProvider,
+                twaStrategy,
+                env.activity,
+                env.mMinimizationManagerHolder);
+        env.tabProvider.swapTab(null);
+
+        shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mNavigationController, times(0)).navigate(any(), any());
+        verify(mWebAppLaunchHandlerJniMock, times(0))
+                .notifyLaunchQueue(any(), anyBoolean(), any(), any(), any());
     }
 }

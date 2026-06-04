@@ -62,13 +62,12 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         }
 
         @TabCreationMode int initialTabCreationMode = mTabProvider.getInitialTabCreationMode();
-        if (mTabProvider.getTab() != null) {
-            CustomTabAuthUrlHeuristics.setFirstCctPageLoadForMetrics(mTabProvider.getTab());
-        }
+        Tab tab = mTabProvider.getTab();
+        if (tab == null) return;
+
+        CustomTabAuthUrlHeuristics.setFirstCctPageLoadForMetrics(tab);
 
         if (intentDataProvider.isTrustedWebActivity()) {
-            Tab tab = mTabProvider.getTab();
-            assumeNonNull(tab);
             WebContents webContents = tab.getWebContents();
             assumeNonNull(webContents);
             WebAppLaunchHandler launchHandler =
