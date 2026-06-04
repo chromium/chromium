@@ -1142,6 +1142,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
                                  GetClientCallback callback,
                                  bool success);
 
+  // Checks if there is an active and pending PAYMENT_REQUEST event
+  // for the current service worker version.
+  bool HasPendingPaymentRequestEvent();
+
   void DidShowPaymentHandlerWindow(
       const GURL& url,
       const blink::StorageKey& key,

@@ -1898,6 +1898,14 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
     return;
   }
 
+  if (!HasPendingPaymentRequestEvent()) {
+    associated_interface_receiver_.ReportBadMessage(
+        "Received PaymentRequestEvent#openWindow() request without a pending "
+        "PaymentRequestEvent.");
+    receiver_.reset();
+    return;
+  }
+
   PaymentHandlerSupport::ShowPaymentHandlerWindow(
       url, context_.get(),
       base::BindOnce(&ServiceWorkerVersion::DidShowPaymentHandlerWindow,
@@ -1906,6 +1914,22 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
           &ServiceWorkerVersion::OpenWindow, weak_factory_.GetWeakPtr(), url,
           service_worker_client_utils::WindowType::PAYMENT_HANDLER_WINDOW),
       std::move(callback));
+}
+
+bool ServiceWorkerVersion::HasPendingPaymentRequestEvent() {
+  // Despite using a const_iterator, this method cannot be const because
+  // base::IDMap::Iterator always modifies the Map object it is iterating
+  // over (to update bookkeeping state).
+  base::IDMap<std::unique_ptr<InflightRequest>>::const_iterator iter(
+      &inflight_requests_);
+  while (!iter.IsAtEnd()) {
+    if (iter.GetCurrentValue()->event_type ==
+        ServiceWorkerMetrics::EventType::PAYMENT_REQUEST) {
+      return true;
+    }
+    iter.Advance();
+  }
+  return false;
 }
 
 void ServiceWorkerVersion::DidShowPaymentHandlerWindow(
