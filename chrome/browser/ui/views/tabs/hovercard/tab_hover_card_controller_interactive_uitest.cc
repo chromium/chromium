@@ -122,7 +122,7 @@ class TabHoverCardInteractiveUiTest
     scoped_feature_list_.InitWithFeatures(
         {features::kTabHoverCardImages,
          data_sharing::features::kDataSharingFeature,
-         features::kTabGroupHoverCards},
+         features::kTabGroupHoverCards, features::kTabStripDeclutter},
         {});
   }
 
@@ -472,6 +472,12 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInterstitialBrowserTest,
 class TabHoverCardFadeFooterInteractiveUiTest
     : public TabHoverCardInteractiveUiTest {
  public:
+  void SetUpOnMainThread() override {
+    TabHoverCardInteractiveUiTest::SetUpOnMainThread();
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kHoverCardMemoryUsageEnabled, true);
+  }
+
   FadeAlertFooterRow* GetPrimaryAlertRowFromHoverCard(
       TabHoverCardBubbleView* bubble) {
     return bubble->GetFooterViewForTesting()
