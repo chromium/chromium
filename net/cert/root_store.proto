@@ -113,6 +113,7 @@ message TrustAnchor {
   optional int32 crs_root_id = 12;
 }
 
+// TODO(crbug.com/520071497): Remove once the Cloudflare experiment is complete.
 message MtcAnchor {
   // The log id is a trust anchor id in binary representation.
   optional bytes log_id = 1;
@@ -164,6 +165,8 @@ message TrustAnchorIdRange {
   // The base_id is a relative OID in DER representation which, when a
   // landmark number is appended, specifies a Trust Anchor ID for this
   // signatureless MTC.
+  // TODO(crbug.com/520071497): Remove once the Cloudflare experiment is
+  // complete.
   optional bytes base_id = 1;
 
   // The minimum supported landmark number.
@@ -184,6 +187,9 @@ message MtcSubTree {
   optional bytes hash = 3;
 }
 
+// Represents a range of Merkle Tree Certificate serials.
+// For the Cloudflare experiment, these are indices in the log instead of
+// serials as defined in the MTC spec.
 message MtcIndexRange {
   // The start index of the range.
   optional uint64 start_inclusive = 1;
@@ -192,26 +198,60 @@ message MtcIndexRange {
   optional uint64 end_exclusive = 2;
 }
 
+message MtcLogData {
+  // Log number for this MTC log. The log ID for this log is constructed by
+  // concatenating the CA ID, the constant 0 and this number.
+  // This is defined as 16 bits in the MTC spec, but protobuf doesn't have a 16
+  // bit integer type.
+  optional uint32 log_number = 1;
+
+  // The range of landmark numbers corresponding to `trusted_subtrees`,
+  // sufficient for constructing the Trust Anchor ID(s) for
+  // negotiating the use of landmark-relative certificates.
+  optional TrustAnchorIdRange trusted_landmark_ids_range = 2;
+
+  // Trusted subtrees that can be used for landmark-relative Merkle Tree
+  // certificate verification.
+  repeated MtcSubTree trusted_subtrees = 3;
+}
+
 message MtcAnchorData {
   // The log id is a trust anchor id in binary representation. This must match
   // the `log_id` for an MtcAnchor in the root store, or this MtcAnchorData
   // will be ignored. (It is not an error for this to occur in practice, since
   // the MtcMetadata and ChromeRootStoreData are updated separately.)
+  // TODO(crbug.com/520071497): Remove once the Cloudflare experiment is
+  // complete.
   optional bytes log_id = 1;
 
   // The range of landmark numbers corresponding to `trusted_subtrees`, along
   // with the base_id, sufficient for constructing the Trust Anchor ID(s) for
   // negotiating the use of signatureless certificates.
+  // TODO(crbug.com/520071497): Remove once the Cloudflare experiment is
+  // complete.
   optional TrustAnchorIdRange trusted_landmark_ids_range = 2;
 
   // Trusted subtrees that can be used for signatureless Merkle Tree
   // certificate verification. Presence in this list implies that relevant root
   // store policies have been already been checked offline for all certificates
   // covered by each subtree.
+  // TODO(crbug.com/520071497): Remove once the Cloudflare experiment is
+  // complete.
   repeated MtcSubTree trusted_subtrees = 3;
 
   // Ranges of Merkle Tree Certificate indices which are revoked.
+  // Serial numbers contain information about the log number and cert index, so
+  // this is tracked at the CA level rather than the log level.
   repeated MtcIndexRange revoked_indices = 4;
+
+  // The CA ID in binary representation. This must match
+  // the `base_id` for an issuer in the signer set, or this MtcAnchorData
+  // will be ignored. (It is not an error for this to occur in practice, since
+  // the MtcMetadata and ChromeRootStoreData are updated separately.)
+  optional bytes ca_id = 5;
+
+  // Data for each of the MTC logs for this MTC CA.
+  repeated MtcLogData mtc_log_data = 6;
 }
 
 message MtcMetadata {
