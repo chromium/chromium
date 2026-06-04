@@ -75,8 +75,8 @@ sudo apt install libstdc++-14-dev
 
 ## Using the tool
 
-The `rewrite_multiple_platforms.py` script first builds the tool, runs tests and
-then runs the tool over every configuration in the list of platforms.
+The `rewrite_multiple_platforms.py` script first builds the tool and then runs
+the tool over every configuration in the list of platforms.
 
 ```bash
   ./tools/clang/spanify/rewrite_multiple_platforms.py
@@ -86,35 +86,23 @@ then runs the tool over every configuration in the list of platforms.
 
 #### Flags
 
-1. `--platforms` or `-p` for short: A space-separated list of platforms to run
-   the rewrite on. Defaults to `linux`. Valid choices are `android`, `win`,
-   `linux`, `cros`, `chromeos`, `mac`.
-2. `--skip-rewrite` or `-r` for short: If you've already ran on the platform and
-   have the associated `<scratch>` directory, you can just skip generating this.
-3. `--skip-extract-edits` or `-e` for short: Don't attempt to run
-   `extract_edits.py` on the results of the rewrite.
-4. `--project`: The project to spanify. Valid choices are `chrome` (default) and
-   `partition_alloc`.
+1. `--platform`: Platform to rewrite (e.g., linux, win, mac, android).
+   Can be specified multiple times to rewrite multiple platforms. Defaults to `linux`.
+2. `--project`: The project to spanify. Valid choices are `chrome` (default),
+   `partition_alloc`, `dawn`, `skia`, `angle`, and `webrtc`.
 
 The script automatically handles the build step. If it detects a custom spanify
 build, it will do an incremental build and keep the build intact. Otherwise, it
 will build spanify from scratch and restore the original `llvm-build` directory
 when finished.
 
-The flags are useful to cut down iteration time when working on particular
-parts. If you've already done the platform, skipping the rewrite allows you to
-work on `extract_edits.py`'s logic. Skipping edits is only really useful if you
-are testing early steps and you aren't interested in the script even attempting
-the edits (so it ends earlier).
-
 Example commands:
 
 ```bash
 
   ./tools/clang/spanify/rewrite_multiple_platforms.py
-  ./tools/clang/spanify/rewrite_multiple_platforms.py --platforms linux mac
+  ./tools/clang/spanify/rewrite_multiple_platforms.py --platform linux
   ./tools/clang/spanify/rewrite_multiple_platforms.py --project partition_alloc
-  ./tools/clang/spanify/rewrite_multiple_platforms.py -p linux --skip-rewrite
 ```
 
 ### Environment Variables
