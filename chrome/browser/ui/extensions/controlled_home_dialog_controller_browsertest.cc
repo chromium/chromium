@@ -4,43 +4,34 @@
 
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_url_overrides_registrar.h"
-#include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
-
-std::unique_ptr<KeyedService> BuildOverrideRegistrar(
-    content::BrowserContext* context) {
-  return std::make_unique<extensions::ExtensionUrlOverridesRegistrar>(context);
-}
-
-}  // namespace
-
-// TODO(crbug.com/441590893): Use ExtensionBrowserTest which is platform
-// agnostic and doesn't depend on Browser.
-class ControlledHomeDialogControllerTest : public BrowserWithTestWindowTest {
+class ControlledHomeDialogControllerTest
+    : public extensions::ExtensionBrowserTest {
  public:
   ControlledHomeDialogControllerTest() = default;
   ~ControlledHomeDialogControllerTest() override = default;
@@ -50,23 +41,41 @@ class ControlledHomeDialogControllerTest : public BrowserWithTestWindowTest {
       const std::string& name = "extension",
       extensions::mojom::ManifestLocation location =
           extensions::mojom::ManifestLocation::kInternal) {
-    scoped_refptr<const extensions::Extension> extension =
-        extensions::ExtensionBuilder(name)
-            .SetLocation(location)
-            .SetManifestKey(
-                "chrome_settings_overrides",
-                base::DictValue().Set("homepage", "http://www.google.com"))
-            .Build();
-    extensions::PermissionsUpdater(profile()).GrantActivePermissions(
-        extension.get());
-    extension_registrar()->AddExtension(extension);
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    auto temp_dir = std::make_unique<base::ScopedTempDir>();
+    EXPECT_TRUE(temp_dir->CreateUniqueTempDir());
 
+    base::DictValue manifest;
+    manifest.Set("name", name);
+    manifest.Set("version", "1.0");
+    manifest.Set("manifest_version", 3);
+
+    base::DictValue overrides;
+    overrides.Set("homepage", "http://www.google.com");
+    manifest.Set("chrome_settings_overrides", std::move(overrides));
+
+    base::FilePath manifest_path =
+        temp_dir->GetPath().AppendASCII("manifest.json");
+    EXPECT_TRUE(base::WriteFile(manifest_path, *base::WriteJson(manifest)));
+
+    extensions::ChromeTestExtensionLoader loader(profile());
+    loader.set_location(location);
+    if (location != extensions::mojom::ManifestLocation::kInternal) {
+      loader.set_pack_extension(true);
+    }
+    loader.set_grant_permissions(true);
+
+    scoped_refptr<const extensions::Extension> extension =
+        loader.LoadExtension(temp_dir->GetPath());
+    EXPECT_TRUE(extension);
+
+    temp_dirs_.push_back(std::move(temp_dir));
     return extension;
   }
 
   // Returns true if the extension is enabled.
   bool IsExtensionEnabled(const extensions::ExtensionId& id) {
-    return extension_registry_->enabled_extensions().GetByID(id);
+    return extension_registry()->enabled_extensions().GetByID(id);
   }
 
   // Returns true if the extension is disabled and has the specified
@@ -74,7 +83,7 @@ class ControlledHomeDialogControllerTest : public BrowserWithTestWindowTest {
   bool IsExtensionDisabled(
       const extensions::ExtensionId& id,
       extensions::disable_reason::DisableReason disable_reason) {
-    return extension_registry_->disabled_extensions().GetByID(id) &&
+    return extension_registry()->disabled_extensions().GetByID(id) &&
            extension_prefs_->HasOnlyDisableReason(id, disable_reason);
   }
 
@@ -94,54 +103,18 @@ class ControlledHomeDialogControllerTest : public BrowserWithTestWindowTest {
         base::Value(true));
   }
 
-  extensions::ExtensionRegistrar* extension_registrar() {
-    return extension_registrar_.get();
-  }
-
  private:
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    // Prevent the Profile from getting deleted before TearDown() is complete,
-    // since WaitForStorageCleanup() relies on an active Profile. See the
-    // DestroyProfileOnBrowserClose flag.
-    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-        profile(), ProfileKeepAliveOrigin::kBrowserWindow);
-
-    // The two lines of magical incantation required to get the extension
-    // service to work inside a unit test and access the extension prefs.
-    static_cast<extensions::TestExtensionSystem*>(
-        extensions::ExtensionSystem::Get(profile()))
-        ->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
-                                 base::FilePath(), false);
-
-    // Set up the rest of the necessary systems.
-    extensions::ExtensionSystem::Get(profile())->extension_service()->Init();
-
-    extensions::ExtensionUrlOverridesRegistrar::GetFactoryInstance()
-        ->SetTestingFactory(profile(),
-                            base::BindRepeating(&BuildOverrideRegistrar));
-    extensions::ExtensionUrlOverridesRegistrar::GetFactoryInstance()->Get(
-        profile());
-
+  void SetUpOnMainThread() override {
+    extensions::ExtensionBrowserTest::SetUpOnMainThread();
     extension_prefs_ = extensions::ExtensionPrefs::Get(profile());
-    extension_registrar_ = extensions::ExtensionRegistrar::Get(profile());
-    extension_registry_ = extensions::ExtensionRegistry::Get(profile());
-
-    // Add web contents since dialog controller needs them.
-    AddTab(browser(), GURL(url::kAboutBlankURL));
   }
 
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     extension_prefs_ = nullptr;
-    extension_registrar_ = nullptr;
-    extension_registry_ = nullptr;
     WaitForStorageCleanup();
-    // Clean up global state for the delegates. Since profiles are stored in
-    // global variables, they can be shared between tests and cause
-    // unpredictable behavior.
     ControlledHomeDialogController::ClearProfileSetForTesting();
-    profile_keep_alive_.reset();
-    BrowserWithTestWindowTest::TearDown();
+    temp_dirs_.clear();
+    extensions::ExtensionBrowserTest::TearDownOnMainThread();
   }
 
   void WaitForStorageCleanup() {
@@ -155,26 +128,21 @@ class ControlledHomeDialogControllerTest : public BrowserWithTestWindowTest {
   base::AutoReset<bool> ignore_learn_more_{
       ControlledHomeDialogController::IgnoreLearnMoreForTesting()};
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
-  raw_ptr<extensions::ExtensionRegistrar> extension_registrar_;
-  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   std::unique_ptr<base::CommandLine> command_line_;
-  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+  std::vector<std::unique_ptr<base::ScopedTempDir>> temp_dirs_;
 };
 
 // Though the test harness should compile on all platforms, the behavior for
 // extensions to override the home page is limited to mac and windows.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-TEST_F(ControlledHomeDialogControllerTest,
-       ClickingExecuteDisablesTheExtension) {
+IN_PROC_BROWSER_TEST_F(ControlledHomeDialogControllerTest,
+                       ClickingExecuteDisablesTheExtension) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome();
   ASSERT_TRUE(extension);
 
-  ASSERT_TRUE(browser());
-  ASSERT_TRUE(profile());
-
   auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-      profile(), browser()->tab_strip_model()->GetActiveWebContents());
+      profile(), GetActiveWebContents());
   EXPECT_TRUE(dialog_controller->ShouldShow());
   EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
@@ -191,14 +159,14 @@ TEST_F(ControlledHomeDialogControllerTest,
   EXPECT_FALSE(IsExtensionAcknowledged(extension->id()));
 }
 
-TEST_F(ControlledHomeDialogControllerTest,
-       ClickingDismissAcknowledgesTheExtension) {
+IN_PROC_BROWSER_TEST_F(ControlledHomeDialogControllerTest,
+                       ClickingDismissAcknowledgesTheExtension) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome();
   ASSERT_TRUE(extension);
 
   auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-      profile(), browser()->tab_strip_model()->GetActiveWebContents());
+      profile(), GetActiveWebContents());
   EXPECT_TRUE(dialog_controller->ShouldShow());
   EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
@@ -213,15 +181,15 @@ TEST_F(ControlledHomeDialogControllerTest,
   EXPECT_TRUE(IsExtensionAcknowledged(extension->id()));
 }
 
-TEST_F(ControlledHomeDialogControllerTest,
-       DismissByDeactivationDoesNotDisableOrAcknowledge) {
+IN_PROC_BROWSER_TEST_F(ControlledHomeDialogControllerTest,
+                       DismissByDeactivationDoesNotDisableOrAcknowledge) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome();
   ASSERT_TRUE(extension);
 
   {
     auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-        profile(), browser()->tab_strip_model()->GetActiveWebContents());
+        profile(), GetActiveWebContents());
     EXPECT_TRUE(dialog_controller->ShouldShow());
     EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
@@ -238,21 +206,21 @@ TEST_F(ControlledHomeDialogControllerTest,
 
   {
     auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-        profile(), browser()->tab_strip_model()->GetActiveWebContents());
+        profile(), GetActiveWebContents());
     // Even though the extension hasn't been acknowledged, we shouldn't show the
     // bubble twice in the same session.
     EXPECT_FALSE(dialog_controller->ShouldShow());
   }
 }
 
-TEST_F(ControlledHomeDialogControllerTest,
-       ClickingLearnMoreAcknowledgesTheExtension) {
+IN_PROC_BROWSER_TEST_F(ControlledHomeDialogControllerTest,
+                       ClickingLearnMoreAcknowledgesTheExtension) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome();
   ASSERT_TRUE(extension);
 
   auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-      profile(), browser()->tab_strip_model()->GetActiveWebContents());
+      profile(), GetActiveWebContents());
   EXPECT_TRUE(dialog_controller->ShouldShow());
   EXPECT_EQ(extension, dialog_controller->extension_for_testing());
 
@@ -266,8 +234,8 @@ TEST_F(ControlledHomeDialogControllerTest,
   EXPECT_TRUE(IsExtensionAcknowledged(extension->id()));
 }
 
-TEST_F(ControlledHomeDialogControllerTest,
-       BubbleShouldntShowIfExtensionAcknowledged) {
+IN_PROC_BROWSER_TEST_F(ControlledHomeDialogControllerTest,
+                       BubbleShouldntShowIfExtensionAcknowledged) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome();
   ASSERT_TRUE(extension);
@@ -275,11 +243,12 @@ TEST_F(ControlledHomeDialogControllerTest,
   AcknowledgeExtension(extension->id());
 
   auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-      profile(), browser()->tab_strip_model()->GetActiveWebContents());
+      profile(), GetActiveWebContents());
   EXPECT_FALSE(dialog_controller->ShouldShow());
 }
 
-TEST_F(ControlledHomeDialogControllerTest, LongExtensionNameIsTruncated) {
+IN_PROC_BROWSER_TEST_F(ControlledHomeDialogControllerTest,
+                       LongExtensionNameIsTruncated) {
   const std::u16string long_name =
       u"This extension name should be longer than our truncation threshold "
       "to test that the bubble can handle long names";
@@ -292,7 +261,7 @@ TEST_F(ControlledHomeDialogControllerTest, LongExtensionNameIsTruncated) {
   ASSERT_TRUE(extension);
 
   auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-      profile(), browser()->tab_strip_model()->GetActiveWebContents());
+      profile(), GetActiveWebContents());
   EXPECT_TRUE(dialog_controller->ShouldShow());
 
   std::u16string bubble_text = dialog_controller->GetBodyText();
@@ -301,8 +270,8 @@ TEST_F(ControlledHomeDialogControllerTest, LongExtensionNameIsTruncated) {
   EXPECT_TRUE(bubble_text.contains(truncated_name));
 }
 
-TEST_F(ControlledHomeDialogControllerTest,
-       ExecutingOnOneExtensionDoesntAffectAnotherExtension) {
+IN_PROC_BROWSER_TEST_F(ControlledHomeDialogControllerTest,
+                       ExecutingOnOneExtensionDoesntAffectAnotherExtension) {
   scoped_refptr<const extensions::Extension> extension1 =
       LoadExtensionOverridingHome("ext1");
   scoped_refptr<const extensions::Extension> extension2 =
@@ -312,7 +281,7 @@ TEST_F(ControlledHomeDialogControllerTest,
 
   {
     auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-        profile(), browser()->tab_strip_model()->GetActiveWebContents());
+        profile(), GetActiveWebContents());
     EXPECT_TRUE(dialog_controller->ShouldShow());
     // The most-recently-installed extension should control the home page
     // (`extension2`).
@@ -334,7 +303,7 @@ TEST_F(ControlledHomeDialogControllerTest,
 
   {
     auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-        profile(), browser()->tab_strip_model()->GetActiveWebContents());
+        profile(), GetActiveWebContents());
     // Since `extension2` was removed, we shouldn't have acknowledged either
     // extension and we can re-show the bubble if the homepage is controlled
     // by another extension.
@@ -343,8 +312,8 @@ TEST_F(ControlledHomeDialogControllerTest,
   }
 }
 
-TEST_F(ControlledHomeDialogControllerTest,
-       AcknowledgingOneExtensionDoesntAffectAnother) {
+IN_PROC_BROWSER_TEST_F(ControlledHomeDialogControllerTest,
+                       AcknowledgingOneExtensionDoesntAffectAnother) {
   scoped_refptr<const extensions::Extension> extension1 =
       LoadExtensionOverridingHome("ext1");
   scoped_refptr<const extensions::Extension> extension2 =
@@ -354,7 +323,7 @@ TEST_F(ControlledHomeDialogControllerTest,
 
   {
     auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-        profile(), browser()->tab_strip_model()->GetActiveWebContents());
+        profile(), GetActiveWebContents());
     EXPECT_TRUE(dialog_controller->ShouldShow());
     EXPECT_EQ(extension2, dialog_controller->extension_for_testing());
 
@@ -376,7 +345,7 @@ TEST_F(ControlledHomeDialogControllerTest,
     // The bubble shouldn't want to show (the extension that controls the home
     // page was acknowledged).
     auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-        profile(), browser()->tab_strip_model()->GetActiveWebContents());
+        profile(), GetActiveWebContents());
     EXPECT_FALSE(dialog_controller->ShouldShow());
   }
 
@@ -386,7 +355,7 @@ TEST_F(ControlledHomeDialogControllerTest,
 
   {
     auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-        profile(), browser()->tab_strip_model()->GetActiveWebContents());
+        profile(), GetActiveWebContents());
     // Now a new extension controls the home page, so we should re-show the
     // bubble.
     EXPECT_TRUE(dialog_controller->ShouldShow());
@@ -394,15 +363,15 @@ TEST_F(ControlledHomeDialogControllerTest,
   }
 }
 
-TEST_F(ControlledHomeDialogControllerTest,
-       PolicyExtensionsRequirePolicyIndicators) {
+IN_PROC_BROWSER_TEST_F(ControlledHomeDialogControllerTest,
+                       PolicyExtensionsRequirePolicyIndicators) {
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionOverridingHome(
           "ext", extensions::mojom::ManifestLocation::kExternalPolicy);
   ASSERT_TRUE(extension);
 
   auto dialog_controller = std::make_unique<ControlledHomeDialogController>(
-      profile(), browser()->tab_strip_model()->GetActiveWebContents());
+      profile(), GetActiveWebContents());
   // We still show the bubble for policy-installed extensions, but it should
   // have a policy decoration.
   EXPECT_TRUE(dialog_controller->ShouldShow());
