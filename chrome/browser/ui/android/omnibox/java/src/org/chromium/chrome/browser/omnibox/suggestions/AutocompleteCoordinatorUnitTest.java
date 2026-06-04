@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
@@ -48,6 +49,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.lang.ref.WeakReference;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link AutocompleteCoordinator}. */
@@ -75,6 +77,7 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private BasicSuggestionProcessor.BookmarkState mBookmarkState;
     @Mock private OmniboxActionDelegateImpl mOmniboxActionDelegate;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock private Activity mActivity;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private DeferredIMEWindowInsetApplicationCallback mDeferredImeInsetCb;
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
@@ -102,6 +105,8 @@ public class AutocompleteCoordinatorUnitTest {
         // Stub getTextWithoutAutocomplete to return an empty string by default. This prevents
         // NullPointerException when triggerSiteSearch() is called (which checks .isEmpty() on it).
         lenient().doReturn("").when(mUrlBarEditingTextProvider).getTextWithoutAutocomplete();
+        lenient().doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
+        lenient().doReturn(true).when(mActivity).hasWindowFocus();
 
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(

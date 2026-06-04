@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.view.ContextThemeWrapper;
@@ -113,6 +114,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.lang.ref.WeakReference;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -145,6 +147,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock NavigationHandle mNavigationHandle;
     private @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private @Mock WindowAndroid mWindowAndroid;
+    private @Mock Activity mActivity;
     private @Mock Window mWindow;
     private @Mock View mDecorView;
     private @Mock OmniboxSuggestionsDropdownEmbedder mEmbedder;
@@ -200,6 +203,8 @@ public class AutocompleteMediatorUnitTest {
                         .build();
 
         lenient().doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
+        lenient().doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
+        lenient().doReturn(true).when(mActivity).hasWindowFocus();
         lenient().doReturn(mWindow).when(mWindowAndroid).getWindow();
         lenient().doReturn(mDecorView).when(mWindow).getDecorView();
         lenient()
@@ -2413,5 +2418,41 @@ public class AutocompleteMediatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mAutocompleteDelegate).setOmniboxEditingText("");
+    }
+
+    @Test
+    public void installAutocompleteObservers_failsWhenActivityNotFocused() {
+        // Create a new mediator with activity focus set to false.
+        doReturn(false).when(mActivity).hasWindowFocus();
+        AutocompleteMediator mediator =
+                new AutocompleteMediator(
+                        mContext,
+                        mAutocompleteDelegate,
+                        mTextStateProvider,
+                        mListModel,
+                        new Handler(),
+                        () -> mModalDialogManager,
+                        null,
+                        null,
+                        mLocationBarDataProvider,
+                        tabGroupId -> {},
+                        url -> false,
+                        mOmniboxActionDelegate,
+                        mActivityLifecycleDispatcher,
+                        mEmbedder,
+                        mWindowAndroid,
+                        mDeferredImeCallback,
+                        mFuseboxCoordinator,
+                        false);
+        mediator.getDropdownItemViewInfoListBuilderForTest()
+                .registerSuggestionProcessor(mMockProcessor);
+        mediator.getDropdownItemViewInfoListBuilderForTest()
+                .setHeaderProcessorForTest(mMockHeaderProcessor);
+
+        var session = createEmptySession();
+        mediator.beginInput(session);
+
+        // Verify that observers are NOT installed because activity is not focused.
+        verify(mAutocompleteController, never()).addOnSuggestionsReceivedListener(any());
     }
 }

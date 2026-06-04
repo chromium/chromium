@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -207,6 +208,7 @@ class AutocompleteMediator
     private boolean mShouldPreventOmniboxAutocomplete;
     private long mLastActionUpTimestamp;
     private boolean mIgnoreOmniboxItemSelection = true;
+    private boolean mActivityWindowFocused;
 
     // The number of touch down events sent to native during an omnibox session.
     private int mNumTouchDownEventForwardedInOmniboxSession;
@@ -264,6 +266,8 @@ class AutocompleteMediator
         OmniboxResourceProvider.invalidateDrawableCache();
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
+        Activity activity = windowAndroid.getActivity().get();
+        mActivityWindowFocused = (activity != null && activity.hasWindowFocus());
         mDeferredIMEWindowInsetApplicationCallback = deferredIMEWindowInsetApplicationCallback;
         mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
 
@@ -654,7 +658,7 @@ class AutocompleteMediator
     }
 
     private void installAutocompleteObservers() {
-        if (mAutocomplete == null) return;
+        if (mAutocomplete == null || !mActivityWindowFocused) return;
         mAutocomplete.addOnSuggestionsReceivedListener(this);
     }
 
@@ -1939,6 +1943,7 @@ class AutocompleteMediator
 
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        mActivityWindowFocused = isTopResumedActivity;
         boolean showSuggestionsContainer = isTopResumedActivity;
 
         if (isInInputSession()) {
