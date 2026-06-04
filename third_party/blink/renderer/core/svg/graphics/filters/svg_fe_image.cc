@@ -170,7 +170,11 @@ gfx::RectF FEImage::MapInputs(const gfx::RectF&) const {
     return dest_rect;
   }
   if (scoped_refptr<Image> image = GetImage(dest_rect.size())) {
-    gfx::RectF src_rect(image->SizeAsFloat(kDoNotRespectImageOrientation));
+    RespectImageOrientationEnum orientation = kDoNotRespectImageOrientation;
+    if (RuntimeEnabledFeatures::SvgFeImageEXIFOrientationEnabled()) {
+      orientation = kRespectImageOrientation;
+    }
+    gfx::RectF src_rect(image->SizeAsFloat(orientation));
     preserve_aspect_ratio_->TransformRect(dest_rect, src_rect);
     return dest_rect;
   }
@@ -260,14 +264,33 @@ sk_sp<PaintFilter> FEImage::CreateImageFilter() {
   scoped_refptr<Image> image = GetImage(dst_rect.size());
   if (PaintImage paint_image =
           image ? image->PaintImageForCurrentFrame() : PaintImage()) {
-    gfx::RectF src_rect(image->SizeAsFloat(kDoNotRespectImageOrientation));
+    RespectImageOrientationEnum orientation = kDoNotRespectImageOrientation;
+    if (RuntimeEnabledFeatures::SvgFeImageEXIFOrientationEnabled()) {
+      orientation = kRespectImageOrientation;
+    }
+    gfx::RectF src_rect(image->SizeAsFloat(orientation));
     preserve_aspect_ratio_->TransformRect(dst_rect, src_rect);
 
     // Adjust the source rectangle if the primitive has been cropped.
     if (crop_rect != dst_rect)
       src_rect = gfx::MapRect(crop_rect, dst_rect, src_rect);
+
+    // Always apply image orientation, because we must for cross-origin images
+    // to respect privacy, and the filter may be applied to multiple elements
+    // with different CSS properties. The filter appearance might then vary
+    // across elements in non-obvious ways.
+    PaintImage oriented_image =
+        orientation == kDoNotRespectImageOrientation
+            ? paint_image
+            : Image::ResizeAndOrientImage(
+                  paint_image,
+                  image ? image->Orientation() : ImageOrientationEnum::kDefault,
+                  gfx::Vector2dF(1, 1), 1, kInterpolationNone, nullptr);
+    if (!oriented_image) {
+      return CreateTransparentBlack();
+    }
     return sk_make_sp<ImagePaintFilter>(
-        std::move(paint_image), gfx::RectFToSkRect(src_rect),
+        std::move(oriented_image), gfx::RectFToSkRect(src_rect),
         gfx::RectFToSkRect(crop_rect), cc::PaintFlags::FilterQuality::kHigh);
   }
   // "A href reference that is an empty image (zero width or zero height),

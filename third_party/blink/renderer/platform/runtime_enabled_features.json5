@@ -5813,6 +5813,10 @@
       status: "stable",
     },
     {
+      name: "SvgFeImageEXIFOrientation",
+      status: "stable",
+    },
+    {
       name: "SvgFeImageSkipHiddenContainerViewportDependence",
       status: "stable",
     },
