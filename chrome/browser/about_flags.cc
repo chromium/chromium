@@ -7039,6 +7039,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextManagementInComposeboxDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kContextManagementInComposebox)},
 
+    {"context-management-in-omnibox",
+     flag_descriptions::kContextManagementInOmniboxName,
+     flag_descriptions::kContextManagementInOmniboxDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kContextManagementInOmnibox)},
+
     {"tab-favicon-chips-to-coins",
      flag_descriptions::kTabFaviconChipsToCoinsName,
      flag_descriptions::kTabFaviconChipsToCoinsDescription, kOsDesktop,

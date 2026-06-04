@@ -1478,6 +1478,11 @@ inline constexpr char kContextManagementInComposeboxDescription[] =
     "Enables an updated tab context management UI in the plus button and "
     "composebox context menu.";
 
+inline constexpr char kContextManagementInOmniboxName[] =
+    "Context management in the Omnibox";
+inline constexpr char kContextManagementInOmniboxDescription[] =
+    "Enables context menu and favicon coins for omnibox";
+
 inline constexpr char kContextualCueingName[] = "Contextual cueing";
 inline constexpr char kContextualCueingDescription[] =
     "Enables the contextual cueing system to support showing actions.";

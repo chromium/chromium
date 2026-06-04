@@ -38,6 +38,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -86,7 +87,9 @@ class OmniboxContextMenuControllerBrowserTest : public InProcessBrowserTest {
           {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
             "inline"},
            {omnibox::kShowToolsAndModels.name, "true"}}},
-         {omnibox::internal::kWebUIOmniboxPopup, {}}},
+         {omnibox::internal::kWebUIOmniboxPopup, {}},
+         {omnibox::kContextManagementInComposebox, {}},
+         {omnibox::kContextManagementInOmnibox, {}}},
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
                                omnibox::kAimFuseboxEligibilityCheckEnabled,
                                omnibox::kAimUsePecApi});
@@ -148,14 +151,17 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
                                           web_contents);
   model = controller.menu_model();
 
-  // The model should have the following visible items:
-  //   - 1 header ("Most recent tabs")
-  //   - 2 recent tab items
-  //   - 1 separator
-  //   - 2 contextual input items
-  //   - 1 separator
-  //   - 2 tool input items
-  EXPECT_EQ(9u, GetVisibleItemCount(model));
+  // Under the new gated flag, tabs are grouped into a submenu.
+  // The main model should contain:
+  // - 1 sub-menu item ("Add tabs")
+  // - 1 separator
+  // - 2 contextual input items
+  // - 1 separator
+  // - 2 tool input items
+  // This totals 7 visible items.
+  EXPECT_EQ(7u, GetVisibleItemCount(model));
+  ASSERT_TRUE(controller.shared_tabs_menu_model());
+  EXPECT_EQ(2u, GetVisibleItemCount(controller.shared_tabs_menu_model()));
 }
 
 // TODO(crbug.com/460910010): Flaky, especially on ASAN/LSAN bots and certain
@@ -304,7 +310,9 @@ class OmniboxContextMenuControllerPecBrowserTest : public InProcessBrowserTest {
            {omnibox::kShowToolsAndModels.name, "true"}}},
          {omnibox::internal::kWebUIOmniboxPopup, {}},
          {omnibox::kAimUsePecApi, {}},
-         {omnibox::kComposeboxDriveContextMenuOption, {}}},
+         {omnibox::kComposeboxDriveContextMenuOption, {}},
+         {omnibox::kContextManagementInComposebox, {}},
+         {omnibox::kContextManagementInOmnibox, {}}},
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
                                omnibox::kAimFuseboxEligibilityCheckEnabled});
   }
@@ -919,8 +927,25 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
-                       RecentTabsCheckmarkToggle) {
+// Explicitly enable both flags to activate right-hand side checkmark
+// behavior.
+class OmniboxContextMenuControllerBrowserTestWithContextManagement
+    : public OmniboxContextMenuControllerBrowserTest {
+ public:
+  OmniboxContextMenuControllerBrowserTestWithContextManagement() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kContextManagementInComposebox,
+                              omnibox::kContextManagementInOmnibox},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    OmniboxContextMenuControllerBrowserTestWithContextManagement,
+    RecentTabsCheckmarkToggle) {
   // Navigate the initial tab to the popup URL.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
@@ -981,15 +1006,19 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
 
     OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
                                             web_contents);
-    ui::SimpleMenuModel* model = controller.menu_model();
+
+    ui::SimpleMenuModel* target_model =
+        controller.shared_tabs_menu_model()
+            ? controller.shared_tabs_menu_model()
+            : controller.menu_model();
 
     // Find the recent tab item in the menu.
-    std::optional<size_t> index =
-        model->GetIndexOfCommandId(kMinOmniboxContextMenuRecentTabsCommandId);
+    std::optional<size_t> index = target_model->GetIndexOfCommandId(
+        kMinOmniboxContextMenuRecentTabsCommandId);
     ASSERT_TRUE(index.has_value());
 
     // Verify that the minor icon is empty (not checked).
-    EXPECT_TRUE(model->GetMinorIconAt(index.value()).IsEmpty());
+    EXPECT_TRUE(target_model->GetMinorIconAt(index.value()).IsEmpty());
   }
 
   // Select the tab -> This should add the tab to the context (stage it).
@@ -1015,14 +1044,18 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   {
     OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
                                             web_contents);
-    ui::SimpleMenuModel* model = controller.menu_model();
 
-    std::optional<size_t> index =
-        model->GetIndexOfCommandId(kMinOmniboxContextMenuRecentTabsCommandId);
+    ui::SimpleMenuModel* target_model =
+        controller.shared_tabs_menu_model()
+            ? controller.shared_tabs_menu_model()
+            : controller.menu_model();
+
+    std::optional<size_t> index = target_model->GetIndexOfCommandId(
+        kMinOmniboxContextMenuRecentTabsCommandId);
     ASSERT_TRUE(index.has_value());
 
     // Verify that the minor icon is not empty (it has the checkmark),
-    EXPECT_FALSE(model->GetMinorIconAt(index.value()).IsEmpty());
+    EXPECT_FALSE(target_model->GetMinorIconAt(index.value()).IsEmpty());
   }
 
   // Select the tab again -> This should remove/uncheck it from the context.
@@ -1044,14 +1077,18 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
 
     OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
                                             web_contents);
-    ui::SimpleMenuModel* model = controller.menu_model();
 
-    std::optional<size_t> index =
-        model->GetIndexOfCommandId(kMinOmniboxContextMenuRecentTabsCommandId);
+    ui::SimpleMenuModel* target_model =
+        controller.shared_tabs_menu_model()
+            ? controller.shared_tabs_menu_model()
+            : controller.menu_model();
+
+    std::optional<size_t> index = target_model->GetIndexOfCommandId(
+        kMinOmniboxContextMenuRecentTabsCommandId);
     ASSERT_TRUE(index.has_value());
 
     // Verify that the minor icon is empty again.
-    EXPECT_TRUE(model->GetMinorIconAt(index.value()).IsEmpty());
+    EXPECT_TRUE(target_model->GetMinorIconAt(index.value()).IsEmpty());
   }
 }
 

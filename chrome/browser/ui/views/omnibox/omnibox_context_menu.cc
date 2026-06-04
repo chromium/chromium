@@ -88,7 +88,8 @@ OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
 }
 
 int OmniboxContextMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
-  if (!base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+  if (!base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) ||
+      !base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox)) {
     return kDefaultMenuWidth;
   }
   // If is top level menu, return main menu's width;
@@ -118,7 +119,8 @@ OmniboxContextMenu::~OmniboxContextMenu() {
 void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
                                    ui::mojom::MenuSourceType source_type) {
   if (menu_ && menu_->HasSubmenu()) {
-    if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
+        base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox)) {
       // Set main menu to the narrower width when a submenu is enabled.
       menu_->GetSubmenu()->set_minimum_preferred_width(
           kMainMenuWidthWithSubmenuEnabled);

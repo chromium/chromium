@@ -22,6 +22,9 @@ BASE_DECLARE_FEATURE(kContextManagementInComposebox);
 // button.
 BASE_DECLARE_FEATURE(kTabFaviconChipsToCoins);
 
+// Gates context menu and favicon coins for omnibox.
+BASE_DECLARE_FEATURE(kContextManagementInOmnibox);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_COMPOSEBOX_FEATURES_H_

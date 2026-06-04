@@ -9493,6 +9493,7 @@ from previous Chrome versions.
   <int value="-1532645183" label="ReleaseNotesNotification:enabled"/>
   <int value="-1532501905"
       label="MediaPlaybackWhileNotVisiblePermissionPolicy:disabled"/>
+  <int value="-1532484557" label="ContextManagementInOmnibox:disabled"/>
   <int value="-1532138473" label="AvatarButtonSyncPromo:enabled"/>
   <int value="-1532100164" label="WebViewMeasureScreenCoverage:enabled"/>
   <int value="-1532035450" label="DragTabsInTabletMode:disabled"/>
@@ -16319,6 +16320,7 @@ from previous Chrome versions.
   <int value="696261973" label="GaiaActionButtons:enabled"/>
   <int value="696600628" label="VibrateRequiresUserGesture:disabled"/>
   <int value="696786796" label="EnableKeyboardRewriterFix:disabled"/>
+  <int value="697211154" label="ContextManagementInOmnibox:enabled"/>
   <int value="697503858" label="SharingPeerConnectionSender:disabled"/>
   <int value="698253616"
       label="ExperimentalAccessibilityChromeVoxOobeDialogImprovements:disabled"/>

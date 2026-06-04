@@ -316,6 +316,7 @@ if (!is_android) {
       "//components/infobars/core",
       "//components/omnibox/browser",
       "//components/omnibox/browser:location_bar",
+      "//components/omnibox/common:features",
       "//components/policy:generated",
       "//components/policy:policy_code_generate",
       "//components/policy/core/browser",
