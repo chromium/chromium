@@ -1,0 +1,43 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("graphics_core_jni_headers") {
+  sources = [ "java/org/chromium/androidx/GraphicsCoreJniLoader.java" ]
+}
+
+android_library("graphics_core_java") {
+  visibility = [ "//third_party/androidx:*" ]
+  sources = [ "java/org/chromium/androidx/GraphicsCoreJniLoader.java" ]
+  deps = [
+    ":graphics_core_jni_headers_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+}
+
+source_set("graphics_core_native") {
+  defines = [ "__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__" ]
+  sources = [
+    "cpp/egl_utils.cpp",
+    "cpp/egl_utils.h",
+    "cpp/graphics-core.cpp",
+    "cpp/sync_fence.cpp",
+    "cpp/sync_fence.h",
+    "graphics_core_jni_initializer.cpp",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  cflags_cc = [ "-Wno-unguarded-availability" ]
+  libs = [
+    "android",
+    "EGL",
+  ]
+  deps = [
+    ":graphics_core_jni_headers",
+    "//base",
+    "//third_party/jni_zero",
+  ]
+}

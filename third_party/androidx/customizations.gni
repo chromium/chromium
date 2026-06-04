@@ -70,6 +70,7 @@ template("_androidx_prebuilt") {
       bytecode_rewriter_target =
           "//build/android/bytecode:system_load_library_remover"
       bytecode_rewriter_args = [ "org.chromium.androidx.GraphicsCoreJniLoader" ]
+      deps += [ "//third_party/androidx/local_modifications/graphics_core:graphics_core_java" ]
     } else if (target_name == "androidx_ink_ink_nativeloader_android_java") {
       ignore_native_libraries = true
       bytecode_rewriter_target =
