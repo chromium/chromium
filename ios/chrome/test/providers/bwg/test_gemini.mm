@@ -101,4 +101,9 @@ int GetLiveCaptionsNumberOfLines() {
   return 0;
 }
 
+UIViewController* GetFloatyViewControllerWithConfiguration(
+    GeminiConfiguration* gemini_configuration) {
+  return nil;
+}
+
 }  // namespace ios::provider

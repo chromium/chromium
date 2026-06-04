@@ -244,6 +244,10 @@ bool IsLiveStopButtonHidden();
 void SetLiveCaptionsNumberOfLines(int number_of_lines);
 int GetLiveCaptionsNumberOfLines();
 
+// Returns the view controller for the Gemini floaty.
+UIViewController* GetFloatyViewControllerWithConfiguration(
+    GeminiConfiguration* gemini_configuration);
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_GEMINI_API_H_
