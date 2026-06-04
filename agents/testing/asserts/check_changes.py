@@ -15,7 +15,7 @@ def _get_changed_files():
         capture_output=True,
         text=True,
     )
-    lines = result.stdout.strip().splitlines()
+    lines = result.stdout.splitlines()
     file_statuses = {}
     for line in lines:
         if not line:
