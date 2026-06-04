@@ -12,8 +12,6 @@
     "proprietary_codecs": true,
     "target_cpu": "arm64",
     "target_os": "android",
-    "tint_build_fuzzer_vulkan_support": true,
-    "tint_build_mesa": true,
     "use_libfuzzer": true,
     "use_reclient": false,
     "use_remoteexec": true,

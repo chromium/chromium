@@ -26,9 +26,6 @@
                 "target_platform": "linux"
               },
               "legacy_gclient_config": {
-                "apply_configs": [
-                  "checkout_mesa"
-                ],
                 "config": "chromium"
               }
             }

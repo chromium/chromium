@@ -252,9 +252,6 @@ def fuzz_target_builder(
         branch_selector = None,
         max_concurrent_invocations = None,
         gn_extra_configs = [],
-        gn_extra_configs_for_ci = [],
-        gclient_apply_configs = [],
-        gclient_apply_configs_for_ci = [],
         use_component_build = True,
         chromium_extra_apply_configs = [],
         clusterfuzz_archive_name_prefix = None,
@@ -301,6 +298,7 @@ def fuzz_target_builder(
         chromium_extra_apply_configs = [
             "clobber",
         ] + chromium_extra_apply_configs,
+        gn_extra_configs = gn_configs,
         use_component_build = use_component_build,
         contact_team_email = contact_team_email,
         **kwargs
@@ -317,8 +315,6 @@ def fuzz_target_builder(
             builderless = builderless,
             console_category = fuzzing_engine,
             properties = properties,
-            gclient_apply_configs = gclient_apply_configs + gclient_apply_configs_for_ci,
-            gn_extra_configs = gn_configs + gn_extra_configs_for_ci,
             **kwargs
         )
 
@@ -359,8 +355,6 @@ def fuzz_target_builder(
             ] + swarming_mixins,
         ),
         console_category = fuzzing_engine + "-tests",
-        gclient_apply_configs = gclient_apply_configs,
-        gn_extra_configs = gn_configs,
         **kwargs
     )
 
@@ -383,8 +377,6 @@ def libfuzzer_linux_builder(
         swarming_mixins = ["linux-jammy"] + swarming_mixins,
         target_platform = target_platform,
         gn_extra_configs = gn_configs,
-        gclient_apply_configs_for_ci = ["checkout_mesa"],
-        gn_extra_configs_for_ci = ["tint_mesa_fuzz"],
         **kwargs
     )
 

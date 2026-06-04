@@ -27,8 +27,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos",
-                  "checkout_mesa"
+                  "chromeos"
                 ],
                 "config": "chromium"
               }
