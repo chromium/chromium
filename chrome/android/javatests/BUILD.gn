@@ -1568,6 +1568,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tasks") {
   deps = [
     ":chrome_test_java_helper",
     "//base:holder_java",
+    "//chrome/browser/actor/android:java",
     "//chrome/browser/educational_tip:java",
   ]
 }
