@@ -3565,6 +3565,10 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   if (!container)
     return;
 
+  // If we skipped an ancestor, it must mean we have an ancestor that was passed
+  // in.
+  CHECK(!skip_info.AncestorSkipped() || ancestor);
+
   PhysicalOffset container_offset = OffsetFromContainer(container, mode);
 
   // Text objects just copy their parent's computed style, so we need to ignore
@@ -3761,6 +3765,7 @@ PhysicalOffset LayoutObject::OffsetFromContainerInternal(
     const LayoutObject* o,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
+  CHECK(o);
   DCHECK_EQ(o, Container());
   PhysicalOffset offset;
   if (o->IsScrollContainer()) {
@@ -3774,6 +3779,7 @@ PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
     const LayoutObject* container,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
+  CHECK(container);
   DCHECK(container->IsScrollContainer());
 
   if (IsFixedPositioned() && container->IsLayoutView())
@@ -3790,6 +3796,7 @@ PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
 
   // ScrollOrigin accounts for other writing modes whose content's origin is not
   // at the top-left.
+  CHECK(box->GetScrollableArea());
   return PhysicalOffset(box->GetScrollableArea()->ScrollOrigin());
 }
 
@@ -3817,14 +3824,16 @@ PhysicalOffset LayoutObject::OffsetFromOverscrollContainer(
           ? overscroll_areas.Find(
                 &To<PseudoElement>(GetNode())->UltimateOriginatingElement())
           : overscroll_areas.size();
+  CHECK_LE(affecting_overscroll_areas, overscroll_areas.size());
 
   PhysicalOffset offset;
   for (wtf_size_t i = 0; i < affecting_overscroll_areas; ++i) {
-    offset += OffsetFromScrollableContainer(
-        overscroll_areas[i]
-            ->GetPseudoElement(kPseudoIdOverscrollAreaParent)
-            ->GetLayoutObject(),
-        mode);
+    auto* area_parent =
+        overscroll_areas[i]->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+    CHECK(area_parent) << i;
+    auto* area_parent_object = area_parent->GetLayoutObject();
+    CHECK(area_parent_object) << i;
+    offset += OffsetFromScrollableContainer(area_parent_object, mode);
   }
   return offset;
 }
