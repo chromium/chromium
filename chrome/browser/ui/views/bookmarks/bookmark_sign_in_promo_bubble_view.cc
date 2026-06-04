@@ -15,10 +15,10 @@
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkSigninPromoFrameViewId);
 
 BookmarkSigninPromoBubbleView::BookmarkSigninPromoBubbleView(
-    View* anchor_view,
+    views::BubbleAnchor bubble_anchor,
     content::WebContents* web_contents,
     const bookmarks::BookmarkNode* bookmark)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents) {
+    : LocationBarBubbleDelegateView(bubble_anchor, web_contents) {
   CHECK(bookmark);
   CHECK(web_contents);
 

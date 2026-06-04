@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/bubble/bubble_anchor.h"
 
 namespace content {
 class WebContents;
@@ -23,7 +24,7 @@ class BookmarkSigninPromoBubbleView : public LocationBarBubbleDelegateView {
   METADATA_HEADER(BookmarkSigninPromoBubbleView, LocationBarBubbleDelegateView)
 
  public:
-  BookmarkSigninPromoBubbleView(View* anchor_view,
+  BookmarkSigninPromoBubbleView(views::BubbleAnchor bubble_anchor,
                                 content::WebContents* web_contents,
                                 const bookmarks::BookmarkNode* bookmark);
   ~BookmarkSigninPromoBubbleView() override;

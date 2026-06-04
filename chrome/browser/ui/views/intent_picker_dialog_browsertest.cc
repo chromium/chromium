@@ -56,7 +56,8 @@ class IntentPickerDialogTest : public DialogBrowserTest {
     add_entry("c");
     add_entry("d");
     IntentPickerBubbleView::ShowBubble(
-        BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView(),
+        views::BubbleAnchor(BrowserView::GetBrowserViewForBrowser(browser())
+                                ->GetLocationBarView()),
         GetHighlightElement(),
         IntentPickerBubbleView::BubbleType::kLinkCapturing,
         browser()->tab_strip_model()->GetActiveWebContents(),

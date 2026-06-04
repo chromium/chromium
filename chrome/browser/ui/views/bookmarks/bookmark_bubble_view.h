@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/bubble/bubble_anchor.h"
 
 class GURL;
 class Browser;
@@ -26,7 +27,6 @@ struct RequestMetadata;
 
 namespace views {
 class BubbleDialogDelegate;
-class View;
 }  // namespace views
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkBubbleOkButtonId);
@@ -43,7 +43,7 @@ class BookmarkBubbleView {
   BookmarkBubbleView& operator=(const BookmarkBubbleView&) = delete;
 
   static void ShowBubble(
-      views::View* anchor_view,
+      views::BubbleAnchor bubble_anchor,
       content::WebContents* web_contents,
       page_actions::PageActionViewInterface* highlighted_button,
       Browser* browser,

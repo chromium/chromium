@@ -163,14 +163,14 @@ actions::ActionItem& GetBookmarkActionItem(BrowserWindowInterface* bwi) {
 #if !BUILDFLAG(IS_CHROMEOS)
 void MaybeShowSignInPromo(bool already_bookmarked,
                           Profile* profile,
-                          views::View* anchor_view,
+                          views::BubbleAnchor bubble_anchor,
                           content::WebContents* web_contents,
                           const bookmarks::BookmarkNode* bookmark) {
   if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
     return;
   }
 
-  if (!anchor_view) {
+  if (!bubble_anchor) {
     return;
   }
 
@@ -183,7 +183,7 @@ void MaybeShowSignInPromo(bool already_bookmarked,
   }
 
   BookmarkSigninPromoBubbleView* bubble =
-      new BookmarkSigninPromoBubbleView(anchor_view, web_contents, bookmark);
+      new BookmarkSigninPromoBubbleView(bubble_anchor, web_contents, bookmark);
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
 }
@@ -216,7 +216,7 @@ class BookmarkBubbleViewPromoHelper {
   static base::OnceCallback<void()> CreatePriceTrackingCallback(
       Browser* browser,
       Profile* profile,
-      views::View* anchor_view,
+      views::BubbleAnchor bubble_anchor,
       content::WebContents* web_contents,
       const bookmarks::BookmarkNode* bookmark) {
     if (!profile) {
@@ -251,14 +251,14 @@ class BookmarkBubbleViewPromoHelper {
 
     base::OnceCallback<void()> show_dialog_callback = base::BindOnce(
         [](base::WeakPtr<content::WebContents> web_contents, Profile* profile,
-           views::View* anchor) {
+           views::BubbleAnchor anchor) {
           if (!web_contents || !profile || !anchor) {
             return;
           }
           PriceTrackingEmailDialogCoordinator(anchor).Show(
               web_contents.get(), profile, base::DoNothing());
         },
-        web_contents->GetWeakPtr(), profile, anchor_view);
+        web_contents->GetWeakPtr(), profile, bubble_anchor);
 
     return base::BindOnce(
         [](Profile* profile, const bookmarks::BookmarkNode* node,
@@ -412,8 +412,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
 
 // static
 void BookmarkBubbleView::ShowBubble(
-    // TODO: crbug.com/501449122 - Switch View to BubbleAnchor.
-    views::View* anchor_view,
+    views::BubbleAnchor bubble_anchor,
     content::WebContents* web_contents,
     page_actions::PageActionViewInterface* highlighted_button,
     Browser* browser,
@@ -449,7 +448,7 @@ void BookmarkBubbleView::ShowBubble(
 
   base::OnceCallback<void()> post_save_callback =
       BookmarkBubbleViewPromoHelper::CreatePriceTrackingCallback(
-          browser, profile, anchor_view, web_contents, bookmark_node);
+          browser, profile, bubble_anchor, web_contents, bookmark_node);
 
   auto bubble_delegate_unique =
       std::make_unique<BookmarkBubbleDelegate>(browser, url);
@@ -492,7 +491,7 @@ void BookmarkBubbleView::ShowBubble(
 #if !BUILDFLAG(IS_CHROMEOS)
                        .Then(base::BindOnce(
                            MaybeShowSignInPromo, already_bookmarked, profile,
-                           anchor_view, web_contents, bookmark_node))
+                           bubble_anchor, web_contents, bookmark_node))
 #endif
                        ,
                    ui::DialogModel::Button::Params()
@@ -548,7 +547,7 @@ void BookmarkBubbleView::ShowBubble(
   // views:: land below, there's no agnostic reference to arrow / anchors /
   // bubbles.
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      dialog_model_builder.Build(), anchor_view,
+      dialog_model_builder.Build(), bubble_anchor,
       views::BubbleBorder::TOP_RIGHT);
   bookmark_bubble_ = bubble.get();
   bubble->SetHighlightedElement(kBookmarkStarViewElementId);

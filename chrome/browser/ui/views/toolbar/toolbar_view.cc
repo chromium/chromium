@@ -1286,22 +1286,20 @@ void ToolbarView::ShowIntentPickerBubble(
   // At this point, we either have a highlighted_element or it's a ClickToCall
   // bubble which doesn't have a corresponding page action button to highlight.
   IntentPickerBubbleView::ShowBubble(
-      location_bar_view(), higlighted_element, bubble_type, GetWebContents(),
-      std::move(app_info), show_stay_in_chrome, show_remember_selection,
-      initiating_origin, std::move(callback));
+      FindBubbleAnchor(std::nullopt), higlighted_element, bubble_type,
+      GetWebContents(), std::move(app_info), show_stay_in_chrome,
+      show_remember_selection, initiating_origin, std::move(callback));
 }
 
 void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
-  // TODO: crbug.com/501449027 - Convert to use FindBubbleAnchor(nullopt).
-  views::View* const anchor_view = location_bar_view();
   page_actions::PageActionViewInterface* bookmark_star_icon = nullptr;
   if (!features::IsWebUILocationBarEnabled()) {
     bookmark_star_icon = GetPageActionViewInterface(kActionBookmarkThisTab);
     CHECK(bookmark_star_icon);
   }
-  BookmarkBubbleView::ShowBubble(anchor_view, GetWebContents(),
-                                 bookmark_star_icon, browser_, url,
-                                 already_bookmarked);
+  BookmarkBubbleView::ShowBubble(FindBubbleAnchor(std::nullopt),
+                                 GetWebContents(), bookmark_star_icon, browser_,
+                                 url, already_bookmarked);
 }
 
 bool ToolbarView::IsPositionInWindowCaption(

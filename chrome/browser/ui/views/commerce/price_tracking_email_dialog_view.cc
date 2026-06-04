@@ -58,11 +58,10 @@ std::unique_ptr<views::StyledLabel> CreateBodyLabel(std::u16string& body_text) {
 }  // namespace
 
 PriceTrackingEmailDialogView::PriceTrackingEmailDialogView(
-    View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     Profile* profile)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
-      profile_(profile) {
+    : LocationBarBubbleDelegateView(anchor, web_contents), profile_(profile) {
   SetShowCloseButton(true);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -187,8 +186,8 @@ END_METADATA
 
 // PriceTrackingEmailDialogCoordinator
 PriceTrackingEmailDialogCoordinator::PriceTrackingEmailDialogCoordinator(
-    views::View* anchor_view)
-    : anchor_view_(anchor_view) {}
+    views::BubbleAnchor anchor)
+    : anchor_(anchor) {}
 
 PriceTrackingEmailDialogCoordinator::~PriceTrackingEmailDialogCoordinator() =
     default;
@@ -212,7 +211,7 @@ void PriceTrackingEmailDialogCoordinator::Show(
       "Commerce.PriceTracking.EmailConsentDialog.Shown"));
 
   auto bubble = std::make_unique<PriceTrackingEmailDialogView>(
-      anchor_view_, web_contents, profile);
+      anchor_, web_contents, profile);
   bubble->SetProperty(views::kElementIdentifierKey,
                       kPriceTrackingEmailConsentDialogId);
   tracker_.SetView(bubble.get());

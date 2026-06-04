@@ -94,8 +94,8 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
     CommitPendingLoad(&web_contents->GetController());
 
     auto* widget = IntentPickerBubbleView::ShowBubble(
-        anchor_view_, /*highlighted_element=*/std::nullopt, bubble_type,
-        web_contents, app_info_, show_stay_in_chrome,
+        views::BubbleAnchor(anchor_view_), /*highlighted_element=*/std::nullopt,
+        bubble_type, web_contents, app_info_, show_stay_in_chrome,
         /*show_remember_selection=*/true, initiating_origin,
         base::BindOnce(&IntentPickerBubbleViewTest::OnBubbleClosed,
                        base::Unretained(this)));

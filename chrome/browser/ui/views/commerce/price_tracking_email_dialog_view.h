@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -29,7 +30,7 @@ class PriceTrackingEmailDialogView : public LocationBarBubbleDelegateView {
   METADATA_HEADER(PriceTrackingEmailDialogView, LocationBarBubbleDelegateView)
 
  public:
-  PriceTrackingEmailDialogView(View* anchor_view,
+  PriceTrackingEmailDialogView(views::BubbleAnchor anchor,
                                content::WebContents* web_contents,
                                Profile* profile);
   ~PriceTrackingEmailDialogView() override;
@@ -50,7 +51,7 @@ class PriceTrackingEmailDialogView : public LocationBarBubbleDelegateView {
 
 class PriceTrackingEmailDialogCoordinator : public views::WidgetObserver {
  public:
-  explicit PriceTrackingEmailDialogCoordinator(views::View* anchor_view);
+  explicit PriceTrackingEmailDialogCoordinator(views::BubbleAnchor anchor);
   ~PriceTrackingEmailDialogCoordinator() override;
 
   // WidgetObserver:
@@ -66,7 +67,7 @@ class PriceTrackingEmailDialogCoordinator : public views::WidgetObserver {
  private:
   bool IsShowing();
 
-  const raw_ptr<views::View> anchor_view_;
+  const views::BubbleAnchor anchor_;
   views::ViewTracker tracker_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};

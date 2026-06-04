@@ -29,7 +29,7 @@ class PriceTrackingEmailDialogViewBrowserTest : public InProcessBrowserTest {
     anchor_widget_->Init(std::move(widget_params));
 
     dialog_coordinator_ = std::make_unique<PriceTrackingEmailDialogCoordinator>(
-        anchor_widget_->GetContentsView());
+        views::BubbleAnchor(anchor_widget_->GetContentsView()));
 
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(GetProfile()), "test@example.com",

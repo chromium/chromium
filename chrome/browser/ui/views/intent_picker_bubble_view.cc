@@ -516,7 +516,7 @@ IntentPickerBubbleView* IntentPickerBubbleView::intent_picker_bubble_ = nullptr;
 
 // static
 views::Widget* IntentPickerBubbleView::ShowBubble(
-    views::View* anchor_view,
+    views::BubbleAnchor bubble_anchor,
     std::optional<ui::ElementIdentifier> highlighted_element,
     BubbleType bubble_type,
     content::WebContents* web_contents,
@@ -529,7 +529,7 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
     intent_picker_bubble_->CloseBubble();
   }
   intent_picker_bubble_ = new IntentPickerBubbleView(
-      anchor_view, bubble_type, std::move(app_info),
+      bubble_anchor, bubble_type, std::move(app_info),
       std::move(intent_picker_cb), web_contents, show_stay_in_chrome,
       show_remember_selection, initiating_origin);
   if (highlighted_element) {
@@ -644,7 +644,7 @@ std::u16string IntentPickerBubbleView::GetWindowTitle() const {
 }
 
 IntentPickerBubbleView::IntentPickerBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor bubble_anchor,
     BubbleType bubble_type,
     std::vector<AppInfo> app_info,
     IntentPickerResponse intent_picker_cb,
@@ -652,7 +652,7 @@ IntentPickerBubbleView::IntentPickerBubbleView(
     bool show_stay_in_chrome,
     bool show_remember_selection,
     const std::optional<url::Origin>& initiating_origin)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(bubble_anchor, web_contents),
       intent_picker_cb_(std::move(intent_picker_cb)),
       app_info_(std::move(app_info)),
       use_grid_view_(apps::features::ShouldShowLinkCapturingUX() &&
