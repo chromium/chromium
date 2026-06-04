@@ -803,6 +803,14 @@ void WebBluetoothServiceImpl::RequestDevice(
     return;
   }
 
+  if (!GetAdapter() &&
+      !BluetoothAdapterFactoryWrapper::Get().IsLowEnergySupported()) {
+    std::move(callback).Run(
+        blink::mojom::WebBluetoothResult::BLUETOOTH_LOW_ENERGY_NOT_AVAILABLE,
+        /*device=*/nullptr);
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(
           features::kWebBluetoothAllowGetAvailabilityWithBfcache)) {
     PreventBackForwardCache();
@@ -811,31 +819,25 @@ void WebBluetoothServiceImpl::RequestDevice(
   RecordRequestDeviceOptions(options);
 
   if (!GetAdapter()) {
-    if (BluetoothAdapterFactoryWrapper::Get().IsLowEnergySupported()) {
-      BluetoothAdapterFactoryWrapper::Get().AcquireAdapter(
-          this, base::BindOnce(&WebBluetoothServiceImpl::RequestDeviceImpl,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               std::move(options), std::move(callback)));
-      return;
-    }
-    std::move(callback).Run(
-        blink::mojom::WebBluetoothResult::BLUETOOTH_LOW_ENERGY_NOT_AVAILABLE,
-        /*device=*/nullptr);
+    BluetoothAdapterFactoryWrapper::Get().AcquireAdapter(
+        this, base::BindOnce(&WebBluetoothServiceImpl::RequestDeviceImpl,
+                             weak_ptr_factory_.GetWeakPtr(), std::move(options),
+                             std::move(callback)));
     return;
   }
   RequestDeviceImpl(std::move(options), std::move(callback), GetAdapter());
 }
 
 void WebBluetoothServiceImpl::GetDevices(GetDevicesCallback callback) {
-  if (base::FeatureList::IsEnabled(
-          features::kWebBluetoothAllowGetAvailabilityWithBfcache)) {
-    PreventBackForwardCache();
-  }
-
   if (GetBluetoothAllowed() != blink::mojom::WebBluetoothResult::SUCCESS ||
       !BluetoothAdapterFactoryWrapper::Get().IsLowEnergySupported()) {
     std::move(callback).Run({});
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebBluetoothAllowGetAvailabilityWithBfcache)) {
+    PreventBackForwardCache();
   }
 
   auto* adapter = GetAdapter();
@@ -1557,11 +1559,6 @@ void WebBluetoothServiceImpl::RequestScanningStart(
   // frames are disallowed.
   DCHECK(!render_frame_host().IsNestedWithinFencedFrame());
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebBluetoothAllowGetAvailabilityWithBfcache)) {
-    PreventBackForwardCache();
-  }
-
   const url::Origin requesting_origin = origin();
   const url::Origin embedding_origin =
       render_frame_host().GetMainFrame()->GetLastCommittedOrigin();
@@ -1582,17 +1579,24 @@ void WebBluetoothServiceImpl::RequestScanningStart(
     return;
   }
 
-  if (!GetAdapter()) {
-    if (BluetoothAdapterFactoryWrapper::Get().IsLowEnergySupported()) {
-      BluetoothAdapterFactoryWrapper::Get().AcquireAdapter(
-          this, base::BindOnce(
-                    &WebBluetoothServiceImpl::RequestScanningStartImpl,
-                    weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
-                    std::move(options), std::move(callback)));
-      return;
-    }
+  if (!GetAdapter() &&
+      !BluetoothAdapterFactoryWrapper::Get().IsLowEnergySupported()) {
     std::move(callback).Run(
         blink::mojom::WebBluetoothResult::BLUETOOTH_LOW_ENERGY_NOT_AVAILABLE);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebBluetoothAllowGetAvailabilityWithBfcache)) {
+    PreventBackForwardCache();
+  }
+
+  if (!GetAdapter()) {
+    BluetoothAdapterFactoryWrapper::Get().AcquireAdapter(
+        this,
+        base::BindOnce(&WebBluetoothServiceImpl::RequestScanningStartImpl,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
+                       std::move(options), std::move(callback)));
     return;
   }
 
