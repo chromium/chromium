@@ -13,7 +13,7 @@ import pathlib
 import pickle
 import shutil
 import sys
-from typing import Any, Callable, Dict, Iterable, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -267,7 +267,7 @@ class PresubmitCache:
 PresubmitCheckMethod = Callable[..., List[Any]]
 
 
-def RunCheckWithCache(check_method: PresubmitCheckMethod, check_id: Any,
+def RunCheckWithCache(check_method: PresubmitCheckMethod, check_id: int,
                       input_api: Any, output_api: Any, cache_file_path: str,
                       *args, **kwargs) -> List[Any]:
   """Runs a check method with caching support.
