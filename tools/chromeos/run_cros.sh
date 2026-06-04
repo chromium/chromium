@@ -59,6 +59,10 @@ GlicZeroStateSuggestions,FeatureManagementGlic,GlicMultiInstance,\
 GlicDefaultTabContextSetting,GlicUnifiedFreScreen,GlicDaisyChainNewTabs,\
 GlicLiveModeOnlyGlow
 
+# Webium feature flags.
+WEBIUM_FEATURES=Webium,AttachUnownedInnerWebContents,\
+ExtensionsMenuAccessControl
+
 FEATURES=VerticalTabs,FeatureManagementRoundedWindows,${GLIC_FEATURES}
 
 export XDG_RUNTIME_DIR=${USER_TMP_DIR}/xdg1
@@ -172,6 +176,7 @@ command
                          'show-xinput-device-id'.
   --user-data-dir        specifies the user data dir
   --wayland-debug        Enable WAYLAND_DEBUG=1
+  --webium               Enable webium.
   --<chrome commandline flags>
                          Pass extra command line flags to ash-chrome.
                          The script will reject if the string does not exist in
@@ -206,11 +211,8 @@ do
     --wayland-debug)
       export WAYLAND_DEBUG=1
       ;;
-    --glic)
-      FEATURES=${FEATURES},${GLIC_BASIC_FEATURES}
-      ;;
-    --glic-side-panel)
-      FEATURES=${FEATURES},${GLIC_BASIC_FEATURES},${GLIC_SIDE_PANEL_FEATURES}
+    --webium)
+      FEATURES=${FEATURES},${WEBIUM_FEATURES}
       ;;
     --touch-device-id=*)
       id=${1:18}
