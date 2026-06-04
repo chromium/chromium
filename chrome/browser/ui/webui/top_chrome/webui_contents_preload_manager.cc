@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -253,10 +254,26 @@ RequestResult::~RequestResult() = default;
 RequestResult::RequestResult(RequestResult&&) = default;
 RequestResult& RequestResult::operator=(RequestResult&&) = default;
 
+namespace {
+
+constexpr base::MemoryConsumerTraits kWebUIContentsPreloadManagerTraits(
+    // Passive consumer. No memory will be reclaimed.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    // Passive consumer. Zero release/traversal overhead.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    // Discards no data.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Checks execute synchronously inline.
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    // Evaluates pressure as a binary state (avoids preloading).
+    base::MemoryConsumerTraits::SupportsMemoryLimit::kNo);
+
+}  // namespace
+
 WebUIContentsPreloadManager::WebUIContentsPreloadManager()
     : memory_consumer_registration_(
           /*consumer_name=*/"WebUIContentsPreloadManager",
-          /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
+          kWebUIContentsPreloadManagerTraits,
           this,
           base::MemoryConsumerRegistration::CheckUnregister::kDisabled,
           base::MemoryConsumerRegistration::CheckRegistryExists::kDisabled) {
