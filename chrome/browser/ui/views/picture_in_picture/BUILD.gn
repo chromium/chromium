@@ -37,11 +37,6 @@ source_set("picture_in_picture") {
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/color:color_headers",
-    "//chrome/browser/ui/views/page_info",
-    "//components/omnibox/browser:location_bar",
-    "//components/security_state/content",
-    "//components/security_state/core",
-    "//components/url_formatter",
     "//components/vector_icons",
     "//ui/base",
     "//ui/base/metadata",
@@ -64,8 +59,6 @@ source_set("unit_tests") {
   deps = [
     ":picture_in_picture",
     "//base",
-    "//chrome/browser/ssl",
-    "//chrome/browser/ui/views/page_info",
     "//chrome/test:test_support",
     "//content/public/browser",
     "//content/test:test_support",
@@ -78,6 +71,5 @@ source_set("unit_tests") {
     "//ui/views",
     "//ui/views:test_support",
     "//ui/views/controls/webview",
-    "//url",
   ]
 }

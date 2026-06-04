@@ -6,17 +6,14 @@
 
 #include <utility>
 
-#include "base/check_deref.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
-#include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/view_utils.h"
 
 DocumentPipWidgetDelegate::DocumentPipWidgetDelegate(
-    DocumentPipHost* host,
-    std::unique_ptr<content::WebContents> child_web_contents)
-    : host_(CHECK_DEREF(host)) {
+    Profile* profile,
+    std::unique_ptr<content::WebContents> child_web_contents) {
   SetCanResize(true);
   SetCanMaximize(false);
   SetCanMinimize(false);
@@ -28,7 +25,7 @@ DocumentPipWidgetDelegate::DocumentPipWidgetDelegate(
   set_use_desktop_widget_override(true);
 
   SetContentsView(std::make_unique<DocumentPipContentsView>(
-      host_->GetProfile(), std::move(child_web_contents)));
+      profile, std::move(child_web_contents)));
 }
 
 DocumentPipWidgetDelegate::~DocumentPipWidgetDelegate() = default;
@@ -40,5 +37,5 @@ DocumentPipWidgetDelegate::GetDocumentPipContentsView() {
 
 std::unique_ptr<views::FrameView> DocumentPipWidgetDelegate::CreateFrameView(
     views::Widget* widget) {
-  return std::make_unique<DocumentPipFrameView>(&host_.get());
+  return std::make_unique<DocumentPipFrameView>(widget);
 }

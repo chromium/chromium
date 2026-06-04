@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -21,7 +20,7 @@ class Widget;
 }  // namespace views
 
 class DocumentPipContentsView;
-class DocumentPipHost;
+class Profile;
 
 // DocumentPipWidgetDelegate is the WidgetDelegate for the standalone Document
 // Picture-in-Picture widget. It creates the contents view
@@ -30,10 +29,10 @@ class DocumentPipHost;
 // This class replaces BrowserView's role as widget delegate for the PiP window.
 class DocumentPipWidgetDelegate : public views::WidgetDelegate {
  public:
-  // `host` must outlive this delegate. Takes ownership of `child_web_contents`
-  // and transfers it to the inner WebView.
+  // `profile` must outlive this delegate. Takes ownership of
+  // `child_web_contents` and transfers it to the inner WebView.
   DocumentPipWidgetDelegate(
-      DocumentPipHost* host,
+      Profile* profile,
       std::unique_ptr<content::WebContents> child_web_contents);
 
   DocumentPipWidgetDelegate(const DocumentPipWidgetDelegate&) = delete;
@@ -54,9 +53,6 @@ class DocumentPipWidgetDelegate : public views::WidgetDelegate {
   }
 
  private:
-  // Owns this delegate and outlives it.
-  const raw_ref<DocumentPipHost> host_;
-
   base::WeakPtrFactory<DocumentPipWidgetDelegate> weak_factory_{this};
 };
 
