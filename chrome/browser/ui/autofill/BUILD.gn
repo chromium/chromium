@@ -20,6 +20,11 @@ if (is_android) {
   }
 }
 
+source_set("bubble_controller_base") {
+  public = [ "bubble_controller_base.h" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("autofill_ai_ui_utils") {
   sources = [
     "autofill_ai/autofill_ai_import_string_utils.h",
@@ -57,7 +62,6 @@ source_set("autofill") {
     "autofill_popup_view_delegate.h",
     "autofill_suggestion_controller.h",
     "autofill_suggestion_controller_utils.h",
-    "bubble_controller_base.h",
     "chrome_autofill_client.h",
     "next_idle_barrier.h",
     "popup_controller_common.h",
@@ -66,6 +70,7 @@ source_set("autofill") {
 
   public_deps = [
     ":autofill_ai_ui_utils",
+    ":bubble_controller_base",
     "//base",
     "//base:i18n",
     "//chrome/browser:global_features",

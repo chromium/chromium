@@ -16,8 +16,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -383,10 +383,10 @@ void VerticalTabStripStateController::UpdateCollapseActionItem() {
   if (collapse_action) {
     collapse_action->SetImage(
         ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon));
-    collapse_action->SetText(BrowserActions::GetCleanTitleAndTooltipText(
-        l10n_util::GetStringUTF16(text)));
-    collapse_action->SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
-        l10n_util::GetStringUTF16(text)));
+    collapse_action->SetText(
+        chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text)));
+    collapse_action->SetTooltipText(
+        chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text)));
   }
 }
 

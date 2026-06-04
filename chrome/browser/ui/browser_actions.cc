@@ -38,6 +38,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
+#include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
@@ -235,18 +236,7 @@ BrowserActions::~BrowserActions() {
 // static
 std::u16string BrowserActions::GetCleanTitleAndTooltipText(
     std::u16string string) {
-  static constexpr std::u16string_view kEllipsisUnicode{u"\u2026"};
-  static constexpr std::u16string_view kEllipsisText{u"..."};
-
-  const auto remove_ellipsis = [&string](const std::u16string_view ellipsis) {
-    const size_t ellipsis_pos = string.find(ellipsis);
-    if (ellipsis_pos != std::u16string::npos) {
-      string.erase(ellipsis_pos);
-    }
-  };
-  remove_ellipsis(kEllipsisUnicode);
-  remove_ellipsis(kEllipsisText);
-  return gfx::RemoveAccelerator(string);
+  return chrome::GetCleanTitleAndTooltipText(std::move(string));
 }
 
 void BrowserActions::InitializeBrowserActions() {

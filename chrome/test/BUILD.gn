@@ -1225,6 +1225,7 @@ static_library("test_support") {
     ]
     deps += [
       "//chrome/browser/ui/color:mixers",
+      "//chrome/browser/ui/passwords:impl",
       "//components/color",
       "//components/omnibox/browser:test_support",
       "//components/user_education/views",
@@ -11370,6 +11371,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/omnibox:interactive_ui_tests",
       "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/passwords:impl",
       "//chrome/browser/ui/plus_addresses:interactive_ui_tests",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/read_anything:interactive_ui_tests",

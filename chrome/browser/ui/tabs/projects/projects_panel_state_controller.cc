@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/grit/generated_resources.h"
@@ -112,10 +112,10 @@ void ProjectsPanelStateController::UpdateProjectsActionItem() {
       actions::ActionManager::Get().FindAction(kActionToggleProjectsPanel,
                                                root_action_item_);
   if (projects_action) {
-    projects_action->SetText(BrowserActions::GetCleanTitleAndTooltipText(
-        l10n_util::GetStringUTF16(text)));
-    projects_action->SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
-        l10n_util::GetStringUTF16(text)));
+    projects_action->SetText(
+        chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text)));
+    projects_action->SetTooltipText(
+        chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text)));
   }
 }
 

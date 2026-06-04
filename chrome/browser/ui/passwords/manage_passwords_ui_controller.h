@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
@@ -49,6 +48,10 @@ class PostSaveCompromisedHelper;
 namespace {
 inline constexpr int kMaxNumberOfTimesBiometricAuthForFillingPromoWillBeShown =
     3;
+}
+
+namespace actions {
+class ActionItem;
 }
 
 class AccountChooserPrompt;

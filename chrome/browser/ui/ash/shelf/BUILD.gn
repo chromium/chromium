@@ -373,3 +373,16 @@ if (is_chromeos_device) {
     ]
   }
 }
+
+source_set("chrome_shelf_metrics_provider") {
+  public = [ "chrome_shelf_metrics_provider.h" ]
+  sources = [ "chrome_shelf_metrics_provider.cc" ]
+  public_deps = [ "//components/metrics" ]
+  deps = [
+    ":shelf",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/profiles:profile",
+  ]
+}

@@ -39,6 +39,7 @@ static_library("ash") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/signin:signin_promo",
+    "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
     "//chrome/browser/ui/webui/ash/edu_coexistence",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/system_web_dialog",

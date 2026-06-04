@@ -126,6 +126,7 @@ static_library("login") {
     "//chrome/browser/password_manager",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/themes",
+    "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
     "//chrome/browser/ui/content_settings",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/views/toolbar",

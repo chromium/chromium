@@ -11,6 +11,7 @@ source_set("browser_window_modal_dialog_delegate") {
   public_deps = [
     "//base",
     "//chrome/browser:primitives",
+    "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
     "//components/web_modal",
     "//ui/base/unowned_user_data",
   ]

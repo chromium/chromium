@@ -9,7 +9,6 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -94,7 +93,7 @@ void AiOverlayDialogController::ShowOverlay() {
 
   if (auto* action_item = actions::ActionManager::Get().FindAction(
           kActionShowAiOverlayDialog,
-          browser_->GetActions()->root_action_item())) {
+          browser_->GetFeatures().GetRootActionItem())) {
     action_item->SetImage(ui::ImageModel::FromVectorIcon(
         features::IsRoundedIconsEnabled() ? vector_icons::kPauseFilledIcon
                                           : vector_icons::kPauseOldIcon,
@@ -118,7 +117,7 @@ void AiOverlayDialogController::HideOverlay() {
 
   if (auto* action_item = actions::ActionManager::Get().FindAction(
           kActionShowAiOverlayDialog,
-          browser_->GetActions()->root_action_item())) {
+          browser_->GetFeatures().GetRootActionItem())) {
     action_item->SetImage(ui::ImageModel::FromVectorIcon(
         features::IsRoundedIconsEnabled() ? vector_icons::kMicFilledIcon
                                           : vector_icons::kMicOldIcon,

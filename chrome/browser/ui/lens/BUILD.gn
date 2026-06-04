@@ -69,6 +69,7 @@ source_set("lens") {
     "//chrome/browser/lens/core/mojom:mojo_bindings",
     "//chrome/browser/search_engines",
     "//chrome/browser/themes",
+    "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
     "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/desktop_to_mobile_promos:service",
     "//chrome/browser/ui/exclusive_access",

@@ -591,11 +591,6 @@ if (is_chromeos) {
         [ "file_system_access/cloud_identifier/cloud_identifier_util_ash.h" ]
     deps = [ "//content/public/browser" ]
   }
-
-  source_set("chrome_shelf_metrics_provider") {
-    public = [ "ui/ash/shelf/chrome_shelf_metrics_provider.h" ]
-    deps = [ "//components/metrics" ]
-  }
 } else {
   source_set("fullscreen") {
     public = [ "fullscreen.h" ]
@@ -3347,11 +3342,9 @@ static_library("browser") {
       "icon_loader_chromeos.cc",
       "platform_util_ash.cc",
       "shell_integration_chromeos.cc",
-      "ui/ash/shelf/chrome_shelf_metrics_provider.cc",
     ]
 
     deps += [
-      ":chrome_shelf_metrics_provider",
       ":chromeos_disabled_apps_throttle",
       ":cloud_identifier_util_ash",
       "//ash",
@@ -3737,6 +3730,7 @@ static_library("browser") {
       "//chrome/browser/ui/ash/session",
       "//chrome/browser/ui/ash/sharesheet",
       "//chrome/browser/ui/ash/shelf",
+      "//chrome/browser/ui/ash/shelf:chrome_shelf_metrics_provider",
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/shell_delegate",
       "//chrome/browser/ui/ash/system",
@@ -5572,7 +5566,6 @@ source_set("primitives") {
   sources = [
     "command_updater.h",
     "platform_util.h",
-    "ui/browser_actions.h",
   ]
   public_deps = [
     "//base",
@@ -5581,13 +5574,6 @@ source_set("primitives") {
     "//ui/gfx",
   ]
   deps = [ "//chrome/common:buildflags" ]
-  if (!is_android) {
-    sources += [
-      "ui/chrome_web_modal_dialog_manager_delegate.cc",
-      "ui/chrome_web_modal_dialog_manager_delegate.h",
-    ]
-    public_deps += [ "//components/web_modal" ]
-  }
 }
 
 source_set("chrome_content_browser_client_parts") {

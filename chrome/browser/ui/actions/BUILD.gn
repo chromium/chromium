@@ -27,6 +27,15 @@ source_set("actions") {
   ]
 }
 
+source_set("actions_util") {
+  public = [ "actions_util.h" ]
+  sources = [ "actions_util.cc" ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//ui/gfx" ]
+}
+
 if (!is_android) {
   executable("dump_actions") {
     testonly = true

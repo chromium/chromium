@@ -31,10 +31,6 @@ source_set("passwords") {
       "manage_passwords_ui_controller.h",
       "password_base_dialog_controller.h",
       "password_dialog_prompts.h",
-      "password_generation_popup_controller.h",
-      "password_generation_popup_controller_impl.h",
-      "password_generation_popup_observer.h",
-      "password_generation_popup_view.h",
       "passwords_client_ui_delegate.h",
       "passwords_leak_dialog_delegate.h",
       "passwords_model_delegate.h",
@@ -42,6 +38,7 @@ source_set("passwords") {
     public_deps += [
       "//build:branding_buildflags",
       "//chrome/browser:primitives",
+      "//chrome/browser/ui/autofill:bubble_controller_base",
       "//chrome/common:buildflags",
       "//components/password_manager/core/browser/ui",
       "//components/password_manager/core/common",
@@ -119,15 +116,14 @@ source_set("impl") {
       "manage_passwords_auto_signin_toast_delegate.cc",
       "manage_passwords_ui_controller.cc",
       "password_change_ui_controller.cc",
+      "password_change_ui_controller.h",
+      "password_generation_popup_controller.h",
       "password_generation_popup_controller_impl.cc",
+      "password_generation_popup_controller_impl.h",
+      "password_generation_popup_observer.h",
+      "password_generation_popup_view.h",
       "passwords_client_ui_delegate.cc",
       "passwords_model_delegate.cc",
-
-      # TODO(crbug.com/437811373): Move this header to `:passwords` target above
-      # when the following headers get componentized:
-      # - c/b/password_manager/password_change_delegate.h
-      # - c/b/ui/views/passwords/password_change/password_change_toast.h
-      "password_change_ui_controller.h",
     ]
 
     deps += [
@@ -272,6 +268,7 @@ source_set("unit_tests") {
       "well_known_change_password_navigation_throttle_unittest.cc",
     ]
     deps += [
+      ":impl",
       ":test_support_ui",
       "//base:i18n",
       "//chrome/app:generated_resources",

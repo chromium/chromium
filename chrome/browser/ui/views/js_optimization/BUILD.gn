@@ -31,7 +31,6 @@ source_set("impl") {
     "//chrome/browser/site_protection:utils",
     "//chrome/browser/ui/actions",
     "//chrome/browser/ui/tabs",
-    "//chrome/browser/ui/views",
     "//chrome/browser/ui/views/page_action",
     "//components/infobars/content",
     "//components/infobars/core",

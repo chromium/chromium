@@ -31,6 +31,7 @@ source_set("impl") {
     "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/actions:actions_util",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/user_education",

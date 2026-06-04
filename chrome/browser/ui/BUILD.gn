@@ -69,6 +69,18 @@ source_set("web_app_testing_flags") {
   ]
 }
 
+if (!is_android) {
+  source_set("chrome_web_modal_dialog_manager_delegate") {
+    public = [ "chrome_web_modal_dialog_manager_delegate.h" ]
+    sources = [ "chrome_web_modal_dialog_manager_delegate.cc" ]
+    public_deps = [ "//components/web_modal" ]
+    deps = [
+      "//chrome/browser:primitives",
+      "//content/public/browser",
+    ]
+  }
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 # TODO(https://crbug.com/353332589): Once //chrome/browser is properly
@@ -983,6 +995,7 @@ static_library("ui") {
 
   if (!is_android) {
     deps += [
+      ":chrome_web_modal_dialog_manager_delegate",
       "//chrome/browser:certificate_viewer",
       "//chrome/browser:intent_chip_display_prefs",
       "//chrome/browser:repost_form_warning_controller",
@@ -1134,6 +1147,7 @@ static_library("ui") {
       "browser_action_prefs_listener.cc",
       "browser_action_prefs_listener.h",
       "browser_actions.cc",
+      "browser_actions.h",
       "browser_command_controller.cc",
       "browser_command_controller.h",
       "browser_commands.cc",
@@ -4679,6 +4693,7 @@ static_library("ui") {
       "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui/actions",
       "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/actions:actions_util",
       "//chrome/browser/ui/animation",
       "//chrome/browser/ui/autofill/payments",
       "//chrome/browser/ui/commerce",

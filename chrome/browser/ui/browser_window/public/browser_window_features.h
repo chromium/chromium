@@ -23,6 +23,10 @@ class GlicNudgeController;
 class GlicActorNudgeController;
 }  // namespace glic
 
+namespace actions {
+class ActionItem;
+}  // namespace actions
+
 class ActorUiWindowController;
 class ContextHighlightWindowFeature;
 
@@ -286,6 +290,7 @@ class BrowserWindowFeatures {
   void TearDownPreBrowserWindowDestruction();
 
   BrowserActions* browser_actions() { return browser_actions_.get(); }
+  actions::ActionItem* GetRootActionItem();
 
   chrome::BrowserCommandController* browser_command_controller() const {
     return browser_command_controller_.get();

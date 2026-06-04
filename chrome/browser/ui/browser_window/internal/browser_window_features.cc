@@ -1180,6 +1180,10 @@ SidePanelUI* BrowserWindowFeatures::side_panel_ui() {
   return browser_ ? SidePanelUI::From(browser_) : nullptr;
 }
 
+actions::ActionItem* BrowserWindowFeatures::GetRootActionItem() {
+  return browser_actions() ? browser_actions()->root_action_item() : nullptr;
+}
+
 ToastController* BrowserWindowFeatures::toast_controller() {
   return toast_service_ ? toast_service_->toast_controller() : nullptr;
 }
