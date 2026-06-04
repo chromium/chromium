@@ -10,7 +10,33 @@ import os
 import sys
 
 from util import build_utils
+from util import protoresources
+
+from proto import Resources_pb2  # prororesources adds proto to sys.path
 import action_helpers  # build_utils adds //build to sys.path.
+
+
+# Workaround for b/512191270. Returns true if something was edited, and we need
+# to rewrite the resources file.
+def _SanitizeProtoTable(msg):
+  has_changes = False
+  # Reference is a leaf node, so we don't need to care about recursing.
+  if hasattr(msg, 'DESCRIPTOR') and msg.DESCRIPTOR.name == 'Reference':
+    # aapt2 convert can't handle misnamed entries like
+    # com.google.android.apps.chrome.tests:style/
+    if msg.name and msg.name.endswith('/'):
+      msg.name = ""
+      return True
+    return False
+  for field_descriptor, field_value in msg.ListFields():
+    if field_descriptor.type == field_descriptor.TYPE_MESSAGE:
+      if field_descriptor.label == field_descriptor.LABEL_REPEATED:
+        for item in field_value:
+          if _SanitizeProtoTable(item):
+            has_changes = True
+      elif _SanitizeProtoTable(field_value):
+        has_changes = True
+  return has_changes
 
 
 def _ParseArgs(args):
@@ -23,18 +49,11 @@ def _ParseArgs(args):
   parser.add_argument('--aapt2-path',
                       required=True,
                       help='Path to the Android aapt2 tool.')
-  parser.add_argument(
-      '--short-resource-paths',
-      action='store_true',
-      help='Whether to shorten resource paths inside the apk or module.')
-  parser.add_argument(
-      '--strip-resource-names',
-      action='store_true',
-      help='Whether to strip resource names from the resource table of the apk '
-      'or module.')
+
   parser.add_argument('--input-path',
                       required=True,
-                      help='Input resources APK.')
+                      help='Input resources APK in proto format.')
+
   parser.add_argument('--resources-config-paths',
                       default='[]',
                       help='GN list of paths to aapt2 resources config files.')
@@ -53,9 +72,6 @@ def _ParseArgs(args):
   options.resources_config_paths = action_helpers.parse_gn_list(
       options.resources_config_paths)
 
-  if options.resources_path_map_out_path and not options.short_resource_paths:
-    parser.error(
-        '--resources-path-map-out-path requires --short-resource-paths')
   return options
 
 
@@ -103,46 +119,85 @@ def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
     unoptimized_path: path of the apk to optimize.
     r_txt_path: path to the R.txt file of the unoptimized apk.
   """
+  # aapt2 optimize does not support an output format flag. If the output
+  # format does not match what was requested, use aapt2 convert.
+  output_format = 'proto' if '.proto' in output else 'binary'
+  # We assume aapt2 optimize output matches its input format.
+  current_format = 'proto' if '.proto' in unoptimized_path else 'binary'
+
+  if output_format != current_format:
+    # We will need to aapt convert to the final output location.
+    optimize_output = os.path.join(temp_dir, f'optimized_res.{current_format}')
+  else:
+    optimize_output = output
+
   optimize_command = [
       options.aapt2_path,
       'optimize',
       unoptimized_path,
       '-o',
-      output,
+      optimize_output,
   ]
 
   # Optimize the resources.pb file by obfuscating resource names and only
   # allow usage via R.java constant.
-  if options.strip_resource_names:
-    no_collapse_resources = _ExtractNonCollapsableResources(r_txt_path)
-    gen_config_path = os.path.join(temp_dir, 'aapt2.config')
-    if options.resources_config_paths:
-      _CombineResourceConfigs(options.resources_config_paths, gen_config_path)
-    with open(gen_config_path, 'a', encoding='utf-8') as config:
-      for resource in no_collapse_resources:
-        config.write('{}#no_collapse\n'.format(resource))
+  no_collapse_resources = _ExtractNonCollapsableResources(r_txt_path)
+  gen_config_path = os.path.join(temp_dir, 'aapt2.config')
+  if options.resources_config_paths:
+    _CombineResourceConfigs(options.resources_config_paths, gen_config_path)
+  with open(gen_config_path, 'a', encoding='utf-8') as config:
+    for resource in no_collapse_resources:
+      config.write('{}#no_collapse\n'.format(resource))
 
-    optimize_command += [
-        '--collapse-resource-names',
-        '--resources-config-path',
-        gen_config_path,
-    ]
+  optimize_command += [
+      '--collapse-resource-names',
+      '--resources-config-path',
+      gen_config_path,
+  ]
 
-  if options.short_resource_paths:
-    optimize_command += ['--shorten-resource-paths']
+  optimize_command += ['--shorten-resource-paths']
   if options.resources_path_map_out_path:
     optimize_command += [
         '--resource-path-shortening-map', options.resources_path_map_out_path
     ]
 
-  logging.debug('Running aapt2 optimize')
+  logging.info('Optimize command: %s', ' '.join(optimize_command))
   build_utils.CheckOutput(optimize_command,
                           print_stdout=False,
                           print_stderr=False)
 
+  if output_format != current_format:
+    if current_format == 'proto':
+
+      def process_proto_resources(filename, data):
+        if filename == 'resources.pb':
+          table = Resources_pb2.ResourceTable()
+          table.ParseFromString(data)
+          if _SanitizeProtoTable(table):
+            data = table.SerializeToString()
+        return data
+
+      protoresources.ProcessZip(optimize_output, process_proto_resources)
+
+    logging.debug('Running aapt2 convert (%s -> %s)', current_format,
+                  output_format)
+    convert_command = [
+        options.aapt2_path,
+        'convert',
+        '--output-format',
+        output_format,
+        '-o',
+        output,
+        optimize_output,
+    ]
+    build_utils.CheckOutput(convert_command,
+                            print_stdout=False,
+                            print_stderr=False)
+
 
 def main(args):
   options = _ParseArgs(args)
+
   with build_utils.TempDir() as temp_dir:
     _OptimizeApk(options.optimized_output_path, options, temp_dir,
                  options.input_path, options.r_text_in)

@@ -1853,10 +1853,11 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     ),
     BanRule(
         r'/\bperfetto::Track::Global',
-        ('Creating new global tracks is discouraged and should be reserved ',
-        'for high level, user visible state. Consider using scoped tracks ',
-        'instead, see ',
-        'https://chromium.googlesource.com/chromium/src.git/+/main/docs/trace_events.md#named-tracks',
+        (
+            'Creating new global tracks is discouraged and should be reserved ',
+            'for high level, user visible state. Consider using scoped tracks ',
+            'instead, see ',
+            'https://chromium.googlesource.com/chromium/src.git/+/main/docs/trace_events.md#named-tracks',
         ),
         False,
         (
@@ -1866,9 +1867,10 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     ),
     BanRule(
         r'/\bperfetto::Track::FromPointer',
-        ('Creating tracks from pointer is discouraged because it risks aliasing when the address ',
-         'is reused. Consider using NamedTrack instead, see ',
-        'https://chromium.googlesource.com/chromium/src.git/+/main/docs/trace_events.md#named-tracks',
+        (
+            'Creating tracks from pointer is discouraged because it risks aliasing when the address ',
+            'is reused. Consider using NamedTrack instead, see ',
+            'https://chromium.googlesource.com/chromium/src.git/+/main/docs/trace_events.md#named-tracks',
         ),
         False,
         (),
@@ -2574,7 +2576,6 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/trace_event_bytecode_rewriter.pydeps',
     'build/android/gyp/tracereferences.pydeps',
     'build/android/gyp/turbine.pydeps',
-    'build/android/gyp/unused_resources.pydeps',
     'build/android/gyp/write_build_config.pydeps',
     'build/android/gyp/write_native_libraries_java.pydeps',
     'build/android/gyp/zip.pydeps',
@@ -2821,7 +2822,7 @@ def CheckNoProductionCodeUsingTestOnlyFunctionsJava(input_api, output_api):
     # exclusion_re misses the closing ''''} when it wraps to the next line, support an on demand
     # multi-line check as a last step.
     multi_line_exclusion_re = input_api.re.compile(
-            r'(%s)[^;]+\{' % name_pattern, input_api.re.DOTALL)
+        r'(%s)[^;]+\{' % name_pattern, input_api.re.DOTALL)
 
     problems = []
     sources = lambda x: input_api.FilterSourceFile(
@@ -2848,7 +2849,8 @@ def CheckNoProductionCodeUsingTestOnlyFunctionsJava(input_api, output_api):
 
                 if cached_file_lines is None:
                     cached_file_lines = input_api.ReadFile(f).splitlines()
-                full_text_from_line = '\n'.join(cached_file_lines[line_number - 1:])
+                full_text_from_line = '\n'.join(cached_file_lines[line_number -
+                                                                  1:])
                 match = multi_line_exclusion_re.search(full_text_from_line)
                 if not match or match.start() >= len(line):
                     problems.append('%s:%d\n    %s' %
@@ -8256,17 +8258,15 @@ def CheckBaseFeatureParamMacro(input_api, output_api):
     # &opts); The 4th arg is a string literal (discouraged form).
     enum_param_6_args_re = input_api.re.compile(
         r'\bBASE_FEATURE_ENUM_PARAM\(' + arg + r',\s*(\w+)\s*,' + arg + r','
-        r'\s*' + quote_str + r'\s*,' + arg
-        + r',(?:[^;"]|' + quote_str + r')*?\);',
-        input_api.re.MULTILINE | input_api.re.DOTALL)
+        r'\s*' + quote_str + r'\s*,' + arg + r',(?:[^;"]|' + quote_str +
+        r')*?\);', input_api.re.MULTILINE | input_api.re.DOTALL)
 
     # 5-arg BASE_FEATURE_ENUM_PARAM(type, kVar, &feature, default, &opts);
     # The 4th arg is NOT a string literal.
     enum_param_5_args_re = input_api.re.compile(
         r'\bBASE_FEATURE_ENUM_PARAM\(' + arg + r',\s*(\w+)\s*,' + arg + r','
-        r'\s*(?!' + quote_str + r'\s*,)' + arg
-        + r',(?:[^;"]|' + quote_str + r')*?\);',
-        input_api.re.MULTILINE | input_api.re.DOTALL)
+        r'\s*(?!' + quote_str + r'\s*,)' + arg + r',(?:[^;"]|' + quote_str +
+        r')*?\);', input_api.re.MULTILINE | input_api.re.DOTALL)
 
     warnings = []
 

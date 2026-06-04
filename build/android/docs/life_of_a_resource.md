@@ -149,23 +149,38 @@ Targets can opt into the following optimizations:
    `res/drawable/something.png` to `res/a`. Rename mapping is stored alongside
    APKs / bundles in a `.pathmap` file. Renames are based on hashes, and so are
    stable between builds (unless a new hash collision occurs).
-3) Unused resource removal: Referenced resources are extracted from the
-   optimized `.dex` and `AndroidManifest.xml`. Resources that are directly or
-   indirectly used by these files are removed.
+3) Unused resource removal (Resource Shrinking): R8's integrated resource
+   shrinker is used to remove resources that are not reachable from code.
+
+When resource shrinking is enabled, R8 performs both code and resource shrinking
+simultaneously. R8 removes resources that are unused or used only by unreachable
+code.
 
 ## App Bundles and Modules:
 
 Processing resources for bundles and modules is slightly different. Each module
 has its resources compiled and linked separately (ie: it goes through the
 entire process for each module). The modules are then combined to form a
-bundle. Moreover, during "Finalizing the apk resources" step, bundle modules
-produce a `resources.proto` file instead of a `resources.arsc` file.
+bundle.
+
+**R8 Resource Shrinking requirement:** R8's resource shrinker operates only on
+resources in [Protocol Buffer (Proto) format][aapt2 proto].
+
+To support this:
+1.  **Link:** `aapt2 link` is first run by `compile_resources.py`, creating a
+    proto resource file.
+3.  **Shrink with R8:** R8 consumes the proto resources alongside the Java
+    bytecode. For APK splits, R8 uses the `--feature` flag syntax:
+    `--feature <jar_path>:<proto_res_in>:<proto_res_out>`.
+4.  **Optimize & Finalize:** `optimize_resources.py` applies Chromium-specific
+    optimizations (path shortening, etc.) to the shrunk proto. Finally, for APKs,
+    `aapt2 convert` is used to restore the binary format required by devices.
+
+[aapt2 proto]: https://developer.android.com/guide/app-bundle/app-bundle-format#resource_table
 
 Resources in a dynamic feature module may reference resources in the base
 module. During the link step for feature module resources, the linked resources
-of the base module are passed in. However, linking against resources currently
-works only with `resources.arsc` format. Thus, when building the base module,
-resources are compiled as both `resources.arsc` and `resources.proto`.
+of the base module are passed in.
 
 ## Debugging resource related errors when resource names are obfuscated
 
@@ -206,6 +221,9 @@ The aapt2 config file is passed to the ninja target through the
 `resources_config_paths` variable. To add a resource to the allowlist, check
 where the config is for your target and add a new line for your resource. If
 none exist, create a new config file and pass its path in your target.
+
+When using R8 resource shrinking, these same rules are also used to keep
+resources from being shrunk.
 
 ### Webview resource ids
 

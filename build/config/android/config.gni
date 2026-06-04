@@ -295,15 +295,9 @@ if (is_android) {
     # configured to use it.
     enable_proguard_obfuscation = true
 
-    # Controls whether |short_resource_paths| and |strip_resource_names| are
-    # respected. Useful when trying to analyze APKs using tools that do not
-    # support mapping these names.
-    enable_arsc_obfuscation = true
-
-    # Controls whether |strip_unused_resources| is respected. Useful when trying
-    # to analyze APKs using tools that do not support missing resources from
-    # resources.arsc.
-    enable_unused_resource_stripping = true
+    # Enables all resource optimizations (shrinking, shortening paths, stripping
+    # names).
+    optimize_android_resources = !is_java_debug
 
     # Controls whether specifying |art_profile_path| automatically adds a binary
     # baseline profile to the APK/AAB.
@@ -340,6 +334,9 @@ if (is_android) {
         is_official_build &&
         (android_channel == "default" || android_channel == "canary")
   }
+
+  assert(!optimize_android_resources || !is_java_debug,
+         "optimize_android_resources = true requires is_java_debug = false")
 
   if (is_asan) {
     # Disable lint since increasing min_sdk_version can cause ObsoleteSdkInt

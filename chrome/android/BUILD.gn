@@ -2850,17 +2850,14 @@ if (_is_default_toolchain) {
           # 2) SuperSize adding disassembly to symbols.
           # Save apk and unstripped library because they are needed for collecting
           # disassembly of large symbols.
-          archive_files =
-              mapping_files + [
-                "apks/$_trichrome_library_basename_for_size",
-                "apks/$_trichrome_chrome_basename_for_size",
-                "apks/$_trichrome_chrome_bundle_for_size.unused_resources",
-                "apks/$_trichrome_chrome_bundle_for_size.R.txt",
-                "apks/$_trichrome_webview_basename_for_size",
-                "apks/$_trichrome_webview_bundle_for_size.unused_resources",
-                "apks/$_trichrome_webview_bundle_for_size.R.txt",
-                "${_symbol_dir_for_size}/libmonochrome.so",
-              ]
+          archive_files = mapping_files + [
+                            "apks/$_trichrome_library_basename_for_size",
+                            "apks/$_trichrome_chrome_basename_for_size",
+                            "apks/$_trichrome_chrome_bundle_for_size.R.txt",
+                            "apks/$_trichrome_webview_basename_for_size",
+                            "apks/$_trichrome_webview_bundle_for_size.R.txt",
+                            "${_symbol_dir_for_size}/libmonochrome.so",
+                          ]
           to_resource_sizes_py = {
             apk_name = "apks/$target_name"
             trichrome_library = "apks/$_trichrome_library_basename_for_size"

@@ -2230,6 +2230,11 @@ if (!is_robolectric && enable_java_templates) {
 
     _omit_dex = defined(invoker.omit_dex) && invoker.omit_dex
 
+    _proguard_enabled =
+        defined(invoker.proguard_enabled) && invoker.proguard_enabled
+    _optimize_resources = optimize_android_resources && !_is_bundle_module &&
+                          !_omit_dex && _proguard_enabled
+
     if (!_is_bundle_module) {
       _final_apk_path = invoker.final_apk_path
       _final_rtxt_path = "${_final_apk_path}.R.txt"
@@ -2248,7 +2253,7 @@ if (!is_robolectric && enable_java_templates) {
     if (_is_base_module) {
       _arsc_resources_path = "$target_out_dir/$target_name.ap_"
     }
-    if (_is_bundle_module) {
+    if (_is_bundle_module || _optimize_resources) {
       # Path to the intermediate proto-format resources zip file.
       _proto_resources_path = "$target_out_dir/$target_name.proto.ap_"
     } else {
@@ -2350,9 +2355,6 @@ if (!is_robolectric && enable_java_templates) {
 
     _generate_productconfig_java =
         defined(invoker.product_config_java_packages) && !_omit_dex
-
-    _proguard_enabled =
-        defined(invoker.proguard_enabled) && invoker.proguard_enabled
 
     if (!_is_bundle_module && _proguard_enabled) {
       _proguard_mapping_path = "$_final_apk_path.mapping"
@@ -2515,8 +2517,8 @@ if (!is_robolectric && enable_java_templates) {
         _link_against = invoker.apk_under_test
       }
 
-      if (_is_bundle_module) {
-        is_bundle_module = true
+      if (_is_bundle_module || _optimize_resources) {
+        is_bundle_module = _is_bundle_module
         proto_output = _proto_resources_path
 
         if (defined(invoker.base_module_target)) {
@@ -2535,87 +2537,8 @@ if (!is_robolectric && enable_java_templates) {
         arsc_output = _arsc_resources_path
       }
     }
+
     _srcjar_deps += [ ":$_compile_resources_target" ]
-
-    _short_resource_paths =
-        defined(invoker.short_resource_paths) && invoker.short_resource_paths &&
-        enable_arsc_obfuscation
-    _strip_resource_names =
-        defined(invoker.strip_resource_names) && invoker.strip_resource_names &&
-        enable_arsc_obfuscation
-    _strip_unused_resources =
-        defined(invoker.strip_unused_resources) &&
-        invoker.strip_unused_resources && enable_unused_resource_stripping
-    _optimize_resources = _strip_resource_names || _short_resource_paths ||
-                          _strip_unused_resources
-
-    if (_strip_unused_resources) {
-      # These need to be kept in sync with the target names + output paths
-      # in the android_app_bundle template.
-      _unused_resources_target = "${_template_name}__unused_resources"
-      _unused_resources_config_path =
-          "$target_gen_dir/${_template_name}_unused_resources.config"
-    }
-
-    if (_optimize_resources) {
-      if (_is_bundle_module) {
-        _optimized_proto_resources_path =
-            "$target_out_dir/$target_name.optimized.proto.ap_"
-      } else {
-        _optimized_arsc_resources_path =
-            "$target_out_dir/$target_name.optimized.ap_"
-      }
-      if (_short_resource_paths) {
-        _resources_path_map_out_path =
-            "${target_gen_dir}/${_template_name}_resources_path_map.txt"
-      }
-      _optimize_resources_target = "${_template_name}__optimize_resources"
-      optimize_resources(_optimize_resources_target) {
-        deps = _non_java_deps + [ ":$_compile_resources_target" ]
-        short_resource_paths = _short_resource_paths
-        strip_resource_names = _strip_resource_names
-        if (_short_resource_paths) {
-          resources_path_map_out_path = _resources_path_map_out_path
-        }
-        rtxt_path = _compile_resources_rtxt_out
-        if (_is_bundle_module) {
-          proto_input_path = _proto_resources_path
-          optimized_proto_output = _optimized_proto_resources_path
-        } else {
-          arsc_input_path = _arsc_resources_path
-          optimized_arsc_output = _optimized_arsc_resources_path
-        }
-        resources_config_paths = []
-        if (_strip_unused_resources) {
-          resources_config_paths += [ _unused_resources_config_path ]
-          deps += [ ":$_unused_resources_target" ]
-        }
-        if (defined(invoker.resources_config_paths)) {
-          resources_config_paths += invoker.resources_config_paths
-        }
-      }
-
-      if (_strip_unused_resources) {
-        # Copy the unused resources config to the final bundle output dir.
-        _copy_unused_resources_target =
-            "${_template_name}__copy_unused_resources"
-        _final_deps += [ ":$_copy_unused_resources_target" ]
-      }
-
-      # Bundles write their pathmap in a android_app_bundle template.
-      if (_short_resource_paths && !_is_bundle_module) {
-        _final_resources_pathmap_path = "${_final_apk_path}.pathmap.txt"
-        _copy_pathmap_target = "${_template_name}__copy_pathmap"
-        copy(_copy_pathmap_target) {
-          deps = [ ":$_optimize_resources_target" ]
-          sources = [ _resources_path_map_out_path ]
-          outputs = [ _final_resources_pathmap_path ]
-        }
-        _final_deps += [ ":$_copy_pathmap_target" ]
-      }
-    } else {
-      not_needed(invoker, [ "resources_config_paths" ])
-    }
 
     if (!_is_bundle_module) {
       # Output the R.txt file to a more easily discoverable location for
@@ -2853,9 +2776,7 @@ if (!is_robolectric && enable_java_templates) {
         proto_resources_path = _proto_resources_path
         if (_optimize_resources) {
           proto_resources_path = _optimized_proto_resources_path
-          if (_short_resource_paths) {
-            module_pathmap_path = _resources_path_map_out_path
-          }
+          module_pathmap_path = _resources_path_map_out_path
         }
       } else {
         apk_path = _final_apk_path
@@ -2911,6 +2832,10 @@ if (!is_robolectric && enable_java_templates) {
                  ])
     } else {
       _final_dex_target_name = "${_template_name}__final_dex"
+      if (_optimize_resources) {
+        _shrunk_proto_resources_path =
+            "$target_out_dir/${_template_name}.shrunk.proto.ap_"
+      }
       dex(_final_dex_target_name) {
         forward_variables_from(invoker,
                                [
@@ -2949,6 +2874,12 @@ if (!is_robolectric && enable_java_templates) {
               "//third_party/jni_zero/checkdiscard_proguard.flags",
             ]
           }
+
+          if (_optimize_resources) {
+            resources_input = _proto_resources_path
+            resources_output = _shrunk_proto_resources_path
+            deps += [ ":${_compile_resources_target}" ]
+          }
         } else {
           if (_min_sdk_version >= default_min_sdk_version) {
             # Enable dex merging only when min_sdk_version is >= what the
@@ -2974,24 +2905,38 @@ if (!is_robolectric && enable_java_templates) {
       }
 
       _final_dex_target_dep = ":$_final_dex_target_name"
+    }
 
-      # Unused resources target for bundles handled in android_app_bundle
-      # template.
-      if (_strip_unused_resources && !_is_bundle_module) {
-        unused_resources(_unused_resources_target) {
-          deps = [
-            ":$_build_config_target",
-            ":$_compile_resources_target",
-            ":$_final_dex_target_name",
-          ]
-          build_config = _build_config
-          res_build_config = _res_build_config
-          if (_proguard_enabled) {
-            proguard_mapping_path = _proguard_mapping_path
-          }
-          output_config = _unused_resources_config_path
+    if (_optimize_resources) {
+      _optimized_arsc_resources_path =
+          "$target_out_dir/$target_name.optimized.ap_"
+      _resources_path_map_out_path =
+          "${target_gen_dir}/${_template_name}_resources_path_map.txt"
+      _optimize_resources_target = "${_template_name}__optimize_resources"
+      optimize_resources(_optimize_resources_target) {
+        deps = _non_java_deps + [
+                 ":$_compile_resources_target",
+                 _final_dex_target_dep,
+               ]
+        resources_path_map_out_path = _resources_path_map_out_path
+        rtxt_path = _compile_resources_rtxt_out
+
+        proto_input_path = _shrunk_proto_resources_path
+        optimized_arsc_output = _optimized_arsc_resources_path
+        resources_config_paths = []
+
+        if (defined(invoker.resources_config_paths)) {
+          resources_config_paths += invoker.resources_config_paths
         }
       }
+
+      _copy_pathmap_target = "${_template_name}__copy_pathmap"
+      copy(_copy_pathmap_target) {
+        deps = [ ":$_optimize_resources_target" ]
+        sources = [ _resources_path_map_out_path ]
+        outputs = [ "${_final_apk_path}.pathmap.txt" ]
+      }
+      _final_deps += [ ":$_copy_pathmap_target" ]
     }
 
     _all_native_libs_deps = _native_libs_deps + _secondary_abi_native_libs_deps
@@ -3074,7 +3019,6 @@ if (!is_robolectric && enable_java_templates) {
 
         build_config = _build_config
         min_sdk_version = _min_sdk_version
-        packaged_resources_path = _arsc_resources_path
 
         # Need full deps rather than _non_java_deps, because loadable_modules
         # may include .so files extracted by __unpack_aar targets.
@@ -3108,6 +3052,7 @@ if (!is_robolectric && enable_java_templates) {
               !defined(native_lib_placeholders)) {
             native_lib_placeholders = [ "libfix.crbug.384638.so" ]
           }
+          packaged_resources_path = _arsc_resources_path
         } else {
           loadable_modules = _loadable_modules + _sanitizer_loadable_modules
           deps += _all_native_libs_deps + [
@@ -3423,14 +3368,11 @@ if (!is_robolectric && enable_java_templates) {
             "secondary_abi_shared_libraries",
             "secondary_native_lib_placeholders",
             "shared_libraries",
-
-            "short_resource_paths",
             "sources",
             "srcjar_deps",
             "static_library_provider",
             "static_library_provider_use_secondary_abi",
             "strip_unused_resources",
-            "strip_resource_names",
             "suffix_apk_assets_used_by",
             "target_sdk_version",
             "testonly",
@@ -3562,12 +3504,9 @@ if (!is_robolectric && enable_java_templates) {
             "secondary_abi_shared_libraries",
             "secondary_native_lib_placeholders",
             "shared_libraries",
-
-            "short_resource_paths",
             "srcjar_deps",
             "static_library_provider",
             "static_library_provider_use_secondary_abi",
-            "strip_resource_names",
             "strip_unused_resources",
             "suffix_apk_assets_used_by",
             "target_sdk_version",
@@ -3787,9 +3726,7 @@ if (!is_robolectric && enable_java_templates) {
       }
       if (defined(invoker.apk_under_test)) {
         data_deps += [ invoker.apk_under_test ]
-      }
 
-      if (defined(invoker.apk_under_test)) {
         _under_test_label =
             get_label_info(invoker.apk_under_test, "label_no_toolchain")
         data_deps += [
@@ -4719,6 +4656,7 @@ if (!is_robolectric && enable_java_templates) {
         defined(invoker.proguard_enabled) && invoker.proguard_enabled
 
     _min_sdk_version = default_min_sdk_version
+
     if (defined(invoker.min_sdk_version)) {
       _min_sdk_version = invoker.min_sdk_version
     }
@@ -4944,7 +4882,30 @@ if (!is_robolectric && enable_java_templates) {
       }
       _dex_target_for_module = ":$_dex_target"
 
-      # Generate one module .zip file per bundle module.
+      # Resources are only in the base module.
+      if (optimize_android_resources && _module.name == "base") {
+        _module_target_name = get_label_info(_module_target, "name")
+        _optimize_module_resources_target =
+            "${_target_name}__optimize_resources"
+        _module_optimized_proto_path =
+            "$target_out_dir/$_target_name/${_module.name}.optimized.proto.ap_"
+        optimize_resources(_optimize_module_resources_target) {
+          forward_variables_from(invoker, [ "resources_config_paths" ])
+          deps = [
+            ":${_target_name}__dex",
+            "${_module.module_target}__compile_resources",
+          ]
+          proto_input_path =
+              "$target_out_dir/${_module_target_name}.shrunk.proto.ap_"
+          optimized_proto_output = _module_optimized_proto_path
+          rtxt_path = "${_base_target_gen_dir}/${_base_target_name}__compile_resources_R.txt"
+
+          _module_pathmap_path =
+              "$target_out_dir/$_target_name/${_module.name}.pathmap.txt"
+          resources_path_map_out_path = _module_pathmap_path
+        }
+      }
+
       #
       # Important: the bundle tool uses the module's zip filename as
       # the internal module name inside the final bundle, in other words,
@@ -4967,24 +4928,29 @@ if (!is_robolectric && enable_java_templates) {
           # dex_path is read from the build_config in the proguard case.
         }
 
-        if (module_name == "base" &&
-            defined(invoker.expected_libs_and_assets)) {
-          forward_variables_from(invoker,
-                                 [
-                                   "expected_libs_and_assets",
-                                   "expected_libs_and_assets_base",
-                                 ])
-          top_target_name = _target_name
-          build_config_target = _module_build_config_target
-          app_bundle_build_config_target = _build_config_target
-        }
-
         deps = [
           _build_config_target,
           _dex_target_for_module,
           _module_build_config_target,
           _module_target,
         ]
+
+        if (module_name == "base") {
+          if (optimize_android_resources) {
+            proto_resources_path = _module_optimized_proto_path
+            deps += [ ":${_optimize_module_resources_target}" ]
+          }
+          if (defined(invoker.expected_libs_and_assets)) {
+            forward_variables_from(invoker,
+                                   [
+                                     "expected_libs_and_assets",
+                                     "expected_libs_and_assets_base",
+                                   ])
+            top_target_name = _target_name
+            build_config_target = _module_build_config_target
+            app_bundle_build_config_target = _build_config_target
+          }
+        }
       }
 
       _all_create_module_targets += [
@@ -4999,37 +4965,6 @@ if (!is_robolectric && enable_java_templates) {
         _dex_target_for_module,
         _module_build_config_target,
       ]
-    }
-    _strip_unused_resources = defined(invoker.strip_unused_resources) &&
-                              invoker.strip_unused_resources
-    if (_strip_unused_resources) {
-      # Resources only live in the base module so we define the unused resources
-      # target only on the base module target.
-      _unused_resources_target = "${_base_target_name}__unused_resources"
-      _unused_resources_config =
-          "${_base_target_gen_dir}/${_base_target_name}_unused_resources.config"
-      _unused_resources_rtxt_path_out =
-          "${_base_target_gen_dir}/${_base_target_name}_unused_resources.R.txt"
-      unused_resources(_unused_resources_target) {
-        deps = _all_module_unused_resources_deps
-        all_module_build_configs = _all_module_build_configs
-        build_config = _base_module_build_config
-        res_build_config =
-            "$_base_target_gen_dir/$_base_target_name.res.build_config.json"
-        if (_proguard_enabled) {
-          proguard_mapping_path = _proguard_mapping_path
-        }
-        output_config = _unused_resources_config
-        output_rtxt_path = _unused_resources_rtxt_path_out
-      }
-      _unused_resources_final_path = "${_bundle_path}.unused_resources"
-      _copy_unused_resources_target =
-          "${_base_target_name}__copy_unused_resources"
-      copy(_copy_unused_resources_target) {
-        deps = [ ":$_unused_resources_target" ]
-        sources = [ _unused_resources_config ]
-        outputs = [ _unused_resources_final_path ]
-      }
     }
 
     _all_rebased_module_zip_paths =
@@ -5090,19 +5025,7 @@ if (!is_robolectric && enable_java_templates) {
 
       if (_enable_language_splits) {
         args += [ "--base-allowlist-rtxt-path=@FileArg($_rebased_base_module_build_config:base_allowlist_rtxt_path)" ]
-        if (_strip_unused_resources) {
-          # Use the stripped out rtxt file to set resources that are pinned to
-          # the default language split.
-          _rebased_unused_resources_rtxt_path_out =
-              rebase_path(_unused_resources_rtxt_path_out, root_build_dir)
-          inputs += [ _unused_resources_rtxt_path_out ]
-          deps += [ ":$_unused_resources_target" ]
-          args += [
-            "--base-module-rtxt-path=$_rebased_unused_resources_rtxt_path_out",
-          ]
-        } else {
-          args += [ "--base-module-rtxt-path=@FileArg($_rebased_base_module_build_config:rtxt_path)" ]
-        }
+        args += [ "--base-module-rtxt-path=@FileArg($_rebased_base_module_build_config:rtxt_path)" ]
       }
       if (defined(invoker.validate_services) && invoker.validate_services) {
         args += [ "--validate-services" ]
@@ -5115,10 +5038,16 @@ if (!is_robolectric && enable_java_templates) {
           "--uncompressed-assets=@FileArg(" +
               "$_rebased_build_config:uncompressed_assets)",
           "--rtxt-in-paths=@FileArg(" + "$_rebased_build_config:rtxt_path)",
-          "--pathmap-in-paths=@FileArg(" +
-              "$_rebased_build_config:module_pathmap_path)",
           "--module-name=" + _module.name,
         ]
+        if (optimize_android_resources) {
+          _module_pathmap =
+              "$target_out_dir/$_target_name/${_module.name}.pathmap.txt"
+          args += [ "--pathmap-in-paths=" +
+                    rebase_path(_module_pathmap, root_build_dir) ]
+        } else {
+          args += [ "--pathmap-in-paths=@FileArg($_rebased_build_config:module_pathmap_path)" ]
+        }
       }
 
       # http://crbug.com/725224. Fix for bots running out of memory.
