@@ -111,10 +111,6 @@ void GlicView::SetWebContents(content::WebContents* web_contents) {
 void GlicView::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions,
     content::WebContents* contents) {
-  // `GlicView::DraggableRegionsChanged()` is called when draggable regions for
-  // either the main-webcontents or guest-webcontents are changed.
-  // guest-webcontents are the webcontents associated to `<webview>` hosting the
-  // glic web app,
   SkRegion sk_region;
   for (const auto& region : regions) {
     sk_region.op(
@@ -123,11 +119,18 @@ void GlicView::DraggableRegionsChanged(
         region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
   }
 
-  SetDraggableRegion(sk_region);
+  // `GlicView::DraggableRegionsChanged()` is called when draggable regions for
+  // either the main-webcontents or guest-webcontents are changed.
+  // guest-webcontents are the webcontents associated to `<webview>` hosting the
+  // glic web app,
+  const bool is_webview_contents = web_contents() != contents;
+  SetDraggableRegion(sk_region, /*for_webview=*/is_webview_contents);
 }
 
 bool GlicView::IsPointWithinDraggableRegion(const gfx::Point& point) {
-  return draggable_region_.contains(point.x(), point.y());
+  // Draggable region of webview takes precedence.
+  return webview_draggable_region_.contains(point.x(), point.y()) ||
+         draggable_region_.contains(point.x(), point.y());
 }
 
 void GlicView::UpdateBackgroundColor() {
@@ -167,10 +170,8 @@ bool GlicView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return false;
 }
 
-void GlicView::SetDraggableRegion(const SkRegion& region) {
-  // Since <webview> covers the entire main web-contents, overriding the
-  // draggable regions set by main web-contents (if any) is okay.
-  draggable_region_ = region;
+void GlicView::SetDraggableRegion(const SkRegion& region, bool for_webview) {
+  (for_webview ? webview_draggable_region_ : draggable_region_) = region;
 }
 
 std::optional<SkColor> GlicView::GetClientBackgroundColor() {

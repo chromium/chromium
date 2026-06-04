@@ -1037,8 +1037,8 @@ void GuestViewBase::DraggableRegionsChanged(
     return;
   }
 
-  embedder_web_contents()->GetDelegate()->DraggableRegionsChanged(
-      regions, embedder_web_contents());
+  embedder_web_contents()->GetDelegate()->DraggableRegionsChanged(regions,
+                                                                  contents);
 }
 
 void GuestViewBase::OnZoomControllerDestroyed(zoom::ZoomController* source) {
