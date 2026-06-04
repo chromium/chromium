@@ -58,6 +58,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       },
       disableVoiceSearchAnimation_: {type: Boolean},
       usePecApi_: {type: Boolean},
+      smartTabSharingVisible_: {type: Boolean},
       isOblongShape_: {type: Boolean},
       webuiOmniboxSimplificationEnabled_: {type: Boolean},
     };
@@ -85,6 +86,8 @@ export class OmniboxAimAppElement extends CrLitElement {
       loadTimeData.getBoolean('energyEffectEnabled');
   protected accessor usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
+  protected accessor smartTabSharingVisible_: boolean =
+      loadTimeData.getBoolean('composeboxSmartTabSharingVisible');
   protected accessor isOblongShape_: boolean =
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
   protected accessor webuiOmniboxSimplificationEnabled_: boolean =

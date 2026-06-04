@@ -54,6 +54,7 @@ export class ContextualEntrypointAndMenuElement extends
       fileNum: {type: Number},
       showContextMenuDescription: {type: Boolean},
       smartTabSharingActive: {type: Boolean},
+      smartTabSharingVisible: {type: Boolean},
       hasImageFiles: {
         reflect: true,
         type: Boolean,
@@ -86,6 +87,7 @@ export class ContextualEntrypointAndMenuElement extends
   accessor fileNum: number = 0;
   accessor showContextMenuDescription: boolean = false;
   accessor smartTabSharingActive: boolean = false;
+  accessor smartTabSharingVisible: boolean = false;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
   accessor aimThreadRestoredTabs: TabInfo[] = [];
   accessor tabSuggestions: TabInfo[] = [];

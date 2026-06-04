@@ -18,6 +18,7 @@ import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/co
 import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -741,6 +742,53 @@ suite('ComposeboxTest', () => {
                 'embedded-permission-prompt-showing'));
         assertEquals('0', window.getComputedStyle(bottomActions).opacity);
       });
+
+  test('connectedCallback calls getSmartTabSharingActive when' +
+        ' smartTabSharingVisible pre-set to true', async () => {
+    handler.setResultMapperFor(
+        'getSmartTabSharingActive',
+        () => Promise.resolve({active: true}));
+
+    const newComposebox = document.createElement('cr-composebox');
+    newComposebox.smartTabSharingVisible = true;
+    document.body.appendChild(newComposebox);
+    await handler.whenCalled('getSmartTabSharingActive');
+    await microtasksFinished();
+
+    assertEquals(1, handler.getCallCount('getSmartTabSharingActive'));
+    assertTrue(newComposebox.smartTabSharingActive);
+  });
+
+  test('connectedCallback does NOT call getSmartTabSharingActive when' +
+        ' smartTabSharingVisible is false', () => {
+    const newComposebox = document.createElement('cr-composebox');
+    newComposebox.smartTabSharingVisible = false;
+    document.body.appendChild(newComposebox);
+
+    assertEquals(0, handler.getCallCount('getSmartTabSharingActive'));
+    assertFalse(newComposebox.smartTabSharingActive);
+  });
+
+  test('host template .prop binding triggers getSmartTabSharingActive' +
+        ' at child mount', async () => {
+    handler.setResultMapperFor(
+        'getSmartTabSharingActive',
+        () => Promise.resolve({active: true}));
+
+    document.body.innerHTML = getTrustedHtml(`
+      <cr-composebox smart-tab-sharing-visible></cr-composebox>
+    `);
+
+    const newComposebox =
+        document.body.querySelector<ComposeboxElement>('cr-composebox');
+    assertTrue(!!newComposebox);
+
+    await handler.whenCalled('getSmartTabSharingActive');
+    await microtasksFinished();
+
+    assertEquals(1, handler.getCallCount('getSmartTabSharingActive'));
+    assertTrue(newComposebox.smartTabSharingActive);
+  });
 });
 
 suite('composeboxSharedMountAutoRepositionDefault', () => {
@@ -781,7 +829,6 @@ suite('composeboxSharedMountAutoRepositionDefault', () => {
       composeboxContextMenuEnableMultiTabSelection: false,
       composeboxShowContextMenuTabPreviews: false,
       ShowContextMenuHeaders: false,
-      composeboxSmartTabSharingVisible: false,
       menu: 'menu',
       addContextTile: 'Add context',
       addContext: 'Add context',

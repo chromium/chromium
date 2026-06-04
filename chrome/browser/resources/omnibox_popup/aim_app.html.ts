@@ -43,6 +43,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       .shouldShowGhostFiles="${true}"
       .showVoiceSearch="${true}"
       .usePecApi="${this.usePecApi_}"
+      .smartTabSharingVisible="${this.smartTabSharingVisible_}"
       .isOblongShape="${this.isOblongShape_}"
       .webuiOmniboxSimplificationEnabled="${this.webuiOmniboxSimplificationEnabled_}"
       entrypoint-name="Omnibox">

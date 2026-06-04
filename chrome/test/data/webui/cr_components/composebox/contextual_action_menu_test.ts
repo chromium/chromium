@@ -28,7 +28,6 @@ suite('ContextualActionMenu', () => {
       composeboxFileMaxCount: 10,
       composeboxShowContextMenuTabPreviews: true,
       ShowContextMenuHeaders: true,
-      composeboxSmartTabSharingVisible: false,
       contextManagementInComposeboxEnabled: false,
     });
 
@@ -36,9 +35,12 @@ suite('ContextualActionMenu', () => {
     PluralStringProxyImpl.setInstance(pluralStringProxy);
 
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
-    Object.assign(
-        actionMenu,
-        {fileNum: 0, disabledTabIds: new Map(), tabSuggestions: []});
+    Object.assign(actionMenu, {
+      fileNum: 0,
+      disabledTabIds: new Map(),
+      tabSuggestions: [],
+      smartTabSharingVisible: false,
+    });
     document.body.appendChild(actionMenu);
     await microtasksFinished();
   });
@@ -569,11 +571,11 @@ suite('ContextualActionMenu', () => {
 
   test('Toggling smart tab sharing fires event', async () => {
     loadTimeData.overrideValues({
-      composeboxSmartTabSharingVisible: true,
       contextManagementInComposeboxEnabled: true,
     });
     actionMenu.remove();
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.smartTabSharingVisible = true;
     actionMenu.tabSuggestions = [
       {
         tabId: 1,
@@ -612,11 +614,11 @@ suite('ContextualActionMenu', () => {
 
   test('Clicking smart tab sharing row updates UI', async () => {
     loadTimeData.overrideValues({
-      composeboxSmartTabSharingVisible: true,
       contextManagementInComposeboxEnabled: true,
     });
     actionMenu.remove();
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.smartTabSharingVisible = true;
     actionMenu.tabSuggestions = [
       {
         tabId: 1,
@@ -930,12 +932,12 @@ suite('ContextualActionMenu', () => {
       async () => {
         loadTimeData.overrideValues({
           contextManagementInComposeboxEnabled: true,
-          composeboxSmartTabSharingVisible: true,
         });
 
         actionMenu.remove();
         actionMenu =
             document.createElement('cr-composebox-contextual-action-menu');
+        actionMenu.smartTabSharingVisible = true;
 
         actionMenu.smartTabSharingActive = true;
         actionMenu.tabSuggestions = [];
@@ -1511,13 +1513,13 @@ suite('ContextualActionMenu', () => {
   suite('SmartTabSharingTogglePositioning', () => {
     setup(async () => {
       loadTimeData.overrideValues({
-        composeboxSmartTabSharingVisible: true,
         contextManagementInComposeboxEnabled: true,
       });
 
       actionMenu.remove();
       actionMenu =
           document.createElement('cr-composebox-contextual-action-menu');
+      actionMenu.smartTabSharingVisible = true;
       actionMenu.tabSuggestions = [
         {
           tabId: 1,

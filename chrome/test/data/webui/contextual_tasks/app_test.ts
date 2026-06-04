@@ -47,6 +47,7 @@ suite('ContextualTasksAppTest', function() {
       isAiPage: true,
       nlmUrlParam: 'ajid',
       enableCustomNlmUi: true,
+      composeboxSmartTabSharingVisible: false,
     });
     metrics = fakeMetricsPrivate();
     const proxy = new TestContextualTasksBrowserProxy('http://example.com');
