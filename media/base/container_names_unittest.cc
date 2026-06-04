@@ -9,9 +9,12 @@
 #include <optional>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace media {
 
@@ -274,6 +277,13 @@ TEST(ContainerNamesTest, FileCheckUNKNOWN) {
   TestFile(MediaContainerName::kContainerUnknown,
            GetTestDataFilePath("webm_vp8_track_entry"));
 }
+
+void DetermineContainerDoesNotCrash(base::span<const uint8_t> data) {
+  DetermineContainer(data.data(), base::checked_cast<int>(data.size()));
+}
+
+FUZZ_TEST(ContainerNamesTest, DetermineContainerDoesNotCrash)
+    .WithDomains(fuzztest::Arbitrary<std::vector<uint8_t>>().WithMinSize(1));
 
 }  // namespace container_names
 

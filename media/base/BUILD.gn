@@ -705,6 +705,7 @@ source_set("unit_tests") {
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuzztest",
     "//third_party/libyuv",
     "//third_party/widevine/cdm:headers",
     "//ui/gfx",
@@ -762,14 +763,6 @@ source_set("perftests") {
 
 fuzzer_test("media_bit_reader_fuzzer") {
   sources = [ "bit_reader_fuzzertest.cc" ]
-  deps = [
-    "//base",
-    "//media:test_support",
-  ]
-}
-
-fuzzer_test("media_container_names_fuzzer") {
-  sources = [ "container_names_fuzzertest.cc" ]
   deps = [
     "//base",
     "//media:test_support",
