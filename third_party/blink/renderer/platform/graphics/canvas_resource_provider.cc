@@ -108,6 +108,37 @@ static FlushForImageListener* GetFlushForImageListener() {
   return flush_for_image_listener;
 }
 
+BASE_FEATURE(kCanvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The following parameters attempt to reach a compromise between not flushing
+// too often, and not accumulating an unreasonable backlog. Flushing too
+// often will hurt performance due to overhead costs. Accumulating large
+// backlogs, in the case of OOPR-Canvas, results in poor parallelism and
+// janky UI. With OOPR-Canvas disabled, it is still desirable to flush
+// periodically to guard against run-away memory consumption caused by
+// PaintOpBuffers that grow indefinitely. The OOPR-related jank is caused by
+// long-running RasterCHROMIUM calls that monopolize the main thread
+// of the GPU process. By flushing periodically, we allow the rasterization
+// of canvas contents to be interleaved with other compositing and UI work.
+//
+// The default values for these parameters were initially determined
+// empirically. They were selected to maximize the MotionMark score on
+// desktop computers. Field trials may be used to tune these parameters
+// further by using metrics data from the field.
+const base::FeatureParam<int> kMaxRecordedOpKB(&kCanvas2DAutoFlushParams,
+                                               "max_recorded_op_kb",
+                                               2 * 1024);
+
+const base::FeatureParam<int> kMaxPinnedImageKB(&kCanvas2DAutoFlushParams,
+                                                "max_pinned_image_kb",
+                                                32 * 1024);
+
+// Graphite can generally handle more ops, increase the size accordingly.
+const base::FeatureParam<int> kMaxRecordedOpGraphiteKB(
+    &kCanvas2DAutoFlushParams,
+    "max_recorded_op_graphite_kb",
+    6 * 1024);
+
 class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
  public:
   CanvasImageProvider(cc::ImageDecodeCache* cache_n32,
@@ -152,7 +183,34 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
       alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata) {
+  max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
+  max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
+}
+
+std::unique_ptr<MemoryManagedPaintRecorder>
+Canvas2DResourceProviderBitmap::ReleaseRecorder() {
+  auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
+  recorder_->SetClient(nullptr);
+  recorder_.swap(recorder);
+  return recorder;
+}
+
+void Canvas2DResourceProviderBitmap::SetRecorder(
+    std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
+  recorder->SetClient(this);
+  recorder_ = std::move(recorder);
+}
+
+void Canvas2DResourceProviderBitmap::FlushIfRecordingLimitExceeded() {
+  if (IsPrinting() && clear_frame_) {
+    return;
+  }
+  if (Recorder().ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
+      Recorder().ReleasableImageBytesUsed() > max_pinned_image_bytes_)
+      [[unlikely]] {
+    Flush(FlushReason::kOther);
+  }
 }
 
 scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderBitmap::Snapshot(
@@ -184,8 +242,6 @@ bool Canvas2DResourceProviderBitmap::WritePixels(const SkImageInfo& orig_info,
   return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
 }
 
-BASE_FEATURE(kCanvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAppendCpuUsages, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, unused resources (ready to be recycled) are reclaimed after a
@@ -205,34 +261,6 @@ BASE_FEATURE(kCanvasResourceIsWebGPUCompatible,
 #endif
 );
 
-// The following parameters attempt to reach a compromise between not flushing
-// too often, and not accumulating an unreasonable backlog. Flushing too
-// often will hurt performance due to overhead costs. Accumulating large
-// backlogs, in the case of OOPR-Canvas, results in poor parellelism and
-// janky UI. With OOPR-Canvas disabled, it is still desirable to flush
-// periodically to guard against run-away memory consumption caused by
-// PaintOpBuffers that grow indefinitely. The OOPR-related jank is caused by
-// long-running RasterCHROMIUM calls that monopolize the main thread
-// of the GPU process. By flushing periodically, we allow the rasterization
-// of canvas contents to be interleaved with other compositing and UI work.
-//
-// The default values for these parameters were initially determined
-// empirically. They were selected to maximize the MotionMark score on
-// desktop computers. Field trials may be used to tune these parameters
-// further by using metrics data from the field.
-const base::FeatureParam<int> kMaxRecordedOpKB(&kCanvas2DAutoFlushParams,
-                                               "max_recorded_op_kb",
-                                               2 * 1024);
-
-const base::FeatureParam<int> kMaxPinnedImageKB(&kCanvas2DAutoFlushParams,
-                                                "max_pinned_image_kb",
-                                                32 * 1024);
-
-// Graphite can generally handle more ops, increase the size accordingly.
-const base::FeatureParam<int> kMaxRecordedOpGraphiteKB(
-    &kCanvas2DAutoFlushParams,
-    "max_recorded_op_graphite_kb",
-    6 * 1024);
 
 base::WeakPtr<Canvas2DResourceProviderSharedImage>
 Canvas2DResourceProviderSharedImage::CreateWeakPtr() {
@@ -312,6 +340,32 @@ CanvasNon2DResourceProviderSharedImage::NewOrRecycledResource() {
   return resource;
 }
 
+std::unique_ptr<MemoryManagedPaintRecorder>
+Canvas2DResourceProviderSharedImage::ReleaseRecorder() {
+  auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
+  recorder_->SetClient(nullptr);
+  recorder_.swap(recorder);
+  DisableLineDrawingAsPathsIfNecessary();
+  return recorder;
+}
+
+void Canvas2DResourceProviderSharedImage::SetRecorder(
+    std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
+  recorder->SetClient(this);
+  recorder_ = std::move(recorder);
+  DisableLineDrawingAsPathsIfNecessary();
+}
+
+void Canvas2DResourceProviderSharedImage::FlushIfRecordingLimitExceeded() {
+  if (IsPrinting() && clear_frame_) {
+    return;
+  }
+  if (Recorder().ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
+      Recorder().ReleasableImageBytesUsed() > max_pinned_image_bytes_)
+      [[unlikely]] {
+    Flush(FlushReason::kOther);
+  }
+}
 
 void Canvas2DResourceProviderSharedImage::SetResourceRecyclingEnabled(
     bool value) {
@@ -1688,45 +1742,11 @@ CanvasResourceProvider::CanvasResourceProvider(
     : type_(type),
       delegate_(delegate),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
-  max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
-  max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
-
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
 CanvasResourceProvider::~CanvasResourceProvider() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
-}
-
-std::unique_ptr<MemoryManagedPaintRecorder>
-CanvasResourceProvider::ReleaseRecorder() {
-  // When releasing the recorder, we swap it with a new, valid one. This way,
-  // the `recorder_` member is guarantied to be always valid.
-  auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
-  recorder_->SetClient(nullptr);
-  recorder_.swap(recorder);
-  DisableLineDrawingAsPathsIfNecessary();
-  return recorder;
-}
-
-void CanvasResourceProvider::SetRecorder(
-    std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
-  recorder->SetClient(this);
-  recorder_ = std::move(recorder);
-  DisableLineDrawingAsPathsIfNecessary();
-}
-
-void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
-  // When printing we avoid flushing if it is still possible to print in
-  // vector mode.
-  if (IsPrinting() && clear_frame_) {
-    return;
-  }
-  if (Recorder().ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
-      Recorder().ReleasableImageBytesUsed() > max_pinned_image_bytes_)
-      [[unlikely]] {
-    Flush(FlushReason::kOther);
-  }
 }
 
 SkSurface* CanvasResourceProvider::GetSkSurface() const {
@@ -2008,6 +2028,8 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
       alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata) {
+  max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
+  max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
@@ -2110,6 +2132,8 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
       alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata) {
+  max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
+  max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);

@@ -171,12 +171,13 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   ResourceProviderType GetType() const { return type_; }
 
-  void FlushIfRecordingLimitExceeded();
+  virtual void FlushIfRecordingLimitExceeded() = 0;
 
-  const MemoryManagedPaintRecorder& Recorder() const { return *recorder_; }
-  MemoryManagedPaintRecorder& Recorder() { return *recorder_; }
-  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
-  void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);
+  virtual const MemoryManagedPaintRecorder& Recorder() const = 0;
+  virtual MemoryManagedPaintRecorder& Recorder() = 0;
+  virtual std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() = 0;
+  virtual void SetRecorder(
+      std::unique_ptr<MemoryManagedPaintRecorder> recorder) = 0;
 
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 
@@ -256,20 +257,12 @@ class PLATFORM_EXPORT CanvasResourceProvider
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   raw_ptr<Delegate> delegate_ = nullptr;
 
-  // Recording accumulating draw ops. This pointer is always valid and safe to
-  // dereference.
-  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
-
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;
   uint32_t snapshot_sk_image_id_ = 0u;
 
   bool always_enable_raster_timers_for_testing_ = false;
-
-  // Parameters for the auto-flushing heuristic.
-  size_t max_recorded_op_bytes_;
-  size_t max_pinned_image_bytes_;
 
   bool clear_frame_ = true;
   std::optional<cc::PaintRecord> last_recording_;
@@ -311,6 +304,16 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   SkAlphaType GetAlphaType() const override { return alpha_type_; }
   gfx::Size Size() const override { return size_; }
 
+  void FlushIfRecordingLimitExceeded() override;
+
+  const MemoryManagedPaintRecorder& Recorder() const override {
+    return *recorder_;
+  }
+  MemoryManagedPaintRecorder& Recorder() override { return *recorder_; }
+  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() override;
+  void SetRecorder(
+      std::unique_ptr<MemoryManagedPaintRecorder> recorder) override;
+
  private:
   friend class CanvasRenderingContext2D;
   friend class OffscreenCanvasRenderingContext2D;
@@ -346,6 +349,9 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
+  size_t max_recorded_op_bytes_;
+  size_t max_pinned_image_bytes_;
 };
 
 // * Subclass of CanvasResourceProvider that is specialized for usage
@@ -452,6 +458,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   SkAlphaType GetAlphaType() const override { return alpha_type_; }
   gfx::Size Size() const override { return size_; }
 
+  void FlushIfRecordingLimitExceeded() override;
+
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
   void OnResourceRefReturned(
@@ -482,6 +490,14 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
                    size_t row_bytes,
                    int x,
                    int y) override;
+
+  const MemoryManagedPaintRecorder& Recorder() const override {
+    return *recorder_;
+  }
+  MemoryManagedPaintRecorder& Recorder() override { return *recorder_; }
+  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() override;
+  void SetRecorder(
+      std::unique_ptr<MemoryManagedPaintRecorder> recorder) override;
 
   void SetResourceRecyclingEnabled(bool value);
 
@@ -573,6 +589,10 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
+
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
+  size_t max_recorded_op_bytes_;
+  size_t max_pinned_image_bytes_;
 
   base::WeakPtrFactory<Canvas2DResourceProviderSharedImage> weak_ptr_factory_{
       this};
