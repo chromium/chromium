@@ -141,6 +141,16 @@ optimize_ts("click_tool_ts") {
   ]
 }
 
+optimize_ts("page_stability_ts") {
+  sources = [ "resources/page_stability.ts" ]
+  output_name = "page_stability"
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
 optimize_ts("select_tool_ts") {
   sources = [ "resources/select_tool.ts" ]
   output_name = "select_tool"
@@ -330,14 +340,6 @@ source_set("page_stability") {
   ]
 }
 
-optimize_ts("page_stability_ts") {
-  sources = [ "resources/page_stability.ts" ]
-  deps = [
-    "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
-  ]
-}
-
 source_set("actor_tool_java_script_feature_test_base") {
   testonly = true
   sources = [
@@ -369,6 +371,7 @@ source_set("unit_tests") {
     "navigate_tool_unittest.mm",
     "observation_delay_controller_unittest.mm",
     "page_stability_java_script_feature_unittest.mm",
+    "page_stability_js_unittest.mm",
     "page_stability_monitor_unittest.mm",
     "scroll_to_tool_unittest.mm",
     "scroll_tool_java_script_feature_unittest.mm",

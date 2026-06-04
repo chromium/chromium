@@ -21,6 +21,8 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
   ]
 }
@@ -45,11 +47,14 @@ source_set("eg2_tests") {
   sources = [ "actor_tools_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
+    "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test:element_selector",
     "//net:test_support",
+    "//url",
   ]
 }

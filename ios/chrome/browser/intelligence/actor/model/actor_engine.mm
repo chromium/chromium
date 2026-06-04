@@ -74,11 +74,11 @@ void WaitOrImmediatelyFinishTool(ActorTool* tool,
   }
   delay_controller->Wait(
       /*web_state=*/tool->GetTargetWebState(),
-      // TODO(crbug.com/498991756): Get the WebFrame from the tool.
-      /*web_frame=*/nullptr,
+      /*web_frame=*/tool->GetTargetWebFrame(),
       base::BindOnce(
           [](base::OnceClosure callback,
              ObservationDelayController::Result delay_result) {
+            // TODO(crbug.com/498991756): Record UMA about what delay_result is.
             std::move(callback).Run();
           },
           std::move(on_delay_complete)));
@@ -163,8 +163,6 @@ ActorEngine::ActorEngine(ActorTaskId task_id,
     : state_(State::kInit),
       task_id_(task_id),
       journal_(journal),
-      observation_delay_controller_(
-          new ObservationDelayController(task_id, journal)),
       execution_updates_delegate_(execution_updates_delegate) {
   CHECK(execution_updates_delegate_);
 }
@@ -273,6 +271,13 @@ void ActorEngine::OnToolExecutionComplete(ActorTool* tool,
   EndAsyncEntry(current_async_entry_.get(), tool_result);
   current_async_entry_.reset();
 
+  if (IsPageStabilityEnabled() && tool_result.requires_page_stabilization()) {
+    observation_delay_controller_ =
+        std::make_unique<ObservationDelayController>(task_id_, journal_);
+  }
+
+  // Regardless of the observation delay outcome, the initial `tool_result` is
+  // used by the engine.
   base::OnceClosure on_delay_complete =
       base::BindOnce(&ActorEngine::FinishedToolInvoke,
                      weak_ptr_factory_.GetWeakPtr(), ActionResult(tool_result));

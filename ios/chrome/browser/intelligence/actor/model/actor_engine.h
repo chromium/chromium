@@ -171,7 +171,7 @@ class ActorEngine {
   // is ready for another tool invocation.
   //
   // TODO(crbug.com/504625981): Replace this with a ToolController once setup.
-  raw_ptr<ObservationDelayController> observation_delay_controller_;
+  std::unique_ptr<ObservationDelayController> observation_delay_controller_;
 
   // The delegate to notify of execution milestones.
   raw_ptr<ExecutionUpdatesDelegate> execution_updates_delegate_;

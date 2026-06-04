@@ -31,7 +31,9 @@ void ParseJavaScriptResult(ToolExecutionCallback callback,
         error_message ? *error_message : "Unknown error in JS."));
     return;
   }
-  std::move(callback).Run(ToolExecutionResult::Ok());
+  std::move(callback).Run(
+      ToolExecutionResult(mojom::ActionResultCode::kOk,
+                          /*requires_page_stabilization=*/true));
 }
 
 ToolExecutionResult ParseJavaScriptResultWithResultCode(
@@ -54,11 +56,14 @@ ToolExecutionResult ParseJavaScriptResultWithResultCode(
         InternalToolErrorCode::kJavascriptFeatureGotInvalidResult);
   }
   int error_code = static_cast<int>(*error_code_double);
+  mojom::ActionResultCode external_code = resultCodeTranslator(error_code);
+  bool requires_page_stabilization =
+      (external_code == mojom::ActionResultCode::kOk);
   if (const std::string* message = result_dict.FindString("message"); message) {
-    return ToolExecutionResult(resultCodeTranslator(error_code),
-                               /*requires_page_stabilization=*/false, *message);
+    return ToolExecutionResult(external_code, requires_page_stabilization,
+                               *message);
   } else {
-    return ToolExecutionResult(resultCodeTranslator(error_code));
+    return ToolExecutionResult(external_code, requires_page_stabilization);
   }
 }
 

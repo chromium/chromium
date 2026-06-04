@@ -11,6 +11,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/base/url_util.h"
@@ -28,6 +30,11 @@
 #import "url/gurl.h"
 
 namespace {
+
+constexpr int kPageStabilityMutationCap = 2;
+constexpr int kPageStabilityWindowDurationMs = 100;
+constexpr int kPageStabilityTimeoutMs = 2000;
+constexpr int kPageStabilityMinWaitMs = 1000;
 
 struct FindNodeResult {
   const optimization_guide::proto::ContentNode* node = nullptr;
@@ -136,7 +143,22 @@ FindNodeResult FindNodeWithText(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kActorTools);
+
+  base::test::FeatureRefAndParams actorToolsConfig(
+      kActorTools,
+      {
+          {"PageStabilityEnabled", "true"},
+          {"ActorPageStabilityMutationCap",
+           base::StringPrintf("%d", kPageStabilityMutationCap)},
+          {"ActorPageStabilityWindowDuration",
+           base::StringPrintf("%dms", kPageStabilityWindowDurationMs)},
+          {"ActorPageStabilityTimeout",
+           base::StringPrintf("%dms", kPageStabilityTimeoutMs)},
+          {"ActorPageStabilityMinWait",
+           base::StringPrintf("%dms", kPageStabilityMinWaitMs)},
+      });
+
+  config.features_enabled_and_params.push_back(actorToolsConfig);
   return config;
 }
 
@@ -891,6 +913,182 @@ FindNodeResult FindNodeWithText(
         return value.is_string() && value.GetString() == "v2";
       });
   GREYAssertTrue(success, @"Select value did not match");
+}
+
+// Tests that the stability check succeeds when the page is stable.
+- (void)testWaitForStability_onStablePage_Succeeds {
+  // This page makes no mutations until the button is clicked.
+  GURL url = self.testServer->GetURL("/actor/page_stability.html");
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:"Initial Content"];
+  __block NSError* stabilityError = nil;
+  __block BOOL completed = NO;
+  [ActorAppInterface waitForPageStabilityWithCompletion:^(NSError* error) {
+    stabilityError = error;
+    completed = YES;
+  }];
+
+  BOOL success = [[GREYCondition conditionWithName:@"Wait for stability"
+                                             block:^BOOL {
+                                               return completed;
+                                             }] waitWithTimeout:10.0];
+
+  GREYAssertTrue(success, @"WaitForStability timed out.");
+  GREYAssertNil(stabilityError, @"WaitForStability failed: %@", stabilityError);
+}
+
+// Tests that the stability check times out when the page is doesn't stabilize.
+- (void)testWaitForStability_onUnstablePage_timesOut {
+  // Disable synchronization since the test page is intentionally unstable.
+  ScopedSynchronizationDisabler disabler;
+  GURL url = self.testServer->GetURL("/actor/page_stability.html");
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:"Initial Content"];
+
+  // Make the test page mutate the DOM to be unstable beyond the timeout.
+  int durationMs = kPageStabilityTimeoutMs * 2;
+  // Since the page applies these mutations evently across the duration, set the
+  // count to be larger than the mutation cap for each window that fits in the
+  // duration. We also multiply a factor of 3 to ensure that JS task scheduling
+  // doesn't cause us to accidentally report stable on an unstable page.
+  int count = (kPageStabilityMutationCap + 1) * 3 *
+              (durationMs / kPageStabilityWindowDurationMs);
+  NSString* configScript =
+      [NSString stringWithFormat:
+                    @"window.sustainedMutations = {count: %d, duration: %d};",
+                    count, durationMs];
+  (void)[ChromeEarlGrey evaluateJavaScript:configScript];
+  NSString* triggerScript = @"document.getElementById('mutate').click();";
+  (void)[ChromeEarlGrey evaluateJavaScript:triggerScript];
+
+  __block NSError* stabilityError = nil;
+  __block BOOL completed = NO;
+  [ActorAppInterface waitForPageStabilityWithCompletion:^(NSError* error) {
+    stabilityError = error;
+    completed = YES;
+  }];
+
+  BOOL success = [[GREYCondition conditionWithName:@"Wait for stability"
+                                             block:^BOOL {
+                                               return completed;
+                                             }] waitWithTimeout:10.0];
+
+  GREYAssertTrue(success,
+                 @"WaitForStability timed out in EGTest condition wait.");
+  GREYAssertNotNil(stabilityError, @"WaitForStability should have failed.");
+}
+
+// Tests that Click tool waits for the page to stabilize if the click triggers
+// page instability.
+//
+// Note that the page stability handler is attached to every tools and this test
+// uses the Click tool arbitrarily.
+- (void)testClickTool_onPageThatStabilizes_waitsForPageStability {
+  GURL url = self.testServer->GetURL("/actor/page_stability.html");
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:"Initial Content"];
+
+  // Inject sustained mutations on click that stop before the stability timeout.
+  int durationMs = kPageStabilityTimeoutMs / 4;
+  int count = (kPageStabilityMutationCap + 1) *
+              (durationMs / kPageStabilityWindowDurationMs);
+  NSString* configScript =
+      [NSString stringWithFormat:
+                    @"window.sustainedMutations = {count: %d, duration: %d};",
+                    count, durationMs];
+  (void)[ChromeEarlGrey evaluateJavaScript:configScript];
+
+  // Set up a click action.
+  base::Value coordinates = [ChromeEarlGrey
+      evaluateJavaScript:[self findCenterJsForElementWithSelector:"#mutate"]];
+  GREYAssertTrue(coordinates.is_dict(), @"Result is not a dict");
+  int x = static_cast<int>(coordinates.GetDict().FindDouble("x").value());
+  int y = static_cast<int>(coordinates.GetDict().FindDouble("y").value());
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ClickAction* clickAction = action.mutable_click();
+  clickAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  clickAction->set_click_type(optimization_guide::proto::ClickAction::LEFT);
+  clickAction->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
+  optimization_guide::proto::ActionTarget* target =
+      clickAction->mutable_target();
+  target->mutable_coordinate()->set_x(x);
+  target->mutable_coordinate()->set_y(y);
+
+  // Track the duration of the action execution.
+  base::TimeTicks startTime = base::TimeTicks::Now();
+  base::TimeDelta duration;
+  {
+    ScopedSynchronizationDisabler disabler;
+    [self executeAction:action];
+    duration = base::TimeTicks::Now() - startTime;
+  }
+
+  [ChromeEarlGrey waitForWebStateContainingText:"<mutating...>!"];
+
+  // The page triggers mutations for `durationMs` and the sliding window is
+  // `kPageStabilityWindowDurationMs`, so the Click action should take at least
+  // `durationMs + kPageStabilityWindowDurationMs` ms to complete.
+  int expectedWait = durationMs + kPageStabilityWindowDurationMs;
+  GREYAssertTrue(duration.InMilliseconds() >= expectedWait,
+                 @"Expected duration to be >= %dms, but was %lldms",
+                 expectedWait, duration.InMilliseconds());
+}
+
+// Tests that Click tool times out if it causes the page to be unstable beyond
+// the timeout.
+//
+// Note that the page stability handler is attached to every tools and this test
+// uses the Click tool arbitrarily.
+- (void)testClickTool_onUnstablePage_timesOut {
+  GURL url = self.testServer->GetURL("/actor/page_stability.html");
+  [ChromeEarlGrey loadURL:url];
+  [ChromeEarlGrey waitForWebStateContainingText:"Initial Content"];
+
+  // Make the test page mutate the DOM to be unstable beyond the timeout.
+  int durationMs = kPageStabilityTimeoutMs * 2;
+  // Since the page applies these mutations evently across the duration, set the
+  // count to be larger than the mutation cap for each window that fits in the
+  // duration. We also multiply a factor of 3 to ensure that JS task scheduling
+  // doesn't cause us to accidentally report stable on an unstable page.
+  int count = (kPageStabilityMutationCap + 1) * 3 *
+              (durationMs / kPageStabilityWindowDurationMs);
+  NSString* configScript =
+      [NSString stringWithFormat:
+                    @"window.sustainedMutations = {count: %d, duration: %d};",
+                    count, durationMs];
+  (void)[ChromeEarlGrey evaluateJavaScript:configScript];
+
+  // Set up a click action.
+  base::Value coordinates = [ChromeEarlGrey
+      evaluateJavaScript:[self findCenterJsForElementWithSelector:"#mutate"]];
+  GREYAssertTrue(coordinates.is_dict(), @"Result is not a dict");
+  int x = static_cast<int>(coordinates.GetDict().FindDouble("x").value());
+  int y = static_cast<int>(coordinates.GetDict().FindDouble("y").value());
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::ClickAction* clickAction = action.mutable_click();
+  clickAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  clickAction->set_click_type(optimization_guide::proto::ClickAction::LEFT);
+  clickAction->set_click_count(optimization_guide::proto::ClickAction::SINGLE);
+  optimization_guide::proto::ActionTarget* target =
+      clickAction->mutable_target();
+  target->mutable_coordinate()->set_x(x);
+  target->mutable_coordinate()->set_y(y);
+  // Track the duration of the action execution.
+  base::TimeTicks startTime = base::TimeTicks::Now();
+  base::TimeDelta duration;
+  {
+    ScopedSynchronizationDisabler disabler;
+    [self executeAction:action];
+    duration = base::TimeTicks::Now() - startTime;
+  }
+
+  // The page triggers mutations for `durationMs` and the sliding window is
+  // `kPageStabilityWindowDurationMs`, so the Click action should take at least
+  // `durationMs + kPageStabilityWindowDurationMs` ms to complete.
+  int expectedTimeoutWait = kPageStabilityTimeoutMs;
+  GREYAssertTrue(duration.InMilliseconds() >= expectedTimeoutWait,
+                 @"Expected duration to be >= %dms, but was %lldms",
+                 expectedTimeoutWait, duration.InMilliseconds());
 }
 
 @end

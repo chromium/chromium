@@ -19,6 +19,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/page_content_annotations/core/page_stability_state.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
@@ -83,7 +84,12 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     case State::kStartMonitoring: {
       start_monitoring_time_ = base::TimeTicks::Now();
 
-      // TODO(crbug.com/498991756): Monitor DOM using JavaScript here.
+      if (target_frame_ && target_frame_->GetBrowserState()) {
+        PageStabilityJavaScriptFeature::GetInstance()->WaitForStability(
+            target_frame_,
+            base::BindOnce(&PageStabilityMonitor::OnStabilityResult,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
       break;
     }
     case State::kTimeout: {
