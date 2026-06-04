@@ -50,6 +50,9 @@ class MultiContentsResizeArea : public views::ResizeArea {
   METADATA_HEADER(MultiContentsResizeArea, ResizeArea)
 
  public:
+  static constexpr int kHandleResizeAxisPadding = 6;
+  static constexpr int kHandleResizeAxisSize = 4;
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsResizeAreaElementId);
 
   explicit MultiContentsResizeArea(MultiContentsView* multi_contents_view);

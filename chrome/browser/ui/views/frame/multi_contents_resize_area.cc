@@ -28,8 +28,6 @@
 namespace {
 constexpr int kHandleCornerRadius = 2;
 constexpr int kHandleOffAxisSize = 24;
-constexpr int kHandleResizeAxisPadding = 6;
-constexpr int kHandleResizeAxisSize = 4;
 constexpr int kResizeIncrement = 50;
 }  // namespace
 

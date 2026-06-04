@@ -10,8 +10,11 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/gfx/geometry/point.h"
@@ -54,7 +57,8 @@ gfx::Point TabModalDialogHost::GetDialogPosition(const gfx::Size& dialog_size) {
   const int dialog_starting_x = std::max(middle_x - dialog_size.width() / 2, 0);
   return gfx::Point(
       std::min(dialog_starting_x, browser_view_->width() - dialog_size.width()),
-      GetDialogYCoordinate());
+      GetDialogYCoordinate(contents_container_view_coordinates_in_browser,
+                           dialog_size.height()));
 }
 
 bool TabModalDialogHost::ShouldActivateDialog() const {
@@ -96,7 +100,7 @@ gfx::Size TabModalDialogHost::GetMaximumDialogSize() {
   // cause the dialog to extend beyond its corresponding content_area but remain
   // the bounds of the browser view contents container.
   return gfx::Size(browser_view_->contents_container()->width(),
-                   content_area.bottom() - GetDialogYCoordinate());
+                   content_area.bottom() - GetToolbarOverlappingYCoordinate());
 }
 
 void TabModalDialogHost::OnViewAddedToWidget(views::View* observed_view) {
@@ -121,14 +125,44 @@ void TabModalDialogHost::OnWidgetBoundsChanged(views::Widget* browser_widget,
   NotifyPositionRequiresUpdate();
 }
 
-int TabModalDialogHost::GetDialogYCoordinate() {
+int TabModalDialogHost::GetToolbarOverlappingYCoordinate() {
   gfx::Rect toolbar_coordinates_in_browser =
       browser_view_->toolbar()->ConvertRectToWidget(
           browser_view_->toolbar()->GetLocalBounds());
   return toolbar_coordinates_in_browser.bottom() - kConstrainedWindowOverlap;
 }
 
+int TabModalDialogHost::GetDialogYCoordinate(
+    const gfx::Rect& contents_container_view_coordinates_in_browser,
+    int dialog_height) {
+  if (IsBottomTabInSplit()) {
+    // For the bottom tab of a stacked split, have the dialog overlap half of
+    // the resize handle.
+    int resize_area_overlap =
+        (MultiContentsResizeArea::kHandleResizeAxisPadding +
+         MultiContentsResizeArea::kHandleResizeAxisSize) /
+        2;
+    // If the contents view is too small, move the dialog up so that it doesn't
+    // extend past the bttom of the contents.
+    int max_y_coordinate =
+        contents_container_view_coordinates_in_browser.bottom() - dialog_height;
+    return std::min(contents_container_view_coordinates_in_browser.y() -
+                        resize_area_overlap,
+                    max_y_coordinate);
+  }
+  return GetToolbarOverlappingYCoordinate();
+}
+
 void TabModalDialogHost::NotifyPositionRequiresUpdate() {
   observer_list_.Notify(
       &web_modal::ModalDialogHostObserver::OnPositionRequiresUpdate);
+}
+
+bool TabModalDialogHost::IsBottomTabInSplit() {
+  auto* multi_contents_view = browser_view_->multi_contents_view();
+  return multi_contents_view->IsInSplitView() &&
+         multi_contents_view->GetSplitLayout() ==
+             split_tabs::SplitTabLayout::kStacked &&
+         contents_container_view_ ==
+             multi_contents_view->contents_container_views().back();
 }
