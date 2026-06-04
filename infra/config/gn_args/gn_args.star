@@ -821,6 +821,7 @@ gn_args.config(
     name = "ios_catalyst",
     args = {
         "target_environment": "catalyst",
+        "use_lld": False,
     },
     configs = [
         "ios",
