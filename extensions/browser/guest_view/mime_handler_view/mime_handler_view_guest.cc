@@ -117,7 +117,8 @@ void MimeHandlerViewGuest::SetBeforeUnloadController(
 }
 
 const char* MimeHandlerViewGuest::GetAPINamespace() const {
-  return mime_handler_view::kAPINamespace;
+  // No associated API. Implicitly available to all contexts.
+  return nullptr;
 }
 
 int MimeHandlerViewGuest::GetTaskPrefix() const {

@@ -92,7 +92,6 @@ if (enable_extensions) {
     # categorize it as "types_only".
     "automation.webidl",
     "mime_handler_private.idl",
-    "mime_handler_view_guest_internal.json",
     "mojo_private.webidl",
     "scripts_internal.webidl",
   ]

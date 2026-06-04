@@ -149,7 +149,14 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
 
 bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(
     const GuestViewBase* guest) const {
-  return IsGuestAvailableToContextWithFeature(guest, guest->GetAPINamespace());
+  const char* api_namespace = guest->GetAPINamespace();
+  if (!api_namespace) {
+    // If there's no associated API namespace, we consider the feature
+    // implicitly allowed.
+    return true;
+  }
+
+  return IsGuestAvailableToContextWithFeature(guest, api_namespace);
 }
 
 bool ExtensionsGuestViewManagerDelegate::IsOwnedByExtension(

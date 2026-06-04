@@ -802,14 +802,6 @@
     "dependencies": ["permission:mdns"],
     "contexts": ["privileged_extension"]
   },
-  "mimeHandlerViewGuestInternal": {
-    "internal": true,
-    "contexts": "all",
-    "channel": "stable",
-    "matches": ["<all_urls>"],
-    // "desktop_android" is not supported.
-    "platforms": ["chromeos", "linux", "mac", "win"]
-  },
   "notifications": {
     "dependencies": ["permission:notifications"],
     "contexts": ["privileged_extension"]

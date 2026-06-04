@@ -6,9 +6,6 @@
 
 namespace mime_handler_view {
 
-// API namespace.
-const char kAPINamespace[] = "mimeHandlerViewGuestInternal";
-
 // Create parameters.
 const char kStreamId[] = "streamId";
 
