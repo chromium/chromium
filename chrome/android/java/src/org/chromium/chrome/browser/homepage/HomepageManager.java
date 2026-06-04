@@ -117,6 +117,8 @@ public class HomepageManager
     /** Returns whether the home button removal everywhere is enabled. */
     private static boolean isHomeButtonRemovalEverywhereEnabled() {
         return ChromeFeatureList.sHomeButtonRemovalEverywhere.getValue()
+                && PartnerBrowserCustomizations.isCountryImpacted(
+                        ChromeFeatureList.sHomeButtonRemovalApplyToAllCountries.getValue())
                 && !BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext());
     }
 
@@ -138,6 +140,8 @@ public class HomepageManager
      */
     private static boolean isHomeButtonRemovalKeepOnNtpEnabled() {
         return ChromeFeatureList.sHomeButtonRemovalKeepOnNtp.getValue()
+                && PartnerBrowserCustomizations.isCountryImpacted(
+                        ChromeFeatureList.sHomeButtonRemovalApplyToAllCountries.getValue())
                 && !BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext());
     }
 

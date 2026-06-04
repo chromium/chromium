@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -30,6 +31,8 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsTe
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.PartnerCustomizationsHomepageEnum;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Locale;
+
 /** Unit tests for {@link PartnerBrowserCustomizations}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -37,6 +40,8 @@ import org.chromium.url.JUnitTestGURLs;
 public class PartnerBrowserCustomizationsRoboUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
+
+    private static final Locale DEFAULT_LOCALE = Locale.getDefault();
 
     @Before
     public void setup() {
@@ -46,6 +51,7 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
 
     @After
     public void tearDown() {
+        Locale.setDefault(DEFAULT_LOCALE);
         PartnerBrowserCustomizations.destroy();
         PartnerCustomizationsUma.resetStaticsForTesting();
     }
@@ -162,5 +168,55 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
         customizations.initializeAsync(ContextUtils.getApplicationContext());
         RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(customizations.isHomepageProviderAvailableAndEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID)
+    public void testIsHomepageProviderAvailableAndEnabled_DisablePartnerHomepageEnabled() {
+        Locale.setDefault(Locale.US);
+        PartnerBrowserCustomizations partnerBrowserCustomizations =
+                PartnerBrowserCustomizations.getInstance();
+        partnerBrowserCustomizations.initializeAsync(ContextUtils.getApplicationContext());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertFalse(partnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled());
+
+        Locale.setDefault(Locale.CANADA);
+        assertTrue(partnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled());
+
+        FeatureOverrides.newBuilder()
+                .param(
+                        ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID,
+                        "apply_to_all_countries",
+                        true)
+                .apply();
+        assertFalse(partnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID
+                + ":disable_partner_homepage_android_for_zero_tabs/true"
+    })
+    public void
+            testIsHomepageProviderAvailableAndEnabledForZeroTabs_DisablePartnerHomepageEnabled() {
+        Locale.setDefault(Locale.US);
+        PartnerBrowserCustomizations partnerBrowserCustomizations =
+                PartnerBrowserCustomizations.getInstance();
+        partnerBrowserCustomizations.initializeAsync(ContextUtils.getApplicationContext());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertFalse(
+                partnerBrowserCustomizations.isHomepageProviderAvailableAndEnabledForZeroTabs());
+
+        Locale.setDefault(Locale.CANADA);
+        assertTrue(partnerBrowserCustomizations.isHomepageProviderAvailableAndEnabledForZeroTabs());
+
+        FeatureOverrides.newBuilder()
+                .param(
+                        ChromeFeatureList.DISABLE_PARTNER_HOMEPAGE_ANDROID,
+                        "apply_to_all_countries",
+                        true)
+                .apply();
+        assertFalse(
+                partnerBrowserCustomizations.isHomepageProviderAvailableAndEnabledForZeroTabs());
     }
 }

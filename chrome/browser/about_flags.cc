@@ -4010,9 +4010,10 @@ const FeatureEntry::FeatureParam kHomeButtonRemovalKeepOnNtpParam[] = {
     {"keep_home_button_on_ntp", "true"}};
 
 const FeatureEntry::FeatureVariation kHomeButtonRemovalVariations[] = {
-    {"Remove home button everywhere", kHomeButtonRemovalEverywhereParam,
-     nullptr},
-    {"Keep home button on NTP", kHomeButtonRemovalKeepOnNtpParam, nullptr}};
+    {"Remove home button everywhere (US only)",
+     kHomeButtonRemovalEverywhereParam, nullptr},
+    {"Keep home button on NTP (US only)", kHomeButtonRemovalKeepOnNtpParam,
+     nullptr}};
 
 const FeatureEntry::FeatureParam kAndroidTipsNotificationsTrustAndSafety[] = {
     {"trust_and_safety", "true"}};

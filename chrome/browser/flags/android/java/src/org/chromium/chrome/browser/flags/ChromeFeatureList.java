@@ -1614,6 +1614,11 @@ public abstract class ChromeFeatureList {
             newStringCachedFeatureParam(
                     DESKTOP_UA_ON_CONNECTED_DISPLAY, "ext_display_desktop_ua_oem_allowlist", "");
 
+    public static final BooleanCachedFeatureParam
+            sDisablePartnerHomepageAndroidApplyToAllCountries =
+                    newBooleanCachedFeatureParam(
+                            DISABLE_PARTNER_HOMEPAGE_ANDROID, "apply_to_all_countries", false);
+
     public static final BooleanCachedFeatureParam sDisablePartnerHomepageAndroidForZeroTabs =
             newBooleanCachedFeatureParam(
                     DISABLE_PARTNER_HOMEPAGE_ANDROID,
@@ -1782,6 +1787,9 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sGlicShowTaskInProgressSnackbar =
             newBooleanCachedFeatureParam(GLIC, "show_task_in_progress_snackbar", true);
 
+    public static final BooleanCachedFeatureParam sHomeButtonRemovalApplyToAllCountries =
+            newBooleanCachedFeatureParam(HOME_BUTTON_REMOVAL, "apply_to_all_countries", false);
+
     public static final BooleanCachedFeatureParam sHomeButtonRemovalEverywhere =
             newBooleanCachedFeatureParam(
                     HOME_BUTTON_REMOVAL, "remove_home_button_everywhere", false);
@@ -1943,6 +1951,7 @@ public abstract class ChromeFeatureList {
                     sClankStartupLatencyInjectionAmountMs,
                     sDefaultBrowserPromoEntryPointShowAppMenu,
                     sDesktopUAAllowedOnExternalDisplayForOem,
+                    sDisablePartnerHomepageAndroidApplyToAllCountries,
                     sDisablePartnerHomepageAndroidForZeroTabs,
                     sEdgeToEdgeEverywhereOemList,
                     sEdgeToEdgeEverywhereOemMinVersions,
@@ -1954,6 +1963,7 @@ public abstract class ChromeFeatureList {
                     sEnableAndroidSidePanelDisableAnimations,
                     sGestureUserEducationPageDelay,
                     sGlicShowTaskInProgressSnackbar,
+                    sHomeButtonRemovalApplyToAllCountries,
                     sHomeButtonRemovalEverywhere,
                     sHomeButtonRemovalKeepOnNtp,
                     sInitFeatureListEarly,

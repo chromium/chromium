@@ -13156,6 +13156,9 @@
                 },
                 {
                     "name": "DisablePartnerHomepage",
+                    "params": {
+                        "disable_partner_homepage_android_for_zero_tabs": "true"
+                    },
                     "enable_features": [
                         "DisablePartnerHomepageAndroid"
                     ],
