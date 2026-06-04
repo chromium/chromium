@@ -4076,7 +4076,7 @@ const FeatureEntry::FeatureVariation kNavigationBlurVariations[] = {
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kWebiumFlag[] = "webium";
 constexpr char kWebiumFeatures[] =
-    "Webium,AttachUnownedInnerWebContents,ExtensionsMenuAccessControl";
+    "Webium,SurfaceEmbed,ExtensionsMenuAccessControl";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kMobileNTPPromoOnDesktopGeneral[] = {
@@ -13278,14 +13278,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            channel != version_info::Channel::UNKNOWN;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Only show Webium flag for Canary channel and developer builds.
-  if (std::string_view(kWebiumFlag) == entry.internal_name) {
-    return channel != version_info::Channel::CANARY &&
-           version_info::IsOfficialBuild();
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Only show the Gemma4 flag on Canary/Dev/Unknown and unofficial builds.
   if (std::string_view(kGemma4ForBuiltInAIInternalName) ==
