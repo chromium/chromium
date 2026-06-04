@@ -9,6 +9,7 @@ import json
 import os
 import pathlib
 import shutil
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -485,7 +486,10 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
         cb_test.options.benchmarks, cb_test.options.passthrough_args, 'dir')
 
     pos = command_list.index('--')
-    self.assertEqual(command_list[pos + 1:], ['--a', '--b', '--c', '--x'])
+    expected_list = ['--a', '--b', '--c', '--x']
+    if sys.platform == 'darwin':
+      expected_list += ['--disable-updater-scheduler']
+    self.assertEqual(command_list[pos + 1:], expected_list)
 
 
 def _create_crossbench_args(browser='./chrome'):
