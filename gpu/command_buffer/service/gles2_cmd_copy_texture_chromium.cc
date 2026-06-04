@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/service/gles2_cmd_copy_tex_image.h"
 #include "gpu/command_buffer/service/shader_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/command_buffer/service/transform_feedback_manager.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_version_info.h"
 
@@ -1281,6 +1282,16 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
   }
   const gl::GLVersionInfo& gl_version_info =
       decoder->GetFeatureInfo()->gl_version_info();
+
+  // glUseProgram fails with INVALID_OPERATION if transform feedback is active
+  // and not paused, and on a GLES 3.2 driver the glDrawArrays(GL_TRIANGLE_FAN)
+  // below would then capture vertices with the user's program, advancing the
+  // driver's transform-feedback write cursor without the validating decoder
+  // updating its vertices_drawn_ counter. Pause TF for the duration of the
+  // internal blit. (Mirrors gles2_cmd_clear_framebuffer.cc.)
+  const ContextState* state = decoder->GetContextState();
+  ScopedPauseResumeTransformFeedback pause_transform_feedback(
+      state ? state->bound_transform_feedback.get() : nullptr);
 
   if (vertex_array_object_id_) {
     glBindVertexArrayOES(vertex_array_object_id_);
