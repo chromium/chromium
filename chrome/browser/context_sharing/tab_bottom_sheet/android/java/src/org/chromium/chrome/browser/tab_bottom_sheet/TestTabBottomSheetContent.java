@@ -11,14 +11,28 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
 /** Concrete test implementation of {@link TabBottomSheetContent} for automated testing. */
 @NullMarked
 public class TestTabBottomSheetContent extends TabBottomSheetContent {
+    private static boolean sUsePlaceholder;
+
+    public static void setUsePlaceholderForTesting(boolean usePlaceholder) {
+        ResettersForTesting.register(() -> sUsePlaceholder = false);
+        sUsePlaceholder = usePlaceholder;
+    }
+
+    @Override
+    protected boolean setupPlaceholder(TextViewWithCompoundDrawables placeholder) {
+        return sUsePlaceholder;
+    }
+
     public TestTabBottomSheetContent(
             View contentView,
             float fullHeightRatio,

@@ -16,6 +16,9 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
@@ -28,6 +31,9 @@ import org.chromium.content_public.browser.WebContents;
  */
 @NullMarked
 public class CoBrowseViews {
+    private final SettableNullableObservableSupplier<WebContents> mWebContentsSupplier =
+            ObservableSuppliers.createNullable();
+
     private final @Nullable TabBottomSheetWebUi mWebUi;
     private final @Nullable ContextualTasksFusebox mFusebox;
     private final @ColorInt int mBackgroundColor;
@@ -63,6 +69,7 @@ public class CoBrowseViews {
         mBackgroundColor = backgroundColor;
         mContainerView = containerView;
         mContentProvider = contentProvider;
+        mWebContentsSupplier.set(getWebContents());
         populateViewHierarchy();
         updateForContainerType();
     }
@@ -149,6 +156,7 @@ public class CoBrowseViews {
         if (mWebUi != null) {
             View oldView = mWebUi.getWebUiView();
             mWebUi.setWebContents(webContents, requestFocus);
+            mWebContentsSupplier.set(webContents);
             View newView = mWebUi.getWebUiView();
             if (oldView != newView) {
                 ViewGroup webUiContainer = mContainerView.findViewById(R.id.web_ui_container);
@@ -178,6 +186,10 @@ public class CoBrowseViews {
 
     @Nullable WebContents getWebContents() {
         return mWebUi != null ? mWebUi.getWebContents() : null;
+    }
+
+    public NullableObservableSupplier<WebContents> getWebContentsSupplier() {
+        return mWebContentsSupplier;
     }
 
     @Nullable WebViewResizingHelper getWebViewResizingHelper() {
