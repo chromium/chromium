@@ -10,6 +10,7 @@
 
 #include "base/base64url.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
@@ -2096,6 +2097,7 @@ TEST_F(ComposeboxQueryControllerTest, PopulatesContentMetadataForPdfUpload) {
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
+  base::HistogramTester histogram_tester;
   // Act: Start the session.
   controller().InitializeIfNeeded();
 
@@ -2186,6 +2188,38 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
   EXPECT_TRUE(controller().last_sent_file_upload_request()->has_lens_intent());
   EXPECT_TRUE(
       controller().last_sent_file_upload_request()->process_image_for_aim());
+
+  histogram_tester.ExpectTotalCount(
+      "Lens.Composebox.ContextUpload.SuccessResponseTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Composebox.ContextUpload.FailureResponseTime", 0);
+}
+
+TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestFailure) {
+  base::HistogramTester histogram_tester;
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Ensure that the upload request fails.
+  controller().set_next_file_upload_request_should_return_error(true);
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf,
+                    ContextUploadStatus::kUploadFailed,
+                    ContextUploadErrorType::kServerError);
+
+  histogram_tester.ExpectTotalCount(
+      "Lens.Composebox.ContextUpload.SuccessResponseTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Composebox.ContextUpload.FailureResponseTime", 1);
 }
 
 TEST_F(ComposeboxQueryControllerTest,

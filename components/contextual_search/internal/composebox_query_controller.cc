@@ -2260,7 +2260,7 @@ void ComposeboxQueryController::OnUploadEndpointFetcherCreated(
       file_info->upload_requests_[request_index].get();
   CHECK(upload_request);
 
-  upload_request->start_time = base::Time::Now();
+  upload_request->start_time = base::TimeTicks::Now();
   upload_request->endpoint_fetcher_ = std::move(endpoint_fetcher);
   if (file_info->upload_status ==
           contextual_search::ContextUploadStatus::kProcessing ||
@@ -2288,9 +2288,19 @@ void ComposeboxQueryController::HandleUploadResponse(
       file_info->upload_requests_[request_index].get();
   CHECK(upload_request);
 
-  upload_request->response_time = base::Time::Now();
+  upload_request->response_time = base::TimeTicks::Now();
   upload_request->response_code = response->http_status_code;
   upload_request->endpoint_fetcher_.reset();
+
+  base::TimeDelta elapsed =
+      upload_request->response_time - upload_request->start_time;
+  if (response->http_status_code == google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    base::UmaHistogramMediumTimes(
+        "Lens.Composebox.ContextUpload.SuccessResponseTime", elapsed);
+  } else {
+    base::UmaHistogramMediumTimes(
+        "Lens.Composebox.ContextUpload.FailureResponseTime", elapsed);
+  }
 
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
     file_info->upload_error_type =
