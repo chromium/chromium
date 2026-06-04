@@ -14,6 +14,9 @@ specific_include_rules = {
     "client_hints_util.h": [
         "+services/network/public/cpp/client_hints.h",
     ],
+    "anchor_element_utils.cc" : [
+        "+base/command_line.h"
+    ],
     "html_anchor_element.cc" : [
         "+base/command_line.h"
     ],

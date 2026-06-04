@@ -208,6 +208,9 @@ void SVGAElement::DefaultEventHandler(Event& event) {
           frame_request, frame->GetSettings(), GetExecutionContext(), target,
           link_relations_);
 
+      AnchorElementUtils::EnforceBlobUrlNoopenerIfNeeded(
+          frame_request, resolved_url, *GetDocument().domWindow());
+
       frame_request.SetTriggeringEventInfo(
           event.isTrusted()
               ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent

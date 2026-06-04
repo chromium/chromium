@@ -139,5 +139,52 @@ promise_test(t => {
  });
 }, "kCrossTopLevelSiteBlobURLNavigation UseCounter should be triggered for a Blob URL cross-top-level-site link click.");
 
+const open_blob_url_window_via_svg_a_click = (blob_url, response_queue_name) => `
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(SVGNS, 'svg');
+  const a = document.createElementNS(SVGNS, 'a');
+  a.setAttribute('href', '${blob_url}');
+  a.setAttribute('target', '_blank');
+  a.setAttribute('rel', 'opener');
+  const t = document.createElementNS(SVGNS, 'text');
+  t.textContent = 'click';
+  a.appendChild(t);
+  svg.appendChild(a);
+  document.body.appendChild(svg);
+  a.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+  if (internals.isUseCounted(document, ${kCrossTopLevelSiteBlobURLNavigation}) === false) {
+    return send("${response_queue_name}", "${navigation_counter_not_triggered}");
+  }
+  return send("${response_queue_name}", "${navigation_counter_triggered}");
+`;
+
+// Tests blob URL `<svg:a target="_blank" rel="opener">` click for cross partition iframes.
+promise_test(t => {
+ return new Promise(async (resolve, reject) => {
+   try {
+     clear();
+     // Creates same and cross partition iframes.
+     const response_queue_uuid = token();
+
+     const [cross_site_iframe_uuid, same_site_iframe_uuid] = await create_test_iframes(t, token());
+
+     const blob = new Blob([frame_html], {type : "text/html"});
+     const blob_url = URL.createObjectURL(blob);
+
+     // Attempt to click SVG blob URL link in cross partition iframe.
+     await send(cross_site_iframe_uuid, open_blob_url_window_via_svg_a_click(blob_url, response_queue_uuid));
+     const response = await receive(response_queue_uuid);
+
+     if (response === navigation_counter_not_triggered) {
+       reject(navigation_counter_not_triggered);
+     }
+
+     resolve();
+   } catch (e) {
+     reject(e);
+   }
+ });
+}, "kCrossTopLevelSiteBlobURLNavigation UseCounter should be triggered for a Blob URL cross-top-level-site SVG link click.");
+
 </script>
 </body>

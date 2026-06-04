@@ -78,6 +78,13 @@ class CORE_EXPORT AnchorElementUtils {
                                             const AtomicString& referrer_policy,
                                             uint32_t link_relations,
                                             Document& document);
+
+  // Enforces noopener on blob: URL navigations when the blob URL's site
+  // differs from the initiator's top-level site, to prevent storage
+  // partitioning bypasses.
+  static void EnforceBlobUrlNoopenerIfNeeded(FrameLoadRequest& frame_request,
+                                             const KURL& url,
+                                             LocalDOMWindow& window);
 };
 
 }  // namespace blink

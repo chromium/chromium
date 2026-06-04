@@ -416,25 +416,8 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
                                          GetExecutionContext(), target,
                                          link_relations_);
 
-  if (completed_url.ProtocolIs("blob")) {
-    auto blob_url_site =
-        BlinkSchemefulSite(SecurityOrigin::Create(completed_url));
-    BlinkSchemefulSite top_level_site =
-        window->GetStorageKey().GetTopLevelSite();
-    if (top_level_site != blob_url_site) {
-      if (base::FeatureList::IsEnabled(
-              features::kEnforceNoopenerOnBlobURLNavigation) &&
-          !base::CommandLine::ForCurrentProcess()->HasSwitch(
-              blink::switches::kDisableBlobUrlPartitioning)) {
-        frame_request.SetNoOpener();
-      }
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kCrossTopLevelSiteBlobURLNavigation);
-      AuditsIssue::ReportPartitioningBlobURLIssue(
-          window, completed_url.GetString(),
-          mojom::blink::PartitioningBlobURLInfo::kEnforceNoopenerForNavigation);
-    }
-  }
+  AnchorElementUtils::EnforceBlobUrlNoopenerIfNeeded(frame_request,
+                                                     completed_url, *window);
 
   frame_request.SetTriggeringEventInfo(
       is_trusted ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent
