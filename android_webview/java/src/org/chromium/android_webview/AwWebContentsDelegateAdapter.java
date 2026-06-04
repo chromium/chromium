@@ -251,24 +251,32 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
 
                     @Override
                     public void onResult(String[] results) {
-                        if (mCompleted) {
-                            throw new IllegalStateException("Duplicate showFileChooser result");
-                        }
-                        mCompleted = true;
-                        if (results == null) {
-                            AwWebContentsDelegateJni.get()
-                                    .filesSelectedInChooser(
-                                            processId, renderId, webChromeClientMode, null, null);
-                            return;
-                        }
-                        GetDisplayNameTask task =
-                                new GetDisplayNameTask(
-                                        mContext,
-                                        processId,
-                                        renderId,
-                                        webChromeClientMode,
-                                        results);
-                        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        ThreadUtils.runOnUiThread(
+                                () -> {
+                                    if (mCompleted) {
+                                        throw new IllegalStateException(
+                                                "Duplicate showFileChooser result");
+                                    }
+                                    mCompleted = true;
+                                    if (results == null) {
+                                        AwWebContentsDelegateJni.get()
+                                                .filesSelectedInChooser(
+                                                        processId,
+                                                        renderId,
+                                                        webChromeClientMode,
+                                                        null,
+                                                        null);
+                                        return;
+                                    }
+                                    GetDisplayNameTask task =
+                                            new GetDisplayNameTask(
+                                                    mContext,
+                                                    processId,
+                                                    renderId,
+                                                    webChromeClientMode,
+                                                    results);
+                                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                });
                     }
                 },
                 params);
