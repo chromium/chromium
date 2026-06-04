@@ -8,11 +8,13 @@
 #include <variant>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -93,8 +95,11 @@ size_t GetShardCount() {
                   1);
 }
 std::string GetExpectedFakeIndexContents() {
+  base::FieldTrial* backend_field_trial = base::FeatureList::GetFieldTrial(
+      net::features::kDiskCacheBackendExperiment);
   return base::StrCat(
-      {kSqlBackendFakeIndexPrefix, base::NumberToString(GetShardCount())});
+      {kSqlBackendFakeIndexPrefix, base::NumberToString(GetShardCount()),
+       backend_field_trial ? backend_field_trial->group_name() : ""});
 }
 
 class SqlBackendImplTest : public testing::Test {
@@ -216,6 +221,42 @@ TEST_F(SqlBackendImplTest, InitWithFakeIndexFile) {
   ASSERT_EQ(future.Get(), net::OK);
   histogram_tester.ExpectUniqueSample("Net.SqlDiskCache.FakeIndexFileError",
                                       FakeIndexFileError::kOkExisting, 1);
+}
+
+TEST_F(SqlBackendImplTest, ExperimentGroupChangeResetsCache) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitFromCommandLine(
+        "DiskCacheBackendExperiment<DiskCacheBackendExperiment.GroupA:dummy/1",
+        "");
+
+    // Create and init backend. This should create fake index with "GroupA".
+    auto backend = CreateBackend();
+    base::test::TestFuture<int> future;
+    backend->Init(future.GetCallback());
+    ASSERT_EQ(future.Get(), net::OK);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitFromCommandLine(
+        "DiskCacheBackendExperiment<DiskCacheBackendExperiment.GroupB:dummy/1",
+        "");
+
+    // Initialize backend on same directory. It should fail because the group
+    // changed.
+    auto backend = CreateBackend();
+    base::test::TestFuture<int> future;
+    base::HistogramTester histogram_tester;
+    backend->Init(future.GetCallback());
+    EXPECT_EQ(future.Get(), net::ERR_FAILED);
+
+    // "GroupA" and "GroupB" have same length, so it should be
+    // kWrongMagicNumber.
+    histogram_tester.ExpectUniqueSample("Net.SqlDiskCache.FakeIndexFileError",
+                                        FakeIndexFileError::kWrongMagicNumber,
+                                        1);
+  }
 }
 
 TEST_F(SqlBackendImplTest, SerialInit) {
