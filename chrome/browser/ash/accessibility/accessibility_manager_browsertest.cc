@@ -32,7 +32,6 @@
 #include "chrome/browser/extensions/api/braille_display_private/mock_braille_controller.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/global_features.h"
-#include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -52,6 +51,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -2041,7 +2041,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
       g_browser_process->GetFeatures()->application_locale_storage(),
       g_browser_process->platform_part()->GetTimezoneResolverManager());
   prefs.InitUserPrefsForTesting(
-      PrefServiceSyncableFromProfile(GetActiveUserProfile()),
+      static_cast<sync_preferences::PrefServiceSyncable*>(
+          GetActiveUserProfile()->GetPrefs()),
       user_manager::UserManager::Get()->GetActiveUser(),
       UserSessionManager::GetInstance()->GetDefaultIMEState(
           GetActiveUserProfile()));

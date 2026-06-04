@@ -225,6 +225,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/browser_context_helper",
     "//components/live_caption",
     "//components/live_caption:constants",
+    "//components/sync_preferences",
     "//ui/base/clipboard:clipboard_test_support",
     "//ui/base/mojom:ui_base_types",
     "//ui/events:test_support",

@@ -29,7 +29,6 @@ include_rules = [
   "+chrome/browser/extensions/error_console",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/extensions/extension_browser_test_util.h",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/speech",
   "+chrome/browser/ui/ash",
