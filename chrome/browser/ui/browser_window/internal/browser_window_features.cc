@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_instant_controller.h"
@@ -277,6 +278,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
               *browser_, &chrome::CreateImmersiveModeController,
               window_feature_controller_.get(),
               browser->GetUnownedUserDataHost());
+
+  browser_commands_ =
+      GetUserDataFactory().CreateInstance<chrome::BrowserCommands>(*browser,
+                                                                   browser);
 
   browser_command_controller_ =
       std::make_unique<chrome::BrowserCommandController>(browser);

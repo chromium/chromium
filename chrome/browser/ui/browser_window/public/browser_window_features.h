@@ -167,6 +167,7 @@ class VerticalTabStripStateController;
 
 namespace chrome {
 class BrowserCommandController;
+class BrowserCommands;
 }  // namespace chrome
 
 namespace contextual_cueing {
@@ -537,6 +538,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<WindowFeatureController> window_feature_controller_;
 
   std::unique_ptr<BrowserActions> browser_actions_;
+
+  std::unique_ptr<chrome::BrowserCommands> browser_commands_;
 
   std::unique_ptr<chrome::BrowserCommandController> browser_command_controller_;
 
