@@ -95,10 +95,6 @@ class ExtensionManagement : public KeyedService,
   bool UsesDefaultPolicyHostRestrictions(const Extension* extension) override;
   bool BlocklistedByDefault() const override;
   GURL GetEffectiveUpdateURL(const Extension& extension) override;
-  bool IsExemptFromMV2DeprecationByPolicy(
-      int manifest_version,
-      const std::string& extension_id,
-      Manifest::Type manifest_type) override;
   bool IsAllowedManifestVersion(int manifest_version,
                                 const std::string& extension_id,
                                 Manifest::Type manifest_type) override;

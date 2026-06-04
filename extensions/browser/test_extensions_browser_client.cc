@@ -63,12 +63,6 @@ class TestExtensionManagementClient : public ExtensionManagementClient {
   }
   bool BlocklistedByDefault() const override { return false; }
   GURL GetEffectiveUpdateURL(const Extension& extension) override { return {}; }
-  bool IsExemptFromMV2DeprecationByPolicy(
-      int manifest_version,
-      const std::string& extension_id,
-      Manifest::Type manifest_type) override {
-    return false;
-  }
 
   bool IsAllowedManifestVersion(int manifest_version,
                                 const std::string& extension_id,

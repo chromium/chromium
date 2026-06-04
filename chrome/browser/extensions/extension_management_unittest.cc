@@ -1216,9 +1216,6 @@ TEST_F(ExtensionManagementServiceTest,
 }
 
 TEST_F(ExtensionManagementServiceTest, ManifestV2Default) {
-  SetPref(true, pref_names::kManifestV2Availability,
-          base::Value(static_cast<int>(
-              internal::GlobalSettings::ManifestV2Setting::kDefault)));
   bool is_manifest_v3_only = base::FeatureList::IsEnabled(
       extensions_features::kExtensionsManifestV3Only);
   EXPECT_EQ(!is_manifest_v3_only,
@@ -1226,117 +1223,6 @@ TEST_F(ExtensionManagementServiceTest, ManifestV2Default) {
                 2, kTargetExtension, Manifest::Type::kExtension));
   EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
       3, kTargetExtension, Manifest::Type::kExtension));
-
-  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      2, kTargetExtension, Manifest::Type::kExtension));
-  // Note: MV3 extension isn't exempt by policy because it's not affected at
-  // all. It's not this class's responsibility to know about the rest of the
-  // criteria; only whether the extension is exempt by policy.
-  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      3, kTargetExtension, Manifest::Type::kExtension));
-}
-
-TEST_F(ExtensionManagementServiceTest, ManifestV2Disabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      extensions_features::kExtensionsManifestV3Only);
-  SetPref(true, pref_names::kManifestV2Availability,
-          base::Value(static_cast<int>(
-              internal::GlobalSettings::ManifestV2Setting::kDisabled)));
-  EXPECT_FALSE(extension_management_->IsAllowedManifestVersion(
-      2, kTargetExtension, Manifest::Type::kExtension));
-  EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
-      3, kTargetExtension, Manifest::Type::kExtension));
-
-  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      2, kTargetExtension, Manifest::Type::kExtension));
-  // Note: MV3 extension isn't exempt by policy because it's not affected at
-  // all. It's not this class's responsibility to know about the rest of the
-  // criteria; only whether the extension is exempt by policy.
-  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      3, kTargetExtension, Manifest::Type::kExtension));
-}
-
-TEST_F(ExtensionManagementServiceTest, ManifestV2Enabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      extensions_features::kExtensionsManifestV3Only);
-  SetPref(true, pref_names::kManifestV2Availability,
-          base::Value(static_cast<int>(
-              internal::GlobalSettings::ManifestV2Setting::kEnabled)));
-  EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
-      2, kTargetExtension, Manifest::Type::kExtension));
-  EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
-      3, kTargetExtension, Manifest::Type::kExtension));
-
-  EXPECT_TRUE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      2, kTargetExtension, Manifest::Type::kExtension));
-  // Note: MV3 extension isn't exempt by policy because it's not affected at
-  // all. It's not this class's responsibility to know about the rest of the
-  // criteria; only whether the extension is exempt by policy.
-  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      3, kTargetExtension, Manifest::Type::kExtension));
-}
-
-TEST_F(ExtensionManagementServiceTest, ManifestV2EnabledForForceInstalled) {
-  SetPref(
-      true, pref_names::kManifestV2Availability,
-      base::Value(static_cast<int>(internal::GlobalSettings::ManifestV2Setting::
-                                       kEnabledForForceInstalled)));
-  EXPECT_FALSE(extension_management_->IsAllowedManifestVersion(
-      2, kTargetExtension, Manifest::Type::kExtension));
-  EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
-      3, kTargetExtension, Manifest::Type::kExtension));
-
-  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      2, kTargetExtension, Manifest::Type::kExtension));
-  // Note: MV3 extension isn't exempt by policy because it's not affected at
-  // all. It's not this class's responsibility to know about the rest of the
-  // criteria; only whether the extension is exempt by policy.
-  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      3, kTargetExtension, Manifest::Type::kExtension));
-
-  base::DictValue forced_list_pref;
-  ExternalPolicyLoader::AddExtension(forced_list_pref, kTargetExtension,
-                                     kExampleUpdateUrl);
-  SetPref(true, pref_names::kInstallForceList, forced_list_pref.Clone());
-
-  EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
-      2, kTargetExtension, Manifest::Type::kExtension));
-  EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
-      3, kTargetExtension, Manifest::Type::kExtension));
-
-  EXPECT_TRUE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      2, kTargetExtension, Manifest::Type::kExtension));
-  // Note: MV3 extension isn't exempt by policy because it's not affected at
-  // all. It's not this class's responsibility to know about the rest of the
-  // criteria; only whether the extension is exempt by policy.
-  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      3, kTargetExtension, Manifest::Type::kExtension));
-}
-
-TEST_F(ExtensionManagementServiceTest, ManifestV2EnabledForExtensionOnly) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      extensions_features::kExtensionsManifestV3Only);
-  SetPref(true, pref_names::kManifestV2Availability,
-          base::Value(static_cast<int>(
-              internal::GlobalSettings::ManifestV2Setting::kEnabled)));
-  EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
-      2, kTargetExtension, Manifest::Type::kExtension));
-  EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
-      2, kTargetExtension, Manifest::Type::kLoginScreenExtension));
-  EXPECT_FALSE(extension_management_->IsAllowedManifestVersion(
-      2, kTargetExtension, Manifest::Type::kHostedApp));
-
-  EXPECT_TRUE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      2, kTargetExtension, Manifest::Type::kExtension));
-  EXPECT_TRUE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      2, kTargetExtension, Manifest::Type::kLoginScreenExtension));
-  // Despite being force-installed, hosted apps aren't included in the
-  // MV2 deprecation, so isn't exempt by policy.
-  EXPECT_FALSE(extension_management_->IsExemptFromMV2DeprecationByPolicy(
-      2, kTargetExtension, Manifest::Type::kHostedApp));
 }
 
 // Verifies that extensions that do not update CWS are always allowed by

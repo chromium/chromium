@@ -126,8 +126,7 @@ ExtensionManagement::ExtensionManagement(Profile* profile)
   pref_change_registrar_.Add(enterprise_reporting::kCloudReportingEnabled,
                              pref_change_callback);
 #endif
-  pref_change_registrar_.Add(pref_names::kManifestV2Availability,
-                             pref_change_callback);
+
   pref_change_registrar_.Add(pref_names::kExtensionUnpublishedAvailability,
                              pref_change_callback);
 
@@ -371,74 +370,14 @@ bool ExtensionManagement::IsAllowedManifestVersion(
     int manifest_version,
     const std::string& extension_id,
     Manifest::Type manifest_type) {
-  bool enabled_by_default =
-      !base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsManifestV3Only) ||
-      manifest_version >= 3;
-
-  // Manifest version policy only supports normal extensions, Chrome OS login
-  // screen extensions, and user scripts (which are largely treated as
-  // extensions).
-  if (manifest_type != Manifest::Type::kExtension &&
-      manifest_type != Manifest::Type::kLoginScreenExtension &&
-      manifest_type != Manifest::Type::kUserScript) {
-    return enabled_by_default;
-  }
-  switch (global_settings_->manifest_v2_setting) {
-    case internal::GlobalSettings::ManifestV2Setting::kDefault:
-      return enabled_by_default;
-    case internal::GlobalSettings::ManifestV2Setting::kDisabled:
-      return manifest_version >= 3;
-    case internal::GlobalSettings::ManifestV2Setting::kEnabled:
-      return true;
-    case internal::GlobalSettings::ManifestV2Setting::kEnabledForForceInstalled:
-      auto installation_mode =
-          GetInstallationMode(extension_id, /*update_url=*/std::string());
-      return manifest_version >= 3 ||
-             installation_mode == ManagedInstallationMode::kForced ||
-             installation_mode == ManagedInstallationMode::kRecommended;
-  }
+  return !base::FeatureList::IsEnabled(
+             extensions_features::kExtensionsManifestV3Only) ||
+         manifest_version >= 3;
 }
 
 bool ExtensionManagement::IsAllowedManifestVersion(const Extension* extension) {
   return IsAllowedManifestVersion(extension->manifest_version(),
                                   extension->id(), extension->GetType());
-}
-
-bool ExtensionManagement::IsExemptFromMV2DeprecationByPolicy(
-    int manifest_version,
-    const std::string& extension_id,
-    Manifest::Type manifest_type) {
-  // This policy only affects MV2 extensions.
-  if (manifest_version != 2) {
-    return false;
-  }
-  if (manifest_type != Manifest::Type::kExtension &&
-      manifest_type != Manifest::Type::kLoginScreenExtension &&
-      manifest_type != Manifest::Type::kUserScript) {
-    return false;
-  }
-
-  switch (global_settings_->manifest_v2_setting) {
-    case internal::GlobalSettings::ManifestV2Setting::kDefault:
-      // Default browser behavior. Not exempt.
-      return false;
-    case internal::GlobalSettings::ManifestV2Setting::kDisabled:
-      // All MV2 extensions are disallowed. Not exempt.
-      return false;
-    case internal::GlobalSettings::ManifestV2Setting::kEnabled:
-      // All MV2 extensions are allowed. Exempt.
-      return true;
-    case internal::GlobalSettings::ManifestV2Setting::kEnabledForForceInstalled:
-      // Force-installed MV2 extensions are allowed. Exempt if it's a force-
-      // installed extension only.
-      auto installation_mode =
-          GetInstallationMode(extension_id, /*update_url=*/std::string());
-      return installation_mode == ManagedInstallationMode::kForced ||
-             installation_mode == ManagedInstallationMode::kRecommended;
-  }
-
-  return false;
 }
 
 bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
@@ -723,9 +662,6 @@ void ExtensionManagement::Refresh() {
       LoadPreference(enterprise_reporting::kCloudExtensionRequestEnabled, false,
                      base::Value::Type::BOOLEAN);
 
-  const base::Value* manifest_v2_pref =
-      LoadPreference(pref_names::kManifestV2Availability,
-                     /*force_managed=*/true, base::Value::Type::INTEGER);
   const base::Value* unpublished_availability_pref =
       LoadPreference(pref_names::kExtensionUnpublishedAvailability,
                      /*force_managed=*/true, base::Value::Type::INTEGER);
@@ -813,12 +749,6 @@ void ExtensionManagement::Refresh() {
         }
       }
     }
-  }
-
-  if (manifest_v2_pref) {
-    global_settings_->manifest_v2_setting =
-        static_cast<internal::GlobalSettings::ManifestV2Setting>(
-            manifest_v2_pref->GetInt());
   }
 
   if (unpublished_availability_pref) {

@@ -126,11 +126,6 @@ inline constexpr char kNativeMessagingAllowlist[] =
 inline constexpr char kNativeMessagingUserLevelHosts[] =
     "native_messaging.user_level_hosts";
 
-// An integer indicates the availability of manifest v2 extensions. The value is
-// controlled by the ExtensionManifestV2Availability policy. More details can
-// be found at ExtensionManifestV2Availability.yaml.
-inline constexpr char kManifestV2Availability[] = "extensions.manifest_v2";
-
 // A preference that tracks extensions pinned to the toolbar. This is a list
 // object stored in the Preferences file. The extensions are stored by ID.
 inline constexpr char kPinnedExtensions[] = "extensions.pinned_extensions";

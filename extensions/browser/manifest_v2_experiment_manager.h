@@ -13,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/mv2_deprecation_impact_checker.h"
@@ -156,9 +155,6 @@ class ManifestV2ExperimentManager : public KeyedService,
                             const Extension* extension,
                             bool is_update) override;
 
-  // Called when the management policy for MV2 is changed.
-  void OnManagementPolicyChanged();
-
   // A helper object to determine if a given extension is affected by the
   // MV2 deprecation experiments.
   MV2DeprecationImpactChecker impact_checker_;
@@ -170,8 +166,6 @@ class ManifestV2ExperimentManager : public KeyedService,
   // The associated BrowserContext. Guaranteed to be safe to use since this is
   // a KeyedService for the context.
   raw_ptr<content::BrowserContext> browser_context_;
-
-  PrefChangeRegistrar pref_change_registrar_;
 
   // Whether the disabled dialog has been triggered for this `browser_context_`.
   bool has_triggered_disabled_dialog_ = false;

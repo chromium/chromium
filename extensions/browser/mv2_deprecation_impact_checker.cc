@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "content/public/browser/browser_context.h"
-#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -73,15 +72,6 @@ bool MV2DeprecationImpactChecker::IsExtensionAffected(
 
   // Ignore component extensions (they're implementation details of Chrome).
   if (Manifest::IsComponentLocation(manifest_location)) {
-    return false;
-  }
-
-  auto* extension_management_client =
-      ExtensionsBrowserClient::Get()->GetExtensionManagementClient(
-          browser_context_);
-  // Ignore MV2 extensions that are allowed by policy.
-  if (extension_management_client->IsExemptFromMV2DeprecationByPolicy(
-          manifest_version, extension_id, manifest_type)) {
     return false;
   }
 

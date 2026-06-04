@@ -166,8 +166,7 @@ extern const base::FeatureParam<std::string>
 // the browser or experiment configuration. This is important to allow
 // developers of MV2 extensions to continue loading, running, and testing their
 // extensions for as long as MV2 is supported in any variant.
-// This will be removed once the ExtensionManifestV2Availability enterprise
-// policy is no longer supported.
+// TODO(https://crbug.com/431097630): Remove this feature.
 BASE_DECLARE_FEATURE(kAllowLegacyMV2Extensions);
 
 // If enabled, allows an extension to specify protocol_handlers keys in the

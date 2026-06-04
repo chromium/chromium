@@ -159,13 +159,6 @@ struct IndividualSettings {
 
 // Global extension management settings, applicable to all extensions.
 struct GlobalSettings {
-  enum class ManifestV2Setting {
-    kDefault = 0,
-    kDisabled,
-    kEnabled,
-    kEnabledForForceInstalled,
-  };
-
   enum class UnpublishedAvailability {
     kAllowUnpublished = 0,
     kDisableUnpublished = 1,
@@ -187,9 +180,6 @@ struct GlobalSettings {
   // Settings specifying all allowed app/extension types, will be enforced
   // only of `has_restricted_allowed_types` is set to true.
   std::optional<std::vector<Manifest::Type>> allowed_types;
-
-  // An enum setting indicates if manifest v2 is allowed.
-  ManifestV2Setting manifest_v2_setting = ManifestV2Setting::kDefault;
 
   UnpublishedAvailability unpublished_availability_setting =
       UnpublishedAvailability::kAllowUnpublished;

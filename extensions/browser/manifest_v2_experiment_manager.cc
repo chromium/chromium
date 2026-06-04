@@ -10,7 +10,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_management_client.h"
@@ -163,15 +162,6 @@ ManifestV2ExperimentManager::ManifestV2ExperimentManager(
       .Post(FROM_HERE,
             base::BindOnce(&ManifestV2ExperimentManager::OnExtensionSystemReady,
                            weak_factory_.GetWeakPtr()));
-
-  // Listen to management policy changes. `Unretained` is safe since the
-  // `pref_change_registrar` is owned by this class.
-  pref_change_registrar_.Init(user_prefs::UserPrefs::Get(browser_context_));
-  pref_change_registrar_.Add(
-      pref_names::kManifestV2Availability,
-      base::BindRepeating(
-          &ManifestV2ExperimentManager::OnManagementPolicyChanged,
-          base::Unretained(this)));
 }
 
 ManifestV2ExperimentManager::~ManifestV2ExperimentManager() = default;
@@ -432,14 +422,6 @@ void ManifestV2ExperimentManager::OnExtensionInstalled(
   }
 
   MaybeReEnableExtension(*extension);
-}
-
-void ManifestV2ExperimentManager::OnManagementPolicyChanged() {
-  // The management policy has changed. Go through all disabled extensions to
-  // check if any should be re-enabled, and go through all enabled extensions
-  // to see if any should be disabled (if the experiment is active).
-  CheckDisabledExtensions();
-  DisableAffectedExtensions();
 }
 
 void ManifestV2ExperimentManager::

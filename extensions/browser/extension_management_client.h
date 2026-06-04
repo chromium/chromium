@@ -60,13 +60,6 @@ class ExtensionManagementClient {
   // from the extension manifest, but may be overridden by policies.
   virtual GURL GetEffectiveUpdateURL(const Extension& extension) = 0;
 
-  // Returns true if the extension associated with the given `extension_id` is
-  // exempt from the MV2 deprecation because of an active admin policy.
-  virtual bool IsExemptFromMV2DeprecationByPolicy(
-      int manifest_version,
-      const std::string& extension_id,
-      Manifest::Type manifest_type) = 0;
-
   // Checks if the specified manifest version is permitted for an extension,
   // based on its ID and manifest type.
   virtual bool IsAllowedManifestVersion(int manifest_version,
