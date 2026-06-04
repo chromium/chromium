@@ -196,24 +196,27 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private void finishDeferredInitialization(View popupView) {
         if (mDestroyed) return;
 
+        // Instead of anchoring on the plus button or status view, anchor on the parent and then
+        // shift down slightly. This gives better behavior on small screens.
+        // TODO(https://crbug.com/520097871): Popover's plus button can be much farther away, and
+        // some special handling is needed.
         Resources res = mActivity.getResources();
-
-        // Prepare rect provider for the floating popup window.
-        var viewRectProvider = new ViewRectProvider(mParent);
-        viewRectProvider.setInsetPx(
-                0, res.getDimensionPixelSize(R.dimen.fusebox_vertical_space_above_popup), 0, 0);
-
-        // Prepare rect provider for the bottom-sheet like popup window.
+        ViewRectProvider floatingViewRectProvider = new ViewRectProvider(mParent);
+        floatingViewRectProvider.setInsetPx(
+                /* left= */ 0,
+                res.getDimensionPixelSize(R.dimen.fusebox_vertical_space_above_popup),
+                /* right= */ 0,
+                /* bottom= */ 0);
         mBottomSheetRectProvider = new BottomSheetRectProvider(mActivity, mParent);
-        var dynamicRectProvider =
-                new DynamicRectProvider(viewRectProvider, mBottomSheetRectProvider);
+
+        DynamicRectProvider dynamicRectProvider =
+                new DynamicRectProvider(floatingViewRectProvider, mBottomSheetRectProvider);
         mViewportRectProvider = new ViewportRectProvider(mActivity);
-        var contextButton = mParent.findViewById(R.id.location_bar_attachments_add);
 
         var popupWindowBuilder =
                 new AnchoredPopupWindow.Builder(
                                 mActivity,
-                                contextButton.getRootView(),
+                                mParent.getRootView(),
                                 OmniboxResourceProvider.getPopupBackgroundDrawable(
                                         mActivity, BrandedColorScheme.APP_DEFAULT),
                                 () -> popupView,
@@ -227,7 +230,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         .setVerticalOverlapAnchor(true)
                         .setAllowNonTouchableSize(true);
 
-        var popup =
+        FuseboxPopup popup =
                 new FuseboxPopup(
                         mActivity,
                         mWindowAndroid,
