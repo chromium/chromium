@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTest,
       Do([this, skill, skill_id_ptr = &generated_skill_id]() mutable {
         skill.id = *skill_id_ptr;
         glic::GlicInvokeOptions options(
-            glic::Target(browser()->GetActiveTabInterface()),
+            glic::Target(*browser()->GetActiveTabInterface()),
             glic::mojom::InvocationSource::kSkills);
         options.prompts.push_back(skill.prompt);
         options.skill_id = skill.id;

@@ -73,12 +73,6 @@
 
 namespace glic {
 
-namespace {
-
-
-
-}  // namespace
-
 class GlicInstanceCoordinatorBrowserTest
     : public GlicBrowserTestMixin<PlatformBrowserTest> {
  public:
@@ -101,7 +95,6 @@ class GlicInstanceCoordinatorBrowserTest
   void SetUpOnMainThread() override {
     GlicBrowserTestMixin::SetUpOnMainThread();
   }
-
 
   void RestoreMostRecentTab() {
 #if BUILDFLAG(IS_ANDROID)
@@ -1254,7 +1247,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_FALSE(instance2->IsHibernated());
 }
 
-
 class GlicInstanceCoordinatorNoWarmingTest
     : public GlicInstanceCoordinatorBrowserTest {
  public:
@@ -1331,7 +1323,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActuationBrowserTest,
 
   tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
 
-  GlicInvokeOptions options(Target(active_tab),
+  GlicInvokeOptions options(Target(*active_tab),
                             glic::mojom::InvocationSource::kOsButton);
   options.feature_mode = mojom::FeatureMode::kActuation;
 

@@ -92,12 +92,10 @@ class GlicContextMenuInvocationHelperUnittest : public testing::Test {
 // specific fre_override.
 MATCHER_P(TargetTabAndFreOverride, expected, "") {
   auto [expected_tab, expected_fre_override] = expected;
-  if (!std::holds_alternative<raw_ptr<tabs::TabInterface>>(
-          arg.target.surface)) {
+  if (!std::holds_alternative<tabs::TabHandle>(arg.target.surface)) {
     return false;
   }
-  return std::get<raw_ptr<tabs::TabInterface>>(arg.target.surface).get() ==
-             expected_tab &&
+  return std::get<tabs::TabHandle>(arg.target.surface).Get() == expected_tab &&
          arg.fre_override == expected_fre_override;
 }
 

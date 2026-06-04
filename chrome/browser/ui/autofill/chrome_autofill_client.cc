@@ -297,7 +297,6 @@ bool CanTriggerAutofillAiSavePromptSurveyForEntityType(EntityType type) {
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-
 }  // namespace
 
 // static
@@ -1385,7 +1384,6 @@ PasswordFormClassification ChromeAutofillClient::ClassifyAsPasswordForm(
   return password_manager::ClassifyAsPasswordForm(manager, form_id, field_id);
 }
 
-
 optimization_guide::ModelQualityLogsUploaderService*
 ChromeAutofillClient::GetMqlsUploadService() {
 #if !BUILDFLAG(IS_ANDROID)
@@ -1537,7 +1535,7 @@ void ChromeAutofillClient::OpenGeminiInSidebar(const std::u16string& prompt) {
   if (!tab) {
     return;
   }
-  glic::Target target(tab);
+  glic::Target target(*tab);
   glic::GlicInvokeOptions options(std::move(target),
                                   glic::mojom::InvocationSource::kAutofill);
   options.prompts.push_back(base::UTF16ToUTF8(prompt));

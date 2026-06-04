@@ -351,7 +351,7 @@ ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
       Profile::FromBrowserContext(contents->GetBrowserContext()));
 
   glic::GlicInvokeOptions options(
-      glic::Target(tab_interface, glic::NewConversation()),
+      glic::Target(*tab_interface, glic::NewConversation()),
       glic::mojom::InvocationSource::kPdfSummarizeButton);
   options.prompts.push_back(
       l10n_util::GetStringUTF8(IDS_PDF_GLIC_SUMMARIZE_PROMPT));

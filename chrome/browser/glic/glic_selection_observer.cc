@@ -504,7 +504,7 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
         Profile* profile =
             Profile::FromBrowserContext(web_contents->GetBrowserContext());
         if (auto* glic_keyed_service = GlicKeyedService::Get(profile)) {
-          GlicInvokeOptions options(glic::Target(tab_interface),
+          GlicInvokeOptions options(glic::Target(*tab_interface),
                                     mojom::InvocationSource::kNudge);
           options.additional_context = AdditionalTabContext(
               CreateAdditionalContext(web_contents.get(), selected_text),
@@ -810,8 +810,7 @@ void GlicSelectionObserver::SendAdditionalContextToPanel(
   if (!glic_keyed_service_) {
     return;
   }
-  if (auto* instance =
-          glic_keyed_service_->GetInstanceForTab(tab_interface)) {
+  if (auto* instance = glic_keyed_service_->GetInstanceForTab(tab_interface)) {
     // TODO(b/508916357): Use the invoke API.
     instance->SendAdditionalContext(
         CreateAdditionalContext(web_contents(), selected_text));
