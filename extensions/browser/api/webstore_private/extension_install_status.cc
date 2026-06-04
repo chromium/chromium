@@ -175,8 +175,7 @@ ExtensionInstallStatus PerformSynchronousChecks(
   constexpr mojom::ManifestLocation kManifestLocation =
       mojom::ManifestLocation::kInternal;
   if (mv2_experiment_manager->ShouldBlockExtensionInstallation(
-          extension_id, manifest_version, manifest_type, kManifestLocation,
-          HashedExtensionId(extension_id))) {
+          manifest_version, manifest_type, kManifestLocation)) {
     // The extension is using a deprecated manifest version and should not
     // be installable.
     return kDeprecatedManifestVersion;

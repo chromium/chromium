@@ -78,14 +78,12 @@ class ManifestV2ExperimentManager : public KeyedService,
   // This may be false if, e.g., the extension is policy-installed.
   bool IsExtensionAffected(const Extension& extension);
 
-  // Returns true if a new installation of the given `extension_id` should be
-  // blocked.
+  // Returns true if a new installation with the given `manifest_version`,
+  // `manifest_type`, and `manifest_location` should be blocked.
   bool ShouldBlockExtensionInstallation(
-      const ExtensionId& extension_id,
       int manifest_version,
       Manifest::Type manifest_type,
-      mojom::ManifestLocation manifest_location,
-      const HashedExtensionId& hashed_id);
+      mojom::ManifestLocation manifest_location);
 
   // Returns true if Chrome should disallow enabling the given `extension`.
   bool ShouldBlockExtensionEnable(const Extension& extension);

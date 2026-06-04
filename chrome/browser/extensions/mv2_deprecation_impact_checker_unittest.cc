@@ -2,30 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
-#include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/manifest_v2_experiment_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 
 namespace extensions {
-
-namespace {
-
-// Hashed ID for 'aaaa...a'.
-constexpr char kTestHashedIdA[] = "68F84A59A3CA2D0E5CB1646FBB164DA409B5D8F2";
-// Hashed ID for 'bbbb...b'.
-constexpr char kTestHashedIdB[] = "142E27CA6D179970507F4076E2AC96FEC5834F82";
-
-}  // namespace
 
 class MV2DeprecationImpactCheckerUnitTest : public ExtensionServiceTestBase {
  public:
@@ -35,7 +20,7 @@ class MV2DeprecationImpactCheckerUnitTest : public ExtensionServiceTestBase {
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams{});
-    impact_checker_ = std::make_unique<MV2DeprecationImpactChecker>(profile());
+    impact_checker_ = std::make_unique<MV2DeprecationImpactChecker>();
   }
 
   void TearDown() override {
@@ -116,23 +101,6 @@ class MV2DeprecationImpactCheckerUnitTest : public ExtensionServiceTestBase {
   }
 
   std::unique_ptr<MV2DeprecationImpactChecker> impact_checker_;
-};
-
-class MV2DeprecationImpactCheckerUnitTestWithAllowlist
-    : public MV2DeprecationImpactCheckerUnitTest {
- public:
-  MV2DeprecationImpactCheckerUnitTestWithAllowlist() {
-    std::string params =
-        base::StringPrintf("%s,%s", kTestHashedIdA, kTestHashedIdB);
-    feature_list_.InitAndEnableFeatureWithParameters(
-        extensions_features::kExtensionManifestV2ExceptionList,
-        {{extensions_features::kExtensionManifestV2ExceptionListParam.name,
-          params}});
-  }
-  ~MV2DeprecationImpactCheckerUnitTestWithAllowlist() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that user-visible MV2 extensions are properly considered affected by
@@ -367,34 +335,6 @@ TEST_F(MV2DeprecationImpactCheckerUnitTest, UserScriptsAreAffected) {
   ASSERT_EQ(Manifest::Type::kUserScript, user_script->GetType());
 
   EXPECT_TRUE(impact_checker()->IsExtensionAffected(*user_script));
-}
-
-// Tests the allowlist is taken into account.
-TEST_F(MV2DeprecationImpactCheckerUnitTestWithAllowlist, AllowlistWorks) {
-  scoped_refptr<const Extension> ext_a =
-      ExtensionBuilder("ext-a")
-          .SetLocation(mojom::ManifestLocation::kInternal)
-          .SetManifestVersion(2)
-          .SetID(std::string(32, 'a'))
-          .Build();
-  scoped_refptr<const Extension> ext_b =
-      ExtensionBuilder("ext-b")
-          .SetLocation(mojom::ManifestLocation::kInternal)
-          .SetManifestVersion(2)
-          .SetID(std::string(32, 'b'))
-          .Build();
-  scoped_refptr<const Extension> ext_c =
-      ExtensionBuilder("ext-c")
-          .SetLocation(mojom::ManifestLocation::kInternal)
-          .SetManifestVersion(2)
-          .SetID(std::string(32, 'c'))
-          .Build();
-
-  // `ext_a` and `ext_b` are in the allowlist, so aren't affected.
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*ext_a));
-  EXPECT_FALSE(impact_checker()->IsExtensionAffected(*ext_b));
-  // `ext_c` is not in the allowlist, so is affected.
-  EXPECT_TRUE(impact_checker()->IsExtensionAffected(*ext_c));
 }
 
 }  // namespace extensions

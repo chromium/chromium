@@ -116,9 +116,6 @@ BASE_FEATURE(kExtensionLocalizationGuid, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionIconVariants, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionManifestV2ExceptionList,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionsBackgroundCompilation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -139,11 +136,6 @@ BASE_FEATURE_PARAM(size_t,
                    &kExtensionsBackgroundCompilation,
                    "max_script_size",
                    0);
-
-const base::FeatureParam<std::string> kExtensionManifestV2ExceptionListParam(
-    &kExtensionManifestV2ExceptionList,
-    /*name=*/"mv2_exception_list",
-    /*default_value=*/"");
 
 BASE_FEATURE(kAllowLegacyMV2Extensions, base::FEATURE_DISABLED_BY_DEFAULT);
 

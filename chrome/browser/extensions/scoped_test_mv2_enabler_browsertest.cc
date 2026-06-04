@@ -50,8 +50,8 @@ IN_PROC_BROWSER_TEST_F(ScopedTestMV2EnablerBrowserTest,
   // The experiment manager should not indicate the extension should be
   // blocked from being installed.
   EXPECT_FALSE(experiment_manager->ShouldBlockExtensionInstallation(
-      extension->id(), extension->manifest_version(), extension->GetType(),
-      extension->location(), extension->hashed_id()));
+      extension->manifest_version(), extension->GetType(),
+      extension->location()));
 
   // Even after disabling affected extensions, the extension should remain
   // enabled, since MV2 extensions are allowed for testing.

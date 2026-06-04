@@ -153,7 +153,7 @@ bool ShouldBlockUnpackedExtensions() {
 
 ManifestV2ExperimentManager::ManifestV2ExperimentManager(
     content::BrowserContext* browser_context)
-    : impact_checker_(browser_context), browser_context_(browser_context) {
+    : browser_context_(browser_context) {
   registry_observation_.Observe(ExtensionRegistry::Get(browser_context));
 
   ExtensionSystem::Get(browser_context)
@@ -184,11 +184,9 @@ bool ManifestV2ExperimentManager::IsExtensionAffected(
 }
 
 bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
-    const ExtensionId& extension_id,
     int manifest_version,
     Manifest::Type manifest_type,
-    mojom::ManifestLocation manifest_location,
-    const HashedExtensionId& hashed_id) {
+    mojom::ManifestLocation manifest_location) {
   if (!ShouldDisableLegacyExtensions()) {
     return false;
   }
@@ -202,9 +200,8 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
 
   // Otherwise, if the extension is affected by the deprecation, it should be
   // blocked.
-  return impact_checker_.IsExtensionAffected(extension_id, manifest_version,
-                                             manifest_type, manifest_location,
-                                             hashed_id);
+  return impact_checker_.IsExtensionAffected(manifest_version, manifest_type,
+                                             manifest_location);
 }
 
 bool ManifestV2ExperimentManager::ShouldBlockExtensionEnable(
@@ -221,8 +218,7 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionEnable(
   }
 
   return impact_checker_.IsExtensionAffected(
-      extension.id(), extension.manifest_version(), extension.GetType(),
-      extension.location(), extension.hashed_id());
+      extension.manifest_version(), extension.GetType(), extension.location());
 }
 
 bool ManifestV2ExperimentManager::DidUserAcknowledgeNoticeGlobally() {

@@ -149,9 +149,8 @@ TEST_F(ManifestV2ExperimentManagerUnitTest,
 
     EXPECT_EQ(test_case.should_block_install,
               experiment_manager()->ShouldBlockExtensionInstallation(
-                  extension->id(), extension->manifest_version(),
-                  extension->GetType(), extension->location(),
-                  extension->hashed_id()));
+                  extension->manifest_version(), extension->GetType(),
+                  extension->location()));
 
     EXPECT_EQ(test_case.should_block_install,
               experiment_manager()->ShouldBlockExtensionEnable(*extension));
@@ -187,8 +186,8 @@ TEST_F(ManifestV2ExperimentManagerUnitTest,
     // an implementation detail. They should always be allowed to install and
     // remain enabled.
     EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
-        extension->id(), extension->manifest_version(), extension->GetType(),
-        extension->location(), extension->hashed_id()));
+        extension->manifest_version(), extension->GetType(),
+        extension->location()));
     EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionEnable(*extension));
   }
 }
@@ -215,8 +214,8 @@ TEST_F(ManifestV2ExperimentManagerUnitTestWithAllowLegacy,
           .SetLocation(mojom::ManifestLocation::kUnpacked)
           .Build();
   EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
-      extension->id(), extension->manifest_version(), extension->GetType(),
-      extension->location(), extension->hashed_id()));
+      extension->manifest_version(), extension->GetType(),
+      extension->location()));
 }
 
 // Tests that the proper manifest group is used when emitting metrics for
