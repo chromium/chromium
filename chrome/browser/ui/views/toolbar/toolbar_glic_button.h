@@ -51,6 +51,7 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton> {
   void ResetSplitButtonCornerStyling() override;
   void SetLeftRightCornerRadii(int left, int right) override;
   float GetCornerRadiusFor(ToolbarButton::Edge edge) const override;
+  int GetRoundedCornerRadius() const override;
   int GetSplitRoundedEdgeRadius() override;
   int GetIconSize() const override;
   ui::ColorId GetBackgroundColor();

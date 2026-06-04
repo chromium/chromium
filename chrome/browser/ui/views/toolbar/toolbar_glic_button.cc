@@ -69,8 +69,8 @@ gfx::Size ToolbarGlicButton::CalculatePreferredSize(
 }
 
 gfx::Size ToolbarGlicButton::GetMinimumSize() const {
-  return gfx::Size(kCollapsedWidth,
-                   GetLayoutConstant(LayoutConstant::kToolbarButtonHeight));
+  const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+  return gfx::Size(size, size);
 }
 
 void ToolbarGlicButton::AddedToWidget() {
@@ -124,6 +124,10 @@ float ToolbarGlicButton::GetCornerRadiusFor(ToolbarButton::Edge edge) const {
     case ToolbarButton::Edge::kBottomRight:
       return right_corner_radius_.value_or(GetRoundedCornerRadius());
   }
+}
+
+int ToolbarGlicButton::GetRoundedCornerRadius() const {
+  return GetLayoutConstant(LayoutConstant::kToolbarButtonHeight) / 2;
 }
 
 int ToolbarGlicButton::GetSplitRoundedEdgeRadius() {
@@ -241,7 +245,7 @@ void ToolbarGlicButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
       image_view->SetProperty(views::kMarginsKey,
                               gfx::Insets().set_left(kIconLeftMargin));
       box_layout->set_main_axis_alignment(
-          views::BoxLayout::MainAxisAlignment::kStart);
+          views::BoxLayout::MainAxisAlignment::kCenter);
     }
   }
 }
