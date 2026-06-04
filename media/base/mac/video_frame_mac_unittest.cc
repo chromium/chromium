@@ -7,7 +7,9 @@
 #include <stddef.h>
 
 #include <utility>
+#include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -128,29 +130,70 @@ static void FillFrameWithPredictableValues(const VideoFrame& frame) {
 }
 
 TEST(VideoFrameMac, CorrectlyWrapsFramesWithPadding) {
-  const gfx::Size coded_size(kWidth, kHeight);
-  const gfx::Rect visible_rect(kVisibleRectOffset, kVisibleRectOffset,
-                               kWidth - 2 * kVisibleRectOffset,
-                               kHeight - 2 * kVisibleRectOffset);
+  const gfx::Size coded_size(kWidth, kHeight);  // 64x48
+  const gfx::Rect visible_rect(
+      kVisibleRectOffset, kVisibleRectOffset, kWidth - 2 * kVisibleRectOffset,
+      kHeight - 2 * kVisibleRectOffset);  // (8, 8, 48, 32)
   auto frame =
       VideoFrame::CreateFrame(PIXEL_FORMAT_I420, coded_size, visible_rect,
                               visible_rect.size(), kTimestamp);
-  ASSERT_TRUE(frame.get());
+  ASSERT_TRUE(frame);
   FillFrameWithPredictableValues(*frame);
 
   auto pb = WrapVideoFrameInCVPixelBuffer(frame);
   ASSERT_TRUE(pb.get());
   EXPECT_EQ(kCVPixelFormatType_420YpCbCr8Planar,
             CVPixelBufferGetPixelFormatType(pb.get()));
-  EXPECT_EQ(visible_rect.width(),
+
+  // 1. CVPixelBuffer should reflect the full CODED size under Approach #2
+  EXPECT_EQ(coded_size.width(),
             static_cast<int>(CVPixelBufferGetWidth(pb.get())));
-  EXPECT_EQ(visible_rect.height(),
+  EXPECT_EQ(coded_size.height(),
             static_cast<int>(CVPixelBufferGetHeight(pb.get())));
+
+  // 2. Retrieve and verify the Clean Aperture crop dict using base helpers
+  CFDictionaryRef clean_aperture =
+      base::apple::CFCast<CFDictionaryRef>(CVBufferCopyAttachment(
+          pb.get(), kCVImageBufferCleanApertureKey, nullptr));
+  ASSERT_NE(clean_aperture, nullptr);
+
+  // Verify Width (48)
+  double width = 0;
+  CFNumberRef width_num = base::apple::GetValueFromDictionary<CFNumberRef>(
+      clean_aperture, kCVImageBufferCleanApertureWidthKey);
+  ASSERT_NE(width_num, nullptr);
+  CFNumberGetValue(width_num, kCFNumberDoubleType, &width);
+  EXPECT_EQ(width, visible_rect.width());
+
+  // Verify Height (32)
+  double height = 0;
+  CFNumberRef height_num = base::apple::GetValueFromDictionary<CFNumberRef>(
+      clean_aperture, kCVImageBufferCleanApertureHeightKey);
+  ASSERT_NE(height_num, nullptr);
+  CFNumberGetValue(height_num, kCFNumberDoubleType, &height);
+  EXPECT_EQ(height, visible_rect.height());
+
+  // Verify Horizontal Offset: 8 - (64 - 48) / 2.0 = 0
+  double horiz_off = 0;
+  CFNumberRef horiz_off_num = base::apple::GetValueFromDictionary<CFNumberRef>(
+      clean_aperture, kCVImageBufferCleanApertureHorizontalOffsetKey);
+  ASSERT_NE(horiz_off_num, nullptr);
+  CFNumberGetValue(horiz_off_num, kCFNumberDoubleType, &horiz_off);
+  EXPECT_EQ(horiz_off, 0.0);
+
+  // Verify Vertical Offset: 8 - (48 - 32) / 2.0 = 0
+  double vert_off = 0;
+  CFNumberRef vert_off_num = base::apple::GetValueFromDictionary<CFNumberRef>(
+      clean_aperture, kCVImageBufferCleanApertureVerticalOffsetKey);
+  ASSERT_NE(vert_off_num, nullptr);
+  CFNumberGetValue(vert_off_num, kCFNumberDoubleType, &vert_off);
+  EXPECT_EQ(vert_off, 0.0);
 
   CVPixelBufferLockBaseAddress(pb.get(), 0);
   for (size_t i = 0; i < VideoFrame::NumPlanes(frame->format()); ++i) {
+    // 3. Plane dimensions in CVPixelBuffer should reflect the full coded size
     const gfx::Size plane_size =
-        VideoFrame::PlaneSize(frame->format(), i, visible_rect.size());
+        VideoFrame::PlaneSize(frame->format(), i, coded_size);
     EXPECT_EQ(plane_size.width(),
               static_cast<int>(CVPixelBufferGetWidthOfPlane(pb.get(), i)));
     EXPECT_EQ(plane_size.height(),
@@ -158,17 +201,21 @@ TEST(VideoFrameMac, CorrectlyWrapsFramesWithPadding) {
 
     uint8_t* plane_ptr = reinterpret_cast<uint8_t*>(
         CVPixelBufferGetBaseAddressOfPlane(pb.get(), i));
-    EXPECT_EQ(frame->visible_data(i), plane_ptr);
+
+    // 4. Pointer should match frame->data() instead of frame->visible_data()
+    ASSERT_EQ(frame->data(i), plane_ptr);
+
     const size_t stride =
         static_cast<size_t>(CVPixelBufferGetBytesPerRowOfPlane(pb.get(), i));
-    EXPECT_EQ(frame->stride(i), stride);
-    const int offset = kVisibleRectOffset / ((i == 0) ? 1 : 2);
+    ASSERT_EQ(frame->stride(i), stride);
+
+    // 5. Verify pixel contents across the full coded frame
+    auto frame_data = frame->data_span(i);
     for (int h = 0; h < plane_size.height(); ++h) {
       const int row_index = h * stride;
       for (int w = 0; w < plane_size.width(); ++w) {
         const int index = row_index + w;
-        EXPECT_EQ(static_cast<uint8_t>((w + offset) ^ (h + offset)),
-                  UNSAFE_TODO(plane_ptr[index]));
+        EXPECT_EQ(static_cast<uint8_t>(w ^ h), frame_data[index]);
       }
     }
   }
