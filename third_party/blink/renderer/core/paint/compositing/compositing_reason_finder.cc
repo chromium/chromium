@@ -384,7 +384,8 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
       auto* canvas_parent =
           DynamicTo<HTMLCanvasElement>(element->parentElement());
       if (IsA<LayoutBox>(object) && canvas_parent &&
-          canvas_parent->layoutSubtree() &&
+          canvas_parent->layoutSubtree() && canvas_parent->GetLayoutObject() &&
+          canvas_parent->GetLayoutObject()->IsCanvas() &&
           !canvas_parent->IsInCanvasSubtree()) {
         reasons |= CompositingReason::kCanvasChild;
       } else {

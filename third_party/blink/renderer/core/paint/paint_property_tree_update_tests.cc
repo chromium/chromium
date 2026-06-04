@@ -5,6 +5,7 @@
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -2380,4 +2381,18 @@ TEST_P(PaintPropertyTreeUpdateTest, FixedPositionChangeCompositingReason) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(translation->IsAffectedByOuterViewportBoundsDelta());
 }
+
+TEST_P(PaintPropertyTreeUpdateTest, CanvasScriptsDisabled) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  GetDocument().GetSettings()->SetScriptEnabled(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <canvas layoutsubtree style="display: inline;">
+      <div id="target">Hello</div>
+    </canvas>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crash.
+}
+
 }  // namespace blink
