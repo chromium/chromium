@@ -145,6 +145,14 @@ export function getHtml(this: OmniboxComposeboxElement) {
           exportparts="voice-close-button, voice-details-link, voice-stop-button, voice-submit-button">
       </cr-composebox-voice-search>
     ` : ''}
+    ${this.shouldShowSuggestionActivityLink() ? html`
+      <div id="suggestionActivity">
+        <localized-link
+          .localizedString="${this.i18nAdvanced('suggestionActivityLink')}"
+          @link-clicked="${this.onLinkClicked}">
+        </localized-link>
+      </div>
+    `: ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

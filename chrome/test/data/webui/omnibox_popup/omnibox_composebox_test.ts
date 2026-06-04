@@ -1125,4 +1125,70 @@ suite('OmniboxComposeboxTest', () => {
             glow.classList.contains('embedded-permission-prompt-showing'));
         assertEquals('0', window.getComputedStyle(recordingWave).opacity);
       });
+
+  test('suggestion activity link triggers navigation', async () => {
+    // Mock results to show the link.
+    const matches = [
+      createSearchMatchForTesting({
+        isNoncannedAimSuggestion: true,
+      }),
+    ];
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          matches: matches,
+        }));
+    await testProxy.page.$.flushForTesting();
+    await microtasksFinished();
+    await omniboxComposebox.updateComplete;
+
+    const suggestionActivity =
+        omniboxComposebox.shadowRoot.querySelector('#suggestionActivity');
+    assertTrue(!!suggestionActivity);
+    const localizedLink = suggestionActivity.querySelector('localized-link');
+    assertTrue(!!localizedLink);
+
+    const testUrl = 'about:blank?activity';
+    // Simulate the event fired by localized-link.
+    const anchor = document.createElement('a');
+    anchor.href = testUrl;
+
+    let preventDefaultCalled = false;
+    const linkClickedEvent = new CustomEvent('link-clicked', {
+      detail: {
+        event: {
+          preventDefault: () => {
+            preventDefaultCalled = true;
+          },
+          currentTarget: anchor,
+        },
+      },
+    });
+
+    localizedLink.dispatchEvent(linkClickedEvent);
+
+    const url = await mockPageHandler.whenCalled('navigateUrl');
+    assertEquals(testUrl, url);
+    assertTrue(preventDefaultCalled);
   });
+
+  test(
+      'suggestion activity link hidden when suggestions are non canned',
+      async () => {
+        const matches = [
+          createSearchMatchForTesting({
+            isNoncannedAimSuggestion: false,
+          }),
+        ];
+        testProxy.page.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              matches: matches,
+            }));
+        await testProxy.page.$.flushForTesting();
+        await microtasksFinished();
+        await omniboxComposebox.updateComplete;
+
+        const suggestionActivity =
+            omniboxComposebox.shadowRoot.querySelector('#suggestionActivity');
+        assertFalse(!!suggestionActivity);
+      });
+});
