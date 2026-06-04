@@ -131,6 +131,7 @@ public class LocationBarLayoutTest {
     @Test
     @SmallTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP)
+    @DisabledTest(message = "crbug.com/519767484")
     public void testDeleteButton() {
         // Desktop does not show a delete button.
         OmniboxFacility omnibox = mPage.openOmnibox();
