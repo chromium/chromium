@@ -1671,9 +1671,23 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     // that it can listen to all file upload events.
     [self onFileContextAdded:serverToken forIdentifier:identifier];
     std::string fileName = base::SysNSStringToUTF8(item.title);
+    std::string mimeType;
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeRawFile) {
+      mimeType = "application/octet-stream";
+      if (item.fileURL) {
+        UTType* contentType = nil;
+        [item.fileURL getResourceValue:&contentType
+                                forKey:NSURLContentTypeKey
+                                 error:nil];
+        if (contentType.preferredMIMEType) {
+          mimeType = base::SysNSStringToUTF8(contentType.preferredMIMEType);
+        }
+      }
+    } else {
+      mimeType = kAdobePortableDocumentFormatMimeType;
+    }
     _contextualSearchSession->StartFileContextUploadFlow(
-        serverToken, fileName, kAdobePortableDocumentFormatMimeType,
-        std::move(buffer),
+        serverToken, fileName, mimeType, std::move(buffer),
         /*image_options=*/std::nullopt);
     [self notifyContextChanged];
   }
