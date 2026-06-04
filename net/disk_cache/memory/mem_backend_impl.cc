@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
@@ -66,6 +67,16 @@ base::LinkNode<MemEntryImpl>* NextSkippingChildren(
   return node;
 }
 
+constexpr base::MemoryConsumerTraits kMemBackendImplTraits(
+    // Scales with system RAM up to a cap in the tens of MBs.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    // Eviction traverses linked list and erases map entries.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Evicted entries can be re-fetched from network.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Eviction runs inline synchronously.
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous);
+
 }  // namespace
 
 MemBackendImpl::MemBackendImpl(net::NetLog* net_log)
@@ -73,7 +84,7 @@ MemBackendImpl::MemBackendImpl(net::NetLog* net_log)
       net_log_(net_log),
       memory_consumer_registration_(
           "MemBackendImpl",
-          std::nullopt,  // TODO(crbug.com/489671163): Add traits.
+          kMemBackendImplTraits,
           this,
           base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled,
           base::AsyncMemoryConsumerRegistration::CheckRegistryExists::
