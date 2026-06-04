@@ -11,11 +11,12 @@
 
 namespace {
 
-const crypto::Aead::AeadAlgorithm kAllAlgorithms[]{
-    crypto::Aead::AES_128_CTR_HMAC_SHA256,
-    crypto::Aead::AES_256_GCM,
-    crypto::Aead::AES_256_GCM_SIV,
-    crypto::Aead::CHACHA20_POLY1305,
+const crypto::aead::Algorithm kAllAlgorithms[]{
+    crypto::aead::AES_128_CTR_HMAC_SHA256,
+    crypto::aead::AES_128_GCM,
+    crypto::aead::AES_256_GCM,
+    crypto::aead::AES_256_GCM_SIV,
+    crypto::aead::CHACHA20_POLY1305,
 };
 
 class AeadTest : public testing::TestWithParam<crypto::Aead::AeadAlgorithm> {};

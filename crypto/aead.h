@@ -26,6 +26,7 @@ namespace aead {
 
 enum Algorithm {
   AES_128_CTR_HMAC_SHA256,
+  AES_128_GCM,
   AES_256_GCM,
   AES_256_GCM_SIV,
   CHACHA20_POLY1305
