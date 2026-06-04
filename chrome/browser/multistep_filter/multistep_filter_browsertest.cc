@@ -21,10 +21,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/page_action/action_ids.h"
+#include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history/core/browser/history_service.h"
@@ -230,26 +234,27 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
   ASSERT_TRUE(suggestion_result.has_value());
   EXPECT_EQ(suggestion_result->navigation_url, suggestion_url);
 
-  ToastController* toast_controller =
-      browser()->browser_window_features()->toast_controller();
+  page_actions::PageActionController* page_action_controller =
+      browser()
+          ->tab_strip_model()
+          ->GetActiveTab()
+          ->GetTabFeatures()
+          ->page_action_controller();
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return toast_controller->IsShowingToast() &&
-           toast_controller->GetCurrentToastId() ==
-               ToastId::kMultistepFilterSuggestionRecent;
+    return page_action_controller->GetActiveAnchoredMessage() ==
+           kActionMultistepFilter;
   }));
-
-  toasts::ToastView* toast_view = toast_controller->GetToastViewForTesting();
-  ASSERT_TRUE(toast_view);
-  views::MdTextButton* action_button = toast_view->action_button_for_testing();
-  ASSERT_TRUE(action_button);
 
   content::TestNavigationObserver nav_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
 
-  ui::MouseEvent click_event(
-      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-  views::test::ButtonTestApi(action_button).NotifyClick(click_event);
+  actions::ActionItem* action = actions::ActionManager::Get().FindAction(
+      kActionMultistepFilter, browser()
+                                  ->browser_window_features()
+                                  ->browser_actions()
+                                  ->root_action_item());
+  ASSERT_TRUE(action);
+  action->InvokeAction(actions::ActionInvocationContext());
 
   nav_observer.Wait();
 
@@ -356,6 +361,21 @@ class MultistepFilterDisabledBrowserTest : public InProcessBrowserTest {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
+                       ExecuteSettingsCommandOpensAiPage) {
+  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* ui_controller = multistep_filter::FilterUiController::From(active_tab);
+  ASSERT_TRUE(ui_controller);
+
+  ui_controller->ExecuteCommand(internal::kSettingsCommand, 0);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return browser()->tab_strip_model()->GetActiveWebContents()->GetURL() ==
+           GURL(base::StrCat({::chrome::kChromeUISettingsURL,
+                              ::chrome::kExperimentalAISettingsSubPage}));
+  }));
+}
 
 // Tests that the `MultistepFilterService` is not created when the feature is
 // disabled.

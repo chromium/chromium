@@ -23,13 +23,22 @@ source_set("ui") {
     ]
 
     deps += [
+      "//chrome/app:generated_resources",
+      "//chrome/browser/favicon",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/page_action",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/common",
+      "//components/favicon/core",
       "//components/multistep_filter/content",
       "//components/multistep_filter/core/logging",
       "//components/tabs:public",
+      "//components/vector_icons",
       "//content/public/browser",
+      "//ui/actions:actions_headers",
       "//ui/base",
+      "//ui/menus",
       "//ui/strings",
       "//url",
     ]
@@ -62,9 +71,12 @@ source_set("unit_tests") {
       ":ui",
       "//base/test:test_support",
       "//chrome/browser/multistep_filter/core",
+      "//chrome/browser/ui/page_action",
+      "//chrome/browser/ui/page_action:test_support",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/test:test_support",
+      "//components/favicon/core/test:test_support",
       "//components/multistep_filter/content",
       "//components/multistep_filter/core",
       "//components/multistep_filter/core:features",
@@ -74,6 +86,7 @@ source_set("unit_tests") {
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/actions",
       "//url",
     ]
   }

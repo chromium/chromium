@@ -1,9 +1,18 @@
 include_rules = [
+  "+chrome/browser/favicon",
+  "+chrome/browser/ui/browser_window",
+  "+chrome/grit",
+  "+components/favicon/core",
+  "+components/vector_icons",
   "+components/multistep_filter/content",
   "+components/multistep_filter/core",
   "+components/keyed_service/core",
   "+components/tabs",
   "+components/unified_consent",
+
+  "+ui/actions",
+  "+ui/base",
+  "+ui/menus",
 ]
 
 specific_include_rules = {

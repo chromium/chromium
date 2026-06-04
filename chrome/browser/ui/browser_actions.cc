@@ -37,6 +37,7 @@
 #endif
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
+#include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
@@ -1777,8 +1778,23 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
     root_action_item_->AddChild(
         actions::ActionItem::Builder()
             .SetActionId(kActionMultistepFilter)
-            // TODO(b/512435534): Add SetInvokeActionCallback once the
-            // controller is updated.
+            .SetInvokeActionCallback(base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  tabs::TabInterface* tab = bwi->GetActiveTabInterface();
+                  if (!tab) {
+                    return;
+                  }
+                  multistep_filter::FilterUiController* filter_ui_controller =
+                      multistep_filter::FilterUiController::From(tab);
+                  if (!filter_ui_controller) {
+                    // The controller is null in off-the-record (incognito)
+                    // sessions.
+                    return;
+                  }
+                  filter_ui_controller->OnActionInvoked();
+                },
+                bwi))
             .SetImage(ui::ImageModel::FromVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
                 vector_icons::kPlayCircleSparkIcon

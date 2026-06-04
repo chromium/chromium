@@ -7,13 +7,18 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/menus/simple_menu_model.h"
 
 class GURL;
 struct ToastParams;
@@ -22,7 +27,20 @@ namespace tabs {
 class TabInterface;
 }
 
+namespace page_actions {
+class PageActionController;
+}
+
+namespace favicon {
+class FaviconService;
+}
+
 namespace multistep_filter {
+
+namespace internal {
+inline constexpr int kDismissCommand = 1;
+inline constexpr int kSettingsCommand = 2;
+}  // namespace internal
 
 class FilterUiControllerTestApi;
 class MultistepFilterLogRouter;
@@ -30,7 +48,8 @@ class MultistepFilterService;
 
 // Manages the UI lifecycle and user interactions for multistep filter
 // suggestions within a tab.
-class FilterUiController : public tabs::ContentsObservingTabFeature {
+class FilterUiController : public tabs::ContentsObservingTabFeature,
+                           public ui::SimpleMenuModel::Delegate {
  public:
   DECLARE_USER_DATA(FilterUiController);
 
@@ -59,6 +78,11 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   FilterUiController& operator=(const FilterUiController&) = delete;
   ~FilterUiController() override;
 
+  // ui::SimpleMenuModel::Delegate:
+  bool IsCommandIdChecked(int command_id) const override;
+  bool IsCommandIdEnabled(int command_id) const override;
+  void ExecuteCommand(int command_id, int event_flags) override;
+
   // Callback for when a suggestion is generated.
   virtual void OnSuggestionGenerated(
       std::optional<UrlFilterSuggestion> suggestion);
@@ -69,13 +93,16 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   // Applies the current suggestion by navigating to the suggested URL.
   virtual void ApplySuggestion();
 
+  // Handles the action invocation from the location bar or bubble.
+  virtual void OnActionInvoked();
 
   // Returns the UI data for the given `suggestion` and `time`.
   SuggestionUiData GetSuggestionUiData(const UrlFilterSuggestion& suggestion,
                                        base::Time now) const;
 
  protected:
-  // Shows the UI for the given suggestion.
+  // TODO(crbug.com/514312241): Remove this when toast code is cleaned
+  // up. Shows the UI for the given suggestion.
   virtual bool ShowSuggestionUi(ToastParams params);
 
   // Navigates the current tab to the given URL. Virtual for testing.
@@ -89,10 +116,26 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
  private:
   friend class FilterUiControllerTestApi;
 
+  // Handles the dismissal of the suggestion.
+  void DismissSuggestion();
+
+  // Opens the settings page.
+  void OpenSettings();
+
   // Invoked when a filter suggestion is dismissed by the user.
   void OnSuggestionDismissed(std::string dismissal_domain,
                              int64_t navigation_id,
                              std::string triggering_domain);
+
+  // Shows the cue for the given suggestion.
+  void ShowCue(const UrlFilterSuggestion& suggestion);
+
+  // Clears the cue UI.
+  void ClearCue();
+
+  // Callback for when the favicon image is available.
+  void OnFaviconAvailable(UrlFilterSuggestion suggestion,
+                          const favicon_base::FaviconImageResult& result);
 
   // Helper variable to scope tab instance unowned user data ownership.
   ui::ScopedUnownedUserData<FilterUiController> scoped_unowned_user_data_;
@@ -107,6 +150,15 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
 
   // Service for managing filters.
   raw_ptr<MultistepFilterService> service_ = nullptr;
+
+  // Controller for the page action.
+  raw_ptr<page_actions::PageActionController> page_action_controller_ = nullptr;
+
+  // Service for fetching favicons.
+  raw_ptr<favicon::FaviconService> favicon_service_ = nullptr;
+
+  // Tracker for favicon fetch requests.
+  base::CancelableTaskTracker favicon_task_tracker_;
 
   // Factory for dismissal callbacks. Must be the last member variable to
   // ensure that it is destroyed first, invalidating all weak pointers before

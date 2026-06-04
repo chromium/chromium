@@ -1530,6 +1530,7 @@ static_library("ui") {
       "//chrome/browser/media/router/discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/metrics/desktop_session_duration",
+      "//chrome/browser/multistep_filter/ui",
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/reading_list",

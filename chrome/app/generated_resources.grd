@@ -19030,6 +19030,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_MULTISTEP_FILTER_CUE_ACTION_TEXT" desc="Text for the action button on the contextual cue for multistep filters." translateable="false">
         Continue
       </message>
+      <message name="IDS_MULTISTEP_FILTER_CUE_DISMISS" desc="Text for the dismiss menu item on the contextual cue for multistep filters." translateable="false">
+        Dismiss
+      </message>
+      <message name="IDS_MULTISTEP_FILTER_CUE_SETTINGS" desc="Text for the settings menu item on the contextual cue for multistep filters." translateable="false">
+        Manage settings
+      </message>
       <message name="IDS_LINK_COPIED_TOAST_BODY" desc="Text on a toast notification that is shown when a link is successfully copied.">
         Link copied
       </message>

@@ -81,6 +81,7 @@ source_set("browser_tests") {
       "//chrome/browser/signin",
       "//chrome/browser/ui",
       "//chrome/browser/ui/toasts",
+      "//chrome/common",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/history/core/browser",
