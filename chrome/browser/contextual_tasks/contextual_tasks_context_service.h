@@ -229,8 +229,7 @@ class ContextualTasksContextService
       const TabSelectionOptions& options,
       base::TimeTicks start_time,
       const std::vector<GURL>& explicit_urls,
-      base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
-          callback,
+      int64_t request_id,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
       std::vector<base::WeakPtr<content::WebContents>> relevant_tabs);
 

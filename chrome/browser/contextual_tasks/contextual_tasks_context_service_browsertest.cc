@@ -981,6 +981,91 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, TimedOut) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       TimedOutDuringTabScoring) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::HistogramTester histogram_tester;
+
+  // unit_test_tab_relevance.tflite expects 25 float inputs.
+  optimization_guide::proto::TabRelevanceModelMetadata metadata;
+  metadata.set_num_features(25);
+  metadata.set_num_passages_per_tab(10);
+  metadata.add_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_LENGTH);
+  metadata.add_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_TITLE_LEXICAL_SIMILARITY);
+  metadata.add_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_ACTIVE_TAB_SIMILARITY);
+  metadata.add_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_CANDIDATE_TAB_SIMILARITY);
+  metadata.add_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_ACTIVE_CANDIDATE_TAB_SIMILARITY);
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/"
+      "optimization_guide.proto.TabRelevanceModelMetadata");
+  metadata.SerializeToString(any_metadata.mutable_value());
+
+  base::FilePath test_data_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
+  base::FilePath model_file_path =
+      test_data_dir.AppendASCII("components")
+          .AppendASCII("test")
+          .AppendASCII("data")
+          .AppendASCII("contextual_tasks")
+          .AppendASCII("unit_test_tab_relevance.tflite");
+  {
+    ASSERT_TRUE(base::PathExists(model_file_path));
+  }
+
+  auto model_info = optimization_guide::TestModelInfoBuilder()
+                        .SetModelFilePath(model_file_path)
+                        .SetModelMetadata(any_metadata)
+                        .Build();
+  UpdateModel(optimization_guide::proto::
+                  OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE,
+              *model_info);
+
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+  // Embedder solves instantly.
+  UpdateEmbedderTimeout(base::Milliseconds(0));
+
+  std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
+      {{std::make_pair("page title",
+                       page_content_annotations::EmbeddingPassageType::kTitle),
+        passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly(Return(fake_page_embeddings));
+
+  base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
+      future;
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kStaticSignalsMlModel;
+  options.min_model_score = 0.5f;
+  // Set request timeout to 1ms so that during asynchronous model execution,
+  // the timeout task is guaranteed to run first.
+  options.tab_selection_timeout = base::Milliseconds(1);
+
+  service()->GetRelevantTabsForQuery(options, "summarize the test page now",
+                                     /*explicit_urls=*/{},
+                                     future.GetCallback());
+
+  // The request should time out and return no relevant tabs.
+  EXPECT_TRUE(future.Get().empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kTimedOut, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
                        NotValidForServerUpload) {
   base::HistogramTester histogram_tester;
 
