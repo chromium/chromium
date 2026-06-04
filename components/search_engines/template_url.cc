@@ -59,7 +59,6 @@
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
-#include "base/logging.h"
 
 #if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS) && !BUILDFLAG(IS_ANDROID)
 #include "third_party/search_engines_data/search_engine_descriptions_strings_map.h"
