@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/lens/core/mojom/translate.mojom.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
 class Profile;
@@ -20,6 +19,10 @@ using SupportedLanguagesRetrievedCallback =
     base::OnceCallback<void(const std::string&,
                             std::vector<lens::mojom::LanguagePtr>,
                             std::vector<lens::mojom::LanguagePtr>)>;
+
+namespace base {
+class ListValue;
+}  // namespace base
 
 namespace lens {
 
@@ -38,8 +41,6 @@ class LensOverlayLanguagesController {
 
   void OnGetSupportedLanguagesResponse(
       std::optional<std::string> response_body);
-
-  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   std::vector<lens::mojom::LanguagePtr> RetrieveLanguagesFromResults(
       const base::ListValue* result_list);

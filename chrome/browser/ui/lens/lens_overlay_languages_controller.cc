@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lens/core/mojom/translate.mojom-forward.h"
@@ -16,7 +17,6 @@
 #include "chrome/common/channel_info.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -100,30 +100,18 @@ void LensOverlayLanguagesController::OnGetSupportedLanguagesResponse(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      response_body.value(),
-      base::BindOnce(&LensOverlayLanguagesController::OnJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void LensOverlayLanguagesController::OnJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
+  std::optional<base::DictValue> result_dict =
+      base::JSONReader::ReadDict(*response_body, base::JSON_PARSE_RFC);
+  if (!result_dict) {
     std::move(callback_).Run(locale_, std::vector<mojom::LanguagePtr>(),
                              std::vector<mojom::LanguagePtr>());
     return;
   }
 
-  if (!result->is_dict()) {
-    std::move(callback_).Run(locale_, std::vector<mojom::LanguagePtr>(),
-                             std::vector<mojom::LanguagePtr>());
-    return;
-  }
-  const base::DictValue& result_dict = result->GetDict();
   const base::ListValue* source_language_list =
-      result_dict.FindList("sourceLanguages");
+      result_dict->FindList("sourceLanguages");
   const base::ListValue* target_language_list =
-      result_dict.FindList("targetLanguages");
+      result_dict->FindList("targetLanguages");
 
   std::vector<lens::mojom::LanguagePtr> source_languages =
       RetrieveLanguagesFromResults(source_language_list);
