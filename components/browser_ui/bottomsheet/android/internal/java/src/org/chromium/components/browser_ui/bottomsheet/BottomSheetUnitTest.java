@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -113,7 +114,7 @@ public class BottomSheetUnitTest {
                 /* alwaysFullWidth= */ false,
                 /* edgeToEdgeBottomInsetSupplier= */ () -> 0,
                 /* appHeaderHeight= */ 0,
-                /* bottomMargin= */ 0,
+                /* bottomControlsOffset= */ 0,
                 mInsetObserver);
 
         mBottomSheet.setSheetBackgroundForTesting(mSheetBackground);
@@ -599,5 +600,19 @@ public class BottomSheetUnitTest {
                 "Accessibility pane title should be set on the BottomSheet itself",
                 expectedTitle,
                 androidx.core.view.ViewCompat.getAccessibilityPaneTitle(mBottomSheet));
+    }
+
+    @Test
+    public void testSetBottomMargin_CompensatesCurrentOffset() {
+        doReturn(SHEET_PEEK_HEIGHT).when(mSheetContent).getPeekHeight();
+        doReturn((float) HeightMode.DISABLED).when(mSheetContent).getHalfHeightRatio();
+        mBottomSheet.showContent(mSheetContent);
+        mBottomSheet.setSheetState(SheetState.PEEK, false);
+
+        assertEquals(SHEET_PEEK_HEIGHT, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+
+        mBottomSheet.setBottomMargin(100);
+
+        assertEquals(SHEET_PEEK_HEIGHT - 100, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
     }
 }
