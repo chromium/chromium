@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "content/public/test/browser_test.h"
 
 namespace glic {
@@ -180,6 +182,48 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
                    mojom::InvocationSource::kTopChromeButton);
 
   coordinator_android->SuppressBottomSheetForTesting(false);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
+                       TransitionToPeekOnActiveEmbedderSwapAcrossWindows) {
+  // Setup the first window and show Glic in expanded state on its active
+  // tab.
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK(
+      WaitForSidePanelState(tab1, GlicSidePanelCoordinator::State::kShown));
+  EXPECT_EQ(instance->GetActiveEmbedderTabForTesting(), tab1);
+
+  // Create a second window/browser.
+  BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
+      BrowserWindowInterface::Type::TYPE_NORMAL, *GetProfile(),
+      /*from_user_gesture=*/false);
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  BrowserWindowInterface* browser2 = future.Get();
+  ASSERT_TRUE(browser2);
+  ASSERT_NE(GetBrowser(), browser2);
+
+  // Get the active tab in the second window.
+  tabs::TabInterface* tab2 = TabListInterface::From(browser2)->GetActiveTab();
+
+  // Swap active embedders by showing Glic on the second window's active
+  // tab. This will trigger the deactivation of tab1's active embedder,
+  // replacing it with GlicInactiveSidePanelUi, which will then call
+  // InitializeAfterRegistration(). Since tab1 is still the active/activated tab
+  // in the first window, its bottom sheet transitions to the peek state.
+  SidePanelShowOptions show_options{*tab2};
+  show_options.prefer_peek = false;
+  instance->Show(ShowOptions{show_options});
+
+  ASSERT_OK(
+      WaitForSidePanelState(tab1, GlicSidePanelCoordinator::State::kPeek));
+  ASSERT_OK(
+      WaitForSidePanelState(tab2, GlicSidePanelCoordinator::State::kShown));
+  EXPECT_EQ(instance->GetActiveEmbedderTabForTesting(), tab2);
+
+  // Cleanup created window
+  browser2->GetWindow()->Close();
 }
 
 }  // namespace glic

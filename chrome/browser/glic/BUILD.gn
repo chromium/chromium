@@ -755,6 +755,7 @@ source_set("browser_tests") {
     "//chrome/browser/skills",
     "//chrome/browser/skills:public",
     "//chrome/browser/tab_list",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/navigator",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",

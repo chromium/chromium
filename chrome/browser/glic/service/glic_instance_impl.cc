@@ -936,6 +936,10 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   it->second.embedder = old_embedder->CreateInactiveEmbedder();
   ClearActiveEmbedderAndNotifyVisibilityChange();
 
+  if (it->second.embedder) {
+    it->second.embedder->InitializeAfterRegistration();
+  }
+
   // Special case: call back to DidCloseFor if the embedder was closed by
   // deletion (eg. floating embedder).
   if (!it->second.embedder) {

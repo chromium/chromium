@@ -96,6 +96,10 @@ class GlicUiEmbedder {
   // Called when the client is ready to show.
   virtual void OnClientReady() {}
 
+  // Called after this embedder has been successfully registered in the
+  // instance.
+  virtual void InitializeAfterRegistration() {}
+
   virtual std::string DescribeForTesting() = 0;
 };
 

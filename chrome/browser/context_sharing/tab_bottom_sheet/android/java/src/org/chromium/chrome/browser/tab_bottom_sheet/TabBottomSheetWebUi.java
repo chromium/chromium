@@ -68,96 +68,101 @@ public class TabBottomSheetWebUi {
         if (mWebContents == webContents) {
             return;
         }
+
+        // Reset references and top-level window for the old WebContents and ContentView.
+        mContentView = null;
+
+        if (mWebContents != null && !mWebContents.isDestroyed()) {
+            mWebContents.setTopLevelNativeWindow(null);
+        }
+
         mWebContents = webContents;
-        if (mWebContents != null) {
-            mWebContents.getEventForwarder().setCurrentTouchOffsetX(0.0f);
-            mWebContents.getEventForwarder().setCurrentTouchOffsetY(0.0f);
-            // Use a local variable to ensure we are using the correct ContentView instance.
-            ContentView contentView = createContentView(mContext, mWebContents);
-            mContentView = contentView;
-
-            contentView.addOnAttachStateChangeListener(
-                    new View.OnAttachStateChangeListener() {
-                        private final ViewTreeObserver.OnWindowFocusChangeListener mListener =
-                                new ViewTreeObserver.OnWindowFocusChangeListener() {
-                                    @Override
-                                    public void onWindowFocusChanged(boolean hasFocus) {
-                                        if (!hasFocus) {
-                                            contentView.clearFocus();
-                                        }
-                                    }
-                                };
-
-                        @Override
-                        public void onViewAttachedToWindow(View v) {
-                            contentView
-                                    .getViewTreeObserver()
-                                    .addOnWindowFocusChangeListener(mListener);
-                        }
-
-                        @Override
-                        public void onViewDetachedFromWindow(View v) {
-                            contentView
-                                    .getViewTreeObserver()
-                                    .removeOnWindowFocusChangeListener(mListener);
-                        }
-                    });
-
-            // Most systems assume ViewAndroidDelegate is created alongside WebContents and never
-            // changes. SelectionPopupControllerImpl is an example of a system that does this so if
-            // we don't reuse the existing delegate, popups will break.
-            ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
-            if (viewDelegate == null) {
-                mWebContents.setDelegates(
-                        VersionInfo.getProductVersion(),
-                        ViewAndroidDelegate.createBasicDelegate(contentView),
-                        contentView,
-                        mWindowAndroid,
-                        WebContents.createDefaultInternalsHolder());
-            } else {
-                // This mirrors the internal updates that happen in setDelegates for the things
-                // that may have changed (contentView and WindowAndroid).
-                mWebContents.setTopLevelNativeWindow(mWindowAndroid);
-                viewDelegate.setContainerView(contentView);
-
-                // Working with this in a test is impossible as ViewEventSinkImpl is final and
-                // WebContentsImpl is not reachable to mock. As such, we need to skip this step in
-                // test mode.
-                if (!sInTestMode) {
-                    ViewEventSink.from(mWebContents).setAccessDelegate(contentView);
-                }
-            }
-            ThinWebViewContextMenuItemDelegate itemDelegate =
-                    new ThinWebViewContextMenuItemDelegate(mWebContents);
-            mContextMenuPopulatorFactory.setItemDelegate(itemDelegate);
-            ensureThinWebViewCreated();
-            if (mThinWebView != null) {
-                mThinWebView.attachWebContents(
-                        mWebContents,
-                        contentView,
-                        new ThinWebViewAttachParams.Builder()
-                                .setContextMenuPopulatorFactory(mContextMenuPopulatorFactory)
-                                .setSupportTheming(true)
-                                .build());
-                mWebViewResizingHelper.setThinWebView(mThinWebView, mWebContents);
-                setAllowFullscreenIme(
-                        mContext.getResources().getConfiguration().orientation
-                                == Configuration.ORIENTATION_LANDSCAPE);
-            }
-
-            if (requestFocus) {
-                // Only request focus once the web contents have been attached to the activity's
-                // layout
-                // tree.
-                View currentlyFocusedView =
-                        assertNonNull(mWindowAndroid.getActivity().get()).getCurrentFocus();
-                if (currentlyFocusedView != null) {
-                    currentlyFocusedView.clearFocus();
-                }
-                contentView.requestFocus();
-            }
-        } else {
+        if (mWebContents == null) {
             destroyThinWebView();
+            return;
+        }
+
+        mWebContents.getEventForwarder().setCurrentTouchOffsetX(0.0f);
+        mWebContents.getEventForwarder().setCurrentTouchOffsetY(0.0f);
+        // Use a local variable to ensure we are using the correct ContentView instance.
+        ContentView contentView = createContentView(mContext, mWebContents);
+        mContentView = contentView;
+
+        contentView.addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                    private final ViewTreeObserver.OnWindowFocusChangeListener mListener =
+                            new ViewTreeObserver.OnWindowFocusChangeListener() {
+                                @Override
+                                public void onWindowFocusChanged(boolean hasFocus) {
+                                    if (!hasFocus) {
+                                        contentView.clearFocus();
+                                    }
+                                }
+                            };
+
+                    @Override
+                    public void onViewAttachedToWindow(View v) {
+                        contentView.getViewTreeObserver().addOnWindowFocusChangeListener(mListener);
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {
+                        contentView
+                                .getViewTreeObserver()
+                                .removeOnWindowFocusChangeListener(mListener);
+                    }
+                });
+        // Most systems assume ViewAndroidDelegate is created alongside WebContents and never
+        // changes. SelectionPopupControllerImpl is an example of a system that does this so if
+        // we don't reuse the existing delegate, popups will break.
+        ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
+        if (viewDelegate == null) {
+            mWebContents.setDelegates(
+                    VersionInfo.getProductVersion(),
+                    ViewAndroidDelegate.createBasicDelegate(contentView),
+                    contentView,
+                    mWindowAndroid,
+                    WebContents.createDefaultInternalsHolder());
+        } else {
+            // This mirrors the internal updates that happen in setDelegates for the things
+            // that may have changed (contentView and WindowAndroid).
+            mWebContents.setTopLevelNativeWindow(mWindowAndroid);
+            viewDelegate.setContainerView(contentView);
+
+            // Working with this in a test is impossible as ViewEventSinkImpl is final and
+            // WebContentsImpl is not reachable to mock. As such, we need to skip this step in
+            // test mode.
+            if (!sInTestMode) {
+                ViewEventSink.from(mWebContents).setAccessDelegate(contentView);
+            }
+        }
+        ThinWebViewContextMenuItemDelegate itemDelegate =
+                new ThinWebViewContextMenuItemDelegate(mWebContents);
+        mContextMenuPopulatorFactory.setItemDelegate(itemDelegate);
+        ensureThinWebViewCreated();
+        if (mThinWebView != null) {
+            mThinWebView.attachWebContents(
+                    mWebContents,
+                    contentView,
+                    new ThinWebViewAttachParams.Builder()
+                            .setContextMenuPopulatorFactory(mContextMenuPopulatorFactory)
+                            .setSupportTheming(true)
+                            .build());
+            mWebViewResizingHelper.setThinWebView(mThinWebView, mWebContents);
+            setAllowFullscreenIme(
+                    mContext.getResources().getConfiguration().orientation
+                            == Configuration.ORIENTATION_LANDSCAPE);
+        }
+
+        if (requestFocus) {
+            // Only request focus once the web contents have been attached to the activity's
+            // layout tree.
+            View currentlyFocusedView =
+                    assertNonNull(mWindowAndroid.getActivity().get()).getCurrentFocus();
+            if (currentlyFocusedView != null) {
+                currentlyFocusedView.clearFocus();
+            }
+            contentView.requestFocus();
         }
     }
 
@@ -184,10 +189,7 @@ public class TabBottomSheetWebUi {
     }
 
     void destroy() {
-        // We expect the life cycle of webContents to be managed by native.
-        mWebContents = null;
-        mContentView = null;
-        destroyThinWebView();
+        setWebContents(null, false);
     }
 
     View getWebUiView() {
@@ -227,6 +229,7 @@ public class TabBottomSheetWebUi {
             mThinWebView = null;
         }
         mWebViewResizingHelper.reset();
+        mContentView = null;
     }
 
     @Nullable ThinWebView getThinWebViewForTesting() {

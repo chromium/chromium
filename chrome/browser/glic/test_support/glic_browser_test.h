@@ -155,6 +155,7 @@ class GlicBrowserTestMixin : public T {
     // Java.
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
         {chrome::android::kEnableAndroidSidePanel, {}},
+        {chrome::android::kEnableAndroidSidePanelLogs, {}},
         {features::kGlicAndroidSidePanel, {}},
 #endif
     };
@@ -178,6 +179,12 @@ class GlicBrowserTestMixin : public T {
     // This is needed to force is_desktop() to return true for desktop Android
     // builds.
     command_line->AppendSwitch(switches::kForceDesktopAndroid);
+#endif
+#if BUILDFLAG(IS_ANDROID)
+    // Disable the first-run experience (FRE) so that when we launch a new
+    // ChromeTabbedActivity in tests, it shows the browser window instead of the
+    // FRE onboarding screens.
+    command_line->AppendSwitch("disable-fre");
 #endif
   }
 

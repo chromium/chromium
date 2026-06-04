@@ -37,8 +37,6 @@ GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
     : tab_(tab), delegate_(delegate) {
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (glic_side_panel_coordinator) {
-    // NEEDS_ANDROID_IMPL: This needs an equivalent of the inactive view
-    // controller that shows a screenshot of the web client with a scrim.
     glic_side_panel_coordinator->SetWebContents(nullptr);
     state_subscription_ = glic_side_panel_coordinator->AddStateCallback(
         base::BindRepeating(&GlicInactiveSidePanelUi::OnSidePanelStateChanged,
@@ -108,6 +106,23 @@ mojom::PanelState GlicInactiveSidePanelUi::GetPanelState() const {
 
 gfx::Size GlicInactiveSidePanelUi::GetPanelSize() {
   return gfx::Size();
+}
+
+void GlicInactiveSidePanelUi::InitializeAfterRegistration() {
+  // When an active embedder is deactivated while its tab is still visible,
+  // we transition the bottom sheet to the peek state rather than closing it.
+  // This is called after the inactive embedder has been fully registered in the
+  // instance, ensuring the state is completely consistent to avoid synchronous
+  // reentrancy issues.
+  auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
+  if (tab_ && tab_->IsActivated() && glic_side_panel_coordinator &&
+      glic_side_panel_coordinator->SupportsPeek() &&
+      glic_side_panel_coordinator->state() ==
+          GlicSidePanelCoordinator::State::kShown) {
+    SidePanelShowOptions side_panel_options{*tab_};
+    side_panel_options.prefer_peek = true;
+    Show(ShowOptions{side_panel_options});
+  }
 }
 
 std::string GlicInactiveSidePanelUi::DescribeForTesting() {

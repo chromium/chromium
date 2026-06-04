@@ -41,6 +41,7 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder {
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
   mojom::PanelState GetPanelState() const override;
   gfx::Size GetPanelSize() override;
+  void InitializeAfterRegistration() override;
   std::string DescribeForTesting() override;
 
  private:

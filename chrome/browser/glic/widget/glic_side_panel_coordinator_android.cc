@@ -46,7 +46,13 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
 GlicSidePanelCoordinatorAndroid::~GlicSidePanelCoordinatorAndroid() = default;
 
 void GlicSidePanelCoordinatorAndroid::Show(const ShowOptions& options) {
-  if (state_ == State::kShown) {
+  if (options.initial_state == ShowOptions::InitialState::kExpanded &&
+      state_ == State::kShown) {
+    return;
+  }
+
+  if (options.initial_state == ShowOptions::InitialState::kPeeked &&
+      state_ == State::kPeek) {
     return;
   }
 
