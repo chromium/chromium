@@ -9,7 +9,7 @@ if (is_ios) {
 } else if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
   sdk_path = mac_sdk_path
-  use_xcode_symlinks = mac_use_xcode_symlinks
+  use_xcode_symlinks = use_system_xcode
 } else {
   use_xcode_symlinks = false
 }
