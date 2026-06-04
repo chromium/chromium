@@ -63,10 +63,7 @@ class OnDeviceAssetManagerTest : public testing::Test {
   }
 
   void UpdateSafetyTarget(const ModelInfo& info) {
-    UpdateTarget(features::ShouldUseGeneralizedSafetyModel()
-                     ? proto::OPTIMIZATION_TARGET_GENERALIZED_SAFETY
-                     : proto::OPTIMIZATION_TARGET_TEXT_SAFETY,
-                 info);
+    UpdateTarget(proto::OPTIMIZATION_TARGET_GENERALIZED_SAFETY, info);
   }
 
   PrefService* local_state() { return &broker_.local_state(); }
