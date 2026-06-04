@@ -13,6 +13,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
@@ -911,9 +912,22 @@ import java.util.function.Supplier;
         }
     }
 
+    private String getRequestTypeButtonText(@AutocompleteRequestType int requestType) {
+        int stringRes =
+                switch (requestType) {
+                    case AutocompleteRequestType.AI_MODE -> R.string.ai_mode_entrypoint_label;
+                    case AutocompleteRequestType.IMAGE_GENERATION -> R.string.omnibox_create_image;
+                    case AutocompleteRequestType.DEEP_SEARCH -> R.string.ntp_compose_deep_search;
+                    case AutocompleteRequestType.CANVAS -> R.string.ntp_compose_canvas;
+                    default -> Resources.ID_NULL;
+                };
+        return stringRes == Resources.ID_NULL ? "" : mContext.getString(stringRes);
+    }
+
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType Integer type) {
         updateFuseboxState();
         mModel.set(FuseboxProperties.REQUEST_TYPE, type);
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, getRequestTypeButtonText(type));
 
         if (isInInputSession()) {
             if (!ToolModeUtils.isAimRequest(type)) {

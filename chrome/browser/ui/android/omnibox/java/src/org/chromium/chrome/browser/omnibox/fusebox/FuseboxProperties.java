@@ -256,6 +256,10 @@ class FuseboxProperties {
     public static final WritableObjectPropertyKey<Runnable> REQUEST_TYPE_BUTTON_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** The text for the request type button. */
+    public static final WritableObjectPropertyKey<String> REQUEST_TYPE_BUTTON_TEXT =
+            new WritableObjectPropertyKey<>();
+
     /** Whether the request type button is visible. */
     public static final WritableBooleanPropertyKey REQUEST_TYPE_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -302,6 +306,7 @@ class FuseboxProperties {
         POPUP_TOOL_HEADER_VISIBLE,
         REQUEST_TYPE,
         REQUEST_TYPE_BUTTON_CLICKED,
+        REQUEST_TYPE_BUTTON_TEXT,
         REQUEST_TYPE_BUTTON_VISIBLE
         // go/keep-sorted end
     };

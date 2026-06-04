@@ -223,6 +223,12 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED) {
             view.requestType.setOnClickListener(
                     v -> model.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT) {
+            String text = model.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT);
+            Resources res = view.requestType.getResources();
+            view.requestType.setText(text);
+            view.requestType.setContentDescription(
+                    res.getString(R.string.accessibility_omnibox_reset_mode, text));
         } else if (propertyKey == FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE) {
             updateRequestTypeButton(model, view);
         }
@@ -576,7 +582,6 @@ class FuseboxViewBinder {
         @ColorInt
         int colorOnSurface = OmniboxResourceProvider.getColorOnSurface(context, brandedColorScheme);
 
-        String text = res.getString(getTextResForTool(requestType));
         Drawable startDrawable = context.getDrawable(getIconResForTool(requestType));
         Drawable endDrawable = assumeNonNull(context.getDrawable(R.drawable.btn_close)).mutate();
         @ColorInt
@@ -593,9 +598,6 @@ class FuseboxViewBinder {
 
         ButtonCompat button = view.requestType;
         button.setVisibility(View.VISIBLE);
-        button.setText(text);
-        button.setContentDescription(
-                res.getString(R.string.accessibility_omnibox_reset_mode, text));
         button.setButtonColor(ColorStateList.valueOf(buttonColor));
         button.setTextAppearance(
                 OmniboxResourceProvider.getRequestTypeButtonTextRes(brandedColorScheme));
@@ -617,20 +619,6 @@ class FuseboxViewBinder {
         int colorOnSurface = OmniboxResourceProvider.getColorOnSurface(context, brandedColorScheme);
         // TODO(pnoland): handle text color, selection, and hover states.
         button.setCompoundDrawableTintList(ColorStateList.valueOf(colorOnSurface));
-    }
-
-    @SuppressLint("SwitchIntDef")
-    private static @StringRes int getTextResForTool(@AutocompleteRequestType int requestType) {
-        return switch (requestType) {
-            case AutocompleteRequestType.AI_MODE -> R.string.ai_mode_entrypoint_label;
-            case AutocompleteRequestType.IMAGE_GENERATION -> R.string.omnibox_create_image;
-            case AutocompleteRequestType.DEEP_SEARCH -> R.string.ntp_compose_deep_search;
-            case AutocompleteRequestType.CANVAS -> R.string.ntp_compose_canvas;
-            default -> {
-                assert false : "AutocompleteRequestType was not a valid tool type.";
-                yield Resources.ID_NULL;
-            }
-        };
     }
 
     @SuppressLint("SwitchIntDef")

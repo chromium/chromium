@@ -2401,4 +2401,30 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         assertEquals(0, mAttachments.size());
     }
+
+    @Test
+    public void onAutocompleteRequestTypeChanged_setsRequestTypeButtonText() {
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        assertEquals(
+                mContext.getString(R.string.ai_mode_entrypoint_label),
+                mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
+
+        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        assertEquals(
+                mContext.getString(R.string.omnibox_create_image),
+                mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
+
+        mInput.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
+        assertEquals(
+                mContext.getString(R.string.ntp_compose_deep_search),
+                mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
+
+        mInput.setRequestType(AutocompleteRequestType.CANVAS);
+        assertEquals(
+                mContext.getString(R.string.ntp_compose_canvas),
+                mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
+
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        assertEquals("", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
+    }
 }
