@@ -57,6 +57,14 @@ bool HTMLMenuItemElement::IsSubmenuOpen() const {
   return false;
 }
 
+void HTMLMenuItemElement::OpenPseudoChanged() {
+  PseudoStateChanged(CSSSelector::kPseudoOpen);
+  if (owning_menu_element_) {
+    owning_menu_element_->PseudoStateChanged(
+        CSSSelector::kPseudoHasOpenMenuitem);
+  }
+}
+
 void HTMLMenuItemElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;

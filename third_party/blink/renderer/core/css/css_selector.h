@@ -368,6 +368,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoGrammarError,
     kPseudoHas,
     kPseudoHasDatalist,
+    kPseudoHasOpenMenuitem,
     kPseudoHighlight,
     kPseudoHost,
     kPseudoHostContext,

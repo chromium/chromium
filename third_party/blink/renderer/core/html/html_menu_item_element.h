@@ -67,6 +67,8 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   bool MatchesEnabledPseudoClass() const override;
   bool IsSubmenuOpen() const;
 
+  void OpenPseudoChanged();
+
   void ParseAttribute(const AttributeModificationParams&) override;
   bool ShouldHaveFocusAppearance() const override;
 

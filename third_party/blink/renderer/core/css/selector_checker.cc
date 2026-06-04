@@ -134,6 +134,18 @@ static bool MatchesHasDatalistPseudoClass(const Element& element) {
   return html_input_element && html_input_element->DataList();
 }
 
+static bool MatchesHasOpenMenuitemPseudoClass(const Element& element) {
+  DCHECK(RuntimeEnabledFeatures::MenuElementsEnabled());
+  if (auto* menu_owner_element = DynamicTo<HTMLMenuOwnerElement>(element)) {
+    for (HTMLMenuItemElement& menu_item : menu_owner_element->ItemList()) {
+      if (menu_item.IsSubmenuOpen()) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 static bool MatchesListBoxPseudoClass(const Element& element) {
   auto* html_select_element = DynamicTo<HTMLSelectElement>(element);
   return html_select_element && !html_select_element->UsesMenuList();
@@ -789,6 +801,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoFutureCue:
     case CSSSelector::kPseudoGrammarError:
     case CSSSelector::kPseudoHasDatalist:
+    case CSSSelector::kPseudoHasOpenMenuitem:
     case CSSSelector::kPseudoHighlight:
     case CSSSelector::kPseudoHostHasNonAutoAppearance:
     case CSSSelector::kPseudoIsHtml:
@@ -3124,6 +3137,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoHasDatalist:
       DCHECK(is_ua_rule_);
       return MatchesHasDatalistPseudoClass(element);
+    case CSSSelector::kPseudoHasOpenMenuitem:
+      DCHECK(is_ua_rule_);
+      return MatchesHasOpenMenuitemPseudoClass(element);
     case CSSSelector::kPseudoIsHtml:
       DCHECK(is_ua_rule_);
       return IsA<HTMLDocument>(element.GetDocument());

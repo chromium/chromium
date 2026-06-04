@@ -453,6 +453,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoHas:
     case kPseudoHasSlotted:
     case kPseudoHasDatalist:
+    case kPseudoHasOpenMenuitem:
     case kPseudoHorizontal:
     case kPseudoHost:
     case kPseudoHostContext:
@@ -585,6 +586,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-autofill-selected", CSSSelector::kPseudoAutofillSelected},
     {"-internal-dialog-in-top-layer", CSSSelector::kPseudoDialogInTopLayer},
     {"-internal-has-datalist", CSSSelector::kPseudoHasDatalist},
+    {"-internal-has-open-menuitem", CSSSelector::kPseudoHasOpenMenuitem},
     {"-internal-is-html", CSSSelector::kPseudoIsHtml},
     {"-internal-list-box", CSSSelector::kPseudoListBox},
     {"-internal-media-controls-overlay-cast-button",
@@ -1022,6 +1024,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       }
       break;
     case kPseudoHasDatalist:
+    case kPseudoHasOpenMenuitem:
     case kPseudoHostHasNonAutoAppearance:
     case kPseudoIsHtml:
     case kPseudoListBox:
@@ -1994,6 +1997,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     // rather than local element information, which should not be allowed.
     case kPseudoHas:
     case kPseudoHasDatalist:
+    case kPseudoHasOpenMenuitem:
     case kPseudoHost:
     case kPseudoHostContext:
     case kPseudoHostHasNonAutoAppearance:
@@ -2243,6 +2247,7 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoFullscreen:
     case CSSSelector::kPseudoHas:
     case CSSSelector::kPseudoHasDatalist:
+    case CSSSelector::kPseudoHasOpenMenuitem:
     case CSSSelector::kPseudoHasSlotted:
     case CSSSelector::kPseudoHover:
     case CSSSelector::kPseudoInRange:

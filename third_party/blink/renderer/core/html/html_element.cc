@@ -1925,7 +1925,7 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   if (invoker_menuitem) {
     // There are some edge cases where :open doesn't change here, but in
     // practice this basically means it's changing.
-    invoker->PseudoStateChanged(CSSSelector::kPseudoOpen);
+    invoker_menuitem->OpenPseudoChanged();
   }
 
   CHECK(!original_document.AllOpenPopovers().Contains(this));
@@ -2443,10 +2443,10 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
     // :popover-open https://issues.chromium.org/issues/375004874
     OwnerShadowHost()->PseudoStateChanged(CSSSelector::kPseudoOpen);
   }
-  if (IsA<HTMLMenuItemElement>(invoker)) {
+  if (auto* invoker_menuitem = DynamicTo<HTMLMenuItemElement>(invoker)) {
     // There are some edge cases where :open doesn't change here, but in
     // practice this basically means it's changing.
-    invoker->PseudoStateChanged(CSSSelector::kPseudoOpen);
+    invoker_menuitem->OpenPseudoChanged();
   }
 
   document.AllOpenPopovers().erase(this);

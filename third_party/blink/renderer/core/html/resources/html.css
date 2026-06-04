@@ -2429,9 +2429,18 @@ select optgroup optgroup {
    * group menuitems in menubars. */
   menubar > menuitem {
     display: inline-flex;
+    /* menuitems in a menubar do not open on interest (hover), unless a menu
+     * is already open (see below) */
+    interest-delay-start: calc(infinity * 1s);
   }
   menulist menuitem {
     display: flex;
+  }
+
+  /* menuitems in a menubar that has an open menu trigger instantly on
+   * interest (hover) */
+  menubar:-internal-has-open-menuitem > menuitem {
+    interest-delay-start: 0s;
   }
 
   menubar, menulist {

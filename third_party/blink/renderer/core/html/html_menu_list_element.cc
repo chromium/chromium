@@ -79,7 +79,7 @@ bool HTMLMenuListElement::HandleCommandInternal(HTMLElement& invoker,
 }
 
 HTMLMenuItemElement* HTMLMenuListElement::InvokingMenuItem() {
-  if (!popoverOpen() || !GetPopoverData()) {
+  if (!popoverOpen()) {
     return nullptr;
   }
   return DynamicTo<HTMLMenuItemElement>(GetPopoverData()->invoker());
@@ -108,15 +108,16 @@ PopoverHideResult HTMLMenuListElement::HidePopoverInternal(
     HidePopoverFocusBehavior focus_behavior,
     HidePopoverTransitionBehavior event_firing,
     ExceptionState* exception_state) {
-  Element* actual_invoker =
+  Element* opening_invoker =
       GetPopoverData() ? GetPopoverData()->invoker() : nullptr;
   PopoverHideResult result = HTMLMenuOwnerElement::HidePopoverInternal(
       invoker, focus_behavior, event_firing, exception_state);
-  if (IsA<HTMLMenuItemElement>(actual_invoker)) {
+  if (auto* opening_menuitem =
+          DynamicTo<HTMLMenuItemElement>(opening_invoker)) {
     // menuitem elements which invoke submenus support the :open pseudo-class.
     // If this menu was closed via hidePopover(), then the menuitem which
     // invoked this menulist should have its :open updated.
-    actual_invoker->PseudoStateChanged(CSSSelector::kPseudoOpen);
+    opening_menuitem->OpenPseudoChanged();
   }
   return result;
 }
