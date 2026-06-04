@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.pdf;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
@@ -16,9 +13,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.pdf.viewer.fragment.PdfViewerFragment;
 
 import org.jni_zero.CalledByNative;
 
@@ -30,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
+import org.chromium.chrome.modules.on_demand.OnDemandModule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -40,7 +36,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -371,15 +366,8 @@ public class PdfUtils {
     }
 
     /** Collects all the View objects for PdfViewerFragment found after activity restart. */
-    public static List<View> findAllPdfFragmentViews(Activity activity) {
-        List<View> allViews = new ArrayList<>();
-        var fragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
-        for (Fragment fragment : fragmentManager.getFragments()) {
-            if (fragment instanceof PdfViewerFragment) {
-                allViews.add(assumeNonNull(fragment.getView()));
-            }
-        }
-        return allViews;
+    public static List<View> findAllPdfFragmentViews(FragmentActivity activity) {
+        return OnDemandModule.getImpl().getPdfEntryPoint().findAllPdfFragmentViews(activity);
     }
 
     /**

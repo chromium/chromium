@@ -17,6 +17,7 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
@@ -493,7 +494,8 @@ public class NativePageFactory {
                 assumeNonNull(pdfInfo);
                 if (mPdfFragmentViewTracker == null) {
                     mPdfFragmentViewTracker =
-                            new PdfFragmentViewTrackerImpl(mTabModelSelector, mActivity);
+                            new PdfFragmentViewTrackerImpl(
+                                    mTabModelSelector, (FragmentActivity) mActivity);
                 }
                 page = getBuilder().buildPdfPage(tab, url, pdfInfo, mPdfFragmentViewTracker);
                 break;

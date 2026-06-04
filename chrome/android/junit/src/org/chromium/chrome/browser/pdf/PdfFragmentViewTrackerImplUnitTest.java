@@ -11,11 +11,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.pdf.viewer.fragment.PdfViewerFragment;
 
 import org.junit.Before;
@@ -78,7 +78,8 @@ public class PdfFragmentViewTrackerImplUnitTest {
         pdfFragmentViews.add(mPdfViewerFragmentView3);
 
         mPdfFragmentViewTracker =
-                new PdfFragmentViewTrackerImpl(mTabModelSelector, Mockito.mock(Activity.class));
+                new PdfFragmentViewTrackerImpl(
+                        mTabModelSelector, Mockito.mock(FragmentActivity.class));
         mPdfFragmentViewTracker.setFragmentSupplierForTesting(() -> pdfFragmentViews);
     }
 

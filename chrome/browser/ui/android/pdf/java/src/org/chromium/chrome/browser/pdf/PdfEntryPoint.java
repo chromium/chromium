@@ -5,13 +5,16 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.app.Activity;
+import android.view.View;
+
+import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.module_installer.builder.ModuleInterface;
+
+import java.util.List;
 
 /** Interface for the PDF viewer module. */
-@ModuleInterface(module = "on_demand", impl = "org.chromium.chrome.browser.pdf.PdfEntryPointImpl")
 @NullMarked
 public interface PdfEntryPoint {
     PdfCoordinatorInterface createPdfCoordinator(
@@ -23,4 +26,6 @@ public interface PdfEntryPoint {
             String title,
             int tabId,
             PdfFragmentViewTracker pdfFragmentViewTracker);
+
+    List<View> findAllPdfFragmentViews(FragmentActivity activity);
 }

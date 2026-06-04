@@ -29,9 +29,11 @@ android_library("pdf_info_java") {
 android_library("pdf_utils_java") {
   sources = [ "java/src/org/chromium/chrome/browser/pdf/PdfUtils.java" ]
   deps = [
+    ":java",
     ":pdf_info_java",
     "//base:base_java",
     "//base:content_uri_utils_java",
+    "//chrome/android/modules/on_demand:provider_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -40,7 +42,6 @@ android_library("pdf_utils_java") {
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
-    "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:url_java",
@@ -61,8 +62,6 @@ android_library("pdf_page_java") {
     "//chrome/browser/ui/android/native_page:java",
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_fragment_fragment_java",
-    "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
   ]
 }
 
@@ -77,9 +76,8 @@ android_library("java") {
     "//components/module_installer/android:module_installer_java",
     "//components/module_installer/android:module_interface_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
   ]
-  annotation_processor_deps =
-      [ "//components/module_installer/android:module_interface_processor" ]
 }
 
 android_resources("java_resources") {

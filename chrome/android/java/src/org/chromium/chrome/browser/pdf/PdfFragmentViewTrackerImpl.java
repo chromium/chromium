@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.pdf;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -43,16 +44,16 @@ public class PdfFragmentViewTrackerImpl implements PdfFragmentViewTracker {
     private Supplier<List<View>> mPdfFragmentSupplier;
 
     public PdfFragmentViewTrackerImpl(
-            @Nullable TabModelSelector tabModelSelector, @Nullable Activity activity) {
+            @Nullable TabModelSelector tabModelSelector, @Nullable FragmentActivity activity) {
         // CustomTab comes with a null selector/activity since it doesn't need to observe tabs.
-        if (tabModelSelector == null && activity == null) {
+        if (tabModelSelector == null || activity == null) {
             mTabModelSelectorTabObserver = null;
             mPdfFragmentSupplier = () -> List.of();
             return;
         }
 
         mTabModelSelectorTabObserver =
-                new TabModelSelectorTabObserver(assumeNonNull(tabModelSelector)) {
+                new TabModelSelectorTabObserver(tabModelSelector) {
                     @Override
                     public void onDestroyed(Tab tab) {
                         if (tab.getNativePage() != null && tab.getNativePage().isPdf()) {
@@ -61,7 +62,7 @@ public class PdfFragmentViewTrackerImpl implements PdfFragmentViewTracker {
                         }
                     }
                 };
-        mPdfFragmentSupplier = () -> PdfUtils.findAllPdfFragmentViews(assumeNonNull(activity));
+        mPdfFragmentSupplier = () -> PdfUtils.findAllPdfFragmentViews(activity);
     }
 
     @Override
