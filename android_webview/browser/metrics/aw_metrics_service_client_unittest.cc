@@ -142,6 +142,15 @@ class AwMetricsServiceClientTest : public testing::Test {
     new_spare_file_ = GetPersistentHistogramsSpareFilePath(new_metrics_dir_);
     old_upload_dir_ = old_metrics_dir_.AppendASCII(kBrowserMetricsName);
     new_upload_dir_ = new_metrics_dir_.AppendASCII(kBrowserMetricsName);
+
+    if (base::FeatureList::IsEnabled(
+            features::kWebViewPersistentMetricsInNoBackupDir)) {
+      default_metrics_dir_ = new_metrics_dir_;
+      default_upload_dir_ = new_upload_dir_;
+    } else {
+      default_metrics_dir_ = old_metrics_dir_;
+      default_upload_dir_ = old_upload_dir_;
+    }
   }
 
   AwMetricsServiceClientTest(const AwMetricsServiceClientTest&) = delete;
@@ -157,6 +166,9 @@ class AwMetricsServiceClientTest : public testing::Test {
   base::FilePath new_spare_file_;
   base::FilePath old_upload_dir_;
   base::FilePath new_upload_dir_;
+
+  base::FilePath default_metrics_dir_;
+  base::FilePath default_upload_dir_;
 
   content::BrowserTaskEnvironment* task_environment() {
     return &task_environment_;
@@ -350,11 +362,8 @@ TEST_F(AwMetricsServiceClientTest, TestBrowserMetricsDirClearedIfNoConsent) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kPersistentHistogramsFeature, {{"storage", "MappedFile"}});
 
-  base::FilePath metrics_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir));
-  InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
-  base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
-  ASSERT_TRUE(base::PathExists(upload_dir));
+  InstantiatePersistentHistogramsWithFeaturesAndCleanup(default_metrics_dir_);
+  ASSERT_TRUE(base::PathExists(default_upload_dir_));
 
   auto prefs = CreateTestPrefs();
   auto client = CreateAndInitTestClient(prefs.get());
@@ -365,7 +374,7 @@ TEST_F(AwMetricsServiceClientTest, TestBrowserMetricsDirClearedIfNoConsent) {
                                 /* app_consent= */ false);
   task_environment()->RunUntilIdle();
 
-  EXPECT_FALSE(base::PathExists(upload_dir));
+  EXPECT_FALSE(base::PathExists(default_upload_dir_));
 }
 
 TEST_F(AwMetricsServiceClientTest,
@@ -374,11 +383,8 @@ TEST_F(AwMetricsServiceClientTest,
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kPersistentHistogramsFeature, {{"storage", "MappedFile"}});
 
-  base::FilePath metrics_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir));
-  InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
-  base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
-  ASSERT_TRUE(base::PathExists(upload_dir));
+  InstantiatePersistentHistogramsWithFeaturesAndCleanup(default_metrics_dir_);
+  ASSERT_TRUE(base::PathExists(default_upload_dir_));
 
   auto prefs = CreateTestPrefs();
   auto client = CreateAndInitTestClient(prefs.get());
@@ -389,7 +395,7 @@ TEST_F(AwMetricsServiceClientTest,
                                 /* app_consent= */ true);
   task_environment()->RunUntilIdle();
 
-  EXPECT_TRUE(base::PathExists(upload_dir));
+  EXPECT_TRUE(base::PathExists(default_upload_dir_));
 }
 
 TEST_F(AwMetricsServiceClientTest,

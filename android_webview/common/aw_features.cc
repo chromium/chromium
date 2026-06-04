@@ -258,7 +258,7 @@ BASE_FEATURE(kWebViewBypassProvisionalCookieManager,
 // When enabled, WebView stores the persistent metrics files in the
 // app's non-backed-up files directory instead of the app's data directory.
 BASE_FEATURE(kWebViewPersistentMetricsInNoBackupDir,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, requests the compositor warm-up (crbug.com/41496019) for the
 // prerender trigger.
