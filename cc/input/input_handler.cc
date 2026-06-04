@@ -857,8 +857,6 @@ void InputHandler::SetSynchronousInputHandlerRootScrollOffset(
   // After applying the synchronous input handler's scroll offset, tell it what
   // we ended up with.
   UpdateRootLayerStateForSynchronousInputHandler();
-
-  compositor_delegate_->SetNeedsFullViewportRedraw();
 }
 
 void InputHandler::PinchGestureBegin(const gfx::Point& anchor,

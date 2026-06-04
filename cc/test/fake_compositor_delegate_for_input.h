@@ -68,7 +68,6 @@ class FakeCompositorDelegateForInput : public CompositorDelegateForInput {
                              base::TimeDelta delayed_by) override;
   bool HasAnimatedScrollbars() const override;
   void SetNeedsCommit(BeginMainFrameReason) override {}
-  void SetNeedsFullViewportRedraw() override {}
   void SetDeferBeginMainFrame(bool defer_begin_main_frame) const override {}
   void DidUpdateScrollAnimationCurve() override {}
   void DidStartPinchZoom() override {}

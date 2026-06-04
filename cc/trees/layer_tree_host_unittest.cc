@@ -7690,7 +7690,9 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
       case 3:
         // Wait one extra frame to make sure tiling with scale 1.0 is deleted
         // in TreesInViz mode.
-        host_impl->SetNeedsFullViewportRedraw();
+        host_impl->SetFullViewportDamage();
+        host_impl->SetNeedsRedraw(/*animation_only=*/false,
+                                  /*skip_if_inside_draw=*/false);
         break;
       case 4:
         // Pinch zoom back to 1.f but don't end it.

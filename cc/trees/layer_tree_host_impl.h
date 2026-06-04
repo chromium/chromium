@@ -279,7 +279,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Already overridden for BrowserControlsOffsetManagerClient which declares a
   // method of the same name.
   // void SetNeedsCommit();
-  void SetNeedsFullViewportRedraw() override;
   void DidUpdateScrollAnimationCurve() override;
   void DidStartPinchZoom() override;
   void DidUpdatePinchZoom() override;

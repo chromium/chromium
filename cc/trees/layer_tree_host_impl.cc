@@ -414,13 +414,6 @@ void LayerTreeHostImpl::DidMouseLeave() {
   }
 }
 
-void LayerTreeHostImpl::SetNeedsFullViewportRedraw() {
-  // TODO(bokan): Do these really need to be manually called? (Rather than
-  // damage/redraw being set from scroll offset changes).
-  SetFullViewportDamage();
-  SetNeedsRedraw(/*animation_only=*/false, /*skip_if_inside_draw=*/false);
-}
-
 void LayerTreeHostImpl::SetDeferBeginMainFrame(
     bool defer_begin_main_frame) const {
   delegate_->SetDeferBeginMainFrameFromImpl(defer_begin_main_frame);
