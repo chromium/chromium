@@ -16,6 +16,8 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -43,7 +45,6 @@ class GlicWebView : public views::WebView {
           ->UpdateModalDialogBounds();
     }
   }
-
  private:
   raw_ptr<tabs::TabInterface> tab_interface_;
 };
@@ -62,6 +63,7 @@ GlicExperimentalOptInDialogView::GlicExperimentalOptInDialogView(
   set_esc_should_cancel_dialog_override(true);
 
   auto web_view = std::make_unique<GlicWebView>(profile, tab_interface);
+  web_view_ = web_view.get();
   web_view->SetProperty(views::kElementIdentifierKey, kDialogElementId);
 
   gfx::Size initial_size(kDefaultWidth, kDefaultHeight);
@@ -83,13 +85,33 @@ GlicExperimentalOptInDialogView::GlicExperimentalOptInDialogView(
   web_view->EnableSizingFromWebContents(gfx::Size(512, 200),
                                         gfx::Size(512, 800));
 
+  view_observation_.Observe(web_view_);
   SetContentsView(std::move(web_view));
 }
 
 GlicExperimentalOptInDialogView::~GlicExperimentalOptInDialogView() = default;
 
 views::WebView* GlicExperimentalOptInDialogView::GetWebViewForTesting() {
-  return static_cast<views::WebView*>(GetContentsView());
+  return web_view_;
+}
+
+void GlicExperimentalOptInDialogView::OnViewAddedToWidget(
+    views::View* observed_view) {
+  if (observed_view != web_view_) {
+    return;
+  }
+
+  // Apply rounded corners to the NativeViewHost to prevent WebUI content
+  // from bleeding through the dialog's rounded corners.
+  web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
+}
+
+void GlicExperimentalOptInDialogView::OnViewIsDeleting(
+    views::View* observed_view) {
+  if (observed_view == web_view_) {
+    view_observation_.Reset();
+    web_view_ = nullptr;
+  }
 }
 
 }  // namespace glic
