@@ -73,10 +73,20 @@ BASE_FEATURE(kEnableSupervisedUserVersionSignOutDialog,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kSupervisedUserUseUrlFilteringService,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSupervisedUserEmitLogRecordSeparately,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kSupervisedUserUseUrlFilteringService,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSupervisedUserEmitLogRecordSeparately,
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace supervised_user
