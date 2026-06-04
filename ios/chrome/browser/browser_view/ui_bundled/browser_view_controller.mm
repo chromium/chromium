@@ -1394,12 +1394,12 @@ bool IsFullscreenNextIAEnabled() {
   AppBarPosition position = self.layoutState.appBarPosition;
   switch (position) {
     case AppBarPosition::kLeft:
-      _toolbarLeadingConstraint.constant = kAppBarHeight;
+      _toolbarLeadingConstraint.constant = kAppBarHeightLandscape;
       _toolbarTrailingConstraint.constant = 0;
       break;
     case AppBarPosition::kRight:
       _toolbarLeadingConstraint.constant = 0;
-      _toolbarTrailingConstraint.constant = -kAppBarHeight;
+      _toolbarTrailingConstraint.constant = -kAppBarHeightLandscape;
       break;
     default:
       _toolbarLeadingConstraint.constant = 0;
@@ -2620,9 +2620,9 @@ bool IsFullscreenNextIAEnabled() {
     UIEdgeInsets insets = UIEdgeInsetsZero;
 
     if (position == AppBarPosition::kLeft) {
-      insets.left = kAppBarHeight;
+      insets.left = kAppBarHeightLandscape;
     } else if (position == AppBarPosition::kRight) {
-      insets.right = kAppBarHeight;
+      insets.right = kAppBarHeightLandscape;
     }
     frameInView = UIEdgeInsetsInsetRect(frameInView, insets);
   }
