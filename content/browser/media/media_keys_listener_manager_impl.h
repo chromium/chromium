@@ -169,24 +169,24 @@ class MediaKeysListenerManagerImpl
   bool ShouldActiveMediaSessionControllerReceiveKey(
       ui::KeyboardCode key_code) const;
 
-  // Performs a platform and feature flag check and returns true if we should
-  // use instanced system media controls for dPWAs.
+  // Returns true on platforms that support instanced system media controls for
+  // web apps (Windows and macOS).
   bool ShouldUseWebAppSystemMediaControls() const;
 
-  // Returns true if |delegate| is an ActiveMediaSessionController for a dPWA.
+  // Returns true if `delegate` is an ActiveMediaSessionController for a dPWA.
   bool IsDelegateForWebAppSession(ui::MediaKeysListener::Delegate* delegate);
 
 #if USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
-  // Given a SystemMediaControls |sender| and an |event|, if the |sender|
+  // Given a SystemMediaControls `sender` and an `event`, if the `sender`
   // is a web app, will fire WebApp.Media.SystemMediaControls histogram with
-  // the associated |event|. If the |sender| is the browser, this function
+  // the associated `event`. If the `sender` is the browser, this function
   // does nothing.
   void MaybeSendWebAppControlsEvent(
       WebAppSystemMediaControlsEvent event,
       system_media_controls::SystemMediaControls* sender);
 #endif  // USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
 
-  // Gets the ActiveMediaSessionController associated with |smc_sender|
+  // Gets the ActiveMediaSessionController associated with `smc_sender`
   ActiveMediaSessionController* GetControllerForSystemMediaControls(
       system_media_controls::SystemMediaControls* system_media_controls);
 
@@ -211,7 +211,7 @@ class MediaKeysListenerManagerImpl
 #endif  // USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
 
   // False if media key handling has been explicitly disabled by a call to
-  // |DisableInternalMediaKeyHandling()|.
+  // `DisableInternalMediaKeyHandling()`.
   bool media_key_handling_enabled_ = true;
 
   // True if auxiliary services have already been started.

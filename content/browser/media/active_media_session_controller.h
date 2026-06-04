@@ -27,11 +27,12 @@ class CONTENT_EXPORT ActiveMediaSessionController
       public ui::MediaKeysListener::Delegate {
  public:
   // When `request_id` is non-null, creates a controller for that specific media
-  // session. Used for dPWAs to control each app's media session individually.
+  // session. Used for dPWAs to control each app's media session individually on
+  // Windows or macOS.
   // When `request_id` is null, creates a controller that automatically follows
   // and controls the "active" session. Used for the browser's media sessions,
-  // and all scenarios where kWebAppSystemMediaControls is NOT supported - Linux
-  // always, and macOS/Windows when the feature flag is off.
+  // and all platforms where instanced system media controls are NOT supported -
+  // Linux, CrOS, mobile.
   explicit ActiveMediaSessionController(base::UnguessableToken request_id);
   ActiveMediaSessionController(const ActiveMediaSessionController&) = delete;
   ActiveMediaSessionController& operator=(const ActiveMediaSessionController&) =

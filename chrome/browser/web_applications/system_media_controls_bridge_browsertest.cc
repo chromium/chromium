@@ -4,7 +4,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
@@ -16,7 +15,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -32,9 +30,7 @@ namespace testing {
 class SystemMediaControlsBridgeBrowsertest
     : public web_app::WebAppBrowserTestBase {
  public:
-  SystemMediaControlsBridgeBrowsertest() {
-    feature_list_.InitWithFeatures({features::kWebAppSystemMediaControls}, {});
-  }
+  SystemMediaControlsBridgeBrowsertest() = default;
 
   SystemMediaControlsBridgeBrowsertest(
       const SystemMediaControlsBridgeBrowsertest&) = delete;
@@ -126,9 +122,6 @@ class SystemMediaControlsBridgeBrowsertest
  protected:
   std::optional<base::RunLoop> wait_for_bridge_creation_run_loop_;
   int num_bridges_created_ = 0;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SystemMediaControlsBridgeBrowsertest, TwoApps) {

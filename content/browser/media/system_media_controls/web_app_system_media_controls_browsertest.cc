@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread_win.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -18,7 +17,6 @@
 #include "content/browser/media/media_keys_listener_manager_impl.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/system_media_controls/web_app_system_media_controls_manager.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -31,11 +29,11 @@
 
 namespace content {
 
-// This test suite tests playing media in a content window and verifies control
-// via system media controls controls the expected window. As instanced system
-// media controls is developed under kWebAppSystemMediaControls.
+// This test suite plays media in content windows and verifies that the system
+// media controls are wired correctly and control their appropriate content
+// window, as if they were web app windows or the main browser.
 
-// Currently, this test suite only runs on windows.
+// This test suite only runs on Windows.
 class WebAppSystemMediaControlsBrowserTest
     : public ContentBrowserTest,
       public WebAppSystemMediaControlsManagerObserver,
@@ -229,8 +227,6 @@ class WebAppSystemMediaControlsBrowserTest
     command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
         switches::autoplay::kNoUserGestureRequiredPolicy);
-
-    feature_list_.InitAndEnableFeature(features::kWebAppSystemMediaControls);
   }
 
  private:
@@ -243,7 +239,6 @@ class WebAppSystemMediaControlsBrowserTest
   std::optional<bool> last_watch_was_for_pwa_;
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,

@@ -15,7 +15,6 @@
 #include "content/browser/media/active_media_session_controller.h"
 #include "content/browser/media/system_media_controls/system_media_controls_notifier.h"
 #include "content/browser/media/system_media_controls/web_app_system_media_controls.h"
-#include "content/public/common/content_features.h"
 #include "media/audio/audio_manager.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/idle/idle.h"
@@ -42,19 +41,14 @@ MediaKeysListenerManagerImpl::MediaKeysListenerManagerImpl() {
   DCHECK(!MediaKeysListenerManager::GetInstance());
 
 #if USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
-  // If instanced system media controls are enabled, create the
-  // web_app_system_media_controls_manager_ that handles web app related system
-  // media controls.
-  if (ShouldUseWebAppSystemMediaControls()) {
-    web_app_system_media_controls_manager_ =
-        std::make_unique<WebAppSystemMediaControlsManager>();
-    web_app_system_media_controls_manager_->Init();
-  }
+  // Create for Windows and macOS only.
+  web_app_system_media_controls_manager_ =
+      std::make_unique<WebAppSystemMediaControlsManager>();
+  web_app_system_media_controls_manager_->Init();
 #endif  // USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
   // Create the single ActiveMediaSessionController that follows the active
-  // session. It can be unsupported due to feature flag being off or platform
-  // constraints.
-  // When instanced system media controls are enabled, this AMSC follows only
+  // session.
+  // When instanced system media controls are supported, this AMSC follows only
   // browser related sessions while web app related ones are handled by
   // web_app_system_media_controls_manager_.
   browser_active_media_session_controller_ =
@@ -421,10 +415,6 @@ void MediaKeysListenerManagerImpl::UpdateSystemMediaControlsEnabledControls() {
 #if USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
   // This loops over active web app instanced system media controls and updates
   // what controls are available on each set of controls.
-  if (!ShouldUseWebAppSystemMediaControls()) {
-    return;
-  }
-
   for (auto* controls :
        web_app_system_media_controls_manager_->GetAllControls()) {
     system_media_controls::SystemMediaControls* smc =
@@ -522,8 +512,7 @@ bool MediaKeysListenerManagerImpl::ShouldActiveMediaSessionControllerReceiveKey(
 
 bool MediaKeysListenerManagerImpl::ShouldUseWebAppSystemMediaControls() const {
 #if USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
-  // This feature is enabled by default on Windows, disabled on mac.
-  return base::FeatureList::IsEnabled(features::kWebAppSystemMediaControls);
+  return true;
 #else
   return false;
 #endif  // USE_INSTANCED_SYSTEM_MEDIA_CONTROLS_FOR_WEB_APPS
@@ -562,9 +551,9 @@ void MediaKeysListenerManagerImpl::MaybeSendWebAppControlsEvent(
 ActiveMediaSessionController*
 MediaKeysListenerManagerImpl::GetControllerForSystemMediaControls(
     system_media_controls::SystemMediaControls* system_media_controls) {
-  // Check if system_media_controls is browser box.
-  // If kWebAppSystemMediaControls is not supported, we should always use the
-  // browser controller.
+  // Check if `system_media_controls` is the browser box. On platforms where
+  // instanced web-app system media controls aren't supported, the browser is
+  // the only possible controller.
   if (!ShouldUseWebAppSystemMediaControls() ||
       system_media_controls == browser_system_media_controls_.get()) {
     return browser_active_media_session_controller_.get();
