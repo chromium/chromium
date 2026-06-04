@@ -29,7 +29,8 @@
 #include "components/variations/variations_safe_seed_store_local_state.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -95,14 +96,15 @@ VerifySignatureResult VerifySeedSignature(
   if (!base::Base64Decode(base64_seed_signature, &signature))
     return VerifySignatureResult::kDecodeFailed;
 
-  crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256,
-                           base::as_byte_span(signature), kPublicKey)) {
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(kPublicKey);
+  if (!public_key) {
     return VerifySignatureResult::kInvalidSignature;
   }
 
-  verifier.VerifyUpdate(base::as_byte_span(seed_bytes));
-  if (!verifier.VerifyFinal()) {
+  if (!crypto::sign::Verify(crypto::sign::SignatureKind::ECDSA_SHA256,
+                            *public_key, base::as_byte_span(seed_bytes),
+                            base::as_byte_span(signature))) {
     return VerifySignatureResult::kInvalidSeed;
   }
 
