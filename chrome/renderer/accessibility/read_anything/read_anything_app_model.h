@@ -646,10 +646,11 @@ class ReadAnythingAppModel {
   // TODO: crbug.com/416483312 - Longer term, reading mode should support
   // distilling from multiple trees, if they have important content.
   // Currently, reading mode only distills from a child tree if the root tree
-  // has no distillable content.
+  // has no distillable content or if the page is a PDF.
 
   // Signal if reading mode should allow use of child trees for the active tree
-  // if the web content's root AXTree has no distillable content.
+  // if the web content's root AXTree has no distillable content or if the page
+  // is a PDF.
   void AllowChildTreeForActiveTree(bool use_child_tree);
 
   bool SelectionNodesContainedInDistilledContent() const;

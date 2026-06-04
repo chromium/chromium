@@ -49,6 +49,19 @@ class AXTreeDistillerTestBase : public ChromeRenderViewTest {
     distiller_->Distill(tree, snapshot, ukm::kInvalidSourceId);
   }
 
+  void DistillAXTree(ui::AXTree& tree,
+                     const ui::AXTreeUpdate& snapshot,
+                     const std::vector<std::string>& expected_node_contents) {
+    expected_node_contents_ = expected_node_contents;
+    content::RenderFrame* render_frame =
+        content::RenderFrame::FromWebFrame(GetMainFrame());
+    distiller_ = std::make_unique<AXTreeDistiller>(
+        render_frame,
+        base::BindRepeating(&AXTreeDistillerTestBase::OnAXTreeDistilled,
+                            base::Unretained(this), &tree));
+    distiller_->Distill(tree, snapshot, ukm::kInvalidSourceId);
+  }
+
   void OnAXTreeDistilled(ui::AXTree* tree,
                          const ui::AXTreeID& tree_id,
                          const std::vector<int32_t>& content_node_ids) {
@@ -256,3 +269,44 @@ INSTANTIATE_TEST_SUITE_P(/* prefix */,
                          AXTreeDistillerTest,
                          ::testing::ValuesIn(kDistillWebPageTestCases),
                          AXTreeDistillerTest::ParamInfoToString);
+
+TEST_F(AXTreeDistillerTestBase, DistillPdfRoot) {
+  ui::AXTreeUpdate snapshot;
+  ui::AXNodeData pdf_root_node;
+  pdf_root_node.id = 1;
+  pdf_root_node.role = ax::mojom::Role::kPdfRoot;
+
+  ui::AXNodeData heading_node;
+  heading_node.id = 2;
+  heading_node.role = ax::mojom::Role::kHeading;
+
+  ui::AXNodeData heading_text_node;
+  heading_text_node.id = 4;
+  heading_text_node.role = ax::mojom::Role::kStaticText;
+  heading_text_node.SetName("Heading");
+  heading_text_node.SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  heading_node.child_ids = {heading_text_node.id};
+
+  ui::AXNodeData paragraph_node;
+  paragraph_node.id = 3;
+  paragraph_node.role = ax::mojom::Role::kParagraph;
+
+  ui::AXNodeData paragraph_text_node;
+  paragraph_text_node.id = 5;
+  paragraph_text_node.role = ax::mojom::Role::kStaticText;
+  paragraph_text_node.SetName("Paragraph");
+  paragraph_text_node.SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  paragraph_node.child_ids = {paragraph_text_node.id};
+
+  pdf_root_node.child_ids = {heading_node.id, paragraph_node.id};
+  snapshot.root_id = pdf_root_node.id;
+  snapshot.nodes = {pdf_root_node, heading_node, heading_text_node,
+                    paragraph_node, paragraph_text_node};
+  snapshot.has_tree_data = true;
+  snapshot.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  ui::AXTree tree(snapshot);
+  DistillAXTree(tree, snapshot, {"Heading", "Paragraph"});
+}

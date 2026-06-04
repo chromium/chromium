@@ -1053,11 +1053,13 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     distillationsCompleted_++;
   }
 
-  // If there's no distillable content on the active tree, allow child tree
-  // content to be distilled. This is needed to distill content on pages with
-  // a single root node containing an iframe that contains a tree with all
-  // the page's content.
-  model_.AllowChildTreeForActiveTree(model_.content_node_ids().empty());
+  // If there's no distillable content on the active tree or if the page is a
+  // PDF, allow child tree content to be distilled. This is needed to distill
+  // content on pages with a single root node containing an iframe that
+  // contains a tree with all the page's content, as well as for PDFs where
+  // the content is also in a child tree.
+  model_.AllowChildTreeForActiveTree(model_.content_node_ids().empty() ||
+                                     model_.is_pdf());
 
   // Draw the selection in the side panel (if one exists in the main panel).
   if (!PostProcessSelection()) {

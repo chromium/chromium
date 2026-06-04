@@ -42,8 +42,8 @@ static const ax::mojom::Role kRolesToSkip[]{
     ax::mojom::Role::kSectionFooter,
 };
 
-// Find all of the main and article nodes. Also, include unignored heading nodes
-// which lie outside of the main and article node.
+// Find all of the main, article, and PDF root nodes. Also, include unignored
+// heading nodes which lie outside of these nodes.
 // TODO(crbug.com/40802192): Replace this with a call to
 // OneShotAccessibilityTreeSearch.
 void GetContentRootNodes(const ui::AXTree& tree,
@@ -59,10 +59,11 @@ void GetContentRootNodes(const ui::AXTree& tree,
   while (!queue.empty()) {
     const ui::AXNode* node = queue.front();
     queue.pop();
-    // If a main or article node is found, add it to the list of content root
-    // nodes and continue. Do not explore children for nested article nodes.
+    // If a main, article, or PDF root node is found, add it to the list of
+    // content root nodes and continue. Do not explore children for these nodes.
     if (node->GetRole() == ax::mojom::Role::kMain ||
-        node->GetRole() == ax::mojom::Role::kArticle) {
+        node->GetRole() == ax::mojom::Role::kArticle ||
+        node->GetRole() == ax::mojom::Role::kPdfRoot) {
       content_root_nodes->push_back(node);
       has_main_or_heading = true;
       continue;
