@@ -10,12 +10,31 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/browser/renderer_prelauncher.h"
 #include "content/public/browser/site_instance.h"
 
 namespace chromecast {
+
+namespace {
+
+constexpr base::MemoryConsumerTraits kLRURendererCacheTraits(
+    // Pools pre-launched renderer processes (tens of MBs each).
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    // Process termination lets the OS to reclaim memory pages directly.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    // Eviction results in a cold start, but no user state is lost.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Process termination by the OS is asynchronous.
+    base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    // Cached memory resides out-of-process.
+    base::MemoryConsumerTraits::InProcess::kNo,
+    // Launching a replacement renderer processes is expensive.
+    base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive);
+
+}  // namespace
 
 LRURendererCache::LRURendererCache(content::BrowserContext* browser_context,
                                    size_t max_renderers)
@@ -25,7 +44,7 @@ LRURendererCache::LRURendererCache(content::BrowserContext* browser_context,
       current_max_renderers_(max_renderers),
       memory_consumer_registration_(
           "LRURendererCache",
-          std::nullopt,  // TODO(b/489671163): Fix traits.
+          kLRURendererCacheTraits,
           this,
           base::MemoryConsumerRegistration::CheckUnregister::kDisabled,
           base::MemoryConsumerRegistration::CheckRegistryExists::kDisabled),
