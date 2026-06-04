@@ -3005,11 +3005,6 @@
     "expiry_milestone": 175
   },
   {
-    "name": "enable-audio-monitoring-on-android",
-    "owners": [ "polardz@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-auto-minted-twa",
     "owners": [ "fx-twa-eng@google.com" ],
     "expiry_milestone": 160

@@ -25,7 +25,6 @@
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "services/audio/device_listener_output_stream.h"
 
@@ -76,9 +75,7 @@ const char* ErrorTypeToString(
 }
 
 bool ShouldMonitorAudioLevels() {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(media::kEnableAudioMonitoringOnAndroid);
-#elif BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
   return false;
 #else
   return true;
