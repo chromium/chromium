@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/containers/adapters.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
@@ -17,13 +18,34 @@
 
 namespace blink {
 
+namespace {
+
+constexpr base::MemoryConsumerTraits kPlainTextPainterTraits{
+    // Shape caches are capped; complex pages up to tens of MBs.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    // Clearing maps requires traversing and dropping nested references.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Shape results can be recalculated.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Map clearing is synchronous.
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    // Either it keeps or clears everything.
+    base::MemoryConsumerTraits::SupportsMemoryLimit::kNo,
+    // Shaping is relatively cheap.
+    base::MemoryConsumerTraits::RecreateMemoryCost::kCheap,
+    // Holds references managed by Blink Oilpan GC.
+    base::MemoryConsumerTraits::ReleaseGCReferences::kYes,
+    // Performs a one-shot clear on memory pressure.
+    base::MemoryConsumerTraits::IsStateful::kNo};
+
+}  // namespace
+
 PlainTextPainter::PlainTextPainter(PlainTextPainter::Mode mode) : mode_(mode) {
   // We don't use FrameShapeCache in the kShared mode. See GetCacheFor().
   if (mode_ == kCanvas) {
     memory_consumer_registration_.emplace(
-        "PlainTextPainter",
-        /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
-        this, MemoryConsumerRegistration::CheckUnregister::kDisabled,
+        "PlainTextPainter", kPlainTextPainterTraits, this,
+        MemoryConsumerRegistration::CheckUnregister::kDisabled,
         MemoryConsumerRegistration::CheckRegistryExists::kDisabled);
   }
 }
