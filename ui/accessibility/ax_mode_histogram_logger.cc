@@ -92,6 +92,11 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
       RecordModeFlag(prefix,
                      AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER);
     }
+
+    if (new_mode_flags & AXMode::kNativeAdaptedWebContents) {
+      RecordModeFlag(prefix, AXMode::ModeFlagHistogramValue::
+                                 UMA_AX_MODE_NATIVE_ADAPTED_WEB_CONTENTS);
+    }
   }
 
   // Record exact match to a named bundle.

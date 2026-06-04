@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 
+#include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
+
 namespace ui {
 
 AXPlatformTreeManager::AXPlatformTreeManager(std::unique_ptr<AXTree> tree)
@@ -12,5 +14,9 @@ AXPlatformTreeManager::AXPlatformTreeManager(std::unique_ptr<AXTree> tree)
 AXPlatformTreeManager::~AXPlatformTreeManager() = default;
 
 void AXPlatformTreeManager::FireSentinelEventForTesting() {}
+
+ui::AXMode AXPlatformTreeManagerDelegate::GetScopedAccessibilityMode() const {
+  return ui::AXMode();
+}
 
 }  // namespace ui

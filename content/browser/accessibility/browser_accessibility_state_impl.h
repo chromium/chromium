@@ -23,6 +23,7 @@
 namespace content {
 
 struct FocusedNodeDetails;
+class WebContents;
 class WebContentsImpl;
 
 // The BrowserAccessibilityState class is used to determine if Chrome should be
@@ -102,7 +103,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
 
   // Signal to BrowserAccessibilityState that a page navigation has occurred.
-  void OnPageNavigationComplete();
+  void OnPageNavigationComplete(WebContents* web_contents);
 
   // Sets the initial accessibility mode for `web_contents` if it is not
   // hidden or if ProgressiveAccessibility is not enabled.

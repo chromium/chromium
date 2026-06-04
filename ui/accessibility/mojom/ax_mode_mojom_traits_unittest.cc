@@ -29,6 +29,7 @@ auto AnyAXModeFlag() {
       ui::AXMode::kAnnotateMainNode,
       ui::AXMode::kFromPlatform,
       ui::AXMode::kScreenReader,
+      ui::AXMode::kNativeAdaptedWebContents,
   });
   // LINT.ThenChange(//ui/accessibility/ax_mode.h)
 }

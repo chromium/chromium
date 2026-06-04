@@ -4227,6 +4227,10 @@ bool RenderFrameHostImpl::AccessibilityIsWebContentSource() {
   return true;
 }
 
+ui::AXMode RenderFrameHostImpl::GetScopedAccessibilityMode() const {
+  return delegate_->GetAccessibilityMode();
+}
+
 ui::AXPlatformNodeId RenderFrameHostImpl::GetOrCreateAXNodeUniqueId(
     ui::AXNodeID ax_node_id) {
   auto [iter, inserted] =

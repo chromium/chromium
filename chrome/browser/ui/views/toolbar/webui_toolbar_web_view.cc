@@ -58,6 +58,7 @@
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/reload_type.h"
@@ -275,6 +276,14 @@ WebUIToolbarWebView::WebUIToolbarWebView(
         web_view->GetWebContents(GURL(chrome::kChromeUIWebUIToolbarURL));
     Observe(web_contents);
     InitialWebUIManager::ConfigureToolbarWebContents(web_contents, browser);
+  }
+
+  content::WebContents* web_contents = web_view->GetWebContents();
+  if (web_contents) {
+    scoped_accessibility_mode_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->CreateScopedModeForWebContents(
+                web_contents, ui::AXMode::kNativeAdaptedWebContents);
   }
 
   // We must save the pointer to the WebView so we can load the URL after the

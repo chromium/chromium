@@ -332,6 +332,59 @@ IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest, Filtering) {
       (ui::kAXModeComplete | ui::AXMode::kLabelImages) & ~kIgnoredModeFlags);
 }
 
+// Verifies that kNativeAdaptedWebContents is filtered, upgrades correctly when
+// combined with kNativeAPIs, and is properly removed when the scoper is
+// destroyed.
+IN_PROC_BROWSER_TEST_F(ScopedAccessibilityModeTest,
+                       NativeAdaptedWebContentsScoper) {
+  // Accessibility is off to start with.
+  ASSERT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::AXMode());
+
+  // 1. Create a scoper on web_contents1 with only kNativeAdaptedWebContents.
+  auto scoped_mode_wc = accessibility_state().CreateScopedModeForWebContents(
+      &web_contents1(), ui::AXMode::kNativeAdaptedWebContents);
+
+  // Since kWebContents/kNativeAPIs is not enabled, kNativeAdaptedWebContents is
+  // filtered out and the effective mode of web_contents1 should remain empty.
+  EXPECT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::AXMode());
+
+  // 2. Create a process-wide scoper that enables kNativeAPIs.
+  auto scoped_mode_process =
+      accessibility_state().CreateScopedModeForProcess(ui::AXMode::kNativeAPIs);
+
+  // Now, because kNativeAdaptedWebContents and kNativeAPIs are active on
+  // web_contents1, the mode should automatically upgrade to include
+  // kWebContents. Therefore, web_contents1 should have:
+  // kNativeAdaptedWebContents | kNativeAPIs | kWebContents.
+  ui::AXMode expected_mode_wc(ui::AXMode::kNativeAdaptedWebContents |
+                              ui::AXMode::kNativeAPIs |
+                              ui::AXMode::kWebContents);
+  EXPECT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            expected_mode_wc & ~kIgnoredModeFlags);
+
+  // Meanwhile, web_contents2 (which does not have the kNativeAdaptedWebContents
+  // scoper) should only have kNativeAPIs. Since kWebContents is not set, and it
+  // does not have kNativeAdaptedWebContents, its effective mode remains just
+  // kNativeAPIs.
+  EXPECT_EQ(web_contents2().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::AXMode::kNativeAPIs & ~kIgnoredModeFlags);
+
+  // 3. Destroy the kNativeAdaptedWebContents scoper on web_contents1.
+  scoped_mode_wc.reset();
+
+  // Now web_contents1 should fall back to having only kNativeAPIs (same as
+  // web_contents2).
+  EXPECT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::AXMode::kNativeAPIs & ~kIgnoredModeFlags);
+
+  // 4. Clean up process scoper.
+  scoped_mode_process.reset();
+  EXPECT_EQ(web_contents1().GetAccessibilityMode() & ~kIgnoredModeFlags,
+            ui::AXMode());
+}
+
 // Verifies that usage from the platform will set AXModes and that if the
 // AXModes do not change, platform still have the chance to discover assistive
 // technology in case we have enough signals of a screen reader may be running.

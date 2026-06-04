@@ -16,6 +16,7 @@
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -309,4 +310,56 @@ TEST(BrowserAccessibilityStateImplAndroidTest,
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(BrowserAccessibilityStateImplTest,
+       NativeAdaptedWebContentsInvariantFiltering) {
+  TestBrowserContext browser_context;
+
+  {
+    // Mode with ONLY kNativeAdaptedWebContents should not trigger kWebContents.
+    // In fact, since kWebContents is not enabled, any higher bits (above
+    // NativeAPIs) are filtered out.
+    auto scoped_mode = state_->CreateScopedModeForProcess(
+        ui::AXMode::kNativeAdaptedWebContents);
+    EXPECT_EQ(ui::AXMode(),
+              state_->GetAccessibilityModeForBrowserContext(&browser_context));
+  }
+
+  {
+    // Mode with kNativeAdaptedWebContents and kNativeAPIs should upgrade to
+    // include kWebContents.
+    auto scoped_mode = state_->CreateScopedModeForProcess(
+        ui::AXMode::kNativeAdaptedWebContents | ui::AXMode::kNativeAPIs);
+    ui::AXMode result_mode =
+        state_->GetAccessibilityModeForBrowserContext(&browser_context);
+    EXPECT_TRUE(result_mode.has_mode(ui::AXMode::kNativeAdaptedWebContents));
+    EXPECT_TRUE(result_mode.has_mode(ui::AXMode::kNativeAPIs));
+    EXPECT_TRUE(result_mode.has_mode(ui::AXMode::kWebContents));
+  }
+}
+
+TEST_F(BrowserAccessibilityStateImplTest,
+       NativeAdaptedWebContentsMetricsAreStripped) {
+  base::HistogramTester histogram_tester;
+
+  {
+    // Applying kNativeAdaptedWebContents and kNativeAPIs should NOT record the
+    // kNativeAdaptedWebContents flag in process-wide histograms to avoid UMA
+    // pollution.
+    auto scoped_mode = state_->CreateScopedModeForProcess(
+        ui::AXMode::kNativeAdaptedWebContents | ui::AXMode::kNativeAPIs);
+
+    // We expect UMA_AX_MODE_NATIVE_APIS to be recorded, but NOT
+    // UMA_AX_MODE_NATIVE_ADAPTED_WEB_CONTENTS.
+    histogram_tester.ExpectBucketCount(
+        "Accessibility.ModeFlag",
+        ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_NATIVE_APIS, 1);
+    histogram_tester.ExpectBucketCount(
+        "Accessibility.ModeFlag",
+        ui::AXMode::ModeFlagHistogramValue::
+            UMA_AX_MODE_NATIVE_ADAPTED_WEB_CONTENTS,
+        0);
+  }
+}
+
 }  // namespace content

@@ -31,6 +31,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -449,6 +450,8 @@ class WebUIToolbarWebView
 
   // True if the WebContents was pre-warmed and injected.
   bool is_preloaded_ = false;
+
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
 
   // This WeakPtrFactory is used to keep tabs on pending state pushes, and then
   // used to cancel them if the state is later updated again before we post a

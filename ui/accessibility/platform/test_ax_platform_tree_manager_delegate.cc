@@ -77,4 +77,14 @@ bool TestAXPlatformTreeManagerDelegate::AccessibilityIsWebContentSource() {
   return is_web_content_source_;
 }
 
+ui::AXMode TestAXPlatformTreeManagerDelegate::GetScopedAccessibilityMode()
+    const {
+  return ax_mode_;
+}
+
+void TestAXPlatformTreeManagerDelegate::SetScopedAccessibilityMode(
+    ui::AXMode mode) {
+  ax_mode_ = mode;
+}
+
 }  // namespace ui

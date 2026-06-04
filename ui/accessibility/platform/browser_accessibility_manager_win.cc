@@ -458,7 +458,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
           // Fire the event on the root object, which in the absence of a text
           // field ancestor is the closest UIA text provider (other than the
           // focused object) in which the selection has changed.
-          DCHECK(IsPlatformDocument(wrapper->GetRole()));
+          DCHECK(wrapper->IsPlatformDocument());
           EnqueueSelectionChangedEvent(*wrapper);
 
           // "IA2_EVENT_TEXT_CARET_MOVED" should only be fired when a visible

@@ -23,6 +23,7 @@ enum AxMode {
   ANNOTATE_MAIN_NODE = 1 << 8,
   FROM_PLATFORM = 1 << 9,
   SCREEN_READER = 1 << 10,
+  NATIVE_ADAPTED_WEB_CONTENTS = 1 << 11,
 }
 
 interface BrowserData {

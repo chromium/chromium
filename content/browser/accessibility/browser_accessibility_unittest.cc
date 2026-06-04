@@ -1105,4 +1105,35 @@ TEST_F(BrowserAccessibilityTest, CreatePositionAt) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+TEST_F(BrowserAccessibilityTest, NativeAdaptedWebContentsMode) {
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      CreateBrowserAccessibilityManager(
+          MakeAXTreeUpdateForTesting(root), node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  ui::BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
+  ASSERT_NE(nullptr, root_obj);
+
+  // By default, no mode is set.
+  EXPECT_EQ(ax::mojom::Role::kRootWebArea, root_obj->GetRole());
+  EXPECT_TRUE(root_obj->IsPlatformDocument());
+
+  // Simulate setting the kNativeAdaptedWebContents mode on the delegate.
+  test_browser_accessibility_delegate_->AccessibilitySetAXMode(
+      ui::AXMode::kNativeAdaptedWebContents);
+  // Simulate Blink serializing the adapted role.
+  root.role = ax::mojom::Role::kGenericContainer;
+  ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(root);
+  update.has_tree_data = true;
+  update.tree_data.tree_id = manager->GetTreeID();
+  ASSERT_TRUE(manager->ax_tree()->Unserialize(update));
+
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, root_obj->GetRole());
+  EXPECT_TRUE(root_obj->IsPlatformDocument());
+}
+
 }  // namespace content

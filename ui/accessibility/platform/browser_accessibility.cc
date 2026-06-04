@@ -1086,7 +1086,16 @@ bool BrowserAccessibility::IsFocused() const {
 }
 
 bool BrowserAccessibility::IsPlatformDocument() const {
-  return ui::IsPlatformDocument(GetRole());
+  if (ui::IsPlatformDocument(GetRole())) {
+    return true;
+  }
+
+  AXPlatformTreeManagerDelegate* delegate =
+      manager()->GetDelegateFromRootManager();
+  return delegate &&
+         delegate->GetScopedAccessibilityMode().has_mode(
+             ui::AXMode::kNativeAdaptedWebContents) &&
+         manager()->GetBrowserAccessibilityRoot() == this;
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetLowestPlatformAncestor()

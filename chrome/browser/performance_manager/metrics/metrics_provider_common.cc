@@ -102,8 +102,9 @@ void MetricsProviderCommon::RecordA11yFlags() {
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kLabelImages);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDFPrinting);
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kAnnotateMainNode);
-    // ui::AXMode::kFromPlatform is unconditionally filtered out and is
-    // therefore never present in `mode`.
+    // ui::AXMode::kFromPlatform and ui::AXMode::kNativeAdaptedWebContents are
+    // unconditionally filtered out from the process-wide mode to prevent
+    // metrics/UMA pollution, and are therefore never present in `mode`.
     MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kScreenReader);
   }
 }

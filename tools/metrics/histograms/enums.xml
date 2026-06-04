@@ -72,6 +72,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="9" label="Annotate Main Node"/>
   <int value="10" label="From Platform"/>
   <int value="11" label="Screen Reader"/>
+  <int value="12" label="Native Adapted Web Contents"/>
 </enum>
 
 <enum name="AccountManagerAccountAdditionSource">

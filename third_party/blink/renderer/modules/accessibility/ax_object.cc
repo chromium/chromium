@@ -1177,6 +1177,10 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
       DisplayLockUtilities::CreateLockCheckMemoizationScope();
 
   node_data->role = ComputeFinalRoleForSerialization();
+  if (accessibility_mode.has_mode(ui::AXMode::kNativeAdaptedWebContents) &&
+      IsRoot()) {
+    node_data->role = ax::mojom::blink::Role::kGenericContainer;
+  }
   node_data->id = AXObjectID();
 
   PreSerializationConsistencyCheck();

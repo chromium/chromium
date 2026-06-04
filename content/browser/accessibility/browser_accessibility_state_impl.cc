@@ -232,6 +232,16 @@ ui::AXMode FilterAccessibilityModeInvariants(ui::AXMode mode) {
     mode.set_mode(ui::AXMode::kLabelImages, false);
   }
 
+  // If the native adapted mode is requested, and native platform APIs are
+  // active, automatically upgrade it to include kWebContents. This ensures
+  // adapted views (like Webium's toolbar) are accessible to any native client
+  // querying the UI, while keeping accessibility off (zero performance cost)
+  // when no client is active.
+  if (mode.has_mode(ui::AXMode::kNativeAdaptedWebContents) &&
+      mode.has_mode(ui::AXMode::kNativeAPIs)) {
+    mode.set_mode(ui::AXMode::kWebContents, true);
+  }
+
   // Modes above kNativeAPIs and kWebContents require kWebContents. Some
   // components may enable higher bits, but those should only be given to a
   // WebContents if that WebContents also has the kWebContents mode enabled;
@@ -616,7 +626,12 @@ void BrowserAccessibilityStateImpl::OnActionFromAssistiveTech() {
   }
 }
 
-void BrowserAccessibilityStateImpl::OnPageNavigationComplete() {
+void BrowserAccessibilityStateImpl::OnPageNavigationComplete(
+    WebContents* web_contents) {
+  if (web_contents && web_contents->GetAccessibilityMode().has_mode(
+                          ui::AXMode::kNativeAdaptedWebContents)) {
+    return;
+  }
   ++num_page_navs_before_first_use_;
   has_recently_checked_for_screen_reader_ = false;
 }
@@ -774,6 +789,10 @@ void BrowserAccessibilityStateImpl::ApplyAccessibilityModeToWebContents(
 // scopers targeting the process changes.
 void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
                                                   ui::AXMode new_mode) {
+  // Strip kNativeAdaptedWebContents so it never pollutes process-wide UMA
+  old_mode.set_mode(ui::AXMode::kNativeAdaptedWebContents, false);
+  new_mode.set_mode(ui::AXMode::kNativeAdaptedWebContents, false);
+
   ui::RecordAccessibilityModeHistograms(ui::AXHistogramPrefix::kNone, new_mode,
                                         old_mode);
   RecordPlatformClientHistograms(old_mode, new_mode);
@@ -827,7 +846,7 @@ void BrowserAccessibilityStateImpl::OnModeChanged(ui::AXMode old_mode,
 // collection of scopers targeting the process.
 ui::AXMode BrowserAccessibilityStateImpl::FilterModeFlags(ui::AXMode mode) {
   if (activation_from_platform_enabled_) {
-    // Allow mode changes with `kFromPlatform`, but filter out that one bit.
+    // Allow mode changes with kFromPlatform, but filter out that one bit.
     // It need not be sent to renderers.
     return mode & ~ui::AXMode(ui::AXMode::kFromPlatform);
   }

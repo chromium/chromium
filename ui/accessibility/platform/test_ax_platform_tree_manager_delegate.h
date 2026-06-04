@@ -42,9 +42,15 @@ class TestAXPlatformTreeManagerDelegate : public AXPlatformTreeManagerDelegate {
   content::WebContentsAccessibility*
     AccessibilityGetWebContentsAccessibility() override;
   bool AccessibilityIsWebContentSource() override;
+  ui::AXMode GetScopedAccessibilityMode() const override;
+  void SetScopedAccessibilityMode(ui::AXMode mode);
+  void AccessibilitySetAXMode(ui::AXMode mode) {
+    SetScopedAccessibilityMode(mode);
+  }
 
   bool is_root_frame_;
   bool is_web_content_source_ = true;
+  ui::AXMode ax_mode_;
   gfx::AcceleratedWidget accelerated_widget_;
   raw_ptr<content::WebContentsAccessibility> web_contents_accessibility_ =
       nullptr;

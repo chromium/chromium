@@ -8,7 +8,8 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
@@ -153,6 +154,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   // Returns true if the current accessibility tree is for web content, false if
   // it's for Views.
   virtual bool AccessibilityIsWebContentSource() = 0;
+
+  virtual ui::AXMode GetScopedAccessibilityMode() const;
 
  protected:
   AXPlatformTreeManagerDelegate() = default;
