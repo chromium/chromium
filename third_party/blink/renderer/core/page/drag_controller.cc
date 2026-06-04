@@ -105,16 +105,6 @@ namespace blink {
 using mojom::blink::FormControlType;
 using ui::mojom::blink::DragOperation;
 
-namespace {
-// Helper struct to store the bitmap and the position and size relative to
-// the mouse required to create the overlay that users see during a drag.
-// Different styles of drags have different offsets to provide better
-// visual feedback to users.
-struct DragOverlay {
-  std::unique_ptr<DragImage> drag_image;
-  gfx::Rect overlay_rect;
-};
-
 static const int kMaxOriginalImageArea = 1500 * 1500;
 static const int kLinkDragBorderInset = 2;
 #if BUILDFLAG(IS_ANDROID)
@@ -167,8 +157,6 @@ static void SetSourceEffectAllowedForDragData(DataTransfer* data_transfer,
     data_transfer->SetSourceEffectAllowed(AtomicString(source_effect_allowed));
   }
 }
-
-}  // namespace
 
 DragController::DragController(Page* page)
     : ExecutionContextLifecycleObserver(
@@ -1276,90 +1264,79 @@ void SelectEnclosingAnchorIfContentEditable(LocalFrame* frame) {
   }
 }
 
-// Returns a `DragOverlay` containing the drag image and its rectangle if the
-// data transfer object has a drag image set via setDragImage in Javascript.
-// Otherwise, returns an empty `DragOverlay`.
-DragOverlay DragOverlayForDataTransferImage(
+std::unique_ptr<DragImage> DetermineDragImageAndRect(
+    gfx::Rect& drag_obj_rect,
+    gfx::Point& effective_drag_initiation_location,
     LocalFrame* frame,
     const DragState& state,
     const HitTestResult& hit_test_result,
     const gfx::Point& drag_initiation_location,
     const gfx::Point& mouse_dragged_point) {
-  const float device_scale_factor =
+  DataTransfer* data_transfer = state.drag_data_transfer_.Get();
+  const KURL& link_url = hit_test_result.AbsoluteLinkURL();
+  float device_scale_factor =
       frame->GetChromeClient().GetScreenInfo(*frame).device_scale_factor;
+
   gfx::Point drag_offset;
-  std::unique_ptr<DragImage> drag_image =
-      state.drag_data_transfer_->CreateDragImage(drag_offset,
-                                                 device_scale_factor, frame);
-  gfx::Rect overlay_rect;
-  if (drag_image) {
-    overlay_rect = gfx::Rect(
-        DragLocationForDHTMLDrag(mouse_dragged_point, drag_initiation_location,
-                                 drag_offset,
-                                 !hit_test_result.AbsoluteLinkURL().IsEmpty()),
-        drag_image->Size());
-  }
-  return DragOverlay{std::move(drag_image), overlay_rect};
-}
 
-DragOverlay DetermineDragOverlay(
-    LocalFrame* frame,
-    const DragState& state,
-    const HitTestResult& drag_origin_hit_test_result,
-    const gfx::Point& drag_initiation_location,
-    const gfx::Point& mouse_dragged_point) {
   // HTML DnD spec allows setting the drag image, even if it is a link, image or
-  // text we are dragging. Draggable elements like canvases can also be dragged
-  // and fall under this case.
-  if (auto data_transfer_drag_overlay = DragOverlayForDataTransferImage(
-          frame, state, drag_origin_hit_test_result, drag_initiation_location,
-          mouse_dragged_point);
-      data_transfer_drag_overlay.drag_image) {
-    return data_transfer_drag_overlay;
+  // text we are dragging.
+  std::unique_ptr<DragImage> drag_image =
+      data_transfer->CreateDragImage(drag_offset, device_scale_factor, frame);
+  if (drag_image) {
+    drag_obj_rect.set_origin(
+        DragLocationForDHTMLDrag(mouse_dragged_point, drag_initiation_location,
+                                 drag_offset, !link_url.IsEmpty()));
+    drag_obj_rect.set_size(drag_image.get()->Size());
+  } else {
+    drag_obj_rect = gfx::Rect();
   }
 
-  // If `drag_image` is not provided, try to determine a drag-source-specific
-  // image and location.
-  const KURL& link_url = drag_origin_hit_test_result.AbsoluteLinkURL();
-  const float device_scale_factor =
-      frame->GetChromeClient().GetScreenInfo(*frame).device_scale_factor;
-  std::unique_ptr<DragImage> drag_image;
-  gfx::Rect overlay_rect;
-  if (state.drag_type_ == kDragSourceActionSelection) {
-    drag_image = DragController::DragImageForSelection(*frame, kDragImageAlpha);
-    overlay_rect = DragRectForSelectionDrag(*frame);
-  } else if (state.drag_type_ == kDragSourceActionImage) {
-    auto* element = DynamicTo<Element>(state.drag_src_.Get());
-    const gfx::Rect& image_rect = drag_origin_hit_test_result.ImageRect();
-    // TODO(crbug.com/331670941): Remove this scaling and simply pass
-    // `imageRect`to `dragImageForImage` once all platforms are migrated
-    // to use zoom for dsf.
-    const gfx::Size image_size_in_pixels = gfx::ScaleToFlooredSize(
-        image_rect.size(), frame->GetPage()->GetVisualViewport().Scale());
+  effective_drag_initiation_location = drag_initiation_location;
 
-    // Pass the selected image size in DIP because dragImageForImage clips the
-    // image in DIP. The coordinates of the locations are in Viewport
-    // coordinates, and they're converted in the Blink client.
-    // TODO(crbug.com/331753419): Consider clipping screen coordinates to
-    // use a high resolution image on high DPI screens.
-    const KURL& image_url = drag_origin_hit_test_result.AbsoluteImageURL();
-    if (!image_url.IsEmpty() && element && CanDragImage(*element)) {
+  // If |drag_image| is not provided, try to determine a drag-source-specific
+  // image and location.
+  if (state.drag_type_ == kDragSourceActionSelection) {
+    if (!drag_image) {
+      drag_image =
+          DragController::DragImageForSelection(*frame, kDragImageAlpha);
+      drag_obj_rect = DragRectForSelectionDrag(*frame);
+    }
+  } else if (state.drag_type_ == kDragSourceActionImage) {
+    if (!drag_image) {
+      auto* element = DynamicTo<Element>(state.drag_src_.Get());
+      const gfx::Rect& image_rect = hit_test_result.ImageRect();
+      // TODO(crbug.com/331670941): Remove this scaling and simply pass
+      // `imageRect`to `dragImageForImage` once all platforms are migrated
+      // to use zoom for dsf.
+      gfx::Size image_size_in_pixels = gfx::ScaleToFlooredSize(
+          image_rect.size(), frame->GetPage()->GetVisualViewport().Scale());
+
+      // Pass the selected image size in DIP becasue dragImageForImage clips the
+      // image in DIP.  The coordinates of the locations are in Viewport
+      // coordinates, and they're converted in the Blink client.
+      // TODO(crbug.com/331753419): Consider clipping screen coordinates to
+      // use a high resolution image on high DPI screens.
       drag_image = DragImageForImage(*element, device_scale_factor,
                                      image_size_in_pixels);
-      overlay_rect =
-          DragRectForImage(drag_image.get(), drag_initiation_location,
+      drag_obj_rect =
+          DragRectForImage(drag_image.get(), effective_drag_initiation_location,
                            image_rect.origin(), image_size_in_pixels);
     }
-  } else if (state.drag_type_ == kDragSourceActionLink && !link_url.IsEmpty()) {
-    DCHECK(frame->GetPage());
-    drag_image =
-        DragImageForLink(link_url, drag_origin_hit_test_result.TextContent(),
-                         device_scale_factor);
-    overlay_rect = DragRectForLink(drag_image.get(), mouse_dragged_point,
-                                   device_scale_factor,
-                                   frame->GetPage()->PageScaleFactor());
+  } else if (state.drag_type_ == kDragSourceActionLink) {
+    if (!drag_image) {
+      DCHECK(frame->GetPage());
+      drag_image = DragImageForLink(link_url, hit_test_result.TextContent(),
+                                    device_scale_factor);
+      drag_obj_rect = DragRectForLink(drag_image.get(), mouse_dragged_point,
+                                      device_scale_factor,
+                                      frame->GetPage()->PageScaleFactor());
+    }
+    // Why is the initiation location different only for link-drags?
+    effective_drag_initiation_location = mouse_dragged_point;
   }
-  return DragOverlay{std::move(drag_image), overlay_rect};
+
+  return drag_image;
 }
 
 }  // namespace
@@ -1368,14 +1345,13 @@ bool DragController::StartDrag(LocalFrame* frame,
                                const DragState& state,
                                const WebMouseEvent& drag_event,
                                const gfx::Point& drag_initiation_location) {
-  CHECK(frame && state.drag_type_ != kDragSourceActionNone);
-  if (!frame->View() || !frame->ContentLayoutObject()) {
+  DCHECK(frame);
+  if (!frame->View() || !frame->ContentLayoutObject())
     return false;
-  }
 
+  HitTestLocation location(drag_initiation_location);
   HitTestResult hit_test_result =
-      frame->GetEventHandler().HitTestResultAtLocation(
-          HitTestLocation(drag_initiation_location));
+      frame->GetEventHandler().HitTestResultAtLocation(location);
   Node* hit_inner_node = hit_test_result.InnerNode();
   if (!hit_inner_node ||
       !state.drag_src_->IsShadowIncludingInclusiveAncestorOf(*hit_inner_node)) {
@@ -1386,28 +1362,37 @@ bool DragController::StartDrag(LocalFrame* frame,
     return false;
   }
 
-  if (state.drag_type_ == kDragSourceActionLink) {
-    SelectEnclosingAnchorIfContentEditable(frame);
-  }
-
-  const gfx::Point mouse_dragged_point = frame->View()->ConvertFromRootFrame(
+  // Note that drag_origin is different from event position.
+  gfx::Point mouse_dragged_point = frame->View()->ConvertFromRootFrame(
       gfx::ToFlooredPoint(drag_event.PositionInRootFrame()));
-  const DragOverlay image_overlay =
-      DetermineDragOverlay(frame, state, hit_test_result,
-                           drag_initiation_location, mouse_dragged_point);
 
-  // There could have been an error that caused the drag overlay to not be
-  // generated, such as an empty link URL for a link drag or an image drag
-  // that failed `CanDragImage()`. Exit early in these cases.
-  if (!image_overlay.drag_image && state.drag_type_ != kDragSourceActionDHTML) {
-    return false;
+  // Check early return conditions.
+  if (state.drag_type_ == kDragSourceActionImage) {
+    const KURL& image_url = hit_test_result.AbsoluteImageURL();
+    auto* element = DynamicTo<Element>(state.drag_src_.Get());
+    if (image_url.IsEmpty() || !element || !CanDragImage(*element))
+      return false;
+  } else if (state.drag_type_ == kDragSourceActionLink) {
+    const KURL& link_url = hit_test_result.AbsoluteLinkURL();
+    if (link_url.IsEmpty())
+      return false;
+  } else if (state.drag_type_ != kDragSourceActionSelection &&
+             state.drag_type_ != kDragSourceActionDHTML) {
+    NOTREACHED();
   }
 
-  const gfx::Point effective_drag_initiation_location =
-      state.drag_type_ == kDragSourceActionLink ? mouse_dragged_point
-                                                : drag_initiation_location;
+  if (state.drag_type_ == kDragSourceActionLink)
+    SelectEnclosingAnchorIfContentEditable(frame);
+
+  gfx::Rect drag_obj_rect;
+  gfx::Point effective_drag_initiation_location;
+
+  std::unique_ptr<DragImage> drag_image = DetermineDragImageAndRect(
+      drag_obj_rect, effective_drag_initiation_location, frame, state,
+      hit_test_result, drag_initiation_location, mouse_dragged_point);
+
   drag_pointer_id_ = drag_event.id;
-  DoSystemDrag(image_overlay.drag_image.get(), image_overlay.overlay_rect,
+  DoSystemDrag(drag_image.get(), drag_obj_rect,
                effective_drag_initiation_location,
                state.drag_data_transfer_.Get(), frame);
   return true;
