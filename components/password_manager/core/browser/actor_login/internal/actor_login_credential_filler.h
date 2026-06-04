@@ -60,6 +60,10 @@ class ActorLoginCredentialFiller {
  private:
   enum class FieldType { kUsername, kPassword };
 
+  bool DoesStoredCredentialBelongToManager(
+      const password_manager::PasswordFormManager* manager,
+      const password_manager::PasswordForm& stored_credential);
+
   // Called when the affiliations for `credential_.request_origin` have been
   // retrieved. `results` contains facets affiliated with the
   // `credential_.request_origin`.
@@ -74,6 +78,15 @@ class ActorLoginCredentialFiller {
   // Should always be called synchronously.
   void ProcessRetrievedForms(
       std::vector<password_manager::PasswordFormManager*> eligible_managers);
+
+  // If there are multiple forms on the page, one will be chosen as
+  // reference based on whether it's in the primary main frame, or whether
+  // the provided credential is a strong match for the form.
+  std::pair<password_manager::PasswordFormManager*,
+            const password_manager::PasswordForm*>
+  FindReferenceFormAndCredential(
+      const std::vector<password_manager::PasswordFormManager*>&
+          eligible_managers);
 
   // Checks if device reauthentication is required before filling.
   // If required, triggers reauthentication and, upon success, re-fetches

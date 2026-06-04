@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -241,8 +242,10 @@ void ActorLoginCredentialFiller::ProcessRetrievedForms(
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
       GetLogger(client_);
 
-  password_manager::PasswordFormManager* signin_form_manager =
-      ActorLoginFormFinder::GetSigninFormManager(eligible_managers);
+  password_manager::PasswordFormManager* signin_form_manager = nullptr;
+  const password_manager::PasswordForm* stored_credential = nullptr;
+  std::tie(signin_form_manager, stored_credential) =
+      FindReferenceFormAndCredential(eligible_managers);
 
   if (!signin_form_manager) {
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_NO_SIGNIN_FORM);
@@ -250,9 +253,6 @@ void ActorLoginCredentialFiller::ProcessRetrievedForms(
     std::move(callback_).Run(LoginStatusResult::kErrorNoSigninForm);
     return;
   }
-
-  const PasswordForm* stored_credential =
-      GetMatchingStoredCredential(*signin_form_manager);
 
   if (!stored_credential) {
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_INVALID_CREDENTIAL);
@@ -265,6 +265,47 @@ void ActorLoginCredentialFiller::ProcessRetrievedForms(
 
   MaybeReauthAndFillAllEligibleFields(std::move(eligible_managers),
                                       *stored_credential);
+}
+
+std::pair<password_manager::PasswordFormManager*,
+          const password_manager::PasswordForm*>
+ActorLoginCredentialFiller::FindReferenceFormAndCredential(
+    const std::vector<password_manager::PasswordFormManager*>&
+        eligible_managers) {
+  // Check if there is a primary main frame form.
+  password_manager::PasswordFormManager* preferred_manager =
+      ActorLoginFormFinder::GetSigninFormManager(eligible_managers);
+  if (preferred_manager &&
+      preferred_manager->GetDriver()->IsInPrimaryMainFrame()) {
+    return {preferred_manager, GetMatchingStoredCredential(*preferred_manager)};
+  }
+
+  // Try to find a manager where the credential is an exact match.
+  for (auto* manager : eligible_managers) {
+    const password_manager::PasswordForm* match =
+        GetMatchingStoredCredential(*manager);
+    if (match && password_manager_util::GetMatchType(*match) ==
+                     password_manager_util::GetLoginMatchType::kExact) {
+      return {manager, match};
+    }
+  }
+
+  // Try to find a manager where the credential is an affiliated match.
+  for (auto* manager : eligible_managers) {
+    const password_manager::PasswordForm* match =
+        GetMatchingStoredCredential(*manager);
+    if (match && password_manager_util::GetMatchType(*match) ==
+                     password_manager_util::GetLoginMatchType::kAffiliated) {
+      return {manager, match};
+    }
+  }
+
+  // Fall back to the default preferred manager.
+  if (preferred_manager) {
+    return {preferred_manager, GetMatchingStoredCredential(*preferred_manager)};
+  }
+
+  return {nullptr, nullptr};
 }
 
 void ActorLoginCredentialFiller::MaybeReauthAndFillAllEligibleFields(
@@ -321,8 +362,8 @@ const PasswordForm* ActorLoginCredentialFiller::GetMatchingStoredCredential(
     // Don't consider weakly affiliated credentials (grouped) because they are
     // not provided in the "Get" step and thus don't actually match the
     // credential that was selected for filling.
-    if (stored_credential_form.match_type.value() ==
-        password_manager::PasswordForm::MatchType::kGrouped) {
+    if (password_manager_util::GetMatchType(stored_credential_form) ==
+        password_manager_util::GetLoginMatchType::kGrouped) {
       continue;
     }
     if (stored_credential_form.username_value == credential_.username &&
@@ -333,6 +374,40 @@ const PasswordForm* ActorLoginCredentialFiller::GetMatchingStoredCredential(
     }
   }
   return matching_stored_credential;
+}
+
+bool ActorLoginCredentialFiller::DoesStoredCredentialBelongToManager(
+    const password_manager::PasswordFormManager* manager,
+    const password_manager::PasswordForm& stored_credential) {
+  // If the stored credential matched the reference form exactly or via
+  // affiliation, we restrict filling to only those managers where the
+  // credential is also of the same match type. This prevents filling an
+  // exact credential into affiliated sibling same-site iframes.
+  // Vice-versa isn't possible anyway, because we already check to see if there
+  // are any exact matches. If we landed on an affiliated match, there were no
+  // exact matches.
+  // The logic also prevents filling any strong matches into weak (PSL-matched)
+  // sibling iframes.
+  password_manager_util::GetLoginMatchType ref_match_type =
+      password_manager_util::GetMatchType(stored_credential);
+  return std::ranges::any_of(
+      manager->GetBestMatches().begin(), manager->GetBestMatches().end(),
+      [&stored_credential,
+       ref_match_type](const password_manager::PasswordForm& best_match) {
+        if (!password_manager::ArePasswordFormUniqueKeysEqual(stored_credential,
+                                                              best_match)) {
+          return false;
+        }
+        password_manager_util::GetLoginMatchType best_match_type =
+            password_manager_util::GetMatchType(best_match);
+        if (ref_match_type ==
+                password_manager_util::GetLoginMatchType::kExact ||
+            ref_match_type ==
+                password_manager_util::GetLoginMatchType::kAffiliated) {
+          return best_match_type == ref_match_type;
+        }
+        return true;
+      });
 }
 
 void ActorLoginCredentialFiller::ReauthenticateAndFill(
@@ -395,17 +470,12 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
           attempt_login_start_time_);
     }
 
-    bool stored_credential_belongs_to_manager = std::ranges::any_of(
-        manager->GetBestMatches().begin(), manager->GetBestMatches().end(),
-        [&stored_credential](const PasswordForm& best_match) {
-          return password_manager::ArePasswordFormUniqueKeysEqual(
-              stored_credential, best_match);
-        });
     if (base::FeatureList::IsEnabled(
             password_manager::features::kActorLoginSameSiteIframeSupport) &&
-        !stored_credential_belongs_to_manager) {
+        !DoesStoredCredentialBelongToManager(manager, stored_credential)) {
       continue;
     }
+
     if (should_store_permission_) {
       manager->SetShouldStoreActorLoginPermission();
     }
