@@ -92,12 +92,6 @@ chromium-metrics-reviews@google.com.
   <int value="35" label="No widget (Not for histogram)"/>
 </enum>
 
-<enum name="ColorGamut">
-  <int value="0" label="sRGB"/>
-  <int value="1" label="Wide Color Gamut"/>
-  <int value="2" label="HDR"/>
-</enum>
-
 <enum name="PropertyMutation">
   <int value="0" label="Transform"/>
   <int value="1" label="Opacity"/>

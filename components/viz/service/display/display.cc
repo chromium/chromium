@@ -878,9 +878,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     renderer_->SetDelegatedInkMetadata(std::move(frame.delegated_ink_metadata));
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Compositing.ColorGamut",
-                            frame.content_color_usage);
-
 #if BUILDFLAG(IS_ANDROID)
   bool wide_color_enabled =
       display_color_spaces_.GetOutputColorSpace(

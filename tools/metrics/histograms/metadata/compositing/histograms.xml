@@ -195,16 +195,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.ColorGamut" enum="ColorGamut"
-    expires_after="2024-04-16">
-  <owner>vasilyt@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Every time a frame is presented, record the generalized color gamut of that
-    frame. Note: this metric was expired from 2022-02-06 to 2023-11-17.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.DecodeLCPCandidateImage.{DecodeMethod}"
     enum="Boolean" expires_after="2026-11-29">
   <owner>mmocny@chromium.org</owner>
