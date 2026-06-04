@@ -2783,6 +2783,10 @@ inline constexpr char kIncognitoThemeOverlayTestingName[] =
 inline constexpr char kIncognitoThemeOverlayTestingDescription[] =
     "Enables incognito theme overlay for testing on the current window.";
 
+inline constexpr char kInfoBarInlineLinksName[] = "InfoBar inline links";
+inline constexpr char kInfoBarInlineLinksDescription[] =
+    "Enables inline links in InfoBars when supported.";
+
 inline constexpr char kInlinePdfV2Name[] = "Inline PDF V2";
 inline constexpr char kInlinePdfV2Description[] =
     "Provides users a seamless, productive, and performant way to view, "

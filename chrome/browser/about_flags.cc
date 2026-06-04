@@ -13054,6 +13054,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableAiCardRecommendation)},
 
+    {"infobar-inline-links", flag_descriptions::kInfoBarInlineLinksName,
+     flag_descriptions::kInfoBarInlineLinksDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kInfoBarInlineLinks)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
