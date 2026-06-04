@@ -236,6 +236,8 @@ should be able to be added at any place in this file.
       summary="Describes the GLIC button added in the bottom bar."/>
   <variant name="_AndroidBottomBarNewTab"
       summary="Describes the new tab button moved down in the bottom bar."/>
+  <variant name="_AndroidBottomBarPromoDialog"
+      summary="For the promo dialog shown to introduce the bottom bar."/>
   <variant name="_AndroidTabDeclutter" summary="For archived tabs on android."/>
   <variant name="_AppRatingPrompt" summary="For App Rating Prompt feature."/>
   <variant name="_AppSpecificHistory"
