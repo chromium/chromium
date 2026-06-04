@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -35,6 +36,9 @@ class WebAuthnCredentialsDelegate {
   // security keys to sign-in. On Android this will trigger Google Play
   // Services.
   virtual void LaunchSecurityKeyOrHybridFlow() = 0;
+
+  // Returns the pre-generated CaBLEv2 QR code string if available.
+  virtual std::optional<std::string> GetCableQrString() const = 0;
 
   // Called when the user selects a passkey from the autofill suggestion list
   // The selected credential must be from the list returned by the last call to

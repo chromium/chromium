@@ -27,6 +27,10 @@ class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
       const MockWebAuthnCredentialsDelegate&) = delete;
 
   MOCK_METHOD(void, LaunchSecurityKeyOrHybridFlow, (), (override));
+  MOCK_METHOD(std::optional<std::string>,
+              GetCableQrString,
+              (),
+              (const, override));
   MOCK_METHOD(void,
               SelectPasskey,
               (const std::string&,

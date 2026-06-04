@@ -82,6 +82,7 @@ using SuggestionMetadata =
 bool IsSuggestionHandledInPasswordManager(SuggestionType type) {
   switch (type) {
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
       return true;
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling:
@@ -265,6 +266,7 @@ void PasswordAutofillManager::DidSelectSuggestion(
       suggestion.type == autofill::SuggestionType::kGeneratePasswordEntry ||
       suggestion.type ==
           autofill::SuggestionType::kWebauthnSignInWithAnotherDevice ||
+      suggestion.type == autofill::SuggestionType::kWebauthnPasskeyQrCode ||
       suggestion.type == autofill::SuggestionType::kTroubleSigningInEntry) {
     return;
   }
@@ -328,6 +330,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           std::move(last_popup_open_args_).suggestions, suggestion));
       break;
     case autofill::SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case autofill::SuggestionType::kWebauthnPasskeyQrCode:
       metrics_util::LogPasswordSuggestionSelected(
           PasswordDropdownSelectedOption::kWebAuthnSignInWithAnotherDevice,
           password_client_->IsOffTheRecord());

@@ -24,6 +24,7 @@ class IOSWebAuthnCredentialsDelegate
 
   // password_manager::WebAuthnCredentialsDelegate:
   void LaunchSecurityKeyOrHybridFlow() override;
+  std::optional<std::string> GetCableQrString() const override;
   void SelectPasskey(const std::string& backend_id,
                      OnPasskeySelectedCallback callback) override;
   base::expected<const std::vector<password_manager::PasskeyCredential>*,

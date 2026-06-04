@@ -102,6 +102,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kBnplEntry:

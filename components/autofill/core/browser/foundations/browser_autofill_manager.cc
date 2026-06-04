@@ -308,6 +308,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
@@ -681,6 +682,7 @@ bool IsManagementFooterOption(const Suggestion& suggestion) {
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kOpenGemini:
       return true;
     case SuggestionType::kAutocompleteEntry:

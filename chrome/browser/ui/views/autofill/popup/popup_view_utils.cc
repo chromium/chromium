@@ -606,6 +606,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kOneTimePasswordEntry:
@@ -682,6 +683,7 @@ bool IsSuggestionTypeAutoselected(SuggestionType type) {
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPersonalContextNotice:
       return false;

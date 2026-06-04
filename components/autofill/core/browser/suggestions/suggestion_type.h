@@ -140,6 +140,7 @@ enum class SuggestionType {
   // Webauthn suggestions.
   kWebauthnCredential = 43,
   kWebauthnSignInWithAnotherDevice = 44,
+  kWebauthnPasskeyQrCode = 86,
 
   // One time password suggestions.
   kOneTimePasswordEntry = 74,
@@ -205,8 +206,8 @@ enum class SuggestionType {
   // selectable suggestion.
   kPersonalContextNotice = 85,
 
-  // Next ID: 86
-  kMaxValue = kPersonalContextNotice
+  // Next ID: 87
+  kMaxValue = kWebauthnPasskeyQrCode
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

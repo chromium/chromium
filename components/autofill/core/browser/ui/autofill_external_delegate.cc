@@ -213,6 +213,7 @@ bool HasAutofillSuggestionsForA11y(SuggestionType type) {
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
     case SuggestionType::kUndoOrClear:
@@ -315,6 +316,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kAtMemorySearchResult:
@@ -683,6 +685,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           suggestion);
       break;
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
       manager_->DelegateSelectToPasswordManager(suggestion, query_field_);
       break;
     case SuggestionType::kAllLoyaltyCardsEntry:
@@ -954,6 +957,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       NOTREACHED();
 #endif
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
       manager_->DelegateAcceptToPasswordManager(suggestion, metadata,
                                                 query_field_);
       break;
@@ -1084,6 +1088,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
     case SuggestionType::kUndoOrClear:

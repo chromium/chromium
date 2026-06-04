@@ -25,6 +25,11 @@ void IOSWebAuthnCredentialsDelegate::LaunchSecurityKeyOrHybridFlow() {
   NOTREACHED() << "Security key or hybrid flow not supported on iOS";
 }
 
+std::optional<std::string> IOSWebAuthnCredentialsDelegate::GetCableQrString()
+    const {
+  return std::nullopt;
+}
+
 void IOSWebAuthnCredentialsDelegate::SelectPasskey(
     const std::string& backend_id,
     OnPasskeySelectedCallback callback) {

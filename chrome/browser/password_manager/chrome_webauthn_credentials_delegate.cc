@@ -117,6 +117,23 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+std::optional<std::string> ChromeWebAuthnCredentialsDelegate::GetCableQrString()
+    const {
+#if !BUILDFLAG(IS_ANDROID)
+  ChromeAuthenticatorRequestDelegate* authenticator_delegate =
+      AuthenticatorRequestScheduler::GetRequestDelegate(web_contents_);
+  if (!authenticator_delegate || !authenticator_delegate->dialog_model()) {
+    return std::nullopt;
+  }
+  if (!authenticator_delegate->dialog_model()->ble_adapter_is_powered) {
+    return std::nullopt;
+  }
+  return authenticator_delegate->dialog_model()->cable_qr_string;
+#else
+  return std::nullopt;
+#endif
+}
+
 base::expected<const std::vector<PasskeyCredential>*,
                ChromeWebAuthnCredentialsDelegate::PasskeysUnavailableReason>
 ChromeWebAuthnCredentialsDelegate::GetPasskeys() const {

@@ -362,6 +362,7 @@ bool IsPaymentMethodSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kOneTimePasswordEntry:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kAtMemoryInactivityNudge:

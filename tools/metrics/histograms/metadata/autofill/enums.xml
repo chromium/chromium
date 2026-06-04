@@ -5712,6 +5712,7 @@ Called by update_autofill_enums.py.-->
   <int value="83" label="AtMemory no connection"/>
   <int value="84" label="AtMemory search trigger affordance"/>
   <int value="85" label="Personal context notice"/>
+  <int value="86" label="Webauthn passkey QR code"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_type.h:SuggestionType) -->

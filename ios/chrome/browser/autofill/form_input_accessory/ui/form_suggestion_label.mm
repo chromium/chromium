@@ -279,6 +279,7 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:

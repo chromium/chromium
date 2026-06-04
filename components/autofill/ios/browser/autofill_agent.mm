@@ -723,6 +723,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       case SuggestionType::kIdentityCredential:
       case SuggestionType::kWebauthnCredential:
       case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      case SuggestionType::kWebauthnPasskeyQrCode:
       case SuggestionType::kPendingStateSignin:
       case SuggestionType::kLoadingThrobber:
       case SuggestionType::kAtMemorySearchResult:

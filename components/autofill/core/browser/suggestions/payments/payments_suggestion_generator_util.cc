@@ -1129,6 +1129,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kBnplEntry:

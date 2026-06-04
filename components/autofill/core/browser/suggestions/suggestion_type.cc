@@ -93,6 +93,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kWebauthnCredential";
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
       return "kWebauthnSignInWithAnotherDevice";
+    case SuggestionType::kWebauthnPasskeyQrCode:
+      return "kWebauthnPasskeyQrCode";
     case SuggestionType::kIdentityCredential:
       return "kIdentityCredential";
     case SuggestionType::kTitle:
