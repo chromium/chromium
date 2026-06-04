@@ -1638,16 +1638,11 @@ class CONTENT_EXPORT ContentBrowserClient {
       mojo::BinderMapWithContext<RenderFrameHost*>* map) {}
 
   // Allows the embedder to control when Mojo interface binders are run for a
-  // frame that is in a managed mode, such as prerendering and preview mode.
+  // frame that is in a managed mode, such as prerendering.
   //
   // Prerender2 limits inactivated pages' capabilities by controlling when to
   // bind Mojo interfaces. See content/browser/preloading/prerender/README.md
   // for more about capability control.
-  //
-  // Preview mode follows the same limits that Prerender2 defines, and the page
-  // behaves as a prerendered page in Blink. But as the preview page is visible
-  // to users, we relax the restriction a little to permit rendering related
-  // operations.
   //
   // The embedder can add entries to `policy_map` for interfaces that it
   // registers in `RegisterBrowserInterfaceBindersForFrame()` and
@@ -1658,8 +1653,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // created for prerendering a page that is same-origin to the page that
   // triggered the prerender.
   virtual void RegisterMojoBinderPoliciesForSameOriginPrerendering(
-      MojoBinderPolicyMap& policy_map) {}
-  virtual void RegisterMojoBinderPoliciesForPreview(
       MojoBinderPolicyMap& policy_map) {}
 
   // Allows to register browser interfaces which are exposed to a service worker

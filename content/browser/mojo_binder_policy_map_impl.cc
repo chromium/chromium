@@ -45,15 +45,9 @@ BASE_FEATURE(kTextInputHostMojoCapabilityControlWorkaround,
 
 namespace {
 
-enum class PolicyClass {
-  kSameOriginPrerendering,
-  kPreview,
-};
-
 // Register feature specific policies for interfaces registered in
 // `internal::PopulateBinderMap` and `internal::PopulateBinderMapWithContext`.
-void RegisterNonAssociatedPolicies(MojoBinderPolicyMap& map,
-                                   PolicyClass policy) {
+void RegisterNonAssociatedPolicies(MojoBinderPolicyMap& map) {
   // For Prerendering, kCancel is usually used for those interfaces that cannot
   // be granted because they can cause undesirable side-effects (e.g., playing
   // audio, showing notification) and are non-deferrable.
@@ -67,14 +61,12 @@ void RegisterNonAssociatedPolicies(MojoBinderPolicyMap& map,
   map.SetNonAssociatedPolicy<device::mojom::GamepadMonitor>(
       MojoBinderNonAssociatedPolicy::kCancel);
 
-  if (policy == PolicyClass::kSameOriginPrerendering) {
-    // ClipboardHost has sync messages, so it cannot be kDefer. However, the
-    // renderer is not expected to request the interface; prerendering documents
-    // do not have system focus nor user activation, which is required before
-    // sending the request.
-    map.SetNonAssociatedPolicy<blink::mojom::ClipboardHost>(
-        MojoBinderNonAssociatedPolicy::kUnexpected);
-  }
+  // ClipboardHost has sync messages, so it cannot be kDefer. However, the
+  // renderer is not expected to request the interface; prerendering documents
+  // do not have system focus nor user activation, which is required before
+  // sending the request.
+  map.SetNonAssociatedPolicy<blink::mojom::ClipboardHost>(
+      MojoBinderNonAssociatedPolicy::kUnexpected);
 
   // FileUtilitiesHost is only used by APIs that require user activations, being
   // impossible for a prerendered document. For the reason, this is marked as
@@ -176,15 +168,7 @@ void RegisterChannelAssociatedPoliciesForSameOriginPrerendering(
 // interfaces.
 void RegisterContentBinderPoliciesForSameOriginPrerendering(
     MojoBinderPolicyMap& map) {
-  RegisterNonAssociatedPolicies(map, PolicyClass::kSameOriginPrerendering);
-  RegisterChannelAssociatedPoliciesForSameOriginPrerendering(map);
-}
-
-// Register mojo binder policies for preview mode for content/ interfaces.
-void RegisterContentBinderPoliciesForPreview(MojoBinderPolicyMap& map) {
-  RegisterNonAssociatedPolicies(map, PolicyClass::kPreview);
-  // Inherits the policies for same-origin prerendering.
-  // TODO(b:299240273): Adjust policies for preview.
+  RegisterNonAssociatedPolicies(map);
   RegisterChannelAssociatedPoliciesForSameOriginPrerendering(map);
 }
 
@@ -199,10 +183,6 @@ class BrowserInterfaceBrokerMojoBinderPolicyMapHolder {
     GetContentClient()
         ->browser()
         ->RegisterMojoBinderPoliciesForSameOriginPrerendering(same_origin_map_);
-
-    RegisterContentBinderPoliciesForPreview(preview_map_);
-    GetContentClient()->browser()->RegisterMojoBinderPoliciesForPreview(
-        preview_map_);
   }
 
   ~BrowserInterfaceBrokerMojoBinderPolicyMapHolder() = default;
@@ -220,15 +200,10 @@ class BrowserInterfaceBrokerMojoBinderPolicyMapHolder {
   const MojoBinderPolicyMapImpl* GetSameOriginPolicyMap() const {
     return &same_origin_map_;
   }
-  const MojoBinderPolicyMapImpl* GetPreviewPolicyMap() const {
-    return &preview_map_;
-  }
 
  private:
   // Changes to `same_origin_map_` require security review.
   MojoBinderPolicyMapImpl same_origin_map_;
-
-  MojoBinderPolicyMapImpl preview_map_;
 };
 
 }  // namespace
@@ -250,14 +225,6 @@ MojoBinderPolicyMapImpl::GetInstanceForSameOriginPrerendering() {
   return map->GetSameOriginPolicyMap();
 }
 
-const MojoBinderPolicyMapImpl*
-MojoBinderPolicyMapImpl::GetInstanceForPreview() {
-  static const base::NoDestructor<
-      BrowserInterfaceBrokerMojoBinderPolicyMapHolder>
-      map;
-
-  return map->GetPreviewPolicyMap();
-}
 
 MojoBinderNonAssociatedPolicy
 MojoBinderPolicyMapImpl::GetNonAssociatedMojoBinderPolicy(

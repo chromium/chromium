@@ -191,18 +191,17 @@ void PageImpl::NotifyCrossOriginSubframePrerenderIsAllowed() {
 }
 
 void PageImpl::Activate(
-    ActivationType type,
     StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts,
     std::optional<blink::ViewTransitionState> view_transition_state,
     base::OnceCallback<void(base::TimeTicks)> completion_callback) {
-  TRACE_EVENT1("navigation", "PageImpl::Activate", "activation_type", type);
+  TRACE_EVENT0("navigation", "PageImpl::Activate");
 
   // SetActivationStartTime() should be called first as the value is used in
   // the callback below.
   CHECK(activation_start_time_.has_value());
 
   base::OnceClosure did_activate_render_views = base::BindOnce(
-      &PageImpl::DidActivateAllRenderViewsForPrerenderingOrPreview,
+      &PageImpl::DidActivateAllRenderViewsForPrerendering,
       weak_factory_.GetWeakPtr(), std::move(completion_callback));
 
   base::RepeatingClosure barrier = base::BarrierClosure(
@@ -223,44 +222,26 @@ void PageImpl::Activate(
       view_transition_state_consumed = true;
     }
 
-    const bool should_send_activation_start = [&]() {
-      // For prerendering activation, send activation_start only to the
-      // RenderViewHost for the main frame to avoid sending the info
-      // cross-origin. Only this RenderViewHost needs the info, as we expect
-      // the other RenderViewHosts are made for cross-origin iframes which
-      // have not yet loaded their document. To the renderer, it just looks
-      // like an ongoing navigation is happening in the frame and has not yet
-      // committed.
-      if (is_main_document) {
-        return true;
-      }
-
-      // Even cross-origin, we allow if the main document has the special
-      // header. See PrerenderHost::AllowCrossOriginSubframeNavigation() for
-      // detail.
-      if (type == ActivationType::kPrerendering &&
-          is_cross_origin_subframe_prerender_allowed_) {
-        return true;
-      }
-
-      // For preview activation, send activation_start to all RenderViewHosts
-      // as preview loads cross-origin subframes under the capability control,
-      // and activation_start time is meaningful there.
-      if (type == ActivationType::kPreview) {
-        return true;
-      }
-      return false;
-    }();
+    // For prerendering activation, send activation_start only to the
+    // RenderViewHost for the main frame to avoid sending the info
+    // cross-origin. Only this RenderViewHost needs the info, as we expect
+    // the other RenderViewHosts are made for cross-origin iframes which
+    // have not yet loaded their document. To the renderer, it just looks
+    // like an ongoing navigation is happening in the frame and has not yet
+    // committed.
+    //
+    // Even cross-origin, we allow if the main document has the special
+    // header. See PrerenderHost::AllowCrossOriginSubframeNavigation() for
+    // detail.
+    const bool should_send_activation_start =
+        is_main_document || is_cross_origin_subframe_prerender_allowed_;
     if (should_send_activation_start) {
       params->activation_start = *activation_start_time_;
     }
 
-    // For preview activation, there is no way to activate the previewed page
-    // other than with a user action, or testing only methods.
     params->was_user_activated =
-        (main_document_->frame_tree_node()
-             ->has_received_user_gesture_before_nav() ||
-         type == ActivationType::kPreview)
+        main_document_->frame_tree_node()
+                ->has_received_user_gesture_before_nav()
             ? blink::mojom::WasActivatedOption::kYes
             : blink::mojom::WasActivatedOption::kNo;
     rvh->ActivatePrerenderedPage(std::move(params), barrier);
@@ -269,7 +250,7 @@ void PageImpl::Activate(
   // Prepare each RenderFrameHostImpl in this Page for activation.
   main_document_->ForEachRenderFrameHostImplIncludingSpeculative(
       [](RenderFrameHostImpl* rfh) {
-        rfh->RendererWillActivateForPrerenderingOrPreview();
+        rfh->RendererWillActivateForPrerendering();
       });
 }
 
@@ -305,7 +286,7 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
       &RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation);
 }
 
-void PageImpl::DidActivateAllRenderViewsForPrerenderingOrPreview(
+void PageImpl::DidActivateAllRenderViewsForPrerendering(
     base::OnceCallback<void(base::TimeTicks)> completion_callback) {
   TRACE_EVENT0("navigation",
                "PageImpl::DidActivateAllRenderViewsForPrerendering");

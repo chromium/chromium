@@ -14678,7 +14678,7 @@ void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
   CHECK(canceled);
 }
 
-void RenderFrameHostImpl::RendererWillActivateForPrerenderingOrPreview() {
+void RenderFrameHostImpl::RendererWillActivateForPrerendering() {
   // Loosen the policies of the Mojo capability control during dispatching the
   // prerenderingchange event in Blink, because the page may start legitimately
   // using controlled interfaces once prerenderingchange is dispatched. We
@@ -14687,7 +14687,7 @@ void RenderFrameHostImpl::RendererWillActivateForPrerenderingOrPreview() {
   // should ensure that ActivateForPrerendering() arrives on the renderer
   // earlier than these deferred messages.
   CHECK(mojo_binder_policy_applier_)
-      << "activating prerender or preview pages should have a policy applier";
+      << "activating prerendering pages should have a policy applier";
   mojo_binder_policy_applier_->PrepareToGrantAll();
 }
 

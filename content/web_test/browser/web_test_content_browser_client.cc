@@ -820,10 +820,5 @@ void WebTestContentBrowserClient::
       MojoBinderAssociatedPolicy::kGrant);
 }
 
-void WebTestContentBrowserClient::RegisterMojoBinderPoliciesForPreview(
-    MojoBinderPolicyMap& policy_map) {
-  policy_map.SetAssociatedPolicy<mojom::WebTestControlHost>(
-      MojoBinderAssociatedPolicy::kGrant);
-}
 
 }  // namespace content

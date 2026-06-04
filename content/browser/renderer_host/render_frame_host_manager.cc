@@ -5376,7 +5376,7 @@ void RenderFrameHostManager::CommitPending(
       CHECK_EQ(prev_state,
                RenderFrameHostImpl::LifecycleStateImpl::kPrerendering);
       current_frame_host()->GetPage().Activate(
-          PageImpl::ActivationType::kPrerendering, render_view_hosts_to_restore,
+          render_view_hosts_to_restore,
           pending_stored_page->TakeViewTransitionState(), base::DoNothing());
     }
   }

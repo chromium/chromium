@@ -57,10 +57,6 @@ class RenderFrameHostImpl;
 // Please refer to content/public/browser/page.h for more details.
 class CONTENT_EXPORT PageImpl : public Page {
  public:
-  enum class ActivationType {
-    kPrerendering,
-    kPreview,
-  };
   PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate);
 
   ~PageImpl() override;
@@ -183,7 +179,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   // prerendered to activated. Tells the corresponding RenderFrameHostImpls that
   // the renderer will be activating their documents.
   void Activate(
-      ActivationType type,
       StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts_to_activate,
       std::optional<blink::ViewTransitionState> view_transition_state,
       base::OnceCallback<void(base::TimeTicks)> completion_callback);
@@ -307,7 +302,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams();
 
  private:
-  void DidActivateAllRenderViewsForPrerenderingOrPreview(
+  void DidActivateAllRenderViewsForPrerendering(
       base::OnceCallback<void(base::TimeTicks)> completion_callback);
 
   // This method is needed to ensure that PageImpl can both implement a Page's
