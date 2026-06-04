@@ -196,17 +196,22 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private void finishDeferredInitialization(View popupView) {
         if (mDestroyed) return;
 
-        // Instead of anchoring on the plus button or status view, anchor on the parent and then
-        // shift down slightly. This gives better behavior on small screens.
-        // TODO(https://crbug.com/520097871): Popover's plus button can be much farther away, and
-        // some special handling is needed.
-        Resources res = mActivity.getResources();
-        ViewRectProvider floatingViewRectProvider = new ViewRectProvider(mParent);
-        floatingViewRectProvider.setInsetPx(
-                /* left= */ 0,
-                res.getDimensionPixelSize(R.dimen.fusebox_vertical_space_above_popup),
-                /* right= */ 0,
-                /* bottom= */ 0);
+        ViewRectProvider floatingViewRectProvider;
+        if (getFuseboxLayoutMode() == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            // Popover never uses StatusView to show plus button, so this is safe here.
+            View plusButton = mParent.findViewById(R.id.location_bar_attachments_add);
+            floatingViewRectProvider = new ViewRectProvider(plusButton);
+        } else {
+            // Instead of anchoring on the plus button or status view, anchor on the parent and then
+            // shift down slightly. This gives better behavior on small screens.
+            Resources res = mActivity.getResources();
+            floatingViewRectProvider = new ViewRectProvider(mParent);
+            floatingViewRectProvider.setInsetPx(
+                    /* left= */ 0,
+                    res.getDimensionPixelSize(R.dimen.fusebox_vertical_space_above_popup),
+                    /* right= */ 0,
+                    /* bottom= */ 0);
+        }
         mBottomSheetRectProvider = new BottomSheetRectProvider(mActivity, mParent);
 
         DynamicRectProvider dynamicRectProvider =
