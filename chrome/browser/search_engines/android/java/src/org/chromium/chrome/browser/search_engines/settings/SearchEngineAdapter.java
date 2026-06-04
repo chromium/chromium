@@ -553,6 +553,7 @@ public class SearchEngineAdapter extends BaseAdapter
                             View host, AccessibilityNodeInfo info) {
                         super.onInitializeAccessibilityNodeInfo(host, info);
                         info.setSelected(selected);
+                        info.setClassName(RadioButton.class.getName());
                     }
                 });
 
