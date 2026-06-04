@@ -96,6 +96,9 @@ GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
     kSkiaGraphiteMinPathSizeForMsaa;
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kGpuPersistentCache);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kGpuPersistentCacheMetadata);
+GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
+    kGpuPersistentCacheMetadataPreloadCount;
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kConditionallySkipGpuChannelFlush);
 

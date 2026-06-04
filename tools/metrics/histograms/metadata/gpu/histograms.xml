@@ -1596,6 +1596,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.KeySize"
+    units="KB" expires_after="2026-09-27">
+  <owner>geofflang@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Records the size of cache entry keys added to the cache.
+
+    Subsampled to 1/100.
+  </summary>
+  <token key="GpuPersistentCacheType" variants="GpuPersistentCacheType"/>
+</histogram>
+
 <histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.Load"
     units="microseconds" expires_after="2026-11-29">
   <owner>lehoangquyen@chromium.org</owner>
@@ -1620,6 +1633,18 @@ chromium-metrics-reviews@google.com.
   <token key="GpuPersistentCacheType" variants="GpuPersistentCacheType"/>
 </histogram>
 
+<histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.MetadataEvent"
+    enum="GpuPersistentCacheMetadataEvent" expires_after="2026-09-27">
+  <owner>geofflang@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Records various usages of GpuPersistentCache metadata for calculating rates
+    of load and stores.
+  </summary>
+  <token key="GpuPersistentCacheType" variants="GpuPersistentCacheType"/>
+</histogram>
+
 <histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.Store"
     units="microseconds" expires_after="2026-11-29">
   <owner>kylechar@chromium.org</owner>
@@ -1628,6 +1653,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time it takes in gpu::GpuPersistentCache::StoreData (only when it is ready).
     Recorded only for clients that support high-resolution clocks.
+  </summary>
+  <token key="GpuPersistentCacheType" variants="GpuPersistentCacheType"/>
+</histogram>
+
+<histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.ValueSize"
+    units="KB" expires_after="2026-09-27">
+  <owner>geofflang@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Records the size of cache entry values added to the cache.
+
+    Subsampled to 1/100.
   </summary>
   <token key="GpuPersistentCacheType" variants="GpuPersistentCacheType"/>
 </histogram>

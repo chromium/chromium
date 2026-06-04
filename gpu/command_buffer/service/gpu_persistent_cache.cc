@@ -30,6 +30,7 @@
 #include "components/persistent_cache/client.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/transaction_error.h"
+#include "components/version_info/version_info.h"
 #include "gpu/command_buffer/service/memory_cache.h"
 #include "ipc/common/gpu_client_ids.h"
 #include "ui/gl/gl_bindings.h"
@@ -39,6 +40,7 @@ namespace gpu {
 namespace {
 
 constexpr size_t kMaxLoadStoreForTrackingCacheAvailable = 100;
+constexpr double kRecordCacheEntrySizeFrequency = 0.01;
 constexpr base::TimeDelta kDiskWriteDelaySeconds = base::Seconds(1);
 constexpr base::TimeDelta kDiskOpWaitTimeoutMs = base::Milliseconds(20);
 
@@ -167,6 +169,9 @@ bool IsVkPipelineCache(std::string_view key_str) {
 }
 #endif
 
+std::string_view GetCacheMetadataKey() {
+  return version_info::GetProductNameAndVersionForUserAgent();
+}
 }  // namespace
 
 // AsyncDiskWriteOpts
@@ -182,6 +187,9 @@ GpuPersistentCache::AsyncDiskWriteOpts::operator=(const AsyncDiskWriteOpts&) =
 GpuPersistentCache::AsyncDiskWriteOpts&
 GpuPersistentCache::AsyncDiskWriteOpts::operator=(AsyncDiskWriteOpts&&) =
     default;
+
+// MetadataOpts
+GpuPersistentCache::MetadataOpts::MetadataOpts() = default;
 
 // Ref-counted wrapper for the persistent cache data, so it can be used safely
 // with asynchronous operations.
@@ -294,12 +302,11 @@ GpuPersistentCache::CacheLoadResult GpuPersistentCache::DiskCache::Load(
   // Notify other threads
   SignalUsingCacheComplete();
 
-  ASSIGN_OR_RETURN(auto metadata, result,
-                   [&](persistent_cache::TransactionError error) {
-                     HandlePersistentCacheError(
-                         &use_shader_cache_shm_count_->data, error);
-                     return CacheLoadResult::kMissTransactionError;
-                   });
+  ASSIGN_OR_RETURN(
+      auto metadata, result, [&](persistent_cache::TransactionError error) {
+        HandlePersistentCacheError(&use_shader_cache_shm_count_->data, error);
+        return CacheLoadResult::kMissTransactionError;
+      });
 
   // Hit if present; miss otherwise.
   return metadata.has_value() ? CacheLoadResult::kHitDisk
@@ -406,10 +413,16 @@ void GpuPersistentCache::DiskCache::DoDelayedStoreToDisk(
 // GpuPersistentCache
 GpuPersistentCache::GpuPersistentCache(std::string_view cache_prefix,
                                        scoped_refptr<MemoryCache> memory_cache,
+                                       MetadataOpts metadata_options,
                                        AsyncDiskWriteOpts async_write_options)
     : cache_prefix_(cache_prefix),
       memory_cache_(std::move(memory_cache)),
-      async_write_options_(std::move(async_write_options)) {}
+      async_write_options_(std::move(async_write_options)),
+      metadata_options_(std::move(metadata_options)) {
+  if (metadata_options_.enabled) {
+    cache_metadata_ = CacheMetadata();
+  }
+}
 
 GpuPersistentCache::~GpuPersistentCache() = default;
 
@@ -433,6 +446,10 @@ void GpuPersistentCache::InitializeCache(
       std::move(use_shader_cache_shm_count));
   disk_cache_initialized_.Set();
 
+  base::UmaHistogramEnumeration(
+      GetHistogramName(cache_prefix_, "MetadataEvent"),
+      MetadataEvent::kCacheInitialized);
+
   if (memory_cache_) {
     // If opening the persistent cache succeeded, copy all entries from the
     // memory cache into it.
@@ -445,6 +462,20 @@ void GpuPersistentCache::InitializeCache(
         disk_cache_->Store(memory_entry);
       }
     });
+  }
+
+  if (metadata_options_.enabled) {
+    // Load and process any metadata found in the disk cache. Run it
+    // asynchronously if possible.
+    if (async_write_options_.task_runner) {
+      async_write_options_.task_runner->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &GpuPersistentCache::LoadAndProcessMetadataFromDiskCache,
+              base::WrapRefCounted(this)));
+    } else {
+      LoadAndProcessMetadataFromDiskCache();
+    }
   }
 }
 
@@ -584,6 +615,20 @@ GpuPersistentCache::GetPersistentCacheForTesting() const {
   return disk_cache_->persistent_cache();
 }
 
+void GpuPersistentCache::FlushMetadataForTesting() {
+  if (!metadata_options_.enabled) {
+    return;
+  }
+
+  base::AutoLock lock(metadata_mutex_);
+  if (!cache_metadata_) {
+    return;
+  }
+
+  FlushCacheMetadata(std::move(cache_metadata_.value()));
+  cache_metadata_.reset();
+}
+
 bool GpuPersistentCache::IsCacheHitResult(CacheLoadResult result) {
   return result > CacheLoadResult::kMaxMissValue;
 }
@@ -603,6 +648,8 @@ GpuPersistentCache::CacheLoadResult GpuPersistentCache::LoadImpl(
         GetHistogramName(cache_prefix_, "Load.CacheAvailable"),
         disk_cache_initialized);
   }
+
+  UpdateCacheMetadataForLoad(key);
 
   if (memory_cache_) {
     if (auto memory_entry = memory_cache_->Find(key)) {
@@ -727,6 +774,14 @@ void GpuPersistentCache::StoreImpl(std::string_view key,
         disk_cache_initialized);
   }
 
+  // Record the cache key and value sizes infrequently.
+  if (base::ShouldRecordSubsampledMetric(kRecordCacheEntrySizeFrequency)) {
+    base::UmaHistogramMemoryKB(GetHistogramName(cache_prefix_, "KeySize"),
+                               base::ByteSize(key.size()));
+    base::UmaHistogramMemoryKB(GetHistogramName(cache_prefix_, "ValueSize"),
+                               base::ByteSize(value.size()));
+  }
+
   scoped_refptr<MemoryCacheEntry> memory_cache_entry;
   if (memory_cache_ && !skip_memory_cache) {
     memory_cache_entry = memory_cache_->Store(key, value);
@@ -751,6 +806,159 @@ void GpuPersistentCache::RecordCacheLoadResultHistogram(
                                 result);
 }
 
+// CacheMetadata
+GpuPersistentCache::CacheMetadata::CacheMetadata::CacheMetadata() = default;
+GpuPersistentCache::CacheMetadata::CacheMetadata(const CacheMetadata&) =
+    default;
+GpuPersistentCache::CacheMetadata::CacheMetadata(CacheMetadata&&) = default;
+GpuPersistentCache::CacheMetadata::~CacheMetadata() = default;
+GpuPersistentCache::CacheMetadata& GpuPersistentCache::CacheMetadata::operator=(
+    const CacheMetadata&) = default;
+GpuPersistentCache::CacheMetadata& GpuPersistentCache::CacheMetadata::operator=(
+    CacheMetadata&&) = default;
+
+base::HeapArray<uint8_t> GpuPersistentCache::CacheMetadata::Serialize() const {
+  base::CheckedNumeric<size_t> buffer_size_needed = 0;
+  buffer_size_needed += sizeof(uint64_t);  // Count of first_loaded_keys
+  for (const std::string& key : first_loaded_keys) {
+    buffer_size_needed += sizeof(uint64_t);
+    buffer_size_needed += key.size();
+  }
+
+  auto serialized_data =
+      base::HeapArray<uint8_t>::WithSize(buffer_size_needed.ValueOrDie());
+  size_t current_buffer_offset = 0;
+
+  auto write_serialized_data = [&serialized_data, &current_buffer_offset](
+                                   base::span<const uint8_t> data) {
+    base::span<uint8_t> dst_span =
+        serialized_data.subspan(current_buffer_offset, data.size());
+    dst_span.copy_from_nonoverlapping(data);
+    current_buffer_offset += data.size();
+  };
+
+  uint64_t first_loaded_keys_count = first_loaded_keys.size();
+  write_serialized_data(
+      base::as_byte_span(base::span_from_ref(first_loaded_keys_count)));
+  for (const std::string& key : first_loaded_keys) {
+    uint64_t key_size = key.size();
+    write_serialized_data(base::as_byte_span(base::span_from_ref(key_size)));
+    write_serialized_data(base::as_byte_span(key));
+  }
+
+  return serialized_data;
+}
+
+GpuPersistentCache::CacheMetadata
+GpuPersistentCache::CacheMetadata::Deserialize(
+    const base::HeapArray<uint8_t>& data) {
+  size_t current_buffer_offset = 0;
+
+  auto read_serialized_data =
+      [&data, &current_buffer_offset](base::span<uint8_t> dst_data) {
+        base::span<const uint8_t> src_data =
+            data.subspan(current_buffer_offset, dst_data.size());
+        dst_data.copy_from_nonoverlapping(src_data);
+        current_buffer_offset += dst_data.size();
+      };
+  auto read_serialized_string = [read_serialized_data]() {
+    uint64_t string_length = 0;
+    read_serialized_data(
+        base::as_writable_bytes(base::span_from_ref(string_length)));
+
+    std::string result;
+    result.resize(string_length);
+    read_serialized_data(base::as_writable_bytes(base::span(result)));
+
+    return result;
+  };
+
+  CacheMetadata metadata;
+
+  uint64_t first_loaded_keys_count = 0;
+  read_serialized_data(
+      base::as_writable_bytes(base::span_from_ref(first_loaded_keys_count)));
+  for (uint64_t key_index = 0; key_index < first_loaded_keys_count;
+       key_index++) {
+    metadata.first_loaded_keys.insert(read_serialized_string());
+  }
+
+  return metadata;
+}
+
+void GpuPersistentCache::UpdateCacheMetadataForLoad(std::string_view key) {
+  if (!metadata_options_.enabled) {
+    return;
+  }
+
+  base::AutoLock lock(metadata_mutex_);
+  if (!cache_metadata_) {
+    return;
+  }
+
+  if (cache_metadata_->first_loaded_keys.size() <
+      metadata_options_.preload_count) {
+    cache_metadata_->first_loaded_keys.insert(
+        std::string(key.data(), key.size()));
+  }
+
+  // Right now the metadata only contains the first_loaded_keys so flush once we
+  // can't fit any more in the set. If the metadata contains more data in the
+  // future, we may want to flush multiple times.
+  bool flush_metadata = cache_metadata_->first_loaded_keys.size() >=
+                        metadata_options_.preload_count;
+  if (flush_metadata) {
+    base::UmaHistogramEnumeration(
+        GetHistogramName(cache_prefix_, "MetadataEvent"),
+        MetadataEvent::kMetadataFlushed);
+    FlushCacheMetadata(std::move(cache_metadata_.value()));
+    cache_metadata_.reset();
+  }
+}
+
+void GpuPersistentCache::FlushCacheMetadata(CacheMetadata metadata) {
+  // If there is no disk cache to flush to, drop the metadata.
+  const bool disk_cache_initialized = disk_cache_initialized_.IsSet();
+  if (!disk_cache_initialized) {
+    return;
+  }
+
+  auto entry = base::MakeRefCounted<MemoryCacheEntry>(GetCacheMetadataKey(),
+                                                      metadata.Serialize());
+  disk_cache_->Store(std::move(entry));
+}
+
+void GpuPersistentCache::LoadAndProcessMetadataFromDiskCache() {
+  CHECK(disk_cache_);
+
+  base::HeapArray<uint8_t> metadata_blob;
+  bool metadata_exists = IsCacheHitResult(disk_cache_->Load(
+      GetCacheMetadataKey(), [&metadata_blob](size_t content_size) {
+        metadata_blob = base::HeapArray<uint8_t>::WithSize(content_size);
+        return metadata_blob.first(content_size);
+      }));
+  if (metadata_exists) {
+    base::UmaHistogramEnumeration(
+        GetHistogramName(cache_prefix_, "MetadataEvent"),
+        MetadataEvent::kMetadataLoaded);
+    CHECK(!metadata_blob.empty());
+    CacheMetadata metadata = CacheMetadata::Deserialize(metadata_blob);
+    ProcessMetadata(std::move(metadata));
+  }
+}
+
+void GpuPersistentCache::ProcessMetadata(const CacheMetadata& metadata) {
+  for (const std::string& key : metadata.first_loaded_keys) {
+    base::HeapArray<uint8_t> value;
+    if (IsCacheHitResult(disk_cache_->Load(key, [&value](size_t content_size) {
+          value = base::HeapArray<uint8_t>::WithSize(content_size);
+          return value.first(content_size);
+        }))) {
+      memory_cache_->Store(key, std::move(value));
+    }
+  }
+}
+
 void BindCacheToCurrentOpenGLContext(GpuPersistentCache* cache) {
   if (!cache || !gl::g_current_gl_driver->ext.b_GL_ANGLE_blob_cache) {
     return;
@@ -770,8 +978,10 @@ void UnbindCacheFromCurrentOpenGLContext() {
 
 GpuPersistentCacheCollection::GpuPersistentCacheCollection(
     size_t max_in_memory_cache_size,
+    GpuPersistentCache::MetadataOpts metadata_options,
     GpuPersistentCache::AsyncDiskWriteOpts async_write_options)
     : max_in_memory_cache_size_(max_in_memory_cache_size),
+      metadata_options_(metadata_options),
       async_write_options_(async_write_options) {
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
@@ -798,7 +1008,7 @@ scoped_refptr<GpuPersistentCache> GpuPersistentCacheCollection::GetCache(
   auto [iter, inserted] = caches_.emplace(
       handle, base::MakeRefCounted<GpuPersistentCache>(
                   GetCacheHistogramPrefix(handle), std::move(memory_cache),
-                  async_write_options_));
+                  metadata_options_, async_write_options_));
   DCHECK(inserted);
   return iter->second;
 }

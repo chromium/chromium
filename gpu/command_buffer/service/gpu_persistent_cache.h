@@ -10,6 +10,8 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/flat_set.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
@@ -64,9 +66,44 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
     size_t max_pending_bytes_to_write = std::numeric_limits<size_t>::max();
   };
 
+  struct GPU_GLES2_EXPORT MetadataOpts {
+    MetadataOpts();
+
+    // Enable reading and writing of metadata about previous runs from the disk
+    // cache.
+    bool enabled = false;
+
+    // Number of keys to write as the "first accessed" items in the cache. These
+    // will be loaded first in subsequent runs.
+    size_t preload_count = 50;
+  };
+
+  // Metadata structure which stores information about cache usage. It is
+  // written to the cache periodically and can be used to improve the
+  // performance of future runs.
+  // Public for unit testing only.
+  struct GPU_GLES2_EXPORT CacheMetadata {
+    CacheMetadata();
+    CacheMetadata(const CacheMetadata&);
+    CacheMetadata(CacheMetadata&&);
+    ~CacheMetadata();
+    CacheMetadata& operator=(const CacheMetadata&);
+    CacheMetadata& operator=(CacheMetadata&&);
+
+    base::HeapArray<uint8_t> Serialize() const;
+    static CacheMetadata Deserialize(const base::HeapArray<uint8_t>& data);
+
+    // The first N keys queried in the cache.
+    // TODO(geofflang): Determine if it's faster to order the keys. If the
+    // preloading of entries races with the queries, we want to load in the
+    // order that the entries were queried.
+    base::flat_set<std::string> first_loaded_keys;
+  };
+
   // If `async_write_options.task_runner` is null, then writes are synchronous.
   explicit GpuPersistentCache(std::string_view cache_prefix,
                               scoped_refptr<MemoryCache> memory_cache,
+                              MetadataOpts metadata_options = {},
                               AsyncDiskWriteOpts async_write_options = {});
 
   GpuPersistentCache(const GpuPersistentCache&) = delete;
@@ -109,6 +146,7 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
                     base::trace_event::ProcessMemoryDump* pmd);
 
   const persistent_cache::PersistentCache& GetPersistentCacheForTesting() const;
+  void FlushMetadataForTesting();
 
  private:
   friend class base::RefCountedThreadSafe<GpuPersistentCache>;
@@ -117,7 +155,7 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
 
   struct DiskCache;
 
-  // Values are mirrored in tools/metrics/histograms/metadata/gpu/enums.xml
+  // LINT.IfChange(CacheLoadResult)
   enum class CacheLoadResult {
     kMiss = 0,
     kMissNoDiskCache = 1,
@@ -129,6 +167,16 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
     kHitDisk = 11,
     kMaxValue = kHitDisk,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:GpuPersistentCacheLoadResult)
+
+  // LINT.IfChange(MetadataEvent)
+  enum class MetadataEvent {
+    kCacheInitialized = 0,
+    kMetadataLoaded = 1,
+    kMetadataFlushed = 2,
+    kMaxValue = kMetadataFlushed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:GpuPersistentCacheMetadataEvent)
 
   static bool IsCacheHitResult(CacheLoadResult result);
 
@@ -139,6 +187,20 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
                  bool skip_memory_cache);
 
   void RecordCacheLoadResultHistogram(CacheLoadResult result);
+
+  // Call after querying for a cache key to update the metadata of which entries
+  // are loaded first.
+  void UpdateCacheMetadataForLoad(std::string_view key);
+
+  // Serialize and write the metadata to the disk cache.
+  void FlushCacheMetadata(CacheMetadata metadata);
+
+  // Attempt to load metadata from disk and process it, if it exists.
+  void LoadAndProcessMetadataFromDiskCache();
+
+  // Process the metadata:
+  // - Load first_loaded_keys from disk into the memory cache
+  void ProcessMetadata(const CacheMetadata& metadata);
 
   // Prefix to prepend to UMA histogram's name. e.g GraphiteDawn, WebGPU
   const std::string cache_prefix_;
@@ -154,6 +216,10 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
   base::AtomicFlag disk_cache_initialized_;
   scoped_refptr<DiskCache> disk_cache_;
   const AsyncDiskWriteOpts async_write_options_;
+
+  const MetadataOpts metadata_options_;
+  base::Lock metadata_mutex_;
+  std::optional<CacheMetadata> cache_metadata_ GUARDED_BY(metadata_mutex_);
 };
 
 void BindCacheToCurrentOpenGLContext(GpuPersistentCache* cache);
@@ -164,6 +230,7 @@ class GPU_GLES2_EXPORT GpuPersistentCacheCollection
  public:
   explicit GpuPersistentCacheCollection(
       size_t max_in_memory_cache_size,
+      GpuPersistentCache::MetadataOpts metadata_options,
       GpuPersistentCache::AsyncDiskWriteOpts async_write_options);
   ~GpuPersistentCacheCollection() override;
 
@@ -176,6 +243,7 @@ class GPU_GLES2_EXPORT GpuPersistentCacheCollection
 
  private:
   const size_t max_in_memory_cache_size_;
+  const GpuPersistentCache::MetadataOpts metadata_options_;
   const GpuPersistentCache::AsyncDiskWriteOpts async_write_options_;
 
   base::Lock mutex_;

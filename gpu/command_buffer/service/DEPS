@@ -9,6 +9,7 @@ include_rules = [
   "+components/crash/core/common/crash_key.h",
   "+components/metal_util",
   "+components/persistent_cache",
+  "+components/version_info/version_info.h",
   "+components/viz/common/gpu/vulkan_context_provider.h",
   "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/shared_image_format.h",

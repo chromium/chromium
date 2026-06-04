@@ -12248,6 +12248,28 @@
             ]
         }
     ],
+    "GpuPersistentCacheMetadata": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "preload_count": "50"
+                    },
+                    "enable_features": [
+                        "GpuPersistentCacheMetadata"
+                    ]
+                }
+            ]
+        }
+    ],
     "GpuYieldRasterization": [
         {
             "platforms": [

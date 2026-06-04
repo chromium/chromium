@@ -1009,6 +1009,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="GPU process crash limit reached"/>
 </enum>
 
+<!-- LINT.IfChange(GpuPersistentCacheLoadResult) -->
+
 <enum name="GpuPersistentCacheLoadResult">
   <summary>The cache hit/miss results of GpuPersistentCache.</summary>
   <int value="0" label="Miss"/>
@@ -1018,6 +1020,21 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="Hit (memory)"/>
   <int value="11" label="Hit (disk)"/>
 </enum>
+
+<!-- LINT.ThenChange(//gpu/command_buffer/service/gpu_persistent_cache.h:CacheLoadResult) -->
+
+<!-- LINT.IfChange(GpuPersistentCacheMetadataEvent) -->
+
+<enum name="GpuPersistentCacheMetadataEvent">
+  <summary>
+    Metadata events used to calculate frequency of metadata reads/writes.
+  </summary>
+  <int value="0" label="Cache Initialized"/>
+  <int value="1" label="Metadata Loaded"/>
+  <int value="2" label="Metadata Flushed"/>
+</enum>
+
+<!-- LINT.ThenChange(//gpu/command_buffer/service/gpu_persistent_cache.h:MetadataEvent) -->
 
 <enum name="GPUProcessLifetimeEvent">
   <summary>
