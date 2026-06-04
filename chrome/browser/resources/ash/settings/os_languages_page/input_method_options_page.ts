@@ -255,8 +255,6 @@ export class SettingsInputMethodOptionsPageElement extends
           loadTimeData.getBoolean('isPhysicalKeyboardAutocorrectAllowed'),
       isPhysicalKeyboardPredictiveWritingAllowed:
           loadTimeData.getBoolean('isPhysicalKeyboardPredictiveWritingAllowed'),
-      isVietnameseFirstPartyInputSettingsAllowed:
-          loadTimeData.getBoolean('allowFirstPartyVietnameseInput'),
     });
     const engineId = this.getStorageEngineId_();
     const currentSettings = inputMethodSpecificSettings[engineId] ?? {};

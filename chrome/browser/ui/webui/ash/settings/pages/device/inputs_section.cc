@@ -292,7 +292,6 @@ void AddInputMethodOptionsLoadTimeData(
   html_source->AddBoolean(
       "autocorrectEnableByDefault",
       base::FeatureList::IsEnabled(features::kAutocorrectByDefault));
-  html_source->AddBoolean("allowFirstPartyVietnameseInput", true);
 }
 
 }  // namespace

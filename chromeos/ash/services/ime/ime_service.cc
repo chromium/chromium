@@ -166,7 +166,6 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
 
   static constexpr std::string_view kEnabledFeatures[] = {
       "InputMethodKoreanRightAltKeyDownFix",
-      "FirstPartyVietnameseInput",
       "ImeKoreanOnlyModeSwitchOnRightAlt",
       "ImeFstDecoderParamsUpdate",
       "ImeDownloaderUpdate",

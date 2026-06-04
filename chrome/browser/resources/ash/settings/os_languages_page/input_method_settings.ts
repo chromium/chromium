@@ -9,7 +9,6 @@
 export interface SettingsContext {
   isPhysicalKeyboardAutocorrectAllowed: boolean;
   isPhysicalKeyboardPredictiveWritingAllowed: boolean;
-  isVietnameseFirstPartyInputSettingsAllowed: boolean;
 }
 
 /**
@@ -152,10 +151,8 @@ export function getInputMethodSettings(context: SettingsContext): SettingsMap {
   };
 
   // Vietnamese first party input
-  if (context.isVietnameseFirstPartyInputSettingsAllowed) {
-    settingsMap['vkd_vi_telex'] = [SettingsType.VIETNAMESE_TELEX_SETTINGS];
-    settingsMap['vkd_vi_vni'] = [SettingsType.VIETNAMESE_VNI_SETTINGS];
-  }
+  settingsMap['vkd_vi_telex'] = [SettingsType.VIETNAMESE_TELEX_SETTINGS];
+  settingsMap['vkd_vi_vni'] = [SettingsType.VIETNAMESE_VNI_SETTINGS];
 
   return settingsMap;
 }

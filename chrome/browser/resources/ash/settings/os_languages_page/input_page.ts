@@ -368,8 +368,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
           loadTimeData.getBoolean('isPhysicalKeyboardAutocorrectAllowed'),
       isPhysicalKeyboardPredictiveWritingAllowed:
           loadTimeData.getBoolean('isPhysicalKeyboardPredictiveWritingAllowed'),
-      isVietnameseFirstPartyInputSettingsAllowed:
-          loadTimeData.getBoolean('allowFirstPartyVietnameseInput'),
     });
   }
 
